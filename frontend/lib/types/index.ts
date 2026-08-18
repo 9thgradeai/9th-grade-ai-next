@@ -224,6 +224,7 @@ export namespace Server {
     subjectId: number;
     subject: string;
     topic: string;
+    subtopic: string;
     question: string;
     options: string[];
     correctAnswer: string;
@@ -394,6 +395,100 @@ export namespace Server {
     createdAt: string;
   };
 
+  // ── Custom exam engine (BCS-style) ─────────────────────────
+  export type ExamSubTopicDTO = {
+    name: string;
+    questionCount: number;
+  };
+
+  export type ExamTopicGroupDTO = {
+    groupName: string;
+    questionCount: number;
+    subTopics: ExamSubTopicDTO[];
+  };
+
+  export type ExamSubjectDTO = {
+    id: number;
+    nameBn: string;
+    nameEn: string;
+    icon: string;
+    color: string;
+    bg: string;
+    questionCount: number;
+    groups: ExamTopicGroupDTO[];
+  };
+
+  export type ExamSelectionRequest = {
+    subjects: {
+      subjectId: number;
+      groups: {
+        groupName: string;
+        subTopics: string[]; // empty = whole group
+      }[];
+    }[];
+    questionCount: number;
+    durationSec: number;
+    shuffleQuestions?: boolean;
+    seed?: number;
+  };
+
+  export type ExamQuestionDTO = {
+    id: number;
+    subject: string;
+    subjectId: number;
+    topic: string;
+    subtopic: string;
+    question: string;
+    options: string[];
+    difficulty: "EASY" | "MEDIUM" | "HARD";
+    sourceExam: string;
+    year: number | null;
+  };
+
+  export type ExamBuildResultDTO = {
+    examId: string;
+    questions: ExamQuestionDTO[];
+    totalQuestions: number;
+    requested: number;
+    available: number;
+    shortfall: number;
+    durationSec: number;
+    config: ExamSelectionRequest;
+  };
+
+  export type ExamSummaryDTO = {
+    total: number;
+    attempted: number;
+    correct: number;
+    wrong: number;
+    unanswered: number;
+    positiveMarks: number;
+    negativeMarks: number;
+    finalScore: number;
+    accuracy: number;
+    percentage: number;
+    pointsEarned: number;
+  };
+
+  export type ExamReviewDTO = {
+    questionId: number;
+    subject: string;
+    topic: string;
+    subtopic: string;
+    question: string;
+    options: string[];
+    correctAnswer: string;
+    explanation: string;
+    userAnswer: string;
+    status: "correct" | "wrong" | "unanswered";
+    marks: number;
+  };
+
+  export type ExamResultDTO = {
+    summary: ExamSummaryDTO;
+    review: ExamReviewDTO[];
+  };
+
   export type DashboardStatsDTO = {
     points: number;
     exams: number;
@@ -442,6 +537,15 @@ export type UserDTO = Server.UserDTO;
 export type ExamScheduleDTO = Server.ExamScheduleDTO;
 export type MockTestResultDTO = Server.MockTestResultDTO;
 export type DashboardStatsDTO = Server.DashboardStatsDTO;
+export type ExamSubTopicDTO = Server.ExamSubTopicDTO;
+export type ExamTopicGroupDTO = Server.ExamTopicGroupDTO;
+export type ExamSubjectDTO = Server.ExamSubjectDTO;
+export type ExamSelectionRequest = Server.ExamSelectionRequest;
+export type ExamQuestionDTO = Server.ExamQuestionDTO;
+export type ExamBuildResultDTO = Server.ExamBuildResultDTO;
+export type ExamSummaryDTO = Server.ExamSummaryDTO;
+export type ExamReviewDTO = Server.ExamReviewDTO;
+export type ExamResultDTO = Server.ExamResultDTO;
 export type TutorMessage = Client.TutorMessage;
 export type FlashNews = Client.FlashNews;
 export type Recommendation = Client.Recommendation;

@@ -1,6 +1,31 @@
 /// <reference types="vitest" />
 import "@testing-library/jest-dom";
 
+// jsdom in this Vitest setup does not expose a functional Storage; install a
+// minimal in-memory polyfill so components using localStorage (e.g. exam
+// state persistence) work reliably in tests.
+if (typeof globalThis.localStorage === "undefined" || typeof globalThis.localStorage.clear !== "function") {
+  const store = new Map<string, string>();
+  const storage: Storage = {
+    getItem: (key: string) => store.get(key) ?? null,
+    setItem: (key: string, value: string) => {
+      store.set(key, String(value));
+    },
+    removeItem: (key: string) => {
+      store.delete(key);
+    },
+    clear: () => {
+      store.clear();
+    },
+    key: (index: number) => Array.from(store.keys())[index] ?? null,
+    get length() {
+      return store.size;
+    },
+  };
+  Object.defineProperty(globalThis, "localStorage", { value: storage, configurable: true });
+  Object.defineProperty(globalThis, "sessionStorage", { value: storage, configurable: true });
+}
+
 (globalThis as any).process = {
   ...(globalThis as any).process,
   env: {
@@ -66,6 +91,12 @@ vi.mock("~backend/db", () => ({
       findMany: vi.fn(),
       findFirst: vi.fn(),
       count: vi.fn(),
+      groupBy: vi.fn(),
+    },
+    questionAttempt: {
+      findMany: vi.fn(),
+      count: vi.fn(),
+      createMany: vi.fn(),
     },
     questionBankCategory: {
       findMany: vi.fn(),

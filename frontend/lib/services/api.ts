@@ -241,6 +241,61 @@ export const api = {
   mockTestResults: (): Promise<Server.MockTestResultDTO[]> =>
     request<{ results: Server.MockTestResultDTO[] }>("/api/mock-test/results").then((d) => d.results),
 
+  examConfig: (): Promise<Server.ExamSubjectDTO[]> =>
+    request<{ subjects: Server.ExamSubjectDTO[] }>("/api/exam/config").then((d) => d.subjects),
+
+  buildExam: async (config: Server.ExamSelectionRequest): Promise<Server.ExamBuildResultDTO> => {
+    const response = await fetch("/api/exam/build", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        "x-request-id": crypto.randomUUID(),
+      },
+      body: JSON.stringify(config),
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      const body = await response.json().catch(() => ({ error: response.statusText }));
+      throw new ApiError(
+        typeof body.error === "string" ? body.error : response.statusText,
+        body.code ?? `HTTP_${response.status}`,
+        response.status,
+      );
+    }
+
+    const data = (await response.json()) as { exam: Server.ExamBuildResultDTO };
+    return data.exam;
+  },
+
+  submitExam: async (
+    answers: { questionId: number; selected: string }[],
+  ): Promise<Server.ExamResultDTO> => {
+    const response = await fetch("/api/exam/submit", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        "x-request-id": crypto.randomUUID(),
+      },
+      body: JSON.stringify({ answers }),
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      const body = await response.json().catch(() => ({ error: response.statusText }));
+      throw new ApiError(
+        typeof body.error === "string" ? body.error : response.statusText,
+        body.code ?? `HTTP_${response.status}`,
+        response.status,
+      );
+    }
+
+    const data = (await response.json()) as { result: Server.ExamResultDTO };
+    return data.result;
+  },
+
   submitDailyQuiz: async (
     quizId: number,
     answers: { questionId: number; selected: string }[],

@@ -8,6 +8,7 @@ export default defineConfig({
       "@": resolve(__dirname, "./frontend"),
       "~backend": resolve(__dirname, "./backend"),
       "~tests": resolve(__dirname, "./tests"),
+      "server-only": resolve(__dirname, "./tests/mocks/server-only.ts"),
     },
   },
   test: {

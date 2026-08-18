@@ -46,6 +46,9 @@ Auth-protected routes require the `auth_token` HttpOnly cookie (JWT, 7-day expir
 | POST | `/api/daily-quiz/submit` | **Auth required** — Grade + persist daily quiz answers `{ quizId, answers }` |
 | POST | `/api/flashcards/review` | **Auth required** — Log an SRS review `{ flashcardId, rating }` (0-3) |
 | POST | `/api/notifications/:id/read` | **Auth required** — Mark a notification read |
+| GET | `/api/exam/config` | List the custom-exam selection tree (subjects → topics → subtopics with question counts) |
+| POST | `/api/exam/build` | Build a custom BCS-style exam `{ subjects, questionCount, durationSec }` |
+| POST | `/api/exam/submit` | **Auth required** — Grade + persist a custom exam `{ answers: [{ questionId, selected }] }` |
 | POST | `/api/ai/solver` | Solve a question `{ text?, imageBase64?, subject? }` |
 | POST | `/api/ai/tutor` | Chat with AI tutor `{ messages: [{ role, content }] }` |
 
@@ -105,6 +108,27 @@ Auth-protected routes require the `auth_token` HttpOnly cookie (JWT, 7-day expir
 Returns `text/plain` stream. Uses the Groq-backed global assistant (`groq+web`
 when `TAVILY_API_KEY` is set, otherwise `groq`), falling back to a clearly
 labelled `mock` source. See `docs/AI-SYSTEM.md`.
+
+### ExamConfig (selection tree)
+```json
+{ "subjects": [{ "id": 1, "nameBn": "বাংলা", "nameEn": "Bangla", "questionCount": 20, "groups": [{ "groupName": "বাক্য শুদ্ধি", "questionCount": 8, "subTopics": [{ "name": "উপযুক্ত শব্দ চয়ন", "questionCount": 4 }] }] }] }
+```
+
+### ExamBuild
+```json
+{ "exam": { "examId": "...", "durationSec": 900, "subjects": ["বাংলা"], "shortfall": 0, "questions": [{ "id": 1, "subject": "বাংলা", "topic": "বাক্য শুদ্ধি", "subtopic": "উপযুক্ত শব্দ চয়ন", "question": "...", "options": ["A","B","C","D"], "difficulty": "EASY" }] } }
+```
+`questions` never include `correctAnswer` or `explanation` — those are only
+returned after submission. `shortfall` reports the number of requested
+questions that could not be sourced from the selection.
+
+### ExamResult
+```json
+{ "result": { "examId": "...", "correct": 8, "wrong": 2, "unanswered": 0, "total": 10, "score": 8, "pointsEarned": 80, "accuracy": 100, "percentage": 80, "durationSec": 900, "subjects": ["বাংলা"], "review": [{ "questionId": 1, "question": "...", "options": ["A","B","C","D"], "selected": "A", "correctAnswer": "A", "explanation": "...", "isCorrect": true }] } }
+```
+Scoring follows the BCS convention: **+1** per correct answer, **−0.5** per
+wrong answer, **0** for unanswered. `score` = correct − wrong×0.5; `accuracy`
+= correct/attempted; `percentage` = score/total (clamped 0–100).
 
 ## Error Shapes
 

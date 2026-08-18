@@ -23,10 +23,12 @@ import { SUBJECTS } from "@/lib/data";
 import { api } from "@/lib/services/api";
 import type { Server } from "@/lib/types";
 import MockTestTab from "./MockTestTab";
+import CustomExamTab from "./CustomExamTab";
 
-type PracticeMode = "mock" | "quick";
+type PracticeMode = "custom" | "mock" | "quick";
 
 const MODES: { id: PracticeMode; label: string; hint: string }[] = [
+  { id: "custom", label: "CUSTOM EXAM", hint: "বিষয়, টপিক, সাবটপিক মিশিয়ে নিজের বিসিএস পরীক্ষা তৈরি করুন" },
   { id: "mock", label: "MOCK_TEST", hint: "সময়সীমা সহ পূর্ণাঙ্গ মক পরীক্ষা" },
   { id: "quick", label: "QUICK_PRACTICE", hint: "বিষয়ভিত্তিক দ্রুত প্র্যাকটিস" },
 ];
@@ -38,7 +40,7 @@ const DIFFICULTY_LABEL: Record<string, string> = {
 };
 
 export default function PracticeTab() {
-  const [mode, setMode] = useState<PracticeMode>("quick");
+  const [mode, setMode] = useState<PracticeMode>("custom");
   const [subjects, setSubjects] = useState(SUBJECTS);
   const [subjectCounts, setSubjectCounts] = useState<Record<string, number>>({});
 
@@ -198,7 +200,7 @@ export default function PracticeTab() {
                   : "text-zinc-400 hover:text-white"
               }`}
             >
-              {m.id === "mock" ? <Timer className="w-4 h-4" /> : <Zap className="w-4 h-4" />}
+              {m.id === "mock" ? <Timer className="w-4 h-4" /> : m.id === "custom" ? <BookOpen className="w-4 h-4" /> : <Zap className="w-4 h-4" />}
               [ {m.label} ]
             </button>
           ))}
@@ -208,7 +210,9 @@ export default function PracticeTab() {
         </p>
       </motion.div>
 
-      {mode === "mock" ? (
+      {mode === "custom" ? (
+        <CustomExamTab />
+      ) : mode === "mock" ? (
         <MockTestTab />
       ) : (
         <>

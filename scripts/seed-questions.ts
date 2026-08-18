@@ -15,6 +15,7 @@
 import { readFileSync, readdirSync } from "fs";
 import { join } from "path";
 import { PrismaClient } from "@prisma/client";
+import { TOPIC_TREES } from "../frontend/lib/data";
 
 // Canonical subjects (must match SUBJECTS.name / QUESTION_BANK_CATEGORIES.label
 // in src/lib/data.ts so the dashboard filters by subject correctly).
@@ -201,19 +202,37 @@ export async function seedQuestions(prisma: PrismaClient): Promise<number> {
       continue;
     }
 
+    // Map each question to a real topic group + subtopic from TOPIC_TREES so the
+    // custom exam engine can filter deterministically by subject → topic → subtopic.
+    // The raw question file carries no per-question topic tags, so questions are
+    // distributed round-robin across the subject's topics/subtopics in file order
+    // (stable for the same file). Subjects without a tree fall back to the whole
+    // subject pool (topic = subject, subtopic = "").
+    const groups = (TOPIC_TREES as Record<string, { name: string; subTopics: { name: string }[] }[]>)[canonical] ?? [];
+    const topicPairs: { groupName: string; subTopic: string }[] = [];
+    for (const group of groups) {
+      for (const sub of group.subTopics) {
+        topicPairs.push({ groupName: group.name, subTopic: sub.name });
+      }
+    }
+
     // Insert questions for this subject.
     await prisma.question.createMany({
-      data: parsed.map((q) => ({
-        subjectId: subject.id,
-        topic: canonical,
-        question: q.question,
-        options: q.options,
-        correctAnswer: q.correctAnswer,
-        explanation: q.explanation,
-        difficulty: "MEDIUM",
-        sourceExam: "BCS",
-        year: null,
-      })),
+      data: parsed.map((q, index) => {
+        const pair = topicPairs.length > 0 ? topicPairs[index % topicPairs.length] : null;
+        return {
+          subjectId: subject.id,
+          topic: pair ? pair.groupName : canonical,
+          subtopic: pair ? pair.subTopic : "",
+          question: q.question,
+          options: q.options,
+          correctAnswer: q.correctAnswer,
+          explanation: q.explanation,
+          difficulty: "MEDIUM",
+          sourceExam: "BCS",
+          year: null,
+        };
+      }),
     });
 
     totalInserted += parsed.length;

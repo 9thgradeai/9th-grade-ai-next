@@ -71,7 +71,8 @@
 - `id` Int — PK, auto-increment
 - `subjectId` Int — FK to Subject
 - `subject` Subject — relation
-- `topic` String — default `""`
+- `topic` String — default `""` (topic group name, e.g. `"বাক্য শুদ্ধি"`)
+- `subtopic` String — default `""` (subtopic name from the `Topic` table; empty when not scoped)
 - `question` String
 - `options` Json — string array
 - `correctAnswer` String
@@ -82,7 +83,7 @@
 - `createdAt` DateTime — default `now()`
 - `updatedAt` DateTime — updatedAt
 - Relations: `bookmarks`
-- Indexes: `[subjectId, difficulty]`, `[subjectId, topic]`
+- Indexes: `[subjectId, difficulty]`, `[subjectId, topic]`, `[subjectId, topic, subtopic]`
 
 #### QuestionBankCategory
 - `id` Int — PK, auto-increment
@@ -362,7 +363,7 @@ Prisma automatically creates indexes for:
 - Primary keys (`@id`).
 - Foreign keys (`subjectId`, `userId`, etc.).
 - Unique constraints (`email`, `handle`, `[userId, questionId]`).
-- Explicit `@@index` fields: `User.email`, `User.handle`, `Subject.sortOrder`, `Topic.subjectId`, `Question.[subjectId, difficulty]`, `Question.[subjectId, topic]`, `Flashcard.subjectId`, `Flashcard.nextReview`, `StudyTask.[dayId, userId]`, `StudyPlanDay.date`, `DailyQuiz.date`, `UserSession.userId`, `UserSession.token`, `UserSession.expiresAt`.
+- Explicit `@@index` fields: `User.email`, `User.handle`, `Subject.sortOrder`, `Topic.subjectId`, `Question.[subjectId, difficulty]`, `Question.[subjectId, topic]`, `Question.[subjectId, topic, subtopic]`, `Flashcard.subjectId`, `Flashcard.nextReview`, `StudyTask.[dayId, userId]`, `StudyPlanDay.date`, `DailyQuiz.date`, `UserSession.userId`, `UserSession.token`, `UserSession.expiresAt`.
 
 ## Generator
 

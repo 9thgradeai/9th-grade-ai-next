@@ -107,7 +107,8 @@ model Question {
   id             Int      @id @default(autoincrement())
   subjectId      Int
   subject        Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
-  topic          String   @default("")
+  topic          String   @default("") // topic group (Topic.groupName)
+  subtopic       String   @default("") // subtopic (Topic.name)
   question       String
   options        Json // string[]
   correctAnswer  String
@@ -122,6 +123,7 @@ model Question {
 
   @@index([subjectId, difficulty])
   @@index([subjectId, topic])
+  @@index([subjectId, topic, subtopic])
 }
 
 model QuestionBankCategory {

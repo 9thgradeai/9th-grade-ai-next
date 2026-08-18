@@ -23,7 +23,7 @@ const POINTS_PER_CORRECT = 10;
 
 // Recompute accuracy + questionsAnswered straight from the attempt log so the
 // stored percentage never drifts from the underlying records.
-async function recomputeProgress(userId: string, pointsEarned: number) {
+export async function recomputeProgress(userId: string, pointsEarned: number) {
   const [total, correctCount] = await Promise.all([
     prisma.questionAttempt.count({ where: { userId } }),
     prisma.questionAttempt.count({ where: { userId, correct: true } }),
