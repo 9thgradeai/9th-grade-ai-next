@@ -54,6 +54,15 @@
 - **Rationale**: The model already knows stable exam facts accurately (verified 5/5 on spot-checked questions without KB); removing the KB eliminates a source of systematic error with zero infrastructure cost.
 - **Consequences**: Answers reflect model knowledge, not a curated syllabus. Groq is inference-only (no web search), so live/current facts would require a separate search provider (Tavily/Exa/Brave/Bing) later. No "no-mistakes" guarantee exists for any LLM; accuracy is best-effort.
 
+## ADR-009: Web-search grounding via Tavily
+
+- **Date**: 2026
+- **Status**: Accepted
+- **Context**: Groq is inference-only and cannot search the web; the user wants the tutor's factual answers grounded in live results to reduce factual slips (e.g., a hallucinated date).
+- **Decision**: When `TAVILY_API_KEY` is set, `/api/ai/tutor` searches Tavily's REST API (`https://api.tavily.com/search`, basic depth, top 5 results) for the latest user message and injects the snippets into the system prompt as the primary source for factual claims (`X-AI-Source: groq+web`). `searchWeb()` lives in `app/api/ai/_search.ts`, returns an empty block on any failure/timeout, and uses a plain `fetch` — **no new npm dependency** (per dependency rules).
+- **Rationale**: Live snippets are directly relevant to the user's question (unlike the curated KB), giving the model verifiable facts and source URLs. Graceful fallback keeps the endpoint reliable when the key is missing or Tavily is down.
+- **Consequences**: Requires a free Tavily key and one external call per tutor request (adds latency, up to ~10s capped by `AbortSignal.timeout`). Free tier ≈ 1000 queries/month. Web grounding cannot guarantee zero errors, only materially fewer factual mistakes.
+
 ## ADR-005: Tailwind CSS v4
 
 - **Date**: 2024

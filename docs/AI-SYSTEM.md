@@ -14,17 +14,19 @@
 
 ## Global assistant (no knowledge-base grounding)
 
-The tutor is a **global AI assistant**: it answers from the model's own knowledge, focused on BCS / bank / teacher-recruitment / govt-job exam preparation but not limited to a fixed syllabus.
+The tutor is a **global AI assistant**: it answers from the model's own knowledge — supplemented by **live web-search grounding when `TAVILY_API_KEY` is set** — focused on BCS / bank / teacher-recruitment / govt-job exam preparation but not limited to a fixed syllabus.
 
 - The curated knowledge base at `frontend/lib/data/knowledge-base.ts` (`KNOWLEDGE_BASE` + `retrieveKnowledge()`) exists as a **tested reference data module** but is **not injected** into the tutor system prompt (a previous KB-grounding design caused the model to anchor to weak/irrelevant retrieved entries and answer incorrectly on simple factual questions).
-- Per-request accuracy on general facts comes from the model itself (`openai/gpt-oss-120b`, a strong reasoning model). The persona instructs the model to be accurate first and to say so when unsure.
-- Web search grounding is **not** used — Groq is inference-only and does not provide a search API. Live, verifiable answers would require integrating a separate search/retrieval provider (Tavily, Exa, Brave, Bing) whose results are injected into the prompt.
+- **Web search grounding**: `searchWeb()` in `app/api/ai/_search.ts` calls Tavily's REST API (`https://api.tavily.com/search`, basic depth, top 5 results) with `TAVILY_API_KEY`. Retrieved snippets are injected into the system prompt as the primary source for factual claims; the model is told to cite sources and to say when results don't cover the question. Failures/timeouts return an empty block and the tutor answers from model knowledge — the endpoint never fails because of search.
+- Per-request accuracy on general facts without search comes from the model itself (`openai/gpt-oss-120b`, a strong reasoning model). The persona instructs the model to be accurate first and to say so when unsure.
+- Groq is **inference-only** — it provides no search API, which is why web grounding is delegated to Tavily.
 
 Tutor pipeline per request:
 1. Take the incoming `messages` array.
-2. System prompt = the `TUTOR_PERSONA` (global, exam-focused, accuracy-first) — no retrieved KB block.
-3. Stream the reply from Groq (`openai/gpt-oss-120b`, `maxTokens: 2048`).
-4. Response headers expose `X-AI-Source`: `groq` / `mock`.
+2. `searchWeb(latestMessage)` → top 5 live results (skipped when no `TAVILY_API_KEY`).
+3. System prompt = `TUTOR_PERSONA` + optional web-search grounding block.
+4. Stream the reply from Groq (`openai/gpt-oss-120b`, `maxTokens: 2048`).
+5. Response headers expose `X-AI-Source`: `groq+web` / `groq` / `mock`.
 
 ## Agents / Tools
 
@@ -98,4 +100,4 @@ There are no autonomous agent loops. The AI is used via two direct endpoints:
 - Mock responses are clearly labelled.
 - No prompt injection mitigation beyond standard system prompt framing.
 - No PII is sent to the LLM beyond what the user provides in chat.
-- API keys come from `process.env` only (`GROQ_API_KEY`, `ANTHROPIC_API_KEY`).
+- API keys come from `process.env` only (`GROQ_API_KEY`, `ANTHROPIC_API_KEY`, `TAVILY_API_KEY`).

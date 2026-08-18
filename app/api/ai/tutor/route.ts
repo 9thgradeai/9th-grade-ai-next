@@ -1,11 +1,13 @@
 /* POST /api/ai/tutor — streaming chat tutor for Bangladesh exam prep.
-   A global AI assistant (no knowledge-base grounding): it answers from the
-   model's own knowledge, focused on BCS / bank / teacher-recruitment / govt-job
-   exam preparation. Streams text via the AI SDK using Groq. Falls back to a
-   clearly-labelled mock stream when GROQ_API_KEY is not set. */
+   A global AI assistant for BCS / bank / teacher-recruitment / govt-job exam
+   preparation. When TAVILY_API_KEY is set it grounds factual answers in live
+   web-search results; without it, it answers from the model's own knowledge.
+   Streams text via the AI SDK using Groq. Falls back to a clearly-labelled
+   mock stream when GROQ_API_KEY is not set. */
 
 import { createGroq } from "@ai-sdk/groq";
 import { streamText } from "ai";
+import { searchWeb } from "../_search";
 import { AppError, toHttpResponse } from "~backend/errors";
 import { checkRateLimit, getRateLimitKey } from "~backend/rate-limit";
 import { getRequestId, startTiming, applySecurityHeaders } from "../../_middleware";
@@ -18,6 +20,14 @@ const TUTOR_PERSONA =
   "- Be encouraging, concise, and exam-focused.\n" +
   "- For concepts, give a short explanation + a quick example or mnemonic.\n" +
   "- If asked to solve, show the steps clearly.";
+
+const WEB_RULES =
+  "## Web Search Results (grounding)\n" +
+  "Below are live web-search results retrieved for the student's question. Use them as your PRIMARY source for factual claims (names, dates, numbers, events).\n" +
+  "- Answer from these results whenever they cover the question, and mention the source (e.g., the site name or URL).\n" +
+  "- If the results are irrelevant, outdated, or do not cover the question, answer from your own knowledge and clearly say the facts come from your knowledge rather than a live search.\n" +
+  "- Never invent facts that contradict the search results.\n\n" +
+  "=== Retrieved web search results ===\n";
 
 const GROQ_MODEL = "openai/gpt-oss-120b";
 
@@ -67,8 +77,16 @@ export async function POST(request: Request) {
       return res;
     }
 
-    // Global assistant: answer from the model's own knowledge, no KB grounding.
-    const system = TUTOR_PERSONA;
+    // Global assistant. When a Tavily key is set, ground the answer in live
+    // web search results for the latest message; otherwise answer from the
+    // model's own knowledge.
+    const latestQuestion = String(messages[messages.length - 1]?.content ?? "");
+    const web = await searchWeb(latestQuestion);
+    const webBlock = web.block
+      ? `${WEB_RULES}\n${web.block}`
+      : "";
+
+    const system = `${TUTOR_PERSONA}\n\n${webBlock}`.trim();
 
     const groq = createGroq({ apiKey });
     const result = streamText({
@@ -81,7 +99,7 @@ export async function POST(request: Request) {
     const res = result.toTextStreamResponse();
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");
-    res.headers.set("X-AI-Source", "groq");
+    res.headers.set("X-AI-Source", web.results > 0 ? "groq+web" : "groq");
     applySecurityHeaders(res);
     return res;
   } catch (err) {
