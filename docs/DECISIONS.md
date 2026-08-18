@@ -45,6 +45,15 @@
 - **Rationale**: Groq offers high-throughput, low-latency inference at low cost; the curated KB keeps answers aligned with the BCS/Bank syllabus and exam patterns. Retrieval is deterministic and dependency-free (no vector DB or embedding service needed at this stage).
 - **Consequences**: Model quality is tied to Groq's Llama lineup; if grounding precision becomes a bottleneck, swap the retrieval layer for embeddings (e.g., pgvector on the Railway Postgres) without changing the route interface.
 
+## ADR-008: Global AI assistant for the tutor (drop KB grounding)
+
+- **Date**: 2026
+- **Status**: Accepted (supersedes the KB-grounding part of ADR-006)
+- **Context**: Live testing showed the tutor answered simple factual questions (e.g., "What is the capital of Bangladesh?", "What is the liberation date of the USA?") incorrectly. Root cause: the KB-grounding system prompt told the model to treat retrieved entries as its primary source, so it anchored to weak/irrelevant matches instead of its own knowledge. Additionally, `llama-3.3-70b-versatile` and `groq/compound` proved flaky/unavailable on the account; the account's curated model list includes `openai/gpt-oss-120b` (reliable, strong reasoning).
+- **Decision**: `/api/ai/tutor` is now a **global assistant** — `openai/gpt-oss-120b`, exam-focused persona, no KB injection, `maxTokens: 2048`, `X-AI-Source: groq`/`mock`. The `knowledge-base.ts` module stays as a tested reference data module but is not used by the tutor.
+- **Rationale**: The model already knows stable exam facts accurately (verified 5/5 on spot-checked questions without KB); removing the KB eliminates a source of systematic error with zero infrastructure cost.
+- **Consequences**: Answers reflect model knowledge, not a curated syllabus. Groq is inference-only (no web search), so live/current facts would require a separate search provider (Tavily/Exa/Brave/Bing) later. No "no-mistakes" guarantee exists for any LLM; accuracy is best-effort.
+
 ## ADR-005: Tailwind CSS v4
 
 - **Date**: 2024

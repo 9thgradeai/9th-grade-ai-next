@@ -2,31 +2,29 @@
 
 ## Providers
 
-- **Groq** — Llama 3.3 70B (`llama-3.3-70b-versatile`) via Vercel AI SDK (`@ai-sdk/groq`) for the AI Tutor. Requires `GROQ_API_KEY`.
+- **Groq** — `openai/gpt-oss-120b` via Vercel AI SDK (`@ai-sdk/groq`) for the AI Tutor. Requires `GROQ_API_KEY`.
 - **Anthropic** — Claude Sonnet 4 (`claude-sonnet-4-6`) via Vercel AI SDK (`@ai-sdk/anthropic`) for the solver. Requires `ANTHROPIC_API_KEY` (falls back to mock when unset).
 
 ## Models
 
 | Endpoint | Model | Purpose |
 |----------|-------|---------|
-| `/api/ai/tutor` | `llama-3.3-70b-versatile` (Groq) | Streaming chat tutor grounded in the knowledge base |
+| `/api/ai/tutor` | `openai/gpt-oss-120b` (Groq) | Streaming global AI assistant (exam-focused, no KB grounding) |
 | `/api/ai/solver` | `claude-sonnet-4-6` (Anthropic) | Step-by-step question solver |
 
-## Knowledge Base (AI Tutor grounding)
+## Global assistant (no knowledge-base grounding)
 
-The tutor answers from a curated, exam-focused knowledge base at `frontend/lib/data/knowledge-base.ts` (`KNOWLEDGE_BASE`):
+The tutor is a **global AI assistant**: it answers from the model's own knowledge, focused on BCS / bank / teacher-recruitment / govt-job exam preparation but not limited to a fixed syllabus.
 
-- ~70 entries covering all 10 BCS Preliminary subjects (Bangla, English, Bangladesh Affairs, International Affairs, Geography/Environment, General Science, Computer & IT, Mathematical Reasoning, Mental Ability, Ethics & Good Governance) plus exam-system and current-affairs sheets.
-- Each entry: `{ id, subject, subjectEn, topic, keywords[], content, source }` — bilingual (Bangla primary, English keywords).
-- **Retrieval**: `retrieveKnowledge(query, limit = 8)` in the same file — deterministic, dependency-free keyword scoring (tokenizes Bangla + Latin text, scores keyword substring hits and token overlap). No embeddings/vector store.
+- The curated knowledge base at `frontend/lib/data/knowledge-base.ts` (`KNOWLEDGE_BASE` + `retrieveKnowledge()`) exists as a **tested reference data module** but is **not injected** into the tutor system prompt (a previous KB-grounding design caused the model to anchor to weak/irrelevant retrieved entries and answer incorrectly on simple factual questions).
+- Per-request accuracy on general facts comes from the model itself (`openai/gpt-oss-120b`, a strong reasoning model). The persona instructs the model to be accurate first and to say so when unsure.
+- Web search grounding is **not** used — Groq is inference-only and does not provide a search API. Live, verifiable answers would require integrating a separate search/retrieval provider (Tavily, Exa, Brave, Bing) whose results are injected into the prompt.
 
 Tutor pipeline per request:
-1. Take the latest user message.
-2. `retrieveKnowledge()` → top 8 matching entries.
-3. Inject them into the system prompt as the grounding block (`=== Retrieved knowledge base entries ===`).
-4. Instruct the model to answer from the KB first, and to state when a question is outside the KB.
-5. Stream the reply from Groq (`llama-3.3-70b-versatile`).
-6. Response headers expose `X-AI-Source`: `groq+kb` / `groq` / `mock`.
+1. Take the incoming `messages` array.
+2. System prompt = the `TUTOR_PERSONA` (global, exam-focused, accuracy-first) — no retrieved KB block.
+3. Stream the reply from Groq (`openai/gpt-oss-120b`, `maxTokens: 2048`).
+4. Response headers expose `X-AI-Source`: `groq` / `mock`.
 
 ## Agents / Tools
 
@@ -90,9 +88,9 @@ There are no autonomous agent loops. The AI is used via two direct endpoints:
 
 - **Missing API key**: Mock fallback activates (clearly labelled).
 - **JSON parse failure (solver)**: Returns raw text as solution with a single step.
-- **Stream failure (tutor)**: Returns `500`.
+- **Model unavailable/fails**: Returns `500`.
 - **Invalid input**: Returns `400` with error message.
-- **No KB match**: Tutor answers from general knowledge and states it is outside the KB.
+- **Model unsure of a fact**: Persona instructs the model to state uncertainty rather than guess.
 
 ## AI Security
 
