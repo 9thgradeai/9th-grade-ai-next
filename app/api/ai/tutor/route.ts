@@ -2,11 +2,12 @@
    A global AI assistant for BCS / bank / teacher-recruitment / govt-job exam
    preparation. When TAVILY_API_KEY is set it grounds factual answers in live
    web-search results; without it, it answers from the model's own knowledge.
-   Streams text via the AI SDK using Groq. Falls back to a clearly-labelled
-   mock stream when GROQ_API_KEY is not set. */
+   Generates the reply via the AI SDK on Groq (with retry-on-empty), then
+   streams it. Falls back to a clearly-labelled mock stream when GROQ_API_KEY
+   is not set. */
 
 import { createGroq } from "@ai-sdk/groq";
-import { streamText } from "ai";
+import { generateText } from "ai";
 import { searchWeb } from "../_search";
 import { AppError, toHttpResponse } from "~backend/errors";
 import { checkRateLimit, getRateLimitKey } from "~backend/rate-limit";
@@ -89,17 +90,51 @@ export async function POST(request: Request) {
     const system = `${TUTOR_PERSONA}\n\n${webBlock}`.trim();
 
     const groq = createGroq({ apiKey });
-    const result = streamText({
-      model: groq(GROQ_MODEL),
-      system,
-      messages,
-      maxTokens: 2048,
-    });
 
-    const res = result.toTextStreamResponse();
-    res.headers.set("X-Request-Id", requestId);
-    res.headers.set("X-Response-Time", getTime() + "ms");
-    res.headers.set("X-AI-Source", web.results > 0 ? "groq+web" : "groq");
+    // Groq's reasoning models intermittently return empty output and the free
+    // tier rate-limits under load. Retry on both empty results and thrown
+    // errors so the student always gets a real answer, then stream it out.
+    let text = "";
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        const result = await generateText({
+          model: groq(GROQ_MODEL),
+          system,
+          messages,
+          maxTokens: 2048,
+        });
+        if (result.text.trim()) {
+          text = result.text;
+          break;
+        }
+      } catch {
+        // transient provider error — retry below
+      }
+      if (attempt < 2) await new Promise((r) => setTimeout(r, 500));
+    }
+
+    const finalText =
+      text.trim() ||
+      "দুঃখিত, এখন উত্তর তৈরি করা যাচ্ছে না। কিছুক্ষণ পর আবার চেষ্টা করুন।";
+
+    const encoder = new TextEncoder();
+    const stream = new ReadableStream({
+      async start(controller) {
+        for (const chunk of finalText.match(/.{1,12}(\s|$)/g) ?? [finalText]) {
+          controller.enqueue(encoder.encode(chunk));
+          await new Promise((r) => setTimeout(r, 25));
+        }
+        controller.close();
+      },
+    });
+    const res = new Response(stream, {
+      headers: {
+        "Content-Type": "text/plain; charset=utf-8",
+        "X-Request-Id": requestId,
+        "X-Response-Time": getTime() + "ms",
+        "X-AI-Source": web.results > 0 ? "groq+web" : "groq",
+      },
+    });
     applySecurityHeaders(res);
     return res;
   } catch (err) {
