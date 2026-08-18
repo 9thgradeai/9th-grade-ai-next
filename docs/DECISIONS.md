@@ -63,6 +63,15 @@
 - **Rationale**: Live snippets are directly relevant to the user's question (unlike the curated KB), giving the model verifiable facts and source URLs. Graceful fallback keeps the endpoint reliable when the key is missing or Tavily is down.
 - **Consequences**: Requires a free Tavily key and one external call per tutor request (adds latency, up to ~10s capped by `AbortSignal.timeout`). Free tier ≈ 1000 queries/month. Web grounding cannot guarantee zero errors, only materially fewer factual mistakes.
 
+## ADR-010: Real-data dashboard redesign (no mock/filler data)
+
+- **Date**: 2026
+- **Status**: Accepted
+- **Context**: The dashboard (Home, Progress, NotificationCenter) rendered hard-coded, static data (fake 91.6 points, fake rank/exams, fabricated subject trends, `+0%` trends, static notifications/badges, a hard-coded exam banner). The user requires that all dashboard data come from the real database and reflect the user's actual progress.
+- **Decision**: The dashboard is rebuilt as a "mission control" surface fed exclusively by real endpoints: `/api/dashboard-stats` (now includes real 7-day `activity` from `QuestionAttempt`, plus `flashcardsReviewed` and `aiQuestionsAsked`), `/api/subject-reports` (fake `trend` field removed), `/api/exam-schedule` (new public route backed by a new `ExamSchedule` model seeded from real published dates, e.g. BCS Preliminary 51st on 2026-11-15), `/api/mock-test/results` (new auth route returning real `MockTestResult` history), `/api/study-plan`, `/api/daily-quiz` and `/api/notifications` + `/api/notifications/:id/read` + `/api/badges`. DailyQuizWidget now submits to `/api/daily-quiz/submit` (real grading + points) instead of computing fake XP locally. The store's fake `totalPoints: 91.6` default was removed and the storage key versioned (`9th_grade_ai_store_v2`) to discard stale persisted values.
+- **Rationale**: Progress should be measured by what the user actually did; fabricated numbers destroy trust in an exam-prep product and make the product non-demoable against real data.
+- **Consequences**: Dashboard sections render graceful empty states when a user has no data yet. `ExamSchedule` is a new model — see `docs/DATABASE.md`; new endpoints are documented in `docs/API.md`.
+
 ## ADR-005: Tailwind CSS v4
 
 - **Date**: 2024

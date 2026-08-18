@@ -45,13 +45,13 @@ type DashboardActions = {
 
 // ── Persistence ────────────────────────────────────────────
 
-const STORAGE_KEY = "9th_grade_ai_store";
+const STORAGE_KEY = "9th_grade_ai_store_v2";
 
 const defaultState: DashboardState = {
   activeTab: "home",
   bookmarkedQuestions: [],
   mockTestScores: [],
-  totalPoints: 91.6,
+  totalPoints: 0,
   streakCount: 0,
   selectedTopics: [],
   studyPlanProgress: {},

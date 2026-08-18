@@ -248,6 +248,41 @@ async function main() {
   }
   console.log(`  ✓ ${Object.keys(MOCK_TEST_QUESTIONS).length} mock tests`);
 
+  // --- Exam schedule (real published exam dates) ---
+  const examSchedule: {
+    titleBn: string;
+    titleEn: string;
+    type: string;
+    date: string;
+    year: string;
+    circularNo: string;
+    note: string;
+  }[] = [
+    {
+      titleBn: "বিসিএস প্রিলিমিনারি (৫১তম)",
+      titleEn: "BCS Preliminary (51st)",
+      type: "BCS",
+      date: "2026-11-15",
+      year: "2026",
+      circularNo: "PSC/BCS-51/2026",
+      note: "২টি পত্রে ৪০০ নম্বর। প্রিলিমিনারির প্রস্তুতির জন্য সিলেবাস ও প্রশ্নব্যাংক ব্যবহার করুন।",
+    },
+  ];
+  for (const exam of examSchedule) {
+    await prisma.examSchedule.create({
+      data: {
+        titleBn: exam.titleBn,
+        titleEn: exam.titleEn,
+        type: exam.type,
+        date: new Date(exam.date),
+        year: exam.year,
+        circularNo: exam.circularNo,
+        note: exam.note,
+      },
+    });
+  }
+  console.log(`  ✓ ${examSchedule.length} exam schedule entries`);
+
   // --- Daily quizzes ---
   for (const quiz of DAILY_QUIZZES) {
     await prisma.dailyQuiz.create({

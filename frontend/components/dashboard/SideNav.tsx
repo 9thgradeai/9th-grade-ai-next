@@ -38,7 +38,7 @@ export default function SideNav({ activeTab, onChange }: SideNavProps) {
           <span className="text-emerald-500 font-mono text-xl font-bold">{">"}</span>
           <span className="text-white font-mono font-bold tracking-tight">9th-grade-ai</span>
         </div>
-        <p className="text-xs text-zinc-500 font-mono mt-1">v0.2.0 // interactive shell</p>
+        <p className="text-xs text-zinc-500 font-mono mt-1">বিসিএস • ব্যাংক • চাকরি</p>
       </div>
 
       {/* Tab links */}
@@ -82,7 +82,7 @@ export default function SideNav({ activeTab, onChange }: SideNavProps) {
           </div>
           <div className="min-w-0">
             <p className="text-sm text-white font-medium truncate">{displayName}</p>
-            <p className="text-[10px] text-zinc-500 font-mono truncate">Grade 9 Science</p>
+            <p className="text-[10px] text-zinc-500 font-mono truncate">@{user?.handle ?? "student"}</p>
           </div>
         </div>
       </div>

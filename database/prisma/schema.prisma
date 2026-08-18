@@ -239,6 +239,22 @@ model MockTestQuestion {
   explanation    String    @default("")
 }
 
+// ── Exam schedule (real published exam dates) ─────────────
+model ExamSchedule {
+  id          Int      @id @default(autoincrement())
+  titleBn     String
+  titleEn     String   @default("")
+  type        String   @default("BCS") // BCS | BANK | TEACHER | OTHER
+  date        DateTime
+  year        String   @default("")
+  circularNo  String   @default("")
+  note        String   @default("")
+  sortOrder   Int      @default(0)
+
+  @@index([date])
+  @@index([type])
+}
+
 // ── News / recommendations / gamification ────────────────
 model FlashNews {
   id          Int     @id @default(autoincrement())

@@ -39,7 +39,7 @@ export async function GET(request: Request) {
       const attempted = entry?.attempted ?? 0;
       const correct = entry?.correct ?? 0;
       const score = attempted > 0 ? Math.min(100, Math.round((correct / attempted) * 100)) : 0;
-      return { name: s.nameBn, score, attempted, correct, trend: "+0%" };
+      return { name: s.nameBn, score, attempted, correct };
     });
 
     const res = NextResponse.json({ reports });

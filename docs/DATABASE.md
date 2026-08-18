@@ -176,6 +176,20 @@
 - `correctAnswer` String
 - `explanation` String — default `""`
 
+#### ExamSchedule
+Real, published exam dates (BCS, bank, teacher registration) backing the
+dashboard countdown. Seeded from announced circulars — no fabricated entries.
+- `id` Int — PK, auto-increment
+- `titleBn` String
+- `titleEn` String — default `""`
+- `type` String — default `"BCS"` (`BCS` | `BANK` | `TEACHER` | `OTHER`)
+- `date` DateTime — when the exam is scheduled
+- `year` String — default `""`
+- `circularNo` String — default `""`
+- `note` String — default `""`
+- `sortOrder` Int — default `0`
+- Indexed on `date` and `type`.
+
 #### FlashNews
 - `id` Int — PK, auto-increment
 - `tag` String — default `"EXAM"`

@@ -22,6 +22,8 @@ import type {
   NotificationDTO,
   OfflinePackDTO,
   DocumentDTO,
+  ExamScheduleDTO,
+  MockTestResultDTO,
 } from "@/lib/types";
 
 // ── Subjects ─────────────────────────────────────────────
@@ -410,5 +412,123 @@ export async function getDocuments(): Promise<DocumentDTO[]> {
     }));
   } catch {
     throw new InternalServerError("Failed to fetch documents");
+  }
+}
+
+// ── Exam schedule ────────────────────────────────────────
+export async function getExamSchedule(): Promise<ExamScheduleDTO[]> {
+  try {
+    const rows = await prisma.examSchedule.findMany({
+      orderBy: [{ date: "asc" }, { sortOrder: "asc" }],
+    });
+    return rows.map((e) => ({
+      id: e.id,
+      titleBn: e.titleBn,
+      titleEn: e.titleEn,
+      type: e.type,
+      date: e.date.toISOString(),
+      year: e.year,
+      circularNo: e.circularNo,
+      note: e.note,
+    }));
+  } catch {
+    throw new InternalServerError("Failed to fetch exam schedule");
+  }
+}
+
+// ── Mock test results ────────────────────────────────────
+export async function getMockTestResults(userId: string): Promise<MockTestResultDTO[]> {
+  try {
+    const rows = await prisma.mockTestResult.findMany({
+      where: { userId },
+      include: { mockTest: { select: { title: true } } },
+      orderBy: { createdAt: "desc" },
+      take: 10,
+    });
+    return rows.map((r) => ({
+      id: r.id,
+      mockTestId: r.mockTestId,
+      title: r.mockTest?.title ?? "মক টেস্ট",
+      score: r.score,
+      correct: r.correct,
+      total: r.total,
+      durationSec: r.durationSec,
+      createdAt: r.createdAt.toISOString(),
+    }));
+  } catch {
+    throw new InternalServerError("Failed to fetch mock test results");
+  }
+}
+
+// ── Dashboard stats (real, per-user) ─────────────────────
+export async function getDashboardStats(userId: string): Promise<{
+  points: number;
+  exams: number;
+  rank: number;
+  streak: number;
+  questionsAnswered: number;
+  accuracy: number;
+  completion: number;
+  flashcardsReviewed: number;
+  aiQuestionsAsked: number;
+  activity: { date: string; answered: number; correct: number }[];
+}> {
+  try {
+    const [questionCount, progress, attempts] = await Promise.all([
+      prisma.question.count(),
+      prisma.userProgress.upsert({
+        where: { userId },
+        update: {},
+        create: { userId },
+      }),
+      prisma.questionAttempt.findMany({
+        where: { userId },
+        select: { correct: true, createdAt: true },
+      }),
+    ]);
+
+    const rank =
+      (await prisma.userProgress.count({
+        where: { points: { gt: progress.points } },
+      })) + 1;
+
+    const activityMap = new Map<string, { answered: number; correct: number }>();
+    const now = Date.now();
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(now - i * 24 * 60 * 60 * 1000);
+      const key = d.toISOString().slice(0, 10);
+      activityMap.set(key, { answered: 0, correct: 0 });
+    }
+    for (const a of attempts) {
+      const key = a.createdAt.toISOString().slice(0, 10);
+      const entry = activityMap.get(key);
+      if (entry) {
+        entry.answered += 1;
+        if (a.correct) entry.correct += 1;
+      }
+    }
+    const activity = Array.from(activityMap.entries()).map(([date, v]) => ({
+      date,
+      answered: v.answered,
+      correct: v.correct,
+    }));
+
+    return {
+      points: progress.points,
+      exams: progress.examsAttempted,
+      rank,
+      streak: progress.streak,
+      questionsAnswered: progress.questionsAnswered,
+      accuracy: progress.accuracy,
+      completion:
+        questionCount > 0
+          ? Math.min(100, Math.round((progress.questionsAnswered / (questionCount * 10)) * 100))
+          : 0,
+      flashcardsReviewed: progress.flashcardsReviewed,
+      aiQuestionsAsked: progress.aiQuestionsAsked,
+      activity,
+    };
+  } catch {
+    throw new InternalServerError("Failed to fetch dashboard stats");
   }
 }

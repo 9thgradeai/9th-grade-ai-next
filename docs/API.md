@@ -24,6 +24,7 @@ Auth-protected routes require the `auth_token` HttpOnly cookie (JWT, 7-day expir
 | GET | `/api/question-bank/categories` | List question bank categories |
 | GET | `/api/archive` | List exam archives |
 | GET | `/api/flashcards` | List flashcards, optionally filtered by `?subject=` |
+| GET | `/api/exam-schedule` | List published exam dates (public, no auth) |
 | GET | `/api/study-plan` | **Auth required** — List the caller's study plan tasks |
 | GET | `/api/daily-quiz` | Get today's quiz |
 | GET | `/api/mock-test` | List mock tests |
@@ -33,7 +34,8 @@ Auth-protected routes require the `auth_token` HttpOnly cookie (JWT, 7-day expir
 | PATCH | `/api/progress` | **Auth required** — Patch user progress (whitelisted fields only) |
 | GET | `/api/notifications` | **Auth required** — List notifications with per-user read state |
 | GET | `/api/badges` | List achievement badges |
-| GET | `/api/subject-reports` | **Auth required** — Per-subject reports from the caller's attempts |
+| GET | `/api/subject-reports` | **Auth required** — Per-subject reports from the caller's attempts (`name`, `score`, `attempted`, `correct` — no fabricated trend) |
+| GET | `/api/mock-test/results` | **Auth required** — Caller's recent mock test results |
 | GET | `/api/documents` | List documents (syllabus, circulars) |
 | GET | `/api/bookmarks` | **Auth required** — Get bookmarked question IDs |
 | POST | `/api/bookmarks` | **Auth required** — Toggle bookmark `{ questionId }` |
@@ -74,13 +76,35 @@ Auth-protected routes require the `auth_token` HttpOnly cookie (JWT, 7-day expir
 { "id": 1, "title": "...", "subject": "...", "totalQuestions": 10, "duration": 20, "questions": [...] }
 ```
 
+### ExamSchedule
+```json
+{ "exams": [{ "id": 1, "titleBn": "...", "titleEn": "...", "type": "BCS", "date": "2026-11-15T00:00:00.000Z", "year": "2026", "circularNo": "...", "note": "..." }] }
+```
+
+### MockTestResult
+```json
+{ "results": [{ "id": 1, "mockTestId": 1, "title": "...", "score": 80, "correct": 8, "total": 10, "durationSec": 900, "createdAt": "2026-08-18T..." }] }
+```
+
+### SubjectReport
+```json
+{ "reports": [{ "name": "বাংলা ভাষা ও সাহিত্য", "score": 80, "attempted": 12, "correct": 10 }] }
+```
+
+### DashboardStats
+```json
+{ "stats": { "points": 120, "exams": 2, "rank": 1, "streak": 3, "questionsAnswered": 40, "accuracy": 75, "completion": 8, "flashcardsReviewed": 5, "aiQuestionsAsked": 2, "activity": [{ "date": "2026-08-18", "answered": 6, "correct": 5 }] } }
+```
+
 ### AI Solver
 ```json
 { "solution": "...", "steps": ["step 1", "step 2"], "source": "anthropic" | "mock", "note": "..." }
 ```
 
 ### AI Tutor (streaming)
-Returns `text/plain` stream when `ANTHROPIC_API_KEY` is set, otherwise returns mock text.
+Returns `text/plain` stream. Uses the Groq-backed global assistant (`groq+web`
+when `TAVILY_API_KEY` is set, otherwise `groq`), falling back to a clearly
+labelled `mock` source. See `docs/AI-SYSTEM.md`.
 
 ## Error Shapes
 

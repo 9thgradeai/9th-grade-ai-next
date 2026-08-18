@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
-import { getDashboardStats } from "~backend/services/content";
-import { getUserIdFromRequest } from "~backend/services/user";
-import { AppError, toHttpResponse } from "~backend/errors";
+import { getExamSchedule } from "~backend/services/content";
+import { toHttpResponse } from "~backend/errors";
 import { getRequestId, startTiming, applySecurityHeaders } from "../_middleware";
 
 export async function GET(request: Request) {
@@ -9,14 +8,9 @@ export async function GET(request: Request) {
   const getTime = startTiming();
 
   try {
-    const userId = await getUserIdFromRequest(request);
-    if (!userId) {
-      throw new AppError(401, "Unauthorized", "AUTH_UNAUTHORIZED");
-    }
+    const exams = await getExamSchedule();
 
-    const stats = await getDashboardStats(userId);
-
-    const res = NextResponse.json({ stats });
+    const res = NextResponse.json({ exams });
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");
     applySecurityHeaders(res);

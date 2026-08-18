@@ -372,6 +372,41 @@ export namespace Server {
     rank: number;
   };
 
+  export type ExamScheduleDTO = {
+    id: number;
+    titleBn: string;
+    titleEn: string;
+    type: string;
+    date: string;
+    year: string;
+    circularNo: string;
+    note: string;
+  };
+
+  export type MockTestResultDTO = {
+    id: number;
+    mockTestId: number | null;
+    title: string;
+    score: number;
+    correct: number;
+    total: number;
+    durationSec: number;
+    createdAt: string;
+  };
+
+  export type DashboardStatsDTO = {
+    points: number;
+    exams: number;
+    rank: number;
+    streak: number;
+    questionsAnswered: number;
+    accuracy: number;
+    completion: number;
+    flashcardsReviewed: number;
+    aiQuestionsAsked: number;
+    activity: { date: string; answered: number; correct: number }[];
+  };
+
   export type UserDTO = {
     id: string;
     name: string;
@@ -404,6 +439,9 @@ export type OfflinePackDTO = Server.OfflinePackDTO;
 export type DocumentDTO = Server.DocumentDTO;
 export type UserProgressDTO = Server.UserProgressDTO;
 export type UserDTO = Server.UserDTO;
+export type ExamScheduleDTO = Server.ExamScheduleDTO;
+export type MockTestResultDTO = Server.MockTestResultDTO;
+export type DashboardStatsDTO = Server.DashboardStatsDTO;
 export type TutorMessage = Client.TutorMessage;
 export type FlashNews = Client.FlashNews;
 export type Recommendation = Client.Recommendation;

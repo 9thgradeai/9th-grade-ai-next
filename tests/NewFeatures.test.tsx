@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import StudyPlannerTab from "@/components/dashboard/StudyPlannerTab";
 import FlashcardsTab from "@/components/dashboard/FlashcardsTab";
@@ -8,6 +8,20 @@ import DailyQuizWidget from "@/components/dashboard/DailyQuizWidget";
 import NotificationCenter from "@/components/dashboard/NotificationCenter";
 import OfflineModeTab from "@/components/dashboard/OfflineModeTab";
 import { MOCK_TEST_QUESTIONS, OFFLINE_PACKS } from "@/lib/data/study";
+
+function stubFetch(routes: Record<string, unknown>) {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async (input: RequestInfo | URL) => {
+      const url = typeof input === "string" ? input : input.toString();
+      const match = Object.keys(routes).find((r) => url.startsWith(r));
+      if (!match) {
+        return { ok: false, status: 404, statusText: "Not Found", json: async () => ({}) } as Response;
+      }
+      return { ok: true, status: 200, json: async () => routes[match] } as Response;
+    }),
+  );
+}
 
 describe("StudyPlannerTab", () => {
   it("renders the study planner header", () => {
@@ -107,20 +121,36 @@ describe("AISolverTab", () => {
 });
 
 describe("DailyQuizWidget", () => {
-  it("renders the closed widget", () => {
-    render(<DailyQuizWidget />);
-    expect(screen.getByText("Daily Quiz")).toBeInTheDocument();
-    expect(screen.getByText("5 questions • +50 XP")).toBeInTheDocument();
+  beforeEach(() => {
+    stubFetch({ "/api/daily-quiz": { quiz: null } });
+  });
+  afterEach(() => {
+    vi.unstubAllGlobals();
   });
 
-  it("opens quiz modal when clicked", () => {
+  it("renders the closed widget", () => {
     render(<DailyQuizWidget />);
-    fireEvent.click(screen.getByText("Daily Quiz"));
-    expect(screen.getByText(/Question/)).toBeInTheDocument();
+    expect(screen.getByText("দৈনিক কুইজ")).toBeInTheDocument();
+  });
+
+  it("shows an empty state when no quiz is available", async () => {
+    render(<DailyQuizWidget />);
+    fireEvent.click(screen.getByText("দৈনিক কুইজ"));
+    expect(await screen.findByText("আজকের জন্য কোনো কুইজ নেই")).toBeInTheDocument();
   });
 });
 
 describe("NotificationCenter", () => {
+  beforeEach(() => {
+    stubFetch({
+      "/api/notifications": { notifications: [], page: 1, pageSize: 20, total: 0 },
+      "/api/badges": { badges: [] },
+    });
+  });
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   it("renders notification bell", () => {
     render(<NotificationCenter />);
     expect(screen.getByTitle("Notifications")).toBeInTheDocument();
@@ -129,14 +159,13 @@ describe("NotificationCenter", () => {
   it("opens notification panel when clicked", () => {
     render(<NotificationCenter />);
     fireEvent.click(screen.getByTitle("Notifications"));
-    expect(screen.getByText("Notifications")).toBeInTheDocument();
+    expect(screen.getByText("নোটিফিকেশন")).toBeInTheDocument();
   });
 
-  it("displays initial notifications", () => {
+  it("shows empty state when there are no notifications", async () => {
     render(<NotificationCenter />);
     fireEvent.click(screen.getByTitle("Notifications"));
-    expect(screen.getByText("Daily Quiz Ready")).toBeInTheDocument();
-    expect(screen.getByText("Streak at Risk!")).toBeInTheDocument();
+    expect(await screen.findByText("কোনো নোটিফিকেশন নেই")).toBeInTheDocument();
   });
 });
 

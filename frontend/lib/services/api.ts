@@ -204,14 +204,70 @@ export const api = {
   notifications: (): Promise<Server.NotificationDTO[]> =>
     request<{ notifications: Server.NotificationDTO[] }>("/api/notifications").then((d) => d.notifications),
 
+  markNotificationRead: async (id: number): Promise<{ read: boolean }> => {
+    const response = await fetch(`/api/notifications/${id}/read`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "x-request-id": crypto.randomUUID(),
+      },
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      const body = await response.json().catch(() => ({ error: response.statusText }));
+      throw new ApiError(
+        typeof body.error === "string" ? body.error : response.statusText,
+        body.code ?? `HTTP_${response.status}`,
+        response.status,
+      );
+    }
+
+    return response.json();
+  },
+
   badges: (): Promise<Server.BadgeDTO[]> =>
     request<{ badges: Server.BadgeDTO[] }>("/api/badges").then((d) => d.badges),
 
-  subjectReports: (): Promise<Array<{ name: string; score: number; attempted: number; correct: number; trend: string }>> =>
-    request<{ reports: Array<{ name: string; score: number; attempted: number; correct: number; trend: string }> }>("/api/subject-reports").then((d) => d.reports),
+  subjectReports: (): Promise<Array<{ name: string; score: number; attempted: number; correct: number }>> =>
+    request<{ reports: Array<{ name: string; score: number; attempted: number; correct: number }> }>("/api/subject-reports").then((d) => d.reports),
 
-  dashboardStats: (): Promise<Server.UserProgressDTO & { completion: number; exams: number }> =>
-    request<{ stats: Server.UserProgressDTO & { completion: number; exams: number } }>("/api/dashboard-stats").then((d) => d.stats),
+  dashboardStats: (): Promise<Server.DashboardStatsDTO> =>
+    request<{ stats: Server.DashboardStatsDTO }>("/api/dashboard-stats").then((d) => d.stats),
+
+  examSchedule: (): Promise<Server.ExamScheduleDTO[]> =>
+    request<{ exams: Server.ExamScheduleDTO[] }>("/api/exam-schedule").then((d) => d.exams),
+
+  mockTestResults: (): Promise<Server.MockTestResultDTO[]> =>
+    request<{ results: Server.MockTestResultDTO[] }>("/api/mock-test/results").then((d) => d.results),
+
+  submitDailyQuiz: async (
+    quizId: number,
+    answers: { questionId: number; selected: string }[],
+  ): Promise<{ correct: number; total: number; score: number; pointsEarned: number }> => {
+    const response = await fetch("/api/daily-quiz/submit", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        "x-request-id": crypto.randomUUID(),
+      },
+      body: JSON.stringify({ quizId, answers }),
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      const body = await response.json().catch(() => ({ error: response.statusText }));
+      throw new ApiError(
+        typeof body.error === "string" ? body.error : response.statusText,
+        body.code ?? `HTTP_${response.status}`,
+        response.status,
+      );
+    }
+
+    const data = (await response.json()) as { summary: { correct: number; total: number; score: number; pointsEarned: number } };
+    return data.summary;
+  },
 
   documents: (): Promise<Server.DocumentDTO[]> =>
     request<{ documents: Server.DocumentDTO[] }>("/api/documents").then((d) => d.documents),
