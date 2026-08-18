@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "jetro": {
+      "type": "stdio",
+      "command": "/Users/farhankabir/.jetro/runtime/node-darwin-arm64",
+      "args": [
+        "/Users/farhankabir/.jetro/mcp-server/index.js"
+      ],
+      "env": {
+        "JET_WORKSPACE": "/Users/farhankabir/9",
+        "JET_API_URL": "https://api.jetro.ai",
+        "PATH": "/Users/farhankabir/.jetro/runtime:/Users/farhankabir/.antigravity-ide/antigravity-ide/bin:/Users/farhankabir/.antigravity-ide/antigravity-ide/bin:/Users/farhankabir/.antigravity-ide/antigravity-ide/bin:/Users/farhankabir/.antigravity-ide/antigravity-ide/bin:/Users/farhankabir/.antigravity-ide/antigravity-ide/bin:/Users/farhankabir/Library/Python/3.12/bin:/Users/farhankabir/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/Users/farhankabir/.nvm/versions/node/v22.23.2/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/opt/pkg/env/active/bin:/opt/pmk/env/global/bin"
+      }
+    }
+  }
+}

@@ -1,0 +1,327 @@
+"use client";
+
+import type { Server, PaginatedResponse } from "@/lib/types";
+
+// ── Constants ──────────────────────────────────────────────
+
+const DEFAULT_TIMEOUT_MS = 15_000;
+const MAX_RETRIES = 3;
+const RETRY_DELAY_BASE_MS = 500;
+
+// ── Error class ────────────────────────────────────────────
+
+export class ApiError extends Error {
+  message: string;
+  code: string;
+  status: number;
+
+  constructor(message: string, code = "UNKNOWN_ERROR", status = 500) {
+    super(message);
+    this.message = message;
+    this.code = code;
+    this.status = status;
+    this.name = "ApiError";
+  }
+}
+
+// ── Internal helpers ───────────────────────────────────────
+
+async function fetchWithTimeout(
+  url: string,
+  options: RequestInit = {},
+  timeoutMs = DEFAULT_TIMEOUT_MS,
+): Promise<Response> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    });
+    return response;
+  } catch (error) {
+    if ((error as Error).name === "AbortError") {
+      throw new ApiError("Request timed out.", "TIMEOUT", 408);
+    }
+    throw new ApiError(
+      "Network request failed.",
+      "NETWORK_ERROR",
+      0,
+    );
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
+function getBackoffDelay(attempt: number): number {
+  return RETRY_DELAY_BASE_MS * Math.pow(2, attempt);
+}
+
+async function request<T>(
+  url: string,
+  options: RequestInit = {},
+  retries = MAX_RETRIES,
+): Promise<T> {
+  const method = (options.method ?? "GET").toUpperCase();
+  const headers = new Headers(options.headers);
+
+  if (!headers.has("x-request-id")) {
+    headers.set("x-request-id", crypto.randomUUID());
+  }
+
+  let lastError: Error | null = null;
+
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const response = await fetchWithTimeout(url, { ...options, headers });
+
+      if (!response.ok) {
+        let body: { error?: string; code?: string };
+        try {
+          body = await response.json();
+        } catch {
+          body = { error: response.statusText };
+        }
+
+        const errorMessage = body.error ?? response.statusText;
+        const errorCode = body.code ?? `HTTP_${response.status}`;
+
+        const shouldRetry =
+          attempt < retries &&
+          (response.status >= 500 ||
+            response.status === 408 ||
+            (typeof body.error === "string" && body.error.includes("Network")));
+
+        if (shouldRetry) {
+          const delay = getBackoffDelay(attempt);
+          await new Promise((resolve) => setTimeout(resolve, delay));
+          continue;
+        }
+
+        throw new ApiError(errorMessage, errorCode, response.status);
+      }
+
+      if (method === "NO_CONTENT" || response.status === 204) {
+        return undefined as T;
+      }
+
+      const data = (await response.json()) as T;
+      return data;
+    } catch (error) {
+      lastError = error as Error;
+
+      if (error instanceof ApiError) {
+        const shouldRetry =
+          attempt < retries &&
+          (error.status >= 500 ||
+            error.status === 408 ||
+            error.code === "NETWORK_ERROR" ||
+            error.code === "TIMEOUT");
+
+        if (shouldRetry) {
+          const delay = getBackoffDelay(attempt);
+          await new Promise((resolve) => setTimeout(resolve, delay));
+          continue;
+        }
+      }
+
+      throw error;
+    }
+  }
+
+  throw lastError ?? new ApiError("Request failed after retries.", "REQUEST_FAILED", 500);
+}
+
+// ── Typed API methods ──────────────────────────────────────
+
+export const api = {
+  subjects: (): Promise<Server.SubjectDTO[]> =>
+    request<{ subjects: Server.SubjectDTO[] }>("/api/subjects").then((d) => d.subjects),
+
+  topics: (subject?: string): Promise<Server.TopicDTO[]> => {
+    const qs = subject ? `?subject=${encodeURIComponent(subject)}` : "";
+    return request<{ topics: Server.TopicDTO[] }>(`/api/topics${qs}`).then((d) => d.topics);
+  },
+
+  questions: (params?: {
+    subject?: string;
+    topic?: string;
+    difficulty?: string;
+    q?: string;
+    limit?: number;
+    page?: number;
+  }): Promise<Server.QuestionDTO[]> => {
+    const qs = new URLSearchParams();
+    if (params) {
+      for (const [k, v] of Object.entries(params)) {
+        if (v !== undefined && String(v).length > 0) {
+          qs.set(k, String(v));
+        }
+      }
+    }
+    const suffix = qs.toString() ? `?${qs.toString()}` : "";
+    return request<{ questions: Server.QuestionDTO[] }>(`/api/questions${suffix}`).then((d) => d.questions);
+  },
+
+  questionBankCategories: (): Promise<Server.QuestionBankCategoryDTO[]> =>
+    request<{ categories: Server.QuestionBankCategoryDTO[] }>("/api/question-bank/categories").then((d) => d.categories),
+
+  archives: (): Promise<Server.ExamArchiveDTO[]> =>
+    request<{ archives: Server.ExamArchiveDTO[] }>("/api/archive").then((d) => d.archives),
+
+  flashcards: (subject?: string): Promise<Server.FlashcardDTO[]> => {
+    const qs = subject ? `?subject=${encodeURIComponent(subject)}` : "";
+    return request<{ flashcards: Server.FlashcardDTO[] }>(`/api/flashcards${qs}`).then((d) => d.flashcards);
+  },
+
+  studyPlan: (): Promise<Server.StudyTaskDTO[]> =>
+    request<{ tasks: Server.StudyTaskDTO[] }>("/api/study-plan").then((d) => d.tasks),
+
+  dailyQuiz: (): Promise<Server.DailyQuizDTO | null> =>
+    request<{ quiz: Server.DailyQuizDTO | null }>("/api/daily-quiz").then((d) => d.quiz),
+
+  dailyQuizzes: async (): Promise<Server.DailyQuizDTO[]> => {
+    const d = await request<{ quiz: Server.DailyQuizDTO | null }>("/api/daily-quiz");
+    return d.quiz ? [d.quiz] : [];
+  },
+
+  mockTests: (): Promise<Server.MockTestDTO[]> =>
+    request<{ tests: Server.MockTestDTO[] }>("/api/mock-test").then((d) => d.tests),
+
+  flashNews: (): Promise<Server.FlashNewsDTO[]> =>
+    request<{ news: Server.FlashNewsDTO[] }>("/api/flash-news").then((d) => d.news),
+
+  news: (): Promise<Server.FlashNewsDTO[]> =>
+    request<{ news: Server.FlashNewsDTO[] }>("/api/flash-news").then((d) => d.news),
+
+  recommendations: (): Promise<Server.RecommendationDTO[]> =>
+    request<{ recommendations: Server.RecommendationDTO[] }>("/api/recommendations").then((d) => d.recommendations),
+
+  progress: (): Promise<Server.UserProgressDTO> =>
+    request<{ progress: Server.UserProgressDTO }>("/api/progress").then((d) => d.progress),
+
+  notifications: (): Promise<Server.NotificationDTO[]> =>
+    request<{ notifications: Server.NotificationDTO[] }>("/api/notifications").then((d) => d.notifications),
+
+  badges: (): Promise<Server.BadgeDTO[]> =>
+    request<{ badges: Server.BadgeDTO[] }>("/api/badges").then((d) => d.badges),
+
+  subjectReports: (): Promise<Array<{ name: string; score: number; attempted: number; correct: number; trend: string }>> =>
+    request<{ reports: Array<{ name: string; score: number; attempted: number; correct: number; trend: string }> }>("/api/subject-reports").then((d) => d.reports),
+
+  dashboardStats: (): Promise<Server.UserProgressDTO & { completion: number; exams: number }> =>
+    request<{ stats: Server.UserProgressDTO & { completion: number; exams: number } }>("/api/dashboard-stats").then((d) => d.stats),
+
+  documents: (): Promise<Server.DocumentDTO[]> =>
+    request<{ documents: Server.DocumentDTO[] }>("/api/documents").then((d) => d.documents),
+
+  bookmarks: (): Promise<number[]> =>
+    request<{ bookmarked: number[] }>("/api/bookmarks").then((d) => d.bookmarked),
+
+  toggleBookmark: async (questionId: number): Promise<{ bookmarked: boolean }> => {
+    const response = await fetch("/api/bookmarks", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        "x-request-id": crypto.randomUUID(),
+      },
+      body: JSON.stringify({ questionId }),
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      const body = await response.json().catch(() => ({ error: response.statusText }));
+      throw new ApiError(
+        typeof body.error === "string" ? body.error : response.statusText,
+        body.code ?? `HTTP_${response.status}`,
+        response.status,
+      );
+    }
+
+    return response.json();
+  },
+
+  toggleStudyTask: async (taskId: number): Promise<{ completed: boolean }> => {
+    const response = await fetch(`/api/study-plan/tasks/${taskId}/toggle`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "x-request-id": crypto.randomUUID(),
+      },
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      const body = await response.json().catch(() => ({ error: response.statusText }));
+      throw new ApiError(
+        typeof body.error === "string" ? body.error : response.statusText,
+        body.code ?? `HTTP_${response.status}`,
+        response.status,
+      );
+    }
+
+    return response.json();
+  },
+
+  patchProgress: async (patch: Record<string, number>): Promise<Server.UserProgressDTO> => {
+    const response = await fetch("/api/progress", {
+      method: "PATCH",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        "x-request-id": crypto.randomUUID(),
+      },
+      body: JSON.stringify(patch),
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      const body = await response.json().catch(() => ({ error: response.statusText }));
+      throw new ApiError(
+        typeof body.error === "string" ? body.error : response.statusText,
+        body.code ?? `HTTP_${response.status}`,
+        response.status,
+      );
+    }
+
+    const data = await response.json();
+    return data.progress;
+  },
+};
+
+// ── Mutation helpers (cache-busting wrappers) ──────────────
+
+export function useMutation<TInput, TOutput>(fn: (input: TInput) => Promise<TOutput>) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<ApiError | null>(null);
+  const [data, setData] = useState<TOutput | null>(null);
+
+  const mutate = async (input: TInput): Promise<TOutput> => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const result = await fn(input);
+      setData(result);
+      return result;
+    } catch (err) {
+      const apiError = err instanceof ApiError ? err : new ApiError("Mutation failed.", "MUTATION_ERROR", 500);
+      setError(apiError);
+      throw apiError;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const reset = () => {
+    setData(null);
+    setError(null);
+    setLoading(false);
+  };
+
+  return { mutate, loading, error, data, reset };
+}
+
+import { useState } from "react";

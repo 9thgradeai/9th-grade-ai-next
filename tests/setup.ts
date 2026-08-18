@@ -1,0 +1,144 @@
+/// <reference types="vitest" />
+import "@testing-library/jest-dom";
+
+(globalThis as any).process = {
+  ...(globalThis as any).process,
+  env: {
+    ...(globalThis as any).process?.env,
+    AUTH_SECRET: (globalThis as any).process?.env?.AUTH_SECRET ?? "test-secret-key-for-unit-tests-only",
+    NODE_ENV: (globalThis as any).process?.env?.NODE_ENV ?? "test",
+  },
+};
+
+vi.mock("server-only", () => ({}));
+
+vi.mock("next/headers", () => ({
+  cookies: vi.fn().mockResolvedValue({
+    get: vi.fn().mockReturnValue({ value: "" }),
+  }),
+  headers: vi.fn().mockResolvedValue({
+    get: vi.fn().mockReturnValue(""),
+  }),
+}));
+
+vi.mock("next/navigation", () => ({
+  redirect: vi.fn(),
+  notFound: vi.fn(),
+  useRouter: vi.fn(() => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    back: vi.fn(),
+    forward: vi.fn(),
+    refresh: vi.fn(),
+    prefetch: vi.fn(),
+  })),
+  useSearchParams: vi.fn(() => new URLSearchParams()),
+  usePathname: vi.fn(() => "/"),
+  useSegments: vi.fn(() => []),
+}));
+
+vi.mock("~backend/db", () => ({
+  prisma: {
+    user: {
+      findUnique: vi.fn(),
+      findFirst: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
+      count: vi.fn(),
+    },
+    userProgress: {
+      findUnique: vi.fn(),
+      upsert: vi.fn(),
+      update: vi.fn(),
+    },
+    subject: {
+      findMany: vi.fn(),
+      findFirst: vi.fn(),
+      count: vi.fn(),
+    },
+    topic: {
+      findMany: vi.fn(),
+      findFirst: vi.fn(),
+      count: vi.fn(),
+    },
+    question: {
+      findMany: vi.fn(),
+      findFirst: vi.fn(),
+      count: vi.fn(),
+    },
+    questionBankCategory: {
+      findMany: vi.fn(),
+      count: vi.fn(),
+    },
+    examArchive: {
+      findMany: vi.fn(),
+      count: vi.fn(),
+    },
+    flashcard: {
+      findMany: vi.fn(),
+      findFirst: vi.fn(),
+      count: vi.fn(),
+    },
+    studyPlanDay: {
+      findMany: vi.fn(),
+      count: vi.fn(),
+    },
+    studyTask: {
+      findUnique: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
+      create: vi.fn(),
+    },
+    dailyQuiz: {
+      findFirst: vi.fn(),
+      count: vi.fn(),
+    },
+    mockTest: {
+      findMany: vi.fn(),
+      findFirst: vi.fn(),
+      count: vi.fn(),
+    },
+    flashNews: {
+      findMany: vi.fn(),
+      findFirst: vi.fn(),
+      count: vi.fn(),
+    },
+    recommendation: {
+      findMany: vi.fn(),
+      findFirst: vi.fn(),
+      count: vi.fn(),
+    },
+    badge: {
+      findMany: vi.fn(),
+      findFirst: vi.fn(),
+      count: vi.fn(),
+    },
+    appNotification: {
+      findMany: vi.fn(),
+      findFirst: vi.fn(),
+      count: vi.fn(),
+    },
+    offlinePack: {
+      findMany: vi.fn(),
+      findFirst: vi.fn(),
+      count: vi.fn(),
+    },
+    document: {
+      findMany: vi.fn(),
+      findFirst: vi.fn(),
+      count: vi.fn(),
+    },
+    bookmark: {
+      findMany: vi.fn(),
+      findUnique: vi.fn(),
+      create: vi.fn(),
+      delete: vi.fn(),
+    },
+    $disconnect: vi.fn(),
+    $connect: vi.fn(),
+    $transaction: vi.fn(),
+    $executeRaw: vi.fn(),
+    $queryRaw: vi.fn(),
+  },
+}));

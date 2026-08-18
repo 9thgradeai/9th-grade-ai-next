@@ -1,0 +1,416 @@
+// Prisma schema for 9Th-Grade AI
+// PostgreSQL for all environments (local + Vercel/Railway). Local dev uses
+// a local Postgres instance; production uses Railway Postgres via DATABASE_URL.
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ── Enums ─────────────────────────────────────────────────
+enum UserRole {
+  STUDENT
+  ADMIN
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum QuizStatus {
+  ACTIVE
+  AVAILABLE
+  NEW
+}
+
+enum NotificationType {
+  INFO
+  SUCCESS
+  WARNING
+  REMINDER
+}
+
+enum BadgeRarity {
+  COMMON
+  RARE
+  EPIC
+  LEGENDARY
+}
+
+// ── Auth ──────────────────────────────────────────────────
+model User {
+  id           String         @id @default(cuid())
+  name         String
+  email        String         @unique
+  emailVerified Boolean       @default(false)
+  handle       String         @unique
+  passwordHash String
+  role         UserRole       @default(STUDENT)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  progress     UserProgress?
+  bookmarks    Bookmark[]
+  studyTasks   StudyTask[]
+  notifications AppNotification[]
+  sessions     UserSession[]
+  attempts     QuestionAttempt[]
+  mockTestResults MockTestResult[]
+  flashcardReviews FlashcardReview[]
+  notificationReads NotificationRead[]
+
+  @@index([email])
+  @@index([handle])
+}
+
+// ── Content taxonomy ──────────────────────────────────────
+model Subject {
+  id           Int      @id @default(autoincrement())
+  nameBn       String
+  nameEn       String
+  icon         String   @default("📘")
+  color        String?  @default("text-emerald-400")
+  bg           String?  @default("bg-emerald-500/10")
+  sortOrder    Int      @default(0)
+  topics       Topic[]
+  questions    Question[]
+  flashcards   Flashcard[]
+  categories   QuestionBankCategory[]
+  attempts     QuestionAttempt[]
+
+  @@index([sortOrder])
+}
+
+model Topic {
+  id           Int    @id @default(autoincrement())
+  subjectId    Int
+  subject      Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  groupName    String // e.g. "ভাষা (১৫ নম্বর)"
+  name         String // sub-topic name
+  questionCount String @default("0")
+}
+
+// ── Questions ─────────────────────────────────────────────
+model Question {
+  id             Int      @id @default(autoincrement())
+  subjectId      Int
+  subject        Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  topic          String   @default("")
+  question       String
+  options        Json // string[]
+  correctAnswer  String
+  explanation    String   @default("")
+  difficulty     Difficulty @default(MEDIUM)
+  year           Int?
+  sourceExam     String   @default("")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  bookmarks      Bookmark[]
+  attempts       QuestionAttempt[]
+
+  @@index([subjectId, difficulty])
+  @@index([subjectId, topic])
+}
+
+model QuestionBankCategory {
+  id        Int      @id @default(autoincrement())
+  subjectId Int?
+  subject   Subject? @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+  label     String
+  count     Int      @default(0)
+}
+
+model ExamArchive {
+  id        Int     @id @default(autoincrement())
+  name      String
+  icon      String  @default("🎯")
+  count     Int     @default(0)
+  yearRange String  @default("")
+  status    QuizStatus @default(ACTIVE)
+  accent    String?
+}
+
+// ── Flashcards (SRS) ──────────────────────────────────────
+model Flashcard {
+  id           Int      @id @default(autoincrement())
+  subjectId    Int?
+  subject      Subject? @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+  subjectName  String   @default("")
+  question     String
+  answer       String
+  hint         String   @default("")
+  difficulty   Difficulty @default(MEDIUM)
+  nextReview   DateTime @default(now())
+  interval     Int      @default(1)
+  easeFactor   Float    @default(2.5)
+  repetitions  Int      @default(0)
+  reviews      FlashcardReview[]
+
+  @@index([subjectId])
+  @@index([nextReview])
+}
+
+// ── Study planner ─────────────────────────────────────────
+model StudyPlanDay {
+  id           Int          @id @default(autoincrement())
+  day          String
+  date         String
+  totalMinutes Int          @default(0)
+  focusAreas   Json // string[]
+  tasks        StudyTask[]
+
+  @@index([date])
+}
+
+model StudyTask {
+  id          Int           @id @default(autoincrement())
+  dayId       Int
+  planDay     StudyPlanDay  @relation(fields: [dayId], references: [id], onDelete: Cascade)
+  userId      String?
+  user        User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String
+  subject     String        @default("")
+  duration    Int           @default(0)
+  priority    Priority      @default(MEDIUM)
+  description String        @default("")
+  completed   Boolean       @default(false)
+  createdAt   DateTime      @default(now())
+
+  @@index([dayId, userId])
+}
+
+// ── Daily quizzes ─────────────────────────────────────────
+model DailyQuiz {
+  id        Int           @id @default(autoincrement())
+  date      String
+  completed Boolean       @default(false)
+  score     Int           @default(0)
+  claimed   Boolean       @default(false)
+  createdAt DateTime      @default(now())
+  questions QuizQuestion[]
+
+  @@index([date])
+}
+
+model QuizQuestion {
+  id             Int        @id @default(autoincrement())
+  dailyQuizId    Int
+  dailyQuiz      DailyQuiz  @relation(fields: [dailyQuizId], references: [id], onDelete: Cascade)
+  subject        String     @default("")
+  topic          String     @default("")
+  question       String
+  options        Json
+  correctAnswer  String
+  explanation    String     @default("")
+}
+
+// ── Mock tests ────────────────────────────────────────────
+model MockTest {
+  id              Int               @id @default(autoincrement())
+  title           String
+  subject         String            @default("")
+  totalQuestions  Int               @default(0)
+  duration        Int               @default(0)
+  questions       MockTestQuestion[]
+  results         MockTestResult[]
+}
+
+model MockTestQuestion {
+  id             Int       @id @default(autoincrement())
+  mockTestId     Int
+  mockTest       MockTest  @relation(fields: [mockTestId], references: [id], onDelete: Cascade)
+  subject        String    @default("")
+  topic          String    @default("")
+  question       String
+  options        Json
+  correctAnswer  String
+  explanation    String    @default("")
+}
+
+// ── News / recommendations / gamification ────────────────
+model FlashNews {
+  id          Int     @id @default(autoincrement())
+  tag         String  @default("EXAM")
+  titleBn     String
+  titleEn     String? @default("")
+  text        String  @default("")
+  full        String  @default("")
+  date        String  @default("")
+  readTime    Int     @default(1)
+  categoryBn  String? @default("")
+  categoryEn  String? @default("")
+}
+
+model Recommendation {
+  id             Int     @id @default(autoincrement())
+  subjectBn      String
+  subjectEn      String? @default("")
+  metric         String  @default("accuracy")
+  accuracy       Int     @default(0)
+  titleBn        String
+  titleEn        String? @default("")
+  descriptionBn  String
+  descriptionEn  String? @default("")
+  ctaBn          String
+  ctaEn          String? @default("")
+}
+
+model Badge {
+  id           Int        @id @default(autoincrement())
+  name         String
+  description  String
+  icon         String     @default("🏅")
+  rarity       BadgeRarity @default(COMMON)
+  unlockedSeed Boolean    @default(false)
+}
+
+model AppNotification {
+  id        Int            @id @default(autoincrement())
+  userId    String?
+  user      User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+  title     String
+  message   String
+  type      NotificationType @default(INFO)
+  timestamp DateTime       @default(now())
+  read      Boolean        @default(false)
+  reads     NotificationRead[]
+
+  @@index([userId])
+  @@index([timestamp])
+}
+
+model OfflinePack {
+  id         Int    @id @default(autoincrement())
+  name       String
+  size       String @default("")
+  downloaded Boolean @default(false)
+  subject    String @default("")
+}
+
+// ── Documents (syllabus, circulars, guides) ──────────────
+model Document {
+  id          Int     @id @default(autoincrement())
+  title       String
+  category    String  @default("Syllabus") // Syllabus | Circular | Guide
+  type        String  @default("md") // md | pdf
+  url         String  @default("")
+  description String  @default("")
+  year        String  @default("")
+  createdAt   DateTime @default(now())
+}
+
+// ── Sessions ──────────────────────────────────────────────
+model UserSession {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([token])
+  @@index([expiresAt])
+}
+
+// ── Per-user state ────────────────────────────────────────
+model UserProgress {
+  id                 Int    @id @default(autoincrement())
+  userId             String @unique
+  user               User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  points             Int    @default(0)
+  streak             Int    @default(0)
+  accuracy           Int    @default(0)
+  questionsAnswered  Int    @default(0)
+  flashcardsReviewed Int    @default(0)
+  aiQuestionsAsked   Int    @default(0)
+  examsAttempted     Int    @default(0)
+  rank               Int    @default(0)
+  updatedAt          DateTime @updatedAt
+}
+
+model Bookmark {
+  id         Int      @id @default(autoincrement())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  questionId Int
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, questionId])
+}
+
+// ── Per-user activity ────────────────────────────────────
+// Every answered question (practice, mock test, daily quiz). Powers
+// accuracy, streaks, and per-subject reports.
+model QuestionAttempt {
+  id         Int       @id @default(autoincrement())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  questionId Int?
+  question   Question? @relation(fields: [questionId], references: [id], onDelete: SetNull)
+  subjectId  Int?
+  subject    Subject?  @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+  subjectName String   @default("")
+  topic      String    @default("")
+  correct    Boolean
+  source     String    @default("practice") // practice | mock | daily
+  createdAt  DateTime  @default(now())
+
+  @@index([userId, createdAt])
+  @@index([userId, subjectId])
+}
+
+// Mock-test attempts (graded results) for history + exam KPIs.
+model MockTestResult {
+  id          Int      @id @default(autoincrement())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mockTestId  Int?
+  mockTest    MockTest? @relation(fields: [mockTestId], references: [id], onDelete: SetNull)
+  score       Int      @default(0) // percentage 0-100
+  correct     Int      @default(0)
+  total       Int      @default(0)
+  durationSec Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+// Per-user flashcard SRS reviews (log). nextReview scheduling is derived
+// from these; the base Flashcard row stays shared content.
+model FlashcardReview {
+  id          Int       @id @default(autoincrement())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  flashcardId Int
+  flashcard   Flashcard @relation(fields: [flashcardId], references: [id], onDelete: Cascade)
+  rating      Int       @default(0) // 0=again 1=hard 2=good 3=easy
+  createdAt   DateTime  @default(now())
+
+  @@index([userId, flashcardId])
+}
+
+// Per-user "read" marker for the global announcement feed.
+model NotificationRead {
+  id             Int            @id @default(autoincrement())
+  userId         String
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  notificationId Int
+  notification   AppNotification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+  readAt         DateTime       @default(now())
+
+  @@unique([userId, notificationId])
+}
