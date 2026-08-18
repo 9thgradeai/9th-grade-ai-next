@@ -10,6 +10,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Per-subject question counts in the custom exam builder: each selected subject
   has its own count input (clamped to availability); the total is the sum and is
   sent as per-subject `count`s to `POST /api/exam/build`.
+- Folder-structured question import: `data/ques/<Subject>/<Group>/<Subtopic>/*.txt`
+  files are tagged with the exact group/subtopic from their path (Topic rows are
+  created on demand), replacing round-robin categorisation for organised files.
+- Seeded 130 International Affairs questions (আন্তর্জাতিক নিরাপত্তা ও
+  আন্তরাষ্ট্রীয় ক্ষমতা সম্পর্ক → সামরিক জোট ও নিরাপত্তা চুক্তি), bringing the
+  question bank to 330.
 
 ### Changed
 - CI is green on every push (Node 22, platform-complete lockfile).

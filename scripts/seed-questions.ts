@@ -1,10 +1,18 @@
 /**
  * scripts/seed-questions.ts
  * ----------------------------------------------------------------------------
- * Parses the 200 questions provided in data/ques/questions_database.txt
- * (10 subjects × 20 questions) and seeds them into the database, linked to the
- * correct Subject (by canonical Bengali name so the dashboard's
- * Question Bank filter matches).
+ * Seeds questions from two sources under data/ques/:
+ *
+ *  1. Flat per-subject files (data/ques/questions_database.txt) — questions are
+ *     distributed round-robin across the subject's TOPIC_TREES subtopics.
+ *
+ *  2. Folder-structured files (data/ques/<Subject>/<Group>/<Subtopic>/*.txt) —
+ *     the file path IS the taxonomy, so each question is tagged with the exact
+ *     group/subtopic from its folder names. Topic rows are created on demand so
+ *     the syllabus explorer and custom-exam selection tree can filter them.
+ *
+ * Subjects are matched by canonical Bengali name so the dashboard's Question
+ * Bank filter stays correct.
  *
  * Run AFTER `prisma db push`:
  *   npx tsx scripts/seed-questions.ts
@@ -80,6 +88,47 @@ type ParsedQuestion = {
 function stripLeadingNumber(text: string): string {
   // Removes a leading "১. " / "10. " style prefix (Bengali or Latin digits).
   return text.replace(/^\s*[০-৯0-9]+\s*\.\s*/, "").trim();
+}
+
+// Recursively collects question files organised as
+//   data/ques/<Subject>/<Group>/<Subtopic>/<file>.txt
+// Each spec keeps the normalised (NFC) path parts so duplicates that differ
+// only by Unicode composition (e.g. "জোট" vs "জোট") collapse into one.
+// Returns specs where parts = [subject, group, subtopic, filename].
+function collectFolderFiles(dir: string): { file: string; parts: string[] }[] {
+  const specs: { file: string; parts: string[] }[] = [];
+  const walk = (d: string, ancestors: string[]) => {
+    for (const entry of readdirSync(d, { withFileTypes: true })) {
+      if (entry.name === ".DS_Store") continue;
+      const full = join(d, entry.name);
+      if (entry.isDirectory()) {
+        walk(full, [...ancestors, entry.name]);
+      } else if (entry.isFile() && /\.txt$/i.test(entry.name) && ancestors.length === 3) {
+        specs.push({ file: full, parts: [...ancestors, entry.name].map((p) => p.normalize("NFC")) });
+      }
+    }
+  };
+  walk(dir, []);
+
+  const seen = new Set<string>();
+  return specs.filter((s) => {
+    const key = s.parts.join("\u0000");
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+// Maps a subject folder name (English or Bengali, e.g. "International Affairs")
+// to the canonical Bengali name used in SUBJECT_META / SUBJECTS.
+function resolveFolderSubject(folder: string): string | null {
+  const norm = folder.trim().normalize("NFC").toLowerCase();
+  for (const canonical of Object.keys(SUBJECT_META)) {
+    const meta = SUBJECT_META[canonical];
+    if (canonical.normalize("NFC").toLowerCase() === norm) return canonical;
+    if (meta.nameEn.normalize("NFC").toLowerCase() === norm) return canonical;
+  }
+  return null;
 }
 
 function parseQuestionLine(line: string): ParsedQuestion | null {
@@ -237,6 +286,80 @@ export async function seedQuestions(prisma: PrismaClient): Promise<number> {
 
     totalInserted += parsed.length;
     console.log(`✓ ${canonical}: ${parsed.length} questions`);
+  }
+
+  // ── Folder-structured files: <Subject>/<Group>/<Subtopic>/<file>.txt ──
+  // The path is the taxonomy — questions get the exact group/subtopic from
+  // their folder names (precise categorisation), unlike the flat files which
+  // are distributed round-robin above. Topic rows are created on demand so the
+  // syllabus explorer and the custom-exam selection tree can filter them.
+  const folderFiles = collectFolderFiles(dir);
+  for (const spec of folderFiles) {
+    const canonical = resolveFolderSubject(spec.parts[0]);
+    if (!canonical) {
+      console.warn(`⚠ Skipping unknown subject folder: "${spec.parts[0]}"`);
+      continue;
+    }
+    const group = spec.parts[1];
+    const subtopic = spec.parts[2];
+
+    const lines = readFileSync(spec.file, "utf8")
+      .replace(/^\uFEFF/, "")
+      .split(/\r?\n/)
+      .map((l) => l.trim())
+      .filter(Boolean);
+    const parsed = lines.map((l) => parseQuestionLine(l)).filter((q): q is ParsedQuestion => q !== null);
+    if (parsed.length === 0) {
+      console.warn(`⚠ No questions parsed for ${spec.parts[0]} / ${group} / ${subtopic}`);
+      continue;
+    }
+
+    let subject = await prisma.subject.findFirst({ where: { nameBn: canonical } });
+    if (!subject) {
+      const meta = SUBJECT_META[canonical];
+      subject = await prisma.subject.create({
+        data: {
+          nameBn: canonical,
+          nameEn: meta.nameEn,
+          icon: meta.icon,
+          color: meta.color,
+          bg: meta.bg,
+          sortOrder: 0,
+        },
+      });
+    }
+
+    const topicRow = await prisma.topic.findFirst({
+      where: { subjectId: subject.id, groupName: group, name: subtopic },
+    });
+    if (!topicRow) {
+      await prisma.topic.create({
+        data: {
+          subjectId: subject.id,
+          groupName: group,
+          name: subtopic,
+          questionCount: String(parsed.length),
+        },
+      });
+    }
+
+    await prisma.question.createMany({
+      data: parsed.map((q) => ({
+        subjectId: subject.id,
+        topic: group,
+        subtopic,
+        question: q.question,
+        options: q.options,
+        correctAnswer: q.correctAnswer,
+        explanation: q.explanation,
+        difficulty: "MEDIUM",
+        sourceExam: "BCS",
+        year: null,
+      })),
+    });
+
+    totalInserted += parsed.length;
+    console.log(`✓ ${canonical} → ${group} / ${subtopic}: ${parsed.length} questions`);
   }
 
   return totalInserted;
