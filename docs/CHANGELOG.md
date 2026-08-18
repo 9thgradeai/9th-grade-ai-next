@@ -42,6 +42,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   whole-subtree selection semantics, and subtree-accurate availability.
 - **Unicode hardening**: all Bengali name matching is NFC-normalised so
   composed/decomposed forms (`য়` vs `য`+নুক্তা) always resolve.
+- `db:sync` (used by the Vercel prod build) now clears the seed-managed
+  content tables (`scripts/clear-content.ts`) before `db push`, so schema
+  changes adding required columns/constraints apply to non-empty databases.
 - CI is green on every push (Node 22, platform-complete lockfile).
 - Fixed 39 pre-existing eslint errors (react-hooks, floating promises, seed types).
 
