@@ -102,27 +102,38 @@ describe("CustomExamTab (config phase)", () => {
     expect(screen.getByText(/−০\.৫/)).toBeInTheDocument();
   });
 
-  it("shows a warning when the requested count exceeds availability", async () => {
+  it("per-subject count defaults and feeds the total", async () => {
     render(<CustomExamTab />);
     await screen.findByText("বাংলা ভাষা ও সাহিত্য");
     fireEvent.click(screen.getByText("বাংলা ভাষা ও সাহিত্য"));
 
-    // Raise question count beyond available via the plus button repeatedly.
-    const plus = screen.getByLabelText("বাড়ান");
-    fireEvent.click(plus); // 11
-    fireEvent.click(plus); // 12
-    fireEvent.click(plus); // 13
-    fireEvent.click(plus); // 14
-    fireEvent.click(plus); // 15
-    fireEvent.click(plus); // 16
-    fireEvent.click(plus); // 17
-    fireEvent.click(plus); // 18
-    fireEvent.click(plus); // 19
-    fireEvent.click(plus); // 20
-    fireEvent.click(plus); // 21
+    const countInput = await screen.findByLabelText("বাংলা ভাষা ও সাহিত্য এর প্রশ্ন সংখ্যা");
+    expect(countInput).toHaveValue(10);
+
+    fireEvent.click(screen.getByLabelText("বিষয়ের প্রশ্ন বাড়ান"));
+    expect(countInput).toHaveValue(11);
 
     await waitFor(() => {
-      expect(screen.getByText(/শুধু/)).toBeInTheDocument();
+      expect(screen.getAllByText("11").length).toBeGreaterThan(0);
+    });
+    expect(screen.getByText("মোট প্রশ্ন")).toBeInTheDocument();
+  });
+
+  it("clamps a subject's count to its available questions", async () => {
+    render(<CustomExamTab />);
+    await screen.findByText("বাংলা ভাষা ও সাহিত্য");
+    fireEvent.click(screen.getByText("বাংলা ভাষা ও সাহিত্য"));
+
+    const countInput = await screen.findByLabelText("বাংলা ভাষা ও সাহিত্য এর প্রশ্ন সংখ্যা");
+    const plus = screen.getByLabelText("বিষয়ের প্রশ্ন বাড়ান");
+    for (let i = 0; i < 15; i++) {
+      fireEvent.click(plus);
+    }
+
+    // Available for the whole subject is 20 — the count clamps there.
+    expect(countInput).toHaveValue(20);
+    await waitFor(() => {
+      expect(screen.getAllByText("20").length).toBeGreaterThan(0);
     });
   });
 });

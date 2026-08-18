@@ -29,7 +29,7 @@ import type { Server } from "@/lib/types";
 type ExamPhase = "config" | "exam" | "result";
 
 type GroupSelection = { groupName: string; subTopics: string[] };
-type SubjectSelection = { groups: GroupSelection[] };
+type SubjectSelection = { groups: GroupSelection[]; count?: number };
 type Selection = Record<number, SubjectSelection>;
 
 const DIFFICULTY_LABEL: Record<string, string> = {
@@ -72,7 +72,6 @@ export default function CustomExamTab() {
   const [configLoading, setConfigLoading] = useState(true);
   const [configError, setConfigError] = useState<string | null>(null);
   const [selection, setSelection] = useState<Selection>({});
-  const [questionCount, setQuestionCount] = useState(10);
   const [durationMin, setDurationMin] = useState(15);
   const [showConfirm, setShowConfirm] = useState(false);
   const [buildLoading, setBuildLoading] = useState(false);
@@ -206,16 +205,13 @@ export default function CustomExamTab() {
     [selectedSubjects, selection],
   );
 
-  const clampedQuestionCount = Math.min(Math.max(questionCount, 1), Math.max(availableTotal, 1));
-  const insufficient = questionCount > availableTotal;
-
   const toggleSubject = (subject: Server.ExamSubjectDTO) => {
     setSelection((prev) => {
       const next = { ...prev };
       if (next[subject.id]) {
         delete next[subject.id];
       } else {
-        next[subject.id] = { groups: [] };
+        next[subject.id] = { groups: [], count: Math.min(subject.questionCount, 10) };
       }
       return next;
     });
@@ -224,7 +220,7 @@ export default function CustomExamTab() {
   const toggleWholeSubject = (subject: Server.ExamSubjectDTO) => {
     setSelection((prev) => {
       const next = { ...prev };
-      next[subject.id] = { groups: [] };
+      next[subject.id] = { groups: [], count: prev[subject.id]?.count ?? Math.min(subject.questionCount, 10) };
       return next;
     });
   };
@@ -268,9 +264,51 @@ export default function CustomExamTab() {
     });
   };
 
-  const adjustQuestionCount = (delta: number) => {
-    setQuestionCount((c) => Math.max(1, Math.min(200, c + delta)));
+  // Questions available within the current group/subtopic selection for one subject.
+  const availableForSubject = useMemo(
+    () => (subject: Server.ExamSubjectDTO): number => {
+      const sel = selection[subject.id];
+      if (!sel) return 0;
+      if (sel.groups.length === 0) return subject.questionCount;
+      let total = 0;
+      for (const g of sel.groups) {
+        const group = subject.groups.find((x) => x.groupName === g.groupName);
+        if (!group) continue;
+        if (g.subTopics.length === 0) {
+          total += group.questionCount;
+        } else {
+          for (const st of g.subTopics) {
+            total += group.subTopics.find((x) => x.name === st)?.questionCount ?? 0;
+          }
+        }
+      }
+      return total;
+    },
+    [selection],
+  );
+
+  const setSubjectCount = (subject: Server.ExamSubjectDTO, value: number) => {
+    const max = availableForSubject(subject);
+    const clamped = Math.min(Math.max(0, Math.floor(value)), max);
+    setSelection((prev) => {
+      const existing = prev[subject.id];
+      if (!existing) return prev;
+      return { ...prev, [subject.id]: { ...existing, count: clamped } };
+    });
   };
+
+  // Total across all selected subjects = sum of per-subject counts.
+  const totalCount = useMemo(
+    () => selectedSubjects.reduce((acc, s) => acc + (selection[s.id].count ?? 0), 0),
+    [selectedSubjects, selection],
+  );
+
+  const overageSubjects = useMemo(
+    () => selectedSubjects.filter((s) => (selection[s.id].count ?? 0) > availableForSubject(s)),
+    [selectedSubjects, availableForSubject],
+  );
+
+  const insufficient = totalCount > availableTotal;
 
   const adjustDuration = (delta: number) => {
     setDurationMin((d) => Math.max(1, Math.min(180, d + delta)));
@@ -280,8 +318,9 @@ export default function CustomExamTab() {
     subjects: selectedSubjects.map((s) => ({
       subjectId: s.id,
       groups: selection[s.id].groups,
+      count: selection[s.id].count ?? 0,
     })),
-    questionCount: clampedQuestionCount,
+    questionCount: totalCount,
     durationSec: durationMin * 60,
   });
 
@@ -409,7 +448,7 @@ export default function CustomExamTab() {
     setResult(null);
     setSubmitError(null);
     setShowUnansweredConfirm(false);
-    setQuestionCount(10);
+    setSelection({});
     setDurationMin(15);
     try {
       localStorage.removeItem(STORAGE_KEY);
@@ -607,16 +646,51 @@ export default function CustomExamTab() {
                         })}
                       </div>
                     )}
+
+                    {/* Per-subject question count */}
+                    <div className="mt-3 pt-3 border-t border-zinc-800 flex items-center justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="text-xs text-zinc-300 font-mono">এই বিষয় থেকে প্রশ্ন</p>
+                        <p className="text-[10px] text-zinc-500 font-mono">
+                          উপলব্ধ: <span className="text-emerald-400">{availableForSubject(subject)}টি</span>
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => setSubjectCount(subject, (sel.count ?? 0) - 1)}
+                          className="w-8 h-8 rounded-lg bg-zinc-900 border border-emerald-500/20 flex items-center justify-center text-emerald-400 hover:border-emerald-500/40"
+                          aria-label="বিষয়ের প্রশ্ন কমান"
+                        >
+                          <Minus className="w-4 h-4" />
+                        </button>
+                        <input
+                          type="number"
+                          min={0}
+                          max={availableForSubject(subject)}
+                          value={sel.count ?? 0}
+                          onChange={(e) => setSubjectCount(subject, Number(e.target.value))}
+                          aria-label={`${subject.nameBn} এর প্রশ্ন সংখ্যা`}
+                          className="w-16 text-center bg-zinc-900 border border-emerald-500/20 rounded-lg py-2 text-emerald-400 font-mono text-sm focus:outline-none focus:border-emerald-500/50 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                        />
+                        <button
+                          onClick={() => setSubjectCount(subject, (sel.count ?? 0) + 1)}
+                          className="w-8 h-8 rounded-lg bg-zinc-900 border border-emerald-500/20 flex items-center justify-center text-emerald-400 hover:border-emerald-500/40"
+                          aria-label="বিষয়ের প্রশ্ন বাড়ান"
+                        >
+                          <Plus className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
                   </motion.div>
                 );
               })}
             </AnimatePresence>
 
-            {/* Question count + duration */}
+            {/* Total question count + duration */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="glass rounded-xl border border-terminal-border p-4 flex items-center justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="text-sm text-zinc-300 font-mono">প্রশ্নের সংখ্যা</p>
+                  <p className="text-sm text-zinc-300 font-mono">মোট প্রশ্ন</p>
                   <p className="text-xs text-zinc-500 mt-0.5">
                     উপলব্ধ:{" "}
                     <span className={`font-mono ${insufficient ? "text-red-400" : "text-emerald-400"}`}>
@@ -624,30 +698,21 @@ export default function CustomExamTab() {
                     </span>
                   </p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => adjustQuestionCount(-1)}
-                    className="w-8 h-8 rounded-lg bg-zinc-900 border border-emerald-500/20 flex items-center justify-center text-emerald-400 hover:border-emerald-500/40"
-                    aria-label="কমান"
-                  >
-                    <Minus className="w-4 h-4" />
-                  </button>
-                  <span className="text-2xl font-bold text-emerald-400 font-mono w-9 text-center">{questionCount}</span>
-                  <button
-                    onClick={() => adjustQuestionCount(1)}
-                    className="w-8 h-8 rounded-lg bg-zinc-900 border border-emerald-500/20 flex items-center justify-center text-emerald-400 hover:border-emerald-500/40"
-                    aria-label="বাড়ান"
-                  >
-                    <Plus className="w-4 h-4" />
-                  </button>
-                </div>
+                <span
+                  className={`text-2xl font-bold font-mono ${
+                    totalCount > 0 ? "text-emerald-400" : "text-zinc-600"
+                  }`}
+                >
+                  {totalCount}
+                  <span className="text-xs text-zinc-500 ml-1">প্র.</span>
+                </span>
               </div>
 
               <div className="glass rounded-xl border border-terminal-border p-4 flex items-center justify-between gap-3">
                 <div>
                   <p className="text-sm text-zinc-300 font-mono">সময়সীমা</p>
                   <p className="text-xs text-zinc-500 mt-0.5">
-                    {durationMin} মিনিট (প্রশ্নপ্রতি ~{Math.max(1, Math.round(durationMin / Math.max(1, clampedQuestionCount)))} মি.)
+                    {durationMin} মিনিট (প্রশ্নপ্রতি ~{Math.max(1, Math.round(durationMin / Math.max(1, totalCount)))} মি.)
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -674,8 +739,18 @@ export default function CustomExamTab() {
               <div className="flex items-start gap-2 rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 text-xs text-amber-300">
                 <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
                 <p>
-                  শুধু <span className="font-mono">{availableTotal}টি</span> প্রশ্ন পাওয়া যায়। পরীক্ষা
-                  শুরু হলে <span className="font-mono">{clampedQuestionCount}টি</span> প্রশ্ন দেওয়া হবে।
+                  নির্বাচিত টপিক থেকে শুধু <span className="font-mono">{availableTotal}টি</span> প্রশ্ন
+                  পাওয়া যায় — মোট <span className="font-mono">{totalCount}টি</span> চাওয়া হয়েছে।
+                </p>
+              </div>
+            )}
+
+            {overageSubjects.length > 0 && (
+              <div className="flex items-start gap-2 rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 text-xs text-amber-300">
+                <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <p>
+                  {overageSubjects.map((s) => s.nameBn).join(", ")} এ চাওয়া প্রশ্ন সংখ্যা উপলব্ধের বেশি —
+                  সর্বোচ্চ <span className="font-mono">{availableForSubject(overageSubjects[0])}টি</span> হবে।
                 </p>
               </div>
             )}
@@ -712,7 +787,7 @@ export default function CustomExamTab() {
                 <div>
                   <Clock className="w-4 h-4 mx-auto text-emerald-400 mb-1" />
                   <p className="text-lg font-bold text-white font-mono">
-                    {clampedQuestionCount}
+                    {totalCount}
                     <span className="text-xs text-zinc-500 ml-1">প্র.</span>
                   </p>
                   <p className="text-[10px] text-zinc-500 font-mono">{durationMin} মিনিট</p>
@@ -722,7 +797,7 @@ export default function CustomExamTab() {
 
             <button
               onClick={() => setShowConfirm(true)}
-              disabled={selectedSubjects.length === 0 || buildLoading}
+              disabled={selectedSubjects.length === 0 || totalCount === 0 || buildLoading}
               className="mt-4 w-full py-3 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-xl hover:bg-emerald-400 transition-colors flex items-center justify-center gap-2 shadow-neon-glow disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <Play className="w-4 h-4" />
@@ -769,7 +844,7 @@ export default function CustomExamTab() {
                       </p>
                       <p className="flex justify-between text-xs">
                         <span className="text-zinc-500 font-mono">প্রশ্ন</span>
-                        <span className="text-emerald-400 font-mono">{clampedQuestionCount}টি</span>
+                        <span className="text-emerald-400 font-mono">{totalCount}টি</span>
                       </p>
                       <p className="flex justify-between text-xs">
                         <span className="text-zinc-500 font-mono">সময়</span>
@@ -783,7 +858,7 @@ export default function CustomExamTab() {
 
                     {insufficient && (
                       <p className="text-[11px] text-amber-300 mb-4">
-                        ⚠️ শুধু {availableTotal}টি প্রশ্ন উপলব্ধ — {clampedQuestionCount}টি দেওয়া হবে।
+                        ⚠️ শুধু {availableTotal}টি প্রশ্ন উপলব্ধ — {totalCount}টি চাওয়া হয়েছে।
                       </p>
                     )}
 

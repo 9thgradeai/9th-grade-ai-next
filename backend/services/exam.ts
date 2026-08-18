@@ -171,9 +171,45 @@ function validateConfig(config: ExamSelectionRequest): Required<ExamSelectionReq
     }
   }
 
+  // Per-subject question counts: when every selected subject provides a valid
+  // `count`, the effective questionCount is their sum; otherwise fall back to
+  // the global questionCount with proportional (largest-remainder) allocation.
+  const normalizedSubjects = config.subjects.map((s) => ({
+    subjectId: s.subjectId,
+    groups: s.groups,
+    count: Number.isInteger(s.count) ? Math.max(0, s.count as number) : undefined,
+  }));
+  const hasPerSubjectCounts = normalizedSubjects.every((s) => s.count !== undefined);
+
+  let effectiveQuestionCount = config.questionCount;
+  if (hasPerSubjectCounts) {
+    effectiveQuestionCount = normalizedSubjects.reduce((acc, s) => acc + (s.count ?? 0), 0);
+    if (
+      !Number.isInteger(effectiveQuestionCount) ||
+      effectiveQuestionCount < EXAM_MIN_QUESTIONS ||
+      effectiveQuestionCount > EXAM_MAX_QUESTIONS
+    ) {
+      throw new AppError(
+        400,
+        `Total per-subject question count must be between ${EXAM_MIN_QUESTIONS} and ${EXAM_MAX_QUESTIONS}.`,
+        "VALIDATION_ERROR",
+      );
+    }
+  } else if (
+    !Number.isInteger(config.questionCount) ||
+    config.questionCount < EXAM_MIN_QUESTIONS ||
+    config.questionCount > EXAM_MAX_QUESTIONS
+  ) {
+    throw new AppError(
+      400,
+      `questionCount must be an integer between ${EXAM_MIN_QUESTIONS} and ${EXAM_MAX_QUESTIONS}.`,
+      "VALIDATION_ERROR",
+    );
+  }
+
   return {
-    subjects: config.subjects,
-    questionCount: config.questionCount,
+    subjects: normalizedSubjects,
+    questionCount: effectiveQuestionCount,
     durationSec,
     shuffleQuestions: config.shuffleQuestions !== false,
     seed: typeof config.seed === "number" && Number.isInteger(config.seed) ? config.seed : Date.now(),
@@ -221,8 +257,13 @@ export async function buildCustomExam(config: ExamSelectionRequest): Promise<Exa
     const finalCount = Math.min(questionCount, totalAvailable);
     const shortfall = questionCount - finalCount;
 
-    // Distribute the requested count across subjects proportionally.
-    const subjectAllocations = allocateLargestRemainder(finalCount, subjectTotals);
+    // With per-subject counts, allocate each subject exactly its requested
+    // count (capped by availability); otherwise distribute the requested count
+    // across subjects proportionally (largest remainder).
+    const perSubjectMode = subjects.every((s) => s.count !== undefined);
+    const subjectAllocations = perSubjectMode
+      ? subjects.map((s, i) => Math.min(s.count ?? 0, subjectTotals[i]))
+      : allocateLargestRemainder(finalCount, subjectTotals);
 
     const selected: ExamQuestionDTO[] = [];
 

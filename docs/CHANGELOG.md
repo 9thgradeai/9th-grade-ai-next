@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.2.1] - 2026-08-19
+
+### Added
+- Per-subject question counts in the custom exam builder: each selected subject
+  has its own count input (clamped to availability); the total is the sum and is
+  sent as per-subject `count`s to `POST /api/exam/build`.
+
+### Changed
+- CI is green on every push (Node 22, platform-complete lockfile).
+- Fixed 39 pre-existing eslint errors (react-hooks, floating promises, seed types).
+
 ## [0.2.0] - 2026-08-19
 
 ### Added

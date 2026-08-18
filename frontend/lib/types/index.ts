@@ -425,6 +425,7 @@ export namespace Server {
         groupName: string;
         subTopics: string[]; // empty = whole group
       }[];
+      count?: number; // per-subject question count; when provided for every selected subject, questionCount becomes the sum
     }[];
     questionCount: number;
     durationSec: number;

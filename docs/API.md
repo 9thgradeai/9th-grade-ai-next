@@ -47,7 +47,7 @@ Auth-protected routes require the `auth_token` HttpOnly cookie (JWT, 7-day expir
 | POST | `/api/flashcards/review` | **Auth required** — Log an SRS review `{ flashcardId, rating }` (0-3) |
 | POST | `/api/notifications/:id/read` | **Auth required** — Mark a notification read |
 | GET | `/api/exam/config` | List the custom-exam selection tree (subjects → topics → subtopics with question counts) |
-| POST | `/api/exam/build` | Build a custom BCS-style exam `{ subjects, questionCount, durationSec }` |
+| POST | `/api/exam/build` | Build a custom BCS-style exam `{ subjects: [{ subjectId, groups, count? }], questionCount, durationSec }` |
 | POST | `/api/exam/submit` | **Auth required** — Grade + persist a custom exam `{ answers: [{ questionId, selected }] }` |
 | POST | `/api/ai/solver` | Solve a question `{ text?, imageBase64?, subject? }` |
 | POST | `/api/ai/tutor` | Chat with AI tutor `{ messages: [{ role, content }] }` |
@@ -121,6 +121,13 @@ labelled `mock` source. See `docs/AI-SYSTEM.md`.
 `questions` never include `correctAnswer` or `explanation` — those are only
 returned after submission. `shortfall` reports the number of requested
 questions that could not be sourced from the selection.
+
+Each subject in the build request may carry an optional `count`. When **every**
+selected subject provides an integer `count`, the effective `questionCount` is
+their sum and each subject is allocated exactly `min(count, available)`; a
+subject's count may be `0` (excluded). Otherwise the legacy behaviour applies:
+the global `questionCount` is distributed proportionally (largest remainder)
+across subjects.
 
 ### ExamResult
 ```json

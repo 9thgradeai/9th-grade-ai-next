@@ -111,6 +111,51 @@ describe("buildCustomExam", () => {
     expect(exam.questions.every((q) => "correctAnswer" in q === false)).toBe(true);
   });
 
+  it("respects per-subject counts when every subject provides one", async () => {
+    vi.mocked(prisma.subject.findMany).mockResolvedValue([
+      { id: 1, nameBn: "বাংলা ভাষা ও সাহিত্য" },
+      { id: 2, nameBn: "English Language and Literature" },
+    ] as never);
+
+    vi.mocked(prisma.question.count).mockImplementation(async (args) => {
+      const a = args as { where?: { subjectId?: number } };
+      return a.where?.subjectId === 2 ? 5 : 10;
+    });
+    vi.mocked(prisma.question.findMany).mockImplementation(async (args) => {
+      const a = args as {
+        select?: Record<string, boolean>;
+        orderBy?: unknown;
+        where?: { subjectId?: number; id?: { in?: number[] } };
+      };
+      const isPick = !!a.orderBy && !!a.select && Object.keys(a.select).length === 1 && a.select.id === true;
+      const base = a.where?.subjectId === 2 ? 11 : 1;
+      const pool = Array.from({ length: 10 }, (_, i) => i + base);
+      if (isPick) return pool.map((id) => ({ id }));
+      const ids = (a.where?.id?.in ?? []).flat();
+      return ids.map((id) => fullQuestion(id, "ক"));
+    });
+
+    const exam = await buildCustomExam({
+      subjects: [
+        { subjectId: 1, groups: [], count: 4 },
+        { subjectId: 2, groups: [], count: 3 },
+      ],
+      questionCount: 7,
+      durationSec: 600,
+      seed: 42,
+      shuffleQuestions: false,
+    });
+
+    expect(exam.totalQuestions).toBe(7);
+    expect(exam.requested).toBe(7);
+    expect(exam.shortfall).toBe(0);
+    // Subject 1 draws from ids 1–10, subject 2 from ids 11–15.
+    const fromSub1 = exam.questions.filter((q) => q.id <= 10).length;
+    const fromSub2 = exam.questions.filter((q) => q.id >= 11).length;
+    expect(fromSub1).toBe(4);
+    expect(fromSub2).toBe(3);
+  });
+
   it("handles insufficient questions gracefully with a shortfall", async () => {
     vi.mocked(prisma.subject.findMany).mockResolvedValue([
       { id: 1, nameBn: "বাংলা ভাষা ও সাহিত্য" },
