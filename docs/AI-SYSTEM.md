@@ -2,14 +2,31 @@
 
 ## Providers
 
-- **Anthropic** — Claude Sonnet 4 (`claude-sonnet-4-6`) via Vercel AI SDK (`@ai-sdk/anthropic`).
+- **Groq** — Llama 3.3 70B (`llama-3.3-70b-versatile`) via Vercel AI SDK (`@ai-sdk/groq`) for the AI Tutor. Requires `GROQ_API_KEY`.
+- **Anthropic** — Claude Sonnet 4 (`claude-sonnet-4-6`) via Vercel AI SDK (`@ai-sdk/anthropic`) for the solver. Requires `ANTHROPIC_API_KEY` (falls back to mock when unset).
 
 ## Models
 
 | Endpoint | Model | Purpose |
 |----------|-------|---------|
-| `/api/ai/tutor` | `claude-sonnet-4-6` | Streaming chat tutor |
-| `/api/ai/solver` | `claude-sonnet-4-6` | Step-by-step question solver |
+| `/api/ai/tutor` | `llama-3.3-70b-versatile` (Groq) | Streaming chat tutor grounded in the knowledge base |
+| `/api/ai/solver` | `claude-sonnet-4-6` (Anthropic) | Step-by-step question solver |
+
+## Knowledge Base (AI Tutor grounding)
+
+The tutor answers from a curated, exam-focused knowledge base at `frontend/lib/data/knowledge-base.ts` (`KNOWLEDGE_BASE`):
+
+- ~70 entries covering all 10 BCS Preliminary subjects (Bangla, English, Bangladesh Affairs, International Affairs, Geography/Environment, General Science, Computer & IT, Mathematical Reasoning, Mental Ability, Ethics & Good Governance) plus exam-system and current-affairs sheets.
+- Each entry: `{ id, subject, subjectEn, topic, keywords[], content, source }` — bilingual (Bangla primary, English keywords).
+- **Retrieval**: `retrieveKnowledge(query, limit = 8)` in the same file — deterministic, dependency-free keyword scoring (tokenizes Bangla + Latin text, scores keyword substring hits and token overlap). No embeddings/vector store.
+
+Tutor pipeline per request:
+1. Take the latest user message.
+2. `retrieveKnowledge()` → top 8 matching entries.
+3. Inject them into the system prompt as the grounding block (`=== Retrieved knowledge base entries ===`).
+4. Instruct the model to answer from the KB first, and to state when a question is outside the KB.
+5. Stream the reply from Groq (`llama-3.3-70b-versatile`).
+6. Response headers expose `X-AI-Source`: `groq+kb` / `groq` / `mock`.
 
 ## Agents / Tools
 
@@ -18,7 +35,7 @@ There are no autonomous agent loops. The AI is used via two direct endpoints:
 1. **AI Tutor** (`POST /api/ai/tutor`)
    - Input: `{ messages: [{ role: "user" | "assistant", content: string }] }`
    - Output: Streaming text response.
-   - System prompt: friendly, encouraging, exam-focused tutor for Bangladesh competitive exams.
+   - System prompt: friendly, encouraging, exam-focused tutor + retrieved knowledge-base block.
 
 2. **AI Solver** (`POST /api/ai/solver`)
    - Input: `{ text?: string, imageBase64?: string, subject?: string }`
@@ -33,7 +50,7 @@ There are no autonomous agent loops. The AI is used via two direct endpoints:
 
 ## Context Management
 
-- **Tutor**: Full conversation history is sent in the `messages` array.
+- **Tutor**: Full conversation history is sent in the `messages` array; the latest user message drives knowledge-base retrieval.
 - **Solver**: Single-turn; no conversation history.
 - Context limit: `maxTokens: 1024` for both endpoints.
 
@@ -45,13 +62,12 @@ There are no autonomous agent loops. The AI is used via two direct endpoints:
 ## Validation
 
 - Input validation is basic: check required fields (`messages` array for tutor, `text`/`imageBase64` for solver).
-- No PII redaction or content filtering beyond Anthropic's built-in safety.
+- No PII redaction or content filtering beyond Groq/Anthropic's built-in safety.
 
 ## Fallback
 
-- When `ANTHROPIC_API_KEY` is unset:
-  - Tutor returns a mock stream with a clearly-labelled mock message.
-  - Solver returns a static mock JSON with `source: "mock"` and a `note` explaining how to enable real AI.
+- When `GROQ_API_KEY` is unset, the tutor returns a mock stream with a clearly-labelled mock message.
+- When `ANTHROPIC_API_KEY` is unset, the solver returns a static mock JSON with `source: "mock"` and a `note` explaining how to enable real AI.
 
 ## Retries
 
@@ -59,11 +75,11 @@ There are no autonomous agent loops. The AI is used via two direct endpoints:
 
 ## Rate Limits
 
-- No application-level rate limiting. Relies on Anthropic's API rate limits and Vercel AI SDK defaults.
+- Application-level rate limit: 10 requests / 60 s per client for both AI endpoints (`checkRateLimit`).
 
 ## Evaluation
 
-- No AI evaluation framework or benchmark tests.
+- Unit tests for knowledge-base retrieval in `tests/unit/backend/knowledge-base.test.ts`.
 
 ## Prompt Versioning
 
@@ -72,10 +88,11 @@ There are no autonomous agent loops. The AI is used via two direct endpoints:
 
 ## Failure Modes
 
-- **Missing API key**: Mock fallback activates.
+- **Missing API key**: Mock fallback activates (clearly labelled).
 - **JSON parse failure (solver)**: Returns raw text as solution with a single step.
 - **Stream failure (tutor)**: Returns `500`.
 - **Invalid input**: Returns `400` with error message.
+- **No KB match**: Tutor answers from general knowledge and states it is outside the KB.
 
 ## AI Security
 
@@ -83,3 +100,4 @@ There are no autonomous agent loops. The AI is used via two direct endpoints:
 - Mock responses are clearly labelled.
 - No prompt injection mitigation beyond standard system prompt framing.
 - No PII is sent to the LLM beyond what the user provides in chat.
+- API keys come from `process.env` only (`GROQ_API_KEY`, `ANTHROPIC_API_KEY`).

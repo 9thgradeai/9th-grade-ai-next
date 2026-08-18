@@ -36,6 +36,15 @@
 - **Rationale**: First-class Next.js integration, streaming support, structured output helpers.
 - **Consequences**: Tied to Vercel AI SDK API; model changes require code updates.
 
+## ADR-006: Groq as AI Tutor provider + grounding knowledge base
+
+- **Date**: 2026
+- **Status**: Accepted
+- **Context**: The AI Tutor needs a fast, cost-effective LLM and must answer from a curated, exam-accurate knowledge base rather than free-form model knowledge.
+- **Decision**: Use `@ai-sdk/groq` with `llama-3.3-70b-versatile` for `/api/ai/tutor`, grounded by keyword-retrieval over a curated knowledge base (`frontend/lib/data/knowledge-base.ts`).
+- **Rationale**: Groq offers high-throughput, low-latency inference at low cost; the curated KB keeps answers aligned with the BCS/Bank syllabus and exam patterns. Retrieval is deterministic and dependency-free (no vector DB or embedding service needed at this stage).
+- **Consequences**: Model quality is tied to Groq's Llama lineup; if grounding precision becomes a bottleneck, swap the retrieval layer for embeddings (e.g., pgvector on the Railway Postgres) without changing the route interface.
+
 ## ADR-005: Tailwind CSS v4
 
 - **Date**: 2024
