@@ -10,10 +10,11 @@
    and re-seeded when SEED_RESET_USERS=1 — safe to run against production
    without destroying real accounts. */
 
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, UserRole, Difficulty, QuizStatus, NotificationType, BadgeRarity } from "@prisma/client";
 import { readFileSync, readdirSync } from "fs";
 import { join } from "path";
 
+import type { Client } from "../../frontend/lib/types";
 import {
   SUBJECTS,
   TOPIC_TREES,
@@ -35,11 +36,23 @@ import { seedQuestions } from "../../scripts/seed-questions";
 
 const prisma = new PrismaClient();
 
-function parseTopics(tree: Record<string, any>) {
+type TopicTree = Record<string, { name: string; subTopics: { name: string; questions: string }[] }[]>;
+
+type SeedUser = {
+  id: number;
+  name: string;
+  email: string;
+  handle: string;
+  passwordHash: string;
+  role?: string;
+  createdAt?: string;
+};
+
+function parseTopics(tree: TopicTree) {
   const rows: { subject: string; groupName: string; name: string; questionCount: string }[] = [];
   for (const [subject, groups] of Object.entries(tree)) {
-    for (const group of groups as any[]) {
-      for (const sub of group.subTopics as any[]) {
+    for (const group of groups) {
+      for (const sub of group.subTopics) {
         rows.push({
           subject,
           groupName: group.name,
@@ -90,7 +103,7 @@ async function main() {
 
   // --- Users (from data/users.json, when resetting) ---
   if (resetUsers) {
-    let users: any[] = [];
+    let users: SeedUser[] = [];
     try {
       const raw = readFileSync(join(process.cwd(), "database", "data", "users.json"), "utf-8");
       users = JSON.parse(raw);
@@ -102,12 +115,12 @@ async function main() {
         where: { email: u.email },
         update: {},
         create: {
-          id: u.id,
+          id: String(u.id),
           name: u.name,
           email: u.email,
           handle: u.handle,
           passwordHash: u.passwordHash,
-          role: (u.role ?? "student").toUpperCase() as any,
+          role: (u.role ?? "student").toUpperCase() as UserRole,
           createdAt: u.createdAt ? new Date(u.createdAt) : undefined,
         },
       });
@@ -130,7 +143,7 @@ async function main() {
         email: demoEmail,
         handle: "demo",
         passwordHash,
-        role: "STUDENT" as any,
+        role: "STUDENT" as UserRole,
       },
     });
     console.log("  ✓ demo account created (demo@9thgrade.ai / demo12345)");
@@ -150,7 +163,7 @@ async function main() {
       },
     });
 
-    const tree = (TOPIC_TREES as Record<string, any>)[s.name];
+    const tree = TOPIC_TREES[s.name];
     if (tree) {
       for (const group of tree) {
         for (const sub of group.subTopics) {
@@ -194,7 +207,7 @@ async function main() {
         icon: a.icon ?? "🎯",
         count: a.count ?? 0,
         yearRange: a.yearRange ?? "",
-        status: (a.status ?? "ACTIVE") as any,
+        status: (a.status ?? "ACTIVE") as QuizStatus,
         accent: a.accent ?? "emerald",
       },
     });
@@ -203,7 +216,7 @@ async function main() {
 
   // --- Flashcards ---
   let flashCount = 0;
-  for (const [subjectName, cards] of Object.entries(FLASHCARD_DECKS) as any[]) {
+  for (const [subjectName, cards] of Object.entries(FLASHCARD_DECKS)) {
     const subjId = subjMap.get(subjectName) ?? null;
     for (const c of cards) {
       await prisma.flashcard.create({
@@ -213,7 +226,7 @@ async function main() {
           question: c.question,
           answer: c.answer,
           hint: c.hint ?? "",
-          difficulty: ((c.difficulty ?? "medium") as string).toUpperCase() as any,
+          difficulty: (c.difficulty ?? "medium").toUpperCase() as Difficulty,
           nextReview: new Date(Date.now() + 86400000),
           interval: c.interval ?? 1,
           easeFactor: c.easeFactor ?? 2.5,
@@ -226,7 +239,7 @@ async function main() {
   console.log(`  ✓ ${flashCount} flashcards`);
 
   // --- Mock tests (one per subject in MOCK_TEST_QUESTIONS) ---
-  for (const [subjectName, questions] of Object.entries(MOCK_TEST_QUESTIONS) as any[]) {
+  for (const [subjectName, questions] of Object.entries(MOCK_TEST_QUESTIONS)) {
     await prisma.mockTest.create({
       data: {
         title: `${subjectName} — Mock Test`,
@@ -234,7 +247,7 @@ async function main() {
         totalQuestions: questions.length,
         duration: 20,
         questions: {
-          create: questions.map((q: any) => ({
+          create: questions.map((q) => ({
             subject: q.subject ?? subjectName,
             topic: q.topic ?? "",
             question: q.question,
@@ -292,7 +305,7 @@ async function main() {
         score: quiz.score ?? 0,
         claimed: quiz.claimed ?? false,
         questions: {
-          create: quiz.questions.map((q: any) => ({
+          create: quiz.questions.map((q) => ({
             subject: q.subject ?? "",
             topic: q.topic ?? "",
             question: q.question,
@@ -307,7 +320,7 @@ async function main() {
   console.log(`  ✓ ${DAILY_QUIZZES.length} daily quizzes`);
 
   // --- Flash news (prefer ai-data items, fall back to data.ts) ---
-  const news = FLASH_NEWS_ITEMS.length > 0 ? FLASH_NEWS_ITEMS : (FLASH_NEWS as any[]);
+  const news = FLASH_NEWS_ITEMS.length > 0 ? FLASH_NEWS_ITEMS : (FLASH_NEWS as Client.FlashNews[]);
   for (const n of news) {
     await prisma.flashNews.create({
       data: {
@@ -351,7 +364,7 @@ async function main() {
         name: b.name,
         description: b.description,
         icon: b.icon ?? "🏅",
-        rarity: (b.rarity ?? "common").toUpperCase() as any,
+        rarity: (b.rarity ?? "common").toUpperCase() as BadgeRarity,
         unlockedSeed: b.unlocked ?? false,
       },
     });
@@ -364,7 +377,7 @@ async function main() {
       data: {
         title: n.title,
         message: n.message,
-        type: (n.type ?? "info").toUpperCase() as any,
+        type: (n.type ?? "info").toUpperCase() as NotificationType,
         timestamp: n.timestamp ? new Date(n.timestamp) : new Date(),
         read: n.read ?? false,
       },

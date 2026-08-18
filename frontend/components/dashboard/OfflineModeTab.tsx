@@ -19,7 +19,7 @@ export default function OfflineMode() {
   // Load offline packs / documents from the database (fallback to static).
   useEffect(() => {
     let cancelled = false;
-    (async () => {
+    void (async () => {
       try {
         const docs = await api.documents();
         if (!cancelled && docs.length) {
@@ -148,7 +148,9 @@ export default function OfflineMode() {
       <motion.button
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
-        onClick={downloadAll}
+        onClick={() => {
+              void downloadAll();
+            }}
         disabled={packs.every((p) => p.downloaded)}
         className="w-full py-3 bg-emerald-500 text-zinc-950 font-mono rounded-lg hover:bg-emerald-400 transition-colors flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
       >
@@ -197,7 +199,9 @@ export default function OfflineMode() {
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    onClick={() => downloadPack(pack.id)}
+                    onClick={() => {
+                      void downloadPack(pack.id);
+                    }}
                     disabled={isDownloading === pack.id}
                     className="px-3 py-1.5 bg-emerald-500 text-zinc-950 font-mono text-xs rounded hover:bg-emerald-400 transition-colors disabled:opacity-40"
                   >

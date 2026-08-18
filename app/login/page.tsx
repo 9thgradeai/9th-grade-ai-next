@@ -137,7 +137,13 @@ export default function LoginPage() {
         )}
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+        <form
+          onSubmit={(e) => {
+            void handleSubmit(e);
+          }}
+          className="space-y-4"
+          noValidate
+        >
           {activeTab === "register" && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}

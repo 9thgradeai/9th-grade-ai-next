@@ -99,14 +99,14 @@ function AITutorModalContent({ onClose }: { onClose?: () => void }) {
     if (lastUserMessageRef.current) {
       setMessages((prev) => prev.slice(0, -1));
       setRetryCount((prev) => prev + 1);
-      generateWithDelay(lastUserMessageRef.current);
+      void generateWithDelay(lastUserMessageRef.current);
     }
   }, [generateWithDelay]);
 
   const handlePresetClick = (prompt: { bn: string }) => {
     if (isGenerating) return;
     lastUserMessageRef.current = prompt.bn;
-    generateWithDelay(prompt.bn);
+    void generateWithDelay(prompt.bn);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -115,7 +115,7 @@ function AITutorModalContent({ onClose }: { onClose?: () => void }) {
     const userText = input.trim();
     lastUserMessageRef.current = userText;
     setInput("");
-    generateWithDelay(userText);
+    void generateWithDelay(userText);
   };
 
   return (

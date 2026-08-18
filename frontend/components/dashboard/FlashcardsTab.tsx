@@ -59,7 +59,7 @@ export default function FlashcardsTab() {
   // Load flashcard decks from the database (fallback to static data).
   useEffect(() => {
     let cancelled = false;
-    (async () => {
+    void (async () => {
       try {
         const flashcards = await api.flashcards();
         if (!cancelled && flashcards.length) {

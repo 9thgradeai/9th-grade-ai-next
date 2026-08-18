@@ -332,7 +332,12 @@ export default function VoiceAITutor() {
             </div>
 
             {/* Input area */}
-            <form onSubmit={handleSubmit} className="p-4 bg-zinc-950 border-t border-emerald-500/20">
+            <form
+              onSubmit={(e) => {
+                void handleSubmit(e);
+              }}
+              className="p-4 bg-zinc-950 border-t border-emerald-500/20"
+            >
               <div className="flex items-center gap-2">
                 <button
                   type="button"

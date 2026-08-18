@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { X, Play, Pause, RotateCcw, Check, Clock, Trophy, ChevronLeft, ChevronRight } from "lucide-react";
 import { MOCK_TEST_QUESTIONS } from "@/lib/data/study";
 import { api } from "@/lib/services/api";
-import type { MockQuestion } from "@/lib/types";
+import type { MockQuestion, Server } from "@/lib/types";
 
 type TestState = "setup" | "active" | "completed";
 
@@ -25,14 +25,14 @@ export default function MockTestTab() {
   // Load mock tests from the database (fallback to static data).
   useEffect(() => {
     let cancelled = false;
-    (async () => {
+    void (async () => {
       try {
         const list = await api.mockTests();
         if (!cancelled && list.length) {
           const grouped: Record<string, MockQuestion[]> = {};
           for (const t of list) {
-            grouped[t.subject] = t.questions.map((q: any) => ({
-              id: q.id,
+            grouped[t.subject] = t.questions.map((q: Server.QuestionDTO) => ({
+              id: String(q.id),
               subject: q.subject,
               topic: q.topic,
               question: q.question,

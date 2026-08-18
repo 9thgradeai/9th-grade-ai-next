@@ -63,7 +63,7 @@ export default function AISolverTab() {
   };
 
   const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
+    void navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -214,7 +214,9 @@ export default function AISolverTab() {
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            onClick={solveQuestion}
+            onClick={() => {
+              void solveQuestion();
+            }}
             disabled={isSolving || (!textInput.trim() && !imagePreview)}
             className="w-full py-3 bg-emerald-500 text-zinc-950 font-mono rounded-lg hover:bg-emerald-400 transition-colors flex items-center justify-center gap-2 shadow-neon-glow disabled:opacity-40 disabled:cursor-not-allowed"
           >

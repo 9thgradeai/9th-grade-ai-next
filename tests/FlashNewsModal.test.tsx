@@ -16,10 +16,10 @@ describe("FlashNewsModal", () => {
     full: "এটি একটি পরীক্ষা",
   };
 
-  it("renders news content when provided", () => {
+  it("renders news content when provided", async () => {
     const onClose = () => {};
     render(<FlashNewsModal news={mockNews} onClose={onClose} />);
-    expect(screen.getByText("টেস্ট শিরোনাম")).toBeInTheDocument();
+    expect(await screen.findByText("টেস্ট শিরোনাম")).toBeInTheDocument();
   });
 
   it("returns null when no news provided", () => {
@@ -28,15 +28,15 @@ describe("FlashNewsModal", () => {
     expect(container.firstChild).toBeNull();
   });
 
-  it("renders the category tag", () => {
+  it("renders the category tag", async () => {
     const onClose = () => {};
     render(<FlashNewsModal news={mockNews} onClose={onClose} />);
-    expect(screen.getByText("পরীক্ষা")).toBeInTheDocument();
+    expect(await screen.findByText("পরীক্ষা")).toBeInTheDocument();
   });
 
-  it("renders the bookmark toggle button", () => {
+  it("renders the bookmark toggle button", async () => {
     const onClose = () => {};
     render(<FlashNewsModal news={mockNews} onClose={onClose} />);
-    expect(screen.getByLabelText("Close")).toBeInTheDocument();
+    expect(await screen.findByLabelText("Close")).toBeInTheDocument();
   });
 });

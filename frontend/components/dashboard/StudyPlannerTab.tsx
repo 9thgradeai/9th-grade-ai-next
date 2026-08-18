@@ -43,7 +43,7 @@ export default function StudyPlannerTab() {
   // Load the study plan from the database (fallback to static data).
   useEffect(() => {
     let cancelled = false;
-    (async () => {
+    void (async () => {
       try {
         const list = await api.studyPlan();
         if (!cancelled && list.length) setTasks(list);
@@ -207,7 +207,9 @@ export default function StudyPlannerTab() {
               >
                 <div className="flex items-start gap-4">
                   <button
-                    onClick={() => toggleTask(task.id)}
+                    onClick={() => {
+                      void toggleTask(task.id);
+                    }}
                     className={`mt-0.5 w-5 h-5 rounded border-2 flex items-center justify-center transition-all flex-shrink-0 ${
                       isCompleted
                         ? "bg-emerald-500 border-emerald-500 text-zinc-950"
@@ -250,7 +252,9 @@ export default function StudyPlannerTab() {
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      onClick={() => toggleTask(task.id)}
+                      onClick={() => {
+                        void toggleTask(task.id);
+                      }}
                       className="px-3 py-1.5 bg-emerald-500 text-zinc-950 font-mono text-xs rounded hover:bg-emerald-400 transition-colors flex items-center gap-1 shadow-neon-glow"
                     >
                       Start <ChevronRight className="w-3 h-3" />

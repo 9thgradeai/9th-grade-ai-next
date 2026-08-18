@@ -20,8 +20,11 @@ function FlashNewsModalContent({ news, onClose }: Props) {
 
   useEffect(() => {
     if (!news) return;
-    setIsLoading(false);
-    setError(null);
+    void (async () => {
+      await Promise.resolve();
+      setIsLoading(false);
+      setError(null);
+    })();
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {

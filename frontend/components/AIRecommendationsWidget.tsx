@@ -21,7 +21,7 @@ export default function AIRecommendationsWidget() {
   // Load recommendations from the database (fallback to static data).
   useEffect(() => {
     let cancelled = false;
-    (async () => {
+    void (async () => {
       try {
         const list = await api.recommendations();
         if (!cancelled && list.length) {

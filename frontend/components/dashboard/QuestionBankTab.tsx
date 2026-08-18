@@ -52,8 +52,8 @@ export default function QuestionBankTab() {
 
   // Load categories + bookmarks from the DB (fallback to static data).
   useEffect(() => {
-    let cancelled = false;
-    (async () => {
+    const cancelled = false;
+    void (async () => {
       try {
         const [cats, bk] = await Promise.all([
           api.questionBankCategories().catch(() => categories),
@@ -72,8 +72,10 @@ export default function QuestionBankTab() {
   // Load questions for the active category from the DB.
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
-    (async () => {
+    void (async () => {
+      await Promise.resolve();
+      if (cancelled) return;
+      setLoading(true);
       try {
         const qs = await api.questions({ subject: activeCategory, limit: 100 });
         if (!cancelled) {
@@ -200,7 +202,9 @@ export default function QuestionBankTab() {
                     </span>
                   </div>
                   <button
-                    onClick={() => toggleSave(item.id)}
+                    onClick={() => {
+                      void toggleSave(item.id);
+                    }}
                     className="text-zinc-500 hover:text-emerald-400 transition-colors"
                     aria-label={isSaved ? "Remove from saved" : "Save question"}
                   >
