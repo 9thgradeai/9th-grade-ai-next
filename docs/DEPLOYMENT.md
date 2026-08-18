@@ -27,6 +27,12 @@ Runs the production server on the port defined by `PORT` (default 3000).
 
 ## Database (Production)
 
+The Vercel build runs `npm run db:sync` (`prisma db push` + idempotent seed)
+automatically when `VERCEL=1`, so schema and seed data stay in sync on every
+production deploy.
+
+For manual application:
+
 1. Provision a PostgreSQL database (e.g., Neon, Supabase, AWS RDS).
 2. Update `DATABASE_URL` in `.env.local` (or your hosting provider's env config).
 3. Run migrations (schema push):

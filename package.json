@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "prebuild": "if [ \"$VERCEL\" = \"1\" ]; then npm run db:sync; fi",
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
@@ -15,6 +16,7 @@
     "format:check": "prettier --check .",
     "db:push": "prisma db push --schema database/prisma/schema.prisma",
     "db:seed": "prisma db seed --schema database/prisma/schema.prisma",
+    "db:sync": "npm run db:push && npm run db:seed",
     "db:seed-users": "SEED_RESET_USERS=1 prisma db seed --schema database/prisma/schema.prisma",
     "db:seed-questions": "tsx scripts/seed-questions.ts",
     "db:reset": "prisma db push --force-reset --schema database/prisma/schema.prisma && SEED_RESET_USERS=1 prisma db seed --schema database/prisma/schema.prisma",
