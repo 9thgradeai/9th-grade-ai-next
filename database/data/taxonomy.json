@@ -1,0 +1,2443 @@
+{
+  "name": "BCS_Question_Bank_Detailed",
+  "children": [
+    {
+      "name": "01_বাংলা_ভাষা_ও_সাহিত্য",
+      "children": [
+        {
+          "name": "ভাষা",
+          "children": [
+            {
+              "name": "প্রয়োগ-অপপ্রয়োগ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/প্রয়োগ-অপপ্রয়োগ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "বানান_ও_বাক্য_শুদ্ধি",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/বানান_ও_বাক্য_শুদ্ধি",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "পরিভাষা",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/পরিভাষা",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "সমার্থক_শব্দ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/সমার্থক_শব্দ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "বিপরীতার্থক_শব্দ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/বিপরীতার্থক_শব্দ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "ধ্বনি",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/ধ্বনি",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "বর্ণ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/বর্ণ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "শব্দ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/শব্দ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "পদ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/পদ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "বাক্য",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/বাক্য",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "প্রত্যয়",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/প্রত্যয়",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "সন্ধি",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/সন্ধি",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "সমাস",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/সমাস",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা",
+          "depth": 2
+        },
+        {
+          "name": "সাহিত্য",
+          "children": [
+            {
+              "name": "প্রাচীন_যুগ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/সাহিত্য/প্রাচীন_যুগ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "মধ্যযুগ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/সাহিত্য/মধ্যযুগ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "আধুনিক_যুগ_১৮০০_হতে_বর্তমান",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/সাহিত্য/আধুনিক_যুগ_১৮০০_হতে_বর্তমান",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/সাহিত্য",
+          "depth": 2
+        }
+      ],
+      "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য",
+      "depth": 1
+    },
+    {
+      "name": "02_English_Language_and_Literature",
+      "children": [
+        {
+          "name": "PART-I_Language",
+          "children": [
+            {
+              "name": "Parts_of_Speech",
+              "children": [
+                {
+                  "name": "Noun",
+                  "children": [
+                    {
+                      "name": "Determiner",
+                      "children": [],
+                      "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Parts_of_Speech/Noun/Determiner",
+                      "depth": 5,
+                      "leaf": true
+                    },
+                    {
+                      "name": "Gender",
+                      "children": [],
+                      "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Parts_of_Speech/Noun/Gender",
+                      "depth": 5,
+                      "leaf": true
+                    },
+                    {
+                      "name": "Number",
+                      "children": [],
+                      "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Parts_of_Speech/Noun/Number",
+                      "depth": 5,
+                      "leaf": true
+                    }
+                  ],
+                  "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Parts_of_Speech/Noun",
+                  "depth": 4
+                },
+                {
+                  "name": "Pronoun",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Parts_of_Speech/Pronoun",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "Verb",
+                  "children": [
+                    {
+                      "name": "Finite_Transitive_Intransitive",
+                      "children": [],
+                      "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Parts_of_Speech/Verb/Finite_Transitive_Intransitive",
+                      "depth": 5,
+                      "leaf": true
+                    },
+                    {
+                      "name": "Non-finite_Participles_Infinitives_Gerund",
+                      "children": [],
+                      "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Parts_of_Speech/Verb/Non-finite_Participles_Infinitives_Gerund",
+                      "depth": 5,
+                      "leaf": true
+                    },
+                    {
+                      "name": "Linking_Verb",
+                      "children": [],
+                      "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Parts_of_Speech/Verb/Linking_Verb",
+                      "depth": 5,
+                      "leaf": true
+                    },
+                    {
+                      "name": "Phrasal_Verb",
+                      "children": [],
+                      "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Parts_of_Speech/Verb/Phrasal_Verb",
+                      "depth": 5,
+                      "leaf": true
+                    },
+                    {
+                      "name": "Modals",
+                      "children": [],
+                      "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Parts_of_Speech/Verb/Modals",
+                      "depth": 5,
+                      "leaf": true
+                    }
+                  ],
+                  "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Parts_of_Speech/Verb",
+                  "depth": 4
+                },
+                {
+                  "name": "Adjective",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Parts_of_Speech/Adjective",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "Adverb",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Parts_of_Speech/Adverb",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "Preposition",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Parts_of_Speech/Preposition",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "Conjunction",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Parts_of_Speech/Conjunction",
+                  "depth": 4,
+                  "leaf": true
+                }
+              ],
+              "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Parts_of_Speech",
+              "depth": 3
+            },
+            {
+              "name": "Idioms_and_Phrases",
+              "children": [
+                {
+                  "name": "Meanings_of_Phrases",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Idioms_and_Phrases/Meanings_of_Phrases",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "Kinds_of_Phrases",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Idioms_and_Phrases/Kinds_of_Phrases",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "Identifying_Phrases",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Idioms_and_Phrases/Identifying_Phrases",
+                  "depth": 4,
+                  "leaf": true
+                }
+              ],
+              "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Idioms_and_Phrases",
+              "depth": 3
+            },
+            {
+              "name": "Clauses",
+              "children": [
+                {
+                  "name": "Principal_Clause",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Clauses/Principal_Clause",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "Subordinate_Clause",
+                  "children": [
+                    {
+                      "name": "Noun_Clause",
+                      "children": [],
+                      "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Clauses/Subordinate_Clause/Noun_Clause",
+                      "depth": 5,
+                      "leaf": true
+                    },
+                    {
+                      "name": "Adjective_Clause",
+                      "children": [],
+                      "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Clauses/Subordinate_Clause/Adjective_Clause",
+                      "depth": 5,
+                      "leaf": true
+                    },
+                    {
+                      "name": "Adverbial_Clause",
+                      "children": [],
+                      "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Clauses/Subordinate_Clause/Adverbial_Clause",
+                      "depth": 5,
+                      "leaf": true
+                    }
+                  ],
+                  "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Clauses/Subordinate_Clause",
+                  "depth": 4
+                }
+              ],
+              "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Clauses",
+              "depth": 3
+            },
+            {
+              "name": "Corrections",
+              "children": [
+                {
+                  "name": "Tense",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Corrections/Tense",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "Verb",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Corrections/Verb",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "Preposition",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Corrections/Preposition",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "Determiner",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Corrections/Determiner",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "Gender",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Corrections/Gender",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "Number",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Corrections/Number",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "Subject-Verb_Agreement",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Corrections/Subject-Verb_Agreement",
+                  "depth": 4,
+                  "leaf": true
+                }
+              ],
+              "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Corrections",
+              "depth": 3
+            },
+            {
+              "name": "Sentences_and_Transformations",
+              "children": [
+                {
+                  "name": "Simple_Sentence",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Sentences_and_Transformations/Simple_Sentence",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "Compound_Sentence",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Sentences_and_Transformations/Compound_Sentence",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "Complex_Sentence",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Sentences_and_Transformations/Complex_Sentence",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "Active_Voice",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Sentences_and_Transformations/Active_Voice",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "Passive_Voice",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Sentences_and_Transformations/Passive_Voice",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "Positive_Degree",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Sentences_and_Transformations/Positive_Degree",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "Comparative_Degree",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Sentences_and_Transformations/Comparative_Degree",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "Superlative_Degree",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Sentences_and_Transformations/Superlative_Degree",
+                  "depth": 4,
+                  "leaf": true
+                }
+              ],
+              "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Sentences_and_Transformations",
+              "depth": 3
+            },
+            {
+              "name": "Words",
+              "children": [
+                {
+                  "name": "Meanings",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Words/Meanings",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "Synonyms",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Words/Synonyms",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "Antonyms",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Words/Antonyms",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "Spellings",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Words/Spellings",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "Usage_of_Words",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Words/Usage_of_Words",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "Prefixes",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Words/Prefixes",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "Suffixes",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Words/Suffixes",
+                  "depth": 4,
+                  "leaf": true
+                }
+              ],
+              "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Words",
+              "depth": 3
+            },
+            {
+              "name": "Composition",
+              "children": [
+                {
+                  "name": "Paragraphs",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Composition/Paragraphs",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "Letters",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Composition/Letters",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "Applications",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Composition/Applications",
+                  "depth": 4,
+                  "leaf": true
+                }
+              ],
+              "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Composition",
+              "depth": 3
+            }
+          ],
+          "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language",
+          "depth": 2
+        },
+        {
+          "name": "PART-II_Literature",
+          "children": [
+            {
+              "name": "Elizabethan_to_21st_Century_Writers",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-II_Literature/Elizabethan_to_21st_Century_Writers",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "Quotations_from_Drama_and_Poetry",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-II_Literature/Quotations_from_Drama_and_Poetry",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature/PART-II_Literature",
+          "depth": 2
+        }
+      ],
+      "path": "/BCS_Question_Bank_Detailed/02_English_Language_and_Literature",
+      "depth": 1
+    },
+    {
+      "name": "03_বাংলাদেশ_বিষয়াবলি",
+      "children": [
+        {
+          "name": "০১_জাতীয়_বিষয়াবলি",
+          "children": [
+            {
+              "name": "প্রাচীনকাল_হতে_সমসাময়িক_ইতিহাস",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০১_জাতীয়_বিষয়াবলি/প্রাচীনকাল_হতে_সমসাময়িক_ইতিহাস",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "কৃষ্টি_ও_সংস্কৃতি",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০১_জাতীয়_বিষয়াবলি/কৃষ্টি_ও_সংস্কৃতি",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "ভাষা_আন্দোলন",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০১_জাতীয়_বিষয়াবলি/ভাষা_আন্দোলন",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "১৯৫৪_সালের_নির্বাচন",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০১_জাতীয়_বিষয়াবলি/১৯৫৪_সালের_নির্বাচন",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "গণ_অভ্যুত্থান_১৯৬৯",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০১_জাতীয়_বিষয়াবলি/গণ_অভ্যুত্থান_১৯৬৯",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "বাংলাদেশের_স্বাধীনতা_সংগ্রাম",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০১_জাতীয়_বিষয়াবলি/বাংলাদেশের_স্বাধীনতা_সংগ্রাম",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "মহান_মুক্তিযুদ্ধের_ইতিহাস",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০১_জাতীয়_বিষয়াবলি/মহান_মুক্তিযুদ্ধের_ইতিহাস",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "মুক্তিযুদ্ধের_রণকৌশল",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০১_জাতীয়_বিষয়াবলি/মুক্তিযুদ্ধের_রণকৌশল",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "মুক্তিযুদ্ধে_বৃহৎ_শক্তিবর্গের_ভূমিকা",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০১_জাতীয়_বিষয়াবলি/মুক্তিযুদ্ধে_বৃহৎ_শক্তিবর্গের_ভূমিকা",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "পাকিস্তানী_বাহিনীর_আত্মসমর্পণ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০১_জাতীয়_বিষয়াবলি/পাকিস্তানী_বাহিনীর_আত্মসমর্পণ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "বাংলাদেশের_অভ্যুদয়",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০১_জাতীয়_বিষয়াবলি/বাংলাদেশের_অভ্যুদয়",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০১_জাতীয়_বিষয়াবলি",
+          "depth": 2
+        },
+        {
+          "name": "০২_কৃষিজ_সম্পদ",
+          "children": [
+            {
+              "name": "শস্য_উৎপাদন",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০২_কৃষিজ_সম্পদ/শস্য_উৎপাদন",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "বহুমুখীকরণ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০২_কৃষিজ_সম্পদ/বহুমুখীকরণ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "খাদ্য_উৎপাদন_ও_ব্যবস্থাপনা",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০২_কৃষিজ_সম্পদ/খাদ্য_উৎপাদন_ও_ব্যবস্থাপনা",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০২_কৃষিজ_সম্পদ",
+          "depth": 2
+        },
+        {
+          "name": "০৩_জনসংখ্যা",
+          "children": [
+            {
+              "name": "বাংলাদেশের_জনসংখ্যা",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০৩_জনসংখ্যা/বাংলাদেশের_জনসংখ্যা",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "জনশুমারি",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০৩_জনসংখ্যা/জনশুমারি",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "জাতি_ও_গোষ্ঠী",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০৩_জনসংখ্যা/জাতি_ও_গোষ্ঠী",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "ক্ষুদ্র_নৃগোষ্ঠী",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০৩_জনসংখ্যা/ক্ষুদ্র_নৃগোষ্ঠী",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০৩_জনসংখ্যা",
+          "depth": 2
+        },
+        {
+          "name": "০৪_অর্থনীতি",
+          "children": [
+            {
+              "name": "উন্নয়ন_পরিকল্পনা_প্রেক্ষিত",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০৪_অর্থনীতি/উন্নয়ন_পরিকল্পনা_প্রেক্ষিত",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "জাতীয়_আয়_ও_ব্যয়",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০৪_অর্থনীতি/জাতীয়_আয়_ও_ব্যয়",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "অর্থনীতি_ও_বার্ষিক_উন্নয়ন_কর্মসূচি",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০৪_অর্থনীতি/অর্থনীতি_ও_বার্ষিক_উন্নয়ন_কর্মসূচি",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "দারিদ্র্য_বিমোচন",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০৪_অর্থনীতি/দারিদ্র্য_বিমোচন",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০৪_অর্থনীতি",
+          "depth": 2
+        },
+        {
+          "name": "০৫_শিল্প_ও_বাণিজ্য",
+          "children": [
+            {
+              "name": "শিল্প_উৎপাদন",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০৫_শিল্প_ও_বাণিজ্য/শিল্প_উৎপাদন",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "পণ্য_আমদানি_ও_রপ্তানিকরণ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০৫_শিল্প_ও_বাণিজ্য/পণ্য_আমদানি_ও_রপ্তানিকরণ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "গার্মেন্টস_শিল্প_ও_ব্যবস্থাপনা",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০৫_শিল্প_ও_বাণিজ্য/গার্মেন্টস_শিল্প_ও_ব্যবস্থাপনা",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "অন্যান্য_শিল্পসমূহ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০৫_শিল্প_ও_বাণিজ্য/অন্যান্য_শিল্পসমূহ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "বৈদেশিক_লেনদেন_ও_অর্থ_প্রেরণ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০৫_শিল্প_ও_বাণিজ্য/বৈদেশিক_লেনদেন_ও_অর্থ_প্রেরণ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "ব্যাংক_ও_বীমা_ব্যবস্থাপনা",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০৫_শিল্প_ও_বাণিজ্য/ব্যাংক_ও_বীমা_ব্যবস্থাপনা",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০৫_শিল্প_ও_বাণিজ্য",
+          "depth": 2
+        },
+        {
+          "name": "০৬_সংবিধান",
+          "children": [
+            {
+              "name": "প্রস্তাবনা_ও_বৈশিষ্ট্য",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০৬_সংবিধান/প্রস্তাবনা_ও_বৈশিষ্ট্য",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "মৌলিক_অধিকার",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০৬_সংবিধান/মৌলিক_অধিকার",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "রাষ্ট্র_পরিচালনার_মূলনীতিসমূহ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০৬_সংবিধান/রাষ্ট্র_পরিচালনার_মূলনীতিসমূহ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "সংবিধানের_সংশোধনীসমূহ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০৬_সংবিধান/সংবিধানের_সংশোধনীসমূহ",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০৬_সংবিধান",
+          "depth": 2
+        },
+        {
+          "name": "০৭_রাজনৈতিক_ব্যবস্থা",
+          "children": [
+            {
+              "name": "রাজনৈতিক_দলসমূহের_গঠন_ও_ভূমিকা",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০৭_রাজনৈতিক_ব্যবস্থা/রাজনৈতিক_দলসমূহের_গঠন_ও_ভূমিকা",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "ক্ষমতাসীন_ও_বিরোধী_দলের_সম্পর্ক",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০৭_রাজনৈতিক_ব্যবস্থা/ক্ষমতাসীন_ও_বিরোধী_দলের_সম্পর্ক",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "সুশীল_সমাজ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০৭_রাজনৈতিক_ব্যবস্থা/সুশীল_সমাজ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "চাপ_সৃষ্টিকারী_গোষ্ঠীসমূহ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০৭_রাজনৈতিক_ব্যবস্থা/চাপ_সৃষ্টিকারী_গোষ্ঠীসমূহ",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০৭_রাজনৈতিক_ব্যবস্থা",
+          "depth": 2
+        },
+        {
+          "name": "০৮_সরকার_ব্যবস্থা",
+          "children": [
+            {
+              "name": "আইন_বিভাগ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০৮_সরকার_ব্যবস্থা/আইন_বিভাগ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "শাসন_বিভাগ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০৮_সরকার_ব্যবস্থা/শাসন_বিভাগ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "বিচার_বিভাগ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০৮_সরকার_ব্যবস্থা/বিচার_বিভাগ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "আইন_প্রণয়ন_ও_নীতি_নির্ধারণ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০৮_সরকার_ব্যবস্থা/আইন_প্রণয়ন_ও_নীতি_নির্ধারণ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "জাতীয়_পর্যায়ের_প্রশাসনিক_ব্যবস্থাপনা",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০৮_সরকার_ব্যবস্থা/জাতীয়_পর্যায়ের_প্রশাসনিক_ব্যবস্থাপনা",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "স্থানীয়_পর্যায়ের_প্রশাসনিক_ব্যবস্থাপনা",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০৮_সরকার_ব্যবস্থা/স্থানীয়_পর্যায়ের_প্রশাসনিক_ব্যবস্থাপনা",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "প্রশাসনিক_পুনর্বিন্যাস_ও_সংস্কার",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০৮_সরকার_ব্যবস্থা/প্রশাসনিক_পুনর্বিন্যাস_ও_সংস্কার",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "স্থানীয়_সরকার_ব্যবস্থাপনা",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০৮_সরকার_ব্যবস্থা/স্থানীয়_সরকার_ব্যবস্থাপনা",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০৮_সরকার_ব্যবস্থা",
+          "depth": 2
+        },
+        {
+          "name": "০৯_জাতীয়_বিষয়াদি",
+          "children": [
+            {
+              "name": "বাংলাদেশের_জাতীয়_অর্জন",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০৯_জাতীয়_বিষয়াদি/বাংলাদেশের_জাতীয়_অর্জন",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "বিশিষ্ট_ব্যক্তিত্ব",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০৯_জাতীয়_বিষয়াদি/বিশিষ্ট_ব্যক্তিত্ব",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "গুরুত্বপূর্ণ_প্রতিষ্ঠানসমূহ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০৯_জাতীয়_বিষয়াদি/গুরুত্বপূর্ণ_প্রতিষ্ঠানসমূহ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "জাতীয়_পুরস্কার",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০৯_জাতীয়_বিষয়াদি/জাতীয়_পুরস্কার",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "খেলাধুলা",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০৯_জাতীয়_বিষয়াদি/খেলাধুলা",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "চলচ্চিত্র",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০৯_জাতীয়_বিষয়াদি/চলচ্চিত্র",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "গণমাধ্যম",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০৯_জাতীয়_বিষয়াদি/গণমাধ্যম",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি/০৯_জাতীয়_বিষয়াদি",
+          "depth": 2
+        }
+      ],
+      "path": "/BCS_Question_Bank_Detailed/03_বাংলাদেশ_বিষয়াবলি",
+      "depth": 1
+    },
+    {
+      "name": "04_আন্তর্জাতিক_বিষয়াবলি",
+      "children": [
+        {
+          "name": "০১_ইতিহাস_ও_ভূরাজনীতি",
+          "children": [
+            {
+              "name": "বৈশ্বিক_ইতিহাস",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০১_ইতিহাস_ও_ভূরাজনীতি/বৈশ্বিক_ইতিহাস",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "আঞ্চলিক_ব্যবস্থা",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০১_ইতিহাস_ও_ভূরাজনীতি/আঞ্চলিক_ব্যবস্থা",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "আন্তর্জাতিক_ব্যবস্থা",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০১_ইতিহাস_ও_ভূরাজনীতি/আন্তর্জাতিক_ব্যবস্থা",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "ভূ-রাজনীতি",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০১_ইতিহাস_ও_ভূরাজনীতি/ভূ-রাজনীতি",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০১_ইতিহাস_ও_ভূরাজনীতি",
+          "depth": 2
+        },
+        {
+          "name": "০২_নিরাপত্তা_ও_ক্ষমতা",
+          "children": [
+            {
+              "name": "আন্তর্জাতিক_নিরাপত্তা",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০২_নিরাপত্তা_ও_ক্ষমতা/আন্তর্জাতিক_নিরাপত্তা",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "আন্তরাষ্ট্রীয়_ক্ষমতা_সম্পর্ক",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০২_নিরাপত্তা_ও_ক্ষমতা/আন্তরাষ্ট্রীয়_ক্ষমতা_সম্পর্ক",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০২_নিরাপত্তা_ও_ক্ষমতা",
+          "depth": 2
+        },
+        {
+          "name": "০৩_চলমান_ঘটনাপ্রবাহ",
+          "children": [
+            {
+              "name": "বিশ্বের_সাম্প্রতিক_ও_চলমান_ঘটনাপ্রবাহ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০৩_চলমান_ঘটনাপ্রবাহ/বিশ্বের_সাম্প্রতিক_ও_চলমান_ঘটনাপ্রবাহ",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০৩_চলমান_ঘটনাপ্রবাহ",
+          "depth": 2
+        },
+        {
+          "name": "০৪_পরিবেশ_ও_কূটনীতি",
+          "children": [
+            {
+              "name": "আন্তর্জাতিক_পরিবেশগত_ইস্যু",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০৪_পরিবেশ_ও_কূটনীতি/আন্তর্জাতিক_পরিবেশগত_ইস্যু",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "কূটনীতি",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০৪_পরিবেশ_ও_কূটনীতি/কূটনীতি",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০৪_পরিবেশ_ও_কূটনীতি",
+          "depth": 2
+        },
+        {
+          "name": "০৫_সংগঠন_ও_প্রতিষ্ঠান",
+          "children": [
+            {
+              "name": "আন্তর্জাতিক_সংগঠনসমূহ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০৫_সংগঠন_ও_প্রতিষ্ঠান/আন্তর্জাতিক_সংগঠনসমূহ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "বৈশ্বিক_অর্থনৈতিক_প্রতিষ্ঠানাদি",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০৫_সংগঠন_ও_প্রতিষ্ঠান/বৈশ্বিক_অর্থনৈতিক_প্রতিষ্ঠানাদি",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০৫_সংগঠন_ও_প্রতিষ্ঠান",
+          "depth": 2
+        }
+      ],
+      "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি",
+      "depth": 1
+    },
+    {
+      "name": "05_ভূগোল_পরিবেশ_ও_দুর্যোগ_ব্যবস্থাপনা",
+      "children": [
+        {
+          "name": "০১_ভৌগোলিক_অবস্থান",
+          "children": [
+            {
+              "name": "বাংলাদেশ_ও_অঞ্চলভিত্তিক_অবস্থান_সীমানা",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/05_ভূগোল_পরিবেশ_ও_দুর্যোগ_ব্যবস্থাপনা/০১_ভৌগোলিক_অবস্থান/বাংলাদেশ_ও_অঞ্চলভিত্তিক_অবস্থান_সীমানা",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "পারিবেশিক_গুরুত্ব",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/05_ভূগোল_পরিবেশ_ও_দুর্যোগ_ব্যবস্থাপনা/০১_ভৌগোলিক_অবস্থান/পারিবেশিক_গুরুত্ব",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "আর্থ-সামাজিক_গুরুত্ব",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/05_ভূগোল_পরিবেশ_ও_দুর্যোগ_ব্যবস্থাপনা/০১_ভৌগোলিক_অবস্থান/আর্থ-সামাজিক_গুরুত্ব",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "ভূ-রাজনৈতিক_গুরুত্ব",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/05_ভূগোল_পরিবেশ_ও_দুর্যোগ_ব্যবস্থাপনা/০১_ভৌগোলিক_অবস্থান/ভূ-রাজনৈতিক_গুরুত্ব",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/BCS_Question_Bank_Detailed/05_ভূগোল_পরিবেশ_ও_দুর্যোগ_ব্যবস্থাপনা/০১_ভৌগোলিক_অবস্থান",
+          "depth": 2
+        },
+        {
+          "name": "০২_ভৌত_পরিবেশ_ও_সম্পদ",
+          "children": [
+            {
+              "name": "অঞ্চলভিত্তিক_ভৌত_পরিবেশ_ভূ-প্রাকৃতিক",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/05_ভূগোল_পরিবেশ_ও_দুর্যোগ_ব্যবস্থাপনা/০২_ভৌত_পরিবেশ_ও_সম্পদ/অঞ্চলভিত্তিক_ভৌত_পরিবেশ_ভূ-প্রাকৃতিক",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "সম্পদের_বণ্টন_ও_গুরুত্ব",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/05_ভূগোল_পরিবেশ_ও_দুর্যোগ_ব্যবস্থাপনা/০২_ভৌত_পরিবেশ_ও_সম্পদ/সম্পদের_বণ্টন_ও_গুরুত্ব",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/BCS_Question_Bank_Detailed/05_ভূগোল_পরিবেশ_ও_দুর্যোগ_ব্যবস্থাপনা/০২_ভৌত_পরিবেশ_ও_সম্পদ",
+          "depth": 2
+        },
+        {
+          "name": "০৩_বাংলাদেশের_পরিবেশ",
+          "children": [
+            {
+              "name": "প্রকৃতি_ও_সম্পদ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/05_ভূগোল_পরিবেশ_ও_দুর্যোগ_ব্যবস্থাপনা/০৩_বাংলাদেশের_পরিবেশ/প্রকৃতি_ও_সম্পদ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "প্রধান_চ্যালেঞ্জসমূহ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/05_ভূগোল_পরিবেশ_ও_দুর্যোগ_ব্যবস্থাপনা/০৩_বাংলাদেশের_পরিবেশ/প্রধান_চ্যালেঞ্জসমূহ",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/BCS_Question_Bank_Detailed/05_ভূগোল_পরিবেশ_ও_দুর্যোগ_ব্যবস্থাপনা/০৩_বাংলাদেশের_পরিবেশ",
+          "depth": 2
+        },
+        {
+          "name": "০৪_পরিবেশ_পরিবর্তন_ও_প্রভাব",
+          "children": [
+            {
+              "name": "আবহাওয়া_ও_জলবায়ু_নিয়ামক",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/05_ভূগোল_পরিবেশ_ও_দুর্যোগ_ব্যবস্থাপনা/০৪_পরিবেশ_পরিবর্তন_ও_প্রভাব/আবহাওয়া_ও_জলবায়ু_নিয়ামক",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "অভিবাসনে_প্রভাব",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/05_ভূগোল_পরিবেশ_ও_দুর্যোগ_ব্যবস্থাপনা/০৪_পরিবেশ_পরিবর্তন_ও_প্রভাব/অভিবাসনে_প্রভাব",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "কৃষিতে_প্রভাব",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/05_ভূগোল_পরিবেশ_ও_দুর্যোগ_ব্যবস্থাপনা/০৪_পরিবেশ_পরিবর্তন_ও_প্রভাব/কৃষিতে_প্রভাব",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "শিল্পে_প্রভাব",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/05_ভূগোল_পরিবেশ_ও_দুর্যোগ_ব্যবস্থাপনা/০৪_পরিবেশ_পরিবর্তন_ও_প্রভাব/শিল্পে_প্রভাব",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "মৎস্যে_প্রভাব",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/05_ভূগোল_পরিবেশ_ও_দুর্যোগ_ব্যবস্থাপনা/০৪_পরিবেশ_পরিবর্তন_ও_প্রভাব/মৎস্যে_প্রভাব",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/BCS_Question_Bank_Detailed/05_ভূগোল_পরিবেশ_ও_দুর্যোগ_ব্যবস্থাপনা/০৪_পরিবেশ_পরিবর্তন_ও_প্রভাব",
+          "depth": 2
+        },
+        {
+          "name": "০৫_প্রাকৃতিক_দুর্যোগ_ও_ব্যবস্থাপনা",
+          "children": [
+            {
+              "name": "দুর্যোগের_ধরন",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/05_ভূগোল_পরিবেশ_ও_দুর্যোগ_ব্যবস্থাপনা/০৫_প্রাকৃতিক_দুর্যোগ_ও_ব্যবস্থাপনা/দুর্যোগের_ধরন",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "দুর্যোগের_প্রকৃতি",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/05_ভূগোল_পরিবেশ_ও_দুর্যোগ_ব্যবস্থাপনা/০৫_প্রাকৃতিক_দুর্যোগ_ও_ব্যবস্থাপনা/দুর্যোগের_প্রকৃতি",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "দুর্যোগ_ব্যবস্থাপনা",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/05_ভূগোল_পরিবেশ_ও_দুর্যোগ_ব্যবস্থাপনা/০৫_প্রাকৃতিক_দুর্যোগ_ও_ব্যবস্থাপনা/দুর্যোগ_ব্যবস্থাপনা",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/BCS_Question_Bank_Detailed/05_ভূগোল_পরিবেশ_ও_দুর্যোগ_ব্যবস্থাপনা/০৫_প্রাকৃতিক_দুর্যোগ_ও_ব্যবস্থাপনা",
+          "depth": 2
+        }
+      ],
+      "path": "/BCS_Question_Bank_Detailed/05_ভূগোল_পরিবেশ_ও_দুর্যোগ_ব্যবস্থাপনা",
+      "depth": 1
+    },
+    {
+      "name": "06_সাধারণ_বিজ্ঞান",
+      "children": [
+        {
+          "name": "ভৌত_বিজ্ঞান",
+          "children": [
+            {
+              "name": "পদার্থের_অবস্থা",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/ভৌত_বিজ্ঞান/পদার্থের_অবস্থা",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "এটমের_গঠন",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/ভৌত_বিজ্ঞান/এটমের_গঠন",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "কার্বনের_বহুমুখী_ব্যবহার",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/ভৌত_বিজ্ঞান/কার্বনের_বহুমুখী_ব্যবহার",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "এসিড_ক্ষার_ও_লবণ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/ভৌত_বিজ্ঞান/এসিড_ক্ষার_ও_লবণ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "পদার্থের_ক্ষয়",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/ভৌত_বিজ্ঞান/পদার্থের_ক্ষয়",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "সাবানের_কাজ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/ভৌত_বিজ্ঞান/সাবানের_কাজ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "ভৌত_রাশি_ও_পরিমাপ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/ভৌত_বিজ্ঞান/ভৌত_রাশি_ও_পরিমাপ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "ভৌত_বিজ্ঞানের_উন্নয়ন",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/ভৌত_বিজ্ঞান/ভৌত_বিজ্ঞানের_উন্নয়ন",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "চৌম্বকত্ব",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/ভৌত_বিজ্ঞান/চৌম্বকত্ব",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "তরঙ্গ_এবং_শব্দ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/ভৌত_বিজ্ঞান/তরঙ্গ_এবং_শব্দ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "তাপ_ও_তাপগতি_বিদ্যা",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/ভৌত_বিজ্ঞান/তাপ_ও_তাপগতি_বিদ্যা",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "আলোর_প্রকৃতি_ও_আলোক_যন্ত্রপাতি",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/ভৌত_বিজ্ঞান/আলোর_প্রকৃতি_ও_আলোক_যন্ত্রপাতি",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "স্থির_এবং_চল_তড়িৎ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/ভৌত_বিজ্ঞান/স্থির_এবং_চল_তড়িৎ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "ইলেকট্রনিক্স",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/ভৌত_বিজ্ঞান/ইলেকট্রনিক্স",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "আধুনিক_পদার্থবিজ্ঞান",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/ভৌত_বিজ্ঞান/আধুনিক_পদার্থবিজ্ঞান",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "শক্তির_উৎস_প্রয়োগ_ও_রূপান্তর",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/ভৌত_বিজ্ঞান/শক্তির_উৎস_প্রয়োগ_ও_রূপান্তর",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "নবায়নযোগ্য_ও_খনিজ_শক্তির_উৎস",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/ভৌত_বিজ্ঞান/নবায়নযোগ্য_ও_খনিজ_শক্তির_উৎস",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "পারমাণবিক_শক্তি_ও_তেজস্ক্রিয়তা",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/ভৌত_বিজ্ঞান/পারমাণবিক_শক্তি_ও_তেজস্ক্রিয়তা",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "মৌলিক_কণা",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/ভৌত_বিজ্ঞান/মৌলিক_কণা",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "ধাতব_পদার্থ_ও_যৌগসমূহ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/ভৌত_বিজ্ঞান/ধাতব_পদার্থ_ও_যৌগসমূহ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "অধাতব_পদার্থ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/ভৌত_বিজ্ঞান/অধাতব_পদার্থ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "জারণ-বিজারণ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/ভৌত_বিজ্ঞান/জারণ-বিজারণ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "তড়িৎ_কোষ_ও_তড়িৎ_চৌম্বক",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/ভৌত_বিজ্ঞান/তড়িৎ_কোষ_ও_তড়িৎ_চৌম্বক",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "অজৈব_ও_জৈব_যৌগ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/ভৌত_বিজ্ঞান/অজৈব_ও_জৈব_যৌগ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "ট্রান্সফরমার_ও_এক্সরে",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/ভৌত_বিজ্ঞান/ট্রান্সফরমার_ও_এক্সরে",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/ভৌত_বিজ্ঞান",
+          "depth": 2
+        },
+        {
+          "name": "জীব_বিজ্ঞান",
+          "children": [
+            {
+              "name": "পদার্থের_জীববিজ্ঞান_বিষয়ক_ধর্ম",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/জীব_বিজ্ঞান/পদার্থের_জীববিজ্ঞান_বিষয়ক_ধর্ম",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "টিস্যু_ও_এনিম্যাল_টিস্যু",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/জীব_বিজ্ঞান/টিস্যু_ও_এনিম্যাল_টিস্যু",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "জেনেটিকস",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/জীব_বিজ্ঞান/জেনেটিকস",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "জীববৈচিত্র্য",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/জীব_বিজ্ঞান/জীববৈচিত্র্য",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "এনিম্যাল_ও_প্লান্ট_ডাইভারসিটি",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/জীব_বিজ্ঞান/এনিম্যাল_ও_প্লান্ট_ডাইভারসিটি",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "অর্গান_এবং_অর্গান_সিস্টেম",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/জীব_বিজ্ঞান/অর্গান_এবং_অর্গান_সিস্টেম",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "সালোক_সংশ্লেষণ_ও_পরাগায়ন",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/জীব_বিজ্ঞান/সালোক_সংশ্লেষণ_ও_পরাগায়ন",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "ভাইরাস_ও_ব্যাকটেরিয়া",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/জীব_বিজ্ঞান/ভাইরাস_ও_ব্যাকটেরিয়া",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "জুলোজিক্যাল_ও_বোটানিক্যাল_নমেনক্লেচার",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/জীব_বিজ্ঞান/জুলোজিক্যাল_ও_বোটানিক্যাল_নমেনক্লেচার",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "প্রাণিজগৎ_উদ্ভিদ_ফুল_ও_ফল",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/জীব_বিজ্ঞান/প্রাণিজগৎ_উদ্ভিদ_ফুল_ও_ফল",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "রক্ত_রক্ত_সঞ্চালন_ও_রক্তচাপ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/জীব_বিজ্ঞান/রক্ত_রক্ত_সঞ্চালন_ও_রক্তচাপ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "হৃদপিণ্ড_এবং_হৃদরোগ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/জীব_বিজ্ঞান/হৃদপিণ্ড_এবং_হৃদরোগ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "স্নায়ু_এবং_স্নায়ুরোগ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/জীব_বিজ্ঞান/স্নায়ু_এবং_স্নায়ুরোগ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "খাদ্য_পুষ্টি_ও_ভিটামিন",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/জীব_বিজ্ঞান/খাদ্য_পুষ্টি_ও_ভিটামিন",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "মাইক্রোবায়োলজি_ও_প্লান্ট_নিউট্রেশন",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/জীব_বিজ্ঞান/মাইক্রোবায়োলজি_ও_প্লান্ট_নিউট্রেশন",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/জীব_বিজ্ঞান",
+          "depth": 2
+        },
+        {
+          "name": "আধুনিক_বিজ্ঞান",
+          "children": [
+            {
+              "name": "পৃথিবী_সৃষ্টির_ইতিহাস_ও_বিবর্তন",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/আধুনিক_বিজ্ঞান/পৃথিবী_সৃষ্টির_ইতিহাস_ও_বিবর্তন",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "মহাকাশ_কসমিক_রে_ও_ব্লাক_হোল",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/আধুনিক_বিজ্ঞান/মহাকাশ_কসমিক_রে_ও_ব্লাক_হোল",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "হিগের_কণা_ও_ফোটন_কণা",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/আধুনিক_বিজ্ঞান/হিগের_কণা_ও_ফোটন_কণা",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "বারিমণ্ডল_বায়ুমণ্ডল_ও_টেকটোনিক_প্লেট",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/আধুনিক_বিজ্ঞান/বারিমণ্ডল_বায়ুমণ্ডল_ও_টেকটোনিক_প্লেট",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "সাইক্লোন_সুনামি_ও_জোয়ার-ভাটা",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/আধুনিক_বিজ্ঞান/সাইক্লোন_সুনামি_ও_জোয়ার-ভাটা",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "সামুদ্রিক_জীবন",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/আধুনিক_বিজ্ঞান/সামুদ্রিক_জীবন",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "মানবদেহ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/আধুনিক_বিজ্ঞান/মানবদেহ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "রোগ_সংক্রামক_রোগ_ও_প্রতিকার",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/আধুনিক_বিজ্ঞান/রোগ_সংক্রামক_রোগ_ও_প্রতিকার",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "মা_ও_শিশু_স্বাস্থ্য",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/আধুনিক_বিজ্ঞান/মা_ও_শিশু_স্বাস্থ্য",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "ইম্যুনাইজেশন_ও_ভ্যাকসিনেশন",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/আধুনিক_বিজ্ঞান/ইম্যুনাইজেশন_ও_ভ্যাকসিনেশন",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "এইচআইভি_এইডস_টিবি_ও_পোলিও",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/আধুনিক_বিজ্ঞান/এইচআইভি_এইডস_টিবি_ও_পোলিও",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "এপিকালচার_সেরিকালচার_পিসিকালচার_ও_হর্টিকালচার",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/আধুনিক_বিজ্ঞান/এপিকালচার_সেরিকালচার_পিসিকালচার_ও_হর্টিকালচার",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "ডায়োড_ট্রানজিস্টর_ও_আইসি",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/আধুনিক_বিজ্ঞান/ডায়োড_ট্রানজিস্টর_ও_আইসি",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "আপেক্ষিক_তত্ত্ব",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/আধুনিক_বিজ্ঞান/আপেক্ষিক_তত্ত্ব",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান/আধুনিক_বিজ্ঞান",
+          "depth": 2
+        }
+      ],
+      "path": "/BCS_Question_Bank_Detailed/06_সাধারণ_বিজ্ঞান",
+      "depth": 1
+    },
+    {
+      "name": "07_কম্পিউটার_ও_তথ্য_প্রযুক্তি",
+      "children": [
+        {
+          "name": "কম্পিউটার",
+          "children": [
+            {
+              "name": "কম্পিউটার_পেরিফেরালস",
+              "children": [
+                {
+                  "name": "কি-বোর্ড",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/কম্পিউটার/কম্পিউটার_পেরিফেরালস/কি-বোর্ড",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "মাউস",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/কম্পিউটার/কম্পিউটার_পেরিফেরালস/মাউস",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "ওসিআর",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/কম্পিউটার/কম্পিউটার_পেরিফেরালস/ওসিআর",
+                  "depth": 4,
+                  "leaf": true
+                }
+              ],
+              "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/কম্পিউটার/কম্পিউটার_পেরিফেরালস",
+              "depth": 3
+            },
+            {
+              "name": "কম্পিউটারের_অঙ্গসংগঠন",
+              "children": [
+                {
+                  "name": "সিপিইউ",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/কম্পিউটার/কম্পিউটারের_অঙ্গসংগঠন/সিপিইউ",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "হার্ড_ডিস্ক",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/কম্পিউটার/কম্পিউটারের_অঙ্গসংগঠন/হার্ড_ডিস্ক",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "এএলইউ",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/কম্পিউটার/কম্পিউটারের_অঙ্গসংগঠন/এএলইউ",
+                  "depth": 4,
+                  "leaf": true
+                }
+              ],
+              "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/কম্পিউটার/কম্পিউটারের_অঙ্গসংগঠন",
+              "depth": 3
+            },
+            {
+              "name": "কম্পিউটারের_পারঙ্গমতা",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/কম্পিউটার/কম্পিউটারের_পারঙ্গমতা",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "দৈনন্দিন_জীবনে_কম্পিউটার",
+              "children": [
+                {
+                  "name": "কৃষি",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/কম্পিউটার/দৈনন্দিন_জীবনে_কম্পিউটার/কৃষি",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "যোগাযোগ",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/কম্পিউটার/দৈনন্দিন_জীবনে_কম্পিউটার/যোগাযোগ",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "শিক্ষা",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/কম্পিউটার/দৈনন্দিন_জীবনে_কম্পিউটার/শিক্ষা",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "স্বাস্থ্য",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/কম্পিউটার/দৈনন্দিন_জীবনে_কম্পিউটার/স্বাস্থ্য",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "খেলাধুলা",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/কম্পিউটার/দৈনন্দিন_জীবনে_কম্পিউটার/খেলাধুলা",
+                  "depth": 4,
+                  "leaf": true
+                }
+              ],
+              "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/কম্পিউটার/দৈনন্দিন_জীবনে_কম্পিউটার",
+              "depth": 3
+            },
+            {
+              "name": "কম্পিউটারের_নম্বর_ব্যবস্থা",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/কম্পিউটার/কম্পিউটারের_নম্বর_ব্যবস্থা",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "অপারেটিং_সিস্টেমস",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/কম্পিউটার/অপারেটিং_সিস্টেমস",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "এমবেডেড_কম্পিউটার",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/কম্পিউটার/এমবেডেড_কম্পিউটার",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "কম্পিউটারের_ইতিহাস",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/কম্পিউটার/কম্পিউটারের_ইতিহাস",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "কম্পিউটারের_প্রকারভেদ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/কম্পিউটার/কম্পিউটারের_প্রকারভেদ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "কম্পিউটার_প্রোগ্রাম",
+              "children": [
+                {
+                  "name": "ভাইরাস",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/কম্পিউটার/কম্পিউটার_প্রোগ্রাম/ভাইরাস",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "ফায়ারওয়াল",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/কম্পিউটার/কম্পিউটার_প্রোগ্রাম/ফায়ারওয়াল",
+                  "depth": 4,
+                  "leaf": true
+                }
+              ],
+              "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/কম্পিউটার/কম্পিউটার_প্রোগ্রাম",
+              "depth": 3
+            },
+            {
+              "name": "ডেটাবেইস_সিস্টেম",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/কম্পিউটার/ডেটাবেইস_সিস্টেম",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/কম্পিউটার",
+          "depth": 2
+        },
+        {
+          "name": "তথ্যপ্রযুক্তি",
+          "children": [
+            {
+              "name": "ই-কমার্স",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/তথ্যপ্রযুক্তি/ই-কমার্স",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "সেলুলার_ডাটা_নেটওয়ার্ক",
+              "children": [
+                {
+                  "name": "টুজি_2G",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/তথ্যপ্রযুক্তি/সেলুলার_ডাটা_নেটওয়ার্ক/টুজি_2G",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "থ্রিজি_3G",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/তথ্যপ্রযুক্তি/সেলুলার_ডাটা_নেটওয়ার্ক/থ্রিজি_3G",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "ফোরজি_4G",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/তথ্যপ্রযুক্তি/সেলুলার_ডাটা_নেটওয়ার্ক/ফোরজি_4G",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "ওয়াইম্যাক্স_Wimax",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/তথ্যপ্রযুক্তি/সেলুলার_ডাটা_নেটওয়ার্ক/ওয়াইম্যাক্স_Wimax",
+                  "depth": 4,
+                  "leaf": true
+                }
+              ],
+              "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/তথ্যপ্রযুক্তি/সেলুলার_ডাটা_নেটওয়ার্ক",
+              "depth": 3
+            },
+            {
+              "name": "কম্পিউটার_নেটওয়ার্ক",
+              "children": [
+                {
+                  "name": "ল্যান_LAN",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/তথ্যপ্রযুক্তি/কম্পিউটার_নেটওয়ার্ক/ল্যান_LAN",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "ম্যান_MAN",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/তথ্যপ্রযুক্তি/কম্পিউটার_নেটওয়ার্ক/ম্যান_MAN",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "ওয়াই-ফাই_WiFi",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/তথ্যপ্রযুক্তি/কম্পিউটার_নেটওয়ার্ক/ওয়াই-ফাই_WiFi",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "ওয়াইম্যাক্স_Wimax",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/তথ্যপ্রযুক্তি/কম্পিউটার_নেটওয়ার্ক/ওয়াইম্যাক্স_Wimax",
+                  "depth": 4,
+                  "leaf": true
+                }
+              ],
+              "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/তথ্যপ্রযুক্তি/কম্পিউটার_নেটওয়ার্ক",
+              "depth": 3
+            },
+            {
+              "name": "দৈনন্দিন_জীবনে_তথ্যপ্রযুক্তি",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/তথ্যপ্রযুক্তি/দৈনন্দিন_জীবনে_তথ্যপ্রযুক্তি",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "স্মার্টফোন",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/তথ্যপ্রযুক্তি/স্মার্টফোন",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "ওয়ার্ল্ড_ওয়াইড_ওয়েব_WWW",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/তথ্যপ্রযুক্তি/ওয়ার্ল্ড_ওয়াইড_ওয়েব_WWW",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "ইন্টারনেট",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/তথ্যপ্রযুক্তি/ইন্টারনেট",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "নিত্য_প্রয়োজনীয়_কম্পিউটিং_প্রযুক্তি",
+              "children": [
+                {
+                  "name": "ই-মেইল",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/তথ্যপ্রযুক্তি/নিত্য_প্রয়োজনীয়_কম্পিউটিং_প্রযুক্তি/ই-মেইল",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "ফ্যাক্স",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/তথ্যপ্রযুক্তি/নিত্য_প্রয়োজনীয়_কম্পিউটিং_প্রযুক্তি/ফ্যাক্স",
+                  "depth": 4,
+                  "leaf": true
+                }
+              ],
+              "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/তথ্যপ্রযুক্তি/নিত্য_প্রয়োজনীয়_কম্পিউটিং_প্রযুক্তি",
+              "depth": 3
+            },
+            {
+              "name": "ক্লায়ন্ট-সার্ভার_ম্যানেজমেন্ট",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/তথ্যপ্রযুক্তি/ক্লায়ন্ট-সার্ভার_ম্যানেজমেন্ট",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "মোবাইল_প্রযুক্তির_বৈশিষ্ট্যসমূহ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/তথ্যপ্রযুক্তি/মোবাইল_প্রযুক্তির_বৈশিষ্ট্যসমূহ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "তথ্যপ্রযুক্তির_বড়_প্রতিষ্ঠান",
+              "children": [
+                {
+                  "name": "গুগল_Google",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/তথ্যপ্রযুক্তি/তথ্যপ্রযুক্তির_বড়_প্রতিষ্ঠান/গুগল_Google",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "মাইক্রোসফট_Microsoft",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/তথ্যপ্রযুক্তি/তথ্যপ্রযুক্তির_বড়_প্রতিষ্ঠান/মাইক্রোসফট_Microsoft",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "আইবিএম_IBM",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/তথ্যপ্রযুক্তি/তথ্যপ্রযুক্তির_বড়_প্রতিষ্ঠান/আইবিএম_IBM",
+                  "depth": 4,
+                  "leaf": true
+                }
+              ],
+              "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/তথ্যপ্রযুক্তি/তথ্যপ্রযুক্তির_বড়_প্রতিষ্ঠান",
+              "depth": 3
+            },
+            {
+              "name": "ক্লাউড_কম্পিউটিং",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/তথ্যপ্রযুক্তি/ক্লাউড_কম্পিউটিং",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "সোশ্যাল_নেটওয়ার্কিং",
+              "children": [
+                {
+                  "name": "ফেসবুক_Facebook",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/তথ্যপ্রযুক্তি/সোশ্যাল_নেটওয়ার্কিং/ফেসবুক_Facebook",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "টুইটার_Twitter",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/তথ্যপ্রযুক্তি/সোশ্যাল_নেটওয়ার্কিং/টুইটার_Twitter",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "ইন্সটাগ্রাম_Instagram",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/তথ্যপ্রযুক্তি/সোশ্যাল_নেটওয়ার্কিং/ইন্সটাগ্রাম_Instagram",
+                  "depth": 4,
+                  "leaf": true
+                }
+              ],
+              "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/তথ্যপ্রযুক্তি/সোশ্যাল_নেটওয়ার্কিং",
+              "depth": 3
+            },
+            {
+              "name": "রোবটিক্স",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/তথ্যপ্রযুক্তি/রোবটিক্স",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "সাইবার_অপরাধ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/তথ্যপ্রযুক্তি/সাইবার_অপরাধ",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি/তথ্যপ্রযুক্তি",
+          "depth": 2
+        }
+      ],
+      "path": "/BCS_Question_Bank_Detailed/07_কম্পিউটার_ও_তথ্য_প্রযুক্তি",
+      "depth": 1
+    },
+    {
+      "name": "08_গাণিতিক_যুক্তি",
+      "children": [
+        {
+          "name": "Part_01_পাটিগণিত",
+          "children": [
+            {
+              "name": "বাস্তব_সংখ্যা",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/08_গাণিতিক_যুক্তি/Part_01_পাটিগণিত/বাস্তব_সংখ্যা",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "লসাগু_ও_গসাগু",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/08_গাণিতিক_যুক্তি/Part_01_পাটিগণিত/লসাগু_ও_গসাগু",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "শতকরা",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/08_গাণিতিক_যুক্তি/Part_01_পাটিগণিত/শতকরা",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "সরল_ও_যৌগিক_মুনাফা",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/08_গাণিতিক_যুক্তি/Part_01_পাটিগণিত/সরল_ও_যৌগিক_মুনাফা",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "অনুপাত_ও_সমানুপাত",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/08_গাণিতিক_যুক্তি/Part_01_পাটিগণিত/অনুপাত_ও_সমানুপাত",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "লাভ_ও_ক্ষতি",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/08_গাণিতিক_যুক্তি/Part_01_পাটিগণিত/লাভ_ও_ক্ষতি",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/BCS_Question_Bank_Detailed/08_গাণিতিক_যুক্তি/Part_01_পাটিগণিত",
+          "depth": 2
+        },
+        {
+          "name": "Part_02_বীজগণিত",
+          "children": [
+            {
+              "name": "বীজগাণিতিক_সূত্রাবলি",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/08_গাণিতিক_যুক্তি/Part_02_বীজগণিত/বীজগাণিতিক_সূত্রাবলি",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "বহুপদী_উৎপাদক",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/08_গাণিতিক_যুক্তি/Part_02_বীজগণিত/বহুপদী_উৎপাদক",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "সরল_ও_দ্বিপদী_সমীকরণ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/08_গাণিতিক_যুক্তি/Part_02_বীজগণিত/সরল_ও_দ্বিপদী_সমীকরণ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "সরল_ও_দ্বিপদী_অসমতা",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/08_গাণিতিক_যুক্তি/Part_02_বীজগণিত/সরল_ও_দ্বিপদী_অসমতা",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "সরল_সহসমীকরণ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/08_গাণিতিক_যুক্তি/Part_02_বীজগণিত/সরল_সহসমীকরণ",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/BCS_Question_Bank_Detailed/08_গাণিতিক_যুক্তি/Part_02_বীজগণিত",
+          "depth": 2
+        },
+        {
+          "name": "Part_03_সূচক_ও_ধারা",
+          "children": [
+            {
+              "name": "সূচক",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/08_গাণিতিক_যুক্তি/Part_03_সূচক_ও_ধারা/সূচক",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "লগারিদম",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/08_গাণিতিক_যুক্তি/Part_03_সূচক_ও_ধারা/লগারিদম",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "সমান্তর_অনুক্রম_ও_ধারা",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/08_গাণিতিক_যুক্তি/Part_03_সূচক_ও_ধারা/সমান্তর_অনুক্রম_ও_ধারা",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "গুণোত্তর_অনুক্রম_ও_ধারা",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/08_গাণিতিক_যুক্তি/Part_03_সূচক_ও_ধারা/গুণোত্তর_অনুক্রম_ও_ধারা",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/BCS_Question_Bank_Detailed/08_গাণিতিক_যুক্তি/Part_03_সূচক_ও_ধারা",
+          "depth": 2
+        },
+        {
+          "name": "Part_04_জ্যামিতি",
+          "children": [
+            {
+              "name": "রেখা_ও_কোণ_সংক্রান্ত_উপপাদ্য",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/08_গাণিতিক_যুক্তি/Part_04_জ্যামিতি/রেখা_ও_কোণ_সংক্রান্ত_উপপাদ্য",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "ত্রিভুজ_সংক্রান্ত_উপপাদ্য",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/08_গাণিতিক_যুক্তি/Part_04_জ্যামিতি/ত্রিভুজ_সংক্রান্ত_উপপাদ্য",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "চতুর্ভুজ_সংক্রান্ত_উপপাদ্য",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/08_গাণিতিক_যুক্তি/Part_04_জ্যামিতি/চতুর্ভুজ_সংক্রান্ত_উপপাদ্য",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "পিথাগোরাসের_উপপাদ্য",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/08_গাণিতিক_যুক্তি/Part_04_জ্যামিতি/পিথাগোরাসের_উপপাদ্য",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "বৃত্ত_সংক্রান্ত_উপপাদ্য",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/08_গাণিতিক_যুক্তি/Part_04_জ্যামিতি/বৃত্ত_সংক্রান্ত_উপপাদ্য",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "পরিমিতি_সরলক্ষেত্র",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/08_গাণিতিক_যুক্তি/Part_04_জ্যামিতি/পরিমিতি_সরলক্ষেত্র",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "পরিমিতি_ঘনবস্তু",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/08_গাণিতিক_যুক্তি/Part_04_জ্যামিতি/পরিমিতি_ঘনবস্তু",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/BCS_Question_Bank_Detailed/08_গাণিতিক_যুক্তি/Part_04_জ্যামিতি",
+          "depth": 2
+        },
+        {
+          "name": "Part_05_সেট_ও_পরিসংখ্যান",
+          "children": [
+            {
+              "name": "সেট",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/08_গাণিতিক_যুক্তি/Part_05_সেট_ও_পরিসংখ্যান/সেট",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "বিন্যাস",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/08_গাণিতিক_যুক্তি/Part_05_সেট_ও_পরিসংখ্যান/বিন্যাস",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "সমাবেশ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/08_গাণিতিক_যুক্তি/Part_05_সেট_ও_পরিসংখ্যান/সমাবেশ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "পরিসংখ্যান",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/08_গাণিতিক_যুক্তি/Part_05_সেট_ও_পরিসংখ্যান/পরিসংখ্যান",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "সম্ভাব্যতা",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/08_গাণিতিক_যুক্তি/Part_05_সেট_ও_পরিসংখ্যান/সম্ভাব্যতা",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/BCS_Question_Bank_Detailed/08_গাণিতিক_যুক্তি/Part_05_সেট_ও_পরিসংখ্যান",
+          "depth": 2
+        }
+      ],
+      "path": "/BCS_Question_Bank_Detailed/08_গাণিতিক_যুক্তি",
+      "depth": 1
+    },
+    {
+      "name": "09_মানসিক_দক্ষতা",
+      "children": [
+        {
+          "name": "০১_ভাষাগত_যৌক্তিক_বিচার_Verbal_Reasoning",
+          "children": [],
+          "path": "/BCS_Question_Bank_Detailed/09_মানসিক_দক্ষতা/০১_ভাষাগত_যৌক্তিক_বিচার_Verbal_Reasoning",
+          "depth": 2,
+          "leaf": true
+        },
+        {
+          "name": "০২_সমস্যা_সমাধান_Problem_Solving",
+          "children": [],
+          "path": "/BCS_Question_Bank_Detailed/09_মানসিক_দক্ষতা/০২_সমস্যা_সমাধান_Problem_Solving",
+          "depth": 2,
+          "leaf": true
+        },
+        {
+          "name": "০৩_বানান_ও_ভাষা_Spelling_and_Language",
+          "children": [],
+          "path": "/BCS_Question_Bank_Detailed/09_মানসিক_দক্ষতা/০৩_বানান_ও_ভাষা_Spelling_and_Language",
+          "depth": 2,
+          "leaf": true
+        },
+        {
+          "name": "০৪_যান্ত্রিক_দক্ষতা_Mechanical_Reasoning",
+          "children": [],
+          "path": "/BCS_Question_Bank_Detailed/09_মানসিক_দক্ষতা/০৪_যান্ত্রিক_দক্ষতা_Mechanical_Reasoning",
+          "depth": 2,
+          "leaf": true
+        },
+        {
+          "name": "০৫_স্থানাঙ্ক_সম্পর্ক_Space_Relation",
+          "children": [],
+          "path": "/BCS_Question_Bank_Detailed/09_মানসিক_দক্ষতা/০৫_স্থানাঙ্ক_সম্পর্ক_Space_Relation",
+          "depth": 2,
+          "leaf": true
+        },
+        {
+          "name": "০৬_সংখ্যাগত_ক্ষমতা_Numerical_Ability",
+          "children": [],
+          "path": "/BCS_Question_Bank_Detailed/09_মানসিক_দক্ষতা/০৬_সংখ্যাগত_ক্ষমতা_Numerical_Ability",
+          "depth": 2,
+          "leaf": true
+        }
+      ],
+      "path": "/BCS_Question_Bank_Detailed/09_মানসিক_দক্ষতা",
+      "depth": 1
+    },
+    {
+      "name": "10_নৈতিকতা_মূল্যবোধ_ও_সু-শাসন",
+      "children": [
+        {
+          "name": "01_Definition_of_Values_and_Good_Governance",
+          "children": [],
+          "path": "/BCS_Question_Bank_Detailed/10_নৈতিকতা_মূল্যবোধ_ও_সু-শাসন/01_Definition_of_Values_and_Good_Governance",
+          "depth": 2,
+          "leaf": true
+        },
+        {
+          "name": "02_Relation_between_Values_and_Good_Governance",
+          "children": [],
+          "path": "/BCS_Question_Bank_Detailed/10_নৈতিকতা_মূল্যবোধ_ও_সু-শাসন/02_Relation_between_Values_and_Good_Governance",
+          "depth": 2,
+          "leaf": true
+        },
+        {
+          "name": "03_General_Perception",
+          "children": [],
+          "path": "/BCS_Question_Bank_Detailed/10_নৈতিকতা_মূল্যবোধ_ও_সু-শাসন/03_General_Perception",
+          "depth": 2,
+          "leaf": true
+        },
+        {
+          "name": "04_Importance_in_Life_and_Society",
+          "children": [
+            {
+              "name": "Individual_as_Citizen",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/10_নৈতিকতা_মূল্যবোধ_ও_সু-শাসন/04_Importance_in_Life_and_Society/Individual_as_Citizen",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "Making_of_Society",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/10_নৈতিকতা_মূল্যবোধ_ও_সু-শাসন/04_Importance_in_Life_and_Society/Making_of_Society",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "National_Ideals",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/10_নৈতিকতা_মূল্যবোধ_ও_সু-শাসন/04_Importance_in_Life_and_Society/National_Ideals",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/BCS_Question_Bank_Detailed/10_নৈতিকতা_মূল্যবোধ_ও_সু-শাসন/04_Importance_in_Life_and_Society",
+          "depth": 2
+        },
+        {
+          "name": "05_Impact_in_National_Development",
+          "children": [],
+          "path": "/BCS_Question_Bank_Detailed/10_নৈতিকতা_মূল্যবোধ_ও_সু-শাসন/05_Impact_in_National_Development",
+          "depth": 2,
+          "leaf": true
+        },
+        {
+          "name": "06_Establishment_in_Social_Context",
+          "children": [],
+          "path": "/BCS_Question_Bank_Detailed/10_নৈতিকতা_মূল্যবোধ_ও_সু-শাসন/06_Establishment_in_Social_Context",
+          "depth": 2,
+          "leaf": true
+        },
+        {
+          "name": "07_Benefit_and_Adverse_Cost",
+          "children": [
+            {
+              "name": "Benefit_of_Values_and_Good_Governance",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/10_নৈতিকতা_মূল্যবোধ_ও_সু-শাসন/07_Benefit_and_Adverse_Cost/Benefit_of_Values_and_Good_Governance",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "Cost_Society_Pays_in_Absence",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/10_নৈতিকতা_মূল্যবোধ_ও_সু-শাসন/07_Benefit_and_Adverse_Cost/Cost_Society_Pays_in_Absence",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/BCS_Question_Bank_Detailed/10_নৈতিকতা_মূল্যবোধ_ও_সু-শাসন/07_Benefit_and_Adverse_Cost",
+          "depth": 2
+        }
+      ],
+      "path": "/BCS_Question_Bank_Detailed/10_নৈতিকতা_মূল্যবোধ_ও_সু-শাসন",
+      "depth": 1
+    }
+  ],
+  "path": "/BCS_Question_Bank_Detailed",
+  "depth": 0
+}

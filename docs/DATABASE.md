@@ -63,16 +63,27 @@
 - `id` Int — PK, auto-increment
 - `subjectId` Int — FK to Subject, indexed
 - `subject` Subject — relation
-- `groupName` String
+- `parentId` Int? — FK to Topic (`TopicTree` self-relation), `null` for depth-1 groups
+- `parent` Topic? — relation
+- `children` Topic[] — relation
 - `name` String
-- `questionCount` Int — default `0`
+- `slug` String
+- `path` String — full content path from the subject root, e.g. `"04_আন্তর্জাতিক_বিষয়াবলি/০২_নিরাপ্তা_ও_ক্ষমতা/আন্তর্জাতিক_নিরাপ্তা"`
+- `depth` Int — default `0` (1 = group under subject, 2 = leaf, …)
+- `sortOrder` Int — default `0`
+- `questionCount` String — default `"0"` (aggregated subtree count, denormalised by the seed)
+- `questions` Question[] — relation
+- Unique: `[subjectId, path]`; Index: `[subjectId, parentId]`
 
 #### Question
 - `id` Int — PK, auto-increment
 - `subjectId` Int — FK to Subject
 - `subject` Subject — relation
-- `topic` String — default `""` (topic group name, e.g. `"বাক্য শুদ্ধি"`)
-- `subtopic` String — default `""` (subtopic name from the `Topic` table; empty when not scoped)
+- `topicId` Int? — FK to Topic leaf (SetNull on delete)
+- `leaf` Topic? — relation
+- `path` String — default `""` (full leaf content path, e.g. `"04_আন্তর্জাতিক_বিষয়াবলি/০২_নিরাপ্তা_ও_ক্ষমতা/আন্তর্জাতিক_নিরাপ্তা"`)
+- `topic` String — default `""` (topic group display name, depth-1 node)
+- `subtopic` String — default `""` (leaf display name, `Topic.name`; empty when the leaf is a group)
 - `question` String
 - `options` Json — string array
 - `correctAnswer` String
@@ -83,7 +94,7 @@
 - `createdAt` DateTime — default `now()`
 - `updatedAt` DateTime — updatedAt
 - Relations: `bookmarks`
-- Indexes: `[subjectId, difficulty]`, `[subjectId, topic]`, `[subjectId, topic, subtopic]`
+- Indexes: `[subjectId, difficulty]`, `[subjectId, topic]`, `[subjectId, topic, subtopic]`, `[subjectId, path]`
 
 #### QuestionBankCategory
 - `id` Int — PK, auto-increment
@@ -355,7 +366,11 @@ Seed sources:
 - `frontend/lib/data/ai.ts` — flash news (preferred), recommendations.
 - `database/data/users.json` — user accounts (gitignored, optional).
 - `database/data/bcs_syllabus/*.md` — syllabus documents.
-- `database/data/ques/questions_database.txt` — raw question text for `scripts/seed-questions.ts`.
+- `database/data/ques/questions_database.txt` — raw flat question text for `scripts/seed-questions.ts`.
+- `database/data/ques/<Subject>/<Node>/…/<file>.txt` — folder-structured questions; the folder path IS the taxonomy (each segment matched by NFC-normalised name).
+- `database/data/taxonomy.json` — parsed taxonomy tree (from `database/data/Questions Architecture/architecture.txt`) driving subject/topic creation, round-robin flat-question distribution, and folder imports via `scripts/taxonomy.ts`.
+
+The recursive Topic tree, leaf `topicId`/`path` tagging on questions, and per-topic aggregated `questionCount` are (re)built by `scripts/seed-questions.ts`, invoked by `npm run db:seed-questions` and as part of `npm run db:seed`.
 
 ## Indexes
 
@@ -363,7 +378,8 @@ Prisma automatically creates indexes for:
 - Primary keys (`@id`).
 - Foreign keys (`subjectId`, `userId`, etc.).
 - Unique constraints (`email`, `handle`, `[userId, questionId]`).
-- Explicit `@@index` fields: `User.email`, `User.handle`, `Subject.sortOrder`, `Topic.subjectId`, `Question.[subjectId, difficulty]`, `Question.[subjectId, topic]`, `Question.[subjectId, topic, subtopic]`, `Flashcard.subjectId`, `Flashcard.nextReview`, `StudyTask.[dayId, userId]`, `StudyPlanDay.date`, `DailyQuiz.date`, `UserSession.userId`, `UserSession.token`, `UserSession.expiresAt`.
+- Explicit `@@index` fields: `User.email`, `User.handle`, `Subject.sortOrder`, `Topic.subjectId`, `Topic.[subjectId, parentId]`, `Question.[subjectId, difficulty]`, `Question.[subjectId, topic]`, `Question.[subjectId, topic, subtopic]`, `Question.[subjectId, path]`, `Flashcard.subjectId`, `Flashcard.nextReview`, `StudyTask.[dayId, userId]`, `StudyPlanDay.date`, `DailyQuiz.date`, `UserSession.userId`, `UserSession.token`, `UserSession.expiresAt`.
+- Unique constraint: `Topic.[subjectId, path]`.
 
 ## Generator
 

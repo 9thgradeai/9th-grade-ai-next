@@ -43,35 +43,57 @@ describe("shuffleWithSeed", () => {
 });
 
 describe("getExamSelectionTree", () => {
-  it("builds subject → topic → subtopic tree with real counts", async () => {
+  it("builds a recursive topic tree with aggregated counts", async () => {
     vi.mocked(prisma.subject.findMany).mockResolvedValue([
       { id: 1, nameBn: "বাংলা ভাষা ও সাহিত্য", nameEn: "Bangla", icon: "📖", color: "", bg: "", sortOrder: 0 },
     ]);
     vi.mocked(prisma.topic.findMany).mockResolvedValue([
-      { id: 1, subjectId: 1, groupName: "ভাষা (১৫ নম্বর)", name: "বানান ও শুদ্ধি", questionCount: "45/12K" },
-      { id: 2, subjectId: 1, groupName: "ভাষা (১৫ নম্বর)", name: "পরিভাষা", questionCount: "32/8K" },
+      { id: 1, subjectId: 1, parentId: null, name: "ভাষা", slug: "ভাষা", path: "ভাষা", depth: 1, sortOrder: 0, questionCount: "7" },
+      { id: 2, subjectId: 1, parentId: 1, name: "বানান", slug: "বানান", path: "ভাষা/বানান", depth: 2, sortOrder: 0, questionCount: "4" },
+      { id: 3, subjectId: 1, parentId: 1, name: "পরিভাষা", slug: "পরিভাষা", path: "ভাষা/পরিভাষা", depth: 2, sortOrder: 1, questionCount: "3" },
     ]);
     vi.mocked(prisma.question.groupBy).mockResolvedValue([
-      { subjectId: 1, topic: "ভাষা (১৫ নম্বর)", subtopic: "বানান ও শুদ্ধি", _count: { _all: 4 } },
-      { subjectId: 1, topic: "ভাষা (১৫ নম্বর)", subtopic: "পরিভাষা", _count: { _all: 3 } },
+      { subjectId: 1, path: "ভাষা/বানান", _count: { _all: 4 } },
+      { subjectId: 1, path: "ভাষা/পরিভাষা", _count: { _all: 3 } },
     ]);
 
     const tree = await getExamSelectionTree();
     expect(tree).toHaveLength(1);
     const subject = tree[0];
-    expect(subject.groups).toHaveLength(1);
-    expect(subject.groups[0].subTopics).toHaveLength(2);
-    expect(subject.groups[0].subTopics[0]).toMatchObject({ name: "বানান ও শুদ্ধি", questionCount: 4 });
-    expect(subject.groups[0].questionCount).toBe(7);
+    expect(subject.nodes).toHaveLength(1);
+    expect(subject.nodes[0]).toMatchObject({
+      name: "ভাষা",
+      path: "ভাষা",
+      depth: 1,
+      questionCount: 7,
+    });
+    expect(subject.nodes[0].children).toHaveLength(2);
+    expect(subject.nodes[0].children[0]).toMatchObject({ name: "বানান", questionCount: 4 });
+    expect(subject.nodes[0].children[1]).toMatchObject({ name: "পরিভাষা", questionCount: 3 });
     expect(subject.questionCount).toBe(7);
+  });
+
+  it("prunes nodes with no questions", async () => {
+    vi.mocked(prisma.subject.findMany).mockResolvedValue([
+      { id: 1, nameBn: "বাংলা ভাষা ও সাহিত্য", nameEn: "Bangla", icon: "📖", color: "", bg: "", sortOrder: 0 },
+    ]);
+    vi.mocked(prisma.topic.findMany).mockResolvedValue([
+      { id: 1, subjectId: 1, parentId: null, name: "ভাষা", slug: "ভাষা", path: "ভাষা", depth: 1, sortOrder: 0, questionCount: "0" },
+      { id: 2, subjectId: 1, parentId: 1, name: "বানান", slug: "বানান", path: "ভাষা/বানান", depth: 2, sortOrder: 0, questionCount: "0" },
+    ]);
+    vi.mocked(prisma.question.groupBy).mockResolvedValue([]);
+
+    const tree = await getExamSelectionTree();
+    expect(tree[0].nodes).toHaveLength(0);
+    expect(tree[0].questionCount).toBe(0);
   });
 });
 
 describe("buildCustomExam", () => {
   const config: ExamSelectionRequest = {
     subjects: [
-      { subjectId: 1, groups: [{ groupName: "ভাষা", subTopics: [] }] },
-      { subjectId: 2, groups: [] },
+      { subjectId: 1, paths: ["ভাষা"] },
+      { subjectId: 2, paths: [] },
     ],
     questionCount: 10,
     durationSec: 600,
@@ -79,18 +101,17 @@ describe("buildCustomExam", () => {
     shuffleQuestions: true,
   };
 
-  it("returns exactly the requested number of questions with no duplicates", async () => {
-    vi.mocked(prisma.subject.findMany).mockResolvedValue([
-      { id: 1, nameBn: "বাংলা ভাষা ও সাহিত্য" },
-      { id: 2, nameBn: "English Language and Literature" },
-    ] as never);
+  const leafCounts = [
+    { subjectId: 1, path: "ভাষা/বানান", _count: { _all: 10 } },
+    { subjectId: 2, path: "Grammar", _count: { _all: 10 } },
+  ];
 
-    vi.mocked(prisma.question.count).mockResolvedValue(10);
+  function mockFindMany() {
     vi.mocked(prisma.question.findMany).mockImplementation(async (args) => {
       const a = args as {
         select?: Record<string, boolean>;
         orderBy?: unknown;
-        where?: { subjectId?: number; id?: { in?: number[] } };
+        where?: { subjectId?: number; path?: { in?: string[] }; id?: { in?: number[] } };
       };
       const isPick = !!a.orderBy && !!a.select && Object.keys(a.select).length === 1 && a.select.id === true;
       const base = a.where?.subjectId === 2 ? 11 : 1;
@@ -99,6 +120,15 @@ describe("buildCustomExam", () => {
       const ids = (a.where?.id?.in ?? []).flat();
       return ids.map((id) => fullQuestion(id, "ক"));
     });
+  }
+
+  it("returns exactly the requested number of questions with no duplicates", async () => {
+    vi.mocked(prisma.subject.findMany).mockResolvedValue([
+      { id: 1, nameBn: "বাংলা ভাষা ও সাহিত্য" },
+      { id: 2, nameBn: "English Language and Literature" },
+    ] as never);
+    vi.mocked(prisma.question.groupBy).mockResolvedValue(leafCounts as never);
+    mockFindMany();
 
     const exam = await buildCustomExam(config);
     expect(exam.totalQuestions).toBe(10);
@@ -111,34 +141,46 @@ describe("buildCustomExam", () => {
     expect(exam.questions.every((q) => "correctAnswer" in q === false)).toBe(true);
   });
 
+  it("selects only questions under the chosen node path", async () => {
+    vi.mocked(prisma.subject.findMany).mockResolvedValue([
+      { id: 1, nameBn: "বাংলা ভাষা ও সাহিত্য" },
+    ] as never);
+    vi.mocked(prisma.question.groupBy).mockResolvedValue([
+      { subjectId: 1, path: "ভাষা/বানান", _count: { _all: 10 } },
+      { subjectId: 1, path: "ভাষা/পরিভাষা", _count: { _all: 20 } },
+    ] as never);
+    mockFindMany();
+
+    const exam = await buildCustomExam({
+      ...config,
+      questionCount: 5,
+      subjects: [{ subjectId: 1, paths: ["ভাষা/বানান"] }],
+    });
+    expect(exam.totalQuestions).toBe(5);
+    expect(exam.available).toBe(10); // only the বানান leaf (10), not পরিভাষা (20)
+    // The pick query must constrain by the eligible leaf paths.
+    const pickCall = vi.mocked(prisma.question.findMany).mock.calls.find((c) => {
+      const where = c[0]?.where as { path?: { in?: string[] } } | undefined;
+      return !!where?.path?.in;
+    });
+    expect(pickCall?.[0]?.where).toMatchObject({ path: { in: ["ভাষা/বানান"] } });
+  });
+
   it("respects per-subject counts when every subject provides one", async () => {
     vi.mocked(prisma.subject.findMany).mockResolvedValue([
       { id: 1, nameBn: "বাংলা ভাষা ও সাহিত্য" },
       { id: 2, nameBn: "English Language and Literature" },
     ] as never);
-
-    vi.mocked(prisma.question.count).mockImplementation(async (args) => {
-      const a = args as { where?: { subjectId?: number } };
-      return a.where?.subjectId === 2 ? 5 : 10;
-    });
-    vi.mocked(prisma.question.findMany).mockImplementation(async (args) => {
-      const a = args as {
-        select?: Record<string, boolean>;
-        orderBy?: unknown;
-        where?: { subjectId?: number; id?: { in?: number[] } };
-      };
-      const isPick = !!a.orderBy && !!a.select && Object.keys(a.select).length === 1 && a.select.id === true;
-      const base = a.where?.subjectId === 2 ? 11 : 1;
-      const pool = Array.from({ length: 10 }, (_, i) => i + base);
-      if (isPick) return pool.map((id) => ({ id }));
-      const ids = (a.where?.id?.in ?? []).flat();
-      return ids.map((id) => fullQuestion(id, "ক"));
-    });
+    vi.mocked(prisma.question.groupBy).mockResolvedValue([
+      { subjectId: 1, path: "ভাষা/বানান", _count: { _all: 10 } },
+      { subjectId: 2, path: "Grammar", _count: { _all: 5 } },
+    ] as never);
+    mockFindMany();
 
     const exam = await buildCustomExam({
       subjects: [
-        { subjectId: 1, groups: [], count: 4 },
-        { subjectId: 2, groups: [], count: 3 },
+        { subjectId: 1, paths: [], count: 4 },
+        { subjectId: 2, paths: [], count: 3 },
       ],
       questionCount: 7,
       durationSec: 600,
@@ -160,23 +202,15 @@ describe("buildCustomExam", () => {
     vi.mocked(prisma.subject.findMany).mockResolvedValue([
       { id: 1, nameBn: "বাংলা ভাষা ও সাহিত্য" },
     ] as never);
-    vi.mocked(prisma.question.count).mockResolvedValue(5);
-    vi.mocked(prisma.question.findMany).mockImplementation(async (args) => {
-      const a = args as {
-        select?: Record<string, boolean>;
-        orderBy?: unknown;
-        where?: { subjectId?: number; id?: { in?: number[] } };
-      };
-      const isPick = !!a.orderBy && !!a.select && Object.keys(a.select).length === 1 && a.select.id === true;
-      if (isPick) return [1, 2, 3, 4, 5].map((id) => ({ id }));
-      const ids = (a.where?.id?.in ?? []).flat();
-      return ids.map((id) => fullQuestion(id, "ক"));
-    });
+    vi.mocked(prisma.question.groupBy).mockResolvedValue([
+      { subjectId: 1, path: "ভাষা/বানান", _count: { _all: 5 } },
+    ] as never);
+    mockFindMany();
 
     const exam = await buildCustomExam({
       ...config,
       questionCount: 10,
-      subjects: [{ subjectId: 1, groups: [{ groupName: "ভাষা", subTopics: [] }] }],
+      subjects: [{ subjectId: 1, paths: ["ভাষা"] }],
     });
     expect(exam.totalQuestions).toBe(5);
     expect(exam.available).toBe(5);

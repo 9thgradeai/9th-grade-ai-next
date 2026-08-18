@@ -26,19 +26,25 @@ const subjects: Server.ExamSubjectDTO[] = [
     color: "text-emerald-400",
     bg: "bg-emerald-500/10",
     questionCount: 20,
-    groups: [
+    nodes: [
       {
-        groupName: "ভাষা (১৫ নম্বর)",
+        id: 1,
+        name: "ভাষা",
+        path: "ভাষা",
+        depth: 1,
         questionCount: 10,
-        subTopics: [
-          { name: "বানান ও শুদ্ধি", questionCount: 4 },
-          { name: "পরিভাষা", questionCount: 6 },
+        children: [
+          { id: 2, name: "বানান ও শুদ্ধি", path: "ভাষা/বানান ও শুদ্ধি", depth: 2, questionCount: 4, children: [] },
+          { id: 3, name: "পরিভাষা", path: "ভাষা/পরিভাষা", depth: 2, questionCount: 6, children: [] },
         ],
       },
       {
-        groupName: "সাহিত্য (১৫ নম্বর)",
+        id: 4,
+        name: "সাহিত্য",
+        path: "সাহিত্য",
+        depth: 1,
         questionCount: 10,
-        subTopics: [{ name: "আধুনিক যুগ", questionCount: 10 }],
+        children: [{ id: 5, name: "আধুনিক যুগ", path: "সাহিত্য/আধুনিক যুগ", depth: 2, questionCount: 10, children: [] }],
       },
     ],
   },
@@ -50,7 +56,9 @@ const subjects: Server.ExamSubjectDTO[] = [
     color: "text-sky-400",
     bg: "bg-sky-500/10",
     questionCount: 20,
-    groups: [],
+    nodes: [
+      { id: 6, name: "Grammar", path: "Grammar", depth: 1, questionCount: 20, children: [] },
+    ],
   },
 ];
 

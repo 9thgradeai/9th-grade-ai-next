@@ -74,13 +74,17 @@ export async function getTopics(subjectName?: string): Promise<TopicDTO[]> {
   try {
     const rows = await prisma.topic.findMany({
       where: subjectName ? { subject: { nameBn: subjectName } } : undefined,
-      orderBy: { id: "asc" },
+      orderBy: [{ subjectId: "asc" }, { sortOrder: "asc" }, { id: "asc" }],
     });
     return rows.map((t) => ({
       id: t.id,
       subjectId: t.subjectId,
-      groupName: t.groupName,
+      parentId: t.parentId,
       name: t.name,
+      slug: t.slug,
+      path: t.path,
+      depth: t.depth,
+      sortOrder: t.sortOrder,
       questionCount: String(t.questionCount),
     }));
   } catch {

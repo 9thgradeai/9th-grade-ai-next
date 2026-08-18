@@ -110,24 +110,34 @@ when `TAVILY_API_KEY` is set, otherwise `groq`), falling back to a clearly
 labelled `mock` source. See `docs/AI-SYSTEM.md`.
 
 ### ExamConfig (selection tree)
+The tree mirrors the recursive Topic taxonomy. Every node carries its aggregated
+subtree `questionCount`; nodes with zero questions are pruned. A node with
+non-empty `children` is a group; a node with empty `children` is a leaf. The
+`path` values are what the client sends back in `ExamBuild`.
 ```json
-{ "subjects": [{ "id": 1, "nameBn": "বাংলা", "nameEn": "Bangla", "questionCount": 20, "groups": [{ "groupName": "বাক্য শুদ্ধি", "questionCount": 8, "subTopics": [{ "name": "উপযুক্ত শব্দ চয়ন", "questionCount": 4 }] }] }] }
+{ "subjects": [{ "id": 1, "nameBn": "বাংলা", "nameEn": "Bangla", "icon": "📘", "color": "text-emerald-400", "bg": "bg-emerald-500/10", "questionCount": 20, "nodes": [{ "id": 10, "name": "ভাষা", "path": "01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা", "depth": 1, "questionCount": 12, "children": [{ "id": 24, "name": "সমার্থক শব্দ", "path": "01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/সমার্থক_শব্দ", "depth": 2, "questionCount": 4, "children": [] }] }] }] }
 ```
+The exam engine supports arbitrarily deep trees (English goes to depth 4).
 
 ### ExamBuild
 ```json
 { "exam": { "examId": "...", "durationSec": 900, "subjects": ["বাংলা"], "shortfall": 0, "questions": [{ "id": 1, "subject": "বাংলা", "topic": "বাক্য শুদ্ধি", "subtopic": "উপযুক্ত শব্দ চয়ন", "question": "...", "options": ["A","B","C","D"], "difficulty": "EASY" }] } }
 ```
+Request body:
+```json
+{ "durationSec": 900, "questionCount": 10, "subjects": [{ "subjectId": 1, "paths": ["01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/সমার্থক_শব্দ"], "count": 4 }] }
+```
+- `paths: []` selects the whole subject; otherwise questions are drawn from the
+  **union** of the selected nodes' subtrees (selecting a group includes all its
+  descendants).
+- Each selected subject may carry an optional `count`. When **every** selected
+  subject provides an integer `count`, the effective `questionCount` is their sum
+  and each subject is allocated exactly `min(count, available)`; a subject's
+  count may be `0` (excluded). Otherwise the legacy behaviour applies: the global
+  `questionCount` is distributed proportionally (largest remainder) across subjects.
 `questions` never include `correctAnswer` or `explanation` — those are only
 returned after submission. `shortfall` reports the number of requested
 questions that could not be sourced from the selection.
-
-Each subject in the build request may carry an optional `count`. When **every**
-selected subject provides an integer `count`, the effective `questionCount` is
-their sum and each subject is allocated exactly `min(count, available)`; a
-subject's count may be `0` (excluded). Otherwise the legacy behaviour applies:
-the global `questionCount` is distributed proportionally (largest remainder)
-across subjects.
 
 ### ExamResult
 ```json

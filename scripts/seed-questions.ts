@@ -1,51 +1,54 @@
 /**
  * scripts/seed-questions.ts
  * ----------------------------------------------------------------------------
- * Seeds questions from two sources under data/ques/:
+ * Seeds the content taxonomy (subjects + recursive topics) and questions from
+ * database/data/ques/:
  *
- *  1. Flat per-subject files (data/ques/questions_database.txt) — questions are
- *     distributed round-robin across the subject's TOPIC_TREES subtopics.
+ *  1. Subjects — the 10 canonical subjects from scripts/taxonomy.ts.
  *
- *  2. Folder-structured files (data/ques/<Subject>/<Group>/<Subtopic>/*.txt) —
- *     the file path IS the taxonomy, so each question is tagged with the exact
- *     group/subtopic from its folder names. Topic rows are created on demand so
- *     the syllabus explorer and custom-exam selection tree can filter them.
+ *  2. Topic tree — the recursive Topic hierarchy built from
+ *     database/data/taxonomy.json (parsed from the Questions Architecture).
+ *     Topic.path is the full content path from the subject root
+ *     ("04_আন্তর্জাতিক_বিষয়াবলি/০২_নিরাপ্তা_ও_ক্ষমতা/আন্তর্জাতিক_নিরাপ্তা"),
+ *     matching the local folder layout under data/ques/.
  *
- * Subjects are matched by canonical Bengali name so the dashboard's Question
- * Bank filter stays correct.
+ *  3. Questions — two sources:
+ *      a. Flat per-subject files (data/ques/questions_database.txt) — questions
+ *         are distributed round-robin across the subject's taxonomy leaves.
+ *      b. Folder-structured files (data/ques/<Subject>/<Node>/…/<file>.txt) —
+ *         the file path IS the taxonomy; each segment is matched to a taxonomy
+ *         node by NFC-normalised name. Questions get the exact leaf path.
+ *
+ * Question rows carry `path` (leaf path), `topicId` (leaf Topic id) plus the
+ * denormalised `topic`/`subtopic` display names used by legacy consumers.
  *
  * Run AFTER `prisma db push`:
  *   npx tsx scripts/seed-questions.ts
  *
- * Idempotent: it deletes existing Question rows, then re-inserts.
+ * Idempotent: deletes existing Question and Topic rows, then re-inserts.
  * ----------------------------------------------------------------------------
  */
 import { readFileSync, readdirSync } from "fs";
 import { join } from "path";
 import { PrismaClient } from "@prisma/client";
-import { TOPIC_TREES } from "../frontend/lib/data";
+import {
+  loadTaxonomy,
+  SUBJECT_META,
+  subjectMetaByNameBn,
+  resolveSubjectNode,
+  matchNodePath,
+  contentPath,
+  type TaxonomyNode,
+} from "./taxonomy";
 
-// Canonical subjects (must match SUBJECTS.name / QUESTION_BANK_CATEGORIES.label
-// in src/lib/data.ts so the dashboard filters by subject correctly).
-const SUBJECT_META: Record<string, { nameEn: string; icon: string; color: string; bg: string }> = {
-  "বাংলা ভাষা ও সাহিত্য": { nameEn: "Bangla Language & Literature", icon: "📖", color: "text-emerald-400", bg: "bg-emerald-500/10" },
-  "English Language and Literature": { nameEn: "English Language and Literature", icon: "📚", color: "text-sky-400", bg: "bg-sky-500/10" },
-  "বাংলাদেশ বিষয়াবলি": { nameEn: "Bangladesh Affairs", icon: "🇧🇩", color: "text-green-400", bg: "bg-green-500/10" },
-  "আন্তর্জাতিক বিষয়াবলী": { nameEn: "International Affairs", icon: "🌍", color: "text-cyan-400", bg: "bg-cyan-500/10" },
-  "ভূগোল, পরিবেশ ও দুর্যোগ ব্যবস্থাপনা": { nameEn: "Geography, Environment & Disaster Management", icon: "🗺️", color: "text-teal-400", bg: "bg-teal-500/10" },
-  "সাধারণ বিজ্ঞান": { nameEn: "General Science", icon: "🔬", color: "text-purple-400", bg: "bg-purple-500/10" },
-  "কম্পিউটার ও তথ্য প্রযুক্তি": { nameEn: "Computer & IT", icon: "💻", color: "text-indigo-400", bg: "bg-indigo-500/10" },
-  "গাণিতিক যুক্তি": { nameEn: "Mathematical Reasoning", icon: "🧮", color: "text-amber-400", bg: "bg-amber-500/10" },
-  "মানসিক দক্ষতা": { nameEn: "Mental Ability", icon: "🧠", color: "text-rose-400", bg: "bg-rose-500/10" },
-  "নৈতিকতা, মূল্যবোধ ও সু-শাসন": { nameEn: "Ethics, Values & Good Governance", icon: "⚖️", color: "text-emerald-500", bg: "bg-emerald-500/10" },
-};
-
-// Map the raw header text found in the file → canonical nameBn.
+// Map the raw header text found in the flat file → canonical nameBn.
+// Keys are NFC-normalised so composed/decomposed Bengali forms ("য়" vs "য"+নুক্তা)
+// always resolve, regardless of how the file was saved.
 const HEADER_TO_CANONICAL: Record<string, string> = {
   "বাংলা ভাষা ও সাহিত্য": "বাংলা ভাষা ও সাহিত্য",
   "English Language & Literature (ইংরেজি ভাষা ও সাহিত্য)": "English Language and Literature",
-  "বাংলাদেশ বিষয়াবলি": "বাংলাদেশ বিষয়াবলি",
-  "আন্তর্জাতিক বিষয়াবলি": "আন্তর্জাতিক বিষয়াবলী",
+  "বাংলাদেশ বিষয়াবলি": "বাংলাদেশ বিষয়াবলি",
+  "আন্তর্জাতিক বিষয়াবলি": "আন্তর্জাতিক বিষয়াবলী",
   "ভূগোল, পরিবেশ ও দুর্যোগ ব্যবস্থাপনা": "ভূগোল, পরিবেশ ও দুর্যোগ ব্যবস্থাপনা",
   "সাধারণ বিজ্ঞান": "সাধারণ বিজ্ঞান",
   "কম্পিউটার ও তথ্যপ্রযুক্তি": "কম্পিউটার ও তথ্য প্রযুক্তি",
@@ -53,6 +56,10 @@ const HEADER_TO_CANONICAL: Record<string, string> = {
   "মানসিক দক্ষতা": "মানসিক দক্ষতা",
   "নৈতিকতা, মূল্যবোধ ও সুশাসন": "নৈতিকতা, মূল্যবোধ ও সু-শাসন",
 };
+
+const HEADER_LOOKUP = new Map<string, string>(
+  Object.entries(HEADER_TO_CANONICAL).map(([k, v]) => [k.normalize("NFC"), v]),
+);
 
 const BANGLA_MARKERS = ["ক.", "খ.", "গ.", "ঘ."];
 const LATIN_MARKERS = ["A.", "B.", "C.", "D."];
@@ -91,10 +98,11 @@ function stripLeadingNumber(text: string): string {
 }
 
 // Recursively collects question files organised as
-//   data/ques/<Subject>/<Group>/<Subtopic>/<file>.txt
-// Each spec keeps the normalised (NFC) path parts so duplicates that differ
-// only by Unicode composition (e.g. "জোট" vs "জোট") collapse into one.
-// Returns specs where parts = [subject, group, subtopic, filename].
+//   data/ques/<Subject>/<Node>/…/<file>.txt
+// The path is the taxonomy: the deepest folder segment must resolve to a
+// taxonomy leaf. Each spec keeps the normalised (NFC) path parts so duplicates
+// that differ only by Unicode composition (e.g. "জোট" vs "জোট") collapse.
+// Returns specs where parts = [subject, ...nodeSegments, filename].
 function collectFolderFiles(dir: string): { file: string; parts: string[] }[] {
   const specs: { file: string; parts: string[] }[] = [];
   const walk = (d: string, ancestors: string[]) => {
@@ -103,7 +111,7 @@ function collectFolderFiles(dir: string): { file: string; parts: string[] }[] {
       const full = join(d, entry.name);
       if (entry.isDirectory()) {
         walk(full, [...ancestors, entry.name]);
-      } else if (entry.isFile() && /\.txt$/i.test(entry.name) && ancestors.length === 3) {
+      } else if (entry.isFile() && /\.txt$/i.test(entry.name) && ancestors.length >= 2) {
         specs.push({ file: full, parts: [...ancestors, entry.name].map((p) => p.normalize("NFC")) });
       }
     }
@@ -117,18 +125,6 @@ function collectFolderFiles(dir: string): { file: string; parts: string[] }[] {
     seen.add(key);
     return true;
   });
-}
-
-// Maps a subject folder name (English or Bengali, e.g. "International Affairs")
-// to the canonical Bengali name used in SUBJECT_META / SUBJECTS.
-function resolveFolderSubject(folder: string): string | null {
-  const norm = folder.trim().normalize("NFC").toLowerCase();
-  for (const canonical of Object.keys(SUBJECT_META)) {
-    const meta = SUBJECT_META[canonical];
-    if (canonical.normalize("NFC").toLowerCase() === norm) return canonical;
-    if (meta.nameEn.normalize("NFC").toLowerCase() === norm) return canonical;
-  }
-  return null;
 }
 
 function parseQuestionLine(line: string): ParsedQuestion | null {
@@ -171,15 +167,136 @@ function parseQuestionLine(line: string): ParsedQuestion | null {
   return { question: questionText, options, correctAnswer, explanation };
 }
 
+// Finds the Subject row for a canonical Bengali name (find-or-create).
+async function ensureSubject(
+  prisma: PrismaClient,
+  nameBn: string,
+  sortOrder: number,
+): Promise<{ id: number }> {
+  const meta = subjectMetaByNameBn(nameBn) ?? SUBJECT_META[0];
+  let subject = await prisma.subject.findFirst({ where: { nameBn } });
+  if (!subject) {
+    subject = await prisma.subject.create({
+      data: {
+        nameBn,
+        nameEn: meta.nameEn,
+        icon: meta.icon,
+        color: meta.color,
+        bg: meta.bg,
+        sortOrder,
+      },
+    });
+  } else {
+    subject = await prisma.subject.update({
+      where: { id: subject.id },
+      data: { nameEn: meta.nameEn, icon: meta.icon, color: meta.color, bg: meta.bg, sortOrder },
+    });
+  }
+  return { id: subject.id };
+}
+
+// Builds the recursive Topic rows for one subject from its taxonomy subtree.
+// Returns maps keyed by the content path (see contentPath()).
+type TopicIndex = { leafIds: Map<string, number>; idsByPath: Map<string, number> };
+
+async function buildTopicTree(
+  prisma: PrismaClient,
+  subjectId: number,
+  subjectNode: TaxonomyNode,
+): Promise<TopicIndex> {
+  const leafIds = new Map<string, number>();
+  const idsByPath = new Map<string, number>();
+  let order = 0;
+
+  const createNode = async (node: TaxonomyNode, parentId: number | null, depth: number) => {
+    const path = contentPath(node);
+    const row = await prisma.topic.upsert({
+      where: { subjectId_path: { subjectId, path } },
+      update: { name: node.name, slug: node.name, depth, sortOrder: order++, parentId },
+      create: {
+        subjectId,
+        name: node.name,
+        slug: node.name,
+        path,
+        depth,
+        sortOrder: order++,
+        parentId,
+        questionCount: "0",
+      },
+    });
+    idsByPath.set(path, row.id);
+    if (node.children.length === 0) {
+      leafIds.set(path, row.id);
+    }
+    for (const child of node.children) {
+      await createNode(child, row.id, depth + 1);
+    }
+  };
+
+  for (const child of subjectNode.children) {
+    await createNode(child, null, 1);
+  }
+  return { leafIds, idsByPath };
+}
+
+// Display fields for a taxonomy leaf: topic = depth-1 node name (the group
+// under the subject), subtopic = the leaf name ("" when the leaf is itself a
+// group). Uses the content path "Subject/Group/…/Leaf".
+function leafTags(node: TaxonomyNode): { topic: string; subtopic: string } {
+  const parts = contentPath(node).split("/");
+  if (parts.length <= 2) return { topic: node.name, subtopic: "" };
+  return { topic: parts[1], subtopic: node.name };
+}
+
+function collectLeaves(node: TaxonomyNode): TaxonomyNode[] {
+  if (node.children.length === 0) return [node];
+  return node.children.flatMap(collectLeaves);
+}
+
 // Parses all .txt files in database/data/ques and inserts their questions,
-// linked to the matching Subject (find-or-create by canonical Bengali name).
-// Idempotent: clears existing Question rows first. Returns the count inserted.
+// linked to the matching Subject + recursive Topic leaf. Idempotent: clears
+// existing Question and Topic rows first. Returns the count inserted.
 export async function seedQuestions(prisma: PrismaClient): Promise<number> {
-  // Find the questions file (single combined file or per-subject files).
   const dir = join(process.cwd(), "database", "data", "ques");
   const files = readdirSync(dir).filter((f) => /\.txt$/i.test(f));
   if (files.length === 0) throw new Error("No .txt question files found in database/data/ques");
 
+  const taxonomy = loadTaxonomy();
+
+  // Idempotent: clear previously-seeded content before re-inserting. Ran
+  // sequentially because the Topic self-relation cascade can deadlock when the
+  // Question delete shares locks in parallel.
+  const delQ = await prisma.question.deleteMany({});
+  const delT = await prisma.topic.deleteMany({});
+  if (delQ.count > 0 || delT.count > 0) {
+    console.log(`Cleared ${delQ.count} questions, ${delT.count} topics`);
+  }
+
+  // Ensure all 10 canonical subjects exist in architecture order.
+  const subjectIds: Record<string, number> = {};
+  for (const [i, meta] of SUBJECT_META.entries()) {
+    const subject = await ensureSubject(prisma, meta.nameBn, i);
+    subjectIds[meta.nameBn.normalize("NFC")] = subject.id;
+  }
+
+  // Build the recursive topic tree for every subject up front.
+  const leafIdsBySubject = new Map<number, Map<string, number>>();
+  const idsByPathBySubject = new Map<number, Map<string, number>>();
+  for (const subjectNode of taxonomy.children) {
+    const meta = SUBJECT_META.find((m) => m.architectureName === subjectNode.name);
+    if (!meta) {
+      console.warn(`⚠ No canonical subject for taxonomy root "${subjectNode.name}"`);
+      continue;
+    }
+    const subjectId = subjectIds[meta.nameBn];
+    const index = await buildTopicTree(prisma, subjectId, subjectNode);
+    leafIdsBySubject.set(subjectId, index.leafIds);
+    idsByPathBySubject.set(subjectId, index.idsByPath);
+  }
+
+  let totalInserted = 0;
+
+  // ── Flat files: questions distributed round-robin across taxonomy leaves ──
   const raw = files
     .map((f) => readFileSync(join(dir, f), "utf8").replace(/^\uFEFF/, ""))
     .join("\n");
@@ -205,42 +322,13 @@ export async function seedQuestions(prisma: PrismaClient): Promise<number> {
   }
   if (current) sections.push(current);
 
-  console.log(`Found ${sections.length} subject sections`);
-
-  // Idempotent: clear previously-seeded questions before re-inserting.
-  const deleted = await prisma.question.deleteMany({});
-  if (deleted.count > 0) console.log(`Cleared ${deleted.count} existing questions`);
-
-  let totalInserted = 0;
-
   for (const section of sections) {
-    const canonical = HEADER_TO_CANONICAL[section.header];
-    if (!canonical || !SUBJECT_META[canonical]) {
+    const canonical = HEADER_LOOKUP.get(section.header.normalize("NFC"));
+    if (!canonical || !subjectIds[canonical.normalize("NFC")]) {
       console.warn(`⚠ Skipping unknown subject header: "${section.header}"`);
       continue;
     }
-    const meta = SUBJECT_META[canonical];
-
-    // Find-or-create the Subject so the dashboard category filter matches it.
-    // (nameBn is not a unique field, so we can't use upsert's `where`.)
-    let subject = await prisma.subject.findFirst({ where: { nameBn: canonical } });
-    if (!subject) {
-      subject = await prisma.subject.create({
-        data: {
-          nameBn: canonical,
-          nameEn: meta.nameEn,
-          icon: meta.icon,
-          color: meta.color,
-          bg: meta.bg,
-          sortOrder: 0,
-        },
-      });
-    } else {
-      subject = await prisma.subject.update({
-        where: { id: subject.id },
-        data: { nameEn: meta.nameEn, icon: meta.icon, color: meta.color, bg: meta.bg },
-      });
-    }
+    const subjectId = subjectIds[canonical.normalize("NFC")];
 
     const parsed = section.lines
       .map((l) => parseQuestionLine(l))
@@ -251,28 +339,41 @@ export async function seedQuestions(prisma: PrismaClient): Promise<number> {
       continue;
     }
 
-    // Map each question to a real topic group + subtopic from TOPIC_TREES so the
-    // custom exam engine can filter deterministically by subject → topic → subtopic.
-    // The raw question file carries no per-question topic tags, so questions are
-    // distributed round-robin across the subject's topics/subtopics in file order
-    // (stable for the same file). Subjects without a tree fall back to the whole
-    // subject pool (topic = subject, subtopic = "").
-    const groups = (TOPIC_TREES as Record<string, { name: string; subTopics: { name: string }[] }[]>)[canonical] ?? [];
-    const topicPairs: { groupName: string; subTopic: string }[] = [];
-    for (const group of groups) {
-      for (const sub of group.subTopics) {
-        topicPairs.push({ groupName: group.name, subTopic: sub.name });
-      }
-    }
+    // Round-robin across the subject's taxonomy leaves (in file order, stable
+    // for the same file). Subjects without a taxonomy fall back to the whole
+    // subject pool.
+    const leafIds = leafIdsBySubject.get(subjectId) ?? new Map<string, number>();
+    const subjectNode = taxonomy.children.find(
+      (n) => SUBJECT_META.find((m) => m.architectureName === n.name)?.nameBn === canonical,
+    );
+    const leaves = subjectNode ? collectLeaves(subjectNode) : [];
 
-    // Insert questions for this subject.
     await prisma.question.createMany({
       data: parsed.map((q, index) => {
-        const pair = topicPairs.length > 0 ? topicPairs[index % topicPairs.length] : null;
+        if (leaves.length === 0) {
+          return {
+            subjectId,
+            topicId: null,
+            path: "",
+            topic: canonical,
+            subtopic: "",
+            question: q.question,
+            options: q.options,
+            correctAnswer: q.correctAnswer,
+            explanation: q.explanation,
+            difficulty: "MEDIUM",
+            sourceExam: "BCS",
+            year: null,
+          };
+        }
+        const leaf = leaves[index % leaves.length];
+        const tags = leafTags(leaf);
         return {
-          subjectId: subject.id,
-          topic: pair ? pair.groupName : canonical,
-          subtopic: pair ? pair.subTopic : "",
+          subjectId,
+          topicId: leafIds.get(contentPath(leaf)) ?? null,
+          path: contentPath(leaf),
+          topic: tags.topic,
+          subtopic: tags.subtopic,
           question: q.question,
           options: q.options,
           correctAnswer: q.correctAnswer,
@@ -288,20 +389,29 @@ export async function seedQuestions(prisma: PrismaClient): Promise<number> {
     console.log(`✓ ${canonical}: ${parsed.length} questions`);
   }
 
-  // ── Folder-structured files: <Subject>/<Group>/<Subtopic>/<file>.txt ──
-  // The path is the taxonomy — questions get the exact group/subtopic from
-  // their folder names (precise categorisation), unlike the flat files which
-  // are distributed round-robin above. Topic rows are created on demand so the
-  // syllabus explorer and the custom-exam selection tree can filter them.
+  // ── Folder-structured files: the path IS the taxonomy ──
+  // Each segment is matched to a taxonomy node by NFC-normalised name; the
+  // deepest segment must resolve to a leaf. Questions are tagged with the
+  // exact leaf path (precise categorisation).
   const folderFiles = collectFolderFiles(dir);
   for (const spec of folderFiles) {
-    const canonical = resolveFolderSubject(spec.parts[0]);
-    if (!canonical) {
+    const subjectNode = resolveSubjectNode(taxonomy, spec.parts[0]);
+    if (!subjectNode) {
       console.warn(`⚠ Skipping unknown subject folder: "${spec.parts[0]}"`);
       continue;
     }
-    const group = spec.parts[1];
-    const subtopic = spec.parts[2];
+    const meta = SUBJECT_META.find((m) => m.architectureName === subjectNode.name);
+    if (!meta || !subjectIds[meta.nameBn]) {
+      console.warn(`⚠ No canonical subject for folder "${spec.parts[0]}"`);
+      continue;
+    }
+    const subjectId = subjectIds[meta.nameBn];
+    const nodeSegments = spec.parts.slice(1, -1);
+    const leaf = matchNodePath(subjectNode, nodeSegments);
+    if (!leaf) {
+      console.warn(`⚠ Folder path not found in taxonomy: "${spec.parts.slice(0, -1).join(" / ")}"`);
+      continue;
+    }
 
     const lines = readFileSync(spec.file, "utf8")
       .replace(/^\uFEFF/, "")
@@ -310,44 +420,21 @@ export async function seedQuestions(prisma: PrismaClient): Promise<number> {
       .filter(Boolean);
     const parsed = lines.map((l) => parseQuestionLine(l)).filter((q): q is ParsedQuestion => q !== null);
     if (parsed.length === 0) {
-      console.warn(`⚠ No questions parsed for ${spec.parts[0]} / ${group} / ${subtopic}`);
+      console.warn(`⚠ No questions parsed for ${spec.parts.slice(0, -1).join(" / ")}`);
       continue;
     }
 
-    let subject = await prisma.subject.findFirst({ where: { nameBn: canonical } });
-    if (!subject) {
-      const meta = SUBJECT_META[canonical];
-      subject = await prisma.subject.create({
-        data: {
-          nameBn: canonical,
-          nameEn: meta.nameEn,
-          icon: meta.icon,
-          color: meta.color,
-          bg: meta.bg,
-          sortOrder: 0,
-        },
-      });
-    }
-
-    const topicRow = await prisma.topic.findFirst({
-      where: { subjectId: subject.id, groupName: group, name: subtopic },
-    });
-    if (!topicRow) {
-      await prisma.topic.create({
-        data: {
-          subjectId: subject.id,
-          groupName: group,
-          name: subtopic,
-          questionCount: String(parsed.length),
-        },
-      });
-    }
+    const path = contentPath(leaf);
+    const tags = leafTags(leaf);
+    const leafIds = leafIdsBySubject.get(subjectId) ?? new Map<string, number>();
 
     await prisma.question.createMany({
       data: parsed.map((q) => ({
-        subjectId: subject.id,
-        topic: group,
-        subtopic,
+        subjectId,
+        topicId: leafIds.get(path) ?? null,
+        path,
+        topic: tags.topic,
+        subtopic: tags.subtopic,
         question: q.question,
         options: q.options,
         correctAnswer: q.correctAnswer,
@@ -359,7 +446,37 @@ export async function seedQuestions(prisma: PrismaClient): Promise<number> {
     });
 
     totalInserted += parsed.length;
-    console.log(`✓ ${canonical} → ${group} / ${subtopic}: ${parsed.length} questions`);
+    console.log(`✓ ${meta.nameBn} → ${path}: ${parsed.length} questions`);
+  }
+
+  // ── Refresh questionCount on every topic row (aggregated over descendants) ──
+  const countRows = await prisma.question.groupBy({
+    by: ["subjectId", "path"],
+    _count: { _all: true },
+  });
+  const perSubject = new Map<number, Map<string, number>>();
+  for (const row of countRows) {
+    if (!perSubject.has(row.subjectId)) perSubject.set(row.subjectId, new Map());
+    perSubject.get(row.subjectId)!.set(row.path, row._count._all);
+  }
+  for (const [subjectId, index] of idsByPathBySubject.entries()) {
+    const totals = new Map<string, number>();
+    const counts = perSubject.get(subjectId) ?? new Map<string, number>();
+    for (const [path, count] of counts) {
+      // Propagate the leaf count up every ancestor path.
+      const segs = path.split("/");
+      let acc = "";
+      for (const seg of segs) {
+        acc = acc ? `${acc}/${seg}` : seg;
+        totals.set(acc, (totals.get(acc) ?? 0) + count);
+      }
+    }
+    for (const [path, count] of totals) {
+      const id = index.get(path);
+      if (id !== undefined) {
+        await prisma.topic.update({ where: { id }, data: { questionCount: String(count) } });
+      }
+    }
   }
 
   return totalInserted;

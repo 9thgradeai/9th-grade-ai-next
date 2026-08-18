@@ -214,8 +214,12 @@ export namespace Server {
   export type TopicDTO = {
     id: number;
     subjectId: number;
-    groupName: string;
+    parentId: number | null;
     name: string;
+    slug: string;
+    path: string;
+    depth: number;
+    sortOrder: number;
     questionCount: string;
   };
 
@@ -396,15 +400,16 @@ export namespace Server {
   };
 
   // ── Custom exam engine (BCS-style) ─────────────────────────
-  export type ExamSubTopicDTO = {
+  // The selection tree mirrors the recursive Topic taxonomy: every node carries
+  // an aggregated question count and children, so the dashboard can render the
+  // full subject → group → subtopic → … hierarchy at any depth.
+  export type ExamSelectionNodeDTO = {
+    id: number;
     name: string;
-    questionCount: number;
-  };
-
-  export type ExamTopicGroupDTO = {
-    groupName: string;
-    questionCount: number;
-    subTopics: ExamSubTopicDTO[];
+    path: string; // relative path from subject root, e.g. "০২_নিরাপ্তা_ও_ক্ষমতা/আন্তর্জাতিক_নিরাপ্তা"
+    depth: number; // 1 = top-level group under the subject
+    questionCount: number; // aggregated over the whole subtree
+    children: ExamSelectionNodeDTO[];
   };
 
   export type ExamSubjectDTO = {
@@ -415,16 +420,13 @@ export namespace Server {
     color: string;
     bg: string;
     questionCount: number;
-    groups: ExamTopicGroupDTO[];
+    nodes: ExamSelectionNodeDTO[];
   };
 
   export type ExamSelectionRequest = {
     subjects: {
       subjectId: number;
-      groups: {
-        groupName: string;
-        subTopics: string[]; // empty = whole group
-      }[];
+      paths: string[]; // selected node paths; empty = whole subject
       count?: number; // per-subject question count; when provided for every selected subject, questionCount becomes the sum
     }[];
     questionCount: number;
@@ -538,8 +540,7 @@ export type UserDTO = Server.UserDTO;
 export type ExamScheduleDTO = Server.ExamScheduleDTO;
 export type MockTestResultDTO = Server.MockTestResultDTO;
 export type DashboardStatsDTO = Server.DashboardStatsDTO;
-export type ExamSubTopicDTO = Server.ExamSubTopicDTO;
-export type ExamTopicGroupDTO = Server.ExamTopicGroupDTO;
+export type ExamSelectionNodeDTO = Server.ExamSelectionNodeDTO;
 export type ExamSubjectDTO = Server.ExamSubjectDTO;
 export type ExamSelectionRequest = Server.ExamSelectionRequest;
 export type ExamQuestionDTO = Server.ExamQuestionDTO;

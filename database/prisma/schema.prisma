@@ -94,12 +94,22 @@ model Subject {
 }
 
 model Topic {
-  id           Int    @id @default(autoincrement())
+  id           Int     @id @default(autoincrement())
   subjectId    Int
   subject      Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
-  groupName    String // e.g. "ভাষা (১৫ নম্বর)"
-  name         String // sub-topic name
+  parentId     Int?
+  parent       Topic?  @relation("TopicTree", fields: [parentId], references: [id], onDelete: Cascade)
+  children     Topic[] @relation("TopicTree")
+  name         String // display name (taxonomy node name), e.g. "০২_নিরাপ্তা_ও_ক্ষমতা"
+  slug         String // path segment (defaults to name)
+  path         String // full content path from subject root, e.g. "04_আন্তর্জাতিক_বিষয়াবলি/০২_নিরাপ্তা_ও_ক্ষমতা/আন্তর্জাতিক_নিরাপ্তা"
+  depth        Int    @default(0)
+  sortOrder    Int    @default(0)
   questionCount String @default("0")
+  questions    Question[]
+
+  @@unique([subjectId, path])
+  @@index([subjectId, parentId])
 }
 
 // ── Questions ─────────────────────────────────────────────
@@ -107,8 +117,11 @@ model Question {
   id             Int      @id @default(autoincrement())
   subjectId      Int
   subject        Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
-  topic          String   @default("") // topic group (Topic.groupName)
-  subtopic       String   @default("") // subtopic (Topic.name)
+  topicId        Int?
+  leaf           Topic?   @relation(fields: [topicId], references: [id], onDelete: SetNull)
+  path           String   @default("") // full leaf content path, e.g. "04_আন্তর্জাতিক_বিষয়াবলি/০২_নিরাপ্তা_ও_ক্ষমতা/আন্তর্জাতিক_নিরাপ্তা"
+  topic          String   @default("") // topic group display name (depth-1 node)
+  subtopic       String   @default("") // leaf display name (Topic.name)
   question       String
   options        Json // string[]
   correctAnswer  String
@@ -122,6 +135,7 @@ model Question {
   attempts       QuestionAttempt[]
 
   @@index([subjectId, difficulty])
+  @@index([subjectId, path])
   @@index([subjectId, topic])
   @@index([subjectId, topic, subtopic])
 }

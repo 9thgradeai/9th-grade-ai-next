@@ -16,8 +16,6 @@ import { join } from "path";
 
 import type { Client } from "../../frontend/lib/types";
 import {
-  SUBJECTS,
-  TOPIC_TREES,
   QUESTION_BANK_CATEGORIES,
   ARCHIVE_CATEGORIES,
   FLASH_NEWS,
@@ -36,8 +34,6 @@ import { seedQuestions } from "../../scripts/seed-questions";
 
 const prisma = new PrismaClient();
 
-type TopicTree = Record<string, { name: string; subTopics: { name: string; questions: string }[] }[]>;
-
 type SeedUser = {
   id: number;
   name: string;
@@ -47,23 +43,6 @@ type SeedUser = {
   role?: string;
   createdAt?: string;
 };
-
-function parseTopics(tree: TopicTree) {
-  const rows: { subject: string; groupName: string; name: string; questionCount: string }[] = [];
-  for (const [subject, groups] of Object.entries(tree)) {
-    for (const group of groups) {
-      for (const sub of group.subTopics) {
-        rows.push({
-          subject,
-          groupName: group.name,
-          name: sub.name,
-          questionCount: sub.questions ?? "0",
-        });
-      }
-    }
-  }
-  return rows;
-}
 
 async function main() {
   console.log("🌱 Seeding 9Th-Grade AI database...");
@@ -149,39 +128,10 @@ async function main() {
     console.log("  ✓ demo account created (demo@9thgrade.ai / demo12345)");
   }
 
-  // --- Subjects + topics + question-bank categories ---
-  let subjectOrder = 0;
-  for (const s of SUBJECTS) {
-    const created = await prisma.subject.create({
-      data: {
-        nameBn: s.name,
-        nameEn: s.name,
-        icon: s.icon ?? "📘",
-        color: s.color ?? "text-emerald-400",
-        bg: s.bg ?? "bg-emerald-500/10",
-        sortOrder: subjectOrder++,
-      },
-    });
-
-    const tree = TOPIC_TREES[s.name];
-    if (tree) {
-      for (const group of tree) {
-        for (const sub of group.subTopics) {
-          await prisma.topic.create({
-            data: {
-              subjectId: created.id,
-              groupName: group.name,
-              name: sub.name,
-              questionCount: sub.questions ?? "0",
-            },
-          });
-        }
-      }
-    }
-  }
-  console.log(`  ✓ ${SUBJECTS.length} subjects + topics`);
-
-  // --- Questions (parsed from database/data/ques/*.txt) ---
+  // --- Subjects + recursive topics + questions (content taxonomy) ---
+  // seedQuestions owns the content taxonomy: it creates the 10 subjects, builds
+  // the recursive Topic tree from database/data/taxonomy.json and inserts all
+  // questions from database/data/ques.
   const questionCount = await seedQuestions(prisma);
   console.log(`  ✓ ${questionCount} questions (from database/data/ques)`);
 

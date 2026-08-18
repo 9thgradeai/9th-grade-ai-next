@@ -73,45 +73,72 @@ function allocateLargestRemainder(total: number, weights: number[]): number[] {
   return base;
 }
 
-// ── Selection tree (real counts, data-driven) ──────────────
+// ── Selection tree (real counts, data-driven, recursive) ──
+// The tree mirrors the recursive Topic taxonomy. Leaf question counts are
+// aggregated up the path chain so every node reports how many questions exist
+// under its whole subtree.
 export async function getExamSelectionTree(): Promise<ExamSubjectDTO[]> {
   try {
     const [subjects, topicRows, countRows] = await Promise.all([
       prisma.subject.findMany({ orderBy: { sortOrder: "asc" } }),
-      prisma.topic.findMany({ orderBy: { id: "asc" } }),
+      prisma.topic.findMany({
+        orderBy: [{ subjectId: "asc" }, { sortOrder: "asc" }, { id: "asc" }],
+      }),
       prisma.question.groupBy({
-        by: ["subjectId", "topic", "subtopic"],
+        by: ["subjectId", "path"],
         _count: { _all: true },
       }),
     ]);
 
-    const countMap = new Map<string, number>();
+    const countMap = new Map<number, Map<string, number>>();
     for (const row of countRows) {
-      countMap.set(`${row.subjectId}|${row.topic}|${row.subtopic}`, row._count._all);
+      let sub = countMap.get(row.subjectId);
+      if (!sub) {
+        sub = new Map();
+        countMap.set(row.subjectId, sub);
+      }
+      sub.set(row.path, row._count._all);
     }
 
+    const buildNode = (
+      topic: (typeof topicRows)[number],
+      childrenByParent: Map<string, (typeof topicRows)[number][]>,
+      counts: Map<string, number>,
+    ): ExamSubjectDTO["nodes"][number] => {
+      const children = (childrenByParent.get(String(topic.id)) ?? [])
+        .map((child) => buildNode(child, childrenByParent, counts))
+        .filter((child) => child.questionCount > 0);
+      const direct = counts.get(topic.path) ?? 0;
+      const questionCount = direct + children.reduce((acc, c) => acc + c.questionCount, 0);
+      return {
+        id: topic.id,
+        name: topic.name,
+        path: topic.path,
+        depth: topic.depth,
+        questionCount,
+        children,
+      };
+    };
+
     return subjects.map((s) => {
-      const groupMap = new Map<string, { groupName: string; subTopicMap: Map<string, number> }>();
-      for (const t of topicRows) {
-        if (t.subjectId !== s.id) continue;
-        const group = groupMap.get(t.groupName) ?? { groupName: t.groupName, subTopicMap: new Map<string, number>() };
-        const count = countMap.get(`${s.id}|${t.groupName}|${t.name}`) ?? 0;
-        group.subTopicMap.set(t.name, count);
-        groupMap.set(t.groupName, group);
+      const subjectTopics = topicRows.filter((t) => t.subjectId === s.id);
+      const childrenByParent = new Map<string, (typeof topicRows)[number][]>();
+      const roots: (typeof topicRows)[number][] = [];
+      for (const t of subjectTopics) {
+        if (t.parentId === null) {
+          roots.push(t);
+        } else {
+          const key = String(t.parentId);
+          if (!childrenByParent.has(key)) childrenByParent.set(key, []);
+          childrenByParent.get(key)!.push(t);
+        }
       }
 
-      const groups = Array.from(groupMap.values())
-        .map((g) => {
-          const subTopics = Array.from(g.subTopicMap.entries())
-            .map(([name, questionCount]) => ({ name, questionCount }))
-            .sort((a, b) => b.questionCount - a.questionCount || a.name.localeCompare(b.name, "bn"));
-          const groupCount = subTopics.reduce((acc, st) => acc + st.questionCount, 0);
-          return { groupName: g.groupName, questionCount: groupCount, subTopics };
-        })
-        .filter((g) => g.questionCount > 0)
-        .sort((a, b) => b.questionCount - a.questionCount);
-
-      const questionCount = groups.reduce((acc, g) => acc + g.questionCount, 0);
+      const counts = countMap.get(s.id) ?? new Map<string, number>();
+      const nodes = roots
+        .map((root) => buildNode(root, childrenByParent, counts))
+        .filter((node) => node.questionCount > 0);
+      const questionCount = nodes.reduce((acc, n) => acc + n.questionCount, 0);
       return {
         id: s.id,
         nameBn: s.nameBn,
@@ -120,12 +147,44 @@ export async function getExamSelectionTree(): Promise<ExamSubjectDTO[]> {
         color: s.color ?? "",
         bg: s.bg ?? "",
         questionCount,
-        groups,
+        nodes,
       };
     });
   } catch {
     throw new InternalServerError("Failed to fetch exam selection tree");
   }
+}
+
+// Leaf question counts per subject: path -> count. The path on a Question row
+// is always a leaf path, so this is the "available question pool" per subject.
+async function getLeafCounts(): Promise<Map<number, Map<string, number>>> {
+  const rows = await prisma.question.groupBy({
+    by: ["subjectId", "path"],
+    _count: { _all: true },
+  });
+  const map = new Map<number, Map<string, number>>();
+  for (const row of rows) {
+    let sub = map.get(row.subjectId);
+    if (!sub) {
+      sub = new Map();
+      map.set(row.subjectId, sub);
+    }
+    sub.set(row.path, row._count._all);
+  }
+  return map;
+}
+
+// Resolves the eligible leaf paths for a subject selection: the union of every
+// selected node's subtree. `paths: []` means the whole subject.
+function eligibleLeafPaths(
+  leafCounts: Map<number, Map<string, number>>,
+  subjectId: number,
+  paths: string[],
+): string[] {
+  const counts = leafCounts.get(subjectId) ?? new Map<string, number>();
+  const leaves = [...counts.keys()];
+  if (paths.length === 0) return leaves;
+  return leaves.filter((leaf) => paths.some((p) => leaf === p || leaf.startsWith(p + "/")));
 }
 
 // ── Validation ─────────────────────────────────────────────
@@ -158,15 +217,12 @@ function validateConfig(config: ExamSelectionRequest): Required<ExamSelectionReq
     if (!Number.isInteger(subject.subjectId) || subject.subjectId < 1) {
       throw new AppError(400, "Each subject needs a numeric subjectId.", "VALIDATION_ERROR");
     }
-    if (!Array.isArray(subject.groups)) {
-      throw new AppError(400, "Each subject needs a groups array.", "VALIDATION_ERROR");
+    if (!Array.isArray(subject.paths)) {
+      throw new AppError(400, "Each subject needs a paths array.", "VALIDATION_ERROR");
     }
-    for (const group of subject.groups) {
-      if (typeof group.groupName !== "string" || group.groupName.length === 0) {
-        throw new AppError(400, "Each group needs a groupName string.", "VALIDATION_ERROR");
-      }
-      if (!Array.isArray(group.subTopics)) {
-        throw new AppError(400, "Each group needs a subTopics array.", "VALIDATION_ERROR");
+    for (const path of subject.paths) {
+      if (typeof path !== "string" || path.length === 0) {
+        throw new AppError(400, "Each path must be a non-empty string.", "VALIDATION_ERROR");
       }
     }
   }
@@ -176,7 +232,7 @@ function validateConfig(config: ExamSelectionRequest): Required<ExamSelectionReq
   // the global questionCount with proportional (largest-remainder) allocation.
   const normalizedSubjects = config.subjects.map((s) => ({
     subjectId: s.subjectId,
-    groups: s.groups,
+    paths: s.paths,
     count: Number.isInteger(s.count) ? Math.max(0, s.count as number) : undefined,
   }));
   const hasPerSubjectCounts = normalizedSubjects.every((s) => s.count !== undefined);
@@ -216,11 +272,10 @@ function validateConfig(config: ExamSelectionRequest): Required<ExamSelectionReq
   };
 }
 
-function groupWhere(subjectId: number, group: { groupName: string; subTopics: string[] }) {
+function groupWhere(subjectId: number, paths: string[]) {
   return {
     subjectId,
-    topic: group.groupName,
-    ...(group.subTopics.length > 0 ? { subtopic: { in: group.subTopics } } : {}),
+    path: { in: paths },
   };
 }
 
@@ -237,21 +292,15 @@ export async function buildCustomExam(config: ExamSelectionRequest): Promise<Exa
     });
     const nameBySubject = new Map(subjectRows.map((s) => [s.id, s.nameBn]));
 
-    // Per-subject availability: whole subject vs. selected groups.
-    const subjectTotals = await Promise.all(
-      subjects.map(async (subject) => {
-        if (subject.groups.length === 0) {
-          const count = await prisma.question.count({ where: { subjectId: subject.subjectId } });
-          return count;
-        }
-        const where = {
-          subjectId: subject.subjectId,
-          OR: subject.groups.map((g) => groupWhere(subject.subjectId, g)),
-        };
-        const count = await prisma.question.count({ where });
-        return count;
-      }),
-    );
+    // Leaf question counts per subject drive availability + selection.
+    const leafCounts = await getLeafCounts();
+
+    // Per-subject availability: the union of every selected node's subtree.
+    const subjectTotals = subjects.map((subject) => {
+      const eligible = eligibleLeafPaths(leafCounts, subject.subjectId, subject.paths);
+      const counts = leafCounts.get(subject.subjectId) ?? new Map<string, number>();
+      return eligible.reduce((acc, p) => acc + (counts.get(p) ?? 0), 0);
+    });
 
     const totalAvailable = subjectTotals.reduce((acc, c) => acc + c, 0);
     const finalCount = Math.min(questionCount, totalAvailable);
@@ -272,35 +321,15 @@ export async function buildCustomExam(config: ExamSelectionRequest): Promise<Exa
         const allocation = subjectAllocations[si];
         if (allocation === 0) return;
 
-        const groups = subject.groups;
-        if (groups.length === 0) {
-          const ids = await pickQuestionIds(
-            { subjectId: subject.subjectId },
-            allocation,
-            seed + si * 131_071,
-          );
-          selected.push(...(await fetchQuestionsByIds(ids, nameBySubject)));
-          return;
-        }
+        const eligible = eligibleLeafPaths(leafCounts, subject.subjectId, subject.paths);
+        if (eligible.length === 0) return;
 
-        // Distribute the subject's share across its groups proportionally.
-        const groupTotals = await Promise.all(
-          groups.map((g) => prisma.question.count({ where: groupWhere(subject.subjectId, g) })),
+        const ids = await pickQuestionIds(
+          groupWhere(subject.subjectId, eligible),
+          allocation,
+          seed + si * 131_071,
         );
-        const groupAllocations = allocateLargestRemainder(allocation, groupTotals);
-
-        await Promise.all(
-          groups.map(async (g, gi) => {
-            const count = groupAllocations[gi];
-            if (count === 0) return;
-            const ids = await pickQuestionIds(
-              groupWhere(subject.subjectId, g),
-              count,
-              seed + si * 131_071 + gi * 65_537,
-            );
-            selected.push(...(await fetchQuestionsByIds(ids, nameBySubject)));
-          }),
-        );
+        selected.push(...(await fetchQuestionsByIds(ids, nameBySubject)));
       }),
     );
 
