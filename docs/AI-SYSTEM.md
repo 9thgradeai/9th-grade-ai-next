@@ -25,7 +25,7 @@ Tutor pipeline per request:
 1. Take the incoming `messages` array.
 2. `searchWeb(latestMessage)` → top 5 live results (skipped when no `TAVILY_API_KEY`).
 3. System prompt = `TUTOR_PERSONA` + optional web-search grounding block.
-4. Stream the reply from Groq (`openai/gpt-oss-120b`, `maxTokens: 2048`).
+4. Generate the reply with Groq `generateText` (`openai/gpt-oss-120b`, `maxTokens: 2048`), retried up to 3× (500ms backoff) on empty output or transient provider errors — Groq's reasoning models intermittently return empty and its free tier rate-limits under load. The final reply is then streamed to the client.
 5. Response headers expose `X-AI-Source`: `groq+web` / `groq` / `mock`.
 
 ## Agents / Tools
