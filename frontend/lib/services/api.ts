@@ -269,6 +269,33 @@ export const api = {
     return data.summary;
   },
 
+  submitPractice: async (
+    answers: { questionId: number; selected: string }[],
+  ): Promise<{ correct: number; total: number; score: number; pointsEarned: number }> => {
+    const response = await fetch("/api/practice/submit", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        "x-request-id": crypto.randomUUID(),
+      },
+      body: JSON.stringify({ answers }),
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      const body = await response.json().catch(() => ({ error: response.statusText }));
+      throw new ApiError(
+        typeof body.error === "string" ? body.error : response.statusText,
+        body.code ?? `HTTP_${response.status}`,
+        response.status,
+      );
+    }
+
+    const data = (await response.json()) as { summary: { correct: number; total: number; score: number; pointsEarned: number } };
+    return data.summary;
+  },
+
   documents: (): Promise<Server.DocumentDTO[]> =>
     request<{ documents: Server.DocumentDTO[] }>("/api/documents").then((d) => d.documents),
 

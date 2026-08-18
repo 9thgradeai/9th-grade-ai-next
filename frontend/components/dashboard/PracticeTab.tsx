@@ -1,32 +1,66 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { X, Plus, Check, Minus, ChevronDown, ChevronRight, Play, BookOpen, Timer, Zap } from "lucide-react";
-import { SUBJECTS, TOPIC_TREES, DEFAULT_TOPICS } from "@/lib/data";
+import { useState, useEffect, useMemo } from "react";
+import { motion } from "framer-motion";
+import {
+  X,
+  Check,
+  Minus,
+  Plus,
+  Play,
+  BookOpen,
+  Timer,
+  Zap,
+  ChevronLeft,
+  ChevronRight,
+  Trophy,
+  RotateCcw,
+  Target,
+  CheckCircle2,
+  XCircle,
+} from "lucide-react";
+import { SUBJECTS } from "@/lib/data";
 import { api } from "@/lib/services/api";
+import type { Server } from "@/lib/types";
+import MockTestTab from "./MockTestTab";
 
 type PracticeMode = "mock" | "quick";
 
-const MODES: { id: PracticeMode; label: string }[] = [
-  { id: "mock", label: "MOCK_TEST" },
-  { id: "quick", label: "QUICK_PRACTICE" },
+const MODES: { id: PracticeMode; label: string; hint: string }[] = [
+  { id: "mock", label: "MOCK_TEST", hint: "সময়সীমা সহ পূর্ণাঙ্গ মক পরীক্ষা" },
+  { id: "quick", label: "QUICK_PRACTICE", hint: "বিষয়ভিত্তিক দ্রুত প্র্যাকটিস" },
 ];
+
+const DIFFICULTY_LABEL: Record<string, string> = {
+  EASY: "সহজ",
+  MEDIUM: "মাঝারি",
+  HARD: "কঠিন",
+};
 
 export default function PracticeTab() {
   const [mode, setMode] = useState<PracticeMode>("quick");
-  const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [step, setStep] = useState(1);
-  const [expandedGroup, setExpandedGroup] = useState<string | null>(null);
-  const [selectedTopics, setSelectedTopics] = useState<Set<string>>(new Set());
-  const [quantity, setQuantity] = useState(25);
   const [subjects, setSubjects] = useState(SUBJECTS);
+  const [subjectCounts, setSubjectCounts] = useState<Record<string, number>>({});
 
-  // Load subjects from the database (fallback to static data).
+  const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
+  const [questions, setQuestions] = useState<Server.QuestionDTO[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
+
+  const [topicFilter, setTopicFilter] = useState<string | null>(null);
+  const [quantity, setQuantity] = useState(10);
+
+  const [sessionActive, setSessionActive] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [answers, setAnswers] = useState<Record<number, string>>({});
+  const [result, setResult] = useState<{ correct: number; total: number; score: number; pointsEarned: number } | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  // Load real subjects + real per-subject question counts.
   useEffect(() => {
     let cancelled = false;
-    (async () => {
+    void (async () => {
       try {
         const list = await api.subjects();
         if (!cancelled && list.length) {
@@ -42,51 +76,107 @@ export default function PracticeTab() {
       } catch {
         /* keep static fallback */
       }
+      try {
+        const all = await api.questions({ limit: 200 });
+        if (!cancelled) {
+          const counts: Record<string, number> = {};
+          for (const q of all) {
+            counts[q.subject] = (counts[q.subject] ?? 0) + 1;
+          }
+          setSubjectCounts(counts);
+        }
+      } catch {
+        /* ignore — counts just won't show */
+      }
     })();
     return () => {
       cancelled = true;
     };
   }, []);
 
-  const openDrawer = (subject: string) => {
+  const availableTopics = useMemo(() => {
+    return Array.from(new Set(questions.map((q) => q.topic))).filter(Boolean);
+  }, [questions]);
+
+  const sessionQuestions = useMemo(() => {
+    const filtered = topicFilter ? questions.filter((q) => q.topic === topicFilter) : questions;
+    return filtered.slice(0, quantity);
+  }, [questions, topicFilter, quantity]);
+
+  const answeredCount = Object.keys(answers).length;
+  const currentQuestion = sessionQuestions[currentIndex];
+  const totalQuestions = sessionQuestions.length;
+  const allAnswered = totalQuestions > 0 && answeredCount === totalQuestions;
+
+  const resetSession = () => {
+    setSelectedSubject(null);
+    setQuestions([]);
+    setTopicFilter(null);
+    setQuantity(10);
+    setSessionActive(false);
+    setCurrentIndex(0);
+    setAnswers({});
+    setResult(null);
+    setLoadError(null);
+    setSubmitError(null);
+  };
+
+  const startSession = async (subject: string) => {
     setSelectedSubject(subject);
-    setStep(1);
-    setSelectedTopics(new Set());
-    setExpandedGroup(null);
-    setIsDrawerOpen(true);
-  };
-
-  const closeDrawer = () => setIsDrawerOpen(false);
-
-  const toggleTopic = (topic: string) => {
-    setSelectedTopics((prev) => {
-      const next = new Set(prev);
-      if (next.has(topic)) next.delete(topic);
-      else next.add(topic);
-      return next;
-    });
-  };
-
-  const topics = selectedSubject ? (TOPIC_TREES[selectedSubject] ?? DEFAULT_TOPICS) : [];
-
-  const totalSelectedQuestions = () => {
-    let count = 0;
-    topics.forEach((group) => {
-      group.subTopics.forEach((st) => {
-        if (selectedTopics.has(st.name)) {
-          const match = st.questions.match(/\/\s*([\d.,]+K?)/);
-          if (match) {
-            const val = match[1];
-            count += val.endsWith("K") ? parseFloat(val) * 1000 : parseInt(val);
-          }
-        }
-      });
-    });
-    return count.toLocaleString();
+    setLoading(true);
+    setLoadError(null);
+    setResult(null);
+    setSubmitError(null);
+    setTopicFilter(null);
+    setQuantity(10);
+    setAnswers({});
+    setCurrentIndex(0);
+    try {
+      const list = await api.questions({ subject, limit: 200 });
+      if (list.length === 0) {
+        setLoadError("এই বিষয়ে এখনো কোনো প্রশ্ন যোগ করা হয়নি।");
+        setQuestions([]);
+      } else {
+        setQuestions(list);
+        setQuantity(Math.min(10, list.length));
+        setSessionActive(true);
+      }
+    } catch {
+      setLoadError("প্রশ্ন লোড করা যায়নি। আবার চেষ্টা করুন।");
+      setQuestions([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const adjustQuantity = (delta: number) => {
-    setQuantity((q) => Math.min(100, Math.max(5, q + delta)));
+    setQuantity((q) => Math.min(totalQuestions, Math.max(1, q + delta)));
+  };
+
+  const selectAnswer = (questionId: number, option: string) => {
+    setAnswers((prev) => ({ ...prev, [questionId]: option }));
+  };
+
+  const submitAnswers = async () => {
+    if (totalQuestions === 0) return;
+    setSubmitting(true);
+    setSubmitError(null);
+    try {
+      const summary = await api.submitPractice(
+        sessionQuestions.map((q) => ({ questionId: q.id, selected: answers[q.id] ?? "" })),
+      );
+      setResult(summary);
+    } catch {
+      setSubmitError("ফলাফল জমা দেওয়া যায়নি। আবার চেষ্টা করুন।");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const formatDuration = (sec: number) => {
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return `${m}:${String(s).padStart(2, "0")}`;
   };
 
   return (
@@ -95,241 +185,410 @@ export default function PracticeTab() {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex gap-2 bg-zinc-900/50 border border-emerald-500/20 rounded-lg p-1 w-fit"
+        className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4"
       >
-        {MODES.map((m) => (
-          <button
-            key={m.id}
-            onClick={() => setMode(m.id)}
-            className={`flex items-center gap-2 px-4 py-2 text-sm font-mono rounded-md transition-all ${
-              mode === m.id
-                ? "bg-emerald-500 text-zinc-950 shadow-neon-glow"
-                : "text-zinc-400 hover:text-white"
-            }`}
-          >
-            {m.id === "mock" ? <Timer className="w-4 h-4" /> : <Zap className="w-4 h-4" />}
-            [ {m.label} ]
-          </button>
-        ))}
+        <div className="flex gap-2 bg-zinc-900/50 border border-emerald-500/20 rounded-xl p-1 w-fit">
+          {MODES.map((m) => (
+            <button
+              key={m.id}
+              onClick={() => setMode(m.id)}
+              className={`flex items-center gap-2 px-4 py-2 text-sm font-mono rounded-lg transition-all ${
+                mode === m.id
+                  ? "bg-emerald-500 text-zinc-950 shadow-neon-glow"
+                  : "text-zinc-400 hover:text-white"
+              }`}
+            >
+              {m.id === "mock" ? <Timer className="w-4 h-4" /> : <Zap className="w-4 h-4" />}
+              [ {m.label} ]
+            </button>
+          ))}
+        </div>
+        <p className="text-xs text-zinc-500">
+          {MODES.find((m) => m.id === mode)?.hint}
+        </p>
       </motion.div>
 
       {mode === "mock" ? (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="glass rounded-terminal-rounded border border-terminal-border p-6 text-center"
-        >
-          <BookOpen className="w-12 h-12 text-emerald-400 mx-auto mb-3" />
-          <h3 className="text-lg font-semibold text-white mb-1">Adaptive Mock Test</h3>
-          <p className="text-sm text-zinc-400 mb-4">AI generates a full mock test based on your weak areas.</p>
-          <button className="px-6 py-3 bg-emerald-500 text-zinc-950 font-mono rounded hover:bg-emerald-400 transition-colors shadow-neon-glow">
-            [ Generate Mock Test ]
-          </button>
-        </motion.div>
+        <MockTestTab />
       ) : (
         <>
-          {/* Subject grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-            {subjects.map((subject, i) => (
-              <motion.button
-                key={subject.name}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: i * 0.03, type: "spring", stiffness: 300, damping: 20 }}
-                whileHover={{ y: -4 }}
-                whileTap={{ scale: 0.96 }}
-                onClick={() => openDrawer(subject.name)}
-                className="glass rounded-terminal-rounded border border-terminal-border p-4 flex flex-col items-center gap-2 hover:border-emerald-500/40 hover:shadow-neon-glow transition-all"
-              >
-                <div className={`w-12 h-12 rounded-lg ${subject.bg} flex items-center justify-center text-2xl`}>
-                  {subject.icon}
-                </div>
-                <span className={`text-xs font-mono text-center leading-tight ${subject.color}`}>
-                  {subject.name}
-                </span>
-                <span className="text-[10px] text-zinc-500 font-mono">SELECT_TOPICS →</span>
-              </motion.button>
-            ))}
-          </div>
-        </>
-      )}
-
-      {/* Drawer / Modal */}
-      <AnimatePresence>
-        {isDrawerOpen && selectedSubject && (
-          <>
-            {/* Backdrop */}
+          {!selectedSubject && (
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={closeDrawer}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
-            />
-
-            {/* Drawer */}
-            <motion.div
-              initial={{ y: "100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "100%" }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="fixed bottom-0 left-0 right-0 z-50 max-h-[90vh] overflow-y-auto bg-zinc-950 border-t-2 border-emerald-500/30 rounded-t-2xl shadow-neon-glow md:inset-0 md:m-auto md:max-w-lg md:max-h-[80vh] md:rounded-2xl"
-              role="dialog"
-              aria-modal="true"
-              aria-label="Topic selector"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
             >
-              {/* Header */}
-              <div className="terminal-window-bar sticky top-0 z-10">
-                <div className="dot close" onClick={closeDrawer} role="button" />
-                <div className="dot minimize" /><div className="dot maximize" />
-                <div className="flex-1 text-center text-xs text-zinc-400 font-mono">
-                   {"// STEP " + step + "/2: " + (step === 1 ? "SELECT_TOPICS" : "CONFIGURE")}
+              {/* Subject grid — real subjects + real counts */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+                {subjects.map((subject, i) => {
+                  const count = subjectCounts[subject.name];
+                  return (
+                    <motion.button
+                      key={subject.name}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: i * 0.03, type: "spring", stiffness: 300, damping: 20 }}
+                      whileHover={{ y: -4 }}
+                      whileTap={{ scale: 0.96 }}
+                      onClick={() => void startSession(subject.name)}
+                      className="glass rounded-2xl border border-terminal-border p-4 flex flex-col items-center gap-2 hover:border-emerald-500/40 hover:shadow-neon-glow transition-all"
+                    >
+                      <div className={`w-12 h-12 rounded-xl ${subject.bg} flex items-center justify-center text-2xl`}>
+                        {subject.icon}
+                      </div>
+                      <span className={`text-xs font-mono text-center leading-tight ${subject.color}`}>
+                        {subject.name}
+                      </span>
+                      <span className="text-[10px] text-zinc-500 font-mono">
+                        {count !== undefined ? `${count}টি প্রশ্ন` : "লোড হচ্ছে..."}
+                      </span>
+                    </motion.button>
+                  );
+                })}
+              </div>
+            </motion.div>
+          )}
+
+          {/* Loading state */}
+          {selectedSubject && loading && (
+            <div className="glass rounded-2xl border border-terminal-border p-10 text-center">
+              <p className="text-3xl mb-3 animate-pulse">⏳</p>
+              <p className="text-sm text-zinc-400 font-mono">প্রশ্ন লোড হচ্ছে...</p>
+            </div>
+          )}
+
+          {/* Error state */}
+          {selectedSubject && !loading && loadError && (
+            <div className="glass rounded-2xl border border-terminal-border p-10 text-center">
+              <p className="text-3xl mb-3">⚠️</p>
+              <p className="text-sm text-zinc-400">{loadError}</p>
+              <button
+                onClick={() => void startSession(selectedSubject)}
+                className="mt-4 px-4 py-2 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors"
+              >
+                আবার চেষ্টা করুন
+              </button>
+              <button
+                onClick={resetSession}
+                className="mt-4 ml-2 px-4 py-2 bg-zinc-800 text-zinc-300 font-mono text-sm rounded-lg hover:bg-zinc-700 transition-colors"
+              >
+                ফিরে যান
+              </button>
+            </div>
+          )}
+
+          {/* Empty state */}
+          {selectedSubject && !loading && !loadError && questions.length === 0 && !sessionActive && (
+            <div className="glass rounded-2xl border border-terminal-border p-10 text-center">
+              <p className="text-3xl mb-3">📭</p>
+              <p className="text-sm text-zinc-400">কোনো প্রশ্ন পাওয়া যায়নি।</p>
+              <button
+                onClick={resetSession}
+                className="mt-4 px-4 py-2 bg-zinc-800 text-zinc-300 font-mono text-sm rounded-lg hover:bg-zinc-700 transition-colors"
+              >
+                ফিরে যান
+              </button>
+            </div>
+          )}
+
+          {/* Session setup */}
+          {selectedSubject && sessionActive && !result && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="glass rounded-2xl border border-terminal-border p-5 md:p-6"
+            >
+              <div className="flex flex-wrap items-center justify-between gap-4 mb-5">
+                <div>
+                  <p className="text-xs text-zinc-500 font-mono uppercase tracking-widest">Quick Practice</p>
+                  <h3 className="text-lg font-bold text-white mt-1">{selectedSubject}</h3>
+                  <p className="text-xs text-zinc-500 mt-0.5">
+                    <span className="text-emerald-400 font-mono">{questions.length}</span>টি প্রশ্ন উপলব্ধ
+                  </p>
                 </div>
-                <button onClick={closeDrawer} className="text-zinc-500 hover:text-white transition-colors" aria-label="Close">
-                  <X className="w-4 h-4" />
+                <button
+                  onClick={resetSession}
+                  className="px-3 py-1.5 text-zinc-400 hover:text-white text-xs font-mono rounded-lg hover:bg-zinc-800 transition-colors flex items-center gap-1"
+                >
+                  <X className="w-3.5 h-3.5" /> বন্ধ করুন
                 </button>
               </div>
 
-              <div className="p-4 md:p-5">
-                <h3 className="text-lg font-bold text-white mb-1">{selectedSubject}</h3>
-                <p className="text-sm text-zinc-400 font-mono mb-4">
-                  {step === 1 ? "Select topics to practice" : "Configure your practice set"}
-                </p>
-
-                {/* STEP 1: Topics */}
-                {step === 1 && (
-                  <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                  >
-                    <div className="space-y-3 mb-24">
-                      {topics.map((group) => (
-                        <div key={group.name} className="glass rounded-terminal-rounded border border-terminal-border overflow-hidden">
-                          <button
-                            onClick={() => setExpandedGroup(expandedGroup === group.name ? null : group.name)}
-                            className="w-full flex items-center justify-between p-3 hover:bg-emerald-500/5 transition-colors"
-                          >
-                            <span className="text-sm font-medium text-white">{group.name}</span>
-                            <ChevronDown
-                              className={`w-4 h-4 text-emerald-400 transition-transform ${expandedGroup === group.name ? "rotate-180" : ""}`}
-                            />
-                          </button>
-                          <AnimatePresence>
-                            {expandedGroup === group.name && (
-                               <motion.div
-                                 initial={{ opacity: 0 }}
-                                 animate={{ opacity: 1 }}
-                                 exit={{ opacity: 0 }}
-                                 transition={{ duration: 0.25 }}
-                                 className="overflow-hidden"
-                               >
-                                <div className="divide-y divide-emerald-500/10">
-                                  {group.subTopics.map((st) => {
-                                    const isSelected = selectedTopics.has(st.name);
-                                    return (
-                                      <label
-                                        key={st.name}
-                                        className="flex items-center justify-between gap-3 p-3 cursor-pointer hover:bg-emerald-500/5 transition-colors"
-                                      >
-                                        <div className="flex items-center gap-3 flex-1">
-                                          <button
-                                            onClick={() => toggleTopic(st.name)}
-                                            className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${
-                                              isSelected
-                                                ? "bg-emerald-500 border-emerald-500 text-zinc-950"
-                                                : "border-emerald-500/30 text-transparent"
-                                            }`}
-                                            aria-label={`Toggle ${st.name}`}
-                                          >
-                                            <Check className="w-3.5 h-3.5" />
-                                          </button>
-                                          <span className={`text-sm ${isSelected ? "text-white" : "text-zinc-400"}`}>
-                                            {st.name}
-                                          </span>
-                                        </div>
-                                        <span className="text-xs text-emerald-400 font-mono">{st.questions}</span>
-                                      </label>
-                                    );
-                                  })}
-                                </div>
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
-                        </div>
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
-
-                {/* STEP 2: Quantity */}
-                {step === 2 && (
-                  <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    className="mb-24"
-                  >
-                    <div className="glass rounded-terminal-rounded border border-terminal-border p-5 text-center">
-                      <p className="text-sm text-zinc-400 font-mono mb-4">SELECT_QUESTION_QUANTITY</p>
-                      <div className="flex items-center justify-center gap-4 mb-4">
-                        <button
-                          onClick={() => adjustQuantity(-5)}
-                          className="w-10 h-10 rounded-lg bg-zinc-900 border border-emerald-500/20 flex items-center justify-center text-emerald-400 hover:border-emerald-500/40"
-                          aria-label="Decrease quantity"
-                        >
-                          <Minus className="w-4 h-4" />
-                        </button>
-                        <div className="text-4xl font-bold text-emerald-400 font-mono">{quantity}</div>
-                        <button
-                          onClick={() => adjustQuantity(5)}
-                          className="w-10 h-10 rounded-lg bg-zinc-900 border border-emerald-500/20 flex items-center justify-center text-emerald-400 hover:border-emerald-500/40"
-                          aria-label="Increase quantity"
-                        >
-                          <Plus className="w-4 h-4" />
-                        </button>
-                      </div>
-                      <div className="text-sm text-zinc-400 font-mono">
-                        Questions: <span className="text-emerald-400">{quantity}</span> • Time:{" "}
-                        <span className="text-emerald-400">{Math.round(quantity * 1.2)} min</span>
-                      </div>
-                      <div className="mt-4 p-3 bg-emerald-500/5 border border-emerald-500/20 rounded-lg">
-                        <p className="text-xs text-zinc-400">
-                          <span className="text-emerald-400 font-mono">{selectedTopics.size}</span> topics selected •{" "}
-                          <span className="text-emerald-400 font-mono">{totalSelectedQuestions()}</span> questions available
-                        </p>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-
-                {/* Sticky footer */}
-                <div className="sticky bottom-0 -mx-4 -mb-4 px-4 py-3 bg-zinc-950/95 backdrop-blur-md border-t border-emerald-500/20 flex items-center gap-2">
-                  {step === 2 && (
+              {/* Real topic chips */}
+              {availableTopics.length > 1 && (
+                <div className="mb-5">
+                  <p className="text-xs text-zinc-500 font-mono mb-2">টপিক ফিল্টার</p>
+                  <div className="flex flex-wrap gap-2">
                     <button
-                      onClick={() => setStep(1)}
-                      className="px-4 py-2.5 bg-transparent border border-emerald-500/30 text-zinc-300 font-mono text-sm rounded-lg hover:bg-emerald-500/10 transition-colors"
+                      onClick={() => setTopicFilter(null)}
+                      className={`px-3 py-1 rounded-lg text-xs font-mono border transition-colors ${
+                        topicFilter === null
+                          ? "bg-emerald-500 text-zinc-950 border-emerald-500"
+                          : "border-zinc-700 text-zinc-400 hover:border-emerald-500/40"
+                      }`}
                     >
-                      ← Back
+                      সবগুলো
                     </button>
-                  )}
+                    {availableTopics.map((t) => (
+                      <button
+                        key={t}
+                        onClick={() => {
+                          setTopicFilter(topicFilter === t ? null : t);
+                          setCurrentIndex(0);
+                        }}
+                        className={`px-3 py-1 rounded-lg text-xs font-mono border transition-colors ${
+                          topicFilter === t
+                            ? "bg-emerald-500 text-zinc-950 border-emerald-500"
+                            : "border-zinc-700 text-zinc-400 hover:border-emerald-500/40"
+                        }`}
+                      >
+                        {t}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Quantity */}
+              <div className="glass rounded-xl border border-terminal-border p-5 flex items-center justify-between gap-4">
+                <div>
+                  <p className="text-sm text-zinc-300 font-mono mb-1">প্রশ্নের সংখ্যা</p>
+                  <p className="text-xs text-zinc-500">
+                    উপলব্ধ: <span className="text-emerald-400 font-mono">{totalQuestions}টি</span>
+                  </p>
+                </div>
+                <div className="flex items-center gap-3">
                   <button
-                    onClick={() => setStep((s) => s + 1)}
-                    disabled={step === 1 && selectedTopics.size === 0}
-                    className="flex-1 py-2.5 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors flex items-center justify-center gap-2 shadow-neon-glow disabled:opacity-40 disabled:cursor-not-allowed"
+                    onClick={() => adjustQuantity(-1)}
+                    className="w-9 h-9 rounded-lg bg-zinc-900 border border-emerald-500/20 flex items-center justify-center text-emerald-400 hover:border-emerald-500/40"
+                    aria-label="কমান"
                   >
-                    {step === 1 ? (
-                      <>Next: Configure <ChevronRight className="w-4 h-4" /></>
-                    ) : (
-                      <>Execute → <Play className="w-4 h-4" /></>
-                    )}
+                    <Minus className="w-4 h-4" />
+                  </button>
+                  <span className="text-3xl font-bold text-emerald-400 font-mono w-10 text-center">{quantity}</span>
+                  <button
+                    onClick={() => adjustQuantity(1)}
+                    className="w-9 h-9 rounded-lg bg-zinc-900 border border-emerald-500/20 flex items-center justify-center text-emerald-400 hover:border-emerald-500/40"
+                    aria-label="বাড়ান"
+                  >
+                    <Plus className="w-4 h-4" />
                   </button>
                 </div>
               </div>
+
+              <button
+                onClick={() => {
+                  setSessionActive(true);
+                  setCurrentIndex(0);
+                }}
+                className="mt-4 w-full py-3 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-xl hover:bg-emerald-400 transition-colors flex items-center justify-center gap-2 shadow-neon-glow"
+              >
+                <Play className="w-4 h-4" /> প্র্যাকটিস শুরু করুন
+              </button>
             </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+          )}
+
+          {/* Active quiz session */}
+          {selectedSubject && sessionActive && !result && totalQuestions > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="glass rounded-2xl border border-emerald-500/30 overflow-hidden"
+            >
+              {/* Header */}
+              <div className="px-5 py-4 border-b border-terminal-border flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <BookOpen className="w-4 h-4 text-emerald-400" />
+                  <span className="text-sm font-medium text-white">{selectedSubject}</span>
+                  {topicFilter && (
+                    <span className="px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded text-[10px] font-mono text-emerald-400">
+                      {topicFilter}
+                    </span>
+                  )}
+                </div>
+                <span className="text-xs text-zinc-500 font-mono">
+                  প্রশ্ন {currentIndex + 1}/{totalQuestions}
+                </span>
+              </div>
+
+              <div className="p-5">
+                {/* Progress bar */}
+                <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden mb-6">
+                  <div
+                    className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all duration-300"
+                    style={{ width: `${totalQuestions > 0 ? (answeredCount / totalQuestions) * 100 : 0}%` }}
+                  />
+                </div>
+
+                {currentQuestion && (
+                  <div key={currentQuestion.id}>
+                    <div className="flex flex-wrap items-center gap-2 mb-3">
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-mono ${
+                        currentQuestion.difficulty === "EASY"
+                          ? "bg-emerald-500/10 text-emerald-400"
+                          : currentQuestion.difficulty === "MEDIUM"
+                            ? "bg-amber-500/10 text-amber-400"
+                            : "bg-red-500/10 text-red-400"
+                      }`}>
+                        {DIFFICULTY_LABEL[currentQuestion.difficulty] ?? currentQuestion.difficulty}
+                      </span>
+                      {currentQuestion.sourceExam && (
+                        <span className="px-2 py-0.5 bg-zinc-800 rounded text-[10px] font-mono text-zinc-400">
+                          {currentQuestion.sourceExam}
+                          {currentQuestion.year ? ` ${currentQuestion.year}` : ""}
+                        </span>
+                      )}
+                      <span className="text-[10px] text-zinc-500 font-mono ml-auto">
+                        {answeredCount}/{totalQuestions} উত্তর
+                      </span>
+                    </div>
+
+                    <h3 className="text-base font-medium text-white mb-5">{currentQuestion.question}</h3>
+
+                    <div className="space-y-2.5 mb-6">
+                      {currentQuestion.options.map((option, i) => {
+                        const isSelected = answers[currentQuestion.id] === option;
+                        return (
+                          <button
+                            key={i}
+                            onClick={() => selectAnswer(currentQuestion.id, option)}
+                            className={`w-full text-left p-3.5 rounded-xl border transition-all ${
+                              isSelected
+                                ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-300"
+                                : "bg-zinc-900/50 border-zinc-800 text-zinc-300 hover:border-emerald-500/20"
+                            }`}
+                          >
+                            <div className="flex items-center gap-3">
+                              <span className="w-6 h-6 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-xs font-mono flex-shrink-0">
+                                {String.fromCharCode(65 + i)}
+                              </span>
+                              <span className="text-sm">{option}</span>
+                              {isSelected && <Check className="w-4 h-4 text-emerald-400 ml-auto" />}
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Navigation */}
+                    <div className="flex items-center justify-between">
+                      <button
+                        onClick={() => setCurrentIndex((i) => Math.max(0, i - 1))}
+                        disabled={currentIndex === 0}
+                        className="px-4 py-2 bg-zinc-900 border border-zinc-800 text-zinc-400 font-mono text-sm rounded-lg hover:bg-zinc-800 transition-colors disabled:opacity-40 flex items-center gap-1"
+                      >
+                        <ChevronLeft className="w-4 h-4" /> আগের
+                      </button>
+                      <span className="text-xs text-zinc-500 font-mono">
+                        {currentIndex + 1} / {totalQuestions}
+                      </span>
+                      {currentIndex < totalQuestions - 1 ? (
+                        <button
+                          onClick={() => setCurrentIndex((i) => Math.min(totalQuestions - 1, i + 1))}
+                          className="px-4 py-2 bg-zinc-800 text-zinc-300 font-mono text-sm rounded-lg hover:bg-zinc-700 transition-colors flex items-center gap-1"
+                        >
+                          পরের <ChevronRight className="w-4 h-4" />
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => void submitAnswers()}
+                          disabled={!allAnswered || submitting}
+                          className="px-5 py-2 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors flex items-center gap-2 shadow-neon-glow disabled:opacity-40 disabled:cursor-not-allowed"
+                        >
+                          {submitting ? "জমা হচ্ছে..." : "ফলাফল জমা দিন"}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          )}
+
+          {/* Result panel */}
+          {selectedSubject && result && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.97 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="glass rounded-2xl border border-emerald-500/30 overflow-hidden"
+            >
+              <div className="p-6 text-center border-b border-terminal-border">
+                <Trophy className={`w-12 h-12 mx-auto mb-3 ${
+                  result.score >= 80 ? "text-amber-400" : result.score >= 50 ? "text-emerald-400" : "text-red-400"
+                }`} />
+                <h3 className="text-xl font-bold text-white mb-2">প্র্যাকটিস সম্পন্ন!</h3>
+                <div className="text-5xl font-bold font-mono text-emerald-400 mb-2">{result.score}%</div>
+                <p className="text-sm text-zinc-400 font-mono mb-1">
+                  {result.correct} / {result.total} সঠিক
+                </p>
+                <p className="text-xs text-zinc-500 font-mono">
+                  +{result.pointsEarned} পয়েন্ট অর্জিত
+                </p>
+                {submitError && (
+                  <p className="mt-3 text-xs text-red-400">{submitError}</p>
+                )}
+                <div className="flex items-center justify-center gap-3 mt-5">
+                  <button
+                    onClick={() => {
+                      setSessionActive(false);
+                      setResult(null);
+                      setAnswers({});
+                      setCurrentIndex(0);
+                    }}
+                    className="px-5 py-2.5 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-xl hover:bg-emerald-400 transition-colors flex items-center gap-2 shadow-neon-glow"
+                  >
+                    <RotateCcw className="w-4 h-4" /> আবার প্র্যাকটিস
+                  </button>
+                  <button
+                    onClick={resetSession}
+                    className="px-5 py-2.5 bg-zinc-900 border border-zinc-800 text-zinc-300 font-mono text-sm rounded-xl hover:bg-zinc-800 transition-colors flex items-center gap-2"
+                  >
+                    <Target className="w-4 h-4" /> অন্য বিষয়
+                  </button>
+                </div>
+              </div>
+
+              {/* Review */}
+              <div className="p-5 max-h-96 overflow-y-auto space-y-2">
+                {sessionQuestions.map((q, i) => {
+                  const userAnswer = answers[q.id];
+                  const isCorrect = userAnswer === q.correctAnswer;
+                  return (
+                    <div key={q.id} className={`p-3.5 rounded-xl border ${
+                      isCorrect ? "border-emerald-500/20" : "border-red-500/20"
+                    }`}>
+                      <div className="flex items-start gap-3">
+                        {isCorrect ? (
+                          <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                        ) : (
+                          <XCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
+                        )}
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm text-white mb-1.5">{i + 1}. {q.question}</p>
+                          <p className="text-xs text-zinc-500 font-mono">
+                            আপনার উত্তর:{" "}
+                            <span className={isCorrect ? "text-emerald-400" : "text-red-400"}>
+                              {userAnswer || "উত্তর দেওয়া হয়নি"}
+                            </span>
+                          </p>
+                          {!isCorrect && (
+                            <p className="text-xs text-emerald-400 font-mono mt-0.5">
+                              সঠিক উত্তর: {q.correctAnswer}
+                            </p>
+                          )}
+                          {q.explanation && (
+                            <p className="text-xs text-zinc-400 mt-1.5">{q.explanation}</p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </motion.div>
+          )}
+        </>
+      )}
     </div>
   );
 }
