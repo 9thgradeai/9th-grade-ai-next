@@ -14,7 +14,7 @@
     "test:ui": "vitest --ui",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "db:push": "prisma db push --schema database/prisma/schema.prisma",
+    "db:push": "prisma db push --accept-data-loss --schema database/prisma/schema.prisma",
     "db:seed": "prisma db seed --schema database/prisma/schema.prisma",
     "db:sync": "npm run db:clean && npm run db:push && npm run db:seed",
     "db:clean": "tsx scripts/clear-content.ts",
