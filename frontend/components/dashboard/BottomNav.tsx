@@ -3,7 +3,8 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { TABS, type TabId } from "@/lib/data";
-import { Home, Calendar, Zap, Brain, TrendingUp, MoreHorizontal, X, Bot, BookOpen, HardDrive } from "lucide-react";
+import { Home, Calendar, Zap, Brain, TrendingUp, MoreHorizontal, X, Bot, BookOpen, HardDrive, Settings } from "lucide-react";
+import LogoutButton from "./LogoutButton";
 
 const BOTTOM_TABS: { id: TabId; icon: typeof Home; short: string }[] = [
   { id: "home", icon: Home, short: "HOM" },
@@ -22,6 +23,7 @@ const TAB_ICONS: Record<TabId, typeof Home> = {
   "question-bank": BookOpen,
   progress: TrendingUp,
   offline: HardDrive,
+  settings: Settings,
 };
 
 interface BottomNavProps {
@@ -148,6 +150,9 @@ export default function BottomNav({ activeTab, onChange }: BottomNavProps) {
                     </button>
                   );
                 })}
+              </div>
+              <div className="border-t border-terminal-border mt-3 pt-2 px-4 pb-4">
+                <LogoutButton aria-label="Log out of your account" />
               </div>
             </motion.div>
           </motion.div>

@@ -199,3 +199,87 @@ export async function toggleStudyTask(
     throw new InternalServerError("Failed to toggle study task");
   }
 }
+
+export async function findUserById(userId: string): Promise<UserRecord | null> {
+  try {
+    const u = await prisma.user.findUnique({ where: { id: userId } });
+    if (!u) return null;
+    return {
+      id: u.id,
+      name: u.name,
+      email: u.email,
+      handle: u.handle,
+      passwordHash: u.passwordHash,
+      role: u.role === "ADMIN" ? "admin" : "student",
+      createdAt: u.createdAt.toISOString(),
+    };
+  } catch {
+    throw new InternalServerError("Failed to fetch user");
+  }
+}
+
+export async function updateUserProfile(
+  userId: string,
+  patch: { name?: string },
+): Promise<UserRecord> {
+  try {
+    const existing = await prisma.user.findUnique({ where: { id: userId } });
+    if (!existing) throw new NotFoundError("User not found");
+
+    const u = await prisma.user.update({
+      where: { id: userId },
+      data: { name: patch.name?.trim() ?? existing.name },
+    });
+
+    return {
+      id: u.id,
+      name: u.name,
+      email: u.email,
+      handle: u.handle,
+      passwordHash: u.passwordHash,
+      role: u.role === "ADMIN" ? "admin" : "student",
+      createdAt: u.createdAt.toISOString(),
+    };
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+    throw new InternalServerError("Failed to update profile");
+  }
+}
+
+export async function changeUserPassword(
+  userId: string,
+  currentPassword: string,
+  newPassword: string,
+): Promise<void> {
+  try {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new NotFoundError("User not found");
+
+    const match = await verifyPassword(user.passwordHash, currentPassword);
+    if (!match) {
+      throw new AppError(
+        401,
+        "Current password is incorrect.",
+        "INVALID_CURRENT_PASSWORD",
+      );
+    }
+
+    const passwordHash = await hash(newPassword, 10);
+    await prisma.user.update({ where: { id: userId }, data: { passwordHash } });
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+    throw new InternalServerError("Failed to change password");
+  }
+}
+
+export async function deleteUserAccount(userId: string): Promise<void> {
+  try {
+    const existing = await prisma.user.findUnique({ where: { id: userId } });
+    if (!existing) throw new NotFoundError("User not found");
+    // Related rows cascade (see schema onDelete: Cascade / SetNull).
+    await prisma.user.delete({ where: { id: userId } });
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+    throw new InternalServerError("Failed to delete account");
+  }
+}

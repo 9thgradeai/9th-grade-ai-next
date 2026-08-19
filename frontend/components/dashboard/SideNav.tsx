@@ -3,8 +3,9 @@
 
 import { motion } from "framer-motion";
 import { TABS, type TabId } from "@/lib/data";
-import { Home, Calendar, Zap, Brain, Bot, BookOpen, TrendingUp, HardDrive } from "lucide-react";
+import { Home, Calendar, Zap, Brain, Bot, BookOpen, TrendingUp, HardDrive, Settings } from "lucide-react";
 import { useAuth } from "@/lib/auth-ctx";
+import LogoutButton from "./LogoutButton";
 
 const TAB_ICONS: Record<TabId, typeof Home> = {
   home: Home,
@@ -15,6 +16,7 @@ const TAB_ICONS: Record<TabId, typeof Home> = {
   "question-bank": BookOpen,
   progress: TrendingUp,
   offline: HardDrive,
+  settings: Settings,
 };
 
 interface SideNavProps {
@@ -86,7 +88,7 @@ export default function SideNav({ activeTab, onChange }: SideNavProps) {
       </div>
 
       {/* User mini-profile */}
-      <div className="p-4 border-t border-white/10">
+      <div className="p-4 border-t border-white/10 space-y-2">
         <div className="flex items-center gap-3">
           <div className="relative">
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500/25 to-cyan-500/10 border border-emerald-500/30 flex items-center justify-center text-sm font-bold text-emerald-400">
@@ -99,6 +101,7 @@ export default function SideNav({ activeTab, onChange }: SideNavProps) {
             <p className="text-[10px] text-zinc-500 font-mono truncate">@{user?.handle ?? "student"}</p>
           </div>
         </div>
+        <LogoutButton aria-label="Log out of your account" />
       </div>
     </nav>
   );

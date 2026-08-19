@@ -4,6 +4,7 @@ import { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import type { Client } from "@/lib/types";
 import { AppError, handleApiError, getUserFriendlyMessage } from "@/lib/errors";
+import { account } from "@/lib/services/api";
 
 type AuthContextType = {
   user: Client.User | null;
@@ -11,6 +12,7 @@ type AuthContextType = {
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  updateProfile: (name: string) => Promise<Client.User>;
   isAuthenticated: boolean;
   hasRole: (role: "student" | "admin") => boolean;
   refreshToken: () => Promise<void>;
@@ -171,6 +173,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return user?.role === role;
   };
 
+  const updateProfile = async (name: string) => {
+    const { user: updated } = await account.updateProfile(name);
+    setUser(updated);
+    return updated;
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -179,6 +187,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         login,
         register,
         logout,
+        updateProfile,
         isAuthenticated,
         hasRole,
         refreshToken,

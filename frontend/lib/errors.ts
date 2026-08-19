@@ -55,6 +55,7 @@ export function getUserFriendlyMessage(error: AppError): string {
     SERVER_ERROR: "Server error. Please try again later.",
     UNKNOWN_ERROR: "Something went wrong. Please try again.",
     AUTH_INVALID_CREDENTIALS: "Invalid email or password.",
+    INVALID_CURRENT_PASSWORD: "Current password is incorrect.",
     USER_EMAIL_EXISTS:
       "An account with that email already exists. Try logging in instead.",
     RATE_LIMIT_EXCEEDED: "Too many attempts. Please wait a moment and try again.",

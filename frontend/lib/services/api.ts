@@ -382,3 +382,51 @@ export const api = {
     return response.json();
   },
 };
+
+// ── Account / settings methods (auth endpoints) ─────────────
+
+async function authRequest<T>(
+  url: string,
+  method: string,
+  body?: unknown,
+): Promise<T> {
+  const response = await fetch(url, {
+    method,
+    credentials: "include",
+    headers: {
+      ...(body !== undefined ? { "Content-Type": "application/json" } : {}),
+      "x-request-id": crypto.randomUUID(),
+    },
+    body: body !== undefined ? JSON.stringify(body) : undefined,
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    const payload = await response.json().catch(() => ({ error: response.statusText }));
+    throw new ApiError(
+      typeof payload.error === "string" ? payload.error : response.statusText,
+      payload.code ?? `HTTP_${response.status}`,
+      response.status,
+    );
+  }
+
+  if (response.status === 204) {
+    return undefined as T;
+  }
+  return response.json() as Promise<T>;
+}
+
+export const account = {
+  updateProfile: (name: string): Promise<{ user: Server.UserDTO }> =>
+    authRequest("/api/auth/profile", "PATCH", { name }),
+
+  changePassword: (currentPassword: string, newPassword: string, confirmPassword: string) =>
+    authRequest<{ success: boolean }>("/api/auth/change-password", "POST", {
+      currentPassword,
+      newPassword,
+      confirmPassword,
+    }),
+
+  deleteAccount: (): Promise<{ success: boolean }> =>
+    authRequest("/api/auth/account", "DELETE"),
+};

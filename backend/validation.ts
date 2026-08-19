@@ -9,6 +9,16 @@ export interface RegisterInput {
   password: string;
 }
 
+export interface UpdateProfileInput {
+  name?: string;
+}
+
+export interface ChangePasswordInput {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
 export interface QuestionSearchFilters {
   subject?: string;
   topic?: string;
@@ -68,6 +78,47 @@ export function validateRegisterInput(body: unknown): RegisterInput {
   }
 
   return { name: name.trim(), email: email.toLowerCase().trim(), password };
+}
+
+export function validateUpdateProfileInput(body: unknown): UpdateProfileInput {
+  if (!body || typeof body !== "object") {
+    throw new Error("Request body must be an object");
+  }
+
+  const record = body as Record<string, unknown>;
+  const name = record.name;
+
+  if (name === undefined) {
+    return {};
+  }
+  if (!isString(name) || name.trim().length < 2) {
+    throw new Error("Name must be at least 2 characters");
+  }
+
+  return { name: name.trim() };
+}
+
+export function validateChangePasswordInput(body: unknown): ChangePasswordInput {
+  if (!body || typeof body !== "object") {
+    throw new Error("Request body must be an object");
+  }
+
+  const record = body as Record<string, unknown>;
+  const currentPassword = record.currentPassword;
+  const newPassword = record.newPassword;
+  const confirmPassword = record.confirmPassword;
+
+  if (!isString(currentPassword) || currentPassword.length < 1) {
+    throw new Error("Current password is required");
+  }
+  if (!isString(newPassword) || newPassword.length < 8) {
+    throw new Error("New password must be at least 8 characters");
+  }
+  if (!isString(confirmPassword) || confirmPassword !== newPassword) {
+    throw new Error("Passwords do not match");
+  }
+
+  return { currentPassword, newPassword, confirmPassword };
 }
 
 export function validateQuestionSearchParams(params: URLSearchParams): QuestionSearchFilters {

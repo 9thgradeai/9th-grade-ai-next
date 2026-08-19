@@ -14,6 +14,7 @@ import AISolverTab from "@/components/dashboard/AISolverTab";
 import QuestionBankTab from "@/components/dashboard/QuestionBankTab";
 import ProgressTab from "@/components/dashboard/ProgressTab";
 import OfflineModeTab from "@/components/dashboard/OfflineModeTab";
+import SettingsTab from "@/components/dashboard/SettingsTab";
 
 const TAB_COMPONENTS: Record<TabId, React.ComponentType> = {
   home: HomeTab,
@@ -24,6 +25,7 @@ const TAB_COMPONENTS: Record<TabId, React.ComponentType> = {
   "question-bank": QuestionBankTab,
   progress: ProgressTab,
   offline: OfflineModeTab,
+  settings: SettingsTab,
 };
 
 export default function DashboardPage() {
