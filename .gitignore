@@ -37,3 +37,4 @@ prisma/dev.db-journal
 Thumbs.db
 tsconfig.tsbuildinfo
 .vercel
+.env*
