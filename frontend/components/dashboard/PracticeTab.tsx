@@ -18,6 +18,9 @@ import {
   Target,
   CheckCircle2,
   XCircle,
+  Loader2,
+  AlertTriangle,
+  Inbox,
 } from "lucide-react";
 import { SUBJECTS } from "@/lib/data";
 import { api } from "@/lib/services/api";
@@ -256,7 +259,7 @@ export default function PracticeTab() {
           {/* Loading state */}
           {selectedSubject && loading && (
             <div className="glass rounded-2xl border border-terminal-border p-10 text-center">
-              <p className="text-3xl mb-3 animate-pulse">⏳</p>
+              <Loader2 className="w-10 h-10 mx-auto mb-3 text-emerald-500 animate-spin" aria-hidden="true" />
               <p className="text-sm text-zinc-400 font-mono">প্রশ্ন লোড হচ্ছে...</p>
             </div>
           )}
@@ -264,7 +267,7 @@ export default function PracticeTab() {
           {/* Error state */}
           {selectedSubject && !loading && loadError && (
             <div className="glass rounded-2xl border border-terminal-border p-10 text-center">
-              <p className="text-3xl mb-3">⚠️</p>
+              <AlertTriangle className="w-10 h-10 mx-auto mb-3 text-amber-500" aria-hidden="true" />
               <p className="text-sm text-zinc-400">{loadError}</p>
               <button
                 onClick={() => void startSession(selectedSubject)}
@@ -284,7 +287,7 @@ export default function PracticeTab() {
           {/* Empty state */}
           {selectedSubject && !loading && !loadError && questions.length === 0 && !sessionActive && (
             <div className="glass rounded-2xl border border-terminal-border p-10 text-center">
-              <p className="text-3xl mb-3">📭</p>
+              <Inbox className="w-10 h-10 mx-auto mb-3 text-zinc-600" aria-hidden="true" />
               <p className="text-sm text-zinc-400">কোনো প্রশ্ন পাওয়া যায়নি।</p>
               <button
                 onClick={resetSession}

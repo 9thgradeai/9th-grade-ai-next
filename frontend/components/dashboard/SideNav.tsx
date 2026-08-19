@@ -29,7 +29,7 @@ export default function SideNav({ activeTab, onChange }: SideNavProps) {
 
   return (
     <nav
-      className="hidden md:flex flex-col w-64 h-screen sticky top-0 border-r border-terminal-border bg-zinc-950/80 backdrop-blur-xl z-30"
+      className="hidden lg:flex flex-col w-64 min-h-dvh sticky top-0 border-r border-terminal-border bg-glass-bg backdrop-blur-xl z-30"
       aria-label="Desktop navigation"
     >
       {/* Logo / Brand */}
@@ -50,7 +50,7 @@ export default function SideNav({ activeTab, onChange }: SideNavProps) {
             <button
               key={tab.id}
               onClick={() => onChange(tab.id)}
-              className={`relative w-full flex items-center gap-3 px-3 py-2.5 rounded-terminal-rounded text-left transition-all ${
+              className={`relative w-full flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-terminal-rounded text-left transition-all ${
                 isActive
                   ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30"
                   : "text-zinc-400 hover:text-white hover:bg-zinc-900/50 border border-transparent"

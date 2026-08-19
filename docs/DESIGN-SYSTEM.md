@@ -43,23 +43,30 @@
 
 ## Layout
 
-- **Dashboard**: Side navigation (desktop) + bottom navigation (mobile).
-- **Max width**: `max-w-4xl` for dashboard content.
-- **Padding**: `p-4 md:p-6 lg:p-8`.
+- **Dashboard**: Side navigation (desktop `lg:`, ≥1024px) + bottom navigation (below `lg:`).
+- **Top header**: Sticky responsive header with page title (desktop), logo (mobile), theme toggle, and notification bell.
+- **Max width**: `max-w-6xl` for dashboard content.
+- **Padding**: `p-4 sm:p-6 lg:p-8` for dashboard content; `px-4 sm:px-6` for landing sections.
+- **Bottom nav**: min `56px` touch targets, `pb-safe` for iOS home indicator, 5 primary tabs + "More" bottom sheet for overflow tabs.
 
 ## Responsive Behavior
 
-- Mobile-first approach.
-- Breakpoints: `md:` (768px), `lg:` (1024px).
-- Bottom nav hidden on desktop (`md:pb-0`).
-- Side nav visible on desktop (`md:ml-64`).
+- Mobile-first approach (default styles are mobile; scale up with `sm:`, `lg:`).
+- Breakpoints: `sm:` (640px), `lg:` (1024px) for navigation switching.
+- Bottom nav hidden on desktop (`lg:hidden`).
+- Side nav visible on desktop (`hidden lg:flex` + `lg:ml-64`).
+- `viewport-fit=cover` + `pt-safe`/`pb-safe` utilities for iOS safe areas.
+- No horizontal scroll: content uses `min-w-0`, fluid grids, and `overflow-x-auto` only for genuinely scrollable strips.
 
 ## Accessibility
 
 - Interactive elements use semantic HTML (`button`, `a`).
-- Focus visible rings: `focus-visible:ring-2 focus-visible:ring-emerald-400/60`.
+- Focus visible rings: `focus-visible:ring-2 focus-visible:ring-emerald-400/60` + global `:focus-visible` outline.
 - ARIA labels on icon-only buttons (e.g., notification bell).
-- Known gaps: modals lack `role="dialog"`, `aria-modal`, focus traps (see `docs/technical-reports/frontend-pitfalls.md`).
+- Modals/overlays expose `role="dialog"`, `aria-modal="true"`, Escape-to-close, and Tab focus traps (NotificationCenter, DailyQuizWidget, AITutorModal, FlashNewsModal, VoiceAITutor).
+- No emojis as structural icons — SVG icons from `lucide-react`.
+- Touch targets ≥44px on mobile; WCAG 2.2 pointer targets ≥24px on web.
+- `prefers-reduced-motion` respected globally; `scroll-padding-top` keeps anchored sections clear of the fixed header.
 
 ## Animation
 

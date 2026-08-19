@@ -10,6 +10,8 @@ import {
   Sparkles,
   Zap,
   Trophy,
+  ClipboardList,
+  Flag,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-ctx";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
@@ -276,7 +278,7 @@ export default function HomeTab() {
 
         {weakest.length === 0 ? (
           <div className="text-center py-8">
-            <p className="text-3xl mb-3">🎯</p>
+            <Target className="w-10 h-10 mx-auto mb-3 text-emerald-500/60" aria-hidden="true" />
             <p className="text-sm text-zinc-400">এখনো কোনো প্রশ্ন সমাধান করেননি।</p>
             <button
               onClick={() => setActiveTab("practice")}
@@ -336,7 +338,7 @@ export default function HomeTab() {
 
           {todaysTasks.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-3xl mb-3">📋</p>
+              <ClipboardList className="w-10 h-10 mx-auto mb-3 text-emerald-500/60" aria-hidden="true" />
               <p className="text-sm text-zinc-400">আজকের জন্য কোনো টাস্ক নেই।</p>
               <button
                 onClick={() => setActiveTab("study-planner")}
@@ -412,7 +414,7 @@ export default function HomeTab() {
 
           {results.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-3xl mb-3">🏁</p>
+              <Flag className="w-10 h-10 mx-auto mb-3 text-emerald-500/60" aria-hidden="true" />
               <p className="text-sm text-zinc-400">এখনো কোনো মক পরীক্ষা দেওয়া হয়নি।</p>
               <button
                 onClick={() => setActiveTab("practice")}

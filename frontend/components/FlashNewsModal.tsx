@@ -1,7 +1,7 @@
 /* src/components/FlashNewsModal.tsx */
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Client } from "@/lib/types";
 import { Volume2, Bookmark, BookmarkCheck, X, Clock, Calendar } from "lucide-react";
@@ -17,6 +17,7 @@ function FlashNewsModalContent({ news, onClose }: Props) {
   const [audioByNews, setAudioByNews] = useState<Record<string, boolean>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!news) return;
@@ -34,6 +35,7 @@ function FlashNewsModalContent({ news, onClose }: Props) {
 
     document.addEventListener("keydown", handleKeyDown);
     document.body.style.overflow = "hidden";
+    panelRef.current?.querySelector<HTMLElement>("button")?.focus();
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
@@ -94,6 +96,7 @@ function FlashNewsModalContent({ news, onClose }: Props) {
         aria-label={`News: ${news.title.bn}`}
       >
         <motion.div
+          ref={panelRef}
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}

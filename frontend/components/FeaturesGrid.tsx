@@ -58,7 +58,7 @@ export default function FeaturesGrid() {
   return (
     <section
       id="features"
-      className="py-24 md:py-32 px-4"
+      className="py-20 md:py-32 px-4 sm:px-6"
       aria-labelledby="features-heading"
     >
       <div className="max-w-7xl mx-auto">
@@ -75,7 +75,7 @@ export default function FeaturesGrid() {
           >
               {"// CORE CAPABILITIES"}
           </h2>
-          <h3 className="text-4xl md:text-5xl font-bold text-white mb-4">
+          <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
             Everything You Need to
             <br />
             <span className="text-emerald-500">Ace the Exam</span>

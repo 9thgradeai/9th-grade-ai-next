@@ -22,6 +22,7 @@ import {
   Clock,
   Flag,
   CircleDashed,
+  Loader2,
 } from "lucide-react";
 import { api } from "@/lib/services/api";
 import type { Server } from "@/lib/types";
@@ -525,14 +526,14 @@ export default function CustomExamTab() {
 
         {configLoading && (
           <div className="glass rounded-2xl border border-terminal-border p-10 text-center">
-            <p className="text-3xl mb-3 animate-pulse">⏳</p>
+            <Loader2 className="w-10 h-10 mx-auto mb-3 text-emerald-500 animate-spin" aria-hidden="true" />
             <p className="text-sm text-zinc-400 font-mono">বিষয় লোড হচ্ছে...</p>
           </div>
         )}
 
         {configError && (
           <div className="glass rounded-2xl border border-terminal-border p-10 text-center">
-            <p className="text-3xl mb-3">⚠️</p>
+            <AlertTriangle className="w-10 h-10 mx-auto mb-3 text-amber-500" aria-hidden="true" />
             <p className="text-sm text-zinc-400">{configError}</p>
             <button
               onClick={handleRetryConfig}
@@ -849,8 +850,9 @@ export default function CustomExamTab() {
                     </div>
 
                     {insufficient && (
-                      <p className="text-[11px] text-amber-300 mb-4">
-                        ⚠️ শুধু {availableTotal}টি প্রশ্ন উপলব্ধ — {totalCount}টি চাওয়া হয়েছে।
+                      <p className="text-[11px] text-amber-300 mb-4 flex items-center gap-1.5">
+                        <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true" />
+                        শুধু {availableTotal}টি প্রশ্ন উপলব্ধ — {totalCount}টি চাওয়া হয়েছে।
                       </p>
                     )}
 

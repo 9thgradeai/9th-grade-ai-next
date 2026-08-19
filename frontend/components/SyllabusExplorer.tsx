@@ -392,7 +392,7 @@ export default function SyllabusExplorer() {
   return (
     <section
       id="syllabus"
-      className="py-24 md:py-32 px-4 bg-zinc-900/30"
+      className="py-20 md:py-32 px-4 sm:px-6 bg-zinc-900/30"
       aria-labelledby="syllabus-heading"
     >
       <div className="max-w-7xl mx-auto">
@@ -409,7 +409,7 @@ export default function SyllabusExplorer() {
           >
             {"// SYLLABUS EXPLORER"}
           </h2>
-          <h3 className="text-4xl md:text-5xl font-bold text-white mb-4">
+          <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
             Complete BCS & Competitive Exam
             <br />
             <span className="text-emerald-500">Syllabus Coverage</span>
@@ -451,10 +451,10 @@ export default function SyllabusExplorer() {
                       <Icon className="w-6 h-6 text-emerald-500" />
                     </div>
                     <div className="min-w-0">
-                      <h4 className="text-lg font-semibold text-white truncate">
+                      <h4 className="text-base md:text-lg font-semibold text-white line-clamp-2">
                         {category.category}
                       </h4>
-                      <div className="flex flex-wrap gap-4 mt-1 text-sm text-zinc-400 font-mono">
+                      <div className="flex flex-wrap gap-2 sm:gap-4 mt-1 text-xs sm:text-sm text-zinc-400 font-mono">
                         <span>{totalQuestions.toLocaleString()} questions</span>
                         <span>{totalHours}h estimated</span>
                         <span>{overallProgress}% complete</span>
@@ -486,12 +486,13 @@ export default function SyllabusExplorer() {
                 <motion.div
                   initial={false}
                   animate={{
-                    maxHeight: isExpanded ? "1200px" : "0px",
+                    gridTemplateRows: isExpanded ? "1fr" : "0fr",
                     opacity: isExpanded ? 1 : 0,
                   }}
                   transition={{ duration: 0.3, ease: "easeInOut" }}
-                  className="overflow-hidden"
+                  className="grid"
                 >
+                  <div className="overflow-hidden">
                   <div className="border-t border-emerald-500/10 p-4 md:p-6 pt-4">
                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                       {category.topics.map((topic, topicIndex) => (
@@ -539,6 +540,7 @@ export default function SyllabusExplorer() {
                       ))}
                     </div>
                   </div>
+                  </div>
                 </motion.div>
               </motion.div>
             );
@@ -555,7 +557,7 @@ export default function SyllabusExplorer() {
         >
           <a
             href="/login?register=true"
-            className="inline-flex items-center gap-2 px-8 py-4 text-base font-medium text-zinc-950 bg-emerald-500 rounded hover:bg-emerald-400 transition-colors font-mono shadow-neon-glow"
+            className="inline-flex flex-wrap items-center justify-center gap-2 w-full sm:w-auto px-6 py-3.5 text-base font-medium text-zinc-950 bg-emerald-500 rounded hover:bg-emerald-400 transition-colors font-mono shadow-neon-glow"
           >
             [ Access Full Syllabus & Start Practicing ]
             <TrendingUp className="w-4 h-4" aria-hidden="true" />

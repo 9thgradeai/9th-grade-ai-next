@@ -3,10 +3,17 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
+import { Bot, X, Lightbulb, Calculator, FlaskConical } from "lucide-react";
 import { PRESET_PROMPTS } from "@/lib/data/ai";
 import type { TutorMessage } from "@/lib/types";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+
+const PRESET_ICONS: Record<string, typeof Lightbulb> = {
+  "physics-formulas": Lightbulb,
+  "math-shortcuts": Calculator,
+  "chemistry-table": FlaskConical,
+};
 
 function AITutorModalContent({ onClose }: { onClose?: () => void }) {
   const [messages, setMessages] = useState<TutorMessage[]>([]);
@@ -30,8 +37,30 @@ function AITutorModalContent({ onClose }: { onClose?: () => void }) {
   }, [messages]);
 
   useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
     const handler = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onCloseRef.current?.();
+      if (e.key === "Escape") {
+        onCloseRef.current?.();
+        return;
+      }
+      if (e.key !== "Tab") return;
+      const nodes = Array.from(
+        dialog.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+        ),
+      ).filter((el) => !el.hasAttribute("disabled"));
+      if (nodes.length === 0) return;
+      const first = nodes[0];
+      const last = nodes[nodes.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
@@ -131,47 +160,53 @@ function AITutorModalContent({ onClose }: { onClose?: () => void }) {
       className="fixed inset-0 z-50 flex flex-col bg-zinc-950 bg-opacity-90 backdrop-filter backdrop-blur-sm overflow-y-auto outline-none"
     >
       {/* Console Header */}
-      <div className="flex items-center justify-between p-4 bg-zinc-950 border border-emerald-500/30">
-        <div className="flex items-center gap-2">
-          <span className="text-emerald-500 text-xl font-bold">🤖 9Th-Grade AI Tutor</span>
-          <motion.span
-            className="text-emerald-500"
-            initial={{ scale: 0.9 }}
-            animate={{ scale: [1, 1.2, 1] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-          >
-            STATUS: ONLINE
-          </motion.span>
+      <div className="bg-zinc-950 border border-emerald-500/30 flex-shrink-0">
+        <div className="flex items-center justify-between gap-3 p-4">
+          <div className="flex items-center gap-2 min-w-0">
+            <Bot className="w-5 h-5 text-emerald-500 flex-shrink-0" aria-hidden="true" />
+            <span className="text-emerald-500 font-bold truncate">9Th-Grade AI Tutor</span>
+            <motion.span
+              className="text-emerald-500 hidden sm:inline"
+              initial={{ scale: 0.9 }}
+              animate={{ scale: [1, 1.2, 1] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            >
+              STATUS: ONLINE
+            </motion.span>
+          </div>
+
+          {onClose && (
+            <button
+              type="button"
+              onClick={onClose}
+              className="w-10 h-10 flex items-center justify-center text-zinc-400 hover:text-white transition-colors rounded-lg"
+              aria-label="Close AI Tutor"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
         </div>
 
-        {onClose && (
-          <button
-            type="button"
-            onClick={onClose}
-            className="text-zinc-400 hover:text-white transition-colors px-2 py-1"
-            aria-label="Close AI Tutor"
-          >
-            ✕
-          </button>
-        )}
-
-        <div className="flex gap-2">
-          {PRESET_PROMPTS.map((p, i) => (
-            <motion.button
-              key={p.id}
-              type="button"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1 }}
-              whileHover={{ scale: 1.05 }}
-              onClick={() => handlePresetClick(p.label)}
-              disabled={isGenerating}
-              className="cursor-pointer px-3 py-1 bg-emerald-500/10 rounded-md text-sm font-mono hover:bg-emerald-400 transition-colors flex items-center gap-1 disabled:opacity-50"
-            >
-              <span className="text-emerald-500" aria-hidden="true">{p.icon}</span>
-              <span className="text-zinc-400">{p.label.bn}</span>
-            </motion.button>
-          ))}
+        <div className="flex gap-2 px-4 pb-4 overflow-x-auto" role="group" aria-label="Quick prompt suggestions">
+          {PRESET_PROMPTS.map((p, i) => {
+            const PresetIcon = PRESET_ICONS[p.id] ?? Lightbulb;
+            return (
+              <motion.button
+                key={p.id}
+                type="button"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
+                whileHover={{ scale: 1.05 }}
+                onClick={() => handlePresetClick(p.label)}
+                disabled={isGenerating}
+                className="cursor-pointer flex-shrink-0 px-3 py-1.5 bg-emerald-500/10 rounded-md text-sm font-mono hover:bg-emerald-400 hover:text-zinc-950 transition-colors flex items-center gap-1.5 disabled:opacity-50"
+              >
+                <PresetIcon className="w-3.5 h-3.5 text-emerald-500" aria-hidden="true" />
+                <span className="text-zinc-300 whitespace-nowrap">{p.label.bn}</span>
+              </motion.button>
+            );
+          })}
         </div>
       </div>
 

@@ -112,7 +112,7 @@ export default function TerminalHero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-6"
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.1] mb-6"
             >
               Master Competitive Exams with
               <br />
@@ -133,18 +133,18 @@ export default function TerminalHero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
-              className="flex flex-wrap gap-4"
+              className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4"
             >
               <a
                 href="/login?register=true"
-                className="px-6 py-3 text-base font-medium text-zinc-950 bg-emerald-500 rounded hover:bg-emerald-400 transition-colors font-mono shadow-neon-glow flex items-center gap-2"
+                className="w-full sm:w-auto px-6 py-3.5 text-base font-medium text-zinc-950 bg-emerald-500 rounded hover:bg-emerald-400 transition-colors font-mono shadow-neon-glow flex items-center justify-center gap-2"
               >
                 [ Start Free Prep ]
                 <ChevronDown className="w-4 h-4" aria-hidden="true" />
               </a>
               <a
                 href="#features"
-                className="px-6 py-3 text-base font-medium text-zinc-100 border border-emerald-500/30 rounded hover:bg-emerald-500/10 transition-colors font-mono flex items-center gap-2"
+                className="w-full sm:w-auto px-6 py-3.5 text-base font-medium text-zinc-100 border border-emerald-500/30 rounded hover:bg-emerald-500/10 transition-colors font-mono flex items-center justify-center gap-2"
               >
                 [ Explore Features ]
               </a>
@@ -155,7 +155,7 @@ export default function TerminalHero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
-              className="mt-12 flex flex-wrap gap-8 text-center"
+              className="mt-12 grid grid-cols-2 gap-6 sm:flex sm:flex-wrap sm:gap-8 text-center"
             >
               <div>
                 <div className="text-3xl font-bold text-emerald-500 font-mono">50K+</div>
@@ -192,7 +192,7 @@ export default function TerminalHero() {
               </div>
 
               {/* Terminal content */}
-              <div className="p-4 md:p-6 font-mono text-sm leading-relaxed h-[500px] overflow-y-auto" ref={terminalRef}>
+              <div className="p-4 md:p-6 font-mono text-sm leading-relaxed h-[420px] sm:h-[500px] overflow-y-auto" ref={terminalRef}>
                 <div className="space-y-1">
                   {lines.map((line, i) => (
                     <motion.div

@@ -66,10 +66,10 @@ export default function LoginPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="relative w-full max-w-md glass rounded-terminal-rounded border border-terminal-border p-8 shadow-neon-glow"
+        className="relative w-full max-w-md glass rounded-terminal-rounded border border-terminal-border p-6 sm:p-8 shadow-neon-glow"
       >
         {/* Terminal Header */}
-        <div className="terminal-window-bar mb-6 -mx-8 -mt-8 rounded-t-terminal-rounded border-b border-terminal-border">
+        <div className="terminal-window-bar mb-6 -mx-6 sm:-mx-8 -mt-6 sm:-mt-8 rounded-t-terminal-rounded border-b border-terminal-border">
           <div className="dot close" />
           <div className="dot minimize" />
           <div className="dot maximize" />
@@ -219,7 +219,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-emerald-400 transition-colors"
+                className="absolute right-1.5 top-1/2 -translate-y-1/2 p-2 text-zinc-500 hover:text-emerald-400 transition-colors rounded-lg"
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}

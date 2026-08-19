@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Check, Trophy, Zap, ArrowRight } from "lucide-react";
+import { X, Check, Trophy, Zap, ArrowRight, Inbox } from "lucide-react";
 import { api } from "@/lib/services/api";
 import type { Server } from "@/lib/types";
 
@@ -15,6 +15,18 @@ export default function DailyQuizWidget() {
   const [showResult, setShowResult] = useState(false);
   const [summary, setSummary] = useState<{ correct: number; total: number; score: number; pointsEarned: number } | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  // Escape to close + focus the modal when it opens.
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsOpen(false);
+    };
+    document.addEventListener("keydown", onKeyDown);
+    dialogRef.current?.querySelector<HTMLElement>("button")?.focus();
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [isOpen]);
 
   useEffect(() => {
     let cancelled = false;
@@ -124,7 +136,7 @@ export default function DailyQuizWidget() {
         animate={{ opacity: 1 }}
         className="glass rounded-2xl border border-amber-500/20 p-6 flex flex-col items-center text-center"
       >
-        <p className="text-3xl mb-3">📭</p>
+        <Inbox className="w-10 h-10 mb-3 text-zinc-600" aria-hidden="true" />
         <h3 className="text-sm font-semibold text-white">আজকের জন্য কোনো কুইজ নেই</h3>
         <p className="text-xs text-zinc-500 mt-1">নতুন কুইজ প্রকাশিত হলে এখানে দেখা যাবে।</p>
         <button
@@ -144,9 +156,13 @@ export default function DailyQuizWidget() {
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
     >
       <motion.div
+        ref={dialogRef}
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         className="w-full max-w-lg bg-zinc-950 border border-amber-500/30 rounded-2xl shadow-2xl overflow-hidden"
+        role="dialog"
+        aria-modal="true"
+        aria-label="দৈনিক কুইজ"
       >
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-3 border-b border-zinc-800">

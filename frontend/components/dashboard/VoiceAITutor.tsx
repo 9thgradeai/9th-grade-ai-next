@@ -2,9 +2,15 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mic, MicOff, Send, X, Volume2, Loader2, Sparkles } from "lucide-react";
+import { Mic, MicOff, Send, X, Volume2, Loader2, Sparkles, Bot, User, GraduationCap, Lightbulb, Calculator, FlaskConical } from "lucide-react";
 import { PRESET_PROMPTS } from "@/lib/data/ai";
 import type { TutorMessage } from "@/lib/types";
+
+const PRESET_ICONS: Record<string, typeof Lightbulb> = {
+  "physics-formulas": Lightbulb,
+  "math-shortcuts": Calculator,
+  "chemistry-table": FlaskConical,
+};
 
 // Minimal typings for the (vendor-prefixed) Web Speech API, which isn't in
 // the standard DOM lib yet.
@@ -236,17 +242,19 @@ export default function VoiceAITutor() {
           >
             {/* Header */}
             <div className="flex items-center justify-between p-4 bg-zinc-950 border-b border-emerald-500/30">
-              <div className="flex items-center gap-3">
-                <span id="voice-tutor-title" className="text-emerald-500 text-xl font-bold">🤖 9Th-Grade AI Tutor</span>
+              <div className="flex items-center gap-3 min-w-0">
+                <Bot className="w-6 h-6 text-emerald-500 flex-shrink-0" aria-hidden="true" />
+                <span id="voice-tutor-title" className="text-emerald-500 font-bold truncate">9Th-Grade AI Tutor</span>
                 <span
                   aria-live="polite"
-                  className={`px-2 py-0.5 rounded-full text-xs font-mono ${
+                  className={`px-2 py-0.5 rounded-full text-xs font-mono hidden sm:inline-flex items-center gap-1 ${
                     isListening ? "bg-red-500/10 text-red-400 animate-pulse" :
                     isSpeaking ? "bg-emerald-500/10 text-emerald-400 animate-pulse" :
                     "bg-emerald-500/10 text-emerald-400"
                   }`}
                 >
-                  {isListening ? "🎤 LISTENING..." : isSpeaking ? "🔊 SPEAKING..." : "STATUS: ONLINE"}
+                  {isListening ? <Mic className="w-3 h-3" /> : isSpeaking ? <Volume2 className="w-3 h-3" /> : null}
+                  {isListening ? "LISTENING..." : isSpeaking ? "SPEAKING..." : "STATUS: ONLINE"}
                 </span>
               </div>
               <div className="flex items-center gap-2">
@@ -271,20 +279,23 @@ export default function VoiceAITutor() {
             {/* Quick Prompts */}
             <div className="px-4 py-2 bg-zinc-900/50 border-b border-emerald-500/10">
               <div className="flex gap-2 overflow-x-auto">
-                {PRESET_PROMPTS.map((p, i) => (
-                  <motion.button
-                    key={p.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.1 }}
-                    whileHover={{ scale: 1.05 }}
-                    onClick={() => handlePresetClick(p.label)}
-                    className="flex-shrink-0 px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-xs font-mono text-zinc-300 hover:bg-emerald-400 transition-colors flex items-center gap-1"
-                  >
-                    <span>{p.icon}</span>
-                    <span>{p.label.bn}</span>
-                  </motion.button>
-                ))}
+                {PRESET_PROMPTS.map((p, i) => {
+                  const PresetIcon = PRESET_ICONS[p.id] ?? Lightbulb;
+                  return (
+                    <motion.button
+                      key={p.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.1 }}
+                      whileHover={{ scale: 1.05 }}
+                      onClick={() => handlePresetClick(p.label)}
+                      className="flex-shrink-0 px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-xs font-mono text-zinc-300 hover:bg-emerald-400 hover:text-zinc-950 transition-colors flex items-center gap-1.5"
+                    >
+                      <PresetIcon className="w-3.5 h-3.5 text-emerald-500" aria-hidden="true" />
+                      <span>{p.label.bn}</span>
+                    </motion.button>
+                  );
+                })}
               </div>
             </div>
 
@@ -299,7 +310,7 @@ export default function VoiceAITutor() {
               <div className="space-y-3" ref={terminalRef} aria-live="polite" role="log">
                 {messages.length === 0 && (
                   <div className="text-center py-12">
-                    <div className="text-4xl mb-3">🎓</div>
+                    <GraduationCap className="w-12 h-12 mx-auto mb-3 text-emerald-500/60" aria-hidden="true" />
                     <p className="text-sm text-zinc-400 font-mono">
                       Hi! I&apos;m your AI Tutor. Ask me anything about your subjects.
                     </p>
@@ -320,8 +331,14 @@ export default function VoiceAITutor() {
                         : "bg-emerald-500/10 text-zinc-300"
                     }`}
                   >
-                    <span className={`text-lg flex-shrink-0 ${msg.role === "ai" ? "" : "hidden"}`}>
-                      {msg.role === "ai" ? "🤖" : "👤"}
+                    <span className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                      msg.role === "ai" ? "bg-emerald-500/15 text-emerald-400" : "bg-zinc-800 text-zinc-400"
+                    }`}>
+                      {msg.role === "ai" ? (
+                        <Bot className="w-4 h-4" aria-hidden="true" />
+                      ) : (
+                        <User className="w-4 h-4" aria-hidden="true" />
+                      )}
                     </span>
                     <div className="flex-1">
                       <p className="text-sm leading-relaxed">{msg.text}</p>

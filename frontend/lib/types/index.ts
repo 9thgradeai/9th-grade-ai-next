@@ -95,7 +95,6 @@ export namespace Client {
       bn: string;
       en: string;
     };
-    icon: string;
   };
 
   export type Flashcard = {

@@ -7,7 +7,6 @@ import type { FlashNews, Recommendation, PresetPrompt } from "@/lib/types";
 export const PRESET_PROMPTS: PresetPrompt[] = [
   {
     id: "physics-formulas",
-    icon: "💡",
     label: {
       bn: "৯ম শ্রেণীর পদার্থবিজ্ঞানের গতি সূত্রগুলো ব্যাখ্যা করো",
       en: "Explain the formula of motion for class 9 physics",
@@ -15,7 +14,6 @@ export const PRESET_PROMPTS: PresetPrompt[] = [
   },
   {
     id: "math-shortcuts",
-    icon: "📝",
     label: {
       bn: "উচ্চতর গণিতের ত্রিকোণমিতির শর্টকাট সূত্র দাও",
       en: "Give me the shortcut formulas for trigonometry in Higher Math",
@@ -23,7 +21,6 @@ export const PRESET_PROMPTS: PresetPrompt[] = [
   },
   {
     id: "chemistry-table",
-    icon: "⚡",
     label: {
       bn: "রসায়নের পর্যায় সারণি মনে রাখার সহজ উপায়",
       en: "Easy trick to remember the periodic table",

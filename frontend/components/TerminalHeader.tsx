@@ -48,7 +48,7 @@ export default function TerminalHeader() {
   }, [isMobileMenuOpen]);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 glass border-b border-terminal-border">
+    <header className="fixed top-0 left-0 right-0 z-50 glass border-b border-terminal-border pt-safe">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
         <div className="flex items-center justify-between h-16">
           {/* Logo & Status */}
@@ -67,7 +67,7 @@ export default function TerminalHeader() {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.3 }}
-              className="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full"
+              className="hidden sm:flex items-center gap-1.5 px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full"
             >
               <motion.span
                 className="w-2 h-2 rounded-full bg-emerald-500"
@@ -112,7 +112,7 @@ export default function TerminalHeader() {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2 rounded-lg hover:bg-zinc-800 transition-colors"
+            className="md:hidden p-2.5 rounded-lg hover:bg-zinc-800 transition-colors"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label="Toggle menu"
             aria-expanded={isMobileMenuOpen}
@@ -141,40 +141,40 @@ export default function TerminalHeader() {
           aria-label="Mobile navigation"
           hidden={!isMobileMenuOpen}
         >
-          <div className="py-4 space-y-2 border-t border-emerald-500/10">
-            {navLinks.map((link, i) => (
-              <motion.a
-                key={link.href}
-                href={link.href}
-                role="menuitem"
-                onClick={() => setIsMobileMenuOpen(false)}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.05 * (i + 1) }}
-                className="block px-2 py-2 text-base font-medium text-zinc-300 hover:text-emerald-400 font-mono"
-              >
-                {link.label}
-              </motion.a>
-            ))}
-            <div className="flex flex-col gap-2 pt-4 border-t border-emerald-500/10">
-              <Link
-                href="/login"
-                role="menuitem"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="px-4 py-2 text-center text-sm font-medium text-zinc-100 border border-emerald-500/30 rounded hover:bg-emerald-500/10 transition-colors font-mono"
-              >
-                [ Login ]
-              </Link>
-              <Link
-                href="/login?register=true"
-                role="menuitem"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="px-4 py-2 text-center text-sm font-medium text-zinc-950 bg-emerald-500 rounded hover:bg-emerald-400 transition-colors font-mono shadow-neon-glow"
-              >
-                [ Get Started ]
-              </Link>
+<div className="py-4 space-y-1 border-t border-emerald-500/10">
+              {navLinks.map((link, i) => (
+                <motion.a
+                  key={link.href}
+                  href={link.href}
+                  role="menuitem"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.05 * (i + 1) }}
+                  className="block px-3 py-3 min-h-[44px] flex items-center text-base font-medium text-zinc-300 hover:text-emerald-400 font-mono"
+                >
+                  {link.label}
+                </motion.a>
+              ))}
+              <div className="flex flex-col gap-2 pt-4 border-t border-emerald-500/10">
+                <Link
+                  href="/login"
+                  role="menuitem"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="px-4 py-3 min-h-[44px] flex items-center justify-center text-center text-sm font-medium text-zinc-100 border border-emerald-500/30 rounded hover:bg-emerald-500/10 transition-colors font-mono"
+                >
+                  [ Login ]
+                </Link>
+                <Link
+                  href="/login?register=true"
+                  role="menuitem"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="px-4 py-3 min-h-[44px] flex items-center justify-center text-center text-sm font-medium text-zinc-950 bg-emerald-500 rounded hover:bg-emerald-400 transition-colors font-mono shadow-neon-glow"
+                >
+                  [ Get Started ]
+                </Link>
+              </div>
             </div>
-          </div>
         </motion.div>
       </nav>
     </header>
