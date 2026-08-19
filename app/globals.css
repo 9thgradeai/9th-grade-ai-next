@@ -176,6 +176,55 @@ html.light .glass-card {
   background: linear-gradient(165deg, rgb(255 255 255 / 0.92), rgb(240 253 244 / 0.75));
 }
 
+/* ── Dashboard light-mode scope ─────────────────────────────
+   The dashboard is authored with dark tokens (text-white, text-zinc-*,
+   border-zinc-*, bg-emerald-400, ...). Tailwind v4 emits those utilities
+   as var(--color-*) references, so re-mapping the tokens inside the
+   `.dashboard-shell` wrapper adapts the whole dashboard to light mode
+   without touching every component. Opacity-modified utilities (e.g.
+   bg-zinc-900/40) are baked to static values at build time; those are
+   replaced in components with the theme-aware helpers below. */
+@utility bg-subtle {
+  background-color: var(--surface-muted);
+}
+@utility border-default {
+  border-color: var(--border-muted);
+}
+
+html.light .dashboard-shell {
+  /* Neutral text scale — inverted for light surfaces */
+  --color-white: #101828;
+  --color-zinc-50: #1a2636;
+  --color-zinc-100: #223047;
+  --color-zinc-200: #2b3648;
+  --color-zinc-300: #415163;
+  --color-zinc-400: #55647a;
+  --color-zinc-500: #6b7a8f;
+  --color-zinc-600: #8b99a8;
+  --color-zinc-700: #cbd5d1;
+  --color-zinc-800: #dde5e2;
+  --color-zinc-900: #ffffff;
+
+  /* Accents — deepened for contrast on light surfaces */
+  --color-emerald-200: #047857;
+  --color-emerald-300: #047857;
+  --color-emerald-400: #047857;
+  --color-emerald-500: #059669;
+  --color-cyan-400: #0e7490;
+  --color-indigo-400: #4f46e5;
+  --color-sky-400: #0369a1;
+  --color-teal-400: #0f766e;
+  --color-red-300: #dc2626;
+  --color-red-400: #dc2626;
+  --color-amber-300: #b45309;
+  --color-amber-400: #b45309;
+  --color-amber-500: #b45309;
+  --color-orange-400: #c2410c;
+  --color-yellow-400: #a16207;
+  --color-violet-400: #6d28d9;
+  --color-fuchsia-400: #c026d3;
+}
+
 /* Gradient text (emerald → stellar cyan → indigo) */
 .text-gradient {
   background: linear-gradient(100deg, #34d399 0%, #22d3ee 48%, #818cf8 100%);

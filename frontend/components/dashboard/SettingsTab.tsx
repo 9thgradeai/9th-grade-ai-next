@@ -84,7 +84,7 @@ function SectionCard({
     <motion.section
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      className="glass-card rounded-2xl border border-white/10 p-5 sm:p-6"
+      className="glass-card rounded-2xl border border-default p-5 sm:p-6"
     >
       <header className="flex items-start gap-3 mb-5">
         <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center flex-shrink-0">
@@ -113,7 +113,7 @@ function Field({
       <input
         id={id}
         {...props}
-        className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900/60 border border-zinc-800 text-sm text-white placeholder-zinc-600 outline-none transition-colors focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20"
+        className="w-full px-3.5 py-2.5 rounded-xl bg-subtle border border-zinc-800 text-sm text-white placeholder-zinc-600 outline-none transition-colors focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20"
       />
     </label>
   );
@@ -286,7 +286,7 @@ export default function SettingsTab() {
                   }}
                   autoFocus
                   aria-label="Edit display name"
-                  className="px-3 py-1.5 rounded-lg bg-zinc-900/60 border border-emerald-500/40 text-sm text-white outline-none"
+                  className="px-3 py-1.5 rounded-lg bg-subtle border border-emerald-500/40 text-sm text-white outline-none"
                 />
                 <button
                   onClick={() => void saveName()}
@@ -332,21 +332,21 @@ export default function SettingsTab() {
           </p>
         ) : null}
         <dl className="grid sm:grid-cols-2 gap-3">
-          <div className="flex items-center gap-2.5 p-3 rounded-xl bg-zinc-900/40 border border-zinc-800">
+          <div className="flex items-center gap-2.5 p-3 rounded-xl bg-subtle border border-zinc-800">
             <Mail className="w-4 h-4 text-emerald-400 flex-shrink-0" aria-hidden="true" />
             <div className="min-w-0">
               <dt className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Email</dt>
               <dd className="text-sm text-zinc-200 truncate">{user?.email ?? "—"}</dd>
             </div>
           </div>
-          <div className="flex items-center gap-2.5 p-3 rounded-xl bg-zinc-900/40 border border-zinc-800">
+          <div className="flex items-center gap-2.5 p-3 rounded-xl bg-subtle border border-zinc-800">
             <AtSign className="w-4 h-4 text-emerald-400 flex-shrink-0" aria-hidden="true" />
             <div className="min-w-0">
               <dt className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Handle</dt>
               <dd className="text-sm text-zinc-200 truncate">@{user?.handle ?? "student"}</dd>
             </div>
           </div>
-          <div className="flex items-center gap-2.5 p-3 rounded-xl bg-zinc-900/40 border border-zinc-800 sm:col-span-2">
+          <div className="flex items-center gap-2.5 p-3 rounded-xl bg-subtle border border-zinc-800 sm:col-span-2">
             <Calendar className="w-4 h-4 text-emerald-400 flex-shrink-0" aria-hidden="true" />
             <div className="min-w-0">
               <dt className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Member since</dt>
@@ -415,7 +415,7 @@ export default function SettingsTab() {
         description="Tune how the app looks and notifies you"
       >
         <div className="space-y-3">
-          <div className="flex items-center justify-between gap-4 p-3.5 rounded-xl bg-zinc-900/40 border border-zinc-800">
+          <div className="flex items-center justify-between gap-4 p-3.5 rounded-xl bg-subtle border border-zinc-800">
             <div className="flex items-center gap-3">
               {theme === "dark" ? <Moon className="w-5 h-5 text-emerald-400" aria-hidden="true" /> : <Sun className="w-5 h-5 text-amber-400" aria-hidden="true" />}
               <div>
@@ -438,7 +438,7 @@ export default function SettingsTab() {
             </button>
           </div>
 
-          <div className="flex items-center justify-between gap-4 p-3.5 rounded-xl bg-zinc-900/40 border border-zinc-800">
+          <div className="flex items-center justify-between gap-4 p-3.5 rounded-xl bg-subtle border border-zinc-800">
             <div className="flex items-center gap-3">
               <Bell className="w-5 h-5 text-emerald-400" aria-hidden="true" />
               <div>
@@ -470,14 +470,14 @@ export default function SettingsTab() {
         description="Your privacy is in your hands"
       >
         <dl className="grid sm:grid-cols-2 gap-3 mb-5">
-          <div className="flex items-center gap-2.5 p-3 rounded-xl bg-zinc-900/40 border border-zinc-800">
+          <div className="flex items-center gap-2.5 p-3 rounded-xl bg-subtle border border-zinc-800">
             <MonitorSmartphone className="w-4 h-4 text-emerald-400 flex-shrink-0" aria-hidden="true" />
             <div className="min-w-0">
               <dt className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Signed in as</dt>
               <dd className="text-sm text-zinc-200 truncate">{user?.email ?? "—"}</dd>
             </div>
           </div>
-          <div className="flex items-center gap-2.5 p-3 rounded-xl bg-zinc-900/40 border border-zinc-800">
+          <div className="flex items-center gap-2.5 p-3 rounded-xl bg-subtle border border-zinc-800">
             <RefreshCw className="w-4 h-4 text-emerald-400 flex-shrink-0" aria-hidden="true" />
             <div className="min-w-0">
               <dt className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Session expiry</dt>
@@ -498,7 +498,7 @@ export default function SettingsTab() {
             onClick={() => {
               resetStore();
             }}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-zinc-700 bg-zinc-900/40 text-zinc-300 text-sm font-mono hover:border-zinc-500 hover:text-white transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-zinc-700 bg-subtle text-zinc-300 text-sm font-mono hover:border-zinc-500 hover:text-white transition-colors"
           >
             <Database className="w-4 h-4" aria-hidden="true" />
             Clear local data
@@ -540,7 +540,7 @@ export default function SettingsTab() {
       <motion.section
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="glass-card rounded-2xl border border-white/10 p-5 sm:p-6"
+        className="glass-card rounded-2xl border border-default p-5 sm:p-6"
       >
         <header className="flex items-start gap-3 mb-4">
           <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center flex-shrink-0">

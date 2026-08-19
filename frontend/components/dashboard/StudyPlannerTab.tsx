@@ -122,11 +122,11 @@ export default function StudyPlannerTab() {
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="text-center px-4 py-2 bg-zinc-900/50 border border-emerald-500/20 rounded-terminal-rounded">
+            <div className="text-center px-4 py-2 bg-subtle border border-emerald-500/20 rounded-terminal-rounded">
               <div className="text-2xl font-bold text-emerald-400 font-mono">{progress}%</div>
               <div className="text-[10px] text-zinc-500 font-mono uppercase">Progress</div>
             </div>
-            <div className="text-center px-4 py-2 bg-zinc-900/50 border border-emerald-500/20 rounded-terminal-rounded">
+            <div className="text-center px-4 py-2 bg-subtle border border-emerald-500/20 rounded-terminal-rounded">
               <div className="text-2xl font-bold text-emerald-400 font-mono">{completedMinutes}m</div>
               <div className="text-[10px] text-zinc-500 font-mono uppercase">Studied</div>
             </div>
@@ -157,7 +157,7 @@ export default function StudyPlannerTab() {
               className={`flex-shrink-0 px-4 py-3 rounded-terminal-rounded border transition-all ${
                 selectedDay === i
                   ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
-                  : "bg-zinc-900/50 border-zinc-800 text-zinc-400 hover:border-emerald-500/20"
+                  : "bg-subtle border-zinc-800 text-zinc-400 hover:border-emerald-500/20"
               }`}
             >
               <div className="text-sm font-mono font-medium">{dayName}</div>
@@ -184,7 +184,7 @@ export default function StudyPlannerTab() {
             {area}
           </span>
         ))}
-        <span className="px-3 py-1 bg-zinc-900/50 border border-zinc-800 rounded-full text-xs font-mono text-zinc-400">
+        <span className="px-3 py-1 bg-subtle border border-zinc-800 rounded-full text-xs font-mono text-zinc-400">
           {dayPlan.tasks.reduce((sum, t) => sum + t.duration, 0)} min total
         </span>
       </motion.div>

@@ -159,7 +159,7 @@ export default function DailyQuizWidget() {
         ref={dialogRef}
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        className="w-full max-w-lg bg-zinc-950 border border-amber-500/30 rounded-2xl shadow-2xl overflow-hidden"
+        className="w-full max-w-lg bg-[var(--surface-solid)] border border-amber-500/30 rounded-2xl shadow-2xl overflow-hidden"
         role="dialog"
         aria-modal="true"
         aria-label="দৈনিক কুইজ"
@@ -213,7 +213,7 @@ export default function DailyQuizWidget() {
                           className={`w-full text-left p-3 rounded-xl border transition-all ${
                             isSelected
                               ? "bg-amber-500/10 border-amber-500/30 text-amber-300"
-                              : "bg-zinc-900/50 border-zinc-800 text-zinc-300 hover:border-amber-500/20"
+                              : "bg-subtle border-zinc-800 text-zinc-300 hover:border-amber-500/20"
                           }`}
                         >
                           <div className="flex items-center gap-3">

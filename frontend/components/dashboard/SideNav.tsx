@@ -31,11 +31,11 @@ export default function SideNav({ activeTab, onChange }: SideNavProps) {
 
   return (
     <nav
-      className="hidden lg:flex flex-col w-64 min-h-dvh sticky top-0 border-r border-white/10 glass-card z-30"
+      className="hidden lg:flex flex-col w-64 min-h-dvh sticky top-0 border-r border-default glass-card z-30"
       aria-label="Desktop navigation"
     >
       {/* Logo / Brand */}
-      <div className="p-6 border-b border-white/10">
+      <div className="p-6 border-b border-default">
         <div className="flex items-center gap-2.5">
           <span className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 via-emerald-500 to-cyan-500 shadow-[0_0_20px_rgba(16,185,129,0.35)] flex items-center justify-center text-zinc-950 font-mono font-bold">
             {"⌁"}
@@ -59,7 +59,7 @@ export default function SideNav({ activeTab, onChange }: SideNavProps) {
               className={`relative w-full flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-left transition-colors ${
                 isActive
                   ? "text-emerald-400"
-                  : "text-zinc-400 hover:text-white hover:bg-white/[0.04]"
+                  : "text-zinc-400 hover:text-white hover:bg-subtle"
               }`}
               aria-current={isActive ? "page" : undefined}
             >
@@ -88,7 +88,7 @@ export default function SideNav({ activeTab, onChange }: SideNavProps) {
       </div>
 
       {/* User mini-profile */}
-      <div className="p-4 border-t border-white/10 space-y-2">
+      <div className="p-4 border-t border-default space-y-2">
         <div className="flex items-center gap-3">
           <div className="relative">
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500/25 to-cyan-500/10 border border-emerald-500/30 flex items-center justify-center text-sm font-bold text-emerald-400">

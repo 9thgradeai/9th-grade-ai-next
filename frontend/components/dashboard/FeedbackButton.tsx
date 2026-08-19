@@ -20,7 +20,7 @@ export const FeedbackButton = () => {
           className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center"
         >
           <div
-            className="bg-zinc-950 rounded-xl p-8 max-w-md w-full transform scale-95 opacity-0 transition-all duration-300 aria-modal"
+            className="bg-[var(--surface-solid)] rounded-xl p-8 max-w-md w-full transform scale-95 opacity-0 transition-all duration-300 aria-modal"
           >
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold text-stellar-cyan">Help Us Improve</h2>

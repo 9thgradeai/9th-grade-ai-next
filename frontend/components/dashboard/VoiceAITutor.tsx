@@ -238,10 +238,10 @@ export default function VoiceAITutor() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="voice-tutor-title"
-            className="fixed inset-0 z-50 flex flex-col bg-zinc-950 bg-opacity-95 backdrop-filter backdrop-blur-sm outline-none"
+            className="fixed inset-0 z-50 flex flex-col bg-[var(--surface-solid)] bg-opacity-95 backdrop-filter backdrop-blur-sm outline-none"
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-4 bg-zinc-950 border-b border-emerald-500/30">
+            <div className="flex items-center justify-between p-4 bg-[var(--surface-solid)] border-b border-emerald-500/30">
               <div className="flex items-center gap-3 min-w-0">
                 <Bot className="w-6 h-6 text-emerald-500 flex-shrink-0" aria-hidden="true" />
                 <span id="voice-tutor-title" className="text-emerald-500 font-bold truncate">9Th-Grade AI Tutor</span>
@@ -277,7 +277,7 @@ export default function VoiceAITutor() {
             </div>
 
             {/* Quick Prompts */}
-            <div className="px-4 py-2 bg-zinc-900/50 border-b border-emerald-500/10">
+            <div className="px-4 py-2 bg-subtle border-b border-emerald-500/10">
               <div className="flex gap-2 overflow-x-auto">
                 {PRESET_PROMPTS.map((p, i) => {
                   const PresetIcon = PRESET_ICONS[p.id] ?? Lightbulb;
@@ -353,7 +353,7 @@ export default function VoiceAITutor() {
               onSubmit={(e) => {
                 void handleSubmit(e);
               }}
-              className="p-4 bg-zinc-950 border-t border-emerald-500/20"
+              className="p-4 bg-[var(--surface-solid)] border-t border-emerald-500/20"
             >
               <div className="flex items-center gap-2">
                 <button
@@ -376,7 +376,7 @@ export default function VoiceAITutor() {
                   aria-label="Type your question or use voice input"
                   placeholder={isListening ? "Listening..." : "Type your question or use voice..."}
                   onChange={(e) => setInput(e.target.value)}
-                  className="flex-1 bg-zinc-900/50 border border-emerald-500/20 rounded-lg px-4 py-2.5 text-sm text-zinc-300 font-mono focus:outline-none focus:border-emerald-500/40"
+                  className="flex-1 bg-subtle border border-emerald-500/20 rounded-lg px-4 py-2.5 text-sm text-zinc-300 font-mono focus:outline-none focus:border-emerald-500/40"
                   disabled={isGenerating}
                 />
                 <button

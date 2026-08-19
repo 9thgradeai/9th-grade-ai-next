@@ -107,7 +107,7 @@ export default function AISolverTab() {
               className={`px-3 py-1.5 rounded-lg border text-xs font-mono transition-all ${
                 selectedSubject === subject
                   ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
-                  : "bg-zinc-900/50 border-zinc-800 text-zinc-400 hover:border-emerald-500/20"
+                  : "bg-subtle border-zinc-800 text-zinc-400 hover:border-emerald-500/20"
               }`}
             >
               {subject}
@@ -122,7 +122,7 @@ export default function AISolverTab() {
             className={`flex-1 py-2.5 rounded-lg border font-mono text-sm transition-all ${
               inputType === "text"
                 ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
-                : "bg-zinc-900/50 border-zinc-800 text-zinc-400"
+                : "bg-subtle border-zinc-800 text-zinc-400"
             }`}
           >
             Text Input
@@ -132,7 +132,7 @@ export default function AISolverTab() {
             className={`flex-1 py-2.5 rounded-lg border font-mono text-sm transition-all ${
               inputType === "image"
                 ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
-                : "bg-zinc-900/50 border-zinc-800 text-zinc-400"
+                : "bg-subtle border-zinc-800 text-zinc-400"
             }`}
           >
             <Camera className="w-4 h-4 inline mr-1" />
@@ -148,7 +148,7 @@ export default function AISolverTab() {
                 value={textInput}
                 onChange={(e) => setTextInput(e.target.value)}
                 placeholder="Type your question here... (e.g., 'Solve: 2x + 5 = 15')"
-                className="w-full h-32 bg-zinc-900/50 border border-emerald-500/20 rounded-terminal-rounded p-4 text-sm text-zinc-300 font-mono resize-none focus:outline-none focus:border-emerald-500/40"
+                className="w-full h-32 bg-subtle border border-emerald-500/20 rounded-terminal-rounded p-4 text-sm text-zinc-300 font-mono resize-none focus:outline-none focus:border-emerald-500/40"
               />
               {textInput && (
                 <button
@@ -178,7 +178,7 @@ export default function AISolverTab() {
                   />
                   <button
                     onClick={clearAll}
-                    className="absolute top-3 right-3 p-1.5 bg-zinc-900/80 border border-zinc-700 rounded-lg text-zinc-400 hover:text-white transition-colors"
+                    className="absolute top-3 right-3 p-1.5 bg-subtle border border-zinc-700 rounded-lg text-zinc-400 hover:text-white transition-colors"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -203,7 +203,7 @@ export default function AISolverTab() {
                 <button
                   key={i}
                   onClick={() => { setTextInput(ex.question); setInputType("text"); }}
-                  className="px-3 py-1.5 bg-zinc-900/50 border border-zinc-800 rounded-lg text-xs text-zinc-400 hover:border-emerald-500/20 hover:text-emerald-400 transition-all"
+                  className="px-3 py-1.5 bg-subtle border border-zinc-800 rounded-lg text-xs text-zinc-400 hover:border-emerald-500/20 hover:text-emerald-400 transition-all"
                 >
                   {ex.subject}: {ex.question.slice(0, 40)}...
                 </button>
@@ -277,7 +277,7 @@ export default function AISolverTab() {
             )}
 
             {/* Final Answer */}
-            <div className="p-4 bg-zinc-900/50 border border-emerald-500/20 rounded-terminal-rounded">
+            <div className="p-4 bg-subtle border border-emerald-500/20 rounded-terminal-rounded">
               <pre className="text-sm text-emerald-300 font-mono whitespace-pre-wrap">{solution}</pre>
             </div>
           </motion.div>

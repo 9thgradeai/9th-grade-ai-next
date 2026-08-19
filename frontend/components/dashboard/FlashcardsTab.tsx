@@ -281,7 +281,7 @@ export default function FlashcardsTab() {
                   className={`w-full h-full rounded-terminal-rounded border-2 cursor-pointer transition-all flex items-center justify-center p-6 ${
                     isFlipped
                       ? "bg-emerald-500/10 border-emerald-500/30"
-                      : "bg-zinc-900/50 border-zinc-800 hover:border-emerald-500/20"
+                      : "bg-subtle border-zinc-800 hover:border-emerald-500/20"
                   }`}
                 >
                   <div className="text-center max-w-lg">

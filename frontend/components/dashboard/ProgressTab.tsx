@@ -109,7 +109,7 @@ function WeeklyActivityChart({ data }: { data: { date: string; answered: number;
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
-                className="absolute top-4 right-4 bg-zinc-800/90 border border-emerald-500/30 rounded-lg p-3 backdrop-blur-sm"
+                className="absolute top-4 right-4 bg-subtle border border-emerald-500/30 rounded-lg p-3 backdrop-blur-sm"
               >
                 <div className="text-xs text-zinc-400 font-mono">
                   {new Date(d.date + "T00:00:00").toLocaleDateString("bn-BD", { weekday: "long" })}
@@ -183,7 +183,7 @@ function SubjectReportRow({ report, index }: { report: { name: string; score: nu
             className="overflow-hidden border-t border-emerald-500/10"
           >
             <div className="p-4 grid grid-cols-3 gap-3">
-              <div className="bg-zinc-900/50 rounded-lg p-3 text-center border border-zinc-800">
+              <div className="bg-subtle rounded-lg p-3 text-center border border-zinc-800">
                 <div className="text-lg font-bold text-white font-mono">{accuracy}%</div>
                 <div className="text-[10px] text-zinc-500 font-mono uppercase tracking-wider mt-1">নির্ভুলতা</div>
                 <div className="mt-2 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
@@ -195,11 +195,11 @@ function SubjectReportRow({ report, index }: { report: { name: string; score: nu
                   />
                 </div>
               </div>
-              <div className="bg-zinc-900/50 rounded-lg p-3 text-center border border-zinc-800">
+              <div className="bg-subtle rounded-lg p-3 text-center border border-zinc-800">
                 <div className="text-lg font-bold text-white font-mono">{report.attempted}</div>
                 <div className="text-[10px] text-zinc-500 font-mono uppercase tracking-wider mt-1">মোট প্রশ্ন</div>
               </div>
-              <div className="bg-zinc-900/50 rounded-lg p-3 text-center border border-zinc-800">
+              <div className="bg-subtle rounded-lg p-3 text-center border border-zinc-800">
                 <div className="text-lg font-bold text-white font-mono">{report.correct}</div>
                 <div className="text-[10px] text-zinc-500 font-mono uppercase tracking-wider mt-1">সঠিক উত্তর</div>
               </div>
@@ -311,7 +311,7 @@ export default function ProgressTab() {
         className="glass-card rounded-2xl border border-terminal-border p-5 md:p-6"
       >
         {loading && !stats ? (
-          <div className="h-52 animate-pulse bg-zinc-800/50 rounded-xl" />
+          <div className="h-52 animate-pulse bg-subtle rounded-xl" />
         ) : stats && stats.activity.some((a) => a.answered > 0) ? (
           <WeeklyActivityChart data={stats.activity} />
         ) : (

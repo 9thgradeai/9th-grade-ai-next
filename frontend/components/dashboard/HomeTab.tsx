@@ -76,7 +76,7 @@ function MetricTile({
   return (
     <motion.div
       whileHover={{ y: -3 }}
-      className="glass-card rounded-2xl border border-white/10 p-4 transition-[border-color,box-shadow] duration-300 hover:border-emerald-400/40 hover:shadow-neon-glow"
+      className="glass-card rounded-2xl border border-default p-4 transition-[border-color,box-shadow] duration-300 hover:border-emerald-400/40 hover:shadow-neon-glow"
     >
       <p className="text-2xl font-display font-semibold text-gradient">
         {value.toLocaleString("bn-BD")}
@@ -167,7 +167,7 @@ export default function HomeTab() {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="glass-card rounded-2xl border border-white/10 p-5 relative overflow-hidden"
+        className="glass-card rounded-2xl border border-default p-5 relative overflow-hidden"
       >
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(16,185,129,0.08),transparent_60%)] pointer-events-none" aria-hidden="true" />
         <div className="relative flex flex-wrap items-center justify-between gap-4">
@@ -366,7 +366,7 @@ export default function HomeTab() {
                   className={`flex items-center gap-3 p-3 rounded-xl border transition-colors ${
                     t.completed
                       ? "border-emerald-500/20 bg-emerald-500/5"
-                      : "border-zinc-800 bg-zinc-900/40"
+                      : "border-default bg-subtle"
                   }`}
                 >
                   <button
@@ -439,7 +439,7 @@ export default function HomeTab() {
               {results.slice(0, 4).map((r) => (
                 <div
                   key={r.id}
-                  className="flex items-center gap-3 p-3 rounded-xl border border-zinc-800 bg-zinc-900/40"
+                  className="flex items-center gap-3 p-3 rounded-xl border border-default bg-subtle"
                 >
                   <div
                     className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${

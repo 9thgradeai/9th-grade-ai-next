@@ -152,7 +152,7 @@ export default function NotificationCenter() {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="relative w-full max-w-md h-full bg-zinc-950 border-l border-terminal-border shadow-2xl overflow-hidden flex flex-col"
+              className="relative w-full max-w-md h-full bg-[var(--surface-solid)] border-l border-terminal-border shadow-2xl overflow-hidden flex flex-col"
             >
               {/* Header */}
               <div className="p-4 border-b border-terminal-border flex items-center justify-between">
@@ -209,7 +209,7 @@ export default function NotificationCenter() {
                         return (
                           <div
                             className={`p-3 rounded-2xl border transition-all cursor-pointer ${
-                              notif.read ? "border-zinc-800 bg-zinc-900/30" : "border-emerald-500/20 bg-emerald-500/5"
+                              notif.read ? "border-zinc-800 bg-subtle" : "border-emerald-500/20 bg-emerald-500/5"
                             }`}
                             onClick={() => void markAsRead(notif.id)}
                           >
@@ -258,7 +258,7 @@ export default function NotificationCenter() {
                         className={`p-3 rounded-2xl border ${
                           badge.unlocked
                             ? "border-emerald-500/20 bg-emerald-500/5"
-                            : "border-zinc-800 bg-zinc-900/30 opacity-60"
+                            : "border-zinc-800 bg-subtle opacity-60"
                         }`}
                       >
                         <div className="flex items-center gap-3">

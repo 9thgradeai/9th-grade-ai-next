@@ -34,7 +34,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   if (authLoading) {
     return (
-      <div className="min-h-dvh flex items-center justify-center">
+      <div className="dashboard-shell min-h-dvh flex items-center justify-center">
         <div className="flex items-center gap-3 text-emerald-400 font-mono text-sm">
           <span className="w-4 h-4 rounded-full border-2 border-emerald-500/30 border-t-emerald-400 animate-spin" aria-hidden="true" />
           Verifying credentials...
@@ -50,14 +50,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const activeLabel = TABS.find((t) => t.id === activeTab)?.label ?? "DASHBOARD";
 
   return (
-    <div className="min-h-dvh flex">
+    <div className="dashboard-shell min-h-dvh flex">
       {/* Desktop Side Navigation (>=1024px) */}
       <SideNav activeTab={activeTab} onChange={handleTabChange} />
 
       {/* Main Column */}
       <div className="flex-1 lg:ml-64 min-w-0 flex flex-col">
         {/* Sticky Top Header (all viewports) */}
-        <header className="sticky top-0 z-30 glass border-b border-white/10 pt-safe">
+        <header className="sticky top-0 z-30 glass border-b border-default pt-safe">
           <div className="flex items-center gap-3 px-4 sm:px-6 h-14 lg:h-16">
             {/* Mobile logo */}
             <Link

@@ -184,7 +184,7 @@ export default function PracticeTab() {
         animate={{ opacity: 1, y: 0 }}
         className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4"
       >
-        <div className="flex gap-2 bg-zinc-900/50 border border-emerald-500/20 rounded-xl p-1 w-fit">
+        <div className="flex gap-2 bg-subtle border border-emerald-500/20 rounded-xl p-1 w-fit">
           {MODES.map((m) => (
             <button
               key={m.id}
@@ -431,7 +431,7 @@ export default function PracticeTab() {
                             className={`w-full text-left p-3.5 rounded-xl border transition-all ${
                               isSelected
                                 ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-300"
-                                : "bg-zinc-900/50 border-zinc-800 text-zinc-300 hover:border-emerald-500/20"
+                                : "bg-subtle border-zinc-800 text-zinc-300 hover:border-emerald-500/20"
                             }`}
                           >
                             <div className="flex items-center gap-3">

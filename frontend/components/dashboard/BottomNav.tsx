@@ -116,7 +116,7 @@ export default function BottomNav({ activeTab, onChange }: BottomNavProps) {
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", stiffness: 300, damping: 32 }}
-              className="absolute bottom-0 left-0 right-0 rounded-t-2xl border-t border-terminal-border bg-zinc-950 shadow-2xl pb-safe"
+              className="absolute bottom-0 left-0 right-0 rounded-t-2xl border-t border-default bg-[var(--surface-solid)] shadow-2xl pb-safe"
             >
               <div className="flex items-center justify-between px-5 pt-4 pb-2">
                 <h2 className="text-sm font-semibold text-white font-mono">আরও অপশন</h2>
@@ -139,7 +139,7 @@ export default function BottomNav({ activeTab, onChange }: BottomNavProps) {
                       className={`flex flex-col items-center justify-center gap-2 rounded-xl border p-4 min-h-[72px] transition-all ${
                         active
                           ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
-                          : "border-zinc-800 bg-zinc-900/40 text-zinc-400 hover:border-emerald-500/30 hover:text-white"
+                          : "border-default bg-subtle text-zinc-400 hover:border-emerald-500/30 hover:text-white"
                       }`}
                       aria-current={active ? "page" : undefined}
                     >

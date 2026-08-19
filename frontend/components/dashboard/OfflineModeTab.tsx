@@ -103,7 +103,7 @@ export default function OfflineMode() {
           <h2 className="text-lg font-bold text-white">Offline Mode</h2>
         </div>
 
-        <div className="flex items-center justify-between p-4 bg-zinc-900/50 border border-emerald-500/20 rounded-terminal-rounded">
+        <div className="flex items-center justify-between p-4 bg-subtle border border-emerald-500/20 rounded-terminal-rounded">
           <div className="flex items-center gap-3">
             <div className={`w-10 h-10 rounded-lg border flex items-center justify-center ${
               isOnline ? "bg-emerald-500/10 border-emerald-500/20" : "bg-red-500/10 border-red-500/20"

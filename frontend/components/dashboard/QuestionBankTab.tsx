@@ -163,7 +163,7 @@ export default function QuestionBankTab() {
             className={`px-3 py-1.5 rounded-full text-xs font-mono border transition-all ${
               activeCategory === cat.label
                 ? "bg-emerald-500 text-zinc-950 border-emerald-500 shadow-neon-glow"
-                : "bg-zinc-900/50 border-emerald-500/20 text-zinc-400 hover:border-emerald-500/40 hover:text-white"
+                : "bg-subtle border-emerald-500/20 text-zinc-400 hover:border-emerald-500/40 hover:text-white"
             }`}
           >
             {cat.label} ({cat.count?.toLocaleString?.() ?? cat.count})

@@ -723,7 +723,7 @@ export default function CustomExamTab() {
                         className={`w-full text-left p-3 rounded-xl border transition-all ${
                           isSelected
                             ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-300"
-                            : "bg-zinc-900/50 border-zinc-800 text-zinc-300 hover:border-emerald-500/20"
+                            : "bg-subtle border-zinc-800 text-zinc-300 hover:border-emerald-500/20"
                         }`}
                       >
                         <div className="flex items-center gap-3">
@@ -852,7 +852,7 @@ export default function CustomExamTab() {
                 <p className="text-[10px] text-zinc-500 font-mono">ভুল</p>
                 <p className="text-lg font-bold text-red-400 font-mono">−{summary.wrong}</p>
               </div>
-              <div className="rounded-xl bg-zinc-800/50 border border-zinc-700 p-3">
+              <div className="rounded-xl bg-subtle border border-zinc-700 p-3">
                 <p className="text-[10px] text-zinc-500 font-mono">উত্তর দেওয়া হয়নি</p>
                 <p className="text-lg font-bold text-zinc-400 font-mono">{summary.unanswered}</p>
               </div>
