@@ -31,7 +31,7 @@ export default function SideNav({ activeTab, onChange }: SideNavProps) {
 
   return (
     <nav
-      className="hidden lg:flex flex-col w-64 min-h-dvh sticky top-0 border-r border-default glass-card z-30"
+      className="hidden lg:flex flex-col w-64 h-full shrink-0 border-r border-default glass-card z-30"
       aria-label="Desktop navigation"
     >
       {/* Logo / Brand */}
@@ -47,8 +47,8 @@ export default function SideNav({ activeTab, onChange }: SideNavProps) {
         </div>
       </div>
 
-      {/* Tab links */}
-      <div className="flex-1 py-6 px-3 space-y-1">
+      {/* Tab links — scroll internally if the list outgrows the shell */}
+      <div className="flex-1 min-h-0 overflow-y-auto py-6 px-3 space-y-1">
         {TABS.map((tab) => {
           const Icon = TAB_ICONS[tab.id];
           const isActive = activeTab === tab.id;

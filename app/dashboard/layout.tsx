@@ -50,14 +50,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const activeLabel = TABS.find((t) => t.id === activeTab)?.label ?? "DASHBOARD";
 
   return (
-    <div className="dashboard-shell min-h-dvh flex">
-      {/* Desktop Side Navigation (>=1024px) */}
+    <div className="dashboard-shell h-dvh overflow-hidden flex">
+      {/* Desktop Side Navigation (>=1024px) — locked column, never scrolls away */}
       <SideNav activeTab={activeTab} onChange={handleTabChange} />
 
       {/* Main Column */}
-      <div className="flex-1 lg:ml-64 min-w-0 flex flex-col">
-        {/* Sticky Top Header (all viewports) */}
-        <header className="sticky top-0 z-30 glass border-b border-default pt-safe">
+      <div className="flex-1 min-w-0 flex flex-col h-full">
+        {/* Fixed Top Header (all viewports) */}
+        <header className="shrink-0 z-30 glass border-b border-default pt-safe">
           <div className="flex items-center gap-3 px-4 sm:px-6 h-14 lg:h-16">
             {/* Mobile logo */}
             <Link
@@ -88,8 +88,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </header>
 
-        {/* Content */}
-        <main className="flex-1 pb-24 lg:pb-8">
+        {/* Scrollable Content — the only thing that moves */}
+        <main className="flex-1 min-h-0 overflow-y-auto pb-24 lg:pb-8">
           <div className="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 min-w-0">
             {children}
           </div>
