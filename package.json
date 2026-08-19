@@ -46,9 +46,12 @@
     "lucide-react": "^1.31.0",
     "next": "16.3.1",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "three": "^0.185.1"
   },
   "devDependencies": {
+    "@emnapi/core": "1.11.3",
+    "@emnapi/runtime": "1.11.3",
     "@storybook/addon-essentials": "^8.6.14",
     "@storybook/react": "^8.6.18",
     "@storybook/test": "^8.6.15",
@@ -58,11 +61,10 @@
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.5.0",
     "@types/bcryptjs": "^2.4.6",
-    "@emnapi/core": "1.11.3",
-    "@emnapi/runtime": "1.11.3",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/three": "^0.185.4",
     "@vitejs/plugin-react": "^5.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.3.1",

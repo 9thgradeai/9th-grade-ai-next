@@ -75,6 +75,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <div className="ml-auto flex items-center gap-1">
               <NotificationCenter />
               <ThemeToggle />
+
+              
+            
             </div>
           </div>
         </header>

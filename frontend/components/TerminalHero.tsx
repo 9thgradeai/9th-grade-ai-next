@@ -1,6 +1,9 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { trackHeroView, trackCtaClick } from "@/lib/analytics";
+import StarfieldBackground from "./StarfieldBackground";
+import { FeedbackButton } from "./dashboard/FeedbackButton";
 import { motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 
@@ -71,6 +74,15 @@ export default function TerminalHero() {
     }
   }, [lines]);
 
+  // Track hero view time
+  useEffect(() => {
+    const start = Date.now();
+    return () => {
+      const duration = Date.now() - start;
+      trackHeroView(duration);
+    };
+  }, []);
+
   const restartAnimation = () => {
     setLines([]);
     setCurrentIndex(0);
@@ -79,12 +91,14 @@ export default function TerminalHero() {
 
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center pt-16 pb-20 px-4 overflow-hidden">
+      
       {/* Background grid pattern */}
       <div className="absolute inset-0 opacity-5" aria-hidden="true">
          <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=%2760%27 height=%2760%27 viewBox=%270 0 60 60%27 xmlns=%27http://www.w3.org/2000/svg%27%3E%3Cg fill=%27none%27 fill-rule=%27evenodd%27%3E%3Cpath d=%27M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z%27 fill=%27%2310B981%27 fill-opacity=%270.4%27/%3E%3C/g%3E%3C/svg%3E')]" />
       </div>
 
       {/* Glow orbs */}
+      <StarfieldBackground />
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl animate-pulse" aria-hidden="true" />
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1s" }} aria-hidden="true" />
 
@@ -103,7 +117,7 @@ export default function TerminalHero() {
               transition={{ delay: 0.2 }}
               className="mb-6"
             >
-              <span className="text-emerald-500 font-mono text-sm tracking-wider uppercase">
+              <span className="text-stellar-cyan font-mono text-sm tracking-wider uppercase">
               {"// NEXT-GEN EXAM INTELLIGENCE"}
               </span>
             </motion.div>
@@ -112,18 +126,18 @@ export default function TerminalHero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.1] mb-6"
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-stellar-cyan leading-[1.1] mb-6"
             >
               Master Competitive Exams with
               <br />
-              <span className="text-emerald-500">AI-Driven Precision</span>
+              <span className="text-stellar-cyan">AI-Driven Precision</span>
             </motion.h1>
 
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="text-lg md:text-xl text-zinc-300 max-w-xl mb-8 leading-relaxed"
+              className="text-lg md:text-xl max-w-xl mb-8 leading-relaxed" style={{ textShadow: "0 2px 4px rgba(0,0,0,0.5)" }}
             >
               Adaptive mock tests, automated flashcards, AI doubt solving, and daily streak tracking —
               all powered by cutting-edge AI to help you ace BCS, Bank, and Teacher recruitment exams.
@@ -135,17 +149,19 @@ export default function TerminalHero() {
               transition={{ delay: 0.5 }}
               className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4"
             >
-              <a
+<a
                 href="/login?register=true"
+                onClick={() => trackCtaClick("primary")}
                 className="w-full sm:w-auto px-6 py-3.5 text-base font-medium text-zinc-950 bg-emerald-500 rounded hover:bg-emerald-400 transition-colors font-mono shadow-neon-glow flex items-center justify-center gap-2"
-              >
+                >
                 [ Start Free Prep ]
                 <ChevronDown className="w-4 h-4" aria-hidden="true" />
               </a>
-              <a
+<a
                 href="#features"
-                className="w-full sm:w-auto px-6 py-3.5 text-base font-medium text-zinc-100 border border-emerald-500/30 rounded hover:bg-emerald-500/10 transition-colors font-mono flex items-center justify-center gap-2"
-              >
+                onClick={() => trackCtaClick("secondary")}
+                className="w-full sm:w-auto px-6 py-3.5 text-base font-medium text-zinc-100 border border-nebula-purple/30 rounded hover:bg-nebula-purple/10 transition-colors font-mono flex items-center justify-center gap-2"
+                >
                 [ Explore Features ]
               </a>
             </motion.div>
@@ -207,7 +223,7 @@ export default function TerminalHero() {
                     >
                       {line.type === "command" && (
                         <>
-                          <span className="text-emerald-500">$ </span>
+                          <span className="text-stellar-cyan">$ </span>
                           <span className="cursor-blink">{line.text.replace("█", "")}</span>
                         </>
                       )}
@@ -268,6 +284,7 @@ export default function TerminalHero() {
         <span className="text-xs font-mono uppercase tracking-wider">Scroll</span>
         <ChevronDown className="w-5 h-5" />
       </motion.div>
-    </section>
+    <FeedbackButton />
+</section>
   );
 }

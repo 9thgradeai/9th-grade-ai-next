@@ -9,6 +9,11 @@
   --color-emerald-500: #10B981;
   --color-emerald-50: #F0FDF4;
   --color-emerald-100: #D1F2EB;
+/* Cosmic theme colors */
+  --color-cosmic-navy: #0a0e17;
+  --color-stellar-cyan: #06d6a0;
+  --color-nebula-purple: #a78bfa;
+  --color-comet-orange: #f97316;
 
   /* Terminal-specific semantic colors */
   --color-terminal-bg: #0f172a;

@@ -124,6 +124,48 @@ export async function getSessionUser(req: Request): Promise<UserRecord | null> {
   };
 }
 
+
+
+// Google OAuth support
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+
+export async function googleAuthUrl(): Promise<string | null> {
+  if (!GOOGLE_CLIENT_ID) return null;
+  const params = new URLSearchParams({
+    client_id: GOOGLE_CLIENT_ID,
+    redirect_uri: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000/api/auth/google/callback',
+    response_type: 'code',
+    scope: 'profile email',
+    access_type: 'offline',
+    prompt: 'consent',
+  });
+  return "https://accounts.google.com/o/oauth2/authorize?" + params;
+}
+
+export async function googleCallback(code: string): Promise<{ email: string; name: string; handle: string } | null> {
+  if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) return null;
+  try {
+    const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
+      method: "POST",
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        code,
+        client_id: GOOGLE_CLIENT_ID,
+        client_secret: GOOGLE_CLIENT_SECRET,
+        grant_type: 'authorization_code',
+      }),
+    });
+    if (!tokenRes.ok) return null;
+    const { access_token } = await tokenRes.json();
+    const userRes = await fetch("https://oauth2.googleapis.com/tokeninfo?access_token=" + access_token);
+    if (!userRes.ok) return null;
+    const googleUser = await userRes.json();
+    return { email: googleUser.email, name: googleUser.name, handle: googleUser.email.split('@')[0] };
+  } catch {
+    return null;
+  }
+}
 // ----- Server-only enforcement -------------------------------
 //
 // Import this only from server components or API routes (not client).
