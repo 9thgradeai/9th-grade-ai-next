@@ -76,13 +76,13 @@ function MetricTile({
   return (
     <motion.div
       whileHover={{ y: -3 }}
-      className="glass-card rounded-2xl border border-terminal-border p-4 transition-[border-color,box-shadow] duration-300 hover:border-emerald-500/30 hover:shadow-neon-glow"
+      className="glass-card rounded-2xl border border-white/10 p-4 transition-[border-color,box-shadow] duration-300 hover:border-emerald-400/40 hover:shadow-neon-glow"
     >
-      <p className="text-2xl font-bold font-mono text-gradient">
+      <p className="text-2xl font-display font-semibold text-gradient">
         {value.toLocaleString("bn-BD")}
-        {suffix ? <span className="text-sm text-zinc-400">{suffix}</span> : null}
+        {suffix ? <span className="text-sm text-zinc-500">{suffix}</span> : null}
       </p>
-      <p className="text-xs text-zinc-400 mt-1">{label}</p>
+      <p className="text-xs text-zinc-500 mt-1">{label}</p>
     </motion.div>
   );
 }
@@ -167,15 +167,16 @@ export default function HomeTab() {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="glass-card rounded-2xl border border-terminal-border p-5 relative overflow-hidden"
+        className="glass-card rounded-2xl border border-white/10 p-5 relative overflow-hidden"
       >
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(16,185,129,0.08),transparent_60%)] pointer-events-none" aria-hidden="true" />
         <div className="relative flex flex-wrap items-center justify-between gap-4">
           <div>
-            <p className="text-xs text-zinc-500 font-mono uppercase tracking-widest">
+            <p className="text-xs text-zinc-500 font-mono uppercase tracking-widest flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.8)]" aria-hidden="true" />
               Mission Control
             </p>
-            <h1 className="text-xl font-bold text-white mt-1">
+            <h1 className="font-display text-xl font-semibold text-white mt-1">
               {user?.name ?? "Student"}
               <span className="text-emerald-400"> — চাকরির প্রস্তুতি</span>
             </h1>
@@ -508,11 +509,14 @@ export default function HomeTab() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
-          className="flex items-center gap-3 p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-2xl"
+          className="relative flex items-start gap-3 p-4 bg-gradient-to-r from-emerald-500/[0.08] to-cyan-500/[0.05] border border-emerald-500/20 rounded-2xl overflow-hidden"
         >
-          <Zap className="w-5 h-5 text-emerald-400 flex-shrink-0" />
-          <p className="text-sm text-zinc-300">
-            <span className="text-emerald-400 font-mono">চর্চা AI:</span> সবচেয়ে দুর্বল বিষয়{" "}
+          <div className="absolute inset-y-0 left-0 w-0.5 bg-gradient-to-b from-emerald-400 to-cyan-400" aria-hidden="true" />
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500/20 to-cyan-500/10 border border-emerald-500/25 flex items-center justify-center flex-shrink-0">
+            <Zap className="w-4.5 h-4.5 text-emerald-400" aria-hidden="true" />
+          </div>
+          <p className="text-sm text-zinc-300 leading-relaxed">
+            <span className="text-emerald-400 font-semibold font-mono">চর্চা AI:</span> সবচেয়ে দুর্বল বিষয়{" "}
             <span className="text-white font-mono">{weakest[0].name}</span> — এখানে{" "}
             <span className="text-white font-mono">{weakest[0].attempted}টি</span> প্রশ্নের
             সঠিকতা {weakest[0].score}%।

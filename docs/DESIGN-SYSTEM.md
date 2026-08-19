@@ -2,17 +2,19 @@
 
 ## Typography
 
+- **Display**: Space Grotesk (`--font-space-grotesk` → `--font-display`) for
+  headlines, brand, numerals (`font-display` utility).
 - **Primary**: Inter (`--font-inter`)
 - **Mono**: JetBrains Mono (`--font-jetbrains-mono`)
-- Weights: 400 (body), 500 (medium), 700 (bold)
+- Weights: 400 (body), 500 (medium), 600/700 (display/bold)
 
 ## Colors
 
-- **Background**: deep `#070a12` (via `cosmic-bg` ambient layer) — dark theme default
+- **Background**: deep `#05070c` (via `cosmic-bg` ambient layer) — dark theme default
 - **Text**: `terminal-text` (CSS variable, zinc-200 equivalent)
 - **Primary accent**: `emerald-500` / `emerald-400`
-- **Secondary accents**: `cyan-400`, `amber-400`, `rose-400`, `sky-400`, `violet-400`, `zinc-400`
-- **Gradient headline**: `text-gradient` (emerald → stellar-cyan)
+- **Secondary accents**: `cyan-400`, `indigo-400` (`aurora-indigo`), `amber-400`, `rose-400`, `violet-400`, `zinc-400`
+- **Gradient headline**: `text-gradient` (emerald → cyan → indigo)
 
 ## Spacing
 
@@ -32,19 +34,43 @@ Shared primitives live in `frontend/components/ui/`:
 - Staggered list container (`staggerChildren: 0.05`), reduced-motion aware.
 - File: `frontend/components/ui/AnimatedList.tsx`.
 
+### Reveal
+- Scroll-reveal wrapper (fade + rise + blur), `whileInView` once, reduced-motion aware.
+- File: `frontend/components/ui/Reveal.tsx`.
+
+### SpotlightCard
+- Card with cursor-tracked radial spotlight (`useMotionTemplate`), GPU-only.
+- File: `frontend/components/ui/SpotlightCard.tsx`.
+
+### SectionHeading
+- Standard eyebrow + display title + description block used by landing sections.
+- File: `frontend/components/ui/SectionHeading.tsx`.
+
+### StatusPill
+- Live "all systems operational" indicator with pulsing dot.
+- File: `frontend/components/ui/StatusPill.tsx`.
+
+### ScrollProgress
+- Fixed top scroll-progress bar (`useScroll` + spring), reduced-motion aware.
+- File: `frontend/components/ui/ScrollProgress.tsx`.
+
 ## Surfaces & Tokens
 
 Defined in `app/globals.css`:
 
 - **`cosmic-bg`**: fixed ambient background layer (aurora radial gradients +
   masked grid) mounted in the root layout behind all routes.
+- **`noise`**: fixed film-grain overlay (`z-60`, pointer-events none) for
+  premium texture.
 - **`glass`**: theme-aware translucent surface (backdrop blur + saturate).
 - **`glass-card`**: elevated card surface with inner highlight; used across
   landing and dashboard cards.
-- **`text-gradient`**: emerald → stellar-cyan (or slate-deep in light mode)
+- **`text-gradient`**: emerald → cyan → indigo (or muted in light mode)
   gradient text for headlines and numerals.
+- **`glow-border`**: animated gradient ring around primary CTAs (CSS mask).
+- **`section-eyebrow`**: mono uppercase eyebrow label style.
 - **Shadows**: `--shadow-neon-glow`, `--shadow-neon-glow-lg`,
-  `--shadow-card-hover`, `--shadow-glow-purple`.
+  `--shadow-card-hover`, `--shadow-glow-purple`, `--shadow-panel`.
 
 ## Layout
 

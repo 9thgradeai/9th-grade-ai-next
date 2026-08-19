@@ -2,10 +2,16 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Mail, Lock, User, Eye, EyeOff, ArrowRight, AlertCircle } from "lucide-react";
+import { Mail, Lock, User, Eye, EyeOff, ArrowRight, AlertCircle, ShieldCheck, Zap, LockKeyhole } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/auth-ctx";
+
+const trustNotes = [
+  { icon: Zap, label: "Free forever" },
+  { icon: LockKeyhole, label: "Encrypted" },
+  { icon: ShieldCheck, label: "No credit card" },
+];
 
 export default function LoginPage() {
   const searchParams = useSearchParams();
@@ -57,13 +63,13 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center px-4 py-12 relative overflow-hidden">
       {/* Ambient aurora */}
       <motion.div
-        className="absolute -top-24 left-1/4 w-[32rem] h-[32rem] bg-emerald-500/12 rounded-full blur-[110px]"
+        className="absolute -top-24 left-1/4 w-[32rem] h-[32rem] bg-emerald-500/10 rounded-full blur-[120px]"
         aria-hidden="true"
         animate={{ opacity: [0.4, 0.7, 0.4], scale: [1, 1.08, 1] }}
         transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
       />
       <motion.div
-        className="absolute bottom-0 right-1/5 w-[28rem] h-[28rem] bg-nebula-purple/12 rounded-full blur-[110px]"
+        className="absolute bottom-0 right-1/5 w-[28rem] h-[28rem] bg-indigo-500/10 rounded-full blur-[120px]"
         aria-hidden="true"
         animate={{ opacity: [0.3, 0.6, 0.3], scale: [1, 1.1, 1] }}
         transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
@@ -73,16 +79,18 @@ export default function LoginPage() {
         initial={{ opacity: 0, y: 20, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.5 }}
-        className="relative w-full max-w-md glass-card rounded-terminal-rounded border border-terminal-border p-6 sm:p-8 shadow-neon-glow-lg"
+        className="relative w-full max-w-md glass-card rounded-3xl border border-white/10 p-6 sm:p-8 shadow-panel"
       >
-        {/* Terminal Header */}
-        <div className="terminal-window-bar mb-6 -mx-6 sm:-mx-8 -mt-6 sm:-mt-8 rounded-t-terminal-rounded border-b border-terminal-border">
-          <div className="dot close" />
-          <div className="dot minimize" />
-          <div className="dot maximize" />
-          <div className="flex-1 text-center text-xs text-zinc-500 font-mono">
-            root@9th-grade-ai:~/auth$
-          </div>
+        {/* Secure session bar */}
+        <div className="flex items-center justify-between mb-6 -mx-6 sm:-mx-8 -mt-6 sm:-mt-8 px-6 sm:px-8 py-3 rounded-t-3xl border-b border-white/10 bg-white/[0.02]">
+          <span className="text-xs text-zinc-500 font-mono flex items-center gap-2">
+            <LockKeyhole className="w-3.5 h-3.5 text-emerald-400" aria-hidden="true" />
+            secure.session — tls 1.3
+          </span>
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-wider text-emerald-400">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.8)]" aria-hidden="true" />
+            online
+          </span>
         </div>
 
         {/* Logo */}
@@ -92,11 +100,13 @@ export default function LoginPage() {
           transition={{ delay: 0.1 }}
           className="text-center mb-8"
         >
-          <Link href="/" className="inline-flex items-center gap-2 text-2xl font-bold text-white tracking-tight font-mono">
-            <span className="text-gradient">{'>'}</span>
+          <Link href="/" className="inline-flex items-center gap-2.5 font-display text-2xl font-semibold text-white tracking-tight">
+            <span className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 via-emerald-500 to-cyan-500 shadow-[0_0_24px_rgba(16,185,129,0.4)] flex items-center justify-center text-zinc-950 font-mono font-bold">
+              {"⌁"}
+            </span>
             <span>9th-grade-ai</span>
           </Link>
-          <p className="text-zinc-400 text-sm mt-2 font-mono">
+          <p className="text-zinc-500 text-sm mt-2 font-mono">
             {activeTab === "login" ? "Sign in to continue" : "Create your account"}
           </p>
         </motion.div>
@@ -106,7 +116,7 @@ export default function LoginPage() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="flex gap-1 bg-zinc-900/50 rounded-lg p-1 mb-6"
+          className="flex gap-1 bg-white/[0.04] border border-white/10 rounded-xl p-1 mb-6"
           role="tablist"
           aria-label="Authentication method"
         >
@@ -119,19 +129,19 @@ export default function LoginPage() {
               }}
               role="tab"
               aria-selected={activeTab === tab}
-              className={`relative flex-1 py-2 px-4 text-sm font-medium font-mono rounded-md transition-colors ${
+              className={`relative flex-1 py-2 px-4 text-sm font-medium font-mono rounded-lg transition-colors ${
                 activeTab === tab ? "text-zinc-950" : "text-zinc-400 hover:text-white"
               }`}
             >
               {activeTab === tab && (
                 <motion.span
                   layoutId="auth-tab"
-                  className="absolute inset-0 bg-emerald-500 rounded-md shadow-neon-glow"
+                  className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-lg shadow-[0_0_20px_rgba(16,185,129,0.3)]"
                   transition={{ type: "spring", stiffness: 500, damping: 35 }}
                 />
               )}
               <span className="relative z-10">
-                {tab === "login" ? "[ Sign In ]" : "[ Register ]"}
+                {tab === "login" ? "Sign In" : "Register"}
               </span>
             </button>
           ))}
@@ -165,8 +175,8 @@ export default function LoginPage() {
               transition={{ delay: 0.3 }}
               className="relative"
             >
-              <label htmlFor="name" className="block text-xs font-mono text-emerald-400 mb-1">
-                user@auth:~$ input_username:
+              <label htmlFor="name" className="block text-xs font-medium text-zinc-400 mb-1.5">
+                Username
               </label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" aria-hidden="true" />
@@ -178,7 +188,7 @@ export default function LoginPage() {
                   placeholder="Enter your name"
                   required
                   autoComplete="name"
-                  className="w-full pl-10 pr-4 py-3 bg-zinc-900/50 border border-emerald-500/20 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors font-mono text-sm"
+                  className="w-full pl-10 pr-4 py-3 bg-white/[0.04] border border-white/10 rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-emerald-400/60 focus:ring-2 focus:ring-emerald-500/20 transition-colors font-mono text-sm"
                 />
               </div>
             </motion.div>
@@ -190,8 +200,8 @@ export default function LoginPage() {
             transition={{ delay: activeTab === "register" ? 0.35 : 0.3 }}
             className="relative"
           >
-            <label htmlFor="email" className="block text-xs font-mono text-emerald-400 mb-1">
-              user@auth:~$ input_email:
+            <label htmlFor="email" className="block text-xs font-medium text-zinc-400 mb-1.5">
+              Email address
             </label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" aria-hidden="true" />
@@ -203,7 +213,7 @@ export default function LoginPage() {
                 placeholder="you@example.com"
                 required
                 autoComplete="email"
-                className="w-full pl-10 pr-4 py-3 bg-zinc-900/50 border border-emerald-500/20 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors font-mono text-sm"
+                className="w-full pl-10 pr-4 py-3 bg-white/[0.04] border border-white/10 rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-emerald-400/60 focus:ring-2 focus:ring-emerald-500/20 transition-colors font-mono text-sm"
               />
             </div>
           </motion.div>
@@ -214,8 +224,8 @@ export default function LoginPage() {
             transition={{ delay: activeTab === "register" ? 0.4 : 0.35 }}
             className="relative"
           >
-            <label htmlFor="password" className="block text-xs font-mono text-emerald-400 mb-1">
-              user@auth:~$ input_password:
+            <label htmlFor="password" className="block text-xs font-medium text-zinc-400 mb-1.5">
+              Password
             </label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" aria-hidden="true" />
@@ -228,7 +238,7 @@ export default function LoginPage() {
                 required
                 minLength={8}
                 autoComplete={activeTab === "login" ? "current-password" : "new-password"}
-                className="w-full pl-10 pr-12 py-3 bg-zinc-900/50 border border-emerald-500/20 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors font-mono text-sm"
+                className="w-full pl-10 pr-12 py-3 bg-white/[0.04] border border-white/10 rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-emerald-400/60 focus:ring-2 focus:ring-emerald-500/20 transition-colors font-mono text-sm"
               />
               <button
                 type="button"
@@ -248,8 +258,8 @@ export default function LoginPage() {
               transition={{ delay: 0.45 }}
               className="relative"
             >
-              <label htmlFor="confirmPassword" className="block text-xs font-mono text-emerald-400 mb-1">
-                user@auth:~$ confirm_password:
+              <label htmlFor="confirmPassword" className="block text-xs font-medium text-zinc-400 mb-1.5">
+                Confirm password
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" aria-hidden="true" />
@@ -261,7 +271,7 @@ export default function LoginPage() {
                   placeholder="••••••••"
                   required
                   autoComplete="new-password"
-                  className="w-full pl-10 pr-4 py-3 bg-zinc-900/50 border border-emerald-500/20 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors font-mono text-sm"
+                  className="w-full pl-10 pr-4 py-3 bg-white/[0.04] border border-white/10 rounded-xl text-white placeholder-zinc-600 focus:outline-none focus:border-emerald-400/60 focus:ring-2 focus:ring-emerald-500/20 transition-colors font-mono text-sm"
                 />
               </div>
             </motion.div>
@@ -276,7 +286,7 @@ export default function LoginPage() {
             transition={{ delay: activeTab === "register" ? 0.5 : 0.45 }}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="w-full py-3 px-4 bg-emerald-500 text-zinc-950 font-medium font-mono rounded-lg hover:bg-emerald-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-neon-glow"
+            className="w-full py-3 px-4 bg-emerald-500 text-zinc-950 font-semibold rounded-full hover:bg-emerald-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-[0_0_24px_rgba(16,185,129,0.3)]"
           >
             {isLoading ? (
               <>
@@ -288,7 +298,7 @@ export default function LoginPage() {
               </>
             ) : (
               <>
-                <span>{activeTab === "login" ? "[ Authenticate ]" : "[ Create Account ]"}</span>
+                <span>{activeTab === "login" ? "Sign In" : "Create Account"}</span>
                 <ArrowRight className="w-4 h-4" aria-hidden="true" />
               </>
             )}
@@ -300,16 +310,16 @@ export default function LoginPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.55 }}
-          className="mt-6 text-center text-sm text-zinc-400"
+          className="mt-6 text-center text-sm text-zinc-500"
         >
           {activeTab === "login" ? (
             <>
               Don&apos;t have an account?{" "}
               <Link
                 href="/login?register=true"
-                className="text-emerald-400 hover:text-emerald-300 font-mono underline underline-offset-2"
+                className="text-emerald-400 hover:text-emerald-300 font-medium underline underline-offset-2"
               >
-                [ Register ]
+                Register
               </Link>
             </>
           ) : (
@@ -317,13 +327,28 @@ export default function LoginPage() {
               Already have an account?{" "}
               <Link
                 href="/login"
-                className="text-emerald-400 hover:text-emerald-300 font-mono underline underline-offset-2"
+                className="text-emerald-400 hover:text-emerald-300 font-medium underline underline-offset-2"
               >
-                [ Sign In ]
+                Sign In
               </Link>
             </>
           )}
         </motion.p>
+
+        {/* Trust notes */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.65 }}
+          className="mt-8 pt-5 border-t border-white/10 flex items-center justify-center gap-x-6 gap-y-2 flex-wrap"
+        >
+          {trustNotes.map((n) => (
+            <span key={n.label} className="inline-flex items-center gap-1.5 text-xs text-zinc-500 font-mono">
+              <n.icon className="w-3.5 h-3.5 text-emerald-400" aria-hidden="true" />
+              {n.label}
+            </span>
+          ))}
+        </motion.div>
       </motion.div>
 
       {/* Version badge */}

@@ -4,6 +4,32 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.4.0] - 2026-08-20
+
+### Changed
+- **Premium "AI platform" design system** (elevates the cosmic-terminal identity):
+  - Typography: `Space Grotesk` display font (`--font-display`) for headlines,
+    brand, and numerals alongside Inter body + JetBrains Mono accents.
+  - Deeper base palette (`#05070c`), refined surface tokens (`--surface-raised`,
+    `--text-muted`), subtle neutral borders, and an emerald→cyan→indigo gradient
+    system (`text-gradient` refreshed, `glow-border` animated gradient ring).
+  - Global polish: fixed film-grain `noise` overlay, scroll progress bar
+    (`ScrollProgress`), refined `cosmic-bg` aurora/grid.
+  - New shared primitives in `frontend/components/ui/`: `Reveal` (scroll
+    reveal), `SpotlightCard` (cursor-tracked radial glow), `SectionHeading`,
+    `StatusPill`.
+  - Landing: scrollspy header with live status pill + logo mark, parallax
+    aurora orbs + premium typography in `TerminalHero`, `TrustStrip` exam-track
+    marquee, `SpotlightCard` features grid, refined syllabus explorer, and a
+    `FinalCTA` trust band (free forever / encrypted / syllabus-aligned).
+  - Auth: premium glass card with secure-session bar, gradient tab indicator,
+    refined inputs, glow submit CTA, and trust microcopy.
+  - Dashboard: refined glass header with session indicator, premium SideNav
+    (gradient active pill + presence-dot profile), and elevated HomeTab
+    surfaces/AI suggestion card.
+- All new animations remain GPU-only (`opacity`, `transform`) with
+  `prefers-reduced-motion` fallbacks.
+
 ## [0.3.0] - 2026-08-20
 
 ### Changed

@@ -7,12 +7,13 @@ import {
   useReducedMotion,
   useMotionValue,
   useTransform,
+  useScroll,
   type Variants,
 } from "framer-motion";
 import { trackHeroView, trackCtaClick } from "@/lib/analytics";
 import { FeedbackButton } from "./dashboard/FeedbackButton";
 import { transitions } from "@/lib/transitions";
-import { ChevronDown, Sparkles } from "lucide-react";
+import { ChevronDown, Sparkles, ShieldCheck, Lock, Zap } from "lucide-react";
 
 type TerminalLine =
   | { type: "command"; text: string; delay: number }
@@ -60,6 +61,12 @@ const stats = [
   { value: 2.5, decimals: 1, suffix: "M+", label: "Questions Practiced" },
   { value: 94, decimals: 0, suffix: "%", label: "Success Rate" },
   { value: 14, decimals: 0, suffix: "", label: "Subjects Covered" },
+];
+
+const trustChips = [
+  { icon: Zap, label: "AI-Powered" },
+  { icon: ShieldCheck, label: "Syllabus-Aligned" },
+  { icon: Lock, label: "Private & Secure" },
 ];
 
 function CountUp({ value, decimals = 0, suffix = "" }: { value: number; decimals?: number; suffix?: string }) {
@@ -118,6 +125,10 @@ export default function TerminalHero() {
   const shouldReduceMotion = useReducedMotion();
   const tilt = useTilt();
 
+  const { scrollY } = useScroll();
+  const orbY = useTransform(scrollY, [0, 600], [0, -40]);
+  const orbOpacity = useTransform(scrollY, [0, 500], [1, 0.4]);
+
   useEffect(() => {
     const timers: ReturnType<typeof setTimeout>[] = [];
 
@@ -167,17 +178,19 @@ export default function TerminalHero() {
 
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center pt-16 pb-20 px-4 overflow-hidden">
-      {/* Ambient aurora orbs (GPU-friendly scale/opacity only) */}
+      {/* Ambient aurora orbs (GPU-friendly, parallax drift) */}
       <motion.div
-        className="absolute -top-32 left-1/4 w-[42rem] h-[42rem] bg-emerald-500/12 rounded-full blur-[120px]"
+        className="absolute -top-32 left-1/4 w-[42rem] h-[42rem] bg-emerald-500/10 rounded-full blur-[130px]"
         aria-hidden="true"
-        animate={shouldReduceMotion ? { opacity: 0.5 } : { opacity: [0.35, 0.6, 0.35], scale: [1, 1.08, 1] }}
+        style={{ y: orbY, opacity: orbOpacity }}
+        animate={shouldReduceMotion ? undefined : { scale: [1, 1.07, 1] }}
         transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
       />
       <motion.div
-        className="absolute bottom-0 right-1/5 w-[34rem] h-[34rem] bg-nebula-purple/12 rounded-full blur-[120px]"
+        className="absolute bottom-0 right-1/5 w-[34rem] h-[34rem] bg-indigo-500/10 rounded-full blur-[130px]"
         aria-hidden="true"
-        animate={shouldReduceMotion ? { opacity: 0.5 } : { opacity: [0.3, 0.55, 0.3], scale: [1, 1.12, 1] }}
+        style={{ y: orbY, opacity: orbOpacity }}
+        animate={shouldReduceMotion ? undefined : { scale: [1, 1.1, 1] }}
         transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
       />
 
@@ -187,9 +200,7 @@ export default function TerminalHero() {
           {/* Left: Text Content */}
           <motion.div variants={heroContainer} initial="hidden" animate="visible">
             <motion.div variants={heroItem} className="mb-6">
-              <motion.span
-                className="inline-flex items-center gap-2 text-stellar-cyan font-mono text-sm tracking-wider uppercase"
-              >
+              <motion.span className="section-eyebrow">
                 <Sparkles className="w-4 h-4" aria-hidden="true" />
                 {"// NEXT-GEN EXAM INTELLIGENCE"}
               </motion.span>
@@ -197,7 +208,7 @@ export default function TerminalHero() {
 
             <motion.h1
               variants={heroItem}
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.08] mb-6"
+              className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-[4.25rem] font-semibold text-white leading-[1.05] tracking-tight mb-6"
             >
               Master Competitive Exams with
               <br />
@@ -206,7 +217,7 @@ export default function TerminalHero() {
 
             <motion.p
               variants={heroItem}
-              className="text-lg md:text-xl max-w-xl mb-8 leading-relaxed text-zinc-400"
+              className="text-lg md:text-xl max-w-xl mb-8 leading-relaxed text-[var(--text-muted)]"
             >
               Adaptive mock tests, automated flashcards, AI doubt solving, and daily streak tracking —
               all powered by cutting-edge AI to help you ace BCS, Bank, and Teacher recruitment exams.
@@ -222,9 +233,9 @@ export default function TerminalHero() {
                 whileHover={shouldReduceMotion ? undefined : { scale: 1.04, y: -2 }}
                 whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
                 transition={transitions.spring}
-                className="w-full sm:w-auto px-6 py-3.5 text-base font-medium text-zinc-950 bg-emerald-500 rounded hover:bg-emerald-400 transition-colors font-mono shadow-neon-glow-lg flex items-center justify-center gap-2"
+                className="glow-border w-full sm:w-auto px-7 py-3.5 rounded-full text-base font-semibold text-zinc-950 bg-emerald-500 hover:bg-emerald-400 transition-colors shadow-[0_0_24px_rgba(16,185,129,0.3)] flex items-center justify-center gap-2"
               >
-                [ Start Free Prep ]
+                Start Free Preparation
                 <ChevronDown className="w-4 h-4" aria-hidden="true" />
               </motion.a>
               <motion.a
@@ -233,10 +244,26 @@ export default function TerminalHero() {
                 whileHover={shouldReduceMotion ? undefined : { scale: 1.04, y: -2 }}
                 whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
                 transition={transitions.spring}
-                className="w-full sm:w-auto px-6 py-3.5 text-base font-medium text-zinc-100 border border-nebula-purple/30 rounded hover:bg-nebula-purple/10 transition-colors font-mono flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-7 py-3.5 rounded-full text-base font-medium text-white border border-white/15 hover:border-emerald-400/50 hover:bg-white/5 transition-colors flex items-center justify-center gap-2"
               >
-                [ Explore Features ]
+                Explore Features
               </motion.a>
+            </motion.div>
+
+            {/* Trust chips */}
+            <motion.div
+              variants={heroItem}
+              className="mt-7 flex flex-wrap gap-2.5"
+            >
+              {trustChips.map((c) => (
+                <span
+                  key={c.label}
+                  className="inline-flex items-center gap-1.5 text-xs text-zinc-400 font-mono px-3 py-1.5 rounded-full border border-white/10 bg-white/[0.03]"
+                >
+                  <c.icon className="w-3.5 h-3.5 text-emerald-400" aria-hidden="true" />
+                  {c.label}
+                </span>
+              ))}
             </motion.div>
 
             {/* Stats bar */}
@@ -245,11 +272,11 @@ export default function TerminalHero() {
               className="mt-12 grid grid-cols-2 gap-6 sm:flex sm:flex-wrap sm:gap-10 text-center"
             >
               {stats.map((stat) => (
-                <div key={stat.label}>
-                  <div className="text-3xl font-bold text-emerald-500 font-mono tabular-nums">
+                <div key={stat.label} className="sm:border-l sm:border-white/10 sm:pl-6 first:border-0 first:pl-0">
+                  <div className="text-3xl font-display font-semibold text-emerald-400 tabular-nums">
                     <CountUp value={stat.value} decimals={stat.decimals} suffix={stat.suffix} />
                   </div>
-                  <div className="text-sm text-zinc-400">{stat.label}</div>
+                  <div className="text-sm text-zinc-500 mt-1">{stat.label}</div>
                 </div>
               ))}
             </motion.div>
@@ -267,14 +294,14 @@ export default function TerminalHero() {
               style={shouldReduceMotion ? undefined : tilt.style}
               whileHover={shouldReduceMotion ? undefined : { scale: 1.015 }}
               transition={transitions.springStiff}
-              className="glass-card rounded-terminal-rounded overflow-hidden border border-terminal-border shadow-neon-glow-lg"
+              className="glass-card rounded-2xl overflow-hidden border border-white/10 shadow-panel"
             >
               {/* Terminal window bar */}
               <div className="terminal-window-bar">
                 <div className="dot close" aria-label="Close" />
                 <div className="dot minimize" aria-label="Minimize" />
                 <div className="dot maximize" aria-label="Maximize" />
-                <div className="flex-1 text-center text-xs text-zinc-500 font-mono">terminal.emulator.9th-grade-ai</div>
+                <div className="flex-1 text-center text-xs text-zinc-500 font-mono">intelligence.9th-grade-ai — session</div>
               </div>
 
               {/* Terminal content */}
@@ -293,20 +320,20 @@ export default function TerminalHero() {
                     >
                       {line.type === "command" && (
                         <>
-                          <span className="text-stellar-cyan">$ </span>
+                          <span className="text-emerald-400">$ </span>
                           <span className="cursor-blink">{line.text.replace("█", "")}</span>
                         </>
                       )}
                       {line.type === "output" && <span>{line.text}</span>}
                       {line.type === "progress" && (
                         <div className="flex items-center gap-3">
-                          <span className="w-40 text-zinc-400">{line.label}</span>
-                          <div className="flex-1 h-2 bg-zinc-800 rounded-full overflow-hidden">
+                          <span className="w-40 text-zinc-400 truncate">{line.label}</span>
+                          <div className="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
                             <motion.div
                               initial={{ width: 0 }}
                               animate={{ width: `${(line.value / line.total) * 100}%` }}
                               transition={{ duration: 0.5, delay: 0.1 }}
-                              className="h-full bg-gradient-to-r from-emerald-500 to-stellar-cyan rounded-full"
+                              className="h-full bg-gradient-to-r from-emerald-500 to-cyan-400 rounded-full"
                             />
                           </div>
                           <span className="text-emerald-400 w-16 text-right font-mono">
@@ -333,9 +360,9 @@ export default function TerminalHero() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     onClick={restartAnimation}
-                    className="mt-4 px-4 py-2 text-sm font-medium text-zinc-950 bg-emerald-500 rounded hover:bg-emerald-400 transition-colors font-mono flex items-center gap-2"
+                    className="mt-4 px-4 py-2 text-sm font-medium text-zinc-950 bg-emerald-500 rounded-full hover:bg-emerald-400 transition-colors font-mono flex items-center gap-2"
                   >
-                    [ Restart Simulation ]
+                    Restart Simulation
                   </motion.button>
                 )}
               </div>

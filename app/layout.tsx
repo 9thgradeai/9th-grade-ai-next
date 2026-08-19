@@ -1,14 +1,21 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import { MotionConfig } from "framer-motion";
 import { AuthProvider } from "@/lib/auth-ctx";
 import { DashboardProvider } from "@/lib/store-ctx/dashboard";
 import { ThemeProvider } from "@/lib/theme-ctx";
+import ScrollProgress from "@/components/ui/ScrollProgress";
 import "./globals.css";
 
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
+  display: "swap",
+});
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-space-grotesk",
   display: "swap",
 });
 
@@ -43,8 +50,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "#0f172a" },
-    { media: "(prefers-color-scheme: light)", color: "#F0FDF4" },
+    { media: "(prefers-color-scheme: dark)", color: "#05070c" },
+    { media: "(prefers-color-scheme: light)", color: "#f5f9f7" },
   ],
   width: "device-width",
   initialScale: 1,
@@ -59,10 +66,11 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans">
+      <body className="min-h-full flex flex-col font-sans noise">
         <div className="cosmic-bg" aria-hidden="true" />
+        <ScrollProgress />
         <MotionConfig reducedMotion="user">
           <AuthProvider>
             <DashboardProvider>

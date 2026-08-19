@@ -29,16 +29,20 @@ export default function SideNav({ activeTab, onChange }: SideNavProps) {
 
   return (
     <nav
-      className="hidden lg:flex flex-col w-64 min-h-dvh sticky top-0 border-r border-terminal-border glass-card z-30"
+      className="hidden lg:flex flex-col w-64 min-h-dvh sticky top-0 border-r border-white/10 glass-card z-30"
       aria-label="Desktop navigation"
     >
       {/* Logo / Brand */}
-      <div className="p-6 border-b border-terminal-border">
-        <div className="flex items-center gap-2">
-          <span className="text-gradient font-mono text-xl font-bold">{">"}</span>
-          <span className="text-white font-mono font-bold tracking-tight">9th-grade-ai</span>
+      <div className="p-6 border-b border-white/10">
+        <div className="flex items-center gap-2.5">
+          <span className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 via-emerald-500 to-cyan-500 shadow-[0_0_20px_rgba(16,185,129,0.35)] flex items-center justify-center text-zinc-950 font-mono font-bold">
+            {"⌁"}
+          </span>
+          <div>
+            <p className="font-display text-white font-semibold tracking-tight leading-tight">9th-grade-ai</p>
+            <p className="text-[11px] text-zinc-500 font-mono">বিসিএস • ব্যাংক • চাকরি</p>
+          </div>
         </div>
-        <p className="text-xs text-zinc-500 font-mono mt-1">বিসিএস • ব্যাংক • চাকরি</p>
       </div>
 
       {/* Tab links */}
@@ -50,24 +54,24 @@ export default function SideNav({ activeTab, onChange }: SideNavProps) {
             <button
               key={tab.id}
               onClick={() => onChange(tab.id)}
-              className={`relative w-full flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-terminal-rounded text-left transition-colors ${
+              className={`relative w-full flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-left transition-colors ${
                 isActive
                   ? "text-emerald-400"
-                  : "text-zinc-400 hover:text-white hover:bg-zinc-900/50"
+                  : "text-zinc-400 hover:text-white hover:bg-white/[0.04]"
               }`}
               aria-current={isActive ? "page" : undefined}
             >
               {isActive && (
                 <motion.span
                   layoutId="side-nav-active-pill"
-                  className="absolute inset-0 rounded-terminal-rounded bg-gradient-to-r from-emerald-500/15 to-stellar-cyan/10 border border-emerald-500/30"
+                  className="absolute inset-0 rounded-xl bg-gradient-to-r from-emerald-500/15 to-cyan-500/10 border border-emerald-500/25"
                   transition={{ type: "spring", stiffness: 400, damping: 30 }}
                 />
               )}
               {isActive && (
                 <motion.span
                   layoutId="side-nav-active"
-                  className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-emerald-500 rounded-r-full shadow-neon-glow"
+                  className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-6 bg-emerald-400 rounded-r-full shadow-[0_0_12px_rgba(16,185,129,0.9)]"
                   transition={{ type: "spring", stiffness: 400, damping: 30 }}
                 />
               )}
@@ -82,10 +86,13 @@ export default function SideNav({ activeTab, onChange }: SideNavProps) {
       </div>
 
       {/* User mini-profile */}
-      <div className="p-4 border-t border-terminal-border">
+      <div className="p-4 border-t border-white/10">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-sm font-bold text-emerald-400">
-            {displayInitial}
+          <div className="relative">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500/25 to-cyan-500/10 border border-emerald-500/30 flex items-center justify-center text-sm font-bold text-emerald-400">
+              {displayInitial}
+            </div>
+            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-[var(--surface-solid)] shadow-[0_0_8px_rgba(16,185,129,0.9)]" aria-hidden="true" />
           </div>
           <div className="min-w-0">
             <p className="text-sm text-white font-medium truncate">{displayName}</p>

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { GitBranch, Globe, Play, Mail, Monitor, Zap, BookOpen, Users } from "lucide-react";
+import StatusPill from "./ui/StatusPill";
 
 const footerLinks = {
   product: [
@@ -44,11 +45,18 @@ const socialLinks = [
   { icon: Mail, href: "mailto:hello@9thgrade.ai", label: "Email" },
 ];
 
+const statusItems = [
+  { icon: Monitor, label: "System Status", value: "ALL SYSTEMS OPERATIONAL" },
+  { icon: Zap, label: "API Latency", value: "42ms avg" },
+  { icon: BookOpen, label: "Questions Served", value: "2.5M+ today" },
+  { icon: Users, label: "Active Users", value: "12.3K online" },
+];
+
 export default function Footer() {
   const shouldReduceMotion = useReducedMotion();
 
   return (
-    <footer className="bg-zinc-900/40 border-t border-emerald-500/10 relative" role="contentinfo">
+    <footer className="border-t border-white/10 bg-white/[0.015] relative" role="contentinfo">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -59,21 +67,23 @@ export default function Footer() {
         >
           {/* Brand */}
           <div className="md:col-span-2">
-            <Link href="/" className="flex items-center gap-2 text-xl font-bold text-white tracking-tight font-mono mb-6">
-              <span className="text-gradient">{'>'}</span>
+            <Link href="/" className="flex items-center gap-2.5 font-display text-xl font-semibold text-white tracking-tight mb-6">
+              <span className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 via-emerald-500 to-cyan-500 shadow-[0_0_20px_rgba(16,185,129,0.35)] flex items-center justify-center text-zinc-950 font-mono font-bold">
+                {"⌁"}
+              </span>
               <span>9th-grade-ai</span>
             </Link>
-            <p className="text-zinc-400 text-sm max-w-xs mb-6 leading-relaxed">
+            <p className="text-sm text-zinc-500 max-w-xs mb-6 leading-relaxed">
               AI-powered study planner and exam prep platform for competitive exams in Bangladesh. Master BCS, Bank, and Teacher recruitment with precision.
             </p>
-            <div className="flex gap-4">
+            <div className="flex gap-3">
               {socialLinks.map((social) => (
                 <motion.a
                   key={social.label}
                   href={social.href}
                   whileHover={shouldReduceMotion ? undefined : { scale: 1.12, y: -2 }}
                   whileTap={shouldReduceMotion ? undefined : { scale: 0.94 }}
-                  className="w-10 h-10 rounded-full bg-zinc-800 border border-emerald-500/20 flex items-center justify-center text-zinc-400 hover:text-emerald-400 hover:border-emerald-500/40 hover:shadow-neon-glow transition-[border-color,color,box-shadow]"
+                  className="w-10 h-10 rounded-full border border-white/10 bg-white/[0.03] flex items-center justify-center text-zinc-400 hover:text-emerald-400 hover:border-emerald-400/40 hover:shadow-neon-glow transition-[border-color,color,box-shadow]"
                   aria-label={social.label}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -86,13 +96,13 @@ export default function Footer() {
 
           {/* Product */}
           <nav aria-label="Product links">
-            <h4 className="text-sm font-semibold text-white uppercase tracking-wider mb-4 font-mono">Product</h4>
+            <h4 className="font-display text-sm font-semibold text-white mb-4">Product</h4>
             <ul className="space-y-3" role="list">
               {footerLinks.product.map((link) => (
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="text-sm text-zinc-400 hover:text-emerald-400 hover:translate-x-0.5 transition-[color,transform] font-mono inline-block"
+                    className="text-sm text-zinc-500 hover:text-emerald-400 hover:translate-x-0.5 transition-[color,transform] inline-block"
                   >
                     {link.label}
                   </Link>
@@ -103,13 +113,13 @@ export default function Footer() {
 
           {/* Tracks */}
           <nav aria-label="Exam tracks">
-            <h4 className="text-sm font-semibold text-white uppercase tracking-wider mb-4 font-mono">Exam Tracks</h4>
+            <h4 className="font-display text-sm font-semibold text-white mb-4">Exam Tracks</h4>
             <ul className="space-y-3" role="list">
               {footerLinks.tracks.map((link) => (
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="text-sm text-zinc-400 hover:text-emerald-400 hover:translate-x-0.5 transition-[color,transform] font-mono inline-block"
+                    className="text-sm text-zinc-500 hover:text-emerald-400 hover:translate-x-0.5 transition-[color,transform] inline-block"
                   >
                     {link.label}
                   </Link>
@@ -120,13 +130,13 @@ export default function Footer() {
 
           {/* Resources */}
           <nav aria-label="Resources">
-            <h4 className="text-sm font-semibold text-white uppercase tracking-wider mb-4 font-mono">Resources</h4>
+            <h4 className="font-display text-sm font-semibold text-white mb-4">Resources</h4>
             <ul className="space-y-3" role="list">
               {footerLinks.resources.map((link) => (
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="text-sm text-zinc-400 hover:text-emerald-400 hover:translate-x-0.5 transition-[color,transform] font-mono inline-block"
+                    className="text-sm text-zinc-500 hover:text-emerald-400 hover:translate-x-0.5 transition-[color,transform] inline-block"
                   >
                     {link.label}
                   </Link>
@@ -137,13 +147,13 @@ export default function Footer() {
 
           {/* Company */}
           <nav aria-label="Company">
-            <h4 className="text-sm font-semibold text-white uppercase tracking-wider mb-4 font-mono">Company</h4>
+            <h4 className="font-display text-sm font-semibold text-white mb-4">Company</h4>
             <ul className="space-y-3" role="list">
               {footerLinks.company.map((link) => (
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="text-sm text-zinc-400 hover:text-emerald-400 hover:translate-x-0.5 transition-[color,transform] font-mono inline-block"
+                    className="text-sm text-zinc-500 hover:text-emerald-400 hover:translate-x-0.5 transition-[color,transform] inline-block"
                   >
                     {link.label}
                   </Link>
@@ -159,59 +169,37 @@ export default function Footer() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-40px" }}
           transition={{ duration: 0.5 }}
-          className="glass-card rounded-terminal-rounded border border-terminal-border p-4 md:p-6 mb-8"
+          className="glass-card rounded-2xl border border-white/10 p-4 md:p-6 mb-8"
         >
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                <Monitor className="w-5 h-5 text-emerald-500" />
+            {statusItems.map((item) => (
+              <div key={item.label} className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500/15 to-cyan-500/10 border border-emerald-500/20 flex items-center justify-center">
+                  <item.icon className="w-5 h-5 text-emerald-400" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-white">{item.label}</p>
+                  <p className="text-xs text-emerald-400 font-mono truncate">{item.value}</p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm font-medium text-white">System Status</p>
-                <p className="text-xs text-emerald-400 font-mono">ALL SYSTEMS OPERATIONAL</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                <Zap className="w-5 h-5 text-emerald-500" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-white">API Latency</p>
-                <p className="text-xs text-emerald-400 font-mono">42ms avg</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                <BookOpen className="w-5 h-5 text-emerald-500" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-white">Questions Served</p>
-                <p className="text-xs text-emerald-400 font-mono">2.5M+ today</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                <Users className="w-5 h-5 text-emerald-500" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-white">Active Users</p>
-                <p className="text-xs text-emerald-400 font-mono">12.3K online</p>
-              </div>
-            </div>
+            ))}
+          </div>
+          <div className="mt-4 pt-4 border-t border-white/10 flex justify-end">
+            <StatusPill label="HEALTH CHECK: PASSING" color="emerald" />
           </div>
         </motion.div>
 
         {/* Bottom Bar */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4 pt-6 border-t border-emerald-500/10">
-          <p className="text-sm text-zinc-500 font-mono">
-            v2.4.0-release • Built with Next.js 16, React 19, Tailwind CSS v4, Framer Motion
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4 pt-6 border-t border-white/10">
+          <p className="text-sm text-zinc-600 font-mono">
+            v2.4.0-release • Next.js 16 · React 19 · Tailwind v4 · Framer Motion
           </p>
           <p className="text-sm text-zinc-500">
             © {new Date().getFullYear()} 9Th-Grade AI. All rights reserved.
           </p>
           <div className="flex items-center gap-4 text-xs text-zinc-500 font-mono">
             <span>uptime: 99.99%</span>
-            <span className="text-emerald-500">●</span>
+            <span className="text-emerald-400">●</span>
             <span>deployed on Vercel</span>
           </div>
         </div>

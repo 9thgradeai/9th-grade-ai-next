@@ -2,39 +2,44 @@
 
 @theme {
   /* Core dark theme colors */
-  --color-zinc-950: #0f172a;
-  --color-slate-900: #1e293b;
+  --color-zinc-950: #0b1020;
+  --color-slate-900: #111827;
 
   /* Emerald accent colors */
   --color-emerald-500: #10B981;
+  --color-emerald-400: #34D399;
   --color-emerald-50: #F0FDF4;
   --color-emerald-100: #D1F2EB;
-/* Cosmic theme colors */
-  --color-cosmic-navy: #0a0e17;
-  --color-stellar-cyan: #06d6a0;
-  --color-nebula-purple: #a78bfa;
+
+  /* Cosmic theme colors */
+  --color-cosmic-navy: #05070c;
+  --color-stellar-cyan: #22d3ee;
+  --color-nebula-purple: #818cf8;
+  --color-aurora-indigo: #6366f1;
   --color-comet-orange: #f97316;
 
   /* Terminal-specific semantic colors */
-  --color-terminal-bg: #0f172a;
-  --color-terminal-text: #e2e8f0;
-  --color-terminal-border: rgb(16 185 129 / 0.2);
-  --color-glass-bg: rgba(15, 23, 42, 0.7);
-  --color-glass-border: rgba(16, 185, 129, 0.15);
+  --color-terminal-bg: #0b1020;
+  --color-terminal-text: #e6edf7;
+  --color-terminal-border: rgb(148 163 184 / 0.14);
+  --color-glass-bg: rgba(11, 16, 32, 0.72);
+  --color-glass-border: rgb(148 163 184 / 0.12);
 
   /* Typography */
   --font-sans: "Inter", "Hind Siliguri", system-ui, sans-serif;
+  --font-display: "Space Grotesk", "Inter", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", "Fira Code", Menlo, Consolas, monospace;
 
-  /* Custom shadows */
-  --shadow-neon-glow: 0 0 15px rgba(16, 185, 129, 0.15);
-  --shadow-neon-glow-lg: 0 0 40px rgba(16, 185, 129, 0.25);
-  --shadow-card-hover: 0 8px 40px rgba(2, 6, 12, 0.55), 0 0 0 1px rgb(16 185 129 / 0.25), 0 0 60px rgb(6 214 160 / 0.1);
-  --shadow-glow-purple: 0 0 60px rgba(167, 139, 250, 0.18);
+  /* Custom shadows — refined premium glow */
+  --shadow-neon-glow: 0 0 20px rgba(16, 185, 129, 0.12);
+  --shadow-neon-glow-lg: 0 12px 48px rgba(6, 214, 160, 0.14), 0 0 0 1px rgb(16 185 129 / 0.18);
+  --shadow-card-hover: 0 16px 48px rgba(2, 6, 12, 0.6), 0 0 0 1px rgb(16 185 129 / 0.28), 0 0 80px rgb(6 214 160 / 0.08);
+  --shadow-glow-purple: 0 0 60px rgba(129, 140, 248, 0.16);
+  --shadow-panel: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 12px 40px rgba(2, 6, 12, 0.4);
 
   /* Border radius */
-  --radius-terminal-square: 4px;
-  --radius-terminal-rounded: 8px;
+  --radius-terminal-square: 6px;
+  --radius-terminal-rounded: 10px;
 
   /* Touch / tap target minimum (web: 24px, mobile touch: 44px) */
   --touch-target-min: 44px;
@@ -47,24 +52,28 @@
 }
 
 :root {
-  --background: #070a12;
-  --foreground: #e2e8f0;
+  --background: #05070c;
+  --foreground: #e6edf7;
   /* Semantic surfaces — dark default */
-  --surface: rgba(13, 18, 30, 0.72);
-  --surface-solid: #0a0e17;
-  --surface-muted: rgba(30, 41, 59, 0.45);
-  --border-muted: rgb(16 185 129 / 0.16);
-  --border-strong: rgb(16 185 129 / 0.32);
+  --surface: rgba(10, 15, 28, 0.74);
+  --surface-solid: #070a12;
+  --surface-raised: rgba(13, 20, 38, 0.9);
+  --surface-muted: rgba(20, 30, 50, 0.5);
+  --border-muted: rgb(148 163 184 / 0.13);
+  --border-strong: rgb(16 185 129 / 0.4);
+  --text-muted: #8b94a8;
 }
 
 html.light {
-  --background: #F0FDF4;
+  --background: #f5f9f7;
   --foreground: #0f172a;
-  --surface: rgba(240, 253, 244, 0.78);
-  --surface-solid: #F0FDF4;
-  --surface-muted: rgba(220, 252, 231, 0.6);
-  --border-muted: rgb(16 185 129 / 0.25);
-  --border-strong: rgb(16 185 129 / 0.45);
+  --surface: rgba(255, 255, 255, 0.82);
+  --surface-solid: #ffffff;
+  --surface-raised: rgba(255, 255, 255, 0.96);
+  --surface-muted: rgba(209, 242, 235, 0.7);
+  --border-muted: rgb(6 95 70 / 0.16);
+  --border-strong: rgb(16 185 129 / 0.5);
+  --text-muted: #52606d;
 }
 
 body {
@@ -75,6 +84,12 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Display type for headlines, brand, and numerals */
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
 /* Cosmic ambient background layer (fixed, GPU-friendly) */
 .cosmic-bg {
   position: fixed;
@@ -83,9 +98,9 @@ body {
   pointer-events: none;
   overflow: hidden;
   background:
-    radial-gradient(ellipse 80% 55% at 50% -12%, rgb(6 214 160 / 0.14), transparent 60%),
-    radial-gradient(ellipse 60% 45% at 85% 8%, rgb(167 139 250 / 0.12), transparent 55%),
-    radial-gradient(ellipse 55% 40% at 12% 75%, rgb(16 185 129 / 0.08), transparent 55%),
+    radial-gradient(ellipse 90% 60% at 50% -18%, rgb(16 185 129 / 0.13), transparent 62%),
+    radial-gradient(ellipse 55% 42% at 88% 4%, rgb(99 102 241 / 0.12), transparent 55%),
+    radial-gradient(ellipse 45% 36% at 8% 62%, rgb(34 211 238 / 0.07), transparent 55%),
     var(--background);
 }
 .cosmic-bg::before {
@@ -93,23 +108,34 @@ body {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgb(148 163 184 / 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(148 163 184 / 0.05) 1px, transparent 1px);
-  background-size: 56px 56px;
-  mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, black 10%, transparent 75%);
-  -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, black 10%, transparent 75%);
+    linear-gradient(rgb(148 163 184 / 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(148 163 184 / 0.04) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 90% 68% at 50% 0%, black 8%, transparent 74%);
+  -webkit-mask-image: radial-gradient(ellipse 90% 68% at 50% 0%, black 8%, transparent 74%);
 }
 .cosmic-bg::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse 45% 40% at 50% 110%, rgb(6 214 160 / 0.1), transparent 60%);
+  background: radial-gradient(ellipse 50% 42% at 50% 112%, rgb(6 214 160 / 0.09), transparent 62%);
 }
 html.light .cosmic-bg {
   background:
-    radial-gradient(ellipse 80% 55% at 50% -12%, rgb(6 214 160 / 0.16), transparent 60%),
-    radial-gradient(ellipse 60% 45% at 85% 8%, rgb(167 139 250 / 0.14), transparent 55%),
+    radial-gradient(ellipse 90% 60% at 50% -18%, rgb(16 185 129 / 0.15), transparent 62%),
+    radial-gradient(ellipse 55% 42% at 88% 4%, rgb(99 102 241 / 0.1), transparent 55%),
     var(--background);
+}
+
+/* Fine film-grain noise overlay for premium texture */
+.noise::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0.028;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 /* Anchor sections sit below the fixed landing header */
@@ -133,35 +159,94 @@ html {
 /* Glassmorphism utility (theme-aware) */
 .glass {
   background: var(--surface);
-  backdrop-filter: blur(16px) saturate(140%);
-  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
   border: 1px solid var(--border-muted);
 }
 
 /* Elevated glass panel for cards / modals */
 .glass-card {
-  background: linear-gradient(160deg, rgb(15 23 42 / 0.72), rgb(10 14 23 / 0.78));
-  backdrop-filter: blur(16px) saturate(140%);
-  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  background: linear-gradient(165deg, rgb(15 23 42 / 0.66), rgb(8 12 22 / 0.82));
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
   border: 1px solid var(--border-muted);
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.04);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.05), 0 12px 40px rgba(2, 6, 12, 0.35);
 }
 html.light .glass-card {
-  background: linear-gradient(160deg, rgb(240 253 244 / 0.85), rgb(255 255 255 / 0.6));
+  background: linear-gradient(165deg, rgb(255 255 255 / 0.92), rgb(240 253 244 / 0.75));
 }
 
-/* Gradient text (emerald → stellar cyan) */
+/* Gradient text (emerald → stellar cyan → indigo) */
 .text-gradient {
-  background: linear-gradient(100deg, #34d399 0%, #06d6a0 45%, #22d3ee 100%);
+  background: linear-gradient(100deg, #34d399 0%, #22d3ee 48%, #818cf8 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 html.light .text-gradient {
-  background: linear-gradient(100deg, #059669 0%, #0d9488 45%, #0891b2 100%);
+  background: linear-gradient(100deg, #059669 0%, #0e7490 48%, #4f46e5 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+/* Section eyebrow label */
+.section-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #34d399;
+}
+
+/* Animated gradient border for primary CTAs */
+.glow-border {
+  position: relative;
+  isolation: isolate;
+}
+.glow-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: linear-gradient(120deg, #10b981, #22d3ee, #818cf8, #10b981);
+  background-size: 300% 100%;
+  animation: gradient-pan 6s linear infinite;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+}
+@keyframes gradient-pan {
+  0% { background-position: 0% 0; }
+  100% { background-position: 300% 0; }
+}
+
+/* Marquee for exam-track / trust strip */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 36s linear infinite;
+}
+.marquee-paused:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+/* Soft pulsing glow (reduced-motion safe via global override) */
+@keyframes pulse-soft {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+.pulse-soft {
+  animation: pulse-soft 3s ease-in-out infinite;
 }
 
 /* Subtle hairline used on premium cards */
@@ -169,20 +254,21 @@ html.light .text-gradient {
   border: 1px solid var(--border-muted);
 }
 
-/* Scrollbar styling for terminal vibe (theme-aware) */
+/* Scrollbar styling (theme-aware) */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 9px;
+  height: 9px;
 }
 ::-webkit-scrollbar-track {
   background: var(--surface-solid);
 }
 ::-webkit-scrollbar-thumb {
-  background: rgb(16 185 129 / 0.3);
-  border-radius: 4px;
+  background: rgb(148 163 184 / 0.25);
+  border-radius: 5px;
+  border: 2px solid var(--surface-solid);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgb(16 185 129 / 0.5);
+  background: rgb(16 185 129 / 0.45);
 }
 
 /* Framer Motion reduced motion */
@@ -216,14 +302,14 @@ html.light .text-gradient {
 
 /* Focus styles */
 *:focus-visible {
-  outline: 2px solid #10B981;
+  outline: 2px solid rgb(52 211 153 / 0.8);
   outline-offset: 2px;
-  border-radius: 2px;
+  border-radius: 3px;
 }
 
 /* Selection colors */
 ::selection {
-  background: rgb(16 185 129 / 0.3);
+  background: rgb(16 185 129 / 0.32);
   color: #fff;
 }
 html.light ::selection {

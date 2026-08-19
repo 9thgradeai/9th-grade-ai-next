@@ -17,6 +17,7 @@ import {
   Calculator,
   Scale,
 } from "lucide-react";
+import SectionHeading from "./ui/SectionHeading";
 
 const SYLLABUS_ICONS = [
   { icon: BookOpen, label: "Bangla Literature" },
@@ -393,33 +394,17 @@ export default function SyllabusExplorer() {
     <section
       id="syllabus"
       className="py-20 md:py-32 px-4 sm:px-6 relative"
-      aria-labelledby="syllabus-heading"
+      aria-label="Syllabus explorer"
     >
       <div className="max-w-7xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-16"
-        >
-          <h2
-            id="syllabus-heading"
-            className="text-emerald-500 font-mono text-sm tracking-wider uppercase mb-4"
-          >
-            {"// SYLLABUS EXPLORER"}
-          </h2>
-          <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
-            Complete BCS & Competitive Exam
-            <br />
-            <span className="text-gradient">Syllabus Coverage</span>
-          </h3>
-          <p className="text-lg text-zinc-400 max-w-2xl mx-auto">
-            Interactive syllabus browser with real-time progress tracking, question counts, and estimated study hours per topic.
-          </p>
-        </motion.div>
+        <SectionHeading
+          eyebrow="SYLLABUS EXPLORER"
+          title="Complete BCS & Competitive Exam"
+          highlight="Syllabus Coverage"
+          description="Interactive syllabus browser with real-time progress tracking, question counts, and estimated study hours per topic."
+        />
 
-        <div className="space-y-6">
+        <div className="space-y-5">
           {syllabusData.map((category, catIndex) => {
             const Icon = SYLLABUS_ICONS[catIndex]?.icon ?? BookOpen;
             const totalQuestions = category.topics.reduce((sum, t) => sum + t.questions, 0);
@@ -437,24 +422,24 @@ export default function SyllabusExplorer() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.4, delay: catIndex * 0.05 }}
-                className="glass-card rounded-terminal-rounded border border-terminal-border overflow-hidden transition-[box-shadow] duration-300 hover:shadow-neon-glow-lg"
+                transition={{ duration: 0.4, delay: catIndex * 0.04 }}
+                className="glass-card rounded-2xl border border-white/10 overflow-hidden transition-[border-color,box-shadow] duration-300 hover:border-emerald-400/30"
               >
                 {/* Category Header */}
                 <button
                   onClick={() => toggleCategory(category.category)}
-                  className="w-full p-4 md:p-6 flex items-center justify-between gap-4 hover:bg-emerald-500/5 transition-colors text-left"
+                  className="w-full p-4 md:p-6 flex items-center justify-between gap-4 hover:bg-white/[0.03] transition-colors text-left"
                   aria-expanded={isExpanded}
                 >
                   <div className="flex items-center gap-4 flex-1 min-w-0">
-                    <div className="w-12 h-12 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center flex-shrink-0">
-                      <Icon className="w-6 h-6 text-emerald-500" />
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500/20 to-cyan-500/10 border border-emerald-500/25 flex items-center justify-center flex-shrink-0">
+                      <Icon className="w-6 h-6 text-emerald-400" />
                     </div>
                     <div className="min-w-0">
-                      <h4 className="text-base md:text-lg font-semibold text-white line-clamp-2">
+                      <h4 className="font-display text-base md:text-lg font-semibold text-white line-clamp-2">
                         {category.category}
                       </h4>
-                      <div className="flex flex-wrap gap-2 sm:gap-4 mt-1 text-xs sm:text-sm text-zinc-400 font-mono">
+                      <div className="flex flex-wrap gap-2 sm:gap-4 mt-1 text-xs sm:text-sm text-zinc-500 font-mono">
                         <span>{totalQuestions.toLocaleString()} questions</span>
                         <span>{totalHours}h estimated</span>
                         <span>{overallProgress}% complete</span>
@@ -473,7 +458,7 @@ export default function SyllabusExplorer() {
                     <motion.div
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
-                      className="w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center"
+                      className="w-11 h-11 rounded-full bg-gradient-to-br from-emerald-500/20 to-cyan-500/10 border border-emerald-500/25 flex items-center justify-center"
                     >
                       <span className="text-emerald-400 font-bold font-mono text-xs">
                         {overallProgress}%
@@ -493,7 +478,7 @@ export default function SyllabusExplorer() {
                   className="grid"
                 >
                   <div className="overflow-hidden">
-                  <div className="border-t border-emerald-500/10 p-4 md:p-6 pt-4">
+                  <div className="border-t border-white/10 p-4 md:p-6 pt-4">
                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                       {category.topics.map((topic, topicIndex) => (
                         <motion.div
@@ -501,7 +486,7 @@ export default function SyllabusExplorer() {
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: topicIndex * 0.03 }}
-                          className="glass-card rounded-terminal-rounded border border-terminal-border p-4 hover:border-emerald-500/30 hover:shadow-neon-glow transition-[border-color,box-shadow] flex flex-col justify-between"
+                          className="glass-card rounded-xl border border-white/10 p-4 hover:border-emerald-400/30 hover:shadow-neon-glow transition-[border-color,box-shadow] flex flex-col justify-between"
                         >
                           <div>
                             <div className="flex items-start justify-between gap-2 mb-2">
@@ -518,16 +503,16 @@ export default function SyllabusExplorer() {
                           </div>
 
                           <div className="space-y-2 mt-3">
-                            <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
+                            <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
                               <motion.div
                                 initial={{ width: 0 }}
                                 whileInView={{ width: `${topic.completed}%` }}
                                 viewport={{ once: true }}
                                 transition={{ duration: 0.6, delay: 0.1 }}
-                                className="h-full bg-gradient-to-r from-emerald-500 to-stellar-cyan rounded-full"
+                                className="h-full bg-gradient-to-r from-emerald-500 to-cyan-400 rounded-full"
                               />
                             </div>
-                            <div className="flex justify-between text-xs text-zinc-400 font-mono">
+                            <div className="flex justify-between text-xs text-zinc-500 font-mono">
                               <span>{topic.completed}% mastered</span>
                               <span>{topic.questions.toLocaleString()} Q</span>
                             </div>
@@ -559,9 +544,9 @@ export default function SyllabusExplorer() {
             href="/login?register=true"
             whileHover={{ scale: 1.04, y: -2 }}
             whileTap={{ scale: 0.97 }}
-            className="inline-flex flex-wrap items-center justify-center gap-2 w-full sm:w-auto px-6 py-3.5 text-base font-medium text-zinc-950 bg-emerald-500 rounded hover:bg-emerald-400 transition-colors font-mono shadow-neon-glow-lg"
+            className="inline-flex flex-wrap items-center justify-center gap-2 w-full sm:w-auto px-8 py-3.5 rounded-full text-base font-semibold text-zinc-950 bg-emerald-500 hover:bg-emerald-400 transition-colors shadow-[0_0_28px_rgba(16,185,129,0.3)]"
           >
-            [ Access Full Syllabus & Start Practicing ]
+            Access Full Syllabus & Start Practicing
             <TrendingUp className="w-4 h-4" aria-hidden="true" />
           </motion.a>
         </motion.div>
