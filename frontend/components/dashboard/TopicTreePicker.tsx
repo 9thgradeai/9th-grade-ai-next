@@ -212,7 +212,7 @@ export default function TopicTreePicker({
                 transition={{ delay: i * 0.03 }}
                 whileHover={{ y: -2 }}
                 onClick={() => toggleSubject(subject)}
-                className={`glass rounded-2xl border p-3 text-left transition-all ${
+                className={`glass-card rounded-2xl border p-3 text-left transition-all ${
                   selected
                     ? "border-emerald-500/40 bg-emerald-500/10 shadow-neon-glow"
                     : "border-terminal-border hover:border-emerald-500/20"
@@ -254,7 +254,7 @@ export default function TopicTreePicker({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               layout
-              className="glass rounded-2xl border border-emerald-500/20 p-4 md:p-5"
+              className="glass-card rounded-2xl border border-emerald-500/20 p-4 md:p-5"
             >
               <div className="flex items-center justify-between gap-3 mb-3">
                 <div className="flex items-center gap-2 min-w-0">

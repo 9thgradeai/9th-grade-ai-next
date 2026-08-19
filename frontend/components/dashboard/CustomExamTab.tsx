@@ -356,7 +356,7 @@ export default function CustomExamTab() {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass rounded-2xl border border-terminal-border overflow-hidden"
+          className="glass-card rounded-2xl border border-terminal-border overflow-hidden"
         >
           <div className="terminal-window-bar border-b border-terminal-border">
             <div className="dot close" /><div className="dot minimize" /><div className="dot maximize" />
@@ -376,14 +376,14 @@ export default function CustomExamTab() {
         </motion.div>
 
         {configLoading && (
-          <div className="glass rounded-2xl border border-terminal-border p-10 text-center">
+          <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
             <Loader2 className="w-10 h-10 mx-auto mb-3 text-emerald-500 animate-spin" aria-hidden="true" />
             <p className="text-sm text-zinc-400 font-mono">বিষয় লোড হচ্ছে...</p>
           </div>
         )}
 
         {configError && (
-          <div className="glass rounded-2xl border border-terminal-border p-10 text-center">
+          <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
             <AlertTriangle className="w-10 h-10 mx-auto mb-3 text-amber-500" aria-hidden="true" />
             <p className="text-sm text-zinc-400">{configError}</p>
             <button
@@ -406,7 +406,7 @@ export default function CustomExamTab() {
 
             {/* Total question count + duration */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="glass rounded-xl border border-terminal-border p-4 flex items-center justify-between gap-3">
+              <div className="glass-card rounded-xl border border-terminal-border p-4 flex items-center justify-between gap-3">
                 <div className="min-w-0">
                   <p className="text-sm text-zinc-300 font-mono">মোট প্রশ্ন</p>
                   <p className="text-xs text-zinc-500 mt-0.5">
@@ -426,7 +426,7 @@ export default function CustomExamTab() {
                 </span>
               </div>
 
-              <div className="glass rounded-xl border border-terminal-border p-4 flex items-center justify-between gap-3">
+              <div className="glass-card rounded-xl border border-terminal-border p-4 flex items-center justify-between gap-3">
                 <div>
                   <p className="text-sm text-zinc-300 font-mono">সময়সীমা</p>
                   <p className="text-xs text-zinc-500 mt-0.5">
@@ -483,7 +483,7 @@ export default function CustomExamTab() {
             {/* Live config summary */}
             <motion.div
               layout
-              className="glass rounded-2xl border border-emerald-500/30 p-4"
+              className="glass-card rounded-2xl border border-emerald-500/30 p-4"
             >
               <p className="text-[10px] text-zinc-500 font-mono uppercase tracking-widest mb-2">লাইভ কনফিগারেশন সামারি</p>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
@@ -537,7 +537,7 @@ export default function CustomExamTab() {
                     animate={{ scale: 1, y: 0 }}
                     exit={{ scale: 0.95, y: 10 }}
                     onClick={(e) => e.stopPropagation()}
-                    className="glass rounded-2xl border border-emerald-500/30 p-6 w-full max-w-md"
+                    className="glass-card rounded-2xl border border-emerald-500/30 p-6 w-full max-w-md"
                   >
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="text-base font-bold text-white">পরীক্ষা নিশ্চিত করুন</h3>
@@ -611,7 +611,7 @@ export default function CustomExamTab() {
       <div className="space-y-4">
         {/* Sticky header: timer + progress + submit */}
         <div className="sticky top-0 z-40 -mx-1 px-1">
-          <div className="glass rounded-2xl border border-emerald-500/30 px-4 py-3">
+          <div className="glass-card rounded-2xl border border-emerald-500/30 px-4 py-3">
             <div className="flex items-center justify-between gap-3 flex-wrap">
               <div className="flex items-center gap-2">
                 <Timer className={`w-4 h-4 ${timeLow ? "text-red-400 animate-pulse" : "text-emerald-400"}`} />
@@ -646,7 +646,7 @@ export default function CustomExamTab() {
         </div>
 
         {/* Question palette (jump navigation) */}
-        <div className="glass rounded-2xl border border-terminal-border p-3">
+        <div className="glass-card rounded-2xl border border-terminal-border p-3">
           <div className="flex items-center gap-2 mb-2">
             <CircleDashed className="w-3.5 h-3.5 text-emerald-400" />
             <p className="text-[10px] text-zinc-500 font-mono uppercase tracking-widest">প্রশ্ন তালিকা</p>
@@ -681,7 +681,7 @@ export default function CustomExamTab() {
                 key={q.id}
                 ref={(el) => { questionRefs.current[q.id] = el; }}
                 id={`exam-q-${q.id}`}
-                className="glass rounded-2xl border border-terminal-border p-4 md:p-5 scroll-mt-32"
+                className="glass-card rounded-2xl border border-terminal-border p-4 md:p-5 scroll-mt-32"
               >
                 <div className="flex flex-wrap items-center gap-2 mb-3">
                   <span className="px-2 py-0.5 rounded bg-zinc-800 text-[10px] font-mono text-zinc-300">
@@ -746,7 +746,7 @@ export default function CustomExamTab() {
 
         {/* Sticky submit bar */}
         <div className="sticky bottom-0 z-40 -mx-1 px-1 pb-1">
-          <div className="glass rounded-2xl border border-emerald-500/30 px-4 py-3 flex items-center justify-between gap-3 flex-wrap">
+          <div className="glass-card rounded-2xl border border-emerald-500/30 px-4 py-3 flex items-center justify-between gap-3 flex-wrap">
             <div className="text-xs text-zinc-400 font-mono">
               {unanswered > 0 ? (
                 <>
@@ -789,7 +789,7 @@ export default function CustomExamTab() {
                 animate={{ scale: 1, y: 0 }}
                 exit={{ scale: 0.95, y: 10 }}
                 onClick={(e) => e.stopPropagation()}
-                className="glass rounded-2xl border border-amber-500/30 p-6 w-full max-w-sm"
+                className="glass-card rounded-2xl border border-amber-500/30 p-6 w-full max-w-sm"
               >
                 <div className="flex items-center gap-2 mb-3">
                   <AlertTriangle className="w-5 h-5 text-amber-400" />
@@ -831,7 +831,7 @@ export default function CustomExamTab() {
         <motion.div
           initial={{ opacity: 0, scale: 0.97 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="glass rounded-2xl border border-emerald-500/30 overflow-hidden"
+          className="glass-card rounded-2xl border border-emerald-500/30 overflow-hidden"
         >
           <div className="p-6 text-center border-b border-terminal-border">
             <Trophy className={`w-12 h-12 mx-auto mb-3 ${summary.percentage >= 80 ? "text-amber-400" : summary.percentage >= 50 ? "text-emerald-400" : "text-red-400"}`} />
@@ -910,7 +910,7 @@ export default function CustomExamTab() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: Math.min(i * 0.03, 0.5) }}
-                className={`glass rounded-2xl border p-4 ${
+                className={`glass-card rounded-2xl border p-4 ${
                   isCorrect ? "border-emerald-500/20" : isUnanswered ? "border-zinc-700" : "border-red-500/20"
                 }`}
               >

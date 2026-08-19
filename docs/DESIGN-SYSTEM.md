@@ -8,10 +8,11 @@
 
 ## Colors
 
-- **Background**: `zinc-950` (dark theme default)
+- **Background**: deep `#070a12` (via `cosmic-bg` ambient layer) — dark theme default
 - **Text**: `terminal-text` (CSS variable, zinc-200 equivalent)
 - **Primary accent**: `emerald-500` / `emerald-400`
 - **Secondary accents**: `cyan-400`, `amber-400`, `rose-400`, `sky-400`, `violet-400`, `zinc-400`
+- **Gradient headline**: `text-gradient` (emerald → stellar-cyan)
 
 ## Spacing
 
@@ -21,25 +22,33 @@
 
 ## Components
 
-### Badge
-- Pill-shaped status indicator.
-- Colors: `emerald`, `cyan`, `amber`, `rose`, `violet`, `zinc`.
-- File: `frontend/components/ui/Badge.tsx`.
+Shared primitives live in `frontend/components/ui/`:
 
-### Button
-- Variants: `primary`, `ghost`, `elite`, `danger`, `outline`.
-- Sizes: `sm`, `md`, `lg`.
-- Supports `loading` and `leftIcon`.
-- File: `frontend/components/ui/Button.tsx`.
+### ErrorBoundary
+- Class-based error boundary wrapping risky surfaces.
+- File: `frontend/components/ui/ErrorBoundary.tsx`.
 
-### Card
-- Glass/terminal card surface.
-- Supports `glow` prop for neon shadow.
-- File: `frontend/components/ui/Card.tsx`.
+### AnimatedContainer
+- Variants-based entrance wrapper (fade/scale/slide), reduced-motion aware.
+- File: `frontend/components/ui/AnimatedContainer.tsx`.
 
-### Input
-- Terminal-styled text input.
-- File: `frontend/components/ui/Input.tsx`.
+### AnimatedList
+- Staggered list container (`staggerChildren: 0.05`), reduced-motion aware.
+- File: `frontend/components/ui/AnimatedList.tsx`.
+
+## Surfaces & Tokens
+
+Defined in `app/globals.css`:
+
+- **`cosmic-bg`**: fixed ambient background layer (aurora radial gradients +
+  masked grid) mounted in the root layout behind all routes.
+- **`glass`**: theme-aware translucent surface (backdrop blur + saturate).
+- **`glass-card`**: elevated card surface with inner highlight; used across
+  landing and dashboard cards.
+- **`text-gradient`**: emerald → stellar-cyan (or slate-deep in light mode)
+  gradient text for headlines and numerals.
+- **Shadows**: `--shadow-neon-glow`, `--shadow-neon-glow-lg`,
+  `--shadow-card-hover`, `--shadow-glow-purple`.
 
 ## Layout
 
@@ -70,10 +79,31 @@
 
 ## Animation
 
-- **Library**: Framer Motion.
-- **Page transitions**: `initial={{ opacity: 0, y: 10 }}` → `animate={{ opacity: 1, y: 0 }}`.
-- **Micro-interactions**: `whileHover={{ y: -4 }}`, `whileTap={{ scale: 0.95 }}`.
-- **Staggered delays**: `transition={{ delay: 0.15 + i * 0.05 }}`.
+- **Library**: Framer Motion (declarative `motion` + `AnimatePresence`).
+- **Global reduced motion**: the root layout wraps the app in
+  `<MotionConfig reducedMotion="user">`, so every Framer Motion animation
+  respects the OS `prefers-reduced-motion` setting automatically.
+- **Page transitions**: `app/template.tsx` wraps every route in a fade/slide
+  (`initial={{ opacity: 0, y: 20 }}` → `animate={{ opacity: 1, y: 0 }}`).
+- **Dashboard tab transitions**: `app/dashboard/page.tsx` animates tab switches
+  with `<AnimatePresence mode="wait">`, keyed by the active tab.
+- **Cinematic hero**: `TerminalHero` uses a staggered `Variants` entrance,
+  animated aurora orbs, count-up stat meters (`useInView` + rAF), magnetic
+  CTAs, and a 3D pointer-tilt on the terminal card.
+- **Reusable primitives** in `frontend/components/ui/`:
+  - `AnimatedContainer` — variants-based entrance (fade/scale/slide) with a
+    `animation`, `delay`, and `duration` prop.
+  - `AnimatedList` — staggered list container (`staggerChildren: 0.05`).
+- **Transition presets**: `frontend/lib/transitions.ts` exports `transitions`
+  (`spring`, `springBouncy`, `springStiff`, `smooth`, `snappy`).
+- **Micro-interactions**: `whileHover` / `whileTap` springs on CTAs, nav links,
+  cards, and icons; shared-element `layoutId` underlines (header) and active
+  pills (auth tabs, side/bottom nav).
+- **Reduced motion**: new animations read `useReducedMotion()` and fall back to
+  opacity-only, zero-duration transitions (alongside `MotionConfig`).
+- **Performance**: only GPU-accelerated properties (`opacity`, `transform`)
+  are animated; layout effects use `layoutId`/`layout` rather than `width`/`height`;
+  scroll reveals use `viewport={{ once: true }}` so they don't re-run.
 
 ## Interaction Patterns
 

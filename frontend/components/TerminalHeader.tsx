@@ -2,17 +2,22 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 
 export default function TerminalHeader() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [activeLink, setActiveLink] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const { scrollY } = useScroll();
 
   const navLinks = [
     { href: "#features", label: "Features" },
     { href: "#syllabus", label: "Syllabus" },
     { href: "#tracks", label: "Tracks" },
   ];
+
+  useMotionValueEvent(scrollY, "change", (v) => setScrolled(v > 24));
 
   // Close the mobile menu on Escape and trap focus while open.
   useEffect(() => {
@@ -48,17 +53,29 @@ export default function TerminalHeader() {
   }, [isMobileMenuOpen]);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 glass border-b border-terminal-border pt-safe">
+    <header
+      className={`fixed top-0 left-0 right-0 z-50 pt-safe transition-[border-color,box-shadow] duration-300 ${
+        scrolled
+          ? "glass border-b border-emerald-500/25 shadow-neon-glow"
+          : "bg-transparent border-b border-transparent"
+      }`}
+    >
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
         <div className="flex items-center justify-between h-16">
           {/* Logo & Status */}
           <div className="flex items-center gap-4">
             <Link
               href="/"
-              className="flex items-center gap-2 text-xl font-bold text-white tracking-tight font-mono hover:opacity-80 transition-opacity"
+              className="flex items-center gap-2 text-xl font-bold text-white tracking-tight font-mono hover:opacity-90 transition-opacity"
               aria-label="9th-grade-ai home"
             >
-              <span className="text-emerald-500">{'>'}</span>
+              <motion.span
+                className="text-gradient"
+                animate={{ opacity: [0.6, 1, 0.6] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+              >
+                {'>'}
+              </motion.span>
               <span>9th-grade-ai</span>
             </Link>
 
@@ -88,22 +105,33 @@ export default function TerminalHeader() {
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 * (i + 1) }}
-                className="text-sm font-medium text-zinc-300 hover:text-emerald-400 transition-colors font-mono"
+                onHoverStart={() => setActiveLink(link.href)}
+                onHoverEnd={() => setActiveLink(null)}
+                className={`relative py-1 text-sm font-medium transition-colors font-mono ${
+                  activeLink === link.href ? "text-emerald-400" : "text-zinc-300 hover:text-emerald-400"
+                }`}
               >
                 {link.label}
+                {activeLink === link.href && (
+                  <motion.span
+                    layoutId="nav-underline"
+                    className="absolute -bottom-0.5 left-0 right-0 h-px bg-gradient-to-r from-transparent via-emerald-400 to-transparent"
+                    transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                  />
+                )}
               </motion.a>
             ))}
 
             <div className="flex items-center gap-3 ml-4 border-l border-emerald-500/20 pl-4">
               <Link
                 href="/login"
-                className="px-4 py-1.5 text-sm font-medium text-zinc-100 border border-emerald-500/30 rounded hover:bg-emerald-500/10 transition-colors font-mono"
+                className="px-4 py-1.5 text-sm font-medium text-zinc-100 border border-emerald-500/30 rounded hover:bg-emerald-500/10 transition-colors font-mono hover:scale-[1.03] active:scale-[0.97] transition-transform"
               >
                 [ Login ]
               </Link>
               <Link
                 href="/login?register=true"
-                className="px-4 py-1.5 text-sm font-medium text-zinc-950 bg-emerald-500 rounded hover:bg-emerald-400 transition-colors font-mono shadow-neon-glow"
+                className="px-4 py-1.5 text-sm font-medium text-zinc-950 bg-emerald-500 rounded hover:bg-emerald-400 transition-colors font-mono shadow-neon-glow hover:scale-[1.03] active:scale-[0.97] transition-transform"
               >
                 [ Get Started ]
               </Link>
@@ -141,40 +169,40 @@ export default function TerminalHeader() {
           aria-label="Mobile navigation"
           hidden={!isMobileMenuOpen}
         >
-<div className="py-4 space-y-1 border-t border-emerald-500/10">
-              {navLinks.map((link, i) => (
-                <motion.a
-                  key={link.href}
-                  href={link.href}
-                  role="menuitem"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.05 * (i + 1) }}
-                  className="block px-3 py-3 min-h-[44px] flex items-center text-base font-medium text-zinc-300 hover:text-emerald-400 font-mono"
-                >
-                  {link.label}
-                </motion.a>
-              ))}
-              <div className="flex flex-col gap-2 pt-4 border-t border-emerald-500/10">
-                <Link
-                  href="/login"
-                  role="menuitem"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="px-4 py-3 min-h-[44px] flex items-center justify-center text-center text-sm font-medium text-zinc-100 border border-emerald-500/30 rounded hover:bg-emerald-500/10 transition-colors font-mono"
-                >
-                  [ Login ]
-                </Link>
-                <Link
-                  href="/login?register=true"
-                  role="menuitem"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="px-4 py-3 min-h-[44px] flex items-center justify-center text-center text-sm font-medium text-zinc-950 bg-emerald-500 rounded hover:bg-emerald-400 transition-colors font-mono shadow-neon-glow"
-                >
-                  [ Get Started ]
-                </Link>
-              </div>
+          <div className="py-4 space-y-1 border-t border-emerald-500/10">
+            {navLinks.map((link, i) => (
+              <motion.a
+                key={link.href}
+                href={link.href}
+                role="menuitem"
+                onClick={() => setIsMobileMenuOpen(false)}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.05 * (i + 1) }}
+                className="block px-3 py-3 min-h-[44px] flex items-center text-base font-medium text-zinc-300 hover:text-emerald-400 font-mono"
+              >
+                {link.label}
+              </motion.a>
+            ))}
+            <div className="flex flex-col gap-2 pt-4 border-t border-emerald-500/10">
+              <Link
+                href="/login"
+                role="menuitem"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="px-4 py-3 min-h-[44px] flex items-center justify-center text-center text-sm font-medium text-zinc-100 border border-emerald-500/30 rounded hover:bg-emerald-500/10 transition-colors font-mono active:scale-[0.98] transition-transform"
+              >
+                [ Login ]
+              </Link>
+              <Link
+                href="/login?register=true"
+                role="menuitem"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="px-4 py-3 min-h-[44px] flex items-center justify-center text-center text-sm font-medium text-zinc-950 bg-emerald-500 rounded hover:bg-emerald-400 transition-colors font-mono shadow-neon-glow active:scale-[0.98] transition-transform"
+              >
+                [ Get Started ]
+              </Link>
             </div>
+          </div>
         </motion.div>
       </nav>
     </header>

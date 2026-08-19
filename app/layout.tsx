@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
+import { MotionConfig } from "framer-motion";
 import { AuthProvider } from "@/lib/auth-ctx";
 import { DashboardProvider } from "@/lib/store-ctx/dashboard";
 import { ThemeProvider } from "@/lib/theme-ctx";
@@ -61,13 +62,16 @@ export default function RootLayout({
       className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans">
-        <AuthProvider>
-          <DashboardProvider>
-            <ThemeProvider>
-              {children}
-            </ThemeProvider>
-          </DashboardProvider>
-        </AuthProvider>
+        <div className="cosmic-bg" aria-hidden="true" />
+        <MotionConfig reducedMotion="user">
+          <AuthProvider>
+            <DashboardProvider>
+              <ThemeProvider>
+                {children}
+              </ThemeProvider>
+            </DashboardProvider>
+          </AuthProvider>
+        </MotionConfig>
       </body>
     </html>
   );

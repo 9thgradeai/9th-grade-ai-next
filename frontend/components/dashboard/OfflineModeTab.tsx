@@ -91,7 +91,7 @@ export default function OfflineMode() {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="glass rounded-terminal-rounded border border-terminal-border p-5"
+        className="glass-card rounded-terminal-rounded border border-terminal-border p-5"
       >
         <div className="terminal-window-bar mb-4 border-b border-terminal-border">
           <div className="dot close" /><div className="dot minimize" /><div className="dot maximize" />
@@ -166,7 +166,7 @@ export default function OfflineMode() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.05 }}
-            className="glass rounded-terminal-rounded border border-terminal-border p-4"
+            className="glass-card rounded-terminal-rounded border border-terminal-border p-4"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">

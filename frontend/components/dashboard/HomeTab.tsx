@@ -74,13 +74,16 @@ function MetricTile({
   suffix?: string;
 }) {
   return (
-    <div className="glass rounded-2xl border border-terminal-border p-4">
-      <p className="text-2xl font-bold font-mono text-emerald-400">
+    <motion.div
+      whileHover={{ y: -3 }}
+      className="glass-card rounded-2xl border border-terminal-border p-4 transition-[border-color,box-shadow] duration-300 hover:border-emerald-500/30 hover:shadow-neon-glow"
+    >
+      <p className="text-2xl font-bold font-mono text-gradient">
         {value.toLocaleString("bn-BD")}
         {suffix ? <span className="text-sm text-zinc-400">{suffix}</span> : null}
       </p>
       <p className="text-xs text-zinc-400 mt-1">{label}</p>
-    </div>
+    </motion.div>
   );
 }
 
@@ -164,9 +167,10 @@ export default function HomeTab() {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="glass rounded-2xl border border-terminal-border p-5"
+        className="glass-card rounded-2xl border border-terminal-border p-5 relative overflow-hidden"
       >
-        <div className="flex flex-wrap items-center justify-between gap-4">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(16,185,129,0.08),transparent_60%)] pointer-events-none" aria-hidden="true" />
+        <div className="relative flex flex-wrap items-center justify-between gap-4">
           <div>
             <p className="text-xs text-zinc-500 font-mono uppercase tracking-widest">
               Mission Control
@@ -194,9 +198,15 @@ export default function HomeTab() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.08 }}
-        className="glass rounded-2xl border border-emerald-500/30 p-6 md:p-8 relative overflow-hidden"
+        className="glass-card rounded-2xl border border-emerald-500/30 p-6 md:p-8 relative overflow-hidden"
       >
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(16,185,129,0.08),transparent_60%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(16,185,129,0.1),transparent_60%)] pointer-events-none" aria-hidden="true" />
+        <motion.div
+          className="absolute -top-16 -right-16 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl"
+          aria-hidden="true"
+          animate={{ opacity: [0.4, 0.8, 0.4], scale: [1, 1.1, 1] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        />
         {nextExam ? (
           <div className="relative flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div className="flex items-center gap-4">
@@ -239,7 +249,7 @@ export default function HomeTab() {
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         {skeleton
           ? Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="glass rounded-2xl border border-terminal-border p-4 animate-pulse">
+              <div key={i} className="glass-card rounded-2xl border border-terminal-border p-4 animate-pulse">
                 <div className="h-7 w-16 bg-zinc-800 rounded" />
                 <div className="h-3 w-20 bg-zinc-800 rounded mt-3" />
               </div>
@@ -259,7 +269,7 @@ export default function HomeTab() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="glass rounded-2xl border border-terminal-border p-5"
+        className="glass-card rounded-2xl border border-terminal-border p-5"
       >
         <div className="flex items-center justify-between mb-4">
           <div>
@@ -322,7 +332,7 @@ export default function HomeTab() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="glass rounded-2xl border border-terminal-border p-5"
+          className="glass-card rounded-2xl border border-terminal-border p-5"
         >
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-semibold text-white uppercase tracking-wider">
@@ -398,7 +408,7 @@ export default function HomeTab() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="glass rounded-2xl border border-terminal-border p-5"
+          className="glass-card rounded-2xl border border-terminal-border p-5"
         >
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-semibold text-white uppercase tracking-wider">
@@ -468,7 +478,7 @@ export default function HomeTab() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="glass rounded-2xl border border-terminal-border overflow-hidden"
+          className="glass-card rounded-2xl border border-terminal-border overflow-hidden"
         >
           <div className="px-5 py-4 border-b border-terminal-border flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-emerald-400" />

@@ -1,11 +1,19 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import {
+  motion,
+  useInView,
+  useReducedMotion,
+  useMotionValue,
+  useTransform,
+  type Variants,
+} from "framer-motion";
 import { trackHeroView, trackCtaClick } from "@/lib/analytics";
 import StarfieldBackground from "./StarfieldBackground";
 import { FeedbackButton } from "./dashboard/FeedbackButton";
-import { motion } from "framer-motion";
-import { ChevronDown } from "lucide-react";
+import { transitions } from "@/lib/transitions";
+import { ChevronDown, Sparkles } from "lucide-react";
 
 type TerminalLine =
   | { type: "command"; text: string; delay: number }
@@ -36,11 +44,80 @@ const terminalOutput: TerminalLine[] = [
   { type: "command", text: "$ █", delay: 1000 },
 ];
 
+const heroContainer: Variants = {
+  hidden: {},
+  visible: {
+    transition: { staggerChildren: 0.12, delayChildren: 0.1 },
+  },
+};
+
+const heroItem: Variants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0, transition: transitions.smooth },
+};
+
+const stats = [
+  { value: 50, decimals: 0, suffix: "K+", label: "Active Students" },
+  { value: 2.5, decimals: 1, suffix: "M+", label: "Questions Practiced" },
+  { value: 94, decimals: 0, suffix: "%", label: "Success Rate" },
+  { value: 14, decimals: 0, suffix: "", label: "Subjects Covered" },
+];
+
+function CountUp({ value, decimals = 0, suffix = "" }: { value: number; decimals?: number; suffix?: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-40px" });
+  const shouldReduceMotion = useReducedMotion();
+  const [display, setDisplay] = useState(shouldReduceMotion ? value : 0);
+
+  useEffect(() => {
+    if (!inView || shouldReduceMotion) return;
+    let raf = 0;
+    const start = performance.now();
+    const duration = 1400;
+    const tick = (now: number) => {
+      const p = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setDisplay(eased * value);
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [inView, value, shouldReduceMotion]);
+
+  return (
+    <span ref={ref}>
+      {display.toLocaleString(undefined, { maximumFractionDigits: decimals, minimumFractionDigits: decimals })}
+      {suffix}
+    </span>
+  );
+}
+
+function useTilt(max = 6) {
+  const mx = useMotionValue(0.5);
+  const my = useMotionValue(0.5);
+  const rotateX = useTransform(my, [0, 1], [max, -max]);
+  const rotateY = useTransform(mx, [0, 1], [-max, max]);
+
+  const onMouseMove = (e: React.MouseEvent<HTMLElement>) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    mx.set((e.clientX - r.left) / r.width);
+    my.set((e.clientY - r.top) / r.height);
+  };
+  const onMouseLeave = () => {
+    mx.set(0.5);
+    my.set(0.5);
+  };
+
+  return { style: { rotateX, rotateY, transformPerspective: 1000 }, onMouseMove, onMouseLeave };
+}
+
 export default function TerminalHero() {
   const [lines, setLines] = useState<typeof terminalOutput>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
   const terminalRef = useRef<HTMLDivElement>(null);
+  const shouldReduceMotion = useReducedMotion();
+  const tilt = useTilt();
 
   useEffect(() => {
     const timers: ReturnType<typeof setTimeout>[] = [];
@@ -91,114 +168,109 @@ export default function TerminalHero() {
 
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center pt-16 pb-20 px-4 overflow-hidden">
-      
-      {/* Background grid pattern */}
-      <div className="absolute inset-0 opacity-5" aria-hidden="true">
-         <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=%2760%27 height=%2760%27 viewBox=%270 0 60 60%27 xmlns=%27http://www.w3.org/2000/svg%27%3E%3Cg fill=%27none%27 fill-rule=%27evenodd%27%3E%3Cpath d=%27M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z%27 fill=%27%2310B981%27 fill-opacity=%270.4%27/%3E%3C/g%3E%3C/svg%3E')]" />
-      </div>
-
-      {/* Glow orbs */}
+      {/* Ambient aurora orbs (GPU-friendly scale/opacity only) */}
       <StarfieldBackground />
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl animate-pulse" aria-hidden="true" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1s" }} aria-hidden="true" />
+      <motion.div
+        className="absolute -top-32 left-1/4 w-[42rem] h-[42rem] bg-emerald-500/12 rounded-full blur-[120px]"
+        aria-hidden="true"
+        animate={shouldReduceMotion ? { opacity: 0.5 } : { opacity: [0.35, 0.6, 0.35], scale: [1, 1.08, 1] }}
+        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.div
+        className="absolute bottom-0 right-1/5 w-[34rem] h-[34rem] bg-nebula-purple/12 rounded-full blur-[120px]"
+        aria-hidden="true"
+        animate={shouldReduceMotion ? { opacity: 0.5 } : { opacity: [0.3, 0.55, 0.3], scale: [1, 1.12, 1] }}
+        transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
+      />
 
       <div className="relative max-w-7xl mx-auto w-full">
         {/* Hero Content */}
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Left: Text Content */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2 }}
-              className="mb-6"
-            >
-              <span className="text-stellar-cyan font-mono text-sm tracking-wider uppercase">
-              {"// NEXT-GEN EXAM INTELLIGENCE"}
-              </span>
+          <motion.div variants={heroContainer} initial="hidden" animate="visible">
+            <motion.div variants={heroItem} className="mb-6">
+              <motion.span
+                className="inline-flex items-center gap-2 text-stellar-cyan font-mono text-sm tracking-wider uppercase"
+              >
+                <Sparkles className="w-4 h-4" aria-hidden="true" />
+                {"// NEXT-GEN EXAM INTELLIGENCE"}
+              </motion.span>
             </motion.div>
 
             <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-stellar-cyan leading-[1.1] mb-6"
+              variants={heroItem}
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.08] mb-6"
             >
               Master Competitive Exams with
               <br />
-              <span className="text-stellar-cyan">AI-Driven Precision</span>
+              <span className="text-gradient">AI-Driven Precision</span>
             </motion.h1>
 
             <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="text-lg md:text-xl max-w-xl mb-8 leading-relaxed" style={{ textShadow: "0 2px 4px rgba(0,0,0,0.5)" }}
+              variants={heroItem}
+              className="text-lg md:text-xl max-w-xl mb-8 leading-relaxed text-zinc-400"
             >
               Adaptive mock tests, automated flashcards, AI doubt solving, and daily streak tracking —
               all powered by cutting-edge AI to help you ace BCS, Bank, and Teacher recruitment exams.
             </motion.p>
 
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
+              variants={heroItem}
               className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4"
             >
-<a
+              <motion.a
                 href="/login?register=true"
                 onClick={() => trackCtaClick("primary")}
-                className="w-full sm:w-auto px-6 py-3.5 text-base font-medium text-zinc-950 bg-emerald-500 rounded hover:bg-emerald-400 transition-colors font-mono shadow-neon-glow flex items-center justify-center gap-2"
-                >
+                whileHover={shouldReduceMotion ? undefined : { scale: 1.04, y: -2 }}
+                whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
+                transition={transitions.spring}
+                className="w-full sm:w-auto px-6 py-3.5 text-base font-medium text-zinc-950 bg-emerald-500 rounded hover:bg-emerald-400 transition-colors font-mono shadow-neon-glow-lg flex items-center justify-center gap-2"
+              >
                 [ Start Free Prep ]
                 <ChevronDown className="w-4 h-4" aria-hidden="true" />
-              </a>
-<a
+              </motion.a>
+              <motion.a
                 href="#features"
                 onClick={() => trackCtaClick("secondary")}
+                whileHover={shouldReduceMotion ? undefined : { scale: 1.04, y: -2 }}
+                whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
+                transition={transitions.spring}
                 className="w-full sm:w-auto px-6 py-3.5 text-base font-medium text-zinc-100 border border-nebula-purple/30 rounded hover:bg-nebula-purple/10 transition-colors font-mono flex items-center justify-center gap-2"
-                >
+              >
                 [ Explore Features ]
-              </a>
+              </motion.a>
             </motion.div>
 
             {/* Stats bar */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-              className="mt-12 grid grid-cols-2 gap-6 sm:flex sm:flex-wrap sm:gap-8 text-center"
+              variants={heroItem}
+              className="mt-12 grid grid-cols-2 gap-6 sm:flex sm:flex-wrap sm:gap-10 text-center"
             >
-              <div>
-                <div className="text-3xl font-bold text-emerald-500 font-mono">50K+</div>
-                <div className="text-sm text-zinc-400">Active Students</div>
-              </div>
-              <div>
-                <div className="text-3xl font-bold text-emerald-500 font-mono">2.5M+</div>
-                <div className="text-sm text-zinc-400">Questions Practiced</div>
-              </div>
-              <div>
-                <div className="text-3xl font-bold text-emerald-500 font-mono">94%</div>
-                <div className="text-sm text-zinc-400">Success Rate</div>
-              </div>
-              <div>
-                <div className="text-3xl font-bold text-emerald-500 font-mono">14</div>
-                <div className="text-sm text-zinc-400">Subjects Covered</div>
-              </div>
+              {stats.map((stat) => (
+                <div key={stat.label}>
+                  <div className="text-3xl font-bold text-emerald-500 font-mono tabular-nums">
+                    <CountUp value={stat.value} decimals={stat.decimals} suffix={stat.suffix} />
+                  </div>
+                  <div className="text-sm text-zinc-400">{stat.label}</div>
+                </div>
+              ))}
             </motion.div>
           </motion.div>
 
           {/* Right: Terminal Simulation */}
           <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2, duration: 0.6 }}
+            initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, x: 30, scale: 0.96 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            transition={{ delay: 0.25, duration: 0.6, ease: "easeOut" }}
           >
-            <div className="glass rounded-terminal-rounded overflow-hidden border border-terminal-border shadow-neon-glow">
+            <motion.div
+              onMouseMove={shouldReduceMotion ? undefined : tilt.onMouseMove}
+              onMouseLeave={shouldReduceMotion ? undefined : tilt.onMouseLeave}
+              style={shouldReduceMotion ? undefined : tilt.style}
+              whileHover={shouldReduceMotion ? undefined : { scale: 1.015 }}
+              transition={transitions.springStiff}
+              className="glass-card rounded-terminal-rounded overflow-hidden border border-terminal-border shadow-neon-glow-lg"
+            >
               {/* Terminal window bar */}
               <div className="terminal-window-bar">
                 <div className="dot close" aria-label="Close" />
@@ -236,7 +308,7 @@ export default function TerminalHero() {
                               initial={{ width: 0 }}
                               animate={{ width: `${(line.value / line.total) * 100}%` }}
                               transition={{ duration: 0.5, delay: 0.1 }}
-                              className="h-full bg-emerald-500 rounded-full"
+                              className="h-full bg-gradient-to-r from-emerald-500 to-stellar-cyan rounded-full"
                             />
                           </div>
                           <span className="text-emerald-400 w-16 text-right font-mono">
@@ -269,14 +341,14 @@ export default function TerminalHero() {
                   </motion.button>
                 )}
               </div>
-            </div>
+            </motion.div>
           </motion.div>
         </div>
       </div>
 
       {/* Scroll indicator */}
       <motion.div
-        animate={{ y: [0, 10, 0] }}
+        animate={shouldReduceMotion ? { opacity: 0.5 } : { y: [0, 10, 0] }}
         transition={{ duration: 1.5, repeat: Infinity }}
         className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-zinc-500"
         aria-hidden="true"
@@ -284,7 +356,7 @@ export default function TerminalHero() {
         <span className="text-xs font-mono uppercase tracking-wider">Scroll</span>
         <ChevronDown className="w-5 h-5" />
       </motion.div>
-    <FeedbackButton />
-</section>
+      <FeedbackButton />
+    </section>
   );
 }

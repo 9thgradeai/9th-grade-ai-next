@@ -103,7 +103,7 @@ export default function StudyPlannerTab() {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="glass rounded-terminal-rounded border border-terminal-border p-5 md:p-6"
+        className="glass-card rounded-terminal-rounded border border-terminal-border p-5 md:p-6"
       >
         <div className="terminal-window-bar mb-4 border-b border-terminal-border">
           <div className="dot close" /><div className="dot minimize" /><div className="dot maximize" />
@@ -201,7 +201,7 @@ export default function StudyPlannerTab() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
                 transition={{ delay: i * 0.05 }}
-                className={`glass rounded-terminal-rounded border p-4 transition-all ${
+                className={`glass-card rounded-terminal-rounded border p-4 transition-all ${
                   isCompleted ? "border-emerald-500/30 bg-emerald-500/5" : "border-terminal-border"
                 }`}
               >

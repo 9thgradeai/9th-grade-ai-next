@@ -34,7 +34,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   if (authLoading) {
     return (
-      <div className="min-h-dvh bg-zinc-950 flex items-center justify-center">
+      <div className="min-h-dvh flex items-center justify-center">
         <div className="text-emerald-500 font-mono text-sm animate-pulse">Verifying credentials...</div>
       </div>
     );
@@ -47,7 +47,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const activeLabel = TABS.find((t) => t.id === activeTab)?.label ?? "DASHBOARD";
 
   return (
-    <div className="min-h-dvh bg-zinc-950 flex">
+    <div className="min-h-dvh flex">
       {/* Desktop Side Navigation (>=1024px) */}
       <SideNav activeTab={activeTab} onChange={handleTabChange} />
 
@@ -62,7 +62,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               className="lg:hidden flex items-center gap-2 font-mono font-bold text-white text-base"
               aria-label="9th-grade-ai home"
             >
-              <span className="text-emerald-500">&gt;</span>
+              <span className="text-gradient">&gt;</span>
               <span>9th-grade-ai</span>
             </Link>
 

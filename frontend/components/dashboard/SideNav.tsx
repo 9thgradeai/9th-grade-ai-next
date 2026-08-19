@@ -29,13 +29,13 @@ export default function SideNav({ activeTab, onChange }: SideNavProps) {
 
   return (
     <nav
-      className="hidden lg:flex flex-col w-64 min-h-dvh sticky top-0 border-r border-terminal-border bg-glass-bg backdrop-blur-xl z-30"
+      className="hidden lg:flex flex-col w-64 min-h-dvh sticky top-0 border-r border-terminal-border glass-card z-30"
       aria-label="Desktop navigation"
     >
       {/* Logo / Brand */}
       <div className="p-6 border-b border-terminal-border">
         <div className="flex items-center gap-2">
-          <span className="text-emerald-500 font-mono text-xl font-bold">{">"}</span>
+          <span className="text-gradient font-mono text-xl font-bold">{">"}</span>
           <span className="text-white font-mono font-bold tracking-tight">9th-grade-ai</span>
         </div>
         <p className="text-xs text-zinc-500 font-mono mt-1">বিসিএস • ব্যাংক • চাকরি</p>
@@ -50,22 +50,29 @@ export default function SideNav({ activeTab, onChange }: SideNavProps) {
             <button
               key={tab.id}
               onClick={() => onChange(tab.id)}
-              className={`relative w-full flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-terminal-rounded text-left transition-all ${
+              className={`relative w-full flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-terminal-rounded text-left transition-colors ${
                 isActive
-                  ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30"
-                  : "text-zinc-400 hover:text-white hover:bg-zinc-900/50 border border-transparent"
+                  ? "text-emerald-400"
+                  : "text-zinc-400 hover:text-white hover:bg-zinc-900/50"
               }`}
               aria-current={isActive ? "page" : undefined}
             >
               {isActive && (
                 <motion.span
-                  layoutId="side-nav-active"
-                  className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-emerald-500 rounded-r-full"
+                  layoutId="side-nav-active-pill"
+                  className="absolute inset-0 rounded-terminal-rounded bg-gradient-to-r from-emerald-500/15 to-stellar-cyan/10 border border-emerald-500/30"
                   transition={{ type: "spring", stiffness: 400, damping: 30 }}
                 />
               )}
-              <Icon className="w-5 h-5" strokeWidth={isActive ? 2.2 : 1.8} />
-              <div className="flex flex-col">
+              {isActive && (
+                <motion.span
+                  layoutId="side-nav-active"
+                  className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-emerald-500 rounded-r-full shadow-neon-glow"
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                />
+              )}
+              <Icon className="relative z-10 w-5 h-5" strokeWidth={isActive ? 2.2 : 1.8} />
+              <div className="relative z-10 flex flex-col">
                 <span className="text-sm font-medium">{tab.label}</span>
                 <span className="text-[10px] font-mono text-zinc-500">{tab.bengali}</span>
               </div>

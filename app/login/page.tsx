@@ -54,19 +54,26 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 flex items-center justify-center px-4 py-12 relative overflow-hidden">
-      {/* Background */}
-      <div className="absolute inset-0 opacity-5" aria-hidden="true">
-         <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=%2760%27 height=%2760%27 viewBox=%270 0 60 60%27 xmlns=%27http://www.w3.org/2000/svg%27%3E%3Cg fill=%27none%27 fill-rule=%27evenodd%27%3E%3Cpath d=%27M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z%27 fill=%27%2310B981%27 fill-opacity=%270.4%27/%3E%3C/g%3E%3C/svg%3E')]" />
-      </div>
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl" aria-hidden="true" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl" aria-hidden="true" />
+    <div className="min-h-screen flex items-center justify-center px-4 py-12 relative overflow-hidden">
+      {/* Ambient aurora */}
+      <motion.div
+        className="absolute -top-24 left-1/4 w-[32rem] h-[32rem] bg-emerald-500/12 rounded-full blur-[110px]"
+        aria-hidden="true"
+        animate={{ opacity: [0.4, 0.7, 0.4], scale: [1, 1.08, 1] }}
+        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.div
+        className="absolute bottom-0 right-1/5 w-[28rem] h-[28rem] bg-nebula-purple/12 rounded-full blur-[110px]"
+        aria-hidden="true"
+        animate={{ opacity: [0.3, 0.6, 0.3], scale: [1, 1.1, 1] }}
+        transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
+      />
 
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0, y: 20, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.5 }}
-        className="relative w-full max-w-md glass rounded-terminal-rounded border border-terminal-border p-6 sm:p-8 shadow-neon-glow"
+        className="relative w-full max-w-md glass-card rounded-terminal-rounded border border-terminal-border p-6 sm:p-8 shadow-neon-glow-lg"
       >
         {/* Terminal Header */}
         <div className="terminal-window-bar mb-6 -mx-6 sm:-mx-8 -mt-6 sm:-mt-8 rounded-t-terminal-rounded border-b border-terminal-border">
@@ -86,7 +93,7 @@ export default function LoginPage() {
           className="text-center mb-8"
         >
           <Link href="/" className="inline-flex items-center gap-2 text-2xl font-bold text-white tracking-tight font-mono">
-           <span className="text-emerald-500">{'>'}</span>
+            <span className="text-gradient">{'>'}</span>
             <span>9th-grade-ai</span>
           </Link>
           <p className="text-zinc-400 text-sm mt-2 font-mono">
@@ -112,13 +119,20 @@ export default function LoginPage() {
               }}
               role="tab"
               aria-selected={activeTab === tab}
-              className={`flex-1 py-2 px-4 text-sm font-medium font-mono rounded-md transition-all ${
-                activeTab === tab
-                  ? "bg-emerald-500 text-zinc-950 shadow-neon-glow"
-                  : "text-zinc-400 hover:text-white"
+              className={`relative flex-1 py-2 px-4 text-sm font-medium font-mono rounded-md transition-colors ${
+                activeTab === tab ? "text-zinc-950" : "text-zinc-400 hover:text-white"
               }`}
             >
-              {tab === "login" ? "[ Sign In ]" : "[ Register ]"}
+              {activeTab === tab && (
+                <motion.span
+                  layoutId="auth-tab"
+                  className="absolute inset-0 bg-emerald-500 rounded-md shadow-neon-glow"
+                  transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                />
+              )}
+              <span className="relative z-10">
+                {tab === "login" ? "[ Sign In ]" : "[ Register ]"}
+              </span>
             </button>
           ))}
         </motion.div>

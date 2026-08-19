@@ -28,6 +28,9 @@
 
   /* Custom shadows */
   --shadow-neon-glow: 0 0 15px rgba(16, 185, 129, 0.15);
+  --shadow-neon-glow-lg: 0 0 40px rgba(16, 185, 129, 0.25);
+  --shadow-card-hover: 0 8px 40px rgba(2, 6, 12, 0.55), 0 0 0 1px rgb(16 185 129 / 0.25), 0 0 60px rgb(6 214 160 / 0.1);
+  --shadow-glow-purple: 0 0 60px rgba(167, 139, 250, 0.18);
 
   /* Border radius */
   --radius-terminal-square: 4px;
@@ -44,20 +47,20 @@
 }
 
 :root {
-  --background: #0f172a;
+  --background: #070a12;
   --foreground: #e2e8f0;
   /* Semantic surfaces — dark default */
-  --surface: rgba(15, 23, 42, 0.7);
-  --surface-solid: #0f172a;
-  --surface-muted: rgba(30, 41, 59, 0.5);
-  --border-muted: rgb(16 185 129 / 0.15);
-  --border-strong: rgb(16 185 129 / 0.3);
+  --surface: rgba(13, 18, 30, 0.72);
+  --surface-solid: #0a0e17;
+  --surface-muted: rgba(30, 41, 59, 0.45);
+  --border-muted: rgb(16 185 129 / 0.16);
+  --border-strong: rgb(16 185 129 / 0.32);
 }
 
 html.light {
   --background: #F0FDF4;
   --foreground: #0f172a;
-  --surface: rgba(240, 253, 244, 0.8);
+  --surface: rgba(240, 253, 244, 0.78);
   --surface-solid: #F0FDF4;
   --surface-muted: rgba(220, 252, 231, 0.6);
   --border-muted: rgb(16 185 129 / 0.25);
@@ -70,6 +73,43 @@ body {
   font-family: var(--font-sans);
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+}
+
+/* Cosmic ambient background layer (fixed, GPU-friendly) */
+.cosmic-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -10;
+  pointer-events: none;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 80% 55% at 50% -12%, rgb(6 214 160 / 0.14), transparent 60%),
+    radial-gradient(ellipse 60% 45% at 85% 8%, rgb(167 139 250 / 0.12), transparent 55%),
+    radial-gradient(ellipse 55% 40% at 12% 75%, rgb(16 185 129 / 0.08), transparent 55%),
+    var(--background);
+}
+.cosmic-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgb(148 163 184 / 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(148 163 184 / 0.05) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, black 10%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, black 10%, transparent 75%);
+}
+.cosmic-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 45% 40% at 50% 110%, rgb(6 214 160 / 0.1), transparent 60%);
+}
+html.light .cosmic-bg {
+  background:
+    radial-gradient(ellipse 80% 55% at 50% -12%, rgb(6 214 160 / 0.16), transparent 60%),
+    radial-gradient(ellipse 60% 45% at 85% 8%, rgb(167 139 250 / 0.14), transparent 55%),
+    var(--background);
 }
 
 /* Anchor sections sit below the fixed landing header */
@@ -93,8 +133,39 @@ html {
 /* Glassmorphism utility (theme-aware) */
 .glass {
   background: var(--surface);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  border: 1px solid var(--border-muted);
+}
+
+/* Elevated glass panel for cards / modals */
+.glass-card {
+  background: linear-gradient(160deg, rgb(15 23 42 / 0.72), rgb(10 14 23 / 0.78));
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  border: 1px solid var(--border-muted);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.04);
+}
+html.light .glass-card {
+  background: linear-gradient(160deg, rgb(240 253 244 / 0.85), rgb(255 255 255 / 0.6));
+}
+
+/* Gradient text (emerald → stellar cyan) */
+.text-gradient {
+  background: linear-gradient(100deg, #34d399 0%, #06d6a0 45%, #22d3ee 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+html.light .text-gradient {
+  background: linear-gradient(100deg, #059669 0%, #0d9488 45%, #0891b2 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Subtle hairline used on premium cards */
+.hairline {
   border: 1px solid var(--border-muted);
 }
 

@@ -81,7 +81,7 @@ export default function AISolverTab() {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="glass rounded-terminal-rounded border border-terminal-border p-5"
+        className="glass-card rounded-terminal-rounded border border-terminal-border p-5"
       >
         <div className="terminal-window-bar mb-4 border-b border-terminal-border">
           <div className="dot close" /><div className="dot minimize" /><div className="dot maximize" />
@@ -241,7 +241,7 @@ export default function AISolverTab() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="glass rounded-terminal-rounded border border-emerald-500/30 p-5"
+            className="glass-card rounded-terminal-rounded border border-emerald-500/30 p-5"
           >
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">

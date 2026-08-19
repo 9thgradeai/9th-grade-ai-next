@@ -211,7 +211,7 @@ export default function MockTestTab() {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass rounded-2xl border border-terminal-border overflow-hidden"
+          className="glass-card rounded-2xl border border-terminal-border overflow-hidden"
         >
           <div className="terminal-window-bar border-b border-terminal-border">
             <div className="dot close" /><div className="dot minimize" /><div className="dot maximize" />
@@ -229,14 +229,14 @@ export default function MockTestTab() {
         </motion.div>
 
         {configLoading && (
-          <div className="glass rounded-2xl border border-terminal-border p-10 text-center">
+          <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
             <Loader2 className="w-10 h-10 mx-auto mb-3 text-emerald-500 animate-spin" aria-hidden="true" />
             <p className="text-sm text-zinc-400 font-mono">বিষয় লোড হচ্ছে...</p>
           </div>
         )}
 
         {configError && (
-          <div className="glass rounded-2xl border border-terminal-border p-10 text-center">
+          <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
             <AlertTriangle className="w-10 h-10 mx-auto mb-3 text-amber-500" aria-hidden="true" />
             <p className="text-sm text-zinc-400">{configError}</p>
             <button
@@ -262,7 +262,7 @@ export default function MockTestTab() {
 
             {/* Total questions + duration */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="glass rounded-xl border border-terminal-border p-4 flex items-center justify-between gap-3">
+              <div className="glass-card rounded-xl border border-terminal-border p-4 flex items-center justify-between gap-3">
                 <div className="min-w-0">
                   <p className="text-sm text-zinc-300 font-mono">মোট প্রশ্ন</p>
                   <p className="text-xs text-zinc-500 mt-0.5">
@@ -282,7 +282,7 @@ export default function MockTestTab() {
                 </span>
               </div>
 
-              <div className="glass rounded-xl border border-terminal-border p-4 flex items-center justify-between gap-3">
+              <div className="glass-card rounded-xl border border-terminal-border p-4 flex items-center justify-between gap-3">
                 <div>
                   <p className="text-sm text-zinc-300 font-mono">সময়সীমা</p>
                   <p className="text-xs text-zinc-500 mt-0.5">{durationMin} মিনিট</p>
@@ -348,7 +348,7 @@ export default function MockTestTab() {
       <div className="space-y-4">
         {/* Sticky header: timer + progress + submit */}
         <div className="sticky top-0 z-40 -mx-1 px-1">
-          <div className="glass rounded-2xl border border-emerald-500/30 px-4 py-3">
+          <div className="glass-card rounded-2xl border border-emerald-500/30 px-4 py-3">
             <div className="flex items-center justify-between gap-3 flex-wrap">
               <div className="flex items-center gap-2">
                 <Timer className={`w-4 h-4 ${timeLow ? "text-red-400 animate-pulse" : "text-emerald-400"}`} />
@@ -384,7 +384,7 @@ export default function MockTestTab() {
             key={q.id}
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="glass rounded-2xl border border-terminal-border p-4 md:p-6"
+            className="glass-card rounded-2xl border border-terminal-border p-4 md:p-6"
           >
             <div className="flex flex-wrap items-center gap-2 mb-3">
               <span className="px-2 py-0.5 rounded bg-zinc-800 text-[10px] font-mono text-zinc-300">
@@ -439,7 +439,7 @@ export default function MockTestTab() {
             </div>
           </motion.div>
         ) : (
-          <div className="glass rounded-2xl border border-terminal-border p-10 text-center">
+          <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
             <p className="text-sm text-zinc-400">কোনো প্রশ্ন পাওয়া যায়নি।</p>
           </div>
         )}
@@ -476,7 +476,7 @@ export default function MockTestTab() {
         </div>
 
         {/* Question map */}
-        <div className="glass rounded-2xl border border-terminal-border p-3">
+        <div className="glass-card rounded-2xl border border-terminal-border p-3">
           <p className="text-[10px] text-zinc-500 font-mono uppercase tracking-widest mb-2">
             প্রশ্ন তালিকা
           </p>
@@ -522,7 +522,7 @@ export default function MockTestTab() {
                 animate={{ scale: 1, y: 0 }}
                 exit={{ scale: 0.95, y: 10 }}
                 onClick={(e) => e.stopPropagation()}
-                className="glass rounded-2xl border border-amber-500/30 p-6 w-full max-w-sm"
+                className="glass-card rounded-2xl border border-amber-500/30 p-6 w-full max-w-sm"
               >
                 <div className="flex items-center gap-2 mb-3">
                   <AlertTriangle className="w-5 h-5 text-amber-400" />
@@ -564,7 +564,7 @@ export default function MockTestTab() {
         <motion.div
           initial={{ opacity: 0, scale: 0.97 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="glass rounded-2xl border border-emerald-500/30 overflow-hidden"
+          className="glass-card rounded-2xl border border-emerald-500/30 overflow-hidden"
         >
           <div className="p-6 text-center border-b border-terminal-border">
             <Trophy className={`w-12 h-12 mx-auto mb-3 ${

@@ -128,7 +128,7 @@ export default function QuestionBankTab() {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="glass rounded-terminal-rounded border border-terminal-border overflow-hidden"
+        className="glass-card rounded-terminal-rounded border border-terminal-border overflow-hidden"
       >
         <div className="terminal-window-bar">
           <div className="dot close" /><div className="dot minimize" /><div className="dot maximize" />
@@ -184,7 +184,7 @@ export default function QuestionBankTab() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ delay: i * 0.05 }}
-                className="glass rounded-terminal-rounded border border-terminal-border p-4"
+                className="glass-card rounded-terminal-rounded border border-terminal-border p-4"
               >
                 <div className="flex items-start justify-between gap-3 mb-3">
                   <div className="flex items-center gap-2 flex-wrap">

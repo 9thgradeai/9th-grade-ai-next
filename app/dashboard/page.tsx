@@ -3,6 +3,7 @@
 
 import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 import { TABS, type TabId } from "@/lib/data";
 import HomeTab from "@/components/dashboard/HomeTab";
@@ -28,6 +29,7 @@ const TAB_COMPONENTS: Record<TabId, React.ComponentType> = {
 export default function DashboardPage() {
   const searchParams = useSearchParams();
   const { activeTab, setActiveTab } = useDashboardStore();
+  const shouldReduceMotion = useReducedMotion();
 
   const ActiveComponent = TAB_COMPONENTS[activeTab] || HomeTab;
 
@@ -38,5 +40,18 @@ export default function DashboardPage() {
     }
   }, [tab, activeTab, setActiveTab]);
 
-  return <ActiveComponent />;
+  return (
+    <AnimatePresence mode="wait" initial={false}>
+      <motion.div
+        key={activeTab}
+        initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: shouldReduceMotion ? 0 : -12 }}
+        transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.2, ease: "easeOut" }}
+        className="flex flex-1 flex-col"
+      >
+        <ActiveComponent />
+      </motion.div>
+    </AnimatePresence>
+  );
 }

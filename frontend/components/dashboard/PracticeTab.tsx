@@ -221,7 +221,7 @@ export default function PracticeTab() {
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="glass rounded-2xl border border-terminal-border overflow-hidden"
+                className="glass-card rounded-2xl border border-terminal-border overflow-hidden"
               >
                 <div className="terminal-window-bar border-b border-terminal-border">
                   <div className="dot close" /><div className="dot minimize" /><div className="dot maximize" />
@@ -239,14 +239,14 @@ export default function PracticeTab() {
               </motion.div>
 
               {configLoading && (
-                <div className="glass rounded-2xl border border-terminal-border p-10 text-center">
+                <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
                   <Loader2 className="w-10 h-10 mx-auto mb-3 text-emerald-500 animate-spin" aria-hidden="true" />
                   <p className="text-sm text-zinc-400 font-mono">বিষয় লোড হচ্ছে...</p>
                 </div>
               )}
 
               {configError && (
-                <div className="glass rounded-2xl border border-terminal-border p-10 text-center">
+                <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
                   <AlertTriangle className="w-10 h-10 mx-auto mb-3 text-amber-500" aria-hidden="true" />
                   <p className="text-sm text-zinc-400">{configError}</p>
                   <button
@@ -280,7 +280,7 @@ export default function PracticeTab() {
                   />
 
                   {/* Total questions */}
-                  <div className="glass rounded-xl border border-terminal-border p-4 flex items-center justify-between gap-3">
+                  <div className="glass-card rounded-xl border border-terminal-border p-4 flex items-center justify-between gap-3">
                     <div className="min-w-0">
                       <p className="text-sm text-zinc-300 font-mono">মোট প্রশ্ন</p>
                       <p className="text-xs text-zinc-500 mt-0.5">
@@ -325,7 +325,7 @@ export default function PracticeTab() {
 
           {/* Loading state */}
           {sessionActive && loading && (
-            <div className="glass rounded-2xl border border-terminal-border p-10 text-center">
+            <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
               <Loader2 className="w-10 h-10 mx-auto mb-3 text-emerald-500 animate-spin" aria-hidden="true" />
               <p className="text-sm text-zinc-400 font-mono">প্রশ্ন লোড হচ্ছে...</p>
             </div>
@@ -333,7 +333,7 @@ export default function PracticeTab() {
 
           {/* Error state */}
           {sessionActive && !loading && loadError && (
-            <div className="glass rounded-2xl border border-terminal-border p-10 text-center">
+            <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
               <AlertTriangle className="w-10 h-10 mx-auto mb-3 text-amber-500" aria-hidden="true" />
               <p className="text-sm text-zinc-400">{loadError}</p>
               <button
@@ -353,7 +353,7 @@ export default function PracticeTab() {
 
           {/* Empty state */}
           {sessionActive && !loading && !loadError && questions.length === 0 && !result && (
-            <div className="glass rounded-2xl border border-terminal-border p-10 text-center">
+            <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
               <Inbox className="w-10 h-10 mx-auto mb-3 text-zinc-600" aria-hidden="true" />
               <p className="text-sm text-zinc-400">কোনো প্রশ্ন পাওয়া যায়নি।</p>
               <button
@@ -370,7 +370,7 @@ export default function PracticeTab() {
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="glass rounded-2xl border border-emerald-500/30 overflow-hidden"
+              className="glass-card rounded-2xl border border-emerald-500/30 overflow-hidden"
             >
               {/* Header */}
               <div className="px-5 py-4 border-b border-terminal-border flex items-center justify-between gap-2">
@@ -486,7 +486,7 @@ export default function PracticeTab() {
             <motion.div
               initial={{ opacity: 0, scale: 0.97 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="glass rounded-2xl border border-emerald-500/30 overflow-hidden"
+              className="glass-card rounded-2xl border border-emerald-500/30 overflow-hidden"
             >
               <div className="p-6 text-center border-b border-terminal-border">
                 <Trophy className={`w-12 h-12 mx-auto mb-3 ${

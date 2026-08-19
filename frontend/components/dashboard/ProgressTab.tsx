@@ -138,7 +138,7 @@ function SubjectReportRow({ report, index }: { report: { name: string; score: nu
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.1 + index * 0.05 }}
-      className="glass rounded-2xl border border-terminal-border overflow-hidden"
+      className="glass-card rounded-2xl border border-terminal-border overflow-hidden"
     >
       <motion.button
         onClick={() => setExpanded(!expanded)}
@@ -255,7 +255,7 @@ export default function ProgressTab() {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="glass rounded-2xl border border-terminal-border p-5"
+        className="glass-card rounded-2xl border border-terminal-border p-5"
       >
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-xl font-bold text-emerald-400 flex-shrink-0">
@@ -286,7 +286,7 @@ export default function ProgressTab() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 + i * 0.06 }}
-            className={`glass rounded-2xl border ${metric.border} p-4 text-center`}
+            className={`glass-card rounded-2xl border ${metric.border} p-4 text-center`}
           >
             <div className="flex items-center justify-center gap-2 mb-2">
               <div className={`p-1.5 rounded-lg ${metric.bg} ${metric.color}`}>
@@ -308,7 +308,7 @@ export default function ProgressTab() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="glass rounded-2xl border border-terminal-border p-5 md:p-6"
+        className="glass-card rounded-2xl border border-terminal-border p-5 md:p-6"
       >
         {loading && !stats ? (
           <div className="h-52 animate-pulse bg-zinc-800/50 rounded-xl" />
@@ -333,7 +333,7 @@ export default function ProgressTab() {
           <span className="text-xs text-zinc-500 font-mono">{reports.length}টি বিষয়</span>
         </div>
         {reports.length === 0 ? (
-          <div className="glass rounded-2xl border border-terminal-border text-center py-10">
+          <div className="glass-card rounded-2xl border border-terminal-border text-center py-10">
             <p className="text-3xl mb-3">📚</p>
             <p className="text-sm text-zinc-400">এখনো কোনো বিষয়ে প্রশ্ন সমাধান করা হয়নি।</p>
           </div>

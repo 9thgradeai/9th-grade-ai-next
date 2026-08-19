@@ -392,7 +392,7 @@ export default function SyllabusExplorer() {
   return (
     <section
       id="syllabus"
-      className="py-20 md:py-32 px-4 sm:px-6 bg-zinc-900/30"
+      className="py-20 md:py-32 px-4 sm:px-6 relative"
       aria-labelledby="syllabus-heading"
     >
       <div className="max-w-7xl mx-auto">
@@ -412,7 +412,7 @@ export default function SyllabusExplorer() {
           <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
             Complete BCS & Competitive Exam
             <br />
-            <span className="text-emerald-500">Syllabus Coverage</span>
+            <span className="text-gradient">Syllabus Coverage</span>
           </h3>
           <p className="text-lg text-zinc-400 max-w-2xl mx-auto">
             Interactive syllabus browser with real-time progress tracking, question counts, and estimated study hours per topic.
@@ -438,7 +438,7 @@ export default function SyllabusExplorer() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: 0.4, delay: catIndex * 0.05 }}
-                className="glass rounded-terminal-rounded border border-terminal-border overflow-hidden"
+                className="glass-card rounded-terminal-rounded border border-terminal-border overflow-hidden transition-[box-shadow] duration-300 hover:shadow-neon-glow-lg"
               >
                 {/* Category Header */}
                 <button
@@ -501,7 +501,7 @@ export default function SyllabusExplorer() {
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: topicIndex * 0.03 }}
-                          className="glass rounded-terminal-rounded border border-terminal-border p-4 hover:border-emerald-500/30 transition-colors flex flex-col justify-between"
+                          className="glass-card rounded-terminal-rounded border border-terminal-border p-4 hover:border-emerald-500/30 hover:shadow-neon-glow transition-[border-color,box-shadow] flex flex-col justify-between"
                         >
                           <div>
                             <div className="flex items-start justify-between gap-2 mb-2">
@@ -524,7 +524,7 @@ export default function SyllabusExplorer() {
                                 whileInView={{ width: `${topic.completed}%` }}
                                 viewport={{ once: true }}
                                 transition={{ duration: 0.6, delay: 0.1 }}
-                                className="h-full bg-emerald-500 rounded-full"
+                                className="h-full bg-gradient-to-r from-emerald-500 to-stellar-cyan rounded-full"
                               />
                             </div>
                             <div className="flex justify-between text-xs text-zinc-400 font-mono">
@@ -555,13 +555,15 @@ export default function SyllabusExplorer() {
           transition={{ duration: 0.5, delay: 0.3 }}
           className="mt-12 text-center"
         >
-          <a
+          <motion.a
             href="/login?register=true"
-            className="inline-flex flex-wrap items-center justify-center gap-2 w-full sm:w-auto px-6 py-3.5 text-base font-medium text-zinc-950 bg-emerald-500 rounded hover:bg-emerald-400 transition-colors font-mono shadow-neon-glow"
+            whileHover={{ scale: 1.04, y: -2 }}
+            whileTap={{ scale: 0.97 }}
+            className="inline-flex flex-wrap items-center justify-center gap-2 w-full sm:w-auto px-6 py-3.5 text-base font-medium text-zinc-950 bg-emerald-500 rounded hover:bg-emerald-400 transition-colors font-mono shadow-neon-glow-lg"
           >
             [ Access Full Syllabus & Start Practicing ]
             <TrendingUp className="w-4 h-4" aria-hidden="true" />
-          </a>
+          </motion.a>
         </motion.div>
       </div>
     </section>

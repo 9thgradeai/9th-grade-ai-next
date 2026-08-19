@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion, useMotionValue, useTransform } from "framer-motion";
 import { Brain, Zap, Target, Flame, BookOpen, Clock, Shield, Award } from "lucide-react";
 
 const features = [
@@ -55,17 +55,19 @@ const features = [
 ];
 
 export default function FeaturesGrid() {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
     <section
       id="features"
-      className="py-20 md:py-32 px-4 sm:px-6"
+      className="py-20 md:py-32 px-4 sm:px-6 relative"
       aria-labelledby="features-heading"
     >
       <div className="max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.5 }}
           className="text-center mb-16"
         >
@@ -78,7 +80,7 @@ export default function FeaturesGrid() {
           <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
             Everything You Need to
             <br />
-            <span className="text-emerald-500">Ace the Exam</span>
+            <span className="text-gradient">Ace the Exam</span>
           </h3>
           <p className="text-lg text-zinc-400 max-w-2xl mx-auto">
             Eight integrated modules designed to cover every aspect of competitive exam preparation — from learning to mastery.
@@ -87,45 +89,78 @@ export default function FeaturesGrid() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {features.map((feature, index) => (
-            <motion.div
-              key={feature.title}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.5, delay: index * 0.08 }}
-              className="group glass rounded-terminal-rounded border border-terminal-border p-6 transition-all duration-300 hover:border-emerald-500/40 hover:shadow-neon-glow"
-            >
-              {/* Terminal window bar */}
-              <div className="terminal-window-bar mb-4">
-                <div className="dot close" />
-                <div className="dot minimize" />
-                <div className="dot maximize" />
-              </div>
-
-              <div className="flex items-center gap-3 mb-4">
-                <motion.div
-                  whileHover={{ scale: 1.1, rotate: 5 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                  className="w-12 h-12 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center"
-                  aria-hidden="true"
-                >
-                  <feature.icon className="w-6 h-6 text-emerald-500" />
-                </motion.div>
-                <span className="text-xs font-mono text-emerald-400 uppercase tracking-wider px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded">
-                  {feature.badge}
-                </span>
-              </div>
-
-              <h4 className="text-xl font-semibold text-white mb-2 group-hover:text-emerald-400 transition-colors">
-                {feature.title}
-              </h4>
-              <p className="text-zinc-400 text-sm leading-relaxed">
-                {feature.description}
-              </p>
-            </motion.div>
+            <FeatureCard key={feature.title} feature={feature} index={index} shouldReduceMotion={shouldReduceMotion} />
           ))}
         </div>
       </div>
     </section>
+  );
+}
+
+function FeatureCard({
+  feature,
+  index,
+  shouldReduceMotion,
+}: {
+  feature: (typeof features)[number];
+  index: number;
+  shouldReduceMotion: boolean | null;
+}) {
+  const mx = useMotionValue(0.5);
+  const my = useMotionValue(0.5);
+  const rotateX = useTransform(my, [0, 1], [4, -4]);
+  const rotateY = useTransform(mx, [0, 1], [-4, 4]);
+
+  const onMouseMove = (e: React.MouseEvent<HTMLElement>) => {
+    if (shouldReduceMotion) return;
+    const r = e.currentTarget.getBoundingClientRect();
+    mx.set((e.clientX - r.left) / r.width);
+    my.set((e.clientY - r.top) / r.height);
+  };
+  const onMouseLeave = () => {
+    mx.set(0.5);
+    my.set(0.5);
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.5, delay: (index % 4) * 0.08 }}
+      onMouseMove={onMouseMove}
+      onMouseLeave={onMouseLeave}
+      style={shouldReduceMotion ? undefined : { rotateX, rotateY, transformPerspective: 900 }}
+      whileHover={shouldReduceMotion ? undefined : { scale: 1.02 }}
+      className="group glass-card rounded-terminal-rounded border border-terminal-border p-6 transition-[border-color,box-shadow] duration-300 hover:border-emerald-500/40 hover:shadow-card-hover"
+    >
+      {/* Terminal window bar */}
+      <div className="terminal-window-bar mb-4">
+        <div className="dot close" />
+        <div className="dot minimize" />
+        <div className="dot maximize" />
+      </div>
+
+      <div className="flex items-center gap-3 mb-4">
+        <motion.div
+          whileHover={shouldReduceMotion ? undefined : { scale: 1.1, rotate: 5 }}
+          transition={{ type: "spring", stiffness: 400, damping: 17 }}
+          className="w-12 h-12 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center"
+          aria-hidden="true"
+        >
+          <feature.icon className="w-6 h-6 text-emerald-500" />
+        </motion.div>
+        <span className="text-xs font-mono text-emerald-400 uppercase tracking-wider px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded">
+          {feature.badge}
+        </span>
+      </div>
+
+      <h4 className="text-xl font-semibold text-white mb-2 group-hover:text-emerald-400 transition-colors">
+        {feature.title}
+      </h4>
+      <p className="text-zinc-400 text-sm leading-relaxed">
+        {feature.description}
+      </p>
+    </motion.div>
   );
 }

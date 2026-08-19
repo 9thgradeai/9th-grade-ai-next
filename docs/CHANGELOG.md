@@ -4,6 +4,31 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.3.0] - 2026-08-20
+
+### Changed
+- **Premium design elevation** (cosmic-terminal identity preserved):
+  - New ambient `cosmic-bg` layer (aurora gradients + masked grid) mounted
+    globally in the root layout; deep `#070a12` base background.
+  - New tokens/utilities in `globals.css`: `glass-card`, `text-gradient`,
+    `--shadow-neon-glow-lg`, `--shadow-card-hover`.
+  - `TerminalHero` — staggered `Variants` entrance, animated aurora orbs,
+    rAF count-up stat meters (`useInView`), magnetic CTAs, and a 3D
+    pointer-tilt terminal card.
+  - `TerminalHeader` — scroll-aware glass nav (`useScroll`) with animated
+    `layoutId` link underlines.
+  - `FeaturesGrid` — 3D tilt cards with `useMotionValue`/`useTransform`,
+    scroll reveals, hover glow.
+  - `Footer` — scroll reveals, hover micro-interactions.
+  - Login page — sliding `layoutId` auth tab indicator, animated aurora,
+    elevated `glass-card`.
+  - Dashboard — `glass-card` surfaces across all tabs, gradient SideNav
+    active pill + glow bar, elevated HomeTab hero/KPI/countdown cards.
+  - Root layout wraps the app in `<MotionConfig reducedMotion="user">` so
+    all animations respect OS reduced-motion preferences.
+- All animations use GPU-accelerated properties only (`opacity`, `transform`),
+  `viewport={{ once: true }}` scroll triggers, and reduced-motion fallbacks.
+
 ## [0.2.2] - 2026-08-20
 
 ### Changed

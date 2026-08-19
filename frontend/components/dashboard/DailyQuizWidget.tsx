@@ -108,7 +108,7 @@ export default function DailyQuizWidget() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.45 }}
-        className="glass rounded-2xl border border-amber-500/20 p-4 flex items-center gap-3 hover:border-amber-500/40 transition-all cursor-pointer"
+        className="glass-card rounded-2xl border border-amber-500/20 p-4 flex items-center gap-3 hover:border-amber-500/40 transition-all cursor-pointer"
         onClick={() => setIsOpen(true)}
       >
         <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center flex-shrink-0">
@@ -134,7 +134,7 @@ export default function DailyQuizWidget() {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="glass rounded-2xl border border-amber-500/20 p-6 flex flex-col items-center text-center"
+        className="glass-card rounded-2xl border border-amber-500/20 p-6 flex flex-col items-center text-center"
       >
         <Inbox className="w-10 h-10 mb-3 text-zinc-600" aria-hidden="true" />
         <h3 className="text-sm font-semibold text-white">আজকের জন্য কোনো কুইজ নেই</h3>

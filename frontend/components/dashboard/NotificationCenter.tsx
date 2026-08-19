@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Bell, X, Trophy, CheckCircle2, AlertTriangle, Info, Megaphone, Medal } from "lucide-react";
 import { api } from "@/lib/services/api";
 import type { Server } from "@/lib/types";
+import { AnimatedList } from "@/components/ui/AnimatedList";
 
 type Tab = "notifications" | "badges";
 
@@ -199,14 +200,14 @@ export default function NotificationCenter() {
                       <p className="text-sm text-zinc-500">কোনো নোটিফিকেশন নেই</p>
                     </div>
                   ) : (
-                    <div className="space-y-2">
-                      {notifications.map((notif) => {
+                    <AnimatedList
+                      items={notifications}
+                      keyExtractor={(n) => String(n.id)}
+                      className="space-y-2"
+                      renderItem={(notif) => {
                         const TypeIcon = TYPE_ICONS[notif.type] ?? Megaphone;
                         return (
-                          <motion.div
-                            key={notif.id}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
+                          <div
                             className={`p-3 rounded-2xl border transition-all cursor-pointer ${
                               notif.read ? "border-zinc-800 bg-zinc-900/30" : "border-emerald-500/20 bg-emerald-500/5"
                             }`}
@@ -237,10 +238,10 @@ export default function NotificationCenter() {
                                 </span>
                               </div>
                             </div>
-                          </motion.div>
+                          </div>
                         );
-                      })}
-                    </div>
+                      }}
+                    />
                   )
                 ) : badges.length === 0 ? (
                   <div className="text-center py-12">
