@@ -42,9 +42,7 @@ class Analytics {
   private readonly events: AnalyticsEvent[] = [];
 
   constructor() {
-    // DEFAULT: analytics disabled unless NEXT_PUBLIC_ANALYTICS_ENDPOINT is set on the server
-    // In client code, we use a safe default (disabled) to avoid process.global usage
-    this.enabled = false;
+    this.enabled = !!process.env.NEXT_PUBLIC_ANALYTICS_ENDPOINT;
     this.startHeroView();
   }
 
@@ -74,9 +72,7 @@ class Analytics {
 
     // Send to analytics endpoint
     // TODO: Implement actual endpoint POST
-    // Use fallback endpoint if not configured
-    const endpoint = process?.env?.NEXT_PUBLIC_ANALYTICS_ENDPOINT || "";
-    fetch(endpoint || "/api/analytics", {
+    fetch(process.env.NEXT_PUBLIC_ANALYTICS_ENDPOINT!, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -101,15 +97,7 @@ class Analytics {
   }
 }
 
-// Analytics instance - configured at runtime via initializeAnalytics()
-export const analytics = new Analytics()
-
-// Initialize analytics with endpoint (call from server-side code)
-export function initializeAnalytics(endpoint?: string) {
-  // In a real implementation, this would configure the analytics client
-  // For now, we just set a global flag or configuration
-  console.log("Analytics initialized", endpoint);
-};
+export const analytics = new Analytics();
 
 // Helper functions for common tracking patterns
 export const trackHeroView = (durationMs: number) => {

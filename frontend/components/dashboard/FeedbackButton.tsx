@@ -55,7 +55,7 @@ export const FeedbackButton = () => {
                   required
                 >
                   <option value="positive">Positive - I love it</option>
-                  <option value="neutral">Neutral's fine</option>
+                  <option value="neutral">Neutral - It's fine</option>
                   <option value="negative">Negative - I prefer the old style</option>
                 </select>
               </div>
