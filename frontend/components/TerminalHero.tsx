@@ -10,7 +10,6 @@ import {
   type Variants,
 } from "framer-motion";
 import { trackHeroView, trackCtaClick } from "@/lib/analytics";
-import StarfieldBackground from "./StarfieldBackground";
 import { FeedbackButton } from "./dashboard/FeedbackButton";
 import { transitions } from "@/lib/transitions";
 import { ChevronDown, Sparkles } from "lucide-react";
@@ -169,7 +168,6 @@ export default function TerminalHero() {
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center pt-16 pb-20 px-4 overflow-hidden">
       {/* Ambient aurora orbs (GPU-friendly scale/opacity only) */}
-      <StarfieldBackground />
       <motion.div
         className="absolute -top-32 left-1/4 w-[42rem] h-[42rem] bg-emerald-500/12 rounded-full blur-[120px]"
         aria-hidden="true"
