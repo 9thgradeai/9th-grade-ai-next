@@ -27,14 +27,11 @@ export async function POST(request: Request) {
       throw new AppError(400, "Invalid or expired reset token.", "RESET_TOKEN_INVALID");
     }
 
-    // Return a success message - the actual password reset will be handled
-    // by the frontend showing a form to set a new password
-    // In a full implementation, the frontend would allow the user to set a new password
     return NextResponse.json(
       { message: "Please set a new password using the form below." },
       { status: 200 }
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
     return toHttpResponse(error);
   }
 }
