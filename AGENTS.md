@@ -30,7 +30,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 │       └── user.ts        # User CRUD, progress, bookmarks, auth helpers
 ├── frontend/              # Client-side code (components, lib, contexts)
 │   ├── components/        # Reusable UI components
-│   │   ├── ui/            # Shared primitives (ErrorBoundary, AnimatedContainer, AnimatedList)
+│   │   ├── ui/            # Shared primitives (ErrorBoundary, AnimatedList)
 │   │   └── dashboard/     # Dashboard tab components
 │   └── lib/               # Client utilities
 │       ├── auth-ctx/      # React context for auth state

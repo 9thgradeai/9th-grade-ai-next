@@ -28,10 +28,6 @@ Shared primitives live in `frontend/components/ui/`:
 - Class-based error boundary wrapping risky surfaces.
 - File: `frontend/components/ui/ErrorBoundary.tsx`.
 
-### AnimatedContainer
-- Variants-based entrance wrapper (fade/scale/slide), reduced-motion aware.
-- File: `frontend/components/ui/AnimatedContainer.tsx`.
-
 ### AnimatedList
 - Staggered list container (`staggerChildren: 0.05`), reduced-motion aware.
 - File: `frontend/components/ui/AnimatedList.tsx`.
@@ -91,8 +87,6 @@ Defined in `app/globals.css`:
   animated aurora orbs, count-up stat meters (`useInView` + rAF), magnetic
   CTAs, and a 3D pointer-tilt on the terminal card.
 - **Reusable primitives** in `frontend/components/ui/`:
-  - `AnimatedContainer` — variants-based entrance (fade/scale/slide) with a
-    `animation`, `delay`, and `duration` prop.
   - `AnimatedList` — staggered list container (`staggerChildren: 0.05`).
 - **Transition presets**: `frontend/lib/transitions.ts` exports `transitions`
   (`spring`, `springBouncy`, `springStiff`, `smooth`, `snappy`).

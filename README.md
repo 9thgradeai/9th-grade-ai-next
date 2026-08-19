@@ -303,7 +303,7 @@ Deployed to **Vercel** at [https://9-delta-ten.vercel.app](https://9-delta-ten.v
 │   └── services/           # content.ts, exam.ts, user.ts, activity.ts
 ├── frontend/               # Client-side code
 │   ├── components/
-│   │   ├── ui/             # ErrorBoundary + AnimatedContainer/AnimatedList
+│   │   ├── ui/             # ErrorBoundary + AnimatedList
 │   │   └── dashboard/      # Dashboard tab components (+ TopicTreePicker)
 │   └── lib/
 │       ├── services/       # api.ts fetch wrappers
