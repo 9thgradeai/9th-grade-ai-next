@@ -4,6 +4,20 @@ import "@testing-library/jest-dom";
 // jsdom in this Vitest setup does not expose a functional Storage; install a
 // minimal in-memory polyfill so components using localStorage (e.g. exam
 // state persistence) work reliably in tests.
+// A functional matchMedia is also absent; framer-motion's useReducedMotion
+// reads it, so stub a no-preference implementation.
+if (typeof window !== "undefined" && typeof window.matchMedia !== "function") {
+  window.matchMedia = ((query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: () => {},
+    removeListener: () => {},
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    dispatchEvent: () => false,
+  })) as unknown as typeof window.matchMedia;
+}
 if (typeof globalThis.localStorage === "undefined" || typeof globalThis.localStorage.clear !== "function") {
   const store = new Map<string, string>();
   const storage: Storage = {

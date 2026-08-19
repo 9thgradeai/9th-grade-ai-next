@@ -1,4 +1,4 @@
-import CLIAuthTerminal from "@/components/auth/CLIAuthTerminal";
+import AuthExperience from "@/components/auth/AuthExperience";
 
 export default async function LoginPage({
   searchParams,
@@ -8,5 +8,5 @@ export default async function LoginPage({
   const params = await searchParams;
   const register = typeof params.register === "string" && params.register === "true";
 
-  return <CLIAuthTerminal initialRegisterHint={register} />;
+  return <AuthExperience initialStage={register ? "signup" : null} />;
 }

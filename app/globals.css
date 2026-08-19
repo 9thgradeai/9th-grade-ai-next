@@ -298,24 +298,6 @@ html.light .text-gradient {
   animation: pulse-soft 3s ease-in-out infinite;
 }
 
-/* CLI terminal block cursor */
-@keyframes cli-cursor {
-  0%, 49% { opacity: 1; }
-  50%, 100% { opacity: 0; }
-}
-.cli-cursor {
-  animation: cli-cursor 1.1s step-end infinite;
-}
-.cli-cursor::after {
-  content: "█";
-}
-
-/* Scrollable terminal body — no visible scrollbar for full immersion */
-.cli-scroll {
-  scrollbar-width: thin;
-  scrollbar-color: rgb(148 163 184 / 0.2) transparent;
-}
-
 /* Subtle hairline used on premium cards */
 .hairline {
   border: 1px solid var(--border-muted);
@@ -350,23 +332,6 @@ html.light .text-gradient {
   }
 }
 
-/* Terminal window top bar styles */
-.terminal-window-bar {
-  display: flex;
-  gap: 6px;
-  padding: 8px 12px;
-  background: var(--surface-solid);
-  border-bottom: 1px solid var(--border-muted);
-}
-.terminal-window-bar .dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-}
-.terminal-window-bar .dot.close { background: #ff5f56; }
-.terminal-window-bar .dot.minimize { background: #ffbd2e; }
-.terminal-window-bar .dot.maximize { background: #27ca4f; }
-
 /* Focus styles */
 *:focus-visible {
   outline: 2px solid rgb(52 211 153 / 0.8);
@@ -395,4 +360,43 @@ html.light ::selection {
 }
 @utility pt-safe {
   padding-top: env(safe-area-inset-top);
+}
+
+/* Auth experience — avatar blink (periodic, GPU-cheap: transform only) */
+@keyframes avatar-blink {
+  0%, 91%, 100% { transform: scaleY(1); }
+  95% { transform: scaleY(0.06); }
+}
+.avatar-blink {
+  transform-origin: 50% 50%;
+  animation: avatar-blink 4.6s ease-in-out infinite;
+}
+
+/* Auth experience — avatar expression swap */
+@keyframes avatar-face-fade {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.avatar-face-fade {
+  animation: avatar-face-fade 0.32s ease-out both;
+}
+
+/* Auth experience — celebration sparkle */
+@keyframes avatar-sparkle {
+  0%, 100% { opacity: 0; transform: scale(0.4) rotate(0deg); }
+  35%, 70% { opacity: 1; transform: scale(1) rotate(90deg); }
+}
+.avatar-sparkle {
+  transform-origin: 50% 50%;
+  animation: avatar-sparkle 1.4s ease-in-out infinite;
+}
+
+/* Auth experience — lamp bulb breathing when lit */
+@keyframes lamp-breathe {
+  0%, 100% { opacity: 0.82; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+.lamp-breathe {
+  transform-origin: 50% 50%;
+  animation: lamp-breathe 3.2s ease-in-out infinite;
 }

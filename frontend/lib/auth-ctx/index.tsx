@@ -9,8 +9,8 @@ import { account } from "@/lib/services/api";
 type AuthContextType = {
   user: Client.User | null;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string) => Promise<void>;
+  login: (email: string, password: string, options?: { redirect?: boolean }) => Promise<void>;
+  register: (name: string, email: string, password: string, options?: { redirect?: boolean }) => Promise<void>;
   logout: () => Promise<void>;
   updateProfile: (name: string) => Promise<Client.User>;
   isAuthenticated: boolean;
@@ -101,7 +101,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string, options?: { redirect?: boolean }) => {
     const res = await fetch("/api/auth/login", {
       method: "POST",
       credentials: "include",
@@ -123,11 +123,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     if (data.user) {
       setUser(data.user);
       setTokenExpiry(Date.now() + 7 * 24 * 60 * 60 * 1000);
-      router.push("/dashboard");
+      if (options?.redirect !== false) {
+        router.push("/dashboard");
+      }
     }
   };
 
-  const register = async (name: string, email: string, password: string) => {
+  const register = async (name: string, email: string, password: string, options?: { redirect?: boolean }) => {
     const res = await fetch("/api/auth/register", {
       method: "POST",
       credentials: "include",
@@ -149,7 +151,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     if (data.user) {
       setUser(data.user);
       setTokenExpiry(Date.now() + 7 * 24 * 60 * 60 * 1000);
-      router.push("/dashboard");
+      if (options?.redirect !== false) {
+        router.push("/dashboard");
+      }
     }
   };
 
