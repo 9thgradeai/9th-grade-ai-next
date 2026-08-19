@@ -54,6 +54,10 @@ export function getUserFriendlyMessage(error: AppError): string {
     VALIDATION_ERROR: "Please check your input and try again.",
     SERVER_ERROR: "Server error. Please try again later.",
     UNKNOWN_ERROR: "Something went wrong. Please try again.",
+    AUTH_INVALID_CREDENTIALS: "Invalid email or password.",
+    USER_EMAIL_EXISTS:
+      "An account with that email already exists. Try logging in instead.",
+    RATE_LIMIT_EXCEEDED: "Too many attempts. Please wait a moment and try again.",
   };
 
   return codeMessages[error.code] ?? error.message;

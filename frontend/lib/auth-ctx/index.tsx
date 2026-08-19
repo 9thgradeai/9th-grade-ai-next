@@ -107,11 +107,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       body: JSON.stringify({ email, password }),
     });
 
-    const data = (await res.json().catch(() => ({}))) as { user?: Client.User; error?: string };
+    const data = (await res.json().catch(() => ({}))) as { user?: Client.User; error?: string; code?: string };
 
     if (!res.ok) {
-      const error = handleApiError(data.error ?? "Invalid email or password.");
-      throw new AppError(getUserFriendlyMessage(error), error.code, res.status);
+      const error = handleApiError({
+        message: data.error ?? "Invalid email or password.",
+        code: data.code ?? "UNKNOWN_ERROR",
+        status: res.status,
+      });
+      throw new AppError(getUserFriendlyMessage(error), error.code, error.status);
     }
 
     if (data.user) {
@@ -129,11 +133,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       body: JSON.stringify({ name, email, password }),
     });
 
-    const data = (await res.json().catch(() => ({}))) as { user?: Client.User; error?: string };
+    const data = (await res.json().catch(() => ({}))) as { user?: Client.User; error?: string; code?: string };
 
     if (!res.ok) {
-      const error = handleApiError(data.error ?? "Unable to create account.");
-      throw new AppError(getUserFriendlyMessage(error), error.code, res.status);
+      const error = handleApiError({
+        message: data.error ?? "Unable to create account.",
+        code: data.code ?? "UNKNOWN_ERROR",
+        status: res.status,
+      });
+      throw new AppError(getUserFriendlyMessage(error), error.code, error.status);
     }
 
     if (data.user) {
