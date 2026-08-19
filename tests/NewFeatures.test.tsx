@@ -7,7 +7,7 @@ import AISolverTab from "@/components/dashboard/AISolverTab";
 import DailyQuizWidget from "@/components/dashboard/DailyQuizWidget";
 import NotificationCenter from "@/components/dashboard/NotificationCenter";
 import OfflineModeTab from "@/components/dashboard/OfflineModeTab";
-import { MOCK_TEST_QUESTIONS, OFFLINE_PACKS } from "@/lib/data/study";
+import { OFFLINE_PACKS } from "@/lib/data/study";
 
 function stubFetch(routes: Record<string, unknown>) {
   vi.stubGlobal(
@@ -71,22 +71,57 @@ describe("FlashcardsTab", () => {
 });
 
 describe("MockTestTab", () => {
-  it("renders setup screen initially", () => {
-    render(<MockTestTab />);
-    expect(screen.getByText("Adaptive Mock Test")).toBeInTheDocument();
-  });
-
-  it("displays available subjects", () => {
-    render(<MockTestTab />);
-    const subjects = Object.keys(MOCK_TEST_QUESTIONS);
-    subjects.forEach((subject) => {
-      expect(screen.getByText(subject)).toBeInTheDocument();
+  beforeEach(() => {
+    stubFetch({
+      "/api/exam/config": {
+        subjects: [
+          {
+            id: 1,
+            nameBn: "বাংলা ভাষা ও সাহিত্য",
+            nameEn: "Bangla",
+            icon: "📖",
+            color: "text-emerald-400",
+            bg: "bg-emerald-500/10",
+            questionCount: 10,
+            nodes: [
+              { id: 1, name: "ভাষা", path: "ভাষা", depth: 1, questionCount: 10, children: [] },
+            ],
+          },
+          {
+            id: 2,
+            nameBn: "English Language and Literature",
+            nameEn: "English",
+            icon: "📚",
+            color: "text-sky-400",
+            bg: "bg-sky-500/10",
+            questionCount: 5,
+            nodes: [
+              { id: 2, name: "Grammar", path: "Grammar", depth: 1, questionCount: 5, children: [] },
+            ],
+          },
+        ],
+      },
     });
   });
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
 
-  it("shows start button", () => {
+  it("renders setup screen initially", async () => {
     render(<MockTestTab />);
-    expect(screen.getByText("Start Mock Test")).toBeInTheDocument();
+    expect(await screen.findByText("মক টেস্ট")).toBeInTheDocument();
+  });
+
+  it("displays available subjects with question counts", async () => {
+    render(<MockTestTab />);
+    expect(await screen.findByText("বাংলা ভাষা ও সাহিত্য")).toBeInTheDocument();
+    expect(screen.getByText("English Language and Literature")).toBeInTheDocument();
+    expect(screen.getAllByText("10টি প্রশ্ন").length).toBeGreaterThan(0);
+  });
+
+  it("shows start button", async () => {
+    render(<MockTestTab />);
+    expect(await screen.findByText("মক টেস্ট শুরু করুন")).toBeInTheDocument();
   });
 });
 

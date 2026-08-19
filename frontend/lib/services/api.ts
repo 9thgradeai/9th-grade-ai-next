@@ -149,13 +149,17 @@ export const api = {
     topic?: string;
     difficulty?: string;
     q?: string;
+    paths?: string[];
     limit?: number;
     page?: number;
   }): Promise<Server.QuestionDTO[]> => {
     const qs = new URLSearchParams();
     if (params) {
       for (const [k, v] of Object.entries(params)) {
-        if (v !== undefined && String(v).length > 0) {
+        if (v === undefined) continue;
+        if (Array.isArray(v)) {
+          if (v.length > 0) qs.set(k, v.join(","));
+        } else if (String(v).length > 0) {
           qs.set(k, String(v));
         }
       }

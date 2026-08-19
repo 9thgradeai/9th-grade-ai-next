@@ -14,6 +14,7 @@ export interface QuestionSearchFilters {
   topic?: string;
   difficulty?: string;
   q?: string;
+  paths?: string[];
   limit?: number;
   id?: number;
 }
@@ -78,11 +79,18 @@ export function validateQuestionSearchParams(params: URLSearchParams): QuestionS
   const q = params.get("q");
   const limit = params.get("limit");
   const id = params.get("id");
+  const paths = params.get("paths");
 
   if (isString(subject) && subject.length > 0) filters.subject = subject;
   if (isString(topic) && topic.length > 0) filters.topic = topic;
   if (isString(difficulty) && difficulty.length > 0) filters.difficulty = difficulty;
   if (isString(q) && q.length > 0) filters.q = q;
+  if (isString(paths) && paths.length > 0) {
+    filters.paths = paths
+      .split(",")
+      .map((p) => p.trim())
+      .filter((p) => p.length > 0);
+  }
 
   if (isString(limit)) {
     const parsed = Number(limit);

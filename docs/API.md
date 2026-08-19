@@ -20,7 +20,7 @@ Auth-protected routes require the `auth_token` HttpOnly cookie (JWT, 7-day expir
 |--------|------|-------------|
 | GET | `/api/subjects` | List all subjects |
 | GET | `/api/topics` | List topics, optionally filtered by `?subject=` |
-| GET | `/api/questions` | List questions, filterable by `?subject=`, `?topic=`, `?difficulty=`, `?q=`, `?limit=` |
+| GET | `/api/questions` | List questions, filterable by `?subject=`, `?topic=`, `?difficulty=`, `?q=`, `?limit=`, `?paths=` |
 | GET | `/api/question-bank/categories` | List question bank categories |
 | GET | `/api/archive` | List exam archives |
 | GET | `/api/flashcards` | List flashcards, optionally filtered by `?subject=` |
@@ -167,3 +167,16 @@ import { api } from "@/lib/services/api";
 const subjects = await api.subjects();
 const questions = await api.questions({ subject: "বাংলা", limit: 10 });
 ```
+
+### `?paths=` on `GET /api/questions`
+`paths` is a comma-separated list of taxonomy paths (slash-joined, URL-encoded)
+matching the `path` values from `ExamConfig`. It narrows the result to questions
+whose leaf path is one of the given paths **or** lives anywhere under one of
+their subtrees — the same eligibility semantics as `ExamBuild`. Selecting a group
+path includes all its descendants. Examples:
+```
+GET /api/questions?subject=বাংলা&paths=01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/সমার্থক_শব্দ
+GET /api/questions?paths=01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা&paths=02_English/Literature&limit=100
+```
+Passing no `paths` returns the whole subject (or the entire question set when no
+other filter is given). The client SDK accepts an array: `api.questions({ paths: ["a/b"], limit: 10 })`.

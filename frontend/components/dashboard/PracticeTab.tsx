@@ -3,10 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import {
-  X,
   Check,
-  Minus,
-  Plus,
   Play,
   BookOpen,
   Timer,
@@ -22,18 +19,21 @@ import {
   AlertTriangle,
   Inbox,
 } from "lucide-react";
-import { SUBJECTS } from "@/lib/data";
 import { api } from "@/lib/services/api";
 import type { Server } from "@/lib/types";
 import MockTestTab from "./MockTestTab";
 import CustomExamTab from "./CustomExamTab";
+import TopicTreePicker, {
+  type Selection,
+  availableForSubject,
+} from "./TopicTreePicker";
 
 type PracticeMode = "custom" | "mock" | "quick";
 
 const MODES: { id: PracticeMode; label: string; hint: string }[] = [
   { id: "custom", label: "CUSTOM EXAM", hint: "বিষয়, টপিক, সাবটপিক মিশিয়ে নিজের বিসিএস পরীক্ষা তৈরি করুন" },
-  { id: "mock", label: "MOCK_TEST", hint: "সময়সীমা সহ পূর্ণাঙ্গ মক পরীক্ষা" },
-  { id: "quick", label: "QUICK_PRACTICE", hint: "বিষয়ভিত্তিক দ্রুত প্র্যাকটিস" },
+  { id: "mock", label: "MOCK_TEST", hint: "বিষয়, টপিক, সাবটপিক থেকে সময়সীমা সহ মক পরীক্ষা" },
+  { id: "quick", label: "QUICK_PRACTICE", hint: "বিষয়, টপিক, সাবটপিক থেকে দ্রুত প্র্যাকটিস" },
 ];
 
 const DIFFICULTY_LABEL: Record<string, string> = {
@@ -44,17 +44,17 @@ const DIFFICULTY_LABEL: Record<string, string> = {
 
 export default function PracticeTab() {
   const [mode, setMode] = useState<PracticeMode>("custom");
-  const [subjects, setSubjects] = useState(SUBJECTS);
-  const [subjectCounts, setSubjectCounts] = useState<Record<string, number>>({});
 
-  const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
+  // ── Config state (quick practice selection tree) ──
+  const [subjects, setSubjects] = useState<Server.ExamSubjectDTO[]>([]);
+  const [configLoading, setConfigLoading] = useState(true);
+  const [configError, setConfigError] = useState<string | null>(null);
+  const [selection, setSelection] = useState<Selection>({});
+
+  // ── Session state ──
   const [questions, setQuestions] = useState<Server.QuestionDTO[]>([]);
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
-
-  const [topicFilter, setTopicFilter] = useState<string | null>(null);
-  const [quantity, setQuantity] = useState(10);
-
   const [sessionActive, setSessionActive] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string>>({});
@@ -62,36 +62,19 @@ export default function PracticeTab() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  // Load real subjects + real per-subject question counts.
+  // Load the selection tree once (drives quick practice).
   useEffect(() => {
     let cancelled = false;
     void (async () => {
       try {
-        const list = await api.subjects();
-        if (!cancelled && list.length) {
-          setSubjects(
-            list.map((s) => ({
-              name: s.nameBn,
-              icon: s.icon,
-              color: s.color,
-              bg: s.bg,
-            })),
-          );
-        }
-      } catch {
-        /* keep static fallback */
-      }
-      try {
-        const all = await api.questions({ limit: 200 });
+        const list = await api.examConfig();
         if (!cancelled) {
-          const counts: Record<string, number> = {};
-          for (const q of all) {
-            counts[q.subject] = (counts[q.subject] ?? 0) + 1;
-          }
-          setSubjectCounts(counts);
+          setSubjects(list.filter((s) => s.questionCount > 0));
         }
       } catch {
-        /* ignore — counts just won't show */
+        if (!cancelled) setConfigError("কনফিগারেশন লোড করা যায়নি। আবার চেষ্টা করুন।");
+      } finally {
+        if (!cancelled) setConfigLoading(false);
       }
     })();
     return () => {
@@ -99,14 +82,25 @@ export default function PracticeTab() {
     };
   }, []);
 
-  const availableTopics = useMemo(() => {
-    return Array.from(new Set(questions.map((q) => q.topic))).filter(Boolean);
-  }, [questions]);
+  const selectedSubjects = useMemo(
+    () => subjects.filter((s) => selection[s.id] !== undefined),
+    [subjects, selection],
+  );
 
-  const sessionQuestions = useMemo(() => {
-    const filtered = topicFilter ? questions.filter((q) => q.topic === topicFilter) : questions;
-    return filtered.slice(0, quantity);
-  }, [questions, topicFilter, quantity]);
+  const availableTotal = useMemo(
+    () => selectedSubjects.reduce((acc, s) => acc + availableForSubject(s, selection), 0),
+    [selectedSubjects, selection],
+  );
+
+  const totalCount = useMemo(
+    () => selectedSubjects.reduce((acc, s) => acc + (selection[s.id].count ?? 0), 0),
+    [selectedSubjects, selection],
+  );
+
+  const insufficient = totalCount > availableTotal;
+  const sessionTitle = selectedSubjects.map((s) => s.nameBn).join(", ");
+
+  const sessionQuestions = useMemo(() => questions, [questions]);
 
   const answeredCount = Object.keys(answers).length;
   const currentQuestion = sessionQuestions[currentIndex];
@@ -114,10 +108,8 @@ export default function PracticeTab() {
   const allAnswered = totalQuestions > 0 && answeredCount === totalQuestions;
 
   const resetSession = () => {
-    setSelectedSubject(null);
+    setSelection({});
     setQuestions([]);
-    setTopicFilter(null);
-    setQuantity(10);
     setSessionActive(false);
     setCurrentIndex(0);
     setAnswers({});
@@ -126,24 +118,34 @@ export default function PracticeTab() {
     setSubmitError(null);
   };
 
-  const startSession = async (subject: string) => {
-    setSelectedSubject(subject);
+  // Fetch full question DTOs (with correct answers for the review panel) for
+  // every selected subject/topic/subtopic, then serve the requested count.
+  const startSession = async () => {
     setLoading(true);
     setLoadError(null);
     setResult(null);
     setSubmitError(null);
-    setTopicFilter(null);
-    setQuantity(10);
     setAnswers({});
     setCurrentIndex(0);
     try {
-      const list = await api.questions({ subject, limit: 200 });
-      if (list.length === 0) {
-        setLoadError("এই বিষয়ে এখনো কোনো প্রশ্ন যোগ করা হয়নি।");
+      const pools = await Promise.all(
+        selectedSubjects.map(async (s) => {
+          const sel = selection[s.id];
+          return api.questions({
+            subject: s.nameBn,
+            paths: sel.paths.length > 0 ? sel.paths : undefined,
+            limit: 200,
+          });
+        }),
+      );
+      const merged = pools.flat().filter(Boolean);
+      if (merged.length === 0) {
+        setLoadError("নির্বাচিত টপিক থেকে কোনো প্রশ্ন পাওয়া যায়নি।");
         setQuestions([]);
       } else {
-        setQuestions(list);
-        setQuantity(Math.min(10, list.length));
+        const requested = totalCount > 0 ? totalCount : merged.length;
+        const shuffled = [...merged].sort(() => Math.random() - 0.5);
+        setQuestions(shuffled.slice(0, Math.min(requested, merged.length)));
         setSessionActive(true);
       }
     } catch {
@@ -152,10 +154,6 @@ export default function PracticeTab() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const adjustQuantity = (delta: number) => {
-    setQuantity((q) => Math.min(totalQuestions, Math.max(1, q + delta)));
   };
 
   const selectAnswer = (questionId: number, option: string) => {
@@ -176,12 +174,6 @@ export default function PracticeTab() {
     } finally {
       setSubmitting(false);
     }
-  };
-
-  const formatDuration = (sec: number) => {
-    const m = Math.floor(sec / 60);
-    const s = sec % 60;
-    return `${m}:${String(s).padStart(2, "0")}`;
   };
 
   return (
@@ -219,45 +211,120 @@ export default function PracticeTab() {
         <MockTestTab />
       ) : (
         <>
-          {!selectedSubject && (
+          {/* ── CONFIG: subject → topic → subtopic picker ── */}
+          {!sessionActive && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
+              className="space-y-6"
             >
-              {/* Subject grid — real subjects + real counts */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-                {subjects.map((subject, i) => {
-                  const count = subjectCounts[subject.name];
-                  return (
-                    <motion.button
-                      key={subject.name}
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: i * 0.03, type: "spring", stiffness: 300, damping: 20 }}
-                      whileHover={{ y: -4 }}
-                      whileTap={{ scale: 0.96 }}
-                      onClick={() => void startSession(subject.name)}
-                      className="glass rounded-2xl border border-terminal-border p-4 flex flex-col items-center gap-2 hover:border-emerald-500/40 hover:shadow-neon-glow transition-all"
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="glass rounded-2xl border border-terminal-border overflow-hidden"
+              >
+                <div className="terminal-window-bar border-b border-terminal-border">
+                  <div className="dot close" /><div className="dot minimize" /><div className="dot maximize" />
+                  <div className="flex-1 text-center text-xs text-zinc-400 font-mono">{"// QUICK_PRACTICE"}</div>
+                </div>
+                <div className="p-5 md:p-6">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Zap className="w-5 h-5 text-emerald-400" />
+                    <h2 className="text-lg font-bold text-white">কুইক প্র্যাকটিস</h2>
+                  </div>
+                  <p className="text-xs text-zinc-500 font-mono">
+                    যেকোনো বিষয়ের নির্দিষ্ট টপিক ও সাবটপিক বেছে নিয়ে তৎক্ষণাৎ প্রশ্ন অনুশীলন করুন।
+                  </p>
+                </div>
+              </motion.div>
+
+              {configLoading && (
+                <div className="glass rounded-2xl border border-terminal-border p-10 text-center">
+                  <Loader2 className="w-10 h-10 mx-auto mb-3 text-emerald-500 animate-spin" aria-hidden="true" />
+                  <p className="text-sm text-zinc-400 font-mono">বিষয় লোড হচ্ছে...</p>
+                </div>
+              )}
+
+              {configError && (
+                <div className="glass rounded-2xl border border-terminal-border p-10 text-center">
+                  <AlertTriangle className="w-10 h-10 mx-auto mb-3 text-amber-500" aria-hidden="true" />
+                  <p className="text-sm text-zinc-400">{configError}</p>
+                  <button
+                    onClick={() => {
+                      setConfigLoading(true);
+                      setConfigError(null);
+                      void (async () => {
+                        try {
+                          const list = await api.examConfig();
+                          setSubjects(list.filter((s) => s.questionCount > 0));
+                        } catch {
+                          setConfigError("কনফিগারেশন লোড করা যায়নি। আবার চেষ্টা করুন।");
+                        } finally {
+                          setConfigLoading(false);
+                        }
+                      })();
+                    }}
+                    className="mt-4 px-4 py-2 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors"
+                  >
+                    আবার চেষ্টা করুন
+                  </button>
+                </div>
+              )}
+
+              {!configLoading && !configError && (
+                <>
+                  <TopicTreePicker
+                    subjects={subjects}
+                    selection={selection}
+                    onSelectionChange={setSelection}
+                  />
+
+                  {/* Total questions */}
+                  <div className="glass rounded-xl border border-terminal-border p-4 flex items-center justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-sm text-zinc-300 font-mono">মোট প্রশ্ন</p>
+                      <p className="text-xs text-zinc-500 mt-0.5">
+                        উপলব্ধ:{" "}
+                        <span className={`font-mono ${insufficient ? "text-red-400" : "text-emerald-400"}`}>
+                          {availableTotal}টি
+                        </span>
+                      </p>
+                    </div>
+                    <span
+                      className={`text-2xl font-bold font-mono ${
+                        totalCount > 0 ? "text-emerald-400" : "text-zinc-600"
+                      }`}
                     >
-                      <div className={`w-12 h-12 rounded-xl ${subject.bg} flex items-center justify-center text-2xl`}>
-                        {subject.icon}
-                      </div>
-                      <span className={`text-xs font-mono text-center leading-tight ${subject.color}`}>
-                        {subject.name}
-                      </span>
-                      <span className="text-[10px] text-zinc-500 font-mono">
-                        {count !== undefined ? `${count}টি প্রশ্ন` : "লোড হচ্ছে..."}
-                      </span>
-                    </motion.button>
-                  );
-                })}
-              </div>
+                      {totalCount}
+                      <span className="text-xs text-zinc-500 ml-1">প্র.</span>
+                    </span>
+                  </div>
+
+                  {insufficient && (
+                    <div className="flex items-start gap-2 rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 text-xs text-amber-300">
+                      <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                      <p>
+                        নির্বাচিত টপিক থেকে শুধু <span className="font-mono">{availableTotal}টি</span> প্রশ্ন
+                        পাওয়া যায় — মোট <span className="font-mono">{totalCount}টি</span> চাওয়া হয়েছে।
+                      </p>
+                    </div>
+                  )}
+
+                  <button
+                    onClick={() => void startSession()}
+                    disabled={selectedSubjects.length === 0 || totalCount === 0 || loading}
+                    className="mt-4 w-full py-3 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-xl hover:bg-emerald-400 transition-colors flex items-center justify-center gap-2 shadow-neon-glow disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    <Play className="w-4 h-4" />
+                    প্র্যাকটিস শুরু করুন
+                  </button>
+                </>
+              )}
             </motion.div>
           )}
 
           {/* Loading state */}
-          {selectedSubject && loading && (
+          {sessionActive && loading && (
             <div className="glass rounded-2xl border border-terminal-border p-10 text-center">
               <Loader2 className="w-10 h-10 mx-auto mb-3 text-emerald-500 animate-spin" aria-hidden="true" />
               <p className="text-sm text-zinc-400 font-mono">প্রশ্ন লোড হচ্ছে...</p>
@@ -265,12 +332,12 @@ export default function PracticeTab() {
           )}
 
           {/* Error state */}
-          {selectedSubject && !loading && loadError && (
+          {sessionActive && !loading && loadError && (
             <div className="glass rounded-2xl border border-terminal-border p-10 text-center">
               <AlertTriangle className="w-10 h-10 mx-auto mb-3 text-amber-500" aria-hidden="true" />
               <p className="text-sm text-zinc-400">{loadError}</p>
               <button
-                onClick={() => void startSession(selectedSubject)}
+                onClick={() => void startSession()}
                 className="mt-4 px-4 py-2 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors"
               >
                 আবার চেষ্টা করুন
@@ -285,7 +352,7 @@ export default function PracticeTab() {
           )}
 
           {/* Empty state */}
-          {selectedSubject && !loading && !loadError && questions.length === 0 && !sessionActive && (
+          {sessionActive && !loading && !loadError && questions.length === 0 && !result && (
             <div className="glass rounded-2xl border border-terminal-border p-10 text-center">
               <Inbox className="w-10 h-10 mx-auto mb-3 text-zinc-600" aria-hidden="true" />
               <p className="text-sm text-zinc-400">কোনো প্রশ্ন পাওয়া যায়নি।</p>
@@ -298,122 +365,20 @@ export default function PracticeTab() {
             </div>
           )}
 
-          {/* Session setup */}
-          {selectedSubject && sessionActive && !result && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="glass rounded-2xl border border-terminal-border p-5 md:p-6"
-            >
-              <div className="flex flex-wrap items-center justify-between gap-4 mb-5">
-                <div>
-                  <p className="text-xs text-zinc-500 font-mono uppercase tracking-widest">Quick Practice</p>
-                  <h3 className="text-lg font-bold text-white mt-1">{selectedSubject}</h3>
-                  <p className="text-xs text-zinc-500 mt-0.5">
-                    <span className="text-emerald-400 font-mono">{questions.length}</span>টি প্রশ্ন উপলব্ধ
-                  </p>
-                </div>
-                <button
-                  onClick={resetSession}
-                  className="px-3 py-1.5 text-zinc-400 hover:text-white text-xs font-mono rounded-lg hover:bg-zinc-800 transition-colors flex items-center gap-1"
-                >
-                  <X className="w-3.5 h-3.5" /> বন্ধ করুন
-                </button>
-              </div>
-
-              {/* Real topic chips */}
-              {availableTopics.length > 1 && (
-                <div className="mb-5">
-                  <p className="text-xs text-zinc-500 font-mono mb-2">টপিক ফিল্টার</p>
-                  <div className="flex flex-wrap gap-2">
-                    <button
-                      onClick={() => setTopicFilter(null)}
-                      className={`px-3 py-1 rounded-lg text-xs font-mono border transition-colors ${
-                        topicFilter === null
-                          ? "bg-emerald-500 text-zinc-950 border-emerald-500"
-                          : "border-zinc-700 text-zinc-400 hover:border-emerald-500/40"
-                      }`}
-                    >
-                      সবগুলো
-                    </button>
-                    {availableTopics.map((t) => (
-                      <button
-                        key={t}
-                        onClick={() => {
-                          setTopicFilter(topicFilter === t ? null : t);
-                          setCurrentIndex(0);
-                        }}
-                        className={`px-3 py-1 rounded-lg text-xs font-mono border transition-colors ${
-                          topicFilter === t
-                            ? "bg-emerald-500 text-zinc-950 border-emerald-500"
-                            : "border-zinc-700 text-zinc-400 hover:border-emerald-500/40"
-                        }`}
-                      >
-                        {t}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Quantity */}
-              <div className="glass rounded-xl border border-terminal-border p-5 flex items-center justify-between gap-4">
-                <div>
-                  <p className="text-sm text-zinc-300 font-mono mb-1">প্রশ্নের সংখ্যা</p>
-                  <p className="text-xs text-zinc-500">
-                    উপলব্ধ: <span className="text-emerald-400 font-mono">{totalQuestions}টি</span>
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => adjustQuantity(-1)}
-                    className="w-9 h-9 rounded-lg bg-zinc-900 border border-emerald-500/20 flex items-center justify-center text-emerald-400 hover:border-emerald-500/40"
-                    aria-label="কমান"
-                  >
-                    <Minus className="w-4 h-4" />
-                  </button>
-                  <span className="text-3xl font-bold text-emerald-400 font-mono w-10 text-center">{quantity}</span>
-                  <button
-                    onClick={() => adjustQuantity(1)}
-                    className="w-9 h-9 rounded-lg bg-zinc-900 border border-emerald-500/20 flex items-center justify-center text-emerald-400 hover:border-emerald-500/40"
-                    aria-label="বাড়ান"
-                  >
-                    <Plus className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-
-              <button
-                onClick={() => {
-                  setSessionActive(true);
-                  setCurrentIndex(0);
-                }}
-                className="mt-4 w-full py-3 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-xl hover:bg-emerald-400 transition-colors flex items-center justify-center gap-2 shadow-neon-glow"
-              >
-                <Play className="w-4 h-4" /> প্র্যাকটিস শুরু করুন
-              </button>
-            </motion.div>
-          )}
-
           {/* Active quiz session */}
-          {selectedSubject && sessionActive && !result && totalQuestions > 0 && (
+          {sessionActive && !loading && !loadError && !result && totalQuestions > 0 && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               className="glass rounded-2xl border border-emerald-500/30 overflow-hidden"
             >
               {/* Header */}
-              <div className="px-5 py-4 border-b border-terminal-border flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <BookOpen className="w-4 h-4 text-emerald-400" />
-                  <span className="text-sm font-medium text-white">{selectedSubject}</span>
-                  {topicFilter && (
-                    <span className="px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded text-[10px] font-mono text-emerald-400">
-                      {topicFilter}
-                    </span>
-                  )}
+              <div className="px-5 py-4 border-b border-terminal-border flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 min-w-0">
+                  <BookOpen className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                  <span className="text-sm font-medium text-white truncate">{sessionTitle}</span>
                 </div>
-                <span className="text-xs text-zinc-500 font-mono">
+                <span className="text-xs text-zinc-500 font-mono flex-shrink-0">
                   প্রশ্ন {currentIndex + 1}/{totalQuestions}
                 </span>
               </div>
@@ -439,10 +404,14 @@ export default function PracticeTab() {
                       }`}>
                         {DIFFICULTY_LABEL[currentQuestion.difficulty] ?? currentQuestion.difficulty}
                       </span>
-                      {currentQuestion.sourceExam && (
+                      {currentQuestion.topic && (
                         <span className="px-2 py-0.5 bg-zinc-800 rounded text-[10px] font-mono text-zinc-400">
-                          {currentQuestion.sourceExam}
-                          {currentQuestion.year ? ` ${currentQuestion.year}` : ""}
+                          {currentQuestion.topic}
+                        </span>
+                      )}
+                      {currentQuestion.subtopic && (
+                        <span className="px-2 py-0.5 bg-zinc-800 rounded text-[10px] font-mono text-zinc-500">
+                          {currentQuestion.subtopic}
                         </span>
                       )}
                       <span className="text-[10px] text-zinc-500 font-mono ml-auto">
@@ -513,7 +482,7 @@ export default function PracticeTab() {
           )}
 
           {/* Result panel */}
-          {selectedSubject && result && (
+          {result && (
             <motion.div
               initial={{ opacity: 0, scale: 0.97 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -550,7 +519,7 @@ export default function PracticeTab() {
                     onClick={resetSession}
                     className="px-5 py-2.5 bg-zinc-900 border border-zinc-800 text-zinc-300 font-mono text-sm rounded-xl hover:bg-zinc-800 transition-colors flex items-center gap-2"
                   >
-                    <Target className="w-4 h-4" /> অন্য বিষয়
+                    <Target className="w-4 h-4" /> নতুন নির্বাচন
                   </button>
                 </div>
               </div>

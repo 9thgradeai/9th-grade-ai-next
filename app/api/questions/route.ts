@@ -22,6 +22,7 @@ export async function GET(request: Request) {
         topic: params.topic,
         difficulty: params.difficulty,
         q: params.q,
+        paths: params.paths,
         limit: params.limit,
       });
     }
