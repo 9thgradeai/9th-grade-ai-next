@@ -3,8 +3,7 @@
  * ----------------------------------------------------------------------------
  * Canonical question-bank taxonomy (the "permanent architecture").
  *
- * The tree comes from database/data/Questions Architecture/architecture.txt
- * and is pre-parsed into database/data/taxonomy.json. This module loads that
+ * The tree is stored in database/data/taxonomy.json. This module loads that
  * JSON and exposes helpers used by the seeder (scripts/seed-questions.ts and
  * database/prisma/seed.ts) to:
  *

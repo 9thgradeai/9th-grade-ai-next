@@ -55,7 +55,6 @@ Open http://localhost:3000.
 | `npm run db:seed` | Seed content into DB |
 | `npm run db:reset` | Reset + reseed DB |
 | `npm run db:studio` | Open Prisma Studio |
-| `npm run storybook` | Component / design-system reference |
 
 ## Database
 
@@ -87,4 +86,3 @@ Parses `database/data/ques/questions_database.txt` and inserts questions linked 
 
 - **"AUTH_SECRET is not set"**: Copy `.env.local.example` to `.env.local` and set `AUTH_SECRET`.
 - **"too many connections"**: `backend/db.ts` uses a singleton pattern to avoid this.
-- **Storybook fails**: Ensure `@storybook/*` dependencies are installed.

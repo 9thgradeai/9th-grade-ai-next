@@ -39,10 +39,6 @@ export async function recomputeProgress(userId: string, pointsEarned: number) {
   });
 }
 
-async function ensureProgress(userId: string) {
-  return prisma.userProgress.upsert({ where: { userId }, update: {}, create: { userId } });
-}
-
 function gradeAnswers(
   answers: SubmittedAnswer[],
   reference: Array<{ id: number; correctAnswer: string }>,
@@ -105,68 +101,6 @@ export async function submitPracticeAnswers(
   }
 }
 
-// ── Mock tests (MockTestQuestion table) ───────────────────
-export async function submitMockTestResult(
-  userId: string,
-  mockTestId: number,
-  answers: SubmittedAnswer[],
-  durationSec = 0,
-): Promise<SubmissionSummary & { resultId: number }> {
-  try {
-    const test = await prisma.mockTest.findUnique({
-      where: { id: mockTestId },
-      include: { questions: { select: { id: true, correctAnswer: true, subject: true, topic: true } } },
-    });
-    if (!test) {
-      throw new AppError(404, "Mock test not found.", "NOT_FOUND");
-    }
-
-    const { correct, total } = gradeAnswers(answers, test.questions);
-    const byId = new Map(test.questions.map((q) => [q.id, q]));
-
-    const result = await prisma.mockTestResult.create({
-      data: {
-        userId,
-        mockTestId: test.id,
-        score: total > 0 ? Math.round((correct / total) * 100) : 0,
-        correct,
-        total,
-        durationSec,
-      },
-    });
-
-    await prisma.questionAttempt.createMany({
-      data: answers.map((a) => {
-        const q = byId.get(a.questionId);
-        return {
-          userId,
-          questionId: null,
-          subjectId: null,
-          subjectName: q?.subject ?? "",
-          topic: q?.topic ?? "",
-          correct: a.selected.trim() === q?.correctAnswer.trim(),
-          source: "mock",
-        };
-      }),
-    });
-
-    const pointsEarned = correct * POINTS_PER_CORRECT;
-    await recomputeProgress(userId, pointsEarned);
-    await prisma.userProgress.update({ where: { userId }, data: { examsAttempted: { increment: 1 } } });
-
-    return {
-      correct,
-      total,
-      score: total > 0 ? Math.round((correct / total) * 100) : 0,
-      pointsEarned,
-      resultId: result.id,
-    };
-  } catch (error) {
-    if (error instanceof AppError) throw error;
-    throw new InternalServerError("Failed to record mock test result");
-  }
-}
-
 // ── Daily quiz (QuizQuestion table) ───────────────────────
 export async function submitDailyQuiz(
   userId: string,
@@ -209,36 +143,6 @@ export async function submitDailyQuiz(
   }
 }
 
-// ── Flashcards (SRS) ──────────────────────────────────────
-export async function submitFlashcardReview(
-  userId: string,
-  flashcardId: number,
-  rating: number,
-): Promise<{ reviewed: boolean; flashcardsReviewed: number }> {
-  try {
-    if (!Number.isInteger(flashcardId)) {
-      throw new AppError(400, "flashcardId must be an integer.", "VALIDATION_ERROR");
-    }
-    if (!Number.isInteger(rating) || rating < 0 || rating > 3) {
-      throw new AppError(400, "rating must be an integer 0-3.", "VALIDATION_ERROR");
-    }
-    const flashcard = await prisma.flashcard.findUnique({ where: { id: flashcardId } });
-    if (!flashcard) {
-      throw new AppError(404, "Flashcard not found.", "NOT_FOUND");
-    }
-
-    await prisma.flashcardReview.create({ data: { userId, flashcardId, rating } });
-    const updated = await prisma.userProgress.update({
-      where: { userId },
-      data: { flashcardsReviewed: { increment: 1 } },
-    });
-    return { reviewed: true, flashcardsReviewed: updated.flashcardsReviewed };
-  } catch (error) {
-    if (error instanceof AppError) throw error;
-    throw new InternalServerError("Failed to record flashcard review");
-  }
-}
-
 // ── Notifications (read markers) ──────────────────────────
 export async function markNotificationRead(
   userId: string,
@@ -260,5 +164,3 @@ export async function markNotificationRead(
     throw new InternalServerError("Failed to mark notification read");
   }
 }
-
-export { ensureProgress };

@@ -125,7 +125,6 @@ Preparing for Bangladesh's competitive exams is hard:
 | Linting | **ESLint 9** (`eslint-config-next`) |
 | Formatting | **Prettier 3** |
 | Type checking | `tsc --noEmit` |
-| Component reference | **Storybook 8** |
 | Dev server | Next.js dev (Turbopack) |
 
 **Deliberately not used:** no Redux/Zustand (React Context + `useSyncExternalStore`), no CSS-in-JS (Tailwind only), no third-party component library (custom UI primitives), no form library (native HTML forms), no agent-orchestration framework (direct SDK calls).
@@ -172,7 +171,7 @@ Prisma  →  SQLite (dev) / PostgreSQL (prod)
 
 - **Path aliases:** `@/*` → `frontend/*`, `~backend/*` → `backend/*`, `~tests/*` → `tests/*`.
 - **Server-only enforcement:** `backend/` imports `"server-only"` so its code can never leak into client bundles.
-- **Auth:** middleware (`backend/middleware.ts`) guards `/dashboard` and `/login`; protected API routes call `getUserIdFromRequest()` and return `401` when there is no valid session.
+- **Auth:** middleware (`middleware.ts`) guards `/dashboard` and `/login`; protected API routes call `getUserIdFromRequest()` and return `401` when there is no valid session.
 - **No business logic in route handlers** — they parse, validate, delegate, and respond.
 
 ### Security model
@@ -285,7 +284,6 @@ Deployed to **Vercel** at [https://9-delta-ten.vercel.app](https://9-delta-ten.v
 | `npm run db:sync` | Clean content, push schema, reseed (used by Vercel) |
 | `npm run db:reset` | Force-reset + reseed with fresh users |
 | `npm run db:studio` | Open Prisma Studio |
-| `npm run storybook` | Component / design-system reference |
 
 ## Project Structure
 
@@ -302,11 +300,10 @@ Deployed to **Vercel** at [https://9-delta-ten.vercel.app](https://9-delta-ten.v
 ├── backend/                # Server-only code (imports "server-only")
 │   ├── auth.ts             # JWT session management (jose)
 │   ├── db.ts               # PrismaClient singleton
-│   ├── middleware.ts       # Next.js middleware (route guards)
 │   └── services/           # content.ts, exam.ts, user.ts, activity.ts
 ├── frontend/               # Client-side code
 │   ├── components/
-│   │   ├── ui/             # Design-system primitives + Storybook stories
+│   │   ├── ui/             # Error boundary + shared primitives
 │   │   └── dashboard/      # Dashboard tab components (+ TopicTreePicker)
 │   └── lib/
 │       ├── services/       # api.ts fetch wrappers

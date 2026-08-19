@@ -28,8 +28,9 @@ prisma/dev.db-journal
 *.db
 *.db-journal
 
-# Storybook
-storybook-static
+# Local tooling (machine-specific)
+.jetro/
+.mcp.json
 
 # OS files
 .DS_Store

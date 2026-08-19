@@ -42,6 +42,7 @@ class Analytics {
   private readonly events: AnalyticsEvent[] = [];
 
   constructor() {
+    // eslint-disable-next-line no-restricted-globals
     this.enabled = !!process.env.NEXT_PUBLIC_ANALYTICS_ENDPOINT;
     this.startHeroView();
   }
@@ -72,6 +73,7 @@ class Analytics {
 
     // Send to analytics endpoint
     // TODO: Implement actual endpoint POST
+    // eslint-disable-next-line no-restricted-globals
     fetch(process.env.NEXT_PUBLIC_ANALYTICS_ENDPOINT!, {
       method: "POST",
       headers: {

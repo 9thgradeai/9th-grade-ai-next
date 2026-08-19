@@ -18,19 +18,14 @@ Auth-protected routes require the `auth_token` HttpOnly cookie (JWT, 7-day expir
 
 | Method | Path | Description |
 |--------|------|-------------|
-| GET | `/api/subjects` | List all subjects |
-| GET | `/api/topics` | List topics, optionally filtered by `?subject=` |
 | GET | `/api/questions` | List questions, filterable by `?subject=`, `?topic=`, `?difficulty=`, `?q=`, `?limit=`, `?paths=` |
 | GET | `/api/question-bank/categories` | List question bank categories |
-| GET | `/api/archive` | List exam archives |
 | GET | `/api/flashcards` | List flashcards, optionally filtered by `?subject=` |
 | GET | `/api/exam-schedule` | List published exam dates (public, no auth) |
 | GET | `/api/study-plan` | **Auth required** — List the caller's study plan tasks |
 | GET | `/api/daily-quiz` | Get today's quiz |
-| GET | `/api/mock-test` | List mock tests |
 | GET | `/api/flash-news` | List flash news items |
 | GET | `/api/recommendations` | List AI recommendations |
-| GET | `/api/progress` | **Auth required** — Get user progress |
 | PATCH | `/api/progress` | **Auth required** — Patch user progress (whitelisted fields only) |
 | GET | `/api/notifications` | **Auth required** — List notifications with per-user read state |
 | GET | `/api/badges` | List achievement badges |
@@ -42,9 +37,7 @@ Auth-protected routes require the `auth_token` HttpOnly cookie (JWT, 7-day expir
 | POST | `/api/study-plan/tasks/:id/toggle` | **Auth required** — Toggle task completion |
 | GET | `/api/dashboard-stats` | **Auth required** — Caller's dashboard stats (per-user) |
 | POST | `/api/practice/submit` | **Auth required** — Grade practice answers `{ answers: [{ questionId, selected }] }` |
-| POST | `/api/mock-test/submit` | **Auth required** — Grade + persist a mock test `{ mockTestId, answers, durationSec? }` |
 | POST | `/api/daily-quiz/submit` | **Auth required** — Grade + persist daily quiz answers `{ quizId, answers }` |
-| POST | `/api/flashcards/review` | **Auth required** — Log an SRS review `{ flashcardId, rating }` (0-3) |
 | POST | `/api/notifications/:id/read` | **Auth required** — Mark a notification read |
 | GET | `/api/exam/config` | List the custom-exam selection tree (subjects → topics → subtopics with question counts) |
 | POST | `/api/exam/build` | Build a custom BCS-style exam `{ subjects: [{ subjectId, groups, count? }], questionCount, durationSec }` |
@@ -164,7 +157,6 @@ All API calls are wrapped in `frontend/lib/services/api.ts`:
 ```ts
 import { api } from "@/lib/services/api";
 
-const subjects = await api.subjects();
 const questions = await api.questions({ subject: "বাংলা", limit: 10 });
 ```
 

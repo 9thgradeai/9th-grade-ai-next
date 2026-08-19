@@ -13,14 +13,19 @@
 
 | File | Type | Coverage |
 |------|------|----------|
+| `tests/CustomExamTab.test.tsx` | Component | Custom exam builder |
+| `tests/MockTestTab.test.tsx` | Component | Mock test builder |
 | `tests/FlashNewsModal.test.tsx` | Component | FlashNewsModal rendering |
 | `tests/NewFeatures.test.tsx` | Component | StudyPlannerTab, FlashcardsTab, MockTestTab, AISolverTab, DailyQuizWidget, NotificationCenter, OfflineModeTab, ThemeToggle |
+| `tests/unit/backend/exam.test.ts` | Unit | Exam selection/grading engine |
+| `tests/unit/backend/questions.test.ts` | Unit | `getQuestions` path filtering |
+| `tests/unit/backend/knowledge-base.test.ts` | Unit | Knowledge-base retrieval |
+| `tests/unit/backend/web-search.test.ts` | Unit | Tavily web-search helper |
 
 ## Missing Coverage
 
 - **API integration tests**: No tests for `app/api/*` routes.
 - **Auth flow tests**: No tests for login, register, logout.
-- **Backend service tests**: No tests for `backend/services/*`.
 - **E2E tests**: No Playwright or Cypress tests.
 - **Database tests**: No Prisma integration tests.
 - **AI evaluation tests**: No tests for `/api/ai/*` endpoints.
@@ -32,7 +37,6 @@
 ```bash
 npm run test          # Run once
 npm run test:watch    # Watch mode
-npm run test:ui       # Vitest UI (if configured)
 ```
 
 ## Writing Tests
@@ -43,5 +47,4 @@ npm run test:ui       # Vitest UI (if configured)
 
 ## CI/CD
 
-- No CI/CD pipeline configured.
-- Tests are run locally before committing.
+- CI runs `typecheck`, `lint`, `test`, and `build` on every push/PR (`.github/workflows/ci.yml`).

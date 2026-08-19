@@ -34,7 +34,7 @@ export const FeedbackButton = () => {
             </div>
 
             <p className="text-zinc-300 mb-8 leading-relaxed">
-              We'd love to hear your thoughts on the new cosmic visual theme:
+              We&apos;d love to hear your thoughts on the new cosmic visual theme:
             </p>
 
             <form
@@ -55,7 +55,7 @@ export const FeedbackButton = () => {
                   required
                 >
                   <option value="positive">Positive - I love it</option>
-                  <option value="neutral">Neutral - It's fine</option>
+                  <option value="neutral">Neutral - It&apos;s fine</option>
                   <option value="negative">Negative - I prefer the old style</option>
                 </select>
               </div>
@@ -69,7 +69,7 @@ export const FeedbackButton = () => {
                   className="w-full px-4 py-2 border border-zinc-600 rounded bg-zinc-900 text-zinc-100 focus:outline-none focus:ring-2 focus:ring-stellar-cyan/50"
                   required
                 >
-                  <option value="not-at-all">Not at all - it's subtle</option>
+                  <option value="not-at-all">Not at all - it&apos;s subtle</option>
                   <option value="slightly">Slightly - needs adjustment</option>
                   <option value="significantly">Significantly - very distracting</option>
                 </select>

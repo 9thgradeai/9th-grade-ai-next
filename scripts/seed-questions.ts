@@ -7,7 +7,7 @@
  *  1. Subjects — the 10 canonical subjects from scripts/taxonomy.ts.
  *
  *  2. Topic tree — the recursive Topic hierarchy built from
- *     database/data/taxonomy.json (parsed from the Questions Architecture).
+ *     database/data/taxonomy.json.
  *     Topic.path is the full content path from the subject root
  *     ("04_আন্তর্জাতিক_বিষয়াবলি/০২_নিরাপ্তা_ও_ক্ষমতা/আন্তর্জাতিক_নিরাপ্তা"),
  *     matching the local folder layout under data/ques/.

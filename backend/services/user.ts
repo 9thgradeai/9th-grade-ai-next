@@ -24,13 +24,6 @@ export type UserRecord = {
   createdAt: string;
 };
 
-export type UserFilters = {
-  role?: string;
-  search?: string;
-  page?: number;
-  limit?: number;
-};
-
 export async function findUserByEmail(email: string): Promise<UserRecord | null> {
   try {
     const u = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
@@ -125,24 +118,6 @@ async function ensureProgress(userId: string) {
   });
 }
 
-export async function getUserProgress(userId: string): Promise<UserProgressDTO> {
-  try {
-    const p = await ensureProgress(userId);
-    return {
-      points: p.points,
-      streak: p.streak,
-      accuracy: p.accuracy,
-      questionsAnswered: p.questionsAnswered,
-      flashcardsReviewed: p.flashcardsReviewed,
-      aiQuestionsAsked: p.aiQuestionsAsked,
-      examsAttempted: p.examsAttempted,
-      rank: p.rank,
-    };
-  } catch {
-    throw new InternalServerError("Failed to fetch user progress");
-  }
-}
-
 export async function patchUserProgress(
   userId: string,
   patch: Partial<{
@@ -222,58 +197,5 @@ export async function toggleStudyTask(
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new InternalServerError("Failed to toggle study task");
-  }
-}
-
-export async function getAllUsers(filters: UserFilters = {}): Promise<{
-  users: UserRecord[];
-  total: number;
-}> {
-  try {
-    const { role, search, page = 1, limit = 20 } = filters;
-    const where: Record<string, unknown> = {};
-
-    if (role) {
-      where.role = role.toUpperCase();
-    }
-    if (search) {
-      where.OR = [
-        { name: { contains: search, mode: "insensitive" } },
-        { email: { contains: search, mode: "insensitive" } },
-      ];
-    }
-
-    const [users, total] = await Promise.all([
-      prisma.user.findMany({
-        where,
-        skip: (page - 1) * limit,
-        take: limit,
-        orderBy: { createdAt: "desc" },
-      }),
-      prisma.user.count({ where }),
-    ]);
-
-    return {
-      users: users.map((u) => ({
-        id: u.id,
-        name: u.name,
-        email: u.email,
-        handle: u.handle,
-        passwordHash: u.passwordHash,
-        role: u.role === "ADMIN" ? "admin" : "student",
-        createdAt: u.createdAt.toISOString(),
-      })),
-      total,
-    };
-  } catch {
-    throw new InternalServerError("Failed to fetch users");
-  }
-}
-
-export async function deleteUser(userId: string): Promise<void> {
-  try {
-    await prisma.user.delete({ where: { id: userId } });
-  } catch {
-    throw new InternalServerError("Failed to delete user");
   }
 }

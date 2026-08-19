@@ -4,6 +4,34 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.2.2] - 2026-08-20
+
+### Changed
+- **Repository cleanup** — removed dead code and vestigial tooling:
+  - Deleted unused modules: `backend/env.ts`, `backend/utils.ts`,
+    `backend/middleware.ts` (duplicate of the root `middleware.ts`),
+    `frontend/lib/hooks/useApi.ts`, and unused components
+    (`AIRecommendationsWidget`, `AITutorModal`, `dashboard/ArchiveTab`).
+  - Removed unused API routes: `/api/auth/forgot-password`,
+    `/api/auth/reset-password`, `/api/flashcards/review`,
+    `/api/mock-test/submit`, `/api/archive`, `/api/subjects`, `/api/topics`,
+    `/api/mock-test`, and the GET handler on `/api/progress`.
+  - Removed the corresponding orphaned service functions from
+    `backend/services/*` (e.g. `getSubjects`, `getTopics`, `getExamArchives`,
+    `getMockTests`, `getBadges`, `getOfflinePacks`, `submitMockTestResult`,
+    `submitFlashcardReview`, `getAllUsers`, `deleteUser`, Google OAuth helpers).
+  - Removed unused client API wrappers and dead mock data from
+    `frontend/lib/data/index.ts`.
+  - Dropped Storybook and its unused design-system primitives (Badge, Button,
+    Card, Input, EmptyState, LoadingSpinner) plus the `@storybook/*`,
+    `@vitejs/plugin-react`, `vite`, and `clsx` dependencies.
+  - Removed the unused Prisma migration files and `db:migrate*` scripts
+    (schema is pushed directly via `db:push`).
+  - Deleted stray/trivial files: default `public/*.svg` assets,
+    `.jetro/`, `.mcp.json`, `CLAUDE.md` (subsumed by `AGENTS.md`),
+    `database/data/Questions Architecture/`, and the stale
+    `docs/technical-reports/frontend-pitfalls.md`.
+
 ## [0.2.1] - 2026-08-19
 
 ### Added
@@ -52,7 +80,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - Repository cleanup and documentation architecture.
-- AI agent governance (`AGENTS.md`, `CLAUDE.md`).
+- AI agent governance (`AGENTS.md`).
 - Canonical documentation in `docs/`.
 - Custom BCS-style exam engine: multi-subject/topic/subtopic selection tree
   (`GET /api/exam/config`), deterministic seeded question build with
@@ -86,4 +114,3 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Responsive dashboard with 8 tabs.
 - Gamification (badges, streaks, leaderboard).
 - Offline packs and document library.
-- Storybook design system primitives (Badge, Button, Card, Input).

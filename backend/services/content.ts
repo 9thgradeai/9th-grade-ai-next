@@ -7,90 +7,18 @@ import "server-only";
 import { prisma } from "~backend/db";
 import { InternalServerError } from "~backend/errors";
 import type {
-  SubjectDTO,
-  TopicDTO,
   QuestionDTO,
   QuestionBankCategoryDTO,
-  ExamArchiveDTO,
   FlashcardDTO,
   StudyTaskDTO,
   DailyQuizDTO,
-  MockTestDTO,
   FlashNewsDTO,
   RecommendationDTO,
-  BadgeDTO,
   NotificationDTO,
-  OfflinePackDTO,
   DocumentDTO,
   ExamScheduleDTO,
   MockTestResultDTO,
 } from "@/lib/types";
-
-// ── Subjects ─────────────────────────────────────────────
-export async function getSubjects(): Promise<SubjectDTO[]> {
-  try {
-    const rows = await prisma.subject.findMany({ orderBy: { sortOrder: "asc" } });
-    return rows.map((s) => ({
-      id: s.id,
-      nameBn: s.nameBn,
-      nameEn: s.nameEn,
-      icon: s.icon,
-      color: s.color ?? "",
-      bg: s.bg ?? "",
-      sortOrder: s.sortOrder,
-    }));
-  } catch {
-    throw new InternalServerError("Failed to fetch subjects");
-  }
-}
-
-export async function getSubjectWithStats(): Promise<SubjectDTO[]> {
-  try {
-    const start = Date.now();
-    const subjects = await prisma.subject.findMany({
-      orderBy: { sortOrder: "asc" },
-    });
-    const duration = Date.now() - start;
-    if (duration > 500 && process.env.NODE_ENV === "development") {
-      console.warn(`[Slow Query] ${duration}ms — getSubjectWithStats`);
-    }
-
-    return subjects.map((s) => ({
-      id: s.id,
-      nameBn: s.nameBn,
-      nameEn: s.nameEn,
-      icon: s.icon,
-      color: s.color ?? "",
-      bg: s.bg ?? "",
-      sortOrder: s.sortOrder,
-    }));
-  } catch {
-    throw new InternalServerError("Failed to fetch subjects with stats");
-  }
-}
-
-// ── Topics ───────────────────────────────────────────────
-export async function getTopics(subjectName?: string): Promise<TopicDTO[]> {
-  try {
-    const rows = await prisma.topic.findMany({
-      where: subjectName ? { subject: { nameBn: subjectName } } : undefined,
-      orderBy: [{ subjectId: "asc" }, { sortOrder: "asc" }, { id: "asc" }],
-    });
-    return rows.map((t) => ({
-      id: t.id,
-      subjectId: t.subjectId,
-      parentId: t.parentId,
-      name: t.name,
-      slug: t.slug,
-      path: t.path,
-      depth: t.depth,
-      sortOrder: t.sortOrder,
-      questionCount: String(t.questionCount),
-    }));
-  } catch {
-    throw new InternalServerError("Failed to fetch topics");
-  }
-}
 
 // ── Questions (powers Question Bank + Practice + Mock) ──
 export async function getQuestions(opts?: {
@@ -200,23 +128,6 @@ export async function getQuestionBankCategories(): Promise<QuestionBankCategoryD
   }
 }
 
-export async function getExamArchives(): Promise<ExamArchiveDTO[]> {
-  try {
-    const rows = await prisma.examArchive.findMany({ orderBy: { id: "asc" } });
-    return rows.map((a) => ({
-      id: a.id,
-      name: a.name,
-      icon: a.icon,
-      count: a.count,
-      yearRange: a.yearRange,
-      status: a.status,
-      accent: a.accent ?? "",
-    }));
-  } catch {
-    throw new InternalServerError("Failed to fetch exam archives");
-  }
-}
-
 // ── Flashcards ───────────────────────────────────────────
 export async function getFlashcards(subjectName?: string): Promise<FlashcardDTO[]> {
   try {
@@ -296,36 +207,6 @@ export async function getDailyQuiz(): Promise<DailyQuizDTO | null> {
   }
 }
 
-// ── Mock tests ───────────────────────────────────────────
-export async function getMockTests(): Promise<MockTestDTO[]> {
-  try {
-    const tests = await prisma.mockTest.findMany({ include: { questions: true } });
-    return tests.map((t) => ({
-      id: t.id,
-      title: t.title,
-      subject: t.subject,
-      totalQuestions: t.totalQuestions,
-      duration: t.duration,
-      questions: t.questions.map((q) => ({
-        id: q.id,
-        subjectId: 0,
-        subject: q.subject,
-        topic: q.topic,
-        subtopic: "",
-        question: q.question,
-        options: (q.options as string[]) ?? [],
-        correctAnswer: q.correctAnswer,
-        explanation: q.explanation,
-        difficulty: "MEDIUM",
-        year: null,
-        sourceExam: "",
-      })),
-    }));
-  } catch {
-    throw new InternalServerError("Failed to fetch mock tests");
-  }
-}
-
 // ── News / recommendations / gamification ───────────────
 export async function getFlashNews(): Promise<FlashNewsDTO[]> {
   try {
@@ -368,22 +249,6 @@ export async function getRecommendations(): Promise<RecommendationDTO[]> {
   }
 }
 
-export async function getBadges(): Promise<BadgeDTO[]> {
-  try {
-    const rows = await prisma.badge.findMany({ orderBy: { id: "asc" } });
-    return rows.map((b) => ({
-      id: b.id,
-      name: b.name,
-      description: b.description,
-      icon: b.icon,
-      rarity: b.rarity,
-      unlocked: b.unlockedSeed,
-    }));
-  } catch {
-    throw new InternalServerError("Failed to fetch badges");
-  }
-}
-
 export async function getNotifications(userId: string): Promise<NotificationDTO[]> {
   try {
     const rows = await prisma.appNotification.findMany({
@@ -400,21 +265,6 @@ export async function getNotifications(userId: string): Promise<NotificationDTO[
     }));
   } catch {
     throw new InternalServerError("Failed to fetch notifications");
-  }
-}
-
-export async function getOfflinePacks(): Promise<OfflinePackDTO[]> {
-  try {
-    const rows = await prisma.offlinePack.findMany({ orderBy: { id: "asc" } });
-    return rows.map((p) => ({
-      id: p.id,
-      name: p.name,
-      size: p.size,
-      downloaded: p.downloaded,
-      subject: p.subject,
-    }));
-  } catch {
-    throw new InternalServerError("Failed to fetch offline packs");
   }
 }
 

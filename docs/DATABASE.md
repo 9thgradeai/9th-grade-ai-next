@@ -361,14 +361,14 @@ npm run db:seed
 ```
 
 Seed sources:
-- `frontend/lib/data/index.ts` — subjects, topics, categories, archives, stats, news, progress, reports.
+- `frontend/lib/data/index.ts` — archive categories, flash news, question bank categories.
 - `frontend/lib/data/study.ts` — flashcards, mock tests, daily quizzes, badges, notifications, offline packs.
 - `frontend/lib/data/ai.ts` — flash news (preferred), recommendations.
 - `database/data/users.json` — user accounts (gitignored, optional).
 - `database/data/bcs_syllabus/*.md` — syllabus documents.
 - `database/data/ques/questions_database.txt` — raw flat question text for `scripts/seed-questions.ts`.
 - `database/data/ques/<Subject>/<Node>/…/<file>.txt` — folder-structured questions; the folder path IS the taxonomy (each segment matched by NFC-normalised name).
-- `database/data/taxonomy.json` — parsed taxonomy tree (from `database/data/Questions Architecture/architecture.txt`) driving subject/topic creation, round-robin flat-question distribution, and folder imports via `scripts/taxonomy.ts`.
+- `database/data/taxonomy.json` — parsed taxonomy tree driving subject/topic creation, round-robin flat-question distribution, and folder imports via `scripts/taxonomy.ts`.
 
 The recursive Topic tree, leaf `topicId`/`path` tagging on questions, and per-topic aggregated `questionCount` are (re)built by `scripts/seed-questions.ts`, invoked by `npm run db:seed-questions` and as part of `npm run db:seed`.
 

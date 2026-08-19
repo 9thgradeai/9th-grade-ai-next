@@ -51,7 +51,7 @@
 
 ## Authorization
 
-- Middleware (`backend/middleware.ts`) guards `/dashboard` and `/login`.
+- Middleware (`middleware.ts`) guards `/dashboard` and `/login`.
 - Protected API routes call `getUserIdFromRequest()` and return `401` if no valid session.
 
 ## External Services

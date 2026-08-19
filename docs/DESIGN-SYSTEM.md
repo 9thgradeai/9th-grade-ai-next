@@ -63,7 +63,7 @@
 - Interactive elements use semantic HTML (`button`, `a`).
 - Focus visible rings: `focus-visible:ring-2 focus-visible:ring-emerald-400/60` + global `:focus-visible` outline.
 - ARIA labels on icon-only buttons (e.g., notification bell).
-- Modals/overlays expose `role="dialog"`, `aria-modal="true"`, Escape-to-close, and Tab focus traps (NotificationCenter, DailyQuizWidget, AITutorModal, FlashNewsModal, VoiceAITutor).
+- Modals/overlays expose `role="dialog"`, `aria-modal="true"`, Escape-to-close, and Tab focus traps (NotificationCenter, DailyQuizWidget, FlashNewsModal, VoiceAITutor).
 - No emojis as structural icons — SVG icons from `lucide-react`.
 - Touch targets ≥44px on mobile; WCAG 2.2 pointer targets ≥24px on web.
 - `prefers-reduced-motion` respected globally; `scroll-padding-top` keeps anchored sections clear of the fixed header.

@@ -25,13 +25,12 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 ├── backend/               # Server-only code (Prisma, auth, services)
 │   ├── auth.ts            # JWT session management (jose)
 │   ├── db.ts              # PrismaClient singleton
-│   ├── middleware.ts      # Next.js middleware (route guards)
 │   └── services/          # Data-access layer
-│       ├── content.ts     # Read operations for subjects, questions, quizzes, etc.
+│       ├── content.ts     # Read operations for questions, quizzes, news, etc.
 │       └── user.ts        # User CRUD, progress, bookmarks, auth helpers
 ├── frontend/              # Client-side code (components, lib, contexts)
 │   ├── components/        # Reusable UI components
-│   │   ├── ui/            # Design-system primitives + Storybook stories
+│   │   ├── ui/            # Shared primitives (ErrorBoundary)
 │   │   └── dashboard/     # Dashboard tab components
 │   └── lib/               # Client utilities
 │       ├── auth-ctx/      # React context for auth state

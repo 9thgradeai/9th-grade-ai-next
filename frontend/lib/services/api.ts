@@ -1,6 +1,6 @@
 "use client";
 
-import type { Server, PaginatedResponse } from "@/lib/types";
+import type { Server } from "@/lib/types";
 
 // ── Constants ──────────────────────────────────────────────
 
@@ -136,14 +136,6 @@ async function request<T>(
 // ── Typed API methods ──────────────────────────────────────
 
 export const api = {
-  subjects: (): Promise<Server.SubjectDTO[]> =>
-    request<{ subjects: Server.SubjectDTO[] }>("/api/subjects").then((d) => d.subjects),
-
-  topics: (subject?: string): Promise<Server.TopicDTO[]> => {
-    const qs = subject ? `?subject=${encodeURIComponent(subject)}` : "";
-    return request<{ topics: Server.TopicDTO[] }>(`/api/topics${qs}`).then((d) => d.topics);
-  },
-
   questions: (params?: {
     subject?: string;
     topic?: string;
@@ -171,9 +163,6 @@ export const api = {
   questionBankCategories: (): Promise<Server.QuestionBankCategoryDTO[]> =>
     request<{ categories: Server.QuestionBankCategoryDTO[] }>("/api/question-bank/categories").then((d) => d.categories),
 
-  archives: (): Promise<Server.ExamArchiveDTO[]> =>
-    request<{ archives: Server.ExamArchiveDTO[] }>("/api/archive").then((d) => d.archives),
-
   flashcards: (subject?: string): Promise<Server.FlashcardDTO[]> => {
     const qs = subject ? `?subject=${encodeURIComponent(subject)}` : "";
     return request<{ flashcards: Server.FlashcardDTO[] }>(`/api/flashcards${qs}`).then((d) => d.flashcards);
@@ -185,25 +174,11 @@ export const api = {
   dailyQuiz: (): Promise<Server.DailyQuizDTO | null> =>
     request<{ quiz: Server.DailyQuizDTO | null }>("/api/daily-quiz").then((d) => d.quiz),
 
-  dailyQuizzes: async (): Promise<Server.DailyQuizDTO[]> => {
-    const d = await request<{ quiz: Server.DailyQuizDTO | null }>("/api/daily-quiz");
-    return d.quiz ? [d.quiz] : [];
-  },
-
-  mockTests: (): Promise<Server.MockTestDTO[]> =>
-    request<{ tests: Server.MockTestDTO[] }>("/api/mock-test").then((d) => d.tests),
-
-  flashNews: (): Promise<Server.FlashNewsDTO[]> =>
-    request<{ news: Server.FlashNewsDTO[] }>("/api/flash-news").then((d) => d.news),
-
   news: (): Promise<Server.FlashNewsDTO[]> =>
     request<{ news: Server.FlashNewsDTO[] }>("/api/flash-news").then((d) => d.news),
 
   recommendations: (): Promise<Server.RecommendationDTO[]> =>
     request<{ recommendations: Server.RecommendationDTO[] }>("/api/recommendations").then((d) => d.recommendations),
-
-  progress: (): Promise<Server.UserProgressDTO> =>
-    request<{ progress: Server.UserProgressDTO }>("/api/progress").then((d) => d.progress),
 
   notifications: (): Promise<Server.NotificationDTO[]> =>
     request<{ notifications: Server.NotificationDTO[] }>("/api/notifications").then((d) => d.notifications),
@@ -406,64 +381,4 @@ export const api = {
 
     return response.json();
   },
-
-  patchProgress: async (patch: Record<string, number>): Promise<Server.UserProgressDTO> => {
-    const response = await fetch("/api/progress", {
-      method: "PATCH",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-        "x-request-id": crypto.randomUUID(),
-      },
-      body: JSON.stringify(patch),
-      cache: "no-store",
-    });
-
-    if (!response.ok) {
-      const body = await response.json().catch(() => ({ error: response.statusText }));
-      throw new ApiError(
-        typeof body.error === "string" ? body.error : response.statusText,
-        body.code ?? `HTTP_${response.status}`,
-        response.status,
-      );
-    }
-
-    const data = await response.json();
-    return data.progress;
-  },
 };
-
-// ── Mutation helpers (cache-busting wrappers) ──────────────
-
-export function useMutation<TInput, TOutput>(fn: (input: TInput) => Promise<TOutput>) {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<ApiError | null>(null);
-  const [data, setData] = useState<TOutput | null>(null);
-
-  const mutate = async (input: TInput): Promise<TOutput> => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const result = await fn(input);
-      setData(result);
-      return result;
-    } catch (err) {
-      const apiError = err instanceof ApiError ? err : new ApiError("Mutation failed.", "MUTATION_ERROR", 500);
-      setError(apiError);
-      throw apiError;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const reset = () => {
-    setData(null);
-    setError(null);
-    setLoading(false);
-  };
-
-  return { mutate, loading, error, data, reset };
-}
-
-import { useState } from "react";

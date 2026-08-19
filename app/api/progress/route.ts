@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getUserProgress, patchUserProgress, getUserIdFromRequest } from "~backend/services/user";
+import { patchUserProgress, getUserIdFromRequest } from "~backend/services/user";
 import { AppError, toHttpResponse } from "~backend/errors";
 import { getRequestId, startTiming, applySecurityHeaders } from "../_middleware";
 
@@ -13,31 +13,6 @@ const PROGRESS_FIELDS = new Set([
   "examsAttempted",
   "rank",
 ]);
-
-export async function GET(request: Request) {
-  const requestId = getRequestId(request);
-  const getTime = startTiming();
-
-  try {
-    const userId = await getUserIdFromRequest(request);
-    if (!userId) {
-      throw new AppError(401, "Unauthorized", "AUTH_UNAUTHORIZED");
-    }
-
-    const progress = await getUserProgress(userId);
-    const res = NextResponse.json({ progress, page: 1, pageSize: 50, total: 1 });
-    res.headers.set("X-Request-Id", requestId);
-    res.headers.set("X-Response-Time", getTime() + "ms");
-    applySecurityHeaders(res);
-    return res;
-  } catch (err) {
-    const res = toHttpResponse(err);
-    res.headers.set("X-Request-Id", requestId);
-    res.headers.set("X-Response-Time", getTime() + "ms");
-    applySecurityHeaders(res);
-    return res;
-  }
-}
 
 export async function PATCH(request: Request) {
   const requestId = getRequestId(request);
