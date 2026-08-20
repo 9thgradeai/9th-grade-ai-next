@@ -243,7 +243,7 @@ export function Avatar({
       >
         <div
           className={`avatar-breathe relative ${
-            compact ? "h-20 w-20 sm:h-40 sm:w-40" : "h-40 w-40 sm:h-52 sm:w-52"
+            compact ? "h-24 w-24 md:h-40 md:w-40" : "h-40 w-40 sm:h-52 sm:w-52"
           }`}
         >
           <svg

@@ -155,16 +155,16 @@ export default function AuthExperience({
     return () => window.clearTimeout(t)
   }, [stage])
 
-  // Avatar column — sits centered pre-light (hidden), then slides to the LEFT
-  // once the lamp is turned on. On mobile it stays compact so the page never
-  // scrolls; the companion always leads the eye left-to-right.
+  // Avatar column — sits centered pre-light (hidden), then drops in once the
+  // lamp is turned on. Mobile stacks it above the content (vertical flow);
+  // desktop places it to the LEFT of the content (split layout).
   const avatarColumn = (
     <motion.div
       key="avatar"
       layout
-      initial={{ opacity: 0, x: -28 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -20 }}
+      initial={{ opacity: 0, y: -18 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -12 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
       className="relative flex shrink-0 flex-col items-center justify-center gap-2 sm:gap-2.5"
     >
@@ -174,13 +174,15 @@ export default function AuthExperience({
     </motion.div>
   )
 
-  // Content column — starts centered with the lamp, then opens on the RIGHT
-  // with a subtle slide as each step (choice / login / signup / success) mounts.
+  // Content column — starts centered with the lamp, then opens with a subtle
+  // slide as each step (choice / login / signup / success) mounts. It may
+  // scroll internally on small screens so the page itself never scrolls.
   const contentColumn = (
     <motion.div
       layout
-      className="flex min-h-0 w-full max-w-md flex-1 flex-col items-center justify-center"
+      className="flex min-h-0 w-full max-w-md flex-1 flex-col items-center overflow-y-auto"
     >
+      <div className="my-auto flex w-full flex-col items-center justify-center">
       {stage === "lamp" && (
         <div className="flex w-full flex-col items-center gap-3 sm:gap-4">
           <Lamp lit={lit} interactive={stage === "lamp"} onActivate={activate} />
@@ -289,6 +291,7 @@ export default function AuthExperience({
           </button>
         </motion.div>
       )}
+      </div>
     </motion.div>
   )
 
@@ -330,8 +333,8 @@ export default function AuthExperience({
             <span className="h-px w-6 bg-emerald-400/40" />
           </motion.div>
 
-          {/* Avatar + content row: centered pre-light, split left/right after */}
-          <div className="flex min-h-0 w-full max-w-4xl flex-1 items-center justify-center gap-3 sm:gap-8 lg:gap-10">
+          {/* Avatar + content: vertical on mobile, split left/right on md+ */}
+          <div className="flex min-h-0 w-full max-w-4xl flex-1 flex-col items-center justify-center gap-4 md:flex-row md:gap-8 lg:gap-10">
             <AnimatePresence>{lit && avatarColumn}</AnimatePresence>
             {contentColumn}
           </div>
@@ -339,7 +342,7 @@ export default function AuthExperience({
           {/* Wizard stage indicator */}
           <div
             aria-hidden="true"
-            className="flex items-center gap-2 pt-1"
+            className="hidden items-center gap-2 pt-1 sm:flex"
             style={{ opacity: lit ? 1 : 0 }}
           >
             {["lamp", "choice", "form", "success"].map((s, i) => {
