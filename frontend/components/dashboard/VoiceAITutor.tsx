@@ -16,9 +16,10 @@ import {
 } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Mic, MicOff, Send, X, Volume2, VolumeX, Sparkles, Loader2,
-  Plus, RefreshCw, GraduationCap, BrainCircuit, PanelLeft, Bot,
+  Mic, MicOff, Send, X, Volume2, VolumeX, Loader2,
+  Plus, RefreshCw, GraduationCap, BrainCircuit, PanelLeft,
 } from "lucide-react";
+import AiLogo from "@/components/ui/AiLogo";
 import { PRESET_PROMPTS } from "@/lib/data/ai";
 import {
   listConversations,
@@ -495,7 +496,7 @@ export default function VoiceAITutor() {
 
   return (
     <>
-      {/* Floating AI button */}
+      {/* Floating AI launcher — the assistant's logo doubles as the button */}
       <motion.button
         whileHover={{ scale: 1.08 }}
         whileTap={{ scale: 0.92 }}
@@ -503,10 +504,10 @@ export default function VoiceAITutor() {
           setShowModal(true);
           setError(null);
         }}
-        className="fixed bottom-20 right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500 text-zinc-950 shadow-neon-glow transition-colors hover:bg-emerald-400 sm:bottom-24 sm:right-6 sm:h-14 sm:w-14"
+        className="fixed bottom-20 right-4 z-40 rounded-2xl drop-shadow-[0_8px_24px_rgba(16,185,129,0.45)] transition-transform sm:bottom-24 sm:right-6"
         aria-label="Open AI Tutor and Assistant"
       >
-        <Sparkles className="h-6 w-6" />
+        <AiLogo className="h-12 w-12 sm:h-14 sm:w-14" />
       </motion.button>
 
       <AnimatePresence>
@@ -545,7 +546,7 @@ export default function VoiceAITutor() {
                   >
                     <PanelLeft className="h-5 w-5" />
                   </button>
-                  <Bot className="h-6 w-6 flex-shrink-0 text-emerald-500" aria-hidden="true" />
+                  <AiLogo className="h-7 w-7 flex-shrink-0" />
                   <span id="ai-workspace-title" className="truncate font-bold text-emerald-500">
                     9Th-Grade AI
                   </span>
@@ -722,7 +723,7 @@ export default function VoiceAITutor() {
                         {showThinkingRow && (
                           <div className="flex items-start gap-3">
                             <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-400 ring-1 ring-emerald-500/20">
-                              <Bot className="h-4 w-4" aria-hidden="true" />
+                              <AiLogo solid={false} className="h-4 w-4" />
                             </div>
                             <TypingIndicator />
                           </div>

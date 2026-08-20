@@ -3,16 +3,19 @@
 
 import { motion } from "framer-motion";
 import { TABS, type TabId } from "@/lib/data";
-import { Home, Calendar, Zap, Brain, Bot, BookOpen, TrendingUp, HardDrive, Settings } from "lucide-react";
+import { Home, Calendar, Zap, Brain, BookOpen, TrendingUp, HardDrive, Settings } from "lucide-react";
+import type { ComponentType } from "react";
 import { useAuth } from "@/lib/auth-ctx";
 import LogoutButton from "./LogoutButton";
+import AiLogo from "@/components/ui/AiLogo";
 
-const TAB_ICONS: Record<TabId, typeof Home> = {
+type IconProps = { className?: string; strokeWidth?: number };
+const TAB_ICONS: Record<TabId, ComponentType<IconProps>> = {
   home: Home,
   "study-planner": Calendar,
   practice: Zap,
   flashcards: Brain,
-  "ai-solver": Bot,
+  "ai-solver": AiLogo,
   "question-bank": BookOpen,
   progress: TrendingUp,
   offline: HardDrive,

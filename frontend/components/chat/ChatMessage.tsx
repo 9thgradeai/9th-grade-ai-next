@@ -6,6 +6,7 @@
 
 import { Check, Copy, ThumbsDown, ThumbsUp } from "lucide-react";
 import Markdown from "./Markdown";
+import AiLogo from "@/components/ui/AiLogo";
 
 export type SuggestedAction = {
   id: string;
@@ -68,8 +69,8 @@ export default function ChatMessage({
 
   return (
     <div className="flex items-start gap-3">
-      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-400 ring-1 ring-emerald-500/20">
-        <BotIcon />
+      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-500 ring-1 ring-emerald-500/20">
+        <AiLogo solid={false} className="h-4 w-4" />
       </div>
       <div className="min-w-0 flex-1">
         {message.error ? (
@@ -137,18 +138,5 @@ export default function ChatMessage({
         )}
       </div>
     </div>
-  );
-}
-
-function BotIcon() {
-  return (
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M12 8V4H8" />
-      <rect width="16" height="12" x="4" y="8" rx="2" />
-      <path d="M2 14h2" />
-      <path d="M20 14h2" />
-      <path d="M15 13v2" />
-      <path d="M9 13v2" />
-    </svg>
   );
 }

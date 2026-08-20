@@ -2,11 +2,14 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
+import type { ComponentType } from "react";
 import { TABS, type TabId } from "@/lib/data";
-import { Home, Calendar, Zap, Brain, TrendingUp, MoreHorizontal, X, Bot, BookOpen, HardDrive, Settings } from "lucide-react";
+import { Home, Calendar, Zap, Brain, TrendingUp, MoreHorizontal, X, BookOpen, HardDrive, Settings } from "lucide-react";
 import LogoutButton from "./LogoutButton";
+import AiLogo from "@/components/ui/AiLogo";
 
-const BOTTOM_TABS: { id: TabId; icon: typeof Home; short: string }[] = [
+type IconProps = { className?: string; strokeWidth?: number };
+const BOTTOM_TABS: { id: TabId; icon: ComponentType<IconProps>; short: string }[] = [
   { id: "home", icon: Home, short: "HOM" },
   { id: "study-planner", icon: Calendar, short: "PLN" },
   { id: "practice", icon: Zap, short: "PRC" },
@@ -14,12 +17,12 @@ const BOTTOM_TABS: { id: TabId; icon: typeof Home; short: string }[] = [
   { id: "progress", icon: TrendingUp, short: "PRG" },
 ];
 
-const TAB_ICONS: Record<TabId, typeof Home> = {
+const TAB_ICONS: Record<TabId, ComponentType<IconProps>> = {
   home: Home,
   "study-planner": Calendar,
   practice: Zap,
   flashcards: Brain,
-  "ai-solver": Bot,
+  "ai-solver": AiLogo,
   "question-bank": BookOpen,
   progress: TrendingUp,
   offline: HardDrive,

@@ -7,6 +7,7 @@ import { SOLVER_EXAMPLES } from "@/lib/data/study";
 import { solve } from "@/lib/services/ai";
 import { launchAI } from "@/lib/ai-launcher";
 import Markdown from "@/components/chat/Markdown";
+import AiLogo from "@/components/ui/AiLogo";
 
 export default function AISolverTab() {
   const [inputType, setInputType] = useState<"text" | "image">("text");
@@ -95,7 +96,7 @@ export default function AISolverTab() {
         </div>
 
         <div className="flex items-center gap-2 mb-4">
-          <Sparkles className="w-5 h-5 text-emerald-400" />
+          <AiLogo className="w-5 h-5" />
           <h2 className="text-lg font-bold text-white">AI Question Solver</h2>
           <span className="text-xs text-zinc-500 font-mono">Text & Image Input</span>
         </div>
