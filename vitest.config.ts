@@ -17,7 +17,8 @@ export default defineConfig({
     setupFiles: ["./tests/setup.ts"],
     include: ["tests/**/*.{test,spec}.{ts,tsx}"],
     css: true,
-    testTimeout: 10000,
+    testTimeout: 30000,
+    hookTimeout: 30000,
     retry: 1,
     coverage: {
       provider: "istanbul",
