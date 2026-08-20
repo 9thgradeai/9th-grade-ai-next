@@ -16,7 +16,7 @@ import {
 } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Mic, MicOff, Send, X, Volume2, VolumeX, Loader2,
+  Mic, MicOff, Send, X, Loader2,
   Plus, RefreshCw, GraduationCap, BrainCircuit, PanelLeft,
 } from "lucide-react";
 import AiLogo from "@/components/ui/AiLogo";
@@ -42,7 +42,7 @@ import ConversationList from "@/components/chat/ConversationList";
 
 type Mode = "tutor" | "assistant";
 
-type Status = "idle" | "generating" | "listening" | "speaking" | "error";
+type Status = "idle" | "generating" | "listening" | "error";
 
 type UIMessage = {
   id: string;
@@ -80,7 +80,6 @@ const STATUS_LABEL: Record<Status, string> = {
   idle: "READY",
   generating: "GENERATING",
   listening: "LISTENING",
-  speaking: "SPEAKING",
   error: "ERROR",
 };
 
@@ -109,7 +108,6 @@ export default function VoiceAITutor() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const [isListening, setIsListening] = useState(false);
-  const [isSpeaking, setIsSpeaking] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [feedbackSent, setFeedbackSent] = useState<Set<string>>(new Set());
 
@@ -226,32 +224,6 @@ export default function VoiceAITutor() {
     }
   }, [activeConversationId, refreshConversations, startNewConversation]);
 
-  const speak = useCallback((text: string) => {
-    if (!("speechSynthesis" in window) || !text) return;
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "bn-BD";
-    utterance.rate = 0.9;
-    utterance.onstart = () => {
-      setIsSpeaking(true);
-      setStatus("speaking");
-    };
-    utterance.onend = () => {
-      setIsSpeaking(false);
-      setStatus("idle");
-    };
-    utterance.onerror = () => {
-      setIsSpeaking(false);
-      setStatus("idle");
-    };
-    speechSynthesis.speak(utterance);
-  }, []);
-
-  const stopSpeaking = useCallback(() => {
-    if ("speechSynthesis" in window) speechSynthesis.cancel();
-    setIsSpeaking(false);
-    setStatus("idle");
-  }, []);
-
   const handleError = useCallback((e: unknown) => {
     if (e instanceof AIError) {
       if (e.status === 401) {
@@ -301,7 +273,6 @@ export default function VoiceAITutor() {
           { id: `a-${Date.now()}`, role: "ai", text: res.reply, actions: res.suggestedActions },
         ]);
         setPendingContext({});
-        speak(res.reply);
         void refreshConversations();
         void syncFromServer(res.conversationId).catch(() => {});
         setStatus("idle");
@@ -342,7 +313,6 @@ export default function VoiceAITutor() {
         void syncFromServer(meta.conversationId);
       }
       setPendingContext({});
-      speak(assistantText);
     } catch (e) {
       abortRef.current = null;
       if (e instanceof DOMException && e.name === "AbortError") {
@@ -358,7 +328,7 @@ export default function VoiceAITutor() {
       );
       handleError(e);
     }
-  }, [status, user, speak, handleError, refreshConversations, syncFromServer, mode, activeConversationId, pendingContext]);
+  }, [status, user, handleError, refreshConversations, syncFromServer, mode, activeConversationId, pendingContext]);
 
   const retryLast = useCallback(() => {
     const lastUser = [...messages].reverse().find((m) => m.role === "user");
@@ -448,7 +418,6 @@ export default function VoiceAITutor() {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setShowModal(false);
-        stopSpeaking();
         return;
       }
       if (e.key !== "Tab") return;
@@ -471,13 +440,12 @@ export default function VoiceAITutor() {
       dialog.removeEventListener("keydown", onKeyDown);
       prevFocused?.focus();
     };
-  }, [showModal, stopSpeaking]);
+  }, [showModal]);
 
   const closeModal = useCallback(() => {
     setShowModal(false);
     stopGeneration();
-    stopSpeaking();
-  }, [stopGeneration, stopSpeaking]);
+  }, [stopGeneration]);
 
   const lastMessage = messages[messages.length - 1];
   const showThinkingRow =
@@ -584,31 +552,17 @@ export default function VoiceAITutor() {
                         ? "bg-red-500/10 text-red-400 animate-pulse"
                         : status === "generating"
                           ? "bg-cyan-500/10 text-cyan-400 animate-pulse"
-                          : status === "speaking"
-                            ? "bg-emerald-500/10 text-emerald-400 animate-pulse"
-                            : status === "error"
-                              ? "bg-red-500/10 text-red-400"
-                              : "bg-emerald-500/10 text-emerald-400"
+                          : status === "error"
+                            ? "bg-red-500/10 text-red-400"
+                            : "bg-emerald-500/10 text-emerald-400"
                     }`}
                   >
                     {status === "listening" ? <Mic className="h-3 w-3" /> : null}
-                    {status === "speaking" ? <Volume2 className="h-3 w-3" /> : null}
                     {STATUS_LABEL[status]}
                   </span>
                 </div>
 
                 <div className="flex flex-shrink-0 items-center gap-1">
-                  {isSpeaking && (
-                    <button
-                      type="button"
-                      onClick={stopSpeaking}
-                      className="p-2 text-red-400 transition-colors hover:text-red-300"
-                      title="Stop speaking"
-                      aria-label="Stop speaking"
-                    >
-                      <VolumeX className="h-5 w-5" />
-                    </button>
-                  )}
                   {activeConversationId && (
                     <button
                       type="button"

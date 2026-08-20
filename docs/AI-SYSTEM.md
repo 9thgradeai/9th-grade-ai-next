@@ -104,3 +104,9 @@ Every AI call records an `AIUsage` row (tokens, latency, success, estimated cost
   centered panel with an always-visible sidebar). Message bubbles live in
   `frontend/components/chat/ChatMessage.tsx`; the solver applies the same renderer to its solution
   output (`frontend/components/dashboard/AISolverTab.tsx`).
+- **Text-to-speech is disabled**: the workspace accepts voice input (STT) but never speaks responses
+  aloud (no auto-TTS after generation).
+- **Conversation titles**: when a new tutor/assistant conversation completes its first turn,
+  `backend/ai/application/title.ts` summarizes the WHOLE chat transcript into a short title via the
+  model (`backend/ai/prompts/title.ts`), falling back to the first learner message when no model or
+  no output is available. Solver conversations keep their first-question snippet title.

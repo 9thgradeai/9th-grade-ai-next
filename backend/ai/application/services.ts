@@ -18,6 +18,7 @@ import { bumpAIQuestions, recordUsage } from "../usage/usage";
 import { searchForIntent } from "../tools/search";
 import { validateSolverOutput, sanitizeReply, parseJsonObject } from "../validation/outputs";
 import { validateChatRequest, validateSolverRequest } from "../schemas";
+import { DEFAULT_TITLE, summarizeConversationTitle } from "./title";
 import type {
   AIMessageInput,
   AssistantResult,
@@ -248,6 +249,9 @@ export async function createTutorTurn(opts: {
       if (success) await bumpAIQuestions(userId);
     } catch (err) {
       console.error("[ai:tutor] persistence failed", err);
+    }
+    if (conversation.title === DEFAULT_TITLE) {
+      void summarizeConversationTitle(userId, conversation.id);
     }
     await finalizeUsage({
       userId,
@@ -489,6 +493,9 @@ export async function assistantTurn(opts: {
     errorCode,
   });
   if (success) await bumpAIQuestions(userId);
+  if (conversation.title === DEFAULT_TITLE) {
+    void summarizeConversationTitle(userId, conversation.id);
+  }
 
   return {
     result: { reply, suggestedActions: actions, source: name },
