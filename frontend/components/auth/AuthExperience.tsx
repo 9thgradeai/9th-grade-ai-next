@@ -1,146 +1,159 @@
-"use client";
+"use client"
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { AnimatePresence, motion, useAnimationControls, useReducedMotion } from "framer-motion";
-import { ArrowRight, Check, LockKeyhole, Sun } from "lucide-react";
-import { useAuth } from "@/lib/auth-ctx";
-import { AuthEnvironment } from "./AuthEnvironment";
-import { Lamp } from "./Lamp";
-import { Avatar } from "./Avatar";
-import { AuthMessage } from "./AuthMessage";
-import { AuthChoice } from "./AuthChoice";
-import { Celebration } from "./Celebration";
-import { LoginForm, type LoginValues } from "./LoginForm";
-import { SignupForm, type SignupValues } from "./SignupForm";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { AnimatePresence, motion, useAnimationControls, useReducedMotion } from "framer-motion"
+import { ArrowRight, Check, ShieldCheck, Sun } from "lucide-react"
+import { useAuth } from "@/lib/auth-ctx"
+import { AuthEnvironment } from "./AuthEnvironment"
+import { Lamp } from "./Lamp"
+import { Avatar } from "./Avatar"
+import { AuthMessage } from "./AuthMessage"
+import { AuthChoice } from "./AuthChoice"
+import { Celebration } from "./Celebration"
+import { LoginForm, type LoginValues } from "./LoginForm"
+import { SignupForm, type SignupValues } from "./SignupForm"
 import {
   getAvatarMessage,
   getAvatarState,
   type AuthStage,
   type AuthSuccessKind,
   type FocusField,
-} from "./auth-state";
+} from "./auth-state"
 
 export default function AuthExperience({
   initialStage = null,
 }: {
-  initialStage?: "login" | "signup" | null;
+  initialStage?: "login" | "signup" | null
 }) {
-  const router = useRouter();
-  const { login, register } = useAuth();
-  const reduced = useReducedMotion() ?? false;
-  const shake = useAnimationControls();
+  const router = useRouter()
+  const { login, register } = useAuth()
+  const reduced = useReducedMotion() ?? false
+  const shake = useAnimationControls()
 
-  const [stage, setStage] = useState<AuthStage>("lamp");
-  const [lit, setLit] = useState(false);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [focusField, setFocusField] = useState<FocusField>(null);
-  const [successKind, setSuccessKind] = useState<AuthSuccessKind>("login");
+  const [stage, setStage] = useState<AuthStage>("lamp")
+  const [lit, setLit] = useState(false)
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [focusField, setFocusField] = useState<FocusField>(null)
+  const [successKind, setSuccessKind] = useState<AuthSuccessKind>("login")
+  const [strength, setStrength] = useState(-1)
+  const [tick, setTick] = useState(0)
 
-  const pendingStage = useRef<AuthStage | null>(initialStage);
-  const redirectTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingStage = useRef<AuthStage | null>(initialStage)
+  const redirectTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(
     () => () => {
-      if (redirectTimer.current) clearTimeout(redirectTimer.current);
+      if (redirectTimer.current) clearTimeout(redirectTimer.current)
     },
-    [],
-  );
+    []
+  )
 
   const avatar = useMemo(
-    () => getAvatarState({ stage, lit, busy, error, focusField, successKind }),
-    [stage, lit, busy, error, focusField, successKind],
-  );
-  const message = getAvatarMessage(avatar, stage);
+    () => getAvatarState({ stage, lit, busy, error, focusField, successKind, strength }),
+    [stage, lit, busy, error, focusField, successKind, strength]
+  )
+  const message = getAvatarMessage(avatar, stage)
 
   const activate = useCallback(() => {
-    if (lit) return;
-    setLit(true);
-    const wait = reduced ? 140 : 720;
-    window.setTimeout(() => setStage(pendingStage.current ?? "choice"), wait);
-  }, [lit, reduced]);
+    if (lit) return
+    setLit(true)
+    const wait = reduced ? 140 : 720
+    window.setTimeout(() => setStage(pendingStage.current ?? "choice"), wait)
+  }, [lit, reduced])
 
   const handleFocusChange = useCallback((field: FocusField) => {
-    setFocusField(field);
-    setError(null);
-  }, []);
+    setFocusField(field)
+    setError(null)
+  }, [])
 
-  const handleClearError = useCallback(() => setError(null), []);
+  const handleClearError = useCallback(() => setError(null), [])
 
   const choose = useCallback((kind: "login" | "signup") => {
-    setError(null);
-    setFocusField(null);
-    setStage(kind);
-  }, []);
+    setError(null)
+    setFocusField(null)
+    setStrength(-1)
+    setStage(kind)
+  }, [])
 
   const goBack = useCallback(() => {
-    setError(null);
-    setFocusField(null);
-    setStage("choice");
-  }, []);
+    setError(null)
+    setFocusField(null)
+    setStrength(-1)
+    setStage("choice")
+  }, [])
 
   const scheduleRedirect = useCallback(() => {
-    if (redirectTimer.current) clearTimeout(redirectTimer.current);
-    const wait = reduced ? 320 : 1100;
-    redirectTimer.current = setTimeout(() => router.push("/dashboard"), wait);
-  }, [router, reduced]);
+    if (redirectTimer.current) clearTimeout(redirectTimer.current)
+    const wait = reduced ? 320 : 1100
+    redirectTimer.current = setTimeout(() => router.push("/dashboard"), wait)
+  }, [router, reduced])
 
   const handleLogin = useCallback(
     async (values: LoginValues) => {
-      setError(null);
-      setBusy(true);
+      setError(null)
+      setBusy(true)
       try {
-        await login(values.email, values.password, { redirect: false });
-        setSuccessKind("login");
-        setStage("success");
-        scheduleRedirect();
+        await login(values.email, values.password, { redirect: false })
+        setSuccessKind("login")
+        setStage("success")
+        scheduleRedirect()
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+        setError(err instanceof Error ? err.message : "Something went wrong. Please try again.")
         if (!reduced) {
-          void shake.start({ x: [0, -8, 8, -6, 6, 0], transition: { duration: 0.45, ease: "easeInOut" } });
+          void shake.start({
+            x: [0, -8, 8, -6, 6, 0],
+            transition: { duration: 0.45, ease: "easeInOut" },
+          })
         }
       } finally {
-        setBusy(false);
+        setBusy(false)
       }
     },
-    [login, scheduleRedirect, reduced, shake],
-  );
+    [login, scheduleRedirect, reduced, shake]
+  )
 
   const handleSignup = useCallback(
     async (values: SignupValues) => {
-      setError(null);
-      setBusy(true);
+      setError(null)
+      setBusy(true)
       try {
-        await register(values.name, values.email, values.password, { redirect: false });
-        setSuccessKind("signup");
-        setStage("success");
-        scheduleRedirect();
+        await register(values.name, values.email, values.password, { redirect: false })
+        setSuccessKind("signup")
+        setStage("success")
+        scheduleRedirect()
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+        setError(err instanceof Error ? err.message : "Something went wrong. Please try again.")
         if (!reduced) {
-          void shake.start({ x: [0, -8, 8, -6, 6, 0], transition: { duration: 0.45, ease: "easeInOut" } });
+          void shake.start({
+            x: [0, -8, 8, -6, 6, 0],
+            transition: { duration: 0.45, ease: "easeInOut" },
+          })
         }
       } finally {
-        setBusy(false);
+        setBusy(false)
       }
     },
-    [register, scheduleRedirect, reduced, shake],
-  );
+    [register, scheduleRedirect, reduced, shake]
+  )
 
   const continueNow = useCallback(() => {
-    if (redirectTimer.current) clearTimeout(redirectTimer.current);
-    router.push("/dashboard");
-  }, [router]);
+    if (redirectTimer.current) clearTimeout(redirectTimer.current)
+    router.push("/dashboard")
+  }, [router])
 
   // Move focus into the first field once a form appears (wizard-style).
   useEffect(() => {
-    if (stage !== "login" && stage !== "signup") return;
-    const id = stage === "login" ? "login-email" : "signup-name";
-    const t = window.setTimeout(() => document.getElementById(id)?.focus({ preventScroll: true }), 260);
-    return () => window.clearTimeout(t);
-  }, [stage]);
+    if (stage !== "login" && stage !== "signup") return
+    const id = stage === "login" ? "login-email" : "signup-name"
+    const t = window.setTimeout(
+      () => document.getElementById(id)?.focus({ preventScroll: true }),
+      260
+    )
+    return () => window.clearTimeout(t)
+  }, [stage])
 
   return (
     <AuthEnvironment lit={lit}>
@@ -166,7 +179,20 @@ export default function AuthExperience({
           </Link>
         </header>
 
-        <main className="flex w-full max-w-md flex-1 flex-col items-center gap-5 self-center px-6 pb-14 pt-10 sm:pt-14">
+        <main className="flex w-full max-w-md flex-1 flex-col items-center gap-5 self-center px-6 pb-14 pt-8 sm:pt-12">
+          {/* Futuristic eyebrow label */}
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: lit ? 1 : 0, y: lit ? 0 : -8 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            aria-hidden="true"
+            className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.28em] text-emerald-400/80"
+          >
+            <span className="h-px w-6 bg-emerald-400/40" />
+            Secure access portal
+            <span className="h-px w-6 bg-emerald-400/40" />
+          </motion.div>
+
           <AnimatePresence>
             {lit && (
               <motion.div
@@ -177,7 +203,7 @@ export default function AuthExperience({
                 transition={{ duration: 0.5, ease: "easeOut" }}
                 className="relative flex flex-col items-center gap-2.5"
               >
-                <Avatar mood={avatar} focusField={focusField} />
+                <Avatar mood={avatar} focusField={focusField} tick={tick} />
                 <Celebration active={stage === "success"} />
                 <AuthMessage message={message} />
               </motion.div>
@@ -216,7 +242,9 @@ export default function AuthExperience({
                   <Sun className="h-4 w-4" aria-hidden="true" />
                   Turn on the light
                 </button>
-                <p className="text-center text-xs text-[var(--text-muted)]">A quiet place to begin.</p>
+                <p className="text-center text-xs text-[var(--text-muted)]">
+                  A quiet place to begin.
+                </p>
               </motion.div>
             )}
 
@@ -239,6 +267,7 @@ export default function AuthExperience({
                     onFocusChange={handleFocusChange}
                     onClearError={handleClearError}
                     onBack={goBack}
+                    onTyping={() => setTick((t) => t + 1)}
                   />
                 </motion.div>
               </motion.div>
@@ -261,6 +290,8 @@ export default function AuthExperience({
                     onFocusChange={handleFocusChange}
                     onClearError={handleClearError}
                     onBack={goBack}
+                    onTyping={() => setTick((t) => t + 1)}
+                    onStrengthChange={setStrength}
                   />
                 </motion.div>
               </motion.div>
@@ -305,12 +336,51 @@ export default function AuthExperience({
             )}
           </AnimatePresence>
 
+          {/* Wizard stage indicator */}
+          <div
+            aria-hidden="true"
+            className="flex items-center gap-2 pt-1"
+            style={{ opacity: lit ? 1 : 0 }}
+          >
+            {["lamp", "choice", "form", "success"].map((s, i) => {
+              const active =
+                (s === "lamp" && stage === "lamp") ||
+                (s === "choice" &&
+                  (stage === "choice" || stage === "login" || stage === "signup")) ||
+                (s === "form" && (stage === "login" || stage === "signup")) ||
+                (s === "success" && stage === "success")
+              const done = i < indexOfStage(stage)
+              return (
+                <div key={s} className="flex items-center gap-2">
+                  {i > 0 && (
+                    <div
+                      className={`h-px w-5 transition-colors duration-300 ${done ? "bg-emerald-400/70" : "bg-[var(--border-muted)]"}`}
+                    />
+                  )}
+                  <motion.div
+                    initial={false}
+                    animate={{ scale: active ? 1.4 : 1, opacity: done || active ? 1 : 0.35 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                    className={`h-1.5 w-1.5 rounded-full ${active || done ? "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" : "bg-[var(--text-muted)]"}`}
+                  />
+                </div>
+              )
+            })}
+          </div>
+
           <p className="mt-auto flex items-center gap-1.5 pt-6 text-xs text-[var(--text-muted)]">
-            <LockKeyhole className="h-3.5 w-3.5" aria-hidden="true" />
+            <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
             Secure session · Passwords are never stored in plain text
           </p>
         </main>
       </div>
     </AuthEnvironment>
-  );
+  )
+}
+
+function indexOfStage(stage: AuthStage): number {
+  if (stage === "lamp") return 0
+  if (stage === "choice") return 1
+  if (stage === "login" || stage === "signup") return 2
+  return 3
 }

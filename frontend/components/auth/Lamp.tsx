@@ -1,8 +1,16 @@
-"use client";
+"use client"
 
-import { motion } from "framer-motion";
+import { motion } from "framer-motion"
 
-export function Lamp({ lit, interactive, onActivate }: { lit: boolean; interactive: boolean; onActivate: () => void }) {
+export function Lamp({
+  lit,
+  interactive,
+  onActivate,
+}: {
+  lit: boolean
+  interactive: boolean
+  onActivate: () => void
+}) {
   const body = (
     <svg viewBox="0 0 220 300" className="h-40 w-30 sm:h-48 sm:w-36" role="img" aria-hidden="true">
       <defs>
@@ -45,7 +53,13 @@ export function Lamp({ lit, interactive, onActivate }: { lit: boolean; interacti
       )}
       {/* Hover pre-light — warms up as you approach */}
       {!lit && (
-        <circle cx="110" cy="176" r="80" fill="url(#lamp-glow)" className="opacity-0 transition-opacity duration-300 group-hover:opacity-90" />
+        <circle
+          cx="110"
+          cy="176"
+          r="80"
+          fill="url(#lamp-glow)"
+          className="opacity-0 transition-opacity duration-300 group-hover:opacity-90"
+        />
       )}
 
       {/* Warm-up flicker then steady glow */}
@@ -90,10 +104,10 @@ export function Lamp({ lit, interactive, onActivate }: { lit: boolean; interacti
       />
       {lit && <circle cx="110" cy="176" r="13" fill="#ffedb3" className="lamp-breathe" />}
     </svg>
-  );
+  )
 
   if (!interactive) {
-    return <div aria-hidden="true">{body}</div>;
+    return <div aria-hidden="true">{body}</div>
   }
 
   return (
@@ -110,11 +124,13 @@ export function Lamp({ lit, interactive, onActivate }: { lit: boolean; interacti
       {/* Gentle sway once the room is lit */}
       <motion.div
         animate={lit ? { rotate: [0, 1.5, -1.5, 0] } : { rotate: 0 }}
-        transition={lit ? { duration: 4.5, repeat: Infinity, ease: "easeInOut" } : { duration: 0.3 }}
+        transition={
+          lit ? { duration: 4.5, repeat: Infinity, ease: "easeInOut" } : { duration: 0.3 }
+        }
       >
         {body}
       </motion.div>
       <span className="sr-only">Turn on the light</span>
     </motion.button>
-  );
+  )
 }

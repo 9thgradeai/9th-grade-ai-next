@@ -1,9 +1,9 @@
-"use client";
+"use client"
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion"
 
 export function AuthMessage({ message }: { message: string }) {
-  if (!message) return null;
+  if (!message) return null
 
   return (
     <p
@@ -23,5 +23,5 @@ export function AuthMessage({ message }: { message: string }) {
         </motion.span>
       </AnimatePresence>
     </p>
-  );
+  )
 }
