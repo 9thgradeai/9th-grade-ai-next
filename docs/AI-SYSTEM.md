@@ -88,3 +88,19 @@ Every AI call records an `AIUsage` row (tokens, latency, success, estimated cost
 - Unit tests: `tests/unit/backend/ai.test.ts` (schemas, output validation, intent, prompts, rate limits).
 - Component tests: `tests/unit/frontend/ai-workspace.test.tsx` (AI workspace UI).
 - Web-search module tests: `tests/unit/backend/web-search.test.ts`.
+
+## Response Rendering & Formatting
+
+- **Client Markdown renderer**: AI replies are rendered by the dependency-free renderer in
+  `frontend/components/chat/Markdown.tsx` — bold/italic, inline code, fenced code blocks (with a copy
+  button), headings, bullet/numbered lists, blockquotes, links and dividers. It also strips the
+  decorative asterisk noise models occasionally emit (stray `**`, `****` separators, empty emphasis)
+  so responses never show raw `*`/`**` characters.
+- **Formatting guidance in prompts**: `tutor.ts` and `assistant.ts` include a `FORMATTING` block that
+  tells the model to use minimal Markdown (`-` bullets, numbered steps, brief headings) and to avoid
+  asterisk-heavy or decoration-only lines, which break on small screens.
+- **Chat UI**: `frontend/components/dashboard/VoiceAITutor.tsx` is a responsive,
+  ChatGPT/Gemini-inspired shell (mobile bottom sheet + slide-over conversation drawer; desktop
+  centered panel with an always-visible sidebar). Message bubbles live in
+  `frontend/components/chat/ChatMessage.tsx`; the solver applies the same renderer to its solution
+  output (`frontend/components/dashboard/AISolverTab.tsx`).

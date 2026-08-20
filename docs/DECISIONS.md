@@ -114,3 +114,18 @@
 - **Decision**: `@/*` → `frontend/*`, `~backend/*` → `backend/*`, `~tests/*` → `tests/*`.
 - **Rationale**: Clear ownership of code by layer; avoids deep relative imports.
 - **Consequences**: Requires `tsconfig.json` paths configuration; some tools may not resolve aliases automatically.
+
+## ADR-008: Dependency-Free Markdown Renderer for AI Responses
+
+- **Date**: 2026-08
+- **Status**: Accepted
+- **Context**: AI chat replies contained raw Markdown asterisks (`**`, `****`) that rendered as broken
+  text; a renderer was needed without adding a runtime dependency.
+- **Decision**: A small custom renderer in `frontend/components/chat/Markdown.tsx` handles the
+  Markdown subset models actually emit (bold, italic, code, fenced blocks, headings, lists,
+  blockquotes, links, dividers) and strips decorative asterisk noise. `react-markdown`/`remark-gfm`
+  were considered and rejected.
+- **Rationale**: Keeps the client bundle lean (no ~40 kB dependency), full control over noise
+  cleanup and theming, and avoids depending on an ecosystem package for a small, fixed feature set.
+- **Consequences**: If richer Markdown (tables, task lists, footnotes) is ever required, migrate to
+  `react-markdown` + `remark-gfm` behind the same `Markdown` component API.

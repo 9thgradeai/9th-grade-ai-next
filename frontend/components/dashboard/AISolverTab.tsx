@@ -6,6 +6,7 @@ import { Upload, Camera, Sparkles, X, Copy, Check, Loader2, Lightbulb, MessageSq
 import { SOLVER_EXAMPLES } from "@/lib/data/study";
 import { solve } from "@/lib/services/ai";
 import { launchAI } from "@/lib/ai-launcher";
+import Markdown from "@/components/chat/Markdown";
 
 export default function AISolverTab() {
   const [inputType, setInputType] = useState<"text" | "image">("text");
@@ -283,7 +284,7 @@ export default function AISolverTab() {
 
             {/* Final Answer */}
             <div className="p-4 bg-subtle border border-emerald-500/20 rounded-terminal-rounded">
-              <pre className="text-sm text-emerald-300 font-mono whitespace-pre-wrap">{solution}</pre>
+              <Markdown text={solution} />
             </div>
 
             {/* Concept explanation + tutor handoff */}

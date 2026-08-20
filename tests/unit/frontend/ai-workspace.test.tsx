@@ -18,8 +18,27 @@ const { MockAIError } = vi.hoisted(() => {
 });
 
 vi.mock("@/lib/services/ai", () => ({
-  listConversations: vi.fn().mockResolvedValue([]),
-  getConversation: vi.fn().mockResolvedValue({ messages: [] }),
+  listConversations: vi.fn().mockResolvedValue([
+    {
+      id: "c1",
+      kind: "TUTOR",
+      title: "গতি সূত্র",
+      subjectId: null,
+      topicId: null,
+      topicPath: "",
+      messageCount: 2,
+      createdAt: "2026-01-01T00:00:00Z",
+      updatedAt: "2026-01-01T00:00:00Z",
+    },
+  ]),
+  getConversation: vi.fn().mockImplementation((id: string) =>
+    Promise.resolve({
+      messages: [
+        { id: "m2", conversationId: id, role: "USER", status: "COMPLETE", content: "সূত্রগুলো ব্যাখ্যা করো", intent: null, provider: null, model: null, errorCode: null, createdAt: "2026-01-01T00:00:00Z" },
+        { id: "m1", conversationId: id, role: "ASSISTANT", status: "COMPLETE", content: "**নিউটনের দ্বিতীয় সূত্র**: F = ma", intent: null, provider: null, model: null, errorCode: null, createdAt: "2026-01-01T00:00:00Z" },
+      ],
+    }),
+  ),
   tutorTurn: vi.fn().mockResolvedValue({ conversationId: "c1" }),
   askAssistant: vi.fn().mockResolvedValue({ conversationId: "c1", reply: "ok" }),
   deleteConversation: vi.fn().mockResolvedValue(undefined),
@@ -69,5 +88,30 @@ describe("VoiceAITutor (AI workspace)", () => {
     expect(screen.getByRole("dialog")).toBeInTheDocument();
     fireEvent.keyDown(screen.getByRole("dialog"), { key: "Escape" });
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+  });
+
+  it("renders loaded conversation responses as Markdown without raw asterisks", async () => {
+    render(<VoiceAITutor />);
+    fireEvent.click(screen.getByLabelText("Open AI Tutor and Assistant"));
+    await waitFor(() => {
+      expect(screen.getByText("গতি সূত্র")).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByText("গতি সূত্র"));
+    await waitFor(() => {
+      expect(screen.getByText("নিউটনের দ্বিতীয় সূত্র").tagName).toBe("STRONG");
+    });
+    expect(screen.getByText(/F = ma/)).toBeTruthy();
+    expect(screen.queryByText("**নিউটনের দ্বিতীয় সূত্র**")).not.toBeInTheDocument();
+  });
+
+  it("sends a message through the auto-growing textarea", async () => {
+    render(<VoiceAITutor />);
+    fireEvent.click(screen.getByLabelText("Open AI Tutor and Assistant"));
+    const textarea = screen.getByLabelText("Type your question or use voice input");
+    fireEvent.change(textarea, { target: { value: "পরীক্ষা বার্তা" } });
+    fireEvent.keyDown(textarea, { key: "Enter" });
+    await waitFor(() => {
+      expect(screen.getByText("পরীক্ষা বার্তা")).toBeInTheDocument();
+    });
   });
 });

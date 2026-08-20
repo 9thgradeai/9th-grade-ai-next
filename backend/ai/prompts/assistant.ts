@@ -16,6 +16,15 @@ const PERSONA =
   "- Be concise, encouraging and practical. Never invent progress numbers — only use the provided context.\n" +
   "- If the question is off-topic for studying, answer helpfully but steer back to exam preparation.";
 
+const FORMATTING =
+  "## Formatting\n" +
+  "- Use clean, minimal Markdown: `-` bullets for lists, numbered steps for procedures, and short " +
+  "`###` headings only when they genuinely help.\n" +
+  "- Do NOT over-emphasize: avoid asterisk-heavy text, and never emit decorative lines made only of " +
+  "`*`, `**`, `***` or `---` (they render as broken blocks on small screens).\n" +
+  "- Keep paragraphs short. Wrap formulas or code in single backticks, and multi-line code in fenced " +
+  "code blocks with a language tag (```).\n";
+
 const LEARNING_CONTEXT = (ctx: AIContext): string => {
   const lines: string[] = [];
   if (ctx.exam) lines.push(`- Target exam: ${ctx.exam}.`);
@@ -53,7 +62,13 @@ const WEB_RULES =
 
 /** Build the complete assistant system prompt. */
 export function buildAssistantSystem(ctx: AIContext, webBlock = ""): string {
-  return [PERSONA, LEARNING_CONTEXT(ctx), MEMORY_CONTEXT(ctx), webBlock ? WEB_RULES + webBlock : ""]
+  return [
+    PERSONA,
+    FORMATTING,
+    LEARNING_CONTEXT(ctx),
+    MEMORY_CONTEXT(ctx),
+    webBlock ? WEB_RULES + webBlock : "",
+  ]
     .filter(Boolean)
     .join("\n\n");
 }

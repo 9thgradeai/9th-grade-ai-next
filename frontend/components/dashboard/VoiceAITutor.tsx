@@ -3,13 +3,21 @@
 // AI Workspace — the real, streaming AI Tutor + Assistant.
 // Replaces the old hardcoded keyword mock. Persists conversations, streams
 // genuine model output, supports voice (STT/TTS) and feedback.
+//
+// Responsive, ChatGPT/Gemini-inspired shell:
+//  - Mobile: full-width bottom sheet + slide-over conversation drawer.
+//  - Desktop: centered floating panel with an always-visible conversation
+//    sidebar. AI replies render as rich Markdown; the learner's messages are
+//    right-aligned bubbles; input is an auto-growing textarea.
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import {
+  useState, useRef, useEffect, useCallback,
+  type ChangeEvent, type KeyboardEvent as ReactKeyboardEvent,
+} from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Mic, MicOff, Send, X, Volume2, VolumeX, Sparkles, Bot, User, Loader2,
-  Plus, MessageSquare, Trash2, Copy, Check, ThumbsUp, ThumbsDown, RefreshCw,
-  GraduationCap, BrainCircuit, ChevronLeft, ChevronRight,
+  Mic, MicOff, Send, X, Volume2, VolumeX, Sparkles, Loader2,
+  Plus, RefreshCw, GraduationCap, BrainCircuit, PanelLeft, Bot,
 } from "lucide-react";
 import { PRESET_PROMPTS } from "@/lib/data/ai";
 import {
@@ -28,6 +36,8 @@ import type {
 } from "@/lib/services/ai/types";
 import { subscribeToLaunch } from "@/lib/ai-launcher";
 import { useAuth } from "@/lib/auth-ctx";
+import ChatMessage, { TypingIndicator, type ChatMessageData } from "@/components/chat/ChatMessage";
+import ConversationList from "@/components/chat/ConversationList";
 
 type Mode = "tutor" | "assistant";
 
@@ -105,6 +115,7 @@ export default function VoiceAITutor() {
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const terminalRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const [pendingContext, setPendingContext] = useState<{
     questionId?: number;
     topicId?: number;
@@ -188,6 +199,7 @@ export default function VoiceAITutor() {
   const openConversation = useCallback(async (id: string) => {
     setActiveConversationId(id);
     setError(null);
+    setSidebarOpen(false);
     try {
       const data = await getConversation(id);
       setMessages(data.messages.map(messageToUI));
@@ -266,6 +278,7 @@ export default function VoiceAITutor() {
     if (!text || status === "generating" || !user) return;
 
     setInput("");
+    if (inputRef.current) inputRef.current.style.height = "auto";
     setError(null);
     setStatus("generating");
     setMessages((prev) => [...prev, { id: `u-${Date.now()}`, role: "user", text }]);
@@ -404,6 +417,23 @@ export default function VoiceAITutor() {
     void sendTurn(prompt);
   }, [sendTurn]);
 
+  const handleInputChange = useCallback((e: ChangeEvent<HTMLTextAreaElement>) => {
+    const el = e.target;
+    setInput(el.value);
+    el.style.height = "auto";
+    el.style.height = `${Math.min(el.scrollHeight, 160)}px`;
+  }, []);
+
+  const handleInputKeyDown = useCallback(
+    (e: ReactKeyboardEvent<HTMLTextAreaElement>) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        void sendTurn(input);
+      }
+    },
+    [input, sendTurn],
+  );
+
   // Dialog focus management.
   const dialogRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -438,417 +468,373 @@ export default function VoiceAITutor() {
     dialog.addEventListener("keydown", onKeyDown);
     return () => {
       dialog.removeEventListener("keydown", onKeyDown);
-      prevFocused?.focus?.();
+      prevFocused?.focus();
     };
   }, [showModal, stopSpeaking]);
+
+  const closeModal = useCallback(() => {
+    setShowModal(false);
+    stopGeneration();
+    stopSpeaking();
+  }, [stopGeneration, stopSpeaking]);
+
+  const lastMessage = messages[messages.length - 1];
+  const showThinkingRow =
+    status === "generating" &&
+    (messages.length === 0 || lastMessage.role !== "ai" || lastMessage.text !== "");
+
+  const conversationList = (
+    <ConversationList
+      conversations={conversations}
+      activeConversationId={activeConversationId}
+      onOpen={(id) => void openConversation(id)}
+      onDelete={(id) => void removeConversation(id)}
+      onNew={startNewConversation}
+    />
+  );
 
   return (
     <>
       {/* Floating AI button */}
       <motion.button
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
+        whileHover={{ scale: 1.08 }}
+        whileTap={{ scale: 0.92 }}
         onClick={() => {
           setShowModal(true);
           setError(null);
         }}
-        className="fixed bottom-24 right-6 z-40 w-14 h-14 bg-emerald-500 rounded-full shadow-neon-glow flex items-center justify-center text-zinc-950 hover:bg-emerald-400 transition-colors"
+        className="fixed bottom-20 right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500 text-zinc-950 shadow-neon-glow transition-colors hover:bg-emerald-400 sm:bottom-24 sm:right-6 sm:h-14 sm:w-14"
         aria-label="Open AI Tutor and Assistant"
       >
-        <Sparkles className="w-6 h-6" />
+        <Sparkles className="h-6 w-6" />
       </motion.button>
 
       <AnimatePresence>
         {showModal && (
-          <motion.div
-            ref={dialogRef}
-            initial={{ opacity: 0, scale: 0.97 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.97 }}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="ai-workspace-title"
-            className="fixed inset-0 z-50 flex flex-col bg-[var(--surface-solid)] bg-opacity-98 backdrop-blur-sm outline-none"
-          >
-            {/* Header */}
-            <div className="flex items-center justify-between gap-2 p-3 sm:p-4 bg-[var(--surface-solid)] border-b border-emerald-500/30">
-              <div className="flex items-center gap-2 min-w-0">
-                {activeConversationId && (
+          <div className="fixed inset-0 z-50">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={closeModal}
+              className="absolute inset-0 bg-zinc-950/70 backdrop-blur-sm"
+              aria-hidden="true"
+            />
+
+            {/* Panel — full-width bottom sheet on mobile, centered panel on desktop */}
+            <motion.div
+              ref={dialogRef}
+              initial={{ y: 48, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 48, opacity: 0 }}
+              transition={{ type: "spring", damping: 28, stiffness: 260 }}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="ai-workspace-title"
+              className="absolute inset-x-0 bottom-0 flex h-[92dvh] w-full flex-col overflow-hidden rounded-t-2xl border border-emerald-500/20 bg-[var(--surface-solid)] shadow-2xl outline-none sm:inset-x-4 sm:bottom-6 sm:mx-auto sm:h-[min(88dvh,900px)] sm:max-w-4xl sm:rounded-2xl"
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between gap-2 border-b border-emerald-500/20 px-3 py-2.5 sm:px-4 sm:py-3">
+                <div className="flex min-w-0 items-center gap-2">
                   <button
-                    onClick={startNewConversation}
-                    className="lg:hidden p-2 text-zinc-400 hover:text-white"
-                    aria-label="New conversation"
+                    type="button"
+                    onClick={() => setSidebarOpen((v) => !v)}
+                    className="flex p-2 text-zinc-400 transition-colors hover:text-white lg:hidden"
+                    aria-label="Toggle conversation list"
                   >
-                    <Plus className="w-5 h-5" />
+                    <PanelLeft className="h-5 w-5" />
                   </button>
-                )}
-                <button
-                  onClick={() => setSidebarOpen((v) => !v)}
-                  className="hidden sm:flex p-2 text-zinc-400 hover:text-white"
-                  aria-label="Toggle conversation list"
-                >
-                  {sidebarOpen ? <ChevronLeft className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
-                </button>
-                <Bot className="w-6 h-6 text-emerald-500 flex-shrink-0" aria-hidden="true" />
-                <span id="ai-workspace-title" className="text-emerald-500 font-bold truncate">
-                  9Th-Grade AI
-                </span>
+                  <Bot className="h-6 w-6 flex-shrink-0 text-emerald-500" aria-hidden="true" />
+                  <span id="ai-workspace-title" className="truncate font-bold text-emerald-500">
+                    9Th-Grade AI
+                  </span>
 
-                {/* Mode switch */}
-                <div className="flex items-center gap-1 ml-2 rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-0.5">
-                  <button
-                    onClick={() => setMode("tutor")}
-                    className={`px-2.5 py-1 rounded-md text-xs font-mono transition-colors ${
-                      mode === "tutor"
-                        ? "bg-emerald-500 text-zinc-950"
-                        : "text-emerald-400 hover:text-white"
-                    }`}
-                  >
-                    টিউটর
-                  </button>
-                  <button
-                    onClick={() => setMode("assistant")}
-                    className={`px-2.5 py-1 rounded-md text-xs font-mono transition-colors ${
-                      mode === "assistant"
-                        ? "bg-emerald-500 text-zinc-950"
-                        : "text-emerald-400 hover:text-white"
-                    }`}
-                  >
-                    সহায়ক
-                  </button>
-                </div>
-
-                <span
-                  aria-live="polite"
-                  className={`hidden sm:inline-flex px-2 py-0.5 rounded-full text-xs font-mono items-center gap-1 ${
-                    status === "listening"
-                      ? "bg-red-500/10 text-red-400 animate-pulse"
-                      : status === "generating"
-                        ? "bg-cyan-500/10 text-cyan-400 animate-pulse"
-                        : status === "speaking"
-                          ? "bg-emerald-500/10 text-emerald-400 animate-pulse"
-                          : status === "error"
-                            ? "bg-red-500/10 text-red-400"
-                            : "bg-emerald-500/10 text-emerald-400"
-                  }`}
-                >
-                  {status === "listening" ? <Mic className="w-3 h-3" /> : null}
-                  {status === "speaking" ? <Volume2 className="w-3 h-3" /> : null}
-                  {STATUS_LABEL[status]}
-                </span>
-              </div>
-
-              <div className="flex items-center gap-1">
-                {isSpeaking && (
-                  <button onClick={stopSpeaking} className="p-2 text-red-400 hover:text-red-300" title="Stop speaking">
-                    <VolumeX className="w-5 h-5" />
-                  </button>
-                )}
-                <button
-                  onClick={() => { setShowModal(false); stopGeneration(); stopSpeaking(); }}
-                  className="p-2 text-zinc-400 hover:text-white"
-                  aria-label="Close AI workspace"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-            </div>
-
-            {/* Body */}
-            <div className="flex-1 flex min-h-0">
-              {/* Conversation list (desktop) */}
-              <AnimatePresence>
-                {sidebarOpen && (
-                  <motion.aside
-                    initial={{ width: 0, opacity: 0 }}
-                    animate={{ width: 260, opacity: 1 }}
-                    exit={{ width: 0, opacity: 0 }}
-                    className="hidden sm:flex flex-col border-r border-emerald-500/10 bg-subtle overflow-hidden"
-                  >
-                    <div className="p-3 flex items-center justify-between border-b border-emerald-500/10">
-                      <span className="text-xs font-mono text-zinc-500">CONVERSATIONS</span>
-                      <button
-                        onClick={startNewConversation}
-                        className="p-1.5 rounded-lg border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/10"
-                        aria-label="New conversation"
-                      >
-                        <Plus className="w-4 h-4" />
-                      </button>
-                    </div>
-                    <div className="flex-1 overflow-y-auto p-2 space-y-1">
-                      {conversations.length === 0 && (
-                        <p className="text-xs text-zinc-600 font-mono p-3">No conversations yet.</p>
-                      )}
-                      {conversations.map((conv) => (
-                        <div
-                          key={conv.id}
-                          className={`group flex items-center gap-2 px-2 py-2 rounded-lg cursor-pointer text-sm transition-colors ${
-                            activeConversationId === conv.id
-                              ? "bg-emerald-500/10 border border-emerald-500/20"
-                              : "hover:bg-zinc-800/40 border border-transparent"
-                          }`}
-                          onClick={() => void openConversation(conv.id)}
-                        >
-                          {conv.kind === "ASSISTANT" ? (
-                            <BrainCircuit className="w-4 h-4 text-emerald-500 flex-shrink-0" aria-hidden="true" />
-                          ) : (
-                            <MessageSquare className="w-4 h-4 text-emerald-500 flex-shrink-0" aria-hidden="true" />
-                          )}
-                          <span className="flex-1 min-w-0 truncate text-zinc-300">
-                            {conv.title}
-                          </span>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              void removeConversation(conv.id);
-                            }}
-                            className="opacity-0 group-hover:opacity-100 p-1 text-zinc-500 hover:text-red-400"
-                            aria-label="Delete conversation"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </motion.aside>
-                )}
-              </AnimatePresence>
-
-              {/* Chat column */}
-              <div className="flex-1 flex flex-col min-w-0">
-                {/* Error banner */}
-                <AnimatePresence>
-                  {error && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0 }}
-                      className="mx-4 mt-3 px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/20 text-xs text-red-300 flex items-center gap-2"
-                    >
-                      <span className="flex-1">{error}</span>
-                      <button onClick={() => setError(null)} className="p-1 hover:text-white" aria-label="Dismiss error">
-                        <X className="w-3.5 h-3.5" />
-                      </button>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                {/* Empty / quick actions */}
-                {messages.length === 0 && (
-                  <div className="flex-1 overflow-y-auto p-4">
-                    <div className="text-center py-6">
-                      {mode === "assistant" ? (
-                        <BrainCircuit className="w-12 h-12 mx-auto mb-3 text-emerald-500/60" aria-hidden="true" />
-                      ) : (
-                        <GraduationCap className="w-12 h-12 mx-auto mb-3 text-emerald-500/60" aria-hidden="true" />
-                      )}
-                      <p className="text-sm text-zinc-300 font-mono">
-                        {mode === "assistant"
-                          ? "আপনার পড়াশোনার সহায়ক — প্রগ্রেস দেখে পরামর্শ দেব।"
-                          : "আমি আপনার পড়াশোনার জন্য সাহায্য করতে পারি।"}
-                      </p>
-                    </div>
-
-                    {mode === "tutor" ? (
-                      <div className="flex flex-wrap gap-2 justify-center">
-                        {PRESET_PROMPTS.map((p) => (
-                          <button
-                            key={p.id}
-                            onClick={() => runPreset(p.label.bn)}
-                            className="px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-xs font-mono text-zinc-300 hover:bg-emerald-400 hover:text-zinc-950 transition-colors"
-                          >
-                            {p.label.bn}
-                          </button>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="flex flex-wrap gap-2 justify-center max-w-lg mx-auto">
-                        {ASSISTANT_QUICK_ACTIONS.map((a) => (
-                          <button
-                            key={a.labelBn}
-                            onClick={() => runAssistantAction(a.prompt)}
-                            className="px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-xs font-mono text-zinc-300 hover:bg-emerald-400 hover:text-zinc-950 transition-colors"
-                          >
-                            {a.labelBn}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Messages */}
-                {messages.length > 0 && (
-                  <div className="flex-1 overflow-y-auto p-4" ref={terminalRef} aria-live="polite" role="log">
-                    <div className="space-y-3 max-w-3xl">
-                      {messages.map((msg) => (
-                        <motion.div
-                          key={msg.id}
-                          initial={{ opacity: 0, y: 8 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          className={`flex items-start gap-3 p-3 rounded-terminal-rounded ${
-                            msg.role === "user"
-                              ? "bg-zinc-900 text-emerald-300 ml-auto"
-                              : msg.error
-                                ? "bg-red-500/10 text-zinc-300 border border-red-500/20"
-                                : "bg-emerald-500/10 text-zinc-300"
-                          }`}
-                        >
-                          <span
-                            className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                              msg.role === "ai" ? "bg-emerald-500/15 text-emerald-400" : "bg-zinc-800 text-zinc-400"
-                            }`}
-                          >
-                            {msg.role === "ai" ? (
-                              <Bot className="w-4 h-4" aria-hidden="true" />
-                            ) : (
-                              <User className="w-4 h-4" aria-hidden="true" />
-                            )}
-                          </span>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.text}</p>
-
-                            {msg.actions && msg.actions.length > 0 && (
-                              <div className="flex flex-wrap gap-2 mt-3">
-                                {msg.actions.map((a) => (
-                                  <button
-                                    key={`${msg.id}-${a.id}`}
-                                    onClick={() => runAssistantAction(a.labelBn)}
-                                    className="px-2.5 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-md text-xs text-emerald-300 hover:bg-emerald-500/20 transition-colors"
-                                  >
-                                    {a.labelBn}
-                                  </button>
-                                ))}
-                              </div>
-                            )}
-
-                            {msg.role === "ai" && msg.text !== "" && (
-                              <div className="flex items-center gap-1 mt-2">
-                                <button
-                                  onClick={() => void copyText(msg.id, msg.text)}
-                                  className="p-1.5 text-zinc-500 hover:text-emerald-400 transition-colors"
-                                  aria-label="Copy response"
-                                  title="Copy"
-                                >
-                                  {copiedId === msg.id ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                                </button>
-                                <button
-                                  onClick={() => void sendFeedback(msg.messageId, "HELPFUL")}
-                                  disabled={feedbackSent.has(msg.messageId ?? "")}
-                                  className={`p-1.5 transition-colors ${
-                                    feedbackSent.has(msg.messageId ?? "")
-                                      ? "text-emerald-400"
-                                      : "text-zinc-500 hover:text-emerald-400"
-                                  }`}
-                                  aria-label="Helpful"
-                                  title="Helpful"
-                                >
-                                  <ThumbsUp className="w-3.5 h-3.5" />
-                                </button>
-                                <button
-                                  onClick={() => void sendFeedback(msg.messageId, "NOT_HELPFUL")}
-                                  disabled={feedbackSent.has(msg.messageId ?? "")}
-                                  className={`p-1.5 transition-colors ${
-                                    feedbackSent.has(msg.messageId ?? "")
-                                      ? "text-red-400"
-                                      : "text-zinc-500 hover:text-red-400"
-                                  }`}
-                                  aria-label="Not helpful"
-                                  title="Not helpful"
-                                >
-                                  <ThumbsDown className="w-3.5 h-3.5" />
-                                </button>
-                                <button
-                                  onClick={() => void sendFeedback(msg.messageId, "NOT_HELPFUL")}
-                                  aria-hidden="true"
-                                  tabIndex={-1}
-                                  className="hidden"
-                                />
-                              </div>
-                            )}
-                          </div>
-                        </motion.div>
-                      ))}
-
-                      {status === "generating" && (
-                        <div className="flex items-center gap-3 p-3 rounded-terminal-rounded bg-emerald-500/10 text-zinc-400 max-w-3xl">
-                          <Loader2 className="w-4 h-4 animate-spin text-emerald-400" aria-hidden="true" />
-                          <span className="text-xs font-mono">Thinking...</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Retry + stop row */}
-                {(status === "generating" || messages.some((m) => m.error)) && (
-                  <div className="px-4 pb-1 flex items-center gap-2">
-                    {status === "generating" ? (
-                      <button
-                        onClick={stopGeneration}
-                        className="text-xs font-mono px-2.5 py-1 rounded-md border border-red-500/20 text-red-300 hover:bg-red-500/10"
-                      >
-                        Stop
-                      </button>
-                    ) : (
-                      <button
-                        onClick={retryLast}
-                        className="flex items-center gap-1.5 text-xs font-mono px-2.5 py-1 rounded-md border border-emerald-500/20 text-emerald-300 hover:bg-emerald-500/10"
-                      >
-                        <RefreshCw className="w-3.5 h-3.5" /> Retry
-                      </button>
-                    )}
-                  </div>
-                )}
-
-                {/* Input */}
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    void sendTurn(input);
-                  }}
-                  className="p-4 bg-[var(--surface-solid)] border-t border-emerald-500/20"
-                >
-                  <div className="flex items-center gap-2">
+                  {/* Mode switch */}
+                  <div className="ml-1 flex items-center gap-1 rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-0.5 sm:ml-2">
                     <button
                       type="button"
-                      onClick={toggleListening}
-                      className={`p-3 rounded-lg border transition-all ${
-                        isListening
-                          ? "bg-red-500/10 border-red-500/30 text-red-400 animate-pulse"
-                          : "bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white"
+                      onClick={() => setMode("tutor")}
+                      className={`rounded-md px-2.5 py-1 font-mono text-xs transition-colors ${
+                        mode === "tutor"
+                          ? "bg-emerald-500 text-zinc-950"
+                          : "text-emerald-400 hover:text-white"
                       }`}
-                      title={isListening ? "Stop listening" : "Start voice input"}
-                      aria-label={isListening ? "Stop listening" : "Start voice input"}
-                      aria-pressed={isListening}
                     >
-                      {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+                      টিউটর
                     </button>
-                    <input
-                      type="text"
-                      value={input}
-                      aria-label="Type your question or use voice input"
-                      placeholder={isListening ? "Listening..." : "Type your question or use voice..."}
-                      onChange={(e) => setInput(e.target.value)}
-                      className="flex-1 bg-subtle border border-emerald-500/20 rounded-lg px-4 py-2.5 text-sm text-zinc-300 font-mono focus:outline-none focus:border-emerald-500/40"
-                      disabled={status === "generating"}
-                    />
                     <button
-                      type="submit"
-                      disabled={status === "generating" || !input.trim()}
-                      className="p-3 bg-emerald-500 text-zinc-950 rounded-lg hover:bg-emerald-400 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                      type="button"
+                      onClick={() => setMode("assistant")}
+                      className={`rounded-md px-2.5 py-1 font-mono text-xs transition-colors ${
+                        mode === "assistant"
+                          ? "bg-emerald-500 text-zinc-950"
+                          : "text-emerald-400 hover:text-white"
+                      }`}
                     >
-                      {status === "generating" ? (
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                      ) : (
-                        <Send className="w-5 h-5" />
-                      )}
+                      সহায়ক
                     </button>
                   </div>
-                </form>
+
+                  <span
+                    aria-live="polite"
+                    className={`hidden items-center gap-1 rounded-full px-2 py-0.5 font-mono text-xs sm:inline-flex ${
+                      status === "listening"
+                        ? "bg-red-500/10 text-red-400 animate-pulse"
+                        : status === "generating"
+                          ? "bg-cyan-500/10 text-cyan-400 animate-pulse"
+                          : status === "speaking"
+                            ? "bg-emerald-500/10 text-emerald-400 animate-pulse"
+                            : status === "error"
+                              ? "bg-red-500/10 text-red-400"
+                              : "bg-emerald-500/10 text-emerald-400"
+                    }`}
+                  >
+                    {status === "listening" ? <Mic className="h-3 w-3" /> : null}
+                    {status === "speaking" ? <Volume2 className="h-3 w-3" /> : null}
+                    {STATUS_LABEL[status]}
+                  </span>
+                </div>
+
+                <div className="flex flex-shrink-0 items-center gap-1">
+                  {isSpeaking && (
+                    <button
+                      type="button"
+                      onClick={stopSpeaking}
+                      className="p-2 text-red-400 transition-colors hover:text-red-300"
+                      title="Stop speaking"
+                      aria-label="Stop speaking"
+                    >
+                      <VolumeX className="h-5 w-5" />
+                    </button>
+                  )}
+                  {activeConversationId && (
+                    <button
+                      type="button"
+                      onClick={startNewConversation}
+                      className="p-2 text-zinc-400 transition-colors hover:text-white lg:hidden"
+                      aria-label="New conversation"
+                    >
+                      <Plus className="h-5 w-5" />
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={closeModal}
+                    className="p-2 text-zinc-400 transition-colors hover:text-white"
+                    aria-label="Close AI workspace"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
               </div>
-            </div>
-          </motion.div>
+
+              {/* Body */}
+              <div className="flex min-h-0 flex-1">
+                {/* Conversation sidebar (desktop) */}
+                <aside className="hidden w-64 flex-shrink-0 flex-col border-r border-emerald-500/10 bg-subtle lg:flex">
+                  {conversationList}
+                </aside>
+
+                {/* Chat column */}
+                <div className="flex min-w-0 flex-1 flex-col">
+                  {/* Error banner */}
+                  <AnimatePresence>
+                    {error && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        className="mx-4 mt-3 flex items-center gap-2 rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-xs text-red-300"
+                      >
+                        <span className="flex-1">{error}</span>
+                        <button type="button" onClick={() => setError(null)} className="p-1 hover:text-white" aria-label="Dismiss error">
+                          <X className="h-3.5 w-3.5" />
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  {messages.length === 0 ? (
+                    /* Empty / quick actions */
+                    <div className="flex-1 overflow-y-auto">
+                      <div className="flex min-h-full flex-col items-center justify-center px-4 py-8">
+                        <div className="text-center">
+                          {mode === "assistant" ? (
+                            <BrainCircuit className="mx-auto mb-3 h-12 w-12 text-emerald-500/60" aria-hidden="true" />
+                          ) : (
+                            <GraduationCap className="mx-auto mb-3 h-12 w-12 text-emerald-500/60" aria-hidden="true" />
+                          )}
+                          <p className="font-mono text-sm text-zinc-400">
+                            {mode === "assistant"
+                              ? "আপনার পড়াশোনার সহায়ক — প্রগ্রেস দেখে পরামর্শ দেব।"
+                              : "আমি আপনার পড়াশোনার জন্য সাহায্য করতে পারি।"}
+                          </p>
+                        </div>
+
+                        <div className="mt-6 flex max-w-xl flex-wrap justify-center gap-2">
+                          {mode === "tutor"
+                            ? PRESET_PROMPTS.map((p) => (
+                                <button
+                                  key={p.id}
+                                  type="button"
+                                  onClick={() => runPreset(p.label.bn)}
+                                  className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-1.5 text-xs text-zinc-300 transition-colors hover:border-emerald-500/40 hover:bg-emerald-500/10 hover:text-emerald-300"
+                                >
+                                  {p.label.bn}
+                                </button>
+                              ))
+                            : ASSISTANT_QUICK_ACTIONS.map((a) => (
+                                <button
+                                  key={a.labelBn}
+                                  type="button"
+                                  onClick={() => runAssistantAction(a.prompt)}
+                                  className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-1.5 text-xs text-zinc-300 transition-colors hover:border-emerald-500/40 hover:bg-emerald-500/10 hover:text-emerald-300"
+                                >
+                                  {a.labelBn}
+                                </button>
+                              ))}
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    /* Messages */
+                    <div ref={terminalRef} role="log" aria-live="polite" className="flex-1 overflow-y-auto">
+                      <div className="mx-auto max-w-3xl space-y-5 px-3 py-4 sm:px-6 sm:py-5">
+                        {messages.map((msg) => (
+                          <motion.div
+                            key={msg.id}
+                            initial={{ opacity: 0, y: 8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                          >
+                            <ChatMessage
+                              message={msg as ChatMessageData}
+                              streaming={status === "generating"}
+                              copied={copiedId === msg.id}
+                              feedbackSent={feedbackSent.has(msg.messageId ?? "")}
+                              onCopy={(id, text) => void copyText(id, text)}
+                              onFeedback={(messageId, rating) => void sendFeedback(messageId, rating)}
+                              onAction={runAssistantAction}
+                            />
+                          </motion.div>
+                        ))}
+
+                        {showThinkingRow && (
+                          <div className="flex items-start gap-3">
+                            <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-400 ring-1 ring-emerald-500/20">
+                              <Bot className="h-4 w-4" aria-hidden="true" />
+                            </div>
+                            <TypingIndicator />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Retry + stop row */}
+                  {(status === "generating" || messages.some((m) => m.error)) && (
+                    <div className="flex items-center justify-center gap-2 px-4 pb-1.5">
+                      {status === "generating" ? (
+                        <button
+                          type="button"
+                          onClick={stopGeneration}
+                          className="rounded-md border border-red-500/20 px-2.5 py-1 font-mono text-xs text-red-300 transition-colors hover:bg-red-500/10"
+                        >
+                          Stop
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={retryLast}
+                          className="flex items-center gap-1.5 rounded-md border border-emerald-500/20 px-2.5 py-1 font-mono text-xs text-emerald-300 transition-colors hover:bg-emerald-500/10"
+                        >
+                          <RefreshCw className="h-3.5 w-3.5" /> Retry
+                        </button>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Input */}
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      void sendTurn(input);
+                    }}
+                    className="border-t border-emerald-500/20 p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:p-4 sm:pb-4"
+                  >
+                    <div className="mx-auto flex max-w-3xl items-end gap-2 rounded-2xl border border-emerald-500/25 bg-subtle px-2 py-1.5 transition-colors focus-within:border-emerald-500/50">
+                      <button
+                        type="button"
+                        onClick={toggleListening}
+                        className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl border transition-all ${
+                          isListening
+                            ? "border-red-500/30 bg-red-500/10 text-red-400 animate-pulse"
+                            : "border-zinc-700/60 text-zinc-400 hover:text-white"
+                        }`}
+                        title={isListening ? "Stop listening" : "Start voice input"}
+                        aria-label={isListening ? "Stop listening" : "Start voice input"}
+                        aria-pressed={isListening}
+                      >
+                        {isListening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
+                      </button>
+                      <textarea
+                        ref={inputRef}
+                        rows={1}
+                        value={input}
+                        aria-label="Type your question or use voice input"
+                        placeholder={isListening ? "Listening..." : "Ask 9Th-Grade AI anything…"}
+                        onChange={handleInputChange}
+                        onKeyDown={handleInputKeyDown}
+                        disabled={status === "generating"}
+                        className="max-h-40 min-h-[38px] flex-1 resize-none bg-transparent px-1 py-2 text-sm leading-relaxed text-zinc-300 placeholder:text-zinc-500 focus:outline-none disabled:opacity-60"
+                      />
+                      <button
+                        type="submit"
+                        disabled={status === "generating" || !input.trim()}
+                        className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-emerald-500 text-zinc-950 transition-colors hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-40"
+                        aria-label="Send message"
+                      >
+                        {status === "generating" ? (
+                          <Loader2 className="h-5 w-5 animate-spin" />
+                        ) : (
+                          <Send className="h-5 w-5" />
+                        )}
+                      </button>
+                    </div>
+                    <p className="mt-1.5 text-center font-mono text-[10px] text-zinc-500">
+                      9Th-Grade AI can make mistakes. Verify important facts.
+                    </p>
+                  </form>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Mobile conversation drawer */}
+            <AnimatePresence>
+              {sidebarOpen && (
+                <>
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    onClick={() => setSidebarOpen(false)}
+                    className="absolute inset-0 z-20 bg-zinc-950/60 lg:hidden"
+                    aria-hidden="true"
+                  />
+                  <motion.aside
+                    initial={{ x: -280 }}
+                    animate={{ x: 0 }}
+                    exit={{ x: -280 }}
+                    transition={{ type: "spring", damping: 30, stiffness: 300 }}
+                    className="absolute inset-y-0 left-0 z-30 w-72 max-w-[85vw] border-r border-emerald-500/10 bg-[var(--surface-solid)] shadow-2xl lg:hidden"
+                    aria-label="Conversation list"
+                  >
+                    {conversationList}
+                  </motion.aside>
+                </>
+              )}
+            </AnimatePresence>
+          </div>
         )}
       </AnimatePresence>
     </>
