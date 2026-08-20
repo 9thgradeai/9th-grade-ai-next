@@ -207,6 +207,57 @@ export default function AuthExperience({
     </div>
   )
 
+  // Login split layout JSX (desktop: avatar left, form right)
+  const loginLayout = (
+    <div className="flex min-h-[520px] flex-col lg:flex-row gap-8" style={{ height: "calc(100vh-14rem)" }}>
+      {/* Left side: Avatar + messaging */}
+      <div className="flex flex-1 flex-col items-center justify-center gap-5 px-4 lg:px-8 shrink-0 min-w-0">
+        <AnimatePresence>
+          {lit && (
+            <motion.div
+              key="avatar"
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+              className="flex flex-col items-center gap-2.5"
+            >
+              <Avatar mood={avatar} focusField={focusField} tick={tick} />
+              <Celebration active={stage === "success"} />
+              <AuthMessage message={message} />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Right side: Login form */}
+      <div className="flex w-full max-w-md flex-1 flex-col items-center justify-center px-4 lg:px-8 shrink-0">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key="login"
+            className="w-full"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -12 }}
+            transition={{ duration: 0.35, ease: "easeOut" }}
+          >
+            <motion.div className="w-full" animate={shake}>
+              <LoginForm
+                onSubmit={handleLogin}
+                busy={busy}
+                error={error}
+                onFocusChange={handleFocusChange}
+                onClearError={handleClearError}
+                onBack={goBack}
+                onTyping={() => setTick((t) => t + 1)}
+              />
+            </motion.div>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </div>
+  )
+
   // Stacked layout JSX for other stages
   const stackedLayout = (
     <div className="flex w-full max-w-md flex-1 flex-col items-center gap-5">
@@ -412,9 +463,13 @@ export default function AuthExperience({
             <span className="h-px w-6 bg-emerald-400/40" />
           </motion.div>
 
-          {/* Content area - split layout for signup on desktop */}
+          {/* Content area - split layout for signup/login on desktop */}
           <div className="relative w-full max-w-4xl flex-1">
-            {stage === "signup" ? signupLayout : stackedLayout}
+            {stage === "signup"
+              ? signupLayout
+              : stage === "login"
+              ? loginLayout
+              : stackedLayout}
           </div>
         </main>
       </div>
