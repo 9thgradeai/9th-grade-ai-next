@@ -47,7 +47,7 @@ export function LoginForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex w-full flex-col gap-4" noValidate>
+    <form onSubmit={handleSubmit} className="flex w-full flex-col gap-3 sm:gap-4" noValidate>
       <AuthField
         id="login-email"
         label="Email"

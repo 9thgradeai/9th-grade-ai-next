@@ -39,7 +39,7 @@ export function AuthField({
     <div>
       <label
         htmlFor={id}
-        className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-[var(--text-muted)]"
+        className="mb-1 block text-xs font-medium uppercase tracking-wider text-[var(--text-muted)] sm:mb-1.5"
       >
         {label}
       </label>
@@ -65,7 +65,7 @@ export function AuthField({
           inputMode={inputMode}
           aria-invalid={error ? true : undefined}
           aria-describedby={describedBy}
-          className={`w-full rounded-xl border bg-[var(--surface-raised)] py-3 text-base text-[var(--foreground)] outline-none backdrop-blur-sm transition-all duration-200 placeholder:text-[var(--text-muted)] focus:border-emerald-400/70 focus:shadow-[0_0_0_4px_rgba(16,185,129,0.10),0_0_28px_rgba(16,185,129,0.16)] focus:ring-2 focus:ring-emerald-400/20 ${
+          className={`w-full rounded-xl border bg-[var(--surface-raised)] py-2 text-base text-[var(--foreground)] outline-none backdrop-blur-sm transition-all duration-200 placeholder:text-[var(--text-muted)] focus:border-emerald-400/70 focus:shadow-[0_0_0_4px_rgba(16,185,129,0.10),0_0_28px_rgba(16,185,129,0.16)] focus:ring-2 focus:ring-emerald-400/20 sm:py-3 ${
             leftIcon ? "pl-11" : "px-4"
           } ${rightSlot ? "pr-12" : "px-4"} ${error ? "border-red-500/70" : "border-[var(--border-muted)]"}`}
         />
@@ -74,7 +74,7 @@ export function AuthField({
         )}
       </div>
       {error && (
-        <p id={describedBy} role="alert" className="mt-1.5 text-sm text-red-500">
+        <p id={describedBy} role="alert" className="mt-1 text-sm text-red-500 sm:mt-1.5">
           {error}
         </p>
       )}

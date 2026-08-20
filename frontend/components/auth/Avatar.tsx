@@ -201,10 +201,12 @@ export function Avatar({
   mood,
   focusField,
   tick,
+  compact = false,
 }: {
   mood: AuthAvatarState
   focusField?: FocusField
   tick?: number
+  compact?: boolean
 }) {
   const cfg = avatarStates[mood]
   const reduced = useReducedMotion() ?? false
@@ -239,7 +241,11 @@ export function Avatar({
         }}
         className="relative"
       >
-        <div className="avatar-breathe relative h-40 w-40 sm:h-52 sm:w-52">
+        <div
+          className={`avatar-breathe relative ${
+            compact ? "h-20 w-20 sm:h-40 sm:w-40" : "h-40 w-40 sm:h-52 sm:w-52"
+          }`}
+        >
           <svg
             viewBox="0 0 240 264"
             className="h-full w-full"

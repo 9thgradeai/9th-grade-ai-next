@@ -8,7 +8,7 @@ export function AuthMessage({ message }: { message: string }) {
   return (
     <p
       aria-live="polite"
-      className="text-center font-display text-xl leading-snug text-[var(--foreground)] sm:text-2xl"
+      className="text-center font-display text-base leading-snug text-[var(--foreground)] sm:text-2xl"
     >
       <motion.span
         key={message}
