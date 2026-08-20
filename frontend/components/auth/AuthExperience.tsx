@@ -157,7 +157,7 @@ export default function AuthExperience({
 
   // Signup split layout JSX (desktop: avatar left, form right)
   const signupLayout = (
-    <div className="flex min-h-[520px] flex-col lg:flex-row gap-8" style={{ height: "calc(100vh-14rem)" }}>
+    <div className="flex min-h-[520px] flex-col lg:flex-row gap-8">
       {/* Left side: Avatar + messaging */}
       <div className="flex flex-1 flex-col items-center justify-center gap-5 px-4 lg:px-8 shrink-0 min-w-0">
         <AnimatePresence>
@@ -209,7 +209,7 @@ export default function AuthExperience({
 
   // Login split layout JSX (desktop: avatar left, form right)
   const loginLayout = (
-    <div className="flex min-h-[520px] flex-col lg:flex-row gap-8" style={{ height: "calc(100vh-14rem)" }}>
+    <div className="flex min-h-[520px] flex-col lg:flex-row gap-8">
       {/* Left side: Avatar + messaging */}
       <div className="flex flex-1 flex-col items-center justify-center gap-5 px-4 lg:px-8 shrink-0 min-w-0">
         <AnimatePresence>
