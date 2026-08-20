@@ -152,7 +152,9 @@ export default function BottomNav({ activeTab, onChange }: BottomNavProps) {
                 })}
               </div>
               <div className="border-t border-terminal-border mt-3 pt-2 px-4 pb-4">
-                <LogoutButton aria-label="Log out of your account" />
+                <div onClick={() => setMoreOpen(false)}>
+                  <LogoutButton aria-label="Log out of your account" />
+                </div>
               </div>
             </motion.div>
           </motion.div>

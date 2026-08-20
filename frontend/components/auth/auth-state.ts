@@ -21,6 +21,7 @@ export type AuthAvatarState =
   | "loading"
   | "success"
   | "celebrating"
+  | "goodbye"
   | "error";
 
 export type EyeKind = "open" | "happy" | "closed" | "lid";
@@ -87,6 +88,11 @@ export const avatarStates: Record<AuthAvatarState, AvatarConfig> = {
     expression: { eyes: "happy", mouth: "wide", brows: "calm", blush: true },
     message: "You're all set. ✨",
     sparkle: true,
+  },
+  goodbye: {
+    expression: { eyes: "happy", mouth: "smile", brows: "calm", blush: true },
+    message: "See you soon. 👋",
+    sparkle: false,
   },
   error: {
     expression: { eyes: "open", mouth: "frown", brows: "concerned", blush: false, gaze: "down" },

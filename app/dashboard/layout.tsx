@@ -9,6 +9,7 @@ import BottomNav from "@/components/dashboard/BottomNav";
 import NotificationCenter from "@/components/dashboard/NotificationCenter";
 import VoiceAITutor from "@/components/dashboard/VoiceAITutor";
 import ThemeToggle from "@/components/ThemeToggle";
+import { LogoutFarewellProvider, useFarewell } from "@/lib/farewell-ctx";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 import { useAuth } from "@/lib/auth-ctx";
 import { TABS, type TabId } from "@/lib/data";
@@ -22,15 +23,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     setActiveTab(tab);
     router.push(`/dashboard?tab=${tab}`);
   };
-
-  // Redirect to login after render once we know the user isn't authenticated.
-  // Doing this in an effect avoids calling a navigation side-effect during
-  // render (which React warns about and can double-fire).
-  useEffect(() => {
-    if (!authLoading && !user) {
-      router.replace("/login");
-    }
-  }, [authLoading, user, router]);
 
   if (authLoading) {
     return (
@@ -47,12 +39,46 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     return null;
   }
 
+  return (
+    <LogoutFarewellProvider>
+      <DashboardShell activeTab={activeTab} onTabChange={handleTabChange}>
+        {children}
+      </DashboardShell>
+    </LogoutFarewellProvider>
+  );
+}
+
+function DashboardShell({
+  children,
+  activeTab,
+  onTabChange,
+}: {
+  children: React.ReactNode;
+  activeTab: TabId;
+  onTabChange: (tab: TabId) => void;
+}) {
+  const router = useRouter();
+  const { user, isLoading: authLoading } = useAuth();
+  const { isLoggingOut } = useFarewell();
+
+  // Redirect to login after render once we know the user isn't authenticated —
+  // unless we're deliberately logging out (the farewell owns the navigation).
+  useEffect(() => {
+    if (!authLoading && !user && !isLoggingOut) {
+      router.replace("/login");
+    }
+  }, [authLoading, user, isLoggingOut, router]);
+
+  if (!user) {
+    return null;
+  }
+
   const activeLabel = TABS.find((t) => t.id === activeTab)?.label ?? "DASHBOARD";
 
   return (
     <div className="dashboard-shell h-dvh overflow-hidden flex">
       {/* Desktop Side Navigation (>=1024px) — locked column, never scrolls away */}
-      <SideNav activeTab={activeTab} onChange={handleTabChange} />
+      <SideNav activeTab={activeTab} onChange={onTabChange} />
 
       {/* Main Column */}
       <div className="flex-1 min-w-0 flex flex-col h-full">
@@ -97,7 +123,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </div>
 
       {/* Mobile Bottom Navigation (<1024px) */}
-      <BottomNav activeTab={activeTab} onChange={handleTabChange} />
+      <BottomNav activeTab={activeTab} onChange={onTabChange} />
 
       {/* Global Components */}
       <VoiceAITutor />

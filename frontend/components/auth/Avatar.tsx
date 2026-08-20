@@ -114,7 +114,9 @@ function Sparkle() {
 
 export function Avatar({ mood, focusField }: { mood: AuthAvatarState; focusField?: FocusField }) {
   const cfg = avatarStates[mood];
-  const gaze = cfg.expression.gaze ?? (focusField ? "up" : undefined);
+  // The avatar sits above the interaction area, so when a field is focused it
+  // looks down toward it (attentive), unless the state explicitly sets a gaze.
+  const gaze = cfg.expression.gaze ?? (focusField ? "down" : undefined);
 
   return (
     <div className="relative flex items-center justify-center">

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useAnimationControls, useReducedMotion } from "framer-motion";
 import { ArrowRight, Check, LockKeyhole, Sun } from "lucide-react";
 import { useAuth } from "@/lib/auth-ctx";
 import { AuthEnvironment } from "./AuthEnvironment";
@@ -11,6 +11,7 @@ import { Lamp } from "./Lamp";
 import { Avatar } from "./Avatar";
 import { AuthMessage } from "./AuthMessage";
 import { AuthChoice } from "./AuthChoice";
+import { Celebration } from "./Celebration";
 import { LoginForm, type LoginValues } from "./LoginForm";
 import { SignupForm, type SignupValues } from "./SignupForm";
 import {
@@ -29,6 +30,7 @@ export default function AuthExperience({
   const router = useRouter();
   const { login, register } = useAuth();
   const reduced = useReducedMotion() ?? false;
+  const shake = useAnimationControls();
 
   const [stage, setStage] = useState<AuthStage>("lamp");
   const [lit, setLit] = useState(false);
@@ -96,11 +98,14 @@ export default function AuthExperience({
         scheduleRedirect();
       } catch (err) {
         setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+        if (!reduced) {
+          void shake.start({ x: [0, -8, 8, -6, 6, 0], transition: { duration: 0.45, ease: "easeInOut" } });
+        }
       } finally {
         setBusy(false);
       }
     },
-    [login, scheduleRedirect],
+    [login, scheduleRedirect, reduced, shake],
   );
 
   const handleSignup = useCallback(
@@ -114,11 +119,14 @@ export default function AuthExperience({
         scheduleRedirect();
       } catch (err) {
         setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+        if (!reduced) {
+          void shake.start({ x: [0, -8, 8, -6, 6, 0], transition: { duration: 0.45, ease: "easeInOut" } });
+        }
       } finally {
         setBusy(false);
       }
     },
-    [register, scheduleRedirect],
+    [register, scheduleRedirect, reduced, shake],
   );
 
   const continueNow = useCallback(() => {
@@ -167,9 +175,10 @@ export default function AuthExperience({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.5, ease: "easeOut" }}
-                className="flex flex-col items-center gap-2.5"
+                className="relative flex flex-col items-center gap-2.5"
               >
                 <Avatar mood={avatar} focusField={focusField} />
+                <Celebration active={stage === "success"} />
                 <AuthMessage message={message} />
               </motion.div>
             )}
@@ -202,7 +211,7 @@ export default function AuthExperience({
                 <button
                   type="button"
                   onClick={activate}
-                  className="group flex items-center gap-2.5 rounded-full border border-emerald-400/40 bg-emerald-500/10 px-6 py-3 text-sm font-semibold text-emerald-400 transition-all hover:border-emerald-400/70 hover:bg-emerald-500/20 focus-visible:ring-2 focus-visible:ring-emerald-400/80"
+                  className="group flex items-center gap-2.5 rounded-full border border-emerald-400/40 bg-emerald-500/10 px-6 py-3 text-sm font-semibold text-emerald-400 transition-all hover:border-emerald-400/70 hover:bg-emerald-500/20 active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-emerald-400/80"
                 >
                   <Sun className="h-4 w-4" aria-hidden="true" />
                   Turn on the light
@@ -222,14 +231,16 @@ export default function AuthExperience({
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.3, ease: "easeOut" }}
               >
-                <LoginForm
-                  onSubmit={handleLogin}
-                  busy={busy}
-                  error={error}
-                  onFocusChange={handleFocusChange}
-                  onClearError={handleClearError}
-                  onBack={goBack}
-                />
+                <motion.div className="w-full" animate={shake}>
+                  <LoginForm
+                    onSubmit={handleLogin}
+                    busy={busy}
+                    error={error}
+                    onFocusChange={handleFocusChange}
+                    onClearError={handleClearError}
+                    onBack={goBack}
+                  />
+                </motion.div>
               </motion.div>
             )}
 
@@ -242,14 +253,16 @@ export default function AuthExperience({
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.3, ease: "easeOut" }}
               >
-                <SignupForm
-                  onSubmit={handleSignup}
-                  busy={busy}
-                  error={error}
-                  onFocusChange={handleFocusChange}
-                  onClearError={handleClearError}
-                  onBack={goBack}
-                />
+                <motion.div className="w-full" animate={shake}>
+                  <SignupForm
+                    onSubmit={handleSignup}
+                    busy={busy}
+                    error={error}
+                    onFocusChange={handleFocusChange}
+                    onClearError={handleClearError}
+                    onBack={goBack}
+                  />
+                </motion.div>
               </motion.div>
             )}
 
@@ -283,7 +296,7 @@ export default function AuthExperience({
                 <button
                   type="button"
                   onClick={continueNow}
-                  className="flex items-center gap-2 rounded-xl bg-emerald-500 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-emerald-600 focus-visible:ring-2 focus-visible:ring-emerald-400/80"
+                  className="flex items-center gap-2 rounded-xl bg-emerald-500 px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-emerald-600 hover:shadow-[0_8px_24px_rgba(16,185,129,0.35)] active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-emerald-400/80"
                 >
                   Continue to dashboard
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />

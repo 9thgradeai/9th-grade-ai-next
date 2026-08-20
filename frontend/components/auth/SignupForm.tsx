@@ -54,6 +54,7 @@ export function SignupForm({
       <AuthField
         id="signup-name"
         label="Name"
+        name="name"
         value={name}
         onChange={(v) => {
           setName(v);
@@ -70,6 +71,7 @@ export function SignupForm({
         id="signup-email"
         label="Email"
         type="email"
+        name="email"
         value={email}
         onChange={(v) => {
           setEmail(v);
@@ -87,6 +89,7 @@ export function SignupForm({
         id="signup-password"
         label="Password"
         type={showPassword ? "text" : "password"}
+        name="new-password"
         value={password}
         onChange={(v) => {
           setPassword(v);
@@ -113,6 +116,7 @@ export function SignupForm({
         id="signup-confirm"
         label="Confirm password"
         type={showPassword ? "text" : "password"}
+        name="new-password"
         value={confirm}
         onChange={(v) => {
           setConfirm(v);
@@ -135,7 +139,7 @@ export function SignupForm({
       <button
         type="submit"
         disabled={busy}
-        className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 px-4 py-3.5 text-base font-semibold text-white transition-colors hover:bg-emerald-600 focus-visible:ring-2 focus-visible:ring-emerald-400/80 disabled:cursor-not-allowed disabled:opacity-60"
+        className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 px-4 py-3.5 text-base font-semibold text-white transition-all hover:bg-emerald-600 hover:shadow-[0_8px_24px_rgba(16,185,129,0.35)] active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-emerald-400/80 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {busy && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
         {busy ? "Creating account..." : "Create account"}

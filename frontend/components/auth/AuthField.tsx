@@ -14,6 +14,7 @@ export function AuthField({
   autoComplete,
   placeholder,
   inputMode,
+  name,
   rightSlot,
 }: {
   id: string;
@@ -27,6 +28,7 @@ export function AuthField({
   autoComplete?: string;
   placeholder?: string;
   inputMode?: "email" | "text" | "tel" | "numeric";
+  name?: string;
   rightSlot?: ReactNode;
 }) {
   const describedBy = error ? `${id}-error` : undefined;
@@ -39,6 +41,7 @@ export function AuthField({
       <div className="relative">
         <input
           id={id}
+          name={name}
           type={type}
           value={value}
           onChange={(e) => onChange(e.target.value)}
@@ -49,7 +52,7 @@ export function AuthField({
           inputMode={inputMode}
           aria-invalid={error ? true : undefined}
           aria-describedby={describedBy}
-          className={`w-full rounded-xl border bg-[var(--surface-raised)] px-4 py-3 text-base text-[var(--foreground)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-emerald-400/70 focus:ring-2 focus:ring-emerald-400/20 ${
+          className={`w-full rounded-xl border bg-[var(--surface-raised)] px-4 py-3 text-base text-[var(--foreground)] outline-none transition-all placeholder:text-[var(--text-muted)] focus:border-emerald-400/70 focus:shadow-[0_0_0_4px_rgba(16,185,129,0.10),0_0_24px_rgba(16,185,129,0.14)] focus:ring-2 focus:ring-emerald-400/20 ${
             rightSlot ? "pr-12" : ""
           } ${error ? "border-red-500/70" : "border-[var(--border-muted)]"}`}
         />
