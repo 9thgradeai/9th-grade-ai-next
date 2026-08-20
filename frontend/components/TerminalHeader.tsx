@@ -6,9 +6,9 @@ import { motion, useScroll, useMotionValueEvent, useReducedMotion } from "framer
 import StatusPill from "./ui/StatusPill";
 
 const navLinks = [
-  { href: "#features", label: "Features" },
-  { href: "#syllabus", label: "Syllabus" },
-  { href: "#tracks", label: "Tracks" },
+  { href: "/#features", label: "Features", anchor: "#features" },
+  { href: "/#syllabus", label: "Syllabus", anchor: "#syllabus" },
+  { href: "/tracks", label: "Tracks" },
 ];
 
 export default function TerminalHeader() {
@@ -22,10 +22,12 @@ export default function TerminalHeader() {
 
   useMotionValueEvent(scrollY, "change", (v) => setScrolled(v > 24));
 
-  // Scrollspy — highlight the nav link for the section in view.
+  // Scrollspy — highlight the nav link for the section in view. Only
+  // same-page anchors are observed; full-page links (e.g. /tracks) skip it.
   useEffect(() => {
+    if (typeof IntersectionObserver === "undefined") return;
     const sections = navLinks
-      .map((l) => document.querySelector<HTMLElement>(l.href))
+      .map((l) => (l.anchor ? document.querySelector<HTMLElement>(l.anchor) : null))
       .filter((s): s is HTMLElement => Boolean(s));
     if (sections.length === 0) return;
 
@@ -109,15 +111,12 @@ export default function TerminalHeader() {
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-7">
-            {navLinks.map((link, i) => (
-              <motion.a
+            {navLinks.map((link) => (
+              <Link
                 key={link.href}
                 href={link.href}
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 * (i + 1) }}
-                onHoverStart={() => setActiveLink(link.href)}
-                onHoverEnd={() => setActiveLink(null)}
+                onMouseEnter={() => setActiveLink(link.href)}
+                onMouseLeave={() => setActiveLink(null)}
                 className={`relative py-1 text-sm font-medium transition-colors ${
                   isLinkActive(link.href)
                     ? "text-emerald-400"
@@ -132,7 +131,7 @@ export default function TerminalHeader() {
                     transition={{ type: "spring", stiffness: 500, damping: 35 }}
                   />
                 )}
-              </motion.a>
+              </Link>
             ))}
 
             <div className="flex items-center gap-3 ml-2">
@@ -183,19 +182,16 @@ export default function TerminalHeader() {
           hidden={!isMobileMenuOpen}
         >
           <div className="py-4 space-y-1 border-t border-white/10">
-            {navLinks.map((link, i) => (
-              <motion.a
+            {navLinks.map((link) => (
+              <Link
                 key={link.href}
                 href={link.href}
                 role="menuitem"
                 onClick={() => setIsMobileMenuOpen(false)}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.05 * (i + 1) }}
                 className="block px-3 py-3 min-h-[44px] flex items-center text-base font-medium text-zinc-300 hover:text-emerald-400"
               >
                 {link.label}
-              </motion.a>
+              </Link>
             ))}
             <div className="flex flex-col gap-2 pt-4 border-t border-white/10">
               <Link

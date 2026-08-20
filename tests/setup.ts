@@ -18,6 +18,22 @@ if (typeof window !== "undefined" && typeof window.matchMedia !== "function") {
     dispatchEvent: () => false,
   })) as unknown as typeof window.matchMedia;
 }
+// framer-motion's `whileInView` requires an IntersectionObserver; jsdom does
+// not ship one, so install a no-op stub to keep viewport-triggered animations
+// harmless in tests.
+if (typeof globalThis.IntersectionObserver === "undefined") {
+  (globalThis as any).IntersectionObserver = class {
+    readonly root: Element | Document | null = null;
+    readonly rootMargin = "0px";
+    readonly thresholds: ReadonlyArray<number> = [0];
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+    takeRecords(): IntersectionObserverEntry[] {
+      return [];
+    }
+  };
+}
 if (typeof globalThis.localStorage === "undefined" || typeof globalThis.localStorage.clear !== "function") {
   const store = new Map<string, string>();
   const storage: Storage = {
