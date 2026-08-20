@@ -42,8 +42,15 @@ Auth-protected routes require the `auth_token` HttpOnly cookie (JWT, 7-day expir
 | GET | `/api/exam/config` | List the custom-exam selection tree (subjects → topics → subtopics with question counts) |
 | POST | `/api/exam/build` | Build a custom BCS-style exam `{ subjects: [{ subjectId, groups, count? }], questionCount, durationSec }` |
 | POST | `/api/exam/submit` | **Auth required** — Grade + persist a custom exam `{ answers: [{ questionId, selected }] }` |
-| POST | `/api/ai/solver` | Solve a question `{ text?, imageBase64?, subject? }` |
-| POST | `/api/ai/tutor` | Chat with AI tutor `{ messages: [{ role, content }] }` |
+| POST | `/api/ai/solver` | **Auth required** — Solve a question `{ text?, imageBase64?, subject?, subjectId?, questionId? }` → `{ solution, steps, explanation, relatedConcept, source }` |
+| POST | `/api/ai/tutor` | **Auth required** — **Streaming** AI tutor turn `{ messages: [{ role, content }], conversationId?, subjectId?, topicId?, questionId?, topicPath?, intent? }` |
+| POST | `/api/ai/assistant` | **Auth required** — Study guidance `{ messages, conversationId?, questionId?, intent? }` → `{ reply, suggestedActions, source }` |
+| GET | `/api/ai/conversations` | **Auth required** — List the caller's AI conversations (`?kind=TUTOR\|ASSISTANT\|SOLVER`) |
+| POST | `/api/ai/conversations` | **Auth required** — Create an AI conversation `{ kind, title?, subjectId?, topicId?, topicPath? }` |
+| GET | `/api/ai/conversations/:id` | **Auth required** — Get one conversation + messages (ownership-checked) |
+| PATCH | `/api/ai/conversations/:id` | **Auth required** — Rename a conversation `{ title }` |
+| DELETE | `/api/ai/conversations/:id` | **Auth required** — Delete a conversation (ownership-checked) |
+| POST | `/api/ai/feedback` | **Auth required** — Record feedback `{ rating: "HELPFUL"\|"NOT_HELPFUL", messageId?, category?, comment? }` |
 
 ## Response Shapes
 
@@ -94,13 +101,24 @@ Auth-protected routes require the `auth_token` HttpOnly cookie (JWT, 7-day expir
 
 ### AI Solver
 ```json
-{ "solution": "...", "steps": ["step 1", "step 2"], "source": "anthropic" | "mock", "note": "..." }
+{ "solution": "...", "steps": ["step 1", "step 2"], "explanation": "...", "relatedConcept": "...", "source": "anthropic" | "groq" | "mock" }
 ```
 
 ### AI Tutor (streaming)
-Returns `text/plain` stream. Uses the Groq-backed global assistant (`groq+web`
-when `TAVILY_API_KEY` is set, otherwise `groq`), falling back to a clearly
-labelled `mock` source. See `docs/AI-SYSTEM.md`.
+Returns a `text/plain` **token stream** (real model output). Headers:
+`X-Conversation-Id`, `X-AI-Intent`, `X-AI-Source` (`groq` | `anthropic` | `mock`), `X-AI-Model`.
+Falls back to a clearly labelled `mock` source when no API key is set. See `docs/AI-SYSTEM.md`.
+
+### AI Assistant
+```json
+{ "reply": "...", "suggestedActions": [{ "id": "...", "labelBn": "...", "labelEn": "...", "action": "continue|weak-topics|mistakes|what-today|practice|current-affairs|general" }], "source": "groq" | "anthropic" | "mock" }
+```
+
+### AIConversation
+```json
+{ "id": "cuid", "kind": "TUTOR" | "ASSISTANT" | "SOLVER", "title": "...", "createdAt": "...", "updatedAt": "..." }
+```
+`GET /api/ai/conversations` → `{ "conversations": [AIConversation] }`; `GET .../:id` → `{ "conversation": AIConversation, "messages": [{ "id": "...", "role": "USER"|"ASSISTANT", "status": "COMPLETE"|"FAILED", "content": "...", "intent": "...", "createdAt": "..." }] }`.
 
 ### ExamConfig (selection tree)
 The tree mirrors the recursive Topic taxonomy. Every node carries its aggregated

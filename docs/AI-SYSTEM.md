@@ -1,103 +1,90 @@
 # AI System
 
-## Providers
+The AI system is a real, authenticated, provider-abstracted layer behind the Tutor, Solver, and Assistant. All business logic lives in `backend/ai/` (the domain seam); route handlers in `app/api/ai/*` stay thin.
 
-- **Groq** — `openai/gpt-oss-120b` via Vercel AI SDK (`@ai-sdk/groq`) for the AI Tutor. Requires `GROQ_API_KEY`.
-- **Anthropic** — Claude Sonnet 4 (`claude-sonnet-4-6`) via Vercel AI SDK (`@ai-sdk/anthropic`) for the solver. Requires `ANTHROPIC_API_KEY` (falls back to mock when unset).
+## Architecture
 
-## Models
+```
+frontend/lib/services/ai/*   ← typed client service layer (tutorTurn, solve, askAssistant, conversations)
+  →  app/api/ai/*            ← thin route handlers (auth + rate limit + validation + streaming)
+        →  backend/ai/*      ← domain: providers, prompts, context, memory, persistence, usage, tools
+              →  Prisma      ← AIConversation, AIMessage, AIMemory, AIUsage, AIFeedback
+```
 
-| Endpoint | Model | Purpose |
-|----------|-------|---------|
-| `/api/ai/tutor` | `openai/gpt-oss-120b` (Groq) | Streaming global AI assistant (exam-focused, no KB grounding) |
-| `/api/ai/solver` | `claude-sonnet-4-6` (Anthropic) | Step-by-step question solver |
+## Providers (`backend/ai/providers/`)
 
-## Global assistant (no knowledge-base grounding)
+Model resolution is task-driven via `resolveModel(task, { image })`:
 
-The tutor is a **global AI assistant**: it answers from the model's own knowledge — supplemented by **live web-search grounding when `TAVILY_API_KEY` is set** — focused on BCS / bank / teacher-recruitment / govt-job exam preparation but not limited to a fixed syllabus.
+| Task | Preferred | Fallback | Last resort |
+|------|-----------|----------|-------------|
+| Tutor | Groq `openai/gpt-oss-120b` (`AI_GROQ_MODEL`) | Anthropic | Mock |
+| Assistant | Groq `openai/gpt-oss-120b` | Anthropic | Mock |
+| Solver (text) | Anthropic `claude-sonnet-4-6` (`AI_ANTHROPIC_MODEL`) | Groq | Mock |
+| Solver (image/vision) | Anthropic | — | Mock |
 
-- The curated knowledge base at `frontend/lib/data/knowledge-base.ts` (`KNOWLEDGE_BASE` + `retrieveKnowledge()`) exists as a **tested reference data module** but is **not injected** into the tutor system prompt (a previous KB-grounding design caused the model to anchor to weak/irrelevant retrieved entries and answer incorrectly on simple factual questions).
-- **Web search grounding**: `searchWeb()` in `app/api/ai/_search.ts` calls Tavily's REST API (`https://api.tavily.com/search`, basic depth, top 5 results) with `TAVILY_API_KEY`. Retrieved snippets are injected into the system prompt as the primary source for factual claims; the model is told to cite sources and to say when results don't cover the question. Failures/timeouts return an empty block and the tutor answers from model knowledge — the endpoint never fails because of search.
-- Per-request accuracy on general facts without search comes from the model itself (`openai/gpt-oss-120b`, a strong reasoning model). The persona instructs the model to be accurate first and to say so when unsure.
-- Groq is **inference-only** — it provides no search API, which is why web grounding is delegated to Tavily.
+- **Groq** (`@ai-sdk/groq`) — fast, free-tier, open-source models. Requires `GROQ_API_KEY`.
+- **Anthropic** (`@ai-sdk/anthropic`) — reasoning + vision. Requires `ANTHROPIC_API_KEY`.
+- **Mock** — deterministic, clearly-labelled (`source: "mock"`) fallback when no key is set. Never fakes live data.
+- Model names are env-overridable: `AI_GROQ_MODEL`, `AI_ANTHROPIC_MODEL`.
 
-Tutor pipeline per request:
-1. Take the incoming `messages` array.
-2. `searchWeb(latestMessage)` → top 5 live results (skipped when no `TAVILY_API_KEY`).
-3. System prompt = `TUTOR_PERSONA` + optional web-search grounding block.
-4. Generate the reply with Groq `generateText` (`openai/gpt-oss-120b`, `maxTokens: 2048`), retried up to 3× (500ms backoff) on empty output or transient provider errors — Groq's reasoning models intermittently return empty and its free tier rate-limits under load. The final reply is then streamed to the client.
-5. Response headers expose `X-AI-Source`: `groq+web` / `groq` / `mock`.
+## Endpoints
 
-## Agents / Tools
+| Endpoint | Auth | Purpose |
+|----------|------|---------|
+| `POST /api/ai/tutor` | required | **Streaming** teaching turn (SSE-style text stream + headers) |
+| `POST /api/ai/solver` | required | Structured step-by-step solver (`{ solution, steps, explanation, relatedConcept }`) |
+| `POST /api/ai/assistant` | required | Structured study guidance (`{ reply, suggestedActions }`) |
+| `GET/POST /api/ai/conversations` | required | List / create conversation threads |
+| `GET/PATCH/DELETE /api/ai/conversations/:id` | required | Read / rename / delete one conversation (ownership-checked) |
+| `POST /api/ai/feedback` | required | Record HELPFUL / NOT_HELPFUL feedback on a message |
 
-There are no autonomous agent loops. The AI is used via two direct endpoints:
+Response headers: `X-AI-Source` (`groq` | `anthropic` | `mock`), `X-Conversation-Id`, `X-AI-Intent`, `X-AI-Model`.
 
-1. **AI Tutor** (`POST /api/ai/tutor`)
-   - Input: `{ messages: [{ role: "user" | "assistant", content: string }] }`
-   - Output: Streaming text response.
-   - System prompt: friendly, encouraging, exam-focused tutor + retrieved knowledge-base block.
+## Tutor streaming flow
 
-2. **AI Solver** (`POST /api/ai/solver`)
-   - Input: `{ text?: string, imageBase64?: string, subject?: string }`
-   - Output: JSON `{ solution, steps, source }`.
-   - System prompt: patient, expert tutor; returns final answer + numbered steps.
+1. Validate request (`validateChatRequest`), detect intent (`detectIntent`, keyword-based + optional override).
+2. Resolve subject/topic/question ids; build learner context (`buildContext`) from progress, subject, topic, question, memories.
+3. Ensure or create the conversation; persist the user message.
+4. Run intent-driven web search (`tools/search.ts`, Tavily, safe fallback to empty block).
+5. Build system prompt (`buildTutorSystem` = persona + learner context + memory + optional web grounding).
+6. `provider.stream()` → real token streaming to the client; assistant message + usage are persisted when the stream completes (`done` + `getFullText`).
+7. Memory side-effects: `notePreferredLanguage`, topic weak/strong signals.
 
-## Orchestration
+## Context & Memory
 
-- No agent orchestration framework (no LangChain, no CrewAI).
-- Direct SDK calls in Next.js route handlers.
-- Client components call endpoints via `frontend/lib/services/api.ts` (currently no AI client wrapper — calls are made inline in components).
-
-## Context Management
-
-- **Tutor**: Full conversation history is sent in the `messages` array; the latest user message drives knowledge-base retrieval.
-- **Solver**: Single-turn; no conversation history.
-- Context limit: `maxTokens: 1024` for both endpoints.
-
-## Structured Outputs
-
-- **Solver** requests JSON output via system prompt. Falls back to raw text if JSON parse fails.
-- **Tutor** returns plain text stream.
+- **Context engine** (`context/context-engine.ts`): assembles `AIContext` — exam target, subject, topic, question, learning profile (from `UserProgress`/attempts), and persisted memories.
+- **Memory store** (`memory/memory-store.ts`): `AIMemory` rows keyed by `[userId, type, key]`; only the AI application layer writes memory (never raw model output). Stores preferred language, topic signals, exam goals.
+- **Conversation persistence** (`persistence/conversations.ts`): every turn is stored in `AIConversation`/`AIMessage`; history is scoped to the authenticated user on every read.
 
 ## Validation
 
-- Input validation is basic: check required fields (`messages` array for tutor, `text`/`imageBase64` for solver).
-- No PII redaction or content filtering beyond Groq/Anthropic's built-in safety.
+- **Input** (`backend/ai/schemas.ts`): dependency-free validators. Chat requests need ≥1 user message, valid roles (`user`/`assistant`/`system`), length caps (`MAX_AI_INPUT_CHARS`), solver needs `text` or `imageBase64` (image ≤ 5MB → `413`).
+- **Output** (`backend/ai/validation/outputs.ts`): model output is never trusted blindly. JSON is parsed + normalized (`parseJsonObject`, `validateSolverOutput`); assistant actions are validated against a whitelist; replies are sanitized and clamped.
+- **AI Safety**: LLM output is never used for authorization, validation, or security decisions.
 
-## Fallback
+## Rate Limits (`backend/rate-limit.ts`)
 
-- When `GROQ_API_KEY` is unset, the tutor returns a mock stream with a clearly-labelled mock message.
-- When `ANTHROPIC_API_KEY` is unset, the solver returns a static mock JSON with `source: "mock"` and a `note` explaining how to enable real AI.
+- Per-user (authenticated) or per-client (IP-derived) buckets, 10 requests / 60 s per endpoint, plus a per-user daily quota.
+- In-memory store — single-instance deployments only; swap for a shared store (Redis/Upstash) behind the same `checkRateLimit`/`checkDailyQuota` surface for multi-instance serverless.
+- `resetRateLimitStore()` is exported for tests.
 
-## Retries
+## Usage & Cost (`backend/ai/usage/`)
 
-- No retry logic. Failures return `500`.
-
-## Rate Limits
-
-- Application-level rate limit: 10 requests / 60 s per client for both AI endpoints (`checkRateLimit`).
-
-## Evaluation
-
-- Unit tests for knowledge-base retrieval in `tests/unit/backend/knowledge-base.test.ts`.
+Every AI call records an `AIUsage` row (tokens, latency, success, estimated cost). No prompt content is stored. `bumpAIQuestions` increments `UserProgress.aiQuestionsAsked`.
 
 ## Prompt Versioning
 
-- Prompts are defined inline in route handlers.
-- No versioning or prompt registry.
+- Prompts live in `backend/ai/prompts/` (`tutor.ts`, `solver.ts`, `assistant.ts`) with versioned constants (`tutor-v1`, etc.). System prompts are defined server-side only — never in client code.
 
-## Failure Modes
+## Fallbacks & Failure Modes
 
-- **Missing API key**: Mock fallback activates (clearly labelled).
-- **JSON parse failure (solver)**: Returns raw text as solution with a single step.
-- **Model unavailable/fails**: Returns `500`.
-- **Invalid input**: Returns `400` with error message.
-- **Model unsure of a fact**: Persona instructs the model to state uncertainty rather than guess.
+- **Missing API key**: Mock provider activates, clearly labelled (`source: "mock"`).
+- **Provider failure**: usage row records the error; tutor stream degrades, solver returns a structured error (`AppError` → JSON error via `toHttpResponse`).
+- **Empty model output**: assistant message persisted as `FAILED`; client shows a friendly Bengali message with a retry action.
+- **Invalid input**: `400` with a human-readable `AppError` message.
 
-## AI Security
+## Evaluation
 
-- LLM output is never used for authorization, validation, or security decisions.
-- Mock responses are clearly labelled.
-- No prompt injection mitigation beyond standard system prompt framing.
-- No PII is sent to the LLM beyond what the user provides in chat.
-- API keys come from `process.env` only (`GROQ_API_KEY`, `ANTHROPIC_API_KEY`, `TAVILY_API_KEY`).
+- Unit tests: `tests/unit/backend/ai.test.ts` (schemas, output validation, intent, prompts, rate limits).
+- Component tests: `tests/unit/frontend/ai-workspace.test.tsx` (AI workspace UI).
+- Web-search module tests: `tests/unit/backend/web-search.test.ts`.

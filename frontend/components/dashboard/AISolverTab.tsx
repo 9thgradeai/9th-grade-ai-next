@@ -2,8 +2,10 @@
 
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, Camera, Sparkles, X, Copy, Check, Loader2, Lightbulb } from "lucide-react";
+import { Upload, Camera, Sparkles, X, Copy, Check, Loader2, Lightbulb, MessageSquare } from "lucide-react";
 import { SOLVER_EXAMPLES } from "@/lib/data/study";
+import { solve } from "@/lib/services/ai";
+import { launchAI } from "@/lib/ai-launcher";
 
 export default function AISolverTab() {
   const [inputType, setInputType] = useState<"text" | "image">("text");
@@ -12,6 +14,8 @@ export default function AISolverTab() {
   const [isSolving, setIsSolving] = useState(false);
   const [solution, setSolution] = useState<string | null>(null);
   const [steps, setSteps] = useState<string[]>([]);
+  const [explanation, setExplanation] = useState<string>("");
+  const [relatedConcept, setRelatedConcept] = useState<string>("");
   const [copied, setCopied] = useState(false);
   const [selectedSubject, setSelectedSubject] = useState("General");
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -37,29 +41,30 @@ export default function AISolverTab() {
     setSteps([]);
 
     try {
-      const body: { text?: string; subject?: string; imageBase64?: string } = {
+      const result = await solve({
         text: textInput,
         subject: selectedSubject !== "General" ? selectedSubject : undefined,
-      };
-      if (imagePreview) {
-        body.imageBase64 = imagePreview.split(",")[1] ?? undefined;
-      }
-
-      const res = await fetch("/api/ai/solver", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
+        imageBase64: imagePreview ? imagePreview.split(",")[1] ?? undefined : undefined,
       });
-      if (!res.ok) throw new Error("Solver request failed");
-      const data = await res.json();
-      setSolution(data.solution);
-      setSteps(data.steps ?? []);
+      setSolution(result.solution);
+      setSteps(result.steps ?? []);
+      setExplanation(result.explanation ?? "");
+      setRelatedConcept(result.relatedConcept ?? "");
     } catch {
       setSolution("Sorry, the AI solver is temporarily unavailable. Please try again.");
       setSteps([]);
+      setExplanation("");
+      setRelatedConcept("");
     } finally {
       setIsSolving(false);
     }
+  };
+
+  const askTutorToExplain = () => {
+    launchAI({
+      mode: "tutor",
+      prompt: `The question was: ${textInput || "the uploaded image question"}. Please teach me the concept behind this solution step by step.`,
+    });
   };
 
   const copyToClipboard = (text: string) => {
@@ -280,6 +285,32 @@ export default function AISolverTab() {
             <div className="p-4 bg-subtle border border-emerald-500/20 rounded-terminal-rounded">
               <pre className="text-sm text-emerald-300 font-mono whitespace-pre-wrap">{solution}</pre>
             </div>
+
+            {/* Concept explanation + tutor handoff */}
+            {(explanation || relatedConcept) && (
+              <div className="mt-4 space-y-2 text-sm text-zinc-400">
+                {explanation && (
+                  <p>
+                    <span className="text-emerald-400 font-mono text-xs">CONCEPT: </span>
+                    {explanation}
+                  </p>
+                )}
+                {relatedConcept && (
+                  <p>
+                    <span className="text-emerald-400 font-mono text-xs">NEXT: </span>
+                    Study related concept — {relatedConcept}
+                  </p>
+                )}
+              </div>
+            )}
+
+            <button
+              onClick={askTutorToExplain}
+              className="mt-4 w-full flex items-center justify-center gap-2 py-2.5 bg-zinc-900 border border-emerald-500/20 text-emerald-400 rounded-lg text-sm font-mono hover:bg-emerald-500/10 transition-colors"
+            >
+              <MessageSquare className="w-4 h-4" />
+              Ask the AI Tutor to explain this step by step
+            </button>
           </motion.div>
         )}
       </AnimatePresence>

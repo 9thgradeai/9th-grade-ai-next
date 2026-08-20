@@ -72,6 +72,22 @@
 - **Rationale**: Progress should be measured by what the user actually did; fabricated numbers destroy trust in an exam-prep product and make the product non-demoable against real data.
 - **Consequences**: Dashboard sections render graceful empty states when a user has no data yet. `ExamSchedule` is a new model — see `docs/DATABASE.md`; new endpoints are documented in `docs/API.md`.
 
+## ADR-011: Production-grade AI architecture (authenticated, provider-abstracted, persistent)
+
+- **Date**: 2026
+- **Status**: Accepted
+- **Context**: The AI surface had drifted from production standards: the tutor UI was a hard-coded keyword mock that never called the real API, `_search.ts` was an orphaned Tavily module, the app was the only client of the solver route, `aiQuestionsAsked` was dead in `UserProgress`, there was no rate limiting per user, and no persistence, memory, usage tracking, or evaluation loop existed. The spec (46 parts) required real streaming, model abstraction, learning memory, and modern UX.
+- **Decision**: Build a **real AI domain layer** at `backend/ai/` (providers, prompts, context engine, memory store, conversation persistence, usage ledger, tools, validation) behind thin, authenticated `app/api/ai/*` route handlers. Key choices:
+  - **Provider abstraction** (`backend/ai/providers/`): a `ModelRouter` (`resolveModel`) maps task → provider. Groq `openai/gpt-oss-120b` primary for tutor/assistant (fast, free-tier), Anthropic `claude-sonnet-4-6` for solver (+ vision), clearly-labelled `MockProvider` last resort. No component knows the provider.
+  - **Authenticated + persistent**: AI endpoints require a session; every conversation is owned by a user and stored in `AIConversation`/`AIMessage`. Streaming persists the assistant message + usage after `done`.
+  - **Learning memory** (`AIMemory`): written only by the application layer (never raw model output), keyed `[userId, type, key]`.
+  - **Intent routing** (`detectIntent`): deterministic keyword routing (quiz/plan/explain/…) with client override — no LLM-in-the-loop for routing.
+  - **Structured output validation** for solver/assistant JSON; system prompts versioned in `backend/ai/prompts/`.
+  - **Typed client service layer** (`frontend/lib/services/ai/*`) + a launcher (`frontend/lib/ai-launcher.ts`) so any surface can hand off to the tutor.
+  - **User-aware rate limiting** (per-user + daily quota, `backend/rate-limit.ts`).
+- **Rationale**: Extends the repo's existing seams (App Router routes → `backend/services` → Prisma, `AppError`, `toHttpResponse`, security headers) rather than inventing a parallel architecture. Additive DB models keep the schema compatible. Real streaming + persistence make the product demoable and give an evaluation loop via `AIUsage` + `AIFeedback`.
+- **Consequences**: No isolated AI database — AI tables reference the existing `User`/`Subject`/`Topic`. In-memory rate limit is single-instance; multi-instance serverless must swap for a shared store behind the same surface. Schema additions must be pushed (`npm run db:push`). Legacy hard-coded mock tutor UI is replaced by the real workspace.
+
 ## ADR-005: Tailwind CSS v4
 
 - **Date**: 2024

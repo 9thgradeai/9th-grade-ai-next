@@ -187,6 +187,63 @@ export namespace Client {
     subject?: string;
   };
 
+  // ── AI domain (conversations, solver, assistant) ──────────
+  export type AIConversationKind = "TUTOR" | "ASSISTANT" | "SOLVER";
+
+  export type AIConversationSummary = {
+    id: string;
+    kind: AIConversationKind;
+    title: string;
+    subjectId: number | null;
+    topicId: number | null;
+    topicPath: string;
+    messageCount: number;
+    createdAt: string;
+    updatedAt: string;
+  };
+
+  export type AIMessageDto = {
+    id: string;
+    conversationId: string;
+    role: "USER" | "ASSISTANT" | "SYSTEM";
+    status: "COMPLETE" | "STREAMING" | "FAILED";
+    content: string;
+    intent: string | null;
+    provider: string | null;
+    model: string | null;
+    errorCode: string | null;
+    createdAt: string;
+  };
+
+  export type SolverResultDto = {
+    solution: string;
+    steps: string[];
+    explanation?: string;
+    relatedConcept?: string;
+    misconception?: string;
+    source: string;
+    conversationId?: string;
+  };
+
+  export type SuggestedActionDto = {
+    id: string;
+    labelBn: string;
+    labelEn: string;
+    action: string;
+  };
+
+  export type AssistantResultDto = {
+    reply: string;
+    suggestedActions: SuggestedActionDto[];
+    source: string;
+    conversationId: string;
+  };
+
+  export type ChatTurn = {
+    role: "user" | "assistant";
+    content: string;
+  };
+
   export type Notification = {
     id: string;
     title: string;
@@ -562,3 +619,10 @@ export type Badge = Client.Badge;
 export type LeaderboardEntry = Client.LeaderboardEntry;
 export type SolverInput = Client.SolverInput;
 export type Notification = Client.Notification;
+export type AIConversationKind = Client.AIConversationKind;
+export type AIConversationSummary = Client.AIConversationSummary;
+export type AIMessageDto = Client.AIMessageDto;
+export type SolverResultDto = Client.SolverResultDto;
+export type SuggestedActionDto = Client.SuggestedActionDto;
+export type AssistantResultDto = Client.AssistantResultDto;
+export type ChatTurn = Client.ChatTurn;

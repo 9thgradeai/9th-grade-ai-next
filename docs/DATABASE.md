@@ -35,6 +35,45 @@
 - `EPIC`
 - `LEGENDARY`
 
+#### AIConversationKind
+- `TUTOR` — teaching conversations
+- `ASSISTANT` — study-guidance conversations
+- `SOLVER` — one-shot solve-and-explain conversations
+
+#### AIMessageRole
+- `USER`
+- `ASSISTANT`
+- `SYSTEM`
+
+#### AIMessageStatus
+- `COMPLETE`
+- `STREAMING`
+- `FAILED`
+
+#### AIMemoryType
+- `WEAK_TOPIC` — learner shows weakness in a topic
+- `STRONG_TOPIC` — learner shows strength in a topic
+- `RECURRING_MISTAKE` — repeated misconception/error
+- `PREFERRED_LANGUAGE` — language the learner prefers
+- `LEARNING_PREFERENCE` — how the learner likes to learn
+- `EXAM_GOAL` — the exam the learner is targeting
+- `DIFFICULTY_PREFERENCE` — preferred difficulty
+- `CORRECTION` — a corrected misconception
+
+#### AIMemorySource
+- `INFERRED`
+- `USER`
+- `SYSTEM`
+
+#### AIUsageTask
+- `TUTOR`
+- `SOLVER`
+- `ASSISTANT`
+
+#### AIFeedbackRating
+- `HELPFUL`
+- `NOT_HELPFUL`
+
 ### Models
 
 #### User
@@ -47,7 +86,7 @@
 - `role` UserRole — default `STUDENT`
 - `createdAt` DateTime — default `now()`
 - `updatedAt` DateTime — updatedAt
-- Relations: `progress`, `bookmarks`, `studyTasks`, `notifications`, `sessions`
+- Relations: `progress`, `bookmarks`, `studyTasks`, `notifications`, `sessions`, `aiConversations`, `aiMemories`, `aiUsage`, `aiFeedback`
 
 #### Subject
 - `id` Int — PK, auto-increment
@@ -344,6 +383,88 @@ Per-user "read" marker for the global announcement feed.
 - `readAt` DateTime — default `now()`
 - Unique constraint: `[userId, notificationId]`
 
+#### AIConversation
+A persisted AI chat thread (Tutor, Assistant, or Solver), always owned by one user.
+- `id` String (cuid) — PK
+- `userId` String — FK to User (cascade)
+- `user` User — relation
+- `kind` AIConversationKind — default `TUTOR`
+- `title` String — default `"New conversation"`
+- `subjectId` Int? — FK to Subject (set-null)
+- `subject` Subject? — relation
+- `topicId` Int? — FK to Topic (set-null)
+- `topic` Topic? — relation
+- `topicPath` String — default `""` (Topic path when the conversation is topic-scoped)
+- `createdAt` DateTime — default `now()`
+- `updatedAt` DateTime — updatedAt
+- Relations: `messages`
+- Indexes: `[userId, updatedAt]`, `[userId, kind, updatedAt]`
+
+#### AIMessage
+A single turn inside an AI conversation. Content only — never system prompts.
+- `id` String (cuid) — PK
+- `conversationId` String — FK to AIConversation (cascade)
+- `conversation` AIConversation — relation
+- `role` AIMessageRole
+- `status` AIMessageStatus — default `COMPLETE`
+- `content` String
+- `intent` String? — default `""` (task intent, e.g. `tutor`, `explain`, `hint`, `solve`)
+- `provider` String? — default `""`
+- `model` String? — default `""`
+- `metadata` Json? — non-sensitive context (subject/topic/question id); never prompts
+- `errorCode` String? — default `""`
+- `createdAt` DateTime — default `now()`
+- Relations: `feedback`
+- Index: `[conversationId, createdAt]`
+
+#### AIMemory
+Persistent learning memory about the learner. Written deliberately by the AI application layer — the model never writes arbitrary memory directly.
+- `id` String (cuid) — PK
+- `userId` String — FK to User (cascade)
+- `user` User — relation
+- `type` AIMemoryType
+- `key` String
+- `value` String
+- `source` AIMemorySource — default `INFERRED`
+- `confidence` Int — default `50` (0-100)
+- `expiresAt` DateTime?
+- `createdAt` DateTime — default `now()`
+- `updatedAt` DateTime — updatedAt
+- Unique constraint: `[userId, type, key]`
+- Index: `[userId, type]`
+
+#### AIUsage
+Usage/cost/observability ledger for every AI call. No prompt content stored.
+- `id` String (cuid) — PK
+- `userId` String? — FK to User (set-null)
+- `user` User? — relation
+- `task` AIUsageTask
+- `intent` String? — default `""`
+- `provider` String
+- `model` String
+- `inputTokens` Int — default `0`
+- `outputTokens` Int — default `0`
+- `totalTokens` Int — default `0`
+- `latencyMs` Int — default `0`
+- `success` Boolean — default `true`
+- `errorCode` String? — default `""`
+- `estimatedCostUsd` Float — default `0`
+- `createdAt` DateTime — default `now()`
+- Indexes: `[userId, createdAt]`, `[task, createdAt]`, `[model, createdAt]`
+
+#### AIFeedback
+Lightweight user feedback on AI responses — the seed of an evaluation set.
+- `id` String (cuid) — PK
+- `userId` String — FK to User (cascade)
+- `user` User — relation
+- `messageId` String? — FK to AIMessage (set-null)
+- `message` AIMessage? — relation
+- `rating` AIFeedbackRating
+- `category` String? — default `""` (e.g. `hallucination`, `wrong_language`, `unhelpful`)
+- `comment` String? — default `""`
+- `createdAt` DateTime — default `now()`
+- Indexes: `[userId, createdAt]`, `[messageId]`
+
 ## Migrations
 
 Migrations are not used. The schema is pushed directly:
@@ -378,7 +499,7 @@ Prisma automatically creates indexes for:
 - Primary keys (`@id`).
 - Foreign keys (`subjectId`, `userId`, etc.).
 - Unique constraints (`email`, `handle`, `[userId, questionId]`).
-- Explicit `@@index` fields: `User.email`, `User.handle`, `Subject.sortOrder`, `Topic.subjectId`, `Topic.[subjectId, parentId]`, `Question.[subjectId, difficulty]`, `Question.[subjectId, topic]`, `Question.[subjectId, topic, subtopic]`, `Question.[subjectId, path]`, `Flashcard.subjectId`, `Flashcard.nextReview`, `StudyTask.[dayId, userId]`, `StudyPlanDay.date`, `DailyQuiz.date`, `UserSession.userId`, `UserSession.token`, `UserSession.expiresAt`.
+- Explicit `@@index` fields: `User.email`, `User.handle`, `Subject.sortOrder`, `Topic.subjectId`, `Topic.[subjectId, parentId]`, `Question.[subjectId, difficulty]`, `Question.[subjectId, topic]`, `Question.[subjectId, topic, subtopic]`, `Question.[subjectId, path]`, `Flashcard.subjectId`, `Flashcard.nextReview`, `StudyTask.[dayId, userId]`, `StudyPlanDay.date`, `DailyQuiz.date`, `UserSession.userId`, `UserSession.token`, `UserSession.expiresAt`, `AIConversation.[userId, updatedAt]`, `AIConversation.[userId, kind, updatedAt]`, `AIMessage.[conversationId, createdAt]`, `AIMemory.[userId, type]`, `AIUsage.[userId, createdAt]`, `AIUsage.[task, createdAt]`, `AIUsage.[model, createdAt]`, `AIFeedback.[userId, createdAt]`, `AIFeedback.[messageId]`.
 - Unique constraint: `Topic.[subjectId, path]`.
 
 ## Generator

@@ -50,6 +50,53 @@ enum BadgeRarity {
   LEGENDARY
 }
 
+// ── AI ────────────────────────────────────────────────────
+enum AIConversationKind {
+  TUTOR
+  ASSISTANT
+  SOLVER
+}
+
+enum AIMessageRole {
+  USER
+  ASSISTANT
+  SYSTEM
+}
+
+enum AIMessageStatus {
+  COMPLETE
+  STREAMING
+  FAILED
+}
+
+enum AIMemoryType {
+  WEAK_TOPIC
+  STRONG_TOPIC
+  RECURRING_MISTAKE
+  PREFERRED_LANGUAGE
+  LEARNING_PREFERENCE
+  EXAM_GOAL
+  DIFFICULTY_PREFERENCE
+  CORRECTION
+}
+
+enum AIMemorySource {
+  INFERRED
+  USER
+  SYSTEM
+}
+
+enum AIUsageTask {
+  TUTOR
+  SOLVER
+  ASSISTANT
+}
+
+enum AIFeedbackRating {
+  HELPFUL
+  NOT_HELPFUL
+}
+
 // ── Auth ──────────────────────────────────────────────────
 model User {
   id           String         @id @default(cuid())
@@ -70,6 +117,10 @@ model User {
   mockTestResults MockTestResult[]
   flashcardReviews FlashcardReview[]
   notificationReads NotificationRead[]
+  aiConversations AIConversation[]
+  aiMemories    AIMemory[]
+  aiUsage       AIUsage[]
+  aiFeedback    AIFeedback[]
 
   @@index([email])
   @@index([handle])
@@ -89,6 +140,7 @@ model Subject {
   flashcards   Flashcard[]
   categories   QuestionBankCategory[]
   attempts     QuestionAttempt[]
+  aiConversations AIConversation[]
 
   @@index([sortOrder])
 }
@@ -107,6 +159,7 @@ model Topic {
   sortOrder    Int    @default(0)
   questionCount String @default("0")
   questions    Question[]
+  aiConversations AIConversation[]
 
   @@unique([subjectId, path])
   @@index([subjectId, parentId])
@@ -445,4 +498,102 @@ model NotificationRead {
   readAt         DateTime       @default(now())
 
   @@unique([userId, notificationId])
+}
+
+// ── AI: conversations, memory, usage, feedback ─────────────
+// AI is a first-class domain. Conversations reference the existing User,
+// Subject and Topic models — no isolated "AI database".
+model AIConversation {
+  id         String             @id @default(cuid())
+  userId     String
+  user       User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kind       AIConversationKind @default(TUTOR)
+  title      String             @default("New conversation")
+  subjectId  Int?
+  subject    Subject?           @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+  topicId    Int?
+  topic      Topic?             @relation(fields: [topicId], references: [id], onDelete: SetNull)
+  topicPath  String             @default("") // path of the Topic when the conversation is topic-scoped
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+  messages   AIMessage[]
+
+  @@index([userId, updatedAt])
+  @@index([userId, kind, updatedAt])
+}
+
+model AIMessage {
+  id             String          @id @default(cuid())
+  conversationId String
+  conversation   AIConversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role           AIMessageRole
+  status         AIMessageStatus @default(COMPLETE)
+  content        String
+  intent         String?         @default("") // task intent, e.g. "tutor", "explain", "hint", "solve"
+  provider       String?         @default("") // provider that generated this message
+  model          String?         @default("") // model that generated this message
+  metadata       Json?           // non-sensitive context (subject/topic/question id); never system prompts
+  errorCode      String?         @default("")
+  createdAt      DateTime        @default(now())
+  feedback       AIFeedback[]
+
+  @@index([conversationId, createdAt])
+}
+
+// Persistent learning memory about the learner. Written deliberately by the
+// AI application layer — the model never writes arbitrary memory directly.
+model AIMemory {
+  id         String         @id @default(cuid())
+  userId     String
+  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type       AIMemoryType
+  key        String
+  value      String
+  source     AIMemorySource @default(INFERRED)
+  confidence Int            @default(50) // 0-100
+  expiresAt  DateTime?
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+
+  @@unique([userId, type, key])
+  @@index([userId, type])
+}
+
+// Usage/cost/observability ledger for every AI call. No prompt content stored.
+model AIUsage {
+  id              String       @id @default(cuid())
+  userId          String?
+  user            User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+  task            AIUsageTask
+  intent          String?      @default("")
+  provider        String
+  model           String
+  inputTokens     Int          @default(0)
+  outputTokens    Int          @default(0)
+  totalTokens     Int          @default(0)
+  latencyMs       Int          @default(0)
+  success         Boolean      @default(true)
+  errorCode       String?      @default("")
+  estimatedCostUsd Float       @default(0)
+  createdAt       DateTime     @default(now())
+
+  @@index([userId, createdAt])
+  @@index([task, createdAt])
+  @@index([model, createdAt])
+}
+
+// Lightweight user feedback on AI responses — the seed of an evaluation set.
+model AIFeedback {
+  id        String            @id @default(cuid())
+  userId    String
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messageId String?
+  message   AIMessage?        @relation(fields: [messageId], references: [id], onDelete: SetNull)
+  rating    AIFeedbackRating
+  category  String?           @default("") // e.g. "hallucination", "wrong_language", "unhelpful"
+  comment   String?           @default("")
+  createdAt DateTime          @default(now())
+
+  @@index([userId, createdAt])
+  @@index([messageId])
 }
