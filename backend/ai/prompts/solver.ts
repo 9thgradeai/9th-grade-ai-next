@@ -5,7 +5,7 @@ import type { AIContext } from "../types";
 export const SOLVER_PROMPT_VERSION = "solver-v1";
 
 const PERSONA =
-  "You are চর্চা AI, a patient, expert tutor for Bangladesh competitive job exams " +
+  "You are 9th-Grade AI, a patient, expert tutor for Bangladesh competitive job exams " +
   "(BCS, Bangladesh Bank, Assistant Director, 9th-grade government posts). " +
   "A student gives you a question — typed or as an image.\n" +
   "Respond with JSON only, exactly this shape:\n" +

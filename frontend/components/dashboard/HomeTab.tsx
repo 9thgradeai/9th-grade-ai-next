@@ -516,7 +516,7 @@ export default function HomeTab() {
             <Zap className="w-4.5 h-4.5 text-emerald-400" aria-hidden="true" />
           </div>
           <p className="text-sm text-zinc-300 leading-relaxed">
-            <span className="text-emerald-400 font-semibold font-mono">চর্চা AI:</span> সবচেয়ে দুর্বল বিষয়{" "}
+            <span className="text-emerald-400 font-semibold font-mono">9th-Grade AI:</span> সবচেয়ে দুর্বল বিষয়{" "}
             <span className="text-white font-mono">{weakest[0].name}</span> — এখানে{" "}
             <span className="text-white font-mono">{weakest[0].attempted}টি</span> প্রশ্নের
             সঠিকতা {weakest[0].score}%।

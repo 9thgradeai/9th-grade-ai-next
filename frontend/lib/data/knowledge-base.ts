@@ -1,5 +1,5 @@
 /* frontend/lib/data/knowledge-base.ts
-   চর্চা AI Tutor-এর grounding নলেজ বেস (Knowledge Base)।
+   9th-Grade AI Tutor-এর grounding নলেজ বেস (Knowledge Base)।
    Each entry is a compact, exam-focused fact sheet for Bangladesh competitive
    job exams (BCS Preliminary, Bangladesh Bank, Teacher Recruitment, 9th-grade
    government posts). The tutor retrieves the top matches for a student's

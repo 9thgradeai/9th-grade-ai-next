@@ -172,7 +172,7 @@ describe("intent detection", () => {
 describe("prompt builders", () => {
   it("builds a tutor system prompt with persona and context", () => {
     const prompt = buildTutorSystem(minimalContext);
-    expect(prompt).toContain("চর্চা AI");
+    expect(prompt).toContain("9th-Grade AI");
     expect(prompt).toContain("BCS");
   });
 
@@ -200,7 +200,7 @@ describe("prompt builders", () => {
 
   it("builds an assistant system prompt", () => {
     const prompt = buildAssistantSystem(minimalContext);
-    expect(prompt).toContain("চর্চা AI");
+    expect(prompt).toContain("9th-Grade AI");
     expect(prompt).toContain("exam-focused");
   });
 });
