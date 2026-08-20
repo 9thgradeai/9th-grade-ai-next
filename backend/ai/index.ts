@@ -15,6 +15,7 @@ export {
   listConversations,
   getConversation,
   renameConversation,
+  setConversationPinned,
   deleteConversation,
   listMessages,
 } from "./persistence/conversations";

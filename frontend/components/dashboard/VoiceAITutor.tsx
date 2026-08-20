@@ -26,6 +26,8 @@ import {
   getConversation,
   tutorTurn,
   askAssistant,
+  renameConversation,
+  pinConversation,
   deleteConversation,
   submitFeedback,
   AIError,
@@ -223,6 +225,40 @@ export default function VoiceAITutor() {
       setError(e instanceof AIError ? e.message : "Could not delete conversation.");
     }
   }, [activeConversationId, refreshConversations, startNewConversation]);
+
+  const applyConversationUpdate = useCallback(
+    (id: string, patch: Partial<AIConversationSummary>) => {
+      setConversations((prev) => {
+        const next = prev.map((c) => (c.id === id ? { ...c, ...patch } : c));
+        return next;
+      });
+    },
+    [],
+  );
+
+  const renameConversationHandler = useCallback(
+    async (id: string, title: string) => {
+      try {
+        const updated = await renameConversation(id, title);
+        applyConversationUpdate(id, { title: updated.title });
+      } catch (e) {
+        setError(e instanceof AIError ? e.message : "Could not rename conversation.");
+      }
+    },
+    [applyConversationUpdate],
+  );
+
+  const togglePinConversation = useCallback(
+    async (id: string, pinned: boolean) => {
+      try {
+        const updated = await pinConversation(id, pinned);
+        applyConversationUpdate(id, { pinned: updated.pinned });
+      } catch (e) {
+        setError(e instanceof AIError ? e.message : "Could not update conversation.");
+      }
+    },
+    [applyConversationUpdate],
+  );
 
   const handleError = useCallback((e: unknown) => {
     if (e instanceof AIError) {
@@ -458,6 +494,8 @@ export default function VoiceAITutor() {
       activeConversationId={activeConversationId}
       onOpen={(id) => void openConversation(id)}
       onDelete={(id) => void removeConversation(id)}
+      onRename={(id, title) => void renameConversationHandler(id, title)}
+      onPin={(id, pinned) => void togglePinConversation(id, pinned)}
       onNew={startNewConversation}
     />
   );

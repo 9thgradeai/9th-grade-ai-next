@@ -390,6 +390,7 @@ A persisted AI chat thread (Tutor, Assistant, or Solver), always owned by one us
 - `user` User — relation
 - `kind` AIConversationKind — default `TUTOR`
 - `title` String — default `"New conversation"`
+- `pinned` Boolean — default `false` (pinned conversations sort to the top of the list)
 - `subjectId` Int? — FK to Subject (set-null)
 - `subject` Subject? — relation
 - `topicId` Int? — FK to Topic (set-null)
@@ -398,7 +399,7 @@ A persisted AI chat thread (Tutor, Assistant, or Solver), always owned by one us
 - `createdAt` DateTime — default `now()`
 - `updatedAt` DateTime — updatedAt
 - Relations: `messages`
-- Indexes: `[userId, updatedAt]`, `[userId, kind, updatedAt]`
+- Indexes: `[userId, updatedAt]`, `[userId, kind, updatedAt]` (list queries order by `pinned` desc first)
 
 #### AIMessage
 A single turn inside an AI conversation. Content only — never system prompts.

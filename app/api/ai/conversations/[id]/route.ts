@@ -1,4 +1,4 @@
-/* GET/PATCH/DELETE /api/ai/conversations/[id] — messages, rename, delete.
+/* GET/PATCH/DELETE /api/ai/conversations/[id] — messages, update, delete.
    Ownership is enforced: a user can only ever touch their own conversations. */
 
 import { NextResponse } from "next/server";
@@ -8,6 +8,7 @@ import {
   getConversation,
   listMessages,
   renameConversation,
+  setConversationPinned,
   deleteConversation,
 } from "~backend/ai";
 import { getRequestId, startTiming, applySecurityHeaders } from "../../../_middleware";
@@ -55,11 +56,22 @@ export async function PATCH(
     if (!userId) throw new UnauthorizedError();
     const { id } = await params;
 
-    const body = (await request.json().catch(() => ({}))) as { title?: string };
-    const title = typeof body.title === "string" && body.title.trim() ? body.title.trim() : null;
-    if (!title) throw new ValidationError("title is required.");
+    const body = (await request.json().catch(() => ({}))) as {
+      title?: string;
+      pinned?: boolean;
+    };
 
-    const conversation = await renameConversation(userId, id, title);
+    let conversation;
+    if (body.title !== undefined) {
+      const title = typeof body.title === "string" && body.title.trim() ? body.title.trim() : null;
+      if (!title) throw new ValidationError("title is required.");
+      conversation = await renameConversation(userId, id, title);
+    } else if (body.pinned !== undefined) {
+      if (typeof body.pinned !== "boolean") throw new ValidationError("pinned must be a boolean.");
+      conversation = await setConversationPinned(userId, id, body.pinned);
+    } else {
+      throw new ValidationError("Provide a title or a pinned value.");
+    }
 
     const res = NextResponse.json({ conversation });
     res.headers.set("X-Request-Id", requestId);

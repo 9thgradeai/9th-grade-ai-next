@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.5.0] - 2026-08-21
+
+### Added
+- **Conversation management** in the 9Th-Grade AI workspace sidebar:
+  - Each conversation row has an overflow menu with **Rename** (inline edit),
+    **Pin / Unpin**, and **Delete** actions.
+  - Pinned conversations persist via a new `AIConversation.pinned` column and
+    sort to the top of the conversation list.
+  - `PATCH /api/ai/conversations/:id` now accepts `{ title }` or
+    `{ pinned: boolean }` (ownership-checked).
+
 ## [0.4.0] - 2026-08-20
 
 ### Changed

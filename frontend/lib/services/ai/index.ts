@@ -14,6 +14,7 @@ export {
   createConversation,
   getConversation,
   renameConversation,
+  pinConversation,
   deleteConversation,
   submitFeedback,
 } from "./conversations";

@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import VoiceAITutor from "@/components/dashboard/VoiceAITutor";
+import { renameConversation, pinConversation } from "@/lib/services/ai";
 
 vi.mock("@/lib/auth-ctx", () => ({
   useAuth: () => ({ user: { id: "u1", name: "Test User", email: "t@t.com" } }),
@@ -23,6 +24,7 @@ vi.mock("@/lib/services/ai", () => ({
       id: "c1",
       kind: "TUTOR",
       title: "গতি সূত্র",
+      pinned: false,
       subjectId: null,
       topicId: null,
       topicPath: "",
@@ -42,6 +44,8 @@ vi.mock("@/lib/services/ai", () => ({
   tutorTurn: vi.fn().mockResolvedValue({ conversationId: "c1" }),
   askAssistant: vi.fn().mockResolvedValue({ conversationId: "c1", reply: "ok" }),
   deleteConversation: vi.fn().mockResolvedValue(undefined),
+  renameConversation: vi.fn().mockResolvedValue({ id: "c1", title: "নতুন নাম" }),
+  pinConversation: vi.fn().mockResolvedValue({ id: "c1", pinned: true }),
   submitFeedback: vi.fn().mockResolvedValue(undefined),
   streamChat: vi.fn(),
   aiJson: vi.fn(),
@@ -112,6 +116,36 @@ describe("VoiceAITutor (AI workspace)", () => {
     fireEvent.keyDown(textarea, { key: "Enter" });
     await waitFor(() => {
       expect(screen.getByText("পরীক্ষা বার্তা")).toBeInTheDocument();
+    });
+  });
+
+  it("renames a conversation from the overflow menu", async () => {
+    render(<VoiceAITutor />);
+    fireEvent.click(screen.getByLabelText("Open AI Tutor and Assistant"));
+    await waitFor(() => {
+      expect(screen.getByText("গতি সূত্র")).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByLabelText("Conversation actions"));
+    fireEvent.click(screen.getByText("Rename"));
+    const input = screen.getByLabelText("Rename conversation");
+    fireEvent.change(input, { target: { value: "নতুন নাম" } });
+    fireEvent.keyDown(input, { key: "Enter" });
+    await waitFor(() => {
+      expect(renameConversation).toHaveBeenCalledWith("c1", "নতুন নাম");
+      expect(screen.getByText("নতুন নাম")).toBeInTheDocument();
+    });
+  });
+
+  it("pins a conversation from the overflow menu", async () => {
+    render(<VoiceAITutor />);
+    fireEvent.click(screen.getByLabelText("Open AI Tutor and Assistant"));
+    await waitFor(() => {
+      expect(screen.getByText("গতি সূত্র")).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByLabelText("Conversation actions"));
+    fireEvent.click(screen.getByText("Pin"));
+    await waitFor(() => {
+      expect(pinConversation).toHaveBeenCalledWith("c1", true);
     });
   });
 });

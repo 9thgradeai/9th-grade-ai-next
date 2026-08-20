@@ -35,7 +35,7 @@ Model resolution is task-driven via `resolveModel(task, { image })`:
 | `POST /api/ai/solver` | required | Structured step-by-step solver (`{ solution, steps, explanation, relatedConcept }`) |
 | `POST /api/ai/assistant` | required | Structured study guidance (`{ reply, suggestedActions }`) |
 | `GET/POST /api/ai/conversations` | required | List / create conversation threads |
-| `GET/PATCH/DELETE /api/ai/conversations/:id` | required | Read / rename / delete one conversation (ownership-checked) |
+| `GET/PATCH/DELETE /api/ai/conversations/:id` | required | Read / rename / pin / delete one conversation (ownership-checked) |
 | `POST /api/ai/feedback` | required | Record HELPFUL / NOT_HELPFUL feedback on a message |
 
 Response headers: `X-AI-Source` (`groq` | `anthropic` | `mock`), `X-Conversation-Id`, `X-AI-Intent`, `X-AI-Model`.

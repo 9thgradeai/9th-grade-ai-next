@@ -509,6 +509,7 @@ model AIConversation {
   user       User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   kind       AIConversationKind @default(TUTOR)
   title      String             @default("New conversation")
+  pinned     Boolean            @default(false)
   subjectId  Int?
   subject    Subject?           @relation(fields: [subjectId], references: [id], onDelete: SetNull)
   topicId    Int?

@@ -48,6 +48,18 @@ export async function renameConversation(id: string, title: string): Promise<AIC
   return data.conversation;
 }
 
+export async function pinConversation(
+  id: string,
+  pinned: boolean,
+): Promise<AIConversationSummary> {
+  const data = await aiJson<{ conversation: AIConversationSummary }>(
+    `/api/ai/conversations/${id}`,
+    "PATCH",
+    { pinned },
+  );
+  return data.conversation;
+}
+
 export async function deleteConversation(id: string): Promise<void> {
   await aiJson<{ ok: boolean }>(`/api/ai/conversations/${id}`, "DELETE");
 }

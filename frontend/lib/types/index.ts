@@ -194,6 +194,7 @@ export namespace Client {
     id: string;
     kind: AIConversationKind;
     title: string;
+    pinned: boolean;
     subjectId: number | null;
     topicId: number | null;
     topicPath: string;

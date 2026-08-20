@@ -17,6 +17,7 @@ export type ConversationSummary = {
   id: string;
   kind: AIConversationKind;
   title: string;
+  pinned: boolean;
   subjectId: number | null;
   topicId: number | null;
   topicPath: string;
@@ -84,7 +85,7 @@ export async function listConversations(
 ): Promise<ConversationSummary[]> {
   const rows = await prisma.aIConversation.findMany({
     where: { userId, ...(kind ? { kind } : {}) },
-    orderBy: { updatedAt: "desc" },
+    orderBy: [{ pinned: "desc" }, { updatedAt: "desc" }],
     take: 50,
     include: { _count: { select: { messages: true } } },
   });
@@ -112,6 +113,20 @@ export async function renameConversation(
   const row = await prisma.aIConversation.update({
     where: { id: existing.id },
     data: { title: title.slice(0, 120) || "New conversation" },
+    include: { _count: { select: { messages: true } } },
+  });
+  return toSummary(row);
+}
+
+export async function setConversationPinned(
+  userId: string,
+  conversationId: string,
+  pinned: boolean,
+): Promise<ConversationSummary> {
+  const existing = await getConversation(userId, conversationId);
+  const row = await prisma.aIConversation.update({
+    where: { id: existing.id },
+    data: { pinned },
     include: { _count: { select: { messages: true } } },
   });
   return toSummary(row);
@@ -200,6 +215,7 @@ function toSummary(row: {
   id: string;
   kind: AIConversationKind;
   title: string;
+  pinned: boolean;
   subjectId: number | null;
   topicId: number | null;
   topicPath: string;
@@ -211,6 +227,7 @@ function toSummary(row: {
     id: row.id,
     kind: row.kind,
     title: row.title,
+    pinned: row.pinned,
     subjectId: row.subjectId,
     topicId: row.topicId,
     topicPath: row.topicPath,

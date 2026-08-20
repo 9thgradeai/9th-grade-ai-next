@@ -48,7 +48,7 @@ Auth-protected routes require the `auth_token` HttpOnly cookie (JWT, 7-day expir
 | GET | `/api/ai/conversations` | **Auth required** — List the caller's AI conversations (`?kind=TUTOR\|ASSISTANT\|SOLVER`) |
 | POST | `/api/ai/conversations` | **Auth required** — Create an AI conversation `{ kind, title?, subjectId?, topicId?, topicPath? }` |
 | GET | `/api/ai/conversations/:id` | **Auth required** — Get one conversation + messages (ownership-checked) |
-| PATCH | `/api/ai/conversations/:id` | **Auth required** — Rename a conversation `{ title }` |
+| PATCH | `/api/ai/conversations/:id` | **Auth required** — Update a conversation: rename `{ title }` or pin/unpin `{ pinned: boolean }` (ownership-checked) |
 | DELETE | `/api/ai/conversations/:id` | **Auth required** — Delete a conversation (ownership-checked) |
 | POST | `/api/ai/feedback` | **Auth required** — Record feedback `{ rating: "HELPFUL"\|"NOT_HELPFUL", messageId?, category?, comment? }` |
 
@@ -116,7 +116,7 @@ Falls back to a clearly labelled `mock` source when no API key is set. See `docs
 
 ### AIConversation
 ```json
-{ "id": "cuid", "kind": "TUTOR" | "ASSISTANT" | "SOLVER", "title": "...", "createdAt": "...", "updatedAt": "..." }
+{ "id": "cuid", "kind": "TUTOR" | "ASSISTANT" | "SOLVER", "title": "...", "pinned": false, "createdAt": "...", "updatedAt": "..." }
 ```
 `GET /api/ai/conversations` → `{ "conversations": [AIConversation] }`; `GET .../:id` → `{ "conversation": AIConversation, "messages": [{ "id": "...", "role": "USER"|"ASSISTANT", "status": "COMPLETE"|"FAILED", "content": "...", "intent": "...", "createdAt": "..." }] }`.
 
