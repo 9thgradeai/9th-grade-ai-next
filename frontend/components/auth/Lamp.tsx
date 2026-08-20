@@ -1,8 +1,10 @@
 "use client";
 
+import { motion } from "framer-motion";
+
 export function Lamp({ lit, interactive, onActivate }: { lit: boolean; interactive: boolean; onActivate: () => void }) {
   const body = (
-    <svg viewBox="0 0 220 300" className="h-32 w-24 sm:h-40 sm:w-30" role="img" aria-hidden="true">
+    <svg viewBox="0 0 220 300" className="h-40 w-30 sm:h-48 sm:w-36" role="img" aria-hidden="true">
       <defs>
         <radialGradient id="lamp-base" cx="50%" cy="30%" r="80%">
           <stop offset="0%" stopColor="#5b4220" />
@@ -30,7 +32,34 @@ export function Lamp({ lit, interactive, onActivate }: { lit: boolean; interacti
         </radialGradient>
       </defs>
 
-      {lit && <circle cx="110" cy="176" r="86" fill="url(#lamp-glow)" className="lamp-breathe" />}
+      {/* Invitation halo — pulses gently while off so the lamp reads as touchable */}
+      {!lit && (
+        <motion.circle
+          cx="110"
+          cy="176"
+          r="92"
+          fill="url(#lamp-glow)"
+          animate={{ opacity: [0.12, 0.32, 0.12], scale: [0.9, 1.06, 0.9] }}
+          transition={{ duration: 3.4, repeat: Infinity, ease: "easeInOut" }}
+        />
+      )}
+      {/* Hover pre-light — warms up as you approach */}
+      {!lit && (
+        <circle cx="110" cy="176" r="80" fill="url(#lamp-glow)" className="opacity-0 transition-opacity duration-300 group-hover:opacity-90" />
+      )}
+
+      {/* Warm-up flicker then steady glow */}
+      {lit && (
+        <motion.circle
+          cx="110"
+          cy="176"
+          r="96"
+          fill="url(#lamp-glow)"
+          initial={{ opacity: 0, scale: 0.6 }}
+          animate={{ opacity: [0, 0.95, 0.35, 1, 0.6, 1], scale: [0.6, 1, 0.82, 1, 0.92, 1] }}
+          transition={{ duration: 0.9, ease: "easeInOut" }}
+        />
+      )}
 
       <ellipse cx="110" cy="278" rx="64" ry="13" fill="url(#lamp-base)" />
       <ellipse cx="110" cy="272" rx="40" ry="8" fill="#0d0803" />
@@ -50,7 +79,16 @@ export function Lamp({ lit, interactive, onActivate }: { lit: boolean; interacti
       />
       <circle cx="110" cy="86" r="7" fill="#d4a24e" />
 
-      <ellipse cx="110" cy="176" rx="11" ry="13" fill="url(#lamp-bulb)" />
+      {/* Bulb — dark when off, glowing core when on */}
+      <ellipse
+        cx="110"
+        cy="176"
+        rx="11"
+        ry="13"
+        fill="url(#lamp-bulb)"
+        className={`transition-opacity duration-500 ${lit ? "opacity-100" : "opacity-55"}`}
+      />
+      {lit && <circle cx="110" cy="176" r="13" fill="#ffedb3" className="lamp-breathe" />}
     </svg>
   );
 
@@ -59,15 +97,24 @@ export function Lamp({ lit, interactive, onActivate }: { lit: boolean; interacti
   }
 
   return (
-    <button
+    <motion.button
       type="button"
       onClick={onActivate}
       aria-label="Turn on the light"
       aria-pressed={lit}
-      className="group flex cursor-pointer flex-col items-center rounded-2xl outline-none transition-transform duration-300 focus-visible:ring-2 focus-visible:ring-emerald-400/80 hover:scale-[1.03] active:scale-[0.98]"
+      whileHover={lit ? { scale: 1.04 } : { scale: 1.07, rotate: -2, y: -4 }}
+      whileTap={{ scale: 0.95 }}
+      transition={{ type: "spring", stiffness: 420, damping: 22 }}
+      className="group flex cursor-pointer flex-col items-center rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/80"
     >
-      {body}
+      {/* Gentle sway once the room is lit */}
+      <motion.div
+        animate={lit ? { rotate: [0, 1.5, -1.5, 0] } : { rotate: 0 }}
+        transition={lit ? { duration: 4.5, repeat: Infinity, ease: "easeInOut" } : { duration: 0.3 }}
+      >
+        {body}
+      </motion.div>
       <span className="sr-only">Turn on the light</span>
-    </button>
+    </motion.button>
   );
 }
