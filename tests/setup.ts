@@ -106,6 +106,7 @@ vi.mock("~backend/db", () => ({
       findUnique: vi.fn(),
       upsert: vi.fn(),
       update: vi.fn(),
+      create: vi.fn(),
     },
     subject: {
       findMany: vi.fn(),
@@ -139,6 +140,30 @@ vi.mock("~backend/db", () => ({
     flashcard: {
       findMany: vi.fn(),
       findFirst: vi.fn(),
+      findUnique: vi.fn(),
+      count: vi.fn(),
+    },
+    flashcardUserState: {
+      findMany: vi.fn(),
+      findUnique: vi.fn(),
+      upsert: vi.fn(),
+      create: vi.fn(),
+      delete: vi.fn(),
+      count: vi.fn(),
+    },
+    flashcardReview: {
+      findMany: vi.fn(),
+      findFirst: vi.fn(),
+      create: vi.fn(),
+      createMany: vi.fn(),
+      delete: vi.fn(),
+      count: vi.fn(),
+    },
+    studyTaskCompletion: {
+      findMany: vi.fn(),
+      findUnique: vi.fn(),
+      create: vi.fn(),
+      delete: vi.fn(),
       count: vi.fn(),
     },
     studyPlanDay: {
@@ -153,6 +178,15 @@ vi.mock("~backend/db", () => ({
     },
     dailyQuiz: {
       findFirst: vi.fn(),
+      findUnique: vi.fn(),
+      update: vi.fn(),
+      count: vi.fn(),
+    },
+    dailyQuizParticipation: {
+      findUnique: vi.fn(),
+      findFirst: vi.fn(),
+      upsert: vi.fn(),
+      create: vi.fn(),
       count: vi.fn(),
     },
     mockTest: {

@@ -1,14 +1,19 @@
-/* prisma/seed.ts — idempotent seed for 9Th-Grade AI
+/* prisma/seed.ts — idempotent, NON-DESTRUCTIVE seed for 9Th-Grade AI
    Ports the existing static data (src/lib/data.ts, src/lib/study-data.ts,
    src/lib/ai-data.ts, data/users.json, data/bcs_syllabus/*.md) into the
    database.
 
-   Content tables (subjects, topics, questions, flashcards, mock tests,
-   daily quizzes, news, etc.) are always refreshed.
+   Safe to run on every deploy: every content row carries a natural key or a
+   deterministic `sourceKey`, so seeding UPSERTS instead of wiping. Row ids
+   are stable across runs, which keeps user data intact:
+     - Bookmarks reference Question ids
+     - QuestionAttempts reference Question ids (SetNull otherwise)
+     - NotificationRead / DailyQuizParticipation / FlashcardReview reference
+       their announcement/quiz/card rows
 
-   Per-user tables (users, progress, bookmarks, attempts) are ONLY wiped
-   and re-seeded when SEED_RESET_USERS=1 — safe to run against production
-   without destroying real accounts. */
+   The ONLY destructive path is explicit opt-in:
+     - SEED_RESET_USERS=1 wipes and re-seeds per-user tables.
+   ---------------------------------------------------------------------------- */
 
 import { PrismaClient, UserRole, Difficulty, QuizStatus, NotificationType, BadgeRarity } from "@prisma/client";
 import { readFileSync, readdirSync } from "fs";
@@ -31,6 +36,7 @@ import {
 } from "../../frontend/lib/data/study";
 import { FLASH_NEWS_ITEMS, RECOMMENDATIONS } from "../../frontend/lib/data/ai";
 import { seedQuestions } from "../../scripts/seed-questions";
+import { sourceKey } from "../../scripts/seed-keys";
 
 const prisma = new PrismaClient();
 
@@ -45,28 +51,8 @@ type SeedUser = {
 };
 
 async function main() {
-  console.log("🌱 Seeding 9Th-Grade AI database...");
+  console.log("🌱 Seeding 9Th-Grade AI database (non-destructive upsert mode)...");
   const resetUsers = process.env.SEED_RESET_USERS === "1";
-
-  // --- Clear content data (idempotent; safe on every run) ---
-  await prisma.topic.deleteMany();
-  await prisma.question.deleteMany();
-  await prisma.flashcard.deleteMany();
-  await prisma.quizQuestion.deleteMany();
-  await prisma.dailyQuiz.deleteMany();
-  await prisma.mockTestQuestion.deleteMany();
-  await prisma.mockTest.deleteMany();
-  await prisma.studyTask.deleteMany();
-  await prisma.studyPlanDay.deleteMany();
-  await prisma.questionBankCategory.deleteMany();
-  await prisma.examArchive.deleteMany();
-  await prisma.recommendation.deleteMany();
-  await prisma.flashNews.deleteMany();
-  await prisma.badge.deleteMany();
-  await prisma.appNotification.deleteMany();
-  await prisma.offlinePack.deleteMany();
-  await prisma.document.deleteMany();
-  await prisma.subject.deleteMany();
 
   // --- Per-user data: only wiped when explicitly requested ---
   if (resetUsers) {
@@ -76,7 +62,6 @@ async function main() {
     await prisma.questionAttempt.deleteMany();
     await prisma.bookmark.deleteMany();
     await prisma.userProgress.deleteMany();
-    await prisma.userSession.deleteMany();
     await prisma.user.deleteMany();
   }
 
@@ -135,12 +120,14 @@ async function main() {
   const questionCount = await seedQuestions(prisma);
   console.log(`  ✓ ${questionCount} questions (from database/data/ques)`);
 
-  // Question-bank categories map to subjects by label.
+  // Question-bank categories map to subjects by label (upsert by unique label).
   const subjectByBn = await prisma.subject.findMany();
   const subjMap = new Map(subjectByBn.map((s) => [s.nameBn, s.id]));
   for (const cat of QUESTION_BANK_CATEGORIES) {
-    await prisma.questionBankCategory.create({
-      data: {
+    await prisma.questionBankCategory.upsert({
+      where: { label: cat.label },
+      update: { count: cat.count, subjectId: subjMap.get(cat.label) ?? null },
+      create: {
         label: cat.label,
         count: cat.count,
         subjectId: subjMap.get(cat.label) ?? null,
@@ -149,64 +136,74 @@ async function main() {
   }
   console.log(`  ✓ ${QUESTION_BANK_CATEGORIES.length} question-bank categories`);
 
-  // --- Exam archives ---
+  // --- Exam archives (upsert by unique name) ---
   for (const a of ARCHIVE_CATEGORIES) {
-    await prisma.examArchive.create({
-      data: {
-        name: a.name,
-        icon: a.icon ?? "🎯",
-        count: a.count ?? 0,
-        yearRange: a.yearRange ?? "",
-        status: (a.status ?? "ACTIVE") as QuizStatus,
-        accent: a.accent ?? "emerald",
-      },
+    const data = {
+      icon: a.icon ?? "🎯",
+      count: a.count ?? 0,
+      yearRange: a.yearRange ?? "",
+      status: (a.status ?? "ACTIVE") as QuizStatus,
+      accent: a.accent ?? "emerald",
+    };
+    await prisma.examArchive.upsert({
+      where: { name: a.name },
+      update: data,
+      create: { name: a.name, ...data },
     });
   }
   console.log(`  ✓ ${ARCHIVE_CATEGORIES.length} exam archives`);
 
-  // --- Flashcards ---
+  // --- Flashcards (upsert by md5(subjectName|question) sourceKey) ---
   let flashCount = 0;
   for (const [subjectName, cards] of Object.entries(FLASHCARD_DECKS)) {
     const subjId = subjMap.get(subjectName) ?? null;
     for (const c of cards) {
-      await prisma.flashcard.create({
-        data: {
-          subjectId: subjId,
-          subjectName,
-          question: c.question,
-          answer: c.answer,
-          hint: c.hint ?? "",
-          difficulty: (c.difficulty ?? "medium").toUpperCase() as Difficulty,
-          nextReview: new Date(Date.now() + 86400000),
-          interval: c.interval ?? 1,
-          easeFactor: c.easeFactor ?? 2.5,
-          repetitions: c.repetitions ?? 0,
-        },
+      const data = {
+        subjectId: subjId,
+        subjectName,
+        answer: c.answer,
+        hint: c.hint ?? "",
+        difficulty: (c.difficulty ?? "medium").toUpperCase() as Difficulty,
+        nextReview: new Date(Date.now() + 86400000),
+        interval: c.interval ?? 1,
+        easeFactor: c.easeFactor ?? 2.5,
+        repetitions: c.repetitions ?? 0,
+      };
+      await prisma.flashcard.upsert({
+        where: { sourceKey: sourceKey(subjectName, c.question) },
+        update: data,
+        create: { question: c.question, sourceKey: sourceKey(subjectName, c.question), ...data },
       });
       flashCount++;
     }
   }
   console.log(`  ✓ ${flashCount} flashcards`);
 
-  // --- Mock tests (one per subject in MOCK_TEST_QUESTIONS) ---
+  // --- Mock tests (upsert by unique title; questions refreshed in place —
+  //     no user rows reference MockTestQuestion) ---
   for (const [subjectName, questions] of Object.entries(MOCK_TEST_QUESTIONS)) {
-    await prisma.mockTest.create({
-      data: {
-        title: `${subjectName} — Mock Test`,
+    const title = `${subjectName} — Mock Test`;
+    const mock = await prisma.mockTest.upsert({
+      where: { title },
+      update: { totalQuestions: questions.length, duration: 20 },
+      create: {
+        title,
         subject: subjectName,
         totalQuestions: questions.length,
         duration: 20,
-        questions: {
-          create: questions.map((q) => ({
-            subject: q.subject ?? subjectName,
-            topic: q.topic ?? "",
-            question: q.question,
-            options: q.options,
-            correctAnswer: q.correctAnswer,
-            explanation: q.explanation ?? "",
-          })),
-        },
       },
+    });
+    await prisma.mockTestQuestion.deleteMany({ where: { mockTestId: mock.id } });
+    await prisma.mockTestQuestion.createMany({
+      data: questions.map((q) => ({
+        mockTestId: mock.id,
+        subject: q.subject ?? subjectName,
+        topic: q.topic ?? "",
+        question: q.question,
+        options: q.options,
+        correctAnswer: q.correctAnswer,
+        explanation: q.explanation ?? "",
+      })),
     });
   }
   console.log(`  ✓ ${Object.keys(MOCK_TEST_QUESTIONS).length} mock tests`);
@@ -232,8 +229,16 @@ async function main() {
     },
   ];
   for (const exam of examSchedule) {
-    await prisma.examSchedule.create({
-      data: {
+    await prisma.examSchedule.upsert({
+      where: { sourceKey: sourceKey(exam.circularNo, exam.titleBn, exam.year) },
+      update: {
+        titleEn: exam.titleEn,
+        type: exam.type,
+        date: new Date(exam.date),
+        year: exam.year,
+        note: exam.note,
+      },
+      create: {
         titleBn: exam.titleBn,
         titleEn: exam.titleEn,
         type: exam.type,
@@ -241,114 +246,138 @@ async function main() {
         year: exam.year,
         circularNo: exam.circularNo,
         note: exam.note,
+        sourceKey: sourceKey(exam.circularNo, exam.titleBn, exam.year),
       },
     });
   }
   console.log(`  ✓ ${examSchedule.length} exam schedule entries`);
 
-  // --- Daily quizzes ---
+  // --- Daily quizzes (upsert by unique date; question children refreshed —
+  //     participations reference the quiz row, not its questions) ---
   for (const quiz of DAILY_QUIZZES) {
-    await prisma.dailyQuiz.create({
-      data: {
+    const dq = await prisma.dailyQuiz.upsert({
+      where: { date: quiz.date },
+      update: {},
+      create: {
         date: quiz.date,
         completed: quiz.completed ?? false,
         score: quiz.score ?? 0,
         claimed: quiz.claimed ?? false,
-        questions: {
-          create: quiz.questions.map((q) => ({
-            subject: q.subject ?? "",
-            topic: q.topic ?? "",
-            question: q.question,
-            options: q.options,
-            correctAnswer: q.correctAnswer,
-            explanation: q.explanation ?? "",
-          })),
-        },
       },
+    });
+    await prisma.quizQuestion.deleteMany({ where: { dailyQuizId: dq.id } });
+    await prisma.quizQuestion.createMany({
+      data: quiz.questions.map((q) => ({
+        dailyQuizId: dq.id,
+        subject: q.subject ?? "",
+        topic: q.topic ?? "",
+        question: q.question,
+        options: q.options,
+        correctAnswer: q.correctAnswer,
+        explanation: q.explanation ?? "",
+      })),
     });
   }
   console.log(`  ✓ ${DAILY_QUIZZES.length} daily quizzes`);
 
-  // --- Flash news (prefer ai-data items, fall back to data.ts) ---
+  // --- Flash news (upsert by md5(titleBn|date); prefer ai-data items) ---
   const news = FLASH_NEWS_ITEMS.length > 0 ? FLASH_NEWS_ITEMS : (FLASH_NEWS as Client.FlashNews[]);
   for (const n of news) {
-    await prisma.flashNews.create({
-      data: {
-        tag: n.tag ?? "EXAM",
-        titleBn: n.title?.bn ?? n.title ?? "",
-        titleEn: n.title?.en ?? "",
-        text: n.text ?? "",
-        full: n.full ?? "",
-        date: n.date ?? "",
-        readTime: n.readTime ?? 1,
-        categoryBn: n.category?.bn ?? "",
-        categoryEn: n.category?.en ?? "",
-      },
+    const titleBn = n.title?.bn ?? n.title ?? "";
+    const data = {
+      tag: n.tag ?? "EXAM",
+      titleEn: n.title?.en ?? "",
+      text: n.text ?? "",
+      full: n.full ?? "",
+      date: n.date ?? "",
+      readTime: n.readTime ?? 1,
+      categoryBn: n.category?.bn ?? "",
+      categoryEn: n.category?.en ?? "",
+    };
+    await prisma.flashNews.upsert({
+      where: { sourceKey: sourceKey(titleBn, data.date) },
+      update: data,
+      create: { titleBn, sourceKey: sourceKey(titleBn, data.date), ...data },
     });
   }
   console.log(`  ✓ ${news.length} flash news`);
 
-  // --- Recommendations ---
+  // --- Recommendations (upsert by md5(subjectBn|titleBn)) ---
   for (const r of RECOMMENDATIONS) {
-    await prisma.recommendation.create({
-      data: {
-        subjectBn: r.subject?.bn ?? r.subject ?? "",
-        subjectEn: r.subject?.en ?? "",
-        metric: r.metric ?? "accuracy",
-        accuracy: r.accuracy ?? 0,
-        titleBn: r.title?.bn ?? "",
-        titleEn: r.title?.en ?? "",
-        descriptionBn: r.description?.bn ?? "",
-        descriptionEn: r.description?.en ?? "",
-        ctaBn: r.cta?.bn ?? "",
-        ctaEn: r.cta?.en ?? "",
-      },
+    const subjectBn = r.subject?.bn ?? r.subject ?? "";
+    const titleBn = r.title?.bn ?? "";
+    const data = {
+      subjectEn: r.subject?.en ?? "",
+      metric: r.metric ?? "accuracy",
+      accuracy: r.accuracy ?? 0,
+      titleEn: r.title?.en ?? "",
+      descriptionBn: r.description?.bn ?? "",
+      descriptionEn: r.description?.en ?? "",
+      ctaBn: r.cta?.bn ?? "",
+      ctaEn: r.cta?.en ?? "",
+    };
+    await prisma.recommendation.upsert({
+      where: { sourceKey: sourceKey(subjectBn, titleBn) },
+      update: data,
+      create: { subjectBn, titleBn, sourceKey: sourceKey(subjectBn, titleBn), ...data },
     });
   }
   console.log(`  ✓ ${RECOMMENDATIONS.length} recommendations`);
 
-  // --- Badges ---
+  // --- Badges (upsert by unique name) ---
   for (const b of BADGES) {
-    await prisma.badge.create({
-      data: {
-        name: b.name,
-        description: b.description,
-        icon: b.icon ?? "🏅",
-        rarity: (b.rarity ?? "common").toUpperCase() as BadgeRarity,
-        unlockedSeed: b.unlocked ?? false,
-      },
+    const data = {
+      description: b.description,
+      icon: b.icon ?? "🏅",
+      rarity: (b.rarity ?? "common").toUpperCase() as BadgeRarity,
+      unlockedSeed: b.unlocked ?? false,
+    };
+    await prisma.badge.upsert({
+      where: { name: b.name },
+      update: { description: data.description, icon: data.icon, rarity: data.rarity },
+      create: { name: b.name, ...data },
     });
   }
   console.log(`  ✓ ${BADGES.length} badges`);
 
-  // --- Notifications ---
+  // --- Notifications (upsert by md5(title|message); NotificationRead rows
+  //     reference these ids and must survive reseeds) ---
   for (const n of INITIAL_NOTIFICATIONS) {
-    await prisma.appNotification.create({
-      data: {
+    const data = {
+      type: (n.type ?? "info").toUpperCase() as NotificationType,
+      timestamp: n.timestamp ? new Date(n.timestamp) : new Date(),
+      read: n.read ?? false,
+    };
+    await prisma.appNotification.upsert({
+      where: { sourceKey: sourceKey(n.title, n.message) },
+      update: { type: data.type },
+      create: {
         title: n.title,
         message: n.message,
-        type: (n.type ?? "info").toUpperCase() as NotificationType,
-        timestamp: n.timestamp ? new Date(n.timestamp) : new Date(),
-        read: n.read ?? false,
+        sourceKey: sourceKey(n.title, n.message),
+        ...data,
       },
     });
   }
   console.log(`  ✓ ${INITIAL_NOTIFICATIONS.length} notifications`);
 
-  // --- Offline packs ---
+  // --- Offline packs (upsert by unique name) ---
   for (const p of OFFLINE_PACKS) {
-    await prisma.offlinePack.create({
-      data: {
-        name: p.name,
-        size: p.size ?? "",
-        downloaded: p.downloaded ?? false,
-        subject: p.subject ?? "",
-      },
+    const data = {
+      size: p.size ?? "",
+      downloaded: p.downloaded ?? false,
+      subject: p.subject ?? "",
+    };
+    await prisma.offlinePack.upsert({
+      where: { name: p.name },
+      update: data,
+      create: { name: p.name, ...data },
     });
   }
   console.log(`  ✓ ${OFFLINE_PACKS.length} offline packs`);
 
-  // --- Documents from syllabus markdown + a few seed entries ---
+  // --- Documents from syllabus markdown + a few seed entries
+  //     (upsert by md5(title|category|year)) ---
   const docs: { title: string; category: string; type: string; description: string; year: string }[] = [
     { title: "BCS Preliminary Syllabus (Full)", category: "Syllabus", type: "md", description: "Complete BCS Preliminary syllabus coverage across all 10 subjects.", year: "2026" },
   ];
@@ -368,13 +397,19 @@ async function main() {
     /* no syllabus dir */
   }
   for (const d of docs) {
-    await prisma.document.create({
-      data: {
+    const data = {
+      type: d.type,
+      description: d.description,
+    };
+    await prisma.document.upsert({
+      where: { sourceKey: sourceKey(d.title, d.category, d.year) },
+      update: data,
+      create: {
         title: d.title,
         category: d.category,
-        type: d.type,
-        description: d.description,
         year: d.year,
+        sourceKey: sourceKey(d.title, d.category, d.year),
+        ...data,
       },
     });
   }

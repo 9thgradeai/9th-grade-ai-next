@@ -224,33 +224,33 @@ describe("stream chunking", () => {
 });
 
 describe("rate limiting", () => {
-  beforeEach(() => {
-    resetRateLimitStore();
+  beforeEach(async () => {
+    await resetRateLimitStore();
   });
-  afterEach(() => {
-    resetRateLimitStore();
+  afterEach(async () => {
+    await resetRateLimitStore();
     vi.useRealTimers();
   });
 
-  it("allows requests under the limit and blocks beyond it", () => {
-    expect(checkRateLimit("a", 2, 1000)).toBe(true);
-    expect(checkRateLimit("a", 2, 1000)).toBe(true);
-    expect(checkRateLimit("a", 2, 1000)).toBe(false);
+  it("allows requests under the limit and blocks beyond it", async () => {
+    await expect(checkRateLimit("a", 2, 1000)).resolves.toBe(true);
+    await expect(checkRateLimit("a", 2, 1000)).resolves.toBe(true);
+    await expect(checkRateLimit("a", 2, 1000)).resolves.toBe(false);
   });
 
-  it("resets after the window expires", () => {
-    expect(checkRateLimit("a", 1, 1000)).toBe(true);
-    expect(checkRateLimit("a", 1, 1000)).toBe(false);
+  it("resets after the window expires", async () => {
+    await expect(checkRateLimit("a", 1, 1000)).resolves.toBe(true);
+    await expect(checkRateLimit("a", 1, 1000)).resolves.toBe(false);
     vi.useFakeTimers();
     vi.setSystemTime(Date.now() + 1001);
-    expect(checkRateLimit("a", 1, 1000)).toBe(true);
+    await expect(checkRateLimit("a", 1, 1000)).resolves.toBe(true);
   });
 
-  it("enforces a daily quota per calendar day", () => {
-    expect(checkDailyQuota("user-1", 3)).toBe(true);
-    expect(checkDailyQuota("user-1", 3)).toBe(true);
-    expect(checkDailyQuota("user-1", 3)).toBe(true);
-    expect(checkDailyQuota("user-1", 3)).toBe(false);
+  it("enforces a daily quota per calendar day", async () => {
+    await expect(checkDailyQuota("user-1", 3)).resolves.toBe(true);
+    await expect(checkDailyQuota("user-1", 3)).resolves.toBe(true);
+    await expect(checkDailyQuota("user-1", 3)).resolves.toBe(true);
+    await expect(checkDailyQuota("user-1", 3)).resolves.toBe(false);
   });
 
   it("keys limits by userId when present", () => {

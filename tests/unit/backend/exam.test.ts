@@ -235,9 +235,11 @@ describe("submitCustomExam", () => {
       fullQuestion(2, "ক"),
       fullQuestion(3, "ঘ"),
     ]);
-    vi.mocked(prisma.questionAttempt.count).mockResolvedValue(2);
     vi.mocked(prisma.questionAttempt.createMany).mockResolvedValue({ count: 2 } as never);
-    vi.mocked(prisma.userProgress.update).mockResolvedValue({} as never);
+    vi.mocked(prisma.$executeRaw).mockResolvedValue(1 as never);
+    vi.mocked(prisma.$transaction).mockImplementation(async (fn) =>
+      (fn as unknown as (tx: unknown) => Promise<unknown>)(prisma),
+    );
 
     const result = await submitCustomExam(userId, [
       { questionId: 1, selected: "খ" }, // correct +1
@@ -267,10 +269,13 @@ describe("submitCustomExam", () => {
     const attempts = vi.mocked(prisma.questionAttempt.createMany).mock.calls[0][0];
     expect(attempts.data).toHaveLength(2);
     expect(attempts.data.map((a: { questionId: number }) => a.questionId)).toEqual([1, 2]);
-    // Exam counted as an exam attempt.
-    expect(
-      vi.mocked(prisma.userProgress.update).mock.calls.some((c) => c[0].data?.examsAttempted !== undefined),
-    ).toBe(true);
+    // Progress recompute + exam counter is the single atomic statement
+    // (params: userId, pointsEarned, examsIncrement ×2).
+    expect(prisma.$executeRaw).toHaveBeenCalledTimes(1);
+    const rawValues = vi.mocked(prisma.$executeRaw).mock.calls[0].slice(1);
+    expect(rawValues[0]).toBe("user-1");
+    expect(rawValues[1]).toBe(10); // 1 correct × 10 points
+    expect(rawValues[2]).toBe(1); // exam counter increment
   });
 
   it("rejects malformed answers", async () => {

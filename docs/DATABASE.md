@@ -1,5 +1,52 @@
 # Database
 
+## Seed identity & idempotency (Phase 2B1)
+
+All seed-managed content rows carry either a natural unique key or a deterministic
+`sourceKey` (md5 of pipe-joined parts — see `scripts/seed-keys.ts`). The seeder
+**upserts** and never deletes, so row ids stay stable across deploys and user data
+referencing content (Bookmarks → Question, NotificationRead → AppNotification,
+DailyQuizParticipation → DailyQuiz, FlashcardReview → Flashcard) survives every deploy.
+
+`sourceKey` part orders (must match migration `000000000002_seed_source_keys` backfills):
+
+| Table | sourceKey parts | Unique on |
+|---|---|---|
+| Question | subjectId, path, question | `[subjectId, sourceKey]` |
+| Flashcard | subjectName, question | `sourceKey` |
+| StudyPlanDay | day, date | `sourceKey` |
+| ExamSchedule | circularNo, titleBn, year | `sourceKey` |
+| FlashNews | titleBn, date | `sourceKey` |
+| Recommendation | subjectBn, titleBn | `sourceKey` |
+| AppNotification | title, message | `sourceKey` |
+| Document | title, category, year | `sourceKey` |
+| Subject / MockTest / DailyQuiz / ExamArchive / QuestionBankCategory / Badge / OfflinePack | natural field | `nameBn` / `title` / `date` / `name` / `label` / `name` / `name` |
+
+## Integrity Constraints (Phase 3)
+
+Prisma cannot express CHECK constraints; they live in migration
+`000000000004_integrity_constraints` and must be re-applied manually if a table is
+ever rebuilt outside migrations:
+
+| Table | Constraint | Rule |
+|---|---|---|
+| UserProgress | nonnegative / accuracy range | all counters ≥ 0, `accuracy` 0–100 |
+| DailyQuizParticipation | score range / counts | `score` 0–100, counts ≥ 0 |
+| FlashcardUserState | bounds / lastRating | interval, repetitions, lapses ≥ 0, easeFactor ≥ 1, lastRating 0–3 or NULL |
+| FlashcardReview | rating range | `rating` 0–3 |
+| MockTestResult | score range / counts | `score` 0–100, counts & durationSec ≥ 0 |
+| AIMemory | confidence range | `confidence` 0–100 |
+| AIUsage | nonnegative | tokens, latencyMs, estimatedCostUsd ≥ 0 |
+| QuestionAttempt | source enum | `source` ∈ practice/daily/exam/mock |
+
+**Documented decisions (Phase 3):**
+- *Date-label columns stay String* (`DailyQuiz.date`, `FlashNews.date`, `StudyPlanDay.date`,
+  `ExamSchedule.year`): they are timezone-free date-only labels surfaced verbatim in API
+  DTOs. Instant columns (`ExamSchedule.date`, timestamps) use DateTime.
+- *No premature partitioning*: high-growth tables (QuestionAttempt, AIUsage, AIMessage)
+  keep serial bigint PKs plus `(userId, createdAt)` composites — sufficient for future
+  time-based partition attachment without changes today.
+
 ## Schema
 
 ### Enums
@@ -153,17 +200,30 @@
 
 #### Flashcard
 - `id` Int — PK, auto-increment
-- `subjectId` Int? — FK to Subject, nullable, indexed
-- `subject` Subject? — relation
-- `subjectName` String — default `""`
-- `question` String
-- `answer` String
-- `hint` String — default `""`
+- `subjectId` Int? — FK to Subject, `onDelete: SetNull`
+- `subjectName` String — default `""` (denormalised for deck filtering)
+- `question`, `answer`, `hint`
 - `difficulty` Difficulty — default `MEDIUM`
-- `nextReview` DateTime — default `now()`, indexed
-- `interval` Int — default `1`
-- `easeFactor` Float — default `2.5`
-- `repetitions` Int — default `0`
+- `nextReview` / `interval` / `easeFactor` / `repetitions` — **DEPRECATED (Phase 2B2)**: legacy shared defaults; authoritative scheduling is per-user in `FlashcardUserState`.
+- `sourceKey` String @unique — seed identity `md5(subjectName|question)`
+- Relations: `reviews` (FlashcardReview), `userStates` (FlashcardUserState)
+
+#### FlashcardUserState (Phase 2B2)
+Per-user SM-2 scheduling. A row exists only after the first review; unseen cards are implicitly new.
+
+- `userId` + `flashcardId` FKs (Cascade), unique `[userId, flashcardId]`
+- `nextReview` DateTime, `interval` Int (days), `easeFactor` Float (default 2.5, floor 1.3)
+- `repetitions` / `lapses` Int, `lastRating` Int? (`0=again 1=hard 2=good 3=easy`)
+- Indexes: `[userId, nextReview]`
+
+#### UserBadge (Phase 2B2)
+Per-user unlock record. Catalog state stays in `Badge`; earned state lives here.
+- `userId` + `badgeId` FKs (Cascade), unique `[userId, badgeId]`, `unlockedAt` DateTime
+
+#### StudyTaskCompletion (Phase 2B2)
+Per-user completion marker for a (usually template) study task; replaces the shared `StudyTask.completed` boolean so one user's progress never affects another.
+- `userId` + `taskId` FKs (Cascade), unique `[userId, taskId]`, `completedAt` DateTime
+- Indexes: `[userId]`
 
 #### StudyPlanDay
 - `id` Int — PK, auto-increment
@@ -177,25 +237,26 @@
 - `id` Int — PK, auto-increment
 - `dayId` Int — FK to StudyPlanDay
 - `planDay` StudyPlanDay — relation
-- `userId` String? — FK to User, nullable
+- `userId` String? — FK to User, nullable (`null` = shared template row)
 - `user` User? — relation
 - `title` String
 - `subject` String — default `""`
 - `duration` Int — default `0`
 - `priority` Priority — default `MEDIUM`
 - `description` String — default `""`
-- `completed` Boolean — default `false`
+- `completed` Boolean — default `false` — **DEPRECATED (Phase 2B2)**: superseded by per-user `StudyTaskCompletion`; never written by new code
 - `createdAt` DateTime — default `now()`
+- Relations: `completions` (StudyTaskCompletion)
 - Indexes: `[dayId, userId]`
 
 #### DailyQuiz
 - `id` Int — PK, auto-increment
 - `date` String, indexed
-- `completed` Boolean — default `false`
-- `score` Int — default `0`
-- `claimed` Boolean — default `false`
+- `completed` Boolean — default `false` — **DEPRECATED (Phase 2)**: legacy GLOBAL state shared by all users; kept only for the dual-read transition. Never read from new code.
+- `score` Int — default `0` — **DEPRECATED**: same as above
+- `claimed` Boolean — default `false` — **DEPRECATED**: same as above
 - `createdAt` DateTime — default `now()`
-- Relations: `questions`
+- Relations: `questions`, `participations`
 
 #### QuizQuestion
 - `id` Int — PK, auto-increment
@@ -207,6 +268,28 @@
 - `options` Json
 - `correctAnswer` String
 - `explanation` String — default `""`
+
+#### DailyQuizParticipation (Phase 2)
+Per-user daily-quiz state. One row per `(userId, quizId)`; replaces the deprecated global flags on DailyQuiz so one user's completion can never affect another user.
+
+- `id` Int — PK, auto-increment
+- `userId` String — FK to User, `onDelete: Cascade`
+- `user` User — relation
+- `quizId` Int — FK to DailyQuiz, `onDelete: Cascade`
+- `dailyQuiz` DailyQuiz — relation
+- `status` DailyQuizParticipationStatus (`IN_PROGRESS` | `COMPLETED`) — default `IN_PROGRESS`
+- `score` Int — percentage 0–100, default `0`
+- `correct` Int — default `0`
+- `total` Int — default `0`
+- `pointsEarned` Int — default `0`
+- `completedAt` DateTime? — set when status becomes `COMPLETED`
+- `createdAt` / `updatedAt` DateTime
+- Unique: `[userId, quizId]`
+- Indexes: `[quizId]`, `[userId, completedAt]`
+
+Behavior notes:
+- `GET /api/daily-quiz` maps the requesting user's participation onto the existing DTO fields (`completed`, `score`); anonymous callers receive neutral flags. Response shape unchanged.
+- `POST /api/daily-quiz/submit` writes attempts + progress recompute + participation inside a single Prisma transaction.
 
 #### MockTest
 - `id` Int — PK, auto-increment
@@ -500,7 +583,8 @@ Prisma automatically creates indexes for:
 - Primary keys (`@id`).
 - Foreign keys (`subjectId`, `userId`, etc.).
 - Unique constraints (`email`, `handle`, `[userId, questionId]`).
-- Explicit `@@index` fields: `User.email`, `User.handle`, `Subject.sortOrder`, `Topic.subjectId`, `Topic.[subjectId, parentId]`, `Question.[subjectId, difficulty]`, `Question.[subjectId, topic]`, `Question.[subjectId, topic, subtopic]`, `Question.[subjectId, path]`, `Flashcard.subjectId`, `Flashcard.nextReview`, `StudyTask.[dayId, userId]`, `StudyPlanDay.date`, `DailyQuiz.date`, `UserSession.userId`, `UserSession.token`, `UserSession.expiresAt`, `AIConversation.[userId, updatedAt]`, `AIConversation.[userId, kind, updatedAt]`, `AIMessage.[conversationId, createdAt]`, `AIMemory.[userId, type]`, `AIUsage.[userId, createdAt]`, `AIUsage.[task, createdAt]`, `AIUsage.[model, createdAt]`, `AIFeedback.[userId, createdAt]`, `AIFeedback.[messageId]`.
+- Explicit `@@index` fields: `User.email`, `User.handle`, `Subject.sortOrder`, `Topic.subjectId`, `Topic.[subjectId, parentId]`, `Question.[subjectId, difficulty]`, `Question.[subjectId, topic]`, `Question.[subjectId, topic, subtopic]`, `Question.[subjectId, path]`, `Flashcard.subjectId`, `Flashcard.nextReview`, `StudyTask.[dayId, userId]`, `StudyPlanDay.date`, `DailyQuiz.date`, `UserProgress.points` (rank range-scan, Phase 3), `DailyQuizParticipation.quizId`, `DailyQuizParticipation.[userId, completedAt]`, `FlashcardUserState.[userId, nextReview]`, `StudyTaskCompletion.userId`, `UserSession.userId`, `UserSession.token`, `UserSession.expiresAt`, `AIConversation.[userId, updatedAt]`, `AIConversation.[userId, kind, updatedAt]`, `AIMessage.[conversationId, createdAt]`, `AIMemory.[userId, type]`, `AIUsage.[userId, createdAt]`, `AIUsage.[task, createdAt]`, `AIUsage.[model, createdAt]`, `AIFeedback.[userId, createdAt]`, `AIFeedback.[messageId]`.
+- Unique constraints: `User.email`, `User.handle`, `Topic.[subjectId, path]`, `Bookmark.[userId, questionId]`, `NotificationRead.[userId, notificationId]`, `AIMemory.[userId, type, key]`, `DailyQuizParticipation.[userId, quizId]`, `UserSession.token`.
 - Unique constraint: `Topic.[subjectId, path]`.
 
 ## Generator

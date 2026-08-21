@@ -35,9 +35,17 @@ const SESSION_COOKIE = "auth_token";
 /**
  * Sign a session JWT payload (usually `{ email }`) and return the string token.
  * 7-day expiry. Sets algorithm explicitly to HS256.
+ * `origIat` (optional, seconds) preserves the ORIGINAL issue time across
+ * refresh hops so the refresh endpoint can enforce an absolute session cap.
  */
-export async function signSession(payload: { email: string }) {
-  return await new SignJWT(payload)
+export async function signSession(
+  payload: { email: string; origIat?: number },
+) {
+  const claims: Record<string, unknown> = { email: payload.email };
+  if (typeof payload.origIat === "number") {
+    claims.origIat = payload.origIat;
+  }
+  return await new SignJWT(claims)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime("7d")

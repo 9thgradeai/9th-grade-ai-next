@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import { patchUserProgress, getUserIdFromRequest } from "~backend/services/user";
 import { AppError, toHttpResponse } from "~backend/errors";
+import { assertNoUnknownFields, validateBoundedInt } from "~backend/validation";
 import { getRequestId, startTiming, applySecurityHeaders } from "../_middleware";
 
-const PROGRESS_FIELDS = new Set([
+const PROGRESS_FIELDS = [
   "points",
   "streak",
   "accuracy",
@@ -12,7 +13,19 @@ const PROGRESS_FIELDS = new Set([
   "aiQuestionsAsked",
   "examsAttempted",
   "rank",
-]);
+] as const;
+
+// Documented bounds per field (mirror DB CHECK constraints, Phase 3).
+const FIELD_BOUNDS: Record<(typeof PROGRESS_FIELDS)[number], { max?: number }> = {
+  points: {},
+  streak: {},
+  accuracy: { max: 100 },
+  questionsAnswered: {},
+  flashcardsReviewed: {},
+  aiQuestionsAsked: {},
+  examsAttempted: {},
+  rank: {},
+};
 
 export async function PATCH(request: Request) {
   const requestId = getRequestId(request);
@@ -25,10 +38,17 @@ export async function PATCH(request: Request) {
     }
 
     const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
+    // Strict mode: unknown fields are REJECTED, not silently dropped.
+    assertNoUnknownFields(body, PROGRESS_FIELDS);
+
     const patch: Record<string, number> = {};
-    for (const [key, value] of Object.entries(body)) {
-      if (PROGRESS_FIELDS.has(key) && typeof value === "number" && Number.isFinite(value)) {
-        patch[key] = Math.max(0, Math.round(value));
+    for (const key of PROGRESS_FIELDS) {
+      const value = validateBoundedInt(body[key], key, {
+        min: 0,
+        ...(FIELD_BOUNDS[key].max !== undefined ? { max: FIELD_BOUNDS[key].max } : {}),
+      });
+      if (value !== undefined) {
+        patch[key] = value;
       }
     }
     if (Object.keys(patch).length === 0) {

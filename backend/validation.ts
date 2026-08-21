@@ -1,3 +1,18 @@
+// backend/validation.ts — THE single source of truth for input validation.
+//
+// Contract:
+//   • Every failure throws ValidationError → HTTP 400 { error, code: "VALIDATION_ERROR" }.
+//     (Plain Error throws here used to leak as 500s — fixed in Phase 7.)
+//   • Write endpoints run bodies through assertNoUnknownFields() so malformed
+//     input is REJECTED, never silently stripped.
+//   • Numeric inputs go through bounded-int helpers; enum-ish strings through
+//     validateEnumValue. Nothing is coerced implicitly.
+//
+// AI request payloads have their own validators in backend/ai/schemas.ts,
+// which follow this same contract and share the same error type.
+
+import { ValidationError } from "~backend/errors";
+
 export interface LoginInput {
   email: string;
   password: string;
@@ -38,91 +53,176 @@ function isString(value: unknown): value is string {
   return typeof value === "string";
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+/** Reject bodies carrying fields outside the declared schema (strict mode). */
+export function assertNoUnknownFields(
+  body: unknown,
+  allowed: readonly string[],
+): void {
+  if (!isRecord(body)) return; // shape errors are reported by field validators
+  const known = new Set(allowed);
+  const unexpected = Object.keys(body).filter((k) => !known.has(k));
+  if (unexpected.length > 0) {
+    throw new ValidationError(`Unexpected field(s): ${unexpected.join(", ")}.`);
+  }
+}
+
+/** Positive integer with an upper bound; defaults when absent. */
+export function validateBoundedInt(
+  value: unknown,
+  fieldName: string,
+  opts: { min?: number; max?: number; default?: number } = {},
+): number | undefined {
+  const { min = 1, max = Number.MAX_SAFE_INTEGER, default: fallback } = opts;
+  if (value === undefined || value === null) {
+    if (fallback !== undefined) return Math.min(Math.max(fallback, min), max);
+    return undefined;
+  }
+  if (typeof value !== "number" || !Number.isInteger(value)) {
+    throw new ValidationError(`${fieldName} must be an integer.`);
+  }
+  if (value < min) {
+    throw new ValidationError(`${fieldName} must be >= ${min}.`);
+  }
+  if (value > max) {
+    throw new ValidationError(`${fieldName} must be <= ${max}.`);
+  }
+  return value;
+}
+
+/** Membership check against a closed set of primitives. */
+export function validateEnumValue<T extends string | number>(
+  value: unknown,
+  allowed: readonly T[],
+  fieldName: string,
+): T | undefined {
+  if (value === undefined || value === null) return undefined;
+  const hit = allowed.find((a) => a === value);
+  if (hit === undefined) {
+    throw new ValidationError(`${fieldName} must be one of: ${allowed.join(", ")}.`);
+  }
+  return hit;
+}
+
+export function requirePositiveInteger(value: unknown, fieldName: string): number {
+  const out = validateBoundedInt(value, fieldName, { min: 1 });
+  if (out === undefined) {
+    throw new ValidationError(`${fieldName} is required.`);
+  }
+  return out;
+}
+
+/**
+ * Legacy alias kept for existing imports — same behavior as its sibling above.
+ */
+export function validatePositiveInteger(value: unknown, fieldName: string): number {
+  return requirePositiveInteger(value, fieldName);
+}
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export function validateLoginInput(body: unknown): LoginInput {
-  if (!body || typeof body !== "object") {
-    throw new Error("Request body must be an object");
+  assertNoUnknownFields(body, ["email", "password"]);
+  if (!isRecord(body)) {
+    throw new ValidationError("Request body must be an object.");
   }
 
-  const record = body as Record<string, unknown>;
-  const email = record.email;
-  const password = record.password;
+  // Normalize before validating — trimmed/lowercased email is the canonical form.
+  const rawEmail = body.email;
+  const email = isString(rawEmail) ? rawEmail.trim().toLowerCase() : rawEmail;
+  const password = body.password;
 
-  if (!isString(email) || !email.includes("@")) {
-    throw new Error("Valid email is required");
+  if (!isString(email) || !EMAIL_RE.test(email)) {
+    throw new ValidationError("Valid email is required.");
   }
   if (!isString(password) || password.length < 1) {
-    throw new Error("Password is required");
+    throw new ValidationError("Password is required.");
   }
 
-  return { email: email.toLowerCase().trim(), password };
+  return { email, password };
 }
 
 export function validateRegisterInput(body: unknown): RegisterInput {
-  if (!body || typeof body !== "object") {
-    throw new Error("Request body must be an object");
+  assertNoUnknownFields(body, ["name", "email", "password"]);
+  if (!isRecord(body)) {
+    throw new ValidationError("Request body must be an object.");
   }
 
-  const record = body as Record<string, unknown>;
-  const name = record.name;
-  const email = record.email;
-  const password = record.password;
+  const name = body.name;
+  // Normalize before validating — trimmed/lowercased email is canonical.
+  const rawEmail = body.email;
+  const email = isString(rawEmail) ? rawEmail.trim().toLowerCase() : rawEmail;
+  const password = body.password;
 
-  if (!isString(name) || name.trim().length < 1) {
-    throw new Error("Name is required");
+  if (!isString(name) || name.trim().length < 2) {
+    throw new ValidationError("Name must be at least 2 characters.");
   }
-  if (!isString(email) || !email.includes("@")) {
-    throw new Error("Valid email is required");
+  if (!isString(email) || !EMAIL_RE.test(email)) {
+    throw new ValidationError("Valid email is required.");
   }
-  if (!isString(password) || password.length < 6) {
-    throw new Error("Password must be at least 6 characters");
+  // Aligned with the live registration contract (>=8). The historical >=6 here
+  // was dead-code drift that Phase 7 eliminated.
+  if (!isString(password) || password.length < 8) {
+    throw new ValidationError("Password must be at least 8 characters.");
   }
 
-  return { name: name.trim(), email: email.toLowerCase().trim(), password };
+  return { name: name.trim(), email: email as string, password };
 }
 
 export function validateUpdateProfileInput(body: unknown): UpdateProfileInput {
-  if (!body || typeof body !== "object") {
-    throw new Error("Request body must be an object");
+  assertNoUnknownFields(body, ["name"]);
+  if (!isRecord(body)) {
+    throw new ValidationError("Request body must be an object.");
   }
 
-  const record = body as Record<string, unknown>;
-  const name = record.name;
+  const name = body.name;
 
   if (name === undefined) {
     return {};
   }
   if (!isString(name) || name.trim().length < 2) {
-    throw new Error("Name must be at least 2 characters");
+    throw new ValidationError("Name must be at least 2 characters.");
   }
 
   return { name: name.trim() };
 }
 
 export function validateChangePasswordInput(body: unknown): ChangePasswordInput {
-  if (!body || typeof body !== "object") {
-    throw new Error("Request body must be an object");
+  assertNoUnknownFields(body, ["currentPassword", "newPassword", "confirmPassword"]);
+  if (!isRecord(body)) {
+    throw new ValidationError("Request body must be an object.");
   }
 
-  const record = body as Record<string, unknown>;
-  const currentPassword = record.currentPassword;
-  const newPassword = record.newPassword;
-  const confirmPassword = record.confirmPassword;
+  const currentPassword = body.currentPassword;
+  const newPassword = body.newPassword;
+  const confirmPassword = body.confirmPassword;
 
   if (!isString(currentPassword) || currentPassword.length < 1) {
-    throw new Error("Current password is required");
+    throw new ValidationError("Current password is required.");
   }
   if (!isString(newPassword) || newPassword.length < 8) {
-    throw new Error("New password must be at least 8 characters");
+    throw new ValidationError("New password must be at least 8 characters.");
   }
   if (!isString(confirmPassword) || confirmPassword !== newPassword) {
-    throw new Error("Passwords do not match");
+    throw new ValidationError("Passwords do not match.");
   }
 
   return { currentPassword, newPassword, confirmPassword };
 }
 
+const DIFFICULTIES = ["EASY", "MEDIUM", "HARD"] as const;
+
 export function validateQuestionSearchParams(params: URLSearchParams): QuestionSearchFilters {
   const filters: QuestionSearchFilters = {};
+
+  const allowedParams = ["subject", "topic", "difficulty", "q", "limit", "id", "paths"];
+  const unexpected = [...params.keys()].filter((k) => !allowedParams.includes(k));
+  if (unexpected.length > 0) {
+    throw new ValidationError(`Unexpected query parameter(s): ${unexpected.join(", ")}.`);
+  }
 
   const subject = params.get("subject");
   const topic = params.get("topic");
@@ -132,61 +232,67 @@ export function validateQuestionSearchParams(params: URLSearchParams): QuestionS
   const id = params.get("id");
   const paths = params.get("paths");
 
-  if (isString(subject) && subject.length > 0) filters.subject = subject;
-  if (isString(topic) && topic.length > 0) filters.topic = topic;
-  if (isString(difficulty) && difficulty.length > 0) filters.difficulty = difficulty;
-  if (isString(q) && q.length > 0) filters.q = q;
-  if (isString(paths) && paths.length > 0) {
+  if (subject && subject.length > 0) filters.subject = subject;
+  if (topic && topic.length > 0) filters.topic = topic;
+  if (difficulty && difficulty.length > 0) {
+    // Normalize to the stored Difficulty enum spelling (EASY/MEDIUM/HARD).
+    const upper = difficulty.toUpperCase();
+    if (!(DIFFICULTIES as readonly string[]).includes(upper)) {
+      throw new ValidationError(
+        `difficulty must be one of: ${DIFFICULTIES.join(", ").toLowerCase()}.`,
+      );
+    }
+    filters.difficulty = upper;
+  }
+  if (q && q.length > 0) filters.q = q;
+  if (paths && paths.length > 0) {
     filters.paths = paths
       .split(",")
       .map((p) => p.trim())
       .filter((p) => p.length > 0);
   }
 
-  if (isString(limit)) {
+  if (limit) {
     const parsed = Number(limit);
-    if (!Number.isNaN(parsed) && parsed > 0) {
-      filters.limit = Math.min(Math.floor(parsed), 200);
+    if (!Number.isInteger(parsed) || parsed <= 0) {
+      throw new ValidationError("limit must be a positive integer.");
     }
+    filters.limit = Math.min(parsed, 200);
   }
 
-  if (isString(id)) {
+  if (id) {
     const parsed = Number(id);
-    if (!Number.isNaN(parsed) && parsed > 0) {
-      filters.id = parsed;
+    if (!Number.isInteger(parsed) || parsed <= 0) {
+      throw new ValidationError("id must be a positive integer.");
     }
+    filters.id = parsed;
   }
 
   return filters;
 }
 
 export function validatePagination(params: URLSearchParams): PaginationParams {
-  const pageParam = params.get("page");
-  const limitParam = params.get("limit");
-
   let page = 1;
   let limit = 20;
 
-  if (isString(pageParam)) {
+  const pageParam = params.get("page");
+  const limitParam = params.get("limit");
+
+  if (pageParam) {
     const parsed = Number(pageParam);
-    if (!Number.isNaN(parsed) && parsed > 0) {
-      page = Math.floor(parsed);
+    if (!Number.isInteger(parsed) || parsed <= 0) {
+      throw new ValidationError("page must be a positive integer.");
     }
+    page = parsed;
   }
 
-  if (isString(limitParam)) {
+  if (limitParam) {
     const parsed = Number(limitParam);
-    if (!Number.isNaN(parsed) && parsed > 0) {
-      limit = Math.min(Math.floor(parsed), 100);
+    if (!Number.isInteger(parsed) || parsed <= 0) {
+      throw new ValidationError("limit must be a positive integer.");
     }
+    limit = Math.min(parsed, 100);
   }
 
   return { page, limit };
-}
-
-export function validatePositiveInteger(value: unknown, fieldName: string): number {
-  if (typeof value !== "number" || !Number.isInteger(value) || value < 1) {
-    throw new Error(fieldName + " must be a positive integer.");
-  }
-  return value;
 }

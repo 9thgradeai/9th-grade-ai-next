@@ -97,6 +97,11 @@ enum AIFeedbackRating {
   NOT_HELPFUL
 }
 
+enum DailyQuizParticipationStatus {
+  IN_PROGRESS
+  COMPLETED
+}
+
 // ── Auth ──────────────────────────────────────────────────
 model User {
   id           String         @id @default(cuid())
@@ -112,7 +117,6 @@ model User {
   bookmarks    Bookmark[]
   studyTasks   StudyTask[]
   notifications AppNotification[]
-  sessions     UserSession[]
   attempts     QuestionAttempt[]
   mockTestResults MockTestResult[]
   flashcardReviews FlashcardReview[]
@@ -121,6 +125,10 @@ model User {
   aiMemories    AIMemory[]
   aiUsage       AIUsage[]
   aiFeedback    AIFeedback[]
+  dailyQuizParticipations DailyQuizParticipation[]
+  flashcardUserStates     FlashcardUserState[]
+  studyTaskCompletions    StudyTaskCompletion[]
+  userBadges              UserBadge[]
 
   @@index([email])
   @@index([handle])
@@ -129,7 +137,7 @@ model User {
 // ── Content taxonomy ──────────────────────────────────────
 model Subject {
   id           Int      @id @default(autoincrement())
-  nameBn       String
+  nameBn       String   @unique
   nameEn       String
   icon         String   @default("📘")
   color        String?  @default("text-emerald-400")
@@ -182,6 +190,10 @@ model Question {
   difficulty     Difficulty @default(MEDIUM)
   year           Int?
   sourceExam     String   @default("")
+  // Deterministic seed identity (md5 of subjectId|path|question). Lets the
+  // seeder upsert instead of wipe-and-recreate, so Question ids — and every
+  // user row referencing them — stay stable across deploys.
+  sourceKey      String   @default("")
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   bookmarks      Bookmark[]
@@ -191,19 +203,20 @@ model Question {
   @@index([subjectId, path])
   @@index([subjectId, topic])
   @@index([subjectId, topic, subtopic])
+  @@unique([subjectId, sourceKey])
 }
 
 model QuestionBankCategory {
   id        Int      @id @default(autoincrement())
   subjectId Int?
   subject   Subject? @relation(fields: [subjectId], references: [id], onDelete: SetNull)
-  label     String
+  label     String   @unique
   count     Int      @default(0)
 }
 
 model ExamArchive {
   id        Int     @id @default(autoincrement())
-  name      String
+  name      String  @unique
   icon      String  @default("🎯")
   count     Int     @default(0)
   yearRange String  @default("")
@@ -212,6 +225,9 @@ model ExamArchive {
 }
 
 // ── Flashcards (SRS) ──────────────────────────────────────
+// DEPRECATED (Phase 2B2): `nextReview` / `interval` / `easeFactor` /
+// `repetitions` on this row are legacy shared defaults. Authoritative SRS
+// scheduling lives per-user in FlashcardUserState.
 model Flashcard {
   id           Int      @id @default(autoincrement())
   subjectId    Int?
@@ -225,10 +241,34 @@ model Flashcard {
   interval     Int      @default(1)
   easeFactor   Float    @default(2.5)
   repetitions  Int      @default(0)
+  // Seed identity: md5(subjectName|question) — keeps card ids stable.
+  sourceKey    String   @default("") @unique
   reviews      FlashcardReview[]
+  userStates   FlashcardUserState[]
 
   @@index([subjectId])
   @@index([nextReview])
+}
+
+// Per-user SM-2 scheduling state. One row appears after the first review;
+// unseen cards have no row (implicitly new).
+model FlashcardUserState {
+  id          Int       @id @default(autoincrement())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  flashcardId Int
+  flashcard   Flashcard @relation(fields: [flashcardId], references: [id], onDelete: Cascade)
+  nextReview  DateTime  @default(now())
+  interval    Int       @default(1) // days until next review
+  easeFactor  Float     @default(2.5)
+  repetitions Int       @default(0)
+  lapses      Int       @default(0) // times rated "again"
+  lastRating  Int? // 0=again 1=hard 2=good 3=easy
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([userId, flashcardId])
+  @@index([userId, nextReview])
 }
 
 // ── Study planner ─────────────────────────────────────────
@@ -238,6 +278,8 @@ model StudyPlanDay {
   date         String
   totalMinutes Int          @default(0)
   focusAreas   Json // string[]
+  // Seed identity: md5(day|date).
+  sourceKey    String       @default("") @unique
   tasks        StudyTask[]
 
   @@index([date])
@@ -247,6 +289,9 @@ model StudyTask {
   id          Int           @id @default(autoincrement())
   dayId       Int
   planDay     StudyPlanDay  @relation(fields: [dayId], references: [id], onDelete: Cascade)
+  // Nullable = shared template row seeded for everyone. User-created custom
+  // tasks (userId set) remain possible; per-user completion of template rows
+  // lives in StudyTaskCompletion.
   userId      String?
   user        User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
   title       String
@@ -254,23 +299,66 @@ model StudyTask {
   duration    Int           @default(0)
   priority    Priority      @default(MEDIUM)
   description String        @default("")
+  // DEPRECATED (Phase 2B2): legacy column, superseded by StudyTaskCompletion.
   completed   Boolean       @default(false)
   createdAt   DateTime      @default(now())
+  completions StudyTaskCompletion[]
 
   @@index([dayId, userId])
 }
 
+// Per-user completion marker for a (usually template) study task. Replaces
+// the shared `completed` boolean so one user's progress never affects another.
+model StudyTaskCompletion {
+  id          Int      @id @default(autoincrement())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  taskId      Int
+  task        StudyTask @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  completedAt DateTime @default(now())
+
+  @@unique([userId, taskId])
+  @@index([userId])
+}
+
 // ── Daily quizzes ─────────────────────────────────────────
+// DEPRECATED (Phase 2): `completed` / `score` / `claimed` on this row are
+// legacy GLOBAL state shared by every user. They are kept only for the
+// dual-read transition; the authoritative per-user state now lives in
+// DailyQuizParticipation. Do not read these columns from new code.
 model DailyQuiz {
   id        Int           @id @default(autoincrement())
-  date      String
+  date      String        @unique
   completed Boolean       @default(false)
   score     Int           @default(0)
   claimed   Boolean       @default(false)
   createdAt DateTime      @default(now())
   questions QuizQuestion[]
+  participations DailyQuizParticipation[]
 
   @@index([date])
+}
+
+// Per-user daily-quiz participation — one row per (user, quiz).
+// Replaces the accidental global completion flags on DailyQuiz.
+model DailyQuizParticipation {
+  id          Int                         @id @default(autoincrement())
+  userId      String
+  user        User                        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quizId      Int
+  dailyQuiz   DailyQuiz                   @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  status      DailyQuizParticipationStatus @default(IN_PROGRESS)
+  score       Int                         @default(0) // percentage 0–100
+  correct     Int                         @default(0)
+  total       Int                         @default(0)
+  pointsEarned Int                        @default(0)
+  completedAt DateTime?
+  createdAt   DateTime                    @default(now())
+  updatedAt   DateTime                    @updatedAt
+
+  @@unique([userId, quizId])
+  @@index([quizId])
+  @@index([userId, completedAt])
 }
 
 model QuizQuestion {
@@ -288,7 +376,7 @@ model QuizQuestion {
 // ── Mock tests ────────────────────────────────────────────
 model MockTest {
   id              Int               @id @default(autoincrement())
-  title           String
+  title           String            @unique
   subject         String            @default("")
   totalQuestions  Int               @default(0)
   duration        Int               @default(0)
@@ -319,6 +407,8 @@ model ExamSchedule {
   circularNo  String   @default("")
   note        String   @default("")
   sortOrder   Int      @default(0)
+  // Seed identity: md5(circularNo|titleBn|year).
+  sourceKey   String   @default("") @unique
 
   @@index([date])
   @@index([type])
@@ -336,6 +426,8 @@ model FlashNews {
   readTime    Int     @default(1)
   categoryBn  String? @default("")
   categoryEn  String? @default("")
+  // Seed identity: md5(titleBn|date).
+  sourceKey   String  @default("") @unique
 }
 
 model Recommendation {
@@ -350,15 +442,31 @@ model Recommendation {
   descriptionEn  String? @default("")
   ctaBn          String
   ctaEn          String? @default("")
+  // Seed identity: md5(subjectBn|titleBn).
+  sourceKey      String  @default("") @unique
 }
 
 model Badge {
   id           Int        @id @default(autoincrement())
-  name         String
+  name         String     @unique
   description  String
   icon         String     @default("🏅")
   rarity       BadgeRarity @default(COMMON)
+  // DEPRECATED (Phase 2B2): seed-time catalog flag; real unlocks live in UserBadge.
   unlockedSeed Boolean    @default(false)
+  userBadges   UserBadge[]
+}
+
+// Per-user badge unlock. Catalog state (Badge) stays shared; this is earned state.
+model UserBadge {
+  id         Int      @id @default(autoincrement())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badgeId    Int
+  badge      Badge    @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  unlockedAt DateTime @default(now())
+
+  @@unique([userId, badgeId])
 }
 
 model AppNotification {
@@ -371,6 +479,9 @@ model AppNotification {
   timestamp DateTime       @default(now())
   read      Boolean        @default(false)
   reads     NotificationRead[]
+  // Seed identity: md5(title|message) — NotificationRead rows reference this
+  // row, so ids must survive reseeds.
+  sourceKey String         @default("") @unique
 
   @@index([userId])
   @@index([timestamp])
@@ -378,7 +489,7 @@ model AppNotification {
 
 model OfflinePack {
   id         Int    @id @default(autoincrement())
-  name       String
+  name       String @unique
   size       String @default("")
   downloaded Boolean @default(false)
   subject    String @default("")
@@ -394,21 +505,14 @@ model Document {
   description String  @default("")
   year        String  @default("")
   createdAt   DateTime @default(now())
+  // Seed identity: md5(title|category|year).
+  sourceKey   String  @default("") @unique
 }
 
 // ── Sessions ──────────────────────────────────────────────
-model UserSession {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  token     String   @unique
-  expiresAt DateTime
-  createdAt DateTime @default(now())
-
-  @@index([userId])
-  @@index([token])
-  @@index([expiresAt])
-}
+// REMOVED (Phase 10): `UserSession` was dead infrastructure — the app uses
+// stateless JWTs with an absolute lifetime cap (see /api/auth/refresh).
+// Dropped by migration 000000000005_drop_user_session.
 
 // ── Per-user state ────────────────────────────────────────
 model UserProgress {
@@ -424,6 +528,10 @@ model UserProgress {
   examsAttempted     Int    @default(0)
   rank               Int    @default(0)
   updatedAt          DateTime @updatedAt
+
+  // Serves the leaderboard-rank computation: count of progress rows with
+  // more points than the caller's (index range scan instead of seq scan).
+  @@index([points])
 }
 
 model Bookmark {

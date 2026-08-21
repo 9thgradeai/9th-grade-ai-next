@@ -318,6 +318,15 @@ export namespace Server {
     answer: string;
     hint: string;
     difficulty: "easy" | "medium" | "hard";
+    /** Present only for authenticated callers with prior review history. */
+    srs?: {
+      nextReview: string;
+      intervalDays: number;
+      easeFactor: number;
+      repetitions: number;
+      lapses: number;
+      lastRating?: number; // 0=again 1=hard 2=good 3=easy
+    };
   };
 
   export type StudyTaskDTO = {

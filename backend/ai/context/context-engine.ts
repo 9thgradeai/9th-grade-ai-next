@@ -5,6 +5,10 @@ import "server-only";
 
 import { prisma } from "~backend/db";
 import { AppError, NotFoundError } from "~backend/errors";
+import {
+  aggregateAttemptsByTopic,
+  aggregateRecentAccuracy,
+} from "~backend/repositories/analytics.repository";
 import { getMemories, type MemoryRow } from "../memory/memory-store";
 import type { AIContext, AIIntent, AITask } from "../types";
 
@@ -56,46 +60,31 @@ type PerformanceAgg = {
 };
 
 async function loadPerformance(userId: string): Promise<PerformanceAgg> {
+  // Both aggregates run as grouped queries IN THE DATABASE (Phase 6) — the
+  // previous implementation loaded every attempt row twice per AI turn.
   const [progress, recent, byTopic] = await Promise.all([
     prisma.userProgress.findUnique({
       where: { userId },
       select: { accuracy: true, questionsAnswered: true },
     }),
-    prisma.questionAttempt.findMany({
-      where: { userId, createdAt: { gte: new Date(Date.now() - 30 * 86400_000) } },
-      select: { correct: true },
-    }),
-    prisma.questionAttempt.findMany({
-      where: { userId },
-      select: { topic: true, correct: true },
-    }),
+    aggregateRecentAccuracy(userId, 30),
+    aggregateAttemptsByTopic(userId),
   ]);
-
-  const recentTotal = recent.length;
-  const recentCorrect = recent.filter((a) => a.correct).length;
-
-  const topicAgg = new Map<string, { attempted: number; correct: number }>();
-  for (const a of byTopic) {
-    if (!a.topic) continue;
-    const entry = topicAgg.get(a.topic) ?? { attempted: 0, correct: 0 };
-    entry.attempted += 1;
-    if (a.correct) entry.correct += 1;
-    topicAgg.set(a.topic, entry);
-  }
 
   const weak: string[] = [];
   const strong: string[] = [];
-  for (const [topic, agg] of topicAgg) {
+  for (const agg of byTopic) {
+    if (!agg.topic) continue;
     if (agg.attempted < 3) continue;
     const acc = Math.round((agg.correct / agg.attempted) * 100);
-    if (acc < 50) weak.push(topic);
-    else if (acc >= 80) strong.push(topic);
+    if (acc < 50) weak.push(agg.topic);
+    else if (acc >= 80) strong.push(agg.topic);
   }
 
   return {
     accuracy: progress?.accuracy ?? 0,
     questionsAnswered: progress?.questionsAnswered ?? 0,
-    recentAccuracy: recentTotal > 0 ? Math.round((recentCorrect / recentTotal) * 100) : 0,
+    recentAccuracy: recent.total > 0 ? Math.round((recent.correct / recent.total) * 100) : 0,
     weakTopics: weak,
     strongTopics: strong,
   };

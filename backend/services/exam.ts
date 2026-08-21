@@ -8,7 +8,9 @@ import "server-only";
 
 import { prisma } from "~backend/db";
 import { AppError, InternalServerError } from "~backend/errors";
-import { recomputeProgress, type SubmittedAnswer } from "./activity";
+import { recomputeAndAward } from "~backend/repositories/progress.repository";
+import { emit } from "~backend/events/bus";
+import type { SubmittedAnswer } from "./activity";
 import type {
   ExamSubjectDTO,
   ExamSelectionRequest,
@@ -514,7 +516,8 @@ export async function submitCustomExam(
     const pointsEarned = correct * 10;
 
     // Persist one attempt per ANSWERED question (unanswered questions are not
-    // attempts, matching practice/mock behaviour).
+    // attempts) and recompute progress ATOMICALLY — attempts, points/accuracy
+    // recompute and the exam counter commit together or not at all.
     const attempts = validAnswers
       .filter((a) => a.selected.trim().length > 0)
       .map((a) => {
@@ -530,9 +533,19 @@ export async function submitCustomExam(
         };
       });
 
-    await prisma.questionAttempt.createMany({ data: attempts });
-    await recomputeProgress(userId, pointsEarned);
-    await prisma.userProgress.update({ where: { userId }, data: { examsAttempted: { increment: 1 } } });
+    await prisma.$transaction(async (tx) => {
+      if (attempts.length > 0) {
+        await tx.questionAttempt.createMany({ data: attempts });
+      }
+      await recomputeAndAward(tx, userId, pointsEarned, 1);
+    });
+    emit({
+      name: "EXAM_COMPLETED",
+      userId,
+      correct,
+      wrong,
+      finalScore,
+    });
 
     return {
       summary: {

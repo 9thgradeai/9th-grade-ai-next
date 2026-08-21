@@ -74,8 +74,11 @@ export class AnthropicProvider implements LLMProvider {
       throw new AppError(502, "The AI provider returned an empty response.", "AI_EMPTY_RESPONSE");
     }
 
-    const inputTokens = estimateTokens(req.system + req.messages.map((m) => m.content).join(""));
-    const outputTokens = estimateTokens(result.text);
+    // Phase 14: provider-reported usage with estimate fallback.
+    const inputTokens =
+      result.usage?.promptTokens ??
+      estimateTokens(req.system + req.messages.map((m) => m.content).join(""));
+    const outputTokens = result.usage?.completionTokens ?? estimateTokens(result.text);
     return {
       text: result.text,
       provider: this.name,

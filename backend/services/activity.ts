@@ -4,8 +4,11 @@
 
 import "server-only";
 
+import type { Prisma } from "@prisma/client";
 import { prisma } from "~backend/db";
 import { AppError, InternalServerError } from "~backend/errors";
+import { recomputeAndAward } from "~backend/repositories/progress.repository";
+import { emit } from "~backend/events/bus";
 
 export type SubmittedAnswer = {
   questionId: number;
@@ -21,22 +24,34 @@ export type SubmissionSummary = {
 
 const POINTS_PER_CORRECT = 10;
 
-// Recompute accuracy + questionsAnswered straight from the attempt log so the
-// stored percentage never drifts from the underlying records.
-export async function recomputeProgress(userId: string, pointsEarned: number) {
-  const [total, correctCount] = await Promise.all([
-    prisma.questionAttempt.count({ where: { userId } }),
-    prisma.questionAttempt.count({ where: { userId, correct: true } }),
-  ]);
+type TxClient = Prisma.TransactionClient;
+type AttemptRow = {
+  userId: string;
+  questionId: number | null;
+  subjectId: number | null;
+  subjectName: string;
+  topic: string;
+  correct: boolean;
+  source: string;
+};
 
-  await prisma.userProgress.update({
-    where: { userId },
-    data: {
-      questionsAnswered: total,
-      accuracy: total > 0 ? Math.round((correctCount / total) * 100) : 0,
-      points: { increment: pointsEarned },
-    },
-  });
+/**
+ * Persist attempts and recompute progress ATOMICALLY. Every submission flow
+ * (practice / daily / exam) funnels through here so a crash between writing
+ * attempts and updating progress can never leave the two inconsistent, and
+ * concurrent submissions cannot interleave stale count-then-update writes.
+ */
+async function recordAttemptsAtomically(
+  tx: TxClient,
+  userId: string,
+  attempts: AttemptRow[],
+  pointsEarned: number,
+  examsIncrement = 0,
+): Promise<void> {
+  if (attempts.length > 0) {
+    await tx.questionAttempt.createMany({ data: attempts });
+  }
+  await recomputeAndAward(tx, userId, pointsEarned, examsIncrement);
 }
 
 function gradeAnswers(
@@ -77,23 +92,25 @@ export async function submitPracticeAnswers(
     const { correct, total } = gradeAnswers(answers, questions);
     const byId = new Map(questions.map((q) => [q.id, q]));
 
-    await prisma.questionAttempt.createMany({
-      data: answers.map((a) => {
-        const q = byId.get(a.questionId);
-        return {
-          userId,
-          questionId: a.questionId,
-          subjectId: q?.subjectId ?? null,
-          subjectName: q?.subject ? q.subject.nameBn : "",
-          topic: q?.topic ?? "",
-          correct: a.selected.trim() === q?.correctAnswer.trim(),
-          source: "practice",
-        };
-      }),
+    const attempts = answers.map((a) => {
+      const q = byId.get(a.questionId);
+      return {
+        userId,
+        questionId: a.questionId,
+        subjectId: q?.subjectId ?? null,
+        subjectName: q?.subject ? q.subject.nameBn : "",
+        topic: q?.topic ?? "",
+        correct: a.selected.trim() === q?.correctAnswer.trim(),
+        source: "practice",
+      };
     });
 
     const pointsEarned = correct * POINTS_PER_CORRECT;
-    await recomputeProgress(userId, pointsEarned);
+    await prisma.$transaction(async (tx) => {
+      await recordAttemptsAtomically(tx, userId, attempts, pointsEarned);
+    });
+    // Domain event (Phase 11) — emitted only after the transaction committed.
+    emit({ name: "PRACTICE_SUBMITTED", userId, correct, total, score: total > 0 ? Math.round((correct / total) * 100) : 0 });
     return { correct, total, score: total > 0 ? Math.round((correct / total) * 100) : 0, pointsEarned };
   } catch (error) {
     if (error instanceof AppError) throw error;
@@ -102,6 +119,8 @@ export async function submitPracticeAnswers(
 }
 
 // ── Daily quiz (QuizQuestion table) ───────────────────────
+// Phase 2: attempts + progress recompute + per-user participation now commit
+// atomically. The legacy global flags on DailyQuiz are never written.
 export async function submitDailyQuiz(
   userId: string,
   quizId: number,
@@ -118,25 +137,49 @@ export async function submitDailyQuiz(
 
     const { correct, total } = gradeAnswers(answers, quiz.questions);
     const byId = new Map(quiz.questions.map((q) => [q.id, q]));
+    const score = total > 0 ? Math.round((correct / total) * 100) : 0;
+    const pointsEarned = correct * POINTS_PER_CORRECT;
 
-    await prisma.questionAttempt.createMany({
-      data: answers.map((a) => {
-        const q = byId.get(a.questionId);
-        return {
-          userId,
-          questionId: null,
-          subjectId: null,
-          subjectName: q?.subject ?? "",
-          topic: q?.topic ?? "",
-          correct: a.selected.trim() === q?.correctAnswer.trim(),
-          source: "daily",
-        };
-      }),
+    const attempts = answers.map((a) => {
+      const q = byId.get(a.questionId);
+      return {
+        userId,
+        questionId: null,
+        subjectId: null,
+        subjectName: q?.subject ?? "",
+        topic: q?.topic ?? "",
+        correct: a.selected.trim() === q?.correctAnswer.trim(),
+        source: "daily",
+      };
     });
 
-    const pointsEarned = correct * POINTS_PER_CORRECT;
-    await recomputeProgress(userId, pointsEarned);
-    return { correct, total, score: total > 0 ? Math.round((correct / total) * 100) : 0, pointsEarned };
+    await prisma.$transaction(async (tx) => {
+      await recordAttemptsAtomically(tx, userId, attempts, pointsEarned);
+      await tx.dailyQuizParticipation.upsert({
+        where: { userId_quizId: { userId, quizId } },
+        update: {
+          status: "COMPLETED",
+          score,
+          correct,
+          total,
+          pointsEarned,
+          completedAt: new Date(),
+        },
+        create: {
+          userId,
+          quizId,
+          status: "COMPLETED",
+          score,
+          correct,
+          total,
+          pointsEarned,
+          completedAt: new Date(),
+        },
+      });
+    });
+
+    emit({ name: "DAILY_QUIZ_COMPLETED", userId, quizId, score });
+    return { correct, total, score, pointsEarned };
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new InternalServerError("Failed to record daily quiz");

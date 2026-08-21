@@ -34,3 +34,4 @@ export async function searchForIntent(
 
   return searchWeb(query);
 }
+export type { WebSearchBlock } from "../../../app/api/ai/_search";

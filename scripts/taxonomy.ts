@@ -70,7 +70,6 @@ export const SUBJECT_META: SubjectMeta[] = [
 export function subjectMetaByNameBn(nameBn: string): SubjectMeta | undefined {
   return SUBJECT_META.find((m) => m.nameBn.normalize("NFC") === nameBn.normalize("NFC"));
 }
-
 // Legacy folder names (pre-architecture) mapped to the current architecture
 // subject segment so existing files keep importing without a rename.
 const SUBJECT_FOLDER_ALIASES: Record<string, string> = {

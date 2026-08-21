@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { AppError, toHttpResponse } from "~backend/errors";
 import { validateChangePasswordInput } from "~backend/validation";
 import { getUserIdFromRequest, changeUserPassword } from "~backend/services/user";
-import { checkRateLimit, getRateLimitKey } from "~backend/rate-limit";
+import { checkRateLimit, getRateLimitKey, LIMITS } from "~backend/rate-limit";
 import { getRequestId, startTiming, applySecurityHeaders } from "../../_middleware";
 
 export async function POST(request: Request) {
@@ -10,7 +10,7 @@ export async function POST(request: Request) {
   const getTime = startTiming();
 
   try {
-    if (!checkRateLimit(getRateLimitKey(request, "auth:change-password"), 5, 60_000)) {
+    if (!(await checkRateLimit(getRateLimitKey(request, "auth:change-password"), LIMITS.passwordPerMin, 60_000))) {
       throw new AppError(429, "Too many attempts. Please try again later.", "RATE_LIMIT_EXCEEDED");
     }
 

@@ -1,8 +1,10 @@
 /**
  * scripts/seed-questions.ts
  * ----------------------------------------------------------------------------
- * Seeds the content taxonomy (subjects + recursive topics) and questions from
- * database/data/ques/:
+ * Syncs the content taxonomy (subjects + recursive topics) and questions from
+ * database/data/ques/. NON-DESTRUCTIVE: subjects upsert by nameBn, topics by
+ * (subjectId, path), questions by (subjectId, sourceKey). Nothing is deleted,
+ * so user rows referencing content survive every reseed.
  *
  *  1. Subjects — the 10 canonical subjects from scripts/taxonomy.ts.
  *
@@ -22,15 +24,16 @@
  * Question rows carry `path` (leaf path), `topicId` (leaf Topic id) plus the
  * denormalised `topic`/`subtopic` display names used by legacy consumers.
  *
- * Run AFTER `prisma db push`:
+ * Run AFTER migrations:
  *   npx tsx scripts/seed-questions.ts
  *
- * Idempotent: deletes existing Question and Topic rows, then re-inserts.
+ * Idempotent: safe to run repeatedly; repeated runs refresh content in place.
  * ----------------------------------------------------------------------------
  */
 import { readFileSync, readdirSync } from "fs";
 import { join } from "path";
 import { PrismaClient } from "@prisma/client";
+import { sourceKey } from "./seed-keys";
 import {
   loadTaxonomy,
   SUBJECT_META,
@@ -167,31 +170,26 @@ function parseQuestionLine(line: string): ParsedQuestion | null {
   return { question: questionText, options, correctAnswer, explanation };
 }
 
-// Finds the Subject row for a canonical Bengali name (find-or-create).
+// Finds or updates the Subject row for a canonical Bengali name (upsert by
+// the unique nameBn key).
 async function ensureSubject(
   prisma: PrismaClient,
   nameBn: string,
   sortOrder: number,
 ): Promise<{ id: number }> {
   const meta = subjectMetaByNameBn(nameBn) ?? SUBJECT_META[0];
-  let subject = await prisma.subject.findFirst({ where: { nameBn } });
-  if (!subject) {
-    subject = await prisma.subject.create({
-      data: {
-        nameBn,
-        nameEn: meta.nameEn,
-        icon: meta.icon,
-        color: meta.color,
-        bg: meta.bg,
-        sortOrder,
-      },
-    });
-  } else {
-    subject = await prisma.subject.update({
-      where: { id: subject.id },
-      data: { nameEn: meta.nameEn, icon: meta.icon, color: meta.color, bg: meta.bg, sortOrder },
-    });
-  }
+  const data = {
+    nameEn: meta.nameEn,
+    icon: meta.icon,
+    color: meta.color,
+    bg: meta.bg,
+    sortOrder,
+  };
+  const subject = await prisma.subject.upsert({
+    where: { nameBn },
+    update: data,
+    create: { nameBn, ...data },
+  });
   return { id: subject.id };
 }
 
@@ -253,24 +251,117 @@ function collectLeaves(node: TaxonomyNode): TaxonomyNode[] {
   return node.children.flatMap(collectLeaves);
 }
 
-// Parses all .txt files in database/data/ques and inserts their questions,
-// linked to the matching Subject + recursive Topic leaf. Idempotent: clears
-// existing Question and Topic rows first. Returns the count inserted.
+// ── Non-destructive question sync ─────────────────────────
+type QuestionCandidate = {
+  topicId: number | null;
+  path: string;
+  topic: string;
+  subtopic: string;
+  parsed: ParsedQuestion;
+};
+
+/**
+ * Upsert candidates keyed by md5(subjectId|path|question) — identical to the
+ * SQL backfill in migration 000000000002. Existing rows keep their id (and
+ * therefore their bookmarks/attempts); only content fields are refreshed.
+ */
+async function syncSubjectQuestions(
+  prisma: PrismaClient,
+  subjectId: number,
+  candidates: QuestionCandidate[],
+): Promise<{ inserted: number; updated: number }> {
+  if (candidates.length === 0) return { inserted: 0, updated: 0 };
+
+  const keyOf = (c: QuestionCandidate) => sourceKey(subjectId, c.path, c.parsed.question);
+
+  // Source files can contain the same question text more than once for the
+  // same subject/path (flat-file repeats, overlapping folder imports). Keep
+  // the FIRST occurrence per key so a single batch never collides with itself.
+  const uniqueCandidates = new Map<string, QuestionCandidate>();
+  let droppedDupes = 0;
+  for (const c of candidates) {
+    const key = keyOf(c);
+    if (uniqueCandidates.has(key)) {
+      droppedDupes += 1;
+      continue;
+    }
+    uniqueCandidates.set(key, c);
+  }
+  if (droppedDupes > 0) {
+    console.warn(`  ⚠ ${droppedDupes} duplicate question(s) collapsed by sourceKey`);
+  }
+
+  const existing = await prisma.question.findMany({
+    where: { subjectId },
+    select: { id: true, sourceKey: true },
+  });
+  const idByKey = new Map(existing.map((r) => [r.sourceKey, r.id]));
+
+  const creates: Array<Record<string, unknown>> = [];
+  let updated = 0;
+  const updates: Promise<unknown>[] = [];
+
+  for (const c of uniqueCandidates.values()) {
+    const row = {
+      subjectId,
+      sourceKey: keyOf(c),
+      topicId: c.topicId,
+      path: c.path,
+      topic: c.topic,
+      subtopic: c.subtopic,
+      question: c.parsed.question,
+      options: c.parsed.options,
+      correctAnswer: c.parsed.correctAnswer,
+      explanation: c.parsed.explanation,
+      difficulty: "MEDIUM",
+      sourceExam: "BCS",
+      year: null,
+    };
+    const existingId = idByKey.get(row.sourceKey as string);
+    if (existingId !== undefined) {
+      updates.push(
+        prisma.question.update({
+          where: { id: existingId },
+          data: {
+            topicId: row.topicId,
+            path: row.path,
+            topic: row.topic,
+            subtopic: row.subtopic,
+            question: row.question,
+            options: row.options,
+            correctAnswer: row.correctAnswer,
+            explanation: row.explanation,
+          },
+        }),
+      );
+      updated += 1;
+    } else {
+      creates.push(row);
+    }
+  }
+
+  // Chunked parallel updates avoid unbounded promise fan-out.
+  const CHUNK = 50;
+  for (let i = 0; i < updates.length; i += CHUNK) {
+    await Promise.all(updates.slice(i, i + CHUNK));
+  }
+  if (creates.length > 0) {
+    await prisma.question.createMany({ data: creates as never });
+  }
+  return { inserted: creates.length, updated };
+}
+
+// Parses all .txt files in database/data/ques and syncs their questions into
+// the matching Subject + recursive Topic leaf. NON-DESTRUCTIVE: rows are
+// upserted by (subjectId, sourceKey) so Question ids — and every user row
+// referencing them (bookmarks, attempts) — survive every reseed. Returns the
+// number of questions present after the sync.
 export async function seedQuestions(prisma: PrismaClient): Promise<number> {
   const dir = join(process.cwd(), "database", "data", "ques");
   const files = readdirSync(dir).filter((f) => /\.txt$/i.test(f));
   if (files.length === 0) throw new Error("No .txt question files found in database/data/ques");
 
   const taxonomy = loadTaxonomy();
-
-  // Idempotent: clear previously-seeded content before re-inserting. Ran
-  // sequentially because the Topic self-relation cascade can deadlock when the
-  // Question delete shares locks in parallel.
-  const delQ = await prisma.question.deleteMany({});
-  const delT = await prisma.topic.deleteMany({});
-  if (delQ.count > 0 || delT.count > 0) {
-    console.log(`Cleared ${delQ.count} questions, ${delT.count} topics`);
-  }
 
   // Ensure all 10 canonical subjects exist in architecture order.
   const subjectIds: Record<string, number> = {};
@@ -348,45 +439,30 @@ export async function seedQuestions(prisma: PrismaClient): Promise<number> {
     );
     const leaves = subjectNode ? collectLeaves(subjectNode) : [];
 
-    await prisma.question.createMany({
-      data: parsed.map((q, index) => {
-        if (leaves.length === 0) {
-          return {
-            subjectId,
-            topicId: null,
-            path: "",
-            topic: canonical,
-            subtopic: "",
-            question: q.question,
-            options: q.options,
-            correctAnswer: q.correctAnswer,
-            explanation: q.explanation,
-            difficulty: "MEDIUM",
-            sourceExam: "BCS",
-            year: null,
-          };
-        }
-        const leaf = leaves[index % leaves.length];
-        const tags = leafTags(leaf);
+    const candidates: QuestionCandidate[] = parsed.map((q, index) => {
+      if (leaves.length === 0) {
         return {
-          subjectId,
-          topicId: leafIds.get(contentPath(leaf)) ?? null,
-          path: contentPath(leaf),
-          topic: tags.topic,
-          subtopic: tags.subtopic,
-          question: q.question,
-          options: q.options,
-          correctAnswer: q.correctAnswer,
-          explanation: q.explanation,
-          difficulty: "MEDIUM",
-          sourceExam: "BCS",
-          year: null,
+          topicId: null,
+          path: "",
+          topic: canonical,
+          subtopic: "",
+          parsed: q,
         };
-      }),
+      }
+      const leaf = leaves[index % leaves.length];
+      const tags = leafTags(leaf);
+      return {
+        topicId: leafIds.get(contentPath(leaf)) ?? null,
+        path: contentPath(leaf),
+        topic: tags.topic,
+        subtopic: tags.subtopic,
+        parsed: q,
+      };
     });
 
-    totalInserted += parsed.length;
-    console.log(`✓ ${canonical}: ${parsed.length} questions`);
+    const { inserted } = await syncSubjectQuestions(prisma, subjectId, candidates);
+    totalInserted += inserted;
+    console.log(`✓ ${canonical}: ${parsed.length} synced (${inserted} new)`);
   }
 
   // ── Folder-structured files: the path IS the taxonomy ──
@@ -428,25 +504,17 @@ export async function seedQuestions(prisma: PrismaClient): Promise<number> {
     const tags = leafTags(leaf);
     const leafIds = leafIdsBySubject.get(subjectId) ?? new Map<string, number>();
 
-    await prisma.question.createMany({
-      data: parsed.map((q) => ({
-        subjectId,
-        topicId: leafIds.get(path) ?? null,
-        path,
-        topic: tags.topic,
-        subtopic: tags.subtopic,
-        question: q.question,
-        options: q.options,
-        correctAnswer: q.correctAnswer,
-        explanation: q.explanation,
-        difficulty: "MEDIUM",
-        sourceExam: "BCS",
-        year: null,
-      })),
-    });
+    const candidates: QuestionCandidate[] = parsed.map((q) => ({
+      topicId: leafIds.get(path) ?? null,
+      path,
+      topic: tags.topic,
+      subtopic: tags.subtopic,
+      parsed: q,
+    }));
 
-    totalInserted += parsed.length;
-    console.log(`✓ ${meta.nameBn} → ${path}: ${parsed.length} questions`);
+    const { inserted } = await syncSubjectQuestions(prisma, subjectId, candidates);
+    totalInserted += inserted;
+    console.log(`✓ ${meta.nameBn} → ${path}: ${parsed.length} synced (${inserted} new)`);
   }
 
   // ── Refresh questionCount on every topic row (aggregated over descendants) ──

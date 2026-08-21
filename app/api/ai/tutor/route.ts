@@ -2,15 +2,11 @@
    Authenticated. Persists conversations. Uses the ModelRouter (Groq primary,
    Anthropic fallback, labelled mock). Real token streaming via the AI SDK. */
 
-import { AppError, RateLimitError, UnauthorizedError, toHttpResponse } from "~backend/errors";
+import { AppError, UnauthorizedError, toHttpResponse } from "~backend/errors";
 import { getUserIdFromRequest } from "~backend/services/user";
-import { checkRateLimit, checkDailyQuota, getRateLimitKey } from "~backend/rate-limit";
+import { enforceAiQuotas } from "~backend/rate-limit";
 import { createTutorTurn } from "~backend/ai";
 import { getRequestId, startTiming, applySecurityHeaders } from "../../_middleware";
-
-const MINUTE_MAX = 10;
-const MINUTE_WINDOW_MS = 60_000;
-const DAILY_MAX = 60;
 
 export async function POST(request: Request) {
   const requestId = getRequestId(request);
@@ -22,12 +18,9 @@ export async function POST(request: Request) {
       throw new UnauthorizedError("Sign in to use the AI tutor.");
     }
 
-    if (!checkRateLimit(getRateLimitKey(request, "ai:tutor", userId), MINUTE_MAX, MINUTE_WINDOW_MS)) {
-      throw new RateLimitError("Too many AI requests. Please wait a moment.");
-    }
-    if (!checkDailyQuota(`ai:tutor:${userId}`, DAILY_MAX)) {
-      throw new RateLimitError("Daily AI tutor limit reached. Come back tomorrow!");
-    }
+    // Phase 8: per-user minute + daily quotas (store-backed) with the usage
+    // ledger as the authoritative daily backstop on single-instance stores.
+    await enforceAiQuotas(request, "tutor", userId);
 
     const body = await request.json().catch(() => ({}));
     const { stream, conversationId, intent, provider, model } = await createTutorTurn({

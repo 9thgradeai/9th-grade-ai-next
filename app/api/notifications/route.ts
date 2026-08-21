@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getNotifications } from "~backend/services/content";
 import { getUserIdFromRequest } from "~backend/services/user";
 import { AppError, toHttpResponse } from "~backend/errors";
+import { validateBoundedInt } from "~backend/validation";
 import { getRequestId, startTiming, applySecurityHeaders } from "../_middleware";
 
 export async function GET(request: Request) {
@@ -15,22 +16,23 @@ export async function GET(request: Request) {
     }
 
     const { searchParams } = new URL(request.url);
-    const rawPage = searchParams.get("page");
-    const rawLimit = searchParams.get("limit");
-    const parsedPage = Number(rawPage);
-    const parsedLimit = Number(rawLimit);
-    const page = rawPage && Number.isFinite(parsedPage) ? Math.max(1, parsedPage) : 1;
-    const limit = rawLimit && Number.isFinite(parsedLimit) ? Math.min(parsedLimit, 100) : 20;
+    // Keyset pagination (Phase 6) with shared validation (Phase 7): `limit`
+    // bounds each page (1–50); `cursor` is the previous page's nextCursor.
+    const limit = validateBoundedInt(
+      searchParams.has("limit") ? Number(searchParams.get("limit")) : undefined,
+      "limit",
+      { min: 1, max: 50, default: 20 },
+    ) as number;
+    const rawCursor = searchParams.has("cursor") ? Number(searchParams.get("cursor")) : undefined;
+    const cursorId = validateBoundedInt(rawCursor, "cursor", { min: 1 });
 
-    const all = await getNotifications(userId);
-    const start = (page - 1) * limit;
-    const paginated = all.slice(start, start + limit);
+    const { items, nextCursor, total } = await getNotifications(userId, { limit, cursorId });
 
     const res = NextResponse.json({
-      notifications: paginated,
-      page,
+      notifications: items,
       pageSize: limit,
-      total: all.length,
+      total,
+      nextCursor,
     });
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");

@@ -137,6 +137,10 @@ export async function deleteConversation(userId: string, conversationId: string)
   await prisma.aIConversation.delete({ where: { id: existing.id } });
 }
 
+// Bounded history window returned per conversation (Phase 6): the most
+// recent 200 messages, chronological order preserved.
+const MAX_MESSAGES_RETURNED = 200;
+
 export async function listMessages(
   userId: string,
   conversationId: string,
@@ -144,9 +148,10 @@ export async function listMessages(
   await getConversation(userId, conversationId);
   const rows = await prisma.aIMessage.findMany({
     where: { conversationId },
-    orderBy: { createdAt: "asc" },
+    orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+    take: MAX_MESSAGES_RETURNED,
   });
-  return rows.map(toMessageRow);
+  return rows.reverse().map(toMessageRow);
 }
 
 export async function addMessage(

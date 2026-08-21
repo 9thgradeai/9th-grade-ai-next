@@ -61,6 +61,13 @@ export class InternalServerError extends AppError {
   }
 }
 
+/** Environment/deployment misconfiguration (missing dep, bad URL…). */
+export class ConfigurationError extends AppError {
+  constructor(message: string) {
+    super(500, message, "CONFIGURATION_ERROR", false);
+  }
+}
+
 export function toHttpResponse(error: unknown): NextResponse {
   if (error instanceof AppError) {
     const payload: Record<string, unknown> = {

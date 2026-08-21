@@ -60,15 +60,33 @@ export async function createUser({
     }
 
     const passwordHash = await hash(password, 10);
-    const u = await prisma.user.create({
-      data: { name, email: email.toLowerCase(), handle, passwordHash, role: "STUDENT" },
-    });
 
-    await prisma.userProgress.upsert({
-      where: { userId: u.id },
-      update: {},
-      create: { userId: u.id },
-    });
+    // User + initial progress row commit atomically — a failure creating the
+    // progress row rolls back the user instead of leaving an orphaned account
+    // without progress. A concurrent registration with the same email hits the
+    // unique constraint (inside or around the transaction) and surfaces as a
+    // 409 conflict rather than a 500.
+    const isUniqueViolation = (err: unknown): boolean =>
+      !!err &&
+      typeof err === "object" &&
+      "code" in err &&
+      (err as { code?: string }).code === "P2002";
+
+    let u;
+    try {
+      u = await prisma.$transaction(async (tx) => {
+        const created = await tx.user.create({
+          data: { name, email: email.toLowerCase(), handle, passwordHash, role: "STUDENT" },
+        });
+        await tx.userProgress.create({ data: { userId: created.id } });
+        return created;
+      });
+    } catch (err) {
+      if (isUniqueViolation(err)) {
+        throw new ConflictError("A user with that email already exists.");
+      }
+      throw err;
+    }
 
     return {
       id: u.id,
@@ -185,15 +203,22 @@ export async function toggleStudyTask(
   taskId: number,
 ): Promise<{ completed: boolean }> {
   try {
-    // Only the task's owner may toggle it — look up scoped to this user.
-    const task = await prisma.studyTask.findFirst({ where: { id: taskId, userId } });
+    // Any task may be toggled (template or user-created) — completion state is
+    // per-user in StudyTaskCompletion, never on the shared row.
+    const task = await prisma.studyTask.findUnique({ where: { id: taskId }, select: { id: true } });
     if (!task) throw new NotFoundError("Task not found");
-    const completed = !task.completed;
-    await prisma.studyTask.update({
-      where: { id: taskId },
-      data: { completed },
+
+    return prisma.$transaction(async (tx) => {
+      const existing = await tx.studyTaskCompletion.findUnique({
+        where: { userId_taskId: { userId, taskId } },
+      });
+      if (existing) {
+        await tx.studyTaskCompletion.delete({ where: { id: existing.id } });
+        return { completed: false };
+      }
+      await tx.studyTaskCompletion.create({ data: { userId, taskId } });
+      return { completed: true };
     });
-    return { completed };
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new InternalServerError("Failed to toggle study task");

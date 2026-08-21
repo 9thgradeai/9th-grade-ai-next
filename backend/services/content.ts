@@ -6,6 +6,10 @@ import "server-only";
 
 import { prisma } from "~backend/db";
 import { InternalServerError } from "~backend/errors";
+import {
+  aggregateDailyActivity,
+  buildActivityWindow,
+} from "~backend/repositories/analytics.repository";
 import type {
   QuestionDTO,
   QuestionBankCategoryDTO,
@@ -18,6 +22,7 @@ import type {
   DocumentDTO,
   ExamScheduleDTO,
   MockTestResultDTO,
+  BadgeDTO,
 } from "@/lib/types";
 
 // ── Questions (powers Question Bank + Practice + Mock) ──
@@ -128,33 +133,80 @@ export async function getQuestionBankCategories(): Promise<QuestionBankCategoryD
   }
 }
 
+// ── Badge catalog (moved out of the route handler — Phase 4) ──
+export async function getBadgeCatalog(): Promise<BadgeDTO[]> {
+  try {
+    const badges = await prisma.badge.findMany({ orderBy: { id: "asc" } });
+    return badges.map((b) => ({
+      id: b.id,
+      name: b.name,
+      description: b.description,
+      icon: b.icon,
+      rarity: b.rarity,
+      unlocked: b.unlockedSeed,
+    }));
+  } catch {
+    throw new InternalServerError("Failed to fetch badges");
+  }
+}
+
 // ── Flashcards ───────────────────────────────────────────
-export async function getFlashcards(subjectName?: string): Promise<FlashcardDTO[]> {
+// Content is shared; scheduling state is overlaid from the requesting user's
+// FlashcardUserState (additive optional fields — API contract preserved).
+export async function getFlashcards(
+  subjectName?: string,
+  userId?: string | null,
+): Promise<FlashcardDTO[]> {
   try {
     const rows = await prisma.flashcard.findMany({
       where: subjectName ? { subjectName } : undefined,
       orderBy: { id: "asc" },
     });
-    return rows.map((f) => ({
-      id: f.id,
-      subjectName: f.subjectName,
-      question: f.question,
-      answer: f.answer,
-      hint: f.hint,
-      difficulty: f.difficulty as FlashcardDTO["difficulty"],
-    }));
+    const states = userId
+      ? await prisma.flashcardUserState.findMany({ where: { userId } })
+      : [];
+    const stateByCard = new Map(states.map((s) => [s.flashcardId, s]));
+    return rows.map((f) => {
+      const s = stateByCard.get(f.id);
+      return {
+        id: f.id,
+        subjectName: f.subjectName,
+        question: f.question,
+        answer: f.answer,
+        hint: f.hint,
+        difficulty: f.difficulty as FlashcardDTO["difficulty"],
+        ...(s
+          ? {
+              srs: {
+                nextReview: s.nextReview.toISOString(),
+                intervalDays: s.interval,
+                easeFactor: s.easeFactor,
+                repetitions: s.repetitions,
+                lapses: s.lapses,
+                lastRating: s.lastRating ?? undefined,
+              },
+            }
+          : {}),
+      };
+    });
   } catch {
     throw new InternalServerError("Failed to fetch flashcards");
   }
 }
 
 // ── Study plan ───────────────────────────────────────────
+// Template tasks are visible to everyone; completion state comes from the
+// requesting user's StudyTaskCompletion rows (Phase 2B2).
 export async function getStudyPlan(userId: string): Promise<StudyTaskDTO[]> {
   try {
-    const days = await prisma.studyPlanDay.findMany({
-      include: { tasks: { where: { userId }, include: { user: true } } },
-      orderBy: { id: "asc" },
-    });
+    const [days, completions] = await Promise.all([
+      prisma.studyPlanDay.findMany({ include: { tasks: true }, orderBy: { id: "asc" } }),
+      prisma.studyTaskCompletion.findMany({
+        where: { userId },
+        select: { taskId: true },
+      }),
+    ]);
+    const done = new Set(completions.map((c) => c.taskId));
     const tasks: StudyTaskDTO[] = [];
     for (const day of days) {
       for (const t of day.tasks) {
@@ -168,7 +220,7 @@ export async function getStudyPlan(userId: string): Promise<StudyTaskDTO[]> {
           duration: t.duration,
           priority: t.priority as StudyTaskDTO["priority"],
           description: t.description,
-          completed: t.completed,
+          completed: done.has(t.id),
         });
       }
     }
@@ -179,19 +231,26 @@ export async function getStudyPlan(userId: string): Promise<StudyTaskDTO[]> {
 }
 
 // ── Daily quiz ───────────────────────────────────────────
-export async function getDailyQuiz(): Promise<DailyQuizDTO | null> {
+// `completed` / `score` reflect the REQUESTING user's DailyQuizParticipation
+// (Phase 2). Anonymous callers get neutral flags — never another user's state.
+export async function getDailyQuiz(userId?: string | null): Promise<DailyQuizDTO | null> {
   try {
     const quiz = await prisma.dailyQuiz.findFirst({
       include: { questions: true },
       orderBy: { id: "desc" },
     });
     if (!quiz) return null;
+    const participation = userId
+      ? await prisma.dailyQuizParticipation.findUnique({
+          where: { userId_quizId: { userId, quizId: quiz.id } },
+        })
+      : null;
     return {
       id: quiz.id,
       date: quiz.date,
-      completed: quiz.completed,
-      score: quiz.score,
-      claimed: quiz.claimed,
+      completed: participation?.status === "COMPLETED",
+      score: participation?.score ?? 0,
+      claimed: false, // legacy global flag retired; rewards ship per-user later
       questions: quiz.questions.map((q) => ({
         id: q.id,
         subject: q.subject,
@@ -249,13 +308,26 @@ export async function getRecommendations(): Promise<RecommendationDTO[]> {
   }
 }
 
-export async function getNotifications(userId: string): Promise<NotificationDTO[]> {
+export async function getNotifications(
+  userId: string,
+  opts: { limit?: number; cursorId?: number } = {},
+): Promise<{
+  items: NotificationDTO[];
+  nextCursor: number | null;
+  total: number;
+}> {
+  const limit = Math.min(Math.max(1, Math.floor(opts.limit ?? 20)), 50);
   try {
     const rows = await prisma.appNotification.findMany({
       include: { reads: { where: { userId } } },
-      orderBy: { timestamp: "desc" },
+      orderBy: [{ timestamp: "desc" }, { id: "desc" }],
+      // Keyset pagination (Phase 6): position on the last-seen row id within
+      // the (timestamp desc, id desc) ordering. Bounded work per page.
+      ...(opts.cursorId ? { cursor: { id: opts.cursorId }, skip: 1 } : {}),
+      take: limit,
     });
-    return rows.map((n) => ({
+    const total = await prisma.appNotification.count();
+    const items = rows.map((n) => ({
       id: n.id,
       title: n.title,
       message: n.message,
@@ -263,6 +335,8 @@ export async function getNotifications(userId: string): Promise<NotificationDTO[
       timestamp: n.timestamp.toISOString(),
       read: n.reads.length > 0,
     }));
+    const nextCursor = rows.length === limit ? rows[rows.length - 1].id : null;
+    return { items, nextCursor, total };
   } catch {
     throw new InternalServerError("Failed to fetch notifications");
   }
@@ -331,6 +405,8 @@ export async function getMockTestResults(userId: string): Promise<MockTestResult
 }
 
 // ── Dashboard stats (real, per-user) ─────────────────────
+// All attempt-derived numbers come from DB-side aggregates (Phase 6): cost is
+// O(subjects/days) rows regardless of how much history the user accumulates.
 export async function getDashboardStats(userId: string): Promise<{
   points: number;
   exams: number;
@@ -344,44 +420,20 @@ export async function getDashboardStats(userId: string): Promise<{
   activity: { date: string; answered: number; correct: number }[];
 }> {
   try {
-    const [questionCount, progress, attempts] = await Promise.all([
+    const [questionCount, progress, activity] = await Promise.all([
       prisma.question.count(),
       prisma.userProgress.upsert({
         where: { userId },
         update: {},
         create: { userId },
       }),
-      prisma.questionAttempt.findMany({
-        where: { userId },
-        select: { correct: true, createdAt: true },
-      }),
+      aggregateDailyActivity(userId, 7),
     ]);
 
     const rank =
       (await prisma.userProgress.count({
         where: { points: { gt: progress.points } },
       })) + 1;
-
-    const activityMap = new Map<string, { answered: number; correct: number }>();
-    const now = Date.now();
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date(now - i * 24 * 60 * 60 * 1000);
-      const key = d.toISOString().slice(0, 10);
-      activityMap.set(key, { answered: 0, correct: 0 });
-    }
-    for (const a of attempts) {
-      const key = a.createdAt.toISOString().slice(0, 10);
-      const entry = activityMap.get(key);
-      if (entry) {
-        entry.answered += 1;
-        if (a.correct) entry.correct += 1;
-      }
-    }
-    const activity = Array.from(activityMap.entries()).map(([date, v]) => ({
-      date,
-      answered: v.answered,
-      correct: v.correct,
-    }));
 
     return {
       points: progress.points,
@@ -396,7 +448,7 @@ export async function getDashboardStats(userId: string): Promise<{
           : 0,
       flashcardsReviewed: progress.flashcardsReviewed,
       aiQuestionsAsked: progress.aiQuestionsAsked,
-      activity,
+      activity: buildActivityWindow(activity, 7),
     };
   } catch {
     throw new InternalServerError("Failed to fetch dashboard stats");

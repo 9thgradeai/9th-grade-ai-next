@@ -2,15 +2,11 @@
    Authenticated. Delegates to the AI application layer; validates structured
    output; persists a SOLVER conversation for history and tutor handoff. */
 
-import { RateLimitError, UnauthorizedError, toHttpResponse } from "~backend/errors";
+import { UnauthorizedError, toHttpResponse } from "~backend/errors";
 import { getUserIdFromRequest } from "~backend/services/user";
-import { checkRateLimit, checkDailyQuota, getRateLimitKey } from "~backend/rate-limit";
+import { enforceAiQuotas } from "~backend/rate-limit";
 import { solveQuestion } from "~backend/ai";
 import { getRequestId, startTiming, applySecurityHeaders } from "../../_middleware";
-
-const MINUTE_MAX = 10;
-const MINUTE_WINDOW_MS = 60_000;
-const DAILY_MAX = 60;
 
 export async function POST(request: Request) {
   const requestId = getRequestId(request);
@@ -22,12 +18,9 @@ export async function POST(request: Request) {
       throw new UnauthorizedError("Sign in to use the AI solver.");
     }
 
-    if (!checkRateLimit(getRateLimitKey(request, "ai:solver", userId), MINUTE_MAX, MINUTE_WINDOW_MS)) {
-      throw new RateLimitError("Too many AI requests. Please wait a moment.");
-    }
-    if (!checkDailyQuota(`ai:solver:${userId}`, DAILY_MAX)) {
-      throw new RateLimitError("Daily AI solver limit reached. Come back tomorrow!");
-    }
+    // Phase 8: per-user minute + daily quotas (store-backed) with the usage
+    // ledger as the authoritative daily backstop on single-instance stores.
+    await enforceAiQuotas(request, "solver", userId);
 
     const body = await request.json().catch(() => ({}));
     const { result, conversationId } = await solveQuestion({ userId, request: body });

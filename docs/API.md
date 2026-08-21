@@ -20,21 +20,22 @@ Auth-protected routes require the `auth_token` HttpOnly cookie (JWT, 7-day expir
 |--------|------|-------------|
 | GET | `/api/questions` | List questions, filterable by `?subject=`, `?topic=`, `?difficulty=`, `?q=`, `?limit=`, `?paths=` |
 | GET | `/api/question-bank/categories` | List question bank categories |
-| GET | `/api/flashcards` | List flashcards, optionally filtered by `?subject=` |
+| GET | `/api/flashcards` | List flashcards, optionally filtered by `?subject=`. Authenticated callers additionally receive a per-card `srs` overlay (their own SM-2 state) |
 | GET | `/api/exam-schedule` | List published exam dates (public, no auth) |
 | GET | `/api/study-plan` | **Auth required** — List the caller's study plan tasks |
 | GET | `/api/daily-quiz` | Get today's quiz |
 | GET | `/api/flash-news` | List flash news items |
 | GET | `/api/recommendations` | List AI recommendations |
 | PATCH | `/api/progress` | **Auth required** — Patch user progress (whitelisted fields only) |
-| GET | `/api/notifications` | **Auth required** — List notifications with per-user read state |
+| GET | `/api/notifications` | **Auth required** — List notifications with per-user read state. Keyset-paginated (Phase 6): `?limit=` (default 20, max 50) and `?cursor=` (previous page's `nextCursor` = last item id). Response: `{ notifications, pageSize, total, nextCursor }` — `nextCursor` is null on the final page |
 | GET | `/api/badges` | List achievement badges |
 | GET | `/api/subject-reports` | **Auth required** — Per-subject reports from the caller's attempts (`name`, `score`, `attempted`, `correct` — no fabricated trend) |
 | GET | `/api/mock-test/results` | **Auth required** — Caller's recent mock test results |
 | GET | `/api/documents` | List documents (syllabus, circulars) |
 | GET | `/api/bookmarks` | **Auth required** — Get bookmarked question IDs |
 | POST | `/api/bookmarks` | **Auth required** — Toggle bookmark `{ questionId }` |
-| POST | `/api/study-plan/tasks/:id/toggle` | **Auth required** — Toggle task completion |
+| POST | `/api/study-plan/tasks/:id/toggle` | **Auth required** — Toggle task completion (per-user completion marker; template tasks toggleable) |
+| POST | `/api/flashcards/review` | **Auth required** — Grade a flashcard `{ flashcardId, rating: 0\|1\|2\|3 }` (0=again, 1=hard, 2=good, 3=easy) → per-user SM-2 state `{ state: { nextReview, interval, easeFactor, repetitions, lapses } }` |
 | GET | `/api/dashboard-stats` | **Auth required** — Caller's dashboard stats (per-user) |
 | POST | `/api/practice/submit` | **Auth required** — Grade practice answers `{ answers: [{ questionId, selected }] }` |
 | POST | `/api/daily-quiz/submit` | **Auth required** — Grade + persist daily quiz answers `{ quizId, answers }` |

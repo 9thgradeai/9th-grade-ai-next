@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { AppError, toHttpResponse } from "~backend/errors";
+import { validateRegisterInput } from "~backend/validation";
 import { findUserByEmail, createUser } from "~backend/services/user";
 import { signSession, setSessionCookie } from "~backend/auth";
-import { checkRateLimit, getRateLimitKey } from "~backend/rate-limit";
+import { checkRateLimit, getRateLimitKey, LIMITS } from "~backend/rate-limit";
 import { getRequestId, startTiming, applySecurityHeaders } from "../../_middleware";
 
 export async function POST(request: Request) {
@@ -10,34 +11,25 @@ export async function POST(request: Request) {
   const getTime = startTiming();
 
   try {
-    if (!checkRateLimit(getRateLimitKey(request, "auth:register"), 3, 60_000)) {
+    if (!(await checkRateLimit(getRateLimitKey(request, "auth:register"), LIMITS.registerPerMin, 60_000))) {
       throw new AppError(429, "Too many registration attempts. Please try again later.", "RATE_LIMIT_EXCEEDED");
     }
 
     const body = await request.json().catch(() => ({}));
-    const { name = "", email = "", password = "" } = body;
-
-    if (typeof name !== "string" || name.trim().length < 2) {
-      throw new AppError(400, "Name must be at least 2 characters.", "VALIDATION_ERROR");
-    }
-
-    if (typeof email !== "string" || !email.includes("@")) {
-      throw new AppError(400, "A valid email address is required.", "VALIDATION_ERROR");
-    }
-
-    if (typeof password !== "string" || password.length < 8) {
-      throw new AppError(400, "Password must be at least 8 characters.", "VALIDATION_ERROR");
-    }
+    // Phase 7: single source of truth — the shared validator enforces the same
+    // rules here as everywhere else (name >=2, valid email, password >=8) and
+    // rejects unknown fields.
+    const { name, email, password } = validateRegisterInput(body);
 
     const existing = await findUserByEmail(email);
     if (existing) {
       throw new AppError(409, "A user with that email already exists.", "USER_EMAIL_EXISTS");
     }
 
-    await createUser({ name: name.trim(), email: email.trim(), password });
+    await createUser({ name, email, password });
 
-    const token = await signSession({ email: email.trim() });
-    const newUser = await findUserByEmail(email.trim());
+    const token = await signSession({ email });
+    const newUser = await findUserByEmail(email);
     if (!newUser) {
       throw new AppError(500, "Failed to retrieve created user.", "INTERNAL_ERROR");
     }

@@ -51,6 +51,8 @@ export class GroqProvider implements LLMProvider {
     const started = Date.now();
     const messages = toCoreMessages(req.messages);
     let text = "";
+    let lastInputTokens: number | undefined;
+    let lastOutputTokens: number | undefined;
     for (let attempt = 0; attempt < RETRY_ATTEMPTS; attempt++) {
       try {
         const result = await generateText({
@@ -62,6 +64,9 @@ export class GroqProvider implements LLMProvider {
         });
         if (result.text.trim()) {
           text = result.text;
+          // Phase 14: prefer provider-reported usage over the chars/4 estimate.
+          if (result.usage?.promptTokens) lastInputTokens = result.usage.promptTokens;
+          if (result.usage?.completionTokens) lastOutputTokens = result.usage.completionTokens;
           break;
         }
       } catch {
@@ -76,10 +81,12 @@ export class GroqProvider implements LLMProvider {
       throw new AppError(502, "The AI provider returned an empty response.", "AI_EMPTY_RESPONSE");
     }
 
-    const inputTokens = estimateTokens(
-      req.system + " " + req.messages.map((m) => m.content).join(" "),
-    );
-    const outputTokens = estimateTokens(text);
+    // Fall back to the crude estimate only when the provider omits usage.
+    const inputTokens =
+      lastInputTokens ?? estimateTokens(
+        req.system + " " + req.messages.map((m) => m.content).join(" "),
+      );
+    const outputTokens = lastOutputTokens ?? estimateTokens(text);
     return {
       text,
       provider: this.name,

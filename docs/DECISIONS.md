@@ -129,3 +129,24 @@
   cleanup and theming, and avoids depending on an ecosystem package for a small, fixed feature set.
 - **Consequences**: If richer Markdown (tables, task lists, footnotes) is ever required, migrate to
   `react-markdown` + `remark-gfm` behind the same `Markdown` component API.
+
+## ADR-0007 — Rate limiting: interface-first, Redis prepared not installed (Phase 8)
+
+**Decision.** Rate-limit state lives behind `RateLimitStore`
+(`backend/infrastructure/cache/rate-limit-store.ts`). Default implementation is
+in-process fixed-window (`rate-limit-memory.ts`), byte-compatible with the legacy
+limiter. A Redis-compatible store (`rate-limit-redis.ts`) ships with an INJECTED
+minimal client (`incr` + `pexpire`) — no vendor SDK dependency exists until adoption.
+
+**Activation path** when distributed limits are required:
+1. `npm i ioredis` (justified at that moment by a real multi-instance deployment).
+2. In `infrastructure/cache/index.ts`, construct
+   `new RedisRateLimitStore(new Redis(process.env.REDIS_URL))` when `REDIS_URL` is set.
+3. Until then, setting `REDIS_URL` without the package throws a loud
+   `CONFIGURATION_ERROR` — silent fallback to per-instance memory would make
+   instances enforce different limits.
+
+**Consequences.** Zero unused dependencies today; one-file activation tomorrow;
+misconfiguration fails loudly instead of degrading silently. Daily AI quotas gain a
+DB-authoritative backstop (`AIUsage` ledger) on memory stores, closing the
+counters-die-on-deploy gap flagged in the scalability audit (B1).
