@@ -77,6 +77,7 @@ const SUBJECT_FOLDER_ALIASES: Record<string, string> = {
   "International Affairs": "04_আন্তর্জাতিক_বিষয়াবলি",
   "English Language and Literature": "02_English_Language_and_Literature",
   "Bangla Language & Literature": "01_বাংলা_ভাষা_ও_সাহিত্য",
+  "10_নৈতিকতা, মূল্যবোধ ও সু-শাসন": "10_নৈতিকতা_মূল্যবোধ_ও_সু-শাসন",
 };
 
 // Matches a folder segment to the taxonomy subject node: exact NFC name first,
