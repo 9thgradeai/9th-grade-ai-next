@@ -103,6 +103,19 @@ export default function NeuralScene() {
     if (!host) return;
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) {
+      console.warn("[NeuralScene] reduced-motion preference active — rendering static composition");
+    }
+    let cleanup: (() => void) | undefined;
+    try {
+      cleanup = init();
+    } catch (err) {
+      console.warn("[NeuralScene] init crashed", err);
+    }
+    return cleanup;
+
+    function init(): (() => void) | undefined {
+    if (!host) return;
     const tier = detectTier();
     const runtime = TIER_RUNTIME[tier];
     const network: Network = generateNetwork(tier);
@@ -118,6 +131,7 @@ export default function NeuralScene() {
       powerPreference: "low-power",
     });
     if (!gl) {
+      console.warn("[NeuralScene] WebGL2 unavailable — CSS atmosphere only");
       canvas.remove();
       return;
     }
@@ -480,6 +494,9 @@ export default function NeuralScene() {
         io.disconnect();
         disposed = true;
         cancelAnimationFrame(rafId);
+        const ext0 = gl.getExtension("WEBGL_lose_context");
+        ext0?.loseContext();
+        canvas.remove();
       };
     }
 
@@ -509,6 +526,7 @@ export default function NeuralScene() {
       ext?.loseContext();
       canvas.remove();
     };
+    }
   }, []);
 
   return <div ref={hostRef} className="absolute inset-0 overflow-hidden" />;
