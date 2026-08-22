@@ -139,17 +139,15 @@ html.light .cosmic-bg {
     var(--background);
 }
 
-/* Hero-local nebula underlay — sits beneath the WebGL canvas so the scene
-   reads even before hydration, on mobile, or if WebGL is unavailable. */
-.hero-nebula-fallback {
+/* Hero-local atmospheric underlay — deep-navy void beneath the neural
+   canvas so the hero reads before hydration or without WebGL. */
+.hero-neural-fallback {
   background:
-    radial-gradient(42% 58% at 68% 26%, rgb(124 58 237 / 0.34), transparent 70%),
-    radial-gradient(38% 50% at 20% 60%, rgb(13 148 136 / 0.30), transparent 72%),
-    radial-gradient(52% 62% at 84% 80%, rgb(192 38 211 / 0.24), transparent 70%),
-    radial-gradient(30% 40% at 45% 12%, rgb(232 121 249 / 0.16), transparent 65%),
-    radial-gradient(60% 70% at 50% 110%, rgb(8 47 73 / 0.5), transparent 75%);
+    radial-gradient(58% 66% at 74% 42%, rgb(30 45 74 / 0.30), transparent 68%),
+    radial-gradient(42% 52% at 60% 78%, rgb(17 28 48 / 0.36), transparent 70%),
+    radial-gradient(120% 80% at 50% 125%, rgb(6 10 20 / 0.55), transparent 72%);
 }
-html.light .hero-nebula-fallback {
+html.light .hero-neural-fallback {
   opacity: 0.3;
 }
 

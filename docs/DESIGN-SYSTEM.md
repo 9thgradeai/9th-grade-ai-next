@@ -66,20 +66,28 @@ Shared primitives live in `frontend/components/ui/`:
 - Reduced motion renders plain text immediately.
 - File: `frontend/components/ui/MotionText.tsx`.
 
-### KnowledgeField
-- Signature WebGL2 environment, "Aurora Iris": **two draw passes in one
-  context** — (A) fullscreen domain-warped fbm aurora nebula (teal/iris/
-  magenta curtains that gather around the pointer; desktop-class viewports,
-  dark mode only) and (B) the knowledge-constellation node field with real
-  perspective depth, pointer repulsion, scroll lean, and pseudo-curl sway.
-- Zero dependencies — hand-written shaders (~6KB), single fullscreen triangle
-  via `gl_VertexID`, all node motion GPU-side (mod-wrap drift).
-- Tiered counts (1600/3200/6000), DPR ≤ 1.75 × 0.85 on fine pointers,
-  paused offscreen + hidden tab, static composed frame under reduced motion,
-  premultiplied-over blending for correct compositing on transparent canvas,
-  full disposal on unmount.
+### NeuralScene
+- Signature WebGL2 environment: a **procedural neural ecosystem** — soma
+  (instanced billboard cells with membrane rim, cytoplasm fbm, nucleus),
+  dendritic fibers (screen-space ribbon geometry with organic curl), curved
+  inter-neuron connections, and cellular micro-particles.
+- **Activation system** (CPU director, seeded): cascades propagate through the
+  connection graph with conduction delays; light pulses travel as shader rings;
+  localized noise-threshold dissolves fragment regions into particles, then a
+  reconstruction pulse re-activates them. Opening sequence: emergence → first
+  hub cascade (~3.6s) → idle events every 4–8s (never identical loops).
+- Zero dependencies — hand-written GLSL ES 3.00 with explicit attribute
+  locations; 3 draw calls (lines / instanced somas / points); premultiplied-
+  over blending; depth + layer attenuation for cinematic parallax.
+- Tiered budgets (desktop/tablet/mobile): neuron counts, particle counts,
+  DPR caps (1.75/1.4/1.25), fiber width scale; pointer parallax (±3°) on fine
+  pointers only; paused offscreen + hidden tab; static composed frame under
+  reduced motion; full disposal on unmount.
+- Framer Motion owns hero orchestration: scene entrance fade, scroll-linked
+  opacity/translate/scale (+ blur on capable desktops).
 - Mounted as a `next/dynamic` `ssr:false` island in the hero only.
-- File: `frontend/components/visual/KnowledgeField.tsx`.
+- Files: `frontend/components/visual/neural/` (`NeuralScene.tsx`,
+  `neuralGenerator.ts`, `activationSystem.ts`, `shaders.ts`, `seededRandom.ts`).
 
 ### ErrorBoundary
 - Class-based error boundary wrapping risky surfaces.

@@ -9,19 +9,19 @@ import {
   useMotionValue,
   useTransform,
   useScroll,
+  useMotionTemplate,
   type Variants,
 } from "framer-motion";
 import { trackHeroView, trackCtaClick } from "@/lib/analytics";
 import { FeedbackButton } from "./dashboard/FeedbackButton";
 import Button from "./ui/Button";
-import AuroraOrb from "./ui/AuroraOrb";
 import MotionText from "./ui/MotionText";
 import { transitions } from "@/lib/transitions";
 import { ArrowRight, ChevronDown, Sparkles, ShieldCheck, Lock, Zap } from "lucide-react";
 
-// Signature WebGL environment — lazy island, never in the server bundle,
+// Cinematic neural environment — lazy island, never in the server bundle,
 // self-pausing when offscreen/hidden (see component contract).
-const KnowledgeField = dynamic(() => import("./visual/KnowledgeField"), {
+const NeuralScene = dynamic(() => import("./visual/neural/NeuralScene"), {
   ssr: false,
 });
 
@@ -131,13 +131,30 @@ export default function TerminalHero() {
   const [lines, setLines] = useState<typeof terminalOutput>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
+  const [allowBlur, setAllowBlur] = useState(false);
   const terminalRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
   const shouldReduceMotion = useReducedMotion();
   const tilt = useTilt();
 
-  const { scrollY } = useScroll();
-  const orbY = useTransform(scrollY, [0, 600], [0, -40]);
-  const orbOpacity = useTransform(scrollY, [0, 500], [1, 0.4]);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end start"],
+  });
+  const sceneOpacity = useTransform(scrollYProgress, [0, 0.85], [1, 0]);
+  const sceneY = useTransform(scrollYProgress, [0, 1], [0, 110]);
+  const sceneScale = useTransform(scrollYProgress, [0, 1], [1, 0.94]);
+  const blurPx = useTransform(scrollYProgress, [0, 0.9], [0, 8]);
+  const sceneFilter = useMotionTemplate`blur(${blurPx}px)`;
+
+  useEffect(() => {
+    if (shouldReduceMotion) return;
+    const mq = window.matchMedia("(pointer: fine) and (min-width: 768px)");
+    const update = () => setAllowBlur(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, [shouldReduceMotion]);
 
   useEffect(() => {
     const timers: ReturnType<typeof setTimeout>[] = [];
@@ -187,32 +204,35 @@ export default function TerminalHero() {
   };
 
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center pt-16 pb-20 px-4 overflow-hidden">
-      {/* Layer 0 — CSS nebula underlay (always visible) */}
-      <div className="absolute inset-0 hero-nebula-fallback" aria-hidden="true" />
+    <section
+      ref={sectionRef}
+      className="relative min-h-[90vh] flex items-center justify-center pt-16 pb-20 px-4 overflow-hidden"
+    >
+      {/* Layer 0 — deep-navy atmospheric underlay (always visible) */}
+      <div className="absolute inset-0 hero-neural-fallback" aria-hidden="true" />
 
-      {/* Layer 1 — the knowledge constellation (WebGL island) */}
-      <div className="absolute inset-0" aria-hidden="true">
-        <KnowledgeField />
-      </div>
-
-      {/* Layer 2 — aurora wash over the field */}
+      {/* Layer 1 — cinematic neural environment (WebGL island) */}
       <motion.div
-        className="absolute -top-32 left-1/4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.7, duration: 1.6, ease: "easeOut" }}
+        className="absolute inset-0"
         aria-hidden="true"
-        style={{ y: orbY, opacity: orbOpacity }}
       >
-        <AuroraOrb colorClass="bg-emerald-500/10" />
-      </motion.div>
-      <motion.div
-        className="absolute bottom-0 right-1/5"
-        aria-hidden="true"
-        style={{ y: orbY, opacity: orbOpacity }}
-      >
-        <AuroraOrb colorClass="bg-violet-500/10" size="34rem" duration={14} breatheTo={1.1} />
+        <motion.div
+          style={{
+            opacity: sceneOpacity,
+            y: sceneY,
+            scale: sceneScale,
+            filter: allowBlur ? sceneFilter : undefined,
+          }}
+          className="h-full w-full"
+        >
+          <NeuralScene />
+        </motion.div>
       </motion.div>
 
-      {/* Layer 3 — content */}
+      {/* Layer 2 — content */}
 
       <div className="relative max-w-7xl mx-auto w-full">
         {/* Hero Content */}
