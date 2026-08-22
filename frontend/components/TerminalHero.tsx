@@ -208,7 +208,7 @@ export default function TerminalHero() {
       ref={sectionRef}
       className="relative min-h-[90vh] flex items-center justify-center pt-16 pb-20 px-4 overflow-hidden"
     >
-      {/* Layer 0 — deep-navy atmospheric underlay (always visible) */}
+      {/* Layer 0 — absolute dark stage (near-black void) */}
       <div className="absolute inset-0 hero-neural-fallback" aria-hidden="true" />
 
       {/* Layer 1 — cinematic neural environment (WebGL island) */}

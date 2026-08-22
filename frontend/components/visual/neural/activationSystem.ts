@@ -24,8 +24,9 @@ const MAX_PULSES = 6;
 const MAX_DISSOLVES = 4;
 const CONDUCTION_SPEED = 0.24;
 const ACT_DECAY_TAU = 1.7;
-const INTRO_CASCADE_AT = 3.6;
-const DIRECTOR_START = 6.2;
+const INTRO_GLOW_START = 3.1;
+const INTRO_FIRE_AT = 3.95;
+const DIRECTOR_START = 6.4;
 
 export class ActivationDirector {
   readonly act: Float32Array;
@@ -68,9 +69,15 @@ export class ActivationDirector {
     if (this.staticMode) return;
     this.simT = t;
 
-    if (!this.introDone && t >= INTRO_CASCADE_AT) {
-      this.introDone = true;
-      this.fire(this.network.hubIndex, t, 1.0, 3);
+    if (!this.introDone) {
+      if (t >= INTRO_GLOW_START && t < INTRO_FIRE_AT) {
+        const glow = smoothstep(INTRO_GLOW_START, INTRO_FIRE_AT, t);
+        this.act[this.network.hubIndex] = Math.max(this.act[this.network.hubIndex], glow * 0.8);
+      }
+      if (t >= INTRO_FIRE_AT) {
+        this.introDone = true;
+        this.fire(this.network.hubIndex, t, 1.0, 3);
+      }
     }
 
     const decay = Math.exp(-dt / ACT_DECAY_TAU);

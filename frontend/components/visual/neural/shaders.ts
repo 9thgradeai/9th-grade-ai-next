@@ -47,7 +47,7 @@ const DISSOLVE_BLOCK = `
     }
     float cut = dis * 1.35 - dn * 0.5;
     alpha *= smoothstep(0.02, 0.34, 1.0 - cut);
-    col += vec3(1.0, 0.87, 0.7) * smoothstep(0.26, 0.5, cut) * smoothstep(0.64, 0.5, cut) * 0.45;
+    col += vec3(0.62, 0.86, 1.0) * smoothstep(0.26, 0.5, cut) * smoothstep(0.64, 0.5, cut) * 0.45;
   }
 `;
 
@@ -56,7 +56,7 @@ const PULSE_BLOCK = `
     if(k >= uPulseCount) break;
     float d = distance(vWorld, uPulseSrc[k]);
     float g = exp(-pow(d - uPulseR[k], 2.0) / 0.0022) * uPulseI[k];
-    col += PULSE_WARM * g * PULSE_GAIN;
+    col += PULSE_ELECTRIC * g * PULSE_GAIN;
     alpha += g * ALPHA_GAIN;
   }
 `;
@@ -120,7 +120,7 @@ void main(){
 
 export const LINE_FS = GLSL_VERSION + `
 precision highp float;
-#define PULSE_WARM vec3(1.0, 0.88, 0.72)
+#define PULSE_ELECTRIC vec3(0.60, 0.82, 1.00)
 #define PULSE_GAIN 1.5
 #define ALPHA_GAIN 0.45
 in vec3 vWorld;
@@ -139,7 +139,7 @@ void main(){
   float edge = smoothstep(1.0, 0.25, abs(vSide));
   float core = exp(-vSide * vSide * 3.5);
   float birth = smoothstep(vBirth, vBirth + 1.1, uTime);
-  vec3 cool = vec3(0.62, 0.72, 0.87);
+  vec3 cool = vec3(0.70, 0.76, 0.86);
   vec3 col = cool * (0.34 + 0.5 * core) * fl;
   float alpha = (0.05 + 0.115 * edge) * edge;
   alpha *= vDim * vAtt * birth;
@@ -172,7 +172,8 @@ out float vSeed;
 out float vBirth;
 void main(){
   float pop = 0.5 + 0.5 * smoothstep(aBirth, aBirth + 1.4, uTime);
-  vec3 world = aPos + (uRight * aCorner.x + uUp * aCorner.y) * aSize * (0.55 + 0.45 * pop);
+  float breathe = 1.0 + 0.045 * sin(uTime * 0.55 + aSeed * 17.0);
+  vec3 world = aPos + (uRight * aCorner.x + uUp * aCorner.y) * aSize * (0.55 + 0.45 * pop) * breathe;
   gl_Position = uVP * uModel * vec4(world, 1.0);
   vUV = aCorner;
   vWorld = world;
@@ -185,7 +186,7 @@ void main(){
 
 export const SOMA_FS = GLSL_VERSION + `
 precision highp float;
-#define PULSE_WARM vec3(1.0, 0.87, 0.7)
+#define PULSE_ELECTRIC vec3(0.62, 0.84, 1.00)
 #define PULSE_GAIN 1.0
 #define ALPHA_GAIN 0.32
 in vec2 vUV;
@@ -208,7 +209,7 @@ void main(){
   vec2 dirV = vUV / max(r, 1e-3);
   float rim = pow(max(dot(dirV, normalize(vec2(-0.55, 0.78))), 0.0), 2.0);
   float ring = smoothstep(0.5, 0.92, r) * smoothstep(1.0, 0.86, r);
-  vec3 cool = vec3(0.66, 0.75, 0.89);
+  vec3 cool = vec3(0.71, 0.77, 0.87);
   vec3 col = cool * (0.15 + 0.22 * cyt);
   col *= 1.0 - smoothstep(0.0, 0.34, nuc) * 0.38;
   col += cool * ring * 0.5 * (0.5 + 0.5 * cyt);
@@ -244,6 +245,14 @@ void main(){
   p.x += sin(uTime * 0.11 + ph) * aAmp;
   p.y += sin(uTime * 0.085 + ph * 1.71) * aAmp * 0.8;
   p.z += cos(uTime * 0.07 + ph) * aAmp;
+  for(int j = 0; j < 4; j++){
+    if(j >= uDisCount) break;
+    float dd = distance(p, uDisC[j]);
+    float infl = uDisS[j] * smoothstep(uDisR[j] * 1.4, uDisR[j] * 0.5, dd);
+    vec3 away = p - uDisC[j];
+    float al = max(length(away), 1e-3);
+    p += (away / al) * infl * 0.055;
+  }
   vec4 cs = uVP * uModel * vec4(p, 1.0);
   gl_Position = cs;
   gl_PointSize = clamp(aSize * (uRes.y * 0.0011) / max(cs.w, 0.1), 1.0, 7.0);
@@ -267,7 +276,7 @@ void main(){
   vec2 pc = gl_PointCoord * 2.0 - 1.0;
   float d = length(pc);
   float disc = smoothstep(1.0, 0.15, d);
-  vec3 cool = vec3(0.6, 0.71, 0.87);
+  vec3 cool = vec3(0.68, 0.74, 0.85);
   vec3 col = cool * (0.5 + 0.5 * tw);
   float alpha = disc * 0.16 * vDim * tw * birth;
 ` + DISSOLVE_BLOCK + `

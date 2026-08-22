@@ -61,11 +61,11 @@ export const TIER_CONFIG: Record<SceneTier, TierConfig> = {
     fg: 20,
     connDist: 0.135,
     maxConn: 3,
-    particles: 820,
-    centerX: 0.56,
-    spreadX: 0.5,
-    spreadY: 0.42,
-    spreadZ: 0.34,
+    particles: 780,
+    centerX: 0.58,
+    spreadX: 0.55,
+    spreadY: 0.44,
+    spreadZ: 0.36,
   },
   tablet: {
     mg: 100,
@@ -311,31 +311,16 @@ export function generateNetwork(tier: SceneTier, seed = 20260823): Network {
 
   const particles: Network["particles"] = [];
   for (let i = 0; i < cfg.particles; i++) {
-    const structural = rng() < 0.72;
-    if (structural) {
-      const host = neurons[Math.floor(rng() * neurons.length)];
-      const off = randUnit(rng);
-      const rad = range(rng, host.size * 1.4, host.size * 4 + 0.075);
-      particles.push({
-        pos: [host.pos[0] + off[0] * rad, host.pos[1] + off[1] * rad, host.pos[2] + off[2] * rad],
-        size: range(rng, 1.6, 4.2),
-        seed: rng(),
-        amp: range(rng, 0.004, 0.011),
-        dim: host.dim * range(rng, 0.5, 1),
-      });
-    } else {
-      particles.push({
-        pos: [
-          range(rng, -1.6, 1.9),
-          range(rng, -1.1, 1.2),
-          range(rng, -0.7, 0.4),
-        ],
-        size: range(rng, 1.1, 2.4),
-        seed: rng(),
-        amp: range(rng, 0.002, 0.007),
-        dim: range(rng, 0.16, 0.42),
-      });
-    }
+    const host = neurons[Math.floor(rng() * neurons.length)];
+    const off = randUnit(rng);
+    const rad = range(rng, host.size * 1.4, host.size * 3.4 + 0.055);
+    particles.push({
+      pos: [host.pos[0] + off[0] * rad, host.pos[1] + off[1] * rad, host.pos[2] + off[2] * rad],
+      size: range(rng, 1.5, 3.8),
+      seed: rng(),
+      amp: range(rng, 0.002, 0.006),
+      dim: host.dim * range(rng, 0.45, 1),
+    });
   }
 
   return { neurons, segs, neighbors, hubIndex, particles };
