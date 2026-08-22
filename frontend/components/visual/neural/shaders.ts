@@ -120,6 +120,7 @@ void main(){
 
 export const LINE_FS = GLSL_VERSION + `
 precision highp float;
+precision highp int;
 #define PULSE_ELECTRIC vec3(0.60, 0.82, 1.00)
 #define PULSE_GAIN 1.5
 #define ALPHA_GAIN 0.45
@@ -152,13 +153,13 @@ void main(){
 `;
 
 export const SOMA_VS = GLSL_VERSION + `
-layout(location = 7) in vec2 aCorner;
-layout(location = 8) in vec3 aPos;
-layout(location = 9) in float aSize;
-layout(location = 10) in float aSeed;
-layout(location = 11) in float aId;
-layout(location = 12) in float aDim;
-layout(location = 13) in float aBirth;
+layout(location = 0) in vec2 aCorner;
+layout(location = 1) in vec3 aPos;
+layout(location = 2) in float aSize;
+layout(location = 3) in float aSeed;
+layout(location = 4) in float aId;
+layout(location = 5) in float aDim;
+layout(location = 6) in float aBirth;
 uniform mat4 uVP;
 uniform mat4 uModel;
 uniform vec3 uRight;
@@ -186,6 +187,7 @@ void main(){
 
 export const SOMA_FS = GLSL_VERSION + `
 precision highp float;
+precision highp int;
 #define PULSE_ELECTRIC vec3(0.62, 0.84, 1.00)
 #define PULSE_GAIN 1.0
 #define ALPHA_GAIN 0.32
@@ -217,7 +219,7 @@ void main(){
   float birth = smoothstep(vBirth, vBirth + 1.3, uTime);
   float alpha = membrane * 0.32 * vDim * birth;
 ` + PULSE_BLOCK + `
-  col += PULSE_WARM * exp(-r * r * 4.5) * act * 0.9;
+  col += PULSE_ELECTRIC * exp(-r * r * 4.5) * act * 0.9;
   col += cool * ring * act * 0.85;
   col += cool * rim * act * 0.4;
   alpha += act * (0.2 + 0.24 * ring) * membrane * birth;
@@ -227,15 +229,19 @@ void main(){
 `;
 
 export const PARTICLE_VS = GLSL_VERSION + `
-layout(location = 14) in vec3 aPos;
-layout(location = 15) in float aSize;
-layout(location = 16) in float aSeed;
-layout(location = 17) in float aAmp;
-layout(location = 18) in float aDim;
+layout(location = 0) in vec3 aPos;
+layout(location = 1) in float aSize;
+layout(location = 2) in float aSeed;
+layout(location = 3) in float aAmp;
+layout(location = 4) in float aDim;
 uniform mat4 uVP;
 uniform mat4 uModel;
 uniform vec2 uRes;
 uniform float uTime;
+uniform int uDisCount;
+uniform vec3 uDisC[4];
+uniform float uDisR[4];
+uniform float uDisS[4];
 out vec3 vWorld;
 out float vSeed;
 out float vDim;
@@ -264,6 +270,7 @@ void main(){
 
 export const PARTICLE_FS = GLSL_VERSION + `
 precision highp float;
+precision highp int;
 in vec3 vWorld;
 in float vSeed;
 in float vDim;

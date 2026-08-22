@@ -306,9 +306,9 @@ export default function NeuralScene() {
       [0, 3], [1, 3], [2, 1], [3, 1], [4, 1], [5, 1], [6, 1],
     ];
     const somaLayoutInst: [number, number][] = [
-      [8, 3], [9, 1], [10, 1], [11, 1], [12, 1], [13, 1],
+      [1, 3], [2, 1], [3, 1], [4, 1], [5, 1], [6, 1],
     ];
-    const partLayout: [number, number][] = [[14, 3], [15, 1], [16, 1], [17, 1], [18, 1]];
+    const partLayout: [number, number][] = [[0, 3], [1, 1], [2, 1], [3, 1], [4, 1]];
 
     const cornerBuf = gl.createBuffer();
     const corners = new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]);
@@ -320,8 +320,8 @@ export default function NeuralScene() {
       gl.bindVertexArray(vao);
       gl.bindBuffer(gl.ARRAY_BUFFER, cornerBuf);
       gl.bufferData(gl.ARRAY_BUFFER, corners, gl.STATIC_DRAW);
-      gl.enableVertexAttribArray(7);
-      gl.vertexAttribPointer(7, 2, gl.FLOAT, false, 0, 0);
+      gl.enableVertexAttribArray(0);
+      gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
       gl.vertexAttribDivisor(7, 0);
       const vbo = gl.createBuffer();
       if (!vbo) return null;
