@@ -32,6 +32,9 @@
 
   /* Custom shadows — refined premium glow */
   --shadow-neon-glow: 0 0 20px rgba(16, 185, 129, 0.12);
+  --shadow-glow: 0 0 24px rgba(16, 185, 129, 0.3);
+  --shadow-glow-sm: 0 0 20px rgba(16, 185, 129, 0.25);
+  --shadow-glow-lg: 0 12px 48px rgba(6, 214, 160, 0.14), 0 0 0 1px rgb(16 185 129 / 0.18);
   --shadow-neon-glow-lg: 0 12px 48px rgba(6, 214, 160, 0.14), 0 0 0 1px rgb(16 185 129 / 0.18);
   --shadow-card-hover:
     0 16px 48px rgba(2, 6, 12, 0.6), 0 0 0 1px rgb(16 185 129 / 0.28),
@@ -323,6 +326,35 @@ html.light .text-gradient {
 }
 .pulse-soft {
   animation: pulse-soft 3s ease-in-out infinite;
+}
+
+/* Terminal window chrome — shared card treatment (TerminalFrame).
+   Previously used by nine components but never defined; now a real
+   design-system primitive with macOS-style traffic lights. */
+.terminal-window-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  background: rgb(255 255 255 / 0.03);
+}
+.dot {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 9999px;
+  flex-shrink: 0;
+}
+.dot.close {
+  background: #fb7185;
+}
+.dot.minimize {
+  background: #fbbf24;
+}
+.dot.maximize {
+  background: #34d399;
+}
+html.light .terminal-window-bar {
+  background: rgb(2 6 12 / 0.04);
 }
 
 /* Subtle hairline used on premium cards */

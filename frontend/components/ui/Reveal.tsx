@@ -4,11 +4,10 @@ import { motion, useReducedMotion, type Variants } from "framer-motion";
 import type { ReactNode } from "react";
 
 const revealVariants: Variants = {
-  hidden: { opacity: 0, y: 28, filter: "blur(6px)" },
+  hidden: { opacity: 0, y: 24 },
   visible: {
     opacity: 1,
     y: 0,
-    filter: "blur(0px)",
     transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
   },
 };
@@ -22,7 +21,7 @@ export default function Reveal({
   children: ReactNode;
   delay?: number;
   className?: string;
-  as?: "div" | "section" | "li" | "span";
+  as?: "div" | "section" | "li" | "span" | "article";
 }) {
   const shouldReduceMotion = useReducedMotion();
 
@@ -30,8 +29,10 @@ export default function Reveal({
     return <Tag className={className}>{children}</Tag>;
   }
 
+  const MotionTag = motion[Tag];
+
   return (
-    <motion.div
+    <MotionTag
       variants={revealVariants}
       initial="hidden"
       whileInView="visible"
@@ -40,6 +41,6 @@ export default function Reveal({
       className={className}
     >
       {children}
-    </motion.div>
+    </MotionTag>
   );
 }

@@ -137,8 +137,11 @@ export default function OfflineMode() {
           </div>
           <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
             <motion.div
-              animate={{ width: `${(downloadedCount / packs.length) * 100}%` }}
-              className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full"
+              initial={false}
+              animate={{ scaleX: packs.length > 0 ? downloadedCount / packs.length : 0 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              style={{ transformOrigin: "left" }}
+              className="h-full w-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full"
             />
           </div>
         </div>

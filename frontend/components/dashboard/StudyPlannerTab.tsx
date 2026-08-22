@@ -136,10 +136,11 @@ export default function StudyPlannerTab() {
         {/* Progress Bar */}
         <div className="mt-4 h-2 bg-zinc-800 rounded-full overflow-hidden">
           <motion.div
-            initial={{ width: 0 }}
-            animate={{ width: `${progress}%` }}
+            initial={false}
+            animate={{ scaleX: progress / 100 }}
             transition={{ duration: 0.5 }}
-            className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full"
+            style={{ transformOrigin: "left" }}
+            className="h-full w-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full"
           />
         </div>
       </motion.div>

@@ -22,6 +22,8 @@ import type {
   Server,
 } from "@/lib/types";
 import DailyQuizWidget from "./DailyQuizWidget";
+import KpiTile, { type KpiAccent } from "@/components/ui/KpiTile";
+import EmptyState from "@/components/ui/EmptyState";
 
 const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
@@ -57,37 +59,20 @@ function useCountdown(target: string) {
   return remaining;
 }
 
-const KPI_KEYS: { key: keyof Server.DashboardStatsDTO; label: string; labelEn: string; suffix?: string }[] = [
-  { key: "points", label: "পয়েন্ট", labelEn: "Points" },
-  { key: "accuracy", label: "সঠিকতার হার", labelEn: "Accuracy", suffix: "%" },
-  { key: "questionsAnswered", label: "প্রশ্ন সমাধান", labelEn: "Solved" },
-  { key: "streak", label: "স্ট্রিক", labelEn: "Streak", suffix: " দিন" },
-  { key: "rank", label: "র‍্যাংক", labelEn: "Rank" },
-  { key: "exams", label: "মক পরীক্ষা", labelEn: "Mock exams" },
-];
-
-function MetricTile({
-  value,
-  label,
-  suffix,
-}: {
-  value: number;
+const KPI_KEYS: {
+  key: keyof Server.DashboardStatsDTO;
   label: string;
+  labelEn: string;
   suffix?: string;
-}) {
-  return (
-    <motion.div
-      whileHover={{ y: -3 }}
-      className="glass-card rounded-2xl border border-default p-4 transition-[border-color,box-shadow] duration-300 hover:border-emerald-400/40 hover:shadow-neon-glow"
-    >
-      <p className="text-2xl font-display font-semibold text-gradient">
-        {value.toLocaleString("bn-BD")}
-        {suffix ? <span className="text-sm text-zinc-500">{suffix}</span> : null}
-      </p>
-      <p className="text-xs text-zinc-500 mt-1">{label}</p>
-    </motion.div>
-  );
-}
+  accent?: KpiAccent;
+}[] = [
+  { key: "points", label: "পয়েন্ট", labelEn: "Points", accent: "emerald" },
+  { key: "accuracy", label: "সঠিকতার হার", labelEn: "Accuracy", suffix: "%", accent: "cyan" },
+  { key: "questionsAnswered", label: "প্রশ্ন সমাধান", labelEn: "Solved", accent: "indigo" },
+  { key: "streak", label: "স্ট্রিক", labelEn: "Streak", suffix: " দিন", accent: "amber" },
+  { key: "rank", label: "র‍্যাংক", labelEn: "Rank", accent: "zinc" },
+  { key: "exams", label: "মক পরীক্ষা", labelEn: "Mock exams", accent: "zinc" },
+];
 
 export default function HomeTab() {
   const { user } = useAuth();
@@ -102,6 +87,8 @@ export default function HomeTab() {
   const [results, setResults] = useState<Server.MockTestResultDTO[]>([]);
   const [news, setNews] = useState<Server.FlashNewsDTO[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadFailed, setLoadFailed] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -127,14 +114,28 @@ export default function HomeTab() {
         if (t.status === "fulfilled") setTasks(t.value);
         if (m.status === "fulfilled") setResults(m.value);
         if (n.status === "fulfilled") setNews(n.value);
-      } finally {
-        if (!cancelled) setLoading(false);
+        // Surface a total outage instead of silently rendering zeros.
+        if ([s, r, e, t, m, n].every((p) => p.status === "rejected")) {
+          setLoadFailed(true);
+        }
+        setLoading(false);
+      } catch {
+        if (!cancelled) {
+          setLoadFailed(true);
+          setLoading(false);
+        }
       }
     })();
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [reloadKey]);
+
+  const retryLoad = () => {
+    setLoading(true);
+    setLoadFailed(false);
+    setReloadKey((k) => k + 1);
+  };
 
   const countdown = useCountdown(nextExam?.date ?? "");
 
@@ -207,7 +208,7 @@ export default function HomeTab() {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.08 }}
+        transition={{ delay: 0.05 }}
         className="glass-card rounded-2xl border border-emerald-500/30 p-6 md:p-8 relative overflow-hidden"
       >
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(16,185,129,0.1),transparent_60%)] pointer-events-none" aria-hidden="true" />
@@ -257,28 +258,41 @@ export default function HomeTab() {
 
       {/* KPI strip — real stats */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-        {skeleton
-          ? Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="glass-card rounded-2xl border border-terminal-border p-4 animate-pulse">
-                <div className="h-7 w-16 bg-zinc-800 rounded" />
-                <div className="h-3 w-20 bg-zinc-800 rounded mt-3" />
-              </div>
-            ))
-          : KPI_KEYS.map((k) => (
-              <MetricTile
-                key={k.key}
-                value={(stats?.[k.key] as number) ?? 0}
-                label={lang === "bn" ? k.label : k.labelEn}
-                suffix={k.suffix}
-              />
-            ))}
+        {KPI_KEYS.map((k) => (
+          <KpiTile
+            key={k.key}
+            label={lang === "bn" ? k.label : k.labelEn}
+            value={`${(stats?.[k.key] as number ?? 0).toLocaleString("bn-BD")}${k.suffix ?? ""}`}
+            accent={k.accent}
+            loading={skeleton}
+          />
+        ))}
       </div>
+
+      {/* Total load failure — never render a silent zeroed dashboard */}
+      {loadFailed && !skeleton && (
+        <div
+          role="alert"
+          className="glass-card rounded-2xl border border-red-500/30 p-8 text-center"
+        >
+          <p className="text-sm font-medium text-zinc-200">ড্যাশবোর্ড ডেটা লোড করা যায়নি</p>
+          <p className="mt-1 text-xs text-zinc-500">
+            ইন্টারনেট সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।
+          </p>
+          <button
+            onClick={retryLoad}
+            className="mt-4 px-4 py-2 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors"
+          >
+            আবার চেষ্টা করুন
+          </button>
+        </div>
+      )}
 
       {/* Weak areas — real subject reports */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
+        transition={{ delay: 0.1 }}
         className="glass-card rounded-2xl border border-terminal-border p-5"
       >
         <div className="flex items-center justify-between mb-4">
@@ -297,16 +311,19 @@ export default function HomeTab() {
         </div>
 
         {weakest.length === 0 ? (
-          <div className="text-center py-8">
-            <Target className="w-10 h-10 mx-auto mb-3 text-emerald-500/60" aria-hidden="true" />
-            <p className="text-sm text-zinc-400">এখনো কোনো প্রশ্ন সমাধান করেননি।</p>
-            <button
-              onClick={() => setActiveTab("practice")}
-              className="mt-4 px-4 py-2 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors"
-            >
-              প্র্যাকটিস শুরু করুন
-            </button>
-          </div>
+          <EmptyState
+            icon={Target}
+            title="এখনো কোনো প্রশ্ন সমাধান করেননি।"
+            hint="প্র্যাকটিস শুরু করলে বিষয়ভিত্তিক দুর্বলতা এখানে দেখা যাবে।"
+            action={
+              <button
+                onClick={() => setActiveTab("practice")}
+                className="px-4 py-2 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors"
+              >
+                প্র্যাকটিস শুরু করুন
+              </button>
+            }
+          />
         ) : (
           <div className="space-y-3">
             {weakest.map((r) => (
@@ -317,14 +334,14 @@ export default function HomeTab() {
                 </div>
                 <div className="flex-1 h-2 bg-zinc-800 rounded-full overflow-hidden">
                   <div
-                    className={`h-full rounded-full transition-all duration-700 ${
+                    className={`h-full w-full origin-left rounded-full transition-transform duration-700 ${
                       r.score < 50
                         ? "bg-red-500"
                         : r.score < 75
                           ? "bg-amber-500"
                           : "bg-emerald-500"
                     }`}
-                    style={{ width: `${Math.max(2, r.score)}%` }}
+                    style={{ transform: `scaleX(${Math.max(0.02, r.score / 100)})` }}
                   />
                 </div>
                 <span className="w-12 text-right text-sm font-mono text-emerald-400">
@@ -341,7 +358,7 @@ export default function HomeTab() {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
+          transition={{ delay: 0.14 }}
           className="glass-card rounded-2xl border border-terminal-border p-5"
         >
           <div className="flex items-center justify-between mb-4">
@@ -357,16 +374,19 @@ export default function HomeTab() {
           </div>
 
           {todaysTasks.length === 0 ? (
-            <div className="text-center py-8">
-              <ClipboardList className="w-10 h-10 mx-auto mb-3 text-emerald-500/60" aria-hidden="true" />
-              <p className="text-sm text-zinc-400">আজকের জন্য কোনো টাস্ক নেই।</p>
-              <button
-                onClick={() => setActiveTab("study-planner")}
-                className="mt-4 px-4 py-2 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors"
-              >
-                রুটিন দেখুন
-              </button>
-            </div>
+            <EmptyState
+              icon={ClipboardList}
+              title="আজকের জন্য কোনো টাস্ক নেই।"
+              hint="প্ল্যানারে গিয়ে আজকের রুটিন তৈরি করুন।"
+              action={
+                <button
+                  onClick={() => setActiveTab("study-planner")}
+                  className="px-4 py-2 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors"
+                >
+                  রুটিন দেখুন
+                </button>
+              }
+            />
           ) : (
             <div className="space-y-2">
               {todaysTasks.map((t) => (
@@ -380,14 +400,15 @@ export default function HomeTab() {
                 >
                   <button
                     onClick={() => void toggleTask(t.id)}
+                    aria-pressed={t.completed}
                     aria-label={t.completed ? "চিহ্নিত করা হয়েছে" : "সম্পন্ন হিসেবে চিহ্নিত করুন"}
-                    className={`w-5 h-5 rounded-md border flex items-center justify-center flex-shrink-0 transition-colors ${
+                    className={`w-5 h-5 rounded-md border flex items-center justify-center flex-shrink-0 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400 ${
                       t.completed
                         ? "bg-emerald-500 border-emerald-500 text-zinc-950"
                         : "border-zinc-600 hover:border-emerald-500"
                     }`}
                   >
-                    {t.completed ? "✓" : ""}
+                    {t.completed ? <span aria-hidden="true">✓</span> : ""}
                   </button>
                   <div className="flex-1 min-w-0">
                     <p className={`text-sm ${t.completed ? "text-zinc-500 line-through" : "text-zinc-200"}`}>
@@ -417,7 +438,7 @@ export default function HomeTab() {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
+          transition={{ delay: 0.18 }}
           className="glass-card rounded-2xl border border-terminal-border p-5"
         >
           <div className="flex items-center justify-between mb-4">
@@ -433,16 +454,19 @@ export default function HomeTab() {
           </div>
 
           {results.length === 0 ? (
-            <div className="text-center py-8">
-              <Flag className="w-10 h-10 mx-auto mb-3 text-emerald-500/60" aria-hidden="true" />
-              <p className="text-sm text-zinc-400">এখনো কোনো মক পরীক্ষা দেওয়া হয়নি।</p>
-              <button
-                onClick={() => setActiveTab("practice")}
-                className="mt-4 px-4 py-2 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors"
-              >
-                মক টেস্ট শুরু করুন
-              </button>
-            </div>
+            <EmptyState
+              icon={Flag}
+              title="এখনো কোনো মক পরীক্ষা দেওয়া হয়নি।"
+              hint="প্রথম মক টেস্ট দিলে ফলাফলের প্রবণতা এখানে জমা হবে।"
+              action={
+                <button
+                  onClick={() => setActiveTab("practice")}
+                  className="px-4 py-2 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors"
+                >
+                  মক টেস্ট শুরু করুন
+                </button>
+              }
+            />
           ) : (
             <div className="space-y-2">
               {results.slice(0, 4).map((r) => (
@@ -487,7 +511,7 @@ export default function HomeTab() {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
+          transition={{ delay: 0.22 }}
           className="glass-card rounded-2xl border border-terminal-border overflow-hidden"
         >
           <div className="px-5 py-4 border-b border-terminal-border flex items-center gap-2">
@@ -517,7 +541,7 @@ export default function HomeTab() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
+          transition={{ delay: 0.26 }}
           className="relative flex items-start gap-3 p-4 bg-gradient-to-r from-emerald-500/[0.08] to-cyan-500/[0.05] border border-emerald-500/20 rounded-2xl overflow-hidden"
         >
           <div className="absolute inset-y-0 left-0 w-0.5 bg-gradient-to-b from-emerald-400 to-cyan-400" aria-hidden="true" />

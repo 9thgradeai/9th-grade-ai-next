@@ -382,8 +382,8 @@ export default function PracticeTab() {
                 {/* Progress bar */}
                 <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden mb-6">
                   <div
-                    className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all duration-300"
-                    style={{ width: `${totalQuestions > 0 ? (answeredCount / totalQuestions) * 100 : 0}%` }}
+                    className="h-full w-full origin-left bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-transform duration-300"
+                    style={{ transform: `scaleX(${totalQuestions > 0 ? answeredCount / totalQuestions : 0})` }}
                   />
                 </div>
 

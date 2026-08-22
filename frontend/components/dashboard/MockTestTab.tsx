@@ -64,28 +64,30 @@ export default function MockTestTab() {
     useCallback(() => setShowUnansweredConfirm(false), []),
   );
 
-  const fetchConfig = useCallback(async () => {
-    try {
-      const list = await api.examConfig();
-      setSubjects(list.filter((s) => s.questionCount > 0));
-    } catch {
-      setConfigError("কনফিগারেশন লোড করা যায়নি। আবার চেষ্টা করুন।");
-    } finally {
-      setConfigLoading(false);
-    }
-  }, []);
+  const [configReloadKey, setConfigReloadKey] = useState(0);
 
   useEffect(() => {
+    let cancelled = false;
     void (async () => {
       try {
         const list = await api.examConfig();
-        setSubjects(list.filter((s) => s.questionCount > 0));
+        if (!cancelled) setSubjects(list.filter((s) => s.questionCount > 0));
       } catch {
-        setConfigError("কনফিগারেশন লোড করা যায়নি। আবার চেষ্টা করুন।");
+        if (!cancelled) setConfigError("কনফিগারেশন লোড করা যায়নি। আবার চেষ্টা করুন।");
       } finally {
-        setConfigLoading(false);
+        if (!cancelled) setConfigLoading(false);
       }
     })();
+    return () => {
+      cancelled = true;
+    };
+  }, [configReloadKey]);
+
+  const fetchConfig = useCallback(() => {
+    // Retry path — reset UI state, then re-run the config effect.
+    setConfigLoading(true);
+    setConfigError(null);
+    setConfigReloadKey((k) => k + 1);
   }, []);
 
   const selectedSubjects = useMemo(
@@ -372,8 +374,8 @@ export default function MockTestTab() {
             </div>
             <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden mt-2">
               <div
-                className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all duration-300"
-                style={{ width: `${progressPct}%` }}
+                className="h-full w-full origin-left bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-transform duration-300"
+                style={{ transform: `scaleX(${progressPct / 100})` }}
               />
             </div>
           </div>

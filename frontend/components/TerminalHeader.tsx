@@ -97,8 +97,8 @@ export default function TerminalHeader() {
               aria-label="9th-grade-ai home"
             >
               <motion.span
-                className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 via-emerald-500 to-cyan-500 shadow-[0_0_20px_rgba(16,185,129,0.35)] flex items-center justify-center text-zinc-950 font-mono font-bold"
-                animate={shouldReduceMotion ? undefined : { boxShadow: ["0 0 16px rgba(16,185,129,0.3)", "0 0 28px rgba(16,185,129,0.5)", "0 0 16px rgba(16,185,129,0.3)"] }}
+                className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 via-emerald-500 to-cyan-500 shadow-glow-sm flex items-center justify-center text-zinc-950 font-mono font-bold"
+                animate={shouldReduceMotion ? undefined : { scale: [1, 1.06, 1] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
               >
                 {"⌁"}
@@ -143,7 +143,7 @@ export default function TerminalHeader() {
               </Link>
               <Link
                 href="/login?register=true"
-                className="px-4 py-1.5 text-sm font-semibold text-zinc-950 bg-emerald-500 rounded-full hover:bg-emerald-400 transition-colors shadow-[0_0_20px_rgba(16,185,129,0.25)] hover:scale-[1.03] active:scale-[0.97]"
+                className="px-4 py-1.5 text-sm font-semibold text-zinc-950 bg-emerald-500 rounded-full hover:bg-emerald-400 transition-colors shadow-glow-sm hover:scale-[1.03] active:scale-[0.97]"
               >
                 Get Started
               </Link>
@@ -154,10 +154,9 @@ export default function TerminalHeader() {
           <button
             className="md:hidden p-2.5 rounded-lg hover:bg-white/5 transition-colors"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            aria-label="Toggle menu"
+            aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
             aria-expanded={isMobileMenuOpen}
             aria-controls="mobile-menu"
-            aria-haspopup="menu"
           >
             <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               {isMobileMenuOpen ? (
@@ -177,7 +176,6 @@ export default function TerminalHeader() {
           animate={{ opacity: isMobileMenuOpen ? 1 : 0, height: isMobileMenuOpen ? "auto" : 0 }}
           transition={{ duration: 0.2 }}
           className="md:hidden overflow-hidden"
-          role="menu"
           aria-label="Mobile navigation"
           hidden={!isMobileMenuOpen}
         >
@@ -186,7 +184,6 @@ export default function TerminalHeader() {
               <Link
                 key={link.href}
                 href={link.href}
-                role="menuitem"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="block px-3 py-3 min-h-[44px] flex items-center text-base font-medium text-zinc-300 hover:text-emerald-400"
               >
@@ -196,7 +193,6 @@ export default function TerminalHeader() {
             <div className="flex flex-col gap-2 pt-4 border-t border-white/10">
               <Link
                 href="/login"
-                role="menuitem"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="px-4 py-3 min-h-[44px] flex items-center justify-center text-center text-sm font-medium text-zinc-100 border border-white/15 rounded-full hover:bg-white/5 transition-colors active:scale-[0.98]"
               >
@@ -204,9 +200,8 @@ export default function TerminalHeader() {
               </Link>
               <Link
                 href="/login?register=true"
-                role="menuitem"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="px-4 py-3 min-h-[44px] flex items-center justify-center text-center text-sm font-semibold text-zinc-950 bg-emerald-500 rounded-full hover:bg-emerald-400 transition-colors shadow-[0_0_20px_rgba(16,185,129,0.25)] active:scale-[0.98]"
+                className="px-4 py-3 min-h-[44px] flex items-center justify-center text-center text-sm font-semibold text-zinc-950 bg-emerald-500 rounded-full hover:bg-emerald-400 transition-colors shadow-glow-sm active:scale-[0.98]"
               >
                 Get Started
               </Link>

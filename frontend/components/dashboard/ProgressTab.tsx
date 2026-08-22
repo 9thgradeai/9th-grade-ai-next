@@ -188,10 +188,11 @@ function SubjectReportRow({ report, index }: { report: { name: string; score: nu
                 <div className="text-[10px] text-zinc-500 font-mono uppercase tracking-wider mt-1">নির্ভুলতা</div>
                 <div className="mt-2 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
                   <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${accuracy}%` }}
+                    initial={false}
+                    animate={{ scaleX: accuracy / 100 }}
                     transition={{ duration: 0.6, delay: 0.1 }}
-                    className="h-full bg-emerald-500 rounded-full"
+                    style={{ transformOrigin: "left" }}
+                    className="h-full w-full bg-emerald-500 rounded-full"
                   />
                 </div>
               </div>

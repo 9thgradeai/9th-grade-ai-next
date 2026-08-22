@@ -8,6 +8,8 @@ const DEFAULT_TIMEOUT_MS = 15_000;
 const MAX_RETRIES = 3;
 const RETRY_DELAY_BASE_MS = 500;
 
+const IDEMPOTENT_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
+
 // ── Error class ────────────────────────────────────────────
 
 export class ApiError extends Error {
@@ -58,10 +60,20 @@ function getBackoffDelay(attempt: number): number {
   return RETRY_DELAY_BASE_MS * Math.pow(2, attempt);
 }
 
+type RequestOptions = RequestInit & { retries?: number };
+
+/**
+ * Single gateway for every browser → API call. Adds request correlation,
+ * timeouts, error normalization, and exponential-backoff retries.
+ *
+ * Retries apply ONLY to idempotent verbs by default — mutations (POST/PATCH/
+ * DELETE) are never retried automatically so a timeout can never double-apply
+ * an action (e.g. an SRS review or exam submission). Pass `retries` explicitly
+ * to opt a safe mutation back in.
+ */
 async function request<T>(
   url: string,
-  options: RequestInit = {},
-  retries = MAX_RETRIES,
+  options: RequestOptions = {},
 ): Promise<T> {
   const method = (options.method ?? "GET").toUpperCase();
   const headers = new Headers(options.headers);
@@ -70,11 +82,19 @@ async function request<T>(
     headers.set("x-request-id", crypto.randomUUID());
   }
 
+  let retries = options.retries ?? MAX_RETRIES;
+  if (!IDEMPOTENT_METHODS.has(method)) {
+    retries = Math.min(retries, options.retries ?? 0);
+  }
+
+  const fetchOptions: RequestInit = { ...options, headers };
+  delete (fetchOptions as RequestOptions).retries;
+
   let lastError: Error | null = null;
 
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
-      const response = await fetchWithTimeout(url, { ...options, headers });
+      const response = await fetchWithTimeout(url, fetchOptions);
 
       if (!response.ok) {
         let body: { error?: string; code?: string };
@@ -102,7 +122,7 @@ async function request<T>(
         throw new ApiError(errorMessage, errorCode, response.status);
       }
 
-      if (method === "NO_CONTENT" || response.status === 204) {
+      if (response.status === 204) {
         return undefined as T;
       }
 
@@ -132,6 +152,23 @@ async function request<T>(
 
   throw lastError ?? new ApiError("Request failed after retries.", "REQUEST_FAILED", 500);
 }
+
+/** JSON mutation helper — sets Content-Type, serializes the body, never retried. */
+function mutate<T>(
+  url: string,
+  method: string,
+  body?: unknown,
+): Promise<T> {
+  return request<T>(url, {
+    method,
+    retries: 0,
+    ...(body !== undefined
+      ? { body: JSON.stringify(body), headers: { "Content-Type": "application/json" } }
+      : {}),
+  });
+}
+
+const AUTH_FETCH_INIT = { credentials: "include", cache: "no-store" } as const;
 
 // ── Typed API methods ──────────────────────────────────────
 
@@ -171,7 +208,9 @@ export const api = {
   reviewFlashcard: (flashcardId: number, rating: 0 | 1 | 2 | 3): Promise<unknown> =>
     request<{ state: unknown }>("/api/flashcards/review", {
       method: "POST",
+      ...AUTH_FETCH_INIT,
       body: JSON.stringify({ flashcardId, rating }),
+      headers: { "Content-Type": "application/json" },
     }).then((d) => d.state),
 
   studyPlan: (): Promise<Server.StudyTaskDTO[]> =>
@@ -189,27 +228,8 @@ export const api = {
   notifications: (): Promise<Server.NotificationDTO[]> =>
     request<{ notifications: Server.NotificationDTO[] }>("/api/notifications").then((d) => d.notifications),
 
-  markNotificationRead: async (id: number): Promise<{ read: boolean }> => {
-    const response = await fetch(`/api/notifications/${id}/read`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "x-request-id": crypto.randomUUID(),
-      },
-      cache: "no-store",
-    });
-
-    if (!response.ok) {
-      const body = await response.json().catch(() => ({ error: response.statusText }));
-      throw new ApiError(
-        typeof body.error === "string" ? body.error : response.statusText,
-        body.code ?? `HTTP_${response.status}`,
-        response.status,
-      );
-    }
-
-    return response.json();
-  },
+  markNotificationRead: (id: number): Promise<{ read: boolean }> =>
+    mutate(`/api/notifications/${id}/read`, "POST"),
 
   badges: (): Promise<Server.BadgeDTO[]> =>
     request<{ badges: Server.BadgeDTO[] }>("/api/badges").then((d) => d.badges),
@@ -230,54 +250,24 @@ export const api = {
     request<{ subjects: Server.ExamSubjectDTO[] }>("/api/exam/config").then((d) => d.subjects),
 
   buildExam: async (config: Server.ExamSelectionRequest): Promise<Server.ExamBuildResultDTO> => {
-    const response = await fetch("/api/exam/build", {
+    const data = await request<{ exam: Server.ExamBuildResultDTO }>("/api/exam/build", {
       method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-        "x-request-id": crypto.randomUUID(),
-      },
+      ...AUTH_FETCH_INIT,
       body: JSON.stringify(config),
-      cache: "no-store",
+      headers: { "Content-Type": "application/json" },
     });
-
-    if (!response.ok) {
-      const body = await response.json().catch(() => ({ error: response.statusText }));
-      throw new ApiError(
-        typeof body.error === "string" ? body.error : response.statusText,
-        body.code ?? `HTTP_${response.status}`,
-        response.status,
-      );
-    }
-
-    const data = (await response.json()) as { exam: Server.ExamBuildResultDTO };
     return data.exam;
   },
 
   submitExam: async (
     answers: { questionId: number; selected: string }[],
   ): Promise<Server.ExamResultDTO> => {
-    const response = await fetch("/api/exam/submit", {
+    const data = await request<{ result: Server.ExamResultDTO }>("/api/exam/submit", {
       method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-        "x-request-id": crypto.randomUUID(),
-      },
+      ...AUTH_FETCH_INIT,
       body: JSON.stringify({ answers }),
-      cache: "no-store",
+      headers: { "Content-Type": "application/json" },
     });
-
-    if (!response.ok) {
-      const body = await response.json().catch(() => ({ error: response.statusText }));
-      throw new ApiError(
-        typeof body.error === "string" ? body.error : response.statusText,
-        body.code ?? `HTTP_${response.status}`,
-        response.status,
-      );
-    }
-
-    const data = (await response.json()) as { result: Server.ExamResultDTO };
     return data.result;
   },
 
@@ -285,54 +275,30 @@ export const api = {
     quizId: number,
     answers: { questionId: number; selected: string }[],
   ): Promise<{ correct: number; total: number; score: number; pointsEarned: number }> => {
-    const response = await fetch("/api/daily-quiz/submit", {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-        "x-request-id": crypto.randomUUID(),
+    const data = await request<{ summary: { correct: number; total: number; score: number; pointsEarned: number } }>(
+      "/api/daily-quiz/submit",
+      {
+        method: "POST",
+        ...AUTH_FETCH_INIT,
+        body: JSON.stringify({ quizId, answers }),
+        headers: { "Content-Type": "application/json" },
       },
-      body: JSON.stringify({ quizId, answers }),
-      cache: "no-store",
-    });
-
-    if (!response.ok) {
-      const body = await response.json().catch(() => ({ error: response.statusText }));
-      throw new ApiError(
-        typeof body.error === "string" ? body.error : response.statusText,
-        body.code ?? `HTTP_${response.status}`,
-        response.status,
-      );
-    }
-
-    const data = (await response.json()) as { summary: { correct: number; total: number; score: number; pointsEarned: number } };
+    );
     return data.summary;
   },
 
   submitPractice: async (
     answers: { questionId: number; selected: string }[],
   ): Promise<{ correct: number; total: number; score: number; pointsEarned: number }> => {
-    const response = await fetch("/api/practice/submit", {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-        "x-request-id": crypto.randomUUID(),
+    const data = await request<{ summary: { correct: number; total: number; score: number; pointsEarned: number } }>(
+      "/api/practice/submit",
+      {
+        method: "POST",
+        ...AUTH_FETCH_INIT,
+        body: JSON.stringify({ answers }),
+        headers: { "Content-Type": "application/json" },
       },
-      body: JSON.stringify({ answers }),
-      cache: "no-store",
-    });
-
-    if (!response.ok) {
-      const body = await response.json().catch(() => ({ error: response.statusText }));
-      throw new ApiError(
-        typeof body.error === "string" ? body.error : response.statusText,
-        body.code ?? `HTTP_${response.status}`,
-        response.status,
-      );
-    }
-
-    const data = (await response.json()) as { summary: { correct: number; total: number; score: number; pointsEarned: number } };
+    );
     return data.summary;
   },
 
@@ -342,97 +308,29 @@ export const api = {
   bookmarks: (): Promise<number[]> =>
     request<{ bookmarked: number[] }>("/api/bookmarks").then((d) => d.bookmarked),
 
-  toggleBookmark: async (questionId: number): Promise<{ bookmarked: boolean }> => {
-    const response = await fetch("/api/bookmarks", {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-        "x-request-id": crypto.randomUUID(),
-      },
-      body: JSON.stringify({ questionId }),
-      cache: "no-store",
-    });
+  toggleBookmark: (questionId: number): Promise<{ bookmarked: boolean }> =>
+    mutate("/api/bookmarks", "POST", { questionId }),
 
-    if (!response.ok) {
-      const body = await response.json().catch(() => ({ error: response.statusText }));
-      throw new ApiError(
-        typeof body.error === "string" ? body.error : response.statusText,
-        body.code ?? `HTTP_${response.status}`,
-        response.status,
-      );
-    }
-
-    return response.json();
-  },
-
-  toggleStudyTask: async (taskId: number): Promise<{ completed: boolean }> => {
-    const response = await fetch(`/api/study-plan/tasks/${taskId}/toggle`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "x-request-id": crypto.randomUUID(),
-      },
-      cache: "no-store",
-    });
-
-    if (!response.ok) {
-      const body = await response.json().catch(() => ({ error: response.statusText }));
-      throw new ApiError(
-        typeof body.error === "string" ? body.error : response.statusText,
-        body.code ?? `HTTP_${response.status}`,
-        response.status,
-      );
-    }
-
-    return response.json();
-  },
+  toggleStudyTask: (taskId: number): Promise<{ completed: boolean }> =>
+    mutate(`/api/study-plan/tasks/${taskId}/toggle`, "POST"),
 };
 
 // ── Account / settings methods (auth endpoints) ─────────────
 
-async function authRequest<T>(
-  url: string,
-  method: string,
-  body?: unknown,
-): Promise<T> {
-  const response = await fetch(url, {
-    method,
-    credentials: "include",
-    headers: {
-      ...(body !== undefined ? { "Content-Type": "application/json" } : {}),
-      "x-request-id": crypto.randomUUID(),
-    },
-    body: body !== undefined ? JSON.stringify(body) : undefined,
-    cache: "no-store",
-  });
-
-  if (!response.ok) {
-    const payload = await response.json().catch(() => ({ error: response.statusText }));
-    throw new ApiError(
-      typeof payload.error === "string" ? payload.error : response.statusText,
-      payload.code ?? `HTTP_${response.status}`,
-      response.status,
-    );
-  }
-
-  if (response.status === 204) {
-    return undefined as T;
-  }
-  return response.json() as Promise<T>;
-}
-
 export const account = {
   updateProfile: (name: string): Promise<{ user: Server.UserDTO }> =>
-    authRequest("/api/auth/profile", "PATCH", { name }),
+    mutate<{ user: Server.UserDTO }>("/api/auth/profile", "PATCH", { name }),
 
   changePassword: (currentPassword: string, newPassword: string, confirmPassword: string) =>
-    authRequest<{ success: boolean }>("/api/auth/change-password", "POST", {
+    mutate<{ success: boolean }>("/api/auth/change-password", "POST", {
       currentPassword,
       newPassword,
       confirmPassword,
     }),
 
   deleteAccount: (): Promise<{ success: boolean }> =>
-    authRequest("/api/auth/account", "DELETE"),
+    request<{ success: boolean }>("/api/auth/account", {
+      method: "DELETE",
+      ...AUTH_FETCH_INIT,
+    }),
 };

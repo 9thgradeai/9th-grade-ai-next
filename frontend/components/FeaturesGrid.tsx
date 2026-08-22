@@ -1,9 +1,9 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
 import { Brain, Zap, BookOpen, Flame, Target, Clock, Shield, Award } from "lucide-react";
 import SpotlightCard from "./ui/SpotlightCard";
 import SectionHeading from "./ui/SectionHeading";
+import Reveal from "./ui/Reveal";
 
 const features = [
   {
@@ -57,12 +57,10 @@ const features = [
 ];
 
 export default function FeaturesGrid() {
-  const shouldReduceMotion = useReducedMotion();
-
   return (
     <section
       id="features"
-      className="py-24 md:py-32 px-4 sm:px-6 relative"
+      className="py-24 md:py-32 px-4 sm:px-6 relative scroll-mt-16"
       aria-label="Core capabilities"
     >
       <div className="max-w-7xl mx-auto">
@@ -75,38 +73,30 @@ export default function FeaturesGrid() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {features.map((feature, index) => (
-            <motion.div
-              key={feature.title}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.5, delay: (index % 4) * 0.08 }}
-            >
+            <Reveal key={feature.title} delay={(index % 4) * 0.06} className="h-full">
               <SpotlightCard
                 className="h-full glass-card rounded-2xl border border-white/10 p-6 transition-[border-color,box-shadow] duration-300 hover:border-emerald-400/40 hover:shadow-card-hover"
               >
                 <div className="flex items-center justify-between mb-5">
-                  <motion.div
-                    whileHover={shouldReduceMotion ? undefined : { scale: 1.1, rotate: 5 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                    className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500/20 to-cyan-500/10 border border-emerald-500/25 flex items-center justify-center"
+                  <div
+                    className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500/20 to-cyan-500/10 border border-emerald-500/25 flex items-center justify-center transition-transform duration-200 group-hover:scale-110 group-hover:rotate-3"
                     aria-hidden="true"
                   >
                     <feature.icon className="w-6 h-6 text-emerald-400" />
-                  </motion.div>
+                  </div>
                   <span className="text-[10px] font-mono text-emerald-400/90 uppercase tracking-[0.14em] px-2.5 py-1 bg-emerald-500/8 border border-emerald-500/20 rounded-full">
                     {feature.badge}
                   </span>
                 </div>
 
-                <h4 className="font-display text-lg font-semibold text-white mb-2 group-hover:text-emerald-400 transition-colors">
+                <h3 className="font-display text-lg font-semibold text-white mb-2 group-hover:text-emerald-400 transition-colors">
                   {feature.title}
-                </h4>
+                </h3>
                 <p className="text-sm text-zinc-400 leading-relaxed">
                   {feature.description}
                 </p>
               </SpotlightCard>
-            </motion.div>
+            </Reveal>
           ))}
         </div>
       </div>

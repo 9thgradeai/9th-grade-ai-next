@@ -12,8 +12,10 @@ import {
 } from "framer-motion";
 import { trackHeroView, trackCtaClick } from "@/lib/analytics";
 import { FeedbackButton } from "./dashboard/FeedbackButton";
+import Button from "./ui/Button";
+import AuroraOrb from "./ui/AuroraOrb";
 import { transitions } from "@/lib/transitions";
-import { ChevronDown, Sparkles, ShieldCheck, Lock, Zap } from "lucide-react";
+import { ArrowRight, ChevronDown, Sparkles, ShieldCheck, Lock, Zap } from "lucide-react";
 
 type TerminalLine =
   | { type: "command"; text: string; delay: number }
@@ -178,21 +180,21 @@ export default function TerminalHero() {
 
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center pt-16 pb-20 px-4 overflow-hidden">
-      {/* Ambient aurora orbs (GPU-friendly, parallax drift) */}
+      {/* Ambient aurora orbs — shared primitive, scroll parallax */}
       <motion.div
-        className="absolute -top-32 left-1/4 w-[42rem] h-[42rem] bg-emerald-500/10 rounded-full blur-[130px]"
+        className="absolute -top-32 left-1/4"
         aria-hidden="true"
         style={{ y: orbY, opacity: orbOpacity }}
-        animate={shouldReduceMotion ? undefined : { scale: [1, 1.07, 1] }}
-        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-      />
+      >
+        <AuroraOrb colorClass="bg-emerald-500/10" />
+      </motion.div>
       <motion.div
-        className="absolute bottom-0 right-1/5 w-[34rem] h-[34rem] bg-indigo-500/10 rounded-full blur-[130px]"
+        className="absolute bottom-0 right-1/5"
         aria-hidden="true"
         style={{ y: orbY, opacity: orbOpacity }}
-        animate={shouldReduceMotion ? undefined : { scale: [1, 1.1, 1] }}
-        transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
-      />
+      >
+        <AuroraOrb colorClass="bg-indigo-500/10" size="34rem" duration={14} breatheTo={1.1} />
+      </motion.div>
 
       <div className="relative max-w-7xl mx-auto w-full">
         {/* Hero Content */}
@@ -227,27 +229,25 @@ export default function TerminalHero() {
               variants={heroItem}
               className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4"
             >
-              <motion.a
+              <Button
                 href="/login?register=true"
+                size="lg"
+                className="glow-border font-semibold w-full sm:w-auto"
                 onClick={() => trackCtaClick("primary")}
-                whileHover={shouldReduceMotion ? undefined : { scale: 1.04, y: -2 }}
-                whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
-                transition={transitions.spring}
-                className="glow-border w-full sm:w-auto px-7 py-3.5 rounded-full text-base font-semibold text-zinc-950 bg-emerald-500 hover:bg-emerald-400 transition-colors shadow-[0_0_24px_rgba(16,185,129,0.3)] flex items-center justify-center gap-2"
               >
                 Start Free Preparation
-                <ChevronDown className="w-4 h-4" aria-hidden="true" />
-              </motion.a>
-              <motion.a
+                <ArrowRight className="w-4 h-4" aria-hidden="true" />
+              </Button>
+              <Button
                 href="#features"
+                size="lg"
+                variant="secondary"
+                className="w-full sm:w-auto"
                 onClick={() => trackCtaClick("secondary")}
-                whileHover={shouldReduceMotion ? undefined : { scale: 1.04, y: -2 }}
-                whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
-                transition={transitions.spring}
-                className="w-full sm:w-auto px-7 py-3.5 rounded-full text-base font-medium text-white border border-white/15 hover:border-emerald-400/50 hover:bg-white/5 transition-colors flex items-center justify-center gap-2"
               >
                 Explore Features
-              </motion.a>
+                <ChevronDown className="w-4 h-4" aria-hidden="true" />
+              </Button>
             </motion.div>
 
             {/* Trust chips */}
@@ -298,10 +298,11 @@ export default function TerminalHero() {
             >
               {/* Terminal window bar */}
               <div className="terminal-window-bar">
-                <div className="dot close" aria-label="Close" />
-                <div className="dot minimize" aria-label="Minimize" />
-                <div className="dot maximize" aria-label="Maximize" />
+                <div className="dot close" />
+                <div className="dot minimize" />
+                <div className="dot maximize" />
                 <div className="flex-1 text-center text-xs text-zinc-500 font-mono">intelligence.9th-grade-ai — session</div>
+                <div className="w-[52px]" aria-hidden="true" />
               </div>
 
               {/* Terminal content */}
@@ -330,10 +331,11 @@ export default function TerminalHero() {
                           <span className="w-40 text-zinc-400 truncate">{line.label}</span>
                           <div className="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
                             <motion.div
-                              initial={{ width: 0 }}
-                              animate={{ width: `${(line.value / line.total) * 100}%` }}
-                              transition={{ duration: 0.5, delay: 0.1 }}
-                              className="h-full bg-gradient-to-r from-emerald-500 to-cyan-400 rounded-full"
+                              initial={{ scaleX: 0 }}
+                              animate={{ scaleX: line.value / line.total }}
+                              transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
+                              style={{ transformOrigin: "left" }}
+                              className="h-full w-full bg-gradient-to-r from-emerald-500 to-cyan-400 rounded-full"
                             />
                           </div>
                           <span className="text-emerald-400 w-16 text-right font-mono">
@@ -364,8 +366,7 @@ export default function TerminalHero() {
                   >
                     Restart Simulation
                   </motion.button>
-                )}
-              </div>
+                )}              </div>
             </motion.div>
           </motion.div>
         </div>

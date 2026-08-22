@@ -7,6 +7,9 @@ import {
   useSyncExternalStore,
   useEffect,
 } from "react";
+import { LANGUAGE_KEY } from "@/lib/lang-key";
+
+export { LANGUAGE_KEY };
 
 export type Language = "bn" | "en";
 
@@ -18,7 +21,6 @@ type LanguageContextType = {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
-export const LANGUAGE_KEY = "9th-grade-ai-lang";
 const DEFAULT_LANG: Language = "bn";
 
 function readLang(): Language {

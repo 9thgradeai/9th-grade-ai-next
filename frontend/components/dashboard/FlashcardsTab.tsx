@@ -299,9 +299,10 @@ export default function FlashcardsTab() {
           {/* Progress */}
           <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
             <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${reviewQueue.length > 0 ? ((currentIndex) / reviewQueue.length) * 100 : 0}%` }}
-              className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full"
+              initial={false}
+              animate={{ scaleX: reviewQueue.length > 0 ? currentIndex / reviewQueue.length : 0 }}
+              style={{ transformOrigin: "left" }}
+              className="h-full w-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full"
             />
           </div>
 

@@ -26,6 +26,36 @@
 
 Shared primitives live in `frontend/components/ui/`:
 
+### Button
+- Single button primitive (`variant`: primary/secondary/ghost, `size`: sm/md/lg).
+- Renders a Next.js `<Link>` when `href` is passed — CTAs never hard-reload.
+- Micro-interactions are pure CSS transforms; no client JS required.
+- File: `frontend/components/ui/Button.tsx`.
+
+### EmptyState
+- Icon + title + hint + action block; the only empty-state treatment.
+- File: `frontend/components/ui/EmptyState.tsx`.
+
+### KpiTile
+- Unified stat tile (label/value/hint/accent/loading) used by dashboard home,
+  progress, and result screens.
+- File: `frontend/components/ui/KpiTile.tsx`.
+
+### TerminalFrame / CardHeader
+- Signature terminal-window chrome (traffic-light dots are decorative) plus
+  the mono section-header row for dashboard cards.
+- File: `frontend/components/ui/TerminalFrame.tsx`.
+- Styles for `.terminal-window-bar` / `.dot` live in `app/globals.css`.
+
+### Skeleton / SkeletonCard
+- Loading placeholders (`role="status"` on cards) for data and tab chunks.
+- File: `frontend/components/ui/Skeleton.tsx`.
+
+### AuroraOrb
+- Shared ambient blurred-orb accent; caller owns positioning; scale-only
+  breathing animation, static under reduced motion.
+- File: `frontend/components/ui/AuroraOrb.tsx`.
+
 ### ErrorBoundary
 - Class-based error boundary wrapping risky surfaces.
 - File: `frontend/components/ui/ErrorBoundary.tsx`.
@@ -35,7 +65,8 @@ Shared primitives live in `frontend/components/ui/`:
 - File: `frontend/components/ui/AnimatedList.tsx`.
 
 ### Reveal
-- Scroll-reveal wrapper (fade + rise + blur), `whileInView` once, reduced-motion aware.
+- Scroll-reveal wrapper (fade + rise), `whileInView` once, reduced-motion aware.
+- The `as` prop renders the matching semantic tag in BOTH branches.
 - File: `frontend/components/ui/Reveal.tsx`.
 
 ### SpotlightCard
@@ -69,8 +100,12 @@ Defined in `app/globals.css`:
   gradient text for headlines and numerals.
 - **`glow-border`**: animated gradient ring around primary CTAs (CSS mask).
 - **`section-eyebrow`**: mono uppercase eyebrow label style.
-- **Shadows**: `--shadow-neon-glow`, `--shadow-neon-glow-lg`,
-  `--shadow-card-hover`, `--shadow-glow-purple`, `--shadow-panel`.
+- **`terminal-window-bar` + `.dot.*`**: terminal chrome styles backing
+  `TerminalFrame`.
+- **Shadows**: `--shadow-neon-glow`, `--shadow-glow`, `--shadow-glow-sm`,
+  `--shadow-glow-lg`, `--shadow-card-hover`, `--shadow-glow-purple`,
+  `--shadow-panel`. Use these tokens — arbitrary glow shadows in components
+  are a lint-review smell.
 
 ## Layout
 
@@ -121,9 +156,18 @@ Defined in `app/globals.css`:
   pills (auth tabs, side/bottom nav).
 - **Reduced motion**: new animations read `useReducedMotion()` and fall back to
   opacity-only, zero-duration transitions (alongside `MotionConfig`).
-- **Performance**: only GPU-accelerated properties (`opacity`, `transform`)
-  are animated; layout effects use `layoutId`/`layout` rather than `width`/`height`;
-  scroll reveals use `viewport={{ once: true }}` so they don't re-run.
+- **Performance**: only GPU-accelerated properties (`opacity`, `transform`) are
+  animated; progress bars use `scaleX` (never `width`); layout effects use
+  `layoutId`/`layout` rather than `width`/`height`; scroll reveals use
+  `viewport={{ once: true }}` so they don't re-run.
+
+## Data Honesty
+
+- Public-facing surfaces must not present fabricated telemetry or fake personal
+  state as real. The footer shows product facts, not invented latency/user
+  counts; the landing syllabus browser shows question-bank coverage and study
+  estimates, not a visitor's (nonexistent) progress. Authenticated progress
+  comes from `/api/progress` and `/api/dashboard-stats`.
 
 ## Interaction Patterns
 

@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Check, Trophy, Zap, ArrowRight, Inbox } from "lucide-react";
 import { api } from "@/lib/services/api";
+import { useDialogA11y } from "@/lib/use-dialog-a11y";
 import type { Server } from "@/lib/types";
 
 export default function DailyQuizWidget() {
@@ -15,18 +16,11 @@ export default function DailyQuizWidget() {
   const [showResult, setShowResult] = useState(false);
   const [summary, setSummary] = useState<{ correct: number; total: number; score: number; pointsEarned: number } | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const dialogRef = useRef<HTMLDivElement>(null);
 
-  // Escape to close + focus the modal when it opens.
-  useEffect(() => {
-    if (!isOpen) return;
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setIsOpen(false);
-    };
-    document.addEventListener("keydown", onKeyDown);
-    dialogRef.current?.querySelector<HTMLElement>("button")?.focus();
-    return () => document.removeEventListener("keydown", onKeyDown);
-  }, [isOpen]);
+  // Shared dialog behavior: Escape, focus trap, initial focus, restore focus
+  // to the trigger card on close.
+  const closeModal = useCallback(() => setIsOpen(false), []);
+  const dialogRef = useDialogA11y<HTMLDivElement>(isOpen, closeModal);
 
   useEffect(() => {
     let cancelled = false;
@@ -107,9 +101,17 @@ export default function DailyQuizWidget() {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.45 }}
-        className="glass-card rounded-2xl border border-amber-500/20 p-4 flex items-center gap-3 hover:border-amber-500/40 transition-all cursor-pointer"
+        transition={{ delay: 0.26 }}
+        role="button"
+        tabIndex={0}
+        className="glass-card rounded-2xl border border-amber-500/20 p-4 flex items-center gap-3 hover:border-amber-500/40 transition-all cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
         onClick={() => setIsOpen(true)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            setIsOpen(true);
+          }
+        }}
       >
         <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center flex-shrink-0">
           <Zap className="w-5 h-5 text-amber-400" />
@@ -154,6 +156,9 @@ export default function DailyQuizWidget() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) closeModal();
+      }}
     >
       <motion.div
         ref={dialogRef}
@@ -163,6 +168,7 @@ export default function DailyQuizWidget() {
         role="dialog"
         aria-modal="true"
         aria-label="দৈনিক কুইজ"
+        tabIndex={-1}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-3 border-b border-zinc-800">
@@ -186,8 +192,11 @@ export default function DailyQuizWidget() {
 
               <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden mb-6">
                 <motion.div
-                  animate={{ width: `${(answeredCount / totalQuestions) * 100}%` }}
-                  className="h-full bg-gradient-to-r from-amber-500 to-amber-400 rounded-full"
+                  initial={false}
+                  animate={{ scaleX: totalQuestions > 0 ? answeredCount / totalQuestions : 0 }}
+                  transition={{ duration: 0.3, ease: "easeOut" }}
+                  style={{ transformOrigin: "left" }}
+                  className="h-full w-full bg-gradient-to-r from-amber-500 to-amber-400 rounded-full"
                 />
               </div>
 
@@ -203,14 +212,16 @@ export default function DailyQuizWidget() {
                     {currentQuestion?.subject} • {currentQuestion?.topic}
                   </span>
                   <h3 className="text-base font-medium text-white mb-4">{currentQuestion?.question}</h3>
-                  <div className="space-y-2">
+                  <div className="space-y-2" role="radiogroup" aria-label="উত্তর নির্বাচন করুন">
                     {currentQuestion?.options.map((option, i) => {
                       const isSelected = answers[currentIndex] === option;
                       return (
                         <button
                           key={i}
+                          role="radio"
+                          aria-checked={isSelected}
                           onClick={() => selectAnswer(option)}
-                          className={`w-full text-left p-3 rounded-xl border transition-all ${
+                          className={`w-full text-left p-3 rounded-xl border transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400 ${
                             isSelected
                               ? "bg-amber-500/10 border-amber-500/30 text-amber-300"
                               : "bg-subtle border-zinc-800 text-zinc-300 hover:border-amber-500/20"

@@ -13,13 +13,16 @@ type AuthContextType = {
   register: (name: string, email: string, password: string, options?: { redirect?: boolean }) => Promise<void>;
   logout: () => Promise<void>;
   updateProfile: (name: string) => Promise<Client.User>;
-  isAuthenticated: boolean;
-  hasRole: (role: "student" | "admin") => boolean;
   refreshToken: () => Promise<void>;
   tokenExpiry: number | null;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+// Mirrors SESSION_DURATION_MS in app/api/auth/refresh/route.ts — keep in sync.
+const SESSION_DURATION_MS = 7 * 24 * 60 * 60 * 1000;
+// Start renewing the session this long before hard expiry while the tab is open.
+const REFRESH_AHEAD_MS = 2 * 24 * 60 * 60 * 1000;
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
@@ -51,32 +54,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     })();
   }, []);
 
-  useEffect(() => {
-    if (tokenExpiry === null) return;
-
-    if (checkIntervalRef.current) {
-      clearInterval(checkIntervalRef.current);
-    }
-
-    checkIntervalRef.current = setInterval(() => {
-      if (Date.now() >= tokenExpiry) {
-        setUser(null);
-        setTokenExpiry(null);
-        if (checkIntervalRef.current) {
-          clearInterval(checkIntervalRef.current);
-          checkIntervalRef.current = null;
-        }
-      }
-    }, 30_000);
-
-    return () => {
-      if (checkIntervalRef.current) {
-        clearInterval(checkIntervalRef.current);
-        checkIntervalRef.current = null;
-      }
-    };
-  }, [tokenExpiry]);
-
   const refreshToken = async () => {
     if (isRefreshingRef.current) return;
     isRefreshingRef.current = true;
@@ -101,6 +78,41 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  useEffect(() => {
+    if (tokenExpiry === null) return;
+
+    if (checkIntervalRef.current) {
+      clearInterval(checkIntervalRef.current);
+    }
+
+    checkIntervalRef.current = setInterval(() => {
+      const remaining = tokenExpiry - Date.now();
+      if (remaining <= 0) {
+        // Hard expiry — the refresh endpoint refused or was never reached.
+        setUser(null);
+        setTokenExpiry(null);
+        if (checkIntervalRef.current) {
+          clearInterval(checkIntervalRef.current);
+          checkIntervalRef.current = null;
+        }
+        return;
+      }
+      // Active users get a sliding renewal via /api/auth/refresh well before
+      // the cookie expires, so long sessions never break mid-study.
+      if (remaining < REFRESH_AHEAD_MS && !isRefreshingRef.current) {
+        void refreshToken();
+      }
+    }, 30_000);
+
+    return () => {
+      if (checkIntervalRef.current) {
+        clearInterval(checkIntervalRef.current);
+        checkIntervalRef.current = null;
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tokenExpiry]);
+
   const login = async (email: string, password: string, options?: { redirect?: boolean }) => {
     const res = await fetch("/api/auth/login", {
       method: "POST",
@@ -122,7 +134,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     if (data.user) {
       setUser(data.user);
-      setTokenExpiry(Date.now() + 7 * 24 * 60 * 60 * 1000);
+      setTokenExpiry(Date.now() + SESSION_DURATION_MS);
       if (options?.redirect !== false) {
         router.push("/dashboard");
       }
@@ -150,7 +162,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     if (data.user) {
       setUser(data.user);
-      setTokenExpiry(Date.now() + 7 * 24 * 60 * 60 * 1000);
+      setTokenExpiry(Date.now() + SESSION_DURATION_MS);
       if (options?.redirect !== false) {
         router.push("/dashboard");
       }
@@ -172,11 +184,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const isAuthenticated = user !== null;
-  const hasRole = (role: "student" | "admin") => {
-    return user?.role === role;
-  };
-
   const updateProfile = async (name: string) => {
     const { user: updated } = await account.updateProfile(name);
     setUser(updated);
@@ -192,8 +199,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         register,
         logout,
         updateProfile,
-        isAuthenticated,
-        hasRole,
         refreshToken,
         tokenExpiry,
       }}

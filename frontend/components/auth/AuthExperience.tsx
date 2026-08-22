@@ -155,6 +155,13 @@ export default function AuthExperience({
     return () => window.clearTimeout(t)
   }, [stage])
 
+  // On a failed submit, move focus to the form-level error so screen-reader
+  // and keyboard users land on the explanation instead of the submit button.
+  useEffect(() => {
+    if (!error || (stage !== "login" && stage !== "signup")) return
+    document.getElementById("auth-form-error")?.focus({ preventScroll: true })
+  }, [error, stage])
+
   // Avatar column — sits centered pre-light (hidden), then drops in once the
   // lamp is turned on. Mobile stacks it above the content (vertical flow);
   // desktop places it to the LEFT of the content (split layout).

@@ -638,8 +638,8 @@ export default function CustomExamTab() {
             </div>
             <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden mt-2">
               <div
-                className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all duration-300"
-                style={{ width: `${progressPct}%` }}
+                className="h-full w-full origin-left bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-transform duration-300"
+                style={{ transform: `scaleX(${progressPct / 100})` }}
               />
             </div>
           </div>
@@ -872,10 +872,10 @@ export default function CustomExamTab() {
 
             <div className="mt-4 h-2 bg-zinc-800 rounded-full overflow-hidden max-w-md mx-auto">
               <div
-                className={`h-full rounded-full transition-all duration-700 ${
+                className={`h-full w-full origin-left rounded-full transition-transform duration-700 ${
                   summary.percentage >= 80 ? "bg-gradient-to-r from-amber-500 to-amber-400" : summary.percentage >= 50 ? "bg-gradient-to-r from-emerald-500 to-emerald-400" : "bg-gradient-to-r from-red-500 to-red-400"
                 }`}
-                style={{ width: `${summary.percentage}%` }}
+                style={{ transform: `scaleX(${summary.percentage / 100})` }}
               />
             </div>
             <p className="text-xs text-zinc-500 font-mono mt-2">
