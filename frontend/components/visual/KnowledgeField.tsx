@@ -361,7 +361,13 @@ export default function KnowledgeField({ className = "" }: { className?: string 
 
     const auroraProg = link(AURORA_VERT, AURORA_FRAG);
     const nodesProg = link(NODES_VERT, NODES_FRAG);
-    if (!nodesProg) return;
+    if (!nodesProg) {
+      console.warn("[KnowledgeField] node program failed — CSS backdrop only");
+      return;
+    }
+    console.info(
+      `[KnowledgeField] aurora:${auroraProg ? "on" : "off"} nodes:on dpr-cap:1.75`,
+    );
 
     // ── Node geometry ─────────────────────────────────────────
     const coarse = window.matchMedia("(pointer: coarse)").matches;
@@ -449,13 +455,13 @@ export default function KnowledgeField({ className = "" }: { className?: string 
     const view = new Float32Array(16);
     let dprScale = 1;
 
-    // Aurora is a dark-scene artwork: only run it while the site is dark
-    // AND on desktop-class viewports; elsewhere the canvas stays additive
-    // over the CSS cosmic-bg.
+    // Aurora is a dark-scene artwork: run it while the site is dark on
+    // reasonably large viewports (tablets included — the tier system
+    // handles their perf). Elsewhere the canvas stays additive over the
+    // CSS cosmic backdrop.
     const auroraActive = () =>
       Boolean(auroraProg) &&
-      window.innerWidth >= 1024 &&
-      !coarse &&
+      window.innerWidth >= 768 &&
       !document.documentElement.classList.contains("light");
 
     const resize = () => {

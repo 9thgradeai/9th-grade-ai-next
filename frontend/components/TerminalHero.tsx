@@ -188,6 +188,9 @@ export default function TerminalHero() {
 
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center pt-16 pb-20 px-4 overflow-hidden">
+      {/* Layer 0 — CSS nebula underlay (always visible) */}
+      <div className="absolute inset-0 hero-nebula-fallback" aria-hidden="true" />
+
       {/* Layer 1 — the knowledge constellation (WebGL island) */}
       <div className="absolute inset-0" aria-hidden="true">
         <KnowledgeField />
