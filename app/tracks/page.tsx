@@ -15,6 +15,7 @@ import PageHero from "@/components/public/PageHero";
 import SectionHeading from "@/components/ui/SectionHeading";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/tracks" },
   title: "Exam Tracks — 9Th-Grade AI",
   description:
     "Structured preparation tracks for BCS Preliminary, BCS Written, Teacher Recruitment, Bank Jobs, and PSC & other competitive exams in Bangladesh.",

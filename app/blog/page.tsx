@@ -8,6 +8,7 @@ import StatusPill from "@/components/ui/StatusPill";
 import { BLOG_POSTS } from "@/lib/data/blog";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/blog" },
   title: "Blog & Tips — 9Th-Grade AI",
   description:
     "Study strategies, exam insights, and preparation tips from the 9Th-Grade AI team for BCS, Bank, and Teacher recruitment aspirants.",

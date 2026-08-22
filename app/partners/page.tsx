@@ -5,6 +5,7 @@ import PageHero from "@/components/public/PageHero";
 import SectionHeading from "@/components/ui/SectionHeading";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/partners" },
   title: "Partnerships — 9Th-Grade AI",
   description:
     "Partner with 9Th-Grade AI — universities, coaching centers, publishers, and organizations serving government job aspirants in Bangladesh.",

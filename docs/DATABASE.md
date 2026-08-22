@@ -219,6 +219,11 @@ Per-user SM-2 scheduling. A row exists only after the first review; unseen cards
 #### UserBadge (Phase 2B2)
 Per-user unlock record. Catalog state stays in `Badge`; earned state lives here.
 - `userId` + `badgeId` FKs (Cascade), unique `[userId, badgeId]`, `unlockedAt` DateTime
+- Written by the domain-event subscribers registered in `instrumentation.ts`
+  (`backend/events/subscribers.ts` → `evaluateBadgesForEvent`): daily-quiz
+  completion, mock-test ≥80% (min 5 questions), 100 flashcard reviews, and
+  3/7-day streaks derived from the attempt log. Awarding is idempotent.
+- Read by `GET /api/badges` to overlay real unlock state per caller.
 
 #### StudyTaskCompletion (Phase 2B2)
 Per-user completion marker for a (usually template) study task; replaces the shared `StudyTask.completed` boolean so one user's progress never affects another.
@@ -366,6 +371,7 @@ dashboard countdown. Seeded from announced circulars — no fabricated entries.
 - `type` NotificationType — default `INFO`
 - `timestamp` DateTime — default `now()`
 - `read` Boolean — default `false`
+- Indexes: `[userId]`, `[timestamp, id]` (keyset pagination order)
 
 #### OfflinePack
 - `id` Int — PK, auto-increment
@@ -397,7 +403,7 @@ dashboard countdown. Seeded from announced circulars — no fabricated entries.
 - `userId` String — unique, FK to User
 - `user` User — relation
 - `points` Int — default `0`
-- `streak` Int — default `0`
+- `streak` Int — default `0` (legacy column; the API now derives streaks server-side from consecutive `QuestionAttempt` days via `computeStreak` — clients cannot write it)
 - `accuracy` Int — default `0`
 - `questionsAnswered` Int — default `0`
 - `flashcardsReviewed` Int — default `0`
@@ -429,7 +435,7 @@ Per-user record of every answered question (practice, mock test, daily quiz). Po
 - `correct` Boolean
 - `source` String — `practice` | `mock` | `daily`
 - `createdAt` DateTime — default `now()`
-- Indexes: `[userId, createdAt]`, `[userId, subjectId]`
+- Indexes: `[userId, createdAt]`, `[userId, subjectId]`, `[userId, subjectName]`, `[userId, topic]` (the last two back the raw-SQL analytics group-bys)
 
 #### MockTestResult
 A graded mock-test attempt (history + exam KPIs).
@@ -534,7 +540,7 @@ Usage/cost/observability ledger for every AI call. No prompt content stored.
 - `errorCode` String? — default `""`
 - `estimatedCostUsd` Float — default `0`
 - `createdAt` DateTime — default `now()`
-- Indexes: `[userId, createdAt]`, `[task, createdAt]`, `[model, createdAt]`
+- Indexes: `[userId, createdAt]`, `[userId, task, createdAt]` (daily quota backstop), `[task, createdAt]`, `[model, createdAt]`
 
 #### AIFeedback
 Lightweight user feedback on AI responses — the seed of an evaluation set.
@@ -583,7 +589,7 @@ Prisma automatically creates indexes for:
 - Primary keys (`@id`).
 - Foreign keys (`subjectId`, `userId`, etc.).
 - Unique constraints (`email`, `handle`, `[userId, questionId]`).
-- Explicit `@@index` fields: `User.email`, `User.handle`, `Subject.sortOrder`, `Topic.subjectId`, `Topic.[subjectId, parentId]`, `Question.[subjectId, difficulty]`, `Question.[subjectId, topic]`, `Question.[subjectId, topic, subtopic]`, `Question.[subjectId, path]`, `Flashcard.subjectId`, `Flashcard.nextReview`, `StudyTask.[dayId, userId]`, `StudyPlanDay.date`, `DailyQuiz.date`, `UserProgress.points` (rank range-scan, Phase 3), `DailyQuizParticipation.quizId`, `DailyQuizParticipation.[userId, completedAt]`, `FlashcardUserState.[userId, nextReview]`, `StudyTaskCompletion.userId`, `UserSession.userId`, `UserSession.token`, `UserSession.expiresAt`, `AIConversation.[userId, updatedAt]`, `AIConversation.[userId, kind, updatedAt]`, `AIMessage.[conversationId, createdAt]`, `AIMemory.[userId, type]`, `AIUsage.[userId, createdAt]`, `AIUsage.[task, createdAt]`, `AIUsage.[model, createdAt]`, `AIFeedback.[userId, createdAt]`, `AIFeedback.[messageId]`.
+- Explicit `@@index` fields: `User.email`, `User.handle`, `Subject.sortOrder`, `Topic.subjectId`, `Topic.[subjectId, parentId]`, `Question.[subjectId, difficulty]`, `Question.[subjectId, topic]`, `Question.[subjectId, topic, subtopic]`, `Question.[subjectId, path]`, `Flashcard.subjectId`, `Flashcard.nextReview`, `StudyTask.[dayId, userId]`, `StudyPlanDay.date`, `DailyQuiz.date`, `UserProgress.points` (rank range-scan, Phase 3), `DailyQuizParticipation.quizId`, `DailyQuizParticipation.[userId, completedAt]`, `FlashcardUserState.[userId, nextReview]`, `StudyTaskCompletion.userId`, `UserSession.userId`, `UserSession.token`, `UserSession.expiresAt`, `AIConversation.[userId, updatedAt]`, `AIConversation.[userId, kind, updatedAt]`, `AIMessage.[conversationId, createdAt]`, `AIMemory.[userId, type]`, `AIUsage.[userId, createdAt]`, `AIUsage.[userId, task, createdAt]`, `AIUsage.[task, createdAt]`, `AIUsage.[model, createdAt]`, `QuestionAttempt.[userId, subjectName]`, `QuestionAttempt.[userId, topic]`, `AppNotification.[timestamp, id]`, `AIFeedback.[userId, createdAt]`, `AIFeedback.[messageId]`.
 - Unique constraints: `User.email`, `User.handle`, `Topic.[subjectId, path]`, `Bookmark.[userId, questionId]`, `NotificationRead.[userId, notificationId]`, `AIMemory.[userId, type, key]`, `DailyQuizParticipation.[userId, quizId]`, `UserSession.token`.
 - Unique constraint: `Topic.[subjectId, path]`.
 

@@ -6,6 +6,7 @@ import PageHero from "@/components/public/PageHero";
 import SectionHeading from "@/components/ui/SectionHeading";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/vocab" },
   title: "Vocabulary Builder — 9Th-Grade AI",
   description:
     "Exam-focused English vocabulary decks with Bengali meanings, synonyms, and spaced-repetition flashcards for BCS, Bank, and Teacher recruitment exams.",

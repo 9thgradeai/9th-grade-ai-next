@@ -6,6 +6,7 @@ import PageHero from "@/components/public/PageHero";
 import SectionHeading from "@/components/ui/SectionHeading";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/about" },
   title: "About Us — 9Th-Grade AI",
   description:
     "9Th-Grade AI is a free, open-source AI-powered exam preparation platform for Bangladeshi government job aspirants.",

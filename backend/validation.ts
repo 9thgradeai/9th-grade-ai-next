@@ -41,6 +41,7 @@ export interface QuestionSearchFilters {
   q?: string;
   paths?: string[];
   limit?: number;
+  page?: number;
   id?: number;
 }
 
@@ -218,7 +219,7 @@ const DIFFICULTIES = ["EASY", "MEDIUM", "HARD"] as const;
 export function validateQuestionSearchParams(params: URLSearchParams): QuestionSearchFilters {
   const filters: QuestionSearchFilters = {};
 
-  const allowedParams = ["subject", "topic", "difficulty", "q", "limit", "id", "paths"];
+  const allowedParams = ["subject", "topic", "difficulty", "q", "limit", "page", "id", "paths"];
   const unexpected = [...params.keys()].filter((k) => !allowedParams.includes(k));
   if (unexpected.length > 0) {
     throw new ValidationError(`Unexpected query parameter(s): ${unexpected.join(", ")}.`);
@@ -229,6 +230,7 @@ export function validateQuestionSearchParams(params: URLSearchParams): QuestionS
   const difficulty = params.get("difficulty");
   const q = params.get("q");
   const limit = params.get("limit");
+  const page = params.get("page");
   const id = params.get("id");
   const paths = params.get("paths");
 
@@ -258,6 +260,14 @@ export function validateQuestionSearchParams(params: URLSearchParams): QuestionS
       throw new ValidationError("limit must be a positive integer.");
     }
     filters.limit = Math.min(parsed, 200);
+  }
+
+  if (page) {
+    const parsed = Number(page);
+    if (!Number.isInteger(parsed) || parsed <= 0) {
+      throw new ValidationError("page must be a positive integer.");
+    }
+    filters.page = parsed;
   }
 
   if (id) {

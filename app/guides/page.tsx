@@ -7,6 +7,7 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import StatusPill from "@/components/ui/StatusPill";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/guides" },
   title: "Study Guides — 9Th-Grade AI",
   description:
     "Complete study guides and roadmaps for BCS, Bank, Teacher Recruitment, and other competitive exams in Bangladesh.",

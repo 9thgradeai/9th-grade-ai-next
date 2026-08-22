@@ -484,7 +484,8 @@ model AppNotification {
   sourceKey String         @default("") @unique
 
   @@index([userId])
-  @@index([timestamp])
+  // Keyset pagination orders by (timestamp desc, id desc).
+  @@index([timestamp, id])
 }
 
 model OfflinePack {
@@ -564,6 +565,9 @@ model QuestionAttempt {
 
   @@index([userId, createdAt])
   @@index([userId, subjectId])
+  // Analytics group-bys filter by userId and aggregate per subject/topic.
+  @@index([userId, subjectName])
+  @@index([userId, topic])
 }
 
 // Mock-test attempts (graded results) for history + exam KPIs.
@@ -687,6 +691,8 @@ model AIUsage {
   createdAt       DateTime     @default(now())
 
   @@index([userId, createdAt])
+  // Daily quota backstop filters userId + createdAt + task.
+  @@index([userId, task, createdAt])
   @@index([task, createdAt])
   @@index([model, createdAt])
 }

@@ -24,11 +24,19 @@ export function applySecurityHeaders(res: Response) {
 
 export function applyCacheHeaders(
   res: Response,
-  options: { maxAge?: number; public?: boolean; etag?: string } = {},
+  options: {
+    maxAge?: number;
+    public?: boolean;
+    etag?: string;
+    staleWhileRevalidate?: number;
+  } = {},
 ) {
-  const { maxAge = 0, public: isPublic = false, etag } = options;
-  const directive = isPublic ? `public, max-age=${maxAge}` : `private, max-age=${maxAge}`;
-  res.headers.set("Cache-Control", directive);
+  const { maxAge = 0, public: isPublic = false, etag, staleWhileRevalidate } = options;
+  const parts = [isPublic ? "public" : "private", `max-age=${maxAge}`];
+  if (staleWhileRevalidate !== undefined) {
+    parts.push(`stale-while-revalidate=${staleWhileRevalidate}`);
+  }
+  res.headers.set("Cache-Control", parts.join(", "));
   if (etag) {
     res.headers.set("ETag", etag);
   }

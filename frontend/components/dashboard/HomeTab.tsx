@@ -15,6 +15,8 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-ctx";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
+import { useLanguage, t } from "@/lib/lang-ctx";
+import { useToastSafe } from "@/lib/toast-ctx";
 import { api } from "@/lib/services/api";
 import type {
   Server,
@@ -55,13 +57,13 @@ function useCountdown(target: string) {
   return remaining;
 }
 
-const KPI_KEYS: { key: keyof Server.DashboardStatsDTO; label: string; suffix?: string }[] = [
-  { key: "points", label: "পয়েন্ট" },
-  { key: "accuracy", label: "সঠিকতার হার", suffix: "%" },
-  { key: "questionsAnswered", label: "প্রশ্ন সমাধান" },
-  { key: "streak", label: "স্ট্রিক", suffix: " দিন" },
-  { key: "rank", label: "র‍্যাংক" },
-  { key: "exams", label: "মক পরীক্ষা" },
+const KPI_KEYS: { key: keyof Server.DashboardStatsDTO; label: string; labelEn: string; suffix?: string }[] = [
+  { key: "points", label: "পয়েন্ট", labelEn: "Points" },
+  { key: "accuracy", label: "সঠিকতার হার", labelEn: "Accuracy", suffix: "%" },
+  { key: "questionsAnswered", label: "প্রশ্ন সমাধান", labelEn: "Solved" },
+  { key: "streak", label: "স্ট্রিক", labelEn: "Streak", suffix: " দিন" },
+  { key: "rank", label: "র‍্যাংক", labelEn: "Rank" },
+  { key: "exams", label: "মক পরীক্ষা", labelEn: "Mock exams" },
 ];
 
 function MetricTile({
@@ -90,6 +92,8 @@ function MetricTile({
 export default function HomeTab() {
   const { user } = useAuth();
   const { setActiveTab } = useDashboardStore();
+  const { lang } = useLanguage();
+  const toast = useToastSafe();
 
   const [stats, setStats] = useState<Server.DashboardStatsDTO | null>(null);
   const [reports, setReports] = useState<Array<{ name: string; score: number; attempted: number; correct: number }>>([]);
@@ -149,13 +153,18 @@ export default function HomeTab() {
   }, [tasks]);
 
   const toggleTask = async (taskId: number) => {
+    // Optimistic flip with rollback on failure — the toggle is a single
+    // checkbox, so local state leads and the server confirms behind it.
+    setTasks((prev) =>
+      prev.map((t) => (t.id === taskId ? { ...t, completed: !t.completed } : t)),
+    );
     try {
       await api.toggleStudyTask(taskId);
+    } catch {
       setTasks((prev) =>
         prev.map((t) => (t.id === taskId ? { ...t, completed: !t.completed } : t)),
       );
-    } catch {
-      // keep local state unchanged on failure
+      toast.error("কাজ আপডেট করা যায়নি — আবার চেষ্টা করুন");
     }
   };
 
@@ -184,7 +193,7 @@ export default function HomeTab() {
           <div className="flex flex-wrap items-center gap-2">
             <span className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-xs font-mono text-emerald-400 flex items-center gap-1">
               <Target className="w-3.5 h-3.5" />
-              {nextExam ? nextExam.titleBn : "কোনো আসন্ন পরীক্ষা নেই"}
+              {nextExam ? t(lang, nextExam.titleBn, nextExam.titleEn) : "কোনো আসন্ন পরীক্ষা নেই"}
             </span>
             <span className="px-3 py-1 bg-orange-500/10 border border-orange-500/20 rounded-lg text-xs font-mono text-orange-400 flex items-center gap-1">
               <Flame className="w-3.5 h-3.5" />
@@ -216,7 +225,7 @@ export default function HomeTab() {
               </div>
               <div>
                 <p className="text-sm text-zinc-400 font-mono mb-1">পরবর্তী পরীক্ষা</p>
-                <h3 className="text-xl md:text-2xl font-bold text-white">{nextExam.titleBn}</h3>
+                <h3 className="text-xl md:text-2xl font-bold text-white">{t(lang, nextExam.titleBn, nextExam.titleEn)}</h3>
                 <p className="text-sm text-zinc-400 mt-1">{formatDate(nextExam.date)}</p>
                 {nextExam.note ? (
                   <p className="text-xs text-zinc-500 mt-1 max-w-md">{nextExam.note}</p>
@@ -259,7 +268,7 @@ export default function HomeTab() {
               <MetricTile
                 key={k.key}
                 value={(stats?.[k.key] as number) ?? 0}
-                label={k.label}
+                label={lang === "bn" ? k.label : k.labelEn}
                 suffix={k.suffix}
               />
             ))}

@@ -8,6 +8,7 @@ import StatusPill from "@/components/ui/StatusPill";
 import { ARCHIVE_CATEGORIES } from "@/lib/data";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/archive" },
   title: "Previous Year Papers — 9Th-Grade AI",
   description:
     "Browse the complete archive of BCS, Bank, Teacher Recruitment, and other competitive exam question papers with solutions.",

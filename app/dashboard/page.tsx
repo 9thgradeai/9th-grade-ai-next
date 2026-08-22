@@ -2,38 +2,32 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import dynamic from "next/dynamic";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 import { TABS, type TabId } from "@/lib/data";
-import HomeTab from "@/components/dashboard/HomeTab";
-import StudyPlannerTab from "@/components/dashboard/StudyPlannerTab";
-import PracticeTab from "@/components/dashboard/PracticeTab";
-import FlashcardsTab from "@/components/dashboard/FlashcardsTab";
-import AISolverTab from "@/components/dashboard/AISolverTab";
-import QuestionBankTab from "@/components/dashboard/QuestionBankTab";
-import ProgressTab from "@/components/dashboard/ProgressTab";
-import OfflineModeTab from "@/components/dashboard/OfflineModeTab";
-import SettingsTab from "@/components/dashboard/SettingsTab";
 
+// Tabs are code-split so the initial dashboard bundle only pays for the
+// active tab (CustomExamTab/VoiceAITutor alone account for ~1,800 LOC).
 const TAB_COMPONENTS: Record<TabId, React.ComponentType> = {
-  home: HomeTab,
-  "study-planner": StudyPlannerTab,
-  practice: PracticeTab,
-  flashcards: FlashcardsTab,
-  "ai-solver": AISolverTab,
-  "question-bank": QuestionBankTab,
-  progress: ProgressTab,
-  offline: OfflineModeTab,
-  settings: SettingsTab,
+  home: dynamic(() => import("@/components/dashboard/HomeTab")),
+  "study-planner": dynamic(() => import("@/components/dashboard/StudyPlannerTab")),
+  practice: dynamic(() => import("@/components/dashboard/PracticeTab")),
+  flashcards: dynamic(() => import("@/components/dashboard/FlashcardsTab")),
+  "ai-solver": dynamic(() => import("@/components/dashboard/AISolverTab")),
+  "question-bank": dynamic(() => import("@/components/dashboard/QuestionBankTab")),
+  progress: dynamic(() => import("@/components/dashboard/ProgressTab")),
+  offline: dynamic(() => import("@/components/dashboard/OfflineModeTab")),
+  settings: dynamic(() => import("@/components/dashboard/SettingsTab")),
 };
 
-export default function DashboardPage() {
+function TabSwitcher() {
   const searchParams = useSearchParams();
   const { activeTab, setActiveTab } = useDashboardStore();
   const shouldReduceMotion = useReducedMotion();
 
-  const ActiveComponent = TAB_COMPONENTS[activeTab] || HomeTab;
+  const ActiveComponent = TAB_COMPONENTS[activeTab];
 
   const tab = searchParams.get("tab") as TabId | null;
   useEffect(() => {
@@ -55,5 +49,14 @@ export default function DashboardPage() {
         <ActiveComponent />
       </motion.div>
     </AnimatePresence>
+  );
+}
+
+export default function DashboardPage() {
+  // useSearchParams requires a Suspense boundary for static prerendering.
+  return (
+    <Suspense fallback={<div className="flex-1 min-h-[40vh]" aria-hidden="true" />}>
+      <TabSwitcher />
+    </Suspense>
   );
 }

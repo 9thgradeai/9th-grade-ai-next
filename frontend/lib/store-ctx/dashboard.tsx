@@ -23,6 +23,8 @@ type DashboardState = {
   flashcardsReviewed: number;
   aiQuestionsAsked: number;
   lastSyncedAt: string | null;
+  // Tab-scoped UI state that must survive tab switches/remounts.
+  questionBankFilters: { query: string; category: string };
 };
 
 // ── Actions ────────────────────────────────────────────────
@@ -39,6 +41,7 @@ type DashboardActions = {
   toggleStudyTask: (taskId: string) => void;
   incrementFlashcardsReviewed: () => void;
   incrementAIQuestionsAsked: () => void;
+  setQuestionBankFilters: (filters: Partial<{ query: string; category: string }>) => void;
   resetStore: () => void;
   syncWithServer: () => Promise<void>;
 };
@@ -58,6 +61,7 @@ const defaultState: DashboardState = {
   flashcardsReviewed: 0,
   aiQuestionsAsked: 0,
   lastSyncedAt: null,
+  questionBankFilters: { query: "", category: "" },
 };
 
 function loadState(): DashboardState {
@@ -163,6 +167,11 @@ const actions: DashboardActions = {
       ...prev,
       aiQuestionsAsked: prev.aiQuestionsAsked + 1,
     })),
+  setQuestionBankFilters: (filters) =>
+    setStore((prev) => ({
+      ...prev,
+      questionBankFilters: { ...prev.questionBankFilters, ...filters },
+    })),
   resetStore: () => {
     storeState = { ...defaultState, lastSyncedAt: null };
     saveState(storeState);
@@ -170,7 +179,9 @@ const actions: DashboardActions = {
   },
   syncWithServer: async () => {
     try {
-      const res = await fetch("/api/progress", {
+      // Server-authoritative numbers (points, rank, attempt-derived streak)
+      // live on /api/dashboard-stats; /api/progress is PATCH-only.
+      const res = await fetch("/api/dashboard-stats", {
         method: "GET",
         credentials: "include",
         headers: { "x-request-id": crypto.randomUUID() },
@@ -187,13 +198,13 @@ const actions: DashboardActions = {
         throw error;
       }
 
-      const data = (await res.json()) as { progress: Server.UserProgressDTO };
-      const progress = data.progress;
+      const data = (await res.json()) as { stats: Server.DashboardStatsDTO };
+      const stats = data.stats;
 
       setStore((prev) => ({
         ...prev,
-        totalPoints: progress.points,
-        streakCount: progress.streak,
+        totalPoints: stats.points,
+        streakCount: stats.streak,
         lastSyncedAt: new Date().toISOString(),
       }));
     } catch (error) {

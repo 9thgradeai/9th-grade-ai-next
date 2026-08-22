@@ -9,6 +9,7 @@ import { InternalServerError } from "~backend/errors";
 import {
   aggregateDailyActivity,
   buildActivityWindow,
+  computeStreak,
 } from "~backend/repositories/analytics.repository";
 import type {
   QuestionDTO,
@@ -26,73 +27,95 @@ import type {
 } from "@/lib/types";
 
 // ── Questions (powers Question Bank + Practice + Mock) ──
-export async function getQuestions(opts?: {
+type QuestionFilters = {
   subject?: string;
   topic?: string;
   difficulty?: string;
   q?: string;
   paths?: string[];
-  page?: number;
-  limit?: number;
-}): Promise<QuestionDTO[]> {
-  try {
-    // All filters are AND-ed; `paths` matches a question whose leaf path is a
-    // selected node or lives anywhere under one of its subtrees.
-    const conditions: Record<string, unknown>[] = [];
-    if (opts?.subject) {
-      const subject = await prisma.subject.findFirst({ where: { nameBn: opts.subject } });
-      if (subject) conditions.push({ subjectId: subject.id });
-    }
-    if (opts?.paths && opts.paths.length > 0) {
-      const or: Record<string, unknown>[] = opts.paths.map((p) => ({
-        path: { startsWith: p.endsWith("/") ? p : `${p}/` },
-      }));
-      or.push({ path: { in: opts.paths } });
-      conditions.push({ OR: or });
-    }
-    if (opts?.topic) conditions.push({ topic: opts.topic });
-    if (opts?.difficulty) conditions.push({ difficulty: opts.difficulty.toUpperCase() });
-    if (opts?.q) {
-      conditions.push({
-        OR: [
-          { question: { contains: opts.q } },
-          { correctAnswer: { contains: opts.q } },
-        ],
-      });
-    }
-    const where = conditions.length > 0 ? { AND: conditions } : {};
+};
 
-    const page = opts?.page ?? 1;
-    const limit = opts?.limit ?? 20;
+async function buildQuestionWhere(opts?: QuestionFilters): Promise<Record<string, unknown>> {
+  // All filters are AND-ed; `paths` matches a question whose leaf path is a
+  // selected node or lives anywhere under one of its subtrees.
+  const conditions: Record<string, unknown>[] = [];
+  if (opts?.subject) {
+    const subject = await prisma.subject.findFirst({ where: { nameBn: opts.subject } });
+    if (subject) conditions.push({ subjectId: subject.id });
+  }
+  if (opts?.paths && opts.paths.length > 0) {
+    const or: Record<string, unknown>[] = opts.paths.map((p) => ({
+      path: { startsWith: p.endsWith("/") ? p : `${p}/` },
+    }));
+    or.push({ path: { in: opts.paths } });
+    conditions.push({ OR: or });
+  }
+  if (opts?.topic) conditions.push({ topic: opts.topic });
+  if (opts?.difficulty) conditions.push({ difficulty: opts.difficulty.toUpperCase() });
+  if (opts?.q) {
+    conditions.push({
+      OR: [
+        { question: { contains: opts.q } },
+        { correctAnswer: { contains: opts.q } },
+      ],
+    });
+  }
+  return conditions.length > 0 ? { AND: conditions } : {};
+}
+
+export async function getQuestions(
+  opts?: QuestionFilters & { page?: number; limit?: number },
+): Promise<QuestionDTO[]> {
+  const { questions } = await getQuestionsPage(opts);
+  return questions;
+}
+
+/** Page + total count so clients can render pagination controls. */
+export async function getQuestionsPage(
+  opts?: QuestionFilters & { page?: number; limit?: number },
+): Promise<{ questions: QuestionDTO[]; total: number; page: number; limit: number }> {
+  try {
+    const page = Math.max(1, opts?.page ?? 1);
+    const limit = Math.min(200, Math.max(1, opts?.limit ?? 20));
     const skip = (page - 1) * limit;
 
+    const where = await buildQuestionWhere(opts);
+
     const start = Date.now();
-    const rows = await prisma.question.findMany({
-      where,
-      skip,
-      take: limit,
-      orderBy: { id: "asc" },
-      include: { subject: true },
-    });
+    const [rows, total] = await Promise.all([
+      prisma.question.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { id: "asc" },
+        include: { subject: true },
+      }),
+      prisma.question.count({ where }),
+    ]);
     const duration = Date.now() - start;
     if (duration > 500 && process.env.NODE_ENV === "development") {
       console.warn(`[Slow Query] ${duration}ms — getQuestions`);
     }
 
-    return rows.map((q) => ({
-      id: q.id,
-      subjectId: q.subjectId,
-      subject: q.subject?.nameBn ?? "",
-      topic: q.topic,
-      subtopic: q.subtopic,
-      question: q.question,
-      options: (q.options as string[]) ?? [],
-      correctAnswer: q.correctAnswer,
-      explanation: q.explanation,
-      difficulty: q.difficulty as QuestionDTO["difficulty"],
-      year: q.year,
-      sourceExam: q.sourceExam,
-    }));
+    return {
+      questions: rows.map((q) => ({
+        id: q.id,
+        subjectId: q.subjectId,
+        subject: q.subject?.nameBn ?? "",
+        topic: q.topic,
+        subtopic: q.subtopic,
+        question: q.question,
+        options: (q.options as string[]) ?? [],
+        correctAnswer: q.correctAnswer,
+        explanation: q.explanation,
+        difficulty: q.difficulty as QuestionDTO["difficulty"],
+        year: q.year,
+        sourceExam: q.sourceExam,
+      })),
+      total,
+      page,
+      limit,
+    };
   } catch {
     throw new InternalServerError("Failed to fetch questions");
   }
@@ -134,16 +157,27 @@ export async function getQuestionBankCategories(): Promise<QuestionBankCategoryD
 }
 
 // ── Badge catalog (moved out of the route handler — Phase 4) ──
-export async function getBadgeCatalog(): Promise<BadgeDTO[]> {
+// Real unlock state lives in UserBadge; the seed-time `unlockedSeed` flag is
+// only a fallback for unauthenticated catalog views.
+export async function getBadgeCatalog(userId?: string | null): Promise<BadgeDTO[]> {
   try {
-    const badges = await prisma.badge.findMany({ orderBy: { id: "asc" } });
+    const [badges, userBadges] = await Promise.all([
+      prisma.badge.findMany({ orderBy: { id: "asc" } }),
+      userId
+        ? prisma.userBadge.findMany({
+            where: { userId },
+            select: { badgeId: true, unlockedAt: true },
+          })
+        : Promise.resolve([] as Array<{ badgeId: number; unlockedAt: Date }>),
+    ]);
+    const unlockedBy = new Map(userBadges.map((ub) => [ub.badgeId, ub.unlockedAt]));
     return badges.map((b) => ({
       id: b.id,
       name: b.name,
       description: b.description,
       icon: b.icon,
       rarity: b.rarity,
-      unlocked: b.unlockedSeed,
+      unlocked: unlockedBy.has(b.id) || b.unlockedSeed,
     }));
   } catch {
     throw new InternalServerError("Failed to fetch badges");
@@ -420,7 +454,7 @@ export async function getDashboardStats(userId: string): Promise<{
   activity: { date: string; answered: number; correct: number }[];
 }> {
   try {
-    const [questionCount, progress, activity] = await Promise.all([
+    const [questionCount, progress, activity, streak] = await Promise.all([
       prisma.question.count(),
       prisma.userProgress.upsert({
         where: { userId },
@@ -428,6 +462,9 @@ export async function getDashboardStats(userId: string): Promise<{
         create: { userId },
       }),
       aggregateDailyActivity(userId, 7),
+      // Derived from the attempt log — never trusts the stored counter,
+      // which clients could previously write to directly.
+      computeStreak(userId),
     ]);
 
     const rank =
@@ -439,7 +476,7 @@ export async function getDashboardStats(userId: string): Promise<{
       points: progress.points,
       exams: progress.examsAttempted,
       rank,
-      streak: progress.streak,
+      streak,
       questionsAnswered: progress.questionsAnswered,
       accuracy: progress.accuracy,
       completion:

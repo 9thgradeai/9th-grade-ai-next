@@ -7,6 +7,7 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import StatusPill from "@/components/ui/StatusPill";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/current-affairs" },
   title: "Current Affairs — 9Th-Grade AI",
   description:
     "A daily-updated current affairs feed covering national and international events for BCS, Bank, and Teacher recruitment exam preparation.",

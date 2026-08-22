@@ -6,6 +6,7 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import StatusPill from "@/components/ui/StatusPill";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/careers" },
   title: "Careers — 9Th-Grade AI",
   description:
     "Join the 9Th-Grade AI team. Open roles in engineering, content, and design for the open-source exam preparation platform.",

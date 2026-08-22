@@ -28,6 +28,7 @@ import {
 import { useAuth } from "@/lib/auth-ctx";
 import { useTheme } from "@/lib/theme-ctx";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
+import { useDialogA11y } from "@/lib/use-dialog-a11y";
 import { account } from "@/lib/services/api";
 import { handleApiError } from "@/lib/errors";
 import LogoutButton from "./LogoutButton";
@@ -154,6 +155,7 @@ export default function SettingsTab() {
 
   // ── Delete account modal ──
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const deleteDialogRef = useDialogA11y<HTMLDivElement>(confirmDelete, () => setConfirmDelete(false));
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
@@ -581,6 +583,8 @@ export default function SettingsTab() {
           >
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setConfirmDelete(false)} />
             <motion.div
+              ref={deleteDialogRef}
+              tabIndex={-1}
               initial={{ scale: shouldReduceMotion ? 1 : 0.95, y: shouldReduceMotion ? 0 : 8 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0 }}

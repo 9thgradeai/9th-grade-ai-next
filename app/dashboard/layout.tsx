@@ -4,15 +4,22 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import SideNav from "@/components/dashboard/SideNav";
 import BottomNav from "@/components/dashboard/BottomNav";
 import NotificationCenter from "@/components/dashboard/NotificationCenter";
-import VoiceAITutor from "@/components/dashboard/VoiceAITutor";
 import ThemeToggle from "@/components/ThemeToggle";
+import LanguageToggle from "@/components/ui/LanguageToggle";
 import { LogoutFarewellProvider, useFarewell } from "@/lib/farewell-ctx";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 import { useAuth } from "@/lib/auth-ctx";
 import { TABS, type TabId } from "@/lib/data";
+
+// The voice tutor (speech-recognition stack) is only needed when launched —
+// keep it out of the critical dashboard bundle.
+const VoiceAITutor = dynamic(() => import("@/components/dashboard/VoiceAITutor"), {
+  ssr: false,
+});
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -77,6 +84,14 @@ function DashboardShell({
 
   return (
     <div className="dashboard-shell h-dvh overflow-hidden flex">
+      {/* Skip link — first focusable element for keyboard users */}
+      <a
+        href="#dashboard-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-emerald-500 focus:text-zinc-950 focus:font-mono focus:text-sm"
+      >
+        Skip to content
+      </a>
+
       {/* Desktop Side Navigation (>=1024px) — locked column, never scrolls away */}
       <SideNav activeTab={activeTab} onChange={onTabChange} />
 
@@ -109,13 +124,14 @@ function DashboardShell({
                 session
               </span>
               <NotificationCenter />
+              <LanguageToggle />
               <ThemeToggle />
             </div>
           </div>
         </header>
 
         {/* Scrollable Content — the only thing that moves */}
-        <main className="flex-1 min-h-0 overflow-y-auto pb-24 lg:pb-8">
+        <main id="dashboard-content" className="flex-1 min-h-0 overflow-y-auto pb-24 lg:pb-8">
           <div className="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 min-w-0">
             {children}
           </div>

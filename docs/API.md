@@ -18,7 +18,7 @@ Auth-protected routes require the `auth_token` HttpOnly cookie (JWT, 7-day expir
 
 | Method | Path | Description |
 |--------|------|-------------|
-| GET | `/api/questions` | List questions, filterable by `?subject=`, `?topic=`, `?difficulty=`, `?q=`, `?limit=`, `?paths=` |
+| GET | `/api/questions` | List questions, filterable by `?subject=`, `?topic=`, `?difficulty=`, `?q=`, `?limit=`, `?page=` (1-based, default 1), `?paths=`. Response: `{ questions, page, pageSize, total }` — `total` enables pagination controls. Cached 60s (`stale-while-revalidate` 300s) |
 | GET | `/api/question-bank/categories` | List question bank categories |
 | GET | `/api/flashcards` | List flashcards, optionally filtered by `?subject=`. Authenticated callers additionally receive a per-card `srs` overlay (their own SM-2 state) |
 | GET | `/api/exam-schedule` | List published exam dates (public, no auth) |
@@ -26,9 +26,9 @@ Auth-protected routes require the `auth_token` HttpOnly cookie (JWT, 7-day expir
 | GET | `/api/daily-quiz` | Get today's quiz |
 | GET | `/api/flash-news` | List flash news items |
 | GET | `/api/recommendations` | List AI recommendations |
-| PATCH | `/api/progress` | **Auth required** — Patch user progress (whitelisted fields only) |
+| PATCH | `/api/progress` | **Auth required** — Patch user progress (whitelisted fields only; `streak` and `rank` are server-derived and rejected) |
 | GET | `/api/notifications` | **Auth required** — List notifications with per-user read state. Keyset-paginated (Phase 6): `?limit=` (default 20, max 50) and `?cursor=` (previous page's `nextCursor` = last item id). Response: `{ notifications, pageSize, total, nextCursor }` — `nextCursor` is null on the final page |
-| GET | `/api/badges` | List achievement badges |
+| GET | `/api/badges` | List achievement badges. Authenticated callers get their real unlock state from `UserBadge` (`unlocked: true`); anonymous callers get the catalog with seed flags only |
 | GET | `/api/subject-reports` | **Auth required** — Per-subject reports from the caller's attempts (`name`, `score`, `attempted`, `correct` — no fabricated trend) |
 | GET | `/api/mock-test/results` | **Auth required** — Caller's recent mock test results |
 | GET | `/api/documents` | List documents (syllabus, circulars) |
@@ -41,7 +41,7 @@ Auth-protected routes require the `auth_token` HttpOnly cookie (JWT, 7-day expir
 | POST | `/api/daily-quiz/submit` | **Auth required** — Grade + persist daily quiz answers `{ quizId, answers }` |
 | POST | `/api/notifications/:id/read` | **Auth required** — Mark a notification read |
 | GET | `/api/exam/config` | List the custom-exam selection tree (subjects → topics → subtopics with question counts) |
-| POST | `/api/exam/build` | Build a custom BCS-style exam `{ subjects: [{ subjectId, groups, count? }], questionCount, durationSec }` |
+| POST | `/api/exam/build` | **Auth required** — Build a custom BCS-style exam `{ subjects: [{ subjectId, groups, count? }], questionCount, durationSec }` (401 without a session — construction is DB-heavy) |
 | POST | `/api/exam/submit` | **Auth required** — Grade + persist a custom exam `{ answers: [{ questionId, selected }] }` |
 | POST | `/api/ai/solver` | **Auth required** — Solve a question `{ text?, imageBase64?, subject?, subjectId?, questionId? }` → `{ solution, steps, explanation, relatedConcept, source }` |
 | POST | `/api/ai/tutor` | **Auth required** — **Streaming** AI tutor turn `{ messages: [{ role, content }], conversationId?, subjectId?, topicId?, questionId?, topicPath?, intent? }` |

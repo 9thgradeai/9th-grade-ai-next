@@ -207,6 +207,17 @@ vi.mock("~backend/db", () => ({
     badge: {
       findMany: vi.fn(),
       findFirst: vi.fn(),
+      findUnique: vi.fn(),
+      create: vi.fn(),
+      upsert: vi.fn(),
+      count: vi.fn(),
+    },
+    userBadge: {
+      findMany: vi.fn(),
+      findUnique: vi.fn(),
+      findFirst: vi.fn(),
+      create: vi.fn(),
+      delete: vi.fn(),
       count: vi.fn(),
     },
     appNotification: {

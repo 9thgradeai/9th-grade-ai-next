@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { validateQuestionSearchParams } from "~backend/validation";
-import { getQuestions, getQuestionById } from "~backend/services/content";
+import { getQuestionById, getQuestionsPage } from "~backend/services/content";
 import { toHttpResponse } from "~backend/errors";
-import { getRequestId, startTiming, applyCorsHeaders, applySecurityHeaders } from "../_middleware";
+import { getRequestId, startTiming, applyCorsHeaders, applySecurityHeaders, applyCacheHeaders } from "../_middleware";
 
 export async function GET(request: Request) {
   const requestId = getRequestId(request);
@@ -12,26 +12,34 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const params = validateQuestionSearchParams(searchParams);
 
-    let questions;
     if (params.id) {
       const single = await getQuestionById(params.id);
-      questions = single ? [single] : [];
-    } else {
-      questions = await getQuestions({
-        subject: params.subject,
-        topic: params.topic,
-        difficulty: params.difficulty,
-        q: params.q,
-        paths: params.paths,
-        limit: params.limit,
-      });
+      const questions = single ? [single] : [];
+      const res = NextResponse.json({ questions, page: 1, pageSize: 1, total: questions.length });
+      res.headers.set("X-Request-Id", requestId);
+      res.headers.set("X-Response-Time", getTime() + "ms");
+      applyCorsHeaders(res);
+      applySecurityHeaders(res);
+      return res;
     }
 
-    const res = NextResponse.json({ questions, page: 1, pageSize: params.limit });
+    const { questions, total, page, limit } = await getQuestionsPage({
+      subject: params.subject,
+      topic: params.topic,
+      difficulty: params.difficulty,
+      q: params.q,
+      paths: params.paths,
+      page: params.page,
+      limit: params.limit,
+    });
+
+    const res = NextResponse.json({ questions, page, pageSize: limit, total });
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");
     applyCorsHeaders(res);
     applySecurityHeaders(res);
+    // Public reference content — cache briefly at the edge/browser.
+    applyCacheHeaders(res, { public: true, maxAge: 60, staleWhileRevalidate: 300 });
     return res;
   } catch (err) {
     const res = toHttpResponse(err);

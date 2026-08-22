@@ -168,6 +168,12 @@ export const api = {
     return request<{ flashcards: Server.FlashcardDTO[] }>(`/api/flashcards${qs}`).then((d) => d.flashcards);
   },
 
+  reviewFlashcard: (flashcardId: number, rating: 0 | 1 | 2 | 3): Promise<unknown> =>
+    request<{ state: unknown }>("/api/flashcards/review", {
+      method: "POST",
+      body: JSON.stringify({ flashcardId, rating }),
+    }).then((d) => d.state),
+
   studyPlan: (): Promise<Server.StudyTaskDTO[]> =>
     request<{ tasks: Server.StudyTaskDTO[] }>("/api/study-plan").then((d) => d.tasks),
 

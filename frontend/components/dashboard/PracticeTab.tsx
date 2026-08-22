@@ -20,6 +20,7 @@ import {
   Inbox,
 } from "lucide-react";
 import { api } from "@/lib/services/api";
+import { DIFFICULTY_LABEL } from "@/lib/exam-ui";
 import type { Server } from "@/lib/types";
 import MockTestTab from "./MockTestTab";
 import CustomExamTab from "./CustomExamTab";
@@ -35,12 +36,6 @@ const MODES: { id: PracticeMode; label: string; hint: string }[] = [
   { id: "mock", label: "MOCK_TEST", hint: "বিষয়, টপিক, সাবটপিক থেকে সময়সীমা সহ মক পরীক্ষা" },
   { id: "quick", label: "QUICK_PRACTICE", hint: "বিষয়, টপিক, সাবটপিক থেকে দ্রুত প্র্যাকটিস" },
 ];
-
-const DIFFICULTY_LABEL: Record<string, string> = {
-  EASY: "সহজ",
-  MEDIUM: "মাঝারি",
-  HARD: "কঠিন",
-};
 
 export default function PracticeTab() {
   const [mode, setMode] = useState<PracticeMode>("custom");

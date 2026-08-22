@@ -11,6 +11,8 @@ import {
   NotFoundError,
   ConflictError,
   InternalServerError,
+  UnauthorizedError,
+  ForbiddenError,
 } from "~backend/errors";
 import type { UserProgressDTO } from "@/lib/types";
 
@@ -126,6 +128,46 @@ export async function getUserIdFromRequest(
   } catch {
     return null;
   }
+}
+
+export type AuthedUser = { id: string; email: string; role: "student" | "admin" };
+
+/** Resolve the authenticated user (id + role) from the request cookies. */
+export async function getAuthedUser(req: Request): Promise<AuthedUser | null> {
+  try {
+    const cookie = req.headers.get("cookie") ?? "";
+    const match = cookie.match(/auth_token=([^;]+)/);
+    if (!match) return null;
+    const payload = await verifySession(match[1]);
+    if (!payload?.email || typeof payload.email !== "string") return null;
+    const user = await prisma.user.findUnique({
+      where: { email: payload.email },
+      select: { id: true, email: true, role: true },
+    });
+    if (!user) return null;
+    return { id: user.id, email: user.email, role: user.role === "ADMIN" ? "admin" : "student" };
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Gate for admin-only surfaces. Throws UnauthorizedError (401) when no valid
+ * session exists and ForbiddenError (403) when the session lacks the role.
+ * Returns the authenticated user on success.
+ */
+export async function requireRole(
+  req: Request,
+  roles: Array<AuthedUser["role"]>,
+): Promise<AuthedUser> {
+  const user = await getAuthedUser(req);
+  if (!user) {
+    throw new UnauthorizedError("Authentication required");
+  }
+  if (!roles.includes(user.role)) {
+    throw new ForbiddenError(`Requires one of: ${roles.join(", ")}`);
+  }
+  return user;
 }
 
 async function ensureProgress(userId: string) {

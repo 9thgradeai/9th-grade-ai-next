@@ -4,27 +4,26 @@ import { AppError, toHttpResponse } from "~backend/errors";
 import { assertNoUnknownFields, validateBoundedInt } from "~backend/validation";
 import { getRequestId, startTiming, applySecurityHeaders } from "../_middleware";
 
+// Client-writable progress fields. `streak` and `rank` are intentionally
+// excluded — they are derived server-side from the attempt log and cannot be
+// set by the client.
 const PROGRESS_FIELDS = [
   "points",
-  "streak",
   "accuracy",
   "questionsAnswered",
   "flashcardsReviewed",
   "aiQuestionsAsked",
   "examsAttempted",
-  "rank",
 ] as const;
 
 // Documented bounds per field (mirror DB CHECK constraints, Phase 3).
 const FIELD_BOUNDS: Record<(typeof PROGRESS_FIELDS)[number], { max?: number }> = {
   points: {},
-  streak: {},
   accuracy: { max: 100 },
   questionsAnswered: {},
   flashcardsReviewed: {},
   aiQuestionsAsked: {},
   examsAttempted: {},
-  rank: {},
 };
 
 export async function PATCH(request: Request) {

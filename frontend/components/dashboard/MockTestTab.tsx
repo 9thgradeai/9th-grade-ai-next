@@ -19,6 +19,8 @@ import {
   XCircle,
 } from "lucide-react";
 import { api } from "@/lib/services/api";
+import { useDialogA11y } from "@/lib/use-dialog-a11y";
+import { DIFFICULTY_LABEL } from "@/lib/exam-ui";
 import type { Server } from "@/lib/types";
 import TopicTreePicker, {
   type Selection,
@@ -27,12 +29,6 @@ import TopicTreePicker, {
 } from "./TopicTreePicker";
 
 type TestState = "setup" | "active" | "completed";
-
-const DIFFICULTY_LABEL: Record<string, string> = {
-  EASY: "সহজ",
-  MEDIUM: "মাঝারি",
-  HARD: "কঠিন",
-};
 
 const OPTION_LABELS = ["A", "B", "C", "D", "E", "F"];
 
@@ -63,6 +59,10 @@ export default function MockTestTab() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [showUnansweredConfirm, setShowUnansweredConfirm] = useState(false);
   const submittingRef = useRef(false);
+  const confirmDialogRef = useDialogA11y<HTMLDivElement>(
+    showUnansweredConfirm,
+    useCallback(() => setShowUnansweredConfirm(false), []),
+  );
 
   const fetchConfig = useCallback(async () => {
     try {
@@ -411,13 +411,15 @@ export default function MockTestTab() {
 
             <h3 className="text-base md:text-lg font-medium text-white mb-5">{q.question}</h3>
 
-            <div className="space-y-2.5">
+            <div className="space-y-2.5" role="radiogroup" aria-label={`প্রশ্ন ${currentQuestion + 1} — উত্তর নির্বাচন করুন`}>
               {q.options.map((option, i) => {
                 const isSelected = answers[q.id] === option;
                 return (
                   <button
                     key={i}
                     onClick={() => selectAnswer(q.id, option)}
+                    role="radio"
+                    aria-checked={isSelected}
                     className={`w-full text-left p-3.5 rounded-xl border transition-all ${
                       isSelected
                         ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-300"
@@ -487,14 +489,15 @@ export default function MockTestTab() {
                 <button
                   key={qq.id}
                   onClick={() => setCurrentQuestion(i)}
-                  className={`w-8 h-8 rounded-lg border text-xs font-mono transition-all ${
+                  className={`min-w-[44px] min-h-[44px] rounded-lg border text-xs font-mono transition-all ${
                     i === currentQuestion
                       ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-400"
                       : isAnswered
                         ? "border-emerald-500/20 bg-emerald-500/5 text-emerald-400"
                         : "border-zinc-800 text-zinc-500 hover:border-zinc-700"
                   }`}
-                  aria-label={`প্রশ্ন ${i + 1}`}
+                  aria-label={`প্রশ্ন ${i + 1}${isAnswered ? " — উত্তর দেওয়া হয়েছে" : ""}`}
+                  aria-current={i === currentQuestion ? "true" : undefined}
                 >
                   {i + 1}
                 </button>
@@ -518,6 +521,11 @@ export default function MockTestTab() {
               onClick={() => setShowUnansweredConfirm(false)}
             >
               <motion.div
+                ref={confirmDialogRef}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="unanswered-confirm-title"
+                tabIndex={-1}
                 initial={{ scale: 0.95, y: 10 }}
                 animate={{ scale: 1, y: 0 }}
                 exit={{ scale: 0.95, y: 10 }}
@@ -526,7 +534,7 @@ export default function MockTestTab() {
               >
                 <div className="flex items-center gap-2 mb-3">
                   <AlertTriangle className="w-5 h-5 text-amber-400" />
-                  <h3 className="text-base font-bold text-white">উত্তর দেওয়া বাকি আছে</h3>
+                  <h3 id="unanswered-confirm-title" className="text-base font-bold text-white">উত্তর দেওয়া বাকি আছে</h3>
                 </div>
                 <p className="text-sm text-zinc-400 mb-5">
                   <span className="text-amber-400 font-mono">{totalQuestions - answeredCount}টি</span> প্রশ্নে

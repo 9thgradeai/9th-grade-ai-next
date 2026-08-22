@@ -6,6 +6,7 @@ import PageHero from "@/components/public/PageHero";
 import SectionHeading from "@/components/ui/SectionHeading";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/docs" },
   title: "API Documentation — 9Th-Grade AI",
   description:
     "Public API reference for the 9Th-Grade AI platform — auth, questions, exams, study plans, progress, content, and AI endpoints.",

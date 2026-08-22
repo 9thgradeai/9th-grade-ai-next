@@ -1,33 +1,21 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import type { ComponentType } from "react";
 import { TABS, type TabId } from "@/lib/data";
-import { Home, Calendar, Zap, Brain, TrendingUp, MoreHorizontal, X, BookOpen, HardDrive, Settings } from "lucide-react";
+import { TAB_ICONS, type IconProps } from "@/lib/exam-ui";
+import { useDialogA11y } from "@/lib/use-dialog-a11y";
+import { MoreHorizontal, X } from "lucide-react";
 import LogoutButton from "./LogoutButton";
-import AiLogo from "@/components/ui/AiLogo";
 
-type IconProps = { className?: string; strokeWidth?: number };
 const BOTTOM_TABS: { id: TabId; icon: ComponentType<IconProps>; short: string }[] = [
-  { id: "home", icon: Home, short: "HOM" },
-  { id: "study-planner", icon: Calendar, short: "PLN" },
-  { id: "practice", icon: Zap, short: "PRC" },
-  { id: "flashcards", icon: Brain, short: "FLC" },
-  { id: "progress", icon: TrendingUp, short: "PRG" },
+  { id: "home", icon: TAB_ICONS.home, short: "HOM" },
+  { id: "study-planner", icon: TAB_ICONS["study-planner"], short: "PLN" },
+  { id: "practice", icon: TAB_ICONS.practice, short: "PRC" },
+  { id: "flashcards", icon: TAB_ICONS.flashcards, short: "FLC" },
+  { id: "progress", icon: TAB_ICONS.progress, short: "PRG" },
 ];
-
-const TAB_ICONS: Record<TabId, ComponentType<IconProps>> = {
-  home: Home,
-  "study-planner": Calendar,
-  practice: Zap,
-  flashcards: Brain,
-  "ai-solver": AiLogo,
-  "question-bank": BookOpen,
-  progress: TrendingUp,
-  offline: HardDrive,
-  settings: Settings,
-};
 
 interface BottomNavProps {
   activeTab: TabId;
@@ -36,6 +24,8 @@ interface BottomNavProps {
 
 export default function BottomNav({ activeTab, onChange }: BottomNavProps) {
   const [moreOpen, setMoreOpen] = useState(false);
+  const closeMore = useCallback(() => setMoreOpen(false), []);
+  const sheetRef = useDialogA11y<HTMLDivElement>(moreOpen, closeMore);
   const isActive = (id: TabId) => activeTab === id;
   const extraTabs = TABS.filter((t) => !BOTTOM_TABS.find((bt) => bt.id === t.id));
 
@@ -115,6 +105,9 @@ export default function BottomNav({ activeTab, onChange }: BottomNavProps) {
               onClick={() => setMoreOpen(false)}
             />
             <motion.div
+              ref={sheetRef}
+              role="document"
+              tabIndex={-1}
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}

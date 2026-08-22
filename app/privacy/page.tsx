@@ -4,6 +4,7 @@ import PageHero from "@/components/public/PageHero";
 import StatusPill from "@/components/ui/StatusPill";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/privacy" },
   title: "Privacy Policy — 9Th-Grade AI",
   description:
     "How 9Th-Grade AI collects, uses, and protects your data. Last updated August 2026.",

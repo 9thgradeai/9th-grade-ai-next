@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useSyncExternalStore, useEffect } from "react";
+import { useState, useSyncExternalStore, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, RotateCcw, Lightbulb, BarChart3 } from "lucide-react";
 import { FLASHCARD_DECKS } from "@/lib/data/study";
+import { useToastSafe } from "@/lib/toast-ctx";
 import { api } from "@/lib/services/api";
 import type { Flashcard } from "@/lib/types";
 
@@ -39,6 +40,13 @@ function useNow(): number {
 
 type ReviewRating = "again" | "hard" | "good" | "easy";
 
+const RATING_VALUE: Record<ReviewRating, 0 | 1 | 2 | 3> = {
+  again: 0,
+  hard: 1,
+  good: 2,
+  easy: 3,
+};
+
 const RATING_CONFIG: Record<ReviewRating, { label: string; color: string; nextInterval: number }> = {
   again: { label: "Again", color: "text-red-400 bg-red-500/10 border-red-500/30", nextInterval: 1 },
   hard: { label: "Hard", color: "text-amber-400 bg-amber-500/10 border-amber-500/30", nextInterval: 6 },
@@ -47,6 +55,8 @@ const RATING_CONFIG: Record<ReviewRating, { label: string; color: string; nextIn
 };
 
 export default function FlashcardsTab() {
+  const toast = useToastSafe();
+  const syncFailureNotified = useRef(false);
   const [selectedDeck, setSelectedDeck] = useState<string | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
@@ -135,6 +145,43 @@ export default function FlashcardsTab() {
     }));
 
     setReviewQueue(newQueue);
+
+    // Persist the review server-side (SM-2 is authoritative there). The UI
+    // schedule above is optimistic; reconcile on success, notify once on
+    // failure so progress loss isn't silent.
+    const flashcardId = Number(currentCard.id);
+    if (Number.isInteger(flashcardId) && flashcardId > 0) {
+      void api
+        .reviewFlashcard(flashcardId, RATING_VALUE[rating])
+        .then((state) => {
+          const s = state as
+            | { nextReview?: string; interval?: number; easeFactor?: number; repetitions?: number }
+            | undefined;
+          if (!s || typeof s.interval !== "number") return;
+          setReviewQueue((prev) =>
+            prev.map((card) =>
+              card.id === currentCard.id
+                ? {
+                    ...card,
+                    interval: s.interval ?? card.interval,
+                    easeFactor: typeof s.easeFactor === "number" ? s.easeFactor : card.easeFactor,
+                    repetitions: typeof s.repetitions === "number" ? s.repetitions : card.repetitions,
+                    nextReview:
+                      typeof s.nextReview === "string"
+                        ? new Date(s.nextReview).getTime()
+                        : card.nextReview,
+                  }
+                : card,
+            ),
+          );
+        })
+        .catch(() => {
+          if (!syncFailureNotified.current) {
+            syncFailureNotified.current = true;
+            toast.error("রিভিউ সংরক্ষণ করা যায়নি — অগ্রগতি সীমিত হতে পারে");
+          }
+        });
+    }
 
     if (currentIndex < newQueue.length - 1) {
       setCurrentIndex((i) => i + 1);
@@ -267,7 +314,7 @@ export default function FlashcardsTab() {
 
           {/* Flashcard */}
           <AnimatePresence mode="wait">
-            {currentCard && (
+            {currentCard && reviewQueue.length > 0 && (
               <motion.div
                 key={currentCard.id}
                 initial={{ opacity: 0, rotateY: 0 }}
@@ -314,20 +361,32 @@ export default function FlashcardsTab() {
             )}
           </AnimatePresence>
 
+          {/* Empty queue state */}
+          {!currentCard && (
+            <div className="glass-card rounded-terminal-rounded border border-terminal-border p-10 text-center">
+              <p className="text-sm text-zinc-400 font-mono mb-1">$ deck empty</p>
+              <p className="text-xs text-zinc-500 font-mono">
+                No cards due in this deck right now — come back later or reset the session.
+              </p>
+            </div>
+          )}
+
           {/* Controls */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               {!isFlipped && currentCard?.hint && (
                 <button
                   onClick={() => setShowHint(!showHint)}
-                  className="p-2 bg-zinc-900 border border-zinc-800 rounded-lg text-amber-400 hover:border-amber-500/30 transition-colors"
+                  aria-label={showHint ? "Hide hint" : "Show hint"}
+                  className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center bg-zinc-900 border border-zinc-800 rounded-lg text-amber-400 hover:border-amber-500/30 transition-colors"
                 >
                   <Lightbulb className="w-5 h-5" />
                 </button>
               )}
               <button
                 onClick={resetSession}
-                className="p-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-400 hover:text-white transition-colors"
+                aria-label="Reset session"
+                className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-400 hover:text-white transition-colors"
               >
                 <RotateCcw className="w-5 h-5" />
               </button>
@@ -337,18 +396,19 @@ export default function FlashcardsTab() {
               {currentIndex > 0 && (
                 <button
                   onClick={() => { setCurrentIndex((i) => i - 1); setIsFlipped(false); setShowHint(false); }}
-                  className="p-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-400 hover:text-white transition-colors"
+                  aria-label="Previous card"
+                  className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-400 hover:text-white transition-colors"
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
               )}
               {isFlipped ? (
-                <div className="flex gap-2">
+                <div className="flex gap-2" role="group" aria-label="Rate your recall">
                   {Object.entries(RATING_CONFIG).map(([key, config]) => (
                     <button
                       key={key}
                       onClick={() => handleRating(key as ReviewRating)}
-                      className={`px-3 py-2 rounded-lg border font-mono text-xs transition-all hover:scale-105 ${config.color}`}
+                      className={`px-3 py-2 min-h-[44px] rounded-lg border font-mono text-xs transition-all hover:scale-105 ${config.color}`}
                     >
                       {config.label}
                     </button>
@@ -365,7 +425,8 @@ export default function FlashcardsTab() {
               {currentIndex < reviewQueue.length - 1 && !isFlipped && (
                 <button
                   onClick={() => { setCurrentIndex((i) => i + 1); setIsFlipped(false); setShowHint(false); }}
-                  className="p-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-400 hover:text-white transition-colors"
+                  aria-label="Next card"
+                  className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-400 hover:text-white transition-colors"
                 >
                   <ChevronRight className="w-5 h-5" />
                 </button>

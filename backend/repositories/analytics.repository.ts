@@ -134,3 +134,35 @@ export function buildActivityWindow(
   }
   return out;
 }
+
+/**
+ * Server-authoritative study streak: consecutive UTC days with at least one
+ * attempt, ending today or yesterday. Derived from the attempt log so it can
+ * never be inflated by the client. Bounded to a year of distinct days.
+ */
+export async function computeStreak(userId: string): Promise<number> {
+  const rows = await prisma.$queryRaw<{ day: string }[]>`
+    SELECT DISTINCT to_char(date_trunc('day', "createdAt"), 'YYYY-MM-DD') AS "day"
+    FROM "QuestionAttempt"
+    WHERE "userId" = ${userId}
+      AND "createdAt" >= now() - interval '365 days'
+    ORDER BY "day" DESC
+    LIMIT 366`;
+
+  if (rows.length === 0) return 0;
+
+  const activeDays = new Set(rows.map((r) => String(r.day)));
+  let streak = 0;
+  // Start from today; allow yesterday as the streak anchor so the counter
+  // doesn't reset to 0 before the user has studied today.
+  const cursor = new Date();
+  if (!activeDays.has(cursor.toISOString().slice(0, 10))) {
+    cursor.setUTCDate(cursor.getUTCDate() - 1);
+    if (!activeDays.has(cursor.toISOString().slice(0, 10))) return 0;
+  }
+  while (activeDays.has(cursor.toISOString().slice(0, 10))) {
+    streak++;
+    cursor.setUTCDate(cursor.getUTCDate() - 1);
+  }
+  return streak;
+}

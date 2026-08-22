@@ -25,10 +25,10 @@
   --color-glass-bg: rgba(11, 16, 32, 0.72);
   --color-glass-border: rgb(148 163 184 / 0.12);
 
-  /* Typography */
-  --font-sans: "Inter", "Hind Siliguri", system-ui, sans-serif;
-  --font-display: "Space Grotesk", "Inter", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", "Fira Code", Menlo, Consolas, monospace;
+  /* Typography — Hind Siliguri covers Bengali glyphs across all stacks */
+  --font-sans: var(--font-inter), var(--font-hind-siliguri), "Hind Siliguri", system-ui, sans-serif;
+  --font-display: var(--font-space-grotesk), var(--font-inter), var(--font-hind-siliguri), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), "Fira Code", Menlo, Consolas, var(--font-hind-siliguri), monospace;
 
   /* Custom shadows — refined premium glow */
   --shadow-neon-glow: 0 0 20px rgba(16, 185, 129, 0.12);
@@ -186,14 +186,14 @@ html.light .glass-card {
   background: linear-gradient(165deg, rgb(255 255 255 / 0.92), rgb(240 253 244 / 0.75));
 }
 
-/* ── Dashboard light-mode scope ─────────────────────────────
-   The dashboard is authored with dark tokens (text-white, text-zinc-*,
-   border-zinc-*, bg-emerald-400, ...). Tailwind v4 emits those utilities
-   as var(--color-*) references, so re-mapping the tokens inside the
-   `.dashboard-shell` wrapper adapts the whole dashboard to light mode
-   without touching every component. Opacity-modified utilities (e.g.
-   bg-zinc-900/40) are baked to static values at build time; those are
-   replaced in components with the theme-aware helpers below. */
+/* ── Light-mode token remap ─────────────────────────────────
+   The entire app is authored with dark tokens (text-white, text-zinc-*,
+   border-zinc-*, ...). Tailwind v4 emits those utilities as var(--color-*)
+   references, so re-mapping the tokens under `html.light` adapts every
+   surface — dashboard, public pages, and body-portaled overlays — to
+   light mode without touching each component. Opacity-modified
+   utilities (e.g. bg-zinc-900/40) compile to color-mix() against the
+   same variables, so they follow the remap too. */
 @utility bg-subtle {
   background-color: var(--surface-muted);
 }
@@ -201,7 +201,7 @@ html.light .glass-card {
   border-color: var(--border-muted);
 }
 
-html.light .dashboard-shell {
+html.light {
   /* Neutral text scale — inverted for light surfaces */
   --color-white: #101828;
   --color-zinc-50: #1a2636;

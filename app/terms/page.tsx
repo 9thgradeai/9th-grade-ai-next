@@ -4,6 +4,7 @@ import PageHero from "@/components/public/PageHero";
 import StatusPill from "@/components/ui/StatusPill";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/terms" },
   title: "Terms of Service — 9Th-Grade AI",
   description:
     "The terms governing your use of the 9Th-Grade AI platform. Last updated August 2026.",

@@ -4,6 +4,8 @@ import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Terminal, Clock, CheckCircle, XCircle, Bookmark, BookmarkCheck } from "lucide-react";
 import { QUESTION_BANK_CATEGORIES } from "@/lib/data";
+import { useDashboardStore } from "@/lib/store-ctx/dashboard";
+import { useToastSafe } from "@/lib/toast-ctx";
 import { api } from "@/lib/services/api";
 
 // Static fallback sample questions (used if the DB/API is unavailable).
@@ -42,13 +44,40 @@ const SAMPLE_QUESTIONS: Record<string, { q: string; a: string; difficulty: strin
 
 type QItem = { id: number; q: string; a: string; difficulty: string };
 
+/** Highlights case-insensitive matches of `query` inside `text`. */
+function Highlight({ text, query }: { text: string; query: string }) {
+  const trimmed = query.trim();
+  if (!trimmed) return <>{text}</>;
+  const parts = text.split(new RegExp(`(${trimmed.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "ig"));
+  return (
+    <>
+      {parts.map((part, i) =>
+        part.toLowerCase() === trimmed.toLowerCase() ? (
+          <mark key={i} className="bg-emerald-500/25 text-emerald-300 rounded-sm px-0.5">
+            {part}
+          </mark>
+        ) : (
+          <span key={i}>{part}</span>
+        ),
+      )}
+    </>
+  );
+}
+
 export default function QuestionBankTab() {
-  const [query, setQuery] = useState("");
-  const [activeCategory, setActiveCategory] = useState<string>("বাংলা ভাষা ও সাহিত্য");
+  const toast = useToastSafe();
+  const { questionBankFilters, setQuestionBankFilters } = useDashboardStore(
+    (s) => s.questionBankFilters && { questionBankFilters: s.questionBankFilters, setQuestionBankFilters: s.setQuestionBankFilters },
+  );
+  const query = questionBankFilters.query;
+  const activeCategory = questionBankFilters.category || "বাংলা ভাষা ও সাহিত্য";
   const [categories, setCategories] = useState(QUESTION_BANK_CATEGORIES);
   const [questions, setQuestions] = useState<QItem[]>([]);
   const [bookmarks, setBookmarks] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const setQuery = (q: string) => setQuestionBankFilters({ query: q });
+  const setActiveCategory = (c: string) => setQuestionBankFilters({ category: c });
 
   // Load categories + bookmarks from the DB (fallback to static data).
   useEffect(() => {
@@ -106,11 +135,19 @@ export default function QuestionBankTab() {
 
   const toggleSave = async (id: number) => {
     if (id < 0) return; // static fallback question — not persisted
+    const wasSaved = bookmarks.includes(id);
+    // Optimistic flip; the server response is authoritative and reconciles.
+    setBookmarks((prev) =>
+      wasSaved ? prev.filter((x) => x !== id) : [...prev, id],
+    );
     try {
       const res = await api.toggleBookmark(id);
       setBookmarks((prev) => (res.bookmarked ? [...prev, id] : prev.filter((x) => x !== id)));
     } catch {
-      /* ignore */
+      setBookmarks((prev) =>
+        wasSaved ? prev.filter((x) => x !== id) : [...prev, id],
+      );
+      toast.error("বুকমার্ক সংরক্ষণ করা যায়নি");
     }
   };
 
@@ -211,7 +248,9 @@ export default function QuestionBankTab() {
                     {isSaved ? <BookmarkCheck className="w-4 h-4 text-emerald-400" /> : <Bookmark className="w-4 h-4" />}
                   </button>
                 </div>
-                <p className="text-sm text-white mb-3">{item.q}</p>
+                <p className="text-sm text-white mb-3">
+                  <Highlight text={item.q} query={query} />
+                </p>
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-2 text-xs text-emerald-400 font-mono">
                     <CheckCircle className="w-3.5 h-3.5" />

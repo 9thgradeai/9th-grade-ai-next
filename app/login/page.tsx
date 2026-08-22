@@ -1,12 +1,17 @@
-import AuthExperience from "@/components/auth/AuthExperience";
+import { Suspense } from "react";
+import type { Metadata } from "next";
+import LoginEntry from "@/components/auth/LoginEntry";
 
-export default async function LoginPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-}) {
-  const params = await searchParams;
-  const register = typeof params.register === "string" && params.register === "true";
+export const metadata: Metadata = {
+  title: "Sign in — 9Th-Grade AI",
+  description: "Log in or create a free account to start your AI-powered exam preparation.",
+  robots: { index: false, follow: true },
+};
 
-  return <AuthExperience initialStage={register ? "signup" : null} />;
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginEntry />
+    </Suspense>
+  );
 }

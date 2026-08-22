@@ -23,6 +23,13 @@ export async function generateMetadata({
   return {
     title: `${post.title} — 9Th-Grade AI`,
     description: post.excerpt,
+    alternates: { canonical: `/blog/${slug}` },
+    openGraph: {
+      title: post.title,
+      description: post.excerpt,
+      type: "article",
+      publishedTime: post.date,
+    },
   };
 }
 

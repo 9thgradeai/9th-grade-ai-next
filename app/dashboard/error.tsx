@@ -5,10 +5,10 @@ import { useRouter } from "next/navigation";
 
 export default function DashboardError({
   error,
-  reset,
+  retry,
 }: {
   error: Error & { digest?: string };
-  reset: () => void;
+  retry: () => void;
 }) {
   const router = useRouter();
 
@@ -28,7 +28,7 @@ export default function DashboardError({
         </p>
         <div className="flex gap-3 justify-center">
           <button
-            onClick={reset}
+            onClick={retry}
             className="px-4 py-2 bg-emerald-500 text-zinc-950 font-mono text-sm rounded hover:bg-emerald-400 transition-colors"
           >
             RETRY

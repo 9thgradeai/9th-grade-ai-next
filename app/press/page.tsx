@@ -5,6 +5,7 @@ import PageHero from "@/components/public/PageHero";
 import SectionHeading from "@/components/ui/SectionHeading";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "/press" },
   title: "Press Kit — 9Th-Grade AI",
   description:
     "Brand assets, product facts, and media contacts for journalists and content creators covering 9Th-Grade AI.",
