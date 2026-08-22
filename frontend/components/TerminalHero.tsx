@@ -206,7 +206,7 @@ export default function TerminalHero() {
         aria-hidden="true"
         style={{ y: orbY, opacity: orbOpacity }}
       >
-        <AuroraOrb colorClass="bg-indigo-500/10" size="34rem" duration={14} breatheTo={1.1} />
+        <AuroraOrb colorClass="bg-violet-500/10" size="34rem" duration={14} breatheTo={1.1} />
       </motion.div>
 
       {/* Layer 3 — content */}

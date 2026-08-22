@@ -10,11 +10,16 @@
 
 ## Colors
 
-- **Background**: deep `#05070c` (via `cosmic-bg` ambient layer) — dark theme default
-- **Text**: `terminal-text` (CSS variable, zinc-200 equivalent)
-- **Primary accent**: `emerald-500` / `emerald-400`
-- **Secondary accents**: `cyan-400`, `indigo-400` (`aurora-indigo`), `amber-400`, `rose-400`, `violet-400`, `zinc-400`
-- **Gradient headline**: `text-gradient` (emerald → cyan → indigo)
+- **Background**: deep space `#04060f` (via `cosmic-bg` aurora wash) — dark theme default
+- **Text**: `--foreground` `#e7ecff` (cool white)
+- **Brand spectrum ("Aurora Iris")**: signal **teal** (`emerald-*` tokens retuned to
+  `#14b8a6`/`#2dd4bf`) → cyan bridge `#22d3ee` → **iris** violet `#a78bfa`/`#818cf8`
+  → magenta spark `#e879f9`
+- Semantic token NAMES are unchanged (components still author `emerald-400`,
+  etc.); only values were remapped in `app/globals.css`, so light mode's
+  token-inversion strategy keeps working (light maps the scale to teal-600
+  family). Teal remains in the green family to preserve success semantics.
+- **Gradient headline**: `text-gradient` (teal → cyan → iris → magenta)
 
 ## Spacing
 
@@ -62,11 +67,17 @@ Shared primitives live in `frontend/components/ui/`:
 - File: `frontend/components/ui/MotionText.tsx`.
 
 ### KnowledgeField
-- Signature WebGL2 environment: 3D drifting "syllabus node" particle field.
-- Zero dependencies — hand-written shaders, single draw call, all motion in
-  the vertex shader (mod-wrap drift). Tiered counts (1600/3200/6000 by
-  viewport + pointer type), DPR ≤ 1.75, paused offscreen + hidden tab,
-  static single frame under reduced motion, full disposal on unmount.
+- Signature WebGL2 environment, "Aurora Iris": **two draw passes in one
+  context** — (A) fullscreen domain-warped fbm aurora nebula (teal/iris/
+  magenta curtains that gather around the pointer; desktop-class viewports,
+  dark mode only) and (B) the knowledge-constellation node field with real
+  perspective depth, pointer repulsion, scroll lean, and pseudo-curl sway.
+- Zero dependencies — hand-written shaders (~6KB), single fullscreen triangle
+  via `gl_VertexID`, all node motion GPU-side (mod-wrap drift).
+- Tiered counts (1600/3200/6000), DPR ≤ 1.75 × 0.85 on fine pointers,
+  paused offscreen + hidden tab, static composed frame under reduced motion,
+  premultiplied-over blending for correct compositing on transparent canvas,
+  full disposal on unmount.
 - Mounted as a `next/dynamic` `ssr:false` island in the hero only.
 - File: `frontend/components/visual/KnowledgeField.tsx`.
 

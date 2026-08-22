@@ -1,46 +1,51 @@
 @import "tailwindcss";
 
 @theme {
-  /* Core dark theme colors */
-  --color-zinc-950: #0b1020;
-  --color-slate-900: #111827;
+  /* ── AURORA IRIS palette ────────────────────────────────────────
+     Brand signal moved from terminal-green to a teal→iris→magenta
+     aurora spectrum. Semantic token NAMES are unchanged (emerald-*,
+     cyan-*, indigo-*) so every component re-colors coherently;
+     only their VALUES are retuned. Teal stays in the green family,
+     preserving "success" semantics across the dashboard. */
+  --color-zinc-950: #0b0d1d;
+  --color-slate-900: #11142a;
 
-  /* Emerald accent colors */
-  --color-emerald-500: #10b981;
-  --color-emerald-400: #34d399;
-  --color-emerald-50: #f0fdf4;
-  --color-emerald-100: #d1f2eb;
+  /* Signal scale (name kept: emerald-*) */
+  --color-emerald-500: #14b8a6;
+  --color-emerald-400: #2dd4bf;
+  --color-emerald-50: #ecfeff;
+  --color-emerald-100: #ccfbf1;
 
-  /* Cosmic theme colors */
-  --color-cosmic-navy: #05070c;
+  /* Cosmic environment */
+  --color-cosmic-navy: #04060f;
   --color-stellar-cyan: #22d3ee;
-  --color-nebula-purple: #818cf8;
-  --color-aurora-indigo: #6366f1;
+  --color-nebula-purple: #a78bfa;
+  --color-aurora-indigo: #818cf8;
   --color-comet-orange: #f97316;
 
   /* Terminal-specific semantic colors */
-  --color-terminal-bg: #0b1020;
-  --color-terminal-text: #e6edf7;
-  --color-terminal-border: rgb(148 163 184 / 0.14);
-  --color-glass-bg: rgba(11, 16, 32, 0.72);
-  --color-glass-border: rgb(148 163 184 / 0.12);
+  --color-terminal-bg: #0b0d1d;
+  --color-terminal-text: #e7ecff;
+  --color-terminal-border: rgb(148 155 195 / 0.14);
+  --color-glass-bg: rgba(11, 13, 29, 0.72);
+  --color-glass-border: rgb(148 155 195 / 0.12);
 
   /* Typography — Hind Siliguri covers Bengali glyphs across all stacks */
   --font-sans: var(--font-inter), var(--font-hind-siliguri), "Hind Siliguri", system-ui, sans-serif;
   --font-display: var(--font-space-grotesk), var(--font-inter), var(--font-hind-siliguri), system-ui, sans-serif;
   --font-mono: var(--font-jetbrains-mono), "Fira Code", Menlo, Consolas, var(--font-hind-siliguri), monospace;
 
-  /* Custom shadows — refined premium glow */
-  --shadow-neon-glow: 0 0 20px rgba(16, 185, 129, 0.12);
-  --shadow-glow: 0 0 24px rgba(16, 185, 129, 0.3);
-  --shadow-glow-sm: 0 0 20px rgba(16, 185, 129, 0.25);
-  --shadow-glow-lg: 0 12px 48px rgba(6, 214, 160, 0.14), 0 0 0 1px rgb(16 185 129 / 0.18);
-  --shadow-neon-glow-lg: 0 12px 48px rgba(6, 214, 160, 0.14), 0 0 0 1px rgb(16 185 129 / 0.18);
+  /* Custom shadows — aurora-tinted elevation */
+  --shadow-neon-glow: 0 0 20px rgba(45, 212, 191, 0.13);
+  --shadow-glow: 0 0 24px rgba(45, 212, 191, 0.32);
+  --shadow-glow-sm: 0 0 20px rgba(45, 212, 191, 0.26);
+  --shadow-glow-lg: 0 12px 48px rgba(129, 140, 248, 0.16), 0 0 0 1px rgb(45 212 191 / 0.18);
+  --shadow-neon-glow-lg: 0 12px 48px rgba(129, 140, 248, 0.16), 0 0 0 1px rgb(45 212 191 / 0.18);
   --shadow-card-hover:
-    0 16px 48px rgba(2, 6, 12, 0.6), 0 0 0 1px rgb(16 185 129 / 0.28),
-    0 0 80px rgb(6 214 160 / 0.08);
-  --shadow-glow-purple: 0 0 60px rgba(129, 140, 248, 0.16);
-  --shadow-panel: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 12px 40px rgba(2, 6, 12, 0.4);
+    0 16px 48px rgba(2, 4, 15, 0.62), 0 0 0 1px rgb(45 212 191 / 0.28),
+    0 0 80px rgb(167 139 250 / 0.09);
+  --shadow-glow-purple: 0 0 60px rgba(167, 139, 250, 0.17);
+  --shadow-panel: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 12px 40px rgba(2, 4, 15, 0.4);
 
   /* Border radius */
   --radius-terminal-square: 6px;
@@ -57,28 +62,28 @@
 }
 
 :root {
-  --background: #05070c;
-  --foreground: #e6edf7;
-  /* Semantic surfaces — dark default */
-  --surface: rgba(10, 15, 28, 0.74);
-  --surface-solid: #070a12;
-  --surface-raised: rgba(13, 20, 38, 0.9);
-  --surface-muted: rgba(20, 30, 50, 0.5);
-  --border-muted: rgb(148 163 184 / 0.13);
-  --border-strong: rgb(16 185 129 / 0.4);
-  --text-muted: #8b94a8;
+  --background: #04060f;
+  --foreground: #e7ecff;
+  /* Semantic surfaces — dark default, violet-leaning deep space */
+  --surface: rgba(12, 14, 30, 0.74);
+  --surface-solid: #070918;
+  --surface-raised: rgba(16, 19, 41, 0.9);
+  --surface-muted: rgba(24, 28, 54, 0.5);
+  --border-muted: rgb(148 155 195 / 0.13);
+  --border-strong: rgb(45 212 191 / 0.4);
+  --text-muted: #8f97b2;
 }
 
 html.light {
-  --background: #f5f9f7;
-  --foreground: #0f172a;
+  --background: #f4f7fc;
+  --foreground: #101431;
   --surface: rgba(255, 255, 255, 0.82);
   --surface-solid: #ffffff;
   --surface-raised: rgba(255, 255, 255, 0.96);
-  --surface-muted: rgba(209, 242, 235, 0.7);
-  --border-muted: rgb(6 95 70 / 0.16);
-  --border-strong: rgb(16 185 129 / 0.5);
-  --text-muted: #52606d;
+  --surface-muted: rgba(204, 251, 241, 0.65);
+  --border-muted: rgb(13 84 92 / 0.16);
+  --border-strong: rgb(20 184 166 / 0.5);
+  --text-muted: #4f5a76;
 }
 
 body {
@@ -95,7 +100,7 @@ body {
   letter-spacing: -0.02em;
 }
 
-/* Cosmic ambient background layer (fixed, GPU-friendly) */
+/* Cosmic ambient background layer (fixed, GPU-friendly) — aurora wash */
 .cosmic-bg {
   position: fixed;
   inset: 0;
@@ -103,9 +108,10 @@ body {
   pointer-events: none;
   overflow: hidden;
   background:
-    radial-gradient(ellipse 90% 60% at 50% -18%, rgb(16 185 129 / 0.13), transparent 62%),
-    radial-gradient(ellipse 55% 42% at 88% 4%, rgb(99 102 241 / 0.12), transparent 55%),
+    radial-gradient(ellipse 90% 60% at 50% -18%, rgb(20 184 166 / 0.14), transparent 62%),
+    radial-gradient(ellipse 55% 42% at 88% 4%, rgb(129 140 248 / 0.13), transparent 55%),
     radial-gradient(ellipse 45% 36% at 8% 62%, rgb(34 211 238 / 0.07), transparent 55%),
+    radial-gradient(ellipse 40% 34% at 78% 88%, rgb(232 121 249 / 0.05), transparent 58%),
     var(--background);
 }
 .cosmic-bg::before {
@@ -113,8 +119,8 @@ body {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgb(148 163 184 / 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(148 163 184 / 0.04) 1px, transparent 1px);
+    linear-gradient(rgb(148 155 195 / 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(148 155 195 / 0.04) 1px, transparent 1px);
   background-size: 64px 64px;
   mask-image: radial-gradient(ellipse 90% 68% at 50% 0%, black 8%, transparent 74%);
   -webkit-mask-image: radial-gradient(ellipse 90% 68% at 50% 0%, black 8%, transparent 74%);
@@ -123,11 +129,11 @@ body {
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse 50% 42% at 50% 112%, rgb(6 214 160 / 0.09), transparent 62%);
+  background: radial-gradient(ellipse 50% 42% at 50% 112%, rgb(167 139 250 / 0.09), transparent 62%);
 }
 html.light .cosmic-bg {
   background:
-    radial-gradient(ellipse 90% 60% at 50% -18%, rgb(16 185 129 / 0.15), transparent 62%),
+    radial-gradient(ellipse 90% 60% at 50% -18%, rgb(20 184 166 / 0.16), transparent 62%),
     radial-gradient(ellipse 55% 42% at 88% 4%, rgb(99 102 241 / 0.1), transparent 55%),
     var(--background);
 }
@@ -164,7 +170,7 @@ html {
 .cursor-blink::after {
   content: "_";
   animation: blink 1s infinite;
-  color: #10b981;
+  color: #2dd4bf;
 }
 
 /* Glassmorphism utility (theme-aware) */
@@ -219,10 +225,10 @@ html.light {
   --color-zinc-900: #ffffff;
 
   /* Accents — deepened for contrast on light surfaces */
-  --color-emerald-200: #047857;
-  --color-emerald-300: #047857;
-  --color-emerald-400: #047857;
-  --color-emerald-500: #059669;
+  --color-emerald-200: #0f766e;
+  --color-emerald-300: #0d9488;
+  --color-emerald-400: #0d9488;
+  --color-emerald-500: #0d9488;
   --color-cyan-400: #0e7490;
   --color-indigo-400: #4f46e5;
   --color-sky-400: #0369a1;
@@ -234,19 +240,19 @@ html.light {
   --color-amber-500: #b45309;
   --color-orange-400: #c2410c;
   --color-yellow-400: #a16207;
-  --color-violet-400: #6d28d9;
-  --color-fuchsia-400: #c026d3;
+  --color-violet-400: #7c3aed;
+  --color-fuchsia-400: #a21caf;
 }
 
 /* Gradient text (emerald → stellar cyan → indigo) */
 .text-gradient {
-  background: linear-gradient(100deg, #34d399 0%, #22d3ee 48%, #818cf8 100%);
+  background: linear-gradient(100deg, #2dd4bf 0%, #22d3ee 42%, #a78bfa 78%, #e879f9 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 html.light .text-gradient {
-  background: linear-gradient(100deg, #059669 0%, #0e7490 48%, #4f46e5 100%);
+  background: linear-gradient(100deg, #0d9488 0%, #0e7490 42%, #7c3aed 78%, #a21caf 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -261,7 +267,7 @@ html.light .text-gradient {
   font-size: 0.75rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: #34d399;
+  color: #2dd4bf;
 }
 
 /* Animated gradient border for primary CTAs */
@@ -275,7 +281,7 @@ html.light .text-gradient {
   inset: 0;
   border-radius: inherit;
   padding: 1.5px;
-  background: linear-gradient(120deg, #10b981, #22d3ee, #818cf8, #10b981);
+  background: linear-gradient(120deg, #14b8a6, #22d3ee, #a78bfa, #e879f9, #14b8a6);
   background-size: 300% 100%;
   animation: gradient-pan 6s linear infinite;
   -webkit-mask:
@@ -351,7 +357,7 @@ html.light .text-gradient {
   background: #fbbf24;
 }
 .dot.maximize {
-  background: #34d399;
+  background: #2dd4bf;
 }
 html.light .terminal-window-bar {
   background: rgb(2 6 12 / 0.04);
@@ -376,7 +382,7 @@ html.light .terminal-window-bar {
   border: 2px solid var(--surface-solid);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgb(16 185 129 / 0.45);
+  background: rgb(45 212 191 / 0.45);
 }
 
 /* Framer Motion reduced motion */
@@ -393,18 +399,18 @@ html.light .terminal-window-bar {
 
 /* Focus styles */
 *:focus-visible {
-  outline: 2px solid rgb(52 211 153 / 0.8);
+  outline: 2px solid rgb(45 212 191 / 0.85);
   outline-offset: 2px;
   border-radius: 3px;
 }
 
 /* Selection colors */
 ::selection {
-  background: rgb(16 185 129 / 0.32);
+  background: rgb(20 184 166 / 0.32);
   color: #fff;
 }
 html.light ::selection {
-  color: #052e16;
+  color: #042f2e;
 }
 
 /* Safe-area helpers for iOS notches / home indicator */
