@@ -124,6 +124,7 @@ uniform float uTime;
 uniform vec2 uMouse;      // aspect-corrected uv
 uniform float uMouseIn;   // eased presence 0..1
 
+// ── noise toolkit ──────────────────────────────────────────────
 float hash(vec2 p) {
   p = fract(p * vec2(123.34, 456.21));
   p += dot(p, p + 45.32);
@@ -152,46 +153,116 @@ float fbm(vec2 p) {
   return v;
 }
 
+// Ridged multifractal — sharp filament strands, the backbone of real
+// nebulosity (the same technique used for volumetric cloud/shader art).
+float ridge(vec2 p) {
+  float v = 0.0;
+  float amp = 0.55;
+  float prev = 1.0;
+  for (int i = 0; i < 5; i++) {
+    float n = noise(p);
+    n = 1.0 - abs(2.0 * n - 1.0);
+    n *= n;
+    v += amp * n * prev;
+    prev = n;
+    p = p * 2.07 + vec2(11.3, 5.7);
+    amp *= 0.52;
+  }
+  return v;
+}
+
+// ── procedural starfield ───────────────────────────────────────
+vec3 starLayer(vec2 uv, float scale, float thresh, float size, float t) {
+  vec2 g = uv * scale;
+  vec2 id = floor(g);
+  vec2 f = fract(g) - 0.5;
+  float h = hash(id);
+  if (h < thresh) return vec3(0.0);
+  vec2 off = (vec2(hash(id + 7.13), hash(id + 3.71)) - 0.5) * 0.72;
+  float d = length(f - off);
+  float tw = 0.68 + 0.32 * sin(t * (0.6 + h * 2.4) + h * 41.0);
+  float core = smoothstep(size, 0.0, d) * tw;
+  // The rare brightest stars get a four-point diffraction glint.
+  float glint = step(0.982, h) * (1.0 - smoothstep(0.0, 0.42, d));
+  vec2 gv = abs(f - off);
+  float cross_ = min(gv.x, gv.y);
+  cross_ = (1.0 - smoothstep(0.006, 0.10, cross_)) * glint;
+  return vec3(core + cross_) * smoothstep(thresh, 1.0, h);
+}
+
+// ── ACES-ish filmic grade ──────────────────────────────────────
+vec3 grade(vec3 x) {
+  x = clamp((x * (2.51 * x + 0.03)) / (x * (2.43 * x + 0.59) + 0.14), 0.0, 1.0);
+  float luma = dot(x, vec3(0.2126, 0.7152, 0.0722));
+  return clamp(mix(vec3(luma), x, 1.14), 0.0, 1.0); // gentle saturation lift
+}
+
 void main() {
   vec2 uv = vUv;
   float aspect = uRes.x / max(1.0, uRes.y);
-  vec2 p = vec2(uv.x * aspect, uv.y);
-  float t = uTime * 0.05;
+  vec2 p = vec2(uv.x * aspect, uv.y) * 2.15;
+  float t1 = uTime * 0.030;
+  float t2 = uTime * 0.017;
 
-  // Double domain-warp — the signature "living silk" motion.
-  vec2 q = vec2(fbm(p * 1.4 + t), fbm(p * 1.4 - t * 0.7));
+  // Double domain-warp for organic billow, then ridged filaments.
+  vec2 q = vec2(fbm(p * 1.15 + t1), fbm(p * 1.15 - t2 * 0.8 + 3.1));
   vec2 r = vec2(
-    fbm(p * 2.2 + q * 1.6 + vec2(1.7, 9.2) + t * 0.6),
-    fbm(p * 2.2 + q * 1.6 + vec2(8.3, 2.8) - t * 0.4)
+    fbm(p * 1.9 + q * 1.9 + vec2(1.7, 9.2) + t2),
+    fbm(p * 1.9 + q * 1.9 + vec2(8.3, 2.8) - t1 * 0.8)
   );
-  float f = fbm(p * 1.8 + r * 1.9);
+  float fil = ridge(p + r * 2.2);
+  float body = fbm(p * 0.85 + r * 1.35);
 
-  float curtain = pow(smoothstep(0.32, 0.95, f), 2.2);
+  // Density field: soft emission mass + bright filament skeleton.
+  float density = smoothstep(0.24, 0.82, body) * 0.8 + pow(fil, 2.6) * 1.15;
 
-  vec3 base    = vec3(0.016, 0.024, 0.062);  // deep space floor
-  vec3 teal    = vec3(0.075, 0.550, 0.500);
-  vec3 iris    = vec3(0.290, 0.270, 0.720);
-  vec3 magenta = vec3(0.620, 0.220, 0.680);
+  // ── emission palette (astrophotography-inspired) ─────────────
+  vec3 base     = vec3(0.012, 0.016, 0.048);  // void floor
+  vec3 crimson  = vec3(0.520, 0.110, 0.290);  // H-alpha emission
+  vec3 iris     = vec3(0.300, 0.240, 0.760);  // ambient violet cloud
+  vec3 teal     = vec3(0.100, 0.620, 0.580);  // OIII ridge light
+  vec3 magenta  = vec3(0.780, 0.260, 0.760);  // hot edge spark
+  vec3 gold     = vec3(1.000, 0.760, 0.420);  // star-forming cores
 
   vec3 col = base;
-  col += iris * curtain * 0.34;
-  col += teal * smoothstep(0.55, 0.95, r.x) * curtain * 0.40;
+  col += iris    * smoothstep(0.18, 0.70, body) * 0.34;
+  col += crimson * smoothstep(0.30, 0.78, body) * (0.30 + 0.55 * fil);
 
-  // Magenta whisper confined to the lower-right sky.
-  float region = smoothstep(0.35, 0.85, uv.x) * smoothstep(0.78, 0.22, uv.y);
-  col += magenta * smoothstep(0.58, 0.96, q.y) * curtain * region * 0.32;
+  // Teal oxygen light rides the sharpest filament crests…
+  float crest = pow(fil, 3.2);
+  col += teal * crest * smoothstep(0.40, 0.92, r.x) * 1.15;
+  // …with magenta sparks on counter-crests.
+  col += magenta * pow(fil, 3.0) * smoothstep(0.45, 0.95, r.y) * 0.95;
 
-  // Horizon breath along the top edge.
-  col += teal * exp(-uv.y * 3.2) * 0.10;
+  // Golden cores where mass AND structure peak together.
+  float core = smoothstep(0.58, 0.94, body) * smoothstep(0.50, 0.95, fil);
+  col += gold * core * 1.05;
+
+  // Dark dust lanes carve silhouettes through the emission.
+  float dust = smoothstep(0.44, 0.74, fbm(p * 1.55 - r * 1.5 + t1 * 1.4));
+  col *= mix(1.0, 0.30, dust * (1.0 - core * 0.8));
+
+  // Slow spectral breathing — the whole scene shifts mood over minutes.
+  col *= 1.0 + 0.06 * sin(uTime * 0.05 + body * 6.2831);
 
   // Pointer aura — ambient light gathers near the cursor.
-  float md = length(p - uMouse);
-  col += teal * exp(-md * md * 7.0) * 0.13 * uMouseIn;
-  col += iris * exp(-md * md * 2.6) * 0.06 * uMouseIn;
+  float md = length(p / 2.15 - uMouse);
+  col += teal * exp(-md * md * 6.0) * 0.16 * uMouseIn;
+  col += iris * exp(-md * md * 2.4) * 0.08 * uMouseIn;
 
-  // Vignette + film grain.
-  col *= 1.0 - 0.38 * pow(length(uv - 0.5) * 1.15, 2.4);
-  col += (hash(gl_FragCoord.xy + fract(uTime)) - 0.5) * 0.018;
+  // Starfield, partially occluded behind dust for depth.
+  float starMask = mix(1.0, 0.30, dust * 0.8);
+  vec2 suv = vec2(uv.x * aspect, uv.y); // square star cells
+  vec3 stars =
+      starLayer(suv, 90.0, 0.930, 0.045, uTime) * 0.55
+    + starLayer(suv + 31.7, 46.0, 0.955, 0.060, uTime * 1.3) * 0.95
+    + starLayer(suv + 57.1, 26.0, 0.972, 0.085, uTime * 0.8) * 1.35;
+  col += stars * starMask;
+
+  // Cinematic finish: vignette, grain, filmic tone-map.
+  col *= 1.0 - 0.30 * pow(length(uv - 0.5) * 1.18, 2.6);
+  col += (hash(gl_FragCoord.xy + fract(uTime)) - 0.5) * 0.016;
+  col = grade(col);
 
   frag = vec4(col, 1.0);
 }`;
