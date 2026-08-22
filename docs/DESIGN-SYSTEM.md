@@ -56,6 +56,20 @@ Shared primitives live in `frontend/components/ui/`:
   breathing animation, static under reduced motion.
 - File: `frontend/components/ui/AuroraOrb.tsx`.
 
+### MotionText
+- Word-mask reveal heading primitive (staggered rise, shared ease).
+- Reduced motion renders plain text immediately.
+- File: `frontend/components/ui/MotionText.tsx`.
+
+### KnowledgeField
+- Signature WebGL2 environment: 3D drifting "syllabus node" particle field.
+- Zero dependencies — hand-written shaders, single draw call, all motion in
+  the vertex shader (mod-wrap drift). Tiered counts (1600/3200/6000 by
+  viewport + pointer type), DPR ≤ 1.75, paused offscreen + hidden tab,
+  static single frame under reduced motion, full disposal on unmount.
+- Mounted as a `next/dynamic` `ssr:false` island in the hero only.
+- File: `frontend/components/visual/KnowledgeField.tsx`.
+
 ### ErrorBoundary
 - Class-based error boundary wrapping risky surfaces.
 - File: `frontend/components/ui/ErrorBoundary.tsx`.

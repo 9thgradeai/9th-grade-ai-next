@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import dynamic from "next/dynamic";
 import {
   motion,
   useInView,
@@ -14,8 +15,15 @@ import { trackHeroView, trackCtaClick } from "@/lib/analytics";
 import { FeedbackButton } from "./dashboard/FeedbackButton";
 import Button from "./ui/Button";
 import AuroraOrb from "./ui/AuroraOrb";
+import MotionText from "./ui/MotionText";
 import { transitions } from "@/lib/transitions";
 import { ArrowRight, ChevronDown, Sparkles, ShieldCheck, Lock, Zap } from "lucide-react";
+
+// Signature WebGL environment — lazy island, never in the server bundle,
+// self-pausing when offscreen/hidden (see component contract).
+const KnowledgeField = dynamic(() => import("./visual/KnowledgeField"), {
+  ssr: false,
+});
 
 type TerminalLine =
   | { type: "command"; text: string; delay: number }
@@ -180,7 +188,12 @@ export default function TerminalHero() {
 
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center pt-16 pb-20 px-4 overflow-hidden">
-      {/* Ambient aurora orbs — shared primitive, scroll parallax */}
+      {/* Layer 1 — the knowledge constellation (WebGL island) */}
+      <div className="absolute inset-0" aria-hidden="true">
+        <KnowledgeField />
+      </div>
+
+      {/* Layer 2 — aurora wash over the field */}
       <motion.div
         className="absolute -top-32 left-1/4"
         aria-hidden="true"
@@ -196,6 +209,8 @@ export default function TerminalHero() {
         <AuroraOrb colorClass="bg-indigo-500/10" size="34rem" duration={14} breatheTo={1.1} />
       </motion.div>
 
+      {/* Layer 3 — content */}
+
       <div className="relative max-w-7xl mx-auto w-full">
         {/* Hero Content */}
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
@@ -208,14 +223,15 @@ export default function TerminalHero() {
               </motion.span>
             </motion.div>
 
-            <motion.h1
-              variants={heroItem}
+            <h1
               className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-[4.25rem] font-semibold text-white leading-[1.05] tracking-tight mb-6"
             >
-              Master Competitive Exams with
+              <MotionText>Master Competitive Exams with</MotionText>
               <br />
-              <span className="text-gradient">AI-Driven Precision</span>
-            </motion.h1>
+              <span className="text-gradient">
+                <MotionText delay={0.35}>AI-Driven Precision</MotionText>
+              </span>
+            </h1>
 
             <motion.p
               variants={heroItem}

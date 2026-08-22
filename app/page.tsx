@@ -1,6 +1,7 @@
 import PublicShell from "@/components/public/PublicShell";
 import TerminalHero from "@/components/TerminalHero";
 import TrustStrip from "@/components/TrustStrip";
+import ProblemSection from "@/components/ProblemSection";
 import FeaturesGrid from "@/components/FeaturesGrid";
 import SyllabusExplorer from "@/components/SyllabusExplorer";
 import FinalCTA from "@/components/FinalCTA";
@@ -26,6 +27,7 @@ export default function Home() {
       />
       <TerminalHero />
       <TrustStrip />
+      <ProblemSection />
       <FeaturesGrid />
       <SyllabusExplorer />
       <FinalCTA />
