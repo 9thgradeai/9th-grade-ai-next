@@ -48,7 +48,6 @@ export class GroqProvider implements LLMProvider {
       throw new AppError(400, "The configured Groq model does not support images.", "MODEL_NO_VISION");
     }
 
-    const started = Date.now();
     const messages = toCoreMessages(req.messages);
     let text = "";
     let lastInputTokens: number | undefined;

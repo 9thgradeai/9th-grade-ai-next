@@ -3,7 +3,7 @@ import { validateLoginInput } from "~backend/validation";
 import { AppError, toHttpResponse } from "~backend/errors";
 import { findUserByEmail, verifyPassword } from "~backend/services/user";
 import { signSession, setSessionCookie } from "~backend/auth";
-import { assertLoginAllowed, LIMITS } from "~backend/rate-limit";
+import { assertLoginAllowed } from "~backend/rate-limit";
 import { getRequestId, startTiming, applySecurityHeaders } from "../../_middleware";
 
 export async function POST(request: Request) {

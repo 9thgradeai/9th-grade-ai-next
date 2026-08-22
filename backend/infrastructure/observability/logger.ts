@@ -32,6 +32,7 @@ function write(level: "info" | "warn" | "error", event: string, fields: LogField
     const line = JSON.stringify({ ts: new Date().toISOString(), level, event, ...safe });
     if (level === "error") console.error(line);
     else if (level === "warn") console.warn(line);
+    // eslint-disable-next-line no-console -- this module IS the sanctioned console gateway
     else console.log(line);
     return;
   }
@@ -41,6 +42,7 @@ function write(level: "info" | "warn" | "error", event: string, fields: LogField
   const line = `[${level.toUpperCase()}] ${event}${flat ? " " + flat : ""}`;
   if (level === "error") console.error(line);
   else if (level === "warn") console.warn(line);
+  // eslint-disable-next-line no-console -- this module IS the sanctioned console gateway
   else console.log(line);
 }
 

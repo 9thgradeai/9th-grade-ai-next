@@ -2,7 +2,7 @@
    Authenticated. Persists conversations. Uses the ModelRouter (Groq primary,
    Anthropic fallback, labelled mock). Real token streaming via the AI SDK. */
 
-import { AppError, UnauthorizedError, toHttpResponse } from "~backend/errors";
+import { UnauthorizedError, toHttpResponse } from "~backend/errors";
 import { getUserIdFromRequest } from "~backend/services/user";
 import { enforceAiQuotas } from "~backend/rate-limit";
 import { createTutorTurn } from "~backend/ai";

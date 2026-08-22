@@ -17,7 +17,6 @@ const BASE = __ENV.BASE || "http://localhost:3000";
 const EMAIL = __ENV.EMAIL || "demo@9thgrade.ai";
 const PASSWORD = __ENV.PASSWORD || "demo12345";
 
-const loginT = new Trend("login_ms");
 const questionsT = new Trend("questions_ms");
 const dashboardT = new Trend("dashboard_ms");
 const examBuildT = new Trend("exam_build_ms");
@@ -53,7 +52,7 @@ export function setup() {
   return { cookie: res.cookies.auth_token[0].value };
 }
 
-export default function (data) {
+export default async function k6Smoke(data) {
   const jar = http.cookieJar();
   jar.set(`${BASE}`, "auth_token", data.cookie);
 

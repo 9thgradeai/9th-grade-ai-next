@@ -23,7 +23,7 @@ export async function POST(request: Request) {
     await enforceAiQuotas(request, "assistant", userId);
 
     const body = await request.json().catch(() => ({}));
-    const { result, conversationId, provider, model } = await assistantTurn({
+    const { result, conversationId, model } = await assistantTurn({
       userId,
       request: body,
     });
