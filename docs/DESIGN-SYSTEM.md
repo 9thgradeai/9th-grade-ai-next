@@ -77,17 +77,32 @@ Shared primitives live in `frontend/components/ui/`:
   reconstruction pulse re-activates them. Opening sequence: emergence → first
   hub cascade (~3.6s) → idle events every 4–8s (never identical loops).
 - Zero dependencies — hand-written GLSL ES 3.00 with explicit attribute
-  locations; 3 draw calls (lines / instanced somas / points); premultiplied-
-  over blending; depth + layer attenuation for cinematic parallax.
-- Tiered budgets (desktop/tablet/mobile): neuron counts, particle counts,
-  DPR caps (1.75/1.4/1.25), fiber width scale; pointer parallax (±3°) on fine
-  pointers only; paused offscreen + hidden tab; static composed frame under
-  reduced motion; full disposal on unmount.
+  locations; ≤5 draw calls (lines / instanced somas / neural points /
+  ambient motes / dynamic traveler points); premultiplied-over blending;
+  depth + layer attenuation for cinematic parallax.
+- **Centralized config** (`config.ts`): named quality presets
+  (ultra/high/medium/low) with node/particle budgets + DPR caps, per-tier
+  geometry, content-safe zone, activation timing — no magic numbers in the
+  renderer. `PerformanceManager` adapts level via frame-time EMA with
+  hysteresis (downgrade ≈2s sustained pressure, upgrade only after a ~6s
+  healthy stretch); downgrades scale resolution/effects, never pop geometry.
+- **Energy travelers**: warm amber vesicles ride the actual bezier fibers
+  during cascades (the palette's reserved warm highlight); ambient depth
+  motes are a separate dim layer, hidden at low quality.
+- Pointer parallax (±3°) on fine pointers only; paused offscreen + hidden
+  tab; static composed frame under reduced motion; full disposal on unmount.
+- **Static SVG fallback** (`NeuralFallback.tsx`): deterministic procedural
+  constellation rendered when WebGL is unavailable or init fails.
+- Dev-only diagnostics: boot line (counts, gen/compile/init timings,
+  quality), adaptive-level changes, `window.__NEURAL_DEBUG` hook.
 - Framer Motion owns hero orchestration: scene entrance fade, scroll-linked
   opacity/translate/scale (+ blur on capable desktops).
 - Mounted as a `next/dynamic` `ssr:false` island in the hero only.
 - Files: `frontend/components/visual/neural/` (`NeuralScene.tsx`,
-  `neuralGenerator.ts`, `activationSystem.ts`, `shaders.ts`, `seededRandom.ts`).
+  `neuralGenerator.ts`, `activationSystem.ts`, `shaders.ts`, `config.ts`,
+  `performance-manager.ts`, `NeuralFallback.tsx`, `seededRandom.ts`).
+  Unit tests: `tests/unit/frontend/neural-{config,generator,fallback}*.test.*`,
+  `performance-manager.test.ts`.
 
 ### ErrorBoundary
 - Class-based error boundary wrapping risky surfaces.

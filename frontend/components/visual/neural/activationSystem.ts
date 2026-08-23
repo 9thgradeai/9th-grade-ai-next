@@ -1,5 +1,6 @@
 import { mulberry32, type Rng } from "./seededRandom";
 import type { Network } from "./neuralGenerator";
+import { ACTIVATION } from "./config";
 
 interface ScheduledFire {
   t: number;
@@ -8,18 +9,27 @@ interface ScheduledFire {
   hops: number;
 }
 
-const MAX_PULSES = 6;
-const MAX_DISSOLVES = 4;
-const CONDUCTION_SPEED = 0.24;
-const ACT_DECAY_TAU = 1.7;
-const INTRO_GLOW_START = 3.1;
-const INTRO_FIRE_AT = 3.95;
-const DIRECTOR_START = 6.4;
+interface Traveler {
+  pathIdx: number;
+  forward: boolean;
+  t0: number;
+  t1: number;
+}
+
+const MAX_PULSES = ACTIVATION.maxPulses;
+const MAX_DISSOLVES = ACTIVATION.maxDissolves;
+const MAX_TRAVELERS = ACTIVATION.maxTravelers;
+const CONDUCTION_SPEED = ACTIVATION.conductionSpeed;
+const ACT_DECAY_TAU = ACTIVATION.actDecayTau;
+const INTRO_GLOW_START = ACTIVATION.introGlowStart;
+const INTRO_FIRE_AT = ACTIVATION.introFireAt;
+const DIRECTOR_START = ACTIVATION.directorStart;
 
 export class ActivationDirector {
   readonly act: Float32Array;
   private scheduled: ScheduledFire[] = [];
   private dueBuf: ScheduledFire[] = [];
+  private travelers: Traveler[] = [];
   private cooldownUntil: Float32Array;
   private pulses: { src: [number, number, number]; r: number; start: number; speed: number; life: number; strength: number }[] = [];
   private dissolves: {
@@ -31,7 +41,7 @@ export class ActivationDirector {
     release: number;
     cascaded: boolean;
   }[] = [];
-  private nextEventAt = DIRECTOR_START;
+  private nextEventAt: number = DIRECTOR_START;
   private lastRegionSeedPos: [number, number, number] = [999, 999, 999];
   private introDone = false;
   private simT = 0;
@@ -85,6 +95,14 @@ export class ActivationDirector {
       if (t < this.cooldownUntil[f.id]) continue;
       this.fire(f.id, t, f.strength, f.hops);
     }
+
+    // travelers: advance + compact (spec §10)
+    w = 0;
+    for (let i = 0; i < this.travelers.length; i++) {
+      const tr = this.travelers[i];
+      if (t < tr.t1) this.travelers[w++] = tr;
+    }
+    this.travelers.length = w;
 
     w = 0;
     for (let i = 0; i < this.pulses.length; i++) {
@@ -151,6 +169,34 @@ export class ActivationDirector {
     return count;
   }
 
+  fillTravelerUniforms(
+    posArr: Float32Array,
+    dimArr: Float32Array,
+    sizeArr: Float32Array,
+    t: number,
+  ): number {
+    const { neurons, paths } = this.network;
+    const count = Math.min(this.travelers.length, MAX_TRAVELERS);
+    for (let i = 0; i < count; i++) {
+      const tr = this.travelers[i];
+      const path = paths[tr.pathIdx];
+      if (!path) continue;
+      const a = neurons[path.ia].pos;
+      const b = neurons[path.ib].pos;
+      const uRaw = (t - tr.t0) / Math.max(tr.t1 - tr.t0, 1e-4);
+      const u = tr.forward ? Math.min(Math.max(uRaw, 0), 1) : 1 - Math.min(Math.max(uRaw, 0), 1);
+      const v = 1 - u;
+      posArr[i * 3] = v * v * a[0] + 2 * v * u * path.mid[0] + u * u * b[0];
+      posArr[i * 3 + 1] = v * v * a[1] + 2 * v * u * path.mid[1] + u * u * b[1];
+      posArr[i * 3 + 2] = v * v * a[2] + 2 * v * u * path.mid[2] + u * u * b[2];
+      // envelope: quick attack, gentle fade — reads as a glowing vesicle
+      const env = Math.sin(Math.min(Math.max(uRaw, 0), 1) * Math.PI);
+      dimArr[i] = 1.45 + env * 0.75;
+      sizeArr[i] = 2.6 + env * 1.1;
+    }
+    return count;
+  }
+
   private fire(id: number, t: number, strength: number, hops: number): void {
     if (strength < 0.22) return;
     this.act[id] = Math.min(1.2, Math.max(this.act[id], strength));
@@ -161,12 +207,25 @@ export class ActivationDirector {
       for (const nb of this.network.neighbors[id]) {
         const np = this.network.neurons[nb].pos;
         const d = Math.hypot(pos[0] - np[0], pos[1] - np[1], pos[2] - np[2]);
+        const arriveAt = t + d / CONDUCTION_SPEED * 0.5 + this.rng() * 0.14;
         this.scheduled.push({
-          t: t + d / CONDUCTION_SPEED * 0.5 + this.rng() * 0.14,
+          t: arriveAt,
           id: nb,
           strength: strength * (0.72 + this.rng() * 0.18),
           hops: hops - 1,
         });
+        // energy vesicle travels the actual fiber (spec §10)
+        if (this.travelers.length < MAX_TRAVELERS) {
+          const pk = this.network.pathLookup.get(`${Math.min(id, nb)}:${Math.max(id, nb)}`);
+          if (pk !== undefined) {
+            this.travelers.push({
+              pathIdx: pk,
+              forward: id < nb,
+              t0: t,
+              t1: arriveAt,
+            });
+          }
+        }
       }
     }
 

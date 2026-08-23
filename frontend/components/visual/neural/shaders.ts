@@ -26,12 +26,12 @@ float vnoise(vec3 p){
 }
 vec3 hueFamily(float s){
   float h = fract(s * 0.6180339887 + 0.123);
-  vec3 aurora = vec3(0.30, 0.88, 0.78);
-  vec3 iris   = vec3(0.62, 0.55, 1.00);
-  vec3 solar  = vec3(1.00, 0.72, 0.38);
-  if(h < 0.42) return mix(aurora, iris, smoothstep(0.10, 0.42, h));
-  if(h < 0.74) return mix(iris, solar, smoothstep(0.42, 0.74, h));
-  return mix(solar, aurora, smoothstep(0.74, 1.05, h));
+  vec3 azure  = vec3(0.42, 0.68, 1.00);
+  vec3 violet = vec3(0.60, 0.54, 1.00);
+  vec3 teal   = vec3(0.34, 0.84, 0.80);
+  if(h < 0.40) return mix(azure, violet, smoothstep(0.08, 0.40, h));
+  if(h < 0.72) return mix(violet, teal, smoothstep(0.40, 0.72, h));
+  return mix(teal, azure, smoothstep(0.72, 1.05, h));
 }
 float fbm(vec3 p){
   float a = 0.5;
@@ -56,7 +56,7 @@ const DISSOLVE_BLOCK = `
     }
     float cut = dis * 1.35 - dn * 0.5;
     alpha *= smoothstep(0.02, 0.34, 1.0 - cut);
-    col += vec3(1.00, 0.80, 0.52) * smoothstep(0.26, 0.5, cut) * smoothstep(0.64, 0.5, cut) * 0.45;
+    col += vec3(0.70, 0.82, 1.00) * smoothstep(0.26, 0.5, cut) * smoothstep(0.64, 0.5, cut) * 0.45;
   }
 `;
 
@@ -280,6 +280,7 @@ void main(){
 export const PARTICLE_FS = GLSL_VERSION + `
 precision highp float;
 precision highp int;
+uniform float uAmbient;
 in vec3 vWorld;
 in float vSeed;
 in float vDim;
@@ -288,13 +289,16 @@ out vec4 frag;
 ` + GLSL_LIB + `
 void main(){
   float birth = smoothstep(0.8 + vSeed * 2.2, 1.9 + vSeed * 2.2, uTime);
-  float tw = 0.55 + 0.45 * sin(uTime * (0.6 + fract(vSeed * 3.1) * 1.6) + vSeed * 40.0);
+  float speedMix = mix(1.0, 0.55, uAmbient);
+  float tw = 0.55 + 0.45 * sin(uTime * (0.6 + fract(vSeed * 3.1) * 1.6) * speedMix + vSeed * 40.0);
   vec2 pc = gl_PointCoord * 2.0 - 1.0;
   float d = length(pc);
   float disc = smoothstep(1.0, 0.15, d);
   vec3 tint = hueFamily(vSeed * 1.37);
-  vec3 col = tint * (0.55 + 0.55 * tw);
-  float alpha = disc * 0.34 * vDim * tw * birth;
+  // dim > ~1.4 marks energy travelers — warm highlight (spec §33)
+  float warm = smoothstep(1.3, 1.7, vDim);
+  vec3 col = mix(tint, vec3(1.00, 0.74, 0.42), warm) * (0.55 + 0.55 * tw) * (1.0 + warm * 1.15);
+  float alpha = disc * 0.34 * min(vDim, 1.35) * tw * birth;
 ` + DISSOLVE_BLOCK + `
   frag = vec4(col * alpha, alpha);
 }

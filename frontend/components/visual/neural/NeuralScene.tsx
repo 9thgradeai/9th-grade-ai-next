@@ -1,24 +1,16 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ActivationDirector } from "./activationSystem";
+import { PerformanceManager } from "./performance-manager";
 import {
-  generateNetwork,
-  MAX_NEURONS,
-  type Network,
-  type SceneTier,
-} from "./neuralGenerator";
+  ACTIVATION,
+  QUALITY_PRESETS,
+  TIER_START_QUALITY,
+  resolveConfig,
+  type HeroQuality,
+} from "./config";
+import { generateNetwork, MAX_NEURONS, type Network, type SceneTier } from "./neuralGenerator";
 import { LINE_FS, LINE_VS, PARTICLE_FS, PARTICLE_VS, SOMA_FS, SOMA_VS } from "./shaders";
-
-interface TierRuntime {
-  dpr: number;
-  widthScale: number;
-  globalAlpha: number;
-}
-
-const TIER_RUNTIME: Record<SceneTier, TierRuntime> = {
-  desktop: { dpr: 1.75, widthScale: 1.35, globalAlpha: 1 },
-  tablet: { dpr: 1.4, widthScale: 1.05, globalAlpha: 0.95 },
-  mobile: { dpr: 1.25, widthScale: 1.0, globalAlpha: 1 },
-};
+import NeuralFallback from "./NeuralFallback";
 
 function detectTier(): SceneTier {
   if (typeof window === "undefined") return "desktop";
@@ -42,6 +34,19 @@ function perspectiveInto(out: Mat4, fovY: number, aspect: number, near: number, 
   out[14] = (2 * far * near) / (near - far);
 }
 
+const TMP_A: Mat4 = new Float32Array(16);
+const TMP_B: Mat4 = new Float32Array(16);
+const TMP_PIVOT_NEG: Mat4 = (() => {
+  const m = new Float32Array([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
+  m[12] = -0.3; m[13] = -0.04;
+  return m;
+})();
+const TMP_PIVOT_POS: Mat4 = (() => {
+  const m = new Float32Array([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
+  m[12] = 0.3; m[13] = 0.04;
+  return m;
+})();
+
 function viewMatrixInto(out: Mat4, yaw: number, pitch: number, camZ: number): void {
   const cy = Math.cos(yaw);
   const sy = Math.sin(yaw);
@@ -60,19 +65,6 @@ function viewMatrixInto(out: Mat4, yaw: number, pitch: number, camZ: number): vo
   multiplyInto(out, TMP_PIVOT_POS, TMP_B);
 }
 
-const TMP_A: Mat4 = new Float32Array(16);
-const TMP_B: Mat4 = new Float32Array(16);
-const TMP_PIVOT_NEG: Mat4 = (() => {
-  const m = new Float32Array([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
-  m[12] = -0.3; m[13] = -0.04;
-  return m;
-})();
-const TMP_PIVOT_POS: Mat4 = (() => {
-  const m = new Float32Array([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
-  m[12] = 0.3; m[13] = 0.04;
-  return m;
-})();
-
 function multiplyInto(o: Mat4, a: Mat4, b: Mat4): void {
   for (let c = 0; c < 4; c++) {
     const b0 = b[c * 4], b1 = b[c * 4 + 1], b2 = b[c * 4 + 2], b3 = b[c * 4 + 3];
@@ -88,30 +80,48 @@ interface ProgramBundle {
   uniforms: Record<string, WebGLUniformLocation | null>;
 }
 
+// eslint-disable-next-line no-restricted-globals
+const IS_DEV = process.env.NODE_ENV !== "production";
+
 export default function NeuralScene() {
   const hostRef = useRef<HTMLDivElement>(null);
+  const [fallback, setFallback] = useState(false);
 
   useEffect(() => {
     const host = hostRef.current;
-    if (!host) return;
+    if (!host || fallback) return;
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduced) {
       console.warn("[NeuralScene] reduced-motion preference active — rendering static composition");
     }
+
     let cleanup: (() => void) | undefined;
+    const tInitStart = performance.now();
     try {
       cleanup = init();
     } catch (err) {
       console.warn("[NeuralScene] init crashed", err);
     }
+    if (!cleanup) {
+      console.warn("[NeuralScene] WebGL initialization failed — static artwork fallback");
+      queueMicrotask(() => setFallback(true));
+      return;
+    }
     return cleanup;
 
     function init(): (() => void) | undefined {
-    if (!host) return;
+    if (!host) return undefined;
     const tier = detectTier();
-    const runtime = TIER_RUNTIME[tier];
-    const network: Network = generateNetwork(tier);
+    const startQuality = TIER_START_QUALITY[tier];
+    const cfg = resolveConfig(tier, startQuality);
+    if (!cfg) return undefined;
+    const perf = reduced ? null : new PerformanceManager(startQuality);
+    let level = startQuality;
+
+    const tGenStart = performance.now();
+    const network: Network = generateNetwork(cfg);
+    const genMs = performance.now() - tGenStart;
 
     const canvas = document.createElement("canvas");
     canvas.style.cssText = "position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none;";
@@ -127,7 +137,7 @@ export default function NeuralScene() {
     if (!gl) {
       console.warn("[NeuralScene] WebGL2 unavailable — CSS atmosphere only");
       canvas.remove();
-      return;
+      return undefined;
     }
 
     let disposed = false;
@@ -173,6 +183,7 @@ export default function NeuralScene() {
       return { program, uniforms };
     };
 
+    const tCompileStart = performance.now();
     const lineB = bundle(LINE_VS, LINE_FS, [
       "uVP", "uModel", "uRes", "uWidthScale", "uTime",
       "uAct", "uPulseCount", "uPulseSrc", "uPulseR", "uPulseI",
@@ -184,14 +195,15 @@ export default function NeuralScene() {
       "uDisCount", "uDisC", "uDisR", "uDisS",
     ]);
     const partB = bundle(PARTICLE_VS, PARTICLE_FS, [
-      "uVP", "uModel", "uRes", "uTime",
+      "uVP", "uModel", "uRes", "uTime", "uAmbient",
       "uAct", "uPulseCount", "uPulseSrc", "uPulseR", "uPulseI",
       "uDisCount", "uDisC", "uDisR", "uDisS",
     ]);
+    const compileMs = performance.now() - tCompileStart;
 
     if (!lineB || !somaB || !partB) {
       canvas.remove();
-      return;
+      return undefined;
     }
 
     const actData = new Float32Array(MAX_NEURONS);
@@ -208,6 +220,7 @@ export default function NeuralScene() {
     const RIGHT: [number, number, number] = [1, 0, 0];
     const UP: [number, number, number] = [0, 1, 0];
 
+    // ── geometry upload ─────────────────────────────────────────
     const segsPerVertFloats = 11;
     const lineVerts = network.segs.length * 4;
     const lineData = new Float32Array(lineVerts * segsPerVertFloats);
@@ -259,9 +272,12 @@ export default function NeuralScene() {
       somaData[o + 7] = n.birth;
     });
 
-    const particleCount = network.particles.length;
-    const particleData = new Float32Array(particleCount * 7);
-    network.particles.forEach((p, i) => {
+    // neural fragments first, ambient motes after — one VBO, ranged draws
+    const neuralCount = network.particles.length;
+    const ambientCount = network.ambient.length;
+    const totalCount = neuralCount + ambientCount;
+    const particleData = new Float32Array(totalCount * 7);
+    const writeParticle = (i: number, p: { pos: [number, number, number]; size: number; seed: number; amp: number; dim: number }) => {
       const o = i * 7;
       particleData[o] = p.pos[0];
       particleData[o + 1] = p.pos[1];
@@ -270,7 +286,20 @@ export default function NeuralScene() {
       particleData[o + 4] = p.seed;
       particleData[o + 5] = p.amp;
       particleData[o + 6] = p.dim;
-    });
+    };
+    network.particles.forEach((p, i) => writeParticle(i, p));
+    network.ambient.forEach((m, k) => writeParticle(neuralCount + k, m));
+
+    // energy travelers: small per-frame dynamic buffer (spec §10)
+    const MAX_TRAVELERS = ACTIVATION.maxTravelers;
+    const travelerData = new Float32Array(MAX_TRAVELERS * 7);
+    for (let i = 0; i < MAX_TRAVELERS; i++) {
+      travelerData[i * 7 + 4] = (i * 0.6180339887) % 1;
+      travelerData[i * 7 + 5] = 0;
+    }
+    const travelerPos = new Float32Array(MAX_TRAVELERS * 3);
+    const travelerDim = new Float32Array(MAX_TRAVELERS);
+    const travelerSize = new Float32Array(MAX_TRAVELERS);
 
     const makeVao = (
       data: Float32Array,
@@ -322,7 +351,6 @@ export default function NeuralScene() {
       gl.bufferData(gl.ARRAY_BUFFER, corners, gl.STATIC_DRAW);
       gl.enableVertexAttribArray(0);
       gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
-      gl.vertexAttribDivisor(7, 0);
       const vbo = gl.createBuffer();
       if (!vbo) return null;
       gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
@@ -334,14 +362,33 @@ export default function NeuralScene() {
         gl.vertexAttribDivisor(loc, 1);
         off += size * 4;
       });
+      gl.vertexAttribDivisor(0, 0);
       gl.bindVertexArray(null);
       return [vao, vbo] as const;
     })();
     const partVao = makeVao(particleData, partLayout);
 
-    if (!lineVao || !somaVaoPair || !partVao) {
+    const travelerVaoPair = (() => {
+      const vao = gl.createVertexArray();
+      if (!vao) return null;
+      const vbo = gl.createBuffer();
+      if (!vbo) return null;
+      gl.bindVertexArray(vao);
+      gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+      gl.bufferData(gl.ARRAY_BUFFER, travelerData, gl.DYNAMIC_DRAW);
+      let off = 0;
+      partLayout.forEach(([loc, size]) => {
+        gl.enableVertexAttribArray(loc);
+        gl.vertexAttribPointer(loc, size, gl.FLOAT, false, 28, off);
+        off += size * 4;
+      });
+      gl.bindVertexArray(null);
+      return [vao, vbo] as const;
+    })();
+
+    if (!lineVao || !somaVaoPair || !partVao || !travelerVaoPair) {
       canvas.remove();
-      return;
+      return undefined;
     }
 
     const director = new ActivationDirector(network, reduced);
@@ -355,13 +402,14 @@ export default function NeuralScene() {
     };
     measure();
 
-    // Adaptive quality: keeps frame time inside the refresh budget on
-    // high-refresh (90/120Hz) and low-power displays alike.
-    let quality = 1;
+    const dprCap = QUALITY_PRESETS[level].maxDpr;
+    const widthScale = QUALITY_PRESETS[level].widthScale;
+
     const resize = () => {
+      const relScale = QUALITY_PRESETS[level].resScale / QUALITY_PRESETS.ultra.resScale;
       const rawDpr =
-        Math.min(window.devicePixelRatio || 1, runtime.dpr) *
-        quality *
+        Math.min(window.devicePixelRatio || 1, dprCap) *
+        relScale *
         (tier === "mobile" ? 0.92 : 1);
       const pw = Math.floor(hostW * rawDpr);
       const ph = Math.floor(hostH * rawDpr);
@@ -442,7 +490,7 @@ export default function NeuralScene() {
       setShared(lineB);
       gl.uniformMatrix4fv(lineB.uniforms.uModel, false, IDENTITY);
       gl.uniform2f(lineB.uniforms.uRes, resW, resH);
-      gl.uniform1f(lineB.uniforms.uWidthScale, runtime.widthScale);
+      gl.uniform1f(lineB.uniforms.uWidthScale, widthScale);
       gl.bindVertexArray(lineVao[0]);
       gl.drawElements(gl.TRIANGLES, network.segs.length * 6, gl.UNSIGNED_INT, 0);
 
@@ -458,8 +506,36 @@ export default function NeuralScene() {
       setShared(partB);
       gl.uniformMatrix4fv(partB.uniforms.uModel, false, IDENTITY);
       gl.uniform2f(partB.uniforms.uRes, resW, resH);
+
+      // cellular fragments
+      gl.uniform1f(partB.uniforms.uAmbient, 0);
       gl.bindVertexArray(partVao[0]);
-      gl.drawArrays(gl.POINTS, 0, particleCount);
+      gl.drawArrays(gl.POINTS, 0, neuralCount);
+
+      // ambient depth motes (skipped at low quality)
+      if (level !== "low" && !reduced) {
+        gl.uniform1f(partB.uniforms.uAmbient, 1);
+        gl.drawArrays(gl.POINTS, neuralCount, ambientCount);
+      }
+
+      // energy vesicles riding fibers (spec §10)
+      if (level !== "low") {
+        const tc = director.fillTravelerUniforms(travelerPos, travelerDim, travelerSize, simT);
+        if (tc > 0) {
+          for (let i = 0; i < tc; i++) {
+            const o = i * 7;
+            travelerData[o] = travelerPos[i * 3];
+            travelerData[o + 1] = travelerPos[i * 3 + 1];
+            travelerData[o + 2] = travelerPos[i * 3 + 2];
+            travelerData[o + 3] = travelerSize[i];
+            travelerData[o + 6] = travelerDim[i];
+          }
+          gl.bindVertexArray(travelerVaoPair[0]);
+          gl.bindBuffer(gl.ARRAY_BUFFER, travelerVaoPair[1]);
+          gl.bufferSubData(gl.ARRAY_BUFFER, 0, travelerData, 0, tc * 7);
+          gl.drawArrays(gl.POINTS, 0, tc);
+        }
+      }
 
       gl.bindVertexArray(null);
     };
@@ -474,20 +550,23 @@ export default function NeuralScene() {
       lastNow = now;
       if (!running || disposed || document.hidden || !inView) return;
 
-      // Frame-time governor: adapt canvas resolution so high-refresh
-      // displays hold their native cadence instead of dropping frames.
-      emaFrameMs = emaFrameMs * 0.92 + Math.min(rawDt, 50) * 0.08;
-      if (++framesSinceEval >= 45) {
-        framesSinceEval = 0;
-        if (emaFrameMs > 13 && quality > 0.66) quality = Math.max(0.66, quality - 0.12);
-        else if (emaFrameMs < 7 && quality < 1) quality = Math.min(1, quality + 0.08);
-      }
-
       simT += dt;
       curX += (mouseX - curX) * 0.045;
       curY += (mouseY - curY) * 0.045;
       director.update(simT, dt);
       render();
+
+      if (perf) {
+        emaFrameMs = emaFrameMs * 0.92 + Math.min(rawDt, 50) * 0.08;
+        if (++framesSinceEval >= 45) {
+          framesSinceEval = 0;
+          const next = perf.report(emaFrameMs);
+          if (next && next !== level) {
+            level = next;
+            if (IS_DEV) console.info(`[NeuralScene] adaptive quality → ${level} (ema ${emaFrameMs.toFixed(1)}ms)`);
+          }
+        }
+      }
     };
 
     const ro = new ResizeObserver(() => {
@@ -499,22 +578,9 @@ export default function NeuralScene() {
     if (reduced) {
       simT = 30;
       render();
-      console.info(`[NeuralScene] static composition · ${network.neurons.length} neurons`);
-      return () => {
-        ro.disconnect();
-        io.disconnect();
-        disposed = true;
-        cancelAnimationFrame(rafId);
-        const ext0 = gl.getExtension("WEBGL_lose_context");
-        ext0?.loseContext();
-        canvas.remove();
-      };
-    }
-
-    if (reduced) {
-      simT = 30;
-      render();
-      console.info(`[NeuralScene] static composition · ${network.neurons.length} neurons`);
+      if (IS_DEV) {
+        console.info(`[NeuralScene] static · init ${(performance.now() - tInitStart).toFixed(1)}ms · neurons ${network.neurons.length}`);
+      }
       return () => {
         ro.disconnect();
         io.disconnect();
@@ -537,9 +603,19 @@ export default function NeuralScene() {
     });
     rafId = requestAnimationFrame(frame);
 
+    const initMs = performance.now() - tInitStart;
     console.info(
-      `[NeuralScene] tier:${tier} neurons:${network.neurons.length} fibers:${network.segs.length} particles:${particleCount}`,
+      `[NeuralScene] tier:${tier} quality:${level} neurons:${network.neurons.length} ` +
+      `fibers:${network.segs.length} particles:${totalCount}(+${ambientCount} ambient) paths:${network.paths.length} ` +
+      `dprCap:${dprCap} · gen:${genMs.toFixed(1)}ms compile:${compileMs.toFixed(1)}ms init:${initMs.toFixed(1)}ms`,
     );
+    if (IS_DEV) {
+      (window as unknown as Record<string, unknown>).__NEURAL_DEBUG = {
+        tier, level: () => level, ema: () => emaFrameMs,
+        neurons: network.neurons.length, segs: network.segs.length,
+        particles: totalCount, initMs,
+      };
+    }
 
     return () => {
       disposed = true;
@@ -552,9 +628,14 @@ export default function NeuralScene() {
       const ext = gl.getExtension("WEBGL_lose_context");
       ext?.loseContext();
       canvas.remove();
+      if (IS_DEV) delete (window as unknown as Record<string, unknown>).__NEURAL_DEBUG;
     };
     }
-  }, []);
+  }, [fallback]);
 
-  return <div ref={hostRef} className="absolute inset-0 overflow-hidden" />;
+  return (
+    <div className="absolute inset-0 overflow-hidden">
+      {fallback ? <NeuralFallback /> : <div ref={hostRef} className="absolute inset-0" />}
+    </div>
+  );
 }

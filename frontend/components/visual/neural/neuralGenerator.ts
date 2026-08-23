@@ -1,4 +1,5 @@
 import { gauss, mulberry32, randUnit, range, type Rng } from "./seededRandom";
+import { ACTIVATION, type ResolvedNeuralConfig } from "./config";
 
 export type SceneTier = "mobile" | "tablet" | "desktop";
 
@@ -27,6 +28,20 @@ export interface LineSeg {
   seed: number;
 }
 
+export interface AmbientMote {
+  pos: [number, number, number];
+  size: number;
+  seed: number;
+  amp: number;
+  dim: number;
+}
+
+export interface ConnectionPath {
+  ia: number;
+  ib: number;
+  mid: [number, number, number];
+}
+
 export interface Network {
   neurons: Neuron[];
   segs: LineSeg[];
@@ -39,68 +54,22 @@ export interface Network {
     amp: number;
     dim: number;
   }[];
+  /** depth-only environmental motes (spec §13) */
+  ambient: AmbientMote[];
+  /** quadratic-bezier control points for energy travelers (spec §10) */
+  paths: ConnectionPath[];
+  pathLookup: Map<string, number>;
 }
 
-interface TierConfig {
-  mg: number;
-  bg: number;
-  fg: number;
-  connDist: number;
-  maxConn: number;
-  particles: number;
-  centerX: number;
-  centerY: number;
-  spreadX: number;
-  spreadY: number;
-  spreadZ: number;
-}
-
-export const TIER_CONFIG: Record<SceneTier, TierConfig> = {
-  desktop: {
-    mg: 132,
-    bg: 40,
-    fg: 16,
-    connDist: 0.125,
-    maxConn: 3,
-    particles: 620,
-    centerX: 0.6,
-    centerY: 0.04,
-    spreadX: 0.5,
-    spreadY: 0.44,
-    spreadZ: 0.34,
-  },
-  tablet: {
-    mg: 92,
-    bg: 28,
-    fg: 12,
-    connDist: 0.135,
-    maxConn: 3,
-    particles: 420,
-    centerX: 0.5,
-    centerY: 0.06,
-    spreadX: 0.4,
-    spreadY: 0.4,
-    spreadZ: 0.32,
-  },
-  mobile: {
-    mg: 56,
-    bg: 16,
-    fg: 8,
-    connDist: 0.16,
-    maxConn: 2,
-    particles: 260,
-    centerX: 0.02,
-    centerY: 0.1,
-    spreadX: 0.26,
-    spreadY: 0.34,
-    spreadZ: 0.28,
-  },
-};
-
-export function generateNetwork(tier: SceneTier, seed = 20260823): Network {
-  const cfg = TIER_CONFIG[tier];
+export function generateNetwork(cfg: ResolvedNeuralConfig, seed = 20260823): Network {
   const rng = mulberry32(seed);
+  const { preset, geometry } = cfg;
   const neurons: Neuron[] = [];
+
+  // Content-safe zone (spec §4): structures never extend further left than
+  // center − spread·safeFrac; violators mirror to the right side.
+  const minXFracByTier: Record<SceneTier, number> = { desktop: 0.38, tablet: 0.3, mobile: 1 };
+  const minX = geometry.centerX - geometry.spreadX * minXFracByTier[cfg.tier];
 
   const spawn = (layer: 0 | 1 | 2, count: number) => {
     for (let i = 0; i < count; i++) {
@@ -111,12 +80,13 @@ export function generateNetwork(tier: SceneTier, seed = 20260823): Network {
             ? range(rng, 0.011, 0.023)
             : range(rng, 0.006, 0.012);
       const depthBias = layer === 2 ? 1.25 : layer === 0 ? 0.55 : 1;
+      let nx =
+        geometry.centerX + gauss(rng) * geometry.spreadX * 0.52 * depthBias;
+      if (nx < minX && layer !== 2) nx = 2 * geometry.centerX - nx;
+      const ny =
+        geometry.centerY + gauss(rng) * geometry.spreadY * 0.48 * depthBias;
       neurons.push({
-        pos: [
-          cfg.centerX + gauss(rng) * cfg.spreadX * 0.52 * depthBias,
-          cfg.centerY + gauss(rng) * cfg.spreadY * 0.48 * depthBias,
-          gauss(rng) * cfg.spreadZ * 0.45 * depthBias,
-        ],
+        pos: [nx, ny, gauss(rng) * geometry.spreadZ * 0.45 * depthBias],
         size,
         seed: range(rng, 0.01, 0.99),
         layer,
@@ -129,9 +99,9 @@ export function generateNetwork(tier: SceneTier, seed = 20260823): Network {
     }
   };
 
-  spawn(2, cfg.bg);
-  spawn(1, cfg.mg);
-  spawn(0, cfg.fg);
+  spawn(2, preset.bg);
+  spawn(1, preset.mg);
+  spawn(0, preset.fg);
 
   const segs: LineSeg[] = [];
   const pushSeg = (
@@ -143,7 +113,11 @@ export function generateNetwork(tier: SceneTier, seed = 20260823): Network {
   };
 
   neurons.forEach((n, idx) => {
-    const radial: [number, number, number] = [n.pos[0] - cfg.centerX, n.pos[1] - cfg.centerY, n.pos[2]];
+    const radial: [number, number, number] = [
+      n.pos[0] - geometry.centerX,
+      n.pos[1] - geometry.centerY,
+      n.pos[2],
+    ];
     const rl = Math.hypot(radial[0], radial[1], radial[2]) || 1;
     const primaryCount = n.layer === 1 ? Math.floor(range(rng, 3, 6.99)) : Math.floor(range(rng, 2, 4.99));
     const baseWidth = n.layer === 0 ? 2.6 : n.layer === 1 ? 1.7 : 1.2;
@@ -204,11 +178,7 @@ export function generateNetwork(tier: SceneTier, seed = 20260823): Network {
           const jd = randUnit(r);
           growBranch(
             r, neuron, neuronIdx,
-            [
-              dx + jd[0] * 0.9,
-              dy + jd[1] * 0.9,
-              dz + jd[2] * 0.9,
-            ],
+            [dx + jd[0] * 0.9, dy + jd[1] * 0.9, dz + jd[2] * 0.9],
             length * 0.42,
             taper * 0.65,
             t0 + s / steps,
@@ -236,6 +206,9 @@ export function generateNetwork(tier: SceneTier, seed = 20260823): Network {
 
   let connectionCount = 0;
   const MAX_CONNECTIONS = 420;
+  const paths: ConnectionPath[] = [];
+  const pathLookup = new Map<string, number>();
+
   for (const [key, list] of grid) {
     if (connectionCount >= MAX_CONNECTIONS) break;
     const [cxStr, cyStr, czStr] = key.split(",").map(Number);
@@ -248,13 +221,13 @@ export function generateNetwork(tier: SceneTier, seed = 20260823): Network {
             for (const j of other) {
               if (i >= j) continue;
               if (connectionCount >= MAX_CONNECTIONS) break;
-              if (neighbors[i].length >= cfg.maxConn && neighbors[j].length >= cfg.maxConn) continue;
+              if (neighbors[i].length >= preset.maxConn && neighbors[j].length >= preset.maxConn) continue;
               const pairKey = `${i}:${j}`;
               if (connected.has(pairKey)) continue;
               const a = neurons[i].pos;
               const b = neurons[j].pos;
               const d = Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
-              if (d > cfg.connDist) continue;
+              if (d > preset.connDist) continue;
               connected.add(pairKey);
               neighbors[i].push(j);
               neighbors[j].push(i);
@@ -281,6 +254,13 @@ export function generateNetwork(tier: SceneTier, seed = 20260823): Network {
     mid[0] += (perp[0] / pl) * bend;
     mid[1] += (perp[1] / pl) * bend;
     mid[2] += (perp[2] / pl) * bend;
+
+    // record path for energy travelers (spec §10)
+    if (paths.length < ACTIVATION.maxConnectionPaths) {
+      pathLookup.set(`${Math.min(ia, ib)}:${Math.max(ia, ib)}`, paths.length);
+      paths.push({ ia, ib, mid });
+    }
+
     const owner = rng() < 0.5 ? ia : ib;
     const dim = Math.min(neurons[ia].dim, neurons[ib].dim) * 0.85;
     const birth = Math.max(neurons[ia].birth, neurons[ib].birth) + 0.3;
@@ -314,7 +294,7 @@ export function generateNetwork(tier: SceneTier, seed = 20260823): Network {
   });
 
   const particles: Network["particles"] = [];
-  for (let i = 0; i < cfg.particles; i++) {
+  for (let i = 0; i < preset.particles; i++) {
     const host = neurons[Math.floor(rng() * neurons.length)];
     const off = randUnit(rng);
     const rad = range(rng, host.size * 1.4, host.size * 3.4 + 0.055);
@@ -327,5 +307,20 @@ export function generateNetwork(tier: SceneTier, seed = 20260823): Network {
     });
   }
 
-  return { neurons, segs, neighbors, hubIndex, particles };
+  // Ambient motes (spec §13): sparse, dim, slow — pure depth cue.
+  const ambient: AmbientMote[] = [];
+  for (let i = 0; i < preset.ambient; i++) {
+    const host = neurons[Math.floor(rng() * neurons.length)];
+    const off = randUnit(rng);
+    const rad = range(rng, 0.12, 0.34);
+    ambient.push({
+      pos: [host.pos[0] + off[0] * rad, host.pos[1] + off[1] * rad, host.pos[2] + off[2] * rad],
+      size: range(rng, 1.1, 2.4),
+      seed: rng(),
+      amp: range(rng, 0.004, 0.011),
+      dim: range(rng, 0.14, 0.34),
+    });
+  }
+
+  return { neurons, segs, neighbors, hubIndex, particles, ambient, paths, pathLookup };
 }
