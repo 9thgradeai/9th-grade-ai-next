@@ -4,6 +4,7 @@ import { Brain, Zap, BookOpen, Flame, Target, Clock, Shield, Award } from "lucid
 import SpotlightCard from "./ui/SpotlightCard";
 import SectionHeading from "./ui/SectionHeading";
 import Reveal from "./ui/Reveal";
+import TerminalSimulation from "./TerminalSimulation";
 
 const features = [
   {
@@ -70,6 +71,21 @@ export default function FeaturesGrid() {
           highlight="Ace the Exam"
           description="Eight integrated modules designed to cover every aspect of competitive exam preparation — from learning to mastery."
         />
+
+        <Reveal className="mb-16 md:mb-20">
+          <div className="max-w-3xl mx-auto relative overflow-hidden rounded-[2rem]">
+            <div
+              className="absolute -inset-8 rounded-[2rem] bg-emerald-500/[0.05] blur-2xl pointer-events-none"
+              aria-hidden="true"
+            />
+            <div className="relative">
+              <TerminalSimulation />
+              <p className="mt-4 text-center text-xs font-mono uppercase tracking-[0.18em] text-zinc-500">
+                Live session — watch the adaptive engine assemble a mock test
+              </p>
+            </div>
+          </div>
+        </Reveal>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {features.map((feature, index) => (

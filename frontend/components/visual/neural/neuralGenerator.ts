@@ -49,6 +49,7 @@ interface TierConfig {
   maxConn: number;
   particles: number;
   centerX: number;
+  centerY: number;
   spreadX: number;
   spreadY: number;
   spreadZ: number;
@@ -56,39 +57,42 @@ interface TierConfig {
 
 export const TIER_CONFIG: Record<SceneTier, TierConfig> = {
   desktop: {
-    mg: 148,
-    bg: 46,
-    fg: 20,
-    connDist: 0.135,
+    mg: 132,
+    bg: 40,
+    fg: 16,
+    connDist: 0.125,
     maxConn: 3,
-    particles: 780,
-    centerX: 0.58,
-    spreadX: 0.55,
+    particles: 620,
+    centerX: 0.6,
+    centerY: 0.04,
+    spreadX: 0.5,
     spreadY: 0.44,
-    spreadZ: 0.36,
+    spreadZ: 0.34,
   },
   tablet: {
-    mg: 100,
-    bg: 30,
+    mg: 92,
+    bg: 28,
     fg: 12,
-    connDist: 0.15,
+    connDist: 0.135,
     maxConn: 3,
-    particles: 500,
-    centerX: 0.44,
-    spreadX: 0.46,
+    particles: 420,
+    centerX: 0.5,
+    centerY: 0.06,
+    spreadX: 0.4,
     spreadY: 0.4,
     spreadZ: 0.32,
   },
   mobile: {
-    mg: 62,
-    bg: 18,
+    mg: 56,
+    bg: 16,
     fg: 8,
-    connDist: 0.17,
+    connDist: 0.16,
     maxConn: 2,
-    particles: 240,
-    centerX: 0.1,
-    spreadX: 0.42,
-    spreadY: 0.38,
+    particles: 260,
+    centerX: 0.02,
+    centerY: 0.1,
+    spreadX: 0.26,
+    spreadY: 0.34,
     spreadZ: 0.28,
   },
 };
@@ -110,7 +114,7 @@ export function generateNetwork(tier: SceneTier, seed = 20260823): Network {
       neurons.push({
         pos: [
           cfg.centerX + gauss(rng) * cfg.spreadX * 0.52 * depthBias,
-          0.04 + gauss(rng) * cfg.spreadY * 0.48 * depthBias,
+          cfg.centerY + gauss(rng) * cfg.spreadY * 0.48 * depthBias,
           gauss(rng) * cfg.spreadZ * 0.45 * depthBias,
         ],
         size,
@@ -139,7 +143,7 @@ export function generateNetwork(tier: SceneTier, seed = 20260823): Network {
   };
 
   neurons.forEach((n, idx) => {
-    const radial: [number, number, number] = [n.pos[0] - cfg.centerX, n.pos[1] - 0.04, n.pos[2]];
+    const radial: [number, number, number] = [n.pos[0] - cfg.centerX, n.pos[1] - cfg.centerY, n.pos[2]];
     const rl = Math.hypot(radial[0], radial[1], radial[2]) || 1;
     const primaryCount = n.layer === 1 ? Math.floor(range(rng, 3, 6.99)) : Math.floor(range(rng, 2, 4.99));
     const baseWidth = n.layer === 0 ? 2.6 : n.layer === 1 ? 1.7 : 1.2;

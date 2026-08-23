@@ -1,18 +1,6 @@
 import { mulberry32, type Rng } from "./seededRandom";
 import type { Network } from "./neuralGenerator";
 
-export interface PulseState {
-  src: [number, number, number];
-  r: number;
-  intensity: number;
-}
-
-export interface DissolveState {
-  c: [number, number, number];
-  r: number;
-  strength: number;
-}
-
 interface ScheduledFire {
   t: number;
   id: number;
@@ -31,6 +19,7 @@ const DIRECTOR_START = 6.4;
 export class ActivationDirector {
   readonly act: Float32Array;
   private scheduled: ScheduledFire[] = [];
+  private dueBuf: ScheduledFire[] = [];
   private cooldownUntil: Float32Array;
   private pulses: { src: [number, number, number]; r: number; start: number; speed: number; life: number; strength: number }[] = [];
   private dissolves: {
@@ -83,34 +72,41 @@ export class ActivationDirector {
     const decay = Math.exp(-dt / ACT_DECAY_TAU);
     for (let i = 0; i < this.act.length; i++) this.act[i] *= decay;
 
-    const due: ScheduledFire[] = [];
-    this.scheduled = this.scheduled.filter((f) => {
-      if (f.t <= t) {
-        due.push(f);
-        return false;
-      }
-      return true;
-    });
-    for (const f of due) {
+    let w = 0;
+    let ndue = 0;
+    for (let i = 0; i < this.scheduled.length; i++) {
+      const f = this.scheduled[i];
+      if (f.t <= t) this.dueBuf[ndue++] = f;
+      else this.scheduled[w++] = f;
+    }
+    this.scheduled.length = w;
+    for (let k = 0; k < ndue; k++) {
+      const f = this.dueBuf[k];
       if (t < this.cooldownUntil[f.id]) continue;
       this.fire(f.id, t, f.strength, f.hops);
     }
 
-    this.pulses = this.pulses.filter((p) => {
+    w = 0;
+    for (let i = 0; i < this.pulses.length; i++) {
+      const p = this.pulses[i];
       const age = t - p.start;
       p.r = age * p.speed;
-      return age < p.life;
-    });
+      if (age < p.life) this.pulses[w++] = p;
+    }
+    this.pulses.length = w;
 
-    this.dissolves.forEach((d) => {
+    w = 0;
+    for (let i = 0; i < this.dissolves.length; i++) {
+      const d = this.dissolves[i];
       const age = t - d.start;
       if (!d.cascaded && age > d.attack + d.hold + d.release * 0.35) {
         d.cascaded = true;
         const anchor = this.nearestNeuron(d.c);
         if (anchor >= 0) this.fire(anchor, t, 0.92, 3);
       }
-    });
-    this.dissolves = this.dissolves.filter((d) => t - d.start < d.attack + d.hold + d.release);
+      if (age < d.attack + d.hold + d.release) this.dissolves[w++] = d;
+    }
+    this.dissolves.length = w;
 
     if (this.introDone && t >= this.nextEventAt) {
       this.scheduleEvent(t);
@@ -118,23 +114,41 @@ export class ActivationDirector {
     }
   }
 
-  getPulses(): PulseState[] {
-    return this.pulses.slice(0, MAX_PULSES).map((p) => ({
-      src: p.src,
-      r: p.r,
-      intensity: p.strength * Math.max(0, 1 - (this.simT - p.start) / p.life) ** 1.4,
-    }));
+  fillPulseUniforms(srcArr: Float32Array, rArr: Float32Array, iArr: Float32Array): number {
+    const count = Math.min(this.pulses.length, MAX_PULSES);
+    for (let i = 0; i < count; i++) {
+      const p = this.pulses[i];
+      srcArr[i * 3] = p.src[0];
+      srcArr[i * 3 + 1] = p.src[1];
+      srcArr[i * 3 + 2] = p.src[2];
+      rArr[i] = p.r;
+      iArr[i] = p.strength * Math.max(0, 1 - (this.simT - p.start) / p.life) ** 1.4;
+    }
+    srcArr.fill(0, count * 3);
+    rArr.fill(-10, count);
+    iArr.fill(0, count);
+    return count;
   }
 
-  getDissolves(): DissolveState[] {
-    return this.dissolves.slice(0, MAX_DISSOLVES).map((d) => {
+  fillDissolveUniforms(cArr: Float32Array, rArr: Float32Array, sArr: Float32Array): number {
+    const count = Math.min(this.dissolves.length, MAX_DISSOLVES);
+    for (let i = 0; i < count; i++) {
+      const d = this.dissolves[i];
+      cArr[i * 3] = d.c[0];
+      cArr[i * 3 + 1] = d.c[1];
+      cArr[i * 3 + 2] = d.c[2];
+      rArr[i] = d.radius;
       const age = this.simT - d.start;
       let s: number;
       if (age < d.attack) s = smoothstep(0, d.attack, age);
       else if (age < d.attack + d.hold) s = 1;
       else s = 1 - smoothstep(d.attack + d.hold, d.attack + d.hold + d.release, age);
-      return { c: d.c, r: d.radius, strength: s };
-    });
+      sArr[i] = s;
+    }
+    cArr.fill(0, count * 3);
+    rArr.fill(0, count);
+    sArr.fill(0, count);
+    return count;
   }
 
   private fire(id: number, t: number, strength: number, hops: number): void {

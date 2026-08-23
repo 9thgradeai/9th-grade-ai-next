@@ -139,14 +139,6 @@ html.light .cosmic-bg {
     var(--background);
 }
 
-/* Hero stage — near-black void; the neural scene emerges from this
-   darkness. Flat by design; depth comes from the render itself. */
-.hero-neural-fallback {
-  background-color: #05070b;
-  background-image:
-    radial-gradient(46% 54% at 76% 44%, rgb(22 32 50 / 0.12), transparent 70%);
-}
-
 /* Fine film-grain noise overlay for premium texture */
 .noise::before {
   content: "";
@@ -158,10 +150,13 @@ html.light .cosmic-bg {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* Anchor sections sit below the fixed landing header */
+/* Anchor sections sit below the fixed landing header.
+   overflow-x: clip guarantees zero horizontal scroll on every device
+   without creating a scroll container (sticky/fixed stay intact). */
 html {
   scroll-padding-top: 5.5rem;
   scroll-behavior: smooth;
+  overflow-x: clip;
 }
 
 /* Terminal cursor blinking animation */

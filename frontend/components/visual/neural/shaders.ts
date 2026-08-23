@@ -24,6 +24,15 @@ float vnoise(vec3 p){
     f.z
   );
 }
+vec3 hueFamily(float s){
+  float h = fract(s * 0.6180339887 + 0.123);
+  vec3 aurora = vec3(0.30, 0.88, 0.78);
+  vec3 iris   = vec3(0.62, 0.55, 1.00);
+  vec3 solar  = vec3(1.00, 0.72, 0.38);
+  if(h < 0.42) return mix(aurora, iris, smoothstep(0.10, 0.42, h));
+  if(h < 0.74) return mix(iris, solar, smoothstep(0.42, 0.74, h));
+  return mix(solar, aurora, smoothstep(0.74, 1.05, h));
+}
 float fbm(vec3 p){
   float a = 0.5;
   float s = 0.0;
@@ -47,7 +56,7 @@ const DISSOLVE_BLOCK = `
     }
     float cut = dis * 1.35 - dn * 0.5;
     alpha *= smoothstep(0.02, 0.34, 1.0 - cut);
-    col += vec3(0.62, 0.86, 1.0) * smoothstep(0.26, 0.5, cut) * smoothstep(0.64, 0.5, cut) * 0.45;
+    col += vec3(1.00, 0.80, 0.52) * smoothstep(0.26, 0.5, cut) * smoothstep(0.64, 0.5, cut) * 0.45;
   }
 `;
 
@@ -140,12 +149,12 @@ void main(){
   float edge = smoothstep(1.0, 0.25, abs(vSide));
   float core = exp(-vSide * vSide * 3.5);
   float birth = smoothstep(vBirth, vBirth + 1.1, uTime);
-  vec3 cool = vec3(0.70, 0.76, 0.86);
-  vec3 col = cool * (0.34 + 0.5 * core) * fl;
-  float alpha = (0.05 + 0.115 * edge) * edge;
+  vec3 tint = hueFamily(vId * 0.77);
+  vec3 col = tint * (0.66 + 0.90 * core) * fl;
+  float alpha = (0.18 + 0.40 * edge) * edge;
   alpha *= vDim * vAtt * birth;
 ` + PULSE_BLOCK + `
-  col += cool * act * (0.45 + core * 0.95);
+  col += mix(tint, vec3(0.85, 0.95, 1.0), 0.35) * act * (0.5 + core * 1.05);
   alpha += act * (0.24 + 0.3 * core) * birth;
 ` + DISSOLVE_BLOCK + `
   frag = vec4(col * alpha, alpha);
@@ -211,17 +220,17 @@ void main(){
   vec2 dirV = vUV / max(r, 1e-3);
   float rim = pow(max(dot(dirV, normalize(vec2(-0.55, 0.78))), 0.0), 2.0);
   float ring = smoothstep(0.5, 0.92, r) * smoothstep(1.0, 0.86, r);
-  vec3 cool = vec3(0.71, 0.77, 0.87);
-  vec3 col = cool * (0.15 + 0.22 * cyt);
+  vec3 tint = hueFamily(vSeed);
+  vec3 col = tint * (0.36 + 0.50 * cyt);
   col *= 1.0 - smoothstep(0.0, 0.34, nuc) * 0.38;
-  col += cool * ring * 0.5 * (0.5 + 0.5 * cyt);
-  col += cool * rim * 0.28;
+  col += mix(tint, vec3(1.00, 0.94, 0.84), 0.40) * ring * 0.80 * (0.5 + 0.5 * cyt);
+  col += mix(tint, vec3(1.00, 0.96, 0.88), 0.50) * rim * 0.60;
   float birth = smoothstep(vBirth, vBirth + 1.3, uTime);
-  float alpha = membrane * 0.32 * vDim * birth;
+  float alpha = membrane * 0.62 * vDim * birth;
 ` + PULSE_BLOCK + `
-  col += PULSE_ELECTRIC * exp(-r * r * 4.5) * act * 0.9;
-  col += cool * ring * act * 0.85;
-  col += cool * rim * act * 0.4;
+  col += mix(PULSE_ELECTRIC, tint, 0.35) * exp(-r * r * 4.5) * act;
+  col += tint * ring * act * 0.95;
+  col += tint * rim * act * 0.45;
   alpha += act * (0.2 + 0.24 * ring) * membrane * birth;
 ` + DISSOLVE_BLOCK + `
   frag = vec4(col * alpha, alpha);
@@ -283,9 +292,9 @@ void main(){
   vec2 pc = gl_PointCoord * 2.0 - 1.0;
   float d = length(pc);
   float disc = smoothstep(1.0, 0.15, d);
-  vec3 cool = vec3(0.68, 0.74, 0.85);
-  vec3 col = cool * (0.5 + 0.5 * tw);
-  float alpha = disc * 0.16 * vDim * tw * birth;
+  vec3 tint = hueFamily(vSeed * 1.37);
+  vec3 col = tint * (0.55 + 0.55 * tw);
+  float alpha = disc * 0.34 * vDim * tw * birth;
 ` + DISSOLVE_BLOCK + `
   frag = vec4(col * alpha, alpha);
 }

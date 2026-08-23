@@ -15,9 +15,9 @@ interface TierRuntime {
 }
 
 const TIER_RUNTIME: Record<SceneTier, TierRuntime> = {
-  desktop: { dpr: 1.75, widthScale: 1, globalAlpha: 1 },
-  tablet: { dpr: 1.4, widthScale: 0.85, globalAlpha: 0.95 },
-  mobile: { dpr: 1.25, widthScale: 0.7, globalAlpha: 0.8 },
+  desktop: { dpr: 1.75, widthScale: 1.35, globalAlpha: 1 },
+  tablet: { dpr: 1.4, widthScale: 1.05, globalAlpha: 0.95 },
+  mobile: { dpr: 1.25, widthScale: 1.0, globalAlpha: 1 },
 };
 
 function detectTier(): SceneTier {
@@ -30,64 +30,57 @@ function detectTier(): SceneTier {
 
 type Mat4 = Float32Array;
 
-function perspective(fovY: number, aspect: number, near: number, far: number): Mat4 {
+const IDENTITY: Mat4 = new Float32Array([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
+
+function perspectiveInto(out: Mat4, fovY: number, aspect: number, near: number, far: number): void {
   const f = 1 / Math.tan(fovY / 2);
-  const out = new Float32Array(16);
+  out.fill(0);
   out[0] = f / aspect;
   out[5] = f;
   out[10] = (far + near) / (near - far);
   out[11] = -1;
   out[14] = (2 * far * near) / (near - far);
-  return out;
 }
 
-function viewMatrix(yaw: number, pitch: number, camZ: number): Mat4 {
+function viewMatrixInto(out: Mat4, yaw: number, pitch: number, camZ: number): void {
   const cy = Math.cos(yaw);
   const sy = Math.sin(yaw);
   const cx = Math.cos(pitch);
   const sx = Math.sin(pitch);
-  const r00 = cy, r01 = 0, r02 = -sy;
-  const r10 = sy * sx, r11 = cx, r12 = cy * sx;
-  const r20 = sy * cx, r21 = -sx, r22 = cy * cx;
-  const eye: [number, number, number] = [0, 0, camZ];
-  const out = new Float32Array(16);
-  out[0] = r00; out[4] = r01; out[8] = r02;
-  out[1] = r10; out[5] = r11; out[9] = r12;
-  out[2] = r20; out[6] = r21; out[10] = r22;
-  out[12] = -(r00 * eye[0] + r01 * eye[1] + r02 * eye[2]);
-  out[13] = -(r10 * eye[0] + r11 * eye[1] + r12 * eye[2]);
-  out[14] = -(r20 * eye[0] + r21 * eye[1] + r22 * eye[2]);
-  out[15] = 1;
-
-  const pivot: [number, number, number] = [0.3, 0.04, 0];
-  const t = new Float32Array(16);
-  const ti = new Float32Array(16);
-  t[0] = 1; t[5] = 1; t[10] = 1; t[15] = 1;
-  t[12] = -pivot[0]; t[13] = -pivot[1]; t[14] = -pivot[2];
-  ti[0] = 1; ti[5] = 1; ti[10] = 1; ti[15] = 1;
-  ti[12] = pivot[0]; ti[13] = pivot[1]; ti[14] = pivot[2];
-  return multiply(multiply(ti, out), t);
+  // column-major rotation + translation (eye on +Z)
+  TMP_A[0] = cy; TMP_A[1] = sy * sx; TMP_A[2] = sy * cx; TMP_A[3] = 0;
+  TMP_A[4] = 0; TMP_A[5] = cx; TMP_A[6] = -sx; TMP_A[7] = 0;
+  TMP_A[8] = -sy; TMP_A[9] = cy * sx; TMP_A[10] = cy * cx; TMP_A[11] = 0;
+  TMP_A[12] = -((-sy) * camZ);
+  TMP_A[13] = -((cy * sx) * camZ);
+  TMP_A[14] = -((cy * cx) * camZ);
+  TMP_A[15] = 1;
+  // M = T(+pivot) * A * T(-pivot), pivot = (0.3, 0.04, 0)
+  multiplyInto(TMP_B, TMP_A, TMP_PIVOT_NEG);
+  multiplyInto(out, TMP_PIVOT_POS, TMP_B);
 }
 
-function multiply(a: Mat4, b: Mat4): Mat4 {
-  const o = new Float32Array(16);
+const TMP_A: Mat4 = new Float32Array(16);
+const TMP_B: Mat4 = new Float32Array(16);
+const TMP_PIVOT_NEG: Mat4 = (() => {
+  const m = new Float32Array([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
+  m[12] = -0.3; m[13] = -0.04;
+  return m;
+})();
+const TMP_PIVOT_POS: Mat4 = (() => {
+  const m = new Float32Array([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
+  m[12] = 0.3; m[13] = 0.04;
+  return m;
+})();
+
+function multiplyInto(o: Mat4, a: Mat4, b: Mat4): void {
   for (let c = 0; c < 4; c++) {
-    for (let r = 0; r < 4; r++) {
-      let s = 0;
-      for (let k = 0; k < 4; k++) s += a[k * 4 + r] * b[c * 4 + k];
-      o[c * 4 + r] = s;
-    }
+    const b0 = b[c * 4], b1 = b[c * 4 + 1], b2 = b[c * 4 + 2], b3 = b[c * 4 + 3];
+    o[c * 4] = a[0] * b0 + a[4] * b1 + a[8] * b2 + a[12] * b3;
+    o[c * 4 + 1] = a[1] * b0 + a[5] * b1 + a[9] * b2 + a[13] * b3;
+    o[c * 4 + 2] = a[2] * b0 + a[6] * b1 + a[10] * b2 + a[14] * b3;
+    o[c * 4 + 3] = a[3] * b0 + a[7] * b1 + a[11] * b2 + a[15] * b3;
   }
-  return o;
-}
-
-function multiplyVec4(m: Mat4, v: [number, number, number, number]): [number, number, number, number] {
-  return [
-    m[0] * v[0] + m[4] * v[1] + m[8] * v[2] + m[12] * v[3],
-    m[1] * v[0] + m[5] * v[1] + m[9] * v[2] + m[13] * v[3],
-    m[2] * v[0] + m[6] * v[1] + m[10] * v[2] + m[14] * v[3],
-    m[3] * v[0] + m[7] * v[1] + m[11] * v[2] + m[15] * v[3],
-  ];
 }
 
 interface ProgramBundle {
@@ -121,7 +114,7 @@ export default function NeuralScene() {
     const network: Network = generateNetwork(tier);
 
     const canvas = document.createElement("canvas");
-    canvas.style.cssText = "position:absolute;inset:0;width:100%;height:100%;display:block;";
+    canvas.style.cssText = "position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none;";
     host.appendChild(canvas);
 
     const gl = canvas.getContext("webgl2", {
@@ -129,6 +122,7 @@ export default function NeuralScene() {
       antialias: true,
       premultipliedAlpha: true,
       powerPreference: "low-power",
+      desynchronized: true,
     });
     if (!gl) {
       console.warn("[NeuralScene] WebGL2 unavailable — CSS atmosphere only");
@@ -207,6 +201,12 @@ export default function NeuralScene() {
     const disCData = new Float32Array(12);
     const disRData = new Float32Array(4);
     const disSData = new Float32Array(4);
+
+    const PROJ_M: Mat4 = new Float32Array(16);
+    const VIEW_M: Mat4 = new Float32Array(16);
+    const VP_M: Mat4 = new Float32Array(16);
+    const RIGHT: [number, number, number] = [1, 0, 0];
+    const UP: [number, number, number] = [0, 1, 0];
 
     const segsPerVertFloats = 11;
     const lineVerts = network.segs.length * 4;
@@ -346,18 +346,30 @@ export default function NeuralScene() {
 
     const director = new ActivationDirector(network, reduced);
 
-    const resize = () => {
+    let hostW = 1;
+    let hostH = 1;
+    const measure = () => {
       const rect = host.getBoundingClientRect();
-      const w = Math.max(1, Math.floor(rect.width));
-      const h = Math.max(1, Math.floor(rect.height));
-      const rawDpr = Math.min(window.devicePixelRatio || 1, runtime.dpr) * (tier === "mobile" ? 0.92 : 1);
-      const pw = Math.floor(w * rawDpr);
-      const ph = Math.floor(h * rawDpr);
+      hostW = Math.max(1, Math.floor(rect.width));
+      hostH = Math.max(1, Math.floor(rect.height));
+    };
+    measure();
+
+    // Adaptive quality: keeps frame time inside the refresh budget on
+    // high-refresh (90/120Hz) and low-power displays alike.
+    let quality = 1;
+    const resize = () => {
+      const rawDpr =
+        Math.min(window.devicePixelRatio || 1, runtime.dpr) *
+        quality *
+        (tier === "mobile" ? 0.92 : 1);
+      const pw = Math.floor(hostW * rawDpr);
+      const ph = Math.floor(hostH * rawDpr);
       if (canvas.width !== pw || canvas.height !== ph) {
         canvas.width = pw;
         canvas.height = ph;
       }
-      return { w, h, aspect: w / h };
+      return { aspect: hostW / hostH };
     };
 
     const onPointerMove = (e: PointerEvent) => {
@@ -380,18 +392,19 @@ export default function NeuralScene() {
     const render = () => {
       const { aspect } = resize();
 
-      const proj = perspective(0.72, aspect, 0.05, 12);
-      const view = viewMatrix(curX * 0.055 + Math.sin(simT * 0.043) * 0.024, curY * 0.035 + Math.sin(simT * 0.031) * 0.016, 2.35);
-      const vp = multiply(proj, view);
+      perspectiveInto(PROJ_M, 0.72, aspect, 0.05, 12);
+      const yaw = curX * 0.055 + Math.sin(simT * 0.043) * 0.024;
+      const pitch = curY * 0.035 + Math.sin(simT * 0.031) * 0.016;
+      viewMatrixInto(VIEW_M, yaw, pitch, 2.35);
+      multiplyInto(VP_M, PROJ_M, VIEW_M);
+      const vp = VP_M;
 
-      const rotY = curX * 0.055 + Math.sin(simT * 0.043) * 0.024;
-      const rotX = curY * 0.035 + Math.sin(simT * 0.031) * 0.016;
-      const cyr = Math.cos(rotY);
-      const syr = Math.sin(rotY);
-      const cxr = Math.cos(rotX);
-      const sxr = Math.sin(rotX);
-      const right: [number, number, number] = [cyr, 0, -syr];
-      const up: [number, number, number] = [syr * sxr, cxr, cyr * sxr];
+      const cyr = Math.cos(yaw);
+      const syr = Math.sin(yaw);
+      const cxr = Math.cos(pitch);
+      const sxr = Math.sin(pitch);
+      RIGHT[0] = cyr; RIGHT[1] = 0; RIGHT[2] = -syr;
+      UP[0] = syr * sxr; UP[1] = cxr; UP[2] = cyr * sxr;
 
       gl.viewport(0, 0, canvas.width, canvas.height);
       gl.clearColor(0, 0, 0, 0);
@@ -400,28 +413,9 @@ export default function NeuralScene() {
       gl.enable(gl.BLEND);
       gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 
-      const pulses = director.getPulses();
-      const dissolves = director.getDissolves();
-      pulseSrcData.fill(0);
-      pulseRData.fill(-10);
-      pulseIData.fill(0);
-      pulses.forEach((p, i) => {
-        pulseSrcData[i * 3] = p.src[0];
-        pulseSrcData[i * 3 + 1] = p.src[1];
-        pulseSrcData[i * 3 + 2] = p.src[2];
-        pulseRData[i] = p.r;
-        pulseIData[i] = p.intensity;
-      });
-      disCData.fill(0);
-      disRData.fill(0);
-      disSData.fill(0);
-      dissolves.forEach((d, i) => {
-        disCData[i * 3] = d.c[0];
-        disCData[i * 3 + 1] = d.c[1];
-        disCData[i * 3 + 2] = d.c[2];
-        disRData[i] = d.r;
-        disSData[i] = d.strength;
-      });
+      const pulseCount = director.fillPulseUniforms(pulseSrcData, pulseRData, pulseIData);
+      const disCount = director.fillDissolveUniforms(disCData, disRData, disSData);
+
       actData.fill(0);
       director.act.forEach((v, i) => {
         if (i < MAX_NEURONS) actData[i] = v;
@@ -431,23 +425,22 @@ export default function NeuralScene() {
         gl.uniformMatrix4fv(b.uniforms.uVP, false, vp);
         gl.uniform1f(b.uniforms.uTime, simT);
         gl.uniform1fv(b.uniforms.uAct, actData);
-        gl.uniform1i(b.uniforms.uPulseCount, pulses.length);
+        gl.uniform1i(b.uniforms.uPulseCount, pulseCount);
         gl.uniform3fv(b.uniforms.uPulseSrc, pulseSrcData);
         gl.uniform1fv(b.uniforms.uPulseR, pulseRData);
         gl.uniform1fv(b.uniforms.uPulseI, pulseIData);
-        gl.uniform1i(b.uniforms.uDisCount, dissolves.length);
+        gl.uniform1i(b.uniforms.uDisCount, disCount);
         gl.uniform3fv(b.uniforms.uDisC, disCData);
         gl.uniform1fv(b.uniforms.uDisR, disRData);
         gl.uniform1fv(b.uniforms.uDisS, disSData);
       };
 
-      const identity = new Float32Array([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
       const resW = canvas.width;
       const resH = canvas.height;
 
       gl.useProgram(lineB.program);
       setShared(lineB);
-      gl.uniformMatrix4fv(lineB.uniforms.uModel, false, identity);
+      gl.uniformMatrix4fv(lineB.uniforms.uModel, false, IDENTITY);
       gl.uniform2f(lineB.uniforms.uRes, resW, resH);
       gl.uniform1f(lineB.uniforms.uWidthScale, runtime.widthScale);
       gl.bindVertexArray(lineVao[0]);
@@ -455,15 +448,15 @@ export default function NeuralScene() {
 
       gl.useProgram(somaB.program);
       setShared(somaB);
-      gl.uniformMatrix4fv(somaB.uniforms.uModel, false, identity);
-      gl.uniform3f(somaB.uniforms.uRight, right[0], right[1], right[2]);
-      gl.uniform3f(somaB.uniforms.uUp, up[0], up[1], up[2]);
+      gl.uniformMatrix4fv(somaB.uniforms.uModel, false, IDENTITY);
+      gl.uniform3f(somaB.uniforms.uRight, RIGHT[0], RIGHT[1], RIGHT[2]);
+      gl.uniform3f(somaB.uniforms.uUp, UP[0], UP[1], UP[2]);
       gl.bindVertexArray(somaVaoPair[0]);
       gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, somaInstances);
 
       gl.useProgram(partB.program);
       setShared(partB);
-      gl.uniformMatrix4fv(partB.uniforms.uModel, false, identity);
+      gl.uniformMatrix4fv(partB.uniforms.uModel, false, IDENTITY);
       gl.uniform2f(partB.uniforms.uRes, resW, resH);
       gl.bindVertexArray(partVao[0]);
       gl.drawArrays(gl.POINTS, 0, particleCount);
@@ -471,11 +464,25 @@ export default function NeuralScene() {
       gl.bindVertexArray(null);
     };
 
+    let emaFrameMs = 8;
+    let framesSinceEval = 0;
+
     const frame = (now: number) => {
       rafId = requestAnimationFrame(frame);
-      const dt = Math.min((now - lastNow) / 1000, 0.05);
+      const rawDt = now - lastNow;
+      const dt = Math.min(rawDt / 1000, 0.05);
       lastNow = now;
       if (!running || disposed || document.hidden || !inView) return;
+
+      // Frame-time governor: adapt canvas resolution so high-refresh
+      // displays hold their native cadence instead of dropping frames.
+      emaFrameMs = emaFrameMs * 0.92 + Math.min(rawDt, 50) * 0.08;
+      if (++framesSinceEval >= 45) {
+        framesSinceEval = 0;
+        if (emaFrameMs > 13 && quality > 0.66) quality = Math.max(0.66, quality - 0.12);
+        else if (emaFrameMs < 7 && quality < 1) quality = Math.min(1, quality + 0.08);
+      }
+
       simT += dt;
       curX += (mouseX - curX) * 0.045;
       curY += (mouseY - curY) * 0.045;
@@ -483,11 +490,30 @@ export default function NeuralScene() {
       render();
     };
 
+    const ro = new ResizeObserver(() => {
+      measure();
+      if (reduced) render();
+    });
+    ro.observe(host);
+
     if (reduced) {
       simT = 30;
       render();
-      const ro = new ResizeObserver(() => render());
-      ro.observe(host);
+      console.info(`[NeuralScene] static composition · ${network.neurons.length} neurons`);
+      return () => {
+        ro.disconnect();
+        io.disconnect();
+        disposed = true;
+        cancelAnimationFrame(rafId);
+        const ext0 = gl.getExtension("WEBGL_lose_context");
+        ext0?.loseContext();
+        canvas.remove();
+      };
+    }
+
+    if (reduced) {
+      simT = 30;
+      render();
       console.info(`[NeuralScene] static composition · ${network.neurons.length} neurons`);
       return () => {
         ro.disconnect();
@@ -519,6 +545,7 @@ export default function NeuralScene() {
       disposed = true;
       running = false;
       cancelAnimationFrame(rafId);
+      ro.disconnect();
       io.disconnect();
       document.removeEventListener("visibilitychange", onVis);
       if (finePointer && !reduced) window.removeEventListener("pointermove", onPointerMove);
