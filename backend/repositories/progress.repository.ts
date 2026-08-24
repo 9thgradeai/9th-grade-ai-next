@@ -34,9 +34,9 @@ export async function recomputeAndAward(
       WHERE "userId" = ${userId}
     ) AS agg
     ON CONFLICT ("userId") DO UPDATE SET
-      "points" = "UserProgress"."points" + ${pointsEarned},
-      "questionsAnswered" = agg.total,
-      "accuracy" = CASE WHEN agg.total > 0 THEN ROUND((agg.correct * 100.0) / agg.total)::int ELSE 0 END,
-      "examsAttempted" = "UserProgress"."examsAttempted" + ${examsIncrement},
-      "updatedAt" = now()`;
+      "points" = "UserProgress"."points" + excluded."points",
+      "questionsAnswered" = excluded."questionsAnswered",
+      "accuracy" = excluded."accuracy",
+      "examsAttempted" = "UserProgress"."examsAttempted" + excluded."examsAttempted",
+      "updatedAt" = excluded."updatedAt"`;
 }

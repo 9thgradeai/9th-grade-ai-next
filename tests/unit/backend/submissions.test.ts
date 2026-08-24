@@ -47,7 +47,7 @@ describe("submitPracticeAnswers (atomic attempts + progress)", () => {
     expect(attempts.data[1].correct).toBe(false);
 
     const rawArgs = vi.mocked(prisma.$executeRaw).mock.calls[0];
-    expect(rawArgs.slice(1)).toEqual(["userA", 10, 0, "userA", 10, 0]);
+    expect(rawArgs.slice(1)).toEqual(["userA", 10, 0, "userA"]);
   });
 
   it("rejects answers referencing unknown questions without any writes", async () => {

@@ -111,7 +111,7 @@ describe("submitDailyQuiz (transactional participation write)", () => {
     expect(String(rawCall[0])).toContain("UserProgress");
     // Params: userId, points, examsIncrement — each interpolated twice
     // (insert branch + conflict-update branch).
-    expect(rawCall.slice(1)).toEqual(["userA", 10, 0, "userA", 10, 0]);
+    expect(rawCall.slice(1)).toEqual(["userA", 10, 0, "userA"]);
     expect(prisma.dailyQuizParticipation.upsert).toHaveBeenCalledWith(
       expect.objectContaining({
         where: { userId_quizId: { userId: "userA", quizId: 7 } },

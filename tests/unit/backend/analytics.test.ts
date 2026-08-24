@@ -54,6 +54,6 @@ describe("recomputeAndAward (atomic progress upsert)", () => {
     expect(String(args[0])).toContain("ON CONFLICT");
     // Params: userId, pointsEarned, examsIncrement — each interpolated twice
     // (INSERT branch + ON CONFLICT UPDATE branch).
-    expect(args.slice(1)).toEqual(["u1", 30, 1, "u1", 30, 1]);
+    expect(args.slice(1)).toEqual(["u1", 30, 1, "u1"]);
   });
 });
