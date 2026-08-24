@@ -1,14 +1,10 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import dynamic from "next/dynamic";
 import {
   motion,
   useInView,
   useReducedMotion,
-  useTransform,
-  useScroll,
-  useMotionTemplate,
   type Variants,
 } from "framer-motion";
 import { trackHeroView, trackCtaClick } from "@/lib/analytics";
@@ -17,12 +13,6 @@ import Button from "./ui/Button";
 import MotionText from "./ui/MotionText";
 import { transitions } from "@/lib/transitions";
 import { ArrowRight, ChevronDown, Sparkles, ShieldCheck, Lock, Zap } from "lucide-react";
-
-// Cinematic neural environment — lazy island, never in the server bundle,
-// self-pausing when offscreen/hidden (see component contract).
-const NeuralScene = dynamic(() => import("./visual/neural/NeuralScene"), {
-  ssr: false,
-});
 
 const heroContainer: Variants = {
   hidden: {},
@@ -79,28 +69,7 @@ function CountUp({ value, decimals = 0, suffix = "" }: { value: number; decimals
 }
 
 export default function TerminalHero() {
-  const [allowBlur, setAllowBlur] = useState(false);
-  const sectionRef = useRef<HTMLElement>(null);
   const shouldReduceMotion = useReducedMotion();
-
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start start", "end start"],
-  });
-  const sceneOpacity = useTransform(scrollYProgress, [0, 0.85], [1, 0]);
-  const sceneY = useTransform(scrollYProgress, [0, 1], [0, 110]);
-  const sceneScale = useTransform(scrollYProgress, [0, 1], [1, 0.94]);
-  const blurPx = useTransform(scrollYProgress, [0, 0.9], [0, 8]);
-  const sceneFilter = useMotionTemplate`blur(${blurPx}px)`;
-
-  useEffect(() => {
-    if (shouldReduceMotion) return;
-    const mq = window.matchMedia("(pointer: fine) and (min-width: 768px)");
-    const update = () => setAllowBlur(mq.matches);
-    update();
-    mq.addEventListener("change", update);
-    return () => mq.removeEventListener("change", update);
-  }, [shouldReduceMotion]);
 
   useEffect(() => {
     const start = Date.now();
@@ -111,33 +80,9 @@ export default function TerminalHero() {
 
   return (
     <section
-      ref={sectionRef}
       className="relative min-h-[92vh] flex items-center pt-16 pb-20 px-4 sm:px-6 overflow-hidden"
     >
-      {/* Layer 0 — page void (body --background #04060f); no painted stage */}
-
-      {/* Layer 1 — cinematic neural environment (WebGL island) */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.7, duration: 1.6, ease: "easeOut" }}
-        className="absolute inset-0"
-        aria-hidden="true"
-      >
-        <motion.div
-          style={{
-            opacity: sceneOpacity,
-            y: sceneY,
-            scale: sceneScale,
-            filter: allowBlur ? sceneFilter : undefined,
-          }}
-          className="h-full w-full"
-        >
-          <NeuralScene />
-        </motion.div>
-      </motion.div>
-
-      {/* Layer 2 — content, left column; the right side stays open for the neural scene */}
+      {/* Page void (body --background #04060f) — content only */}
       <div className="relative z-10 w-full max-w-7xl mx-auto">
         <motion.div
           variants={heroContainer}
@@ -155,9 +100,9 @@ export default function TerminalHero() {
           <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-[4.25rem] font-semibold text-white leading-[1.05] tracking-tight mb-6">
             <MotionText>Master Competitive Exams with</MotionText>
             <br />
-            <span className="text-gradient">
-              <MotionText delay={0.35}>AI-Driven Precision</MotionText>
-            </span>
+            <MotionText delay={0.35} wordClassName="text-gradient">
+              AI-Driven Precision
+            </MotionText>
           </h1>
 
           <motion.p

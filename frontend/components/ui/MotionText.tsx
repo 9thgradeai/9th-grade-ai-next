@@ -23,21 +23,29 @@ const wordVariants: Variants = {
  * Cinematic word-reveal heading. Words rise out of individual overflow
  * masks with a shared ease curve — one idea, executed quietly.
  * Reduced motion renders the plain text immediately.
+ * `wordClassName` is applied to each word span (and the plain fallback),
+ * so per-word paint styles like gradient text survive the transform.
  */
 export default function MotionText({
   children,
   className = "",
   delay = 0,
+  wordClassName,
 }: {
   children: ReactNode;
   className?: string;
   delay?: number;
+  wordClassName?: string;
 }) {
   const shouldReduceMotion = useReducedMotion();
   const words = typeof children === "string" ? children.split(" ") : null;
 
   if (!words || shouldReduceMotion) {
-    return <span className={className}>{children}</span>;
+    return (
+      <span className={wordClassName ? `${className} ${wordClassName}` : className}>
+        {children}
+      </span>
+    );
   }
 
   return (
@@ -56,7 +64,10 @@ export default function MotionText({
           aria-hidden="true"
           className="inline-block overflow-hidden pb-[0.08em] -mb-[0.08em] align-bottom"
         >
-          <motion.span className="inline-block will-change-transform" variants={wordVariants}>
+          <motion.span
+            className={`inline-block will-change-transform${wordClassName ? ` ${wordClassName}` : ""}`}
+            variants={wordVariants}
+          >
             {word}
             {i < words.length - 1 ? "\u00A0" : ""}
           </motion.span>

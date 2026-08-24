@@ -44,9 +44,9 @@ export default function ProblemSection() {
           <h2 id="reality-heading" className="font-display text-3xl sm:text-4xl md:text-[2.9rem] font-semibold text-white leading-[1.12] tracking-tight">
             <MotionText>Lakh-strong applicant pools.</MotionText>
             <br />
-            <span className="text-gradient">
-              <MotionText delay={0.25}>Single-digit selection.</MotionText>
-            </span>
+            <MotionText delay={0.25} wordClassName="text-gradient">
+              Single-digit selection.
+            </MotionText>
           </h2>
           <Reveal delay={0.15}>
             <p className="mt-6 text-base sm:text-lg text-[var(--text-muted)] leading-relaxed max-w-2xl">
