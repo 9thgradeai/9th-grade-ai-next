@@ -8,15 +8,15 @@ export function AuthChoice({ onChoose }: { onChoose: (kind: "login" | "signup") 
     {
       kind: "login" as const,
       title: "I have an account",
-      subtitle: "Sign in to your dashboard",
-      tag: "MEMBER",
+      subtitle: "Sign in — your admit card is waiting",
+      tag: "EXAMINEE",
       icon: <ArrowRight className="h-5 w-5" aria-hidden="true" />,
     },
     {
       kind: "signup" as const,
       title: "I'm new here",
-      subtitle: "Create your account",
-      tag: "NEW",
+      subtitle: "Form fill-up — issue your first admit card",
+      tag: "NEW ASPIRANT",
       icon: <Sparkles className="h-5 w-5" aria-hidden="true" />,
     },
   ]

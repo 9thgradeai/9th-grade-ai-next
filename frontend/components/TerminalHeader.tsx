@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { motion, useScroll, useMotionValueEvent, useReducedMotion } from "framer-motion";
 import StatusPill from "./ui/StatusPill";
+import BrandMark from "./ui/BrandMark";
 
 const navLinks = [
   { href: "/#features", label: "Features", anchor: "#features" },
@@ -47,6 +48,9 @@ export default function TerminalHeader() {
   // Close the mobile menu on Escape and trap focus while open.
   useEffect(() => {
     if (!isMobileMenuOpen) return;
+    // Lock background scrolling so menu interaction stays predictable.
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key !== "Escape" && e.key !== "Tab") return;
       const menu = menuRef.current;
@@ -73,7 +77,10 @@ export default function TerminalHeader() {
     };
     document.addEventListener("keydown", onKeyDown);
     menuRef.current?.querySelector<HTMLElement>("a[href]")?.focus();
-    return () => document.removeEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = previousOverflow;
+    };
   }, [isMobileMenuOpen]);
 
   const isLinkActive = (href: string) =>
@@ -97,11 +104,11 @@ export default function TerminalHeader() {
               aria-label="9th-grade-ai home"
             >
               <motion.span
-                className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 via-emerald-500 to-cyan-500 shadow-glow-sm flex items-center justify-center text-zinc-950 font-mono font-bold"
+                className="inline-flex"
                 animate={shouldReduceMotion ? undefined : { scale: [1, 1.06, 1] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
               >
-                {"⌁"}
+                <BrandMark className="h-8 w-8 rounded-lg shadow-glow-sm" />
               </motion.span>
               <span>9th-grade-ai</span>
             </Link>
@@ -117,6 +124,7 @@ export default function TerminalHeader() {
                 href={link.href}
                 onMouseEnter={() => setActiveLink(link.href)}
                 onMouseLeave={() => setActiveLink(null)}
+                aria-current={spySection === link.href ? "location" : undefined}
                 className={`relative py-1 text-sm font-medium transition-colors ${
                   isLinkActive(link.href)
                     ? "text-emerald-400"
@@ -185,6 +193,7 @@ export default function TerminalHeader() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setIsMobileMenuOpen(false)}
+                aria-current={spySection === link.href ? "location" : undefined}
                 className="block px-3 py-3 min-h-[44px] flex items-center text-base font-medium text-zinc-300 hover:text-emerald-400"
               >
                 {link.label}

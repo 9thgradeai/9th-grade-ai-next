@@ -31,6 +31,35 @@ export function AuthEnvironment({ lit, children }: { lit: boolean; children: Rea
         animate={{ opacity: lit ? 0 : 0.84 }}
         transition={{ duration: 0.8, ease: "easeInOut" }}
       />
+
+      {/* Cold moonlight shaft — the only light before the lamp is on */}
+      <motion.div
+        aria-hidden="true"
+        className="pointer-events-none absolute -top-[12%] left-[-6%] z-0 h-[75vh] w-[46vw] rotate-[24deg]"
+        initial={{ opacity: 0.9 }}
+        animate={{ opacity: lit ? 0 : 0.9 }}
+        transition={{ duration: 0.9, ease: "easeInOut" }}
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(129,140,248,0.16), rgba(129,140,248,0.05) 55%, transparent 80%)",
+          maskImage: "linear-gradient(180deg, black 40%, transparent)",
+          WebkitMaskImage: "linear-gradient(180deg, black 40%, transparent)",
+          filter: "blur(6px)",
+        }}
+      />
+
+      {/* Cinematic vignette — heavier in the dark, relaxes once lit */}
+      <motion.div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 z-0"
+        initial={{ opacity: 0.85 }}
+        animate={{ opacity: lit ? 0.3 : 0.85 }}
+        transition={{ duration: 0.9, ease: "easeInOut" }}
+        style={{
+          background:
+            "radial-gradient(ellipse 72% 60% at 50% 44%, transparent 42%, rgba(2,4,10,0.55) 78%, rgba(2,4,10,0.8))",
+        }}
+      />
       <motion.div
         aria-hidden="true"
         className="pointer-events-none absolute inset-x-0 top-[8%] z-0 h-[80vh]"

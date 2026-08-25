@@ -1,10 +1,17 @@
 import PublicShell from "@/components/public/PublicShell";
-import TerminalHero from "@/components/TerminalHero";
-import TrustStrip from "@/components/TrustStrip";
-import ProblemSection from "@/components/ProblemSection";
-import FeaturesGrid from "@/components/FeaturesGrid";
-import SyllabusExplorer from "@/components/SyllabusExplorer";
-import FinalCTA from "@/components/FinalCTA";
+import HeroSection from "@/components/landing/HeroSection";
+import TrustStripSection from "@/components/landing/TrustStripSection";
+import ProblemSection from "@/components/landing/ProblemSection";
+import IntelligenceSection from "@/components/landing/IntelligenceSection";
+import SignalSection from "@/components/landing/SignalSection";
+import AdaptivePracticeSection from "@/components/landing/AdaptivePracticeSection";
+import TutorSection from "@/components/landing/TutorSection";
+import ExamEngineSection from "@/components/landing/ExamEngineSection";
+import SubjectUniverseSection from "@/components/landing/SubjectUniverseSection";
+import AnalyticsSection from "@/components/landing/AnalyticsSection";
+import PlannerSection from "@/components/landing/PlannerSection";
+import PhilosophySection from "@/components/landing/PhilosophySection";
+import FinalCtaSection from "@/components/landing/FinalCtaSection";
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -25,12 +32,19 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <TerminalHero />
-      <TrustStrip />
+      <HeroSection />
+      <TrustStripSection />
       <ProblemSection />
-      <FeaturesGrid />
-      <SyllabusExplorer />
-      <FinalCTA />
+      <IntelligenceSection />
+      <SignalSection />
+      <AdaptivePracticeSection />
+      <TutorSection />
+      <ExamEngineSection />
+      <SubjectUniverseSection />
+      <AnalyticsSection />
+      <PlannerSection />
+      <PhilosophySection />
+      <FinalCtaSection />
     </PublicShell>
   );
 }

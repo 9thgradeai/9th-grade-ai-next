@@ -49,7 +49,7 @@ describe("AuthExperience", () => {
     render(<AuthExperience />)
 
     expect(screen.getAllByRole("button", { name: /turn on the light/i }).length).toBeGreaterThan(0)
-    expect(screen.queryByText("Do you already have an account?")).not.toBeInTheDocument()
+    expect(screen.queryByText("First attempt here, or returning examinee?")).not.toBeInTheDocument()
     expect(screen.queryByRole("img", { name: /friendly companion/i })).not.toBeInTheDocument()
   })
 
@@ -60,7 +60,7 @@ describe("AuthExperience", () => {
 
     await waitFor(
       () => {
-        expect(screen.getByText("Do you already have an account?")).toBeInTheDocument()
+        expect(screen.getByText("First attempt here, or returning examinee?")).toBeInTheDocument()
         expect(screen.getByRole("button", { name: /i have an account/i })).toBeInTheDocument()
         expect(screen.getByRole("button", { name: /i'm new here/i })).toBeInTheDocument()
       },
@@ -92,7 +92,7 @@ describe("AuthExperience", () => {
     await waitFor(() => {
       expect(h.login).toHaveBeenCalledWith("demo@9thgrade.ai", "secret123", { redirect: false })
     })
-    await waitFor(() => expect(screen.getByText("Welcome back. Let's go.")).toBeInTheDocument(), {
+    await waitFor(() => expect(screen.getByText("Seat confirmed. See you inside.")).toBeInTheDocument(), {
       timeout: 2000,
     })
     await waitFor(() => expect(h.push).toHaveBeenCalledWith("/dashboard"), { timeout: 2500 })
@@ -122,7 +122,7 @@ describe("AuthExperience", () => {
       expect(screen.getByText("We couldn't sign you in with those details.")).toBeInTheDocument()
     )
     await waitFor(() =>
-      expect(screen.getByText("Hmm... something didn't go as expected.")).toBeInTheDocument()
+      expect(screen.getByText("That didn't match our records. Try again?")).toBeInTheDocument()
     )
     expect(h.push).not.toHaveBeenCalled()
   })
@@ -161,8 +161,11 @@ describe("AuthExperience", () => {
         redirect: false,
       })
     })
-    await waitFor(() => expect(screen.getByText("You're all set. ✨")).toBeInTheDocument(), {
-      timeout: 2000,
+    await waitFor(() => {
+      expect(screen.getByText("Admit card issued. ✨")).toBeInTheDocument()
+      expect(screen.getAllByText("Rahim Uddin").length).toBeGreaterThan(0)
+      expect(screen.getByText(/9th-Grade AI · Admit Card/i)).toBeInTheDocument()
+      expect(screen.getByRole("button", { name: /enter the hall/i })).toBeInTheDocument()
     })
   })
 
@@ -175,11 +178,55 @@ describe("AuthExperience", () => {
     await waitFor(() => expect(screen.getByLabelText("Name")).toBeInTheDocument(), {
       timeout: 2000,
     })
-    expect(screen.queryByText("Do you already have an account?")).not.toBeInTheDocument()
+    expect(screen.queryByText("First attempt here, or returning examinee?")).not.toBeInTheDocument()
   })
 
   it("never renders audio (the avatar does not speak)", async () => {
     render(<AuthExperience />)
     expect(document.querySelector("audio")).toBeNull()
+  })
+
+  it("issues a personalized admit card on successful login", async () => {
+    render(<AuthExperience />)
+
+    fireEvent.click(screen.getAllByRole("button", { name: /turn on the light/i })[0])
+    await waitFor(
+      () => expect(screen.getByRole("button", { name: /i have an account/i })).toBeInTheDocument(),
+      { timeout: 2000 }
+    )
+    fireEvent.click(screen.getByRole("button", { name: /i have an account/i }))
+    await waitFor(() => expect(screen.getByLabelText("Email")).toBeInTheDocument(), {
+      timeout: 2000,
+    })
+
+    fireEvent.change(screen.getByLabelText("Email"), { target: { value: "demo@9thgrade.ai" } })
+    fireEvent.change(screen.getByLabelText("Password"), { target: { value: "secret123" } })
+    submitForm("Sign in securely")
+
+    // Name derived from the email local-part ("demo" → "Demo").
+    await waitFor(() =>
+      expect(screen.getAllByText("Demo").length).toBeGreaterThan(0)
+    )
+    expect(screen.getByText(/Returning Examinee/i)).toBeInTheDocument()
+    expect(screen.getByText(/Session valid · 7 days/i)).toBeInTheDocument()
+
+    fireEvent.click(await screen.findByRole("button", { name: /enter the hall/i }))
+    await waitFor(() => expect(h.push).toHaveBeenCalledWith("/dashboard"))
+  })
+
+  it("shows the Caps Lock hint only while active", async () => {
+    // jsdom cannot reproduce modifier-state through React's synthetic proxy,
+    // so the hint UI and its guard are covered directly.
+    const { CapsLockWarning, readCapsLock } = await import("@/components/auth/CapsLockWarning")
+
+    const { rerender } = render(<CapsLockWarning visible={false} />)
+    expect(screen.queryByText(/caps lock is on/i)).not.toBeInTheDocument()
+
+    rerender(<CapsLockWarning visible />)
+    expect(screen.getByRole("status")).toHaveTextContent(/caps lock is on/i)
+
+    expect(readCapsLock({ getModifierState: () => true })).toBe(true)
+    expect(readCapsLock({ getModifierState: () => false })).toBe(false)
+    expect(readCapsLock({})).toBe(false)
   })
 })

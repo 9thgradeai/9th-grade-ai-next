@@ -2,6 +2,9 @@
 // The whole flow is driven by a single explicit stage — there are no free-floating
 // booleans that can contradict each other. The avatar's expression/text/animation
 // are derived from that stage plus transient signals (busy / error / focus).
+//
+// Copy voice: the product frames sign-in/sign-up as entering the exam hall —
+// aspirants know this ritual intimately, so the journey borrows it.
 
 export type AuthStage = "lamp" | "choice" | "login" | "signup" | "success"
 
@@ -58,25 +61,25 @@ export const avatarStates: Record<AuthAvatarState, AvatarConfig> = {
   },
   welcoming: {
     expression: { eyes: "happy", mouth: "wide", brows: "calm", blush: true },
-    message: "Hey there. 👋",
+    message: "The hall is open. Ready when you are.",
     sparkle: false,
     headTilt: -3,
   },
   asking: {
     expression: { eyes: "open", mouth: "small", brows: "curious", blush: false },
-    message: "Do you already have an account?",
+    message: "First attempt here, or returning examinee?",
     sparkle: false,
     headTilt: 4,
   },
   login: {
     expression: { eyes: "open", mouth: "smile", brows: "calm", blush: false },
-    message: "Welcome back.",
+    message: "Show me your admit card.",
     sparkle: false,
     headTilt: 0,
   },
   signup: {
     expression: { eyes: "open", mouth: "smile", brows: "curious", blush: false },
-    message: "Let's get you set up.",
+    message: "Form fill-up — takes under a minute.",
     sparkle: false,
     headTilt: 2,
   },
@@ -111,20 +114,20 @@ export const avatarStates: Record<AuthAvatarState, AvatarConfig> = {
   },
   loading: {
     expression: { eyes: "open", mouth: "open", brows: "curious", blush: false, gaze: "up" },
-    message: "One moment...",
+    message: "Checking the register...",
     sparkle: false,
     headTilt: -3,
   },
   success: {
     expression: { eyes: "happy", mouth: "wide", brows: "calm", blush: true },
-    message: "Welcome back. Let's go.",
+    message: "Seat confirmed. See you inside.",
     sparkle: true,
     wave: true,
     headTilt: -3,
   },
   celebrating: {
     expression: { eyes: "happy", mouth: "wide", brows: "calm", blush: true },
-    message: "You're all set. ✨",
+    message: "Admit card issued. ✨",
     sparkle: true,
     wave: true,
     headTilt: -3,
@@ -137,7 +140,7 @@ export const avatarStates: Record<AuthAvatarState, AvatarConfig> = {
   },
   error: {
     expression: { eyes: "open", mouth: "frown", brows: "concerned", blush: false, gaze: "down" },
-    message: "Hmm... something didn't go as expected.",
+    message: "That didn't match our records. Try again?",
     sparkle: false,
     headTilt: -6,
   },

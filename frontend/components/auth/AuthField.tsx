@@ -1,6 +1,6 @@
 "use client"
 
-import type { ReactNode } from "react"
+import type { KeyboardEvent, ReactNode } from "react"
 
 export function AuthField({
   id,
@@ -10,6 +10,8 @@ export function AuthField({
   onChange,
   onFocus,
   onBlur,
+  onKeyDown,
+  onKeyUp,
   error,
   autoComplete,
   placeholder,
@@ -25,6 +27,8 @@ export function AuthField({
   onChange: (value: string) => void
   onFocus?: () => void
   onBlur?: () => void
+  onKeyDown?: (event: KeyboardEvent<HTMLInputElement>) => void
+  onKeyUp?: (event: KeyboardEvent<HTMLInputElement>) => void
   error?: string
   autoComplete?: string
   placeholder?: string
@@ -60,6 +64,8 @@ export function AuthField({
           onChange={(e) => onChange(e.target.value)}
           onFocus={onFocus}
           onBlur={onBlur}
+          onKeyDown={onKeyDown}
+          onKeyUp={onKeyUp}
           autoComplete={autoComplete}
           placeholder={placeholder}
           inputMode={inputMode}

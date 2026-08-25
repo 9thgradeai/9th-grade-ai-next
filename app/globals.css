@@ -324,6 +324,19 @@ html.light .text-gradient {
   animation-play-state: paused;
 }
 
+/* Reduced motion: freeze the marquee into a static wrapped row */
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+    width: auto;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .marquee-dup {
+    display: none !important;
+  }
+}
+
 /* Soft pulsing glow (reduced-motion safe via global override) */
 @keyframes pulse-soft {
   0%,

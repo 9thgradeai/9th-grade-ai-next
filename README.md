@@ -168,11 +168,19 @@ Visitors land on `/` and explore the marketing surface without an account:
 
 | Component | Purpose |
 |-----------|---------|
-| `TerminalHero` | Brand pitch + primary CTA → login/register |
-| `TrustStrip` | Stats strip (question count, subjects, users) |
-| `FeaturesGrid` | Feature showcase |
-| `SyllabusExplorer` | Interactive preview of the BCS syllabus taxonomy (read-only, non-persistent) |
-| `FinalCTA` | Conversion CTA → login/register |
+| `landing/HeroSection` | Cinematic hero — knowledge-field canvas, pointer-reactive depth, CTAs → login/register |
+| `landing/TrustStripSection` | Exam-track marquee (CSS-only, reduced-motion safe) |
+| `landing/ProblemSection` | The three structural frictions of exam prep |
+| `landing/IntelligenceSection` | Interactive knowledge graph (Subjects → … → Strengths) |
+| `landing/SignalSection` | Answer-signal pipeline with correct/incorrect simulation |
+| `landing/AdaptivePracticeSection` | Circular adaptive loop (`#features`) |
+| `landing/TutorSection` | AI tutor reasoning timeline |
+| `landing/ExamEngineSection` | Track cards → `/tracks#…` |
+| `landing/SubjectUniverseSection` | Subject constellation around the knowledge core (`#syllabus`) |
+| `landing/AnalyticsSection` | Sample dashboard visualization |
+| `landing/PlannerSection` | Weak Topic → Mastery path drawn on scroll |
+| `landing/PhilosophySection` | Scroll-linked typography moment |
+| `landing/FinalCtaSection` | Conversion CTA → login/register |
 
 ### Stage 2 — Authentication
 

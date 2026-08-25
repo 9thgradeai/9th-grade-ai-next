@@ -29,7 +29,7 @@ const assets = [
   {
     icon: Image,
     title: "Logo & Brand",
-    text: "The brand mark is a glowing emerald-and-cyan terminal glyph (⌁) on a dark cosmic backdrop. Fonts: Space Grotesk for display, Inter for body, JetBrains Mono for code.",
+    text: "The brand mark is a knowledge constellation — four connected nodes orbiting a luminous core inside a deep-space tile, ringed in blue→cyan→violet. Fonts: Space Grotesk for display, Inter for body, JetBrains Mono for code.",
   },
   {
     icon: FileText,

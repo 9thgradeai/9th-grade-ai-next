@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react"
 import { ArrowLeft, Eye, EyeOff, KeyRound, Loader2, Mail, ShieldCheck } from "lucide-react"
 import { AuthField } from "./AuthField"
+import { CapsLockWarning, readCapsLock } from "./CapsLockWarning"
 import type { FocusField } from "./auth-state"
 
 export type LoginValues = { email: string; password: string }
@@ -27,6 +28,7 @@ export function LoginForm({
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
+  const [capsLock, setCapsLock] = useState(false)
   const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({})
 
   const validate = () => {
@@ -68,39 +70,47 @@ export function LoginForm({
         inputMode="email"
         leftIcon={<Mail className="h-4.5 w-4.5" aria-hidden="true" />}
       />
-      <AuthField
-        id="login-password"
-        label="Password"
-        type={showPassword ? "text" : "password"}
-        name="password"
-        value={password}
-        onChange={(v) => {
-          setPassword(v)
-          setFieldErrors((f) => ({ ...f, password: undefined }))
-          onClearError()
-          onTyping?.()
-        }}
-        onFocus={() => onFocusChange("password")}
-        onBlur={() => onFocusChange(null)}
-        error={fieldErrors.password}
-        autoComplete="current-password"
-        placeholder="Your password"
-        leftIcon={<KeyRound className="h-4.5 w-4.5" aria-hidden="true" />}
-        rightSlot={
-          <button
-            type="button"
-            onClick={() => setShowPassword((s) => !s)}
-            aria-label={showPassword ? "Hide password" : "Show password"}
-            className="rounded-lg p-1.5 text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)] focus-visible:ring-2 focus-visible:ring-emerald-400/80"
-          >
-            {showPassword ? (
-              <EyeOff className="h-4 w-4" aria-hidden="true" />
-            ) : (
-              <Eye className="h-4 w-4" aria-hidden="true" />
-            )}
-          </button>
-        }
-      />
+      <div>
+        <AuthField
+          id="login-password"
+          label="Password"
+          type={showPassword ? "text" : "password"}
+          name="password"
+          value={password}
+          onChange={(v) => {
+            setPassword(v)
+            setFieldErrors((f) => ({ ...f, password: undefined }))
+            onClearError()
+            onTyping?.()
+          }}
+          onFocus={() => onFocusChange("password")}
+          onBlur={() => {
+            setCapsLock(false)
+            onFocusChange(null)
+          }}
+          onKeyDown={(e) => setCapsLock(readCapsLock(e))}
+          onKeyUp={(e) => setCapsLock(readCapsLock(e))}
+          error={fieldErrors.password}
+          autoComplete="current-password"
+          placeholder="Your password"
+          leftIcon={<KeyRound className="h-4.5 w-4.5" aria-hidden="true" />}
+          rightSlot={
+            <button
+              type="button"
+              onClick={() => setShowPassword((s) => !s)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              className="rounded-lg p-1.5 text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)] focus-visible:ring-2 focus-visible:ring-emerald-400/80"
+            >
+              {showPassword ? (
+                <EyeOff className="h-4 w-4" aria-hidden="true" />
+              ) : (
+                <Eye className="h-4 w-4" aria-hidden="true" />
+              )}
+            </button>
+          }
+        />
+        <CapsLockWarning visible={capsLock} />
+      </div>
 
       {error && (
         <p

@@ -14,6 +14,7 @@ import { LogoutFarewellProvider, useFarewell } from "@/lib/farewell-ctx";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 import { useAuth } from "@/lib/auth-ctx";
 import { TABS, type TabId } from "@/lib/data";
+import BrandMark from "@/components/ui/BrandMark";
 
 // The voice tutor (speech-recognition stack) is only needed when launched —
 // keep it out of the critical dashboard bundle.
@@ -106,9 +107,7 @@ function DashboardShell({
               className="lg:hidden flex items-center gap-2 font-display font-semibold text-white text-base"
               aria-label="9th-grade-ai home"
             >
-              <span className="w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-400 via-emerald-500 to-cyan-500 shadow-[0_0_16px_rgba(16,185,129,0.35)] flex items-center justify-center text-zinc-950 font-mono font-bold text-sm">
-                {"⌁"}
-              </span>
+              <BrandMark className="h-7 w-7 rounded-lg shadow-[0_0_16px_rgba(16,185,129,0.35)]" />
               <span>9th-grade-ai</span>
             </Link>
 

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import BrandMark from "@/components/ui/BrandMark";
 import { motion, useReducedMotion } from "framer-motion";
 import { GitBranch, Globe, Play, Mail, Zap, BookOpen, ShieldCheck, Languages } from "lucide-react";
 import { version } from "../../package.json";
@@ -70,9 +71,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="md:col-span-2">
             <Link href="/" className="flex items-center gap-2.5 font-display text-xl font-semibold text-white tracking-tight mb-6">
-              <span className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 via-emerald-500 to-cyan-500 shadow-glow-sm flex items-center justify-center text-zinc-950 font-mono font-bold">
-                {"⌁"}
-              </span>
+              <BrandMark className="h-8 w-8 rounded-lg shadow-glow-sm" />
               <span>9th-grade-ai</span>
             </Link>
             <p className="text-sm text-zinc-500 max-w-xs mb-6 leading-relaxed">

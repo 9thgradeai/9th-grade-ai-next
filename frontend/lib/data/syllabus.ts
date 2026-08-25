@@ -1,4 +1,5 @@
-// BCS preliminary syllabus structure rendered by the landing SyllabusExplorer.
+// BCS preliminary syllabus structure rendered by the landing Subject
+// Universe section (via frontend/components/landing/subjects.ts).
 // Question counts reflect the seeded question bank; study hours are editorial
 // estimates for planning purposes. No personal progress data lives here —
 // authenticated progress comes from /api/progress.

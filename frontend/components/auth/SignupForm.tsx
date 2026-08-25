@@ -3,11 +3,12 @@
 import { useMemo, useState, type FormEvent } from "react"
 import { ArrowLeft, Eye, EyeOff, KeyRound, Loader2, Mail, Rocket, UserRound } from "lucide-react"
 import { AuthField } from "./AuthField"
+import { CapsLockWarning, readCapsLock } from "./CapsLockWarning"
 import type { FocusField } from "./auth-state"
 
 export type SignupValues = { name: string; email: string; password: string }
 
-const STRENGTH_LABEL = ["Too weak", "Too weak", "Getting there", "Good", "Excellent"]
+const STRENGTH_LABEL = ["Needs work", "Needs work", "Warming up", "Exam-ready", "Fortress"]
 
 // Heuristic password strength 0-4; -1 when empty (no feedback yet).
 export function passwordStrength(password: string): number {
@@ -47,6 +48,7 @@ export function SignupForm({
   const [password, setPassword] = useState("")
   const [confirm, setConfirm] = useState("")
   const [showPassword, setShowPassword] = useState(false)
+  const [capsLock, setCapsLock] = useState(false)
   const [fieldErrors, setFieldErrors] = useState<{
     name?: string
     email?: string
@@ -118,6 +120,9 @@ export function SignupForm({
         leftIcon={<Mail className="h-4.5 w-4.5" aria-hidden="true" />}
       />
       <div>
+        <p className="mb-3 text-center font-mono text-[10px] uppercase tracking-[0.24em] text-emerald-400/80">
+          Form fill-up · Free forever · No card required
+        </p>
         <AuthField
           id="signup-password"
           label="Password"
@@ -132,7 +137,12 @@ export function SignupForm({
             onStrengthChange?.(passwordStrength(v))
           }}
           onFocus={() => onFocusChange("password")}
-          onBlur={() => onFocusChange(null)}
+          onBlur={() => {
+            setCapsLock(false)
+            onFocusChange(null)
+          }}
+          onKeyDown={(e) => setCapsLock(readCapsLock(e))}
+          onKeyUp={(e) => setCapsLock(readCapsLock(e))}
           error={fieldErrors.password}
           autoComplete="new-password"
           placeholder="At least 8 characters"
@@ -165,10 +175,11 @@ export function SignupForm({
               ))}
             </div>
             <p className="mt-1.5 text-xs font-medium text-[var(--text-muted)]">
-              Strength: <span className="text-emerald-400">{STRENGTH_LABEL[strength]}</span>
+              Preparation level: <span className="text-emerald-400">{STRENGTH_LABEL[strength]}</span>
             </p>
           </div>
         )}
+        <CapsLockWarning visible={capsLock} />
       </div>
       <AuthField
         id="signup-confirm"

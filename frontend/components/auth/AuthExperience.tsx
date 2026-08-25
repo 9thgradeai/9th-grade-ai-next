@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { AnimatePresence, motion, useAnimationControls, useReducedMotion } from "framer-motion"
-import { ArrowRight, Check, ShieldCheck, Sun } from "lucide-react"
+import { ArrowRight, MoonStar, ShieldCheck, Sun } from "lucide-react"
 import { useAuth } from "@/lib/auth-ctx"
 import { AuthEnvironment } from "./AuthEnvironment"
 import { Lamp } from "./Lamp"
@@ -12,6 +12,8 @@ import { Avatar } from "./Avatar"
 import { AuthMessage } from "./AuthMessage"
 import { AuthChoice } from "./AuthChoice"
 import { Celebration } from "./Celebration"
+import { AdmitCard, deriveDisplayName } from "./AdmitCard"
+import BrandMark from "@/components/ui/BrandMark"
 import { LoginForm, type LoginValues } from "./LoginForm"
 import { SignupForm, type SignupValues } from "./SignupForm"
 import {
@@ -40,6 +42,9 @@ export default function AuthExperience({
   const [successKind, setSuccessKind] = useState<AuthSuccessKind>("login")
   const [strength, setStrength] = useState(-1)
   const [tick, setTick] = useState(0)
+  // Account details captured at submit time so the admit card can greet the
+  // user by name even before /api/auth/me round-trips.
+  const [account, setAccount] = useState<{ name: string; email: string } | null>(null)
 
   const pendingStage = useRef<AuthStage | null>(initialStage)
   const redirectTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -97,6 +102,7 @@ export default function AuthExperience({
       setBusy(true)
       try {
         await login(values.email, values.password, { redirect: false })
+        setAccount({ name: deriveDisplayName(values.email), email: values.email })
         setSuccessKind("login")
         setStage("success")
         scheduleRedirect()
@@ -121,6 +127,7 @@ export default function AuthExperience({
       setBusy(true)
       try {
         await register(values.name, values.email, values.password, { redirect: false })
+        setAccount({ name: values.name, email: values.email })
         setSuccessKind("signup")
         setStage("success")
         scheduleRedirect()
@@ -191,8 +198,63 @@ export default function AuthExperience({
     >
       <div className="my-auto flex w-full flex-col items-center justify-center">
       {stage === "lamp" && (
-        <div className="flex w-full flex-col items-center gap-3 sm:gap-4">
-          <Lamp lit={lit} interactive={stage === "lamp"} onActivate={activate} />
+        <div className="flex w-full flex-col items-center gap-4 sm:gap-5">
+          {/* The dark scene — dissolves as the room fills with light */}
+          <AnimatePresence>
+            {!lit && (
+              <motion.div
+                key="dark-scene"
+                className="flex w-full flex-col items-center gap-3 sm:gap-4"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.45 }}
+              >
+                <p className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.26em] text-emerald-400/70">
+                  <MoonStar className="h-3.5 w-3.5" aria-hidden="true" />
+                  Study hour · <LocalTime />
+                </p>
+                <p className="max-w-xs text-center font-display text-xl leading-snug text-zinc-300 sm:max-w-sm sm:text-2xl">
+                  Your exam won&rsquo;t wait.
+                  <span className="mt-1 block text-base font-normal text-[var(--text-muted)] sm:text-lg">
+                    Neither should your preparation.
+                  </span>
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Unit-9 waits in the darkness — two LEDs and an antenna tip */}
+          <AnimatePresence>
+            {!lit && (
+              <motion.div
+                key="dark-unit9"
+                aria-hidden="true"
+                className="flex flex-col items-center gap-1"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ duration: 0.4 }}
+              >
+                <span className="h-3 w-px bg-emerald-400/25" />
+                <div className="flex items-center gap-2.5">
+                  <motion.span
+                    className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.95)]"
+                    animate={reduced ? undefined : { opacity: [0.85, 0.2, 0.85] }}
+                    transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
+                  />
+                  <motion.span
+                    className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.95)]"
+                    animate={reduced ? undefined : { opacity: [0.2, 0.85, 0.2] }}
+                    transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
+                  />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <Lamp lit={lit} interactive onActivate={activate} />
+
           {!lit && (
             <motion.div
               key="turn-on"
@@ -209,7 +271,9 @@ export default function AuthExperience({
                 <Sun className="h-4 w-4" aria-hidden="true" />
                 Turn on the light
               </button>
-              <p className="text-center text-xs text-[var(--text-muted)]">A quiet place to begin.</p>
+              <p className="text-center text-xs text-[var(--text-muted)]">
+                Pull the cord — your desk is ready, a million questions are waiting.
+              </p>
             </motion.div>
           )}
         </div>
@@ -266,34 +330,31 @@ export default function AuthExperience({
         <motion.div
           key="success"
           className="flex w-full flex-col items-center gap-4 text-center"
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={{ opacity: 0, scale: 0.97 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.35, ease: "easeOut" }}
         >
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: "spring", stiffness: 420, damping: 22, delay: 0.05 }}
-            className="flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500 text-white shadow-[0_0_30px_rgba(16,185,129,0.45)]"
-          >
-            <Check className="h-7 w-7" aria-hidden="true" />
-          </motion.div>
+          <AdmitCard
+            name={account?.name ?? deriveDisplayName(account?.email ?? "")}
+            email={account?.email ?? ""}
+            kind={successKind}
+          />
           <div>
             <p className="font-display text-2xl font-semibold text-[var(--foreground)]">
-              {successKind === "signup" ? "You're all set." : "Welcome back."}
+              {successKind === "signup" ? "Your seat is reserved." : "Welcome back, examinee."}
             </p>
             <p className="mt-1 text-sm text-[var(--text-muted)]">
               {successKind === "signup"
-                ? "Your account is ready — let's start preparing."
-                : "Your dashboard is ready — let's keep going."}
+                ? "Your preparation starts the moment you step in."
+                : "The hall kept your place — let's keep going."}
             </p>
           </div>
           <button
             type="button"
             onClick={continueNow}
-            className="flex items-center gap-2 rounded-xl bg-emerald-500 px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-emerald-600 hover:shadow-[0_8px_24px_rgba(16,185,129,0.35)] active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-emerald-400/80"
+            className="btn-shine flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(16,185,129,0.3)] transition-all hover:shadow-[0_10px_32px_rgba(16,185,129,0.45)] active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-emerald-400/80"
           >
-            Continue to dashboard
+            Enter the hall
             <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </button>
         </motion.div>
@@ -310,12 +371,7 @@ export default function AuthExperience({
             href="/"
             className="flex items-center gap-2.5 font-display text-[15px] font-semibold text-[var(--foreground)] transition-opacity hover:opacity-85"
           >
-            <span
-              aria-hidden="true"
-              className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-400 to-cyan-500 text-sm font-bold text-white shadow-[0_0_18px_rgba(16,185,129,0.35)]"
-            >
-              9
-            </span>
+            <BrandMark className="h-7 w-7 rounded-lg shadow-[0_0_18px_rgba(16,185,129,0.35)]" />
             9Th-Grade AI
           </Link>
           <Link
@@ -336,7 +392,7 @@ export default function AuthExperience({
             className="hidden items-center gap-2 font-mono text-[11px] uppercase tracking-[0.28em] text-emerald-400/80 sm:flex"
           >
             <span className="h-px w-6 bg-emerald-400/40" />
-            Secure access portal
+            Exam hall — secure entry
             <span className="h-px w-6 bg-emerald-400/40" />
           </motion.div>
 
@@ -353,13 +409,13 @@ export default function AuthExperience({
             style={{ opacity: lit ? 1 : 0 }}
           >
             {["lamp", "choice", "form", "success"].map((s, i) => {
+              const idx = indexOfStage(stage)
               const active =
-                (s === "lamp" && stage === "lamp") ||
-                (s === "choice" &&
-                  (stage === "choice" || stage === "login" || stage === "signup")) ||
-                (s === "form" && (stage === "login" || stage === "signup")) ||
-                (s === "success" && stage === "success")
-              const done = i < indexOfStage(stage)
+                (i === 0 && idx === 0) ||
+                (i === 1 && (idx === 1 || idx === 2)) ||
+                (i === 2 && idx === 2) ||
+                (i === 3 && idx === 3)
+              const done = i < idx
               return (
                 <div key={s} className="flex items-center gap-2">
                   {i > 0 && (
@@ -380,7 +436,7 @@ export default function AuthExperience({
 
           <p className="flex items-center gap-1.5 text-xs text-[var(--text-muted)]">
             <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
-            Secure session · Passwords are never stored in plain text
+            Secure session · Your password never leaves this page unhashed
           </p>
         </main>
       </div>
@@ -393,4 +449,27 @@ function indexOfStage(stage: AuthStage): number {
   if (stage === "choice") return 1
   if (stage === "login" || stage === "signup") return 2
   return 3
+}
+
+/**
+ * Live local time for the midnight-study scene. Renders a stable placeholder
+ * on the server and first paint, then ticks every 15s — hydration-safe.
+ */
+function LocalTime() {
+  const [time, setTime] = useState<string | null>(null)
+
+  useEffect(() => {
+    const update = () =>
+      setTime(
+        new Date().toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        })
+      )
+    update()
+    const id = window.setInterval(update, 15000)
+    return () => window.clearInterval(id)
+  }, [])
+
+  return <span className="tabular-nums">{time ?? "--:--"}</span>
 }

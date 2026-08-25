@@ -6,6 +6,7 @@ import { TABS, type TabId } from "@/lib/data";
 import { TAB_ICONS } from "@/lib/exam-ui";
 import type { ComponentType } from "react";
 import { useAuth } from "@/lib/auth-ctx";
+import BrandMark from "@/components/ui/BrandMark";
 import LogoutButton from "./LogoutButton";
 
 type IconProps = { className?: string; strokeWidth?: number };
@@ -28,9 +29,7 @@ export default function SideNav({ activeTab, onChange }: SideNavProps) {
       {/* Logo / Brand */}
       <div className="p-6 border-b border-default">
         <div className="flex items-center gap-2.5">
-          <span className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 via-emerald-500 to-cyan-500 shadow-[0_0_20px_rgba(16,185,129,0.35)] flex items-center justify-center text-zinc-950 font-mono font-bold">
-            {"⌁"}
-          </span>
+          <BrandMark className="h-8 w-8 rounded-lg shadow-[0_0_20px_rgba(16,185,129,0.35)]" />
           <div>
             <p className="font-display text-white font-semibold tracking-tight leading-tight">9th-grade-ai</p>
             <p className="text-[11px] text-zinc-500 font-mono">বিসিএস • ব্যাংক • চাকরি</p>

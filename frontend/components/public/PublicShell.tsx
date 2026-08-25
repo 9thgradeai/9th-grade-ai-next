@@ -1,5 +1,6 @@
 import TerminalHeader from "@/components/TerminalHeader";
 import Footer from "@/components/Footer";
+import BackToTop from "@/components/ui/BackToTop";
 
 export default function PublicShell({ children }: { children: React.ReactNode }) {
   return (
@@ -15,6 +16,7 @@ export default function PublicShell({ children }: { children: React.ReactNode })
         {children}
       </main>
       <Footer />
+      <BackToTop />
     </div>
   );
 }

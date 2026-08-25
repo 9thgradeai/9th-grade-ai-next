@@ -95,6 +95,31 @@ Shared primitives live in `frontend/components/ui/`:
 - Fixed top scroll-progress bar (`useScroll` + spring), reduced-motion aware.
 - File: `frontend/components/ui/ScrollProgress.tsx`.
 
+### BackToTop
+- Fixed back-to-top button for public pages (appears past ~90vh, smooth
+  scroll unless reduced motion). Threshold derived from Framer's scroll
+  MotionValue — no scroll listener.
+- File: `frontend/components/ui/BackToTop.tsx`.
+
+### Landing experience primitives (`frontend/components/landing/`)
+
+- **Interactive3DCard** — reusable dimensional card: pointer-tracked
+  perspective tilt (±`maxRotation`, default 3°) + cursor-following border
+  glow via CSS variables. Zero React state per pointer frame; disabled on
+  touch, reduced motion, and low-tier devices.
+- **Magnetic** — CTA wrapper drifting ≤5px toward the cursor; same gating.
+- **KnowledgeField** — shared hero Canvas 2D "knowledge intelligence field"
+  (drifting nodes + neural mesh). DPR capped at 1.5 (1 on low tier), particle
+  count scales with area AND device tier, pauses offscreen/tab-hidden,
+  renders one static frame under reduced motion or low tier.
+- **Device tiers** — `frontend/lib/motion/device.ts`: `detectDeviceTier()`
+  classifies high/mid/low from cores, memory, SaveData, pointer type;
+  `useMotionCapabilities()` gates pointer/continuous effects after mount.
+- **Motion language** — `frontend/lib/motion/variants.ts`: shared ease family
+  (`EASE_OUT_EXPO`) plus `fadeRise` / `heroItem` / `staggerParent`. Micro
+  150–250ms, UI 300–600ms, cinematic 600–1000ms — cinematic reserved for the
+  hero entrance and the philosophy section only.
+
 ## Surfaces & Tokens
 
 Defined in `app/globals.css`:
@@ -154,9 +179,10 @@ Defined in `app/globals.css`:
   (`initial={{ opacity: 0, y: 20 }}` → `animate={{ opacity: 1, y: 0 }}`).
 - **Dashboard tab transitions**: `app/dashboard/page.tsx` animates tab switches
   with `<AnimatePresence mode="wait">`, keyed by the active tab.
-- **Cinematic hero**: `TerminalHero` uses a staggered `Variants` entrance,
-  animated aurora orbs, count-up stat meters (`useInView` + rAF), magnetic
-  CTAs, and a 3D pointer-tilt on the terminal card.
+- **Cinematic hero**: `landing/HeroSection` uses a staggered `Variants`
+  entrance, word-mask headline reveals, a Canvas 2D knowledge field with
+  pointer-reactive parallax (MotionValues — no re-renders), magnetic CTAs,
+  and count-up-free stat row.
 - **Reusable primitives** in `frontend/components/ui/`:
   - `AnimatedList` — staggered list container (`staggerChildren: 0.05`).
 - **Transition presets**: `frontend/lib/transitions.ts` exports `transitions`
