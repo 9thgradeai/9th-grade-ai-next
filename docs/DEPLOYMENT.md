@@ -27,15 +27,25 @@ Runs the production server on the port defined by `PORT` (default 3000).
 
 ## Database (Production)
 
-The Vercel build runs `npm run db:sync` (`prisma db push` + idempotent seed)
-automatically when `VERCEL=1`, so schema and seed data stay in sync on every
-production deploy.
+Schema changes ship via **direct push** (`prisma db push`), not migration files.
+On every Vercel deploy the `prebuild` hook runs `npm run db:deploy-sync`
+(`prisma db push --skip-generate` + idempotent seed) when `VERCEL=1`, keeping the
+production schema in sync automatically. A destructive change fails the build
+instead of silently applying (`--accept-data-loss` is intentionally omitted in
+the deploy path).
 
-For manual application:
+If a deploy logs `WARNING: schema sync failed`, apply once manually against the
+production `DATABASE_URL`:
+
+```bash
+DATABASE_URL="<prod-url>" npm run db:push && DATABASE_URL="<prod-url>" npm run db:seed
+```
+
+For manual provisioning from scratch:
 
 1. Provision a PostgreSQL database (e.g., Neon, Supabase, AWS RDS).
 2. Update `DATABASE_URL` in `.env.local` (or your hosting provider's env config).
-3. Run migrations (schema push):
+3. Push the schema:
 
 ```bash
 npm run db:push

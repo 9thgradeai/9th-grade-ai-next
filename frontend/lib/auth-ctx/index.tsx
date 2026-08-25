@@ -47,6 +47,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           // tokenExpiry stayed null after reloads and long-lived tabs let
           // sessions hard-expire despite active use.
           setTokenExpiry(Date.now() + SESSION_DURATION_MS);
+        } else if (res.status === 401) {
+          // The cookie is missing OR stale (expired/revoked). It is HttpOnly,
+          // so only the server can remove it — ask /logout to clear it, then
+          // drop local state. Without this a dead cookie lingers and the
+          // login page's signed-in gate can fight the dashboard guard.
+          await fetch("/api/auth/logout", {
+            method: "POST",
+            credentials: "include",
+          }).catch(() => {});
+          setUser(null);
         } else {
           setUser(null);
         }

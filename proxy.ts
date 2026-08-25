@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { isValidSessionToken, readSessionCookie } from "~backend/session-verify";
 
 const PROTECTED_PREFIXES = ["/dashboard"];
 const AUTH_ROUTES = ["/login"];
@@ -15,9 +16,24 @@ const SECURITY_HEADERS: Record<string, string> = {
   "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
 };
 
-export function proxy(request: NextRequest) {
+/**
+ * Session gate for page routes.
+ *
+ * The cookie is CRYPTOGRAPHICALLY verified (signature + expiry), not merely
+ * probed for presence. A stale/garbage cookie therefore counts as signed-out:
+ *   • /dashboard  → redirect to /login   (no more blank-page redirect loops)
+ *   • /login      → bounce to /dashboard ONLY with a genuinely valid session
+ *
+ * Deep checks (user existence, tokenVersion revocation) remain in the route
+ * handlers — the edge only decides which PAGE makes sense to render.
+ */
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const hasSession = request.cookies.has("auth_token");
+
+  // Verify once per request; API routes re-validate deeply on their own.
+  const token = readSessionCookie(request.cookies);
+  const hasSession =
+    token !== null && (await isValidSessionToken(token, process.env.AUTH_SECRET));
 
   const isProtected = PROTECTED_PREFIXES.some(
     (p) => pathname === p || pathname.startsWith(`${p}/`),
