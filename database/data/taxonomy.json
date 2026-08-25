@@ -985,115 +985,248 @@
       "name": "04_আন্তর্জাতিক_বিষয়াবলি",
       "children": [
         {
-          "name": "০১_ইতিহাস_ও_ভূরাজনীতি",
+          "name": "০১_বৈশ্বিক_ইতিহাস_আঞ্চলিক_ও_আন্তর্জাতিক_ব্যবস্থা_ভূ-রাজনীতি",
           "children": [
             {
               "name": "বৈশ্বিক_ইতিহাস",
               "children": [],
-              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০১_ইতিহাস_ও_ভূরাজনীতি/বৈশ্বিক_ইতিহাস",
+              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০১_বৈশ্বিক_ইতিহাস_আঞ্চলিক_ও_আন্তর্জাতিক_ব্যবস্থা_ভূ-রাজনীতি/বৈশ্বিক_ইতিহাস",
               "depth": 3,
               "leaf": true
             },
             {
-              "name": "আঞ্চলিক_ব্যবস্থা",
+              "name": "আঞ্চলিক_ও_আন্তর্জাতিক_ব্যবস্থা",
               "children": [],
-              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০১_ইতিহাস_ও_ভূরাজনীতি/আঞ্চলিক_ব্যবস্থা",
+              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০১_বৈশ্বিক_ইতিহাস_আঞ্চলিক_ও_আন্তর্জাতিক_ব্যবস্থা_ভূ-রাজনীতি/আঞ্চলিক_ও_আন্তর্জাতিক_ব্যবস্থা",
               "depth": 3,
               "leaf": true
             },
             {
-              "name": "আন্তর্জাতিক_ব্যবস্থা",
+              "name": "গুরুত্বপূর্ণ_মহাদেশ_দেশ_রাজধানী_মুদ্রা_ইত্যাদি",
               "children": [],
-              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০১_ইতিহাস_ও_ভূরাজনীতি/আন্তর্জাতিক_ব্যবস্থা",
+              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০১_বৈশ্বিক_ইতিহাস_আঞ্চলিক_ও_আন্তর্জাতিক_ব্যবস্থা_ভূ-রাজনীতি/গুরুত্বপূর্ণ_মহাদেশ_দেশ_রাজধানী_মুদ্রা_ইত্যাদি",
               "depth": 3,
               "leaf": true
             },
             {
-              "name": "ভূ-রাজনীতি",
+              "name": "যুদ্ধ_ও_বিপ্লবসমূহ",
               "children": [],
-              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০১_ইতিহাস_ও_ভূরাজনীতি/ভূ-রাজনীতি",
+              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০১_বৈশ্বিক_ইতিহাস_আঞ্চলিক_ও_আন্তর্জাতিক_ব্যবস্থা_ভূ-রাজনীতি/যুদ্ধ_ও_বিপ্লবসমূহ",
               "depth": 3,
               "leaf": true
+            },
+            {
+              "name": "ইতিহাসের_গুরুত্বপূর্ণ_ব্যক্তি_ধর্মের_ইতিহাস",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০১_বৈশ্বিক_ইতিহাস_আঞ্চলিক_ও_আন্তর্জাতিক_ব্যবস্থা_ভূ-রাজনীতি/ইতিহাসের_গুরুত্বপূর্ণ_ব্যক্তি_ধর্মের_ইতিহাস",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "আইন",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০১_বৈশ্বিক_ইতিহাস_আঞ্চলিক_ও_আন্তর্জাতিক_ব্যবস্থা_ভূ-রাজনীতি/আইন",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "গুরুত্বপূর্ণ_আন্তর্জাতিক_বিষয়সমূহ",
+              "children": [
+                {
+                  "name": "মহাবিশ্ব",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০১_বৈশ্বিক_ইতিহাস_আঞ্চলিক_ও_আন্তর্জাতিক_ব্যবস্থা_ভূ-রাজনীতি/গুরুত্বপূর্ণ_আন্তর্জাতিক_বিষয়সমূহ/মহাবিশ্ব",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "সংস্কৃতি_ও_শিল্পকলা",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০১_বৈশ্বিক_ইতিহাস_আঞ্চলিক_ও_আন্তর্জাতিক_ব্যবস্থা_ভূ-রাজনীতি/গুরুত্বপূর্ণ_আন্তর্জাতিক_বিষয়সমূহ/সংস্কৃতি_ও_শিল্পকলা",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "আন্তর্জাতিক_দিবসসমূহ",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০১_বৈশ্বিক_ইতিহাস_আঞ্চলিক_ও_আন্তর্জাতিক_ব্যবস্থা_ভূ-রাজনীতি/গুরুত্বপূর্ণ_আন্তর্জাতিক_বিষয়সমূহ/আন্তর্জাতিক_দিবসসমূহ",
+                  "depth": 4,
+                  "leaf": true
+                }
+              ],
+              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০১_বৈশ্বিক_ইতিহাস_আঞ্চলিক_ও_আন্তর্জাতিক_ব্যবস্থা_ভূ-রাজনীতি/গুরুত্বপূর্ণ_আন্তর্জাতিক_বিষয়সমূহ",
+              "depth": 3
             }
           ],
-          "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০১_ইতিহাস_ও_ভূরাজনীতি",
+          "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০১_বৈশ্বিক_ইতিহাস_আঞ্চলিক_ও_আন্তর্জাতিক_ব্যবস্থা_ভূ-রাজনীতি",
           "depth": 2
         },
         {
-          "name": "০২_নিরাপত্তা_ও_ক্ষমতা",
+          "name": "০২_আন্তর্জাতিক_নিরাপত্তা_ও_আন্তরাষ্ট্রীয়_ক্ষমতা_সম্পর্ক",
           "children": [
             {
-              "name": "আন্তর্জাতিক_নিরাপত্তা",
+              "name": "NATO",
               "children": [],
-              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০২_নিরাপত্তা_ও_ক্ষমতা/আন্তর্জাতিক_নিরাপত্তা",
+              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০২_আন্তর্জাতিক_নিরাপত্তা_ও_আন্তরাষ্ট্রীয়_ক্ষমতা_সম্পর্ক/NATO",
               "depth": 3,
               "leaf": true
             },
             {
-              "name": "আন্তরাষ্ট্রীয়_ক্ষমতা_সম্পর্ক",
+              "name": "আন্তর্জাতিক_গুরুত্বপূর্ণ_অঞ্চল_সীমারেখা",
               "children": [],
-              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০২_নিরাপত্তা_ও_ক্ষমতা/আন্তরাষ্ট্রীয়_ক্ষমতা_সম্পর্ক",
-              "depth": 3,
-              "leaf": true
-            }
-          ],
-          "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০২_নিরাপত্তা_ও_ক্ষমতা",
-          "depth": 2
-        },
-        {
-          "name": "০৩_চলমান_ঘটনাপ্রবাহ",
-          "children": [
-            {
-              "name": "বিশ্বের_সাম্প্রতিক_ও_চলমান_ঘটনাপ্রবাহ",
-              "children": [],
-              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০৩_চলমান_ঘটনাপ্রবাহ/বিশ্বের_সাম্প্রতিক_ও_চলমান_ঘটনাপ্রবাহ",
-              "depth": 3,
-              "leaf": true
-            }
-          ],
-          "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০৩_চলমান_ঘটনাপ্রবাহ",
-          "depth": 2
-        },
-        {
-          "name": "০৪_পরিবেশ_ও_কূটনীতি",
-          "children": [
-            {
-              "name": "আন্তর্জাতিক_পরিবেশগত_ইস্যু",
-              "children": [],
-              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০৪_পরিবেশ_ও_কূটনীতি/আন্তর্জাতিক_পরিবেশগত_ইস্যু",
+              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০২_আন্তর্জাতিক_নিরাপত্তা_ও_আন্তরাষ্ট্রীয়_ক্ষমতা_সম্পর্ক/আন্তর্জাতিক_গুরুত্বপূর্ণ_অঞ্চল_সীমারেখা",
               "depth": 3,
               "leaf": true
             },
             {
-              "name": "কূটনীতি",
+              "name": "অন্যান্য_নিরাপত্তা_জোট_ও_বাহিনী",
               "children": [],
-              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০৪_পরিবেশ_ও_কূটনীতি/কূটনীতি",
-              "depth": 3,
-              "leaf": true
-            }
-          ],
-          "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০৪_পরিবেশ_ও_কূটনীতি",
-          "depth": 2
-        },
-        {
-          "name": "০৫_সংগঠন_ও_প্রতিষ্ঠান",
-          "children": [
-            {
-              "name": "আন্তর্জাতিক_সংগঠনসমূহ",
-              "children": [],
-              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০৫_সংগঠন_ও_প্রতিষ্ঠান/আন্তর্জাতিক_সংগঠনসমূহ",
+              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০২_আন্তর্জাতিক_নিরাপত্তা_ও_আন্তরাষ্ট্রীয়_ক্ষমতা_সম্পর্ক/অন্যান্য_নিরাপত্তা_জোট_ও_বাহিনী",
               "depth": 3,
               "leaf": true
             },
             {
-              "name": "বৈশ্বিক_অর্থনৈতিক_প্রতিষ্ঠানাদি",
+              "name": "আন্তর্জাতিক_বিভিন্ন_গেরিলা_বিদ্রোহী_সংগঠন",
               "children": [],
-              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০৫_সংগঠন_ও_প্রতিষ্ঠান/বৈশ্বিক_অর্থনৈতিক_প্রতিষ্ঠানাদি",
+              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০২_আন্তর্জাতিক_নিরাপত্তা_ও_আন্তরাষ্ট্রীয়_ক্ষমতা_সম্পর্ক/আন্তর্জাতিক_বিভিন্ন_গেরিলা_বিদ্রোহী_সংগঠন",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "আন্তর্জাতিক_চুক্তি_সংক্রান্ত_সনদ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০২_আন্তর্জাতিক_নিরাপত্তা_ও_আন্তরাষ্ট্রীয়_ক্ষমতা_সম্পর্ক/আন্তর্জাতিক_চুক্তি_সংক্রান্ত_সনদ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "রাষ্ট্র_ও_সরকার",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০২_আন্তর্জাতিক_নিরাপত্তা_ও_আন্তরাষ্ট্রীয়_ক্ষমতা_সম্পর্ক/রাষ্ট্র_ও_সরকার",
               "depth": 3,
               "leaf": true
             }
           ],
-          "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০৫_সংগঠন_ও_প্রতিষ্ঠান",
+          "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০২_আন্তর্জাতিক_নিরাপত্তা_ও_আন্তরাষ্ট্রীয়_ক্ষমতা_সম্পর্ক",
+          "depth": 2
+        },
+        {
+          "name": "০৩_বিশ্বের_সাম্প্রতিক_ও_চলমান_ঘটনাপ্রবাহ",
+          "children": [
+            {
+              "name": "নোবেল_এবং_অন্যান্য_আন্তর্জাতিক_পুরস্কার",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০৩_বিশ্বের_সাম্প্রতিক_ও_চলমান_ঘটনাপ্রবাহ/নোবেল_এবং_অন্যান্য_আন্তর্জাতিক_পুরস্কার",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "আন্তর্জাতিক_গুরুত্বপূর্ণ_জরিপ_ও_সমীক্ষা",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০৩_বিশ্বের_সাম্প্রতিক_ও_চলমান_ঘটনাপ্রবাহ/আন্তর্জাতিক_গুরুত্বপূর্ণ_জরিপ_ও_সমীক্ষা",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "আন্তর্জাতিক_খেলাধুলা_সম্পর্কিত",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০৩_বিশ্বের_সাম্প্রতিক_ও_চলমান_ঘটনাপ্রবাহ/আন্তর্জাতিক_খেলাধুলা_সম্পর্কিত",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "সাম্প্রতিক_সম্মেলন",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০৩_বিশ্বের_সাম্প্রতিক_ও_চলমান_ঘটনাপ্রবাহ/সাম্প্রতিক_সম্মেলন",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০৩_বিশ্বের_সাম্প্রতিক_ও_চলমান_ঘটনাপ্রবাহ",
+          "depth": 2
+        },
+        {
+          "name": "০৪_আন্তর্জাতিক_পরিবেশগত_ইস্যু_ও_কূটনীতি",
+          "children": [
+            {
+              "name": "পরিবেশগত_বিভিন্ন_ইস্যু",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০৪_আন্তর্জাতিক_পরিবেশগত_ইস্যু_ও_কূটনীতি/পরিবেশগত_বিভিন্ন_ইস্যু",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "পরিবেশ_বিষয়ক_সংস্থা_ও_জোট",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০৪_আন্তর্জাতিক_পরিবেশগত_ইস্যু_ও_কূটনীতি/পরিবেশ_বিষয়ক_সংস্থা_ও_জোট",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "পরিবেশ_বিষয়ক_চুক্তি_ও_সম্মেলন",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০৪_আন্তর্জাতিক_পরিবেশগত_ইস্যু_ও_কূটনীতি/পরিবেশ_বিষয়ক_চুক্তি_ও_সম্মেলন",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০৪_আন্তর্জাতিক_পরিবেশগত_ইস্যু_ও_কূটনীতি",
+          "depth": 2
+        },
+        {
+          "name": "০৫_আন্তর্জাতিক_সংগঠনসমূহ_এবং_বৈশ্বিক_অর্থনৈতিক_প্রতিষ্ঠানাদি",
+          "children": [
+            {
+              "name": "জাতিসংঘ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০৫_আন্তর্জাতিক_সংগঠনসমূহ_এবং_বৈশ্বিক_অর্থনৈতিক_প্রতিষ্ঠানাদি/জাতিসংঘ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "আন্তর্জাতিক_বিভিন্ন_সংস্থাসমূহ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০৫_আন্তর্জাতিক_সংগঠনসমূহ_এবং_বৈশ্বিক_অর্থনৈতিক_প্রতিষ্ঠানাদি/আন্তর্জাতিক_বিভিন্ন_সংস্থাসমূহ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "আন্তর্জাতিক_রাজনৈতিক_সংগঠন_ও_জোট",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০৫_আন্তর্জাতিক_সংগঠনসমূহ_এবং_বৈশ্বিক_অর্থনৈতিক_প্রতিষ্ঠানাদি/আন্তর্জাতিক_রাজনৈতিক_সংগঠন_ও_জোট",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "আন্তর্জাতিক_সেবা_মানবাধিকার_ও_দুর্নীতি_বিরোধী_সংস্থা",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০৫_আন্তর্জাতিক_সংগঠনসমূহ_এবং_বৈশ্বিক_অর্থনৈতিক_প্রতিষ্ঠানাদি/আন্তর্জাতিক_সেবা_মানবাধিকার_ও_দুর্নীতি_বিরোধী_সংস্থা",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "আঞ্চলিক_সহযোগিতা_সংগঠন_ও_জোট",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০৫_আন্তর্জাতিক_সংগঠনসমূহ_এবং_বৈশ্বিক_অর্থনৈতিক_প্রতিষ্ঠানাদি/আঞ্চলিক_সহযোগিতা_সংগঠন_ও_জোট",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "বিশ্বব্যাংক_ও_IMF",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০৫_আন্তর্জাতিক_সংগঠনসমূহ_এবং_বৈশ্বিক_অর্থনৈতিক_প্রতিষ্ঠানাদি/বিশ্বব্যাংক_ও_IMF",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "আন্তর্জাতিক_বিভিন্ন_অর্থনৈতিক_সংস্থাসমূহ",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০৫_আন্তর্জাতিক_সংগঠনসমূহ_এবং_বৈশ্বিক_অর্থনৈতিক_প্রতিষ্ঠানাদি/আন্তর্জাতিক_বিভিন্ন_অর্থনৈতিক_সংস্থাসমূহ",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/BCS_Question_Bank_Detailed/04_আন্তর্জাতিক_বিষয়াবলি/০৫_আন্তর্জাতিক_সংগঠনসমূহ_এবং_বৈশ্বিক_অর্থনৈতিক_প্রতিষ্ঠানাদি",
           "depth": 2
         }
       ],
@@ -2350,87 +2483,87 @@
       "name": "10_নৈতিকতা_মূল্যবোধ_ও_সু-শাসন",
       "children": [
         {
-          "name": "01_Definition_of_Values_and_Good_Governance",
+          "name": "Definition_of_Values_and_Good_Governance",
           "children": [],
-          "path": "/BCS_Question_Bank_Detailed/10_নৈতিকতা_মূল্যবোধ_ও_সু-শাসন/01_Definition_of_Values_and_Good_Governance",
+          "path": "/BCS_Question_Bank_Detailed/10_নৈতিকতা_মূল্যবোধ_ও_সু-শাসন/Definition_of_Values_and_Good_Governance",
           "depth": 2,
           "leaf": true
         },
         {
-          "name": "02_Relation_between_Values_and_Good_Governance",
+          "name": "Relation_between_Values_and_Good_Governance",
           "children": [],
-          "path": "/BCS_Question_Bank_Detailed/10_নৈতিকতা_মূল্যবোধ_ও_সু-শাসন/02_Relation_between_Values_and_Good_Governance",
+          "path": "/BCS_Question_Bank_Detailed/10_নৈতিকতা_মূল্যবোধ_ও_সু-শাসন/Relation_between_Values_and_Good_Governance",
           "depth": 2,
           "leaf": true
         },
         {
-          "name": "03_General_Perception",
+          "name": "General_Perception",
           "children": [],
-          "path": "/BCS_Question_Bank_Detailed/10_নৈতিকতা_মূল্যবোধ_ও_সু-শাসন/03_General_Perception",
+          "path": "/BCS_Question_Bank_Detailed/10_নৈতিকতা_মূল্যবোধ_ও_সু-শাসন/General_Perception",
           "depth": 2,
           "leaf": true
         },
         {
-          "name": "04_Importance_in_Life_and_Society",
+          "name": "Importance_in_Life_and_Society",
           "children": [
             {
               "name": "Individual_as_Citizen",
               "children": [],
-              "path": "/BCS_Question_Bank_Detailed/10_নৈতিকতা_মূল্যবোধ_ও_সু-শাসন/04_Importance_in_Life_and_Society/Individual_as_Citizen",
+              "path": "/BCS_Question_Bank_Detailed/10_নৈতিকতা_মূল্যবোধ_ও_সু-শাসন/Importance_in_Life_and_Society/Individual_as_Citizen",
               "depth": 3,
               "leaf": true
             },
             {
               "name": "Making_of_Society",
               "children": [],
-              "path": "/BCS_Question_Bank_Detailed/10_নৈতিকতা_মূল্যবোধ_ও_সু-শাসন/04_Importance_in_Life_and_Society/Making_of_Society",
+              "path": "/BCS_Question_Bank_Detailed/10_নৈতিকতা_মূল্যবোধ_ও_সু-শাসন/Importance_in_Life_and_Society/Making_of_Society",
               "depth": 3,
               "leaf": true
             },
             {
               "name": "National_Ideals",
               "children": [],
-              "path": "/BCS_Question_Bank_Detailed/10_নৈতিকতা_মূল্যবোধ_ও_সু-শাসন/04_Importance_in_Life_and_Society/National_Ideals",
+              "path": "/BCS_Question_Bank_Detailed/10_নৈতিকতা_মূল্যবোধ_ও_সু-শাসন/Importance_in_Life_and_Society/National_Ideals",
               "depth": 3,
               "leaf": true
             }
           ],
-          "path": "/BCS_Question_Bank_Detailed/10_নৈতিকতা_মূল্যবোধ_ও_সু-শাসন/04_Importance_in_Life_and_Society",
+          "path": "/BCS_Question_Bank_Detailed/10_নৈতিকতা_মূল্যবোধ_ও_সু-শাসন/Importance_in_Life_and_Society",
           "depth": 2
         },
         {
-          "name": "05_Impact_in_National_Development",
+          "name": "Impact_in_National_Development",
           "children": [],
-          "path": "/BCS_Question_Bank_Detailed/10_নৈতিকতা_মূল্যবোধ_ও_সু-শাসন/05_Impact_in_National_Development",
+          "path": "/BCS_Question_Bank_Detailed/10_নৈতিকতা_মূল্যবোধ_ও_সু-শাসন/Impact_in_National_Development",
           "depth": 2,
           "leaf": true
         },
         {
-          "name": "06_Establishment_in_Social_Context",
+          "name": "Establishment_in_Social_Context",
           "children": [],
-          "path": "/BCS_Question_Bank_Detailed/10_নৈতিকতা_মূল্যবোধ_ও_সু-শাসন/06_Establishment_in_Social_Context",
+          "path": "/BCS_Question_Bank_Detailed/10_নৈতিকতা_মূল্যবোধ_ও_সু-শাসন/Establishment_in_Social_Context",
           "depth": 2,
           "leaf": true
         },
         {
-          "name": "07_Benefit_and_Adverse_Cost",
+          "name": "Benefit_and_Adverse_Cost",
           "children": [
             {
               "name": "Benefit_of_Values_and_Good_Governance",
               "children": [],
-              "path": "/BCS_Question_Bank_Detailed/10_নৈতিকতা_মূল্যবোধ_ও_সু-শাসন/07_Benefit_and_Adverse_Cost/Benefit_of_Values_and_Good_Governance",
+              "path": "/BCS_Question_Bank_Detailed/10_নৈতিকতা_মূল্যবোধ_ও_সু-শাসন/Benefit_and_Adverse_Cost/Benefit_of_Values_and_Good_Governance",
               "depth": 3,
               "leaf": true
             },
             {
               "name": "Cost_Society_Pays_in_Absence",
               "children": [],
-              "path": "/BCS_Question_Bank_Detailed/10_নৈতিকতা_মূল্যবোধ_ও_সু-শাসন/07_Benefit_and_Adverse_Cost/Cost_Society_Pays_in_Absence",
+              "path": "/BCS_Question_Bank_Detailed/10_নৈতিকতা_মূল্যবোধ_ও_সু-শাসন/Benefit_and_Adverse_Cost/Cost_Society_Pays_in_Absence",
               "depth": 3,
               "leaf": true
             }
           ],
-          "path": "/BCS_Question_Bank_Detailed/10_নৈতিকতা_মূল্যবোধ_ও_সু-শাসন/07_Benefit_and_Adverse_Cost",
+          "path": "/BCS_Question_Bank_Detailed/10_নৈতিকতা_মূল্যবোধ_ও_সু-শাসন/Benefit_and_Adverse_Cost",
           "depth": 2
         }
       ],

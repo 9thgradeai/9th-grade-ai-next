@@ -2,16 +2,20 @@
  * scripts/seed-questions.ts
  * ----------------------------------------------------------------------------
  * Syncs the content taxonomy (subjects + recursive topics) and questions from
- * database/data/ques/. NON-DESTRUCTIVE: subjects upsert by nameBn, topics by
- * (subjectId, path), questions by (subjectId, sourceKey). Nothing is deleted,
- * so user rows referencing content survive every reseed.
+ * database/data/ques/. NON-DESTRUCTIVE for user data: subjects upsert by
+ * nameBn, topics by (subjectId, path), questions by (subjectId, sourceKey).
+ * Question rows whose text already exists under a different path are ADOPTED
+ * (path + sourceKey updated in place), so architecture renames migrate
+ * bookmarks/attempts instead of duplicating content. Topic sections removed
+ * from database/data/taxonomy.json are pruned after the sync.
  *
  *  1. Subjects — the 10 canonical subjects from scripts/taxonomy.ts.
  *
  *  2. Topic tree — the recursive Topic hierarchy built from
- *     database/data/taxonomy.json.
+ *     database/data/taxonomy.json (regenerate it from the architecture file
+ *     with `npx tsx scripts/generate-taxonomy.ts`).
  *     Topic.path is the full content path from the subject root
- *     ("04_আন্তর্জাতিক_বিষয়াবলি/০২_নিরাপ্তা_ও_ক্ষমতা/আন্তর্জাতিক_নিরাপ্তা"),
+ *     ("04_আন্তর্জাতিক_বিষয়াবলি/০২_নিরাপত্তা_ও_ক্ষমতা/আন্তর্জাতিক_নিরাপ্তা"),
  *     matching the local folder layout under data/ques/.
  *
  *  3. Questions — two sources:
@@ -264,6 +268,12 @@ type QuestionCandidate = {
  * Upsert candidates keyed by md5(subjectId|path|question) — identical to the
  * SQL backfill in migration 000000000002. Existing rows keep their id (and
  * therefore their bookmarks/attempts); only content fields are refreshed.
+ *
+ * Content-identity fallback: when the sourceKey misses (e.g. the taxonomy was
+ * restructured and the leaf path changed) but a row with the SAME question
+ * text already exists for the subject, that row is adopted — updated to the
+ * new path/topic/sourceKey instead of inserted again. Taxonomy renames
+ * therefore MIGRATE user-referenced rows rather than duplicating them.
  */
 async function syncSubjectQuestions(
   prisma: PrismaClient,
@@ -293,18 +303,24 @@ async function syncSubjectQuestions(
 
   const existing = await prisma.question.findMany({
     where: { subjectId },
-    select: { id: true, sourceKey: true },
+    select: { id: true, sourceKey: true, question: true },
   });
   const idByKey = new Map(existing.map((r) => [r.sourceKey, r.id]));
+  // Content identity: NFC-normalised question text → row id (first wins).
+  const idByText = new Map<string, number>();
+  for (const r of existing) {
+    const text = r.question.normalize("NFC");
+    if (!idByText.has(text)) idByText.set(text, r.id);
+  }
 
   const creates: Array<Record<string, unknown>> = [];
   let updated = 0;
+  let migrated = 0;
   const updates: Promise<unknown>[] = [];
 
   for (const c of uniqueCandidates.values()) {
-    const row = {
-      subjectId,
-      sourceKey: keyOf(c),
+    const key = keyOf(c);
+    const contentData = {
       topicId: c.topicId,
       path: c.path,
       topic: c.topic,
@@ -313,30 +329,33 @@ async function syncSubjectQuestions(
       options: c.parsed.options,
       correctAnswer: c.parsed.correctAnswer,
       explanation: c.parsed.explanation,
-      difficulty: "MEDIUM",
-      sourceExam: "BCS",
-      year: null,
     };
-    const existingId = idByKey.get(row.sourceKey as string);
+    const byKey = idByKey.get(key);
+    // Content-twin adoption: the key missed because the leaf path changed.
+    const byText =
+      byKey === undefined ? idByText.get(c.parsed.question.normalize("NFC")) : undefined;
+    const existingId = byKey ?? byText;
     if (existingId !== undefined) {
       updates.push(
         prisma.question.update({
           where: { id: existingId },
-          data: {
-            topicId: row.topicId,
-            path: row.path,
-            topic: row.topic,
-            subtopic: row.subtopic,
-            question: row.question,
-            options: row.options,
-            correctAnswer: row.correctAnswer,
-            explanation: row.explanation,
-          },
+          data:
+            byText !== undefined
+              ? { ...contentData, sourceKey: key } // adopt: identity moves to the new taxonomy location
+              : contentData,
         }),
       );
       updated += 1;
+      if (byText !== undefined) migrated += 1;
     } else {
-      creates.push(row);
+      creates.push({
+        subjectId,
+        sourceKey: key,
+        ...contentData,
+        difficulty: "MEDIUM",
+        sourceExam: "BCS",
+        year: null,
+      });
     }
   }
 
@@ -349,6 +368,33 @@ async function syncSubjectQuestions(
     await prisma.question.createMany({ data: creates as never });
   }
   return { inserted: creates.length, updated };
+}
+
+/**
+ * Deletes Topic rows whose path is no longer part of the taxonomy for the
+ * subject (stale sections left behind by architecture renames/restructures).
+ * Runs AFTER question sync so content-identity adoption had the chance to
+ * move every row onto current paths first. Related questions keep their rows
+ * (topicId is SetNull) — nothing user-generated is destroyed.
+ */
+async function pruneStaleTopics(
+  prisma: PrismaClient,
+  idsByPathBySubject: Map<number, Map<string, number>>,
+): Promise<number> {
+  let pruned = 0;
+  for (const [subjectId, index] of idsByPathBySubject.entries()) {
+    const validPaths = [...index.keys()];
+    const stale = await prisma.topic.count({
+      where: { subjectId, NOT: { path: { in: validPaths } } },
+    });
+    if (stale === 0) continue;
+    await prisma.topic.deleteMany({
+      where: { subjectId, NOT: { path: { in: validPaths } } },
+    });
+    pruned += stale;
+    console.log(`✓ pruned ${stale} stale topic(s) (subject ${subjectId})`);
+  }
+  return pruned;
 }
 
 // Parses all .txt files in database/data/ques and syncs their questions into
@@ -517,6 +563,11 @@ export async function seedQuestions(prisma: PrismaClient): Promise<number> {
     console.log(`✓ ${meta.nameBn} → ${path}: ${parsed.length} synced (${inserted} new)`);
   }
 
+  // ── Prune topics removed by architecture restructures ──
+  // Runs after sync so content-identity adoption moved rows onto current
+  // paths first; only genuinely retired sections are deleted here.
+  const pruned = await pruneStaleTopics(prisma, idsByPathBySubject);
+
   // ── Refresh questionCount on every topic row (aggregated over descendants) ──
   const countRows = await prisma.question.groupBy({
     by: ["subjectId", "path"],
@@ -547,6 +598,7 @@ export async function seedQuestions(prisma: PrismaClient): Promise<number> {
     }
   }
 
+  console.log(`  (pruned ${pruned} stale topic(s))`);
   return totalInserted;
 }
 

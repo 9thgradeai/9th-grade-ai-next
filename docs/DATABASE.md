@@ -130,6 +130,7 @@ ever rebuilt outside migrations:
 - `emailVerified` Boolean — default `false`
 - `handle` String — unique, indexed
 - `passwordHash` String
+- `tokenVersion` Int — default `0`. Bumped on password change / "sign out everywhere"; session JWTs carry the version they were minted with (`ver` claim) and are rejected when it is stale
 - `role` UserRole — default `STUDENT`
 - `createdAt` DateTime — default `now()`
 - `updatedAt` DateTime — updatedAt
@@ -579,9 +580,12 @@ Seed sources:
 - `database/data/bcs_syllabus/*.md` — syllabus documents.
 - `database/data/ques/questions_database.txt` — raw flat question text for `scripts/seed-questions.ts`.
 - `database/data/ques/<Subject>/<Node>/…/<file>.txt` — folder-structured questions; the folder path IS the taxonomy (each segment matched by NFC-normalised name).
+- `database/data/bcs_syllabus/BCS_Question_Bank_Detailed_*.txt` — **canonical architecture tree** (the source of truth for the topic hierarchy). Regenerate the taxonomy with `npx tsx scripts/generate-taxonomy.ts` after editing it, then rename any `data/ques/` folders that moved.
 - `database/data/taxonomy.json` — parsed taxonomy tree driving subject/topic creation, round-robin flat-question distribution, and folder imports via `scripts/taxonomy.ts`.
 
 The recursive Topic tree, leaf `topicId`/`path` tagging on questions, and per-topic aggregated `questionCount` are (re)built by `scripts/seed-questions.ts`, invoked by `npm run db:seed-questions` and as part of `npm run db:seed`.
+
+**Architecture changes are migrations, not resets.** When a section is renamed or restructured, the seeder adopts question rows by content identity (same subject + question text): their `path`, `topicId`, and `sourceKey` are updated in place so bookmarks and attempts survive. Topic sections removed from the taxonomy are pruned after the sync; legacy duplicate rows can be collapsed with a text-dedupe pass keyed on `(subjectId, question)`.
 
 ## Indexes
 
