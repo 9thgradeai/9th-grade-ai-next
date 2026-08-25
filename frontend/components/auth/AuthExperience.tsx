@@ -13,9 +13,13 @@ import { AuthMessage } from "./AuthMessage"
 import { AuthChoice } from "./AuthChoice"
 import { Celebration } from "./Celebration"
 import { AdmitCard, deriveDisplayName } from "./AdmitCard"
+import { VerificationSequence } from "./ceremony/VerificationSequence"
+import { EnterHallTransition } from "./ceremony/EnterHallTransition"
 import BrandMark from "@/components/ui/BrandMark"
 import { LoginForm, type LoginValues } from "./LoginForm"
 import { SignupForm, type SignupValues } from "./SignupForm"
+import { resolveScene } from "./animation/AnimationDirector"
+import { useVisualQuality } from "@/lib/motion/device"
 import {
   getAvatarMessage,
   getAvatarState,
@@ -32,7 +36,20 @@ export default function AuthExperience({
   const router = useRouter()
   const { login, register } = useAuth()
   const reduced = useReducedMotion() ?? false
+  const quality = useVisualQuality()
   const shake = useAnimationControls()
+
+  // Virtual camera — one gentle push per scene state, never more than ~2%.
+  const CAMERA = {
+    dark: { scale: 1.015, y: -4 },
+    awakening: { scale: 1.01, y: -2 },
+    ready: { scale: 1, y: 0 },
+    choice: { scale: 1, y: -5 },
+    focused: { scale: 1.006, y: -3 },
+    verifying: { scale: 1.008, y: 0 },
+    success: { scale: 0.996, y: 0 },
+    departure: { scale: 1.025, y: 0 },
+  } as const
 
   const [stage, setStage] = useState<AuthStage>("lamp")
   const [lit, setLit] = useState(false)
@@ -42,6 +59,8 @@ export default function AuthExperience({
   const [successKind, setSuccessKind] = useState<AuthSuccessKind>("login")
   const [strength, setStrength] = useState(-1)
   const [tick, setTick] = useState(0)
+  const [departing, setDeparting] = useState(false)
+  const [failedAttempts, setFailedAttempts] = useState(0)
   // Account details captured at submit time so the admit card can greet the
   // user by name even before /api/auth/me round-trips.
   const [account, setAccount] = useState<{ name: string; email: string } | null>(null)
@@ -61,6 +80,21 @@ export default function AuthExperience({
     [stage, lit, busy, error, focusField, successKind, strength]
   )
   const message = getAvatarMessage(avatar, stage)
+
+  // ── Animation Director: one derivation drives environment + Unit-9 ──
+  const scene = useMemo(
+    () =>
+      resolveScene({
+        stage,
+        lit,
+        busy,
+        error: error !== null,
+        hasFieldFocus: focusField !== null,
+        passwordFocused: focusField === "password" || focusField === "confirm",
+        departing,
+      }),
+    [stage, lit, busy, error, focusField, departing]
+  )
 
   const activate = useCallback(() => {
     if (lit) return
@@ -90,10 +124,17 @@ export default function AuthExperience({
     setStage("choice")
   }, [])
 
-  const scheduleRedirect = useCallback(() => {
+  // Verification ceremony dwell after the API has already resolved.
+  const scheduleAdmitCard = useCallback(() => {
     if (redirectTimer.current) clearTimeout(redirectTimer.current)
-    const wait = reduced ? 320 : 1100
-    redirectTimer.current = setTimeout(() => router.push("/dashboard"), wait)
+    redirectTimer.current = setTimeout(() => setStage("success"), reduced ? 400 : 1150)
+  }, [reduced])
+
+  // "Enter the hall": short departure transition, then navigation.
+  const continueNow = useCallback(() => {
+    if (redirectTimer.current) clearTimeout(redirectTimer.current)
+    setDeparting(true)
+    redirectTimer.current = setTimeout(() => router.push("/dashboard"), reduced ? 300 : 900)
   }, [router, reduced])
 
   const handleLogin = useCallback(
@@ -104,10 +145,11 @@ export default function AuthExperience({
         await login(values.email, values.password, { redirect: false })
         setAccount({ name: deriveDisplayName(values.email), email: values.email })
         setSuccessKind("login")
-        setStage("success")
-        scheduleRedirect()
+        setStage("verify")
+        scheduleAdmitCard()
       } catch (err) {
         setError(err instanceof Error ? err.message : "Something went wrong. Please try again.")
+        setFailedAttempts((n) => n + 1)
         if (!reduced) {
           void shake.start({
             x: [0, -8, 8, -6, 6, 0],
@@ -118,7 +160,7 @@ export default function AuthExperience({
         setBusy(false)
       }
     },
-    [login, scheduleRedirect, reduced, shake]
+    [login, scheduleAdmitCard, reduced, shake]
   )
 
   const handleSignup = useCallback(
@@ -129,10 +171,11 @@ export default function AuthExperience({
         await register(values.name, values.email, values.password, { redirect: false })
         setAccount({ name: values.name, email: values.email })
         setSuccessKind("signup")
-        setStage("success")
-        scheduleRedirect()
+        setStage("verify")
+        scheduleAdmitCard()
       } catch (err) {
         setError(err instanceof Error ? err.message : "Something went wrong. Please try again.")
+        setFailedAttempts((n) => n + 1)
         if (!reduced) {
           void shake.start({
             x: [0, -8, 8, -6, 6, 0],
@@ -143,13 +186,8 @@ export default function AuthExperience({
         setBusy(false)
       }
     },
-    [register, scheduleRedirect, reduced, shake]
+    [register, scheduleAdmitCard, reduced, shake]
   )
-
-  const continueNow = useCallback(() => {
-    if (redirectTimer.current) clearTimeout(redirectTimer.current)
-    router.push("/dashboard")
-  }, [router])
 
   // Move focus into the first field once a form appears (wizard-style).
   useEffect(() => {
@@ -182,7 +220,7 @@ export default function AuthExperience({
       transition={{ duration: 0.5, ease: "easeOut" }}
       className="relative flex shrink-0 flex-col items-center justify-center gap-2 sm:gap-2.5"
     >
-      <Avatar mood={avatar} focusField={focusField} tick={tick} compact />
+      <Avatar mood={avatar} focusField={focusField} tick={tick} compact behavior={scene.unit9} />
       <Celebration active={stage === "success"} />
       <AuthMessage message={message} />
     </motion.div>
@@ -284,7 +322,7 @@ export default function AuthExperience({
       {stage === "login" && (
         <motion.div
           key="login"
-          className="w-full"
+          className="glass-card w-full rounded-3xl border border-white/10 p-5 shadow-panel sm:p-7"
           initial={{ opacity: 0, x: 24 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.35, ease: "easeOut" }}
@@ -298,6 +336,7 @@ export default function AuthExperience({
               onClearError={handleClearError}
               onBack={goBack}
               onTyping={() => setTick((t) => t + 1)}
+              failedAttempt={failedAttempts}
             />
           </motion.div>
         </motion.div>
@@ -306,7 +345,7 @@ export default function AuthExperience({
       {stage === "signup" && (
         <motion.div
           key="signup"
-          className="w-full"
+          className="glass-card w-full rounded-3xl border border-white/10 p-5 shadow-panel sm:p-7"
           initial={{ opacity: 0, x: 24 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.35, ease: "easeOut" }}
@@ -321,8 +360,21 @@ export default function AuthExperience({
               onBack={goBack}
               onTyping={() => setTick((t) => t + 1)}
               onStrengthChange={setStrength}
+              failedAttempt={failedAttempts}
             />
           </motion.div>
+        </motion.div>
+      )}
+
+      {stage === "verify" && (
+        <motion.div
+          key="verify"
+          className="w-full"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, ease: "easeOut" }}
+        >
+          <VerificationSequence kind={successKind} onComplete={() => setStage("success")} />
         </motion.div>
       )}
 
@@ -364,8 +416,17 @@ export default function AuthExperience({
   )
 
   return (
-    <AuthEnvironment lit={lit}>
-      <div className="relative z-10 flex h-dvh flex-col overflow-hidden">
+    <AuthEnvironment state={scene.environment}>
+      <motion.div
+        className="relative z-10 flex h-dvh flex-col overflow-hidden"
+        initial={false}
+        animate={
+          reduced || quality === "low" || quality === "reduced"
+            ? undefined
+            : CAMERA[scene.environment]
+        }
+        transition={{ type: "spring", stiffness: 60, damping: 20 }}
+      >
         <header className="flex items-center justify-between px-5 pt-3 sm:px-8 sm:pt-5">
           <Link
             href="/"
@@ -439,7 +500,8 @@ export default function AuthExperience({
             Secure session · Your password never leaves this page unhashed
           </p>
         </main>
-      </div>
+      </motion.div>
+      {departing && <EnterHallTransition onNavigate={() => router.push("/dashboard")} />}
     </AuthEnvironment>
   )
 }
@@ -447,7 +509,7 @@ export default function AuthExperience({
 function indexOfStage(stage: AuthStage): number {
   if (stage === "lamp") return 0
   if (stage === "choice") return 1
-  if (stage === "login" || stage === "signup") return 2
+  if (stage === "login" || stage === "signup" || stage === "verify") return 2
   return 3
 }
 

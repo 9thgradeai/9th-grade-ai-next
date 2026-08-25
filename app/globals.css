@@ -351,6 +351,14 @@ html.light .text-gradient {
   animation: pulse-soft 3s ease-in-out infinite;
 }
 
+/* Battery governor — decorative ambient loops freeze when the tab hides */
+html[data-app-hidden="true"] .ember,
+html[data-app-hidden="true"] .aurora-blob,
+html[data-app-hidden="true"] .hud-ring,
+html[data-app-hidden="true"] .pulse-soft {
+  animation-play-state: paused !important;
+}
+
 /* Terminal window chrome — shared card treatment (TerminalFrame).
    Previously used by nine components but never defined; now a real
    design-system primitive with macOS-style traffic lights. */

@@ -8,7 +8,13 @@ import type { FocusField } from "./auth-state"
 
 export type SignupValues = { name: string; email: string; password: string }
 
-const STRENGTH_LABEL = ["Needs work", "Needs work", "Warming up", "Exam-ready", "Fortress"]
+const STRENGTH_LABEL = [
+  "Too weak",
+  "Warming up",
+  "Building momentum",
+  "Exam-ready",
+  "Fortress",
+]
 
 // Heuristic password strength 0-4; -1 when empty (no feedback yet).
 export function passwordStrength(password: string): number {
@@ -33,6 +39,7 @@ export function SignupForm({
   onBack,
   onTyping,
   onStrengthChange,
+  failedAttempt = 0,
 }: {
   onSubmit: (values: SignupValues) => Promise<void>
   busy: boolean
@@ -42,6 +49,8 @@ export function SignupForm({
   onBack: () => void
   onTyping?: () => void
   onStrengthChange?: (strength: number) => void
+  /** Increments after each rejected submit — secrets are never preserved. */
+  failedAttempt?: number
 }) {
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
@@ -57,6 +66,16 @@ export function SignupForm({
   }>({})
 
   const strength = useMemo(() => passwordStrength(password), [password])
+
+  // Privacy: after a rejected attempt the secrets are wiped; name/email stay.
+  // Render-phase reset (React's "adjust state on prop change" pattern).
+  const [clearedAttempt, setClearedAttempt] = useState(failedAttempt)
+  if (failedAttempt > clearedAttempt) {
+    setClearedAttempt(failedAttempt)
+    setPassword("")
+    setConfirm("")
+    onStrengthChange?.(-1)
+  }
 
   const validate = () => {
     const next: typeof fieldErrors = {}

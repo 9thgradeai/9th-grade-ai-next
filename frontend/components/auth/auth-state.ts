@@ -6,7 +6,7 @@
 // Copy voice: the product frames sign-in/sign-up as entering the exam hall —
 // aspirants know this ritual intimately, so the journey borrows it.
 
-export type AuthStage = "lamp" | "choice" | "login" | "signup" | "success"
+export type AuthStage = "lamp" | "choice" | "login" | "signup" | "verify" | "success"
 
 export type AuthSuccessKind = "login" | "signup"
 
@@ -177,7 +177,7 @@ export type AvatarInput = {
 
 export function getAvatarState(input: AvatarInput): AuthAvatarState {
   if (!input.lit) return "hidden"
-  if (input.busy) return "loading"
+  if (input.busy || input.stage === "verify") return "loading"
   if (input.error) return "error"
   if (input.stage === "success") {
     return input.successKind === "signup" ? "celebrating" : "success"

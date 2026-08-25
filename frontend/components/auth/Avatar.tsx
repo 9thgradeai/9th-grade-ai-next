@@ -1,7 +1,14 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { motion, useAnimationControls, useReducedMotion } from "framer-motion"
+import {
+  motion,
+  useAnimationControls,
+  useMotionValue,
+  useReducedMotion,
+  useSpring,
+  useTransform,
+} from "framer-motion"
 import {
   avatarStates,
   focusLean,
@@ -9,6 +16,8 @@ import {
   type EyeKind,
   type FocusField,
 } from "./auth-state"
+import type { Unit9Behavior } from "./animation/AnimationDirector"
+import { detectVisualQuality } from "@/lib/motion/device"
 import {
   BEZEL_A,
   BEZEL_B,
@@ -43,16 +52,32 @@ export function Avatar({
   focusField,
   tick,
   compact = false,
+  behavior = "idle",
 }: {
   mood: AuthAvatarState
   focusField?: FocusField
   tick?: number
   compact?: boolean
+  /** Behavioral hint from the Animation Director (gaze/departure nuance). */
+  behavior?: Unit9Behavior
 }) {
   const cfg = avatarStates[mood]
   const reduced = useReducedMotion() ?? false
+  const quality = detectVisualQuality()
   const headControls = useAnimationControls()
   const bodyControls = useAnimationControls()
+
+  const containerRef = useRef<HTMLDivElement>(null)
+  // Pointer attention — springs keep the lean physical; never a re-render.
+  const rawGazeX = useMotionValue(0)
+  const rawGazeY = useMotionValue(0)
+  const gazeSpring = { stiffness: 90, damping: 18 }
+  const gazeX = useSpring(rawGazeX, gazeSpring)
+  const gazeY = useSpring(rawGazeY, gazeSpring)
+  const pointerGaze =
+    !reduced && quality !== "low" && quality !== "medium" && behavior !== "departing"
+  const faceX = useTransform(gazeX, (v) => v * (behavior === "observing" ? 2.4 : 1.6))
+  const faceY = useTransform(gazeY, (v) => v * 1.6)
 
   const palette = paletteFor(mood)
   const lean = focusLean(focusField)
@@ -112,7 +137,6 @@ export function Avatar({
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tick])
-
   // Error glitch — a hard little shudder, like a failed handshake.
   useEffect(() => {
     if (mood === "error" && !reduced) {
@@ -124,13 +148,43 @@ export function Avatar({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mood])
 
+  // Departing: the unit turns toward the hall and settles.
+  useEffect(() => {
+    if (behavior === "departing" && !reduced) {
+      void headControls.start({
+        rotate: [tilt, tilt + 7],
+        x: [0, 8],
+        transition: { duration: 0.6, ease: "easeInOut" },
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [behavior])
+
+  // Pointer attention — the whole face leans a couple of pixels toward the
+  // cursor (MotionValues; zero re-renders while tracking).
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!pointerGaze) return
+    const rect = containerRef.current?.getBoundingClientRect()
+    if (!rect) return
+    gazeX.set(((e.clientX - rect.left) / rect.width - 0.5) * 2)
+    gazeY.set(((e.clientY - rect.top) / rect.height - 0.5) * 2)
+  }
+
   const effectiveEyes: EyeKind =
     blink && cfg.expression.eyes === "open" ? "closed" : cfg.expression.eyes
   const loading = mood === "loading"
   const privacyOn = focusField === "password" || focusField === "confirm"
 
   return (
-    <div className="relative flex items-center justify-center">
+    <div
+      ref={containerRef}
+      onPointerMove={onPointerMove}
+      onPointerLeave={() => {
+        gazeX.set(0)
+        gazeY.set(0)
+      }}
+      className="relative flex items-center justify-center"
+    >
       <motion.div
         initial={{ opacity: 0, y: 18, scale: 0.9 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -141,9 +195,10 @@ export function Avatar({
         }}
         className="relative"
       >
+        {/* Hover bob only at ultra quality — alive, never distracting */}
         <motion.div
-          animate={reduced ? undefined : { y: [0, -6, 0] }}
-          transition={{ duration: 3.4, repeat: Infinity, ease: "easeInOut" }}
+          animate={quality === "ultra" && !reduced ? { y: [0, -4, 0] } : undefined}
+          transition={{ duration: 4.4, repeat: Infinity, ease: "easeInOut" }}
           className={`relative ${compact ? "h-24 w-24 md:h-40 md:w-40" : "h-40 w-40 sm:h-52 sm:w-52"}`}
         >
           <svg
@@ -288,7 +343,11 @@ export function Avatar({
               </g>
 
               {/* Face — keyed by mood so expressions cross-fade */}
-              <g key={mood} className="avatar-face-fade">
+              <motion.g
+                key={mood}
+                className="avatar-face-fade"
+                style={pointerGaze ? { x: faceX, y: faceY } : undefined}
+              >
                 <LedBrow kind={cfg.expression.brows} cx={94} cy={74} color={palette.led} />
                 <LedBrow kind={cfg.expression.brows} cx={146} cy={74} color={palette.led} />
                 <g className={effectiveEyes === "open" ? "avatar-blink" : undefined}>
@@ -302,7 +361,7 @@ export function Avatar({
                   </g>
                 )}
                 <LedMouth kind={cfg.expression.mouth} color={palette.led} loading={loading} />
-              </g>
+              </motion.g>
 
               {/* Privacy indicator — lit while a password field has focus */}
               {privacyOn && (

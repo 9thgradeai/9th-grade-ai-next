@@ -97,3 +97,37 @@ function noopSubscribe() {
 export function useMotionCapabilities(): MotionCapabilities {
   return useSyncExternalStore(noopSubscribe, getClientCaps, () => STATIC_CAPS);
 }
+
+/* ── Visual quality governor ──────────────────────────────────────── */
+
+export type VisualQuality = "ultra" | "high" | "medium" | "low" | "reduced";
+
+let cachedQuality: VisualQuality | null = null;
+
+/**
+ * Single source of truth for cinematic ambition across the auth experience.
+ * Combines the coarse device tier with viewport size and reduced-motion:
+ *   reduced  — essential transitions only
+ *   low      — CSS-only environment, minimal decoration
+ *   medium   — gradients, sparse particles, no continuous camera drift
+ *   high     — reduced particles + limited parallax (default desktop)
+ *   ultra    — full ambience on capable large screens
+ */
+export function detectVisualQuality(): VisualQuality {
+  if (typeof window === "undefined") return "medium";
+  if (prefersReducedMotion()) return "reduced";
+  if (cachedQuality) return cachedQuality;
+
+  const tier = detectDeviceTier();
+  const viewportUnits = Math.min(window.innerWidth, window.innerHeight);
+  if (tier === "low") cachedQuality = "low";
+  else if (tier === "mid") cachedQuality = viewportUnits < 500 ? "medium" : "high";
+  else cachedQuality = viewportUnits >= 700 ? "ultra" : "high";
+  return cachedQuality;
+}
+
+const QUALITY_STATIC: VisualQuality = "medium";
+
+export function useVisualQuality(): VisualQuality {
+  return useSyncExternalStore(noopSubscribe, detectVisualQuality, () => QUALITY_STATIC);
+}

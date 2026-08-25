@@ -4,6 +4,7 @@ import { useMemo } from "react"
 import { motion, useReducedMotion } from "framer-motion"
 import { ScanLine } from "lucide-react"
 import BrandMark from "@/components/ui/BrandMark"
+import Interactive3DCard from "@/components/landing/Interactive3DCard"
 
 /**
  * The product's own success ceremony: a stylized admit card that materializes
@@ -64,13 +65,42 @@ export function AdmitCard({
   })
 
   return (
+    <Interactive3DCard maxRotation={5} glow className="rounded-2xl">
     <motion.div
       initial={reduced ? { opacity: 0 } : { opacity: 0, rotateY: -80, y: 14 }}
       animate={{ opacity: 1, rotateY: 0, y: 0 }}
       transition={reduced ? { duration: 0.25 } : { type: "spring", stiffness: 210, damping: 22 }}
-      style={{ transformStyle: "preserve-3d", perspective: 900 }}
+      style={{ transformStyle: "preserve-3d" }}
       className="relative w-full overflow-hidden rounded-2xl border border-emerald-400/30 bg-gradient-to-br from-[#0b1120]/95 via-[#0a1626]/95 to-[#07202b]/95 shadow-[0_20px_60px_rgba(2,6,12,0.55),0_0_40px_rgba(16,185,129,0.10)]"
     >
+      {/* Paper grain + top sheen */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 opacity-[0.35]"
+        style={{
+          backgroundImage:
+            "radial-gradient(120% 70% at 18% 0%, rgba(234,255,251,0.06), transparent 55%)," +
+            "repeating-linear-gradient(115deg, rgba(234,255,251,0.02) 0 2px, transparent 2px 5px)",
+        }}
+      />
+
+      {/* Verification stamp — physical, slightly rotated, pops in late */}
+      <motion.div
+        aria-hidden="true"
+        className="pointer-events-none absolute right-3 top-9 z-20 -rotate-[9deg]"
+        initial={reduced ? { opacity: 0 } : { opacity: 0, scale: 1.7 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={
+          reduced
+            ? { duration: 0.3, delay: 0.5 }
+            : { type: "spring", stiffness: 420, damping: 16, delay: 0.85 }
+        }
+      >
+        <span className="block rounded-md border-2 border-emerald-400/80 px-2 py-1 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-emerald-300 shadow-[0_0_18px_rgba(52,211,153,0.25)]">
+          ✓ Authenticated
+        </span>
+      </motion.div>
+
       {/* Header strip */}
       <div className="flex items-center justify-between border-b border-dashed border-white/15 px-5 py-3">
         <div className="flex items-center gap-2.5">
@@ -123,6 +153,9 @@ export function AdmitCard({
             {kind === "signup" ? "New Aspirant" : "Returning Examinee"}
           </p>
           <p className="mt-0.5 font-mono text-[10px] text-emerald-400/90">Session valid · 7 days</p>
+          <p className="mt-1 font-mono text-[8px] uppercase tracking-[0.14em] text-zinc-600">
+            Candidate verified · Registrar: Unit-9
+          </p>
         </div>
         <div aria-hidden="true" className="flex h-8 items-end gap-[3px]" >
           {bars.map((width, i) => (
@@ -138,5 +171,6 @@ export function AdmitCard({
         </div>
       </div>
     </motion.div>
+    </Interactive3DCard>
   )
 }

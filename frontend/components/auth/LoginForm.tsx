@@ -16,6 +16,7 @@ export function LoginForm({
   onClearError,
   onBack,
   onTyping,
+  failedAttempt = 0,
 }: {
   onSubmit: (values: LoginValues) => Promise<void>
   busy: boolean
@@ -24,12 +25,21 @@ export function LoginForm({
   onClearError: () => void
   onBack: () => void
   onTyping?: () => void
+  /** Increments after each rejected submit — secrets are never preserved. */
+  failedAttempt?: number
 }) {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [capsLock, setCapsLock] = useState(false)
   const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({})
+  // Privacy: after a rejected attempt the password is wiped; the email stays.
+  // Render-phase reset (React's "adjust state on prop change" pattern).
+  const [clearedAttempt, setClearedAttempt] = useState(failedAttempt)
+  if (failedAttempt > clearedAttempt) {
+    setClearedAttempt(failedAttempt)
+    setPassword("")
+  }
 
   const validate = () => {
     const next: typeof fieldErrors = {}

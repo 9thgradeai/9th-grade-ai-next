@@ -92,10 +92,13 @@ describe("AuthExperience", () => {
     await waitFor(() => {
       expect(h.login).toHaveBeenCalledWith("demo@9thgrade.ai", "secret123", { redirect: false })
     })
-    await waitFor(() => expect(screen.getByText("Seat confirmed. See you inside.")).toBeInTheDocument(), {
-      timeout: 2000,
-    })
-    await waitFor(() => expect(h.push).toHaveBeenCalledWith("/dashboard"), { timeout: 2500 })
+    await waitFor(
+      () => expect(screen.getByText("Seat confirmed. See you inside.")).toBeInTheDocument(),
+      { timeout: 3000 }
+    )
+    // Navigation is now explicit: the candidate enters the hall themselves.
+    fireEvent.click(screen.getByRole("button", { name: /enter the hall/i }))
+    await waitFor(() => expect(h.push).toHaveBeenCalledWith("/dashboard"), { timeout: 3000 })
   })
 
   it("shows a human-friendly error and concerned avatar on failed login", async () => {
@@ -161,12 +164,68 @@ describe("AuthExperience", () => {
         redirect: false,
       })
     })
-    await waitFor(() => {
-      expect(screen.getByText("Admit card issued. ✨")).toBeInTheDocument()
-      expect(screen.getAllByText("Rahim Uddin").length).toBeGreaterThan(0)
-      expect(screen.getByText(/9th-Grade AI · Admit Card/i)).toBeInTheDocument()
-      expect(screen.getByRole("button", { name: /enter the hall/i })).toBeInTheDocument()
+    await waitFor(
+      () => {
+        expect(screen.getByText("Admit card issued. ✨")).toBeInTheDocument()
+        expect(screen.getAllByText("Rahim Uddin").length).toBeGreaterThan(0)
+        expect(screen.getByText(/9th-Grade AI · Admit Card/i)).toBeInTheDocument()
+        expect(screen.getByRole("button", { name: /enter the hall/i })).toBeInTheDocument()
+      },
+      { timeout: 3500 }
+    )
+  })
+
+  it("runs the verification ceremony between submit and admit card", async () => {
+    render(<AuthExperience />)
+
+    fireEvent.click(screen.getAllByRole("button", { name: /turn on the light/i })[0])
+    await waitFor(
+      () => expect(screen.getByRole("button", { name: /i have an account/i })).toBeInTheDocument(),
+      { timeout: 2000 }
+    )
+    fireEvent.click(screen.getByRole("button", { name: /i have an account/i }))
+    await waitFor(() => expect(screen.getByLabelText("Email")).toBeInTheDocument(), {
+      timeout: 2000,
     })
+    fireEvent.change(screen.getByLabelText("Email"), { target: { value: "demo@9thgrade.ai" } })
+    fireEvent.change(screen.getByLabelText("Password"), { target: { value: "secret123" } })
+    submitForm("Sign in securely")
+
+    await waitFor(() =>
+      expect(screen.getByText(/verifying candidate|access authorized/i)).toBeInTheDocument(),
+      { timeout: 1500 }
+    )
+    await waitFor(
+      () => expect(screen.getByText(/Candidate verified/i)).toBeInTheDocument(),
+      { timeout: 3000 }
+    )
+  }, 15000)
+
+  it("wipes the password after a rejected attempt but keeps the email", async () => {
+    h.login.mockRejectedValue(new Error("We couldn't sign you in with those details."))
+    render(<AuthExperience />)
+
+    fireEvent.click(screen.getAllByRole("button", { name: /turn on the light/i })[0])
+    await waitFor(
+      () => expect(screen.getByRole("button", { name: /i have an account/i })).toBeInTheDocument(),
+      { timeout: 2000 }
+    )
+    fireEvent.click(screen.getByRole("button", { name: /i have an account/i }))
+    await waitFor(() => expect(screen.getByLabelText("Email")).toBeInTheDocument(), {
+      timeout: 2000,
+    })
+
+    const email = screen.getByLabelText("Email")
+    const password = screen.getByLabelText("Password") as HTMLInputElement
+    fireEvent.change(email, { target: { value: "demo@9thgrade.ai" } })
+    fireEvent.change(password, { target: { value: "secret123" } })
+    submitForm("Sign in securely")
+
+    await waitFor(() =>
+      expect(screen.getByText("We couldn't sign you in with those details.")).toBeInTheDocument()
+    )
+    await waitFor(() => expect(password.value).toBe(""))
+    expect((email as HTMLInputElement).value).toBe("demo@9thgrade.ai")
   })
 
   it("honors ?register=true by going straight to signup after the lamp", async () => {
@@ -204,14 +263,15 @@ describe("AuthExperience", () => {
     submitForm("Sign in securely")
 
     // Name derived from the email local-part ("demo" → "Demo").
-    await waitFor(() =>
-      expect(screen.getAllByText("Demo").length).toBeGreaterThan(0)
+    await waitFor(
+      () => expect(screen.getAllByText("Demo").length).toBeGreaterThan(0),
+      { timeout: 3000 }
     )
     expect(screen.getByText(/Returning Examinee/i)).toBeInTheDocument()
     expect(screen.getByText(/Session valid · 7 days/i)).toBeInTheDocument()
 
     fireEvent.click(await screen.findByRole("button", { name: /enter the hall/i }))
-    await waitFor(() => expect(h.push).toHaveBeenCalledWith("/dashboard"))
+    await waitFor(() => expect(h.push).toHaveBeenCalledWith("/dashboard"), { timeout: 3000 })
   })
 
   it("shows the Caps Lock hint only while active", async () => {
