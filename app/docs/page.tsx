@@ -30,7 +30,8 @@ const groups: { title: string; icon: typeof BookOpen; endpoints: Endpoint[] }[] 
       { method: "GET", path: "/api/auth/me", description: "Return the currently authenticated user." },
       { method: "GET", path: "/api/auth/profile", description: "Fetch the signed-in user's full profile." },
       { method: "GET", path: "/api/auth/account", description: "Return account & subscription details." },
-      { method: "POST", path: "/api/auth/change-password", description: "Update the account password." },
+      { method: "POST", path: "/api/auth/change-password", description: "Update the account password and sign out other devices." },
+      { method: "POST", path: "/api/auth/sessions/revoke-all", description: "Sign out everywhere by invalidating all sessions." },
     ],
   },
   {
