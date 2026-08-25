@@ -43,6 +43,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         if (res.ok) {
           const data = (await res.json()) as { user: Client.User };
           setUser(data.user);
+          // Restart the refresh scheduler on every page load. Without this,
+          // tokenExpiry stayed null after reloads and long-lived tabs let
+          // sessions hard-expire despite active use.
+          setTokenExpiry(Date.now() + SESSION_DURATION_MS);
         } else {
           setUser(null);
         }
@@ -69,10 +73,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         if (data.expiresIn) {
           setTokenExpiry(Date.now() + data.expiresIn);
         }
+      } else if (res.status === 401) {
+        // Server explicitly rejected the session — clear local state.
+        setUser(null);
+        setTokenExpiry(null);
       }
+      // Other failures (429 rate limit, 5xx, offline) keep the session: the
+      // cookie is still valid and the next scheduler tick retries.
     } catch {
-      setUser(null);
-      setTokenExpiry(null);
+      // Network error — cookie may still be valid, so do NOT log out here.
+      // The next tick retries; hard expiry is handled by the interval check.
     } finally {
       isRefreshingRef.current = false;
     }
@@ -110,7 +120,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         checkIntervalRef.current = null;
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tokenExpiry]);
 
   const login = async (email: string, password: string, options?: { redirect?: boolean }) => {

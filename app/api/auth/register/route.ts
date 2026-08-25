@@ -4,13 +4,16 @@ import { validateRegisterInput } from "~backend/validation";
 import { findUserByEmail, createUser } from "~backend/services/user";
 import { signSession, setSessionCookie } from "~backend/auth";
 import { checkRateLimit, getRateLimitKey, LIMITS } from "~backend/rate-limit";
-import { getRequestId, startTiming, applySecurityHeaders } from "../../_middleware";
+import { getRequestId, startTiming, applySecurityHeaders, assertSameOrigin } from "../../_middleware";
+import { log } from "~backend/infrastructure/observability/logger";
 
 export async function POST(request: Request) {
   const requestId = getRequestId(request);
   const getTime = startTiming();
 
   try {
+    assertSameOrigin(request);
+
     if (!(await checkRateLimit(getRateLimitKey(request, "auth:register"), LIMITS.registerPerMin, 60_000))) {
       throw new AppError(429, "Too many registration attempts. Please try again later.", "RATE_LIMIT_EXCEEDED");
     }
@@ -28,15 +31,17 @@ export async function POST(request: Request) {
 
     await createUser({ name, email, password });
 
-    const token = await signSession({ email });
     const newUser = await findUserByEmail(email);
     if (!newUser) {
       throw new AppError(500, "Failed to retrieve created user.", "INTERNAL_ERROR");
     }
+    const token = await signSession({ email, ver: newUser.tokenVersion });
     const { passwordHash: _passwordHash, ...safeUser } = newUser;
 
     const res = NextResponse.json({ user: safeUser }, { status: 201 });
     await setSessionCookie(token, res);
+
+    log.info("auth.register.success", { requestId, userId: newUser.id });
 
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");

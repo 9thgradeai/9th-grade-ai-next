@@ -2,13 +2,15 @@ import { NextResponse } from "next/server";
 import { AppError, toHttpResponse } from "~backend/errors";
 import { validateUpdateProfileInput } from "~backend/validation";
 import { getUserIdFromRequest, updateUserProfile } from "~backend/services/user";
-import { getRequestId, startTiming, applySecurityHeaders } from "../../_middleware";
+import { getRequestId, startTiming, applySecurityHeaders, assertSameOrigin } from "../../_middleware";
 
 export async function PATCH(request: Request) {
   const requestId = getRequestId(request);
   const getTime = startTiming();
 
   try {
+    assertSameOrigin(request);
+
     const userId = await getUserIdFromRequest(request);
     if (!userId) {
       throw new AppError(401, "Not authenticated", "AUTH_UNAUTHORIZED");

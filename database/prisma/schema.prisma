@@ -110,6 +110,9 @@ model User {
   emailVerified Boolean       @default(false)
   handle       String         @unique
   passwordHash String
+  // Bumped on password change / global revoke — JWTs carry the version they
+  // were minted with; any token whose version is stale is rejected on verify.
+  tokenVersion Int            @default(0)
   role         UserRole       @default(STUDENT)
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt

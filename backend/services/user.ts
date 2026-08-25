@@ -5,7 +5,7 @@ import "server-only";
 
 import { hash, compare } from "bcryptjs";
 import { prisma } from "~backend/db";
-import { verifySession } from "~backend/auth";
+import { getSessionUser } from "~backend/auth";
 import {
   AppError,
   NotFoundError,
@@ -22,6 +22,7 @@ export type UserRecord = {
   email: string;
   handle: string;
   passwordHash: string;
+  tokenVersion: number;
   role: "student" | "admin";
   createdAt: string;
 };
@@ -36,6 +37,7 @@ export async function findUserByEmail(email: string): Promise<UserRecord | null>
       email: u.email,
       handle: u.handle,
       passwordHash: u.passwordHash,
+      tokenVersion: u.tokenVersion,
       role: u.role === "ADMIN" ? "admin" : "student",
       createdAt: u.createdAt.toISOString(),
     };
@@ -96,6 +98,7 @@ export async function createUser({
       email: u.email,
       handle: u.handle,
       passwordHash: u.passwordHash,
+      tokenVersion: u.tokenVersion,
       role: "student",
       createdAt: u.createdAt.toISOString(),
     };
@@ -113,17 +116,22 @@ export async function verifyPassword(hashStr: string, plain: string): Promise<bo
   }
 }
 
+/**
+ * Pre-computed bcrypt digest used to equalize timing when the submitted email
+ * does not exist. Running the same single compare on both the "no such user"
+ * and "wrong password" paths removes the ~100ms oracle that let attackers
+ * enumerate registered emails from response latency.
+ */
+export const DUMMY_PASSWORD_HASH = "$2b$10$mfEU02aBWld.H0jui8HgCuZz9R1S7WV8QTsnKc3JsxZkLjC4WbMCK";
+
 /** Resolve the authenticated user's id from the request cookies. */
 export async function getUserIdFromRequest(
   req: Request,
 ): Promise<string | null> {
   try {
-    const cookie = req.headers.get("cookie") ?? "";
-    const match = cookie.match(/auth_token=([^;]+)/);
-    if (!match) return null;
-    const payload = await verifySession(match[1]);
-    if (!payload?.email || typeof payload.email !== "string") return null;
-    const user = await prisma.user.findUnique({ where: { email: payload.email } });
+    // Delegates to getSessionUser so every session check (JWT signature,
+    // existence, tokenVersion) stays in one place.
+    const user = await getSessionUser(req);
     return user?.id ?? null;
   } catch {
     return null;
@@ -135,17 +143,10 @@ export type AuthedUser = { id: string; email: string; role: "student" | "admin" 
 /** Resolve the authenticated user (id + role) from the request cookies. */
 export async function getAuthedUser(req: Request): Promise<AuthedUser | null> {
   try {
-    const cookie = req.headers.get("cookie") ?? "";
-    const match = cookie.match(/auth_token=([^;]+)/);
-    if (!match) return null;
-    const payload = await verifySession(match[1]);
-    if (!payload?.email || typeof payload.email !== "string") return null;
-    const user = await prisma.user.findUnique({
-      where: { email: payload.email },
-      select: { id: true, email: true, role: true },
-    });
+    // Delegates to getSessionUser so every session check stays in one place.
+    const user = await getSessionUser(req);
     if (!user) return null;
-    return { id: user.id, email: user.email, role: user.role === "ADMIN" ? "admin" : "student" };
+    return { id: user.id, email: user.email, role: user.role };
   } catch {
     return null;
   }
@@ -277,6 +278,7 @@ export async function findUserById(userId: string): Promise<UserRecord | null> {
       email: u.email,
       handle: u.handle,
       passwordHash: u.passwordHash,
+      tokenVersion: u.tokenVersion,
       role: u.role === "ADMIN" ? "admin" : "student",
       createdAt: u.createdAt.toISOString(),
     };
@@ -304,6 +306,7 @@ export async function updateUserProfile(
       email: u.email,
       handle: u.handle,
       passwordHash: u.passwordHash,
+      tokenVersion: u.tokenVersion,
       role: u.role === "ADMIN" ? "admin" : "student",
       createdAt: u.createdAt.toISOString(),
     };
@@ -317,7 +320,7 @@ export async function changeUserPassword(
   userId: string,
   currentPassword: string,
   newPassword: string,
-): Promise<void> {
+): Promise<{ tokenVersion: number }> {
   try {
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new NotFoundError("User not found");
@@ -331,11 +334,41 @@ export async function changeUserPassword(
       );
     }
 
+    // Bumping tokenVersion invalidates every JWT minted before this point —
+    // stolen cookies stop working after a password change. The caller issues
+    // a fresh token for the CURRENT session so the user isn't logged out.
     const passwordHash = await hash(newPassword, 10);
-    await prisma.user.update({ where: { id: userId }, data: { passwordHash } });
+    const tokenVersion = user.tokenVersion + 1;
+    await prisma.user.update({
+      where: { id: userId },
+      data: { passwordHash, tokenVersion },
+    });
+    return { tokenVersion };
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new InternalServerError("Failed to change password");
+  }
+}
+
+/**
+ * Invalidate every active session for the user ("log out everywhere") by
+ * bumping their tokenVersion. Also affects the calling device — the client
+ * clears its own cookie afterwards.
+ */
+export async function revokeAllSessions(userId: string): Promise<void> {
+  try {
+    const existing = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true },
+    });
+    if (!existing) throw new NotFoundError("User not found");
+    await prisma.user.update({
+      where: { id: userId },
+      data: { tokenVersion: { increment: 1 } },
+    });
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+    throw new InternalServerError("Failed to revoke sessions");
   }
 }
 

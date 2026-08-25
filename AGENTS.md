@@ -19,7 +19,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 /
 ├── app/                    # Next.js App Router (pages, layouts, API routes, metadata)
 │   ├── api/               # Route handlers — the backend seam
-│   ├── (auth)/            # Auth group (login)
+│   ├── login/             # Auth page (login + signup via ?register=true)
 │   ├── (dashboard)/       # Dashboard group (protected)
 │   └── ...
 ├── backend/               # Server-only code (Prisma, auth, services)

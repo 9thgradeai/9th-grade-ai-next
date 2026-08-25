@@ -1,7 +1,35 @@
 import { NextResponse } from "next/server";
+import { AppError } from "~backend/errors";
 
 export function getRequestId(req: Request): string {
   return req.headers.get("x-request-id") ?? crypto.randomUUID();
+}
+
+/**
+ * Defense-in-depth CSRF check for state-changing requests. Browsers always
+ * attach an Origin header to cross-site POST/PATCH/DELETE; if it names a
+ * different host than the one serving the request, reject. Non-browser
+ * clients (curl, server-to-server) send no Origin and are unaffected —
+ * they carry no ambient cookie credentials anyway.
+ */
+export function assertSameOrigin(request: Request): void {
+  const origin = request.headers.get("origin");
+  if (!origin || origin === "null") return;
+
+  // Behind proxies the effective host can arrive via x-forwarded-host.
+  const host =
+    request.headers.get("x-forwarded-host") ?? request.headers.get("host") ?? "";
+
+  let originHost = "";
+  try {
+    originHost = new URL(origin).host;
+  } catch {
+    throw new AppError(403, "Invalid request origin.", "CSRF_ORIGIN_INVALID");
+  }
+
+  if (originHost && originHost !== host) {
+    throw new AppError(403, "Cross-origin request rejected.", "CSRF_ORIGIN_MISMATCH");
+  }
 }
 
 export function startTiming() {

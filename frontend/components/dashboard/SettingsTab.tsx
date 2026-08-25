@@ -123,7 +123,7 @@ function Field({
 export default function SettingsTab() {
   const router = useRouter();
   const shouldReduceMotion = useReducedMotion();
-  const { user, updateProfile, logout, tokenExpiry } = useAuth();
+  const { user, updateProfile, logout, tokenExpiry, refreshToken } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const { lastSyncedAt, resetStore } = useDashboardStore();
 
@@ -137,6 +137,10 @@ export default function SettingsTab() {
   const [pw, setPw] = useState({ current: "", next: "", confirm: "" });
   const [changingPw, setChangingPw] = useState(false);
   const [pwMsg, setPwMsg] = useState<{ ok: boolean; text: string } | null>(null);
+
+  // ── Revoke all sessions ──
+  const [revokingAll, setRevokingAll] = useState(false);
+  const [revokeMsg, setRevokeMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
   // ── Notifications pref ──
   const notifPref = useSyncExternalStore(subscribeNotif, getNotifSnapshot, getNotifServerSnapshot);
@@ -200,12 +204,27 @@ export default function SettingsTab() {
     setPwMsg(null);
     try {
       await account.changePassword(pw.current, pw.next, pw.confirm);
-      setPwMsg({ ok: true, text: "Password changed successfully." });
+      // The server re-minted this device's cookie with a new tokenVersion —
+      // resync the client's session timer so auto-refresh keeps working.
+      await refreshToken();
+      setPwMsg({ ok: true, text: "Password changed. Other devices have been signed out." });
       setPw({ current: "", next: "", confirm: "" });
     } catch (error) {
       setPwMsg({ ok: false, text: handleApiError(error).message });
     } finally {
       setChangingPw(false);
+    }
+  };
+
+  const handleRevokeSessions = async () => {
+    setRevokingAll(true);
+    setRevokeMsg(null);
+    try {
+      await account.revokeAllSessions();
+      await logout();
+    } catch (error) {
+      setRevokeMsg({ ok: false, text: handleApiError(error).message });
+      setRevokingAll(false);
     }
   };
 
@@ -408,6 +427,33 @@ export default function SettingsTab() {
           <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" aria-hidden="true" />
           Passwords are hashed with bcrypt (cost 10) — never stored in plain text.
         </p>
+
+        {/* Revoke every active session across devices */}
+        <div className="mt-5 pt-5 border-t border-default flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <MonitorSmartphone className="w-4 h-4 text-emerald-400 flex-shrink-0" aria-hidden="true" />
+            <div className="min-w-0">
+              <p className="text-sm text-zinc-200 font-medium">Sign out of all devices</p>
+              <p className="text-[11px] text-zinc-500 font-mono">
+                Invalidates every active session, including this one.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => void handleRevokeSessions()}
+            disabled={revokingAll}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-red-500/40 bg-red-500/10 text-red-300 text-sm font-mono font-semibold hover:bg-red-500/20 transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex-shrink-0"
+          >
+            {revokingAll ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" /> : <RefreshCw className="w-4 h-4" aria-hidden="true" />}
+            {revokingAll ? "Signing out..." : "Revoke all"}
+          </button>
+        </div>
+        {revokeMsg && !revokeMsg.ok ? (
+          <p className="mt-2 text-xs font-mono text-red-400 flex items-center gap-1.5">
+            <AlertTriangle className="w-3.5 h-3.5" aria-hidden="true" />
+            {revokeMsg.text}
+          </p>
+        ) : null}
       </SectionCard>
 
       {/* Preferences */}

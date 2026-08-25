@@ -8,11 +8,19 @@ All API routes live under `/api/*`.
 
 Auth-protected routes require the `auth_token` HttpOnly cookie (JWT, 7-day expiry, SameSite=Lax).
 
+Session JWTs carry a `ver` claim matching the user's `tokenVersion`. Changing the password or revoking all sessions bumps that version, instantly invalidating every previously issued token on every device.
+
 - `GET /api/auth/me` — Returns the current user or `401`.
-- `POST /api/auth/login` — Authenticates `{ email, password }`, sets cookie, returns user.
-- `POST /api/auth/register` — Creates account `{ name, email, password }`, sets cookie, returns user.
+- `POST /api/auth/login` — Authenticates `{ email, password }`, sets cookie, returns user. Timing-equalized (unknown emails run a dummy bcrypt compare) and rate-limited per-IP (5/min) and per-account (10/hour).
+- `POST /api/auth/register` — Creates account `{ name, email, password }` (8–128 chars), sets cookie, returns user.
 - `POST /api/auth/logout` — Clears the session cookie.
-- `POST /api/auth/refresh` — Re-issues the session JWT, extends the `auth_token` cookie, returns `{ expiresIn }` (ms until expiry). Requires a valid session cookie; `401` otherwise.
+- `POST /api/auth/refresh` — Re-issues the session JWT, extends the `auth_token` cookie, returns `{ expiresIn }` (ms until expiry). Enforces a 30-day absolute session cap. Requires a valid session cookie; `401` otherwise.
+- `PATCH /api/auth/profile` — **Auth required** — Updates `{ name }`.
+- `POST /api/auth/change-password` — **Auth required** — Verifies `{ currentPassword }`, updates to `{ newPassword }`, **invalidates all other sessions**, and re-mints this device's cookie so it stays signed in.
+- `DELETE /api/auth/account` — **Auth required** — Deletes the account and clears the cookie.
+- `POST /api/auth/sessions/revoke-all` — **Auth required** — "Sign out everywhere": invalidates every session (including the caller's) and clears the local cookie.
+
+All mutating auth endpoints reject cross-origin requests via an Origin/Host check (`403 CSRF_ORIGIN_MISMATCH`).
 
 ## Public Endpoints
 

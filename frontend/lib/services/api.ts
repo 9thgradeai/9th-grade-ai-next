@@ -333,4 +333,8 @@ export const account = {
       method: "DELETE",
       ...AUTH_FETCH_INIT,
     }),
+
+  // Invalidates every session (all devices) and clears this device's cookie.
+  revokeAllSessions: (): Promise<{ success: boolean }> =>
+    mutate<{ success: boolean }>("/api/auth/sessions/revoke-all", "POST"),
 };

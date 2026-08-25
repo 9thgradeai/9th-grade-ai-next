@@ -124,6 +124,15 @@ export function validatePositiveInteger(value: unknown, fieldName: string): numb
 }
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// Upper bound on password length: bcrypt ignores bytes past 72, and unbounded
+// inputs let a client force expensive hashing on every attempt (CPU DoS).
+const MAX_PASSWORD_LENGTH = 128;
+
+function assertPasswordLength(password: unknown, fieldName = "Password"): void {
+  if (isString(password) && password.length > MAX_PASSWORD_LENGTH) {
+    throw new ValidationError(`${fieldName} must be at most ${MAX_PASSWORD_LENGTH} characters.`);
+  }
+}
 
 export function validateLoginInput(body: unknown): LoginInput {
   assertNoUnknownFields(body, ["email", "password"]);
@@ -142,6 +151,7 @@ export function validateLoginInput(body: unknown): LoginInput {
   if (!isString(password) || password.length < 1) {
     throw new ValidationError("Password is required.");
   }
+  assertPasswordLength(password);
 
   return { email, password };
 }
@@ -169,6 +179,7 @@ export function validateRegisterInput(body: unknown): RegisterInput {
   if (!isString(password) || password.length < 8) {
     throw new ValidationError("Password must be at least 8 characters.");
   }
+  assertPasswordLength(password);
 
   return { name: name.trim(), email: email as string, password };
 }
@@ -207,6 +218,7 @@ export function validateChangePasswordInput(body: unknown): ChangePasswordInput 
   if (!isString(newPassword) || newPassword.length < 8) {
     throw new ValidationError("New password must be at least 8 characters.");
   }
+  assertPasswordLength(newPassword, "New password");
   if (!isString(confirmPassword) || confirmPassword !== newPassword) {
     throw new ValidationError("Passwords do not match.");
   }

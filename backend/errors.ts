@@ -83,8 +83,17 @@ export function toHttpResponse(error: unknown): NextResponse {
   }
 
   if (error instanceof Error) {
+    // Unexpected (non-operational) errors: log the real cause server-side, but
+    // never return internals like Prisma/DB messages to the client.
+    console.error(`[unhandled] ${error.message}`, error.stack);
     return NextResponse.json(
-      { error: error.message, code: "INTERNAL_ERROR" },
+      {
+        error:
+          process.env.NODE_ENV === "production"
+            ? "An unexpected error occurred."
+            : error.message,
+        code: "INTERNAL_ERROR",
+      },
       { status: 500 },
     );
   }

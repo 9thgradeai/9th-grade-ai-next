@@ -30,6 +30,17 @@ function getJoseSecret(): Uint8Array {
 // Cookie name used across all API routes
 const SESSION_COOKIE = "auth_token";
 
+/**
+ * Extract the session token from the request's Cookie header.
+ * Uses an exact-boundary pattern (`^` or `; ` before the name) so decoy
+ * cookies like `xauth_token=` cannot shadow the real session value.
+ */
+export function extractSessionToken(req: Request): string | null {
+  const header = req.headers.get("cookie") ?? "";
+  const match = header.match(/(?:^|;\s*)auth_token=([^;]*)/);
+  return match?.[1] || null;
+}
+
 // ----- Helpers ---------------------------------------------------
 
 /**
@@ -37,13 +48,18 @@ const SESSION_COOKIE = "auth_token";
  * 7-day expiry. Sets algorithm explicitly to HS256.
  * `origIat` (optional, seconds) preserves the ORIGINAL issue time across
  * refresh hops so the refresh endpoint can enforce an absolute session cap.
+ * `ver` is the user's tokenVersion — bumped server-side to revoke all tokens
+ * issued before it (password change, logout-everywhere).
  */
 export async function signSession(
-  payload: { email: string; origIat?: number },
+  payload: { email: string; origIat?: number; ver?: number },
 ) {
   const claims: Record<string, unknown> = { email: payload.email };
   if (typeof payload.origIat === "number") {
     claims.origIat = payload.origIat;
+  }
+  if (typeof payload.ver === "number") {
+    claims.ver = payload.ver;
   }
   return await new SignJWT(claims)
     .setProtectedHeader({ alg: "HS256" })
@@ -109,11 +125,8 @@ export async function clearSessionCookie(res: NextResponse) {
  * @returns UserRecord if authenticated, null otherwise
  */
 export async function getSessionUser(req: Request): Promise<UserRecord | null> {
-  const cookie = req.headers.get("cookie") ?? "";
-  const match = cookie.match(/auth_token=([^;]+)/);
-  if (!match) return null;
-
-  const token = match[1];
+  const token = extractSessionToken(req);
+  if (!token) return null;
 
   const payload = await verifySession(token);
   if (!payload?.email || typeof payload.email !== "string") return null;
@@ -121,12 +134,21 @@ export async function getSessionUser(req: Request): Promise<UserRecord | null> {
   const u = await prisma.user.findUnique({ where: { email: payload.email } });
   if (!u) return null;
 
+  // Session-version check: tokens minted before the user's current
+  // tokenVersion (password change / revoke-all) are dead even if unexpired.
+  // Legacy tokens without a `ver` claim count as version 0.
+  const ver = typeof (payload as { ver?: unknown }).ver === "number"
+    ? ((payload as { ver: number }).ver)
+    : 0;
+  if (ver !== u.tokenVersion) return null;
+
   return {
     id: u.id,
     name: u.name,
     email: u.email,
     handle: u.handle,
     passwordHash: u.passwordHash,
+    tokenVersion: u.tokenVersion,
     role: u.role === "ADMIN" ? "admin" : "student",
     createdAt: u.createdAt.toISOString(),
   };

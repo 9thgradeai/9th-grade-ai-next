@@ -1,11 +1,16 @@
 import { NextResponse } from "next/server";
 import { AppError, toHttpResponse } from "~backend/errors";
-import { getUserIdFromRequest, deleteUserAccount } from "~backend/services/user";
+import { getUserIdFromRequest, revokeAllSessions } from "~backend/services/user";
 import { clearSessionCookie } from "~backend/auth";
-import { getRequestId, startTiming, applySecurityHeaders, assertSameOrigin } from "../../_middleware";
+import { getRequestId, startTiming, applySecurityHeaders, assertSameOrigin } from "../../../_middleware";
 import { log } from "~backend/infrastructure/observability/logger";
 
-export async function DELETE(request: Request) {
+/**
+ * POST /api/auth/sessions/revoke-all — "log out everywhere".
+ * Bumps the user's tokenVersion so every issued JWT becomes invalid
+ * (including this device), then clears the local session cookie.
+ */
+export async function POST(request: Request) {
   const requestId = getRequestId(request);
   const getTime = startTiming();
 
@@ -17,12 +22,12 @@ export async function DELETE(request: Request) {
       throw new AppError(401, "Not authenticated", "AUTH_UNAUTHORIZED");
     }
 
-    await deleteUserAccount(userId);
+    await revokeAllSessions(userId);
 
     const res = NextResponse.json({ success: true });
     await clearSessionCookie(res);
 
-    log.info("auth.account.deleted", { requestId, userId });
+    log.info("auth.sessions.revoked_all", { requestId, userId });
 
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");

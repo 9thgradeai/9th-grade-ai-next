@@ -15,10 +15,12 @@ const h = vi.hoisted(() => ({
   } as Client.User,
   logout: vi.fn(),
   updateProfile: vi.fn(),
+  refreshToken: vi.fn(),
   resetStore: vi.fn(),
   toggleTheme: vi.fn(),
   changePassword: vi.fn(),
   deleteAccount: vi.fn(),
+  revokeAllSessions: vi.fn(),
 }));
 
 vi.mock("@/lib/auth-ctx", () => ({
@@ -27,6 +29,7 @@ vi.mock("@/lib/auth-ctx", () => ({
     isLoading: false,
     logout: h.logout,
     updateProfile: h.updateProfile,
+    refreshToken: h.refreshToken,
     tokenExpiry: Date.now() + 60_000,
   }),
 }));
@@ -40,7 +43,11 @@ vi.mock("@/lib/store-ctx/dashboard", () => ({
 }));
 
 vi.mock("@/lib/services/api", () => ({
-  account: { changePassword: h.changePassword, deleteAccount: h.deleteAccount },
+  account: {
+    changePassword: h.changePassword,
+    deleteAccount: h.deleteAccount,
+    revokeAllSessions: h.revokeAllSessions,
+  },
 }));
 
 describe("SettingsTab", () => {
@@ -49,6 +56,7 @@ describe("SettingsTab", () => {
     h.updateProfile.mockResolvedValue(h.mockUser);
     h.changePassword.mockResolvedValue({ success: true });
     h.deleteAccount.mockResolvedValue({ success: true });
+    h.revokeAllSessions.mockResolvedValue({ success: true });
     h.logout.mockResolvedValue(undefined);
   });
 
@@ -65,15 +73,19 @@ describe("SettingsTab", () => {
     expect(screen.getByRole("button", { name: /log out/i })).toBeInTheDocument();
   });
 
-  it("changes the password and reports success", async () => {
+  it("changes the password and reports other devices were signed out", async () => {
     render(<SettingsTab />);
     fireEvent.change(screen.getByLabelText("Current password"), { target: { value: "old-pass" } });
     fireEvent.change(screen.getByLabelText("New password"), { target: { value: "new-password-1" } });
     fireEvent.change(screen.getByLabelText("Confirm new"), { target: { value: "new-password-1" } });
     fireEvent.click(screen.getByRole("button", { name: /change password/i }));
 
-    expect(await screen.findByText("Password changed successfully.")).toBeInTheDocument();
+    expect(
+      await screen.findByText(/Password changed\. Other devices have been signed out\./),
+    ).toBeInTheDocument();
     expect(h.changePassword).toHaveBeenCalledWith("old-pass", "new-password-1", "new-password-1");
+    // Session timer resync after the server re-mints this device's cookie.
+    expect(h.refreshToken).toHaveBeenCalled();
   });
 
   it("rejects mismatched password confirmation client-side", async () => {
@@ -95,6 +107,14 @@ describe("SettingsTab", () => {
     fireEvent.click(screen.getByRole("button", { name: /delete forever/i }));
 
     await waitFor(() => expect(h.deleteAccount).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(h.logout).toHaveBeenCalledTimes(1));
+  });
+
+  it("revokes all sessions and signs out", async () => {
+    render(<SettingsTab />);
+    fireEvent.click(screen.getByRole("button", { name: /revoke all/i }));
+
+    await waitFor(() => expect(h.revokeAllSessions).toHaveBeenCalledTimes(1));
     await waitFor(() => expect(h.logout).toHaveBeenCalledTimes(1));
   });
 });

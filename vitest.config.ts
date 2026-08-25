@@ -7,6 +7,8 @@ export default defineConfig({
     alias: {
       "@": resolve(__dirname, "./frontend"),
       "~backend": resolve(__dirname, "./backend"),
+      "~app": resolve(__dirname, "./app"),
+      "~scripts": resolve(__dirname, "./scripts"),
       "~tests": resolve(__dirname, "./tests"),
       "server-only": resolve(__dirname, "./tests/mocks/server-only.ts"),
     },
