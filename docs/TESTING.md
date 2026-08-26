@@ -2,49 +2,46 @@
 
 ## Framework
 
-- **Vitest** 3.0.0 with `@testing-library/react` and `jsdom`.
+- **Vitest** 3 with `@testing-library/react` and `jsdom` (per-file Node opt-in
+  for tests that sign real JWTs or hit raw SQL).
+- Coverage: Istanbul, thresholds **enforced in CI** (`npm run test -- --run --coverage`).
+  Thresholds are set to actual current coverage and must be ratcheted up over
+  time — never lowered.
 
 ## Test Location
 
 - `tests/` — root-level test directory.
-- `tests/setup.ts` — global test setup (`@testing-library/jest-dom`).
+- `tests/setup.ts` — global setup: polyfills, `server-only` stub, `next/headers`
+  + `next/navigation` mocks, and a hand-maintained Prisma client double.
+- `tests/api/routes.test.ts` — route-handler integration suite (real handlers,
+  real Requests; Prisma + rate-limit store mocked).
 
-## Current Tests
+## Current Tests (high level)
 
-| File | Type | Coverage |
-|------|------|----------|
-| `tests/CustomExamTab.test.tsx` | Component | Custom exam builder |
-| `tests/MockTestTab.test.tsx` | Component | Mock test builder |
-| `tests/FlashNewsModal.test.tsx` | Component | FlashNewsModal rendering |
-| `tests/NewFeatures.test.tsx` | Component | StudyPlannerTab, FlashcardsTab, MockTestTab, AISolverTab, DailyQuizWidget, NotificationCenter, OfflineModeTab, ThemeToggle |
-| `tests/unit/backend/exam.test.ts` | Unit | Exam selection/grading engine |
-| `tests/unit/backend/questions.test.ts` | Unit | `getQuestions` path filtering |
-| `tests/unit/backend/knowledge-base.test.ts` | Unit | Knowledge-base retrieval |
-| `tests/unit/backend/web-search.test.ts` | Unit | Tavily web-search helper |
+| Area | Files | What is covered |
+|------|-------|-----------------|
+| Component | `tests/*.test.tsx` (~10) | Auth experience, dashboard tabs, landing, public pages |
+| Backend units | `tests/unit/backend/*` (~20) | Exam engine, SRS, rate limiting, auth hardening, session verify, security isolation, validation, badges, streaks, AI providers/search |
+| Frontend units | `tests/unit/frontend/*` | Markdown renderer, toaster, conversation list |
+| API routes | `tests/api/routes.test.ts` | Auth login/register/me (status codes, cookie flags, revocation), submission bounds (200-answer cap), CSRF origin checks, rate-limit 429s |
+| Integration | `tests/integration/*` | Real-Postgres run of the progress upsert (runs in CI via a Postgres service container) |
 
-## Missing Coverage
+## Known Gaps
 
-- **API integration tests**: No tests for `app/api/*` routes.
-- **Auth flow tests**: No tests for login, register, logout.
-- **E2E tests**: No Playwright or Cypress tests.
-- **Database tests**: No Prisma integration tests.
-- **AI evaluation tests**: No tests for `/api/ai/*` endpoints.
-- **Accessibility tests**: No axe-core or similar.
-- **Performance tests**: No Lighthouse or bundle size tests.
+- **E2E**: no Playwright/Cypress yet.
+- **AI route streaming**: `/api/ai/tutor` stream behavior untested at HTTP level.
+- **Accessibility/performance**: no axe-core or Lighthouse gates.
 
 ## Running Tests
 
 ```bash
-npm run test          # Run once
-npm run test:watch    # Watch mode
+npm run test              # Run once
+npm run test:watch        # Watch mode
+npm run test:coverage     # Enforce coverage thresholds
 ```
-
-## Writing Tests
-
-- Use `render` and `screen` from `@testing-library/react`.
-- Mock API calls where needed (e.g., `vi.mock("@/lib/services/api")`).
-- Follow existing patterns in `tests/NewFeatures.test.tsx`.
 
 ## CI/CD
 
-- CI runs `typecheck`, `lint`, `test`, and `build` on every push/PR (`.github/workflows/ci.yml`).
+- CI (`.github/workflows/ci.yml`) runs typecheck, lint, tests with enforced
+  coverage against a real Postgres 16 service container, then build.
+- Dependabot keeps npm deps and actions current (`.github/dependabot.yml`).

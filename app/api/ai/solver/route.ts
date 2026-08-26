@@ -6,13 +6,18 @@ import { UnauthorizedError, toHttpResponse } from "~backend/errors";
 import { getUserIdFromRequest } from "~backend/services/user";
 import { enforceAiQuotas } from "~backend/rate-limit";
 import { solveQuestion } from "~backend/ai";
-import { getRequestId, startTiming, applySecurityHeaders } from "../../_middleware";
+import { getRequestId, startTiming, applySecurityHeaders, assertSameOrigin } from "../../_middleware";
+
+// Streaming/LLM latency can exceed serverless defaults; keep the invocation alive.
+export const maxDuration = 60;
 
 export async function POST(request: Request) {
   const requestId = getRequestId(request);
   const getTime = startTiming();
 
   try {
+    assertSameOrigin(request);
+
     const userId = await getUserIdFromRequest(request);
     if (!userId) {
       throw new UnauthorizedError("Sign in to use the AI solver.");

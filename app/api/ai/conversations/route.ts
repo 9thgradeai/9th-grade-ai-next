@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 import { UnauthorizedError, toHttpResponse } from "~backend/errors";
 import { getUserIdFromRequest } from "~backend/services/user";
 import { createConversation, listConversations } from "~backend/ai";
-import { getRequestId, startTiming, applySecurityHeaders } from "../../_middleware";
+import { getRequestId, startTiming, applySecurityHeaders, assertSameOrigin } from "../../_middleware";
 
 const KINDS = new Set(["TUTOR", "ASSISTANT", "SOLVER"]);
 
@@ -40,6 +40,8 @@ export async function POST(request: Request) {
   const getTime = startTiming();
 
   try {
+    assertSameOrigin(request);
+
     const userId = await getUserIdFromRequest(request);
     if (!userId) throw new UnauthorizedError();
 

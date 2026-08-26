@@ -6,8 +6,6 @@ import MockTestTab from "@/components/dashboard/MockTestTab";
 import AISolverTab from "@/components/dashboard/AISolverTab";
 import DailyQuizWidget from "@/components/dashboard/DailyQuizWidget";
 import NotificationCenter from "@/components/dashboard/NotificationCenter";
-import OfflineModeTab from "@/components/dashboard/OfflineModeTab";
-import { OFFLINE_PACKS } from "@/lib/data/study";
 
 function stubFetch(routes: Record<string, unknown>) {
   vi.stubGlobal(
@@ -201,25 +199,6 @@ describe("NotificationCenter", () => {
     render(<NotificationCenter />);
     fireEvent.click(screen.getByTitle("Notifications"));
     expect(await screen.findByText("কোনো নোটিফিকেশন নেই")).toBeInTheDocument();
-  });
-});
-
-describe("OfflineModeTab", () => {
-  it("renders offline mode header", () => {
-    render(<OfflineModeTab />);
-    expect(screen.getByText("Offline Mode")).toBeInTheDocument();
-  });
-
-  it("shows content packs", () => {
-    render(<OfflineModeTab />);
-    OFFLINE_PACKS.forEach((pack) => {
-      expect(screen.getByText(pack.name)).toBeInTheDocument();
-    });
-  });
-
-  it("shows download all button", () => {
-    render(<OfflineModeTab />);
-    expect(screen.getByText("Download All Content")).toBeInTheDocument();
   });
 });
 

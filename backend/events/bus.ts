@@ -7,6 +7,7 @@
 
 import "server-only";
 
+import { runAfterResponse } from "~backend/schedule";
 import type { DomainEvent, DomainEventName, EventHandler } from "./types";
 
 type AnyHandler = (event: DomainEvent) => void | Promise<void>;
@@ -30,20 +31,23 @@ export function subscribe<T extends DomainEventName>(
 /**
  * Fire-and-forget publish. A failing subscriber is logged and isolated —
  * it can NEVER break the business operation that produced the event.
+ * Handlers run via runAfterResponse so they survive serverless response
+ * completion (badge awards etc. are not dropped on Vercel).
  */
 export function emit(event: DomainEvent): void {
   const set = handlers.get(event.name);
   if (!set || set.size === 0) return;
   for (const handler of set) {
-    Promise.resolve()
-      .then(() => handler(event))
-      .catch((err) => {
-        // Late import avoided: logger has no dependency on events.
+    runAfterResponse(async () => {
+      try {
+        await handler(event);
+      } catch (err) {
         console.error(
           `[events] handler failed for ${event.name}:`,
           err instanceof Error ? err.message : err,
         );
-      });
+      }
+    });
   }
 }
 

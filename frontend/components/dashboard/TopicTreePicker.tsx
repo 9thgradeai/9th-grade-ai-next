@@ -104,10 +104,12 @@ function TopicNodeRow({
       >
         <button
           onClick={() => onToggle(node)}
+          role="checkbox"
+          aria-checked={selected}
+          aria-label={`${node.name} (${node.questionCount}টি প্রশ্ন)`}
           className={`w-4 h-4 rounded border flex-shrink-0 flex items-center justify-center ${
             selected ? "bg-emerald-500 border-emerald-500" : "border-zinc-600"
           }`}
-          aria-label={selected ? "Remove topic" : "Select topic"}
         >
           {selected && <Check className="w-3 h-3 text-zinc-950" />}
         </button>

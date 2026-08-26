@@ -133,8 +133,8 @@ model User {
   studyTaskCompletions    StudyTaskCompletion[]
   userBadges              UserBadge[]
 
-  @@index([email])
-  @@index([handle])
+  // NOTE: `email` and `handle` are @unique — their backing indexes already
+  // serve lookups; explicit duplicates were removed (write amplification).
 }
 
 // ── Content taxonomy ──────────────────────────────────────
@@ -204,7 +204,8 @@ model Question {
 
   @@index([subjectId, difficulty])
   @@index([subjectId, path])
-  @@index([subjectId, topic])
+  // FK-side index: Topic SetNull updates/deletes must not seq-scan Questions.
+  @@index([topicId])
   @@index([subjectId, topic, subtopic])
   @@unique([subjectId, sourceKey])
 }
@@ -307,6 +308,9 @@ model StudyTask {
   createdAt   DateTime      @default(now())
   completions StudyTaskCompletion[]
 
+  // FK-side index: user account deletion cascades here; composite below
+  // leads with dayId so userId lookups need their own index.
+  @@index([userId])
   @@index([dayId, userId])
 }
 
@@ -339,7 +343,7 @@ model DailyQuiz {
   questions QuizQuestion[]
   participations DailyQuizParticipation[]
 
-  @@index([date])
+  // `date` is @unique — its unique index serves lookups; duplicate removed.
 }
 
 // Per-user daily-quiz participation — one row per (user, quiz).
@@ -374,6 +378,9 @@ model QuizQuestion {
   options        Json
   correctAnswer  String
   explanation    String     @default("")
+
+  // FK-side index: seed's atomic replace deletes by dailyQuizId.
+  @@index([dailyQuizId])
 }
 
 // ── Mock tests ────────────────────────────────────────────
@@ -547,6 +554,8 @@ model Bookmark {
   createdAt  DateTime @default(now())
 
   @@unique([userId, questionId])
+  // FK-side index for Question cascade deletes (unique above leads with userId).
+  @@index([questionId])
 }
 
 // ── Per-user activity ────────────────────────────────────
@@ -568,6 +577,8 @@ model QuestionAttempt {
 
   @@index([userId, createdAt])
   @@index([userId, subjectId])
+  // FK-side index: Question SetNull on delete/update must not seq-scan attempts.
+  @@index([questionId])
   // Analytics group-bys filter by userId and aggregate per subject/topic.
   @@index([userId, subjectName])
   @@index([userId, topic])
@@ -587,6 +598,8 @@ model MockTestResult {
   createdAt   DateTime @default(now())
 
   @@index([userId, createdAt])
+  // FK-side index for MockTest SetNull.
+  @@index([mockTestId])
 }
 
 // Per-user flashcard SRS reviews (log). nextReview scheduling is derived
@@ -601,6 +614,8 @@ model FlashcardReview {
   createdAt   DateTime  @default(now())
 
   @@index([userId, flashcardId])
+  // FK-side index: Flashcard cascade deletes scan this column.
+  @@index([flashcardId])
 }
 
 // Per-user "read" marker for the global announcement feed.

@@ -325,8 +325,18 @@ export default function FlashcardsTab() {
                 className="relative h-80 perspective-1000"
               >
                 <div
+                  role="button"
+                  tabIndex={0}
+                  aria-label={isFlipped ? "উত্তর দেখানো হচ্ছে — প্রশ্নে ফিরে যেতে ক্লিক করুন" : "প্রশ্ন — উত্তর দেখতে ক্লিক বা Enter চাপুন"}
+                  aria-pressed={isFlipped}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      handleFlip();
+                    }
+                  }}
                   onClick={handleFlip}
-                  className={`w-full h-full rounded-terminal-rounded border-2 cursor-pointer transition-all flex items-center justify-center p-6 ${
+                  className={`w-full h-full rounded-terminal-rounded border-2 cursor-pointer transition-all flex items-center justify-center p-6 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400 ${
                     isFlipped
                       ? "bg-emerald-500/10 border-emerald-500/30"
                       : "bg-subtle border-zinc-800 hover:border-emerald-500/20"

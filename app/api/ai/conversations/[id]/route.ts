@@ -11,7 +11,7 @@ import {
   setConversationPinned,
   deleteConversation,
 } from "~backend/ai";
-import { getRequestId, startTiming, applySecurityHeaders } from "../../../_middleware";
+import { getRequestId, startTiming, applySecurityHeaders, assertSameOrigin } from "../../../_middleware";
 
 export async function GET(
   request: Request,
@@ -52,6 +52,7 @@ export async function PATCH(
   const getTime = startTiming();
 
   try {
+    assertSameOrigin(request);
     const userId = await getUserIdFromRequest(request);
     if (!userId) throw new UnauthorizedError();
     const { id } = await params;
@@ -95,6 +96,7 @@ export async function DELETE(
   const getTime = startTiming();
 
   try {
+    assertSameOrigin(request);
     const userId = await getUserIdFromRequest(request);
     if (!userId) throw new UnauthorizedError();
     const { id } = await params;

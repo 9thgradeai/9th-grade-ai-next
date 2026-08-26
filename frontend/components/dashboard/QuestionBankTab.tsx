@@ -81,7 +81,7 @@ export default function QuestionBankTab() {
 
   // Load categories + bookmarks from the DB (fallback to static data).
   useEffect(() => {
-    const cancelled = false;
+    let cancelled = false;
     void (async () => {
       try {
         const [cats, bk] = await Promise.all([
@@ -96,6 +96,9 @@ export default function QuestionBankTab() {
         /* keep static fallback */
       }
     })();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Load questions for the active category from the DB.
@@ -210,6 +213,12 @@ export default function QuestionBankTab() {
 
       {/* Questions list */}
       <div className="space-y-3">
+        {loading ? (
+          <div className="glass-card rounded-terminal-rounded border border-terminal-border p-10 text-center" role="status">
+            <span className="sr-only">লোড হচ্ছে…</span>
+            <p className="text-sm text-zinc-400 font-mono">প্রশ্ন লোড হচ্ছে...</p>
+          </div>
+        ) : (
         <AnimatePresence mode="popLayout">
           {visibleQuestions.map((item, i) => {
             const isSaved = bookmarks.includes(item.id);
@@ -220,7 +229,7 @@ export default function QuestionBankTab() {
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ delay: i * 0.05 }}
+                transition={{ delay: Math.min(i * 0.05, 0.3) }}
                 className="glass-card rounded-terminal-rounded border border-terminal-border p-4"
               >
                 <div className="flex items-start justify-between gap-3 mb-3">
@@ -264,8 +273,9 @@ export default function QuestionBankTab() {
             );
           })}
         </AnimatePresence>
+        )}
 
-        {visibleQuestions.length === 0 && (
+        {!loading && visibleQuestions.length === 0 && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

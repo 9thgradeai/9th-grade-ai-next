@@ -391,13 +391,10 @@ dashboard countdown. Seeded from announced circulars — no fabricated entries.
 - `year` String — default `""`
 - `createdAt` DateTime — default `now()`
 
-#### UserSession
-- `id` String (cuid) — PK
-- `userId` String — FK to User, indexed
-- `user` User — relation
-- `token` String — unique, indexed
-- `expiresAt` DateTime, indexed
-- `createdAt` DateTime — default `now()`
+#### UserSession (REMOVED)
+Sessions are stateless JWTs in an HttpOnly cookie (`backend/auth.ts`); there is
+no `UserSession` table. The model was dropped by migration
+`000000000005_drop_user_session`. Session invalidation uses `User.tokenVersion`.
 
 #### UserProgress
 - `id` Int — PK, auto-increment
@@ -589,19 +586,36 @@ The recursive Topic tree, leaf `topicId`/`path` tagging on questions, and per-to
 
 ## Indexes
 
-Prisma automatically creates indexes for:
+Prisma automatically creates indexes ONLY for:
 - Primary keys (`@id`).
-- Foreign keys (`subjectId`, `userId`, etc.).
 - Unique constraints (`email`, `handle`, `[userId, questionId]`).
-- Explicit `@@index` fields: `User.email`, `User.handle`, `Subject.sortOrder`, `Topic.subjectId`, `Topic.[subjectId, parentId]`, `Question.[subjectId, difficulty]`, `Question.[subjectId, topic]`, `Question.[subjectId, topic, subtopic]`, `Question.[subjectId, path]`, `Flashcard.subjectId`, `Flashcard.nextReview`, `StudyTask.[dayId, userId]`, `StudyPlanDay.date`, `DailyQuiz.date`, `UserProgress.points` (rank range-scan, Phase 3), `DailyQuizParticipation.quizId`, `DailyQuizParticipation.[userId, completedAt]`, `FlashcardUserState.[userId, nextReview]`, `StudyTaskCompletion.userId`, `UserSession.userId`, `UserSession.token`, `UserSession.expiresAt`, `AIConversation.[userId, updatedAt]`, `AIConversation.[userId, kind, updatedAt]`, `AIMessage.[conversationId, createdAt]`, `AIMemory.[userId, type]`, `AIUsage.[userId, createdAt]`, `AIUsage.[userId, task, createdAt]`, `AIUsage.[task, createdAt]`, `AIUsage.[model, createdAt]`, `QuestionAttempt.[userId, subjectName]`, `QuestionAttempt.[userId, topic]`, `AppNotification.[timestamp, id]`, `AIFeedback.[userId, createdAt]`, `AIFeedback.[messageId]`.
-- Unique constraints: `User.email`, `User.handle`, `Topic.[subjectId, path]`, `Bookmark.[userId, questionId]`, `NotificationRead.[userId, notificationId]`, `AIMemory.[userId, type, key]`, `DailyQuizParticipation.[userId, quizId]`, `UserSession.token`.
-- Unique constraint: `Topic.[subjectId, path]`.
+
+**Foreign-key scalar columns are NOT auto-indexed.** Every FK that participates
+in a `onDelete: Cascade`/`SetNull` path or is queried directly carries an
+explicit `@@index`. Current explicit indexes:
+
+- `Subject.sortOrder`, `Topic.subjectId`, `Topic.[subjectId, parentId]`
+- `Question.[subjectId, difficulty]`, `Question.[subjectId, topic, subtopic]`, `Question.[subjectId, path]`, `Question.topicId`
+- `Flashcard.subjectId`, `Flashcard.nextReview`, `StudyTask.[dayId, userId]`, `StudyTask.userId`, `StudyPlanDay.date`
+- `UserProgress.points` (rank range-scan)
+- `Bookmark.questionId` (unique `[userId, questionId]` leads with userId)
+- `QuestionAttempt.[userId, createdAt]`, `[userId, subjectId]`, `[userId, subjectName]`, `[userId, topic]`, `questionId`
+- `MockTestResult.[userId, createdAt]`, `mockTestId`
+- `FlashcardReview.[userId, flashcardId]`, `flashcardId`
+- `DailyQuizParticipation.quizId`, `[userId, completedAt]`; `QuizQuestion.dailyQuizId`
+- `FlashcardUserState.[userId, nextReview]`, `StudyTaskCompletion.userId`
+- `AIConversation.[userId, updatedAt]`, `[userId, kind, updatedAt]`; `AIMessage.[conversationId, createdAt]`; `AIMemory.[userId, type]`; `AIUsage.[userId, createdAt]`, `[userId, task, createdAt]`, `[task, createdAt]`, `[model, createdAt]`; `AIFeedback.[userId, createdAt]`, `messageId`
+- `AppNotification.[timestamp, id]`
+
+Redundant indexes were removed in the launch audit: `User.email` / `User.handle`
+(duplicated their unique constraints) and `DailyQuiz.date` / `Question.[subjectId, topic]`
+(duplicated a unique constraint / a composite prefix).
 
 ## Generator
 
 ```prisma
 generator client {
   provider = "prisma-client-js"
-  previewFeatures = ["fullTextSearch", "postgresqlExtensions"]
+  previewFeatures = ["postgresqlExtensions"]
 }
 ```

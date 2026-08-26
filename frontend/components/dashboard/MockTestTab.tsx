@@ -32,6 +32,18 @@ type TestState = "setup" | "active" | "completed";
 
 const OPTION_LABELS = ["A", "B", "C", "D", "E", "F"];
 
+// An active attempt survives tab switches/remounts: questions, answers and a
+// wall-clock start time are persisted so navigation never destroys progress.
+const STORAGE_KEY = "ninth-grade-ai:mock-test:active";
+
+type PersistedMockTest = {
+  questions: Server.ExamQuestionDTO[];
+  answers: Record<number, string>;
+  currentQuestion: number;
+  startsAt: number;
+  durationSec: number;
+};
+
 function formatTime(seconds: number): string {
   const m = Math.floor(seconds / 60);
   const s = seconds % 60;
@@ -59,6 +71,11 @@ export default function MockTestTab() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [showUnansweredConfirm, setShowUnansweredConfirm] = useState(false);
   const submittingRef = useRef(false);
+  const startedAtRef = useRef(0);
+  const totalSecRef = useRef(0);
+  // Latest questions/answers for the timer's auto-submit without re-subscribing.
+  const questionsRef = useRef<Server.ExamQuestionDTO[]>([]);
+  const answersRef = useRef<Record<number, string>>({});
   const confirmDialogRef = useDialogA11y<HTMLDivElement>(
     showUnansweredConfirm,
     useCallback(() => setShowUnansweredConfirm(false), []),
@@ -89,6 +106,64 @@ export default function MockTestTab() {
     setConfigError(null);
     setConfigReloadKey((k) => k + 1);
   }, []);
+
+  // Resume an in-progress attempt from localStorage so tab switches or a
+  // refresh never destroy an active test. The wall-clock timer below
+  // auto-submits if time ran out while away.
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      await Promise.resolve();
+      if (cancelled) return;
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const saved = JSON.parse(raw) as PersistedMockTest;
+        if (!saved?.questions?.length || !saved.startsAt || !saved.durationSec) return;
+        const elapsedSec = Math.floor((Date.now() - saved.startsAt) / 1000);
+        if (elapsedSec >= saved.durationSec + 5) {
+          // Long expired — drop it rather than resurfacing a finished exam.
+          localStorage.removeItem(STORAGE_KEY);
+          return;
+        }
+        startedAtRef.current = saved.startsAt;
+        totalSecRef.current = saved.durationSec;
+        setQuestions(saved.questions);
+        setAnswers(saved.answers ?? {});
+        setCurrentQuestion(Math.min(saved.currentQuestion ?? 0, saved.questions.length - 1));
+        setTimeRemaining(Math.max(0, saved.durationSec - elapsedSec));
+        setTestState("active");
+      } catch {
+        /* corrupt storage — ignore */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Mirror the latest questions/answers into refs for the wall-clock timer.
+  useEffect(() => {
+    questionsRef.current = questions;
+    answersRef.current = answers;
+  }, [questions, answers]);
+
+  // Keep the persisted snapshot in sync while a test is active.
+  useEffect(() => {
+    if (testState !== "active" || questions.length === 0 || startedAtRef.current === 0) return;
+    try {
+      const snapshot: PersistedMockTest = {
+        questions,
+        answers,
+        currentQuestion,
+        startsAt: startedAtRef.current,
+        durationSec: totalSecRef.current,
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot));
+    } catch {
+      /* storage full/unavailable — resume just won't be available */
+    }
+  }, [testState, questions, answers, currentQuestion]);
 
   const selectedSubjects = useMemo(
     () => subjects.filter((s) => selection[s.id] !== undefined),
@@ -126,6 +201,8 @@ export default function MockTestTab() {
       setQuestions(built.questions);
       setAnswers({});
       setCurrentQuestion(0);
+      startedAtRef.current = Date.now();
+      totalSecRef.current = built.durationSec;
       setTimeRemaining(built.durationSec);
       setTestState("active");
     } catch {
@@ -151,6 +228,7 @@ export default function MockTestTab() {
       try {
         const payload = qs.map((q) => ({ questionId: q.id, selected: ans[q.id] ?? "" }));
         const res = await api.submitExam(payload);
+        localStorage.removeItem(STORAGE_KEY);
         setResult(res);
         setTestState("completed");
       } catch {
@@ -176,24 +254,31 @@ export default function MockTestTab() {
     void submit(questions, answers);
   };
 
-  // Countdown — auto-submits when the timer runs out.
+  // Countdown — wall-clock based (survives remounts, no per-second interval
+  // churn) and auto-submits when time runs out.
   useEffect(() => {
-    if (testState !== "active" || timeRemaining <= 0) return;
-    const interval = setInterval(() => {
-      setTimeRemaining((t) => {
-        if (t <= 1) {
-          clearInterval(interval);
-          void submit(questions, answers);
-          return 0;
-        }
-        return t - 1;
-      });
-    }, 1000);
+    if (testState !== "active") return;
+    let autoSubmitted = false;
+    const tick = () => {
+      const remaining = Math.max(
+        0,
+        Math.ceil((startedAtRef.current + totalSecRef.current * 1000 - Date.now()) / 1000),
+      );
+      setTimeRemaining(remaining);
+      if (remaining <= 0 && !autoSubmitted) {
+        autoSubmitted = true;
+        clearInterval(interval);
+        void submit(questionsRef.current, answersRef.current);
+      }
+    };
+    tick();
+    const interval = setInterval(tick, 1000);
     return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [testState, timeRemaining, questions, answers]);
+  }, [testState]);
 
   const resetTest = () => {
+    localStorage.removeItem(STORAGE_KEY);
     setTestState("setup");
     setSelection({});
     setDurationMin(30);
@@ -565,7 +650,7 @@ export default function MockTestTab() {
   }
 
   // ═══════════════ RESULTS ═══════════════
-  if (testState === "completed" && result) {
+  if (result) {
     const { summary } = result;
     const percentage = summary.percentage;
 

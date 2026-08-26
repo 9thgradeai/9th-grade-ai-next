@@ -71,6 +71,30 @@ export function assertNoUnknownFields(
   }
 }
 
+/**
+ * Upper bound for one submission payload. Mirrors exam/build's questionCount
+ * cap (200) — anything larger is a abuse vector (giant IN-clause queries), not
+ * a real attempt.
+ */
+export const MAX_SUBMITTED_ANSWERS = 200;
+
+/**
+ * Shape-and-size check for graded-submission payloads
+ * (`{ questionId, selected }[]`) shared by practice/daily-quiz/exam submit.
+ */
+export function validateSubmittedAnswers(
+  value: unknown,
+): asserts value is Array<{ questionId: number; selected: string }> {
+  if (!Array.isArray(value) || value.length === 0) {
+    throw new ValidationError("answers must be a non-empty array.");
+  }
+  if (value.length > MAX_SUBMITTED_ANSWERS) {
+    throw new ValidationError(
+      `answers must contain at most ${MAX_SUBMITTED_ANSWERS} entries.`,
+    );
+  }
+}
+
 /** Positive integer with an upper bound; defaults when absent. */
 export function validateBoundedInt(
   value: unknown,

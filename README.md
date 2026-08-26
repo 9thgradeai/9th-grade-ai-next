@@ -186,7 +186,7 @@ Visitors land on `/` and explore the marketing surface without an account:
 
 - The user registers (`POST /api/auth/register`) or logs in (`POST /api/auth/login`).
 - The server verifies the password (`bcryptjs`) and sets an **HttpOnly `auth_token` cookie** (JWT, 7 days).
-- `middleware.ts` redirects unauthenticated users away from `/dashboard` and authenticated users away from `/login`.
+- `proxy.ts` (Next 16's middleware) redirects unauthenticated users away from `/dashboard` and authenticated users away from `/login`.
 - The client never stores the token — every subsequent request is authorized by the cookie.
 
 ### Stage 3 — Dashboard: "Mission Control"
@@ -309,10 +309,10 @@ All of the above ────────────────────►
 | Component | Technology | Notes |
 |-----------|-----------|-------|
 | ORM | **Prisma 6** | Type-safe queries, schema pushed directly (no migration files) |
-| Database | **PostgreSQL** (prod) / **SQLite** (dev) | Drop-in swap via `DATABASE_URL` |
+| Database | **PostgreSQL** (required — dev and prod) | Local Docker or Neon; schema pushed directly |
 | Auth | **jose** (JWT) | HttpOnly, SameSite=Lax cookies, 7-day sessions, `auth_token` |
 | Password hashing | **bcryptjs** | Cost 10 |
-| Rate limiting | **Custom token bucket** | Per-client sliding window, configurable limits |
+| Rate limiting | **Token bucket** behind a pluggable store | In-memory dev / Redis prod (`REDIS_URL`), per-user + per-IP policies |
 
 ### AI
 
@@ -351,7 +351,7 @@ No Redux/Zustand (React Context + `useSyncExternalStore`), no CSS-in-JS (Tailwin
 │  (React 19) │              │  Router (app/)   │            │  (prod)      │
 │             │ ◄─────────── │                  │ ◄───────── │              │
 └─────────────┘  JSON (API)  └──────────────────┘   JSON     └──────────────┘
-                                  │        │                    SQLite (dev)
+                                  │        │                    PostgreSQL (dev & prod)
                         ┌─────────▼──┐  ┌──▼─────────┐
                         │  backend/  │  │  frontend/ │
                         │ services/  │  │ components │
@@ -371,7 +371,7 @@ The codebase enforces strict layer ownership — the frontend never touches the 
 
 ### Security Headers
 
-Applied by `middleware.ts` on every matched route:
+Applied by `proxy.ts` + `next.config.ts` headers on every matched route:
 
 | Header | Value |
 |--------|-------|
@@ -394,14 +394,14 @@ Client components
 Next.js API routes  (app/api/*)     — validate input, call services
    │  backend/services/*            — business logic only, no controllers
    ▼
-Prisma  →  PostgreSQL (prod) / SQLite (dev)
+Prisma  →  PostgreSQL (prod) / PostgreSQL (dev & prod)
 ```
 
 **Key invariants:**
 
 - **Path aliases:** `@/*` → `frontend/*`, `~backend/*` → `backend/*`, `~tests/*` → `tests/*`.
 - **Server-only enforcement:** `backend/` imports `"server-only"` so its code can never leak into client bundles.
-- **Auth:** middleware (`middleware.ts`) guards `/dashboard` and `/login`; protected API routes call `getUserIdFromRequest()` and return `401` when there is no valid session.
+- **Auth:** proxy (`proxy.ts`) guards `/dashboard` and `/login`; protected API routes call `getUserIdFromRequest()` and return `401` when there is no valid session.
 - **No business logic in route handlers** — they parse, validate, delegate, and respond.
 - **No server-side caching** — client-side `localStorage` persists dashboard state and theme; `fetch()` uses `cache: "no-store"`.
 
@@ -496,7 +496,7 @@ All Bengali name matching is **NFC-normalised**, so composed/decomposed forms al
 
 ### Idempotent Seeding
 
-`npm run db:sync` (the Vercel prebuild) clears seed-managed tables, pushes the schema, and reseeds so every production deploy stays in sync. Safe to run repeatedly.
+The Vercel `prebuild` hook runs `npm run db:deploy-sync`: a non-destructive schema push (`db push` without `--accept-data-loss` — destructive changes fail the deploy loudly) followed by the idempotent seed.
 
 ### Exam Selection Model
 
@@ -734,9 +734,13 @@ npm run build        # Production build
 ### Prerequisites
 
 - **Node.js 20+** and npm
-- **PostgreSQL** (prod) or **SQLite** (dev — bundled, no server needed)
+- **PostgreSQL** (required in dev AND prod — the schema is postgresql-only)
 
 ### Quick Start
+
+> **Prerequisite:** a PostgreSQL server (the Prisma schema is
+> `provider = "postgresql"` — SQLite is NOT supported). Local Docker works:
+> `docker run -e POSTGRES_PASSWORD=postgres -p 5432:5432 postgres:16`
 
 ```bash
 # 1. Clone the repository
@@ -749,7 +753,7 @@ npm install
 # 3. Configure environment
 cp .env.local.example .env.local
 #   AUTH_SECRET:  openssl rand -base64 32
-#   DATABASE_URL: file:./dev.db  (default — no DB server needed)
+#   DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ninth_grade_ai
 
 # 4. Create + seed the database
 npm run db:push
@@ -759,8 +763,8 @@ npm run db:seed
 npm run dev
 ```
 
-Open **http://localhost:3000**. A demo account is created on seed:
-**`demo@9thgrade.ai` / `demo12345`**.
+Open **http://localhost:3000**. Local dev seeding creates a demo account:
+**`demo@9thgrade.ai` / `demo12345`** (never created in production builds).
 
 > Without AI keys, the Tutor and Solver return clearly-labelled mock responses — the app runs end-to-end with zero external dependencies.
 
@@ -777,8 +781,12 @@ Open **http://localhost:3000**. A demo account is created on seed:
 | `TAVILY_API_KEY` | No | — | Web-search grounding for the tutor |
 | `NEXT_PUBLIC_APP_URL` | No | `http://localhost:3000` | Public app origin |
 | `NEXT_PUBLIC_API_URL` | No | `http://localhost:3000` | Public API origin |
-| `RATE_LIMIT_MAX_REQUESTS` | No | `100` | Per-window request ceiling |
-| `RATE_LIMIT_WINDOW_MS` | No | `60000` | Rate-limit window (ms) |
+| `REDIS_URL` | Prod: Yes | — | Distributed rate limiting (Upstash/Redis); see ADR-0009 |
+| `RL_LOGIN_PER_MIN` | No | `5` | Login attempts per IP per minute |
+| `RL_LOGIN_ACCOUNT_PER_HOUR` | No | `10` | Attempts per account per hour (hashed key) |
+| `RL_AI_PER_MIN` / `RL_AI_DAILY` | No | `10` / `60` | AI request budgets per user |
+| `RL_SUBMIT_PER_MIN` | No | `30` | Graded submissions per user per minute |
+| `TRUST_CLIENT_IP` | No | `true` | Set `false` when not behind a sanitizing proxy |
 
 ---
 
@@ -801,7 +809,8 @@ Open **http://localhost:3000**. A demo account is created on seed:
 | `npm run db:seed` | Idempotent content seed |
 | `npm run db:seed-questions` | Import questions + rebuild the topic tree |
 | `npm run db:seed-users` | Re-seed users (resets user accounts) |
-| `npm run db:sync` | Clean content, push schema, reseed (used by Vercel) |
+| `npm run db:sync` | Push schema + reseed (local convenience) |
+| `npm run db:deploy-sync` | Schema push + seed used by the Vercel prebuild hook (non-destructive, fails closed) |
 | `npm run db:reset` | Force-reset + reseed with fresh users |
 | `npm run db:clean` | Clear seed-managed content tables |
 | `npm run db:studio` | Open Prisma Studio (visual DB browser) |
@@ -892,7 +901,7 @@ Open **http://localhost:3000**. A demo account is created on seed:
 │   └── clear-content.ts        # Clean seed-managed tables
 ├── docs/                       # Canonical documentation (14 files)
 ├── public/                     # Static assets
-├── middleware.ts                # Edge middleware (auth guards, security headers)
+├── proxy.ts                     # Edge proxy — auth guards, security headers
 ├── vitest.config.ts            # Test configuration
 ├── eslint.config.mjs           # Lint configuration
 ├── postcss.config.mjs          # PostCSS + Tailwind
@@ -936,13 +945,19 @@ npm run build         # Production build succeeds
 
 | Metric | Threshold |
 |--------|-----------|
-| Lines | 70% |
-| Functions | 60% |
-| Branches | 70% |
+| Lines | 41% |
+| Functions | 40% |
+| Branches | 37% |
+
+Enforced in CI via `npm run test -- --run --coverage`. The thresholds are set
+to actual current coverage and must be **ratcheted up** (never lowered) as
+tests land.
 
 ### CI
 
-CI runs `typecheck`, `lint`, `test`, and `build` on every push/PR (`.github/workflows/ci.yml`). Node 22, platform-complete lockfile.
+CI runs `typecheck`, `lint`, `test` (with enforced coverage against a real
+Postgres 16 service container, so the raw-SQL integration test runs), and
+`build` on every push/PR (`.github/workflows/ci.yml`). Node 22.
 
 ---
 
@@ -952,7 +967,7 @@ CI runs `typecheck`, `lint`, `test`, and `build` on every push/PR (`.github/work
 
 ```bash
 # Automatic on push to main
-# prebuild hook runs: npm run db:sync (when VERCEL=1)
+# prebuild hook runs: npm run db:deploy-sync (when VERCEL=1)
 # Schema push + idempotent seed on every deploy
 ```
 

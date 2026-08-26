@@ -6,7 +6,7 @@ import {
   useSyncExternalStore,
   useMemo,
 } from "react";
-import type { TabId } from "@/lib/data";
+import { TABS, type TabId } from "@/lib/data";
 import type { Server } from "@/lib/types";
 import { AppError } from "@/lib/errors";
 
@@ -70,7 +70,13 @@ function loadState(): DashboardState {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return defaultState;
     const parsed = JSON.parse(raw);
-    return { ...defaultState, ...parsed };
+    const state = { ...defaultState, ...parsed };
+    // Persisted tab may no longer exist (removed feature); never render a
+    // tab whose component isn't registered.
+    if (!TABS.some((t) => t.id === state.activeTab)) {
+      state.activeTab = defaultState.activeTab;
+    }
+    return state;
   } catch {
     return defaultState;
   }

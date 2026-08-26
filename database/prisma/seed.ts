@@ -92,13 +92,15 @@ async function main() {
     console.log(`  ✓ ${users.length} users`);
   }
 
-  // Ensure a reproducible demo account exists (data/users.json is
-  // gitignored, so don't rely on it for seeding). Skipped on an existing
-  // production DB unless resetting, so a shared login is not re-created.
+  // Ensure a reproducible demo account exists for local development. Never
+  // created in production builds (NODE_ENV=production) — a publicly-known
+  // login must not exist on a live database. Force locally via
+  // SEED_RESET_USERS=1.
   const demoEmail = "demo@9thgrade.ai";
   const existingDemo = await prisma.user.findUnique({ where: { email: demoEmail } });
   const totalUsers = await prisma.user.count();
-  if (!existingDemo && (resetUsers || totalUsers === 0)) {
+  const isProdBuild = process.env.NODE_ENV === "production";
+  if (!existingDemo && !isProdBuild && (resetUsers || totalUsers === 0)) {
     const { hash } = await import("bcryptjs");
     const passwordHash = await hash("demo12345", 10);
     await prisma.user.create({
@@ -193,18 +195,21 @@ async function main() {
         duration: 20,
       },
     });
-    await prisma.mockTestQuestion.deleteMany({ where: { mockTestId: mock.id } });
-    await prisma.mockTestQuestion.createMany({
-      data: questions.map((q) => ({
-        mockTestId: mock.id,
-        subject: q.subject ?? subjectName,
-        topic: q.topic ?? "",
-        question: q.question,
-        options: q.options,
-        correctAnswer: q.correctAnswer,
-        explanation: q.explanation ?? "",
-      })),
-    });
+    // Atomic replace: readers never observe a half-emptied question set.
+    await prisma.$transaction([
+      prisma.mockTestQuestion.deleteMany({ where: { mockTestId: mock.id } }),
+      prisma.mockTestQuestion.createMany({
+        data: questions.map((q) => ({
+          mockTestId: mock.id,
+          subject: q.subject ?? subjectName,
+          topic: q.topic ?? "",
+          question: q.question,
+          options: q.options,
+          correctAnswer: q.correctAnswer,
+          explanation: q.explanation ?? "",
+        })),
+      }),
+    ]);
   }
   console.log(`  ✓ ${Object.keys(MOCK_TEST_QUESTIONS).length} mock tests`);
 
@@ -265,18 +270,21 @@ async function main() {
         claimed: quiz.claimed ?? false,
       },
     });
-    await prisma.quizQuestion.deleteMany({ where: { dailyQuizId: dq.id } });
-    await prisma.quizQuestion.createMany({
-      data: quiz.questions.map((q) => ({
-        dailyQuizId: dq.id,
-        subject: q.subject ?? "",
-        topic: q.topic ?? "",
-        question: q.question,
-        options: q.options,
-        correctAnswer: q.correctAnswer,
-        explanation: q.explanation ?? "",
-      })),
-    });
+    // Atomic replace: readers never observe a half-emptied question set.
+    await prisma.$transaction([
+      prisma.quizQuestion.deleteMany({ where: { dailyQuizId: dq.id } }),
+      prisma.quizQuestion.createMany({
+        data: quiz.questions.map((q) => ({
+          dailyQuizId: dq.id,
+          subject: q.subject ?? "",
+          topic: q.topic ?? "",
+          question: q.question,
+          options: q.options,
+          correctAnswer: q.correctAnswer,
+          explanation: q.explanation ?? "",
+        })),
+      }),
+    ]);
   }
   console.log(`  ✓ ${DAILY_QUIZZES.length} daily quizzes`);
 

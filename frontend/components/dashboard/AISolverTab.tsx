@@ -257,6 +257,7 @@ export default function AISolverTab() {
               </div>
               <button
                 onClick={() => copyToClipboard(solution)}
+                aria-label={copied ? "কপি করা হয়েছে" : "সমাধান কপি করুন"}
                 className="p-1.5 text-zinc-400 hover:text-emerald-400 transition-colors"
               >
                 {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}

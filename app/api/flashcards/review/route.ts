@@ -7,7 +7,7 @@ import {
   requirePositiveInteger,
   validateEnumValue,
 } from "~backend/validation";
-import { getRequestId, startTiming, applySecurityHeaders } from "../../_middleware";
+import { getRequestId, startTiming, applySecurityHeaders, assertSameOrigin } from "../../_middleware";
 
 const RATINGS = [0, 1, 2, 3] as const; // again | hard | good | easy
 
@@ -16,6 +16,7 @@ export async function POST(request: Request) {
   const getTime = startTiming();
 
   try {
+    assertSameOrigin(request);
     const userId = await getUserIdFromRequest(request);
     if (!userId) {
       throw new AppError(401, "Unauthorized", "AUTH_UNAUTHORIZED");

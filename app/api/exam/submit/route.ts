@@ -2,23 +2,31 @@ import { NextResponse } from "next/server";
 import { submitCustomExam } from "~backend/services/exam";
 import type { SubmittedAnswer } from "~backend/services/activity";
 import { getUserIdFromRequest } from "~backend/services/user";
+import { assertSubmitAllowed } from "~backend/rate-limit";
 import { AppError, toHttpResponse } from "~backend/errors";
-import { getRequestId, startTiming, applySecurityHeaders } from "../../_middleware";
+import { validateSubmittedAnswers } from "~backend/validation";
+import {
+  getRequestId,
+  startTiming,
+  applySecurityHeaders,
+  assertSameOrigin,
+} from "../../_middleware";
 
 export async function POST(request: Request) {
   const requestId = getRequestId(request);
   const getTime = startTiming();
 
   try {
+    assertSameOrigin(request);
+
     const userId = await getUserIdFromRequest(request);
     if (!userId) {
       throw new AppError(401, "Unauthorized", "AUTH_UNAUTHORIZED");
     }
+    await assertSubmitAllowed(userId);
 
     const body = (await request.json().catch(() => ({}))) as { answers?: SubmittedAnswer[] };
-    if (!Array.isArray(body.answers) || body.answers.length === 0) {
-      throw new AppError(400, "answers must be a non-empty array.", "VALIDATION_ERROR");
-    }
+    validateSubmittedAnswers(body.answers);
 
     const result = await submitCustomExam(userId, body.answers);
 

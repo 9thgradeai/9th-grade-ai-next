@@ -20,7 +20,7 @@ Session JWTs carry a `ver` claim matching the user's `tokenVersion`. Changing th
 - `DELETE /api/auth/account` — **Auth required** — Deletes the account and clears the cookie.
 - `POST /api/auth/sessions/revoke-all` — **Auth required** — "Sign out everywhere": invalidates every session (including the caller's) and clears the local cookie.
 
-All mutating auth endpoints reject cross-origin requests via an Origin/Host check (`403 CSRF_ORIGIN_MISMATCH`).
+All mutating endpoints (auth and non-auth) reject cross-origin requests via an Origin/Host check (`403 CSRF_ORIGIN_MISMATCH`).
 
 ## Public Endpoints
 
@@ -34,7 +34,7 @@ All mutating auth endpoints reject cross-origin requests via an Origin/Host chec
 | GET | `/api/daily-quiz` | Get today's quiz |
 | GET | `/api/flash-news` | List flash news items |
 | GET | `/api/recommendations` | List AI recommendations |
-| PATCH | `/api/progress` | **Auth required** — Patch user progress (whitelisted fields only; `streak` and `rank` are server-derived and rejected) |
+> Progress (`points`, `streak`, counters) is **server-derived only** from the attempt log — there is no client-writable progress endpoint by design.
 | GET | `/api/notifications` | **Auth required** — List notifications with per-user read state. Keyset-paginated (Phase 6): `?limit=` (default 20, max 50) and `?cursor=` (previous page's `nextCursor` = last item id). Response: `{ notifications, pageSize, total, nextCursor }` — `nextCursor` is null on the final page |
 | GET | `/api/badges` | List achievement badges. Authenticated callers get their real unlock state from `UserBadge` (`unlocked: true`); anonymous callers get the catalog with seed flags only |
 | GET | `/api/subject-reports` | **Auth required** — Per-subject reports from the caller's attempts (`name`, `score`, `attempted`, `correct` — no fabricated trend) |
@@ -72,6 +72,9 @@ All mutating auth endpoints reject cross-origin requests via an Origin/Host chec
 ```json
 { "id": 1, "subjectId": 1, "subject": "বাংলা", "topic": "বাক্য শুদ্ধি", "question": "...", "options": ["A","B","C","D"], "correctAnswer": "A", "explanation": "...", "difficulty": "EASY", "year": 2023, "sourceExam": "BCS" }
 ```
+> `correctAnswer` is part of the public question bank by design (open study
+> material). Grading for practice/exam/daily-quiz is server-authoritative;
+> exam-mode DTOs omit it so in-flight attempts can't be trivially auto-answered.
 
 ### Flashcard
 ```json

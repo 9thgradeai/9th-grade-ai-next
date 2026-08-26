@@ -32,8 +32,14 @@
 
 ## Rate Limiting
 
-- No application-level rate limiting implemented.
-- Relies on Vercel platform limits and Anthropic API limits.
+- Implemented in `backend/rate-limit.ts` (token buckets behind a pluggable
+  `RateLimitStore`): login (per-IP + per-account hashed), register, refresh,
+  password change, AI endpoints (per-minute + daily quota with a DB-backed
+  usage-ledger backstop), and graded submissions.
+- Limits are env-tunable (`RL_*` variables) — see `.env.local.example`.
+- Production MUST set `REDIS_URL` so counters are shared across serverless
+  instances (ADR-0009); on Redis outage requests fail open and the failure is
+  logged.
 
 ## CORS
 
@@ -80,5 +86,7 @@
 
 ## Dependency Vulnerabilities
 
-- Run `npm audit` regularly.
-- No automated dependency scanning in CI/CD (no CI/CD configured).
+- CI runs on every push/PR (`.github/workflows/ci.yml`): typecheck, lint,
+  tests with enforced coverage against a real Postgres service container, and
+  build.
+- Dependabot monitors npm dependencies weekly (`.github/dependabot.yml`).

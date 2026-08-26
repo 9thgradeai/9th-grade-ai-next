@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Star, Trophy, Flame, BookOpenCheck, BrainCircuit, Target, ChevronDown, BarChart3 } from "lucide-react";
+import { Star, Trophy, Flame, BookOpenCheck, BrainCircuit, Target, ChevronDown, BarChart3, AlertTriangle } from "lucide-react";
 import { useAuth } from "@/lib/auth-ctx";
 import { api } from "@/lib/services/api";
 import type { Server } from "@/lib/types";
@@ -58,7 +58,19 @@ function WeeklyActivityChart({ data }: { data: { date: string; answered: number;
             const isSelected = selectedDay === d.date;
 
             return (
-              <g key={d.date}>
+              <g
+                key={d.date}
+                role="button"
+                tabIndex={0}
+                aria-label={`${new Date(d.date + "T00:00:00").toLocaleDateString("bn-BD", { day: "numeric", month: "long" })} — ${d.answered}টি প্রশ্ন, ${d.correct}টি সঠিক${isSelected ? " (নির্বাচিত)" : ""}`}
+                aria-pressed={isSelected}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setSelectedDay(isSelected ? null : d.date);
+                  }
+                }}
+              >
                 <rect
                   x={centerX - barWidth / 2}
                   y={baseY - totalH}
@@ -83,7 +95,7 @@ function WeeklyActivityChart({ data }: { data: { date: string; answered: number;
                   x={centerX}
                   y={chartHeight - 1}
                   textAnchor="middle"
-                  className="text-[3px] fill-zinc-500 font-mono"
+                  className="text-[3px] fill-zinc-500 font-mono pointer-events-none"
                 >
                   {new Date(d.date + "T00:00:00").toLocaleDateString("bn-BD", { day: "numeric", month: "short" })}
                 </text>
@@ -220,6 +232,7 @@ export default function ProgressTab() {
   const [stats, setStats] = useState<Server.DashboardStatsDTO | null>(null);
   const [reports, setReports] = useState<Array<{ name: string; score: number; attempted: number; correct: number }>>([]);
   const [loading, setLoading] = useState(true);
+  const [loadFailed, setLoadFailed] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -227,6 +240,10 @@ export default function ProgressTab() {
       try {
         const [s, r] = await Promise.allSettled([api.dashboardStats(), api.subjectReports()]);
         if (cancelled) return;
+        // Both failing is a total outage — never render zeroed stats that
+        // look like a wiped account.
+        const failed = s.status === "rejected" && r.status === "rejected";
+        setLoadFailed(failed);
         if (s.status === "fulfilled") setStats(s.value);
         if (r.status === "fulfilled") setReports(r.value);
       } finally {
@@ -252,6 +269,19 @@ export default function ProgressTab() {
 
   return (
     <div className="space-y-6">
+      {/* Total-outage banner — data failure must be visible, not silent zeros */}
+      {loadFailed && !loading && (
+        <div
+          role="alert"
+          className="flex items-start gap-3 rounded-2xl border border-red-500/30 bg-red-500/5 p-4 text-sm text-red-300"
+        >
+          <AlertTriangle className="h-5 w-5 flex-shrink-0 mt-0.5" aria-hidden="true" />
+          <div className="flex-1">
+            আপনার প্রোগ্রেস লোড করা যায়নি। সার্ভারে সমস্যা হতে পারে — কিছুক্ষণ পরে আবার চেষ্টা করুন।
+          </div>
+        </div>
+      )}
+
       {/* Profile header */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}

@@ -16,6 +16,7 @@ export default function DailyQuizWidget() {
   const [showResult, setShowResult] = useState(false);
   const [summary, setSummary] = useState<{ correct: number; total: number; score: number; pointsEarned: number } | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [submitFailed, setSubmitFailed] = useState(false);
 
   // Shared dialog behavior: Escape, focus trap, initial focus, restore focus
   // to the trigger card on close.
@@ -72,7 +73,10 @@ export default function DailyQuizWidget() {
         })),
       );
       setSummary(res);
+      setSubmitFailed(false);
     } catch {
+      // Server did NOT record the attempt — show the local tally but say so,
+      // never let the user believe points/streak were saved.
       const correct = quiz.questions.reduce(
         (acc, q, i) => (answers[i] === q.correctAnswer ? acc + 1 : acc),
         0,
@@ -83,6 +87,7 @@ export default function DailyQuizWidget() {
         score: Math.round((correct / quiz.questions.length) * 100),
         pointsEarned: 0,
       });
+      setSubmitFailed(true);
     } finally {
       setSubmitting(false);
       setShowResult(true);
@@ -94,6 +99,7 @@ export default function DailyQuizWidget() {
     setAnswers({});
     setShowResult(false);
     setSummary(null);
+    setSubmitFailed(false);
   };
 
   if (!isOpen) {
@@ -275,6 +281,14 @@ export default function DailyQuizWidget() {
             >
               <Trophy className={`w-12 h-12 mx-auto mb-3 ${(summary?.score ?? 0) >= 80 ? "text-amber-400" : (summary?.score ?? 0) >= 50 ? "text-emerald-400" : "text-red-400"}`} />
               <h3 className="text-xl font-bold text-white mb-2">কুইজ সম্পন্ন!</h3>
+              {submitFailed && (
+                <div
+                  role="alert"
+                  className="mx-auto mb-4 max-w-xs rounded-xl border border-red-500/30 bg-red-500/5 p-3 text-xs text-red-300 text-left"
+                >
+                  সার্ভারে ফলাফল জমা হয়নি — পয়েন্ট বা স্ট্রিক সংরক্ষিত হয়নি। ইন্টারনেট সংযোগ দেখে আবার চেষ্টা করুন।
+                </div>
+              )}
               <div className="text-4xl font-bold font-mono text-emerald-400 mb-2">{summary?.score ?? 0}%</div>
               <p className="text-sm text-zinc-400 font-mono mb-1">
                 {summary?.correct ?? 0} / {summary?.total ?? 0} সঠিক

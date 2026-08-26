@@ -21,7 +21,8 @@ Runs the production server on the port defined by `PORT` (default 3000).
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `AUTH_SECRET` | Yes | JWT signing secret (generate with `openssl rand -base64 32`) |
-| `DATABASE_URL` | Yes | PostgreSQL connection string |
+| `DATABASE_URL` | Yes | PostgreSQL connection string — on Neon/serverless use the **pooled** host with `?connection_limit=10` so function fan-out cannot exhaust `max_connections` |
+| `REDIS_URL` | Yes (prod) | Distributed rate limiting (Upstash/Redis). Without it each serverless instance enforces its own counters — see `docs/DECISIONS.md` ADR-0009 |
 | `ANTHROPIC_API_KEY` | No | AI features (mock fallback if empty) |
 | `NODE_ENV` | Auto | Set to `production` |
 
@@ -29,18 +30,26 @@ Runs the production server on the port defined by `PORT` (default 3000).
 
 Schema changes ship via **direct push** (`prisma db push`), not migration files.
 On every Vercel deploy the `prebuild` hook runs `npm run db:deploy-sync`
-(`prisma db push --accept-data-loss` + idempotent seed) when `VERCEL=1`, keeping
-the production schema in sync automatically — matching the local `db:push`
-policy. Pushes run in a single Postgres transaction: if a change cannot be
-applied (e.g. a new unique constraint colliding with duplicate rows), the whole
-push aborts atomically and the deploy log names the offending table.
+(schema push + idempotent seed) when `VERCEL=1`, keeping the production schema
+in sync automatically — matching the local `db:push` policy.
 
-If a deploy logs `WARNING: schema sync failed`, apply once manually against the
-production `DATABASE_URL`:
+**Deploys are non-destructive and fail closed.** The push runs *without*
+`--accept-data-loss`: additive changes apply automatically, but any change that
+would drop data (removed column/table) fails the deploy loudly instead of
+silently destroying production rows. To ship an intentionally destructive
+change, run it once by hand against production, then redeploy:
 
 ```bash
-DATABASE_URL="<prod-url>" npm run db:push && DATABASE_URL="<prod-url>" npm run db:seed
+DATABASE_URL="<prod-url>" npm run db:push-force   # review the diff first!
 ```
+
+If a deploy fails during schema sync, the build aborts before the new code goes
+live. Inspect the deploy log for the offending table, fix the schema or run the
+manual command above, then redeploy.
+
+Seeding is idempotent (upserts keyed on stable `sourceKey`s). Mock-test and
+daily-quiz question sets are replaced inside a single transaction, so readers
+never observe partially-replaced content.
 
 For manual provisioning from scratch:
 

@@ -52,6 +52,9 @@ export const LIMITS = {
   get aiDaily() {
     return envInt("RL_AI_DAILY", 60);
   },
+  get submitPerMin() {
+    return envInt("RL_SUBMIT_PER_MIN", 30);
+  },
 };
 
 const MINUTE_MS = 60_000;
@@ -165,6 +168,22 @@ export async function enforceAiQuotas(
   const dayAuthorityOk = await checkDailyAuthority(task, userId, task, LIMITS.aiDaily);
   if (!dayStoreOk || !dayAuthorityOk) {
     throw new RateLimitError(`Daily AI ${task} limit reached. Come back tomorrow!`);
+  }
+}
+
+/**
+ * Graded-submission guard (practice / daily quiz / custom exam). Per-user
+ * minute bucket — a real user cannot finish 30 graded attempts per minute;
+ * anything beyond that is a script.
+ */
+export async function assertSubmitAllowed(userId: string): Promise<void> {
+  const ok = await checkRateLimit(
+    `submit:user:${userId}`,
+    LIMITS.submitPerMin,
+    MINUTE_MS,
+  );
+  if (!ok) {
+    throw new RateLimitError("Too many submissions. Please slow down.");
   }
 }
 

@@ -208,8 +208,19 @@ export default function NotificationCenter() {
                         const TypeIcon = TYPE_ICONS[notif.type] ?? Megaphone;
                         return (
                           <div
-                            className={`p-3 rounded-2xl border transition-all cursor-pointer ${
-                              notif.read ? "border-zinc-800 bg-subtle" : "border-emerald-500/20 bg-emerald-500/5"
+                            role={notif.read ? undefined : "button"}
+                            tabIndex={notif.read ? undefined : 0}
+                            aria-label={
+                              notif.read ? notif.title : `${notif.title} — পড়া হিসেবে চিহ্নিত করুন`
+                            }
+                            onKeyDown={(e) => {
+                              if (!notif.read && (e.key === "Enter" || e.key === " ")) {
+                                e.preventDefault();
+                                void markAsRead(notif.id);
+                              }
+                            }}
+                            className={`p-3 rounded-2xl border transition-all ${
+                              notif.read ? "border-zinc-800 bg-subtle" : "border-emerald-500/20 bg-emerald-500/5 cursor-pointer"
                             }`}
                             onClick={() => void markAsRead(notif.id)}
                           >

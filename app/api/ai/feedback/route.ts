@@ -6,13 +6,15 @@ import { UnauthorizedError, toHttpResponse } from "~backend/errors";
 import { getUserIdFromRequest } from "~backend/services/user";
 import { submitFeedback } from "~backend/ai";
 import { validateFeedbackBody } from "~backend/ai/schemas";
-import { getRequestId, startTiming, applySecurityHeaders } from "../../_middleware";
+import { getRequestId, startTiming, applySecurityHeaders, assertSameOrigin } from "../../_middleware";
 
 export async function POST(request: Request) {
   const requestId = getRequestId(request);
   const getTime = startTiming();
 
   try {
+    assertSameOrigin(request);
+
     const userId = await getUserIdFromRequest(request);
     if (!userId) throw new UnauthorizedError();
 

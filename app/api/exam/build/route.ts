@@ -3,13 +3,14 @@ import { buildCustomExam } from "~backend/services/exam";
 import { getUserIdFromRequest } from "~backend/services/user";
 import type { ExamSelectionRequest } from "@/lib/types";
 import { AppError, toHttpResponse } from "~backend/errors";
-import { getRequestId, startTiming, applySecurityHeaders } from "../../_middleware";
+import { getRequestId, startTiming, applySecurityHeaders, assertSameOrigin } from "../../_middleware";
 
 export async function POST(request: Request) {
   const requestId = getRequestId(request);
   const getTime = startTiming();
 
   try {
+    assertSameOrigin(request);
     // Exam construction is DB-heavy (full-pool selection + shuffle); require a
     // session so it can't be hammered anonymously.
     const userId = await getUserIdFromRequest(request);

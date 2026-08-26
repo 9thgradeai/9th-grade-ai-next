@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getBookmarkedQuestionIds, toggleBookmark, getUserIdFromRequest } from "~backend/services/user";
 import { AppError, toHttpResponse } from "~backend/errors";
 import { validatePositiveInteger } from "~backend/validation";
-import { getRequestId, startTiming, applySecurityHeaders } from "../_middleware";
+import { getRequestId, startTiming, applySecurityHeaders, assertSameOrigin } from "../_middleware";
 
 export async function GET(request: Request) {
   const requestId = getRequestId(request);
@@ -34,6 +34,7 @@ export async function POST(request: Request) {
   const getTime = startTiming();
 
   try {
+    assertSameOrigin(request);
     const userId = await getUserIdFromRequest(request);
     if (!userId) {
       throw new AppError(401, "Unauthorized", "AUTH_UNAUTHORIZED");

@@ -8,8 +8,6 @@ import {
   Play,
   Timer,
   BookOpen,
-  ChevronRight,
-  ChevronLeft,
   Trophy,
   RotateCcw,
   AlertTriangle,
@@ -153,7 +151,6 @@ export default function CustomExamTab() {
     return () => {
       cancelled = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ── Selection helpers ──
@@ -168,7 +165,6 @@ export default function CustomExamTab() {
       total += availableForSubject(s, selection);
     }
     return total;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedSubjects, selection]);
 
   const selectedGroupCount = useMemo(
@@ -300,7 +296,6 @@ export default function CustomExamTab() {
         setSubmitting(false);
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
 
@@ -330,7 +325,6 @@ export default function CustomExamTab() {
       }
     }, 1000);
     return () => clearInterval(interval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase, exam, answers]);
 
   const resetAll = () => {

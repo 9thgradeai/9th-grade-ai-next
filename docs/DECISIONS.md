@@ -150,3 +150,26 @@ minimal client (`incr` + `pexpire`) — no vendor SDK dependency exists until ad
 misconfiguration fails loudly instead of degrading silently. Daily AI quotas gain a
 DB-authoritative backstop (`AIUsage` ledger) on memory stores, closing the
 counters-die-on-deploy gap flagged in the scalability audit (B1).
+
+## ADR-0009 — Distributed rate limiting activated (ioredis installed)
+
+**Date**: 2026-08
+**Status**: Accepted (supersedes the activation path in ADR-0007)
+**Context**: Pre-launch audit found that per-process in-memory counters are
+effectively unenforced on serverless (Vercel): every warm instance keeps its own
+map, multiplying login brute-force and AI budgets by the instance count. The
+Redis store existed behind an injected-client interface but was deliberately
+unwired.
+**Decision**: `ioredis` is now a runtime dependency. When `REDIS_URL` is set,
+`infrastructure/cache/index.ts` constructs `RedisRateLimitStore` and wraps it in
+a fail-open decorator: if Redis is unreachable, requests are allowed and the
+failure is logged (`rate_limit_store_unavailable`) rather than 500-ing every
+auth/AI endpoint. Without `REDIS_URL`, behavior is unchanged (in-memory store).
+**Rationale**: Shared counters are required for limits to mean anything on a
+multi-instance platform; failing open preserves availability during cache blips
+while bcrypt cost, token revocation, and the DB-backed AI usage ledger still
+protect the endpoints.
+**Consequences**: One new runtime dependency, justified by launch security.
+Operators MUST set `REDIS_URL` in production (e.g., Upstash) for rate limits to
+be enforced across instances; the `.env.local.example` documents this. The
+in-memory map remains for dev/test and single-instance self-hosting.

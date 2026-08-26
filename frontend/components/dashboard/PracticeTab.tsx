@@ -31,6 +31,25 @@ import TopicTreePicker, {
 
 type PracticeMode = "custom" | "mock" | "quick";
 
+// Quick-practice sessions survive tab switches/remounts via localStorage.
+const QUICK_STORAGE_KEY = "ninth-grade-ai:practice:quick";
+
+type PersistedQuickSession = {
+  questions: Server.QuestionDTO[];
+  answers: Record<number, string>;
+  currentIndex: number;
+};
+
+/** Unbiased Fisher-Yates shuffle (sort-compare is biased). */
+function shuffled<T>(items: T[]): T[] {
+  const out = [...items];
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
+}
+
 const MODES: { id: PracticeMode; label: string; hint: string }[] = [
   { id: "custom", label: "CUSTOM EXAM", hint: "বিষয়, টপিক, সাবটপিক মিশিয়ে নিজের বিসিএস পরীক্ষা তৈরি করুন" },
   { id: "mock", label: "MOCK_TEST", hint: "বিষয়, টপিক, সাবটপিক থেকে সময়সীমা সহ মক পরীক্ষা" },
@@ -95,7 +114,7 @@ export default function PracticeTab() {
   const insufficient = totalCount > availableTotal;
   const sessionTitle = selectedSubjects.map((s) => s.nameBn).join(", ");
 
-  const sessionQuestions = useMemo(() => questions, [questions]);
+  const sessionQuestions = questions;
 
   const answeredCount = Object.keys(answers).length;
   const currentQuestion = sessionQuestions[currentIndex];
@@ -103,6 +122,9 @@ export default function PracticeTab() {
   const allAnswered = totalQuestions > 0 && answeredCount === totalQuestions;
 
   const resetSession = () => {
+    try {
+      localStorage.removeItem(QUICK_STORAGE_KEY);
+    } catch { /* ignore */ }
     setSelection({});
     setQuestions([]);
     setSessionActive(false);
@@ -112,6 +134,42 @@ export default function PracticeTab() {
     setLoadError(null);
     setSubmitError(null);
   };
+
+  // Resume an interrupted quick-practice session so tab switches never
+  // destroy progress.
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      await Promise.resolve();
+      if (cancelled) return;
+      try {
+        const raw = localStorage.getItem(QUICK_STORAGE_KEY);
+        if (!raw) return;
+        const saved = JSON.parse(raw) as PersistedQuickSession;
+        if (!saved?.questions?.length) return;
+        setQuestions(saved.questions);
+        setAnswers(saved.answers ?? {});
+        setCurrentIndex(Math.min(saved.currentIndex ?? 0, saved.questions.length - 1));
+        setSessionActive(true);
+      } catch {
+        /* corrupt storage — ignore */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Keep the persisted snapshot in sync while a session is running.
+  useEffect(() => {
+    if (!sessionActive || result || questions.length === 0) return;
+    try {
+      const snapshot: PersistedQuickSession = { questions, answers, currentIndex };
+      localStorage.setItem(QUICK_STORAGE_KEY, JSON.stringify(snapshot));
+    } catch {
+      /* storage full/unavailable — resume just won't be available */
+    }
+  }, [sessionActive, result, questions, answers, currentIndex]);
 
   // Fetch full question DTOs (with correct answers for the review panel) for
   // every selected subject/topic/subtopic, then serve the requested count.
@@ -139,8 +197,8 @@ export default function PracticeTab() {
         setQuestions([]);
       } else {
         const requested = totalCount > 0 ? totalCount : merged.length;
-        const shuffled = [...merged].sort(() => Math.random() - 0.5);
-        setQuestions(shuffled.slice(0, Math.min(requested, merged.length)));
+        const picked = shuffled(merged).slice(0, Math.min(requested, merged.length));
+        setQuestions(picked);
         setSessionActive(true);
       }
     } catch {
@@ -163,6 +221,9 @@ export default function PracticeTab() {
       const summary = await api.submitPractice(
         sessionQuestions.map((q) => ({ questionId: q.id, selected: answers[q.id] ?? "" })),
       );
+      try {
+        localStorage.removeItem(QUICK_STORAGE_KEY);
+      } catch { /* ignore */ }
       setResult(summary);
     } catch {
       setSubmitError("ফলাফল জমা দেওয়া যায়নি। আবার চেষ্টা করুন।");
@@ -416,13 +477,15 @@ export default function PracticeTab() {
 
                     <h3 className="text-base font-medium text-white mb-5">{currentQuestion.question}</h3>
 
-                    <div className="space-y-2.5 mb-6">
+                    <div className="space-y-2.5 mb-6" role="radiogroup" aria-label="উত্তর নির্বাচন করুন">
                       {currentQuestion.options.map((option, i) => {
                         const isSelected = answers[currentQuestion.id] === option;
                         return (
                           <button
                             key={i}
                             onClick={() => selectAnswer(currentQuestion.id, option)}
+                            role="radio"
+                            aria-checked={isSelected}
                             className={`w-full text-left p-3.5 rounded-xl border transition-all ${
                               isSelected
                                 ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-300"
@@ -501,10 +564,14 @@ export default function PracticeTab() {
                 <div className="flex items-center justify-center gap-3 mt-5">
                   <button
                     onClick={() => {
+                      try {
+                        localStorage.removeItem(QUICK_STORAGE_KEY);
+                      } catch { /* ignore */ }
                       setSessionActive(false);
                       setResult(null);
                       setAnswers({});
                       setCurrentIndex(0);
+                      setQuestions([]);
                     }}
                     className="px-5 py-2.5 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-xl hover:bg-emerald-400 transition-colors flex items-center gap-2 shadow-neon-glow"
                   >

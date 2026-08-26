@@ -15,6 +15,7 @@ import {
   listMessages,
 } from "../persistence/conversations";
 import { bumpAIQuestions, recordUsage } from "../usage/usage";
+import { runAfterResponse } from "~backend/schedule";
 import { searchForIntent } from "../tools/search";
 import { validateSolverOutput, sanitizeReply, parseJsonObject } from "../validation/outputs";
 import { validateChatRequest, validateSolverRequest } from "../schemas";
@@ -229,13 +230,14 @@ export async function createTutorTurn(opts: {
     },
   });
 
-  void (async () => {
+  // Persistence + usage must outlive the HTTP response (serverless freezes
+  // the invocation when the stream ends) — schedule via waitUntil.
+  runAfterResponse(async () => {
     await done;
     const fullText = sanitizeReply(getFullText());
     const success = fullText.length > 0;
-    let messageId: string | undefined;
     try {
-      const msg = await addMessage(userId, conversation.id, {
+      await addMessage(userId, conversation.id, {
         role: "ASSISTANT",
         status: success ? "COMPLETE" : "FAILED",
         content: fullText,
@@ -245,7 +247,6 @@ export async function createTutorTurn(opts: {
         metadata: { subjectId, topicId, topicPath: topicPath ?? "", intent, webResults: web.results },
         errorCode: success ? undefined : "AI_EMPTY_RESPONSE",
       });
-      messageId = msg.id;
       if (success) await bumpAIQuestions(userId);
     } catch (err) {
       console.error("[ai:tutor] persistence failed", err);
@@ -265,7 +266,7 @@ export async function createTutorTurn(opts: {
       errorCode: success ? undefined : "AI_EMPTY_RESPONSE",
       intent,
     });
-  })();
+  });
 
   return {
     stream: wrapped,

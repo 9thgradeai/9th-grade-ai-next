@@ -42,8 +42,7 @@ const subjectFixture: Server.ExamSubjectDTO[] = [
   },
 ];
 
-const builtExam: Server.ExamBuildResultDTO = {
-  examId: "mock-1",
+const builtExam: Server.ExamBuildResultDTO = {  examId: "mock-1",
   questions: [
     {
       id: 10,
@@ -71,6 +70,9 @@ const builtExam: Server.ExamBuildResultDTO = {
 };
 
 beforeEach(() => {
+  // MockTestTab persists active attempts to localStorage; clear it so each
+  // test starts from the setup phase instead of resuming a prior session.
+  localStorage.clear();
   stubFetch({
     "/api/exam/config": { subjects: subjectFixture },
     "/api/exam/build": { exam: builtExam },

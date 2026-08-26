@@ -9,10 +9,24 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     env:
       NODE_ENV: test
       CI: true
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: app_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -20,7 +34,17 @@ jobs:
           node-version: "22"
           cache: "npm"
       - run: npm ci
-      - run: npm run typecheck
-      - run: npm run lint
-      - run: npm run test -- --run
-      - run: npm run build
+      - name: Prepare test database (schema push)
+        run: npx prisma db push --skip-generate --schema database/prisma/schema.prisma
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/app_test
+      # The real-Postgres integration test skips silently without DATABASE_URL;
+      # providing it makes the raw-SQL regression guard actually run in CI.
+      - name: Typecheck, lint, tests (coverage enforced), build
+        run: |
+          npm run typecheck
+          npm run lint
+          npm run test -- --run --coverage
+          npm run build
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/app_test

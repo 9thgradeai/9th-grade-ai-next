@@ -211,6 +211,8 @@ export default function StudyPlannerTab() {
                     onClick={() => {
                       void toggleTask(task.id);
                     }}
+                    aria-label={`${task.title} — সম্পন্ন হিসেবে চিহ্নিত করুন`}
+                    aria-pressed={isCompleted}
                     className={`mt-0.5 w-5 h-5 rounded border-2 flex items-center justify-center transition-all flex-shrink-0 ${
                       isCompleted
                         ? "bg-emerald-500 border-emerald-500 text-zinc-950"
@@ -268,7 +270,7 @@ export default function StudyPlannerTab() {
         </AnimatePresence>
       </div>
 
-      {/* AI Suggestion */}
+      {/* Study tip — static guidance, honestly labelled (not AI-generated) */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -277,8 +279,8 @@ export default function StudyPlannerTab() {
         <Sparkles className="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5" />
         <div>
           <p className="text-sm text-zinc-300">
-            <span className="text-emerald-400 font-mono">AI Tip:</span> Based on your recent performance, I recommend spending extra 15 minutes on{" "}
-            <span className="text-white font-mono">গাণিতিক যুক্তি</span> today. Your accuracy is improving but needs more practice.
+            <span className="text-emerald-400 font-mono">স্টাডি টিপ:</span> প্রতিদিন অন্তত একটি দুর্বল টপিকে ১৫ মিনিট
+            অতিরিক্ত সময় দিন। ছোট ছোট নিয়মিত প্র্যাকটিস সেশন ধারাবাহিকতা তৈরি করে — পরীক্ষার আগের রাতের ভরোসা।
           </p>
         </div>
       </motion.div>

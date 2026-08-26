@@ -1,10 +1,7 @@
 // backend/infrastructure/cache/rate-limit-redis.ts
-// Redis-compatible store for distributed deployments. PREPARED, not active:
-// the client is INJECTED, so no vendor package is required until adoption day.
-// To activate (docs/DECISIONS.md):
-//   1. npm i ioredis
-//   2. construct `new RedisRateLimitStore(new Redis(process.env.REDIS_URL))`
-//      and return it from infrastructure/cache/index.ts
+// Redis-backed store for distributed deployments. Active when REDIS_URL is
+// set — infrastructure/cache/index.ts constructs this store with an ioredis
+// client and wraps it in fail-open error handling.
 // Counters live under a dedicated prefix; application code never flushes them.
 
 import "server-only";

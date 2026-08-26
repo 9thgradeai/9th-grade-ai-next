@@ -14,7 +14,6 @@ import {
   UnauthorizedError,
   ForbiddenError,
 } from "~backend/errors";
-import type { UserProgressDTO } from "@/lib/types";
 
 export type UserRecord = {
   id: string;
@@ -169,45 +168,6 @@ export async function requireRole(
     throw new ForbiddenError(`Requires one of: ${roles.join(", ")}`);
   }
   return user;
-}
-
-async function ensureProgress(userId: string) {
-  return prisma.userProgress.upsert({
-    where: { userId },
-    update: {},
-    create: { userId },
-  });
-}
-
-export async function patchUserProgress(
-  userId: string,
-  patch: Partial<{
-    points: number;
-    streak: number;
-    accuracy: number;
-    questionsAnswered: number;
-    flashcardsReviewed: number;
-    aiQuestionsAsked: number;
-    examsAttempted: number;
-    rank: number;
-  }>,
-): Promise<UserProgressDTO> {
-  try {
-    await ensureProgress(userId);
-    const p = await prisma.userProgress.update({ where: { userId }, data: patch });
-    return {
-      points: p.points,
-      streak: p.streak,
-      accuracy: p.accuracy,
-      questionsAnswered: p.questionsAnswered,
-      flashcardsReviewed: p.flashcardsReviewed,
-      aiQuestionsAsked: p.aiQuestionsAsked,
-      examsAttempted: p.examsAttempted,
-      rank: p.rank,
-    };
-  } catch {
-    throw new InternalServerError("Failed to patch user progress");
-  }
 }
 
 export async function getBookmarkedQuestionIds(userId: string): Promise<number[]> {
