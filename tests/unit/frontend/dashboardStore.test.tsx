@@ -1,21 +1,27 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { render, screen, fireEvent, act } from "@testing-library/react";
+import { useEffect } from "react";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 
 // Validates the Phase-1 per-selector isolation: a field update must re-render
 // only the components that actually read that field, never unrelated ones.
-
-const renderCounts = { active: 0, filters: 0 };
+// Render counts are accumulated inside effects (not during render) so they
+// satisfy the React Compiler immutability rule.
+const counters = { active: 0, filters: 0 };
 
 function ActiveView() {
   const activeTab = useDashboardStore((s) => s.activeTab);
-  renderCounts.active += 1;
+  useEffect(() => {
+    counters.active += 1;
+  });
   return <span data-testid="active">{activeTab}</span>;
 }
 
 function FiltersView() {
   const filters = useDashboardStore((s) => s.questionBankFilters);
-  renderCounts.filters += 1;
+  useEffect(() => {
+    counters.filters += 1;
+  });
   return <span data-testid="filters">{filters.query}</span>;
 }
 
@@ -32,8 +38,8 @@ function Controls() {
 
 describe("dashboard store selector isolation", () => {
   beforeEach(() => {
-    renderCounts.active = 0;
-    renderCounts.filters = 0;
+    counters.active = 0;
+    counters.filters = 0;
     localStorage.clear();
   });
 
@@ -46,7 +52,7 @@ describe("dashboard store selector isolation", () => {
       </>,
     );
     expect(screen.getByTestId("active").textContent).toBe("home");
-    const filtersBefore = renderCounts.filters;
+    const filtersBefore = counters.filters;
 
     act(() => {
       fireEvent.click(screen.getByText("change-tab"));
@@ -54,7 +60,7 @@ describe("dashboard store selector isolation", () => {
 
     expect(screen.getByTestId("active").textContent).toBe("practice");
     // The filters view never re-rendered from this update.
-    expect(renderCounts.filters).toBe(filtersBefore);
+    expect(counters.filters).toBe(filtersBefore);
   });
 
   it("re-renders only the filters view when filters change", () => {
@@ -65,13 +71,13 @@ describe("dashboard store selector isolation", () => {
         <Controls />
       </>,
     );
-    const activeBefore = renderCounts.active;
+    const activeBefore = counters.active;
 
     act(() => {
       fireEvent.click(screen.getByText("change-filters"));
     });
 
     expect(screen.getByTestId("filters").textContent).toBe("x");
-    expect(renderCounts.active).toBe(activeBefore);
+    expect(counters.active).toBe(activeBefore);
   });
 });
