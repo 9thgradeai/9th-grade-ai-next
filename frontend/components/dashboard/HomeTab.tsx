@@ -24,8 +24,64 @@ import type {
 import DailyQuizWidget from "./DailyQuizWidget";
 import KpiTile, { type KpiAccent } from "@/components/ui/KpiTile";
 import EmptyState from "@/components/ui/EmptyState";
+import Sparkline from "@/components/ui/Sparkline";
+import StreakHeatmap from "./StreakHeatmap";
 
 const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const WEEKDAY_SHORT_BN = ["শনি", "রবি", "সোম", "মঙ্গল", "বুধ", "বৃহ", "শুক্র"];
+
+const PREP_LABEL: Record<string, string> = {
+  BEGINNER: "নবীন",
+  INTERMEDIATE: "মধ্যম",
+  ADVANCED: "উন্নত",
+};
+
+const STAGGER = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.06, delayChildren: 0.04 } },
+};
+const STAGGER_ITEM = {
+  hidden: { opacity: 0, y: 10 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { type: "spring" as const, stiffness: 260, damping: 26 },
+  },
+};
+
+function lastSevenDayLabels(): string[] {
+  const today = new Date().getDay();
+  const out: string[] = [];
+  for (let i = 6; i >= 0; i--) {
+    out.push(WEEKDAY_SHORT_BN[(today - i + 7) % 7]);
+  }
+  return out;
+}
+
+const WEEKDAY_LABELS_7 = lastSevenDayLabels();
+
+function CountdownRing({ daysLeft }: { daysLeft: number }) {
+  const fraction = Math.max(0, Math.min(1, daysLeft / 90));
+  const r = 26;
+  const circ = 2 * Math.PI * r;
+  const offset = circ * (1 - fraction);
+  return (
+    <svg viewBox="0 0 64 64" className="w-16 h-16 -rotate-90" aria-hidden="true">
+      <circle cx="32" cy="32" r={r} fill="none" stroke="rgb(148 155 195 / 0.18)" strokeWidth="5" />
+      <circle
+        cx="32"
+        cy="32"
+        r={r}
+        fill="none"
+        stroke="#2dd4bf"
+        strokeWidth="5"
+        strokeLinecap="round"
+        strokeDasharray={circ}
+        strokeDashoffset={offset}
+      />
+    </svg>
+  );
+}
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("bn-BD", {
@@ -131,6 +187,21 @@ export default function HomeTab() {
     };
   }, [reloadKey]);
 
+  useEffect(() => {
+    if (!stats) return;
+    const s = stats.streak;
+    const isMilestone = s === 7 || s === 30 || s === 100 || (s > 0 && s % 50 === 0);
+    if (!isMilestone) return;
+    const key = `streak-celebrated-${s}`;
+    try {
+      if (sessionStorage.getItem(key)) return;
+      sessionStorage.setItem(key, "1");
+    } catch {
+      return;
+    }
+    toast.success(`অভিনন্দন! আপনি ${s} দিনের স্ট্রিক অর্জন করেছেন।`);
+  }, [stats, toast]);
+
   const retryLoad = () => {
     setLoading(true);
     setLoadFailed(false);
@@ -153,6 +224,28 @@ export default function HomeTab() {
     return tasks.filter((t) => t.day === today);
   }, [tasks]);
 
+  const activityDays = useMemo(() => {
+    const done = new Set(results.map((r) => new Date(r.createdAt).toDateString()));
+    const out: boolean[] = [];
+    const today = new Date();
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(today.getDate() - i);
+      out.push(done.has(d.toDateString()));
+    }
+    return out;
+  }, [results]);
+
+  const mockTrend = useMemo(
+    () =>
+      results
+        .slice()
+        .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+        .slice(-8)
+        .map((r) => r.score),
+    [results],
+  );
+
   const toggleTask = async (taskId: number) => {
     // Optimistic flip with rollback on failure — the toggle is a single
     // checkbox, so local state leads and the server confirms behind it.
@@ -172,11 +265,15 @@ export default function HomeTab() {
   const skeleton = loading && !stats;
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      variants={STAGGER}
+      initial="hidden"
+      animate="show"
+      className="space-y-6"
+    >
       {/* Header */}
       <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
+        variants={STAGGER_ITEM}
         className="glass-card rounded-2xl border border-default p-5 relative overflow-hidden"
       >
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(16,185,129,0.08),transparent_60%)] pointer-events-none" aria-hidden="true" />
@@ -186,37 +283,43 @@ export default function HomeTab() {
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.8)]" aria-hidden="true" />
               Mission Control
             </p>
-            <h1 className="font-display text-xl font-semibold text-white mt-1">
-              {user?.name ?? "Student"}
-              <span className="text-emerald-400"> — চাকরির প্রস্তুতি</span>
-            </h1>
+              <h1 className="font-display text-xl font-semibold text-white mt-1 text-balance">
+                {user?.name ?? "Student"}
+                <span className="text-emerald-400">
+                  {" "}
+                  — {user?.examTarget ? user.examTarget : "চাকরির প্রস্তুতি"}
+                </span>
+              </h1>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <span className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-xs font-mono text-emerald-400 flex items-center gap-1">
               <Target className="w-3.5 h-3.5" />
               {nextExam ? t(lang, nextExam.titleBn, nextExam.titleEn) : "কোনো আসন্ন পরীক্ষা নেই"}
             </span>
-            <span className="px-3 py-1 bg-orange-500/10 border border-orange-500/20 rounded-lg text-xs font-mono text-orange-400 flex items-center gap-1">
+            <span className="px-3 py-1.5 bg-orange-500/10 border border-orange-500/20 rounded-lg text-xs font-mono text-orange-400 flex items-center gap-2">
               <Flame className="w-3.5 h-3.5" />
-              {stats?.streak ?? 0} দিন স্ট্রিক
+              <span>{stats?.streak ?? 0} দিন স্ট্রিক</span>
+              <StreakHeatmap activeDays={activityDays} labels={WEEKDAY_LABELS_7} />
             </span>
+            {user?.goal && (
+              <span className="px-3 py-1.5 bg-indigo-500/10 border border-indigo-500/20 rounded-lg text-xs font-mono text-indigo-300 flex items-center gap-1 max-w-[14rem]">
+                <Target className="w-3.5 h-3.5 flex-shrink-0" />
+                <span className="truncate">{user.goal}</span>
+              </span>
+            )}
           </div>
         </div>
       </motion.div>
 
       {/* Countdown hero — real exam */}
       <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.05 }}
+        variants={STAGGER_ITEM}
         className="glass-card rounded-2xl border border-emerald-500/30 p-6 md:p-8 relative overflow-hidden"
       >
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(16,185,129,0.1),transparent_60%)] pointer-events-none" aria-hidden="true" />
-        <motion.div
-          className="absolute -top-16 -right-16 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl"
+        <div
+          className="absolute -top-16 -right-16 w-64 h-64 bg-emerald-500/10 rounded-full blur-2xl"
           aria-hidden="true"
-          animate={{ opacity: [0.4, 0.8, 0.4], scale: [1, 1.1, 1] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
         />
         {nextExam ? (
           <div className="relative flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
@@ -233,11 +336,14 @@ export default function HomeTab() {
                 ) : null}
               </div>
             </div>
-            <div className="flex items-center gap-3 font-mono">
-              <span className="text-xs text-zinc-400 uppercase tracking-wider">Countdown</span>
-              <span className="px-4 py-2 bg-zinc-900 border border-emerald-500/20 rounded-xl text-emerald-400 font-bold text-lg tracking-widest">
-                {countdown.d}:{countdown.h}:{countdown.m}:{countdown.s}
-              </span>
+            <div className="flex items-center gap-4">
+              <CountdownRing daysLeft={Number(countdown.d) || 0} />
+              <div className="flex flex-col font-mono">
+                <span className="text-xs text-zinc-400 uppercase tracking-wider">Countdown</span>
+                <span className="text-emerald-400 font-bold text-lg tracking-widest tabular-nums">
+                  {countdown.d}:{countdown.h}:{countdown.m}:{countdown.s}
+                </span>
+              </div>
             </div>
           </div>
         ) : (
@@ -256,16 +362,17 @@ export default function HomeTab() {
         )}
       </motion.div>
 
-      {/* KPI strip — real stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+      {/* KPI strip — real stats (swipeable on mobile, grid on larger screens) */}
+      <div className="-mx-4 px-4 pb-1 flex gap-3 overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3 sm:overflow-visible lg:grid-cols-6">
         {KPI_KEYS.map((k) => (
-          <KpiTile
-            key={k.key}
-            label={lang === "bn" ? k.label : k.labelEn}
-            value={`${(stats?.[k.key] as number ?? 0).toLocaleString("bn-BD")}${k.suffix ?? ""}`}
-            accent={k.accent}
-            loading={skeleton}
-          />
+          <div key={k.key} className="snap-start min-w-[44%] sm:min-w-0">
+            <KpiTile
+              label={lang === "bn" ? k.label : k.labelEn}
+              value={`${(stats?.[k.key] as number ?? 0).toLocaleString("bn-BD")}${k.suffix ?? ""}`}
+              accent={k.accent}
+              loading={skeleton}
+            />
+          </div>
         ))}
       </div>
 
@@ -290,9 +397,7 @@ export default function HomeTab() {
 
       {/* Weak areas — real subject reports */}
       <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
+        variants={STAGGER_ITEM}
         className="glass-card rounded-2xl border border-terminal-border p-5"
       >
         <div className="flex items-center justify-between mb-4">
@@ -332,16 +437,14 @@ export default function HomeTab() {
                   <p className="text-sm text-zinc-300 truncate">{r.name}</p>
                   <p className="text-[10px] text-zinc-500 font-mono">{r.attempted}টি সমাধান</p>
                 </div>
-                <div className="flex-1 h-2 bg-zinc-800 rounded-full overflow-hidden">
+                <div className="flex-1 h-2 bg-zinc-800 rounded-full overflow-hidden flex">
                   <div
-                    className={`h-full w-full origin-left rounded-full transition-transform duration-700 ${
-                      r.score < 50
-                        ? "bg-red-500"
-                        : r.score < 75
-                          ? "bg-amber-500"
-                          : "bg-emerald-500"
-                    }`}
-                    style={{ transform: `scaleX(${Math.max(0.02, r.score / 100)})` }}
+                    className="h-full bg-emerald-500 transition-[width] duration-700"
+                    style={{ width: `${(r.correct / r.attempted) * 100}%` }}
+                  />
+                  <div
+                    className="h-full bg-red-500/80 transition-[width] duration-700"
+                    style={{ width: `${((r.attempted - r.correct) / r.attempted) * 100}%` }}
                   />
                 </div>
                 <span className="w-12 text-right text-sm font-mono text-emerald-400">
@@ -355,15 +458,18 @@ export default function HomeTab() {
 
       {/* Today's plan + recent mock results */}
       <div className="grid md:grid-cols-2 gap-6">
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.14 }}
-          className="glass-card rounded-2xl border border-terminal-border p-5"
+      <motion.div
+        variants={STAGGER_ITEM}
+        className="glass-card rounded-2xl border border-terminal-border p-5"
         >
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-semibold text-white uppercase tracking-wider">
               আজকের রুটিন
+              {user?.prepLevel && (
+                <span className="ml-2 align-middle text-[10px] normal-case font-mono text-zinc-400 border border-zinc-700 rounded px-1.5 py-0.5">
+                  {PREP_LABEL[user.prepLevel]}
+                </span>
+              )}
             </h3>
             <button
               onClick={() => setActiveTab("study-planner")}
@@ -435,17 +541,22 @@ export default function HomeTab() {
           )}
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.18 }}
-          className="glass-card rounded-2xl border border-terminal-border p-5"
+      <motion.div
+        variants={STAGGER_ITEM}
+        className="glass-card rounded-2xl border border-terminal-border p-5"
         >
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold text-white uppercase tracking-wider">
-              সাম্প্রতিক মক পরীক্ষা
-            </h3>
-            <button
+            <div className="flex items-center justify-between mb-4 gap-3">
+              <div>
+                <h3 className="text-sm font-semibold text-white uppercase tracking-wider">
+                  সাম্প্রতিক মক পরীক্ষা
+                </h3>
+                {mockTrend.length > 1 && (
+                  <div className="mt-1 w-28 text-emerald-400">
+                    <Sparkline values={mockTrend} fillId="mock-trend" />
+                  </div>
+                )}
+              </div>
+              <button
               onClick={() => setActiveTab("practice")}
               className="text-xs text-emerald-400 font-mono hover:text-emerald-300 transition-colors flex items-center gap-1"
             >
@@ -504,15 +615,16 @@ export default function HomeTab() {
       </div>
 
       {/* Daily quiz */}
-      <DailyQuizWidget />
+      <div className="[content-visibility:auto] [contain-intrinsic-size:auto_360px]">
+        <DailyQuizWidget />
+      </div>
 
       {/* Flash news */}
       {news.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.22 }}
-          className="glass-card rounded-2xl border border-terminal-border overflow-hidden"
+        <div className="[content-visibility:auto] [contain-intrinsic-size:auto_300px]">
+      <motion.div
+        variants={STAGGER_ITEM}
+        className="glass-card rounded-2xl border border-terminal-border overflow-hidden"
         >
           <div className="px-5 py-4 border-b border-terminal-border flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-emerald-400" />
@@ -534,15 +646,14 @@ export default function HomeTab() {
             ))}
           </div>
         </motion.div>
+        </div>
       )}
 
       {/* AI suggestion strip — real weakest subject */}
       {weakest.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.26 }}
-          className="relative flex items-start gap-3 p-4 bg-gradient-to-r from-emerald-500/[0.08] to-cyan-500/[0.05] border border-emerald-500/20 rounded-2xl overflow-hidden"
+      <motion.div
+        variants={STAGGER_ITEM}
+        className="relative flex items-start gap-3 p-4 bg-gradient-to-r from-emerald-500/[0.08] to-cyan-500/[0.05] border border-emerald-500/20 rounded-2xl overflow-hidden"
         >
           <div className="absolute inset-y-0 left-0 w-0.5 bg-gradient-to-b from-emerald-400 to-cyan-400" aria-hidden="true" />
           <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500/20 to-cyan-500/10 border border-emerald-500/25 flex items-center justify-center flex-shrink-0">
@@ -556,6 +667,6 @@ export default function HomeTab() {
           </p>
         </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 }

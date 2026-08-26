@@ -153,6 +153,11 @@ export async function getSessionUser(req: Request): Promise<UserRecord | null> {
     emailVerified: u.emailVerified,
     onboarded: u.onboarded,
     createdAt: u.createdAt.toISOString(),
+    examTarget: u.examTarget ?? undefined,
+    examDate: u.examDate ? u.examDate.toISOString() : undefined,
+    prepLevel: (u.prepLevel as "BEGINNER" | "INTERMEDIATE" | "ADVANCED" | undefined) ?? undefined,
+    studyHoursPerDay: u.studyHoursPerDay ?? undefined,
+    goal: u.goal ?? undefined,
   };
 }
 

@@ -5,9 +5,11 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
+import { MotionConfig } from "framer-motion";
 import SideNav from "@/components/dashboard/SideNav";
 import BottomNav from "@/components/dashboard/BottomNav";
 import NotificationCenter from "@/components/dashboard/NotificationCenter";
+import CommandBar from "@/components/dashboard/CommandBar";
 import ThemeToggle from "@/components/ThemeToggle";
 import LanguageToggle from "@/components/ui/LanguageToggle";
 import { LogoutFarewellProvider, useFarewell } from "@/lib/farewell-ctx";
@@ -84,7 +86,8 @@ function DashboardShell({
   const activeLabel = TABS.find((t) => t.id === activeTab)?.label ?? "DASHBOARD";
 
   return (
-    <div className="dashboard-shell h-dvh overflow-hidden flex">
+    <MotionConfig reducedMotion="user">
+      <div className="dashboard-shell h-dvh overflow-hidden flex">
       {/* Skip link — first focusable element for keyboard users */}
       <a
         href="#dashboard-content"
@@ -118,6 +121,14 @@ function DashboardShell({
             </span>
 
             <div className="ml-auto flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => window.dispatchEvent(new Event("app:open-command"))}
+                aria-label="কমান্ড প্যানেল খুলুন"
+                className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-white/10 text-[11px] font-mono text-zinc-400 hover:text-emerald-300 hover:border-emerald-500/30 transition-colors"
+              >
+                <span>⌘K</span>
+              </button>
               <span className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-emerald-500/20 bg-emerald-500/8 text-[11px] font-mono uppercase tracking-wider text-emerald-400">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.8)]" aria-hidden="true" />
                 session
@@ -142,6 +153,8 @@ function DashboardShell({
 
       {/* Global Components */}
       <VoiceAITutor />
-    </div>
+      <CommandBar />
+      </div>
+    </MotionConfig>
   );
 }

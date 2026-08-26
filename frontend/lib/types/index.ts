@@ -29,6 +29,13 @@ export namespace Client {
     handle: string;
     role: "student" | "admin";
     createdAt: string;
+    emailVerified?: boolean;
+    onboarded?: boolean;
+    examTarget?: string;
+    examDate?: string;
+    prepLevel?: "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
+    studyHoursPerDay?: number;
+    goal?: string;
   };
 
   export type TutorMessage = {

@@ -47,6 +47,12 @@
   --shadow-glow-purple: 0 0 60px rgba(167, 139, 250, 0.17);
   --shadow-panel: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 12px 40px rgba(2, 4, 15, 0.4);
 
+  /* Layered elevation — replaces glass blur with cheap, premium shadows */
+  --shadow-elevation-1:
+    0 1px 0 rgb(255 255 255 / 0.04) inset, 0 8px 30px rgba(2, 6, 12, 0.35);
+  --shadow-elevation-2:
+    0 1px 0 rgb(255 255 255 / 0.05) inset, 0 16px 48px rgba(2, 6, 12, 0.45);
+
   /* Border radius */
   --radius-terminal-square: 6px;
   --radius-terminal-rounded: 10px;
@@ -177,26 +183,21 @@ html {
   color: #2dd4bf;
 }
 
-/* Glassmorphism utility (theme-aware) */
+/* Solid elevated surface (replaces glassmorphism — no blur, cheap on low-end devices) */
 .glass {
   background: var(--surface);
-  backdrop-filter: blur(18px) saturate(150%);
-  -webkit-backdrop-filter: blur(18px) saturate(150%);
   border: 1px solid var(--border-muted);
+  box-shadow: var(--shadow-elevation-1);
 }
 
-/* Elevated glass panel for cards / modals */
+/* Elevated panel for cards / modals — premium solid surface, layered shadow */
 .glass-card {
-  background: linear-gradient(165deg, rgb(15 23 42 / 0.66), rgb(8 12 22 / 0.82));
-  backdrop-filter: blur(18px) saturate(150%);
-  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  background: var(--surface-raised);
   border: 1px solid var(--border-muted);
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.05),
-    0 12px 40px rgba(2, 6, 12, 0.35);
+  box-shadow: var(--shadow-elevation-1);
 }
 html.light .glass-card {
-  background: linear-gradient(165deg, rgb(255 255 255 / 0.92), rgb(240 253 244 / 0.75));
+  background: var(--surface-raised);
 }
 
 /* ── Light-mode token remap ─────────────────────────────────
@@ -391,6 +392,24 @@ html.light .terminal-window-bar {
 /* Subtle hairline used on premium cards */
 .hairline {
   border: 1px solid var(--border-muted);
+}
+
+/* Card primitive — solid elevated surface, theme-aware, no blur */
+.card {
+  background: var(--surface-raised);
+  border: 1px solid var(--border-muted);
+  box-shadow: var(--shadow-elevation-1);
+}
+.card-interactive {
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease;
+}
+.card-interactive:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-elevation-2);
+  border-color: var(--border-strong);
 }
 
 /* Scrollbar styling (theme-aware) */

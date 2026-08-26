@@ -30,6 +30,11 @@ export type UserRecord = {
   emailVerified: boolean;
   onboarded: boolean;
   createdAt: string;
+  examTarget?: string;
+  examDate?: string;
+  prepLevel?: "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
+  studyHoursPerDay?: number;
+  goal?: string;
 };
 
 export type OnboardingInput = {
@@ -69,6 +74,11 @@ export async function findUserByEmail(email: string): Promise<UserRecord | null>
       emailVerified: u.emailVerified,
       onboarded: u.onboarded,
       createdAt: u.createdAt.toISOString(),
+      examTarget: u.examTarget ?? undefined,
+      examDate: u.examDate ? u.examDate.toISOString() : undefined,
+      prepLevel: (u.prepLevel as "BEGINNER" | "INTERMEDIATE" | "ADVANCED" | undefined) ?? undefined,
+      studyHoursPerDay: u.studyHoursPerDay ?? undefined,
+      goal: u.goal ?? undefined,
     };
   } catch {
     throw new InternalServerError("Failed to fetch user by email");
@@ -158,6 +168,11 @@ export async function createUser({
       emailVerified: u.emailVerified,
       onboarded: u.onboarded,
       createdAt: u.createdAt.toISOString(),
+      examTarget: u.examTarget ?? undefined,
+      examDate: u.examDate ? u.examDate.toISOString() : undefined,
+      prepLevel: (u.prepLevel as "BEGINNER" | "INTERMEDIATE" | "ADVANCED" | undefined) ?? undefined,
+      studyHoursPerDay: u.studyHoursPerDay ?? undefined,
+      goal: u.goal ?? undefined,
     };
   } catch (error) {
     if (error instanceof AppError) throw error;
@@ -301,6 +316,11 @@ export async function findUserById(userId: string): Promise<UserRecord | null> {
       emailVerified: u.emailVerified,
       onboarded: u.onboarded,
       createdAt: u.createdAt.toISOString(),
+      examTarget: u.examTarget ?? undefined,
+      examDate: u.examDate ? u.examDate.toISOString() : undefined,
+      prepLevel: (u.prepLevel as "BEGINNER" | "INTERMEDIATE" | "ADVANCED" | undefined) ?? undefined,
+      studyHoursPerDay: u.studyHoursPerDay ?? undefined,
+      goal: u.goal ?? undefined,
     };
   } catch {
     throw new InternalServerError("Failed to fetch user");
@@ -331,6 +351,11 @@ export async function updateUserProfile(
       emailVerified: u.emailVerified,
       onboarded: u.onboarded,
       createdAt: u.createdAt.toISOString(),
+      examTarget: u.examTarget ?? undefined,
+      examDate: u.examDate ? u.examDate.toISOString() : undefined,
+      prepLevel: (u.prepLevel as "BEGINNER" | "INTERMEDIATE" | "ADVANCED" | undefined) ?? undefined,
+      studyHoursPerDay: u.studyHoursPerDay ?? undefined,
+      goal: u.goal ?? undefined,
     };
   } catch (error) {
     if (error instanceof AppError) throw error;
@@ -587,6 +612,11 @@ export async function completeOnboarding(
       emailVerified: u.emailVerified,
       onboarded: u.onboarded,
       createdAt: u.createdAt.toISOString(),
+      examTarget: u.examTarget ?? undefined,
+      examDate: u.examDate ? u.examDate.toISOString() : undefined,
+      prepLevel: (u.prepLevel as "BEGINNER" | "INTERMEDIATE" | "ADVANCED" | undefined) ?? undefined,
+      studyHoursPerDay: u.studyHoursPerDay ?? undefined,
+      goal: u.goal ?? undefined,
     };
   } catch (error) {
     if (error instanceof AppError) throw error;
