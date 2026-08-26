@@ -12,6 +12,17 @@ type FieldNode = {
   color: string;
   phase: number;
   pulseSpeed: number;
+  // Diagnostic-sweep state: the one-time entrance choreography that aligns
+  // nodes onto the ascending "path to passing", then releases them back
+  // into free drift. See DIAG below.
+  tx: number; // path target
+  ty: number;
+  fromX: number; // position when claimed
+  fromY: number;
+  claimAt: number | null;
+  freeX: number; // free-drift position after release
+  freeY: number;
+  released: boolean;
 };
 
 const PALETTE = [
@@ -23,6 +34,40 @@ const PALETTE = [
 
 const LINK_DISTANCE = 120;
 const POINTER_DISTANCE = 140;
+
+/**
+ * One-time entrance choreography ("the diagnostic sweep") — the hero tells
+ * the product story in ~2.5s: scattered noise (unprepared) → a single radar
+ * beam passes (the AI diagnoses) → nodes snap onto an ascending trajectory
+ * (your path to passing) → everything relaxes into calm drift.
+ *
+ *   0–400     chaos drift (normal behaviour)
+ *   400–1500  radar beam sweeps L→R; nodes it touches claim a path target
+ *   1500–2600 aligned hold — the path breathes in place
+ *   2600–4600 release — nodes blend back into free drift
+ *
+ * Reduced motion / low tier skip the sequence entirely and render the
+ * aligned constellation as a static frame.
+ */
+const SWEEP_START = 400;
+const SWEEP_END = 1500;
+const HOLD_END = 2600;
+const RELEASE_END = 4600;
+const CLAIM_DURATION = 700;
+
+const easeOutExpo = (t: number) => (t >= 1 ? 1 : 1 - Math.pow(2, -10 * t));
+const easeInOut = (t: number) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
+
+/** Ascending S-curve the nodes align to — the product's "improvement trend" motif. */
+function pathTarget(t: number, w: number, h: number): { x: number; y: number } {
+  // Cubic bezier P0(0.06,0.80) P1(0.38,0.72) P2(0.62,0.34) P3(0.94,0.22)
+  const u = 1 - t;
+  const x =
+    u * u * u * 0.06 + 3 * u * u * t * 0.38 + 3 * u * t * t * 0.62 + t * t * t * 0.94;
+  const y =
+    u * u * u * 0.8 + 3 * u * u * t * 0.72 + 3 * u * t * t * 0.34 + t * t * t * 0.22;
+  return { x: x * w, y: y * h };
+}
 
 /**
  * Hero "knowledge intelligence field" — a single shared Canvas 2D layer of
@@ -59,6 +104,8 @@ export default function KnowledgeField({ className = "" }: { className?: string 
     let pointerY = -9999;
     let lastTime = performance.now();
     let resizePending = false;
+    // Wall-clock anchor for the sweep timeline (ms since first frame).
+    let sequenceStart = -1;
 
     const isLightTheme = () => document.documentElement.classList.contains("light");
 
@@ -78,7 +125,33 @@ export default function KnowledgeField({ className = "" }: { className?: string 
           color: `${r},${g},${b}`,
           phase: Math.random() * Math.PI * 2,
           pulseSpeed: 0.4 + Math.random() * 0.6,
+          tx: 0,
+          ty: 0,
+          fromX: 0,
+          fromY: 0,
+          claimAt: null,
+          freeX: 0,
+          freeY: 0,
+          released: false,
         };
+      });
+
+      // Assign ascending path targets left-to-right so the beam reveals the
+      // trajectory in reading order. Static mode renders the aligned
+      // constellation directly — the "after" composition without motion.
+      const order = nodes
+        .map((n, i) => i)
+        .sort((a, b) => nodes[a].x - nodes[b].x);
+      order.forEach((idx, rank) => {
+        const t = nodes.length > 1 ? rank / (nodes.length - 1) : 0.5;
+        const target = pathTarget(t, width, height);
+        const node = nodes[idx];
+        node.tx = target.x + (Math.random() - 0.5) * 14;
+        node.ty = target.y + (Math.random() - 0.5) * 14;
+        if (staticMode) {
+          node.x = node.tx;
+          node.y = node.ty;
+        }
       });
     };
 
@@ -93,6 +166,10 @@ export default function KnowledgeField({ className = "" }: { className?: string 
       canvas.height = Math.round(height * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       seedNodes();
+      // A mid-session resize skips the entrance replay — land in calm drift.
+      if (!staticMode && sequenceStart >= 0) {
+        sequenceStart = performance.now() - RELEASE_END - 1;
+      }
       if (staticMode) drawFrame(0);
     };
 
@@ -100,6 +177,18 @@ export default function KnowledgeField({ className = "" }: { className?: string 
       const light = isLightTheme();
       const themeAlpha = light ? 0.55 : 1;
       ctx.clearRect(0, 0, width, height);
+
+      // Radar beam — a soft trailing band with a bright leading edge.
+      if (!staticMode && activeBeamX >= 0) {
+        const band = ctx.createLinearGradient(activeBeamX - 90, 0, activeBeamX, 0);
+        band.addColorStop(0, "rgba(45,212,191,0)");
+        band.addColorStop(0.75, `rgba(45,212,191,${(0.08 * themeAlpha).toFixed(3)})`);
+        band.addColorStop(1, `rgba(45,212,191,${(0.2 * themeAlpha).toFixed(3)})`);
+        ctx.fillStyle = band;
+        ctx.fillRect(activeBeamX - 90, 0, 90, height);
+        ctx.fillStyle = `rgba(45,212,191,${(0.32 * themeAlpha).toFixed(3)})`;
+        ctx.fillRect(activeBeamX - 1, 0, 1.5, height);
+      }
 
       // Connections first so dots sit on top.
       ctx.lineWidth = 1;
@@ -112,7 +201,11 @@ export default function KnowledgeField({ className = "" }: { className?: string 
           const d2 = dx * dx + dy * dy;
           if (d2 > LINK_DISTANCE * LINK_DISTANCE) continue;
           const strength = 1 - Math.sqrt(d2) / LINK_DISTANCE;
-          ctx.strokeStyle = `rgba(129,140,248,${(0.13 * strength * themeAlpha).toFixed(3)})`;
+          // Aligned neighbours glow teal — the revealed path reads as one system.
+          const aligned = a.claimAt !== null && b.claimAt !== null;
+          ctx.strokeStyle = aligned
+            ? `rgba(45,212,191,${(0.2 * strength * themeAlpha).toFixed(3)})`
+            : `rgba(129,140,248,${(0.13 * strength * themeAlpha).toFixed(3)})`;
           ctx.beginPath();
           ctx.moveTo(a.x, a.y);
           ctx.lineTo(b.x, b.y);
@@ -140,9 +233,15 @@ export default function KnowledgeField({ className = "" }: { className?: string 
         const pulse = reducedMotion
           ? 0.7
           : 0.55 + 0.45 * Math.sin(time * 0.001 * node.pulseSpeed + node.phase);
-        ctx.fillStyle = `rgba(${node.color},${(pulse * themeAlpha).toFixed(3)})`;
+        // Claimed nodes flare briefly, then settle at full brightness.
+        let boost = 1;
+        if (node.claimAt !== null) {
+          const cT = time - node.claimAt;
+          if (cT < CLAIM_DURATION) boost = 1 + 0.9 * (1 - easeOutExpo(cT / CLAIM_DURATION));
+        }
+        ctx.fillStyle = `rgba(${node.color},${Math.min(1, pulse * boost * themeAlpha).toFixed(3)})`;
         ctx.beginPath();
-        ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+        ctx.arc(node.x, node.y, node.radius * boost, 0, Math.PI * 2);
         ctx.fill();
       }
 
@@ -154,13 +253,70 @@ export default function KnowledgeField({ className = "" }: { className?: string 
       }
     };
 
+    let activeBeamX = -1;
+
     const step = (now: number) => {
       if (!running()) return;
       const dt = Math.min(now - lastTime, 50);
       lastTime = now;
       const k = dt / 16.7;
 
+      if (sequenceStart < 0) sequenceStart = now;
+      const seqT = now - sequenceStart;
+
+      // Radar beam position + claiming: nodes the beam has passed snap onto
+      // their assigned path target.
+      activeBeamX = -1;
+      if (seqT >= SWEEP_START && seqT <= SWEEP_END) {
+        const p = easeInOut((seqT - SWEEP_START) / (SWEEP_END - SWEEP_START));
+        activeBeamX = -90 + (width + 180) * p;
+        for (const node of nodes) {
+          if (node.claimAt === null && node.x <= activeBeamX) {
+            node.claimAt = now;
+            node.fromX = node.x;
+            node.fromY = node.y;
+          }
+        }
+      }
+
       for (const node of nodes) {
+        if (node.claimAt !== null && !node.released) {
+          // Choreographed: claim lerp → aligned hold with a quiet breath.
+          const cT = now - node.claimAt;
+          if (cT < CLAIM_DURATION) {
+            const p = easeOutExpo(cT / CLAIM_DURATION);
+            node.x = node.fromX + (node.tx - node.fromX) * p;
+            node.y = node.fromY + (node.ty - node.fromY) * p;
+          } else if (seqT < HOLD_END) {
+            node.x = node.tx;
+            node.y = node.ty + Math.sin(now * 0.001 * 0.9 + node.phase) * 1.6;
+          } else {
+            // Release: seed free drift from the aligned position and blend out.
+            node.released = true;
+            node.freeX = node.tx;
+            node.freeY = node.ty;
+          }
+          if (!node.released) continue;
+        }
+
+        if (node.released && node.claimAt !== null) {
+          // Blend the aligned position into free drift, then hand control back
+          // to normal integration.
+          const blend = easeInOut(
+            Math.min(1, (seqT - HOLD_END) / (RELEASE_END - HOLD_END)),
+          );
+          node.freeX += node.vx * k;
+          node.freeY += node.vy * k;
+          if (node.freeX < -8) node.freeX = width + 8;
+          else if (node.freeX > width + 8) node.freeX = -8;
+          if (node.freeY < -8) node.freeY = height + 8;
+          else if (node.freeY > height + 8) node.freeY = -8;
+          node.x = node.tx + (node.freeX - node.tx) * blend;
+          node.y = node.ty + (node.freeY - node.ty) * blend;
+          if (blend >= 1) node.claimAt = null;
+          continue;
+        }
+
         node.x += node.vx * k;
         node.y += node.vy * k;
         if (node.x < -8) node.x = width + 8;

@@ -16,7 +16,7 @@ import Magnetic from "@/components/landing/Magnetic";
 import KnowledgeField from "@/components/landing/KnowledgeField";
 import { trackCtaClick, trackHeroView } from "@/lib/analytics";
 import { useMotionCapabilities } from "@/lib/motion/device";
-import { heroItem, staggerParent } from "@/lib/motion/variants";
+import { EASE_OUT_EXPO, heroItem, staggerParent } from "@/lib/motion/variants";
 
 const stats = [
   { value: "14", label: "Subjects" },
@@ -116,9 +116,71 @@ export default function HeroSection() {
           <h1 className="mb-6 font-display text-[clamp(2.75rem,8vw,5.25rem)] font-semibold leading-[1.02] tracking-tight text-white">
             <MotionText>Stop guessing.</MotionText>
             <br />
-            <MotionText delay={0.3} wordClassName="text-gradient">
-              Start passing.
-            </MotionText>
+            <span className="relative inline-block">
+              <MotionText delay={0.3} wordClassName="text-gradient">
+                Start passing.
+              </MotionText>
+              {/* The examiner's pen — a gradient mark that draws itself under
+                  "Start passing." right as the field's diagnostic sweep
+                  completes, ending in a quiet ✓. Reduced motion: static. */}
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 300 14"
+                preserveAspectRatio="none"
+                className="absolute -bottom-[0.06em] left-0 h-[0.14em] w-full overflow-visible"
+              >
+                <defs>
+                  <linearGradient id="pen-stroke" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor="#2dd4bf" />
+                    <stop offset="60%" stopColor="#22d3ee" />
+                    <stop offset="100%" stopColor="#a78bfa" />
+                  </linearGradient>
+                </defs>
+                <motion.path
+                  d="M 4 10 C 80 5, 190 12, 296 6"
+                  fill="none"
+                  stroke="url(#pen-stroke)"
+                  strokeWidth="4"
+                  strokeLinecap="round"
+                  vectorEffect="non-scaling-stroke"
+                  initial={shouldReduceMotion ? { pathLength: 1 } : { pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={
+                    shouldReduceMotion
+                      ? { duration: 0 }
+                      : { delay: 1.25, duration: 0.5, ease: EASE_OUT_EXPO }
+                  }
+                />
+              </svg>
+              <motion.svg
+                aria-hidden="true"
+                viewBox="0 0 16 16"
+                className="absolute -right-[0.32em] top-[0.42em] h-[0.3em] w-[0.3em]"
+                initial={shouldReduceMotion ? { scale: 1, opacity: 1 } : { scale: 0.4, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={
+                  shouldReduceMotion
+                    ? { duration: 0 }
+                    : { delay: 1.72, duration: 0.28, ease: EASE_OUT_EXPO }
+                }
+              >
+                <motion.path
+                  d="M 3 8.5 L 6.5 12 L 13 4"
+                  fill="none"
+                  stroke="#34d399"
+                  strokeWidth="2.4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  initial={shouldReduceMotion ? { pathLength: 1 } : { pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={
+                    shouldReduceMotion
+                      ? { duration: 0 }
+                      : { delay: 1.72, duration: 0.3, ease: EASE_OUT_EXPO }
+                  }
+                />
+              </motion.svg>
+            </span>
           </h1>
 
           <motion.p
