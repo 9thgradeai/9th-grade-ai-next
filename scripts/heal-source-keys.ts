@@ -30,6 +30,9 @@ const BACKFILL: Array<[table: string, expr: string]> = [
   ["FlashNews", '"titleBn" || \'|\' || "date"'],
   ["Recommendation", '"subjectBn" || \'|\' || "titleBn"'],
   ["StudyPlanDay", '"day" || \'|\' || "date"'],
+  // Composite unique (subjectId, sourceKey); parity with seedQuestions'
+  // sourceKey(subjectId, path, question).
+  ["Question", '"subjectId"::text || \'|\' || COALESCE("path", \'\') || \'|\' || "question"'],
 ];
 
 /**
