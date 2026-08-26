@@ -66,9 +66,8 @@ function Highlight({ text, query }: { text: string; query: string }) {
 
 export default function QuestionBankTab() {
   const toast = useToastSafe();
-  const { questionBankFilters, setQuestionBankFilters } = useDashboardStore(
-    (s) => s.questionBankFilters && { questionBankFilters: s.questionBankFilters, setQuestionBankFilters: s.setQuestionBankFilters },
-  );
+  const questionBankFilters = useDashboardStore((s) => s.questionBankFilters);
+  const setQuestionBankFilters = useDashboardStore((s) => s.setQuestionBankFilters);
   const query = questionBankFilters.query;
   const activeCategory = questionBankFilters.category || "বাংলা ভাষা ও সাহিত্য";
   const [categories, setCategories] = useState(QUESTION_BANK_CATEGORIES);

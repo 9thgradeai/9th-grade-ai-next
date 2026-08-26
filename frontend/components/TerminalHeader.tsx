@@ -133,10 +133,9 @@ export default function TerminalHeader() {
               >
                 {link.label}
                 {isLinkActive(link.href) && (
-                  <motion.span
-                    layoutId="nav-underline"
+                  <span
                     className="absolute -bottom-0.5 left-0 right-0 h-px bg-gradient-to-r from-transparent via-emerald-400 to-transparent"
-                    transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                    aria-hidden="true"
                   />
                 )}
               </Link>

@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Space_Grotesk, JetBrains_Mono, Hind_Siliguri } from "next/font/google";
 import { MotionConfig } from "framer-motion";
 import { AuthProvider } from "@/lib/auth-ctx";
-import { DashboardProvider } from "@/lib/store-ctx/dashboard";
 import { ThemeProvider } from "@/lib/theme-ctx";
 import { ToastProvider } from "@/lib/toast-ctx";
 import { LanguageProvider } from "@/lib/lang-ctx";
@@ -114,13 +113,9 @@ export default function RootLayout({
         <MotionConfig reducedMotion="user">
           <ToastProvider>
             <LanguageProvider>
-              <AuthProvider>
-                <DashboardProvider>
-                  <ThemeProvider>
-                    {children}
-                  </ThemeProvider>
-                </DashboardProvider>
-              </AuthProvider>
+                <AuthProvider>
+                  <ThemeProvider>{children}</ThemeProvider>
+                </AuthProvider>
             </LanguageProvider>
             <Toaster />
           </ToastProvider>

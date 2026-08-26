@@ -23,7 +23,6 @@ import type { Client } from "../../frontend/lib/types";
 import {
   QUESTION_BANK_CATEGORIES,
   ARCHIVE_CATEGORIES,
-  FLASH_NEWS,
 } from "../../frontend/lib/data";
 import {
   FLASHCARD_DECKS,

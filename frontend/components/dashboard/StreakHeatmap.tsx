@@ -6,9 +6,14 @@ type StreakHeatmapProps = {
 export default function StreakHeatmap({ activeDays, labels }: StreakHeatmapProps) {
   const days = activeDays.slice(-7);
   const dayLabels = labels.slice(-7);
+  const activeCount = days.filter(Boolean).length;
 
   return (
-    <div className="flex items-center gap-1.5" role="img" aria-label="গত ৭ দিনের অধ্যয়ন">
+    <div
+      className="flex items-center gap-1.5"
+      role="img"
+      aria-label={`গত ৭ দিনের মধ্যে ${activeCount} দিন অধ্যয়ন করেছেন`}
+    >
       {days.map((active, i) => (
         <div key={i} className="flex flex-col items-center gap-1">
           <span

@@ -3,6 +3,7 @@ type SparklineProps = {
   className?: string;
   strokeClassName?: string;
   fillId?: string;
+  ariaLabel?: string;
 };
 
 export default function Sparkline({
@@ -10,6 +11,7 @@ export default function Sparkline({
   className = "",
   strokeClassName = "text-emerald-400",
   fillId,
+  ariaLabel,
 }: SparklineProps) {
   if (values.length < 2) return null;
 
@@ -29,12 +31,17 @@ export default function Sparkline({
   const line = points.map(([x, y]) => `${x},${y}`).join(" ");
   const area = `0,${h} ${line} ${w},${h}`;
 
+  const trend = values[values.length - 1] >= values[0] ? "বেড়েছে" : "কমেছে";
+  const descriptiveLabel =
+    ariaLabel ?? `স্কোর ট্রেন্ড — শেষ ${values.length}টি মান, ${trend}`;
+
   return (
     <svg
       viewBox={`0 0 ${w} ${h}`}
       preserveAspectRatio="none"
       className={`w-full h-7 ${strokeClassName} ${className}`}
-      aria-hidden="true"
+      role="img"
+      aria-label={descriptiveLabel}
     >
       {fillId ? (
         <>

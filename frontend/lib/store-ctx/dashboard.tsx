@@ -1,66 +1,23 @@
 "use client";
 
-import {
-  createContext,
-  useContext,
-  useSyncExternalStore,
-  useMemo,
-} from "react";
+import { useCallback, useRef, useSyncExternalStore } from "react";
 import { TABS, type TabId } from "@/lib/data";
-import type { Server } from "@/lib/types";
-import { AppError } from "@/lib/errors";
 
 // ── State ──────────────────────────────────────────────────
+// Only durable, cross-tab UI state lives here. All attempt-derived
+// metrics (points, streak, accuracy, etc.) are server-authoritative and
+// fetched per-tab via the API — never mirrored into this store.
 
 type DashboardState = {
   activeTab: TabId;
-  bookmarkedQuestions: string[];
-  mockTestScores: number[];
-  totalPoints: number;
-  streakCount: number;
-  selectedTopics: string[];
-  studyPlanProgress: Record<string, boolean>;
-  flashcardsReviewed: number;
-  aiQuestionsAsked: number;
-  lastSyncedAt: string | null;
   // Tab-scoped UI state that must survive tab switches/remounts.
   questionBankFilters: { query: string; category: string };
 };
-
-// ── Actions ────────────────────────────────────────────────
-
-type DashboardActions = {
-  setActiveTab: (tab: TabId) => void;
-  toggleBookmark: (questionId: string) => void;
-  addMockTestScore: (score: number) => void;
-  setTotalPoints: (points: number) => void;
-  incrementStreak: () => void;
-  resetStreak: () => void;
-  toggleTopic: (topic: string) => void;
-  clearTopics: () => void;
-  toggleStudyTask: (taskId: string) => void;
-  incrementFlashcardsReviewed: () => void;
-  incrementAIQuestionsAsked: () => void;
-  setQuestionBankFilters: (filters: Partial<{ query: string; category: string }>) => void;
-  resetStore: () => void;
-  syncWithServer: () => Promise<void>;
-};
-
-// ── Persistence ────────────────────────────────────────────
 
 const STORAGE_KEY = "9th_grade_ai_store_v2";
 
 const defaultState: DashboardState = {
   activeTab: "home",
-  bookmarkedQuestions: [],
-  mockTestScores: [],
-  totalPoints: 0,
-  streakCount: 0,
-  selectedTopics: [],
-  studyPlanProgress: {},
-  flashcardsReviewed: 0,
-  aiQuestionsAsked: 0,
-  lastSyncedAt: null,
   questionBankFilters: { query: "", category: "" },
 };
 
@@ -69,25 +26,15 @@ function loadState(): DashboardState {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return defaultState;
-    const parsed = JSON.parse(raw);
-    const state = { ...defaultState, ...parsed };
-    // Persisted tab may no longer exist (removed feature); never render a
-    // tab whose component isn't registered.
-    if (!TABS.some((t) => t.id === state.activeTab)) {
-      state.activeTab = defaultState.activeTab;
-    }
-    return state;
+    const parsed = JSON.parse(raw) as Partial<DashboardState>;
+    const activeTab =
+      parsed.activeTab && TABS.some((t) => t.id === parsed.activeTab)
+        ? (parsed.activeTab as TabId)
+        : "home";
+    const questionBankFilters = parsed.questionBankFilters ?? defaultState.questionBankFilters;
+    return { activeTab, questionBankFilters };
   } catch {
     return defaultState;
-  }
-}
-
-function saveState(state: DashboardState) {
-  if (typeof window === "undefined") return;
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  } catch {
-    // storage full or unavailable
   }
 }
 
@@ -104,155 +51,87 @@ function getSnapshot(): DashboardState {
   }
   return storeState;
 }
-
 function getServerSnapshot(): DashboardState {
   return defaultState;
 }
-
 function subscribe(cb: () => void) {
   listeners.add(cb);
   return () => {
     listeners.delete(cb);
   };
 }
-
+function saveState(state: DashboardState) {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch {
+    // storage full or unavailable
+  }
+}
 function setStore(updater: (prev: DashboardState) => DashboardState) {
   storeState = updater(storeState);
   saveState(storeState);
   listeners.forEach((l) => l());
 }
 
-// ── Actions ────────────────────────────────────────────────
+// ── Actions (module-stable references) ─────────────────────
 
-const actions: DashboardActions = {
-  setActiveTab: (tab) => setStore((prev) => ({ ...prev, activeTab: tab })),
-  toggleBookmark: (questionId) =>
-    setStore((prev) => {
-      const exists = prev.bookmarkedQuestions.includes(questionId);
-      return {
-        ...prev,
-        bookmarkedQuestions: exists
-          ? prev.bookmarkedQuestions.filter((id) => id !== questionId)
-          : [...prev.bookmarkedQuestions, questionId],
-      };
-    }),
-  addMockTestScore: (score) =>
-    setStore((prev) => ({
-      ...prev,
-      mockTestScores: [...prev.mockTestScores, score],
-      totalPoints: prev.totalPoints + score,
-    })),
-  setTotalPoints: (points) =>
-    setStore((prev) => ({ ...prev, totalPoints: points })),
-  incrementStreak: () =>
-    setStore((prev) => ({ ...prev, streakCount: prev.streakCount + 1 })),
-  resetStreak: () => setStore((prev) => ({ ...prev, streakCount: 0 })),
-  toggleTopic: (topic) =>
-    setStore((prev) => ({
-      ...prev,
-      selectedTopics: prev.selectedTopics.includes(topic)
-        ? prev.selectedTopics.filter((t) => t !== topic)
-        : [...prev.selectedTopics, topic],
-    })),
-  clearTopics: () => setStore((prev) => ({ ...prev, selectedTopics: [] })),
-  toggleStudyTask: (taskId) =>
-    setStore((prev) => ({
-      ...prev,
-      studyPlanProgress: {
-        ...prev.studyPlanProgress,
-        [taskId]: !prev.studyPlanProgress[taskId],
-      },
-    })),
-  incrementFlashcardsReviewed: () =>
-    setStore((prev) => ({
-      ...prev,
-      flashcardsReviewed: prev.flashcardsReviewed + 1,
-    })),
-  incrementAIQuestionsAsked: () =>
-    setStore((prev) => ({
-      ...prev,
-      aiQuestionsAsked: prev.aiQuestionsAsked + 1,
-    })),
-  setQuestionBankFilters: (filters) =>
-    setStore((prev) => ({
-      ...prev,
-      questionBankFilters: { ...prev.questionBankFilters, ...filters },
-    })),
-  resetStore: () => {
-    storeState = { ...defaultState, lastSyncedAt: null };
-    saveState(storeState);
-    listeners.forEach((l) => l());
-  },
-  syncWithServer: async () => {
-    try {
-      // Server-authoritative numbers (points, rank, attempt-derived streak)
-      // live on /api/dashboard-stats; /api/progress is PATCH-only.
-      const res = await fetch("/api/dashboard-stats", {
-        method: "GET",
-        credentials: "include",
-        headers: { "x-request-id": crypto.randomUUID() },
-        cache: "no-store",
-      });
-
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        const error = new AppError(
-          typeof body.error === "string" ? body.error : "Failed to sync progress.",
-          body.code ?? `HTTP_${res.status}`,
-          res.status,
-        );
-        throw error;
-      }
-
-      const data = (await res.json()) as { stats: Server.DashboardStatsDTO };
-      const stats = data.stats;
-
-      setStore((prev) => ({
-        ...prev,
-        totalPoints: stats.points,
-        streakCount: stats.streak,
-        lastSyncedAt: new Date().toISOString(),
-      }));
-    } catch (error) {
-      console.error("[DashboardStore] syncWithServer failed:", error);
-    }
-  },
-};
-
-// ── Context ────────────────────────────────────────────────
-
-type DashboardContextType = DashboardState & DashboardActions;
-
-const DashboardContext = createContext<DashboardContextType | undefined>(undefined);
-
-export function DashboardProvider({ children }: { children: React.ReactNode }) {
-  const state = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
-  const syncWithServer = actions.syncWithServer;
-
-  const value = useMemo<DashboardContextType>(
-    () => ({ ...state, ...actions, syncWithServer }),
-    [state, syncWithServer],
-  );
-
-  return (
-    <DashboardContext.Provider value={value}>
-      {children}
-    </DashboardContext.Provider>
-  );
+function setActiveTab(tab: TabId) {
+  setStore((prev) => (prev.activeTab === tab ? prev : { ...prev, activeTab: tab }));
+}
+function setQuestionBankFilters(filters: Partial<{ query: string; category: string }>) {
+  setStore((prev) => ({
+    ...prev,
+    questionBankFilters: { ...prev.questionBankFilters, ...filters },
+  }));
+}
+function resetStore() {
+  storeState = defaultState;
+  saveState(storeState);
+  listeners.forEach((l) => l());
 }
 
-// ── Hook ───────────────────────────────────────────────────
+const actions = { setActiveTab, setQuestionBankFilters, resetStore };
+export type DashboardActions = typeof actions;
 
-export function useDashboardStore(): DashboardContextType;
+// ── Hook ───────────────────────────────────────────────────
+// Per-selector isolation: components only re-render when the slice they
+// select actually changes. The selector receives state + stable actions.
+
+function useDashboardStoreWithSelector<T>(
+  selector: (value: DashboardState & DashboardActions) => T,
+  isEqual?: (a: T, b: T) => boolean,
+): T {
+  const lastRef = useRef<{ snap: DashboardState; value: T } | null>(null);
+  const getSelection = useCallback(() => {
+    const snap = getSnapshot();
+    if (lastRef.current && lastRef.current.snap === snap) return lastRef.current.value;
+    const value = selector({ ...snap, ...actions });
+    if (lastRef.current && isEqual?.(lastRef.current.value, value)) {
+      lastRef.current = { snap, value: lastRef.current.value };
+      return lastRef.current.value;
+    }
+    lastRef.current = { snap, value };
+    return value;
+  }, [selector, isEqual]);
+  const getServerSelection = useCallback(
+    () => selector({ ...getServerSnapshot(), ...actions }),
+    [selector],
+  );
+  return useSyncExternalStore(subscribe, getSelection, getServerSelection);
+}
+
+const defaultSelector = (v: DashboardState & DashboardActions) => v;
+
+export function useDashboardStore(): DashboardState & DashboardActions;
 export function useDashboardStore<T>(
-  selector: (state: DashboardContextType) => T,
+  selector: (value: DashboardState & DashboardActions) => T,
+  isEqual?: (a: T, b: T) => boolean,
 ): T;
 export function useDashboardStore<T>(
-  selector?: (state: DashboardContextType) => T,
+  selector?: (value: DashboardState & DashboardActions) => T,
+  isEqual?: ((a: T, b: T) => boolean) | undefined,
 ) {
-  const ctx = useContext(DashboardContext);
-  if (ctx === undefined) {
-    throw new Error("useDashboardStore must be used within a DashboardProvider");
-  }
-  return selector ? selector(ctx) : ctx;
+  const sel = (selector ?? defaultSelector) as (value: DashboardState & DashboardActions) => T;
+  return useDashboardStoreWithSelector<T>(sel, isEqual);
 }

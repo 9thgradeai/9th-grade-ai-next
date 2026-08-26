@@ -125,7 +125,7 @@ export default function SettingsTab() {
   const shouldReduceMotion = useReducedMotion();
   const { user, updateProfile, logout, tokenExpiry, refreshToken } = useAuth();
   const { theme, toggleTheme } = useTheme();
-  const { lastSyncedAt, resetStore } = useDashboardStore();
+  const { resetStore } = useDashboardStore();
 
   // ── Profile edit ──
   const [editingName, setEditingName] = useState(false);
@@ -552,9 +552,6 @@ export default function SettingsTab() {
             Clear local data
           </button>
         </div>
-        <p className="mt-3 text-[11px] text-zinc-500 font-mono">
-          Last synced with server: {lastSyncedAt ? new Date(lastSyncedAt).toLocaleString("bn-BD") : "never"}
-        </p>
       </SectionCard>
 
       {/* Danger zone */}
@@ -627,7 +624,12 @@ export default function SettingsTab() {
             aria-modal="true"
             aria-label="Confirm account deletion"
           >
-            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setConfirmDelete(false)} />
+            <button
+              type="button"
+              aria-label="বাতিল করুন"
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              onClick={() => setConfirmDelete(false)}
+            />
             <motion.div
               ref={deleteDialogRef}
               tabIndex={-1}

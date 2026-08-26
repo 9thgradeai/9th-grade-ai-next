@@ -61,6 +61,52 @@ function formatTime(seconds: number): string {
   return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
 }
 
+// Isolated timer leaf: the 1-second tick only re-renders this node, not the
+// whole exam surface (which can hold many questions). The expiry callback is
+// held in a ref so selecting an answer doesn't reset the interval.
+function ExamTimer({
+  startsAt,
+  durationSec,
+  onExpire,
+}: {
+  startsAt: number;
+  durationSec: number;
+  onExpire: () => void;
+}) {
+  const [remaining, setRemaining] = useState(() =>
+    Math.max(0, durationSec - Math.floor((Date.now() - startsAt) / 1000)),
+  );
+  const onExpireRef = useRef(onExpire);
+  useEffect(() => {
+    onExpireRef.current = onExpire;
+  }, [onExpire]);
+
+  useEffect(() => {
+    if (durationSec <= 0) return;
+    const tick = () => {
+      const rem = Math.max(0, durationSec - Math.floor((Date.now() - startsAt) / 1000));
+      setRemaining(rem);
+      if (rem <= 0) onExpireRef.current();
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [startsAt, durationSec]);
+
+  const timeLow = remaining > 0 && remaining <= 60;
+  return (
+    <>
+      <Timer className={`w-4 h-4 ${timeLow ? "text-red-400 animate-pulse motion-reduce:animate-none" : "text-emerald-400"}`} />
+      <span className={`font-mono text-lg font-bold ${timeLow ? "text-red-400" : "text-emerald-400"}`}>
+        {formatTime(remaining)}
+      </span>
+      <span className="text-[10px] text-zinc-500 font-mono hidden sm:inline">
+        {durationSec > 0 ? "" : "সময় সীমাহীন"}
+      </span>
+    </>
+  );
+}
+
 function performanceLabel(percentage: number): { label: string; tone: string } {
   if (percentage >= 80) return { label: "চমৎকার", tone: "text-amber-400" };
   if (percentage >= 60) return { label: "ভালো", tone: "text-emerald-400" };
@@ -82,7 +128,7 @@ export default function CustomExamTab() {
   // ── Exam state ──
   const [exam, setExam] = useState<PersistedExam | null>(null);
   const [answers, setAnswers] = useState<Record<number, string>>({});
-  const [timeRemaining, setTimeRemaining] = useState(0);
+
   const [phase, setPhase] = useState<ExamPhase>("config");
   const [showUnansweredConfirm, setShowUnansweredConfirm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -141,8 +187,7 @@ export default function CustomExamTab() {
         setExam(saved);
         setAnswers(saved.answers ?? {});
         const elapsed = Math.floor((Date.now() - saved.startsAt) / 1000);
-        const remaining = saved.durationSec > 0 ? Math.max(0, saved.durationSec - elapsed) : 0;
-        setTimeRemaining(remaining);
+        void elapsed;
         setPhase("exam");
       } catch {
         /* corrupt storage — ignore */
@@ -238,7 +283,6 @@ export default function CustomExamTab() {
       }
       setExam(persisted);
       setAnswers({});
-      setTimeRemaining(built.durationSec);
       setShowConfirm(false);
       setPhase("exam");
     } catch {
@@ -311,21 +355,6 @@ export default function CustomExamTab() {
     setShowUnansweredConfirm(false);
     if (exam) void submit(exam.questions, answers);
   };
-
-  // Countdown — wall-clock based so it survives refreshes.
-  useEffect(() => {
-    if (phase !== "exam" || !exam || exam.durationSec <= 0) return;
-    const interval = setInterval(() => {
-      const elapsed = Math.floor((Date.now() - exam.startsAt) / 1000);
-      const remaining = Math.max(0, exam.durationSec - elapsed);
-      setTimeRemaining(remaining);
-      if (remaining <= 0) {
-        clearInterval(interval);
-        void submit(exam.questions, answers);
-      }
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [phase, exam, answers]);
 
   const resetAll = () => {
     setPhase("config");
@@ -598,7 +627,6 @@ export default function CustomExamTab() {
 
   // ═══════════════ EXAM PHASE ═══════════════
   if (phase === "exam" && exam) {
-    const timeLow = timeRemaining > 0 && timeRemaining <= 60;
     const progressPct = totalQuestions > 0 ? (answeredCount / totalQuestions) * 100 : 0;
 
     return (
@@ -608,13 +636,13 @@ export default function CustomExamTab() {
           <div className="glass-card rounded-2xl border border-emerald-500/30 px-4 py-3">
             <div className="flex items-center justify-between gap-3 flex-wrap">
               <div className="flex items-center gap-2">
-                <Timer className={`w-4 h-4 ${timeLow ? "text-red-400 animate-pulse" : "text-emerald-400"}`} />
-                <span className={`font-mono text-lg font-bold ${timeLow ? "text-red-400" : "text-emerald-400"}`}>
-                  {formatTime(timeRemaining)}
-                </span>
-                <span className="text-[10px] text-zinc-500 font-mono hidden sm:inline">
-                  {exam.durationSec > 0 ? "" : "সময় সীমাহীন"}
-                </span>
+                <ExamTimer
+                  startsAt={exam.startsAt}
+                  durationSec={exam.durationSec}
+                  onExpire={() => {
+                    void submit(exam.questions, answers);
+                  }}
+                />
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-xs text-zinc-400 font-mono">

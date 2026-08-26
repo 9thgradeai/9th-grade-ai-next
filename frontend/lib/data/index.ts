@@ -14,15 +14,6 @@ export const TABS: { id: TabId; label: string; short: string; bengali: string; i
   { id: "settings", label: "SETTINGS", short: "SET", bengali: "সেটিংস", icon: "⚙️" },
 ];
 
-// ── Flash news feed (HOME + seed) ────────────────────────
-export const FLASH_NEWS = [
-  { tag: "EXAM", time: "2h", text: "BCS 51st Preliminary exam date announced: November 15, 2026" },
-  { tag: "SYLLABUS", time: "5h", text: "New syllabus update for 46th BCS Written — English Paper revised" },
-  { tag: "AI", time: "1d", text: "9th-Grade AI now supports voice-based doubt solving in Bengali" },
-  { tag: "MOCK", time: "1d", text: "Adaptive Mock Test v2.0 released with real exam timer interface" },
-  { tag: "STREAK", time: "2d", text: "Top weekly streak: 14 days — keep it up, farhan!" },
-];
-
 // ── Archive categories (seed) ─────────────────────────────
 export const ARCHIVE_CATEGORIES = [
   {

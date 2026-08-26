@@ -1,7 +1,6 @@
 /* src/components/dashboard/SideNav.tsx */
 "use client";
 
-import { motion } from "framer-motion";
 import { TABS, type TabId } from "@/lib/data";
 import { TAB_ICONS } from "@/lib/exam-ui";
 import type { ComponentType } from "react";
@@ -54,17 +53,15 @@ export default function SideNav({ activeTab, onChange }: SideNavProps) {
               aria-current={isActive ? "page" : undefined}
             >
               {isActive && (
-                <motion.span
-                  layoutId="side-nav-active-pill"
+                <span
                   className="absolute inset-0 rounded-xl bg-gradient-to-r from-emerald-500/15 to-cyan-500/10 border border-emerald-500/25"
-                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  aria-hidden="true"
                 />
               )}
               {isActive && (
-                <motion.span
-                  layoutId="side-nav-active"
+                <span
                   className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-6 bg-emerald-400 rounded-r-full shadow-[0_0_12px_rgba(16,185,129,0.9)]"
-                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  aria-hidden="true"
                 />
               )}
               <Icon className="relative z-10 w-5 h-5" strokeWidth={isActive ? 2.2 : 1.8} />

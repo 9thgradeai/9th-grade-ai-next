@@ -52,10 +52,9 @@ export default function BottomNav({ activeTab, onChange }: BottomNavProps) {
                 aria-current={isActive(tab.id) ? "page" : undefined}
               >
                 {isActive(tab.id) && (
-                  <motion.span
-                    layoutId="bottom-nav-active"
+                  <span
                     className="absolute top-0 w-10 h-0.5 bg-emerald-500 rounded-full"
-                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                    aria-hidden="true"
                   />
                 )}
                 <motion.div

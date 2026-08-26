@@ -227,17 +227,21 @@ export async function getLeaderboard(
       orderBy: { points: "desc" },
       take: limit,
       select: {
+        userId: true,
         points: true,
-        streak: true,
         user: { select: { name: true, handle: true } },
       },
     });
+
+    // Streak is server-authoritative (derived from attempt days), never stored,
+    // so it can't be inflated client-side. Computed live per entry.
+    const streakResults = await Promise.all(rows.map((r) => computeStreak(r.userId)));
 
     const entries: LeaderboardEntryDTO[] = rows.map((r, i) => ({
       rank: i + 1,
       name: r.user?.name || r.user?.handle || "অজানা",
       points: r.points,
-      streak: r.streak,
+      streak: streakResults[i],
     }));
 
     let me: { rank: number; points: number } | null = null;

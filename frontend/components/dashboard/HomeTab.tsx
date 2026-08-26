@@ -8,7 +8,6 @@ import {
   Target,
   ArrowRight,
   Sparkles,
-  Zap,
   Trophy,
   ClipboardList,
   Flag,
@@ -26,6 +25,8 @@ import KpiTile, { type KpiAccent } from "@/components/ui/KpiTile";
 import EmptyState from "@/components/ui/EmptyState";
 import Sparkline from "@/components/ui/Sparkline";
 import StreakHeatmap from "./StreakHeatmap";
+import NextBestAction from "./NextBestAction";
+import { deriveNextAction } from "@/lib/dashboard/recommend";
 
 const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const WEEKDAY_SHORT_BN = ["শনি", "রবি", "সোম", "মঙ্গল", "বুধ", "বৃহ", "শুক্র"];
@@ -115,6 +116,43 @@ function useCountdown(target: string) {
   return remaining;
 }
 
+// Isolated leaf: the 1-second tick only re-renders this tiny node, not the
+// whole HomeTab.
+function CountdownClock({ target }: { target: string }) {
+  const remaining = useCountdown(target);
+  return (
+    <span className="text-emerald-400 font-bold text-lg tracking-widest tabular-nums">
+      {remaining.d}:{remaining.h}:{remaining.m}:{remaining.s}
+    </span>
+  );
+}
+
+// Ring driven by the same isolated countdown (no Date.now() during render).
+function CountdownRingLive({ target }: { target: string }) {
+  const remaining = useCountdown(target);
+  return <CountdownRing daysLeft={Number(remaining.d) || 0} />;
+}
+
+// Days until an exam. Mirrors useCountdown's effect-based pattern so it is not
+// evaluated during render (Date.now() is impure).
+function useExamDaysLeft(target: string | null): number | null {
+  const [days, setDays] = useState<number | null>(null);
+  useEffect(() => {
+    if (!target) {
+      queueMicrotask(() => setDays(null));
+      return;
+    }
+    const tick = () => {
+      const diff = new Date(target).getTime() - Date.now();
+      setDays(Math.max(0, Math.ceil(diff / 86400000)));
+    };
+    queueMicrotask(tick);
+    const id = setInterval(tick, 60000);
+    return () => clearInterval(id);
+  }, [target]);
+  return days;
+}
+
 const KPI_KEYS: {
   key: keyof Server.DashboardStatsDTO;
   label: string;
@@ -142,6 +180,7 @@ export default function HomeTab() {
   const [tasks, setTasks] = useState<Server.StudyTaskDTO[]>([]);
   const [results, setResults] = useState<Server.MockTestResultDTO[]>([]);
   const [news, setNews] = useState<Server.FlashNewsDTO[]>([]);
+  const [pendingMistakes, setPendingMistakes] = useState(0);
   const [loading, setLoading] = useState(true);
   const [loadFailed, setLoadFailed] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
@@ -150,13 +189,14 @@ export default function HomeTab() {
     let cancelled = false;
     void (async () => {
       try {
-        const [s, r, e, t, m, n] = await Promise.allSettled([
+        const [s, r, e, t, m, n, w] = await Promise.allSettled([
           api.dashboardStats(),
           api.subjectReports(),
           api.examSchedule(),
           api.studyPlan(),
           api.mockTestResults(),
           api.news(),
+          api.wrongAnswers({ limit: 1 }),
         ]);
         if (cancelled) return;
         if (s.status === "fulfilled") setStats(s.value);
@@ -170,8 +210,9 @@ export default function HomeTab() {
         if (t.status === "fulfilled") setTasks(t.value);
         if (m.status === "fulfilled") setResults(m.value);
         if (n.status === "fulfilled") setNews(n.value);
+        if (w.status === "fulfilled") setPendingMistakes(w.value.total);
         // Surface a total outage instead of silently rendering zeros.
-        if ([s, r, e, t, m, n].every((p) => p.status === "rejected")) {
+        if ([s, r, e, t, m, n, w].every((p) => p.status === "rejected")) {
           setLoadFailed(true);
         }
         setLoading(false);
@@ -208,8 +249,6 @@ export default function HomeTab() {
     setReloadKey((k) => k + 1);
   };
 
-  const countdown = useCountdown(nextExam?.date ?? "");
-
   const weakest = useMemo(
     () =>
       [...reports]
@@ -224,17 +263,31 @@ export default function HomeTab() {
     return tasks.filter((t) => t.day === today);
   }, [tasks]);
 
-  const activityDays = useMemo(() => {
-    const done = new Set(results.map((r) => new Date(r.createdAt).toDateString()));
-    const out: boolean[] = [];
-    const today = new Date();
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date(today);
-      d.setDate(today.getDate() - i);
-      out.push(done.has(d.toDateString()));
-    }
-    return out;
-  }, [results]);
+  const studiedToday = (stats?.activity?.[stats.activity.length - 1]?.answered ?? 0) > 0;
+  const examDaysLeft = useExamDaysLeft(nextExam?.date ?? null);
+
+  const nextAction = useMemo(
+    () =>
+      deriveNextAction({
+        weakest: weakest[0] ?? null,
+        examTitle: nextExam ? t(lang, nextExam.titleBn, nextExam.titleEn) : null,
+        examDaysLeft,
+        streak: stats?.streak ?? 0,
+        studiedToday,
+        pendingMistakes,
+      }),
+    [weakest, nextExam, examDaysLeft, stats?.streak, studiedToday, pendingMistakes, lang],
+  );
+
+  // 7-day activity reflects ALL attempts (matches the server-authoritative
+  // streak), not just mock tests — so the heatmap and streak number agree.
+  const activityDays = useMemo(
+    () =>
+      (stats?.activity ?? Array.from({ length: 7 }, () => ({ answered: 0 }))).map(
+        (a) => (a?.answered ?? 0) > 0,
+      ),
+    [stats],
+  );
 
   const mockTrend = useMemo(
     () =>
@@ -269,7 +322,7 @@ export default function HomeTab() {
       variants={STAGGER}
       initial="hidden"
       animate="show"
-      className="space-y-6"
+      className="space-y-6 pb-24 sm:pb-6"
     >
       {/* Header */}
       <motion.div
@@ -311,6 +364,22 @@ export default function HomeTab() {
         </div>
       </motion.div>
 
+      {/* Next best action — the single most useful thing to do right now */}
+      <NextBestAction action={nextAction} />
+
+      {/* Sticky mobile primary CTA — one tap to the next best action on small
+          screens, where the in-flow hero is far down the scroll. */}
+      <div className="fixed inset-x-0 bottom-0 z-30 sm:hidden bg-gradient-to-t from-zinc-950 via-zinc-950/95 to-transparent p-3">
+        <button
+          type="button"
+          onClick={() => setActiveTab(nextAction.tab)}
+          className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-zinc-950 shadow-lg shadow-emerald-500/20"
+        >
+          {nextAction.cta}
+          <ArrowRight className="h-4 w-4" />
+        </button>
+      </div>
+
       {/* Countdown hero — real exam */}
       <motion.div
         variants={STAGGER_ITEM}
@@ -347,12 +416,10 @@ export default function HomeTab() {
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <CountdownRing daysLeft={Number(countdown.d) || 0} />
+              <CountdownRingLive target={nextExam.date} />
               <div className="flex flex-col font-mono">
                 <span className="text-xs text-zinc-400 uppercase tracking-wider">Countdown</span>
-                <span className="text-emerald-400 font-bold text-lg tracking-widest tabular-nums">
-                  {countdown.d}:{countdown.h}:{countdown.m}:{countdown.s}
-                </span>
+                <CountdownClock target={nextExam.date} />
               </div>
             </div>
           </div>
@@ -562,7 +629,11 @@ export default function HomeTab() {
                 </h3>
                 {mockTrend.length > 1 && (
                   <div className="mt-1 w-28 text-emerald-400">
-                    <Sparkline values={mockTrend} fillId="mock-trend" />
+                    <Sparkline
+                      values={mockTrend}
+                      fillId="mock-trend"
+                      ariaLabel="সাম্প্রতিক মক পরীক্ষার স্কোর ট্রেন্ড"
+                    />
                   </div>
                 )}
               </div>
@@ -671,24 +742,8 @@ export default function HomeTab() {
         </div>
       )}
 
-      {/* AI suggestion strip — real weakest subject */}
-      {weakest.length > 0 && (
-      <motion.div
-        variants={STAGGER_ITEM}
-        className="relative flex items-start gap-3 p-4 bg-gradient-to-r from-emerald-500/[0.08] to-cyan-500/[0.05] border border-emerald-500/20 rounded-2xl overflow-hidden"
-        >
-          <div className="absolute inset-y-0 left-0 w-0.5 bg-gradient-to-b from-emerald-400 to-cyan-400" aria-hidden="true" />
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500/20 to-cyan-500/10 border border-emerald-500/25 flex items-center justify-center flex-shrink-0">
-            <Zap className="w-4.5 h-4.5 text-emerald-400" aria-hidden="true" />
-          </div>
-          <p className="text-sm text-zinc-300 leading-relaxed">
-            <span className="text-emerald-400 font-semibold font-mono">9th-Grade AI:</span> সবচেয়ে দুর্বল বিষয়{" "}
-            <span className="text-white font-mono">{weakest[0].name}</span> — এখানে{" "}
-            <span className="text-white font-mono">{weakest[0].attempted}টি</span> প্রশ্নের
-            সঠিকতা {weakest[0].score}%।
-          </p>
-        </motion.div>
-      )}
+      {/* AI suggestion strip removed — superseded by the NextBestAction hero,
+          which is also driven by the real weakest subject but is actionable. */}
     </motion.div>
   );
 }

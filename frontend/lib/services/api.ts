@@ -153,6 +153,39 @@ async function request<T>(
   throw lastError ?? new ApiError("Request failed after retries.", "REQUEST_FAILED", 500);
 }
 
+// ── Read cache (stale-while-revalidate) ─────────────────────
+// GETs are cached in-memory for a short TTL. Within the TTL the cached value is
+// returned instantly (no refetch on every dashboard remount / tab switch); past
+// it we refetch and update the cache. On a network failure we fall back to the
+// last cached value instead of throwing, so the dashboard still renders offline
+// or during blips. Mutations never touch this cache.
+
+const CACHE_TTL_MS = 15_000;
+const cache = new Map<string, { ts: number; data: unknown }>();
+
+async function cachedGet<T>(
+  url: string,
+  options: RequestOptions = {},
+): Promise<T> {
+  const cached = cache.get(url);
+  const fresh = cached && Date.now() - cached.ts < CACHE_TTL_MS;
+
+  if (fresh) {
+    return cached.data as T;
+  }
+
+  try {
+    const data = await request<T>(url, options);
+    cache.set(url, { ts: Date.now(), data });
+    return data;
+  } catch (error) {
+    if (cached) {
+      return cached.data as T;
+    }
+    throw error;
+  }
+}
+
 /** JSON mutation helper — sets Content-Type, serializes the body, never retried. */
 function mutate<T>(
   url: string,
@@ -197,7 +230,7 @@ export const api = {
       }
     }
     const suffix = qs.toString() ? `?${qs.toString()}` : "";
-    return request<{ questions: Server.QuestionDTO[] }>(`/api/questions${suffix}`).then((d) => d.questions);
+    return cachedGet<{ questions: Server.QuestionDTO[] }>(`/api/questions${suffix}`).then((d) => d.questions);
   },
 
   /** Wrong-Answer Notebook (ভুলের নোটবুক): questions whose latest attempt was wrong. */
@@ -211,7 +244,7 @@ export const api = {
     if (params?.page) qs.set("page", String(params.page));
     if (params?.limit) qs.set("limit", String(params.limit));
     const suffix = qs.toString() ? `?${qs.toString()}` : "";
-    return request<{
+    return cachedGet<{
       questions: Server.QuestionDTO[];
       total: number;
       page: number;
@@ -221,7 +254,7 @@ export const api = {
 
   /** Weak topics (lowest accuracy) for the signed-in user. */
   weakTopics: (): Promise<Server.WeakTopicDTO[]> =>
-    request<{ topics: Server.WeakTopicDTO[] }>("/api/weak-topics").then((d) => d.topics),
+    cachedGet<{ topics: Server.WeakTopicDTO[] }>("/api/weak-topics").then((d) => d.topics),
 
   /** Points leaderboard; `me` is null for users with no progress row. */
   leaderboard: (limit?: number): Promise<{
@@ -229,7 +262,7 @@ export const api = {
     me: { rank: number; points: number } | null;
   }> => {
     const suffix = limit ? `?limit=${limit}` : "";
-    return request<{
+    return cachedGet<{
       entries: Server.LeaderboardEntryDTO[];
       me: { rank: number; points: number } | null;
     }>(`/api/leaderboard${suffix}`);
@@ -238,17 +271,17 @@ export const api = {
   /** Recent completed daily quizzes for the signed-in user. */
   dailyQuizHistory: (limit?: number): Promise<Server.DailyQuizHistoryItemDTO[]> => {
     const suffix = limit ? `?limit=${limit}` : "";
-    return request<{ history: Server.DailyQuizHistoryItemDTO[] }>(
+    return cachedGet<{ history: Server.DailyQuizHistoryItemDTO[] }>(
       `/api/daily-quiz/history${suffix}`,
     ).then((d) => d.history);
   },
 
   questionBankCategories: (): Promise<Server.QuestionBankCategoryDTO[]> =>
-    request<{ categories: Server.QuestionBankCategoryDTO[] }>("/api/question-bank/categories").then((d) => d.categories),
+    cachedGet<{ categories: Server.QuestionBankCategoryDTO[] }>("/api/question-bank/categories").then((d) => d.categories),
 
   flashcards: (subject?: string): Promise<Server.FlashcardDTO[]> => {
     const qs = subject ? `?subject=${encodeURIComponent(subject)}` : "";
-    return request<{ flashcards: Server.FlashcardDTO[] }>(`/api/flashcards${qs}`).then((d) => d.flashcards);
+    return cachedGet<{ flashcards: Server.FlashcardDTO[] }>(`/api/flashcards${qs}`).then((d) => d.flashcards);
   },
 
   reviewFlashcard: (flashcardId: number, rating: 0 | 1 | 2 | 3): Promise<unknown> =>
@@ -260,37 +293,37 @@ export const api = {
     }).then((d) => d.state),
 
   studyPlan: (): Promise<Server.StudyTaskDTO[]> =>
-    request<{ tasks: Server.StudyTaskDTO[] }>("/api/study-plan").then((d) => d.tasks),
+    cachedGet<{ tasks: Server.StudyTaskDTO[] }>("/api/study-plan").then((d) => d.tasks),
 
   dailyQuiz: (): Promise<Server.DailyQuizDTO | null> =>
-    request<{ quiz: Server.DailyQuizDTO | null }>("/api/daily-quiz").then((d) => d.quiz),
+    cachedGet<{ quiz: Server.DailyQuizDTO | null }>("/api/daily-quiz").then((d) => d.quiz),
 
   news: (): Promise<Server.FlashNewsDTO[]> =>
-    request<{ news: Server.FlashNewsDTO[] }>("/api/flash-news").then((d) => d.news),
+    cachedGet<{ news: Server.FlashNewsDTO[] }>("/api/flash-news").then((d) => d.news),
 
   notifications: (): Promise<Server.NotificationDTO[]> =>
-    request<{ notifications: Server.NotificationDTO[] }>("/api/notifications").then((d) => d.notifications),
+    cachedGet<{ notifications: Server.NotificationDTO[] }>("/api/notifications").then((d) => d.notifications),
 
   markNotificationRead: (id: number): Promise<{ read: boolean }> =>
     mutate(`/api/notifications/${id}/read`, "POST"),
 
   badges: (): Promise<Server.BadgeDTO[]> =>
-    request<{ badges: Server.BadgeDTO[] }>("/api/badges").then((d) => d.badges),
+    cachedGet<{ badges: Server.BadgeDTO[] }>("/api/badges").then((d) => d.badges),
 
   subjectReports: (): Promise<Array<{ name: string; score: number; attempted: number; correct: number }>> =>
-    request<{ reports: Array<{ name: string; score: number; attempted: number; correct: number }> }>("/api/subject-reports").then((d) => d.reports),
+    cachedGet<{ reports: Array<{ name: string; score: number; attempted: number; correct: number }> }>("/api/subject-reports").then((d) => d.reports),
 
   dashboardStats: (): Promise<Server.DashboardStatsDTO> =>
-    request<{ stats: Server.DashboardStatsDTO }>("/api/dashboard-stats").then((d) => d.stats),
+    cachedGet<{ stats: Server.DashboardStatsDTO }>("/api/dashboard-stats").then((d) => d.stats),
 
   examSchedule: (): Promise<Server.ExamScheduleDTO[]> =>
-    request<{ exams: Server.ExamScheduleDTO[] }>("/api/exam-schedule").then((d) => d.exams),
+    cachedGet<{ exams: Server.ExamScheduleDTO[] }>("/api/exam-schedule").then((d) => d.exams),
 
   mockTestResults: (): Promise<Server.MockTestResultDTO[]> =>
-    request<{ results: Server.MockTestResultDTO[] }>("/api/mock-test/results").then((d) => d.results),
+    cachedGet<{ results: Server.MockTestResultDTO[] }>("/api/mock-test/results").then((d) => d.results),
 
   examConfig: (): Promise<Server.ExamSubjectDTO[]> =>
-    request<{ subjects: Server.ExamSubjectDTO[] }>("/api/exam/config").then((d) => d.subjects),
+    cachedGet<{ subjects: Server.ExamSubjectDTO[] }>("/api/exam/config").then((d) => d.subjects),
 
   buildExam: async (config: Server.ExamSelectionRequest): Promise<Server.ExamBuildResultDTO> => {
     const data = await request<{ exam: Server.ExamBuildResultDTO }>("/api/exam/build", {
@@ -346,10 +379,10 @@ export const api = {
   },
 
   documents: (): Promise<Server.DocumentDTO[]> =>
-    request<{ documents: Server.DocumentDTO[] }>("/api/documents").then((d) => d.documents),
+    cachedGet<{ documents: Server.DocumentDTO[] }>("/api/documents").then((d) => d.documents),
 
   bookmarks: (): Promise<number[]> =>
-    request<{ bookmarked: number[] }>("/api/bookmarks").then((d) => d.bookmarked),
+    cachedGet<{ bookmarked: number[] }>("/api/bookmarks").then((d) => d.bookmarked),
 
   toggleBookmark: (questionId: number): Promise<{ bookmarked: boolean }> =>
     mutate("/api/bookmarks", "POST", { questionId }),

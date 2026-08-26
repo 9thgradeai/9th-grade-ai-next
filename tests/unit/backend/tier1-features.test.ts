@@ -67,6 +67,10 @@ describe("getWrongAnswerNotebook (ভুলের নোটবুক)", () => {
 
 describe("getLeaderboard (points-ranked)", () => {
   it("ranks entries by points and computes the caller's rank", async () => {
+    // Streaks are server-authoritative (computed from the attempt log), not the
+    // never-written UserProgress.streak column. With no attempts mocked the
+    // computed streak is 0 for every entry.
+    vi.spyOn(prisma, "$queryRaw").mockResolvedValue([] as never);
     vi.spyOn(prisma.userProgress, "findUnique").mockResolvedValue({ points: 50 } as never);
     vi.spyOn(prisma.userProgress, "findMany").mockResolvedValue([
       { points: 200, streak: 5, user: { name: "A", handle: "a" } },
@@ -79,9 +83,9 @@ describe("getLeaderboard (points-ranked)", () => {
     const board = await getLeaderboard("me");
 
     expect(board.entries).toEqual([
-      { rank: 1, name: "A", points: 200, streak: 5 },
-      { rank: 2, name: "Me", points: 50, streak: 2 },
-      { rank: 3, name: "B", points: 10, streak: 1 },
+      { rank: 1, name: "A", points: 200, streak: 0 },
+      { rank: 2, name: "Me", points: 50, streak: 0 },
+      { rank: 3, name: "B", points: 10, streak: 0 },
     ]);
     expect(board.me).toEqual({ rank: 2, points: 50 });
   });
