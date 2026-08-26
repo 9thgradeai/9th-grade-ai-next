@@ -29,6 +29,9 @@ export async function GET(request: Request) {
       difficulty: params.difficulty,
       q: params.q,
       paths: params.paths,
+      ids: params.ids,
+      year: params.year,
+      sourceExam: params.sourceExam,
       page: params.page,
       limit: params.limit,
     });

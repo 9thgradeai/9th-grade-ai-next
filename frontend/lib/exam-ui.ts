@@ -1,4 +1,4 @@
-import { Home, Calendar, Zap, Brain, BookOpen, TrendingUp, Settings } from "lucide-react";
+import { Home, Calendar, Zap, Brain, BookOpen, TrendingUp, Settings, BookX } from "lucide-react";
 import type { ComponentType } from "react";
 import type { TabId } from "@/lib/data";
 import AiLogo from "@/components/ui/AiLogo";
@@ -14,6 +14,7 @@ export const TAB_ICONS: Record<TabId, ComponentType<IconProps>> = {
   "ai-solver": AiLogo,
   "question-bank": BookOpen,
   progress: TrendingUp,
+  "wrong-answers": BookX,
   settings: Settings,
 };
 

@@ -10,6 +10,7 @@ import type { Server } from "@/lib/types";
 export default function DailyQuizWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [quiz, setQuiz] = useState<Server.DailyQuizDTO | null>(null);
+  const [history, setHistory] = useState<Server.DailyQuizHistoryItemDTO[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string>>({});
@@ -17,6 +18,7 @@ export default function DailyQuizWidget() {
   const [summary, setSummary] = useState<{ correct: number; total: number; score: number; pointsEarned: number } | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitFailed, setSubmitFailed] = useState(false);
+  const [reviewMode, setReviewMode] = useState(false);
 
   // Shared dialog behavior: Escape, focus trap, initial focus, restore focus
   // to the trigger card on close.
@@ -27,10 +29,11 @@ export default function DailyQuizWidget() {
     let cancelled = false;
     void (async () => {
       try {
-        const dq = await api.dailyQuiz();
-        if (!cancelled) setQuiz(dq);
-      } catch {
-        if (!cancelled) setQuiz(null);
+        const [dq, hist] = await Promise.allSettled([api.dailyQuiz(), api.dailyQuizHistory(14)]);
+        if (!cancelled) {
+          if (dq.status === "fulfilled") setQuiz(dq.value);
+          if (hist.status === "fulfilled") setHistory(hist.value);
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -100,6 +103,7 @@ export default function DailyQuizWidget() {
     setShowResult(false);
     setSummary(null);
     setSubmitFailed(false);
+    setReviewMode(false);
   };
 
   if (!isOpen) {
@@ -127,9 +131,11 @@ export default function DailyQuizWidget() {
           <p className="text-xs text-zinc-500 font-mono">
             {loading
               ? "লোড হচ্ছে..."
-              : quiz
-                ? `${quiz.questions.length}টি প্রশ্ন`
-                : "আজকের কুইজ শীঘ্রই আসছে"}
+              : quiz?.completed
+                ? `সম্পন্ন ✓ • ${quiz.score}%`
+                : quiz
+                  ? `${quiz.questions.length}টি প্রশ্ন`
+                  : "আজকের কুইজ শীঘ্রই আসছে"}
           </p>
         </div>
         <ArrowRight className="w-4 h-4 text-amber-400" />
@@ -185,7 +191,59 @@ export default function DailyQuizWidget() {
         </div>
 
         <div className="p-5">
-          {!showResult ? (
+          {quiz && quiz.completed && !showResult && !reviewMode ? (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="text-center py-6"
+            >
+              <Trophy className="w-12 h-12 mx-auto mb-3 text-amber-400" />
+              <h3 className="text-xl font-bold text-white mb-2">আজকের কুইজ সম্পন্ন!</h3>
+              <div className="text-4xl font-bold font-mono text-emerald-400 mb-2">{quiz.score}%</div>
+              <p className="text-xs text-zinc-500 font-mono mb-6">আজকের কুইজ শেষ — কাল আবার চেষ্টা করুন।</p>
+
+              {history.length > 0 && (
+                <div className="mb-6">
+                  <p className="text-[10px] text-zinc-500 font-mono uppercase tracking-wider mb-2">সাম্প্রতিক ইতিহাস</p>
+                  <div className="flex items-center justify-center gap-1.5">
+                    {history.slice(0, 7).map((h) => (
+                      <div
+                        key={h.quizId + h.completedAt}
+                        title={`${h.score}% • ${h.correct}/${h.total}`}
+                        className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-mono ${
+                          h.score >= 80
+                            ? "bg-amber-500/20 text-amber-300"
+                            : h.score >= 50
+                            ? "bg-emerald-500/20 text-emerald-300"
+                            : "bg-red-500/20 text-red-300"
+                        }`}
+                      >
+                        {h.score}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="flex gap-3 justify-center">
+                <button
+                  onClick={() => {
+                    resetQuiz();
+                    setReviewMode(true);
+                  }}
+                  className="px-4 py-2 bg-zinc-900 border border-zinc-800 text-zinc-300 font-mono text-sm rounded-lg hover:bg-zinc-800 transition-colors"
+                >
+                  আবার চেষ্টা করুন
+                </button>
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="px-4 py-2 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors"
+                >
+                  বন্ধ করুন
+                </button>
+              </div>
+            </motion.div>
+          ) : !showResult ? (
             <>
               <div className="flex items-center justify-between mb-4">
                 <span className="text-xs text-zinc-500 font-mono">

@@ -126,3 +126,34 @@ describe("query validators", () => {
     expect(validatePagination(new URLSearchParams("page=2&limit=1000"))).toEqual({ page: 2, limit: 100 });
   });
 });
+
+describe("question search — notebook / PYQ filters", () => {
+  it("parses ids, year and sourceExam", () => {
+    const f = validateQuestionSearchParams(
+      new URLSearchParams("ids=1,2,3&year=2021&sourceExam=45th%20BCS"),
+    );
+    expect(f.ids).toEqual([1, 2, 3]);
+    expect(f.year).toBe(2021);
+    expect(f.sourceExam).toBe("45th BCS");
+  });
+
+  it("caps ids at 200 and rejects non-positive entries", () => {
+    const many = Array.from({ length: 201 }, (_, i) => i + 1).join(",");
+    expect(() => validateQuestionSearchParams(new URLSearchParams(`ids=${many}`))).toThrow(/at most 200/);
+    expect(() => validateQuestionSearchParams(new URLSearchParams("ids=1,x,2"))).toThrow(/positive integers/);
+  });
+
+  it("year must be within the plausible range", () => {
+    expect(validateQuestionSearchParams(new URLSearchParams("year=2020")).year).toBe(2020);
+    expect(() => validateQuestionSearchParams(new URLSearchParams("year=1800"))).toThrow(/1950/);
+    expect(() => validateQuestionSearchParams(new URLSearchParams("year=3000"))).toThrow(/2100/);
+  });
+
+  it("sourceExam is length-bounded and not required", () => {
+    expect(validateQuestionSearchParams(new URLSearchParams("sourceExam=BCS")).sourceExam).toBe("BCS");
+    expect(() =>
+      validateQuestionSearchParams(new URLSearchParams("sourceExam=" + "x".repeat(41))),
+    ).toThrow(/at most 40/);
+    expect(validateQuestionSearchParams(new URLSearchParams("q=xyz")).sourceExam).toBeUndefined();
+  });
+});

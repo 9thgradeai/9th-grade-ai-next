@@ -3,10 +3,11 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Star, Trophy, Flame, BookOpenCheck, BrainCircuit, Target, ChevronDown, BarChart3, AlertTriangle } from "lucide-react";
+import { Star, Trophy, Flame, BookOpenCheck, BrainCircuit, Target, ChevronDown, BarChart3, AlertTriangle, Swords, Medal } from "lucide-react";
 import { useAuth } from "@/lib/auth-ctx";
 import { api } from "@/lib/services/api";
 import type { Server } from "@/lib/types";
+import QuestionDrill from "./QuestionDrill";
 
 /* --------------------------------------------------------------
    Weekly activity chart (real, from QuestionAttempt records)
@@ -231,21 +232,29 @@ export default function ProgressTab() {
   const { user } = useAuth();
   const [stats, setStats] = useState<Server.DashboardStatsDTO | null>(null);
   const [reports, setReports] = useState<Array<{ name: string; score: number; attempted: number; correct: number }>>([]);
+  const [weakTopics, setWeakTopics] = useState<Server.WeakTopicDTO[]>([]);
+  const [board, setBoard] = useState<{ entries: Server.LeaderboardEntryDTO[]; me: { rank: number; points: number } | null } | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadFailed, setLoadFailed] = useState(false);
+  const [drillQuestions, setDrillQuestions] = useState<Server.QuestionDTO[] | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     void (async () => {
       try {
-        const [s, r] = await Promise.allSettled([api.dashboardStats(), api.subjectReports()]);
+        const [s, r, w, l] = await Promise.allSettled([
+          api.dashboardStats(),
+          api.subjectReports(),
+          api.weakTopics(),
+          api.leaderboard(),
+        ]);
         if (cancelled) return;
-        // Both failing is a total outage — never render zeroed stats that
-        // look like a wiped account.
         const failed = s.status === "rejected" && r.status === "rejected";
         setLoadFailed(failed);
         if (s.status === "fulfilled") setStats(s.value);
         if (r.status === "fulfilled") setReports(r.value);
+        if (w.status === "fulfilled") setWeakTopics(w.value);
+        if (l.status === "fulfilled") setBoard(l.value);
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -254,6 +263,15 @@ export default function ProgressTab() {
       cancelled = true;
     };
   }, []);
+
+  const startTopicDrill = async (topic: Server.WeakTopicDTO) => {
+    try {
+      const qs = await api.questions({ subject: topic.subject, topic: topic.topic, limit: 50 });
+      setDrillQuestions(qs);
+    } catch {
+      /* ignore — section simply won't open */
+    }
+  };
 
   const kpis = useMemo(
     () => [
@@ -269,6 +287,14 @@ export default function ProgressTab() {
 
   return (
     <div className="space-y-6">
+      {drillQuestions && (
+        <QuestionDrill
+          questions={drillQuestions}
+          title="দুর্বল টপিক প্র্যাকটিস"
+          onExit={() => setDrillQuestions(null)}
+        />
+      )}
+
       {/* Total-outage banner — data failure must be visible, not silent zeros */}
       {loadFailed && !loading && (
         <div
@@ -353,6 +379,60 @@ export default function ProgressTab() {
         )}
       </motion.div>
 
+      {/* Weak topics (lowest accuracy) */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.25 }}
+      >
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+            <Swords className="w-5 h-5 text-rose-400" /> দুর্বল টপিক
+          </h3>
+          <span className="text-xs text-zinc-500 font-mono">নিম্ন নির্ভুলতা</span>
+        </div>
+        {weakTopics.length === 0 ? (
+          <div className="glass-card rounded-2xl border border-terminal-border text-center py-10">
+            <p className="text-3xl mb-3">💪</p>
+            <p className="text-sm text-zinc-400">দুর্বল টপিক চিহ্নিত করতে কিছু প্রশ্ন সমাধান করুন।</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {weakTopics.map((t, i) => (
+              <div
+                key={`${t.subject}-${t.topic}`}
+                className="glass-card rounded-2xl border border-terminal-border p-4"
+              >
+                <div className="flex items-center justify-between gap-3 mb-2">
+                  <div className="min-w-0">
+                    <h4 className="text-sm font-medium text-white truncate">{t.topic}</h4>
+                    <p className="text-xs text-zinc-500 font-mono">{t.subject} • {t.attempted}টি সমাধান</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-lg font-bold font-mono text-rose-400">{t.score}%</span>
+                    <button
+                      onClick={() => void startTopicDrill(t)}
+                      className="px-3 py-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 text-xs font-mono hover:bg-emerald-500/20 transition-colors"
+                    >
+                      প্র্যাকটিস
+                    </button>
+                  </div>
+                </div>
+                <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                  <motion.div
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: t.score / 100 }}
+                    transition={{ duration: 0.6, delay: i * 0.05 }}
+                    style={{ transformOrigin: "left" }}
+                    className="h-full w-full bg-rose-500 rounded-full"
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </motion.div>
+
       {/* Subject reports */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
@@ -373,6 +453,67 @@ export default function ProgressTab() {
             {reports.map((report, i) => (
               <SubjectReportRow key={report.name} report={report} index={i} />
             ))}
+          </div>
+        )}
+      </motion.div>
+
+      {/* Leaderboard */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.35 }}
+      >
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+            <Medal className="w-5 h-5 text-amber-400" /> লিডারবোর্ড
+          </h3>
+          {board?.me && (
+            <span className="text-xs text-amber-300 font-mono">
+              আপনার র‍্যাংক: #{board.me.rank} ({board.me.points} পয়েন্ট)
+            </span>
+          )}
+        </div>
+        {!board || board.entries.length === 0 ? (
+          <div className="glass-card rounded-2xl border border-terminal-border text-center py-10">
+            <p className="text-3xl mb-3">🏆</p>
+            <p className="text-sm text-zinc-400">এখনো কোনো র‍্যাংকিং উপলব্ধ নয়।</p>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {board.entries.map((e) => {
+              const isMe = board.me?.rank === e.rank;
+              return (
+                <div
+                  key={e.rank}
+                  className={`flex items-center justify-between rounded-xl border p-3 ${
+                    isMe
+                      ? "border-emerald-500/40 bg-emerald-500/10"
+                      : "border-terminal-border bg-subtle"
+                  }`}
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span
+                      className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold font-mono ${
+                        e.rank === 1
+                          ? "bg-amber-500/20 text-amber-300"
+                          : e.rank === 2
+                          ? "bg-zinc-400/20 text-zinc-300"
+                          : e.rank === 3
+                          ? "bg-orange-700/20 text-orange-300"
+                          : "bg-zinc-800 text-zinc-400"
+                      }`}
+                    >
+                      {e.rank}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-white truncate">{e.name}</p>
+                      <p className="text-xs text-zinc-500 font-mono">{e.streak} দিন স্ট্রিক</p>
+                    </div>
+                  </div>
+                  <div className="text-sm font-bold font-mono text-emerald-400">{e.points}</div>
+                </div>
+              );
+            })}
           </div>
         )}
       </motion.div>

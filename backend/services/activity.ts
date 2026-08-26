@@ -186,6 +186,50 @@ export async function submitDailyQuiz(
   }
 }
 
+export type DailyQuizHistoryItem = {
+  quizId: number;
+  date: string;
+  score: number;
+  correct: number;
+  total: number;
+  completedAt: string;
+};
+
+/**
+ * Recent daily-quiz participations for the user (most-recent first). Backs the
+ * "completed today" state and the history strip in the daily-quiz widget.
+ */
+export async function getDailyQuizHistory(
+  userId: string,
+  limit = 14,
+): Promise<DailyQuizHistoryItem[]> {
+  try {
+    const rows = await prisma.dailyQuizParticipation.findMany({
+      where: { userId, status: "COMPLETED" },
+      orderBy: { completedAt: "desc" },
+      take: limit,
+      select: {
+        quizId: true,
+        score: true,
+        correct: true,
+        total: true,
+        completedAt: true,
+        dailyQuiz: { select: { date: true } },
+      },
+    });
+    return rows.map((r) => ({
+      quizId: r.quizId,
+      date: r.dailyQuiz?.date ? String(r.dailyQuiz.date) : "",
+      score: r.score,
+      correct: r.correct,
+      total: r.total,
+      completedAt: r.completedAt?.toISOString() ?? "",
+    }));
+  } catch {
+    throw new InternalServerError("Failed to fetch daily-quiz history");
+  }
+}
+
 // ── Notifications (read markers) ──────────────────────────
 export async function markNotificationRead(
   userId: string,

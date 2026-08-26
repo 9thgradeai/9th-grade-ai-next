@@ -43,6 +43,12 @@ export interface QuestionSearchFilters {
   limit?: number;
   page?: number;
   id?: number;
+  /** Restrict to a specific set of question ids (used by bookmark/notebook views). */
+  ids?: number[];
+  /** Filter by previous-year question year (Question.year). */
+  year?: number;
+  /** Filter by previous-year source exam (exact, case-insensitive). */
+  sourceExam?: string;
 }
 
 export interface PaginationParams {
@@ -255,7 +261,19 @@ const DIFFICULTIES = ["EASY", "MEDIUM", "HARD"] as const;
 export function validateQuestionSearchParams(params: URLSearchParams): QuestionSearchFilters {
   const filters: QuestionSearchFilters = {};
 
-  const allowedParams = ["subject", "topic", "difficulty", "q", "limit", "page", "id", "paths"];
+  const allowedParams = [
+    "subject",
+    "topic",
+    "difficulty",
+    "q",
+    "limit",
+    "page",
+    "id",
+    "paths",
+    "ids",
+    "year",
+    "sourceExam",
+  ];
   const unexpected = [...params.keys()].filter((k) => !allowedParams.includes(k));
   if (unexpected.length > 0) {
     throw new ValidationError(`Unexpected query parameter(s): ${unexpected.join(", ")}.`);
@@ -269,6 +287,9 @@ export function validateQuestionSearchParams(params: URLSearchParams): QuestionS
   const page = params.get("page");
   const id = params.get("id");
   const paths = params.get("paths");
+  const ids = params.get("ids");
+  const year = params.get("year");
+  const sourceExam = params.get("sourceExam");
 
   if (subject && subject.length > 0) filters.subject = subject;
   if (topic && topic.length > 0) filters.topic = topic;
@@ -312,6 +333,40 @@ export function validateQuestionSearchParams(params: URLSearchParams): QuestionS
       throw new ValidationError("id must be a positive integer.");
     }
     filters.id = parsed;
+  }
+
+  if (ids && ids.length > 0) {
+    const parsed = ids
+      .split(",")
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0)
+      .map((s) => {
+        const n = Number(s);
+        if (!Number.isInteger(n) || n <= 0) {
+          throw new ValidationError("ids must be positive integers.");
+        }
+        return n;
+      });
+    // Cap the IN-clause so a giant id list can't become an abuse vector.
+    if (parsed.length > 200) {
+      throw new ValidationError("ids must contain at most 200 entries.");
+    }
+    if (parsed.length > 0) filters.ids = parsed;
+  }
+
+  if (year) {
+    const parsed = Number(year);
+    if (!Number.isInteger(parsed) || parsed < 1950 || parsed > 2100) {
+      throw new ValidationError("year must be between 1950 and 2100.");
+    }
+    filters.year = parsed;
+  }
+
+  if (sourceExam && sourceExam.length > 0) {
+    if (sourceExam.length > 40) {
+      throw new ValidationError("sourceExam must be at most 40 characters.");
+    }
+    filters.sourceExam = sourceExam;
   }
 
   return filters;

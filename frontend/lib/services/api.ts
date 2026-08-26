@@ -179,6 +179,9 @@ export const api = {
     difficulty?: string;
     q?: string;
     paths?: string[];
+    ids?: number[];
+    year?: number;
+    sourceExam?: string;
     limit?: number;
     page?: number;
   }): Promise<Server.QuestionDTO[]> => {
@@ -195,6 +198,49 @@ export const api = {
     }
     const suffix = qs.toString() ? `?${qs.toString()}` : "";
     return request<{ questions: Server.QuestionDTO[] }>(`/api/questions${suffix}`).then((d) => d.questions);
+  },
+
+  /** Wrong-Answer Notebook (ভুলের নোটবুক): questions whose latest attempt was wrong. */
+  wrongAnswers: (params?: { page?: number; limit?: number }): Promise<{
+    questions: Server.QuestionDTO[];
+    total: number;
+    page: number;
+    limit: number;
+  }> => {
+    const qs = new URLSearchParams();
+    if (params?.page) qs.set("page", String(params.page));
+    if (params?.limit) qs.set("limit", String(params.limit));
+    const suffix = qs.toString() ? `?${qs.toString()}` : "";
+    return request<{
+      questions: Server.QuestionDTO[];
+      total: number;
+      page: number;
+      limit: number;
+    }>(`/api/wrong-answers${suffix}`);
+  },
+
+  /** Weak topics (lowest accuracy) for the signed-in user. */
+  weakTopics: (): Promise<Server.WeakTopicDTO[]> =>
+    request<{ topics: Server.WeakTopicDTO[] }>("/api/weak-topics").then((d) => d.topics),
+
+  /** Points leaderboard; `me` is null for users with no progress row. */
+  leaderboard: (limit?: number): Promise<{
+    entries: Server.LeaderboardEntryDTO[];
+    me: { rank: number; points: number } | null;
+  }> => {
+    const suffix = limit ? `?limit=${limit}` : "";
+    return request<{
+      entries: Server.LeaderboardEntryDTO[];
+      me: { rank: number; points: number } | null;
+    }>(`/api/leaderboard${suffix}`);
+  },
+
+  /** Recent completed daily quizzes for the signed-in user. */
+  dailyQuizHistory: (limit?: number): Promise<Server.DailyQuizHistoryItemDTO[]> => {
+    const suffix = limit ? `?limit=${limit}` : "";
+    return request<{ history: Server.DailyQuizHistoryItemDTO[] }>(
+      `/api/daily-quiz/history${suffix}`,
+    ).then((d) => d.history);
   },
 
   questionBankCategories: (): Promise<Server.QuestionBankCategoryDTO[]> =>

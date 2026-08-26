@@ -14,6 +14,11 @@ import { GET as meGET } from "~app/api/auth/me/route";
 import { POST as examSubmitPOST } from "~app/api/exam/submit/route";
 import { POST as practiceSubmitPOST } from "~app/api/practice/submit/route";
 import { POST as dailyQuizSubmitPOST } from "~app/api/daily-quiz/submit/route";
+import { GET as wrongAnswersGET } from "~app/api/wrong-answers/route";
+import { GET as weakTopicsGET } from "~app/api/weak-topics/route";
+import { GET as leaderboardGET } from "~app/api/leaderboard/route";
+import { GET as dailyQuizHistoryGET } from "~app/api/daily-quiz/history/route";
+import { GET as questionsGET } from "~app/api/questions/route";
 import { signSession } from "~backend/auth";
 import { resetRateLimitStore } from "~backend/rate-limit";
 import { prisma } from "~backend/db";
@@ -287,5 +292,124 @@ describe("POST /api/daily-quiz/submit", () => {
       jsonRequest("/api/daily-quiz/submit", { quizId: 1, answers: makeAnswers(500) }, { cookie }),
     ));
     expect(res.status).toBe(400);
+  });
+});
+
+// ── Tier-1 read endpoints: auth gate + shape ──────────────
+
+describe("GET /api/wrong-answers", () => {
+  it("requires a session", async () => {
+    const res = await wrongAnswersGET(getRequest("/api/wrong-answers"));
+    expect(res.status).toBe(401);
+  });
+
+  it("returns the wrong-answer notebook for the caller", async () => {
+    const cookie = await sessionCookieFor("aspirant@example.com");
+    vi.mocked(prisma.user.findUnique).mockResolvedValue(mockUser());
+    vi.spyOn(prisma, "$queryRaw").mockResolvedValue([{ questionId: 5, correct: false }] as never);
+    vi.spyOn(prisma.question, "findMany").mockResolvedValue([
+      {
+        id: 5, subjectId: 1, subject: { nameBn: "বাংলা" }, topic: "নাতিহ", subtopic: "",
+        question: "q5", options: ["a", "b"], correctAnswer: "a", explanation: "e",
+        difficulty: "EASY", year: null, sourceExam: "",
+      },
+    ] as never);
+    vi.spyOn(prisma.question, "count").mockResolvedValue(1);
+
+    const res = await wrongAnswersGET(getRequest("/api/wrong-answers", { cookie }));
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.total).toBe(1);
+    expect(body.questions[0].id).toBe(5);
+  });
+});
+
+describe("GET /api/weak-topics", () => {
+  it("requires a session", async () => {
+    expect((await weakTopicsGET(getRequest("/api/weak-topics"))).status).toBe(401);
+  });
+
+  it("returns ascending-accuracy weak topics", async () => {
+    const cookie = await sessionCookieFor("aspirant@example.com");
+    vi.mocked(prisma.user.findUnique).mockResolvedValue(mockUser());
+    vi.spyOn(prisma, "$queryRaw").mockResolvedValue([
+      { subjectName: "বাংলা", topic: "নাতিহ", attempted: 10, correct: 3 },
+      { subjectName: "ইতিহাস", topic: "মুক্তি", attempted: 4, correct: 2 },
+    ] as never);
+
+    const res = await weakTopicsGET(getRequest("/api/weak-topics", { cookie }));
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.topics[0].score).toBeLessThanOrEqual(body.topics[1].score);
+  });
+});
+
+describe("GET /api/leaderboard", () => {
+  it("requires a session", async () => {
+    expect((await leaderboardGET(getRequest("/api/leaderboard"))).status).toBe(401);
+  });
+
+  it("returns ranked entries and the caller's rank", async () => {
+    const cookie = await sessionCookieFor("aspirant@example.com");
+    vi.mocked(prisma.user.findUnique).mockResolvedValue(mockUser());
+    vi.spyOn(prisma.userProgress, "findUnique").mockResolvedValue({ points: 50 } as never);
+    vi.spyOn(prisma.userProgress, "findMany").mockResolvedValue([
+      { points: 200, streak: 5, user: { name: "A", handle: "a" } },
+      { points: 50, streak: 2, user: { name: "Me", handle: "me" } },
+    ] as never);
+    vi.spyOn(prisma.userProgress, "count").mockResolvedValue(1);
+
+    const res = await leaderboardGET(getRequest("/api/leaderboard", { cookie }));
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.entries[0]).toMatchObject({ rank: 1, points: 200 });
+    expect(body.me).toEqual({ rank: 2, points: 50 });
+  });
+});
+
+describe("GET /api/daily-quiz/history", () => {
+  it("requires a session", async () => {
+    expect((await dailyQuizHistoryGET(getRequest("/api/daily-quiz/history"))).status).toBe(401);
+  });
+
+  it("returns completed daily quizzes", async () => {
+    const cookie = await sessionCookieFor("aspirant@example.com");
+    vi.mocked(prisma.user.findUnique).mockResolvedValue(mockUser());
+    vi.spyOn(prisma.dailyQuizParticipation, "findMany").mockResolvedValue([
+      {
+        quizId: 1, score: 80, correct: 4, total: 5,
+        completedAt: new Date("2026-01-01T10:00:00Z"),
+        dailyQuiz: { date: new Date("2026-01-01T00:00:00Z") },
+      },
+    ] as never);
+
+    const res = await dailyQuizHistoryGET(getRequest("/api/daily-quiz/history", { cookie }));
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.history[0]).toMatchObject({ quizId: 1, score: 80 });
+  });
+});
+
+describe("GET /api/questions — ids / year / sourceExam filters", () => {
+  it("rejects unknown filter parameters", async () => {
+    const res = await questionsGET(getRequest("/api/questions?bogus=1"));
+    expect(res.status).toBe(400);
+  });
+
+  it("filters by year and sourceExam and returns matching questions", async () => {
+    vi.spyOn(prisma.question, "findMany").mockResolvedValue([
+      {
+        id: 3, subjectId: 1, subject: { nameBn: "বাংলা" }, topic: "নাতিহ", subtopic: "",
+        question: "pyq", options: ["a"], correctAnswer: "a", explanation: "", difficulty: "EASY",
+        year: 2021, sourceExam: "45th BCS",
+      },
+    ] as never);
+    vi.spyOn(prisma.question, "count").mockResolvedValue(1);
+
+    const res = await questionsGET(getRequest("/api/questions?year=2021&sourceExam=45th%20BCS"));
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.questions[0].year).toBe(2021);
+    expect(body.questions[0].sourceExam).toBe("45th BCS");
   });
 });

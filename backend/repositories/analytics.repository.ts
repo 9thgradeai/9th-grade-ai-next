@@ -76,6 +76,60 @@ export async function aggregateAttemptsByTopic(
 
 export type RecentAccuracy = { total: number; correct: number };
 
+/**
+ * Distinct question ids whose MOST RECENT attempt by this user was incorrect.
+ * Drives the Wrong-Answer Notebook: a question drops out the moment the user
+ * answers it correctly (the latest attempt flips to correct). DISTINCT ON
+ * keeps cost to ~one row per attempted question.
+ */
+export async function fetchWrongNotebookQuestionIds(
+  userId: string,
+  limit = 500,
+): Promise<number[]> {
+  const rows = await prisma.$queryRaw<
+    { questionId: number; correct: boolean }[]
+  >`
+    SELECT DISTINCT ON ("questionId") "questionId", "correct"
+    FROM "QuestionAttempt"
+    WHERE "userId" = ${userId} AND "questionId" IS NOT NULL
+    ORDER BY "questionId", "createdAt" DESC`;
+
+  return rows.filter((r) => !r.correct).map((r) => Number(r.questionId)).slice(0, limit);
+}
+
+export type SubjectTopicAggregate = {
+  subjectName: string;
+  topic: string;
+  attempted: number;
+  correct: number;
+};
+
+/**
+ * Per (subject, topic) attempt totals for one user, aggregated IN THE DATABASE.
+ * Backs the weak-topic report (accuracy per topic within a subject).
+ */
+export async function aggregateAttemptsBySubjectTopic(
+  userId: string,
+): Promise<SubjectTopicAggregate[]> {
+  const rows = await prisma.$queryRaw<
+    { subjectName: string | null; topic: string | null; attempted: number; correct: number }[]
+  >`
+    SELECT "subjectName" AS "subjectName",
+           "topic" AS "topic",
+           COUNT(*)::int AS "attempted",
+           COALESCE(SUM(CASE WHEN "correct" THEN 1 ELSE 0 END), 0)::int AS "correct"
+    FROM "QuestionAttempt"
+    WHERE "userId" = ${userId}
+    GROUP BY "subjectName", "topic"`;
+
+  return rows.map((r) => ({
+    subjectName: r.subjectName ?? "",
+    topic: r.topic ?? "",
+    attempted: Number(r.attempted),
+    correct: Number(r.correct),
+  }));
+}
+
 /** Correct/total over the trailing window, aggregated IN THE DATABASE. */
 export async function aggregateRecentAccuracy(
   userId: string,

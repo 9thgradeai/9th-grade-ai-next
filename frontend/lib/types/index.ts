@@ -360,6 +360,30 @@ export namespace Server {
     }[];
   };
 
+  export type WeakTopicDTO = {
+    subject: string;
+    topic: string;
+    attempted: number;
+    correct: number;
+    score: number;
+  };
+
+  export type LeaderboardEntryDTO = {
+    rank: number;
+    name: string;
+    points: number;
+    streak: number;
+  };
+
+  export type DailyQuizHistoryItemDTO = {
+    quizId: number;
+    date: string;
+    score: number;
+    correct: number;
+    total: number;
+    completedAt: string;
+  };
+
   export type MockTestDTO = {
     id: number;
     title: string;
@@ -614,6 +638,9 @@ export type ExamBuildResultDTO = Server.ExamBuildResultDTO;
 export type ExamSummaryDTO = Server.ExamSummaryDTO;
 export type ExamReviewDTO = Server.ExamReviewDTO;
 export type ExamResultDTO = Server.ExamResultDTO;
+export type WeakTopicDTO = Server.WeakTopicDTO;
+export type LeaderboardEntryDTO = Server.LeaderboardEntryDTO;
+export type DailyQuizHistoryItemDTO = Server.DailyQuizHistoryItemDTO;
 export type TutorMessage = Client.TutorMessage;
 export type FlashNews = Client.FlashNews;
 export type Recommendation = Client.Recommendation;

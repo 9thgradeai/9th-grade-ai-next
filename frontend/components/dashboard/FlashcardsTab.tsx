@@ -77,6 +77,10 @@ export default function FlashcardsTab() {
           for (const f of flashcards) {
             const deck = f.subjectName || "General";
             grouped[deck] = grouped[deck] ?? [];
+            // Honor the server-authoritative SRS schedule when the user has a
+            // prior review history; only brand-new cards (no srs) default to
+            // "due now" so they enter the review queue.
+            const nextReview = f.srs ? new Date(f.srs.nextReview).getTime() : now;
             grouped[deck].push({
               id: String(f.id),
               subject: deck,
@@ -84,10 +88,10 @@ export default function FlashcardsTab() {
               answer: f.answer,
               hint: f.hint,
               difficulty: f.difficulty,
-              nextReview: now + 86400000,
-              interval: 1,
-              repetitions: 0,
-              easeFactor: 2.5,
+              nextReview,
+              interval: f.srs?.intervalDays ?? 1,
+              repetitions: f.srs?.repetitions ?? 0,
+              easeFactor: f.srs?.easeFactor ?? 2.5,
             });
           }
           setDecks(grouped);
@@ -108,6 +112,19 @@ export default function FlashcardsTab() {
     const due = cards.filter((c) => c.nextReview <= now);
     setReviewQueue(due.length > 0 ? due : cards);
     setSelectedDeck(deckName);
+    setCurrentIndex(0);
+    setIsFlipped(false);
+    setShowHint(false);
+    setSessionStats({ reviewed: 0, correct: 0 });
+  };
+
+  // Mixed-deck review: pull every due card across all decks into one queue so
+  // users aren't forced to sit through a single subject's backlog.
+  const startMixedSession = () => {
+    const all = Object.values(decks).flat();
+    const due = all.filter((c) => c.nextReview <= now);
+    setReviewQueue(due.length > 0 ? due : all);
+    setSelectedDeck("সব ডিউ কার্ড");
     setCurrentIndex(0);
     setIsFlipped(false);
     setShowHint(false);
@@ -232,6 +249,14 @@ export default function FlashcardsTab() {
             <p className="text-sm text-zinc-400 font-mono mb-4">
               Select a deck to start your spaced repetition session. Cards you find hard will appear more frequently.
             </p>
+
+            <button
+              onClick={startMixedSession}
+              className="w-full mb-4 px-4 py-3 bg-emerald-500/10 border border-emerald-500/30 rounded-lg text-emerald-300 font-mono text-sm hover:bg-emerald-500/20 transition-colors flex items-center justify-center gap-2"
+            >
+              <BarChart3 className="w-4 h-4" />
+              সব ডিউ কার্ড একসাথে রিভিউ করুন
+            </button>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {Object.keys(decks).map((deckName, i) => {

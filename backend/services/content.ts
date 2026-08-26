@@ -10,6 +10,7 @@ import {
   aggregateDailyActivity,
   buildActivityWindow,
   computeStreak,
+  fetchWrongNotebookQuestionIds,
 } from "~backend/repositories/analytics.repository";
 import type {
   QuestionDTO,
@@ -33,6 +34,9 @@ type QuestionFilters = {
   difficulty?: string;
   q?: string;
   paths?: string[];
+  ids?: number[];
+  year?: number;
+  sourceExam?: string;
 };
 
 async function buildQuestionWhere(opts?: QuestionFilters): Promise<Record<string, unknown>> {
@@ -59,6 +63,15 @@ async function buildQuestionWhere(opts?: QuestionFilters): Promise<Record<string
         { correctAnswer: { contains: opts.q } },
       ],
     });
+  }
+  if (opts?.ids && opts.ids.length > 0) {
+    conditions.push({ id: { in: opts.ids } });
+  }
+  if (opts?.year !== undefined) {
+    conditions.push({ year: opts.year });
+  }
+  if (opts?.sourceExam) {
+    conditions.push({ sourceExam: { equals: opts.sourceExam, mode: "insensitive" } });
   }
   return conditions.length > 0 ? { AND: conditions } : {};
 }
@@ -153,6 +166,81 @@ export async function getQuestionBankCategories(): Promise<QuestionBankCategoryD
     return rows.map((c) => ({ id: c.id, label: c.label, count: c.count }));
   } catch {
     throw new InternalServerError("Failed to fetch question bank categories");
+  }
+}
+
+// ── Wrong-Answer Notebook (ভুলের নোটবুক) ─────────────────
+// A question enters the notebook when its latest attempt by the user is wrong
+// and leaves the moment they answer it correctly. Returns paginated Question
+// DTOs so the UI can reuse the standard question rendering + practice flow.
+export async function getWrongAnswerNotebook(
+  userId: string,
+  opts?: { page?: number; limit?: number },
+): Promise<{ questions: QuestionDTO[]; total: number; page: number; limit: number }> {
+  try {
+    const page = Math.max(1, opts?.page ?? 1);
+    const limit = Math.min(200, Math.max(1, opts?.limit ?? 20));
+
+    const ids = await fetchWrongNotebookQuestionIds(userId);
+    if (ids.length === 0) {
+      return { questions: [], total: 0, page, limit };
+    }
+    return await getQuestionsPage({ ids, page, limit });
+  } catch {
+    throw new InternalServerError("Failed to fetch wrong-answer notebook");
+  }
+}
+
+export type LeaderboardEntryDTO = {
+  rank: number;
+  name: string;
+  points: number;
+  streak: number;
+};
+
+export type LeaderboardDTO = {
+  entries: LeaderboardEntryDTO[];
+  me: { rank: number; points: number } | null;
+};
+
+// ── Leaderboard (server-authoritative, points-ranked) ─────
+export async function getLeaderboard(
+  userId: string,
+  limit = 20,
+): Promise<LeaderboardDTO> {
+  try {
+    const progress = await prisma.userProgress.findUnique({
+      where: { userId },
+      select: { points: true },
+    });
+
+    const rows = await prisma.userProgress.findMany({
+      orderBy: { points: "desc" },
+      take: limit,
+      select: {
+        points: true,
+        streak: true,
+        user: { select: { name: true, handle: true } },
+      },
+    });
+
+    const entries: LeaderboardEntryDTO[] = rows.map((r, i) => ({
+      rank: i + 1,
+      name: r.user?.name || r.user?.handle || "অজানা",
+      points: r.points,
+      streak: r.streak,
+    }));
+
+    let me: { rank: number; points: number } | null = null;
+    if (progress) {
+      const rank =
+        (await prisma.userProgress.count({ where: { points: { gt: progress.points } } })) + 1;
+      me = { rank, points: progress.points };
+    }
+
+    return { entries, me };
+  } catch {
+    throw new InternalServerError("Failed to fetch leaderboard");
   }
 }
 

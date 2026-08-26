@@ -26,7 +26,7 @@ All mutating endpoints (auth and non-auth) reject cross-origin requests via an O
 
 | Method | Path | Description |
 |--------|------|-------------|
-| GET | `/api/questions` | List questions, filterable by `?subject=`, `?topic=`, `?difficulty=`, `?q=`, `?limit=`, `?page=` (1-based, default 1), `?paths=`. Response: `{ questions, page, pageSize, total }` — `total` enables pagination controls. Cached 60s (`stale-while-revalidate` 300s) |
+| GET | `/api/questions` | List questions, filterable by `?subject=`, `?topic=`, `?difficulty=`, `?q=`, `?limit=`, `?page=` (1-based, default 1), `?paths=`, `?ids=` (comma-separated question IDs, max 200), `?year=` (previous-year-question filter), `?sourceExam=` (e.g. `45th BCS`). Response: `{ questions, page, pageSize, total }` — `total` enables pagination controls. Cached 60s (`stale-while-revalidate` 300s) |
 | GET | `/api/question-bank/categories` | List question bank categories |
 | GET | `/api/flashcards` | List flashcards, optionally filtered by `?subject=`. Authenticated callers additionally receive a per-card `srs` overlay (their own SM-2 state) |
 | GET | `/api/exam-schedule` | List published exam dates (public, no auth) |
@@ -60,6 +60,15 @@ All mutating endpoints (auth and non-auth) reject cross-origin requests via an O
 | PATCH | `/api/ai/conversations/:id` | **Auth required** — Update a conversation: rename `{ title }` or pin/unpin `{ pinned: boolean }` (ownership-checked) |
 | DELETE | `/api/ai/conversations/:id` | **Auth required** — Delete a conversation (ownership-checked) |
 | POST | `/api/ai/feedback` | **Auth required** — Record feedback `{ rating: "HELPFUL"\|"NOT_HELPFUL", messageId?, category?, comment? }` |
+
+## Study & Progress Endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/api/wrong-answers` | **Auth required** — The caller's wrong-answer notebook: questions whose **most recent** attempt was incorrect. Query: `?page=` (default 1), `?limit=` (default 20, max 100). Response: `{ questions: [Question], page, pageSize, total }` |
+| GET | `/api/weak-topics` | **Auth required** — Topics ranked weakest-first by accuracy from the caller's attempts. Query: `?minAttempts=` (default 3), `?limit=` (default 10). Response: `{ topics: [{ subject, topic, attempted, correct, score }] }` (ascending `score`) |
+| GET | `/api/leaderboard` | **Auth required** — Points-ranked leaderboard. Query: `?limit=` (default 20, max 50). Response: `{ entries: [{ rank, name, points, streak }], me: { rank, points } \| null }` |
+| GET | `/api/daily-quiz/history` | **Auth required** — The caller's completed daily quizzes (newest-first, default 14). Response: `{ history: [{ quizId, date, score, correct, total, completedAt }] }` (dates stringified) |
 
 ## Response Shapes
 
@@ -131,6 +140,27 @@ Falls back to a clearly labelled `mock` source when no API key is set. See `docs
 { "id": "cuid", "kind": "TUTOR" | "ASSISTANT" | "SOLVER", "title": "...", "pinned": false, "createdAt": "...", "updatedAt": "..." }
 ```
 `GET /api/ai/conversations` → `{ "conversations": [AIConversation] }`; `GET .../:id` → `{ "conversation": AIConversation, "messages": [{ "id": "...", "role": "USER"|"ASSISTANT", "status": "COMPLETE"|"FAILED", "content": "...", "intent": "...", "createdAt": "..." }] }`.
+
+### WrongAnswerNotebook
+```json
+{ "questions": [Question], "page": 1, "pageSize": 20, "total": 7 }
+```
+
+### WeakTopics
+```json
+{ "topics": [{ "subject": "বাংলা", "topic": "নাতিহ", "attempted": 10, "correct": 3, "score": 30 }] }
+```
+
+### Leaderboard
+```json
+{ "entries": [{ "rank": 1, "name": "A", "points": 200, "streak": 5 }], "me": { "rank": 2, "points": 50 } }
+```
+`me` is `null` when the caller has no `UserProgress` row. Ranks are 1-based by descending `points`.
+
+### DailyQuizHistory
+```json
+{ "history": [{ "quizId": 1, "date": "2026-01-01", "score": 80, "correct": 4, "total": 5, "completedAt": "2026-01-01T10:00:00.000Z" }] }
+```
 
 ### ExamConfig (selection tree)
 The tree mirrors the recursive Topic taxonomy. Every node carries its aggregated

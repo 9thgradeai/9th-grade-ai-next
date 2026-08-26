@@ -4,7 +4,11 @@
 
 import "server-only";
 
-import { aggregateAttemptsBySubject, fetchSubjectsOrdered } from "~backend/repositories/analytics.repository";
+import {
+  aggregateAttemptsBySubject,
+  aggregateAttemptsBySubjectTopic,
+  fetchSubjectsOrdered,
+} from "~backend/repositories/analytics.repository";
 import { InternalServerError } from "~backend/errors";
 
 export type SubjectReport = {
@@ -12,6 +16,14 @@ export type SubjectReport = {
   score: number;
   attempted: number;
   correct: number;
+};
+
+export type WeakTopic = {
+  subject: string;
+  topic: string;
+  attempted: number;
+  correct: number;
+  score: number;
 };
 
 /**
@@ -41,5 +53,36 @@ export async function getSubjectReports(userId: string): Promise<SubjectReport[]
     });
   } catch {
     throw new InternalServerError("Failed to build subject reports");
+  }
+}
+
+/**
+ * Topics the user struggles with most: lowest accuracy (descending), only
+ * counting topics with enough attempts to be meaningful. Powers the weak-topic
+ * report / "practice your weak spots" surfacing.
+ */
+export async function getWeakTopics(
+  userId: string,
+  opts?: { minAttempts?: number; limit?: number },
+): Promise<WeakTopic[]> {
+  try {
+    const minAttempts = opts?.minAttempts ?? 3;
+    const limit = Math.min(50, Math.max(1, opts?.limit ?? 8));
+
+    const rows = await aggregateAttemptsBySubjectTopic(userId);
+
+    return rows
+      .filter((r) => r.attempted >= minAttempts && r.topic.length > 0)
+      .map((r) => ({
+        subject: r.subjectName || "অন্যান্য",
+        topic: r.topic,
+        attempted: r.attempted,
+        correct: r.correct,
+        score: Math.round((r.correct / r.attempted) * 100),
+      }))
+      .sort((a, b) => a.score - b.score)
+      .slice(0, limit);
+  } catch {
+    throw new InternalServerError("Failed to build weak-topic report");
   }
 }

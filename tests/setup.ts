@@ -104,9 +104,12 @@ vi.mock("~backend/db", () => ({
     },
     userProgress: {
       findUnique: vi.fn(),
+      findMany: vi.fn(),
+      findFirst: vi.fn(),
       upsert: vi.fn(),
       update: vi.fn(),
       create: vi.fn(),
+      count: vi.fn(),
     },
     subject: {
       findMany: vi.fn(),
@@ -185,6 +188,7 @@ vi.mock("~backend/db", () => ({
     dailyQuizParticipation: {
       findUnique: vi.fn(),
       findFirst: vi.fn(),
+      findMany: vi.fn(),
       upsert: vi.fn(),
       create: vi.fn(),
       count: vi.fn(),
