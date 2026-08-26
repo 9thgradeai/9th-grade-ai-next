@@ -80,6 +80,13 @@ const THEME_INIT_SCRIPT = `(function(){try{var t=localStorage.getItem("9th-grade
 
 const LANG_INIT_SCRIPT = `(function(){try{var l=localStorage.getItem("${LANGUAGE_KEY}");document.documentElement.lang=(l==="en")?"en":"bn";}catch(e){}})()`;
 
+// Failsafe: landing sections are server-rendered with `opacity:0` and only
+// revealed by framer-motion JS animations. If hydration stalls (e.g. a chunk
+// fails to load) those initial states stay frozen and the page appears blank.
+// This plain inline script runs independently of the React/Next chunks, so it
+// reveals any still-hidden content shortly after load as a last resort.
+const ANIMATION_FAILSAFE_SCRIPT = `(function(){try{function r(){document.querySelectorAll('[style*="opacity: 0"],[style*="opacity:0"]').forEach(function(el){if(el.hasAttribute("hidden"))return;el.style.opacity="1";el.style.transform="none";el.style.height="";});}var t1=setTimeout(r,1500),t2=setTimeout(r,3000);if(document.readyState==="complete"){setTimeout(r,800);}else{window.addEventListener("load",function(){setTimeout(r,800);});}window.addEventListener("load",function(){clearTimeout(t1);});}catch(e){}})();`;
+
 export default function RootLayout({
   children,
 }: {
@@ -98,6 +105,8 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         {/* Sync <html lang> with the persisted UI language before paint. */}
         <script dangerouslySetInnerHTML={{ __html: LANG_INIT_SCRIPT }} />
+        {/* Last-resort reveal of content if JS animations fail to run. */}
+        <script dangerouslySetInnerHTML={{ __html: ANIMATION_FAILSAFE_SCRIPT }} />
       </head>
       <body className="min-h-full flex flex-col font-sans noise">
         <div className="cosmic-bg" aria-hidden="true" />
