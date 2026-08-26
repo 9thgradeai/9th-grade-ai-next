@@ -17,7 +17,7 @@
     "db:migrate": "prisma migrate deploy --schema database/prisma/schema.prisma",
     "db:seed": "prisma db seed --schema database/prisma/schema.prisma",
     "db:sync": "npm run db:push && npm run db:seed",
-    "db:deploy-sync": "prisma db push --skip-generate --schema database/prisma/schema.prisma && npm run db:seed",
+    "db:deploy-sync": "prisma db push --skip-generate --accept-data-loss --schema database/prisma/schema.prisma && npm run db:seed",
     "db:clean": "tsx scripts/clear-content.ts",
     "db:seed-users": "SEED_RESET_USERS=1 prisma db seed --schema database/prisma/schema.prisma",
     "db:seed-questions": "tsx scripts/seed-questions.ts",

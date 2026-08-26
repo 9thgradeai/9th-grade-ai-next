@@ -29,10 +29,11 @@ Runs the production server on the port defined by `PORT` (default 3000).
 
 Schema changes ship via **direct push** (`prisma db push`), not migration files.
 On every Vercel deploy the `prebuild` hook runs `npm run db:deploy-sync`
-(`prisma db push --skip-generate` + idempotent seed) when `VERCEL=1`, keeping the
-production schema in sync automatically. A destructive change fails the build
-instead of silently applying (`--accept-data-loss` is intentionally omitted in
-the deploy path).
+(`prisma db push --accept-data-loss` + idempotent seed) when `VERCEL=1`, keeping
+the production schema in sync automatically — matching the local `db:push`
+policy. Pushes run in a single Postgres transaction: if a change cannot be
+applied (e.g. a new unique constraint colliding with duplicate rows), the whole
+push aborts atomically and the deploy log names the offending table.
 
 If a deploy logs `WARNING: schema sync failed`, apply once manually against the
 production `DATABASE_URL`:
