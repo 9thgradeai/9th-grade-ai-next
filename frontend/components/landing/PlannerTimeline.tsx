@@ -144,7 +144,14 @@ function PlannerStop({
 
   return (
     <motion.div
-      style={{ left: `${step.x * 100}%`, top: `${step.y * 100}%`, opacity }}
+      // clamp() keeps the 160px-wide label inside the container at every
+      // breakpoint — edge stops (x=0.03 / x=0.95) used to spill past the
+      // viewport on tablet widths.
+      style={{
+        left: `clamp(5rem, ${step.x * 100}%, calc(100% - 5rem))`,
+        top: `${step.y * 100}%`,
+        opacity,
+      }}
       className={`absolute flex w-40 -translate-x-1/2 flex-col items-center text-center ${
         step.labelSide === "above" ? "-translate-y-full pb-4" : "translate-y-0 pt-4"
       }`}

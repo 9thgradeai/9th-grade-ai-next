@@ -94,11 +94,11 @@ export default function AnalyticsVisualization() {
       </Card>
 
       {/* Improvement trend */}
-      <Card className="md:col-span-2">
+      <Card className="min-w-0 md:col-span-2">
         <CardLabel>Improvement trend</CardLabel>
-        <div className="flex items-end gap-6">
+        <div className="flex min-w-0 items-end gap-4 sm:gap-6">
           <TrendValue />
-          <svg viewBox="0 0 320 96" className="mb-1 h-24 flex-1" preserveAspectRatio="none" aria-hidden="true">
+          <svg viewBox="0 0 320 96" className="mb-1 h-24 w-full min-w-0 flex-1" preserveAspectRatio="none" aria-hidden="true">
             <defs>
               <linearGradient id="an-line" x1="0" y1="0" x2="1" y2="0">
                 <stop offset="0%" stopColor="#22d3ee" />
@@ -231,7 +231,10 @@ function WeaknessCount() {
 
 function Card({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={`glass-card rounded-2xl p-6 ${className}`}>
+    // min-w-0 lets grid items shrink below their content's intrinsic width —
+    // without it a single wide child (e.g. an SVG's default 300px) forces the
+    // whole track wider than the viewport on small phones.
+    <div className={`glass-card min-w-0 rounded-2xl p-6 ${className}`}>
       {children}
     </div>
   );
