@@ -105,6 +105,40 @@ async function dedupeParents() {
   }
 }
 
+async function dedupeQuestions() {
+  // Questions duplicated across old seeding generations (flat file vs folder
+  // imports). Group by CONTENT identity (subjectId + question text); keep the
+  // oldest row. Bookmarks are re-pointed onto it; attempts survive via
+  // onDelete: SetNull (they retain subjectName/topic for analytics).
+  const kept = `(SELECT MIN(k.id) FROM "Question" k
+                 WHERE k."subjectId" = d."subjectId" AND k."question" = d."question")`;
+
+  // Conflicting bookmark twins (same user already bookmarked the kept row).
+  const droppedMarks = await p.$executeRawUnsafe(`
+    DELETE FROM "Bookmark" s
+    USING "Question" d
+    WHERE s."questionId" = d.id
+      AND EXISTS (SELECT 1 FROM "Bookmark" x
+                  WHERE x."userId" = s."userId" AND x."questionId" = ${kept})
+      AND d.id <> ${kept}
+  `.replace(/\s+/g, " "));
+  if (droppedMarks > 0) console.log(`heal: Bookmark — dropped ${droppedMarks} conflicting twin(s)`);
+
+  const movedMarks = await p.$executeRawUnsafe(`
+    UPDATE "Bookmark" s
+    SET "questionId" = ${kept}
+    FROM "Question" d
+    WHERE s."questionId" = d.id AND d.id <> ${kept}
+  `.replace(/\s+/g, " "));
+  if (movedMarks > 0) console.log(`heal: Bookmark — re-pointed ${movedMarks} bookmark(s)`);
+
+  const removed = await p.$executeRawUnsafe(`
+    DELETE FROM "Question" d
+    WHERE d.id <> ${kept}
+  `.replace(/\s+/g, " "));
+  if (removed > 0) console.log(`heal: Question — removed ${removed} duplicate(s)`);
+}
+
 async function report() {
   for (const [table] of BACKFILL) {
     const rows = await p.$queryRawUnsafe<{ n: bigint }[]>(
@@ -124,6 +158,7 @@ async function main() {
   await backfill();
   await repointChildren();
   await dedupeParents();
+  await dedupeQuestions();
   await report();
 }
 
