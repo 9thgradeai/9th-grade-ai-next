@@ -61,6 +61,8 @@ export namespace Client {
       bn: string;
       en?: string;
     };
+    sourceUrl?: string;
+    verified?: boolean;
   };
 
   export type SubjectCard = {
@@ -389,6 +391,8 @@ export namespace Server {
     readTime: number;
     categoryBn: string;
     categoryEn: string;
+    sourceUrl?: string;
+    verified?: boolean;
   };
 
   export type BadgeDTO = {
@@ -447,6 +451,8 @@ export namespace Server {
     year: string;
     circularNo: string;
     note: string;
+    sourceUrl?: string;
+    verified?: boolean;
   };
 
   export type MockTestResultDTO = {

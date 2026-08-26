@@ -400,7 +400,10 @@ export async function getDailyQuiz(userId?: string | null): Promise<DailyQuizDTO
 // ── News / recommendations / gamification ───────────────
 export async function getFlashNews(): Promise<FlashNewsDTO[]> {
   try {
-    const rows = await prisma.flashNews.findMany({ orderBy: { id: "desc" } });
+    const rows = await prisma.flashNews.findMany({
+      where: { verified: true },
+      orderBy: { id: "desc" },
+    });
     return rows.map((n) => ({
       id: n.id,
       tag: n.tag,
@@ -412,6 +415,8 @@ export async function getFlashNews(): Promise<FlashNewsDTO[]> {
       readTime: n.readTime,
       categoryBn: n.categoryBn ?? "",
       categoryEn: n.categoryEn ?? "",
+      sourceUrl: n.sourceUrl ?? undefined,
+      verified: n.verified,
     }));
   } catch {
     throw new InternalServerError("Failed to fetch flash news");
@@ -473,6 +478,7 @@ export async function getDocuments(): Promise<DocumentDTO[]> {
 export async function getExamSchedule(): Promise<ExamScheduleDTO[]> {
   try {
     const rows = await prisma.examSchedule.findMany({
+      where: { verified: true },
       orderBy: [{ date: "asc" }, { sortOrder: "asc" }],
     });
     return rows.map((e) => ({
@@ -484,6 +490,8 @@ export async function getExamSchedule(): Promise<ExamScheduleDTO[]> {
       year: e.year,
       circularNo: e.circularNo,
       note: e.note,
+      sourceUrl: e.sourceUrl ?? undefined,
+      verified: e.verified,
     }));
   } catch {
     throw new InternalServerError("Failed to fetch exam schedule");

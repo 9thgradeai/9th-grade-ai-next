@@ -34,7 +34,6 @@ import {
   OFFLINE_PACKS,
   SOLVER_EXAMPLES,
 } from "../../frontend/lib/data/study";
-import { FLASH_NEWS_ITEMS } from "../../frontend/lib/data/ai";
 import { seedQuestions } from "../../scripts/seed-questions";
 import { sourceKey } from "../../scripts/seed-keys";
 
@@ -213,7 +212,11 @@ async function main() {
   }
   console.log(`  ✓ ${Object.keys(MOCK_TEST_QUESTIONS).length} mock tests`);
 
-  // --- Exam schedule (real published exam dates) ---
+  // --- Exam schedule (verified official dates only) ---
+  // No placeholder/fabricated dates are seeded. Real exam dates must come from
+  // verified official circulars (BPSC etc.); until then the dashboard shows an
+  // empty state instead of inventing a schedule.
+  await prisma.examSchedule.deleteMany({});
   const examSchedule: {
     titleBn: string;
     titleEn: string;
@@ -222,17 +225,9 @@ async function main() {
     year: string;
     circularNo: string;
     note: string;
-  }[] = [
-    {
-      titleBn: "বিসিএস প্রিলিমিনারি (৫১তম)",
-      titleEn: "BCS Preliminary (51st)",
-      type: "BCS",
-      date: "2026-11-15",
-      year: "2026",
-      circularNo: "PSC/BCS-51/2026",
-      note: "২টি পত্রে ৪০০ নম্বর। প্রিলিমিনারির প্রস্তুতির জন্য সিলেবাস ও প্রশ্নব্যাংক ব্যবহার করুন।",
-    },
-  ];
+    sourceUrl: string;
+    verified: boolean;
+  }[] = [];
   for (const exam of examSchedule) {
     await prisma.examSchedule.upsert({
       where: { sourceKey: sourceKey(exam.circularNo, exam.titleBn, exam.year) },
@@ -242,6 +237,8 @@ async function main() {
         date: new Date(exam.date),
         year: exam.year,
         note: exam.note,
+        sourceUrl: exam.sourceUrl || null,
+        verified: exam.verified,
       },
       create: {
         titleBn: exam.titleBn,
@@ -251,6 +248,8 @@ async function main() {
         year: exam.year,
         circularNo: exam.circularNo,
         note: exam.note,
+        sourceUrl: exam.sourceUrl || null,
+        verified: exam.verified,
         sourceKey: sourceKey(exam.circularNo, exam.titleBn, exam.year),
       },
     });
@@ -288,8 +287,11 @@ async function main() {
   }
   console.log(`  ✓ ${DAILY_QUIZZES.length} daily quizzes`);
 
-  // --- Flash news (upsert by md5(titleBn|date); prefer ai-data items) ---
-  const news = FLASH_NEWS_ITEMS.length > 0 ? FLASH_NEWS_ITEMS : (FLASH_NEWS as Client.FlashNews[]);
+  // --- Flash news (editorially curated from verified official sources) ---
+  // Clear any previously seeded placeholder items so none persist, and seed
+  // nothing fabricated. The dashboard hides the section when empty.
+  await prisma.flashNews.deleteMany({});
+  const news: Client.FlashNews[] = [];
   for (const n of news) {
     const titleBn = n.title?.bn ?? n.title ?? "";
     const data = {
@@ -301,6 +303,8 @@ async function main() {
       readTime: n.readTime ?? 1,
       categoryBn: n.category?.bn ?? "",
       categoryEn: n.category?.en ?? "",
+      sourceUrl: n.sourceUrl ?? null,
+      verified: n.verified ?? false,
     };
     await prisma.flashNews.upsert({
       where: { sourceKey: sourceKey(titleBn, data.date) },

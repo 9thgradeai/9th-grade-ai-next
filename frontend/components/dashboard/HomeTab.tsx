@@ -334,6 +334,16 @@ export default function HomeTab() {
                 {nextExam.note ? (
                   <p className="text-xs text-zinc-500 mt-1 max-w-md">{nextExam.note}</p>
                 ) : null}
+                {nextExam.sourceUrl ? (
+                  <a
+                    href={nextExam.sourceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-emerald-400 hover:underline mt-1 inline-flex items-center gap-1"
+                  >
+                    সূত্র ↗
+                  </a>
+                ) : null}
               </div>
             </div>
             <div className="flex items-center gap-4">
@@ -638,7 +648,19 @@ export default function HomeTab() {
                 <span className="px-1.5 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded text-[10px] font-mono text-emerald-400 flex-shrink-0 mt-0.5">
                   {item.tag}
                 </span>
-                <p className="text-sm text-zinc-300 flex-1">{item.text}</p>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm text-zinc-300">{item.text}</p>
+                  {item.sourceUrl ? (
+                    <a
+                      href={item.sourceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[11px] text-emerald-400 hover:underline mt-0.5 inline-flex items-center gap-1"
+                    >
+                      সূত্র ↗
+                    </a>
+                  ) : null}
+                </div>
                 <span className="text-xs text-zinc-500 font-mono flex-shrink-0">
                   {item.date}
                 </span>

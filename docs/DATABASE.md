@@ -338,6 +338,8 @@ dashboard countdown. Seeded from announced circulars — no fabricated entries.
 - `circularNo` String — default `""`
 - `note` String — default `""`
 - `sortOrder` Int — default `0`
+- `sourceUrl` String? — default `""`, link to the verified official circular
+- `verified` Boolean — default `false`; only `verified` rows are surfaced by the API
 - Indexed on `date` and `type`.
 
 #### FlashNews
@@ -351,6 +353,8 @@ dashboard countdown. Seeded from announced circulars — no fabricated entries.
 - `readTime` Int — default `1`
 - `categoryBn` String? — default `""`
 - `categoryEn` String? — default `""`
+- `sourceUrl` String? — default `""`, link to the verified official source
+- `verified` Boolean — default `false`; only `verified` rows are surfaced by the API
 
 #### Recommendation
 - `id` Int — PK, auto-increment

@@ -434,6 +434,8 @@ model ExamSchedule {
   circularNo  String   @default("")
   note        String   @default("")
   sortOrder   Int      @default(0)
+  sourceUrl   String?  @default("") // Link to the verified official circular
+  verified    Boolean  @default(false) // Only verified entries are surfaced by the API
   // Seed identity: md5(circularNo|titleBn|year).
   sourceKey   String   @default("") @unique
 
@@ -453,6 +455,8 @@ model FlashNews {
   readTime    Int     @default(1)
   categoryBn  String? @default("")
   categoryEn  String? @default("")
+  sourceUrl   String? @default("") // Link to the verified official source
+  verified    Boolean  @default(false) // Only verified items are surfaced by the API
   // Seed identity: md5(titleBn|date).
   sourceKey   String  @default("") @unique
 }
