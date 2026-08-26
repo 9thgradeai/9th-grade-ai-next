@@ -9,7 +9,7 @@ export default function PlannerSection() {
           eyebrow="STUDY PLANNER"
           title="From weak topic"
           highlight="to mastery"
-          description="One route, re-planned nightly around your exam date, your hours, and what the graph says you actually need."
+          description="One route through the syllabus — a daily routine you follow and mark complete as you prepare."
         />
         <PlannerTimeline />
       </div>

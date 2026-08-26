@@ -1,7 +1,7 @@
 // src/lib/study-data.ts
 // Comprehensive data for all new interactive features
 
-import type { Flashcard, StudyPlanDay, MockQuestion, DailyQuiz, Badge, LeaderboardEntry, Notification } from "@/lib/types";
+import type { Flashcard, StudyPlanDay, MockQuestion, DailyQuiz, Badge, Notification } from "@/lib/types";
 
 // ── Smart Study Planner Data ──────────────────────────
 export const STUDY_PLAN: StudyPlanDay[] = [
@@ -530,20 +530,6 @@ export const BADGES: Badge[] = [
     unlocked: false,
     rarity: "rare",
   },
-];
-
-// ── Leaderboard Data ─────────────────────────────────
-export const LEADERBOARD: LeaderboardEntry[] = [
-  { rank: 1, name: "Arif Rahman", points: 1250, streak: 14 },
-  { rank: 2, name: "Sabina Yasmin", points: 1180, streak: 12 },
-  { rank: 3, name: "Farhan Kabir", points: 916, streak: 10 },
-  { rank: 4, name: "Tahmid Hasan", points: 890, streak: 8 },
-  { rank: 5, name: "Nusrat Jahan", points: 845, streak: 7 },
-  { rank: 6, name: "Rafi Ahmed", points: 720, streak: 5 },
-  { rank: 7, name: "Mitu Akter", points: 680, streak: 4 },
-  { rank: 8, name: "Sakib Khan", points: 650, streak: 3 },
-  { rank: 9, name: "Riya Sultana", points: 610, streak: 2 },
-  { rank: 10, name: "Imran Hossain", points: 580, streak: 1 },
 ];
 
 // ── Notifications ────────────────────────────────────

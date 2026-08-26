@@ -1,7 +1,7 @@
 // src/lib/ai-data.ts
-// Static data backing the AI Tutor, recommendations, and flash-news modal.
+// Static data backing the AI Tutor and flash-news modal.
 
-import type { FlashNews, Recommendation, PresetPrompt } from "@/lib/types";
+import type { FlashNews, PresetPrompt } from "@/lib/types";
 
 // ---------------------------------------------------------------- 1️⃣ AI Tutor: preset quick prompts
 export const PRESET_PROMPTS: PresetPrompt[] = [
@@ -28,47 +28,7 @@ export const PRESET_PROMPTS: PresetPrompt[] = [
   },
 ];
 
-// ---------------------------------------------------------------- 2️⃣ AI Recommendation Engine
-export const RECOMMENDATIONS: Recommendation[] = [
-  {
-    id: "higher-math",
-    subject: { bn: "উচ্চতর গণিত", en: "Higher Math" },
-    metric: "accuracy",
-    accuracy: 45,
-    title: {
-      bn: "উচ্চতর গণিত রিভিশন",
-      en: "Higher Math Revision",
-    },
-    description: {
-      bn: "আপনার উচ্চতর গণিত বিষয়ের নির্ভুলতা মাত্র ৪৫%। আজই ১৫টি রিভিশন প্রশ্ন দিয়ে দুর্বলতা ঢাকা যাক!",
-      en: "Your accuracy in Higher Math is only 45%. Close the gap with 15 targeted revision questions today!",
-    },
-    cta: {
-      bn: "9Th-Grade AI দিয়ে ১৫টি রিভিশন প্রশ্ন শুরু করুন",
-      en: "Start 15 Revision Questions with 9Th-Grade AI",
-    },
-  },
-  {
-    id: "biology",
-    subject: { bn: "জীববিদ্যা", en: "Biology" },
-    metric: "accuracy",
-    accuracy: 58,
-    title: {
-      bn: "জীববিদ্যা মাস্টারি",
-      en: "Biology Mastery",
-    },
-    description: {
-      bn: "আপনার জীববিদ্যার নির্ভুলতা ৫৮% — ১০টি ফ্ল্যাশকার্ড দিয়ে পড়াশোনা করুন।",
-      en: "Your Biology accuracy is 58%. Try 10 flashcards to lock in the concepts.",
-    },
-    cta: {
-      bn: "10টি স্মার্ট ফ্ল্যাশকার্ড শুরু করুন",
-      en: "Start 10 Smart Flashcards",
-    },
-  },
-];
-
-// ---------------------------------------------------------------- 3️⃣ Flash News samples (used by HomeTab carousel AND FlashNewsModal)
+// ---------------------------------------------------------------- 2️⃣ Flash News samples (consume via /api/flash-news; HomeTab uses api.news())
 export const FLASH_NEWS_ITEMS: FlashNews[] = [
   {
     id: "bcs-51-dates",

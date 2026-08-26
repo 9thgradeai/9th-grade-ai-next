@@ -29,7 +29,8 @@ export async function POST(request: Request) {
       throw new AppError(409, "A user with that email already exists.", "USER_EMAIL_EXISTS");
     }
 
-    await createUser({ name, email, password });
+    const origin = new URL(request.url).origin;
+    await createUser({ name, email, password, origin });
 
     const newUser = await findUserByEmail(email);
     if (!newUser) {

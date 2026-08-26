@@ -18,15 +18,15 @@ import { trackCtaClick, trackHeroView } from "@/lib/analytics";
 import { useMotionCapabilities } from "@/lib/motion/device";
 import { EASE_OUT_EXPO, heroItem, staggerParent } from "@/lib/motion/variants";
 
-const stats = [
-  { value: "14", label: "Subjects" },
+const stats = (subjectCount: number) => [
+  { value: String(subjectCount), label: "Subjects" },
   { value: "2", label: "Languages" },
   { value: "100%", label: "Free" },
 ];
 
 const heroContainer: Variants = staggerParent(0.12, 0.1);
 
-export default function HeroSection() {
+export default function HeroSection({ subjectCount }: { subjectCount: number }) {
   const sectionRef = useRef<HTMLElement>(null);
   const shouldReduceMotion = useReducedMotion();
 
@@ -219,7 +219,7 @@ export default function HeroSection() {
             variants={heroItem}
             className="mt-12 flex flex-wrap items-center gap-x-8 gap-y-4 sm:gap-x-12"
           >
-            {stats.map((stat, i) => (
+            {stats(subjectCount).map((stat, i) => (
               <div key={stat.label} className={`flex items-baseline gap-8 sm:gap-12 ${i > 0 ? "sm:border-l sm:border-white/10 sm:pl-12" : ""}`}>
                 <dt className="sr-only">{stat.label}</dt>
                 <dd className="font-display text-2xl font-semibold text-emerald-400 tabular-nums sm:text-3xl">

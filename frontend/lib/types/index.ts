@@ -56,28 +56,6 @@ export namespace Client {
     };
   };
 
-  export type Recommendation = {
-    id: string;
-    subject: {
-      bn: string;
-      en?: string;
-    };
-    metric: string;
-    accuracy: number;
-    title: {
-      bn: string;
-      en: string;
-    };
-    description: {
-      bn: string;
-      en?: string;
-    };
-    cta: {
-      bn: string;
-      en: string;
-    };
-  };
-
   export type SubjectCard = {
     id: string;
     name: {
@@ -406,20 +384,6 @@ export namespace Server {
     categoryEn: string;
   };
 
-  export type RecommendationDTO = {
-    id: number;
-    subjectBn: string;
-    subjectEn: string;
-    metric: string;
-    accuracy: number;
-    titleBn: string;
-    titleEn: string;
-    descriptionBn: string;
-    descriptionEn: string;
-    ctaBn: string;
-    ctaEn: string;
-  };
-
   export type BadgeDTO = {
     id: number;
     name: string;
@@ -620,7 +584,6 @@ export type StudyTaskDTO = Server.StudyTaskDTO;
 export type DailyQuizDTO = Server.DailyQuizDTO;
 export type MockTestDTO = Server.MockTestDTO;
 export type FlashNewsDTO = Server.FlashNewsDTO;
-export type RecommendationDTO = Server.RecommendationDTO;
 export type BadgeDTO = Server.BadgeDTO;
 export type NotificationDTO = Server.NotificationDTO;
 export type OfflinePackDTO = Server.OfflinePackDTO;
@@ -643,7 +606,6 @@ export type LeaderboardEntryDTO = Server.LeaderboardEntryDTO;
 export type DailyQuizHistoryItemDTO = Server.DailyQuizHistoryItemDTO;
 export type TutorMessage = Client.TutorMessage;
 export type FlashNews = Client.FlashNews;
-export type Recommendation = Client.Recommendation;
 export type SubjectCard = Client.SubjectCard;
 export type PresetPrompt = Client.PresetPrompt;
 export type Flashcard = Client.Flashcard;

@@ -4,6 +4,7 @@ import { Target, Heart, Shield, Users, Sparkles, ArrowRight } from "lucide-react
 import PublicShell from "@/components/public/PublicShell";
 import PageHero from "@/components/public/PageHero";
 import SectionHeading from "@/components/ui/SectionHeading";
+import { prisma } from "~backend/db";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/about" },
@@ -12,12 +13,18 @@ export const metadata: Metadata = {
     "9Th-Grade AI is a free, open-source AI-powered exam preparation platform for Bangladeshi government job aspirants.",
 };
 
-const stats = [
-  { value: "50K+", label: "Active Students" },
-  { value: "2.5M+", label: "Questions Practiced" },
-  { value: "100K+", label: "Questions in Bank" },
-  { value: "14", label: "Subjects Covered" },
-];
+export default async function AboutPage() {
+  const [questionCount, subjectCount] = await Promise.all([
+    prisma.question.count(),
+    prisma.subject.count(),
+  ]);
+
+  const stats = [
+    { value: String(subjectCount), label: "Subjects (BCS syllabus)" },
+    { value: `${questionCount.toLocaleString()}+`, label: "Practice Questions" },
+    { value: "বাংলা / English", label: "Bilingual AI Tutor" },
+    { value: "Free", label: "Open-Source Core" },
+  ];
 
 const values = [
   {
@@ -42,7 +49,6 @@ const values = [
   },
 ];
 
-export default function AboutPage() {
   return (
     <PublicShell>
       <PageHero
@@ -85,7 +91,7 @@ export default function AboutPage() {
             </p>
             <p>
               We set out to change that with an open platform that combines a complete
-              syllabus map, a massive tagged question bank, adaptive mock tests, spaced
+              syllabus map, a syllabus-aligned question bank, full-length mock tests, spaced
               repetition, and an AI tutor — all free, all in one place, and all in both
               Bangla and English.
             </p>

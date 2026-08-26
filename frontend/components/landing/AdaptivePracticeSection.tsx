@@ -14,10 +14,10 @@ export default function AdaptivePracticeSection() {
       />
       <div className="relative mx-auto max-w-7xl">
         <SectionHeading
-          eyebrow="ADAPTIVE ENGINE"
-          title="A loop that tightens"
-          highlight="with every question"
-          description="Performance feeds pattern detection, pattern detection tunes difficulty, difficulty shapes topic selection — and the next question is chosen to move you, not to fill time."
+          eyebrow="PRACTICE LOOP"
+          title="A loop that builds"
+          highlight="session by session"
+          description="Answer questions, see where your accuracy is weak, review with spaced-repetition flashcards, then focus your next session on the topics that need it most."
         />
         <AdaptiveLoop />
       </div>

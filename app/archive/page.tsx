@@ -5,13 +5,13 @@ import PublicShell from "@/components/public/PublicShell";
 import PageHero from "@/components/public/PageHero";
 import SectionHeading from "@/components/ui/SectionHeading";
 import StatusPill from "@/components/ui/StatusPill";
-import { ARCHIVE_CATEGORIES } from "@/lib/data";
+import { prisma } from "~backend/db";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/archive" },
-  title: "Previous Year Papers — 9Th-Grade AI",
+  title: "Practice by Exam Track — 9Th-Grade AI",
   description:
-    "Browse the complete archive of BCS, Bank, Teacher Recruitment, and other competitive exam question papers with solutions.",
+    "Practice questions organized by exam track — BCS, Bank, Teacher Recruitment, and other competitive exams — with solutions and full-length practice mode.",
 };
 
 const accentStyles: Record<string, string> = {
@@ -21,14 +21,23 @@ const accentStyles: Record<string, string> = {
   purple: "from-purple-500/15 to-purple-500/5 border-purple-400/25 text-purple-400",
 };
 
-export default function ArchivePage() {
+const tracks = [
+  { name: "BCS Preliminary", icon: "🎯", accent: "emerald", status: "ACTIVE" },
+  { name: "BCS Written", icon: "📄", accent: "sky", status: "AVAILABLE" },
+  { name: "Teacher Recruitment", icon: "👨‍🏫", accent: "yellow", status: "ACTIVE" },
+  { name: "Bank Jobs", icon: "🏦", accent: "purple", status: "NEW" },
+];
+
+export default async function ArchivePage() {
+  const questionCount = await prisma.question.count();
+
   return (
     <PublicShell>
       <PageHero
-        eyebrow="PREVIOUS YEAR PAPERS"
-        title="The Full Archive of"
-        highlight="Real Exam Papers"
-        description="Every past question, organized by exam, year, and subject — with detailed solutions and full-length practice mode. Search, filter, and drill what matters."
+        eyebrow="PRACTICE BY TRACK"
+        title="Questions Organized by"
+        highlight="Your Exam Track"
+        description="Practice questions mapped to the major recruitment exams — with detailed solutions and full-length practice mode. Search, filter, and drill what matters."
         actions={[
           { href: "/dashboard?tab=question-bank", label: "Browse Question Bank" },
           { href: "/login?register=true", label: "Start Free Preparation", variant: "ghost" },
@@ -38,14 +47,14 @@ export default function ArchivePage() {
       <section className="py-16 md:py-24 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto">
           <SectionHeading
-            eyebrow="ARCHIVE"
-            title="Papers by Exam,"
-            highlight="Year After Year"
-            description="From 1982 to today — a continuously growing repository of previous year papers across every major recruitment exam."
+            eyebrow="TRACKS"
+            title="Practice by Exam,"
+            highlight="Track After Track"
+            description={`${questionCount.toLocaleString()} practice questions available across the BCS syllabus and related exam tracks.`}
           />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {ARCHIVE_CATEGORIES.map((category) => {
+            {tracks.map((category) => {
               const accent = accentStyles[category.accent] ?? accentStyles.emerald;
               return (
                 <Link
@@ -64,13 +73,13 @@ export default function ArchivePage() {
                     {category.name}
                   </h3>
                   <p className="text-sm text-zinc-500 font-mono">
-                    {category.count} papers · {category.yearRange}
+                    Practice questions
                   </p>
 
                   <div className="mt-5 pt-4 border-t border-white/10 flex items-center justify-between text-xs text-zinc-400">
                     <span className="inline-flex items-center gap-1.5 font-mono">
                       <CalendarRange className="w-3.5 h-3.5" aria-hidden="true" />
-                      All years indexed
+                      Syllabus-aligned
                     </span>
                     <ChevronRight className="w-4 h-4 text-emerald-400 group-hover:translate-x-0.5 transition-transform" aria-hidden="true" />
                   </div>
@@ -85,7 +94,7 @@ export default function ArchivePage() {
                 <FolderArchive className="w-5 h-5 text-emerald-400" aria-hidden="true" />
               </div>
               <div>
-                <p className="text-sm font-medium text-white">Practice a paper in exam mode</p>
+                <p className="text-sm font-medium text-white">Practice a set in exam mode</p>
                 <p className="text-xs text-zinc-500 mt-0.5">
                   Full-length timed attempt with solutions after submission.
                 </p>

@@ -198,6 +198,13 @@ vi.mock("~backend/db", () => ({
       findFirst: vi.fn(),
       count: vi.fn(),
     },
+    mockTestResult: {
+      findMany: vi.fn(),
+      findFirst: vi.fn(),
+      findUnique: vi.fn(),
+      create: vi.fn(),
+      count: vi.fn(),
+    },
     flashNews: {
       findMany: vi.fn(),
       findFirst: vi.fn(),

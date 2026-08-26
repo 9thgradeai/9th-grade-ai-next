@@ -3,11 +3,15 @@
 
 import "server-only";
 
+import crypto from "crypto";
 import { hash, compare } from "bcryptjs";
 import { prisma } from "~backend/db";
 import { getSessionUser } from "~backend/auth";
+import { sendEmail } from "~backend/lib/email";
+import { log } from "~backend/infrastructure/observability/logger";
 import {
   AppError,
+  ValidationError,
   NotFoundError,
   ConflictError,
   InternalServerError,
@@ -23,8 +27,32 @@ export type UserRecord = {
   passwordHash: string;
   tokenVersion: number;
   role: "student" | "admin";
+  emailVerified: boolean;
+  onboarded: boolean;
   createdAt: string;
 };
+
+export type OnboardingInput = {
+  examTarget?: string;
+  examDate?: string;
+  prepLevel?: "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
+  studyHoursPerDay?: number;
+  goal?: string;
+};
+
+const TOKEN_TTL_MS = 60 * 60 * 1000; // 1 hour for password reset
+const VERIFY_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours for email verification
+
+/** Generate a high-entropy raw token and its SHA-256 hash (store the hash). */
+function makeToken(): { raw: string; hash: string } {
+  const raw = crypto.randomBytes(32).toString("hex");
+  const hashValue = crypto.createHash("sha256").update(raw).digest("hex");
+  return { raw, hash: hashValue };
+}
+
+function sha256(raw: string): string {
+  return crypto.createHash("sha256").update(raw).digest("hex");
+}
 
 export async function findUserByEmail(email: string): Promise<UserRecord | null> {
   try {
@@ -38,6 +66,8 @@ export async function findUserByEmail(email: string): Promise<UserRecord | null>
       passwordHash: u.passwordHash,
       tokenVersion: u.tokenVersion,
       role: u.role === "ADMIN" ? "admin" : "student",
+      emailVerified: u.emailVerified,
+      onboarded: u.onboarded,
       createdAt: u.createdAt.toISOString(),
     };
   } catch {
@@ -50,11 +80,14 @@ export async function createUser({
   email,
   password,
   handle = email.split("@")[0],
+  origin,
 }: {
   name: string;
   email: string;
   password: string;
   handle?: string;
+  /** Request origin used to build the email-verification link. */
+  origin?: string;
 }): Promise<UserRecord> {
   try {
     const existing = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
@@ -63,6 +96,7 @@ export async function createUser({
     }
 
     const passwordHash = await hash(password, 10);
+    const { raw: verifyRaw, hash: verifyHash } = makeToken();
 
     // User + initial progress row commit atomically — a failure creating the
     // progress row rolls back the user instead of leaving an orphaned account
@@ -79,7 +113,15 @@ export async function createUser({
     try {
       u = await prisma.$transaction(async (tx) => {
         const created = await tx.user.create({
-          data: { name, email: email.toLowerCase(), handle, passwordHash, role: "STUDENT" },
+          data: {
+            name,
+            email: email.toLowerCase(),
+            handle,
+            passwordHash,
+            role: "STUDENT",
+            emailVerifyToken: verifyHash,
+            emailVerifyExpires: new Date(Date.now() + VERIFY_TTL_MS),
+          },
         });
         await tx.userProgress.create({ data: { userId: created.id } });
         return created;
@@ -91,6 +133,20 @@ export async function createUser({
       throw err;
     }
 
+    // Best-effort verification email; never blocks registration. In dev with no
+    // transport the link is logged server-side so the flow stays testable.
+    if (origin) {
+      const link = `${origin}/verify-email?token=${verifyRaw}`;
+      const { sent } = await sendEmail({
+        to: u.email,
+        subject: "Verify your 9Th-Grade AI account",
+        html: `<p>Welcome to 9Th-Grade AI. Confirm your email to secure your account:</p><p><a href="${link}">${link}</a></p>`,
+      });
+      if (!sent && process.env.NODE_ENV !== "production") {
+        log.info("auth.verify.devlink", { email: u.email, link });
+      }
+    }
+
     return {
       id: u.id,
       name: u.name,
@@ -99,6 +155,8 @@ export async function createUser({
       passwordHash: u.passwordHash,
       tokenVersion: u.tokenVersion,
       role: "student",
+      emailVerified: u.emailVerified,
+      onboarded: u.onboarded,
       createdAt: u.createdAt.toISOString(),
     };
   } catch (error) {
@@ -240,6 +298,8 @@ export async function findUserById(userId: string): Promise<UserRecord | null> {
       passwordHash: u.passwordHash,
       tokenVersion: u.tokenVersion,
       role: u.role === "ADMIN" ? "admin" : "student",
+      emailVerified: u.emailVerified,
+      onboarded: u.onboarded,
       createdAt: u.createdAt.toISOString(),
     };
   } catch {
@@ -268,6 +328,8 @@ export async function updateUserProfile(
       passwordHash: u.passwordHash,
       tokenVersion: u.tokenVersion,
       role: u.role === "ADMIN" ? "admin" : "student",
+      emailVerified: u.emailVerified,
+      onboarded: u.onboarded,
       createdAt: u.createdAt.toISOString(),
     };
   } catch (error) {
@@ -342,4 +404,196 @@ export async function deleteUserAccount(userId: string): Promise<void> {
     if (error instanceof AppError) throw error;
     throw new InternalServerError("Failed to delete account");
   }
+}
+
+// ── Password reset ───────────────────────────────────────────
+
+/**
+ * Begin a password-reset flow. Always returns a positive result so the
+ * response cannot be used to enumerate which emails are registered. When the
+ * address matches a user we mint a single-use, 1-hour token (store only its
+ * SHA-256 hash), email a reset link, and — in non-production with no email
+ * transport — return the link so the flow stays manually testable.
+ */
+export async function requestPasswordReset(
+  email: string,
+  origin: string,
+): Promise<{ devLink?: string }> {
+  try {
+    const user = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
+    if (!user) return {};
+
+    const { raw, hash: tokenHash } = makeToken();
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        passwordResetToken: tokenHash,
+        passwordResetExpires: new Date(Date.now() + TOKEN_TTL_MS),
+      },
+    });
+
+    const link = `${origin}/reset-password?token=${raw}`;
+    const { sent } = await sendEmail({
+      to: user.email,
+      subject: "Reset your 9Th-Grade AI password",
+      html: `<p>We received a request to reset your 9Th-Grade AI password.</p><p><a href="${link}">${link}</a></p><p>If you didn't request this, you can ignore this email.</p>`,
+    });
+
+    if (!sent && process.env.NODE_ENV !== "production") {
+      log.info("auth.reset.devlink", { email: user.email, link });
+      return { devLink: link };
+    }
+    return {};
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+    throw new InternalServerError("Failed to request password reset");
+  }
+}
+
+/**
+ * Consume a password-reset token. Validates the hash, expiry, and new
+ * password, then rotates the password and bumps tokenVersion so every prior
+ * session is invalidated. Clears the token either way on success.
+ */
+export async function resetPassword(token: string, newPassword: string): Promise<void> {
+  try {
+    if (!isString(token) || token.length < 32) {
+      throw new ValidationError("Invalid or expired reset link.");
+    }
+    if (!isString(newPassword) || newPassword.length < 8) {
+      throw new ValidationError("Password must be at least 8 characters.");
+    }
+
+    const tokenHash = sha256(token);
+    const user = await prisma.user.findFirst({
+      where: { passwordResetToken: tokenHash, passwordResetExpires: { gt: new Date() } },
+    });
+    if (!user) {
+      throw new ValidationError("Invalid or expired reset link.");
+    }
+
+    const passwordHash = await hash(newPassword, 10);
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        passwordHash,
+        tokenVersion: { increment: 1 },
+        passwordResetToken: null,
+        passwordResetExpires: null,
+      },
+    });
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+    throw new InternalServerError("Failed to reset password");
+  }
+}
+
+// ── Email verification ───────────────────────────────────────
+
+/** Verify an email-confirmation token. Idempotent and safe to retry. */
+export async function verifyEmail(token: string): Promise<{ ok: boolean }> {
+  try {
+    if (!isString(token) || token.length < 32) return { ok: false };
+    const tokenHash = sha256(token);
+    const user = await prisma.user.findFirst({
+      where: { emailVerifyToken: tokenHash, emailVerifyExpires: { gt: new Date() } },
+    });
+    if (!user) return { ok: false };
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { emailVerified: true, emailVerifyToken: null, emailVerifyExpires: null },
+    });
+    return { ok: true };
+  } catch {
+    return { ok: false };
+  }
+}
+
+// ── Onboarding ───────────────────────────────────────────────
+
+function validateOnboarding(input: OnboardingInput): {
+  examTarget?: string;
+  examDate?: Date;
+  prepLevel?: "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
+  studyHoursPerDay?: number;
+  goal?: string;
+} {
+  const out: {
+    examTarget?: string;
+    examDate?: Date;
+    prepLevel?: "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
+    studyHoursPerDay?: number;
+    goal?: string;
+  } = {};
+
+  if (input.examTarget != null) {
+    if (!isString(input.examTarget) || input.examTarget.trim().length === 0 || input.examTarget.length > 120) {
+      throw new ValidationError("Exam target must be between 1 and 120 characters.");
+    }
+    out.examTarget = input.examTarget.trim();
+  }
+  if (input.examDate != null) {
+    const date = new Date(input.examDate);
+    if (Number.isNaN(date.getTime())) {
+      throw new ValidationError("Exam date is not a valid date.");
+    }
+    out.examDate = date;
+  }
+  if (input.prepLevel != null) {
+    if (!["BEGINNER", "INTERMEDIATE", "ADVANCED"].includes(input.prepLevel)) {
+      throw new ValidationError("Prep level must be BEGINNER, INTERMEDIATE, or ADVANCED.");
+    }
+    out.prepLevel = input.prepLevel;
+  }
+  if (input.studyHoursPerDay != null) {
+    const n = Number(input.studyHoursPerDay);
+    if (!Number.isInteger(n) || n < 0 || n > 24) {
+      throw new ValidationError("Study hours per day must be a whole number between 0 and 24.");
+    }
+    out.studyHoursPerDay = n;
+  }
+  if (input.goal != null) {
+    if (!isString(input.goal) || input.goal.trim().length === 0 || input.goal.length > 280) {
+      throw new ValidationError("Goal must be between 1 and 280 characters.");
+    }
+    out.goal = input.goal.trim();
+  }
+  return out;
+}
+
+/** Persist onboarding answers and mark the user onboarded. */
+export async function completeOnboarding(
+  userId: string,
+  input: OnboardingInput,
+): Promise<UserRecord> {
+  try {
+    const existing = await prisma.user.findUnique({ where: { id: userId } });
+    if (!existing) throw new NotFoundError("User not found");
+
+    const data = validateOnboarding(input);
+    const u = await prisma.user.update({
+      where: { id: userId },
+      data: { ...data, onboarded: true },
+    });
+
+    return {
+      id: u.id,
+      name: u.name,
+      email: u.email,
+      handle: u.handle,
+      passwordHash: u.passwordHash,
+      tokenVersion: u.tokenVersion,
+      role: u.role === "ADMIN" ? "admin" : "student",
+      emailVerified: u.emailVerified,
+      onboarded: u.onboarded,
+      createdAt: u.createdAt.toISOString(),
+    };
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+    throw new InternalServerError("Failed to save onboarding");
+  }
+}
+
+function isString(v: unknown): v is string {
+  return typeof v === "string";
 }

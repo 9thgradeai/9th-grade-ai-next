@@ -13,6 +13,7 @@ import {
 import PublicShell from "@/components/public/PublicShell";
 import PageHero from "@/components/public/PageHero";
 import SectionHeading from "@/components/ui/SectionHeading";
+import { prisma } from "~backend/db";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/tracks" },
@@ -29,16 +30,16 @@ const trackNav = [
   { id: "psc-and-other", label: "PSC & Other Exams" },
 ];
 
-const tracks = [
+const tracks = (questionCount: number) => [
   {
     id: "bcs-preliminary",
     icon: Landmark,
     title: "BCS Preliminary",
     badge: "200 MARKS · 100 MCQ · 2 HRS",
     description:
-      "The first gate to the Bangladesh Civil Service. Master all 10 syllabus subjects — Bangla, English, Bangladesh & International Affairs, Geography, Science, Computer, Math, Mental Ability, and Ethics — with syllabus-aligned practice and adaptive mocks.",
+      "The first gate to the Bangladesh Civil Service. Master all 10 syllabus subjects — Bangla, English, Bangladesh & International Affairs, Geography, Science, Computer, Math, Mental Ability, and Ethics — with syllabus-aligned practice and full-length mock tests.",
     points: [
-      "Full BCS syllabus coverage with 35,000+ tagged questions",
+      `Full BCS syllabus coverage with ${questionCount.toLocaleString()}+ practice questions`,
       "Mock tests with real exam interface, timer & negative marking",
       "Weak-topic detection via AI performance analytics",
     ],
@@ -102,14 +103,16 @@ const tracks = [
   },
 ];
 
-export default function TracksPage() {
+export default async function TracksPage() {
+  const questionCount = await prisma.question.count();
+  const trackList = tracks(questionCount);
   return (
     <PublicShell>
       <PageHero
         eyebrow="EXAM TRACKS"
         title="Structured Tracks for Every"
         highlight="Competitive Exam"
-        description="Pick a track, follow the syllabus map, and let adaptive practice close your weak areas — from your first question to the final mock test."
+        description="Pick a track, follow the syllabus map, and let syllabus-aligned practice close your weak areas — from your first question to the final mock test."
         actions={[
           { href: "/login?register=true", label: "Start Free Preparation" },
           { href: "/dashboard?tab=practice", label: "Open Practice", variant: "ghost" },
@@ -139,11 +142,11 @@ export default function TracksPage() {
             eyebrow="THE TRACKS"
             title="Choose Your Exam,"
             highlight="Own the Syllabus"
-            description="Every track ships with a complete syllabus map, tagged question bank, adaptive mocks, and AI-driven feedback."
+            description="Every track ships with a complete syllabus map, tagged question bank, full-length mock tests, and AI-driven feedback."
           />
 
           <div className="space-y-8">
-            {tracks.map((track) => {
+            {trackList.map((track) => {
               const Icon = track.icon;
               return (
                 <article

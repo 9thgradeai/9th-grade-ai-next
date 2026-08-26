@@ -47,9 +47,9 @@ describe("HeroSection", () => {
     expect(secondary).toHaveAttribute("href", "#signal");
   });
 
-  it("renders the 14 Subjects · 2 Languages · 100% Free stat row", () => {
-    render(<HeroSection />);
-    expect(screen.getAllByText("14").length).toBeGreaterThan(0);
+  it("renders the real subject count · 2 Languages · 100% Free stat row", () => {
+    render(<HeroSection subjectCount={10} />);
+    expect(screen.getAllByText("10").length).toBeGreaterThan(0);
     expect(screen.getAllByText("100%").length).toBeGreaterThan(0);
     for (const label of ["Subjects", "Languages", "Free"]) {
       // Labels appear twice by design: visible span + sr-only <dt>.

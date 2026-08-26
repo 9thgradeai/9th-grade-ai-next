@@ -7,18 +7,18 @@ import { EASE_OUT_EXPO } from "@/lib/motion/variants";
 import { useMotionCapabilities } from "@/lib/motion/device";
 
 /**
- * The adaptive practice loop rendered as a circular system (desktop) and a
- * vertical pipeline (mobile). A single active-node cursor advances on a slow
- * interval ONLY while the section is on screen, the tab is visible, and the
- * device allows continuous effects.
+ * The practice loop rendered as a circular system (desktop) and a vertical
+ * pipeline (mobile). A single active-node cursor advances on a slow interval
+ * ONLY while the section is on screen, the tab is visible, and the device
+ * allows continuous effects.
  */
 
 const LOOP_STEPS = [
-  { id: "performance", label: "Performance", icon: Activity },
-  { id: "pattern", label: "Pattern Detection", icon: Compass },
-  { id: "difficulty", label: "Difficulty Adjustment", icon: SlidersHorizontal },
-  { id: "topic", label: "Topic Selection", icon: ListChecks },
-  { id: "next", label: "Next Question", icon: ArrowRightCircle },
+  { id: "practice", label: "Practice", icon: Activity },
+  { id: "track", label: "Track Accuracy", icon: Compass },
+  { id: "review", label: "Review Flashcards", icon: SlidersHorizontal },
+  { id: "focus", label: "Focus Weak Topics", icon: ListChecks },
+  { id: "repeat", label: "Next Session", icon: ArrowRightCircle },
 ] as const;
 
 // Polar placement on a 38%-radius orbit (percent coordinates).
@@ -92,7 +92,7 @@ export default function AdaptiveLoop() {
           <div className="glass-card flex h-36 w-36 flex-col items-center justify-center rounded-full border-emerald-500/25 sm:h-40 sm:w-40">
             <span className="pulse-soft mb-2 h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-glow-sm" />
             <span className="font-mono text-[0.6rem] uppercase tracking-[0.22em] text-zinc-400">
-              Adaptive
+              Practice
             </span>
             <span className="font-display text-lg font-semibold text-white">Loop</span>
           </div>
@@ -134,7 +134,7 @@ export default function AdaptiveLoop() {
       </div>
 
       {/* Mobile / low-tier vertical pipeline — shares the live cursor */}
-      <ol className="mx-auto max-w-md space-y-0 md:hidden" aria-label="Adaptive loop stages">
+      <ol className="mx-auto max-w-md space-y-0 md:hidden" aria-label="Practice loop stages">
         {LOOP_STEPS.map((step, i) => (
           <li key={step.id} className="relative flex gap-4 pb-7 last:pb-0">
             {i < LOOP_STEPS.length - 1 && (

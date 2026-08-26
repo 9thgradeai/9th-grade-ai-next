@@ -19,7 +19,6 @@ import type {
   StudyTaskDTO,
   DailyQuizDTO,
   FlashNewsDTO,
-  RecommendationDTO,
   NotificationDTO,
   DocumentDTO,
   ExamScheduleDTO,
@@ -160,10 +159,20 @@ export async function getQuestionById(id: number): Promise<QuestionDTO | null> {
   }
 }
 
+// Counts are derived live from the real Question table (grouped by subject)
+// rather than the seeded `QuestionBankCategory.count`, which was a fabricated
+// static number. The `label` returned is the canonical `Subject.nameBn` so the
+// client can keep using it as the subject filter in buildQuestionWhere.
 export async function getQuestionBankCategories(): Promise<QuestionBankCategoryDTO[]> {
   try {
-    const rows = await prisma.questionBankCategory.findMany({ orderBy: { count: "desc" } });
-    return rows.map((c) => ({ id: c.id, label: c.label, count: c.count }));
+    const [subjects, counts] = await Promise.all([
+      prisma.subject.findMany({ select: { id: true, nameBn: true } }),
+      prisma.question.groupBy({ by: ["subjectId"], _count: { _all: true } }),
+    ]);
+    const countBySubject = new Map(counts.map((c) => [c.subjectId, c._count._all]));
+    return subjects
+      .map((s) => ({ id: s.id, label: s.nameBn, count: countBySubject.get(s.id) ?? 0 }))
+      .sort((a, b) => b.count - a.count);
   } catch {
     throw new InternalServerError("Failed to fetch question bank categories");
   }
@@ -406,27 +415,6 @@ export async function getFlashNews(): Promise<FlashNewsDTO[]> {
     }));
   } catch {
     throw new InternalServerError("Failed to fetch flash news");
-  }
-}
-
-export async function getRecommendations(): Promise<RecommendationDTO[]> {
-  try {
-    const rows = await prisma.recommendation.findMany({ orderBy: { id: "asc" } });
-    return rows.map((r) => ({
-      id: r.id,
-      subjectBn: r.subjectBn,
-      subjectEn: r.subjectEn ?? "",
-      metric: r.metric,
-      accuracy: r.accuracy,
-      titleBn: r.titleBn,
-      titleEn: r.titleEn ?? "",
-      descriptionBn: r.descriptionBn,
-      descriptionEn: r.descriptionEn ?? "",
-      ctaBn: r.ctaBn,
-      ctaEn: r.ctaEn ?? "",
-    }));
-  } catch {
-    throw new InternalServerError("Failed to fetch recommendations");
   }
 }
 

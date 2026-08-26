@@ -117,7 +117,7 @@ export default function StudyPlannerTab() {
               <h2 className="text-xl font-bold text-white">AI Study Planner</h2>
             </div>
             <p className="text-sm text-zinc-400 font-mono">
-              Personalized schedule generated based on your weak areas and exam timeline.
+              A structured study schedule — mark tasks complete as you progress.
             </p>
           </div>
 

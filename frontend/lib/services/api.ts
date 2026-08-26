@@ -268,9 +268,6 @@ export const api = {
   news: (): Promise<Server.FlashNewsDTO[]> =>
     request<{ news: Server.FlashNewsDTO[] }>("/api/flash-news").then((d) => d.news),
 
-  recommendations: (): Promise<Server.RecommendationDTO[]> =>
-    request<{ recommendations: Server.RecommendationDTO[] }>("/api/recommendations").then((d) => d.recommendations),
-
   notifications: (): Promise<Server.NotificationDTO[]> =>
     request<{ notifications: Server.NotificationDTO[] }>("/api/notifications").then((d) => d.notifications),
 
@@ -383,4 +380,22 @@ export const account = {
   // Invalidates every session (all devices) and clears this device's cookie.
   revokeAllSessions: (): Promise<{ success: boolean }> =>
     mutate<{ success: boolean }>("/api/auth/sessions/revoke-all", "POST"),
+
+  forgotPassword: (email: string): Promise<{ ok: boolean; devLink?: string }> =>
+    mutate<{ ok: boolean; devLink?: string }>("/api/auth/forgot-password", "POST", { email }),
+
+  resetPassword: (token: string, password: string): Promise<{ ok: boolean }> =>
+    mutate<{ ok: boolean }>("/api/auth/reset-password", "POST", { token, password }),
+
+  verifyEmail: (token: string): Promise<{ ok: boolean }> =>
+    mutate<{ ok: boolean }>("/api/auth/verify-email", "POST", { token }),
+
+  completeOnboarding: (data: {
+    examTarget?: string;
+    examDate?: string;
+    prepLevel?: "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
+    studyHoursPerDay?: number;
+    goal?: string;
+  }): Promise<{ ok: boolean; user: Server.UserDTO }> =>
+    mutate<{ ok: boolean; user: Server.UserDTO }>("/api/onboarding", "POST", data),
 };

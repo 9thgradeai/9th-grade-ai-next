@@ -302,7 +302,7 @@ export default function MockTestTab() {
         >
           <div className="terminal-window-bar border-b border-terminal-border">
             <div className="dot close" /><div className="dot minimize" /><div className="dot maximize" />
-            <div className="flex-1 text-center text-xs text-zinc-400 font-mono">{"// ADAPTIVE_MOCK_TEST"}</div>
+            <div className="flex-1 text-center text-xs text-zinc-400 font-mono">{"// MOCK_TEST"}</div>
           </div>
           <div className="p-5 md:p-6">
             <div className="flex items-center gap-2 mb-1">

@@ -18,7 +18,12 @@ Session JWTs carry a `ver` claim matching the user's `tokenVersion`. Changing th
 - `PATCH /api/auth/profile` — **Auth required** — Updates `{ name }`.
 - `POST /api/auth/change-password` — **Auth required** — Verifies `{ currentPassword }`, updates to `{ newPassword }`, **invalidates all other sessions**, and re-mints this device's cookie so it stays signed in.
 - `DELETE /api/auth/account` — **Auth required** — Deletes the account and clears the cookie.
-- `POST /api/auth/sessions/revoke-all` — **Auth required** — "Sign out everywhere": invalidates every session (including the caller's) and clears the local cookie.
+ - `POST /api/auth/sessions/revoke-all` — **Auth required** — "Sign out everywhere": invalidates every session (including the caller's) and clears the local cookie.
+ - `POST /api/auth/forgot-password` — Starts a password-reset flow. Accepts `{ email }`; always returns `{ ok: true }` (anti-enumeration — does not reveal whether the email is registered). In non-production with no email transport, the response includes a `devLink` to the reset page.
+ - `POST /api/auth/reset-password` — Consumes a reset token. Accepts `{ token, password }` (password ≥ 8). Rotates the password, **invalidates all sessions**, and clears the token. Returns `400` for expired/invalid tokens.
+ - `POST /api/auth/verify-email` — Verifies an email-confirmation token. Accepts `{ token }`; returns `{ ok: true }` on success or `{ ok: false }` for expired/invalid tokens.
+ - `POST /api/onboarding` — **Auth required** — Persists post-signup onboarding `{ examTarget?, examDate?, prepLevel?, studyHoursPerDay?, goal? }` and marks the user `onboarded`. All fields optional and validated server-side.
+
 
 All mutating endpoints (auth and non-auth) reject cross-origin requests via an Origin/Host check (`403 CSRF_ORIGIN_MISMATCH`).
 

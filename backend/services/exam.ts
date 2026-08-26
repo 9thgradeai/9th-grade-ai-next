@@ -537,6 +537,10 @@ export async function submitCustomExam(
       if (attempts.length > 0) {
         await tx.questionAttempt.createMany({ data: attempts });
       }
+      // Record a real mock-test result so the dashboard's history is populated.
+      await tx.mockTestResult.create({
+        data: { userId, score: percentage, correct, total, durationSec: 0 },
+      });
       await recomputeAndAward(tx, userId, pointsEarned, 1);
     });
     emit({

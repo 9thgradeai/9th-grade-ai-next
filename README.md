@@ -520,7 +520,7 @@ Two direct endpoints — no agent loops, no orchestration frameworks.
 
 ### Design Decisions
 
-- **No knowledge-base grounding** for the tutor: a prior KB-injection design anchored the model to weak matches and caused factual slips, so the tutor answers from its own knowledge, optionally grounded in live web snippets, with a persona that says so when unsure. `frontend/lib/data/knowledge-base.ts` remains as a tested reference data module.
+- **No knowledge-base grounding** for the tutor: a prior KB-injection design anchored the model to weak matches and caused factual slips, so the tutor answers from its own knowledge, optionally grounded in live web snippets, with a persona that says so when unsure.
 - **Mock fallbacks** are clearly labelled and let the whole app run with zero external dependencies for local dev and CI.
 - Prompts live inline in the route handlers; full details in [`docs/AI-SYSTEM.md`](./docs/AI-SYSTEM.md).
 
@@ -665,7 +665,7 @@ All endpoints live under `/api/*`. Auth-protected routes require the `auth_token
 ### Accessibility
 
 - Semantic HTML (`button`, `a`), focus-visible rings, ARIA-labelled icon buttons.
-- Dialog focus traps (NotificationCenter, DailyQuizWidget, FlashNewsModal, VoiceAITutor).
+- Dialog focus traps (NotificationCenter, DailyQuizWidget, VoiceAITutor).
 - Touch targets ≥44px on mobile; WCAG 2.2 pointer targets ≥24px on web.
 - `prefers-reduced-motion` respected globally.
 - `viewport-fit=cover` + `pt-safe`/`pb-safe` for iOS safe areas.
@@ -892,7 +892,7 @@ Open **http://localhost:3000**. Local dev seeding creates a demo account:
 │   ├── setup.ts                # Global test setup
 │   ├── mocks/                  # Mock modules (server-only, etc.)
 │   ├── unit/                   # Backend unit tests
-│   │   └── backend/            # exam, questions, web-search, knowledge-base
+│   │   └── backend/            # exam, questions, web-search
 │   ├── *.test.tsx              # Component tests
 │   └── *.test.ts               # Integration tests
 ├── scripts/                    # Maintenance scripts
@@ -921,10 +921,8 @@ Open **http://localhost:3000**. Local dev seeding creates a demo account:
 | `tests/unit/backend/exam.test.ts` | Unit | Exam selection/grading engine |
 | `tests/unit/backend/questions.test.ts` | Unit | `getQuestions` path filtering |
 | `tests/unit/backend/web-search.test.ts` | Unit | Tavily web-search helper |
-| `tests/unit/backend/knowledge-base.test.ts` | Unit | Knowledge-base retrieval |
 | `tests/CustomExamTab.test.tsx` | Component | Custom exam builder |
 | `tests/MockTestTab.test.tsx` | Component | Mock test builder |
-| `tests/FlashNewsModal.test.tsx` | Component | FlashNewsModal rendering |
 | `tests/NewFeatures.test.tsx` | Component | StudyPlanner, Flashcards, MockTest, AISolver, DailyQuiz, Notifications, OfflineMode, ThemeToggle |
 | `tests/AuthExperience.test.tsx` | Component | Auth flow experience |
 | `tests/LogoutFarewell.test.tsx` | Component | Logout farewell screen |

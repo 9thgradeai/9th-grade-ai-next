@@ -130,12 +130,14 @@ export default function AuthExperience({
     redirectTimer.current = setTimeout(() => setStage("success"), reduced ? 400 : 1150)
   }, [reduced])
 
-  // "Enter the hall": short departure transition, then navigation.
+  // "Enter the hall": short departure transition, then navigation. New
+  // signups land on the onboarding step; returning users go straight in.
   const continueNow = useCallback(() => {
     if (redirectTimer.current) clearTimeout(redirectTimer.current)
     setDeparting(true)
-    redirectTimer.current = setTimeout(() => router.push("/dashboard"), reduced ? 300 : 900)
-  }, [router, reduced])
+    const target = successKind === "signup" ? "/onboarding" : "/dashboard"
+    redirectTimer.current = setTimeout(() => router.push(target), reduced ? 300 : 900)
+  }, [router, reduced, successKind])
 
   const handleLogin = useCallback(
     async (values: LoginValues) => {
@@ -501,7 +503,11 @@ export default function AuthExperience({
           </p>
         </main>
       </motion.div>
-      {departing && <EnterHallTransition onNavigate={() => router.push("/dashboard")} />}
+      {departing && (
+        <EnterHallTransition
+          onNavigate={() => router.push(successKind === "signup" ? "/onboarding" : "/dashboard")}
+        />
+      )}
     </AuthEnvironment>
   )
 }

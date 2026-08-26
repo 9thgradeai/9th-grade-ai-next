@@ -84,15 +84,19 @@ export async function submitPracticeAnswers(
   answers: SubmittedAnswer[],
 ): Promise<SubmissionSummary> {
   try {
-    const ids = answers.map((a) => a.questionId);
+    // Unanswered questions are sent as "" — skip them so they are neither
+    // scored as wrong nor recorded as an attempt (deflating accuracy / polluting
+    // weak-topic analytics). Mirrors the exam engine's behavior.
+    const answered = answers.filter((a) => a.selected.trim().length > 0);
+    const ids = answered.map((a) => a.questionId);
     const questions = await prisma.question.findMany({
       where: { id: { in: ids } },
       select: { id: true, correctAnswer: true, subjectId: true, topic: true, subject: { select: { nameBn: true } } },
     });
-    const { correct, total } = gradeAnswers(answers, questions);
+    const { correct, total } = gradeAnswers(answered, questions);
     const byId = new Map(questions.map((q) => [q.id, q]));
 
-    const attempts = answers.map((a) => {
+    const attempts = answered.map((a) => {
       const q = byId.get(a.questionId);
       return {
         userId,
@@ -135,12 +139,15 @@ export async function submitDailyQuiz(
       throw new AppError(404, "Daily quiz not found.", "NOT_FOUND");
     }
 
-    const { correct, total } = gradeAnswers(answers, quiz.questions);
+    // Unanswered questions are sent as "" — skip them (same rationale as
+    // practice) so they are not recorded as wrong attempts.
+    const answered = answers.filter((a) => a.selected.trim().length > 0);
+    const { correct, total } = gradeAnswers(answered, quiz.questions);
     const byId = new Map(quiz.questions.map((q) => [q.id, q]));
     const score = total > 0 ? Math.round((correct / total) * 100) : 0;
     const pointsEarned = correct * POINTS_PER_CORRECT;
 
-    const attempts = answers.map((a) => {
+    const attempts = answered.map((a) => {
       const q = byId.get(a.questionId);
       return {
         userId,

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, type FormEvent } from "react"
+import Link from "next/link"
 import { ArrowLeft, Eye, EyeOff, KeyRound, Loader2, Mail, ShieldCheck } from "lucide-react"
 import { AuthField } from "./AuthField"
 import { CapsLockWarning, readCapsLock } from "./CapsLockWarning"
@@ -142,6 +143,15 @@ export function LoginForm({
         {busy ? "Signing in..." : "Sign in securely"}
         {!busy && <ShieldCheck className="h-4 w-4" aria-hidden="true" />}
       </button>
+
+      <div className="text-center">
+        <Link
+          href="/forgot-password"
+          className="text-sm text-emerald-400/80 transition-colors hover:text-emerald-400 focus-visible:ring-2 focus-visible:ring-emerald-400/80"
+        >
+          Forgot your password?
+        </Link>
+      </div>
 
       <button
         type="button"

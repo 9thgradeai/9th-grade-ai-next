@@ -116,6 +116,23 @@ model User {
   role         UserRole       @default(STUDENT)
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
+
+  // ── Onboarding (captured post-signup; powers the study planner) ──
+  examTarget         String?
+  examDate           DateTime?
+  prepLevel          String? // BEGINNER | INTERMEDIATE | ADVANCED
+  studyHoursPerDay   Int?
+  goal               String?
+  onboarded          Boolean  @default(false)
+
+  // ── Email verification (raw token is emailed; only the SHA-256 hash is stored) ──
+  emailVerifyToken   String?
+  emailVerifyExpires DateTime?
+
+  // ── Password reset (raw token is emailed; only the SHA-256 hash is stored) ──
+  passwordResetToken   String?
+  passwordResetExpires DateTime?
+
   progress     UserProgress?
   bookmarks    Bookmark[]
   studyTasks   StudyTask[]

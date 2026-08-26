@@ -34,7 +34,7 @@ import {
   OFFLINE_PACKS,
   SOLVER_EXAMPLES,
 } from "../../frontend/lib/data/study";
-import { FLASH_NEWS_ITEMS, RECOMMENDATIONS } from "../../frontend/lib/data/ai";
+import { FLASH_NEWS_ITEMS } from "../../frontend/lib/data/ai";
 import { seedQuestions } from "../../scripts/seed-questions";
 import { sourceKey } from "../../scripts/seed-keys";
 
@@ -309,28 +309,6 @@ async function main() {
     });
   }
   console.log(`  ✓ ${news.length} flash news`);
-
-  // --- Recommendations (upsert by md5(subjectBn|titleBn)) ---
-  for (const r of RECOMMENDATIONS) {
-    const subjectBn = r.subject?.bn ?? r.subject ?? "";
-    const titleBn = r.title?.bn ?? "";
-    const data = {
-      subjectEn: r.subject?.en ?? "",
-      metric: r.metric ?? "accuracy",
-      accuracy: r.accuracy ?? 0,
-      titleEn: r.title?.en ?? "",
-      descriptionBn: r.description?.bn ?? "",
-      descriptionEn: r.description?.en ?? "",
-      ctaBn: r.cta?.bn ?? "",
-      ctaEn: r.cta?.en ?? "",
-    };
-    await prisma.recommendation.upsert({
-      where: { sourceKey: sourceKey(subjectBn, titleBn) },
-      update: data,
-      create: { subjectBn, titleBn, sourceKey: sourceKey(subjectBn, titleBn), ...data },
-    });
-  }
-  console.log(`  ✓ ${RECOMMENDATIONS.length} recommendations`);
 
   // --- Badges (upsert by unique name) ---
   for (const b of BADGES) {

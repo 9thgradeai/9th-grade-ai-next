@@ -47,11 +47,11 @@ const RATING_VALUE: Record<ReviewRating, 0 | 1 | 2 | 3> = {
   easy: 3,
 };
 
-const RATING_CONFIG: Record<ReviewRating, { label: string; color: string; nextInterval: number }> = {
-  again: { label: "Again", color: "text-red-400 bg-red-500/10 border-red-500/30", nextInterval: 1 },
-  hard: { label: "Hard", color: "text-amber-400 bg-amber-500/10 border-amber-500/30", nextInterval: 6 },
-  good: { label: "Good", color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/30", nextInterval: 10 },
-  easy: { label: "Easy", color: "text-sky-400 bg-sky-500/10 border-sky-500/30", nextInterval: 15 },
+const RATING_CONFIG: Record<ReviewRating, { label: string; color: string }> = {
+  again: { label: "Again", color: "text-red-400 bg-red-500/10 border-red-500/30" },
+  hard: { label: "Hard", color: "text-amber-400 bg-amber-500/10 border-amber-500/30" },
+  good: { label: "Good", color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/30" },
+  easy: { label: "Easy", color: "text-sky-400 bg-sky-500/10 border-sky-500/30" },
 };
 
 export default function FlashcardsTab() {
@@ -141,20 +141,11 @@ export default function FlashcardsTab() {
   const handleRating = (rating: ReviewRating) => {
     if (!currentCard) return;
 
-    const newQueue = reviewQueue.map((card, i) => {
-      if (i !== currentIndex) return card;
-      const nextInterval = RATING_CONFIG[rating].nextInterval;
-      return {
-        ...card,
-        repetitions: card.repetitions + 1,
-        interval: nextInterval,
-        nextReview: now + nextInterval * 86400000,
-        easeFactor: Math.max(
-          1.3,
-          card.easeFactor - (rating === "again" ? 0.3 : rating === "hard" ? 0.15 : 0),
-        ),
-      };
-    });
+    // Do not fabricate an SRS schedule client-side — the server's SM-2 result
+    // is authoritative and is reconciled below. Keep the card's real loaded
+    // schedule until the server responds; if the call fails, the honest prior
+    // schedule stays (we notify the user rather than silently showing a fake).
+    const newQueue = reviewQueue;
 
     setSessionStats((prev) => ({
       reviewed: prev.reviewed + 1,

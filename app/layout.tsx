@@ -42,7 +42,7 @@ const hindSiliguri = Hind_Siliguri({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://9thgrade.ai"),
   title: "9Th-Grade AI — AI-Powered Study Planner & Exam Prep",
-  description: "Master competitive exams with AI-driven precision. Adaptive mock tests, automated flashcards, daily streak tracking, and AI doubt solving for BCS, Bank, and Teacher recruitment exams.",
+  description: "Master competitive exams with AI-driven precision. Full-length mock tests, automated flashcards, daily streak tracking, and AI doubt solving for BCS, Bank, and Teacher recruitment exams.",
   keywords: ["BCS preparation", "exam prep", "AI study planner", "mock tests", "competitive exams Bangladesh"],
   authors: [{ name: "9Th-Grade AI Team" }],
   alternates: {

@@ -205,11 +205,58 @@ export async function createTutorTurn(opts: {
   );
 
   const started = Date.now();
-  const { stream, done, getFullText } = await provider.stream({
-    system,
-    messages: modelMessages,
-    maxTokens: 2048,
-  });
+  let streamResult;
+  try {
+    streamResult = await provider.stream({
+      system,
+      messages: modelMessages,
+      maxTokens: 2048,
+    });
+  } catch (err) {
+    // A provider error (bad key, network, rate limit) must not surface as a
+    // broken/empty stream. Return a clear fallback message and record the
+    // failure honestly so the conversation reflects what happened.
+    console.error("[ai:tutor] provider stream failed", err);
+    const fallback =
+      "দুঃখিত, এই মুহূর্তে AI টিউটরে সংযোগ করা যাচ্ছে না। অনুগ্রহ করে কিছুক্ষণ পরে আবার চেষ্টা করুন।";
+    const encoder = new TextEncoder();
+    const fbStream = new ReadableStream<Uint8Array>({
+      start(controller) {
+        controller.enqueue(encoder.encode(fallback));
+        controller.close();
+      },
+    });
+    runAfterResponse(async () => {
+      try {
+        await addMessage(userId, conversation.id, {
+          role: "ASSISTANT",
+          status: "FAILED",
+          content: fallback,
+          intent,
+          provider: name,
+          model: provider.model,
+          metadata: { subjectId, topicId, topicPath: topicPath ?? "", intent, webResults: web.results },
+          errorCode: "AI_UNAVAILABLE",
+        });
+      } catch (e) {
+        console.error("[ai:tutor] fallback persistence failed", e);
+      }
+      await finalizeUsage({
+        userId,
+        task: "tutor",
+        provider: name,
+        model: provider.model,
+        started: Date.now(),
+        inputText: "",
+        outputText: "",
+        success: false,
+        errorCode: "AI_UNAVAILABLE",
+        intent,
+      });
+    });
+    return { stream: fbStream, conversationId: conversation.id, intent, provider: name, model: provider.model };
+  }
+  const { stream, done, getFullText } = streamResult;
 
   const wrapped = new ReadableStream<Uint8Array>({
     async pull(controller) {

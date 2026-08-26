@@ -132,9 +132,19 @@ ever rebuilt outside migrations:
 - `passwordHash` String
 - `tokenVersion` Int — default `0`. Bumped on password change / "sign out everywhere"; session JWTs carry the version they were minted with (`ver` claim) and are rejected when it is stale
 - `role` UserRole — default `STUDENT`
-- `createdAt` DateTime — default `now()`
-- `updatedAt` DateTime — updatedAt
-- Relations: `progress`, `bookmarks`, `studyTasks`, `notifications`, `sessions`, `aiConversations`, `aiMemories`, `aiUsage`, `aiFeedback`
+ - `createdAt` DateTime — default `now()`
+ - `updatedAt` DateTime — updatedAt
+ - `examTarget` String? — onboarding: the user's target exam (e.g. "46th BCS")
+ - `examDate` DateTime? — onboarding: scheduled exam date
+ - `prepLevel` String? — onboarding: `BEGINNER` | `INTERMEDIATE` | `ADVANCED`
+ - `studyHoursPerDay` Int? — onboarding: self-reported daily study hours (0–24)
+ - `goal` String? — onboarding: free-text goal (≤ 280 chars)
+ - `onboarded` Boolean — default `false`; set `true` after `/api/onboarding` is completed
+ - `emailVerifyToken` String? — SHA-256 hash of the email-verification token (raw token is emailed)
+ - `emailVerifyExpires` DateTime? — expiry for `emailVerifyToken`
+ - `passwordResetToken` String? — SHA-256 hash of the password-reset token (raw token is emailed)
+ - `passwordResetExpires` DateTime? — expiry for `passwordResetToken` (1 hour)
+ - Relations: `progress`, `bookmarks`, `studyTasks`, `notifications`, `sessions`, `aiConversations`, `aiMemories`, `aiUsage`, `aiFeedback`
 
 #### Subject
 - `id` Int — PK, auto-increment

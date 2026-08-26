@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Megaphone, Image, FileText, Mail, ArrowUpRight } from "lucide-react";
+import { prisma } from "~backend/db";
 import PublicShell from "@/components/public/PublicShell";
 import PageHero from "@/components/public/PageHero";
 import SectionHeading from "@/components/ui/SectionHeading";
@@ -11,10 +12,10 @@ export const metadata: Metadata = {
     "Brand assets, product facts, and media contacts for journalists and content creators covering 9Th-Grade AI.",
 };
 
-const facts = [
+const facts = (subjectCount: number, questionCount: number) => [
   { label: "Launched", value: "2025" },
-  { label: "Active students", value: "50K+" },
-  { label: "Questions practiced", value: "2.5M+ monthly" },
+  { label: "Subjects covered", value: String(subjectCount) },
+  { label: "Questions in bank", value: String(questionCount) },
   { label: "Coverage", value: "BCS · Bank · Teacher · PSC" },
   { label: "Languages", value: "English · বাংলা" },
   { label: "Model", value: "Free & open source" },
@@ -34,11 +35,13 @@ const assets = [
   {
     icon: FileText,
     title: "Product Facts",
-    text: "A syllabus explorer, 100K+ question bank, adaptive mock tests, spaced-repetition flashcards, an AI question solver, a bilingual AI tutor, and a daily streak system.",
+    text: "A syllabus explorer, a growing question bank, full-length mock tests, spaced-repetition flashcards, an AI question solver, a bilingual AI tutor, and a daily streak system.",
   },
 ];
 
-export default function PressPage() {
+export default async function PressPage() {
+  const subjectCount = await prisma.subject.count();
+  const questionCount = await prisma.question.count();
   return (
     <PublicShell>
       <PageHero
@@ -53,7 +56,7 @@ export default function PressPage() {
         <div className="max-w-5xl mx-auto">
           {/* Facts grid */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-14">
-            {facts.map((fact) => (
+            {facts(subjectCount, questionCount).map((fact) => (
               <div key={fact.label} className="glass-card rounded-2xl border border-white/10 p-5">
                 <p className="text-xs text-zinc-500 font-mono uppercase tracking-wider">{fact.label}</p>
                 <p className="mt-1.5 text-lg font-display font-semibold text-white">{fact.value}</p>

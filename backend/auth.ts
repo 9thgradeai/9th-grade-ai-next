@@ -150,6 +150,8 @@ export async function getSessionUser(req: Request): Promise<UserRecord | null> {
     passwordHash: u.passwordHash,
     tokenVersion: u.tokenVersion,
     role: u.role === "ADMIN" ? "admin" : "student",
+    emailVerified: u.emailVerified,
+    onboarded: u.onboarded,
     createdAt: u.createdAt.toISOString(),
   };
 }
