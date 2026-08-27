@@ -88,6 +88,24 @@
 - **Rationale**: Extends the repo's existing seams (App Router routes → `backend/services` → Prisma, `AppError`, `toHttpResponse`, security headers) rather than inventing a parallel architecture. Additive DB models keep the schema compatible. Real streaming + persistence make the product demoable and give an evaluation loop via `AIUsage` + `AIFeedback`.
 - **Consequences**: No isolated AI database — AI tables reference the existing `User`/`Subject`/`Topic`. In-memory rate limit is single-instance; multi-instance serverless must swap for a shared store behind the same surface. Schema additions must be pushed (`npm run db:push`). Legacy hard-coded mock tutor UI is replaced by the real workspace.
 
+## ADR-0012: Hero black hole — raw WebGL, no 3D dependency
+
+- **Date**: 2026-08
+- **Status**: Accepted
+- **Context**: The landing hero needed to read as a "next-level AI product": a realistic 3D black hole with a lensed accretion disk and a true event horizon. Initial request also named "UI/UX pro" (not a real npm package) and a UI component kit.
+- **Decision**: Render the black hole with **raw WebGL** (a hand-written vertex/fragment shader in `frontend/components/landing/BlackholeCanvas.tsx`) — no `three`, `@react-three/fiber`, or `@react-three/drei`. Photon paths are integrated with the standard bending acceleration `a = -1.5·h²·p/r⁵`; the event horizon swallows captured rays, disk crossings emit temperature-graded + Doppler-beamed light, and surviving rays sample a procedural starfield (producing the Einstein-ring arcs). Quality is governed by the existing `useVisualQuality` / `useMotionCapabilities` hooks: reduced/low tiers render a single static frame at low resolution and never loop. A WebGL-unavailable fallback paints a calm radial void.
+- **Rationale**: A realistic black hole is a shader problem, not a Framer Motion problem; `framer-motion` is already installed (v13) and still drives the copy entrance + Magnetic CTAs, but cannot bend light. Three.js would add ~150 kB+ for a single fullscreen shader we fully control by hand. This honors the repo's "no dependency without justification" rule (see ADR-0007/0009) and keeps the client bundle lean.
+- **Consequences**: Must be maintained as GLSL, not a scene-graph. If richer 3D surfaces (interactive 3D subjects, orbit controls) are needed later, revisit `three` + `react-three-fiber` behind a measured ADR. `KnowledgeField.tsx` is now unused by the hero but retained as a tested canvas utility.
+
+## ADR-0013: Hero UI — keep the bespoke component system (no shadcn/Radix migration)
+
+- **Date**: 2026-08
+- **Status**: Accepted
+- **Context**: The same request asked for "a UI component kit (e.g. shadcn/ui, Radix)". The repo already ships a bespoke, token-driven system (`Button`, `MotionText`, `Magnetic`, `AuroraOrb`, `KnowledgeField`) under `frontend/components/{ui,landing}` with Tailwind v4 tokens.
+- **Decision**: Do **not** install shadcn/ui or a sweeping Radix migration. The black hole hero is built entirely from existing primitives. If a specific accessible primitive is later required (e.g. a focus-trapped dialog/popover the hero does not need), add the single `@radix-ui/react-*` package behind a targeted ADR rather than forking the whole system.
+- **Rationale**: A full component-kit migration would duplicate the existing design language, risk breaking the established test contracts (`tests/LandingExperience.test.tsx`, etc.), and contradict the dependency-minimization rule. The chosen "raw WebGL, no deps" path already signals a preference for minimal dependencies.
+- **Consequences**: Visual cohesion stays in one system; future primitive needs are incremental and justified.
+
 ## ADR-005: Tailwind CSS v4
 
 - **Date**: 2024

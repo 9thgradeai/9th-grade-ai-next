@@ -13,7 +13,7 @@ import { ArrowRight, ChevronDown, Sparkles } from "lucide-react";
 import Button from "@/components/ui/Button";
 import MotionText from "@/components/ui/MotionText";
 import Magnetic from "@/components/landing/Magnetic";
-import KnowledgeField from "@/components/landing/KnowledgeField";
+import BlackholeCanvas from "@/components/landing/BlackholeCanvas";
 import { trackCtaClick, trackHeroView } from "@/lib/analytics";
 import { useMotionCapabilities } from "@/lib/motion/device";
 import { EASE_OUT_EXPO, heroItem, staggerParent } from "@/lib/motion/variants";
@@ -30,14 +30,14 @@ export default function HeroSection({ subjectCount }: { subjectCount: number }) 
   const sectionRef = useRef<HTMLElement>(null);
   const shouldReduceMotion = useReducedMotion();
 
-  // Pointer-reactive depth via MotionValues — zero re-renders while tracking.
+  // Pointer-reactive depth for the copy layer — zero re-renders while tracking.
   const rawX = useMotionValue(0);
   const rawY = useMotionValue(0);
   const springCfg = { stiffness: 55, damping: 18, mass: 0.7 };
   const fieldX = useSpring(rawX, springCfg);
   const fieldY = useSpring(rawY, springCfg);
-  const copyX = useTransform(fieldX, (v) => v * -5);
-  const copyY = useTransform(fieldY, (v) => v * -4);
+  const copyX = useTransform(fieldX, (v) => v * -6);
+  const copyY = useTransform(fieldY, (v) => v * -5);
 
   useEffect(() => {
     const start = Date.now();
@@ -67,44 +67,47 @@ export default function HeroSection({ subjectCount }: { subjectCount: number }) 
       className="relative flex min-h-[92vh] items-center overflow-hidden px-4 pb-24 pt-28 sm:px-6"
       aria-label="Introduction"
     >
-      {/* Layer 1 — knowledge intelligence field (shared canvas) */}
-      <motion.div style={pointerEffects ? { x: fieldX, y: fieldY } : undefined} className="absolute inset-[-40px] z-0">
-        <KnowledgeField />
-      </motion.div>
+      {/* Layer 0 — the black hole: event horizon + accretion disk, the
+          gravitational center of the product vision. Raw WebGL, no deps. */}
+      <BlackholeCanvas />
 
-      {/* Layer 1b — aurora lighting */}
+      {/* Layer 1 — legibility scrim, viewport-aware so the disk stays visible and
+          the copy stays readable on every screen size.
+          - Always: a soft vignette darkening the edges.
+          - ≥sm (desktop/tablet landscape): darken the left where the copy sits.
+          - <sm (phones/portrait): darken the bottom where the stacked copy sits. */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 z-[1]"
         style={{
           background:
-            "radial-gradient(ellipse 60% 46% at 72% 30%, rgba(129,140,248,0.13), transparent 60%), radial-gradient(ellipse 44% 38% at 18% 68%, rgba(45,212,191,0.10), transparent 62%)",
+            "radial-gradient(125% 125% at 50% 38%, transparent 30%, rgba(5,5,9,0.5) 100%)",
+        }}
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 z-[1] hidden sm:block"
+        style={{
+          background:
+            "linear-gradient(100deg, rgba(5,5,9,0.92) 0%, rgba(5,5,9,0.55) 30%, rgba(5,5,9,0.08) 60%, transparent 100%)",
+        }}
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 z-[1] block sm:hidden"
+        style={{
+          background:
+            "linear-gradient(to top, rgba(5,5,9,0.92) 0%, rgba(5,5,9,0.5) 38%, rgba(5,5,9,0.12) 70%, transparent 100%)",
         }}
       />
 
-      {/* Orbital ring — one quiet depth cue behind the copy */}
-      <svg
-        aria-hidden="true"
-        viewBox="0 0 800 800"
-        className="pointer-events-none absolute -right-40 top-1/2 z-[1] hidden w-[46rem] -translate-y-1/2 opacity-40 lg:block"
-      >
-        <defs>
-          <linearGradient id="ring-glow" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#2dd4bf" stopOpacity="0.5" />
-            <stop offset="55%" stopColor="#818cf8" stopOpacity="0.25" />
-            <stop offset="100%" stopColor="#a78bfa" stopOpacity="0.05" />
-          </linearGradient>
-        </defs>
-        <ellipse cx="400" cy="400" rx="330" ry="330" fill="none" stroke="url(#ring-glow)" strokeWidth="1" />
-        <ellipse cx="400" cy="400" rx="250" ry="250" fill="none" stroke="url(#ring-glow)" strokeWidth="0.6" strokeDasharray="2 9" />
-        <ellipse cx="400" cy="400" rx="398" ry="120" fill="none" stroke="url(#ring-glow)" strokeWidth="0.6" transform="rotate(-16 400 400)" />
-        <circle cx="730" cy="400" r="3.5" fill="#2dd4bf" />
-        <circle cx="150" cy="400" r="2.5" fill="#a78bfa" />
-      </svg>
-
       {/* Layer 2 — copy */}
       <motion.div
-        style={pointerEffects ? { x: copyX, y: copyY } : undefined}
+        style={
+          pointerEffects
+            ? { x: copyX, y: copyY, textShadow: "0 1px 22px rgba(0,0,0,0.55)" }
+            : { textShadow: "0 1px 22px rgba(0,0,0,0.55)" }
+        }
         className="relative z-10 mx-auto w-full max-w-7xl"
       >
         <motion.div variants={heroContainer} initial="hidden" animate="visible" className="max-w-2xl">
@@ -121,8 +124,7 @@ export default function HeroSection({ subjectCount }: { subjectCount: number }) 
                 Start passing.
               </MotionText>
               {/* The examiner's pen — a gradient mark that draws itself under
-                  "Start passing." right as the field's diagnostic sweep
-                  completes, ending in a quiet ✓. Reduced motion: static. */}
+                  "Start passing." ending in a quiet ✓. Reduced motion: static. */}
               <svg
                 aria-hidden="true"
                 viewBox="0 0 300 14"
