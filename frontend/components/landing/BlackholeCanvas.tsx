@@ -342,6 +342,8 @@ export default function BlackholeCanvas({ className = "" }: { className?: string
       const should = continuousEffects && document.visibilityState === "visible" && inView;
       if (should && !running) {
         running = true;
+        // Resume the clock from where it paused (no absolute-time jump).
+        lastSimNow = performance.now();
         lastFrame = performance.now();
         raf = requestAnimationFrame(loop);
       } else if (!should && running) {
@@ -349,6 +351,13 @@ export default function BlackholeCanvas({ className = "" }: { className?: string
         if (raf) cancelAnimationFrame(raf);
       }
     };
+
+    // Accumulated animation clock — advances ONLY while the loop runs, so
+    // scrolling away and back (or a tab switch) resumes seamlessly instead of
+    // jumping the camera to a new absolute-time angle. Clamped so a stalled
+    // frame (GC / throttled tab) can't lurch the scene during a long session.
+    let simTime = 0;
+    let lastSimNow = performance.now();
 
     const render = (timeSec: number) => {
       current.x += (target.x - current.x) * 0.05;
@@ -382,7 +391,10 @@ export default function BlackholeCanvas({ className = "" }: { className?: string
 
     const loop = (now: number) => {
       if (!running) return;
-      render(continuousEffects ? now / 1000 : 0);
+      const frameDt = (now - lastSimNow) / 1000;
+      lastSimNow = now;
+      simTime += Math.min(0.05, frameDt);
+      render(continuousEffects ? simTime : 0);
       adapt(now);
       raf = requestAnimationFrame(loop);
     };
