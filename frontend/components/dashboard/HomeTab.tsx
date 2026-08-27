@@ -369,7 +369,7 @@ export default function HomeTab() {
 
       {/* Sticky mobile primary CTA — one tap to the next best action on small
           screens, where the in-flow hero is far down the scroll. */}
-      <div className="fixed inset-x-0 bottom-0 z-30 sm:hidden bg-gradient-to-t from-zinc-950 via-zinc-950/95 to-transparent p-3">
+      <div className="fixed inset-x-0 bottom-[72px] z-30 sm:hidden bg-gradient-to-t from-zinc-950 via-zinc-950/95 to-transparent p-3">
         <button
           type="button"
           onClick={() => setActiveTab(nextAction.tab)}
@@ -510,7 +510,7 @@ export default function HomeTab() {
           <div className="space-y-3">
             {weakest.map((r) => (
               <div key={r.name} className="flex items-center gap-4">
-                <div className="w-44 flex-shrink-0">
+                <div className="w-32 flex-shrink-0 sm:w-44">
                   <p className="text-sm text-zinc-300 truncate">{r.name}</p>
                   <p className="text-[10px] text-zinc-500 font-mono">{r.attempted}টি সমাধান</p>
                 </div>

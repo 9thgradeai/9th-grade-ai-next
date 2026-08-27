@@ -195,7 +195,7 @@ function SubjectReportRow({ report, index }: { report: { name: string; score: nu
             transition={{ duration: 0.3 }}
             className="overflow-hidden border-t border-emerald-500/10"
           >
-            <div className="p-4 grid grid-cols-3 gap-3">
+            <div className="p-4 grid grid-cols-2 sm:grid-cols-3 gap-3">
               <div className="bg-subtle rounded-lg p-3 text-center border border-zinc-800">
                 <div className="text-lg font-bold text-white font-mono">{accuracy}%</div>
                 <div className="text-[10px] text-zinc-500 font-mono uppercase tracking-wider mt-1">নির্ভুলতা</div>

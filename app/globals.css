@@ -100,6 +100,28 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Crisp tap targets — kill the default grey flash on touch devices so taps
+   feel instantaneous rather than laggy. */
+a,
+button,
+[role="button"],
+input,
+select,
+textarea,
+label {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Tactile tap feedback for an instant "pressed" feel. Transform-only, so it
+   stays on the compositor and never triggers layout — perf-neutral. */
+@media (prefers-reduced-motion: no-preference) {
+  button:active:not(:disabled),
+  [role="button"]:active:not([aria-disabled="true"]) {
+    transform: scale(0.97);
+    transition: transform 80ms ease;
+  }
+}
+
 /* Display type for headlines, brand, and numerals */
 .font-display {
   font-family: var(--font-display);
@@ -191,6 +213,9 @@ body {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
+  }
+  html {
+    scroll-behavior: auto;
   }
   .pen-draw path,
   .pen-check-path {
@@ -290,6 +315,8 @@ html {
   scroll-padding-top: 5.5rem;
   scroll-behavior: smooth;
   overflow-x: clip;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 /* Terminal cursor blinking animation */

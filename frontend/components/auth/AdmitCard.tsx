@@ -120,7 +120,7 @@ export function AdmitCard({
         <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">Candidate</p>
         <p className="mt-0.5 truncate font-display text-xl font-semibold text-white">{name}</p>
 
-        <dl className="mt-3 grid grid-cols-3 gap-2 text-left">
+        <dl className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-2 text-left">
           <div>
             <dt className="font-mono text-[9px] uppercase tracking-[0.16em] text-zinc-600">Seat</dt>
             <dd className="font-display text-sm font-semibold tabular-nums text-emerald-300">{seat}</dd>

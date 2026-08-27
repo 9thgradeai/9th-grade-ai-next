@@ -130,7 +130,7 @@ export default function HeroSection({ subjectCount }: { subjectCount: number }) 
   return (
     <section
       ref={sectionRef}
-      className="relative flex min-h-[92vh] items-center overflow-hidden px-4 pb-24 pt-28 sm:px-6"
+      className="relative flex min-h-[92dvh] items-center overflow-hidden px-4 pb-24 pt-28 sm:px-6"
       aria-label="Introduction"
     >
       {/* Full-bleed hero backdrop painted via background-image (a contentful

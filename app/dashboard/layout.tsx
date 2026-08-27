@@ -141,7 +141,7 @@ function DashboardShell({
         </header>
 
         {/* Scrollable Content — the only thing that moves */}
-        <main id="dashboard-content" className="flex-1 min-h-0 overflow-y-auto pb-24 lg:pb-8">
+        <main id="dashboard-content" className="flex-1 min-h-0 overflow-y-auto overscroll-contain pb-40 lg:pb-8">
           <div className="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 min-w-0">
             {children}
           </div>
