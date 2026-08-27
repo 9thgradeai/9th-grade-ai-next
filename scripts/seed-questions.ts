@@ -109,6 +109,9 @@ function stripLeadingNumber(text: string): string {
 // The path is the taxonomy: the deepest folder segment must resolve to a
 // taxonomy leaf. Each spec keeps the normalised (NFC) path parts so duplicates
 // that differ only by Unicode composition (e.g. "জোট" vs "জোট") collapse.
+// A file placed directly under a subject folder (parts = [subject, file]) is a
+// subject-level flat dump: it has no taxonomy node, so the caller distributes
+// its questions round-robin across the subject's leaves.
 // Returns specs where parts = [subject, ...nodeSegments, filename].
 function collectFolderFiles(dir: string): { file: string; parts: string[] }[] {
   const specs: { file: string; parts: string[] }[] = [];
@@ -118,7 +121,7 @@ function collectFolderFiles(dir: string): { file: string; parts: string[] }[] {
       const full = join(d, entry.name);
       if (entry.isDirectory()) {
         walk(full, [...ancestors, entry.name]);
-      } else if (entry.isFile() && /\.txt$/i.test(entry.name) && ancestors.length >= 2) {
+       } else if (entry.isFile() && /\.txt$/i.test(entry.name) && ancestors.length >= 1) {
         specs.push({ file: full, parts: [...ancestors, entry.name].map((p) => p.normalize("NFC")) });
       }
     }
@@ -529,6 +532,43 @@ export async function seedQuestions(prisma: PrismaClient): Promise<number> {
     }
     const subjectId = subjectIds[meta.nameBn];
     const nodeSegments = spec.parts.slice(1, -1);
+
+    // Subject-level flat file (data/ques/<Subject>/<file>.txt): no intermediate
+    // taxonomy node, so distribute its questions round-robin across the
+    // subject's taxonomy leaves — the same categorisation the master flat file
+    // uses. This is how a plain per-subject question dump gets topic coverage.
+    if (nodeSegments.length === 0) {
+      const lines = readFileSync(spec.file, "utf8")
+        .replace(/^\uFEFF/, "")
+        .split(/\r?\n/)
+        .map((l) => l.trim())
+        .filter(Boolean);
+      const parsed = lines
+        .map((l) => parseQuestionLine(l))
+        .filter((q): q is ParsedQuestion => q !== null);
+      if (parsed.length === 0) {
+        console.warn(`⚠ No questions parsed for ${spec.parts[0]}`);
+        continue;
+      }
+      const leaves = collectLeaves(subjectNode);
+      const leafIds = leafIdsBySubject.get(subjectId) ?? new Map<string, number>();
+      const candidates: QuestionCandidate[] = parsed.map((q, index) => {
+        const leaf = leaves[index % leaves.length];
+        const tags = leafTags(leaf);
+        return {
+          topicId: leafIds.get(contentPath(leaf)) ?? null,
+          path: contentPath(leaf),
+          topic: tags.topic,
+          subtopic: tags.subtopic,
+          parsed: q,
+        };
+      });
+      const { inserted } = await syncSubjectQuestions(prisma, subjectId, candidates);
+      totalInserted += inserted;
+      console.log(`✓ ${meta.nameBn} (subject file): ${parsed.length} synced (${inserted} new)`);
+      continue;
+    }
+
     const leaf = matchNodePath(subjectNode, nodeSegments);
     if (!leaf) {
       console.warn(`⚠ Folder path not found in taxonomy: "${spec.parts.slice(0, -1).join(" / ")}"`);

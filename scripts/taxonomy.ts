@@ -80,7 +80,9 @@ const SUBJECT_FOLDER_ALIASES: Record<string, string> = {
 };
 
 // Matches a folder segment to the taxonomy subject node: exact NFC name first,
-// then the alias map. Returns the subject node or null.
+// then the alias map, then a fallback for a folder named by its canonical
+// display nameBn (commas/spaces instead of underscores, e.g.
+// "ভূগোল, পরিবেশ ও দুর্যোগ ব্যবস্থাপনা"). Returns the subject node or null.
 export function resolveSubjectNode(root: TaxonomyNode, folder: string): TaxonomyNode | null {
   const norm = folder.trim().normalize("NFC");
   for (const s of root.children) {
@@ -91,6 +93,16 @@ export function resolveSubjectNode(root: TaxonomyNode, folder: string): Taxonomy
     for (const s of root.children) {
       if (s.name === alias) return s;
     }
+  }
+  // Fallback: a content folder named by the canonical display nameBn (the
+  // form used across the dashboard). NFC-normalised so spelling/composition
+  // variants (e.g. "ভূগোল" vs "ভূগোল") still resolve.
+  const meta = SUBJECT_META.find((m) => m.nameBn.normalize("NFC") === norm);
+  if (meta) {
+    const node = root.children.find(
+      (s) => s.name.normalize("NFC") === meta.architectureName.normalize("NFC"),
+    );
+    if (node) return node;
   }
   return null;
 }
