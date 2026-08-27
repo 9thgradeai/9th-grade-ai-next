@@ -59,6 +59,11 @@ All mutating endpoints (auth and non-auth) reject cross-origin requests via an O
 | POST | `/api/ai/solver` | **Auth required** — Solve a question `{ text?, imageBase64?, subject?, subjectId?, questionId? }` → `{ solution, steps, explanation, relatedConcept, source }` |
 | POST | `/api/ai/tutor` | **Auth required** — **Streaming** AI tutor turn `{ messages: [{ role, content }], conversationId?, subjectId?, topicId?, questionId?, topicPath?, intent? }` |
 | POST | `/api/ai/assistant` | **Auth required** — Study guidance `{ messages, conversationId?, questionId?, intent? }` → `{ reply, suggestedActions, source }` |
+| POST | `/api/ai/evaluate` | **Auth required** — Grade a learner's written answer `{ question, learnerAnswer, questionId?, subjectId? }` → `{ score, verdict, strengths[], gaps[], modelAnswer, improvementTips[], source }` (grounded on the curated question bank when `questionId` is given) |
+| POST | `/api/ai/mock-test` | **Auth required** — Generate an AI mock test `{ subject?, subjectId?, exam?, count?, difficulty? }` → `{ title, questions: [{ id, question, options[], answer, explanation, topic, difficulty }], source }` |
+| POST | `/api/ai/advisor` | **Auth required** — Personalized exam-target + study plan `{ education?, interests?, targetExam?, weeklyHours?, examDate? }` → `{ summary, recommendedExam, focusAreas[], timelineWeeks, weeklyPlan[], tips[], source }` |
+| GET | `/api/ai/student-model` | **Auth required** — The learner's long-term profile (goals, language, weak/strong topics, usage) |
+| GET | `/api/ai/usage/summary` | **Auth required** — The caller's own AI usage/observability (`{ totalCalls, totalCostUsd, successRate, avgLatencyMs, byProvider[], byDay[] }`) |
 | GET | `/api/ai/conversations` | **Auth required** — List the caller's AI conversations (`?kind=TUTOR\|ASSISTANT\|SOLVER`) |
 | POST | `/api/ai/conversations` | **Auth required** — Create an AI conversation `{ kind, title?, subjectId?, topicId?, topicPath? }` |
 | GET | `/api/ai/conversations/:id` | **Auth required** — Get one conversation + messages (ownership-checked) |
@@ -126,8 +131,10 @@ All mutating endpoints (auth and non-auth) reject cross-origin requests via an O
 ```
 
 ### AI Solver
+Now **streams** a `application/json` token stream (same shape as below). Headers:
+`X-Conversation-Id`, `X-AI-Source` (`groq` | `anthropic` | `mock` | `cache`), `X-AI-Model`.
 ```json
-{ "solution": "...", "steps": ["step 1", "step 2"], "explanation": "...", "relatedConcept": "...", "source": "anthropic" | "groq" | "mock" }
+{ "solution": "...", "steps": ["step 1", "step 2"], "explanation": "...", "relatedConcept": "...", "source": "anthropic" | "groq" | "mock" | "cache" }
 ```
 
 ### AI Tutor (streaming)
@@ -136,8 +143,10 @@ Returns a `text/plain` **token stream** (real model output). Headers:
 Falls back to a clearly labelled `mock` source when no API key is set. See `docs/AI-SYSTEM.md`.
 
 ### AI Assistant
+Now **streams** a `application/json` token stream (same shape as below). Headers:
+`X-Conversation-Id`, `X-AI-Source` (`groq` | `anthropic` | `mock` | `cache`), `X-AI-Model`.
 ```json
-{ "reply": "...", "suggestedActions": [{ "id": "...", "labelBn": "...", "labelEn": "...", "action": "continue|weak-topics|mistakes|what-today|practice|current-affairs|general" }], "source": "groq" | "anthropic" | "mock" }
+{ "reply": "...", "suggestedActions": [{ "id": "...", "labelBn": "...", "labelEn": "...", "action": "continue|weak-topics|mistakes|what-today|practice|current-affairs|general" }], "source": "groq" | "anthropic" | "mock" | "cache" }
 ```
 
 ### AIConversation

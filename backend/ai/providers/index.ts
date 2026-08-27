@@ -1,6 +1,6 @@
 // Provider package public API.
 
-export { resolveModel, resolvedProviderName } from "./registry";
+export { resolveModel, resolveModelCandidates, resolvedProviderName } from "./registry";
 export type { ModelSelection } from "./registry";
 export {
   type LLMProvider,

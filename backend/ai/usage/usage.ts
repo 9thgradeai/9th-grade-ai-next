@@ -62,3 +62,65 @@ export async function countUsageToday(
     },
   });
 }
+
+export type UsageSummary = {
+  totalCalls: number;
+  totalCostUsd: number;
+  successRate: number;
+  avgLatencyMs: number;
+  byProvider: { provider: string; calls: number; costUsd: number }[];
+  byDay: { date: string; calls: number; costUsd: number }[];
+};
+
+/** Aggregate the caller's own AI usage for an observability view. */
+export async function getUsageSummary(userId: string): Promise<UsageSummary> {
+  const since = new Date(Date.now() - 14 * 86400_000);
+
+  const [agg, byProvider, rows] = await Promise.all([
+    prisma.aIUsage.aggregate({
+      where: { userId },
+      _count: { _all: true },
+      _sum: { estimatedCostUsd: true },
+      _avg: { latencyMs: true },
+    }),
+    prisma.aIUsage.groupBy({
+      by: ["provider"],
+      where: { userId },
+      _count: { _all: true },
+      _sum: { estimatedCostUsd: true },
+    }),
+    prisma.aIUsage.findMany({
+      where: { userId, createdAt: { gte: since } },
+      select: { createdAt: true, estimatedCostUsd: true, success: true },
+      orderBy: { createdAt: "asc" },
+    }),
+  ]);
+
+  const total = agg._count._all;
+  const successCount = rows.filter((r) => r.success).length;
+  const byDayMap = new Map<string, { calls: number; costUsd: number }>();
+  for (const r of rows) {
+    const day = r.createdAt.toISOString().slice(0, 10);
+    const cur = byDayMap.get(day) ?? { calls: 0, costUsd: 0 };
+    cur.calls += 1;
+    cur.costUsd += r.estimatedCostUsd;
+    byDayMap.set(day, cur);
+  }
+
+  return {
+    totalCalls: total,
+    totalCostUsd: agg._sum.estimatedCostUsd ?? 0,
+    successRate: total ? successCount / total : 0,
+    avgLatencyMs: Math.round(agg._avg.latencyMs ?? 0),
+    byProvider: byProvider.map((p) => ({
+      provider: p.provider,
+      calls: p._count._all,
+      costUsd: p._sum.estimatedCostUsd ?? 0,
+    })),
+    byDay: Array.from(byDayMap.entries()).map(([date, v]) => ({
+      date,
+      calls: v.calls,
+      costUsd: v.costUsd,
+    })),
+  };
+}

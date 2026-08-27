@@ -25,9 +25,12 @@
 
 | Component | Technology | Notes |
 |-----------|-----------|-------|
-| AI Provider | Anthropic | Claude Sonnet 4 |
-| AI SDK | Vercel AI SDK | `ai` + `@ai-sdk/anthropic` |
-| Streaming | AI SDK `streamText` | Used in `/api/ai/tutor` |
+| AI Provider (primary) | Groq | `openai/gpt-oss-120b` (`AI_GROQ_MODEL`) for tutor/assistant |
+| AI Provider (fallback) | Anthropic | `claude-sonnet-4-6` (`AI_ANTHROPIC_MODEL`) for solver + vision |
+| Runtime failover | ModelRouter (`resolveModelCandidates`) | Groq → Anthropic → Mock, tried per-request on provider error |
+| AI SDK | Vercel AI SDK | `ai` + `@ai-sdk/groq` + `@ai-sdk/anthropic` |
+| Streaming | `provider.stream` | All of tutor / solver / assistant stream token-by-token |
+| Response cache | `backend/ai/infrastructure/ai-cache` | In-memory or Redis; serves repeated questions as `source: "cache"` |
 | Fallback | Mock responses | Labelled `source: "mock"` |
 
 ## Testing

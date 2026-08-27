@@ -23,12 +23,19 @@ const PERSONA =
   "- If the question is ambiguous, state your assumption in 'solution'.\n" +
   "- Never invent facts; if unsure, say so in 'solution'.";
 
+const DOMAIN_RULES =
+  "\n\n## Question Bank Context (grounding)\n" +
+  "The following are real past/exam questions from our curated bank, with verified answers. " +
+  "If the learner's question matches one of these, prefer the bank's verified answer and explain " +
+  "it. If it does not match, solve from first principles but keep the exam style in mind.\n\n" +
+  "=== Retrieved question-bank entries (trusted, curated) ===\n";
+
 /** Build the solver system prompt. */
-export function buildSolverSystem(ctx: AIContext): string {
+export function buildSolverSystem(ctx: AIContext, domainBlock = ""): string {
   const subjectLine = ctx.subject
     ? `\n[Subject: ${ctx.subject.nameBn} (${ctx.subject.nameEn})]`
     : "";
-  return PERSONA + subjectLine;
+  return PERSONA + subjectLine + (domainBlock ? DOMAIN_RULES + domainBlock : "");
 }
 
 /** JSON shape the model must return; validated by the application layer. */

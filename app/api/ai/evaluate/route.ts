@@ -1,14 +1,11 @@
-/* POST /api/ai/solver — step-by-step question solver (text + optional image).
-   Authenticated. Delegates to the AI application layer; validates structured
-   output; persists a SOLVER conversation for history and tutor handoff. */
+/* POST /api/ai/evaluate — grade a learner's written answer. Authenticated. */
 
 import { UnauthorizedError, toHttpResponse } from "~backend/errors";
 import { getUserIdFromRequest } from "~backend/services/user";
 import { enforceAiQuotas } from "~backend/rate-limit";
-import { solveQuestion } from "~backend/ai";
+import { evaluateAnswer } from "~backend/ai";
 import { getRequestId, startTiming, applySecurityHeaders, assertSameOrigin } from "../../_middleware";
 
-// Streaming/LLM latency can exceed serverless defaults; keep the invocation alive.
 export const maxDuration = 60;
 
 export async function POST(request: Request) {
@@ -20,19 +17,17 @@ export async function POST(request: Request) {
 
     const userId = await getUserIdFromRequest(request);
     if (!userId) {
-      throw new UnauthorizedError("Sign in to use the AI solver.");
+      throw new UnauthorizedError("Sign in to use the answer evaluator.");
     }
 
-    // Phase 8: per-user minute + daily quotas (store-backed) with the usage
-    // ledger as the authoritative daily backstop on single-instance stores.
     await enforceAiQuotas(request, "solver", userId);
 
     const body = await request.json().catch(() => ({}));
-    const { stream, conversationId, provider, model } = await solveQuestion({ userId, request: body });
+    const { result, conversationId, provider, model } = await evaluateAnswer({ userId, request: body });
 
-    const res = new Response(stream, {
+    const res = new Response(JSON.stringify({ ...result, conversationId }), {
       headers: {
-        "Content-Type": "application/json; charset=utf-8",
+        "Content-Type": "application/json",
         "X-Conversation-Id": conversationId,
         "X-AI-Source": provider,
         "X-AI-Model": model,

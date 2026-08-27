@@ -1,6 +1,6 @@
 "use client";
 
-import { aiJson } from "./client";
+import { streamChat, parseStreamedJson } from "./client";
 import type { AIIntent } from "./types";
 import type { AssistantResultDto } from "./types";
 
@@ -11,7 +11,7 @@ export type AssistantTurnOptions = {
   intent?: AIIntent;
 };
 
-/** Ask the learning assistant; returns reply + suggested actions. */
+/** Ask the learning assistant; streams the reply + suggested actions. */
 export async function askAssistant(
   opts: AssistantTurnOptions,
 ): Promise<AssistantResultDto> {
@@ -22,5 +22,14 @@ export async function askAssistant(
   if (opts.questionId) body.questionId = opts.questionId;
   if (opts.intent) body.intent = opts.intent;
 
-  return aiJson<AssistantResultDto>("/api/ai/assistant", "POST", body);
+  let full = "";
+  await streamChat({ url: "/api/ai/assistant", body, onChunk: (c) => { full += c; } });
+  const parsed = parseStreamedJson(full);
+  return (
+    (parsed as AssistantResultDto) ?? {
+      reply: "দুঃখিত, এখন উত্তর তৈরি করা যাচ্ছে না। কিছুক্ষণ পর আবার চেষ্টা করুন।",
+      suggestedActions: [],
+      source: "mock",
+    }
+  );
 }

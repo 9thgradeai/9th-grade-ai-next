@@ -28,24 +28,21 @@ export async function POST(request: Request) {
     await enforceAiQuotas(request, "assistant", userId);
 
     const body = await request.json().catch(() => ({}));
-    const { result, conversationId, model } = await assistantTurn({
+    const { stream, conversationId, provider, model } = await assistantTurn({
       userId,
       request: body,
     });
 
-    const res = new Response(
-      JSON.stringify({ ...result, conversationId }),
-      {
-        headers: {
-          "Content-Type": "application/json",
-          "X-Conversation-Id": conversationId,
-          "X-AI-Source": result.source,
-          "X-AI-Model": model,
-          "X-Request-Id": requestId,
-          "X-Response-Time": getTime() + "ms",
-        },
+    const res = new Response(stream, {
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+        "X-Conversation-Id": conversationId,
+        "X-AI-Source": provider,
+        "X-AI-Model": model,
+        "X-Request-Id": requestId,
+        "X-Response-Time": getTime() + "ms",
       },
-    );
+    });
     applySecurityHeaders(res);
     return res;
   } catch (err) {

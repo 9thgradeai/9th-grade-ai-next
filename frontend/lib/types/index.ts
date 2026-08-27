@@ -227,6 +227,61 @@ export namespace Client {
     conversationId: string;
   };
 
+  export type EvaluationResultDto = {
+    score: number;
+    verdict: "correct" | "partial" | "incorrect";
+    strengths: string[];
+    gaps: string[];
+    modelAnswer: string;
+    improvementTips: string[];
+    source: string;
+    conversationId?: string;
+  };
+
+  export type GeneratedMockOption = { id: string; text: string };
+  export type GeneratedMockQuestion = {
+    id: string;
+    question: string;
+    options: GeneratedMockOption[];
+    answer: string;
+    explanation: string;
+    topic: string;
+    difficulty: "EASY" | "MEDIUM" | "HARD";
+  };
+  export type GeneratedMockTest = {
+    title: string;
+    questions: GeneratedMockQuestion[];
+    source: string;
+  };
+  export type AdvisorPlanDto = {
+    summary: string;
+    recommendedExam: string;
+    focusAreas: string[];
+    timelineWeeks: number;
+    weeklyPlan: { week: number; focus: string; tasks: string[] }[];
+    tips: string[];
+    source: string;
+  };
+  export type StudentModelTopicDto = { topic: string; detail: string; confidence: number };
+  export type StudentModelDto = {
+    examGoal?: string;
+    preferredLanguage?: string;
+    weakTopics: StudentModelTopicDto[];
+    strongTopics: { topic: string; detail: string }[];
+    totalAiQuestions: number;
+    evaluatedCount: number;
+    usageByTask: { task: string; count: number }[];
+    lastActive?: string;
+  };
+  export type UsageSummaryDto = {
+    totalCalls: number;
+    totalCostUsd: number;
+    successRate: number;
+    avgLatencyMs: number;
+    byProvider: { provider: string; calls: number; costUsd: number }[];
+    byDay: { date: string; calls: number; costUsd: number }[];
+  };
+
   export type ChatTurn = {
     role: "user" | "assistant";
     content: string;
@@ -637,4 +692,10 @@ export type AIMessageDto = Client.AIMessageDto;
 export type SolverResultDto = Client.SolverResultDto;
 export type SuggestedActionDto = Client.SuggestedActionDto;
 export type AssistantResultDto = Client.AssistantResultDto;
+export type EvaluationResultDto = Client.EvaluationResultDto;
+export type GeneratedMockTest = Client.GeneratedMockTest;
+export type GeneratedMockQuestion = Client.GeneratedMockQuestion;
+export type AdvisorPlanDto = Client.AdvisorPlanDto;
+export type StudentModelDto = Client.StudentModelDto;
+export type UsageSummaryDto = Client.UsageSummaryDto;
 export type ChatTurn = Client.ChatTurn;

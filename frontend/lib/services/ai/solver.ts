@@ -1,6 +1,6 @@
 "use client";
 
-import { aiJson } from "./client";
+import { streamChat, parseStreamedJson } from "./client";
 import type { SolverResultDto } from "./types";
 
 export type SolverTurnOptions = {
@@ -11,7 +11,7 @@ export type SolverTurnOptions = {
   questionId?: number;
 };
 
-/** Solve a question (text/image) via the AI solver. */
+/** Solve a question (text/image) via the AI solver. Streams the response. */
 export async function solve(opts: SolverTurnOptions): Promise<SolverResultDto> {
   const body: Record<string, unknown> = {};
   if (opts.text) body.text = opts.text;
@@ -20,5 +20,16 @@ export async function solve(opts: SolverTurnOptions): Promise<SolverResultDto> {
   if (opts.subjectId) body.subjectId = opts.subjectId;
   if (opts.questionId) body.questionId = opts.questionId;
 
-  return aiJson<SolverResultDto>("/api/ai/solver", "POST", body);
+  let full = "";
+  await streamChat({ url: "/api/ai/solver", body, onChunk: (c) => { full += c; } });
+  const parsed = parseStreamedJson(full);
+  return (
+    (parsed as SolverResultDto) ?? {
+      solution: "Sorry, the AI solver is temporarily unavailable. Please try again.",
+      steps: [],
+      explanation: "",
+      relatedConcept: "",
+      source: "mock",
+    }
+  );
 }

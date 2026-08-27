@@ -9,6 +9,12 @@ export type {
   SolverResultDto,
   SuggestedActionDto,
   AssistantResultDto,
+  EvaluationResultDto,
+  GeneratedMockTest,
+  GeneratedMockQuestion,
+  AdvisorPlanDto,
+  StudentModelDto,
+  UsageSummaryDto,
   ChatTurn,
 } from "@/lib/types";
 

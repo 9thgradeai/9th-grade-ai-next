@@ -98,3 +98,28 @@ export async function streamChat(opts: {
     model: res.headers.get("x-ai-model") ?? "",
   };
 }
+
+/**
+ * Parse a JSON object out of streamed model output that may be wrapped in code
+ * fences or embedded in prose. Returns null if no JSON object can be found.
+ */
+export function parseStreamedJson(text: string): unknown {
+  const t = text.trim();
+  const fence = t.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  const candidate = fence ? fence[1].trim() : t;
+  try {
+    return JSON.parse(candidate);
+  } catch {
+    // ignore
+  }
+  const start = candidate.indexOf("{");
+  const end = candidate.lastIndexOf("}");
+  if (start >= 0 && end > start) {
+    try {
+      return JSON.parse(candidate.slice(start, end + 1));
+    } catch {
+      // ignore
+    }
+  }
+  return null;
+}

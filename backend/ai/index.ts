@@ -6,6 +6,9 @@ export {
   createTutorTurn,
   solveQuestion,
   assistantTurn,
+  evaluateAnswer,
+  generateMockTest,
+  getCareerAdvice,
   detectIntent,
 } from "./application/services";
 export type { SolverResult, AssistantResult, SuggestedAction, AIContext } from "./types";
@@ -22,5 +25,8 @@ export {
 export type { ConversationSummary, MessageRow } from "./persistence/conversations";
 
 export { submitFeedback } from "./feedback";
-export { recordUsage, bumpAIQuestions, countUsageToday } from "./usage/usage";
+export { recordUsage, bumpAIQuestions, countUsageToday, getUsageSummary } from "./usage/usage";
+export type { UsageSummary } from "./usage/usage";
 export { getMemories, upsertMemory, setExamGoal } from "./memory/memory-store";
+export { getStudentModel } from "./student-model";
+export type { StudentModel } from "./student-model";

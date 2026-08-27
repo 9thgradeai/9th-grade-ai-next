@@ -9,6 +9,9 @@ import { ValidationError, AppError } from "../../../backend/errors";
 import {
   parseJsonObject,
   validateSolverOutput,
+  validateEvaluationOutput,
+  validateMockTestOutput,
+  validateAdvisorOutput,
   sanitizeReply,
 } from "../../../backend/ai/validation/outputs";
 import { detectIntent } from "../../../backend/ai/application/services";
@@ -16,6 +19,9 @@ import {
   buildTutorSystem,
   buildSolverSystem,
   buildAssistantSystem,
+  buildEvaluatorSystem,
+  buildMockTestSystem,
+  buildAdvisorSystem,
 } from "../../../backend/ai/prompts";
 import { chunkedTextStream } from "../../../backend/ai/providers/types";
 import {
@@ -153,6 +159,38 @@ describe("output validation", () => {
     expect(sanitizeReply(long).length).toBe(8_000);
     expect(sanitizeReply("  hi  ")).toBe("hi");
   });
+
+  it("normalizes an evaluation response with a grading key", () => {
+    const result = validateEvaluationOutput(
+      JSON.stringify({
+        score: 87,
+        verdict: "correct",
+        strengths: ["Clear reasoning", "Correct formula", 5],
+        gaps: ["Minor notation slip"],
+        modelAnswer: "F = ma",
+        improvementTips: ["Show units"],
+      }),
+      "fallback",
+    );
+    expect(result.score).toBe(87);
+    expect(result.verdict).toBe("correct");
+    expect(result.strengths).toEqual(["Clear reasoning", "Correct formula"]);
+    expect(result.gaps).toEqual(["Minor notation slip"]);
+    expect(result.modelAnswer).toBe("F = ma");
+    expect(result.improvementTips).toEqual(["Show units"]);
+    expect(result.source).toBe("ai");
+  });
+
+  it("infers a verdict from the score when missing", () => {
+    expect(validateEvaluationOutput('{"score":90}', "fallback").verdict).toBe("correct");
+    expect(validateEvaluationOutput('{"score":60}', "fallback").verdict).toBe("partial");
+    expect(validateEvaluationOutput('{"score":10}', "fallback").verdict).toBe("incorrect");
+  });
+
+  it("clamps the score into 0-100 and falls back on garbage", () => {
+    expect(validateEvaluationOutput('{"score":999}', "fallback").score).toBe(100);
+    expect(validateEvaluationOutput("not json", "fallback model").modelAnswer).toBe("fallback model");
+  });
 });
 
 describe("intent detection", () => {
@@ -202,6 +240,131 @@ describe("prompt builders", () => {
     const prompt = buildAssistantSystem(minimalContext);
     expect(prompt).toContain("9th-Grade AI");
     expect(prompt).toContain("exam-focused");
+  });
+
+  it("builds an evaluator system prompt with a grading key and exam rules", () => {
+    const prompt = buildEvaluatorSystem(minimalContext, "Correct answer: 42");
+    expect(prompt).toContain("answer evaluator");
+    expect(prompt).toContain("Grading key");
+    expect(prompt).toContain("Correct answer: 42");
+    expect(prompt).toContain("score");
+    expect(prompt).toContain("verdict");
+  });
+
+  it("builds a mock-test system prompt with a question count and subject", () => {
+    const prompt = buildMockTestSystem(minimalContext, { subjectName: "History", exam: "BCS", count: 12 });
+    expect(prompt).toContain("mock-test generator");
+    expect(prompt).toContain("12");
+    expect(prompt).toContain("History");
+    expect(prompt).toContain("BCS");
+  });
+
+  it("builds an advisor system prompt from a learner profile", () => {
+    const prompt = buildAdvisorSystem(minimalContext, {
+      education: "BSc",
+      interests: "Science",
+      targetExam: "BCS",
+      weeklyHours: 12,
+    });
+    expect(prompt).toContain("career");
+    expect(prompt).toContain("BSc");
+    expect(prompt).toContain("Science");
+    expect(prompt).toContain("BCS");
+    expect(prompt).toContain("12");
+  });
+});
+
+describe("advisor validation", () => {
+  it("normalizes an advisor plan with a weekly schedule", () => {
+    const result = validateAdvisorOutput(
+      JSON.stringify({
+        summary: "Focus on BCS.",
+        recommendedExam: "BCS",
+        focusAreas: ["Bangla", "Math"],
+        timelineWeeks: 16,
+        weeklyPlan: [
+          { week: 1, focus: "Basics", tasks: ["Revise Bangla", "Daily current affairs"] },
+          { week: 2, focus: "Math", tasks: ["Algebra"] },
+        ],
+        tips: ["Practice past papers"],
+      }),
+      "fallback",
+    );
+    expect(result.summary).toContain("BCS");
+    expect(result.recommendedExam).toBe("BCS");
+    expect(result.focusAreas).toEqual(["Bangla", "Math"]);
+    expect(result.timelineWeeks).toBe(16);
+    expect(result.weeklyPlan).toHaveLength(2);
+    expect(result.weeklyPlan[0].tasks).toEqual(["Revise Bangla", "Daily current affairs"]);
+  });
+
+  it("applies defaults on garbage input", () => {
+    const result = validateAdvisorOutput("not json", "fallback summary");
+    expect(result.summary).toBe("fallback summary");
+    expect(result.timelineWeeks).toBe(12);
+    expect(result.weeklyPlan).toEqual([]);
+  });
+});
+
+describe("mock-test validation", () => {
+  it("normalizes a generated mock test and clamps options/answer", () => {
+    const result = validateMockTestOutput(
+      JSON.stringify({
+        title: "History Test",
+        questions: [
+          {
+            id: "q1",
+            question: "When did Bangladesh become independent?",
+            options: [
+              { id: "A", text: "1971" },
+              { id: "B", text: "1947" },
+              { id: "C", text: "1952" },
+              { id: "D", text: "1990" },
+            ],
+            answer: "A",
+            explanation: "1971",
+            topic: "History",
+            difficulty: "EASY",
+          },
+          { question: "", options: [{ id: "A", text: "x" }], answer: "A" }, // dropped: empty + <2 options
+        ],
+      }),
+      "fallback",
+      10,
+    );
+    expect(result.title).toBe("History Test");
+    expect(result.questions).toHaveLength(1);
+    expect(result.questions[0].answer).toBe("A");
+    expect(result.questions[0].options).toHaveLength(4);
+  });
+
+  it("drops questions whose answer does not match an option", () => {
+    const result = validateMockTestOutput(
+      JSON.stringify({
+        questions: [
+          {
+            id: "q1",
+            question: "What is 2+2?",
+            options: [
+              { id: "A", text: "3" },
+              { id: "B", text: "4" },
+            ],
+            answer: "Z", // invalid
+            explanation: "4",
+            topic: "Math",
+          },
+        ],
+      }),
+      "fallback",
+      10,
+    );
+    expect(result.questions).toHaveLength(0);
+  });
+
+  it("returns an empty test on garbage input", () => {
+    const result = validateMockTestOutput("not json", "fallback", 10);
+    expect(result.questions).toEqual([]);
+    expect(result.title).toBe("Mock Test");
   });
 });
 

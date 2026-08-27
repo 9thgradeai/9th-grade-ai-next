@@ -34,6 +34,11 @@ Model resolution is task-driven via `resolveModel(task, { image })`:
 | `POST /api/ai/tutor` | required | **Streaming** teaching turn (SSE-style text stream + headers) |
 | `POST /api/ai/solver` | required | Structured step-by-step solver (`{ solution, steps, explanation, relatedConcept }`) |
 | `POST /api/ai/assistant` | required | Structured study guidance (`{ reply, suggestedActions }`) |
+| `POST /api/ai/evaluate` | required | Answer evaluator: grade a learner's written answer (`{ score, verdict, strengths[], gaps[], modelAnswer, improvementTips[] }`), grounded on the curated question bank when `questionId` is supplied |
+| `POST /api/ai/mock-test` | required | AI mock-test generator: produce N multiple-choice questions (`{ title, questions:[{ id, question, options[], answer, explanation, topic, difficulty }] }`) for a subject/exam |
+| `POST /api/ai/advisor` | required | Career/exam advisor: personalized target + study plan (`{ summary, recommendedExam, focusAreas[], timelineWeeks, weeklyPlan[], tips[] }`) from the learner profile |
+| `GET /api/ai/student-model` | required | Long-term student model: aggregated goals, language, weak/strong topics (from `AIMemory`) + usage counts |
+| `GET /api/ai/usage/summary` | required | Observability: per-caller AI usage (`totalCalls`, `totalCostUsd`, `successRate`, `avgLatencyMs`, `byProvider`, `byDay`) — no prompt content stored |
 | `GET/POST /api/ai/conversations` | required | List / create conversation threads |
 | `GET/PATCH/DELETE /api/ai/conversations/:id` | required | Read / rename / pin / delete one conversation (ownership-checked) |
 | `POST /api/ai/feedback` | required | Record HELPFUL / NOT_HELPFUL feedback on a message |
