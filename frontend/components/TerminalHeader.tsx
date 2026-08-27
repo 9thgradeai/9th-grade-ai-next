@@ -191,6 +191,7 @@ export default function TerminalHeader() {
           ref={menuRef}
           aria-label="Mobile navigation"
           inert={!isMobileMenuOpen || undefined}
+          hidden={!isMobileMenuOpen || undefined}
           className="mobile-menu md:hidden overflow-hidden transition-[max-height,opacity] duration-200 ease-out"
           style={{
             maxHeight: isMobileMenuOpen ? 480 : 0,
