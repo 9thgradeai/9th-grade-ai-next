@@ -1,41 +1,44 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Space_Grotesk, JetBrains_Mono, Hind_Siliguri } from "next/font/google";
-import { MotionConfig } from "framer-motion";
+import { Inter, Space_Grotesk, Hind_Siliguri } from "next/font/google";
 import { AuthProvider } from "@/lib/auth-ctx";
 import { ThemeProvider } from "@/lib/theme-ctx";
 import { ToastProvider } from "@/lib/toast-ctx";
 import { LanguageProvider } from "@/lib/lang-ctx";
 import { LANGUAGE_KEY } from "@/lib/lang-key";
 import ScrollProgress from "@/components/ui/ScrollProgress";
-import Toaster from "@/components/ui/Toaster";
+import Toaster from "@/components/ui/ToasterLazy";
 import "./globals.css";
 
+// Fonts use `swap` so the real web face shows on first paint. LCP is no longer
+// tied to font loading because the hero text paints at FCP (its entrance
+// animation no longer starts from opacity:0 / a fully-clipped mask), so the
+// late swap re-paint cannot overtake LCP.
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
   display: "swap",
+  preload: false,
 });
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   variable: "--font-space-grotesk",
   display: "swap",
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-jetbrains-mono",
-  display: "swap",
+  preload: false,
 });
 
 // Bangla text is first-class across the product (KPIs, questions, AI tutor).
 // Hind Siliguri ships the bengali subset so UI copy renders in a proper
-// Bengali face instead of falling back to system fonts.
+// Bengali face. Latin is intentionally omitted (Inter covers Latin). We keep
+// only the two weights used for hierarchy (400 + 700; 600 is synthesized) and
+// disable font preloading so the render-blocking CSS — not the font files —
+// wins the throttled connection first. Total font payload is ~150KB.
 const hindSiliguri = Hind_Siliguri({
-  subsets: ["bengali", "latin"],
-  weight: ["400", "500", "600", "700"],
+  subsets: ["bengali"],
+  weight: ["400", "700"],
   variable: "--font-hind-siliguri",
   display: "swap",
+  preload: false,
 });
 
 export const metadata: Metadata = {
@@ -94,7 +97,7 @@ export default function RootLayout({
   return (
     <html
       lang="bn"
-      className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} ${hindSiliguri.variable} h-full antialiased`}
+      className={`${inter.variable} ${spaceGrotesk.variable} ${hindSiliguri.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <head>
@@ -110,16 +113,14 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col font-sans noise">
         <div className="cosmic-bg" aria-hidden="true" />
         <ScrollProgress />
-        <MotionConfig reducedMotion="user">
-          <ToastProvider>
-            <LanguageProvider>
-                <AuthProvider>
-                  <ThemeProvider>{children}</ThemeProvider>
-                </AuthProvider>
-            </LanguageProvider>
-            <Toaster />
-          </ToastProvider>
-        </MotionConfig>
+        <ToastProvider>
+          <LanguageProvider>
+            <AuthProvider>
+              <ThemeProvider>{children}</ThemeProvider>
+            </AuthProvider>
+          </LanguageProvider>
+          <Toaster />
+        </ToastProvider>
       </body>
     </html>
   );

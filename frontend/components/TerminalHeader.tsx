@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { motion, useScroll, useMotionValueEvent, useReducedMotion } from "framer-motion";
 import StatusPill from "./ui/StatusPill";
 import BrandMark from "./ui/BrandMark";
 
@@ -18,10 +17,25 @@ export default function TerminalHeader() {
   const [activeLink, setActiveLink] = useState<string | null>(null);
   const [spySection, setSpySection] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
-  const { scrollY } = useScroll();
-  const shouldReduceMotion = useReducedMotion();
 
-  useMotionValueEvent(scrollY, "change", (v) => setScrolled(v > 24));
+  // Track scroll position for the condensed header state (passive listener,
+  // no animation library in the initial bundle).
+  useEffect(() => {
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      setScrolled(window.scrollY > 24);
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
 
   // Scrollspy — highlight the nav link for the section in view. Only
   // same-page anchors are observed; full-page links (e.g. /tracks) skip it.
@@ -103,13 +117,9 @@ export default function TerminalHeader() {
               className="flex items-center gap-2.5 font-display text-lg font-semibold text-white tracking-tight hover:opacity-90 transition-opacity"
               aria-label="9th-grade-ai home"
             >
-              <motion.span
-                className="inline-flex"
-                animate={shouldReduceMotion ? undefined : { scale: [1, 1.06, 1] }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-              >
+              <span className="brand-pulse inline-flex">
                 <BrandMark className="h-8 w-8 rounded-lg shadow-glow-sm" />
-              </motion.span>
+              </span>
               <span>9th-grade-ai</span>
             </Link>
 
@@ -176,15 +186,16 @@ export default function TerminalHeader() {
         </div>
 
         {/* Mobile Menu */}
-        <motion.div
+        <div
           id="mobile-menu"
           ref={menuRef}
-          initial={false}
-          animate={{ opacity: isMobileMenuOpen ? 1 : 0, height: isMobileMenuOpen ? "auto" : 0 }}
-          transition={{ duration: 0.2 }}
-          className="md:hidden overflow-hidden"
           aria-label="Mobile navigation"
-          hidden={!isMobileMenuOpen}
+          inert={!isMobileMenuOpen || undefined}
+          className="mobile-menu md:hidden overflow-hidden transition-[max-height,opacity] duration-200 ease-out"
+          style={{
+            maxHeight: isMobileMenuOpen ? 480 : 0,
+            opacity: isMobileMenuOpen ? 1 : 0,
+          }}
         >
           <div className="py-4 space-y-1 border-t border-white/10">
             {navLinks.map((link) => (
@@ -215,7 +226,7 @@ export default function TerminalHeader() {
               </Link>
             </div>
           </div>
-        </motion.div>
+        </div>
       </nav>
     </header>
   );

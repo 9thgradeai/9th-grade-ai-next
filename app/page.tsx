@@ -1,18 +1,7 @@
 import { prisma } from "~backend/db";
 import PublicShell from "@/components/public/PublicShell";
 import HeroSection from "@/components/landing/HeroSection";
-import TrustStripSection from "@/components/landing/TrustStripSection";
-import ProblemSection from "@/components/landing/ProblemSection";
-import IntelligenceSection from "@/components/landing/IntelligenceSection";
-import SignalSection from "@/components/landing/SignalSection";
-import AdaptivePracticeSection from "@/components/landing/AdaptivePracticeSection";
-import TutorSection from "@/components/landing/TutorSection";
-import ExamEngineSection from "@/components/landing/ExamEngineSection";
-import SubjectUniverseSection from "@/components/landing/SubjectUniverseSection";
-import AnalyticsSection from "@/components/landing/AnalyticsSection";
-import PlannerSection from "@/components/landing/PlannerSection";
-import PhilosophySection from "@/components/landing/PhilosophySection";
-import FinalCtaSection from "@/components/landing/FinalCtaSection";
+import LazySection from "@/components/landing/LazySection";
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -35,18 +24,18 @@ export default async function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <HeroSection subjectCount={subjectCount} />
-      <TrustStripSection />
-      <ProblemSection />
-      <IntelligenceSection />
-      <SignalSection />
-      <AdaptivePracticeSection />
-      <TutorSection />
-      <ExamEngineSection />
-      <SubjectUniverseSection />
-      <AnalyticsSection />
-      <PlannerSection />
-      <PhilosophySection />
-      <FinalCtaSection />
+      <LazySection name="TrustStripSection" />
+      <LazySection name="ProblemSection" />
+      <LazySection name="IntelligenceSection" />
+      <LazySection name="SignalSection" />
+      <LazySection name="AdaptivePracticeSection" />
+      <LazySection name="TutorSection" />
+      <LazySection name="ExamEngineSection" />
+      <LazySection name="SubjectUniverseSection" />
+      <LazySection name="AnalyticsSection" />
+      <LazySection name="PlannerSection" />
+      <LazySection name="PhilosophySection" />
+      <LazySection name="FinalCtaSection" />
     </PublicShell>
   );
 }

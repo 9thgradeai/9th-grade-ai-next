@@ -33,7 +33,7 @@
   /* Typography — Hind Siliguri covers Bengali glyphs across all stacks */
   --font-sans: var(--font-inter), var(--font-hind-siliguri), "Hind Siliguri", system-ui, sans-serif;
   --font-display: var(--font-space-grotesk), var(--font-inter), var(--font-hind-siliguri), system-ui, sans-serif;
-  --font-mono: var(--font-jetbrains-mono), "Fira Code", Menlo, Consolas, var(--font-hind-siliguri), monospace;
+  --font-mono: "Fira Code", Menlo, Consolas, var(--font-hind-siliguri), monospace;
 
   /* Custom shadows — aurora-tinted elevation */
   --shadow-neon-glow: 0 0 20px rgba(45, 212, 191, 0.13);
@@ -104,6 +104,133 @@ body {
 .font-display {
   font-family: var(--font-display);
   letter-spacing: -0.02em;
+}
+
+/* ── Hero entrance (CSS-driven, visible at first paint) ──────────────────
+   Runs as a plain CSS animation so the LCP heading paints immediately
+   instead of waiting for JS hydration (the previous Framer Motion
+   `initial="hidden"` kept it at opacity:0 server-side). */
+:root {
+  --ease-expo: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hero-eyebrow {
+  animation: heroRise 0.7s var(--ease-expo) both;
+  animation-delay: 0.05s;
+}
+.hero-sub {
+  animation: heroRise 0.8s var(--ease-expo) both;
+  animation-delay: 0.12s;
+}
+.hero-cta {
+  animation: heroRise 0.8s var(--ease-expo) both;
+  animation-delay: 0.2s;
+}
+.hero-stats {
+  animation: heroRise 0.8s var(--ease-expo) both;
+  animation-delay: 0.28s;
+}
+.hero-scroll {
+  animation: heroRise 0.8s var(--ease-expo) both;
+  animation-delay: 0.45s;
+}
+
+/* Entrances animate transform (and a faint opacity fade starting at 0.4, which
+   is already painted) so the hero text is rendered at FCP and can never become
+   a late LCP. A full opacity:0 hide would push LCP to ~3s under throttle. */
+@keyframes heroRise {
+  from {
+    opacity: 0.4;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.word-rise {
+  animation: wordRise 0.7s var(--ease-expo) both;
+}
+/* Reveal from a partially-visible offset (not fully clipped) so the LCP
+   heading paints at first paint instead of after the rise completes. */
+@keyframes wordRise {
+  from {
+    opacity: 0.4;
+    transform: translateY(60%) rotate(2deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) rotate(0);
+  }
+}
+
+.pen-draw path {
+  stroke-dasharray: 400;
+  stroke-dashoffset: 400;
+  animation: penDraw 0.5s var(--ease-expo) 1s forwards;
+}
+.pen-check-path {
+  stroke-dasharray: 30;
+  stroke-dashoffset: 30;
+  animation: penDraw 0.3s var(--ease-expo) 1.4s forwards;
+}
+@keyframes penDraw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-eyebrow,
+  .hero-sub,
+  .hero-cta,
+  .hero-stats,
+  .hero-scroll,
+  .word-rise {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .pen-draw path,
+  .pen-check-path {
+    stroke-dashoffset: 0 !important;
+    animation: none !important;
+  }
+}
+
+/* Lightweight ambient pulses (replaces Framer Motion loops above the fold) so
+   the animation library stays out of the initial bundle. */
+@keyframes brandPulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+}
+.brand-pulse {
+  animation: brandPulse 4s ease-in-out infinite;
+  transform-origin: center;
+}
+@keyframes dotPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+.status-dot-pulse {
+  animation: dotPulse 2.2s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .brand-pulse,
+  .status-dot-pulse {
+    animation: none !important;
+  }
 }
 
 /* Cosmic ambient background layer (fixed, GPU-friendly) — aurora wash */

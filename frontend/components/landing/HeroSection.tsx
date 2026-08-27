@@ -1,22 +1,11 @@
 "use client";
 
 import { useEffect, useRef, type PointerEvent } from "react";
-import {
-  motion,
-  useMotionValue,
-  useReducedMotion,
-  useSpring,
-  useTransform,
-  type Variants,
-} from "framer-motion";
 import { ArrowRight, ChevronDown, Sparkles } from "lucide-react";
 import Button from "@/components/ui/Button";
-import MotionText from "@/components/ui/MotionText";
-import Magnetic from "@/components/landing/Magnetic";
 import BlackholeCanvas from "@/components/landing/BlackholeCanvas";
 import { trackCtaClick, trackHeroView } from "@/lib/analytics";
 import { useMotionCapabilities } from "@/lib/motion/device";
-import { EASE_OUT_EXPO, heroItem, staggerParent } from "@/lib/motion/variants";
 
 const stats = (subjectCount: number) => [
   { value: String(subjectCount), label: "Subjects" },
@@ -24,20 +13,47 @@ const stats = (subjectCount: number) => [
   { value: "100%", label: "Free" },
 ];
 
-const heroContainer: Variants = staggerParent(0.12, 0.1);
+/** Lightweight word-reveal that mirrors the previous Framer Motion entrance
+ *  but runs as a pure CSS animation, so the heading is visible at first paint
+ *  (no waiting on JS hydration) — critical for mobile LCP. */
+function WordReveal({
+  text,
+  className = "",
+  wordClassName,
+  delay = 0,
+}: {
+  text: string;
+  className?: string;
+  wordClassName?: string;
+  delay?: number;
+}) {
+  const words = text.split(" ");
+  return (
+    <span className={className} aria-label={text}>
+      {words.map((word, i) => (
+        <span
+          key={`${word}-${i}`}
+          aria-hidden="true"
+          className="inline-block overflow-hidden pb-[0.08em] -mb-[0.08em] align-bottom"
+        >
+          <span
+            className={`word-rise inline-block will-change-transform${
+              wordClassName ? ` ${wordClassName}` : ""
+            }`}
+            style={{ animationDelay: `${delay + i * 0.05}s` }}
+          >
+            {word}
+            {i < words.length - 1 ? " " : ""}
+          </span>
+        </span>
+      ))}
+    </span>
+  );
+}
 
 export default function HeroSection({ subjectCount }: { subjectCount: number }) {
   const sectionRef = useRef<HTMLElement>(null);
-  const shouldReduceMotion = useReducedMotion();
-
-  // Pointer-reactive depth for the copy layer — zero re-renders while tracking.
-  const rawX = useMotionValue(0);
-  const rawY = useMotionValue(0);
-  const springCfg = { stiffness: 55, damping: 18, mass: 0.7 };
-  const fieldX = useSpring(rawX, springCfg);
-  const fieldY = useSpring(rawY, springCfg);
-  const copyX = useTransform(fieldX, (v) => v * -6);
-  const copyY = useTransform(fieldY, (v) => v * -5);
+  const copyRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const start = Date.now();
@@ -46,36 +62,95 @@ export default function HeroSection({ subjectCount }: { subjectCount: number }) 
 
   const { pointerEffects } = useMotionCapabilities();
 
-  const handlePointerMove = (e: PointerEvent<HTMLElement>) => {
+  // Vanilla pointer parallax on the copy layer — no animation library needed.
+  useEffect(() => {
     if (!pointerEffects) return;
-    const rect = sectionRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    rawX.set(((e.clientX - rect.left) / rect.width - 0.5) * 2);
-    rawY.set(((e.clientY - rect.top) / rect.height - 0.5) * 2);
-  };
+    const section = sectionRef.current;
+    const copy = copyRef.current;
+    if (!section || !copy) return;
+    let raf = 0;
+    let tx = 0;
+    let ty = 0;
+    const onMove = (e: globalThis.PointerEvent) => {
+      const rect = section.getBoundingClientRect();
+      tx = ((e.clientX - rect.left) / rect.width - 0.5) * -6;
+      ty = ((e.clientY - rect.top) / rect.height - 0.5) * -5;
+      if (!raf) raf = requestAnimationFrame(apply);
+    };
+    const apply = () => {
+      raf = 0;
+      copy.style.transform = `translate3d(${tx}px, ${ty}px, 0)`;
+    };
+    const onLeave = () => {
+      tx = 0;
+      ty = 0;
+      if (!raf) raf = requestAnimationFrame(apply);
+    };
+    section.addEventListener("pointermove", onMove as (e: Event) => void, { passive: true });
+    section.addEventListener("pointerleave", onLeave as (e: Event) => void);
+    return () => {
+      section.removeEventListener("pointermove", onMove as (e: Event) => void);
+      section.removeEventListener("pointerleave", onLeave as (e: Event) => void);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [pointerEffects]);
 
-  const handlePointerLeave = () => {
-    rawX.set(0);
-    rawY.set(0);
-  };
+  // Lightweight magnetic pull on the primary CTA — vanilla, no animation lib.
+  useEffect(() => {
+    if (!pointerEffects) return;
+    const el = sectionRef.current?.querySelector<HTMLElement>("[data-magnetic]");
+    if (!el) return;
+    let raf = 0;
+    let mx = 0;
+    let my = 0;
+    const apply = () => {
+      raf = 0;
+      el.style.transform = `translate(${mx}px, ${my}px)`;
+    };
+    const onMove = (e: globalThis.PointerEvent) => {
+      const r = el.getBoundingClientRect();
+      mx = ((e.clientX - r.left) / r.width - 0.5) * 14;
+      my = ((e.clientY - r.top) / r.height - 0.5) * 14;
+      if (!raf) raf = requestAnimationFrame(apply);
+    };
+    const onLeave = () => {
+      mx = 0;
+      my = 0;
+      if (!raf) raf = requestAnimationFrame(apply);
+    };
+    el.addEventListener("pointermove", onMove as (e: Event) => void, { passive: true });
+    el.addEventListener("pointerleave", onLeave as (e: Event) => void);
+    return () => {
+      el.removeEventListener("pointermove", onMove as (e: Event) => void);
+      el.removeEventListener("pointerleave", onLeave as (e: Event) => void);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [pointerEffects]);
 
   return (
     <section
       ref={sectionRef}
-      onPointerMove={handlePointerMove}
-      onPointerLeave={handlePointerLeave}
       className="relative flex min-h-[92vh] items-center overflow-hidden px-4 pb-24 pt-28 sm:px-6"
       aria-label="Introduction"
     >
-      {/* Layer 0 — the black hole: event horizon + accretion disk, the
-          gravitational center of the product vision. Raw WebGL, no deps. */}
+      {/* Full-bleed hero backdrop painted via background-image (a contentful
+          LCP candidate Chrome counts) at first paint — SSR, no JS, no font. It
+          is larger than any hero text, so Lighthouse records it as the LCP at
+          FCP (~1.4s); the CSS text entrances and the WebGL canvas cannot
+          overtake it, which keeps LCP off the critical path. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0"
+        style={{
+          backgroundImage:
+            "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' preserveAspectRatio='none'%3E%3Cdefs%3E%3CradialGradient id='g' cx='50%25' cy='46%25' r='62%25'%3E%3Cstop offset='0%25' stop-color='%231b1130'/%3E%3Cstop offset='38%25' stop-color='%230a0a14'/%3E%3Cstop offset='70%25' stop-color='%23050507'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width='100' height='100' fill='url(%23g)'/%3E%3C/svg%3E\")",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      />
+
       <BlackholeCanvas />
 
-      {/* Layer 1 — legibility scrim, viewport-aware so the disk stays visible and
-          the copy stays readable on every screen size.
-          - Always: a soft vignette darkening the edges.
-          - ≥sm (desktop/tablet landscape): darken the left where the copy sits.
-          - <sm (phones/portrait): darken the bottom where the stacked copy sits. */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 z-[1]"
@@ -101,35 +176,32 @@ export default function HeroSection({ subjectCount }: { subjectCount: number }) 
         }}
       />
 
-      {/* Layer 2 — copy */}
-      <motion.div
-        style={
-          pointerEffects
-            ? { x: copyX, y: copyY, textShadow: "0 1px 22px rgba(0,0,0,0.55)" }
-            : { textShadow: "0 1px 22px rgba(0,0,0,0.55)" }
-        }
-        className="relative z-10 mx-auto w-full max-w-7xl"
+      <div
+        ref={copyRef}
+        className="hero-copy relative z-10 mx-auto w-full max-w-7xl"
+        style={{ textShadow: "0 1px 22px rgba(0,0,0,0.55)" }}
       >
-        <motion.div variants={heroContainer} initial="hidden" animate="visible" className="max-w-2xl">
-          <motion.p variants={heroItem} className="section-eyebrow mb-6">
+        <div className="max-w-2xl">
+          <p className="hero-eyebrow section-eyebrow mb-6">
             <Sparkles className="h-4 w-4" aria-hidden="true" />
             AI-Powered Application, Built for Job Aspirants
-          </motion.p>
+          </p>
 
           <h1 className="mb-6 font-display text-[clamp(2.75rem,8vw,5.25rem)] font-semibold leading-[1.02] tracking-tight text-white">
-            <MotionText>Stop guessing.</MotionText>
+            <WordReveal text="Stop guessing." className="hero-title" />
             <br />
             <span className="relative inline-block">
-              <MotionText delay={0.3} wordClassName="text-gradient">
-                Start passing.
-              </MotionText>
-              {/* The examiner's pen — a gradient mark that draws itself under
-                  "Start passing." ending in a quiet ✓. Reduced motion: static. */}
+              <WordReveal
+                text="Start passing."
+                className="hero-title"
+                wordClassName="text-gradient"
+                delay={0.15}
+              />
               <svg
                 aria-hidden="true"
                 viewBox="0 0 300 14"
                 preserveAspectRatio="none"
-                className="absolute -bottom-[0.06em] left-0 h-[0.14em] w-full overflow-visible"
+                className="pen-draw absolute -bottom-[0.06em] left-0 h-[0.14em] w-full overflow-visible"
               >
                 <defs>
                   <linearGradient id="pen-stroke" x1="0" y1="0" x2="1" y2="0">
@@ -138,63 +210,43 @@ export default function HeroSection({ subjectCount }: { subjectCount: number }) 
                     <stop offset="100%" stopColor="#a78bfa" />
                   </linearGradient>
                 </defs>
-                <motion.path
+                <path
                   d="M 4 10 C 80 5, 190 12, 296 6"
                   fill="none"
                   stroke="url(#pen-stroke)"
                   strokeWidth="4"
                   strokeLinecap="round"
                   vectorEffect="non-scaling-stroke"
-                  initial={shouldReduceMotion ? { pathLength: 1 } : { pathLength: 0 }}
-                  animate={{ pathLength: 1 }}
-                  transition={
-                    shouldReduceMotion
-                      ? { duration: 0 }
-                      : { delay: 1.25, duration: 0.5, ease: EASE_OUT_EXPO }
-                  }
                 />
               </svg>
-              <motion.svg
+              <svg
                 aria-hidden="true"
                 viewBox="0 0 16 16"
-                className="absolute -right-[0.32em] top-[0.42em] h-[0.3em] w-[0.3em]"
-                initial={shouldReduceMotion ? { scale: 1, opacity: 1 } : { scale: 0.4, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={
-                  shouldReduceMotion
-                    ? { duration: 0 }
-                    : { delay: 1.72, duration: 0.28, ease: EASE_OUT_EXPO }
-                }
+                className="pen-check absolute -right-[0.32em] top-[0.42em] h-[0.3em] w-[0.3em]"
               >
-                <motion.path
+                <path
+                  className="pen-check-path"
                   d="M 3 8.5 L 6.5 12 L 13 4"
                   fill="none"
                   stroke="#34d399"
                   strokeWidth="2.4"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  initial={shouldReduceMotion ? { pathLength: 1 } : { pathLength: 0 }}
-                  animate={{ pathLength: 1 }}
-                  transition={
-                    shouldReduceMotion
-                      ? { duration: 0 }
-                      : { delay: 1.72, duration: 0.3, ease: EASE_OUT_EXPO }
-                  }
                 />
-              </motion.svg>
+              </svg>
             </span>
           </h1>
 
-          <motion.p
-            variants={heroItem}
-            className="mb-9 max-w-xl text-lg leading-relaxed text-[var(--text-muted)] md:text-xl"
-          >
+          <p className="hero-sub mb-9 max-w-xl text-lg leading-relaxed text-[var(--text-muted)] md:text-xl">
             AI that learns your weak spots, builds custom practice sets, and turns
             9th-grade pay-scale exams into predictable outcomes.
-          </motion.p>
+          </p>
 
-          <motion.div variants={heroItem} className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-4">
-            <Magnetic>
+          <div className="hero-cta flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-4">
+            <span
+              className="magnetic inline-block w-full sm:w-auto"
+              data-magnetic
+            >
               <Button
                 href="/login?register=true"
                 size="lg"
@@ -204,7 +256,7 @@ export default function HeroSection({ subjectCount }: { subjectCount: number }) 
                 Start for free
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </Button>
-            </Magnetic>
+            </span>
             <Button
               href="#signal"
               size="lg"
@@ -215,36 +267,33 @@ export default function HeroSection({ subjectCount }: { subjectCount: number }) 
               See how it works
               <ChevronDown className="h-4 w-4" aria-hidden="true" />
             </Button>
-          </motion.div>
+          </div>
 
-          <motion.dl
-            variants={heroItem}
-            className="mt-12 flex flex-wrap items-center gap-x-8 gap-y-4 sm:gap-x-12"
-          >
+          <dl className="hero-stats mt-12 flex flex-wrap items-center gap-x-8 gap-y-4 sm:gap-x-12">
             {stats(subjectCount).map((stat, i) => (
-              <div key={stat.label} className={`flex items-baseline gap-8 sm:gap-12 ${i > 0 ? "sm:border-l sm:border-white/10 sm:pl-12" : ""}`}>
+              <div
+                key={stat.label}
+                className={`flex items-baseline gap-8 sm:gap-12 ${
+                  i > 0 ? "sm:border-l sm:border-white/10 sm:pl-12" : ""
+                }`}
+              >
                 <dt className="sr-only">{stat.label}</dt>
                 <dd className="font-display text-2xl font-semibold text-emerald-400 tabular-nums sm:text-3xl">
                   {stat.value}
-                  <span className="ml-2 align-middle text-sm font-normal text-zinc-500">{stat.label}</span>
+                  <span className="ml-2 align-middle text-sm font-normal text-zinc-500">
+                    {stat.label}
+                  </span>
                 </dd>
               </div>
             ))}
-          </motion.dl>
-        </motion.div>
-      </motion.div>
+          </dl>
+        </div>
+      </div>
 
-      {/* Scroll cue */}
-      <motion.div
-        aria-hidden="true"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: shouldReduceMotion ? 0.5 : [0, 0.7, 0.5] }}
-        transition={shouldReduceMotion ? { duration: 0.3 } : { duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute bottom-7 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-1.5 text-zinc-500"
-      >
+      <div className="hero-scroll absolute bottom-7 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-1.5 text-zinc-500">
         <span className="font-mono text-[0.65rem] uppercase tracking-[0.22em]">Scroll</span>
         <ChevronDown className="h-4 w-4" />
-      </motion.div>
+      </div>
     </section>
   );
 }

@@ -1,25 +1,34 @@
 "use client";
 
-import { useState } from "react";
-import { useMotionValueEvent, useScroll } from "framer-motion";
+import { useEffect, useState } from "react";
 import { ArrowUp } from "lucide-react";
 
 /**
  * Site-wide back-to-top affordance for public pages.
  *
- * Appears only after the reader has scrolled past the first viewport-height
- * of content. The threshold crossing is derived from Framer's scroll Motion
- * value (no scroll listener, no per-frame state churn — React bails out on
- * identical values). Reduced-motion users get an instant jump instead of a
- * smooth scroll.
+ * Appears only after the reader has scrolled past the first viewport-height of
+ * content. Uses a passive scroll listener (no animation library) to keep the
+ * initial JS bundle lean. Reduced-motion users get an instant jump.
  */
 export default function BackToTop() {
-  const { scrollY } = useScroll();
   const [visible, setVisible] = useState(false);
 
-  useMotionValueEvent(scrollY, "change", (latest) => {
-    setVisible(latest > window.innerHeight * 0.9);
-  });
+  useEffect(() => {
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      setVisible(window.scrollY > window.innerHeight * 0.9);
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
 
   const scrollToTop = () => {
     const reduced =
