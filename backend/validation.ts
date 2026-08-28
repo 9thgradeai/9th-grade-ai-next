@@ -49,6 +49,8 @@ export interface QuestionSearchFilters {
   year?: number;
   /** Filter by previous-year source exam (exact, case-insensitive). */
   sourceExam?: string;
+  /** Filter by BCS exam term (e.g., "50th", "49th"). */
+  bcsTerm?: string;
 }
 
 export interface PaginationParams {
@@ -273,6 +275,7 @@ export function validateQuestionSearchParams(params: URLSearchParams): QuestionS
     "ids",
     "year",
     "sourceExam",
+    "bcsTerm",
   ];
   const unexpected = [...params.keys()].filter((k) => !allowedParams.includes(k));
   if (unexpected.length > 0) {
@@ -290,6 +293,7 @@ export function validateQuestionSearchParams(params: URLSearchParams): QuestionS
   const ids = params.get("ids");
   const year = params.get("year");
   const sourceExam = params.get("sourceExam");
+  const bcsTerm = params.get("bcsTerm");
 
   if (subject && subject.length > 0) filters.subject = subject;
   if (topic && topic.length > 0) filters.topic = topic;
@@ -304,6 +308,12 @@ export function validateQuestionSearchParams(params: URLSearchParams): QuestionS
     filters.difficulty = upper;
   }
   if (q && q.length > 0) filters.q = q;
+  if (bcsTerm && bcsTerm.length > 0) {
+    if (bcsTerm.length > 20) {
+      throw new ValidationError("bcsTerm must be at most 20 characters.");
+    }
+    filters.bcsTerm = bcsTerm;
+  }
   if (paths && paths.length > 0) {
     filters.paths = paths
       .split(",")

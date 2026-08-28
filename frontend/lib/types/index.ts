@@ -337,6 +337,7 @@ export namespace Server {
     difficulty: "EASY" | "MEDIUM" | "HARD";
     year: number | null;
     sourceExam: string;
+    bcsTerm: string | null;
   };
 
   export type QuestionBankCategoryDTO = {

@@ -220,6 +220,7 @@ model Question {
   difficulty     Difficulty @default(MEDIUM)
   year           Int?
   sourceExam     String   @default("")
+  bcsTerm        String?  // e.g., "50th", "49th", "48th" — BCS exam term
   // Deterministic seed identity (md5 of subjectId|path|question). Lets the
   // seeder upsert instead of wipe-and-recreate, so Question ids — and every
   // user row referencing them — stay stable across deploys.

@@ -215,6 +215,7 @@ export const api = {
     ids?: number[];
     year?: number;
     sourceExam?: string;
+    bcsTerm?: string;
     limit?: number;
     page?: number;
   }): Promise<Server.QuestionDTO[]> => {

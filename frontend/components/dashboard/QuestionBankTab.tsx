@@ -77,6 +77,7 @@ export default function QuestionBankTab() {
   const [view, setView] = useState<"all" | "saved">("all");
   const [year, setYear] = useState<number | null>(null);
   const [sourceExam, setSourceExam] = useState<string | null>(null);
+  const [bcsTerm, setBcsTerm] = useState<string | null>(null);
   const [drilling, setDrilling] = useState(false);
   const [savedQuestions, setSavedQuestions] = useState<QuestionDTO[]>([]);
 
@@ -85,6 +86,7 @@ export default function QuestionBankTab() {
     setQuestionBankFilters({ category: c });
     setYear(null);
     setSourceExam(null);
+    setBcsTerm(null);
   };
 
   // Load categories + bookmarks from the DB (fallback to static data).
@@ -123,6 +125,7 @@ export default function QuestionBankTab() {
           limit: 100,
           year: year ?? undefined,
           sourceExam: sourceExam ?? undefined,
+          bcsTerm: bcsTerm ?? undefined,
         });
         if (!cancelled) setQuestions(qs);
       } catch {
@@ -141,6 +144,7 @@ export default function QuestionBankTab() {
               difficulty: s.difficulty as QuestionDTO["difficulty"],
               year: null,
               sourceExam: "",
+              bcsTerm: null,
             })),
           );
         }
@@ -202,6 +206,17 @@ export default function QuestionBankTab() {
     const set = new Set<string>();
     for (const q of questions) if (q.sourceExam) set.add(q.sourceExam);
     return [...set].sort();
+  }, [questions]);
+
+  const bcsTerms = useMemo(() => {
+    const set = new Set<string>();
+    for (const q of questions) if (q.bcsTerm) set.add(q.bcsTerm);
+    // Sort by term number descending (50th, 49th, etc.)
+    return [...set].sort((a, b) => {
+      const numA = parseInt(a.replace("th", ""));
+      const numB = parseInt(b.replace("th", ""));
+      return numB - numA;
+    });
   }, [questions]);
 
   const baseQuestions = view === "saved" ? savedQuestions : questions;
@@ -324,6 +339,36 @@ export default function QuestionBankTab() {
               }`}
             >
               {se}
+            </button>
+          ))}
+        </div>
+      )}
+      
+      {/* BCS Term filters */}
+      {view === "all" && (
+        <div className="flex flex-wrap gap-2 items-center">
+          <span className="text-[10px] text-zinc-500 font-mono uppercase tracking-wider">BCS:</span>
+          <button
+            onClick={() => setBcsTerm(null)}
+            className={`px-2.5 py-1 rounded-full text-[11px] font-mono border transition-all ${
+              bcsTerm === null
+                ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-300"
+                : "border-zinc-700 text-zinc-400 hover:text-white"
+            }`}
+          >
+            সব টার্ম
+          </button>
+          {bcsTerms.map((term) => (
+            <button
+              key={term}
+              onClick={() => setBcsTerm(bcsTerm === term ? null : term)}
+              className={`px-2.5 py-1 rounded-full text-[11px] font-mono border transition-all ${
+                bcsTerm === term
+                  ? "bg-amber-500/20 border-amber-500/40 text-amber-300"
+                  : "border-zinc-700 text-zinc-400 hover:text-white"
+              }`}
+            >
+              {term}
             </button>
           ))}
         </div>

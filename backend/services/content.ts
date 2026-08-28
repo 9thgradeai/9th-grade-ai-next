@@ -36,6 +36,7 @@ type QuestionFilters = {
   ids?: number[];
   year?: number;
   sourceExam?: string;
+  bcsTerm?: string;
 };
 
 async function buildQuestionWhere(opts?: QuestionFilters): Promise<Record<string, unknown>> {
@@ -71,6 +72,9 @@ async function buildQuestionWhere(opts?: QuestionFilters): Promise<Record<string
   }
   if (opts?.sourceExam) {
     conditions.push({ sourceExam: { equals: opts.sourceExam, mode: "insensitive" } });
+  }
+  if (opts?.bcsTerm) {
+    conditions.push({ bcsTerm: { equals: opts.bcsTerm, mode: "insensitive" } });
   }
   return conditions.length > 0 ? { AND: conditions } : {};
 }
@@ -123,6 +127,7 @@ export async function getQuestionsPage(
         difficulty: q.difficulty as QuestionDTO["difficulty"],
         year: q.year,
         sourceExam: q.sourceExam,
+        bcsTerm: q.bcsTerm,
       })),
       total,
       page,
@@ -153,6 +158,7 @@ export async function getQuestionById(id: number): Promise<QuestionDTO | null> {
       difficulty: q.difficulty as QuestionDTO["difficulty"],
       year: q.year,
       sourceExam: q.sourceExam,
+      bcsTerm: q.bcsTerm,
     };
   } catch {
     throw new InternalServerError("Failed to fetch question by id");
