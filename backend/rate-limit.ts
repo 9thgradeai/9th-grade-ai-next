@@ -46,6 +46,9 @@ export const LIMITS = {
   get loginAccountPerHour() {
     return envInt("RL_LOGIN_ACCOUNT_PER_HOUR", 10);
   },
+  get googlePerMin() {
+    return envInt("RL_GOOGLE_PER_MIN", 10);
+  },
   get aiPerMin() {
     return envInt("RL_AI_PER_MIN", 10);
   },

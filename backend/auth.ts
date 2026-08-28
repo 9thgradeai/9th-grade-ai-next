@@ -31,6 +31,31 @@ function getJoseSecret(): Uint8Array {
 const SESSION_COOKIE = "auth_token";
 
 /**
+ * Contain a post-auth redirect to this origin only. OAuth and other flows take
+ * a `?redirect=` parameter; without this an attacker could bounce a
+ * just-authenticated user to an external site (open-redirect / phishing).
+ * Accepts absolute same-origin URLs and relative paths; everything else falls
+ * back to `/dashboard`. Relative paths must start with a single "/" and must
+ * not be protocol-relative ("//evil.com").
+ */
+export function safeRedirect(target: string | null | undefined): string {
+  if (!target) return "/dashboard";
+  if (target.startsWith("//") || target.includes("://") || target.startsWith("@")) {
+    return "/dashboard";
+  }
+  if (target.startsWith("/")) return target;
+  try {
+    const url = new URL(target);
+    if (url.origin === new URL(process.env.APP_URL ?? "https://app.local").origin) {
+      return target;
+    }
+  } catch {
+    // not an absolute URL
+  }
+  return "/dashboard";
+}
+
+/**
  * Extract the session token from the request's Cookie header.
  * Uses an exact-boundary pattern (`^` or `; ` before the name) so decoy
  * cookies like `xauth_token=` cannot shadow the real session value.
@@ -153,6 +178,8 @@ export async function getSessionUser(req: Request): Promise<UserRecord | null> {
     emailVerified: u.emailVerified,
     onboarded: u.onboarded,
     createdAt: u.createdAt.toISOString(),
+    authProvider: (u.authProvider as "password" | "google" | "both") ?? "password",
+    imageUrl: u.imageUrl ?? undefined,
     examTarget: u.examTarget ?? undefined,
     examDate: u.examDate ? u.examDate.toISOString() : undefined,
     prepLevel: (u.prepLevel as "BEGINNER" | "INTERMEDIATE" | "ADVANCED" | undefined) ?? undefined,

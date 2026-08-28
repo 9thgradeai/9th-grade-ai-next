@@ -30,9 +30,29 @@ import {
 
 export default function AuthExperience({
   initialStage = null,
+  initialError = null,
 }: {
   initialStage?: "login" | "signup" | null
+  initialError?: string | null
 }) {
+  // Translate OAuth error flags from the callback redirect into a friendly,
+  // non-leaky message. Google's raw error names are normalized server-side to
+  // `google_*` flags; anything unknown falls back to a generic line.
+  function googleErrorMessage(flag: string): string {
+    const messages: Record<string, string> = {
+      google_unavailable: "Google sign-in isn't available right now. Please use your email and password.",
+      google_rate_limited: "Too many Google sign-in attempts. Please wait a moment and try again.",
+      google_state_missing: "Your Google sign-in session expired. Please try again.",
+      google_state_mismatch: "Google sign-in was blocked for security. Please try again.",
+      google_invalid: "Google sign-in didn't complete. Please try again.",
+      google_failed: "We couldn't sign you in with Google. Please try again or use your password.",
+    }
+    if (flag.startsWith("google_") || flag === "google_access_denied") {
+      return messages[flag] ?? messages.google_failed
+    }
+    return messages.google_failed
+  }
+
   const router = useRouter()
   const { login, register } = useAuth()
   const reduced = useReducedMotion() ?? false
@@ -54,7 +74,7 @@ export default function AuthExperience({
   const [stage, setStage] = useState<AuthStage>("lamp")
   const [lit, setLit] = useState(false)
   const [busy, setBusy] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(initialError ? googleErrorMessage(initialError) : null)
   const [focusField, setFocusField] = useState<FocusField>(null)
   const [successKind, setSuccessKind] = useState<AuthSuccessKind>("login")
   const [strength, setStrength] = useState(-1)
@@ -319,7 +339,28 @@ export default function AuthExperience({
         </div>
       )}
 
-      {stage === "choice" && <AuthChoice key="choice" onChoose={choose} />}
+      {stage === "choice" && (
+        <>
+          {error && (
+            <motion.div
+              role="alert"
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="w-full max-w-md rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-2.5 text-center text-sm text-red-300"
+            >
+              {error}
+              <button
+                type="button"
+                onClick={() => setError(null)}
+                className="ml-2 text-red-300/70 underline-offset-2 hover:underline"
+              >
+                Dismiss
+              </button>
+            </motion.div>
+          )}
+          <AuthChoice key="choice" onChoose={choose} />
+        </>
+      )}
 
       {stage === "login" && (
         <motion.div

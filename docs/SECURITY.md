@@ -16,7 +16,15 @@
 - **Algorithm**: HS256.
 - **Expiry**: 7 days.
 - **Cookie**: `auth_token`, HttpOnly, SameSite=Lax, Secure in production.
-- **Client storage**: No tokens stored in localStorage or sessionStorage.
+ - **Client storage**: No tokens stored in localStorage or sessionStorage.
+
+### Google OAuth 2.0 (social sign-in)
+
+- **Flow**: Authorization Code + PKCE (`S256`). The `code_verifier` is kept only in the `oauth_google` HttpOnly cookie; a leaked `code` is useless without it.
+- **CSRF**: an opaque, single-use `state` is bound to the same cookie and checked against the callback `state` param. The one-time cookie is cleared on first callback (success or failure).
+- **Token verification**: the Google `id_token` is verified locally against Google's published JWKS (`createRemoteJWKSet` / `jwtVerify` from `jose`) — issuer (`accounts.google.com`) and audience (`GOOGLE_CLIENT_ID`) are enforced. No extra network hop and no new dependency.
+- **Account linking**: a Google identity is linked onto an existing email account (`authProvider` → `"both"`); Google-only accounts get `passwordHash = ""` and password login is blocked with `AUTH_GOOGLE_ONLY`.
+- **Open-redirect guard**: the post-login `?redirect=` is run through `safeRedirect()` and confined to this origin.
 
 ## Authorization
 

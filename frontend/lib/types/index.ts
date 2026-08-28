@@ -29,6 +29,8 @@ export namespace Client {
     handle: string;
     role: "student" | "admin";
     createdAt: string;
+    authProvider?: "password" | "google" | "both";
+    imageUrl?: string;
     emailVerified?: boolean;
     onboarded?: boolean;
     examTarget?: string;

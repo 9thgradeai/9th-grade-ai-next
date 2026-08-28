@@ -129,8 +129,11 @@ ever rebuilt outside migrations:
 - `email` String — unique, indexed
 - `emailVerified` Boolean — default `false`
 - `handle` String — unique, indexed
-- `passwordHash` String
+- `passwordHash` String — default `""`. Empty for Google-only accounts (they cannot log in with a password; the login route rejects them with `AUTH_GOOGLE_ONLY`).
 - `tokenVersion` Int — default `0`. Bumped on password change / "sign out everywhere"; session JWTs carry the version they were minted with (`ver` claim) and are rejected when it is stale
+- `googleId` String? — unique. The stable Google subject (`sub`). `null` for password-only accounts.
+- `authProvider` String — default `"password"`. `"password"` (email/password), `"google"` (Google-created), or `"both"` (password account linked to Google).
+- `imageUrl` String? — Google avatar URL (carried through to the client on `GET /api/auth/me`).
 - `role` UserRole — default `STUDENT`
  - `createdAt` DateTime — default `now()`
  - `updatedAt` DateTime — updatedAt

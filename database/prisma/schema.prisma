@@ -109,10 +109,19 @@ model User {
   email        String         @unique
   emailVerified Boolean       @default(false)
   handle       String         @unique
-  passwordHash String
+  passwordHash String         @default("")
   // Bumped on password change / global revoke — JWTs carry the version they
   // were minted with; any token whose version is stale is rejected on verify.
   tokenVersion Int            @default(0)
+
+  // ── Social auth (Google OAuth 2.0 / OIDC) ──
+  // googleId is the stable Google subject (`sub`). Null for password-only
+  // accounts. `authProvider` records how the account was established so the UI
+  // and login route can (a) show the right badge and (b) block password login
+  // for Google-only accounts. `imageUrl` carries the Google avatar.
+  googleId      String?        @unique
+  authProvider  String         @default("password") // "password" | "google" | "both"
+  imageUrl      String?
   role         UserRole       @default(STUDENT)
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt

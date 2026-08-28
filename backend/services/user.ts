@@ -30,6 +30,8 @@ export type UserRecord = {
   emailVerified: boolean;
   onboarded: boolean;
   createdAt: string;
+  authProvider: "password" | "google" | "both";
+  imageUrl?: string;
   examTarget?: string;
   examDate?: string;
   prepLevel?: "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
@@ -59,27 +61,60 @@ function sha256(raw: string): string {
   return crypto.createHash("sha256").update(raw).digest("hex");
 }
 
+/**
+ * Maps a raw Prisma `User` row to the public `UserRecord`. Centralized so the
+ * shape stays identical across every read path (login, me, profile update,
+ * onboarding, …) — previously each path re-declared the same 15-field object,
+ * which drifted whenever a field was added.
+ */
+type RawUser = {
+  id: string;
+  name: string;
+  email: string;
+  handle: string;
+  passwordHash: string;
+  tokenVersion: number;
+  role: "STUDENT" | "ADMIN";
+  emailVerified: boolean;
+  onboarded: boolean;
+  createdAt: Date;
+  examTarget: string | null;
+  examDate: Date | null;
+  prepLevel: string | null;
+  studyHoursPerDay: number | null;
+  goal: string | null;
+  googleId: string | null;
+  authProvider: string;
+  imageUrl: string | null;
+};
+
+export function toUserRecord(u: RawUser): UserRecord {
+  return {
+    id: u.id,
+    name: u.name,
+    email: u.email,
+    handle: u.handle,
+    passwordHash: u.passwordHash,
+    tokenVersion: u.tokenVersion,
+    role: u.role === "ADMIN" ? "admin" : "student",
+    emailVerified: u.emailVerified,
+    onboarded: u.onboarded,
+    createdAt: u.createdAt.toISOString(),
+    examTarget: u.examTarget ?? undefined,
+    examDate: u.examDate ? u.examDate.toISOString() : undefined,
+    prepLevel: (u.prepLevel as "BEGINNER" | "INTERMEDIATE" | "ADVANCED" | undefined) ?? undefined,
+    studyHoursPerDay: u.studyHoursPerDay ?? undefined,
+    goal: u.goal ?? undefined,
+    authProvider: (u.authProvider as UserRecord["authProvider"]) ?? "password",
+    imageUrl: u.imageUrl ?? undefined,
+  };
+}
+
 export async function findUserByEmail(email: string): Promise<UserRecord | null> {
   try {
     const u = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
     if (!u) return null;
-    return {
-      id: u.id,
-      name: u.name,
-      email: u.email,
-      handle: u.handle,
-      passwordHash: u.passwordHash,
-      tokenVersion: u.tokenVersion,
-      role: u.role === "ADMIN" ? "admin" : "student",
-      emailVerified: u.emailVerified,
-      onboarded: u.onboarded,
-      createdAt: u.createdAt.toISOString(),
-      examTarget: u.examTarget ?? undefined,
-      examDate: u.examDate ? u.examDate.toISOString() : undefined,
-      prepLevel: (u.prepLevel as "BEGINNER" | "INTERMEDIATE" | "ADVANCED" | undefined) ?? undefined,
-      studyHoursPerDay: u.studyHoursPerDay ?? undefined,
-      goal: u.goal ?? undefined,
-    };
+    return toUserRecord(u);
   } catch {
     throw new InternalServerError("Failed to fetch user by email");
   }
@@ -157,27 +192,96 @@ export async function createUser({
       }
     }
 
-    return {
-      id: u.id,
-      name: u.name,
-      email: u.email,
-      handle: u.handle,
-      passwordHash: u.passwordHash,
-      tokenVersion: u.tokenVersion,
-      role: "student",
-      emailVerified: u.emailVerified,
-      onboarded: u.onboarded,
-      createdAt: u.createdAt.toISOString(),
-      examTarget: u.examTarget ?? undefined,
-      examDate: u.examDate ? u.examDate.toISOString() : undefined,
-      prepLevel: (u.prepLevel as "BEGINNER" | "INTERMEDIATE" | "ADVANCED" | undefined) ?? undefined,
-      studyHoursPerDay: u.studyHoursPerDay ?? undefined,
-      goal: u.goal ?? undefined,
-    };
+    return toUserRecord(u);
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new InternalServerError("Failed to create user");
   }
+}
+
+/**
+ * Resolve or provision a user from a verified Google profile.
+ *
+ * Strategy (idempotent + account-linking safe):
+ *   1. Match by Google `sub` (googleId) → return existing.
+ *   2. Match by email → LINK the Google identity onto the existing account
+ *      (so a password user who later signs in with Google keeps one account).
+ *      `authProvider` becomes "both"; `passwordHash` stays so password login
+ *      keeps working.
+ *   3. Otherwise create a brand-new Google-only account (empty passwordHash,
+ *      `authProvider: "google"`). The progress row is created atomically.
+ *
+ * Google-only accounts have `passwordHash === ""`, so the password-login route
+ * (which runs a bcrypt compare) will reject them with a clear message.
+ */
+export async function findOrCreateGoogleUser(profile: {
+  sub: string;
+  email: string;
+  emailVerified: boolean;
+  name: string;
+  picture?: string;
+}): Promise<UserRecord> {
+  try {
+    const existingByGoogle = await prisma.user.findUnique({ where: { googleId: profile.sub } });
+    if (existingByGoogle) return toUserRecord(existingByGoogle);
+
+    const existingByEmail = await prisma.user.findUnique({
+      where: { email: profile.email.toLowerCase() },
+    });
+    if (existingByEmail) {
+      const isPasswordUser = existingByEmail.passwordHash.length > 0;
+      const updated = await prisma.user.update({
+        where: { id: existingByEmail.id },
+        data: {
+          googleId: profile.sub,
+          authProvider: isPasswordUser ? "both" : "google",
+          emailVerified: existingByEmail.emailVerified || profile.emailVerified,
+          imageUrl: existingByEmail.imageUrl ?? profile.picture ?? null,
+        },
+      });
+      return toUserRecord(updated);
+    }
+
+    const handle = await uniqueHandle(profile.email.split("@")[0] || "user");
+    const created = await prisma.$transaction(async (tx) => {
+      const u = await tx.user.create({
+        data: {
+          name: profile.name.trim() || profile.email.split("@")[0],
+          email: profile.email.toLowerCase(),
+          handle,
+          passwordHash: "",
+          googleId: profile.sub,
+          authProvider: "google",
+          emailVerified: profile.emailVerified,
+          imageUrl: profile.picture ?? null,
+          role: "STUDENT",
+        },
+      });
+      await tx.userProgress.create({ data: { userId: u.id } });
+      return u;
+    });
+
+    return toUserRecord(created);
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+    throw new InternalServerError("Failed to sign in with Google");
+  }
+}
+
+/** Build a unique, URL-safe handle, retrying with a suffix on collision. */
+async function uniqueHandle(base: string): Promise<string> {
+  const safe = base
+    .toLowerCase()
+    .replace(/[^a-z0-9_]+/g, "_")
+    .replace(/^_+|_+$/g, "")
+    .slice(0, 28);
+  const root = safe || "user";
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const candidate = attempt === 0 ? root : `${root}_${crypto.randomBytes(3).toString("hex")}`;
+    const clash = await prisma.user.findUnique({ where: { handle: candidate } });
+    if (!clash) return candidate;
+  }
+  return `${root}_${crypto.randomBytes(4).toString("hex")}`;
 }
 
 export async function verifyPassword(hashStr: string, plain: string): Promise<boolean> {
@@ -305,23 +409,7 @@ export async function findUserById(userId: string): Promise<UserRecord | null> {
   try {
     const u = await prisma.user.findUnique({ where: { id: userId } });
     if (!u) return null;
-    return {
-      id: u.id,
-      name: u.name,
-      email: u.email,
-      handle: u.handle,
-      passwordHash: u.passwordHash,
-      tokenVersion: u.tokenVersion,
-      role: u.role === "ADMIN" ? "admin" : "student",
-      emailVerified: u.emailVerified,
-      onboarded: u.onboarded,
-      createdAt: u.createdAt.toISOString(),
-      examTarget: u.examTarget ?? undefined,
-      examDate: u.examDate ? u.examDate.toISOString() : undefined,
-      prepLevel: (u.prepLevel as "BEGINNER" | "INTERMEDIATE" | "ADVANCED" | undefined) ?? undefined,
-      studyHoursPerDay: u.studyHoursPerDay ?? undefined,
-      goal: u.goal ?? undefined,
-    };
+    return toUserRecord(u);
   } catch {
     throw new InternalServerError("Failed to fetch user");
   }
@@ -340,23 +428,7 @@ export async function updateUserProfile(
       data: { name: patch.name?.trim() ?? existing.name },
     });
 
-    return {
-      id: u.id,
-      name: u.name,
-      email: u.email,
-      handle: u.handle,
-      passwordHash: u.passwordHash,
-      tokenVersion: u.tokenVersion,
-      role: u.role === "ADMIN" ? "admin" : "student",
-      emailVerified: u.emailVerified,
-      onboarded: u.onboarded,
-      createdAt: u.createdAt.toISOString(),
-      examTarget: u.examTarget ?? undefined,
-      examDate: u.examDate ? u.examDate.toISOString() : undefined,
-      prepLevel: (u.prepLevel as "BEGINNER" | "INTERMEDIATE" | "ADVANCED" | undefined) ?? undefined,
-      studyHoursPerDay: u.studyHoursPerDay ?? undefined,
-      goal: u.goal ?? undefined,
-    };
+    return toUserRecord(u);
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new InternalServerError("Failed to update profile");
@@ -601,23 +673,7 @@ export async function completeOnboarding(
       data: { ...data, onboarded: true },
     });
 
-    return {
-      id: u.id,
-      name: u.name,
-      email: u.email,
-      handle: u.handle,
-      passwordHash: u.passwordHash,
-      tokenVersion: u.tokenVersion,
-      role: u.role === "ADMIN" ? "admin" : "student",
-      emailVerified: u.emailVerified,
-      onboarded: u.onboarded,
-      createdAt: u.createdAt.toISOString(),
-      examTarget: u.examTarget ?? undefined,
-      examDate: u.examDate ? u.examDate.toISOString() : undefined,
-      prepLevel: (u.prepLevel as "BEGINNER" | "INTERMEDIATE" | "ADVANCED" | undefined) ?? undefined,
-      studyHoursPerDay: u.studyHoursPerDay ?? undefined,
-      goal: u.goal ?? undefined,
-    };
+    return toUserRecord(u);
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new InternalServerError("Failed to save onboarding");

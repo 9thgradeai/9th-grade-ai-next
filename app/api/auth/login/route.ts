@@ -23,6 +23,16 @@ export async function POST(request: Request) {
 
     const user = await findUserByEmail(email);
 
+    // Google-only accounts have no password; tell the user to use Google
+    // instead of a generic "invalid credentials" so they're not stuck guessing.
+    if (user && user.passwordHash === "") {
+      throw new AppError(
+        401,
+        "This account uses Google sign-in. Please choose 'Continue with Google'.",
+        "AUTH_GOOGLE_ONLY",
+      );
+    }
+
     // Single bcrypt compare on BOTH paths (existing vs. unknown email) so the
     // response latency cannot reveal whether an address is registered.
     const match = await verifyPassword(user?.passwordHash ?? DUMMY_PASSWORD_HASH, password);
