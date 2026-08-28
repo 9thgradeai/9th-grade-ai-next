@@ -18,7 +18,6 @@ describe("LoginForm", () => {
         error={null}
         onFocusChange={noop}
         onClearError={noop}
-        onBack={noop}
       />,
     );
 
@@ -30,7 +29,7 @@ describe("LoginForm", () => {
     });
     fireEvent.click(screen.getByLabelText(/stay signed in/i));
 
-    const form = screen.getByRole("button", { name: /sign in securely/i }).closest("form")!;
+    const form = screen.getByRole("button", { name: /enter the hall/i }).closest("form")!;
     fireEvent.submit(form);
 
     await waitFor(() =>
@@ -51,13 +50,12 @@ describe("LoginForm", () => {
         error="Locked out"
         onFocusChange={noop}
         onClearError={noop}
-        onBack={noop}
         lockoutUntil={Date.now() + 5000}
       />,
     );
 
     expect(screen.getByText(/too many attempts/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /sign in securely/i })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /enter the hall/i })).toBeDisabled();
   });
 });
 
@@ -73,7 +71,6 @@ describe("SignupForm", () => {
         error={null}
         onFocusChange={noop}
         onClearError={noop}
-        onBack={noop}
         lockoutUntil={Date.now() + 8000}
       />,
     );
