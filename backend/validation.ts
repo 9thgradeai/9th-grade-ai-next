@@ -165,7 +165,7 @@ function assertPasswordLength(password: unknown, fieldName = "Password"): void {
 }
 
 export function validateLoginInput(body: unknown): LoginInput {
-  assertNoUnknownFields(body, ["email", "password"]);
+  assertNoUnknownFields(body, ["email", "password", "remember"]);
   if (!isRecord(body)) {
     throw new ValidationError("Request body must be an object.");
   }

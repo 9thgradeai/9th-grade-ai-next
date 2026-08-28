@@ -16,11 +16,17 @@ export default function ForgotPasswordPage() {
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault()
+    const trimmed = email.trim().toLowerCase()
+    if (!trimmed || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+      setMessage("Please enter a valid email address.")
+      setStatus("error")
+      return
+    }
     setStatus("sending")
     setMessage("")
     setDevLink(undefined)
     try {
-      const res = await account.forgotPassword(email)
+      const res = await account.forgotPassword(trimmed)
       setDevLink(res.devLink)
       setStatus("sent")
     } catch (err) {

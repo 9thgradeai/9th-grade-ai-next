@@ -45,7 +45,7 @@ export async function sendEmail(msg: EmailMessage): Promise<{ sent: boolean }> {
     });
     if (res.ok) return { sent: true };
     log.error("email.send.failed", { status: res.status, to: msg.to });
-    } catch (err) {
+  } catch (err) {
       log.error("email.send.error", {
         error: err instanceof Error ? err.message : String(err),
       });
