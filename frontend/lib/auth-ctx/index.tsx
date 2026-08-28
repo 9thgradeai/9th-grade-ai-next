@@ -9,8 +9,8 @@ import { account } from "@/lib/services/api";
 type AuthContextType = {
   user: Client.User | null;
   isLoading: boolean;
-  login: (email: string, password: string, options?: { redirect?: boolean }) => Promise<void>;
-  register: (name: string, email: string, password: string, options?: { redirect?: boolean }) => Promise<void>;
+  login: (email: string, password: string, options?: { redirect?: boolean; remember?: boolean }) => Promise<void>;
+  register: (name: string, email: string, password: string, options?: { redirect?: boolean; remember?: boolean }) => Promise<void>;
   logout: () => Promise<void>;
   updateProfile: (name: string) => Promise<Client.User>;
   refreshToken: () => Promise<void>;
@@ -132,12 +132,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
   }, [tokenExpiry]);
 
-  const login = async (email: string, password: string, options?: { redirect?: boolean }) => {
+  const login = async (email: string, password: string, options?: { redirect?: boolean; remember?: boolean }) => {
     const res = await fetch("/api/auth/login", {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, password, remember: options?.remember === true }),
     });
 
     const data = (await res.json().catch(() => ({}))) as { user?: Client.User; error?: string; code?: string };
@@ -160,12 +160,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const register = async (name: string, email: string, password: string, options?: { redirect?: boolean }) => {
+  const register = async (name: string, email: string, password: string, options?: { redirect?: boolean; remember?: boolean }) => {
     const res = await fetch("/api/auth/register", {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password }),
+      body: JSON.stringify({ name, email, password, remember: options?.remember === true }),
     });
 
     const data = (await res.json().catch(() => ({}))) as { user?: Client.User; error?: string; code?: string };

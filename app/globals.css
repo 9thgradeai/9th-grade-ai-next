@@ -752,6 +752,17 @@ html.light ::selection {
   animation: aurora-drift 18s ease-in-out infinite;
 }
 
+/* Auth experience — subtle pointer-reactive light (shared across all auth
+   routes; position follows the cursor via --mx/--my, opacity fades in/out) */
+.auth-pointer-glow {
+  background: radial-gradient(
+    540px circle at var(--mx, 50%) var(--my, 30%),
+    rgba(45, 212, 191, 0.10),
+    transparent 60%
+  );
+  will-change: opacity;
+}
+
 /* Auth experience — primary CTA shine sweep */
 @keyframes shine-sweep {
   0% {

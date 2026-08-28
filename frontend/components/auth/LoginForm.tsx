@@ -1,13 +1,14 @@
 "use client"
 
-import { useState, type FormEvent } from "react"
+import { useEffect, useState, type FormEvent } from "react"
 import Link from "next/link"
-import { ArrowLeft, Eye, EyeOff, KeyRound, Loader2, Mail, ShieldCheck } from "lucide-react"
+import { ArrowLeft, Eye, EyeOff, KeyRound, Mail, ShieldCheck } from "lucide-react"
 import { AuthField } from "./AuthField"
+import { AuthSubmitButton } from "./AuthSubmitButton"
 import { CapsLockWarning, readCapsLock } from "./CapsLockWarning"
 import type { FocusField } from "./auth-state"
 
-export type LoginValues = { email: string; password: string }
+export type LoginValues = { email: string; password: string; remember: boolean }
 
 export function LoginForm({
   onSubmit,
@@ -18,6 +19,7 @@ export function LoginForm({
   onBack,
   onTyping,
   failedAttempt = 0,
+  lockoutUntil = null,
 }: {
   onSubmit: (values: LoginValues) => Promise<void>
   busy: boolean
@@ -28,9 +30,12 @@ export function LoginForm({
   onTyping?: () => void
   /** Increments after each rejected submit — secrets are never preserved. */
   failedAttempt?: number
+  /** Epoch ms until which submission is blocked (rate-limit backoff). */
+  lockoutUntil?: number | null
 }) {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [remember, setRemember] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [capsLock, setCapsLock] = useState(false)
   const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({})
@@ -41,6 +46,16 @@ export function LoginForm({
     setClearedAttempt(failedAttempt)
     setPassword("")
   }
+
+  // Rate-limit backoff countdown — ticks every 500ms while locked.
+  const [now, setNow] = useState(() => Date.now())
+  useEffect(() => {
+    if (!lockoutUntil) return
+    const id = setInterval(() => setNow(Date.now()), 500)
+    return () => clearInterval(id)
+  }, [lockoutUntil])
+  const secondsLeft = lockoutUntil ? Math.max(0, Math.ceil((lockoutUntil - now) / 1000)) : 0
+  const locked = secondsLeft > 0
 
   const validate = () => {
     const next: typeof fieldErrors = {}
@@ -54,9 +69,9 @@ export function LoginForm({
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
-    if (busy) return
+    if (busy || locked) return
     if (!validate()) return
-    void onSubmit({ email: email.trim(), password })
+    void onSubmit({ email: email.trim(), password, remember })
   }
 
   return (
@@ -123,6 +138,24 @@ export function LoginForm({
         <CapsLockWarning visible={capsLock} />
       </div>
 
+      <div className="flex items-center justify-between gap-3">
+        <label className="flex cursor-pointer items-center gap-2 text-sm text-[var(--text-muted)]">
+          <input
+            type="checkbox"
+            checked={remember}
+            onChange={(e) => setRemember(e.target.checked)}
+            className="h-4 w-4 rounded border-[var(--border-muted)] bg-transparent text-emerald-500 accent-emerald-500 focus-visible:ring-2 focus-visible:ring-emerald-400/80"
+          />
+          Stay signed in
+        </label>
+        <Link
+          href="/forgot-password"
+          className="text-sm text-emerald-400/80 transition-colors hover:text-emerald-400 focus-visible:ring-2 focus-visible:ring-emerald-400/80"
+        >
+          Forgot your password?
+        </Link>
+      </div>
+
       {error && (
         <p
           role="alert"
@@ -134,24 +167,23 @@ export function LoginForm({
         </p>
       )}
 
-      <button
-        type="submit"
-        disabled={busy}
-        className="btn-shine flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-4 py-3.5 text-base font-semibold text-white shadow-[0_8px_24px_rgba(16,185,129,0.25)] transition-all hover:shadow-[0_10px_32px_rgba(16,185,129,0.4)] active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-emerald-400/80 disabled:cursor-not-allowed disabled:opacity-60"
-      >
-        {busy && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
-        {busy ? "Signing in..." : "Sign in securely"}
-        {!busy && <ShieldCheck className="h-4 w-4" aria-hidden="true" />}
-      </button>
-
-      <div className="text-center">
-        <Link
-          href="/forgot-password"
-          className="text-sm text-emerald-400/80 transition-colors hover:text-emerald-400 focus-visible:ring-2 focus-visible:ring-emerald-400/80"
+      {locked && (
+        <p
+          role="alert"
+          className="rounded-xl border border-amber-400/30 bg-amber-500/10 px-4 py-2.5 text-center text-sm text-amber-300"
         >
-          Forgot your password?
-        </Link>
-      </div>
+          Too many attempts — try again in {secondsLeft}s.
+        </p>
+      )}
+
+      <AuthSubmitButton
+        busy={busy}
+        disabled={locked}
+        busyLabel="Signing in..."
+        icon={<ShieldCheck className="h-4 w-4" aria-hidden="true" />}
+      >
+        Sign in securely
+      </AuthSubmitButton>
 
       <button
         type="button"

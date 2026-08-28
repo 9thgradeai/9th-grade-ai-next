@@ -1,12 +1,12 @@
 "use client"
 
-import { useEffect, type ReactNode } from "react"
+import { useEffect, useRef, type PointerEvent as ReactPointerEvent, type ReactNode } from "react"
 import { motion } from "framer-motion"
 import {
   EMBER_BUDGET,
   type AuthEnvironmentState,
 } from "./animation/AnimationDirector"
-import { detectVisualQuality, type VisualQuality } from "@/lib/motion/device"
+import { useMotionCapabilities, useVisualQuality, type VisualQuality } from "@/lib/motion/device"
 
 // Deterministic ember field (seeded by index) — drifting light motes that make
 // the room feel alive. Only opacity/transform, GPU-friendly. The rendered
@@ -66,10 +66,38 @@ export function AuthEnvironment({
   state: AuthEnvironmentState
   children: ReactNode
 }) {
-  const quality: VisualQuality = detectVisualQuality()
+  const quality: VisualQuality = useVisualQuality()
+  const { pointerEffects } = useMotionCapabilities()
   const s = SCENE[state]
   const embers = emberCount(state, quality)
   const ambientMotion = quality !== "reduced" && quality !== "low"
+
+  // Subtle pointer-reactive light: the room's glow very gently tracks the
+  // cursor on capable desktops. Throttled via rAF and written straight to a
+  // style (no React re-render); disabled for reduced-motion / coarse / low
+  // devices by `pointerEffects`. Never affects layout — transform/opacity only.
+  const rootRef = useRef<HTMLDivElement>(null)
+  const glowRef = useRef<HTMLDivElement>(null)
+  const pending = useRef<{ x: number; y: number } | null>(null)
+  const frame = useRef<number | null>(null)
+
+  const paintGlow = () => {
+    frame.current = null
+    const g = glowRef.current
+    if (!g || !pending.current) return
+    g.style.setProperty("--mx", `${pending.current.x}px`)
+    g.style.setProperty("--my", `${pending.current.y}px`)
+    g.style.opacity = "1"
+  }
+  const handlePointerMove = (e: ReactPointerEvent<HTMLDivElement>) => {
+    if (!pointerEffects || !rootRef.current) return
+    const rect = rootRef.current.getBoundingClientRect()
+    pending.current = { x: e.clientX - rect.left, y: e.clientY - rect.top }
+    if (frame.current == null) frame.current = requestAnimationFrame(paintGlow)
+  }
+  const handlePointerLeave = () => {
+    if (glowRef.current) glowRef.current.style.opacity = "0"
+  }
 
   // Pause every decorative CSS loop while the tab is hidden (battery).
   useEffect(() => {
@@ -86,7 +114,19 @@ export function AuthEnvironment({
   }, [])
 
   return (
-    <div className="relative min-h-dvh overflow-hidden">
+    <div
+      ref={rootRef}
+      className="relative min-h-dvh overflow-hidden"
+      onPointerMove={handlePointerMove}
+      onPointerLeave={handlePointerLeave}
+    >
+      {/* Pointer-reactive light — barely-there, gated by capability */}
+      <div
+        ref={glowRef}
+        aria-hidden="true"
+        className="auth-pointer-glow pointer-events-none absolute inset-0 z-0 opacity-0 transition-opacity duration-500"
+      />
+
       {/* Dark scrim — lifts as the room wakes */}
       <motion.div
         aria-hidden="true"

@@ -1,8 +1,9 @@
 "use client"
 
-import { useMemo, useState, type FormEvent } from "react"
-import { ArrowLeft, Eye, EyeOff, KeyRound, Loader2, Mail, Rocket, UserRound } from "lucide-react"
+import { useEffect, useMemo, useState, type FormEvent } from "react"
+import { ArrowLeft, Eye, EyeOff, KeyRound, Mail, Rocket, UserRound } from "lucide-react"
 import { AuthField } from "./AuthField"
+import { AuthSubmitButton } from "./AuthSubmitButton"
 import { CapsLockWarning, readCapsLock } from "./CapsLockWarning"
 import type { FocusField } from "./auth-state"
 
@@ -40,6 +41,7 @@ export function SignupForm({
   onTyping,
   onStrengthChange,
   failedAttempt = 0,
+  lockoutUntil = null,
 }: {
   onSubmit: (values: SignupValues) => Promise<void>
   busy: boolean
@@ -51,6 +53,8 @@ export function SignupForm({
   onStrengthChange?: (strength: number) => void
   /** Increments after each rejected submit — secrets are never preserved. */
   failedAttempt?: number
+  /** Epoch ms until which submission is blocked (rate-limit backoff). */
+  lockoutUntil?: number | null
 }) {
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
@@ -64,6 +68,16 @@ export function SignupForm({
     password?: string
     confirm?: string
   }>({})
+
+  // Rate-limit backoff countdown — ticks every 500ms while locked.
+  const [now, setNow] = useState(() => Date.now())
+  useEffect(() => {
+    if (!lockoutUntil) return
+    const id = setInterval(() => setNow(Date.now()), 500)
+    return () => clearInterval(id)
+  }, [lockoutUntil])
+  const secondsLeft = lockoutUntil ? Math.max(0, Math.ceil((lockoutUntil - now) / 1000)) : 0
+  const locked = secondsLeft > 0
 
   const strength = useMemo(() => passwordStrength(password), [password])
 
@@ -93,7 +107,7 @@ export function SignupForm({
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
-    if (busy) return
+    if (busy || locked) return
     if (!validate()) return
     void onSubmit({ name: name.trim(), email: email.trim(), password })
   }
@@ -231,15 +245,23 @@ export function SignupForm({
         </p>
       )}
 
-      <button
-        type="submit"
-        disabled={busy}
-        className="btn-shine flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 px-4 py-3.5 text-base font-semibold text-white shadow-[0_8px_24px_rgba(16,185,129,0.25)] transition-all hover:shadow-[0_10px_32px_rgba(16,185,129,0.4)] active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-emerald-400/80 disabled:cursor-not-allowed disabled:opacity-60"
+      {locked && (
+        <p
+          role="alert"
+          className="rounded-xl border border-amber-400/30 bg-amber-500/10 px-4 py-2.5 text-center text-sm text-amber-300"
+        >
+          Too many attempts — try again in {secondsLeft}s.
+        </p>
+      )}
+
+      <AuthSubmitButton
+        busy={busy}
+        disabled={locked}
+        busyLabel="Creating account..."
+        icon={<Rocket className="h-4 w-4" aria-hidden="true" />}
       >
-        {busy && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
-        {busy ? "Creating account..." : "Create account"}
-        {!busy && <Rocket className="h-4 w-4" aria-hidden="true" />}
-      </button>
+        Create account
+      </AuthSubmitButton>
 
       <button
         type="button"

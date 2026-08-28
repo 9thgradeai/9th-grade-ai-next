@@ -29,7 +29,7 @@ export namespace Client {
     handle: string;
     role: "student" | "admin";
     createdAt: string;
-    authProvider?: "password" | "google" | "both";
+    authProvider?: "password" | "google" | "apple" | "both";
     imageUrl?: string;
     emailVerified?: boolean;
     onboarded?: boolean;

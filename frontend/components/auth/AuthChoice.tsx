@@ -29,23 +29,50 @@ function GoogleIcon({ className }: { className?: string }) {
   )
 }
 
+/** Apple logo — inline so we don't add an icon dependency. */
+function AppleIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden="true" fill="currentColor">
+      <path d="M16.365 1.43c0 1.14-.42 2.2-1.12 2.97-.78.86-2.06 1.52-3.12 1.44-.13-1.1.42-2.27 1.09-3 .77-.83 2.12-1.45 3.15-1.41zM20.5 17.1c-.55 1.27-.82 1.84-1.53 2.96-.99 1.56-2.39 3.5-4.12 3.51-1.54.02-1.94-1-4.03-.99-2.09.01-2.53 1.01-4.07.99-1.73-.02-3.06-1.79-4.05-3.35C.31 16.6-.2 11.6 1.6 8.9c1.05-1.66 2.71-2.65 4.32-2.65 1.62 0 2.65 1 4 1 1.32 0 2.12-1 4.02-1 1.43 0 2.95.78 4.03 2.13-3.55 1.95-2.97 7.05.53 8.72z" />
+    </svg>
+  )
+}
+
 /**
  * Candidate identification — two examination documents rather than generic
  * UI cards. Each carries a form serial and a candidate-class stamp; tilt,
- * lift and edge-lighting react to the pointer on capable devices. A Google
- * button sits above as the fastest path in (OAuth 2.0 + PKCE round-trip).
+ * lift and edge-lighting react to the pointer on capable devices. Social
+ * buttons (Google / Apple) sit above as the fastest path in (OIDC), and a
+ * one-tap demo lets visitors explore without filling the form.
  */
-export function AuthChoice({ onChoose }: { onChoose: (kind: "login" | "signup") => void }) {
+export function AuthChoice({
+  onChoose,
+  onDemo,
+  busy = false,
+}: {
+  onChoose: (kind: "login" | "signup") => void
+  onDemo?: () => void
+  busy?: boolean
+}) {
   const [googleBusy, setGoogleBusy] = useState(false)
+  const [appleBusy, setAppleBusy] = useState(false)
 
   // Full-page navigation to the OAuth flow. The server sets the session cookie
   // on the callback and redirects back, so no client-side token handling is
   // needed (and none can leak to JS — the cookie is HttpOnly).
   const startGoogle = () => {
-    if (googleBusy) return
+    if (googleBusy || appleBusy) return
     setGoogleBusy(true)
     window.location.assign("/api/auth/google")
   }
+
+  const startApple = () => {
+    if (googleBusy || appleBusy) return
+    setAppleBusy(true)
+    window.location.assign("/api/auth/apple")
+  }
+
+  const socialBusy = googleBusy || appleBusy || busy
 
   const options = [
     {
@@ -78,18 +105,31 @@ export function AuthChoice({ onChoose }: { onChoose: (kind: "login" | "signup") 
       exit={{ opacity: 0, y: -8 }}
       transition={{ duration: 0.32, ease: "easeOut" }}
     >
-      {/* Fastest path in: Google OAuth (PKCE). Styled as a distinct, branded
-          primary action above the two credential documents. */}
-      <motion.button
-        type="button"
-        onClick={startGoogle}
-        disabled={googleBusy}
-        aria-busy={googleBusy}
-        className="group relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-2xl border border-[var(--border-muted)] bg-[var(--surface-raised)] px-5 py-3.5 text-sm font-semibold text-[var(--foreground)] backdrop-blur-md transition-all duration-300 hover:border-zinc-300/60 hover:shadow-[0_12px_36px_rgba(0,0,0,0.18)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400 disabled:opacity-70 dark:hover:border-zinc-500/60"
-      >
-        <GoogleIcon className="h-5 w-5" />
-        <span>{googleBusy ? "Redirecting to Google…" : "Continue with Google"}</span>
-      </motion.button>
+      {/* Fastest path in: Google + Apple OIDC. Styled as distinct, branded
+          primary actions above the two credential documents. */}
+      <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+        <motion.button
+          type="button"
+          onClick={startGoogle}
+          disabled={socialBusy}
+          aria-busy={googleBusy}
+          className="group relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-2xl border border-[var(--border-muted)] bg-[var(--surface-raised)] px-5 py-3.5 text-sm font-semibold text-[var(--foreground)] backdrop-blur-md transition-all duration-300 hover:border-zinc-300/60 hover:shadow-[0_12px_36px_rgba(0,0,0,0.18)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400 disabled:opacity-70 dark:hover:border-zinc-500/60"
+        >
+          <GoogleIcon className="h-5 w-5" />
+          <span>{googleBusy ? "Redirecting…" : "Google"}</span>
+        </motion.button>
+
+        <motion.button
+          type="button"
+          onClick={startApple}
+          disabled={socialBusy}
+          aria-busy={appleBusy}
+          className="group relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-2xl border border-[var(--border-muted)] bg-[var(--surface-raised)] px-5 py-3.5 text-sm font-semibold text-[var(--foreground)] backdrop-blur-md transition-all duration-300 hover:border-zinc-300/60 hover:shadow-[0_12px_36px_rgba(0,0,0,0.18)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400 disabled:opacity-70 dark:hover:border-zinc-500/60"
+        >
+          <AppleIcon className="h-5 w-5" />
+          <span>{appleBusy ? "Redirecting…" : "Apple"}</span>
+        </motion.button>
+      </div>
 
       <div className="flex items-center gap-3 px-1" aria-hidden="true">
         <span className="h-px flex-1 bg-[var(--border-muted)]" />
@@ -145,6 +185,18 @@ export function AuthChoice({ onChoose }: { onChoose: (kind: "login" | "signup") 
           </Interactive3DCard>
         </motion.div>
       ))}
+
+      {onDemo && (
+        <button
+          type="button"
+          onClick={onDemo}
+          disabled={busy}
+          className="flex items-center justify-center gap-2 rounded-xl border border-emerald-400/30 bg-emerald-500/10 px-5 py-3 text-sm font-semibold text-emerald-400 transition-all hover:border-emerald-400/60 hover:bg-emerald-500/20 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400 disabled:opacity-70"
+        >
+          <Sparkles className="h-4 w-4" aria-hidden="true" />
+          Try a demo account
+        </button>
+      )}
     </motion.div>
   )
 }

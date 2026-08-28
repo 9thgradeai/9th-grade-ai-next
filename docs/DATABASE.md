@@ -132,7 +132,8 @@ ever rebuilt outside migrations:
 - `passwordHash` String — default `""`. Empty for Google-only accounts (they cannot log in with a password; the login route rejects them with `AUTH_GOOGLE_ONLY`).
 - `tokenVersion` Int — default `0`. Bumped on password change / "sign out everywhere"; session JWTs carry the version they were minted with (`ver` claim) and are rejected when it is stale
 - `googleId` String? — unique. The stable Google subject (`sub`). `null` for password-only accounts.
-- `authProvider` String — default `"password"`. `"password"` (email/password), `"google"` (Google-created), or `"both"` (password account linked to Google).
+- `appleId` String? — unique. The stable Apple subject (`sub`). `null` for password/Google-only accounts. Added for Apple Sign In; `findOrCreateAppleUser` matches by this, then by email, otherwise provisions an Apple-only account.
+- `authProvider` String — default `"password"`. `"password"` (email/password), `"google"` (Google-created), `"apple"` (Apple-created), or `"both"` (password account linked to a social provider).
 - `imageUrl` String? — Google avatar URL (carried through to the client on `GET /api/auth/me`).
 - `role` UserRole — default `STUDENT`
  - `createdAt` DateTime — default `now()`

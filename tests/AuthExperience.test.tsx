@@ -43,6 +43,13 @@ describe("AuthExperience", () => {
     h.push.mockReset()
     h.login.mockResolvedValue(undefined)
     h.register.mockResolvedValue(undefined)
+    // Each mount sets a "returning visitor" flag; clear it so the lamp still
+    // appears at the start of every test (mirrors a fresh browser session).
+    try {
+      localStorage.clear()
+    } catch {
+      /* ignore */
+    }
   })
 
   it("opens in a dim room with the lamp as the only interaction", () => {
@@ -90,7 +97,10 @@ describe("AuthExperience", () => {
     submitForm("Sign in securely")
 
     await waitFor(() => {
-      expect(h.login).toHaveBeenCalledWith("demo@9thgrade.ai", "secret123", { redirect: false })
+      expect(h.login).toHaveBeenCalledWith("demo@9thgrade.ai", "secret123", {
+        redirect: false,
+        remember: false,
+      })
     })
     await waitFor(
       () => expect(screen.getByText("Seat confirmed. See you inside.")).toBeInTheDocument(),

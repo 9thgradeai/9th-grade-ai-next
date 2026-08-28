@@ -423,6 +423,9 @@ export const account = {
   verifyEmail: (token: string): Promise<{ ok: boolean }> =>
     mutate<{ ok: boolean }>("/api/auth/verify-email", "POST", { token }),
 
+  resendVerification: (email: string): Promise<{ ok: boolean; devLink?: string }> =>
+    mutate<{ ok: boolean; devLink?: string }>("/api/auth/resend-verification", "POST", { email }),
+
   completeOnboarding: (data: {
     examTarget?: string;
     examDate?: string;

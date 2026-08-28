@@ -120,7 +120,8 @@ model User {
   // and login route can (a) show the right badge and (b) block password login
   // for Google-only accounts. `imageUrl` carries the Google avatar.
   googleId      String?        @unique
-  authProvider  String         @default("password") // "password" | "google" | "both"
+  appleId       String?        @unique
+  authProvider  String         @default("password") // "password" | "google" | "apple" | "both"
   imageUrl      String?
   role         UserRole       @default(STUDENT)
   createdAt    DateTime       @default(now())

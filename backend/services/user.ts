@@ -30,7 +30,7 @@ export type UserRecord = {
   emailVerified: boolean;
   onboarded: boolean;
   createdAt: string;
-  authProvider: "password" | "google" | "both";
+  authProvider: "password" | "google" | "apple" | "both";
   imageUrl?: string;
   examTarget?: string;
   examDate?: string;
@@ -265,6 +265,66 @@ export async function findOrCreateGoogleUser(profile: {
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new InternalServerError("Failed to sign in with Google");
+  }
+}
+
+/**
+ * Resolve or provision a user from a verified Apple profile. Mirrors the Google
+ * strategy: match by Apple `sub` (appleId), then by email (link identity onto
+ * an existing account), otherwise provision an Apple-only account. Apple-only
+ * accounts have `passwordHash === ""`, so password login is blocked for them.
+ */
+export async function findOrCreateAppleUser(profile: {
+  sub: string;
+  email: string;
+  emailVerified: boolean;
+  name: string;
+  picture?: string;
+}): Promise<UserRecord> {
+  try {
+    const existingByApple = await prisma.user.findUnique({ where: { appleId: profile.sub } });
+    if (existingByApple) return toUserRecord(existingByApple);
+
+    const existingByEmail = await prisma.user.findUnique({
+      where: { email: profile.email.toLowerCase() },
+    });
+    if (existingByEmail) {
+      const isPasswordUser = existingByEmail.passwordHash.length > 0;
+      const updated = await prisma.user.update({
+        where: { id: existingByEmail.id },
+        data: {
+          appleId: profile.sub,
+          authProvider: isPasswordUser ? "both" : "apple",
+          emailVerified: existingByEmail.emailVerified || profile.emailVerified,
+          imageUrl: existingByEmail.imageUrl ?? profile.picture ?? null,
+        },
+      });
+      return toUserRecord(updated);
+    }
+
+    const handle = await uniqueHandle(profile.email.split("@")[0] || "user");
+    const created = await prisma.$transaction(async (tx) => {
+      const u = await tx.user.create({
+        data: {
+          name: profile.name.trim() || profile.email.split("@")[0],
+          email: profile.email.toLowerCase(),
+          handle,
+          passwordHash: "",
+          appleId: profile.sub,
+          authProvider: "apple",
+          emailVerified: profile.emailVerified,
+          imageUrl: profile.picture ?? null,
+          role: "STUDENT",
+        },
+      });
+      await tx.userProgress.create({ data: { userId: u.id } });
+      return u;
+    });
+
+    return toUserRecord(created);
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+    throw new InternalServerError("Failed to sign in with Apple");
   }
 }
 
@@ -600,6 +660,47 @@ export async function verifyEmail(token: string): Promise<{ ok: boolean }> {
       where: { id: user.id },
       data: { emailVerified: true, emailVerifyToken: null, emailVerifyExpires: null },
     });
+    return { ok: true };
+  } catch {
+    return { ok: false };
+  }
+}
+
+/**
+ * Re-issue an email-verification token and (best-effort) email it. Idempotent
+ * and enumeration-safe: an unknown or already-verified address resolves to a
+ * no-op success so the client cannot probe which emails are registered.
+ */
+export async function resendVerification(
+  email: string,
+  origin?: string,
+): Promise<{ ok: boolean; devLink?: string }> {
+  try {
+    if (!email || typeof email !== "string" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return { ok: false };
+    }
+    const normalized = email.trim().toLowerCase();
+    const user = await prisma.user.findUnique({ where: { email: normalized } });
+    if (!user || user.emailVerified) return { ok: true };
+
+    const { raw: verifyRaw, hash: verifyHash } = makeToken();
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { emailVerifyToken: verifyHash, emailVerifyExpires: new Date(Date.now() + VERIFY_TTL_MS) },
+    });
+
+    if (origin) {
+      const link = `${origin}/verify-email?token=${verifyRaw}`;
+      const { sent } = await sendEmail({
+        to: user.email,
+        subject: "Verify your 9Th-Grade AI account",
+        html: `<p>Welcome to 9Th-Grade AI. Confirm your email to secure your account:</p><p><a href="${link}">${link}</a></p>`,
+      });
+      if (!sent && process.env.NODE_ENV !== "production") {
+        log.info("auth.verify.devlink", { email: user.email, link });
+        return { ok: true, devLink: link };
+      }
+    }
     return { ok: true };
   } catch {
     return { ok: false };

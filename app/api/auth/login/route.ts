@@ -15,6 +15,8 @@ export async function POST(request: Request) {
     assertSameOrigin(request);
 
     const body = await request.json().catch(() => ({}));
+    // `remember` is an explicit, optional opt-in (default: session-length cookie).
+    const remember = body?.remember === true;
     const { email, password } = validateLoginInput(body);
 
     // Phase 8: per-IP minute bucket + per-account hourly bucket (hashed email),
@@ -23,13 +25,15 @@ export async function POST(request: Request) {
 
     const user = await findUserByEmail(email);
 
-    // Google-only accounts have no password; tell the user to use Google
-    // instead of a generic "invalid credentials" so they're not stuck guessing.
+    // Social-only accounts (Google/Apple) have no password; tell the user which
+    // provider to use instead of a generic "invalid credentials" so they're not
+    // stuck guessing.
     if (user && user.passwordHash === "") {
+      const provider = user.authProvider === "apple" ? "Apple" : "Google";
       throw new AppError(
         401,
-        "This account uses Google sign-in. Please choose 'Continue with Google'.",
-        "AUTH_GOOGLE_ONLY",
+        `This account uses ${provider} sign-in. Please choose 'Continue with ${provider}'.`,
+        "AUTH_SOCIAL_ONLY",
       );
     }
 
@@ -43,7 +47,9 @@ export async function POST(request: Request) {
     const token = await signSession({ email: user.email, ver: user.tokenVersion });
     const { passwordHash: _passwordHash, ...safeUser } = user;
     const res = NextResponse.json({ user: safeUser });
-    await setSessionCookie(token, res);
+    // "Stay signed in" extends the cookie from 7 to 30 days; otherwise the
+    // session expires when the browser closes-ish (7-day cap in either case).
+    await setSessionCookie(token, res, remember ? 60 * 60 * 24 * 30 : undefined);
 
     log.info("auth.login.success", { requestId, userId: user.id });
 

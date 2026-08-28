@@ -46,15 +46,21 @@ export default function AuthExperience({
       google_state_mismatch: "Google sign-in was blocked for security. Please try again.",
       google_invalid: "Google sign-in didn't complete. Please try again.",
       google_failed: "We couldn't sign you in with Google. Please try again or use your password.",
+      apple_unavailable: "Apple sign-in isn't available right now. Please use your email and password.",
+      apple_rate_limited: "Too many Apple sign-in attempts. Please wait a moment and try again.",
+      apple_state_missing: "Your Apple sign-in session expired. Please try again.",
+      apple_state_mismatch: "Apple sign-in was blocked for security. Please try again.",
+      apple_invalid: "Apple sign-in didn't complete. Please try again.",
+      apple_failed: "We couldn't sign you in with Apple. Please try again or use your password.",
     }
-    if (flag.startsWith("google_") || flag === "google_access_denied") {
+    if (flag.startsWith("google_") || flag.startsWith("apple_") || flag === "google_access_denied") {
       return messages[flag] ?? messages.google_failed
     }
     return messages.google_failed
   }
 
   const router = useRouter()
-  const { login, register } = useAuth()
+  const { login, register, user, isLoading } = useAuth()
   const reduced = useReducedMotion() ?? false
   const quality = useVisualQuality()
   const shake = useAnimationControls()
@@ -84,6 +90,9 @@ export default function AuthExperience({
   // Account details captured at submit time so the admit card can greet the
   // user by name even before /api/auth/me round-trips.
   const [account, setAccount] = useState<{ name: string; email: string } | null>(null)
+  // Set when a request is rate-limited (429); the form shows a live countdown
+  // and blocks resubmission until it elapses.
+  const [lockoutUntil, setLockoutUntil] = useState<number | null>(null)
 
   const pendingStage = useRef<AuthStage | null>(initialStage)
   const redirectTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -94,6 +103,41 @@ export default function AuthExperience({
     },
     []
   )
+
+  // Redirect already-authenticated visitors straight to the hall — the entry
+  // ceremony is only for people who still need to sign in.
+  useEffect(() => {
+    if (isLoading || !user) return
+    if (stage === "lamp" || stage === "choice") {
+      router.replace("/dashboard")
+    }
+  }, [user, isLoading, stage, router])
+
+  // Skip the lamp ("pull the cord") for returning visitors and on very small
+  // viewports where the staged reveal crowds the form. We still set the
+  // "seen" flag so the lamp only appears on a visitor's very first arrival.
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    let seen = false
+    try {
+      seen = window.localStorage.getItem("unit9-seen") === "1"
+    } catch {
+      seen = false
+    }
+    const small = window.innerWidth < 380
+    try {
+      window.localStorage.setItem("unit9-seen", "1")
+    } catch {
+      /* ignore */
+    }
+    if (seen || small) {
+      const id = window.setTimeout(() => {
+        setLit(true)
+        setStage(pendingStage.current ?? "choice")
+      }, 0)
+      return () => window.clearTimeout(id)
+    }
+  }, [])
 
   const avatar = useMemo(
     () => getAvatarState({ stage, lit, busy, error, focusField, successKind, strength }),
@@ -159,19 +203,30 @@ export default function AuthExperience({
     redirectTimer.current = setTimeout(() => router.push(target), reduced ? 300 : 900)
   }, [router, reduced, successKind])
 
+  // Normalize an auth error into a friendly message + machine code (the code
+  // drives the rate-limit countdown UI).
+  const describeError = useCallback((err: unknown): { message: string; code?: string } => {
+    const message = err instanceof Error ? err.message : "Something went wrong. Please try again."
+    const code = (err as { code?: string } | null)?.code
+    return { message, code }
+  }, [])
+
   const handleLogin = useCallback(
     async (values: LoginValues) => {
       setError(null)
+      setLockoutUntil(null)
       setBusy(true)
       try {
-        await login(values.email, values.password, { redirect: false })
+        await login(values.email, values.password, { redirect: false, remember: values.remember })
         setAccount({ name: deriveDisplayName(values.email), email: values.email })
         setSuccessKind("login")
         setStage("verify")
         scheduleAdmitCard()
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Something went wrong. Please try again.")
+        const { message, code } = describeError(err)
+        setError(message)
         setFailedAttempts((n) => n + 1)
+        if (code === "RATE_LIMIT_EXCEEDED") setLockoutUntil(Date.now() + 60_000)
         if (!reduced) {
           void shake.start({
             x: [0, -8, 8, -6, 6, 0],
@@ -182,12 +237,13 @@ export default function AuthExperience({
         setBusy(false)
       }
     },
-    [login, scheduleAdmitCard, reduced, shake]
+    [login, scheduleAdmitCard, reduced, shake, describeError]
   )
 
   const handleSignup = useCallback(
     async (values: SignupValues) => {
       setError(null)
+      setLockoutUntil(null)
       setBusy(true)
       try {
         await register(values.name, values.email, values.password, { redirect: false })
@@ -196,8 +252,10 @@ export default function AuthExperience({
         setStage("verify")
         scheduleAdmitCard()
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Something went wrong. Please try again.")
+        const { message, code } = describeError(err)
+        setError(message)
         setFailedAttempts((n) => n + 1)
+        if (code === "RATE_LIMIT_EXCEEDED") setLockoutUntil(Date.now() + 60_000)
         if (!reduced) {
           void shake.start({
             x: [0, -8, 8, -6, 6, 0],
@@ -208,7 +266,30 @@ export default function AuthExperience({
         setBusy(false)
       }
     },
-    [register, scheduleAdmitCard, reduced, shake]
+    [register, scheduleAdmitCard, reduced, shake, describeError]
+  )
+
+  // One-tap demo: drop the visitor straight into the sample account so they can
+  // explore the product without filling the form.
+  const handleDemo = useCallback(
+    async () => {
+      setError(null)
+      setLockoutUntil(null)
+      setBusy(true)
+      try {
+        await login("demo@9thgrade.ai", "demo12345", { redirect: false })
+        setAccount({ name: "Demo Examinee", email: "demo@9thgrade.ai" })
+        setSuccessKind("login")
+        setStage("verify")
+        scheduleAdmitCard()
+      } catch (err) {
+        const { message } = describeError(err)
+        setError(message)
+      } finally {
+        setBusy(false)
+      }
+    },
+    [login, scheduleAdmitCard, describeError]
   )
 
   // Move focus into the first field once a form appears (wizard-style).
@@ -229,6 +310,15 @@ export default function AuthExperience({
     document.getElementById("auth-form-error")?.focus({ preventScroll: true })
   }, [error, stage])
 
+  // Auto-advance the success "admit card" into the hall after a beat, so the
+  // ceremony feels continuous. The button below still lets eager users skip it.
+  useEffect(() => {
+    if (stage !== "success") return
+    const delay = reduced ? 1200 : 2600
+    const t = window.setTimeout(continueNow, delay)
+    return () => window.clearTimeout(t)
+  }, [stage, reduced, continueNow])
+
   // Avatar column — sits centered pre-light (hidden), then drops in once the
   // lamp is turned on. Mobile stacks it above the content (vertical flow);
   // desktop places it to the LEFT of the content (split layout).
@@ -240,11 +330,13 @@ export default function AuthExperience({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -12 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className="relative flex shrink-0 flex-col items-center justify-center gap-2 sm:gap-2.5"
+      className="relative flex shrink-0 flex-col items-center justify-center gap-2 max-[380px]:hidden sm:gap-2.5"
     >
-      <Avatar mood={avatar} focusField={focusField} tick={tick} compact behavior={scene.unit9} />
-      <Celebration active={stage === "success"} />
-      <AuthMessage message={message} />
+       <Avatar mood={avatar} focusField={focusField} tick={tick} compact behavior={scene.unit9} />
+       <Celebration active={stage === "success"} />
+       <div role="status" aria-live="polite">
+         <AuthMessage message={message} />
+       </div>
     </motion.div>
   )
 
@@ -358,54 +450,70 @@ export default function AuthExperience({
               </button>
             </motion.div>
           )}
-          <AuthChoice key="choice" onChoose={choose} />
+          <AuthChoice key="choice" onChoose={choose} onDemo={() => void handleDemo()} busy={busy} />
         </>
       )}
 
       {stage === "login" && (
         <motion.div
           key="login"
-          className="glass-card w-full rounded-3xl border border-white/10 p-5 shadow-panel sm:p-7"
+          className="glass-card glow-border relative isolate w-full overflow-hidden rounded-3xl border border-white/10 p-5 shadow-panel sm:p-7"
           initial={{ opacity: 0, x: 24 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.35, ease: "easeOut" }}
         >
-          <motion.div className="w-full" animate={shake}>
-            <LoginForm
-              onSubmit={handleLogin}
-              busy={busy}
-              error={error}
-              onFocusChange={handleFocusChange}
-              onClearError={handleClearError}
-              onBack={goBack}
-              onTyping={() => setTick((t) => t + 1)}
-              failedAttempt={failedAttempts}
-            />
-          </motion.div>
+          <CardTexture />
+          <div className="relative z-10">
+            <CardHeader serial="FORM 9G-A1" />
+            <motion.div className="w-full" animate={shake}>
+              <LoginForm
+                onSubmit={handleLogin}
+                busy={busy}
+                error={error}
+                onFocusChange={handleFocusChange}
+                onClearError={handleClearError}
+                onBack={goBack}
+                onTyping={() => {
+                  setTick((t) => t + 1)
+                  setLockoutUntil(null)
+                }}
+                failedAttempt={failedAttempts}
+                lockoutUntil={lockoutUntil}
+              />
+            </motion.div>
+          </div>
         </motion.div>
       )}
 
       {stage === "signup" && (
         <motion.div
           key="signup"
-          className="glass-card w-full rounded-3xl border border-white/10 p-5 shadow-panel sm:p-7"
+          className="glass-card glow-border relative isolate w-full overflow-hidden rounded-3xl border border-white/10 p-5 shadow-panel sm:p-7"
           initial={{ opacity: 0, x: 24 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.35, ease: "easeOut" }}
         >
-          <motion.div className="w-full" animate={shake}>
-            <SignupForm
-              onSubmit={handleSignup}
-              busy={busy}
-              error={error}
-              onFocusChange={handleFocusChange}
-              onClearError={handleClearError}
-              onBack={goBack}
-              onTyping={() => setTick((t) => t + 1)}
-              onStrengthChange={setStrength}
-              failedAttempt={failedAttempts}
-            />
-          </motion.div>
+          <CardTexture />
+          <div className="relative z-10">
+            <CardHeader serial="FORM 9G-B7" />
+            <motion.div className="w-full" animate={shake}>
+              <SignupForm
+                onSubmit={handleSignup}
+                busy={busy}
+                error={error}
+                onFocusChange={handleFocusChange}
+                onClearError={handleClearError}
+                onBack={goBack}
+                onTyping={() => {
+                  setTick((t) => t + 1)
+                  setLockoutUntil(null)
+                }}
+                onStrengthChange={setStrength}
+                failedAttempt={failedAttempts}
+                lockoutUntil={lockoutUntil}
+              />
+            </motion.div>
+          </div>
         </motion.div>
       )}
 
@@ -546,7 +654,9 @@ export default function AuthExperience({
       </motion.div>
       {departing && (
         <EnterHallTransition
-          onNavigate={() => router.push(successKind === "signup" ? "/onboarding" : "/dashboard")}
+          onNavigate={() => {
+            router.push(successKind === "signup" ? "/onboarding" : "/dashboard")
+          }}
         />
       )}
     </AuthEnvironment>
@@ -581,4 +691,39 @@ function LocalTime() {
   }, [])
 
   return <span className="tabular-nums">{time ?? "--:--"}</span>
+}
+
+/** Subtle engraved grid texture inside the entry-pass card. */
+function CardTexture() {
+  return (
+    <div
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-0 opacity-[0.07]"
+      style={{
+        backgroundImage:
+          "linear-gradient(rgb(45 212 191 / 0.9) 1px, transparent 1px), linear-gradient(90deg, rgb(45 212 191 / 0.9) 1px, transparent 1px)",
+        backgroundSize: "22px 22px",
+        maskImage: "radial-gradient(120% 80% at 50% 0%, black, transparent 72%)",
+        WebkitMaskImage: "radial-gradient(120% 80% at 50% 0%, black, transparent 72%)",
+      }}
+    />
+  )
+}
+
+/** "Entry pass" header strip — serial + live status dot. */
+function CardHeader({ serial }: { serial: string }) {
+  return (
+    <div className="mb-4">
+      <div className="flex items-center justify-between gap-3">
+        <span className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-emerald-400/80">
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)]" />
+          Exam hall · entry pass
+        </span>
+        <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-muted)]">
+          {serial}
+        </span>
+      </div>
+      <div className="mt-3 h-px w-full bg-gradient-to-r from-transparent via-[var(--border-muted)] to-transparent" />
+    </div>
+  )
 }

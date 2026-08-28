@@ -114,13 +114,21 @@ export async function verifySession(token: string) {
  * @param token - the signed JWT
  * @param res - NextResponse (or Next.js route handler response)
  */
-export async function setSessionCookie(token: string, res: NextResponse) {
+/**
+ * Set an HttpOnly, SameSite=Lax, Secure-in-prod cookie with the JWT.
+ * Called from API route responders.
+ * @param token - the signed JWT
+ * @param res - NextResponse (or Next.js route handler response)
+ * @param maxAgeSeconds - cookie lifetime in seconds. Defaults to 7 days;
+ *   pass a longer value (e.g. 30 days) when the user opts to stay signed in.
+ */
+export async function setSessionCookie(token: string, res: NextResponse, maxAgeSeconds?: number) {
   const cookieOpts = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax" as const,
     path: "/",
-    maxAge: 60 * 60 * 24 * 7,
+    maxAge: maxAgeSeconds ?? 60 * 60 * 24 * 7,
   };
   res.cookies.set(SESSION_COOKIE, token, cookieOpts);
 }
@@ -178,7 +186,7 @@ export async function getSessionUser(req: Request): Promise<UserRecord | null> {
     emailVerified: u.emailVerified,
     onboarded: u.onboarded,
     createdAt: u.createdAt.toISOString(),
-    authProvider: (u.authProvider as "password" | "google" | "both") ?? "password",
+    authProvider: (u.authProvider as "password" | "google" | "apple" | "both") ?? "password",
     imageUrl: u.imageUrl ?? undefined,
     examTarget: u.examTarget ?? undefined,
     examDate: u.examDate ? u.examDate.toISOString() : undefined,
