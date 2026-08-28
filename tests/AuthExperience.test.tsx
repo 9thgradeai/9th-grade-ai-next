@@ -67,7 +67,7 @@ describe("AuthExperience", () => {
 
     await waitFor(
       () => {
-        expect(screen.getByText("First attempt here, or returning examinee?")).toBeInTheDocument()
+        expect(screen.getByText(/welcome, candidate/i)).toBeInTheDocument()
         expect(screen.getByRole("button", { name: /i have an account/i })).toBeInTheDocument()
         expect(screen.getByRole("button", { name: /i'm new here/i })).toBeInTheDocument()
       },
@@ -94,7 +94,7 @@ describe("AuthExperience", () => {
 
     fireEvent.change(screen.getByLabelText("Email"), { target: { value: "demo@9thgrade.ai" } })
     fireEvent.change(screen.getByLabelText("Password"), { target: { value: "secret123" } })
-    submitForm("Sign in securely")
+    submitForm("Enter the hall")
 
     await waitFor(() => {
       expect(h.login).toHaveBeenCalledWith("demo@9thgrade.ai", "secret123", {
@@ -129,7 +129,7 @@ describe("AuthExperience", () => {
 
     fireEvent.change(screen.getByLabelText("Email"), { target: { value: "demo@9thgrade.ai" } })
     fireEvent.change(screen.getByLabelText("Password"), { target: { value: "wrongpw" } })
-    submitForm("Sign in securely")
+    submitForm("Enter the hall")
 
     await waitFor(() =>
       expect(screen.getByText("We couldn't sign you in with those details.")).toBeInTheDocument()
@@ -155,7 +155,7 @@ describe("AuthExperience", () => {
       timeout: 2000,
     })
 
-    submitForm("Create account")
+    submitForm("Enter the hall")
     expect(await screen.findByText("What should we call you?")).toBeInTheDocument()
     expect(screen.getByText("Email is required.")).toBeInTheDocument()
 
@@ -163,11 +163,11 @@ describe("AuthExperience", () => {
     fireEvent.change(screen.getByLabelText("Email"), { target: { value: "rahim@example.com" } })
     fireEvent.change(screen.getByLabelText("Password"), { target: { value: "secret123" } })
     fireEvent.change(screen.getByLabelText("Confirm password"), { target: { value: "secret999" } })
-    submitForm("Create account")
+    submitForm("Enter the hall")
     expect(screen.getByText("Passwords don't match.")).toBeInTheDocument()
 
     fireEvent.change(screen.getByLabelText("Confirm password"), { target: { value: "secret123" } })
-    submitForm("Create account")
+    submitForm("Enter the hall")
 
     await waitFor(() => {
       expect(h.register).toHaveBeenCalledWith("Rahim Uddin", "rahim@example.com", "secret123", {
@@ -185,7 +185,7 @@ describe("AuthExperience", () => {
     )
   })
 
-  it("runs the verification ceremony between submit and admit card", async () => {
+  it("goes straight to admit card on login (no verification ceremony)", async () => {
     render(<AuthExperience />)
 
     fireEvent.click(screen.getAllByRole("button", { name: /turn on the light/i })[0])
@@ -199,14 +199,11 @@ describe("AuthExperience", () => {
     })
     fireEvent.change(screen.getByLabelText("Email"), { target: { value: "demo@9thgrade.ai" } })
     fireEvent.change(screen.getByLabelText("Password"), { target: { value: "secret123" } })
-    submitForm("Sign in securely")
+    submitForm("Enter the hall")
 
-    await waitFor(() =>
-      expect(screen.getByText(/verifying candidate|access authorized/i)).toBeInTheDocument(),
-      { timeout: 1500 }
-    )
+    // Login skips verification — goes straight to admit card
     await waitFor(
-      () => expect(screen.getByText(/Candidate verified/i)).toBeInTheDocument(),
+      () => expect(screen.getByRole("button", { name: /enter the hall/i })).toBeInTheDocument(),
       { timeout: 3000 }
     )
   }, 15000)
@@ -229,7 +226,7 @@ describe("AuthExperience", () => {
     const password = screen.getByLabelText("Password") as HTMLInputElement
     fireEvent.change(email, { target: { value: "demo@9thgrade.ai" } })
     fireEvent.change(password, { target: { value: "secret123" } })
-    submitForm("Sign in securely")
+    submitForm("Enter the hall")
 
     await waitFor(() =>
       expect(screen.getByText("We couldn't sign you in with those details.")).toBeInTheDocument()
@@ -247,7 +244,7 @@ describe("AuthExperience", () => {
     await waitFor(() => expect(screen.getByLabelText("Name")).toBeInTheDocument(), {
       timeout: 2000,
     })
-    expect(screen.queryByText("First attempt here, or returning examinee?")).not.toBeInTheDocument()
+    expect(screen.queryByText(/welcome, candidate/i)).not.toBeInTheDocument()
   })
 
   it("never renders audio (the avatar does not speak)", async () => {
@@ -270,7 +267,7 @@ describe("AuthExperience", () => {
 
     fireEvent.change(screen.getByLabelText("Email"), { target: { value: "demo@9thgrade.ai" } })
     fireEvent.change(screen.getByLabelText("Password"), { target: { value: "secret123" } })
-    submitForm("Sign in securely")
+    submitForm("Enter the hall")
 
     // Name derived from the email local-part ("demo" → "Demo").
     await waitFor(

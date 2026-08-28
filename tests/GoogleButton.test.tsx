@@ -16,37 +16,37 @@ describe("AuthChoice — social sign-in", () => {
 
   it("renders a 'Google' button", () => {
     render(<AuthChoice onChoose={() => {}} />)
-    expect(screen.getByRole("button", { name: /^google$/i })).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: /sign in with google/i })).toBeInTheDocument()
   })
 
   it("renders an 'Apple' button", () => {
     render(<AuthChoice onChoose={() => {}} />)
-    expect(screen.getByRole("button", { name: /^apple$/i })).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: /sign in with apple/i })).toBeInTheDocument()
   })
 
   it("navigates to the Google OAuth start route when clicked", () => {
     render(<AuthChoice onChoose={() => {}} />)
-    fireEvent.click(screen.getByRole("button", { name: /^google$/i }))
+    fireEvent.click(screen.getByRole("button", { name: /sign in with google/i }))
     expect(assignSpy).toHaveBeenCalledWith("/api/auth/google")
   })
 
   it("navigates to the Apple OAuth start route when clicked", () => {
     render(<AuthChoice onChoose={() => {}} />)
-    fireEvent.click(screen.getByRole("button", { name: /^apple$/i }))
+    fireEvent.click(screen.getByRole("button", { name: /sign in with apple/i }))
     expect(assignSpy).toHaveBeenCalledWith("/api/auth/apple")
   })
 
   it("does not call onChoose when a social button is used", () => {
     const onChoose = vi.fn()
     render(<AuthChoice onChoose={onChoose} />)
-    fireEvent.click(screen.getByRole("button", { name: /^google$/i }))
+    fireEvent.click(screen.getByRole("button", { name: /sign in with google/i }))
     expect(onChoose).not.toHaveBeenCalled()
   })
 
   it("calls onDemo when the demo button is clicked", () => {
     const onDemo = vi.fn()
     render(<AuthChoice onChoose={() => {}} onDemo={onDemo} />)
-    fireEvent.click(screen.getByRole("button", { name: /try a demo account/i }))
+    fireEvent.click(screen.getByRole("button", { name: /explore with demo/i }))
     expect(onDemo).toHaveBeenCalledTimes(1)
   })
 })
