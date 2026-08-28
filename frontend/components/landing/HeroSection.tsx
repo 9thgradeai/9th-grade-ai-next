@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, type PointerEvent } from "react";
-import { ArrowRight, ChevronDown, Sparkles } from "lucide-react";
+import { ArrowRight, ChevronDown } from "lucide-react";
 import Button from "@/components/ui/Button";
 import BlackholeCanvas from "@/components/landing/BlackholeCanvas";
 import { trackCtaClick, trackHeroView } from "@/lib/analytics";
@@ -183,7 +183,52 @@ export default function HeroSection({ subjectCount }: { subjectCount: number }) 
       >
         <div className="max-w-2xl">
           <p className="hero-eyebrow section-eyebrow mb-6">
-            <Sparkles className="h-4 w-4" aria-hidden="true" />
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              className="h-4 w-4"
+              aria-hidden="true"
+            >
+              <defs>
+                <linearGradient id="hero-ai-cap" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor="#2dd4bf" />
+                  <stop offset="60%" stopColor="#22d3ee" />
+                  <stop offset="100%" stopColor="#a78bfa" />
+                </linearGradient>
+              </defs>
+              {/* mortarboard — study / exam prep for job aspirants */}
+              <path
+                d="M12 3 21 7.5 12 12 3 7.5Z"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M6 8.6c0 1.4 2.7 2.6 6 2.6s6-1.2 6-2.6"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+              />
+              {/* tassel */}
+              <path
+                d="M12 7.5 16.4 10.9"
+                stroke="url(#hero-ai-cap)"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+              />
+              <circle cx="16.8" cy="11.4" r="1.1" fill="url(#hero-ai-cap)" />
+              {/* AI core: orbital node riding the cap */}
+              <ellipse
+                cx="12"
+                cy="7.4"
+                rx="3.4"
+                ry="1.3"
+                stroke="url(#hero-ai-cap)"
+                strokeWidth="1.4"
+                transform="rotate(-18 12 7.4)"
+              />
+              <circle cx="15.1" cy="6.3" r="1.1" fill="url(#hero-ai-cap)" />
+            </svg>
             AI-Powered Application, Built for Job Aspirants
           </p>
 
