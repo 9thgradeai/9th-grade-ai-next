@@ -338,17 +338,13 @@ export default function BlackholeCanvas({ className = "" }: { className?: string
     };
 
     // --- run-state management: only animate when visible AND on-screen ---
-    // On small / coarse-pointer (touch) viewports we render a single
-    // high-quality static frame instead of an endless orbit. The signature
-    // visual is intact, but a perpetually-animating above-the-fold canvas
-    // saturates the main thread (esp. under mobile CPU throttling) and tanks
-    // Lighthouse Speed Index / Total Blocking Time.
-    const isSmallViewport = window.innerWidth < 768;
+    // Continuous orbit is allowed on every device (incl. touch / small
+    // viewports) — the quality tier + adaptive scaler keep it smooth. We no
+    // longer freeze the canvas on mobile; prefers-reduced-motion users still
+    // get a single static frame via `continuousEffects` being false.
     const updateRun = () => {
       const should =
         continuousEffects &&
-        !coarse &&
-        !isSmallViewport &&
         document.visibilityState === "visible" &&
         inView;
       if (should && !running) {
