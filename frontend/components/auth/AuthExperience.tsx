@@ -19,7 +19,6 @@ import BrandMark from "@/components/ui/BrandMark"
 import { LoginForm, type LoginValues } from "./LoginForm"
 import { SignupForm, type SignupValues } from "./SignupForm"
 import { resolveScene } from "./animation/AnimationDirector"
-import { useVisualQuality } from "@/lib/motion/device"
 import {
   getAvatarMessage,
   getAvatarState,
@@ -62,20 +61,7 @@ export default function AuthExperience({
   const router = useRouter()
   const { login, register, user, isLoading } = useAuth()
   const reduced = useReducedMotion() ?? false
-  const quality = useVisualQuality()
   const shake = useAnimationControls()
-
-  // Virtual camera — one gentle push per scene state, never more than ~2%.
-  const CAMERA = {
-    dark: { scale: 1.015, y: -4 },
-    awakening: { scale: 1.01, y: -2 },
-    ready: { scale: 1, y: 0 },
-    choice: { scale: 1, y: -5 },
-    focused: { scale: 1.006, y: -3 },
-    verifying: { scale: 1.008, y: 0 },
-    success: { scale: 0.996, y: 0 },
-    departure: { scale: 1.025, y: 0 },
-  } as const
 
   const [stage, setStage] = useState<AuthStage>("lamp")
   const [lit, setLit] = useState(false)
@@ -167,6 +153,14 @@ export default function AuthExperience({
     window.setTimeout(() => setStage(pendingStage.current ?? "choice"), wait)
   }, [lit, reduced])
 
+  // Quiet mode: environment recedes as the user engages with the form
+  const quietLevel: 0 | 1 | 2 | 3 = useMemo(() => {
+    if (stage === "choice" || stage === "lamp") return 0
+    if (focusField === "password" || focusField === "confirm") return 3
+    if (focusField !== null) return 2
+    return 1
+  }, [stage, focusField])
+
   const handleFocusChange = useCallback((field: FocusField) => {
     setFocusField(field)
     setError(null)
@@ -179,13 +173,6 @@ export default function AuthExperience({
     setFocusField(null)
     setStrength(-1)
     setStage(kind)
-  }, [])
-
-  const goBack = useCallback(() => {
-    setError(null)
-    setFocusField(null)
-    setStrength(-1)
-    setStage("choice")
   }, [])
 
   // Verification ceremony dwell after the API has already resolved.
@@ -220,8 +207,8 @@ export default function AuthExperience({
         await login(values.email, values.password, { redirect: false, remember: values.remember })
         setAccount({ name: deriveDisplayName(values.email), email: values.email })
         setSuccessKind("login")
-        setStage("verify")
-        scheduleAdmitCard()
+        // Skip verification ceremony on login — go straight to admit card
+        setStage("success")
       } catch (err) {
         const { message, code } = describeError(err)
         setError(message)
@@ -237,7 +224,7 @@ export default function AuthExperience({
         setBusy(false)
       }
     },
-    [login, scheduleAdmitCard, reduced, shake, describeError]
+    [login, reduced, shake, describeError]
   )
 
   const handleSignup = useCallback(
@@ -280,8 +267,8 @@ export default function AuthExperience({
         await login("demo@9thgrade.ai", "demo12345", { redirect: false })
         setAccount({ name: "Demo Examinee", email: "demo@9thgrade.ai" })
         setSuccessKind("login")
-        setStage("verify")
-        scheduleAdmitCard()
+        // Skip verification ceremony on demo — go straight to admit card
+        setStage("success")
       } catch (err) {
         const { message } = describeError(err)
         setError(message)
@@ -289,7 +276,7 @@ export default function AuthExperience({
         setBusy(false)
       }
     },
-    [login, scheduleAdmitCard, describeError]
+    [login, describeError]
   )
 
   // Move focus into the first field once a form appears (wizard-style).
@@ -309,15 +296,6 @@ export default function AuthExperience({
     if (!error || (stage !== "login" && stage !== "signup")) return
     document.getElementById("auth-form-error")?.focus({ preventScroll: true })
   }, [error, stage])
-
-  // Auto-advance the success "admit card" into the hall after a beat, so the
-  // ceremony feels continuous. The button below still lets eager users skip it.
-  useEffect(() => {
-    if (stage !== "success") return
-    const delay = reduced ? 1200 : 2600
-    const t = window.setTimeout(continueNow, delay)
-    return () => window.clearTimeout(t)
-  }, [stage, reduced, continueNow])
 
   // Avatar column — sits centered pre-light (hidden), then drops in once the
   // lamp is turned on. Mobile stacks it above the content (vertical flow);
@@ -457,12 +435,11 @@ export default function AuthExperience({
       {stage === "login" && (
         <motion.div
           key="login"
-          className="glass-card glow-border relative isolate w-full overflow-hidden rounded-3xl border border-white/10 p-5 shadow-panel sm:p-7"
+          className="glass-card relative isolate w-full overflow-hidden rounded-2xl border border-white/10 p-5 shadow-panel sm:p-7"
           initial={{ opacity: 0, x: 24 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.35, ease: "easeOut" }}
         >
-          <CardTexture />
           <div className="relative z-10">
             <CardHeader serial="FORM 9G-A1" />
             <motion.div className="w-full" animate={shake}>
@@ -472,7 +449,6 @@ export default function AuthExperience({
                 error={error}
                 onFocusChange={handleFocusChange}
                 onClearError={handleClearError}
-                onBack={goBack}
                 onTyping={() => {
                   setTick((t) => t + 1)
                   setLockoutUntil(null)
@@ -488,12 +464,11 @@ export default function AuthExperience({
       {stage === "signup" && (
         <motion.div
           key="signup"
-          className="glass-card glow-border relative isolate w-full overflow-hidden rounded-3xl border border-white/10 p-5 shadow-panel sm:p-7"
+          className="glass-card relative isolate w-full overflow-hidden rounded-2xl border border-white/10 p-5 shadow-panel sm:p-7"
           initial={{ opacity: 0, x: 24 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.35, ease: "easeOut" }}
         >
-          <CardTexture />
           <div className="relative z-10">
             <CardHeader serial="FORM 9G-B7" />
             <motion.div className="w-full" animate={shake}>
@@ -503,7 +478,6 @@ export default function AuthExperience({
                 error={error}
                 onFocusChange={handleFocusChange}
                 onClearError={handleClearError}
-                onBack={goBack}
                 onTyping={() => {
                   setTick((t) => t + 1)
                   setLockoutUntil(null)
@@ -567,16 +541,9 @@ export default function AuthExperience({
   )
 
   return (
-    <AuthEnvironment state={scene.environment}>
+    <AuthEnvironment state={scene.environment} quietLevel={quietLevel}>
       <motion.div
         className="relative z-10 flex h-dvh flex-col overflow-hidden"
-        initial={false}
-        animate={
-          reduced || quality === "low" || quality === "reduced"
-            ? undefined
-            : CAMERA[scene.environment]
-        }
-        transition={{ type: "spring", stiffness: 60, damping: 20 }}
       >
         <header className="flex items-center justify-between px-5 pt-3 sm:px-8 sm:pt-5">
           <Link
@@ -586,64 +553,13 @@ export default function AuthExperience({
             <BrandMark className="h-7 w-7 rounded-lg shadow-[0_0_18px_rgba(16,185,129,0.35)]" />
             9Th-Grade AI
           </Link>
-          <Link
-            href="/"
-            className="rounded-lg px-2 py-1 text-sm text-[var(--text-muted)] transition-colors hover:text-white focus-visible:ring-2 focus-visible:ring-emerald-400/80"
-          >
-            Back to home
-          </Link>
         </header>
 
         <main className="flex min-h-0 w-full flex-1 flex-col items-center justify-center gap-3 self-center overflow-hidden px-4 pb-4 pt-1 sm:gap-5 sm:px-6 sm:pb-6 sm:pt-3">
-          {/* Futuristic eyebrow label */}
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: lit ? 1 : 0, y: lit ? 0 : -8 }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
-            aria-hidden="true"
-            className="hidden items-center gap-2 font-mono text-[11px] uppercase tracking-[0.28em] text-emerald-400/80 sm:flex"
-          >
-            <span className="h-px w-6 bg-emerald-400/40" />
-            Exam hall — secure entry
-            <span className="h-px w-6 bg-emerald-400/40" />
-          </motion.div>
-
           {/* Avatar + content: vertical on mobile, split left/right on md+ */}
           <div className="flex min-h-0 w-full max-w-4xl flex-1 flex-col items-center justify-center gap-4 md:flex-row md:gap-8 lg:gap-10">
             <AnimatePresence>{lit && avatarColumn}</AnimatePresence>
             {contentColumn}
-          </div>
-
-          {/* Wizard stage indicator */}
-          <div
-            aria-hidden="true"
-            className="hidden items-center gap-2 pt-1 sm:flex"
-            style={{ opacity: lit ? 1 : 0 }}
-          >
-            {["lamp", "choice", "form", "success"].map((s, i) => {
-              const idx = indexOfStage(stage)
-              const active =
-                (i === 0 && idx === 0) ||
-                (i === 1 && (idx === 1 || idx === 2)) ||
-                (i === 2 && idx === 2) ||
-                (i === 3 && idx === 3)
-              const done = i < idx
-              return (
-                <div key={s} className="flex items-center gap-2">
-                  {i > 0 && (
-                    <div
-                      className={`h-px w-5 transition-colors duration-300 ${done ? "bg-emerald-400/70" : "bg-[var(--border-muted)]"}`}
-                    />
-                  )}
-                  <motion.div
-                    initial={false}
-                    animate={{ scale: active ? 1.4 : 1, opacity: done || active ? 1 : 0.35 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 20 }}
-                    className={`h-1.5 w-1.5 rounded-full ${active || done ? "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" : "bg-[var(--text-muted)]"}`}
-                  />
-                </div>
-              )
-            })}
           </div>
 
           <p className="flex items-center gap-1.5 text-xs text-[var(--text-muted)]">
@@ -661,13 +577,6 @@ export default function AuthExperience({
       )}
     </AuthEnvironment>
   )
-}
-
-function indexOfStage(stage: AuthStage): number {
-  if (stage === "lamp") return 0
-  if (stage === "choice") return 1
-  if (stage === "login" || stage === "signup" || stage === "verify") return 2
-  return 3
 }
 
 /**
@@ -693,32 +602,14 @@ function LocalTime() {
   return <span className="tabular-nums">{time ?? "--:--"}</span>
 }
 
-/** Subtle engraved grid texture inside the entry-pass card. */
-function CardTexture() {
-  return (
-    <div
-      aria-hidden="true"
-      className="pointer-events-none absolute inset-0 opacity-[0.07]"
-      style={{
-        backgroundImage:
-          "linear-gradient(rgb(45 212 191 / 0.9) 1px, transparent 1px), linear-gradient(90deg, rgb(45 212 191 / 0.9) 1px, transparent 1px)",
-        backgroundSize: "22px 22px",
-        maskImage: "radial-gradient(120% 80% at 50% 0%, black, transparent 72%)",
-        WebkitMaskImage: "radial-gradient(120% 80% at 50% 0%, black, transparent 72%)",
-      }}
-    />
-  )
-}
-
 /** "Entry pass" header strip — serial + live status dot. */
 function CardHeader({ serial }: { serial: string }) {
   return (
-    <div className="mb-4">
+    <div className="mb-5">
       <div className="flex items-center justify-between gap-3">
-        <span className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-emerald-400/80">
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)]" />
-          Exam hall · entry pass
-        </span>
+        <h2 className="font-display text-2xl font-bold tracking-tight text-[var(--foreground)]">
+          ENTRY PASS
+        </h2>
         <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--text-muted)]">
           {serial}
         </span>

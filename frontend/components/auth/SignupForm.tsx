@@ -1,8 +1,8 @@
 "use client"
 
 import { useEffect, useMemo, useState, type FormEvent } from "react"
-import { ArrowLeft, Eye, EyeOff, KeyRound, Mail, Rocket, UserRound } from "lucide-react"
-import { AuthField } from "./AuthField"
+import { Eye, EyeOff, Rocket } from "lucide-react"
+import { UnderlineField } from "./UnderlineField"
 import { AuthSubmitButton } from "./AuthSubmitButton"
 import { CapsLockWarning, readCapsLock } from "./CapsLockWarning"
 import type { FocusField } from "./auth-state"
@@ -37,7 +37,6 @@ export function SignupForm({
   error,
   onFocusChange,
   onClearError,
-  onBack,
   onTyping,
   onStrengthChange,
   failedAttempt = 0,
@@ -48,7 +47,6 @@ export function SignupForm({
   error: string | null
   onFocusChange: (field: FocusField) => void
   onClearError: () => void
-  onBack: () => void
   onTyping?: () => void
   onStrengthChange?: (strength: number) => void
   /** Increments after each rejected submit — secrets are never preserved. */
@@ -113,8 +111,8 @@ export function SignupForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex w-full flex-col gap-3 sm:gap-4" noValidate>
-      <AuthField
+    <form onSubmit={handleSubmit} className="flex w-full flex-col gap-4 sm:gap-5" noValidate>
+      <UnderlineField
         id="signup-name"
         label="Name"
         name="name"
@@ -130,9 +128,8 @@ export function SignupForm({
         error={fieldErrors.name}
         autoComplete="name"
         placeholder="Rahim Uddin"
-        leftIcon={<UserRound className="h-4.5 w-4.5" aria-hidden="true" />}
       />
-      <AuthField
+      <UnderlineField
         id="signup-email"
         label="Email"
         type="email"
@@ -150,13 +147,12 @@ export function SignupForm({
         autoComplete="email"
         placeholder="you@example.com"
         inputMode="email"
-        leftIcon={<Mail className="h-4.5 w-4.5" aria-hidden="true" />}
       />
       <div>
-        <p className="mb-3 text-center font-mono text-[10px] uppercase tracking-[0.24em] text-emerald-400/80">
+        <p className="mb-2 text-center font-mono text-[10px] uppercase tracking-[0.24em] text-emerald-400/80">
           Form fill-up · Free forever · No card required
         </p>
-        <AuthField
+        <UnderlineField
           id="signup-password"
           label="Password"
           type={showPassword ? "text" : "password"}
@@ -179,7 +175,6 @@ export function SignupForm({
           error={fieldErrors.password}
           autoComplete="new-password"
           placeholder="At least 8 characters"
-          leftIcon={<KeyRound className="h-4.5 w-4.5" aria-hidden="true" />}
           rightSlot={
             <button
               type="button"
@@ -214,7 +209,7 @@ export function SignupForm({
         )}
         <CapsLockWarning visible={capsLock} />
       </div>
-      <AuthField
+      <UnderlineField
         id="signup-confirm"
         label="Confirm password"
         type={showPassword ? "text" : "password"}
@@ -231,7 +226,6 @@ export function SignupForm({
         error={fieldErrors.confirm}
         autoComplete="new-password"
         placeholder="Repeat your password"
-        leftIcon={<KeyRound className="h-4.5 w-4.5" aria-hidden="true" />}
       />
 
       {error && (
@@ -260,18 +254,8 @@ export function SignupForm({
         busyLabel="Creating account..."
         icon={<Rocket className="h-4 w-4" aria-hidden="true" />}
       >
-        Create account
+        Enter the hall
       </AuthSubmitButton>
-
-      <button
-        type="button"
-        onClick={onBack}
-        disabled={busy}
-        className="flex items-center gap-1 self-center text-sm text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)] focus-visible:ring-2 focus-visible:ring-emerald-400/80"
-      >
-        <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
-        Back
-      </button>
     </form>
   )
 }

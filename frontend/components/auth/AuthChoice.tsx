@@ -3,7 +3,6 @@
 import { useState } from "react"
 import { motion } from "framer-motion"
 import { ArrowRight, Sparkles } from "lucide-react"
-import Interactive3DCard from "@/components/landing/Interactive3DCard"
 
 /** Google "G" mark — inline so we don't add an icon dependency. */
 function GoogleIcon({ className }: { className?: string }) {
@@ -39,11 +38,9 @@ function AppleIcon({ className }: { className?: string }) {
 }
 
 /**
- * Candidate identification — two examination documents rather than generic
- * UI cards. Each carries a form serial and a candidate-class stamp; tilt,
- * lift and edge-lighting react to the pointer on capable devices. Social
- * buttons (Google / Apple) sit above as the fastest path in (OIDC), and a
- * one-tap demo lets visitors explore without filling the form.
+ * Candidate identification — two clear paths with exam-hall language.
+ * Social auth above, credential options below. No 3D tilt, no serial
+ * numbers on the choice cards — clean, decisive.
  */
 export function AuthChoice({
   onChoose,
@@ -57,9 +54,6 @@ export function AuthChoice({
   const [googleBusy, setGoogleBusy] = useState(false)
   const [appleBusy, setAppleBusy] = useState(false)
 
-  // Full-page navigation to the OAuth flow. The server sets the session cookie
-  // on the callback and redirects back, so no client-side token handling is
-  // needed (and none can leak to JS — the cookie is HttpOnly).
   const startGoogle = () => {
     if (googleBusy || appleBusy) return
     setGoogleBusy(true)
@@ -74,46 +68,28 @@ export function AuthChoice({
 
   const socialBusy = googleBusy || appleBusy || busy
 
-  const options = [
-    {
-      kind: "login" as const,
-      title: "I have an account",
-      kicker: "Returning candidate",
-      subtitle: "Sign in — your admit card is waiting",
-      tag: "EXAMINEE",
-      serial: "FORM NO. 9G-A1",
-      icon: <ArrowRight className="h-5 w-5" aria-hidden="true" />,
-    },
-    {
-      kind: "signup" as const,
-      title: "I'm new here",
-      kicker: "First attempt",
-      subtitle: "Form fill-up — issue your first admit card",
-      tag: "NEW ASPIRANT",
-      serial: "FORM NO. 9G-B7",
-      icon: <Sparkles className="h-5 w-5" aria-hidden="true" />,
-    },
-  ]
-
   return (
     <motion.div
       role="group"
       aria-label="Do you already have an account?"
-      className="flex w-full flex-col gap-3"
+      className="flex w-full max-w-md flex-col gap-3"
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
       transition={{ duration: 0.32, ease: "easeOut" }}
     >
-      {/* Fastest path in: Google + Apple OIDC. Styled as distinct, branded
-          primary actions above the two credential documents. */}
+      <h2 className="text-center font-display text-2xl font-bold tracking-tight text-[var(--foreground)]">
+        Welcome, candidate
+      </h2>
+
       <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
         <motion.button
           type="button"
           onClick={startGoogle}
           disabled={socialBusy}
           aria-busy={googleBusy}
-          className="group relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-2xl border border-[var(--border-muted)] bg-[var(--surface-raised)] px-5 py-3.5 text-sm font-semibold text-[var(--foreground)] backdrop-blur-md transition-all duration-300 hover:border-zinc-300/60 hover:shadow-[0_12px_36px_rgba(0,0,0,0.18)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400 disabled:opacity-70 dark:hover:border-zinc-500/60"
+          aria-label="Sign in with Google"
+          className="group relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-2xl border border-[var(--border-muted)] bg-[var(--surface-raised)] px-5 py-3.5 text-sm font-semibold text-[var(--foreground)] transition-all duration-200 hover:border-zinc-300/60 hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400 disabled:opacity-70 dark:hover:border-zinc-500/60"
         >
           <GoogleIcon className="h-5 w-5" />
           <span>{googleBusy ? "Redirecting…" : "Google"}</span>
@@ -124,7 +100,8 @@ export function AuthChoice({
           onClick={startApple}
           disabled={socialBusy}
           aria-busy={appleBusy}
-          className="group relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-2xl border border-[var(--border-muted)] bg-[var(--surface-raised)] px-5 py-3.5 text-sm font-semibold text-[var(--foreground)] backdrop-blur-md transition-all duration-300 hover:border-zinc-300/60 hover:shadow-[0_12px_36px_rgba(0,0,0,0.18)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400 disabled:opacity-70 dark:hover:border-zinc-500/60"
+          aria-label="Sign in with Apple"
+          className="group relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-2xl border border-[var(--border-muted)] bg-[var(--surface-raised)] px-5 py-3.5 text-sm font-semibold text-[var(--foreground)] transition-all duration-200 hover:border-zinc-300/60 hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400 disabled:opacity-70 dark:hover:border-zinc-500/60"
         >
           <AppleIcon className="h-5 w-5" />
           <span>{appleBusy ? "Redirecting…" : "Apple"}</span>
@@ -134,67 +111,58 @@ export function AuthChoice({
       <div className="flex items-center gap-3 px-1" aria-hidden="true">
         <span className="h-px flex-1 bg-[var(--border-muted)]" />
         <span className="font-mono text-[9px] uppercase tracking-[0.22em] text-zinc-500">
-          or use exam credentials
+          or enter with credentials
         </span>
         <span className="h-px flex-1 bg-[var(--border-muted)]" />
       </div>
 
-      {options.map((opt) => (
-        <motion.div
-          key={opt.kind}
-          whileHover={{ y: -3 }}
-          whileTap={{ scale: 0.985 }}
-          transition={{ type: "spring", stiffness: 500, damping: 32 }}
-        >
-          <Interactive3DCard maxRotation={2} glow className="rounded-2xl">
-            <button
-              type="button"
-              onClick={() => onChoose(opt.kind)}
-              className="group relative flex w-full items-center justify-between gap-4 overflow-hidden rounded-2xl border border-[var(--border-muted)] bg-[var(--surface-raised)] px-5 py-4 text-left backdrop-blur-md transition-all duration-300 hover:border-emerald-400/60 hover:shadow-[0_0_0_1px_rgba(16,185,129,0.28),0_12px_36px_rgba(6,214,160,0.10)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
-            >
-              {/* Document texture — faint ruled lines */}
-              <span
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-0 opacity-[0.05]"
-                style={{
-                  backgroundImage:
-                    "repeating-linear-gradient(0deg, rgba(234,255,251,0.7) 0 1px, transparent 1px 22px)",
-                }}
-              />
-              <span className="relative min-w-0">
-                <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                  <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-zinc-500">
-                    {opt.serial}
-                  </span>
-                  <span className="rounded border border-emerald-400/30 bg-emerald-500/10 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.16em] text-emerald-400">
-                    {opt.tag}
-                  </span>
-                </span>
-                <span className="mt-1 block font-mono text-[10px] uppercase tracking-[0.18em] text-emerald-400/70">
-                  {opt.kicker}
-                </span>
-                <span className="mt-0.5 block truncate text-base font-semibold text-[var(--foreground)]">
-                  {opt.title}
-                </span>
-                <span className="mt-0.5 block text-sm text-[var(--text-muted)]">{opt.subtitle}</span>
-              </span>
-              <span className="relative shrink-0 text-[var(--text-muted)] transition-all group-hover:translate-x-0.5 group-hover:text-emerald-400">
-                {opt.icon}
-              </span>
-            </button>
-          </Interactive3DCard>
-        </motion.div>
-      ))}
+      <button
+        type="button"
+        onClick={() => onChoose("login")}
+        className="group relative flex w-full items-center justify-between gap-4 overflow-hidden rounded-2xl border border-[var(--border-muted)] bg-[var(--surface-raised)] px-5 py-4 text-left transition-all duration-200 hover:border-emerald-400/60 hover:shadow-[0_0_0_1px_rgba(16,185,129,0.28),0_8px_24px_rgba(6,214,160,0.08)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
+      >
+        <span className="min-w-0">
+          <span className="block font-mono text-[10px] uppercase tracking-[0.18em] text-emerald-400/70">
+            Returning
+          </span>
+          <span className="mt-0.5 block truncate text-base font-semibold text-[var(--foreground)]">
+            I have an account
+          </span>
+          <span className="mt-0.5 block text-sm text-[var(--text-muted)]">Your preparation is waiting.</span>
+        </span>
+        <span className="shrink-0 text-[var(--text-muted)] transition-all group-hover:translate-x-0.5 group-hover:text-emerald-400">
+          <ArrowRight className="h-5 w-5" aria-hidden="true" />
+        </span>
+      </button>
+
+      <button
+        type="button"
+        onClick={() => onChoose("signup")}
+        className="group relative flex w-full items-center justify-between gap-4 overflow-hidden rounded-2xl border border-[var(--border-muted)] bg-[var(--surface-raised)] px-5 py-4 text-left transition-all duration-200 hover:border-emerald-400/60 hover:shadow-[0_0_0_1px_rgba(16,185,129,0.28),0_8px_24px_rgba(6,214,160,0.08)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
+      >
+        <span className="min-w-0">
+          <span className="block font-mono text-[10px] uppercase tracking-[0.18em] text-emerald-400/70">
+            First entry
+          </span>
+          <span className="mt-0.5 block truncate text-base font-semibold text-[var(--foreground)]">
+            I&apos;m new here
+          </span>
+          <span className="mt-0.5 block text-sm text-[var(--text-muted)]">Start your preparation.</span>
+        </span>
+        <span className="shrink-0 text-[var(--text-muted)] transition-all group-hover:translate-x-0.5 group-hover:text-emerald-400">
+          <Sparkles className="h-5 w-5" aria-hidden="true" />
+        </span>
+      </button>
 
       {onDemo && (
         <button
           type="button"
           onClick={onDemo}
           disabled={busy}
-          className="flex items-center justify-center gap-2 rounded-xl border border-emerald-400/30 bg-emerald-500/10 px-5 py-3 text-sm font-semibold text-emerald-400 transition-all hover:border-emerald-400/60 hover:bg-emerald-500/20 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400 disabled:opacity-70"
+          className="flex items-center justify-center gap-2 self-center text-sm text-[var(--text-muted)] transition-colors hover:text-emerald-400 focus-visible:ring-2 focus-visible:ring-emerald-400/80 disabled:opacity-70"
         >
-          <Sparkles className="h-4 w-4" aria-hidden="true" />
-          Try a demo account
+          Explore with demo
+          <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
         </button>
       )}
     </motion.div>

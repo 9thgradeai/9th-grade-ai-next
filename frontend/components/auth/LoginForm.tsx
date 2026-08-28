@@ -2,8 +2,8 @@
 
 import { useEffect, useState, type FormEvent } from "react"
 import Link from "next/link"
-import { ArrowLeft, Eye, EyeOff, KeyRound, Mail, ShieldCheck } from "lucide-react"
-import { AuthField } from "./AuthField"
+import { Eye, EyeOff, ShieldCheck } from "lucide-react"
+import { UnderlineField } from "./UnderlineField"
 import { AuthSubmitButton } from "./AuthSubmitButton"
 import { CapsLockWarning, readCapsLock } from "./CapsLockWarning"
 import type { FocusField } from "./auth-state"
@@ -16,7 +16,6 @@ export function LoginForm({
   error,
   onFocusChange,
   onClearError,
-  onBack,
   onTyping,
   failedAttempt = 0,
   lockoutUntil = null,
@@ -26,7 +25,6 @@ export function LoginForm({
   error: string | null
   onFocusChange: (field: FocusField) => void
   onClearError: () => void
-  onBack: () => void
   onTyping?: () => void
   /** Increments after each rejected submit — secrets are never preserved. */
   failedAttempt?: number
@@ -75,8 +73,8 @@ export function LoginForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex w-full flex-col gap-3 sm:gap-4" noValidate>
-      <AuthField
+    <form onSubmit={handleSubmit} className="flex w-full flex-col gap-4 sm:gap-5" noValidate>
+      <UnderlineField
         id="login-email"
         label="Email"
         type="email"
@@ -94,10 +92,9 @@ export function LoginForm({
         autoComplete="email"
         placeholder="you@example.com"
         inputMode="email"
-        leftIcon={<Mail className="h-4.5 w-4.5" aria-hidden="true" />}
       />
       <div>
-        <AuthField
+        <UnderlineField
           id="login-password"
           label="Password"
           type={showPassword ? "text" : "password"}
@@ -119,7 +116,6 @@ export function LoginForm({
           error={fieldErrors.password}
           autoComplete="current-password"
           placeholder="Your password"
-          leftIcon={<KeyRound className="h-4.5 w-4.5" aria-hidden="true" />}
           rightSlot={
             <button
               type="button"
@@ -182,18 +178,8 @@ export function LoginForm({
         busyLabel="Signing in..."
         icon={<ShieldCheck className="h-4 w-4" aria-hidden="true" />}
       >
-        Sign in securely
+        Enter the hall
       </AuthSubmitButton>
-
-      <button
-        type="button"
-        onClick={onBack}
-        disabled={busy}
-        className="flex items-center gap-1 self-center text-sm text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)] focus-visible:ring-2 focus-visible:ring-emerald-400/80"
-      >
-        <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
-        Back
-      </button>
     </form>
   )
 }

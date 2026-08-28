@@ -24,7 +24,6 @@ import {
   LedBrow,
   LedEye,
   LedMouth,
-  Sparkle,
   UNIT9_GRADIENTS,
   paletteFor,
 } from "./Unit9Face"
@@ -63,7 +62,6 @@ export function Avatar({
   const reduced = useReducedMotion() ?? false
   const quality = detectVisualQuality()
   const headControls = useAnimationControls()
-  const bodyControls = useAnimationControls()
 
   const containerRef = useRef<HTMLDivElement>(null)
   const [hovered, setHovered] = useState(false)
@@ -129,15 +127,16 @@ export function Avatar({
     }
   }, [reduced, cfg.expression.eyes])
 
-  // Keystroke response: a nod + a ripple ring + node pulse.
+  // Keystroke response: a subtle nod on password fields only.
   useEffect(() => {
     if (!tick || tick <= 0 || reduced) return
+    const isPassword = focusField === "password" || focusField === "confirm"
+    if (!isPassword) return
     void headControls.start({
       y: [0, -4, 0],
       rotate: [tilt, tilt + 2, tilt],
       transition: { duration: 0.28, ease: "easeInOut" },
     })
-    void bodyControls.start({ scale: [1, 1.02, 1], transition: { duration: 0.24 } })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tick])
 
@@ -265,23 +264,6 @@ export function Avatar({
               ))}
             </g>
 
-            {/* Keystroke ripple — retriggered each tick via key */}
-            {!reduced && tick != null && tick > 0 && (
-              <motion.circle
-                key={tick}
-                cx="120"
-                cy="120"
-                r="44"
-                fill="none"
-                stroke={palette.led}
-                strokeWidth="2"
-                initial={{ r: 40, opacity: 0.5 }}
-                animate={{ r: 116, opacity: 0 }}
-                transition={{ duration: 0.7, ease: "easeOut" }}
-                style={{ transformOrigin: "120px 120px" }}
-              />
-            )}
-
             {/* ── Shield crest headframe ── */}
             <motion.g animate={headControls} style={{ transformOrigin: "120px 128px" }}>
               {/* Antenna sigil */}
@@ -404,25 +386,6 @@ export function Avatar({
               )}
             </motion.g>
 
-            {cfg.wave && (
-              <motion.g
-                initial={{ rotate: 12, opacity: 0 }}
-                animate={{ rotate: [-40, -50, -40, -50, -40, -50, -40], opacity: 1 }}
-                transition={{ duration: 1.9, ease: "easeInOut" }}
-                style={{ transformOrigin: "62px 216px" }}
-              >
-                <rect x="46" y="188" width="13" height="34" rx="6.5" fill="#101a30" stroke="#1f2b44" strokeWidth="1.4" />
-                <circle cx="52.5" cy="184" r="7.5" fill={BEZEL_A} opacity="0.9" />
-              </motion.g>
-            )}
-
-            {cfg.sparkle && (
-              <g>
-                <Sparkle x={40} y={48} />
-                <Sparkle x={198} y={84} delay={0.5} />
-                <Sparkle x={32} y={148} delay={0.9} />
-              </g>
-            )}
           </svg>
         </motion.div>
       </motion.div>

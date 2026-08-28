@@ -1,17 +1,17 @@
 "use client"
 
-import { useEffect, useRef, type PointerEvent as ReactPointerEvent, type ReactNode } from "react"
+import { useEffect, type ReactNode } from "react"
 import { motion } from "framer-motion"
 import {
   EMBER_BUDGET,
   type AuthEnvironmentState,
 } from "./animation/AnimationDirector"
-import { useMotionCapabilities, useVisualQuality, type VisualQuality } from "@/lib/motion/device"
+import { useVisualQuality, type VisualQuality } from "@/lib/motion/device"
 
 // Deterministic ember field (seeded by index) — drifting light motes that make
 // the room feel alive. Only opacity/transform, GPU-friendly. The rendered
 // count is clamped by the quality governor and the current scene state.
-const EMBER_POOL = Array.from({ length: 20 }, (_, i) => {
+const EMBER_POOL = Array.from({ length: 12 }, (_, i) => {
   const seed = ((i * 7919) % 1000) / 1000
   return {
     id: i,
@@ -25,17 +25,11 @@ const EMBER_POOL = Array.from({ length: 20 }, (_, i) => {
 })
 
 const EMBER_BASE_COUNT: Record<VisualQuality, number> = {
-  ultra: 20,
-  high: 16,
-  medium: 10,
-  low: 6,
+  ultra: 12,
+  high: 8,
+  medium: 6,
+  low: 3,
   reduced: 0,
-}
-
-function emberCount(state: AuthEnvironmentState, quality: VisualQuality): number {
-  const base = EMBER_BASE_COUNT[quality]
-  if (base === 0) return 0
-  return Math.max(0, Math.round(base * EMBER_BUDGET[state]))
 }
 
 /** Per-state lighting values — the room never jumps, it eases. */
@@ -58,46 +52,30 @@ const SCENE: Record<
  * light → focused authentication light → verification glow → success
  * illumination. All layers are opacity/transform only; ambient CSS loops
  * pause when the tab is hidden.
+ *
+ * `quietLevel` (0-3) progressively quiets the environment as the user
+ * engages with the form — fewer embers, dimmer bloom.
  */
 export function AuthEnvironment({
   state,
+  quietLevel = 0,
   children,
 }: {
   state: AuthEnvironmentState
+  quietLevel?: 0 | 1 | 2 | 3
   children: ReactNode
 }) {
   const quality: VisualQuality = useVisualQuality()
-  const { pointerEffects } = useMotionCapabilities()
   const s = SCENE[state]
-  const embers = emberCount(state, quality)
   const ambientMotion = quality !== "reduced" && quality !== "low"
 
-  // Subtle pointer-reactive light: the room's glow very gently tracks the
-  // cursor on capable desktops. Throttled via rAF and written straight to a
-  // style (no React re-render); disabled for reduced-motion / coarse / low
-  // devices by `pointerEffects`. Never affects layout — transform/opacity only.
-  const rootRef = useRef<HTMLDivElement>(null)
-  const glowRef = useRef<HTMLDivElement>(null)
-  const pending = useRef<{ x: number; y: number } | null>(null)
-  const frame = useRef<number | null>(null)
+  // Quiet mode: reduce embers progressively
+  const quietMultiplier = quietLevel === 0 ? 1 : quietLevel === 1 ? 0.7 : quietLevel === 2 ? 0.4 : 0.2
+  const base = EMBER_BASE_COUNT[quality]
+  const embers = base === 0 ? 0 : Math.max(0, Math.round(base * EMBER_BUDGET[state] * quietMultiplier))
 
-  const paintGlow = () => {
-    frame.current = null
-    const g = glowRef.current
-    if (!g || !pending.current) return
-    g.style.setProperty("--mx", `${pending.current.x}px`)
-    g.style.setProperty("--my", `${pending.current.y}px`)
-    g.style.opacity = "1"
-  }
-  const handlePointerMove = (e: ReactPointerEvent<HTMLDivElement>) => {
-    if (!pointerEffects || !rootRef.current) return
-    const rect = rootRef.current.getBoundingClientRect()
-    pending.current = { x: e.clientX - rect.left, y: e.clientY - rect.top }
-    if (frame.current == null) frame.current = requestAnimationFrame(paintGlow)
-  }
-  const handlePointerLeave = () => {
-    if (glowRef.current) glowRef.current.style.opacity = "0"
-  }
+  // Quiet mode: dim bloom slightly during focused states
+  const bloomQuietOffset = quietLevel >= 2 ? -0.15 : quietLevel === 1 ? -0.05 : 0
 
   // Pause every decorative CSS loop while the tab is hidden (battery).
   useEffect(() => {
@@ -114,19 +92,7 @@ export function AuthEnvironment({
   }, [])
 
   return (
-    <div
-      ref={rootRef}
-      className="relative min-h-dvh overflow-hidden"
-      onPointerMove={handlePointerMove}
-      onPointerLeave={handlePointerLeave}
-    >
-      {/* Pointer-reactive light — barely-there, gated by capability */}
-      <div
-        ref={glowRef}
-        aria-hidden="true"
-        className="auth-pointer-glow pointer-events-none absolute inset-0 z-0 opacity-0 transition-opacity duration-500"
-      />
-
+    <div className="relative min-h-dvh overflow-hidden">
       {/* Dark scrim — lifts as the room wakes */}
       <motion.div
         aria-hidden="true"
@@ -170,50 +136,10 @@ export function AuthEnvironment({
         aria-hidden="true"
         className="pointer-events-none absolute inset-x-0 top-[8%] z-0 h-[80vh]"
         initial={{ opacity: 0, scale: 0.7 }}
-        animate={{ opacity: s.bloom, scale: s.bloomScale }}
+        animate={{ opacity: Math.max(0, s.bloom + bloomQuietOffset), scale: s.bloomScale }}
         transition={{ duration: 1, ease: "easeOut" }}
         style={{
           background: "radial-gradient(closest-side, rgba(251,191,36,0.16), transparent 72%)",
-        }}
-      />
-
-      {/* Ambient aurora blobs (decorative motion gated by quality) */}
-      <div
-        aria-hidden="true"
-        className="aurora-blob"
-        style={{
-          left: "-12%",
-          top: "-8%",
-          width: 430,
-          height: 430,
-          background: "radial-gradient(circle, rgba(16,185,129,0.16), transparent 66%)",
-          animation: ambientMotion ? undefined : "none",
-        }}
-      />
-      <div
-        aria-hidden="true"
-        className="aurora-blob"
-        style={{
-          right: "-10%",
-          top: "16%",
-          width: 400,
-          height: 400,
-          background: "radial-gradient(circle, rgba(99,102,241,0.13), transparent 66%)",
-          animationDelay: "-6s",
-          animation: ambientMotion ? undefined : "none",
-        }}
-      />
-      <div
-        aria-hidden="true"
-        className="aurora-blob"
-        style={{
-          left: "18%",
-          bottom: "-12%",
-          width: 340,
-          height: 340,
-          background: "radial-gradient(circle, rgba(34,211,238,0.12), transparent 64%)",
-          animationDelay: "-11s",
-          animation: ambientMotion ? undefined : "none",
         }}
       />
 
@@ -227,8 +153,8 @@ export function AuthEnvironment({
               left: e.left,
               width: e.size,
               height: e.size,
-              backgroundColor: e.id % 3 === 0 ? "#22d3ee" : "#34d399",
-              boxShadow: `0 0 ${e.size * 3}px ${e.id % 3 === 0 ? "#22d3ee" : "#34d399"}`,
+              backgroundColor: "#34d399",
+              boxShadow: `0 0 ${e.size * 3}px #34d399`,
               ["--ember-duration" as string]: `${e.duration}s`,
               ["--ember-delay" as string]: `${e.delay}s`,
               ["--ember-drift" as string]: `${e.drift}px`,
@@ -239,21 +165,6 @@ export function AuthEnvironment({
           />
         ))}
       </div>
-
-      {/* Holographic floor grid */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 z-0 h-44 opacity-50"
-        style={{
-          background:
-            "linear-gradient(to top, rgba(16,185,129,0.10), transparent 70%)," +
-            "linear-gradient(rgb(148 163 184 / 0.06) 1px, transparent 1px)," +
-            "linear-gradient(90deg, rgb(148 163 184 / 0.06) 1px, transparent 1px)",
-          backgroundSize: "auto, 44px 44px, 44px 44px",
-          maskImage: "linear-gradient(to top, black, transparent)",
-          WebkitMaskImage: "linear-gradient(to top, black, transparent)",
-        }}
-      />
 
       <div className="relative z-10">{children}</div>
     </div>
