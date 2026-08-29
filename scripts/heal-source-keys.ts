@@ -19,6 +19,11 @@
  */
 import { PrismaClient } from "@prisma/client";
 
+if (!process.env.DATABASE_URL) {
+  console.log("DATABASE_URL not set — skipping heal-source-keys");
+  process.exit(0);
+}
+
 const p = new PrismaClient();
 
 /** Tables carrying @unique sourceKey → their md5 business-key expression. */
