@@ -79,7 +79,7 @@ function withStreamTimeout<T>(
           controller.error(err);
         }
       };
-      pump();
+      void pump();
     },
     cancel() {
       clearTimeout(timeoutId);
