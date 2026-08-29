@@ -74,7 +74,7 @@ type RawUser = {
   handle: string;
   passwordHash: string;
   tokenVersion: number;
-  role: "STUDENT" | "ADMIN";
+  role: "STUDENT" | "ADMIN" | "BANNED";
   emailVerified: boolean;
   onboarded: boolean;
   createdAt: Date;
