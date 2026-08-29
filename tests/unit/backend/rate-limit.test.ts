@@ -71,6 +71,10 @@ describe("per-account login throttle", () => {
 describe("enforceAiQuotas", () => {
   it("throws on minute overflow with the product message", async () => {
     vi.stubEnv("RL_AI_PER_MIN", "1");
+    vi.mocked(prisma.aIUsage.count).mockResolvedValue(0);
+    vi.mocked(prisma.aIUsage.aggregate).mockResolvedValue({
+      _sum: { estimatedCostUsd: 0 }, _avg: null, _count: null, _max: null, _min: null,
+    } as never);
     await enforceAiQuotas(reqWithIp("1.1.1.1"), "tutor", "u1"); // consumes the 1
     await expect(enforceAiQuotas(reqWithIp("1.1.1.1"), "tutor", "u1")).rejects.toMatchObject({
       statusCode: 429,

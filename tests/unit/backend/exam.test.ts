@@ -6,6 +6,7 @@ import {
   getExamSelectionTree,
   shuffleWithSeed,
 } from "~backend/services/exam";
+import { QueryCache } from "~backend/infrastructure/cache/query-cache";
 import type { ExamSelectionRequest } from "@/lib/types";
 
 function fullQuestion(id: number, correctAnswer: string) {
@@ -25,8 +26,9 @@ function fullQuestion(id: number, correctAnswer: string) {
   };
 }
 
-beforeEach(() => {
+beforeEach(async () => {
   vi.clearAllMocks();
+  await QueryCache.invalidateExamTree();
 });
 
 describe("shuffleWithSeed", () => {

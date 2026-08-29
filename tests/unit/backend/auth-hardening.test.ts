@@ -101,27 +101,27 @@ describe("assertSameOrigin (CSRF defense-in-depth)", () => {
 });
 
 describe("password length guards (bcrypt CPU bound)", () => {
-  it("register rejects passwords over 128 chars", () => {
+  it("register rejects passwords over 128 chars", async () => {
     const body = {
       name: "Test User",
       email: "a@b.com",
       password: "x".repeat(129),
     };
-    expect(() => validateRegisterInput(body)).toThrow(/at most 128/);
+    await expect(validateRegisterInput(body)).rejects.toThrow(/at most 128/);
   });
 
   it("register still accepts 8..128 char passwords", () => {
     expect(() => validateRegisterInput({ name: "T U", email: "a@b.com", password: "x".repeat(128) })).not.toThrow();
   });
 
-  it("change-password rejects oversized newPassword and login rejects oversized passwords", () => {
-    expect(() =>
+  it("change-password rejects oversized newPassword and login rejects oversized passwords", async () => {
+    await expect(
       validateChangePasswordInput({
         currentPassword: "cur",
         newPassword: "y".repeat(129),
         confirmPassword: "y".repeat(129),
       }),
-    ).toThrow(/at most 128/);
+    ).rejects.toThrow(/at most 128/);
 
     expect(() => validateLoginInput({ email: "a@b.com", password: "z".repeat(129) })).toThrow(
       /at most 128/,
