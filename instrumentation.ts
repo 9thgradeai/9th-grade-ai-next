@@ -8,14 +8,4 @@ Sentry.init({
   debug: process.env.NODE_ENV !== "production",
   // Only send events in production
   enabled: process.env.NODE_ENV === "production" || process.env.VERCEL_ENV === "production",
-  // Replay configuration
-  replaysOnErrorSampleRate: 1.0,
-  replaysSessionSampleRate: 0.1,
-  // Integrations
-  integrations: [
-    Sentry.replayIntegration({
-      maskAllText: true,
-      blockAllMedia: true,
-    }),
-  ],
 });

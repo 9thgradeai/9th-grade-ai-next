@@ -1,6 +1,7 @@
 "use client";
 
 import * as Sentry from "@sentry/nextjs";
+import { replayIntegration, browserTracingIntegration } from "@sentry/react";
 import { useEffect } from "react";
 
 // eslint-disable-next-line no-restricted-globals -- process.env is inlined by Next.js at build time
@@ -16,11 +17,11 @@ Sentry.init({
   replaysOnErrorSampleRate: 1.0,
   replaysSessionSampleRate: 0.1,
   integrations: [
-    Sentry.replayIntegration({
+    replayIntegration({
       maskAllText: true,
       blockAllMedia: true,
     }),
-    Sentry.browserTracingIntegration(),
+    browserTracingIntegration(),
   ],
   beforeSend(event) {
     // eslint-disable-next-line no-restricted-globals
