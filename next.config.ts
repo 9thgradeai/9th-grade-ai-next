@@ -42,7 +42,7 @@ const withPWA = require("next-pwa")({
   runtimeCaching: [
     { urlPattern: /^https:\/\/fonts\.(googleapis|gstatic)\.com\/.*/i, handler: "CacheFirst", options: { cacheName: "google-fonts", expiration: { maxEntries: 4, maxAgeSeconds: 365 * 24 * 60 * 60 } } },
     { urlPattern: /^https:\/\/.*\.sentry\.io\/.*/i, handler: "NetworkFirst", options: { cacheName: "sentry", expiration: { maxEntries: 32, maxAgeSeconds: 24 * 60 * 60 }, networkTimeoutSeconds: 10 } },
-    { urlPattern: /^https:\/\/api\.(groq|anthropic)\.com\/.*/i, handler: "NetworkOnly", options: { cacheName: "ai-api", networkTimeoutSeconds: 30 } },
+    { urlPattern: /^https:\/\/api\.(groq|anthropic)\.com\/.*/i, handler: "NetworkOnly", options: { cacheName: "ai-api" } },
     { urlPattern: /\/api\/questions/, handler: "StaleWhileRevalidate", options: { cacheName: "questions-api", expiration: { maxEntries: 64, maxAgeSeconds: 5 * 60 } } },
     { urlPattern: /\/api\/exam\/config/, handler: "StaleWhileRevalidate", options: { cacheName: "exam-config-api", expiration: { maxEntries: 16, maxAgeSeconds: 5 * 60 } } },
     { urlPattern: /\/api\/flash-news/, handler: "StaleWhileRevalidate", options: { cacheName: "flash-news-api", expiration: { maxEntries: 16, maxAgeSeconds: 10 * 60 } } },
