@@ -58,6 +58,7 @@ if (typeof globalThis.localStorage === "undefined" || typeof globalThis.localSto
 
 (globalThis as any).process = {
   ...(globalThis as any).process,
+  listeners: (globalThis as any).process?.listeners?.bind(globalThis.process) ?? (() => []),
   env: {
     ...(globalThis as any).process?.env,
     AUTH_SECRET: (globalThis as any).process?.env?.AUTH_SECRET ?? "test-secret-key-for-unit-tests-only",
