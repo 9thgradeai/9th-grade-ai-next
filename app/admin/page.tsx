@@ -3,7 +3,7 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -32,17 +32,76 @@ type UsersResponse = {
   totalPages: number;
 };
 
+type ListState = {
+  users: AdminUser[];
+  loading: boolean;
+  totalPages: number;
+};
+
+type ListAction =
+  | { type: "FETCH_START" }
+  | { type: "FETCH_SUCCESS"; users: AdminUser[]; totalPages: number }
+  | { type: "FETCH_ERROR" };
+
+function listReducer(state: ListState, action: ListAction): ListState {
+  switch (action.type) {
+    case "FETCH_START":
+      return { ...state, loading: true };
+    case "FETCH_SUCCESS":
+      return { users: action.users, loading: false, totalPages: action.totalPages };
+    case "FETCH_ERROR":
+      return { ...state, loading: false };
+  }
+}
+
 export default function AdminPage() {
   const router = useRouter();
-  const [users, setUsers] = useState<AdminUser[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [list, dispatch] = useReducer(listReducer, {
+    users: [],
+    loading: true,
+    totalPages: 1,
+  });
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [search, setSearch] = useState("");
-  const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
-  const fetchUsers = async () => {
+  useEffect(() => {
+    let cancelled = false;
+    const controller = new AbortController();
+
+    async function load() {
+      dispatch({ type: "FETCH_START" });
+      try {
+        const params = new URLSearchParams({ page: String(page), limit: "20" });
+        if (search) params.set("search", search);
+        const res = await fetch(`/api/admin/users?${params}`, {
+          credentials: "include",
+          signal: controller.signal,
+        });
+        if (res.status === 401 || res.status === 403) {
+          router.push("/login");
+          return;
+        }
+        const data: UsersResponse = await res.json();
+        if (!cancelled) {
+          dispatch({ type: "FETCH_SUCCESS", users: data.users, totalPages: data.totalPages });
+        }
+      } catch (err) {
+        if (!cancelled && !(err instanceof DOMException && err.name === "AbortError")) {
+          dispatch({ type: "FETCH_ERROR" });
+        }
+      }
+    }
+
+    void load();
+    return () => {
+      cancelled = true;
+      controller.abort();
+    };
+  }, [page, search, router]);
+
+  const refetch = async () => {
+    dispatch({ type: "FETCH_START" });
     try {
       const params = new URLSearchParams({ page: String(page), limit: "20" });
       if (search) params.set("search", search);
@@ -52,18 +111,11 @@ export default function AdminPage() {
         return;
       }
       const data: UsersResponse = await res.json();
-      setUsers(data.users);
-      setTotalPages(data.totalPages);
-    } catch (err) {
-      console.error("Failed to fetch users:", err);
-    } finally {
-      setLoading(false);
+      dispatch({ type: "FETCH_SUCCESS", users: data.users, totalPages: data.totalPages });
+    } catch {
+      dispatch({ type: "FETCH_ERROR" });
     }
   };
-
-  useEffect(() => {
-    void fetchUsers();
-  }, [page, search]);
 
   const handleAction = async (userId: string, action: "ban" | "unban" | "revoke_sessions") => {
     setActionLoading(userId);
@@ -75,7 +127,7 @@ export default function AdminPage() {
         body: JSON.stringify({ action }),
       });
       if (!res.ok) throw new Error("Action failed");
-      await fetchUsers();
+      await refetch();
     } catch (err) {
       alert(`Failed to ${action}: ${err}`);
     } finally {
@@ -87,7 +139,7 @@ export default function AdminPage() {
     year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit",
   });
 
-  if (loading && users.length === 0) {
+  if (list.loading && list.users.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-zinc-950">
         <div className="animate-spin rounded-full h-12 w-12 border-4 border-emerald-500 border-t-transparent" />
@@ -131,7 +183,7 @@ export default function AdminPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
-              {users.map((user) => (
+              {list.users.map((user) => (
                 <tr key={user.id} className="hover:bg-white/[0.02] transition-colors">
                   <td className="px-4 py-3">
                     <div className="font-medium">{user.name}</div>
@@ -204,19 +256,19 @@ export default function AdminPage() {
         </div>
 
         {/* Pagination */}
-        {totalPages > 1 && (
+        {list.totalPages > 1 && (
           <div className="mt-6 flex items-center justify-center gap-2">
             <button
-              onClick={() => setPage(p => Math.max(1, p - 1))}
-              disabled={page === 1 || loading}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1 || list.loading}
               className="px-4 py-2 text-sm font-medium text-zinc-300 bg-zinc-900 border border-white/10 rounded-lg hover:bg-zinc-800 disabled:opacity-50"
             >
               Previous
             </button>
-            <span className="px-4 text-sm text-zinc-400">Page {page} of {totalPages}</span>
+            <span className="px-4 text-sm text-zinc-400">Page {page} of {list.totalPages}</span>
             <button
-              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-              disabled={page === totalPages || loading}
+              onClick={() => setPage((p) => Math.min(list.totalPages, p + 1))}
+              disabled={page === list.totalPages || list.loading}
               className="px-4 py-2 text-sm font-medium text-zinc-300 bg-zinc-900 border border-white/10 rounded-lg hover:bg-zinc-800 disabled:opacity-50"
             >
               Next
