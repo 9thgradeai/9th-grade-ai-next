@@ -110,8 +110,10 @@ describe("password length guards (bcrypt CPU bound)", () => {
     await expect(validateRegisterInput(body)).rejects.toThrow(/at most 128/);
   });
 
-  it("register still accepts 8..128 char passwords", () => {
-    expect(() => validateRegisterInput({ name: "T U", email: "a@b.com", password: "x".repeat(128) })).not.toThrow();
+  it("register still accepts 8..128 char passwords", async () => {
+    await expect(
+      validateRegisterInput({ name: "T U", email: "a@b.com", password: "xK9!mP2@vQ7w" }),
+    ).resolves.toBeDefined();
   });
 
   it("change-password rejects oversized newPassword and login rejects oversized passwords", async () => {
