@@ -43,7 +43,6 @@ export default function AdminPage() {
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
   const fetchUsers = async () => {
-    setLoading(true);
     try {
       const params = new URLSearchParams({ page: String(page), limit: "20" });
       if (search) params.set("search", search);
@@ -64,7 +63,7 @@ export default function AdminPage() {
 
   useEffect(() => {
     void fetchUsers();
-  }, []);
+  }, [page, search]);
 
   const handleAction = async (userId: string, action: "ban" | "unban" | "revoke_sessions") => {
     setActionLoading(userId);
