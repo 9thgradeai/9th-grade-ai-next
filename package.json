@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build --no-turbopack",
+    "build": "next build --webpack",
     "prebuild": "if [ \"$VERCEL\" = \"1\" ] && [ -n \"$DATABASE_URL\" ]; then npm run db:deploy-sync; fi",
     "db:deploy-sync": "tsx scripts/heal-source-keys.ts && prisma db push --skip-generate --accept-data-loss --schema database/prisma/schema.prisma && npm run db:seed",
     "start": "next start",
