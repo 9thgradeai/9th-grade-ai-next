@@ -59,22 +59,22 @@ describe("validateEnumValue / validateBoundedInt", () => {
 });
 
 describe("auth validators (single source of truth)", () => {
-  it("register enforces the LIVE rules: name>=2, valid email, password>=8", () => {
-    const ok = validateRegisterInput({
+  it("register enforces the LIVE rules: name>=2, valid email, password>=8", async () => {
+    const ok = await validateRegisterInput({
       name: "Farhan",
       email: "F@Example.com ",
       password: "password123",
     });
     expect(ok.email).toBe("f@example.com");
     // Strict mode: undeclared fields are rejected, not stripped.
-    expect(() =>
+    await expect(
       validateRegisterInput({
         name: "Farhan",
         email: "F@Example.com",
         password: "password123",
         admin: true,
       }),
-    ).toThrow(/Unexpected field\(s\): admin/);
+    ).rejects.toThrow(/Unexpected field\(s\): admin/);
   });
 
   it("register rejects the historical weak-password rule (6–7 chars)", async () => {
@@ -90,19 +90,19 @@ describe("auth validators (single source of truth)", () => {
     expect(() => validateLoginInput({ email: "a@b", password: "x" })).toThrow(/Valid email/);
   });
 
-  it("profile rejects short names; changePassword enforces >=8 + match", () => {
+  it("profile rejects short names; changePassword enforces >=8 + match", async () => {
     expect(validateUpdateProfileInput({})).toEqual({});
     expect(() => validateUpdateProfileInput({ name: "A" })).toThrow(/at least 2/);
 
     expect(
-      validateChangePasswordInput({ currentPassword: "a", newPassword: "12345678", confirmPassword: "12345678" }),
+      await validateChangePasswordInput({ currentPassword: "a", newPassword: "12345678", confirmPassword: "12345678" }),
     ).toBeDefined();
-    expect(() =>
+    await expect(
       validateChangePasswordInput({ currentPassword: "a", newPassword: "short", confirmPassword: "short" }),
-    ).toThrow(/at least 8/);
-    expect(() =>
+    ).rejects.toThrow(/at least 8/);
+    await expect(
       validateChangePasswordInput({ currentPassword: "a", newPassword: "12345678", confirmPassword: "zzzz" }),
-    ).toThrow(/do not match/i);
+    ).rejects.toThrow(/do not match/i);
   });
 });
 
