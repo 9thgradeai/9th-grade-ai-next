@@ -1,17 +1,13 @@
 // backend/infrastructure/observability/logger.ts
-// Structured logging (Phase 18). Emits single-line JSON when LOG_FORMAT=json
-// or in production; human-readable one-liners otherwise.
-//
-// REDACTION CONTRACT: values whose keys match the sensitive list are replaced
-// with "[REDACTED]" before serialization. Never log raw credentials — pass
-// identifiers, not secrets.
+// Structured logging using Pino. Emits single-line JSON in production,
+// human-readable one-liners in development.
 
 import "server-only";
 
-type LogFields = Record<string, unknown>;
+import pino from "pino";
+import type { LogFields } from "./types";
 
-const SENSITIVE_KEY_RE =
-  /(password|passwd|secret|token|authorization|cookie|apikey|api_key)/i;
+const SENSITIVE_KEY_RE = /(password|passwd|secret|token|authorization|cookie|apikey|api_key)/i;
 
 function redact(fields: LogFields): LogFields {
   const out: LogFields = {};
@@ -21,35 +17,78 @@ function redact(fields: LogFields): LogFields {
   return out;
 }
 
-function shouldUseJson(): boolean {
-  return process.env.LOG_FORMAT === "json" || process.env.NODE_ENV === "production";
+// Create Pino logger with appropriate transport
+function createLogger() {
+  const isProd = process.env.NODE_ENV === "production";
+  const isTest = process.env.NODE_ENV === "test";
+
+  if (isTest) {
+    // No-op logger for tests
+    return {
+      info: () => {},
+      warn: () => {},
+      error: () => {},
+      debug: () => {},
+      child: () => createLogger(),
+    };
+  }
+
+  const config: pino.LoggerOptions = {
+    level: process.env.LOG_LEVEL ?? (isProd ? "info" : "debug"),
+    redact: {
+      paths: ["*.password*", "*.passwd*", "*.secret*", "*.token*", "*.authorization*", "*.cookie*", "*.apikey*", "*.api_key*"],
+      censor: "[REDACTED]",
+    },
+    base: {
+      service: "9th-grade-ai",
+      env: process.env.NODE_ENV ?? "development",
+      vercel_env: process.env.VERCEL_ENV,
+    },
+  };
+
+  if (isProd) {
+    // Production: JSON output to stdout
+    return pino(config);
+  } else {
+    // Development: pretty print
+    return pino({
+      ...config,
+      transport: {
+        target: "pino-pretty",
+        options: {
+          colorize: true,
+          translateTime: "SYS:standard",
+          ignore: "pid,hostname",
+        },
+      },
+    });
+  }
 }
 
-function write(level: "info" | "warn" | "error", event: string, fields: LogFields = {}): void {
-  if (process.env.NODE_ENV === "test") return; // keep test output clean
-  const safe = redact(fields);
-  if (shouldUseJson()) {
-    const line = JSON.stringify({ ts: new Date().toISOString(), level, event, ...safe });
-    if (level === "error") console.error(line);
-    else if (level === "warn") console.warn(line);
-    // eslint-disable-next-line no-console -- this module IS the sanctioned console gateway
-    else console.log(line);
-    return;
-  }
-  const flat = Object.entries(safe)
-    .map(([k, v]) => `${k}=${typeof v === "string" ? v : JSON.stringify(v)}`)
-    .join(" ");
-  const line = `[${level.toUpperCase()}] ${event}${flat ? " " + flat : ""}`;
-  if (level === "error") console.error(line);
-  else if (level === "warn") console.warn(line);
-  // eslint-disable-next-line no-console -- this module IS the sanctioned console gateway
-  else console.log(line);
-}
+const pinoLogger = createLogger();
 
 export const log = {
-  info: (event: string, fields?: LogFields) => write("info", event, fields),
-  warn: (event: string, fields?: LogFields) => write("warn", event, fields),
-  error: (event: string, fields?: LogFields) => write("error", event, fields),
+  info: (event: string, fields?: LogFields) => {
+    pinoLogger.info(redact(fields ?? {}), event);
+  },
+  warn: (event: string, fields?: LogFields) => {
+    pinoLogger.warn(redact(fields ?? {}), event);
+  },
+  error: (event: string, fields?: LogFields) => {
+    pinoLogger.error(redact(fields ?? {}), event);
+  },
+  debug: (event: string, fields?: LogFields) => {
+    pinoLogger.debug(redact(fields ?? {}), event);
+  },
+  child: (bindings: LogFields) => {
+    const child = pinoLogger.child(redact(bindings));
+    return {
+      info: (event: string, fields?: LogFields) => child.info(redact(fields ?? {}), event),
+      warn: (event: string, fields?: LogFields) => child.warn(redact(fields ?? {}), event),
+      error: (event: string, fields?: LogFields) => child.error(redact(fields ?? {}), event),
+      debug: (event: string, fields?: LogFields) => child.debug(redact(fields ?? {}), event),
+    };
+  },
 };
 
 /** Test-only passthrough so the redaction contract is verifiable in unit tests. */

@@ -24,7 +24,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json().catch(() => ({}));
-    const { currentPassword, newPassword } = validateChangePasswordInput(body);
+    const { currentPassword, newPassword } = await validateChangePasswordInput(body);
 
     // Bumps tokenVersion — every other device's session dies here.
     const { tokenVersion } = await changeUserPassword(

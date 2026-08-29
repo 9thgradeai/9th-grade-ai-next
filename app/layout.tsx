@@ -7,6 +7,7 @@ import { LanguageProvider } from "@/lib/lang-ctx";
 import { LANGUAGE_KEY } from "@/lib/lang-key";
 import ScrollProgress from "@/components/ui/ScrollProgress";
 import Toaster from "@/components/ui/ToasterLazy";
+import { SentryClientProvider } from "@/lib/sentry";
 import "./globals.css";
 
 // Fonts use `swap` so the real web face shows on first paint. LCP is no longer
@@ -116,7 +117,9 @@ export default function RootLayout({
         <ToastProvider>
           <LanguageProvider>
             <AuthProvider>
-              <ThemeProvider>{children}</ThemeProvider>
+              <ThemeProvider>
+                <SentryClientProvider>{children}</SentryClientProvider>
+              </ThemeProvider>
             </AuthProvider>
           </LanguageProvider>
           <Toaster />

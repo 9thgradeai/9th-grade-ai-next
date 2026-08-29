@@ -1,7 +1,21 @@
-// Server startup hook — registers domain-event subscribers exactly once per
-// process so badge awarding reacts to exam/practice/quiz/flashcard events.
-export async function register() {
-  if (process.env.NEXT_RUNTIME !== "nodejs") return;
-  const { registerSubscribers } = await import("~backend/events/subscribers");
-  registerSubscribers();
-}
+import * as Sentry from "@sentry/nextjs";
+
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+  // Adjust this value in production, or use tracesSampler for greater control
+  tracesSampleRate: 0.1,
+  // Setting this option to true will print useful information to the console while you're setting up Sentry.
+  debug: process.env.NODE_ENV !== "production",
+  // Only send events in production
+  enabled: process.env.NODE_ENV === "production" || process.env.VERCEL_ENV === "production",
+  // Replay configuration
+  replaysOnErrorSampleRate: 1.0,
+  replaysSessionSampleRate: 0.1,
+  // Integrations
+  integrations: [
+    Sentry.replayIntegration({
+      maskAllText: true,
+      blockAllMedia: true,
+    }),
+  ],
+});

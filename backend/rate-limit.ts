@@ -15,10 +15,18 @@ import "server-only";
 
 import { createHash } from "crypto";
 import { RateLimitError } from "~backend/errors";
-import { countUsageToday } from "~backend/ai/usage/usage";
+import { countUsageToday, getDailyCostUsd } from "~backend/ai/usage/usage";
 import { getRateLimitStore } from "~backend/infrastructure/cache";
 
 const DAY_MS = 86_400_000;
+
+// Default daily AI cost budget per user in USD (configurable via env)
+function getDailyAiBudget(): number {
+  const raw = process.env.AI_DAILY_BUDGET_USD;
+  if (!raw) return 0.50; // $0.50/day default
+  const parsed = Number(raw);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 0.50;
+}
 
 // ── Configurable limits (defaults = previously hardcoded values) ──
 // Read LIVE via getters so env changes apply without code edits and tests
@@ -150,8 +158,19 @@ export async function assertLoginAllowed(req: Request, email: string): Promise<v
 }
 
 /**
- * AI endpoint guard: per-user minute limit + per-user daily quota, with the
- * usage ledger as the authoritative daily backstop on single-instance stores.
+ * Check if user has exceeded their daily AI cost budget.
+ */
+export async function checkDailyCostBudget(userId: string): Promise<boolean> {
+  const budget = getDailyAiBudget();
+  if (budget <= 0) return true; // No budget limit set (0 or negative = unlimited)
+
+  const spent = await getDailyCostUsd(userId);
+  return spent < budget;
+}
+
+/**
+ * AI endpoint guard: per-user minute limit + per-user daily quota + cost budget,
+ * with the usage ledger as the authoritative daily backstop on single-instance stores.
  */
 export async function enforceAiQuotas(
   req: Request,
@@ -171,6 +190,12 @@ export async function enforceAiQuotas(
   const dayAuthorityOk = await checkDailyAuthority(task, userId, task, LIMITS.aiDaily);
   if (!dayStoreOk || !dayAuthorityOk) {
     throw new RateLimitError(`Daily AI ${task} limit reached. Come back tomorrow!`);
+  }
+
+  // Check daily cost budget
+  const budgetOk = await checkDailyCostBudget(userId);
+  if (!budgetOk) {
+    throw new RateLimitError(`Daily AI cost budget exceeded ($${getDailyAiBudget().toFixed(2)}). Try again tomorrow.`);
   }
 }
 

@@ -21,8 +21,8 @@ export async function POST(request: Request) {
     const body = await request.json().catch(() => ({}));
     // Phase 7: single source of truth — the shared validator enforces the same
     // rules here as everywhere else (name >=2, valid email, password >=8) and
-    // rejects unknown fields.
-    const { name, email, password } = validateRegisterInput(body);
+    // rejects unknown fields. Now includes zxcvbn + HIBP password strength check.
+    const { name, email, password } = await validateRegisterInput(body);
 
     const existing = await findUserByEmail(email);
     if (existing) {

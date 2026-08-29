@@ -92,13 +92,16 @@ async function main() {
   }
 
   // Ensure a reproducible demo account exists for local development. Never
-  // created in production builds (NODE_ENV=production) — a publicly-known
-  // login must not exist on a live database. Force locally via
-  // SEED_RESET_USERS=1.
+  // created in production builds — a publicly-known login must not exist on
+  // a live database. Force locally via SEED_RESET_USERS=1.
+  // Check multiple production indicators: VERCEL_ENV, NODE_ENV, and explicit flag.
   const demoEmail = "demo@9thgrade.ai";
   const existingDemo = await prisma.user.findUnique({ where: { email: demoEmail } });
   const totalUsers = await prisma.user.count();
-  const isProdBuild = process.env.NODE_ENV === "production";
+  const isProdBuild =
+    process.env.NODE_ENV === "production" ||
+    process.env.VERCEL_ENV === "production" ||
+    process.env.FORCE_PROD_BUILD === "1";
   if (!existingDemo && !isProdBuild && (resetUsers || totalUsers === 0)) {
     const { hash } = await import("bcryptjs");
     const passwordHash = await hash("demo12345", 10);

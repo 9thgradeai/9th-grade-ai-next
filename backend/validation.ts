@@ -1,19 +1,99 @@
 // backend/validation.ts — THE single source of truth for input validation.
 //
-// Contract:
-//   • Every failure throws ValidationError → HTTP 400 { error, code: "VALIDATION_ERROR" }.
-//     (Plain Error throws here used to leak as 500s — fixed in Phase 7.)
-//   • Write endpoints run bodies through assertNoUnknownFields() so malformed
-//     input is REJECTED, never silently stripped.
-//   • Numeric inputs go through bounded-int helpers; enum-ish strings through
-//     validateEnumValue. Nothing is coerced implicitly.
-//
-// AI request payloads have their own validators in backend/ai/schemas.ts,
-// which follow this same contract and share the same error type.
+ // Contract:
+ //   • Every failure throws ValidationError → HTTP 400 { error, code: "VALIDATION_ERROR" }.
+ //     (Plain Error throws here used to leak as 500s — fixed in Phase 7.)
+ //   • Write endpoints run bodies through assertNoUnknownFields() so malformed
+ //     input is REJECTED, never silently stripped.
+ //   • Numeric inputs go through bounded-int helpers; enum-ish strings through
+ //     validateEnumValue. Nothing is coerced implicitly.
+ //
+ // AI request payloads have their own validators in backend/ai/schemas.ts,
+ // which follow this same contract and share the same error type.
 
 import { ValidationError } from "~backend/errors";
+import zxcvbn from "zxcvbn";
 
 export interface LoginInput {
+  email: string;
+  password: string;
+}
+
+/** Password strength result for client feedback. */
+export type PasswordStrength = {
+  score: number; // 0-4
+  feedback: string[];
+  warning?: string;
+};
+
+/**
+ * Evaluate password strength using zxcvbn.
+ * Returns score (0-4) and actionable feedback.
+ */
+export function checkPasswordStrength(password: string): PasswordStrength {
+  const result = zxcvbn(password);
+  return {
+    score: result.score,
+    feedback: result.feedback.suggestions,
+    warning: result.feedback.warning,
+  };
+}
+
+/**
+ * Check if password has been exposed in data breaches via Have I Been Pwned API.
+ * Uses k-anonymity: sends first 5 chars of SHA-1 hash.
+ * Returns true if password is pwned.
+ */
+export async function checkPasswordPwned(password: string): Promise<boolean> {
+  const crypto = await import("crypto");
+  const sha1 = crypto.createHash("sha1").update(password).digest("hex").toUpperCase();
+  const prefix = sha1.slice(0, 5);
+  const suffix = sha1.slice(5);
+
+  try {
+    const res = await fetch(`https://api.pwnedpasswords.com/range/${prefix}`, {
+      headers: { "User-Agent": "9th-grade-ai" },
+      signal: AbortSignal.timeout(3000),
+    });
+    if (!res.ok) return false; // Fail open on API error
+
+    const text = await res.text();
+    for (const line of text.split("\n")) {
+      const [hashSuffix, count] = line.split(":");
+      if (hashSuffix === suffix && Number(count) > 0) {
+        return true;
+      }
+    }
+    return false;
+  } catch {
+    return false; // Fail open on network error
+  }
+}
+
+/**
+ * Validate password meets minimum strength requirements.
+ * Throws ValidationError if password is too weak or pwned.
+ */
+export async function validatePasswordStrength(password: string, fieldName = "Password"): Promise<void> {
+  const { score, feedback, warning } = checkPasswordStrength(password);
+
+  // Minimum score of 2 (fair) — allows reasonable passwords, blocks obvious weak ones
+  if (score < 2) {
+    const msg = warning ?? feedback[0] ?? "Password is too weak. Use a longer, more complex password.";
+    throw new ValidationError(`${fieldName}: ${msg}`);
+  }
+
+  // Check HIBP (async, fail open)
+  const pwned = await checkPasswordPwned(password);
+  if (pwned) {
+    throw new ValidationError(
+      `${fieldName}: This password has appeared in a data breach. Please choose a different one.`,
+    );
+  }
+}
+
+export interface RegisterInput {
+  name: string;
   email: string;
   password: string;
 }
@@ -188,7 +268,7 @@ export function validateLoginInput(body: unknown): LoginInput {
   return { email, password };
 }
 
-export function validateRegisterInput(body: unknown): RegisterInput {
+export async function validateRegisterInput(body: unknown): Promise<RegisterInput> {
   assertNoUnknownFields(body, ["name", "email", "password"]);
   if (!isRecord(body)) {
     throw new ValidationError("Request body must be an object.");
@@ -213,6 +293,9 @@ export function validateRegisterInput(body: unknown): RegisterInput {
   }
   assertPasswordLength(password);
 
+  // Password strength check (zxcvbn + HIBP)
+  await validatePasswordStrength(password);
+
   return { name: name.trim(), email: email as string, password };
 }
 
@@ -234,7 +317,7 @@ export function validateUpdateProfileInput(body: unknown): UpdateProfileInput {
   return { name: name.trim() };
 }
 
-export function validateChangePasswordInput(body: unknown): ChangePasswordInput {
+export async function validateChangePasswordInput(body: unknown): Promise<ChangePasswordInput> {
   assertNoUnknownFields(body, ["currentPassword", "newPassword", "confirmPassword"]);
   if (!isRecord(body)) {
     throw new ValidationError("Request body must be an object.");
@@ -251,6 +334,10 @@ export function validateChangePasswordInput(body: unknown): ChangePasswordInput 
     throw new ValidationError("New password must be at least 8 characters.");
   }
   assertPasswordLength(newPassword, "New password");
+
+  // Password strength check (zxcvbn + HIBP)
+  await validatePasswordStrength(newPassword, "New password");
+
   if (!isString(confirmPassword) || confirmPassword !== newPassword) {
     throw new ValidationError("Passwords do not match.");
   }

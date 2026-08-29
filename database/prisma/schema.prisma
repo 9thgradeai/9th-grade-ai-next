@@ -16,6 +16,7 @@ datasource db {
 enum UserRole {
   STUDENT
   ADMIN
+  BANNED
 }
 
 enum Difficulty {
@@ -142,6 +143,11 @@ model User {
   // ── Password reset (raw token is emailed; only the SHA-256 hash is stored) ──
   passwordResetToken   String?
   passwordResetExpires DateTime?
+
+  // ── Session tracking (for concurrency limits) ──
+  // JSON array of { id: string, createdAt: string, userAgent?: string, ip?: string }
+  // Max 5 concurrent sessions; oldest revoked on new login when at limit.
+  sessions        Json       @default("[]")
 
   progress     UserProgress?
   bookmarks    Bookmark[]

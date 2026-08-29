@@ -30,6 +30,80 @@ function getJoseSecret(): Uint8Array {
 // Cookie name used across all API routes
 const SESSION_COOKIE = "auth_token";
 
+// Max concurrent sessions per user
+const MAX_CONCURRENT_SESSIONS = 5;
+
+// Session metadata stored in JWT and user.sessions JSON
+type SessionMeta = {
+  id: string;
+  createdAt: string; // ISO timestamp
+  userAgent?: string;
+  ip?: string;
+};
+
+function parseSessions(json: unknown): SessionMeta[] {
+  if (!json) return [];
+  try {
+    const arr = JSON.parse(json as string);
+    return Array.isArray(arr) ? arr : [];
+  } catch {
+    return [];
+  }
+}
+
+function serializeSessions(sessions: SessionMeta[]): string {
+  return JSON.stringify(sessions);
+}
+
+/**
+ * Add a new session to user's session list, enforcing max concurrency.
+ * Returns the updated session list and the new session ID.
+ */
+async function addUserSession(userId: string, session: SessionMeta): Promise<SessionMeta[]> {
+  const user = await prisma.user.findUnique({ where: { id: userId }, select: { sessions: true } });
+  const sessions = parseSessions(user?.sessions ?? "[]");
+
+  // Remove expired sessions (> 7 days)
+  const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+  const active = sessions.filter((s) => new Date(s.createdAt).getTime() > sevenDaysAgo);
+
+  // If at limit, remove oldest
+  if (active.length >= MAX_CONCURRENT_SESSIONS) {
+    active.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+    active.shift(); // remove oldest
+  }
+
+  active.push(session);
+  await prisma.user.update({
+    where: { id: userId },
+    data: { sessions: serializeSessions(active) },
+  });
+  return active;
+}
+
+/**
+ * Remove a session from user's session list (on logout).
+ */
+async function removeUserSession(userId: string, sessionId: string): Promise<void> {
+  const user = await prisma.user.findUnique({ where: { id: userId }, select: { sessions: true } });
+  const sessions = parseSessions(user?.sessions ?? "[]");
+  const filtered = sessions.filter((s) => s.id !== sessionId);
+  await prisma.user.update({
+    where: { id: userId },
+    data: { sessions: serializeSessions(filtered) },
+  });
+}
+
+/**
+ * Get active session count for a user.
+ */
+async function getActiveSessionCount(userId: string): Promise<number> {
+  const user = await prisma.user.findUnique({ where: { id: userId }, select: { sessions: true } });
+  const sessions = parseSessions(user?.sessions ?? "[]");
+  const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+  return sessions.filter((s) => new Date(s.createdAt).getTime() > sevenDaysAgo).length;
+}
+
 /**
  * Contain a post-auth redirect to this origin only. OAuth and other flows take
  * a `?redirect=` parameter; without this an attacker could bounce a
@@ -69,15 +143,16 @@ export function extractSessionToken(req: Request): string | null {
 // ----- Helpers ---------------------------------------------------
 
 /**
- * Sign a session JWT payload (usually `{ email }`) and return the string token.
+ * Sign a session JWT payload and return the string token.
  * 7-day expiry. Sets algorithm explicitly to HS256.
  * `origIat` (optional, seconds) preserves the ORIGINAL issue time across
  * refresh hops so the refresh endpoint can enforce an absolute session cap.
  * `ver` is the user's tokenVersion — bumped server-side to revoke all tokens
  * issued before it (password change, logout-everywhere).
+ * `sid` is the session ID for concurrency tracking.
  */
 export async function signSession(
-  payload: { email: string; origIat?: number; ver?: number },
+  payload: { email: string; origIat?: number; ver?: number; sid?: string },
 ) {
   const claims: Record<string, unknown> = { email: payload.email };
   if (typeof payload.origIat === "number") {
@@ -85,6 +160,9 @@ export async function signSession(
   }
   if (typeof payload.ver === "number") {
     claims.ver = payload.ver;
+  }
+  if (typeof payload.sid === "string") {
+    claims.sid = payload.sid;
   }
   return await new SignJWT(claims)
     .setProtectedHeader({ alg: "HS256" })
@@ -175,6 +253,19 @@ export async function getSessionUser(req: Request): Promise<UserRecord | null> {
     : 0;
   if (ver !== u.tokenVersion) return null;
 
+  // Session ID check: validate this session is still in user's active sessions
+  const sid = typeof (payload as { sid?: unknown }).sid === "string"
+    ? ((payload as { sid: string }).sid)
+    : null;
+  if (sid) {
+    const sessions = parseSessions(u.sessions ?? "[]");
+    const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+    const active = sessions.filter((s) => new Date(s.createdAt).getTime() > sevenDaysAgo);
+    if (!active.some((s) => s.id === sid)) {
+      return null; // Session revoked (concurrency limit or manual logout)
+    }
+  }
+
   return {
     id: u.id,
     name: u.name,
@@ -195,6 +286,9 @@ export async function getSessionUser(req: Request): Promise<UserRecord | null> {
     goal: u.goal ?? undefined,
   };
 }
+
+// Export session tracking functions
+export { addUserSession, removeUserSession, getActiveSessionCount, type SessionMeta, MAX_CONCURRENT_SESSIONS };
 
 // ----- Server-only enforcement -------------------------------
 //

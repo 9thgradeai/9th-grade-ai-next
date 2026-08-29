@@ -25,12 +25,11 @@ export default defineConfig({
     coverage: {
       provider: "istanbul",
       thresholds: {
-        // Honest, ENFORCED gates (CI runs with --coverage). The previous
-        // 70/60/70 values were aspirational fiction — actual coverage was
-        // ~44%. Ratchet these up as tests land; never lower them.
-        lines: 41,
-        functions: 40,
-        branches: 37,
+        // Honest, ENFORCED gates (CI runs with --coverage).
+        // Raised progressively as test coverage improves.
+        lines: 60,
+        functions: 55,
+        branches: 50,
       },
     },
   },

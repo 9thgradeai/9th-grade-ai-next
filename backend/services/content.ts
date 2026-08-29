@@ -12,6 +12,7 @@ import {
   computeStreak,
   fetchWrongNotebookQuestionIds,
 } from "~backend/repositories/analytics.repository";
+import { QueryCache } from "~backend/infrastructure/cache/query-cache";
 import type {
   QuestionDTO,
   QuestionBankCategoryDTO,
@@ -97,6 +98,15 @@ export async function getQuestionsPage(
 
     const where = await buildQuestionWhere(opts);
 
+    // Build cache key from filters
+    const cacheKey = JSON.stringify({ ...opts, page, limit });
+
+    // Try cache first
+    const cached = await QueryCache.getQuestions(cacheKey);
+    if (cached) {
+      return cached as { questions: QuestionDTO[]; total: number; page: number; limit: number };
+    }
+
     const start = Date.now();
     const [rows, total] = await Promise.all([
       prisma.question.findMany({
@@ -113,7 +123,7 @@ export async function getQuestionsPage(
       console.warn(`[Slow Query] ${duration}ms — getQuestions`);
     }
 
-    return {
+    const result = {
       questions: rows.map((q) => ({
         id: q.id,
         subjectId: q.subjectId,
@@ -133,6 +143,11 @@ export async function getQuestionsPage(
       page,
       limit,
     };
+
+    // Cache the result
+    await QueryCache.setQuestions(cacheKey, result);
+
+    return result;
   } catch {
     throw new InternalServerError("Failed to fetch questions");
   }

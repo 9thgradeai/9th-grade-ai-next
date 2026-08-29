@@ -39,6 +39,55 @@ import type {
 const MAX_CONTEXT_MESSAGES = 30;
 const TITLE_SNIPPET = 60;
 
+// Streaming timeout (ms) — serverless functions have limits (Vercel: 60s for Pro, 10s for Hobby)
+const STREAM_TIMEOUT_MS = 30_000;
+
+/**
+ * Wrap a ReadableStream with a timeout. If the stream doesn't produce data
+ * within the timeout, it will be cancelled and an error thrown.
+ */
+function withStreamTimeout<T>(
+  stream: ReadableStream<T>,
+  timeoutMs: number,
+): ReadableStream<T> {
+  let timeoutId: ReturnType<typeof setTimeout>;
+  return new ReadableStream<T>({
+    start(controller) {
+      timeoutId = setTimeout(() => {
+        controller.error(new Error(`Stream timeout after ${timeoutMs}ms`));
+      }, timeoutMs);
+
+      const reader = stream.getReader();
+      const pump = async () => {
+        try {
+          while (true) {
+            const { value, done } = await reader.read();
+            if (done) {
+              clearTimeout(timeoutId);
+              controller.close();
+              break;
+            }
+            // Reset timeout on each chunk
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => {
+              controller.error(new Error(`Stream timeout after ${timeoutMs}ms`));
+            }, timeoutMs);
+            controller.enqueue(value);
+          }
+        } catch (err) {
+          clearTimeout(timeoutId);
+          controller.error(err);
+        }
+      };
+      pump();
+    },
+    cancel() {
+      clearTimeout(timeoutId);
+      stream.cancel().catch(() => {});
+    },
+  });
+}
+
 // ── Intent routing (deterministic where possible) ──────────
 const INTENT_KEYWORDS: [RegExp, AIIntent][] = [
   [/কারেন্ট|current affairs|সমসাময়িক|সাম্প্রতিক/i, "current_affairs"],
@@ -335,9 +384,12 @@ export async function createTutorTurn(opts: {
   }
   const { stream, done, getFullText } = streamResult;
 
+  // Apply streaming timeout guard
+  const timedStream = withStreamTimeout(stream, STREAM_TIMEOUT_MS);
+
   const wrapped = new ReadableStream<Uint8Array>({
     async pull(controller) {
-      const reader = stream.getReader();
+      const reader = timedStream.getReader();
       try {
         while (true) {
           const { value, done: streamDone } = await reader.read();
@@ -350,7 +402,7 @@ export async function createTutorTurn(opts: {
       }
     },
     cancel() {
-      stream.cancel().catch(() => {});
+      timedStream.cancel().catch(() => {});
     },
   });
 
@@ -503,10 +555,13 @@ export async function solveQuestion(opts: {
     return { stream: fbStream, conversationId: conversation.id, provider: name, model: modelName };
   }
 
+  // ── Solver service: apply streaming timeout
   const { stream, done, getFullText } = streamResult;
+  const timedStream = withStreamTimeout(stream, STREAM_TIMEOUT_MS);
+
   const wrapped = new ReadableStream<Uint8Array>({
     async pull(controller) {
-      const reader = stream.getReader();
+      const reader = timedStream.getReader();
       try {
         while (true) {
           const { value, done: streamDone } = await reader.read();
@@ -519,7 +574,7 @@ export async function solveQuestion(opts: {
       }
     },
     cancel() {
-      stream.cancel().catch(() => {});
+      timedStream.cancel().catch(() => {});
     },
   });
 

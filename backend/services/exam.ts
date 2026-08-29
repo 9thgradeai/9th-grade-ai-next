@@ -10,6 +10,7 @@ import { prisma } from "~backend/db";
 import { AppError, InternalServerError } from "~backend/errors";
 import { recomputeAndAward } from "~backend/repositories/progress.repository";
 import { emit } from "~backend/events/bus";
+import { QueryCache } from "~backend/infrastructure/cache/query-cache";
 import type { SubmittedAnswer } from "./activity";
 import type {
   ExamSubjectDTO,
@@ -80,6 +81,12 @@ function allocateLargestRemainder(total: number, weights: number[]): number[] {
 // aggregated up the path chain so every node reports how many questions exist
 // under its whole subtree.
 export async function getExamSelectionTree(): Promise<ExamSubjectDTO[]> {
+  // Try cache first
+  const cached = await QueryCache.getExamTree();
+  if (cached) {
+    return cached as ExamSubjectDTO[];
+  }
+
   try {
     const [subjects, topicRows, countRows] = await Promise.all([
       prisma.subject.findMany({ orderBy: { sortOrder: "asc" } }),
@@ -122,7 +129,7 @@ export async function getExamSelectionTree(): Promise<ExamSubjectDTO[]> {
       };
     };
 
-    return subjects.map((s) => {
+    const result = subjects.map((s) => {
       const subjectTopics = topicRows.filter((t) => t.subjectId === s.id);
       const childrenByParent = new Map<string, (typeof topicRows)[number][]>();
       const roots: (typeof topicRows)[number][] = [];
@@ -152,6 +159,11 @@ export async function getExamSelectionTree(): Promise<ExamSubjectDTO[]> {
         nodes,
       };
     });
+
+    // Cache the result
+    await QueryCache.setExamTree(result);
+
+    return result;
   } catch {
     throw new InternalServerError("Failed to fetch exam selection tree");
   }

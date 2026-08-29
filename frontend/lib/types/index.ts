@@ -31,7 +31,7 @@ export namespace Client {
     createdAt: string;
     authProvider?: "password" | "google" | "apple" | "both";
     imageUrl?: string;
-    emailVerified?: boolean;
+    emailVerified: boolean;
     onboarded?: boolean;
     examTarget?: string;
     examDate?: string;
@@ -637,6 +637,15 @@ export namespace Server {
     handle: string;
     role: "student" | "admin";
     createdAt: string;
+    emailVerified: boolean;
+    onboarded?: boolean;
+    authProvider?: "password" | "google" | "apple" | "both";
+    imageUrl?: string;
+    examTarget?: string;
+    examDate?: string;
+    prepLevel?: "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
+    studyHoursPerDay?: number;
+    goal?: string;
   };
 }
 

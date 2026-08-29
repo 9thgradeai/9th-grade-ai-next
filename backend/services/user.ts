@@ -543,7 +543,7 @@ export async function revokeAllSessions(userId: string): Promise<void> {
     if (!existing) throw new NotFoundError("User not found");
     await prisma.user.update({
       where: { id: userId },
-      data: { tokenVersion: { increment: 1 } },
+      data: { tokenVersion: { increment: 1 }, sessions: "[]" },
     });
   } catch (error) {
     if (error instanceof AppError) throw error;

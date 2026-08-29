@@ -24,15 +24,16 @@ const VoiceAITutor = dynamic(() => import("@/components/dashboard/VoiceAITutor")
   ssr: false,
 });
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+function EmailVerificationGate({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const { activeTab, setActiveTab } = useDashboardStore();
   const { user, isLoading: authLoading } = useAuth();
 
-  const handleTabChange = (tab: TabId) => {
-    setActiveTab(tab);
-    router.push(`/dashboard?tab=${tab}`);
-  };
+  // Gate: require email verification before accessing dashboard
+  useEffect(() => {
+    if (!authLoading && user && !user.emailVerified) {
+      router.replace("/verify-email");
+    }
+  }, [authLoading, user, router]);
 
   if (authLoading) {
     return (
@@ -49,11 +50,36 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     return null;
   }
 
+  if (!user.emailVerified) {
+    return (
+      <div className="dashboard-shell min-h-dvh flex items-center justify-center">
+        <div className="flex items-center gap-3 text-emerald-400 font-mono text-sm">
+          <span className="w-4 h-4 rounded-full border-2 border-emerald-500/30 border-t-emerald-400 animate-spin" aria-hidden="true" />
+          Redirecting to email verification...
+        </div>
+      </div>
+    );
+  }
+
+  return <>{children}</>;
+}
+
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+  const { activeTab, setActiveTab } = useDashboardStore();
+
+  const handleTabChange = (tab: TabId) => {
+    setActiveTab(tab);
+    router.push(`/dashboard?tab=${tab}`);
+  };
+
   return (
     <LogoutFarewellProvider>
-      <DashboardShell activeTab={activeTab} onTabChange={handleTabChange}>
-        {children}
-      </DashboardShell>
+      <EmailVerificationGate>
+        <DashboardShell activeTab={activeTab} onTabChange={handleTabChange}>
+          {children}
+        </DashboardShell>
+      </EmailVerificationGate>
     </LogoutFarewellProvider>
   );
 }

@@ -63,6 +63,17 @@ export async function countUsageToday(
   });
 }
 
+/** Get total estimated cost (USD) for a user within the current UTC day. */
+export async function getDailyCostUsd(userId: string): Promise<number> {
+  const start = new Date();
+  start.setUTCHours(0, 0, 0, 0);
+  const result = await prisma.aIUsage.aggregate({
+    where: { userId, createdAt: { gte: start } },
+    _sum: { estimatedCostUsd: true },
+  });
+  return result._sum.estimatedCostUsd ?? 0;
+}
+
 export type UsageSummary = {
   totalCalls: number;
   totalCostUsd: number;

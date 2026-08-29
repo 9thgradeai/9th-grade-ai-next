@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { validateLoginInput } from "~backend/validation";
 import { AppError, toHttpResponse } from "~backend/errors";
 import { findUserByEmail, verifyPassword, DUMMY_PASSWORD_HASH } from "~backend/services/user";
-import { signSession, setSessionCookie } from "~backend/auth";
+import { signSession, setSessionCookie, addUserSession } from "~backend/auth";
 import { assertLoginAllowed } from "~backend/rate-limit";
 import { getRequestId, startTiming, applySecurityHeaders, assertSameOrigin } from "../../_middleware";
 import { log } from "~backend/infrastructure/observability/logger";
@@ -44,7 +44,18 @@ export async function POST(request: Request) {
       throw new AppError(401, "Invalid email or password.", "AUTH_INVALID_CREDENTIALS");
     }
 
-    const token = await signSession({ email: user.email, ver: user.tokenVersion });
+    // Create session with unique ID for concurrency tracking
+    const sessionId = crypto.randomUUID();
+    const sessionMeta = {
+      id: sessionId,
+      createdAt: new Date().toISOString(),
+      userAgent: request.headers.get("user-agent") ?? undefined,
+      ip: request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? undefined,
+    };
+
+    const token = await signSession({ email: user.email, ver: user.tokenVersion, sid: sessionId });
+    await addUserSession(user.id, sessionMeta);
+
     const { passwordHash: _passwordHash, ...safeUser } = user;
     const res = NextResponse.json({ user: safeUser });
     // "Stay signed in" extends the cookie from 7 to 30 days; otherwise the
