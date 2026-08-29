@@ -3,11 +3,16 @@
 import * as Sentry from "@sentry/nextjs";
 import { useEffect } from "react";
 
+// eslint-disable-next-line no-restricted-globals -- process.env is inlined by Next.js at build time
+const env = process.env;
+
 Sentry.init({
-  dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+  dsn: env.NEXT_PUBLIC_SENTRY_DSN,
   tracesSampleRate: 0.1,
-  debug: process.env.NODE_ENV !== "production",
-  enabled: process.env.NODE_ENV === "production" || process.env.VERCEL_ENV === "production",
+  // eslint-disable-next-line no-restricted-globals
+  debug: env.NODE_ENV !== "production",
+  // eslint-disable-next-line no-restricted-globals
+  enabled: env.NODE_ENV === "production" || env.VERCEL_ENV === "production",
   replaysOnErrorSampleRate: 1.0,
   replaysSessionSampleRate: 0.1,
   integrations: [
@@ -18,7 +23,8 @@ Sentry.init({
     Sentry.browserTracingIntegration(),
   ],
   beforeSend(event) {
-    if (process.env.NODE_ENV !== "production" && process.env.VERCEL_ENV !== "production") {
+    // eslint-disable-next-line no-restricted-globals
+    if (env.NODE_ENV !== "production" && env.VERCEL_ENV !== "production") {
       return null;
     }
     return event;

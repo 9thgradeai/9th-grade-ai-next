@@ -81,7 +81,7 @@ export async function PATCH(
       // Ban by setting a flag and revoking all sessions
       await prisma.user.update({
         where: { id },
-        data: { role: "BANNED" as any }, // Using role as ban flag for simplicity
+        data: { role: "BANNED" as "STUDENT" | "ADMIN" | "BANNED" },
       });
       await revokeAllSessions(id);
     } else if (action === "unban") {

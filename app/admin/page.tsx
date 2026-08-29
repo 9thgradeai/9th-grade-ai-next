@@ -63,8 +63,8 @@ export default function AdminPage() {
   };
 
   useEffect(() => {
-    fetchUsers();
-  }, [page, search]);
+    void fetchUsers();
+  }, []);
 
   const handleAction = async (userId: string, action: "ban" | "unban" | "revoke_sessions") => {
     setActionLoading(userId);
@@ -174,7 +174,7 @@ export default function AdminPage() {
                       </Link>
                       {user.role !== "BANNED" ? (
                         <button
-                          onClick={() => handleAction(user.id, "ban")}
+                          onClick={() => { void handleAction(user.id, "ban"); }}
                           disabled={actionLoading === user.id}
                           className="px-3 py-1.5 text-xs font-medium text-red-400 hover:text-red-300 border border-red-500/30 rounded-lg transition-colors disabled:opacity-50"
                         >
@@ -182,7 +182,7 @@ export default function AdminPage() {
                         </button>
                       ) : (
                         <button
-                          onClick={() => handleAction(user.id, "unban")}
+                          onClick={() => { void handleAction(user.id, "unban"); }}
                           disabled={actionLoading === user.id}
                           className="px-3 py-1.5 text-xs font-medium text-emerald-400 hover:text-emerald-300 border border-emerald-500/30 rounded-lg transition-colors disabled:opacity-50"
                         >
@@ -190,7 +190,7 @@ export default function AdminPage() {
                         </button>
                       )}
                       <button
-                        onClick={() => handleAction(user.id, "revoke_sessions")}
+                        onClick={() => { void handleAction(user.id, "revoke_sessions"); }}
                         disabled={actionLoading === user.id}
                         className="px-3 py-1.5 text-xs font-medium text-yellow-400 hover:text-yellow-300 border border-yellow-500/30 rounded-lg transition-colors disabled:opacity-50"
                       >
