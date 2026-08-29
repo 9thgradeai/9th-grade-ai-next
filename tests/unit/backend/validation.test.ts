@@ -63,7 +63,7 @@ describe("auth validators (single source of truth)", () => {
     const ok = await validateRegisterInput({
       name: "Farhan",
       email: "F@Example.com ",
-      password: "password123",
+      password: "xK9!mP2@vQ7w",
     });
     expect(ok.email).toBe("f@example.com");
     // Strict mode: undeclared fields are rejected, not stripped.
@@ -71,7 +71,7 @@ describe("auth validators (single source of truth)", () => {
       validateRegisterInput({
         name: "Farhan",
         email: "F@Example.com",
-        password: "password123",
+        password: "xK9!mP2@vQ7w",
         admin: true,
       }),
     ).rejects.toThrow(/Unexpected field\(s\): admin/);
@@ -79,9 +79,7 @@ describe("auth validators (single source of truth)", () => {
 
   it("register rejects the historical weak-password rule (6–7 chars)", async () => {
     await expect(
-      Promise.resolve().then(() =>
-        validateRegisterInput({ name: "Ab", email: "a@b.co", password: "123456" }),
-      ),
+      validateRegisterInput({ name: "Ab", email: "a@b.co", password: "123456" }),
     ).rejects.toMatchObject(VALIDATION_ERROR);
   });
 
@@ -95,13 +93,13 @@ describe("auth validators (single source of truth)", () => {
     expect(() => validateUpdateProfileInput({ name: "A" })).toThrow(/at least 2/);
 
     expect(
-      await validateChangePasswordInput({ currentPassword: "a", newPassword: "12345678", confirmPassword: "12345678" }),
+      await validateChangePasswordInput({ currentPassword: "a", newPassword: "xK9!mP2@vQ7w", confirmPassword: "xK9!mP2@vQ7w" }),
     ).toBeDefined();
     await expect(
       validateChangePasswordInput({ currentPassword: "a", newPassword: "short", confirmPassword: "short" }),
     ).rejects.toThrow(/at least 8/);
     await expect(
-      validateChangePasswordInput({ currentPassword: "a", newPassword: "12345678", confirmPassword: "zzzz" }),
+      validateChangePasswordInput({ currentPassword: "a", newPassword: "xK9!mP2@vQ7w", confirmPassword: "zzzz" }),
     ).rejects.toThrow(/do not match/i);
   });
 });

@@ -94,6 +94,7 @@ describe("enforceAiQuotas", () => {
 
   it("passes when both store and ledger are under quota", async () => {
     vi.mocked(prisma.aIUsage.count).mockResolvedValue(5);
+    vi.mocked(prisma.aIUsage.aggregate).mockResolvedValue({ _sum: { costUsd: 0 }, _avg: null, _count: null, _max: null, _min: null } as never);
     await expect(enforceAiQuotas(reqWithIp("3.3.3.3"), "assistant", "u3")).resolves.toBeUndefined();
   });
 });
