@@ -33,7 +33,6 @@ const securityHeaders = [
     : []),
 ];
 
-// @ts-expect-error - next-pwa types are incompatible with Next.js 15
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const withPWA = require("next-pwa")({
   dest: "public",
