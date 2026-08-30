@@ -37,6 +37,22 @@ enum QuizStatus {
   NEW
 }
 
+// Stage of an exam within its category (BCS: Preliminary / Written / Viva).
+enum ExamStage {
+  PRELIMINARY
+  WRITTEN
+  VIVA
+  OTHER
+}
+
+// Confidence in a paper's provenance. Never assert OFFICIAL without a real
+// source; default to UNKNOWN and only promote on verified evidence.
+enum Provenance {
+  OFFICIAL
+  CURATED
+  UNKNOWN
+}
+
 enum NotificationType {
   INFO
   SUCCESS
@@ -208,6 +224,70 @@ model Topic {
   @@index([subjectId, parentId])
 }
 
+// ── Exam library (Question Bank hierarchy) ────────────────
+// ExamCategory → Exam → ExamPaper → Questions (+ Subject/Topic taxonomy).
+// Mirrors the real-world structure: "BCS" → "BCS Preliminary" → "50th BCS".
+// Metadata that is genuinely unknown is left NULL — never fabricated.
+
+model ExamCategory {
+  id        Int     @id @default(autoincrement())
+  slug      String  @unique
+  nameBn    String
+  nameEn    String
+  icon      String  @default("📘")
+  color     String  @default("text-emerald-400")
+  bg        String  @default("bg-emerald-500/10")
+  sortOrder Int     @default(0)
+  exams     Exam[]
+
+  @@index([sortOrder])
+}
+
+model Exam {
+  id             Int        @id @default(autoincrement())
+  categoryId     Int
+  category       ExamCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  slug           String     @unique
+  nameBn         String
+  nameEn         String
+  type           ExamStage  @default(PRELIMINARY)
+  durationMin    Int?
+  totalQuestions Int?
+  year           Int?
+  heldOn         DateTime?
+  sourceUrl      String?
+  verified       Boolean    @default(false)
+  sortOrder      Int        @default(0)
+  papers         ExamPaper[]
+  questions      Question[]
+
+  @@index([categoryId, sortOrder])
+}
+
+model ExamPaper {
+  id                Int        @id @default(autoincrement())
+  examId            Int
+  exam              Exam       @relation(fields: [examId], references: [id], onDelete: Cascade)
+  slug              String     @unique
+  titleBn           String
+  titleEn           String
+  bcsTerm           Int?       // ordinal number for BCS (50, 49, ...)
+  termLabel         String?    // "50th"
+  year              Int?
+  heldOn            DateTime?
+  durationMin       Int?
+  totalQuestions    Int?       // official paper total, if known
+  availableQuestions Int       @default(0) // validated questions actually held
+  source            String     @default("")
+  provenance        Provenance @default(UNKNOWN)
+  verified          Boolean    @default(false)
+  sortOrder         Int        @default(0)
+  questions         Question[]
+
+  @@index([examId, bcsTerm])
+  @@index([year])
+}
+
 // ── Questions ─────────────────────────────────────────────
 model Question {
   id             Int      @id @default(autoincrement())
@@ -226,6 +306,13 @@ model Question {
   year           Int?
   sourceExam     String   @default("")
   bcsTerm        String?  // e.g., "50th", "49th", "48th" — BCS exam term
+  // Exam-library linkage: a question may belong to a specific paper (BCS exam
+  // session). Nullable so generic subject-wise questions remain valid.
+  examId         Int?
+  exam           Exam?      @relation(fields: [examId], references: [id], onDelete: SetNull)
+  paperId        Int?
+  paper          ExamPaper? @relation(fields: [paperId], references: [id], onDelete: SetNull)
+  questionNumber Int?       // position of the question in the original paper, if known
   // Deterministic seed identity (md5 of subjectId|path|question). Lets the
   // seeder upsert instead of wipe-and-recreate, so Question ids — and every
   // user row referencing them — stay stable across deploys.
@@ -240,6 +327,8 @@ model Question {
   // FK-side index: Topic SetNull updates/deletes must not seq-scan Questions.
   @@index([topicId])
   @@index([subjectId, topic, subtopic])
+  @@index([examId])
+  @@index([paperId, questionNumber])
   @@unique([subjectId, sourceKey])
 }
 

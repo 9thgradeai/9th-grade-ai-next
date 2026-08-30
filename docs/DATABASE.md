@@ -121,6 +121,19 @@ ever rebuilt outside migrations:
 - `HELPFUL`
 - `NOT_HELPFUL`
 
+#### ExamStage
+- `PRELIMINARY`
+- `WRITTEN`
+- `VIVA`
+- `OTHER`
+
+#### Provenance
+Confidence in a paper's provenance. Never assert `OFFICIAL` without a real
+source; default to `UNKNOWN` and only promote on verified evidence.
+- `OFFICIAL`
+- `CURATED`
+- `UNKNOWN`
+
 ### Models
 
 #### User
@@ -192,10 +205,70 @@ ever rebuilt outside migrations:
 - `difficulty` Difficulty — default `MEDIUM`
 - `year` Int?
 - `sourceExam` String — default `""`
+- `bcsTerm` String? — BCS exam term, e.g. `"50th"`, `"49th"` (denormalised BCS ordinal + "th")
+- `examId` Int? — FK to Exam (SetNull on delete). Null for generic subject-wise questions
+- `exam` Exam? — relation
+- `paperId` Int? — FK to ExamPaper (SetNull on delete). Null for generic subject-wise questions
+- `paper` ExamPaper? — relation
+- `questionNumber` Int? — position of the question in the original paper, if known
 - `createdAt` DateTime — default `now()`
 - `updatedAt` DateTime — updatedAt
-- Relations: `bookmarks`
-- Indexes: `[subjectId, difficulty]`, `[subjectId, topic]`, `[subjectId, topic, subtopic]`, `[subjectId, path]`
+- `sourceKey` String — default `""`; deterministic seed identity (md5 of `subjectId|…|question`). Lets the seeder upsert instead of wipe-and-recreate so Question ids — and every user row referencing them — stay stable across deploys. Unique with `subjectId`.
+- Relations: `bookmarks`, `attempts`
+- Indexes: `[subjectId, difficulty]`, `[subjectId, topic]`, `[subjectId, topic, subtopic]`, `[subjectId, path]`, `[topicId]`, `[examId]`, `[paperId, questionNumber]`; Unique: `[subjectId, sourceKey]`
+
+#### ExamCategory
+- `id` Int — PK, auto-increment
+- `slug` String — unique
+- `nameBn` String
+- `nameEn` String
+- `icon` String — default `"📘"`
+- `color` String — default `"text-emerald-400"`
+- `bg` String — default `"bg-emerald-500/10"`
+- `sortOrder` Int — default `0`
+- Relations: `exams`
+- Indexes: `[sortOrder]`
+
+#### Exam
+- `id` Int — PK, auto-increment
+- `categoryId` Int — FK to ExamCategory (Cascade on delete)
+- `category` ExamCategory — relation
+- `slug` String — unique
+- `nameBn` String
+- `nameEn` String
+- `type` ExamStage — default `PRELIMINARY`
+- `durationMin` Int? — official duration, if known
+- `totalQuestions` Int? — official total, if known
+- `year` Int?
+- `heldOn` DateTime?
+- `sourceUrl` String?
+- `verified` Boolean — default `false`
+- `sortOrder` Int — default `0`
+- Relations: `papers`, `questions`
+- Indexes: `[categoryId, sortOrder]`
+
+#### ExamPaper
+- `id` Int — PK, auto-increment
+- `examId` Int — FK to Exam (Cascade on delete)
+- `exam` Exam — relation
+- `slug` String — unique
+- `titleBn` String (e.g. `"৫০তম বিসিএস প্রিলিমিনারি"`)
+- `titleEn` String (e.g. `"50th BCS Preliminary"`)
+- `bcsTerm` Int? — ordinal number for BCS (50, 49, …)
+- `termLabel` String? — e.g. `"50th"`
+- `year` Int?
+- `heldOn` DateTime?
+- `durationMin` Int?
+- `totalQuestions` Int? — official paper total, if known
+- `availableQuestions` Int — default `0`; count of validated questions actually held
+- `source` String — default `""`
+- `provenance` Provenance — default `UNKNOWN` (examiners set `CURATED` when a paper has validated content)
+- `verified` Boolean — default `false`
+- `sortOrder` Int — default `0`
+- Relations: `questions`
+- Indexes: `[examId, bcsTerm]`, `[year]`
+
+> Mirrors the real-world hierarchy: **BCS** (ExamCategory) → **BCS Preliminary** (Exam) → **50th BCS** (ExamPaper) → Questions. Metadata that is genuinely unknown is left NULL — never fabricated.
 
 #### QuestionBankCategory
 - `id` Int — PK, auto-increment
