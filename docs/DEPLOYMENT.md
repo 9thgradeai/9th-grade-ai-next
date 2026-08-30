@@ -24,6 +24,9 @@ Runs the production server on the port defined by `PORT` (default 3000).
 | `DATABASE_URL` | Yes | PostgreSQL connection string — on Neon/serverless use the **pooled** host with `?connection_limit=10` so function fan-out cannot exhaust `max_connections` |
 | `REDIS_URL` | Yes (prod) | Distributed rate limiting (Upstash/Redis). Without it each serverless instance enforces its own counters — see `docs/DECISIONS.md` ADR-0009 |
 | `ANTHROPIC_API_KEY` | No | AI features (mock fallback if empty) |
+| `SMTP_HOST` / `SMTP_USER` / `SMTP_PASS` | No | Transactional email (verification links) via SMTP, e.g. a free Gmail App Password. See `docs/EMAIL.md`. When unset, `RESEND_API_KEY` is used; when neither is set, accounts auto-verify. |
+| `SMTP_PORT` / `SMTP_SECURE` / `EMAIL_FROM` | No | Optional SMTP tuning. Defaults: port `587`, `SMTP_SECURE=false`, `EMAIL_FROM` falls back to `SMTP_USER`. |
+| `RESEND_API_KEY` | No | Alternative transactional transport when SMTP is not configured. See `docs/EMAIL.md`. |
 | `NODE_ENV` | Auto | Set to `production` |
 
 ## Database (Production)

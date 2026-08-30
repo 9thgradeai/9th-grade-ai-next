@@ -191,3 +191,28 @@ protect the endpoints.
 Operators MUST set `REDIS_URL` in production (e.g., Upstash) for rate limits to
 be enforced across instances; the `.env.local.example` documents this. The
 in-memory map remains for dev/test and single-instance self-hosting.
+
+## ADR-0010 — SMTP+Resend transactional email transport (nodemailer)
+
+**Date**: 2026-08
+**Status**: Accepted
+**Context**: Email verification was non-functional in production because the
+`9th-grade-ai` Vercel project had no `RESEND_API_KEY` and no SMTP config, so
+`hasEmailTransport()` returned `false` and every account auto-verified without
+ever receiving a real confirmation email. The product needs a genuine, working
+verification email path.
+**Decision**: `backend/lib/email.ts` now resolves a transport by priority —
+SMTP (when `SMTP_HOST` + `SMTP_USER` + `SMTP_PASS` are set via `nodemailer`),
+else Resend (`RESEND_API_KEY`), else none. `hasEmailTransport()` reflects the
+resolved transport. SMTP is preferred because a free Gmail App Password (or any
+free provider) delivers real mail at $0 with **no custom domain**, unlike Resend
+which needs a verified sending domain for production use.
+**Rationale**: Email delivery is a hard infrastructure requirement that no
+library-free code can satisfy; a $0, no-domain transport is the only way to get
+real verification mail flowing without a paid plan or a custom domain. `nodemailer`
+is pure-JS, dependency-free, and the de-facto Node SMTP standard.
+**Consequences**: One new runtime dependency (`nodemailer`) + dev types, justified
+by the launch requirement for working email verification. When no transport is
+configured, the app keeps the documented auto-verify fallback so accounts are never
+locked out. Operators must set SMTP (or `RESEND_API_KEY`) env vars for real delivery
+— see `docs/EMAIL.md`.
