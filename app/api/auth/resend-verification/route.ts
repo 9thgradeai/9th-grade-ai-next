@@ -23,9 +23,11 @@ export async function POST(request: Request) {
 
     const body = (await request.json().catch(() => ({}))) as { email?: string };
     const origin = new URL(request.url).origin;
-    const { ok, devLink } = await resendVerification(body.email ?? "", origin);
+    const { ok, devLink, autoVerified } = await resendVerification(body.email ?? "", origin);
 
-    const res = NextResponse.json(devLink ? { ok, devLink } : { ok });
+    const res = NextResponse.json(
+      devLink ? { ok, devLink } : autoVerified ? { ok, autoVerified } : { ok },
+    );
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");
     applySecurityHeaders(res);

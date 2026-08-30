@@ -28,10 +28,11 @@ function EmailVerificationGate({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { user, isLoading: authLoading } = useAuth();
 
-  // Gate: require email verification before accessing dashboard
+  // Gate: require email verification before accessing dashboard. Carry the
+  // user's email so the verify page can prefill the "resend" box.
   useEffect(() => {
     if (!authLoading && user && !user.emailVerified) {
-      router.replace("/verify-email");
+      router.replace(`/verify-email?email=${encodeURIComponent(user.email)}`);
     }
   }, [authLoading, user, router]);
 

@@ -11,6 +11,18 @@ export type EmailMessage = {
 };
 
 /**
+ * Whether a transactional email transport is configured.
+ *
+ * When no transport exists, verification emails cannot be delivered, so flows
+ * that depend on confirmation-by-email (registration / resend) complete the
+ * verification implicitly instead of locking accounts behind a link that never
+ * arrives. See `backend/services/user.ts`.
+ */
+export function hasEmailTransport(): boolean {
+  return !!process.env.RESEND_API_KEY;
+}
+
+/**
  * Send a transactional email.
  *
  * Transport is Resend when `RESEND_API_KEY` is set (a single `fetch` call —

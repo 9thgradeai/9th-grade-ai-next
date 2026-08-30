@@ -112,6 +112,7 @@ async function main() {
         handle: "demo",
         passwordHash,
         role: "STUDENT" as UserRole,
+        emailVerified: true,
       },
     });
     console.log("  ✓ demo account created (demo@9thgrade.ai / demo12345)");

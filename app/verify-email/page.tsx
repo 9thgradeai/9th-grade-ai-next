@@ -2,31 +2,74 @@
 
 import { Suspense, useEffect, useState } from "react"
 import Link from "next/link"
-import { useSearchParams } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { account } from "@/lib/services/api"
 import { AuthShell } from "@/components/auth/AuthShell"
 
 function VerifyInner() {
+  const router = useRouter()
   const params = useSearchParams()
   const token = params.get("token") ?? ""
-  const [state, setState] = useState<"checking" | "ok" | "invalid">(token ? "checking" : "invalid")
-  const [email, setEmail] = useState("")
+  // `email` is prefilled from the dashboard gate (?email=...) so the "resend"
+  // box starts addressed even when the visitor has no token to paste.
+  const prefilledEmail = params.get("email") ?? ""
+  // No token at all — visiting the page directly. Show "check your inbox"
+  // instead of the misleading "invalid/expired" state.
+  const hasToken = token.length > 0
+  const [state, setState] = useState<"checking" | "ok" | "invalid">("checking")
+  const [email, setEmail] = useState(prefilledEmail)
   const [resending, setResending] = useState(false)
   const [resendNote, setResendNote] = useState<string | null>(null)
+  const [autoVerified, setAutoVerified] = useState(false)
 
   useEffect(() => {
-    if (!token) return
     let active = true
+    if (!token) {
+      // Direct visit with no link: there is nothing to verify yet. The `state`
+      // starts at "checking"; rendering falls through to the inbox hint since
+      // there is no token to act on.
+      return () => {
+        active = false
+      }
+    }
     account
       .verifyEmail(token)
-      .then((r) => active && setState(r.ok ? "ok" : "invalid"))
+      .then((r) => {
+        if (!active) return
+        if (r.ok) {
+          // Common case: the email is now verified, so let them straight in.
+          router.replace("/dashboard")
+        } else {
+          setState("invalid")
+        }
+      })
       .catch(() => active && setState("invalid"))
     return () => {
       active = false
     }
-  }, [token])
+  }, [token, router])
 
-  if (state === "checking") {
+  // Verified by resend (no transport installed — account auto-verified).
+  if (autoVerified) {
+    return (
+      <div className="space-y-3">
+        <p
+          role="status"
+          className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300"
+        >
+          Your email is verified. Welcome aboard!
+        </p>
+        <Link
+          href="/dashboard"
+          className="block text-center text-sm text-emerald-400/80 transition-colors hover:text-emerald-400"
+        >
+          Go to your dashboard
+        </Link>
+      </div>
+    )
+  }
+
+  if (state === "checking" && hasToken) {
     return (
       <div className="flex flex-col items-center gap-3 py-2">
         <span
@@ -63,13 +106,21 @@ function VerifyInner() {
     <div className="space-y-3">
       <p
         role="alert"
-        className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400"
+        className={`rounded-xl border px-4 py-3 text-sm ${
+          hasToken
+            ? "border-red-500/30 bg-red-500/10 text-red-400"
+            : "border-amber-500/30 bg-amber-500/10 text-amber-300"
+        }`}
       >
-        This verification link is invalid or has expired.
+        {hasToken
+          ? "This verification link is invalid or has expired."
+          : "Check your inbox — we sent you a verification link. If you haven't received one, request a fresh link below."}
       </p>
 
       <div className="rounded-xl border border-white/10 bg-white/5 p-3">
-        <p className="mb-2 text-sm text-[var(--text-muted)]">Resend a fresh link:</p>
+        <p className="mb-2 text-sm text-[var(--text-muted)]">
+          {hasToken ? "Resend a fresh link:" : "Resend the link to:"}
+        </p>
         <form
           className="flex flex-col gap-2 sm:flex-row"
           onSubmit={(e) => {
@@ -80,7 +131,12 @@ function VerifyInner() {
             account
               .resendVerification(email)
               .then((r) => {
-                if (r.devLink) {
+                if (r.autoVerified) {
+                  // No email transport installed — the account was verified
+                  // immediately, so drop them into the product.
+                  setResendNote("No email service is configured, so your account was verified automatically.")
+                  setAutoVerified(true)
+                } else if (r.devLink) {
                   setResendNote("Dev link (no email transport): open it to verify.")
                   window.location.href = r.devLink
                 } else {

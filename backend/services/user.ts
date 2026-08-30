@@ -7,7 +7,7 @@ import crypto from "crypto";
 import { hash, compare } from "bcryptjs";
 import { prisma } from "~backend/db";
 import { getSessionUser } from "~backend/auth";
-import { sendEmail } from "~backend/lib/email";
+import { sendEmail, hasEmailTransport } from "~backend/lib/email";
 import { log } from "~backend/infrastructure/observability/logger";
 import {
   AppError,
@@ -141,7 +141,12 @@ export async function createUser({
     }
 
     const passwordHash = await hash(password, 10);
-    const { raw: verifyRaw, hash: verifyHash } = makeToken();
+    // Without an email transport a confirmation link can never be delivered, so
+    // verification is implicit — otherwise new accounts lock themselves out of
+    // the product behind a link that cannot arrive. Once a transport is
+    // configured, new accounts are unverified until they click the link.
+    const requiresVerification = hasEmailTransport();
+    const verify = requiresVerification ? makeToken() : null;
 
     // User + initial progress row commit atomically — a failure creating the
     // progress row rolls back the user instead of leaving an orphaned account
@@ -164,8 +169,11 @@ export async function createUser({
             handle,
             passwordHash,
             role: "STUDENT",
-            emailVerifyToken: verifyHash,
-            emailVerifyExpires: new Date(Date.now() + VERIFY_TTL_MS),
+            emailVerified: !requiresVerification,
+            emailVerifyToken: verify?.hash ?? null,
+            emailVerifyExpires: requiresVerification
+              ? new Date(Date.now() + VERIFY_TTL_MS)
+              : null,
           },
         });
         await tx.userProgress.create({ data: { userId: created.id } });
@@ -180,8 +188,8 @@ export async function createUser({
 
     // Best-effort verification email; never blocks registration. In dev with no
     // transport the link is logged server-side so the flow stays testable.
-    if (origin) {
-      const link = `${origin}/verify-email?token=${verifyRaw}`;
+    if (origin && verify) {
+      const link = `${origin}/verify-email?token=${verify.raw}`;
       const { sent } = await sendEmail({
         to: u.email,
         subject: "Verify your 9Th-Grade AI account",
@@ -616,7 +624,7 @@ export async function verifyEmail(token: string): Promise<{ ok: boolean }> {
 export async function resendVerification(
   email: string,
   origin?: string,
-): Promise<{ ok: boolean; devLink?: string }> {
+): Promise<{ ok: boolean; devLink?: string; autoVerified?: boolean }> {
   try {
     if (!email || typeof email !== "string" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return { ok: false };
@@ -624,6 +632,17 @@ export async function resendVerification(
     const normalized = email.trim().toLowerCase();
     const user = await prisma.user.findUnique({ where: { email: normalized } });
     if (!user || user.emailVerified) return { ok: true };
+
+    // Without an email transport no fresh link can ever be delivered. Verify
+    // the account immediately (idempotent) so an unverified account is never
+    // locked out behind a link that cannot arrive.
+    if (!hasEmailTransport()) {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { emailVerified: true, emailVerifyToken: null, emailVerifyExpires: null },
+      });
+      return { ok: true, autoVerified: true };
+    }
 
     const { raw: verifyRaw, hash: verifyHash } = makeToken();
     await prisma.user.update({
