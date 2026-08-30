@@ -30,7 +30,7 @@ export type UserRecord = {
   emailVerified: boolean;
   onboarded: boolean;
   createdAt: string;
-  authProvider: "password" | "google" | "apple" | "both";
+  authProvider: "password" | "google" | "both";
   imageUrl?: string;
   examTarget?: string;
   examDate?: string;
@@ -268,65 +268,7 @@ export async function findOrCreateGoogleUser(profile: {
   }
 }
 
-/**
- * Resolve or provision a user from a verified Apple profile. Mirrors the Google
- * strategy: match by Apple `sub` (appleId), then by email (link identity onto
- * an existing account), otherwise provision an Apple-only account. Apple-only
- * accounts have `passwordHash === ""`, so password login is blocked for them.
- */
-export async function findOrCreateAppleUser(profile: {
-  sub: string;
-  email: string;
-  emailVerified: boolean;
-  name: string;
-  picture?: string;
-}): Promise<UserRecord> {
-  try {
-    const existingByApple = await prisma.user.findUnique({ where: { appleId: profile.sub } });
-    if (existingByApple) return toUserRecord(existingByApple);
 
-    const existingByEmail = await prisma.user.findUnique({
-      where: { email: profile.email.toLowerCase() },
-    });
-    if (existingByEmail) {
-      const isPasswordUser = existingByEmail.passwordHash.length > 0;
-      const updated = await prisma.user.update({
-        where: { id: existingByEmail.id },
-        data: {
-          appleId: profile.sub,
-          authProvider: isPasswordUser ? "both" : "apple",
-          emailVerified: existingByEmail.emailVerified || profile.emailVerified,
-          imageUrl: existingByEmail.imageUrl ?? profile.picture ?? null,
-        },
-      });
-      return toUserRecord(updated);
-    }
-
-    const handle = await uniqueHandle(profile.email.split("@")[0] || "user");
-    const created = await prisma.$transaction(async (tx) => {
-      const u = await tx.user.create({
-        data: {
-          name: profile.name.trim() || profile.email.split("@")[0],
-          email: profile.email.toLowerCase(),
-          handle,
-          passwordHash: "",
-          appleId: profile.sub,
-          authProvider: "apple",
-          emailVerified: profile.emailVerified,
-          imageUrl: profile.picture ?? null,
-          role: "STUDENT",
-        },
-      });
-      await tx.userProgress.create({ data: { userId: u.id } });
-      return u;
-    });
-
-    return toUserRecord(created);
-  } catch (error) {
-    if (error instanceof AppError) throw error;
-    throw new InternalServerError("Failed to sign in with Apple");
-  }
-}
 
 /** Build a unique, URL-safe handle, retrying with a suffix on collision. */
 async function uniqueHandle(base: string): Promise<string> {

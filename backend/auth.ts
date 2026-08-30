@@ -277,7 +277,7 @@ export async function getSessionUser(req: Request): Promise<UserRecord | null> {
     emailVerified: u.emailVerified,
     onboarded: u.onboarded,
     createdAt: u.createdAt.toISOString(),
-    authProvider: (u.authProvider as "password" | "google" | "apple" | "both") ?? "password",
+    authProvider: (u.authProvider as "password" | "google" | "both") ?? "password",
     imageUrl: u.imageUrl ?? undefined,
     examTarget: u.examTarget ?? undefined,
     examDate: u.examDate ? u.examDate.toISOString() : undefined,

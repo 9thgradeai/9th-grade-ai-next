@@ -25,14 +25,13 @@ export async function POST(request: Request) {
 
     const user = await findUserByEmail(email);
 
-    // Social-only accounts (Google/Apple) have no password; tell the user which
+    // Social-only accounts (Google) have no password; tell the user which
     // provider to use instead of a generic "invalid credentials" so they're not
     // stuck guessing.
     if (user && user.passwordHash === "") {
-      const provider = user.authProvider === "apple" ? "Apple" : "Google";
       throw new AppError(
         401,
-        `This account uses ${provider} sign-in. Please choose 'Continue with ${provider}'.`,
+        "This account uses Google sign-in. Please choose 'Continue with Google'.",
         "AUTH_SOCIAL_ONLY",
       );
     }
