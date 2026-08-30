@@ -141,6 +141,24 @@ vi.mock("~backend/db", () => ({
       findMany: vi.fn(),
       count: vi.fn(),
     },
+    examCategory: {
+      findMany: vi.fn(),
+      findUnique: vi.fn(),
+      upsert: vi.fn(),
+      count: vi.fn(),
+    },
+    exam: {
+      findMany: vi.fn(),
+      findUnique: vi.fn(),
+      upsert: vi.fn(),
+      count: vi.fn(),
+    },
+    examPaper: {
+      findMany: vi.fn(),
+      findUnique: vi.fn(),
+      upsert: vi.fn(),
+      count: vi.fn(),
+    },
     flashcard: {
       findMany: vi.fn(),
       findFirst: vi.fn(),

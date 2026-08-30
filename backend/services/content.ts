@@ -16,6 +16,7 @@ import { QueryCache } from "~backend/infrastructure/cache/query-cache";
 import type {
   QuestionDTO,
   QuestionBankCategoryDTO,
+  ExamCategoryDTO,
   FlashcardDTO,
   StudyTaskDTO,
   DailyQuizDTO,
@@ -38,6 +39,7 @@ type QuestionFilters = {
   year?: number;
   sourceExam?: string;
   bcsTerm?: string;
+  paperId?: number;
 };
 
 async function buildQuestionWhere(opts?: QuestionFilters): Promise<Record<string, unknown>> {
@@ -76,6 +78,9 @@ async function buildQuestionWhere(opts?: QuestionFilters): Promise<Record<string
   }
   if (opts?.bcsTerm) {
     conditions.push({ bcsTerm: { equals: opts.bcsTerm, mode: "insensitive" } });
+  }
+  if (opts?.paperId) {
+    conditions.push({ paperId: opts.paperId });
   }
   return conditions.length > 0 ? { AND: conditions } : {};
 }
@@ -138,6 +143,9 @@ export async function getQuestionsPage(
         year: q.year,
         sourceExam: q.sourceExam,
         bcsTerm: q.bcsTerm,
+        paperId: q.paperId,
+        examId: q.examId,
+        questionNumber: q.questionNumber,
       })),
       total,
       page,
@@ -174,6 +182,9 @@ export async function getQuestionById(id: number): Promise<QuestionDTO | null> {
       year: q.year,
       sourceExam: q.sourceExam,
       bcsTerm: q.bcsTerm,
+      paperId: q.paperId,
+      examId: q.examId,
+      questionNumber: q.questionNumber,
     };
   } catch {
     throw new InternalServerError("Failed to fetch question by id");
@@ -196,6 +207,68 @@ export async function getQuestionBankCategories(): Promise<QuestionBankCategoryD
       .sort((a, b) => b.count - a.count);
   } catch {
     throw new InternalServerError("Failed to fetch question bank categories");
+  }
+}
+
+// ── Exam library (BCS → Preliminary → specific paper) ────
+// Returns the available exam taxonomy hierarchy for browsing: ExamCategory
+// ("BCS") → Exam ("BCS Preliminary") → ExamPaper ("50th BCS"). Only papers
+// actually present in the data are returned; no paper metadata is fabricated.
+export async function getQuestionBankExams(): Promise<ExamCategoryDTO[]> {
+  try {
+    const categories = await prisma.examCategory.findMany({
+      orderBy: { sortOrder: "asc" },
+      include: {
+        exams: {
+          orderBy: [{ sortOrder: "asc" }, { id: "asc" }],
+          include: {
+            papers: {
+              orderBy: [{ sortOrder: "asc" }, { bcsTerm: "desc" }, { id: "asc" }],
+            },
+          },
+        },
+      },
+    });
+    return categories.map((c) => ({
+      id: c.id,
+      slug: c.slug,
+      nameBn: c.nameBn,
+      nameEn: c.nameEn,
+      icon: c.icon,
+      color: c.color,
+      bg: c.bg,
+      sortOrder: c.sortOrder,
+      exams: c.exams.map((e) => ({
+        id: e.id,
+        slug: e.slug,
+        nameBn: e.nameBn,
+        nameEn: e.nameEn,
+        type: e.type as ExamCategoryDTO["exams"][number]["type"],
+        durationMin: e.durationMin,
+        totalQuestions: e.totalQuestions,
+        year: e.year,
+        heldOn: e.heldOn ? e.heldOn.toISOString() : null,
+        verified: e.verified,
+        sortOrder: e.sortOrder,
+        papers: e.papers.map((p) => ({
+          id: p.id,
+          slug: p.slug,
+          titleBn: p.titleBn,
+          titleEn: p.titleEn,
+          bcsTerm: p.bcsTerm,
+          termLabel: p.termLabel,
+          year: p.year,
+          heldOn: p.heldOn ? p.heldOn.toISOString() : null,
+          durationMin: p.durationMin,
+          totalQuestions: p.totalQuestions,
+          availableQuestions: p.availableQuestions,
+          provenance: p.provenance,
+          verified: p.verified,
+        })),
+      })),
+    }));
+  } catch {
+    throw new InternalServerError("Failed to fetch exam library");
   }
 }
 

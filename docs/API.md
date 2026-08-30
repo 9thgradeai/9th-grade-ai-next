@@ -38,6 +38,7 @@ All mutating endpoints (auth and non-auth) reject cross-origin requests via an O
 |--------|------|-------------|
 | GET | `/api/questions` | List questions, filterable by `?subject=`, `?topic=`, `?difficulty=`, `?q=`, `?limit=`, `?page=` (1-based, default 1), `?paths=`, `?ids=` (comma-separated question IDs, max 200), `?year=` (previous-year-question filter), `?sourceExam=` (e.g. `45th BCS`). Response: `{ questions, page, pageSize, total }` — `total` enables pagination controls. Cached 60s (`stale-while-revalidate` 300s) |
 | GET | `/api/question-bank/categories` | List question bank categories |
+| GET | `/api/question-bank/exams` | List the exam-library taxonomy as a hierarchy: `category → [exam → [paper]]`. Papers carry `availableQuestions` (curated); used by the dashboard's BCS exam browser. Cached 5min (`stale-while-revalidate` 10min) |
 | GET | `/api/flashcards` | List flashcards, optionally filtered by `?subject=`. Authenticated callers additionally receive a per-card `srs` overlay (their own SM-2 state) |
 | GET | `/api/exam-schedule` | List published exam dates (public, no auth) |
 | GET | `/api/study-plan` | **Auth required** — List the caller's study plan tasks |

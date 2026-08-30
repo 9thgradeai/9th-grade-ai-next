@@ -68,3 +68,45 @@ describe("getQuestions paths filter", () => {
     expect(call?.where).toEqual({});
   });
 });
+
+describe("getQuestions paperId filter (exam library)", () => {
+  it("adds the paperId equality condition when set", async () => {
+    vi.mocked(prisma.question.findMany).mockResolvedValue([]);
+
+    await getQuestions({ paperId: 99 });
+
+    const call = vi.mocked(prisma.question.findMany).mock.calls[0][0];
+    expect(call?.where).toEqual({ AND: [{ paperId: 99 }] });
+  });
+
+  it("maps exam-library linkage fields into the QuestionDTO", async () => {
+    vi.mocked(prisma.question.findMany).mockResolvedValue([
+      {
+        id: 9,
+        subjectId: 1,
+        subject: { nameBn: "বাংলা ভাষা ও সাহিত্য" },
+        topic: "",
+        subtopic: "",
+        question: "প্রশ্ন?",
+        options: ["ক", "খ", "গ", "ঘ"],
+        correctAnswer: "ক",
+        explanation: "",
+        difficulty: "MEDIUM",
+        year: 2024,
+        sourceExam: "৫০তম বিসিএস",
+        bcsTerm: "50th",
+        paperId: 42,
+        examId: 3,
+        questionNumber: 7,
+      },
+    ] as never);
+
+    const rows = await getQuestions({ paperId: 42 });
+    expect(rows[0]).toMatchObject({
+      paperId: 42,
+      examId: 3,
+      questionNumber: 7,
+      bcsTerm: "50th",
+    });
+  });
+});

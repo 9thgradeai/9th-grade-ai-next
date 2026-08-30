@@ -216,6 +216,7 @@ export const api = {
     year?: number;
     sourceExam?: string;
     bcsTerm?: string;
+    paperId?: number;
     limit?: number;
     page?: number;
   }): Promise<Server.QuestionDTO[]> => {
@@ -279,6 +280,10 @@ export const api = {
 
   questionBankCategories: (): Promise<Server.QuestionBankCategoryDTO[]> =>
     cachedGet<{ categories: Server.QuestionBankCategoryDTO[] }>("/api/question-bank/categories").then((d) => d.categories),
+
+  /** Exam-library hierarchy: ExamCategory → Exam → ExamPaper (BCS → Preliminary → specific paper). */
+  examLibrary: (): Promise<Server.ExamCategoryDTO[]> =>
+    cachedGet<{ exams: Server.ExamCategoryDTO[] }>("/api/question-bank/exams").then((d) => d.exams),
 
   flashcards: (subject?: string): Promise<Server.FlashcardDTO[]> => {
     const qs = subject ? `?subject=${encodeURIComponent(subject)}` : "";

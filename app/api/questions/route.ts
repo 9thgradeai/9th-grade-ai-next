@@ -32,6 +32,7 @@ export async function GET(request: Request) {
       ids: params.ids,
       year: params.year,
       sourceExam: params.sourceExam,
+      paperId: params.paperId,
       page: params.page,
       limit: params.limit,
     });

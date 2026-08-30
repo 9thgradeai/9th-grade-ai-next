@@ -131,6 +131,8 @@ export interface QuestionSearchFilters {
   sourceExam?: string;
   /** Filter by BCS exam term (e.g., "50th", "49th"). */
   bcsTerm?: string;
+  /** Restrict to a specific ExamPaper id (exam-library paper browse). */
+  paperId?: number;
 }
 
 export interface PaginationParams {
@@ -363,6 +365,7 @@ export function validateQuestionSearchParams(params: URLSearchParams): QuestionS
     "year",
     "sourceExam",
     "bcsTerm",
+    "paperId",
   ];
   const unexpected = [...params.keys()].filter((k) => !allowedParams.includes(k));
   if (unexpected.length > 0) {
@@ -381,6 +384,7 @@ export function validateQuestionSearchParams(params: URLSearchParams): QuestionS
   const year = params.get("year");
   const sourceExam = params.get("sourceExam");
   const bcsTerm = params.get("bcsTerm");
+  const paperId = params.get("paperId");
 
   if (subject && subject.length > 0) filters.subject = subject;
   if (topic && topic.length > 0) filters.topic = topic;
@@ -464,6 +468,14 @@ export function validateQuestionSearchParams(params: URLSearchParams): QuestionS
       throw new ValidationError("sourceExam must be at most 40 characters.");
     }
     filters.sourceExam = sourceExam;
+  }
+
+  if (paperId) {
+    const parsed = Number(paperId);
+    if (!Number.isInteger(parsed) || parsed <= 0) {
+      throw new ValidationError("paperId must be a positive integer.");
+    }
+    filters.paperId = parsed;
   }
 
   return filters;

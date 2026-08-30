@@ -154,4 +154,12 @@ describe("question search — notebook / PYQ filters", () => {
     ).toThrow(/at most 40/);
     expect(validateQuestionSearchParams(new URLSearchParams("q=xyz")).sourceExam).toBeUndefined();
   });
+
+  it("parses paperId and rejects junk or unknown params", () => {
+    expect(validateQuestionSearchParams(new URLSearchParams("paperId=7")).paperId).toBe(7);
+    expect(validateQuestionSearchParams(new URLSearchParams("q=xyz")).paperId).toBeUndefined();
+    expect(() => validateQuestionSearchParams(new URLSearchParams("paperId=abc"))).toThrow(/positive integer/);
+    expect(() => validateQuestionSearchParams(new URLSearchParams("paperId=0"))).toThrow(/positive integer/);
+    expect(() => validateQuestionSearchParams(new URLSearchParams("paper=7"))).toThrow(/paper/);
+  });
 });

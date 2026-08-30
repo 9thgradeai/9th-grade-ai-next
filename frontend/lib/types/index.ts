@@ -338,6 +338,54 @@ export namespace Server {
     year: number | null;
     sourceExam: string;
     bcsTerm: string | null;
+    /** Exam-library linkage (absent for generic subject-wise questions). */
+    paperId?: number | null;
+    examId?: number | null;
+    questionNumber?: number | null;
+  };
+
+  /** Exam-library hierarchy: ExamCategory "BCS" → Exam "BCS Preliminary" → papers. */
+  export type ExamPaperDTO = {
+    id: number;
+    slug: string;
+    titleBn: string;
+    titleEn: string;
+    bcsTerm: number | null;
+    termLabel: string | null;
+    year: number | null;
+    heldOn: string | null;
+    durationMin: number | null;
+    totalQuestions: number | null;
+    availableQuestions: number;
+    provenance: "OFFICIAL" | "CURATED" | "UNKNOWN";
+    verified: boolean;
+  };
+
+  export type ExamDTO = {
+    id: number;
+    slug: string;
+    nameBn: string;
+    nameEn: string;
+    type: "PRELIMINARY" | "WRITTEN" | "VIVA" | "OTHER";
+    durationMin: number | null;
+    totalQuestions: number | null;
+    year: number | null;
+    heldOn: string | null;
+    verified: boolean;
+    sortOrder: number;
+    papers: ExamPaperDTO[];
+  };
+
+  export type ExamCategoryDTO = {
+    id: number;
+    slug: string;
+    nameBn: string;
+    nameEn: string;
+    icon: string;
+    color: string;
+    bg: string;
+    sortOrder: number;
+    exams: ExamDTO[];
   };
 
   export type QuestionBankCategoryDTO = {
@@ -658,6 +706,9 @@ export type SubjectDTO = Server.SubjectDTO;
 export type TopicDTO = Server.TopicDTO;
 export type QuestionDTO = Server.QuestionDTO;
 export type QuestionBankCategoryDTO = Server.QuestionBankCategoryDTO;
+export type ExamPaperDTO = Server.ExamPaperDTO;
+export type ExamDTO = Server.ExamDTO;
+export type ExamCategoryDTO = Server.ExamCategoryDTO;
 export type ExamArchiveDTO = Server.ExamArchiveDTO;
 export type FlashcardDTO = Server.FlashcardDTO;
 export type StudyTaskDTO = Server.StudyTaskDTO;

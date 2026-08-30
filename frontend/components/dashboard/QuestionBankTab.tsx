@@ -9,6 +9,7 @@ import { useToastSafe } from "@/lib/toast-ctx";
 import { api } from "@/lib/services/api";
 import type { QuestionDTO } from "@/lib/types";
 import QuestionDrill from "./QuestionDrill";
+import ExamLibraryView from "./ExamLibraryView";
 
 // Static fallback sample questions (used if the DB/API is unavailable).
 const SAMPLE_QUESTIONS: Record<string, { q: string; a: string; difficulty: string }[]> = {
@@ -80,6 +81,10 @@ export default function QuestionBankTab() {
   const [bcsTerm, setBcsTerm] = useState<string | null>(null);
   const [drilling, setDrilling] = useState(false);
   const [savedQuestions, setSavedQuestions] = useState<QuestionDTO[]>([]);
+  const [browseMode, setBrowseMode] = useState<"subject" | "exam">("subject");
+  // Widened to `string` so comparisons in the toggle survive TS control-flow
+  // narrowing after the exam-mode early return above.
+  const mode: string = browseMode;
 
   const setQuery = (q: string) => setQuestionBankFilters({ query: q });
   const setActiveCategory = (c: string) => {
@@ -240,8 +245,12 @@ export default function QuestionBankTab() {
     );
   }
 
-  return (
-    <div className="space-y-6">
+  const isExamBrowse = browseMode === "exam";
+  if (isExamBrowse) {
+    return <ExamLibraryView />;
+  }
+
+  return (    <div className="space-y-6">
       {/* Live query terminal */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
@@ -268,6 +277,30 @@ export default function QuestionBankTab() {
           </span>
         </div>
       </motion.div>
+
+      {/* Browse mode: subject taxonomy vs exam library */}
+      <div className="flex gap-2 flex-wrap">
+        <button
+          onClick={() => setBrowseMode("subject")}
+          className={`px-3 py-1.5 rounded-full text-xs font-mono border transition-all ${
+            mode === "subject"
+              ? "bg-emerald-500 text-zinc-950 border-emerald-500 shadow-neon-glow"
+              : "bg-subtle border-emerald-500/20 text-zinc-400 hover:border-emerald-500/40 hover:text-white"
+          }`}
+        >
+          📚 বিষয় অনুযায়ী
+        </button>
+        <button
+          onClick={() => setBrowseMode("exam")}
+          className={`px-3 py-1.5 rounded-full text-xs font-mono border transition-all ${
+            mode === "exam"
+              ? "bg-emerald-500 text-zinc-950 border-emerald-500 shadow-neon-glow"
+              : "bg-subtle border-emerald-500/20 text-zinc-400 hover:border-emerald-500/40 hover:text-white"
+          }`}
+        >
+          🎯 পরীক্ষা অনুযায়ী
+        </button>
+      </div>
 
       {/* View toggle (all vs saved) */}
       <div className="flex gap-2 flex-wrap">
