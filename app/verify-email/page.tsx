@@ -4,10 +4,12 @@ import { Suspense, useEffect, useState } from "react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { account } from "@/lib/services/api"
+import { useAuth } from "@/lib/auth-ctx"
 import { AuthShell } from "@/components/auth/AuthShell"
 
 function VerifyInner() {
   const router = useRouter()
+  const { logout } = useAuth()
   const params = useSearchParams()
   const token = params.get("token") ?? ""
   // `email` is prefilled from the dashboard gate (?email=...) so the "resend"
@@ -177,6 +179,14 @@ function VerifyInner() {
       >
         Back to sign in
       </Link>
+
+      <button
+        type="button"
+        onClick={() => void logout()}
+        className="mx-auto block text-center text-xs text-zinc-500 transition-colors hover:text-zinc-300"
+      >
+        Use a different account — log out
+      </button>
     </div>
   )
 }

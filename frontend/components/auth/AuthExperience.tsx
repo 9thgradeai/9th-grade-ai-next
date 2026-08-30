@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import { AnimatePresence, motion, useAnimationControls, useReducedMotion } from "framer-motion"
 import { ArrowRight, MoonStar, ShieldCheck, Sun } from "lucide-react"
 import { useAuth } from "@/lib/auth-ctx"
+import { account as accountApi } from "@/lib/services/api"
 import { AuthEnvironment } from "./AuthEnvironment"
 import { Lamp } from "./Lamp"
 import { Avatar } from "./Avatar"
@@ -59,7 +60,7 @@ export default function AuthExperience({
   }
 
   const router = useRouter()
-  const { login, register, user, isLoading } = useAuth()
+  const { login, register, logout, user, isLoading } = useAuth()
   const reduced = useReducedMotion() ?? false
   const shake = useAnimationControls()
 
@@ -90,14 +91,21 @@ export default function AuthExperience({
     []
   )
 
-  // Redirect already-authenticated visitors straight to the hall — the entry
-  // ceremony is only for people who still need to sign in.
+  // Redirect already-authenticated AND email-verified visitors straight to the
+  // hall — the entry ceremony is only for people who still need to sign in.
+  // Unverified accounts are deliberately NOT redirected away: doing so created
+  // a redirect loop (/login -> /dashboard -> /verify-email -> /login) that
+  // made it impossible to reach the sign-in form or log out. An unverified
+  // user lands on the form surrounded by a banner with logout + verify links.
   useEffect(() => {
     if (isLoading || !user) return
-    if (stage === "lamp" || stage === "choice") {
+    if (user.emailVerified && (stage === "lamp" || stage === "choice")) {
       router.replace("/dashboard")
     }
   }, [user, isLoading, stage, router])
+
+  // Capture the email so an unverified session can be identified / re-verified.
+  const unverifiedEmail = user && !user.emailVerified ? user.email : null
 
   // Skip the lamp ("pull the cord") for returning visitors and on very small
   // viewports where the staged reveal crowds the form. We still set the
@@ -265,6 +273,10 @@ export default function AuthExperience({
       setBusy(true)
       try {
         await login("demo@9thgrade.ai", "demo12345", { redirect: false })
+        // The demo account maps to a real row in the DB which may be unverified
+        // on long-lived deployments. Best-effort auto-verify so the dashboard
+        // gate can't bounce the demo user back to /verify-email.
+        await accountApi.resendVerification("demo@9thgrade.ai").catch(() => {})
         setAccount({ name: "Demo Examinee", email: "demo@9thgrade.ai" })
         setSuccessKind("login")
         // Skip verification ceremony on demo — go straight to admit card
@@ -556,6 +568,32 @@ export default function AuthExperience({
         </header>
 
         <main className="flex min-h-0 w-full flex-1 flex-col items-center justify-center gap-3 self-center overflow-hidden px-4 pb-4 pt-1 sm:gap-5 sm:px-6 sm:pb-6 sm:pt-3">
+          {/* Unverified session: don't silently redirect into a loop. Surface a
+              clear banner so the user can verify, log out, or switch accounts. */}
+          {unverifiedEmail && (
+            <div className="flex w-full max-w-4xl flex-col items-center gap-2 rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-center sm:flex-row sm:justify-between sm:text-left">
+              <p className="text-sm text-amber-200">
+                <span className="font-semibold">Your account needs email verification.</span>{" "}
+                <span className="text-amber-200/80">Verify to unlock the dashboard.</span>
+              </p>
+              <div className="flex shrink-0 items-center gap-2">
+                <Link
+                  href={`/verify-email?email=${encodeURIComponent(unverifiedEmail)}`}
+                  className="rounded-lg bg-amber-500/90 px-3 py-1.5 text-xs font-semibold text-amber-950 transition-colors hover:bg-amber-400"
+                >
+                  Verify email
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => void logout()}
+                  className="rounded-lg border border-white/20 px-3 py-1.5 text-xs font-medium text-zinc-300 transition-colors hover:border-white/40 hover:text-white"
+                >
+                  Log out
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Avatar + content: vertical on mobile, split left/right on md+ */}
           <div className="flex min-h-0 w-full max-w-4xl flex-1 flex-col items-center justify-center gap-4 md:flex-row md:gap-8 lg:gap-10">
             <AnimatePresence>{lit && avatarColumn}</AnimatePresence>
