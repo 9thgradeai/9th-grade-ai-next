@@ -7,6 +7,8 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import StatusPill from "@/components/ui/StatusPill";
 import { prisma } from "~backend/db";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   alternates: { canonical: "/archive" },
   title: "Practice by Exam Track — 9Th-Grade AI",

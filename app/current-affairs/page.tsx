@@ -7,6 +7,8 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import StatusPill from "@/components/ui/StatusPill";
 import { getFlashNews } from "~backend/services/content";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   alternates: { canonical: "/current-affairs" },
   title: "Current Affairs — 9Th-Grade AI",
