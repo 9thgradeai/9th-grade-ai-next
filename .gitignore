@@ -40,3 +40,6 @@ tsconfig.tsbuildinfo
 .vercel
 .env*
 coverage/
+
+# QB forensics generated artifacts (reproducible via the CLI)
+scripts/qb-forensics/artifacts/
