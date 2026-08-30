@@ -72,7 +72,7 @@ export function AuthChoice({
         disabled={socialBusy}
         aria-busy={googleBusy}
         aria-label="Sign in with Google"
-        className="group relative flex w-full items-center justify-center gap-3 overflow-hidden rounded-2xl border border-[var(--border-muted)] bg-[var(--surface-raised)] px-5 py-3.5 text-sm font-semibold text-[var(--foreground)] transition-all duration-200 hover:border-zinc-300/60 hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400 disabled:opacity-70 dark:hover:border-zinc-500/60"
+        className="group relative flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-full border border-white/10 bg-[var(--surface-raised)] px-5 py-3.5 text-sm font-semibold text-[var(--foreground)] transition-all duration-200 hover:border-white/25 hover:shadow-[0_8px_24px_rgba(0,0,0,0.18)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400 disabled:opacity-70"
       >
         <GoogleIcon className="h-5 w-5" />
         <span>{googleBusy ? "Redirecting…" : "Google"}</span>
@@ -80,9 +80,7 @@ export function AuthChoice({
 
       <div className="flex items-center gap-3 px-1" aria-hidden="true">
         <span className="h-px flex-1 bg-[var(--border-muted)]" />
-        <span className="font-mono text-[9px] uppercase tracking-[0.22em] text-zinc-500">
-          or enter with credentials
-        </span>
+        <span className="font-mono text-[9px] uppercase tracking-[0.22em] text-zinc-500">OR</span>
         <span className="h-px flex-1 bg-[var(--border-muted)]" />
       </div>
 

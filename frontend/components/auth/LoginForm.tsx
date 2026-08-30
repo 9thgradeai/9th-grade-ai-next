@@ -3,7 +3,7 @@
 import { useEffect, useState, type FormEvent } from "react"
 import Link from "next/link"
 import { Eye, EyeOff, ShieldCheck } from "lucide-react"
-import { UnderlineField } from "./UnderlineField"
+import { SurfaceField } from "./SurfaceField"
 import { AuthSubmitButton } from "./AuthSubmitButton"
 import { CapsLockWarning, readCapsLock } from "./CapsLockWarning"
 import type { FocusField } from "./auth-state"
@@ -74,7 +74,7 @@ export function LoginForm({
 
   return (
     <form onSubmit={handleSubmit} className="flex w-full flex-col gap-4 sm:gap-5" noValidate>
-      <UnderlineField
+      <SurfaceField
         id="login-email"
         label="Email"
         type="email"
@@ -94,7 +94,7 @@ export function LoginForm({
         inputMode="email"
       />
       <div>
-        <UnderlineField
+        <SurfaceField
           id="login-password"
           label="Password"
           type={showPassword ? "text" : "password"}
