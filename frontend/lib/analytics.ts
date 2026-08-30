@@ -30,6 +30,7 @@ type AnalyticsData =
 
 class Analytics {
   private readonly enabled: boolean;
+  private readonly endpoint: string | undefined;
   private readonly heroView: {
     startTime: number;
     endTime?: number;
@@ -42,8 +43,9 @@ class Analytics {
   private readonly events: AnalyticsEvent[] = [];
 
   constructor() {
-    // eslint-disable-next-line no-restricted-globals
-    this.enabled = !!process.env.NEXT_PUBLIC_ANALYTICS_ENDPOINT;
+    // eslint-disable-next-line no-restricted-globals -- NEXT_PUBLIC_* inlined by Next.js at build time
+    this.endpoint = process.env.NEXT_PUBLIC_ANALYTICS_ENDPOINT;
+    this.enabled = !!this.endpoint;
     this.startHeroView();
   }
 
@@ -73,8 +75,7 @@ class Analytics {
 
     // Send to analytics endpoint
     // TODO: Implement actual endpoint POST
-    // eslint-disable-next-line no-restricted-globals
-    fetch(process.env.NEXT_PUBLIC_ANALYTICS_ENDPOINT!, {
+    fetch(this.endpoint!, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -4,16 +4,15 @@ import * as Sentry from "@sentry/nextjs";
 import { replayIntegration, browserTracingIntegration } from "@sentry/react";
 import { useEffect } from "react";
 
-// eslint-disable-next-line no-restricted-globals -- process.env is inlined by Next.js at build time
-const env = process.env;
+// eslint-disable-next-line no-restricted-globals -- NEXT_PUBLIC_* inlined by Next.js at build time
+const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN;
+const isProduction = Boolean(dsn && typeof window !== "undefined" && window.location.hostname !== "localhost");
 
 Sentry.init({
-  dsn: env.NEXT_PUBLIC_SENTRY_DSN,
+  dsn,
   tracesSampleRate: 0.1,
-  // eslint-disable-next-line no-restricted-globals
-  debug: env.NODE_ENV !== "production",
-  // eslint-disable-next-line no-restricted-globals
-  enabled: env.NODE_ENV === "production" || env.VERCEL_ENV === "production",
+  debug: !isProduction,
+  enabled: isProduction,
   replaysOnErrorSampleRate: 1.0,
   replaysSessionSampleRate: 0.1,
   integrations: [
@@ -24,8 +23,7 @@ Sentry.init({
     browserTracingIntegration(),
   ],
   beforeSend(event) {
-    // eslint-disable-next-line no-restricted-globals
-    if (env.NODE_ENV !== "production" && env.VERCEL_ENV !== "production") {
+    if (!isProduction) {
       return null;
     }
     return event;
