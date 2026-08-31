@@ -117,6 +117,8 @@ export async function buildMistakeExam(
         subtopic: true,
         question: true,
         options: true,
+        correctAnswer: true,
+        explanation: true,
         difficulty: true,
         sourceExam: true,
         year: true,
@@ -126,7 +128,7 @@ export async function buildMistakeExam(
 
     const byId = new Map(rows.map((r) => [r.id, r]));
     const questions: ExamQuestionDTO[] = questionIds
-      .map((id) => {
+      .map((id): ExamQuestionDTO | null => {
         const q = byId.get(id);
         if (!q) return null;
         return {
@@ -137,6 +139,8 @@ export async function buildMistakeExam(
           subtopic: q.subtopic,
           question: q.question,
           options: (q.options as string[]) ?? [],
+          correctAnswer: q.correctAnswer,
+          explanation: q.explanation,
           difficulty: q.difficulty as ExamQuestionDTO["difficulty"],
           sourceExam: q.sourceExam,
           year: q.year,

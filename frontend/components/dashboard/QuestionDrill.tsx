@@ -167,8 +167,8 @@ export default function QuestionDrill({
         <div className="space-y-2">
           {current.options.map((opt, i) => {
             const optLetter = String.fromCharCode(65 + i);
-            const isSelected = selected === optLetter;
-            const isAnswer = optLetter === current.correctAnswer.trim();
+            const isSelected = selected === opt;
+            const isAnswer = opt.trim() === current.correctAnswer.trim();
             let cls = "border-zinc-800 hover:border-emerald-500/30 text-zinc-300";
             if (revealed) {
               if (isAnswer) cls = "border-emerald-500/50 bg-emerald-500/10 text-emerald-300";
@@ -181,7 +181,7 @@ export default function QuestionDrill({
               <button
                 key={optLetter}
                 disabled={revealed}
-                onClick={() => setSelected(optLetter)}
+                onClick={() => setSelected(opt)}
                 className={`w-full text-left px-4 py-3 rounded-lg border font-mono text-sm transition-all flex items-center gap-3 ${cls}`}
               >
                 <span className="font-bold">{optLetter}.</span>

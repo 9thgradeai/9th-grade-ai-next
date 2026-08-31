@@ -619,6 +619,13 @@ export namespace Server {
     difficulty: "EASY" | "MEDIUM" | "HARD";
     sourceExam: string;
     year: number | null;
+    /**
+     * Present only on practice-drill exam builders (e.g. the mistake exam),
+     * which are studied rather than graded — so the drill can grade and reveal
+     * the correct answer. Graded exam builds keep these absent by design.
+     */
+    correctAnswer?: string;
+    explanation?: string;
   };
 
   export type ExamBuildResultDTO = {

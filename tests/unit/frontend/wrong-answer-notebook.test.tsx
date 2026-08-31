@@ -20,13 +20,17 @@ vi.mock("@/lib/toast-ctx", () => ({
 vi.mock("@/components/dashboard/QuestionDrill", () => ({
   default: ({
     title,
+    questions,
     onComplete,
   }: {
     title: string;
+    questions: { correctAnswer: string; explanation: string }[];
     onComplete?: (answered: { questionId: number; correct: boolean; justMastered?: boolean }[]) => void;
   }) => (
     <div>
       <span>DRILL:{title}</span>
+      <span>ANSWER:{questions[0]?.correctAnswer ?? ""}</span>
+      <span>EXPL:{questions[0]?.explanation ?? ""}</span>
       <button
         onClick={() =>
           onComplete?.([
@@ -163,6 +167,8 @@ describe("WrongAnswerNotebookTab", () => {
           subtopic: "",
           question: "Which of the following is linear?",
           options: ["a", "b", "c", "d"],
+          correctAnswer: "c",
+          explanation: "Linear equations have degree one.",
           difficulty: "MEDIUM",
           year: null,
           sourceExam: "BCS",
@@ -182,6 +188,9 @@ describe("WrongAnswerNotebookTab", () => {
       expect(screen.getByText("DRILL:Mistake Practice")).toBeTruthy();
     });
     expect(api.buildMistakeExam).toHaveBeenCalled();
+    // The drill must receive the answer key + explanation (regression).
+    expect(screen.getByText("ANSWER:c")).toBeTruthy();
+    expect(screen.getByText("EXPL:Linear equations have degree one.")).toBeTruthy();
   });
 
   it("opens the exam config view from the empty state", async () => {

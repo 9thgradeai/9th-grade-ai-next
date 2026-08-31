@@ -153,8 +153,8 @@ export default function MistakesTab() {
           subtopic: q.subtopic,
           question: q.question,
           options: q.options,
-          correctAnswer: "",
-          explanation: "",
+          correctAnswer: q.correctAnswer ?? "",
+          explanation: q.explanation ?? "",
           difficulty: q.difficulty,
           year: q.year,
           sourceExam: q.sourceExam,
@@ -567,7 +567,7 @@ export default function MistakesTab() {
                             <div className="space-y-1.5">
                               {q.options.map((opt, i) => {
                                 const letter = String.fromCharCode(65 + i);
-                                const isCorrect = letter === q.correctAnswer.trim();
+                                const isCorrect = opt.trim() === q.correctAnswer.trim();
                                 return (
                                   <div
                                     key={letter}

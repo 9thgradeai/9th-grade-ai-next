@@ -362,6 +362,8 @@ describe("POST /api/mistakes/exam", () => {
         subtopic: "Linear",
         question: "Which of the following is linear?",
         options: ["a", "b", "c", "d"],
+        correctAnswer: "c",
+        explanation: "Linear equations have degree one.",
         difficulty: "MEDIUM",
         sourceExam: "BCS",
         year: null,
@@ -376,5 +378,7 @@ describe("POST /api/mistakes/exam", () => {
     const body = await res.json();
     expect(body.result.questions).toHaveLength(1);
     expect(body.result.questions[0].topic).toBe("Algebra");
+    expect(body.result.questions[0].correctAnswer).toBe("c");
+    expect(body.result.questions[0].explanation).toBe("Linear equations have degree one.");
   });
 });
