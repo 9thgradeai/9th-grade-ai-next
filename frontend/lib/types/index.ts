@@ -658,6 +658,9 @@ export namespace Server {
     userAnswer: string;
     status: "correct" | "wrong" | "unanswered";
     marks: number;
+    /** Mistake/mastery feedback for this attempt (present during mistake practice). */
+    masteryStatus?: MasteryStatus | null;
+    justMastered?: boolean;
   };
 
   export type ExamResultDTO = {
@@ -676,6 +679,56 @@ export namespace Server {
     flashcardsReviewed: number;
     aiQuestionsAsked: number;
     activity: { date: string; answered: number; correct: number }[];
+  };
+
+  // ── Mistake / Mastery system ─────────────────────────────
+  export type MasteryStatus = "NEW" | "STRUGGLING" | "REVIEWING" | "IMPROVING" | "MASTERED";
+
+  export type MistakeItemDTO = {
+    id: number;
+    questionId: number;
+    totalAttempts: number;
+    correctAttempts: number;
+    incorrectAttempts: number;
+    consecutiveCorrect: number;
+    mistakeCount: number;
+    masteryScore: number;
+    masteryStatus: MasteryStatus;
+    isMistake: boolean;
+    firstIncorrectAt: string | null;
+    lastIncorrectAt: string | null;
+    lastCorrectAt: string | null;
+    lastReviewedAt: string | null;
+    reviewCount: number;
+    lastSubject: string;
+    lastTopic: string;
+    question: QuestionDTO;
+  };
+
+  export type MistakeStatsDTO = {
+    totalMistakes: number;
+    unmastered: number;
+    struggling: number;
+    reviewing: number;
+    improving: number;
+    mastered: number;
+    accuracy: number;
+    totalAttempts: number;
+    totalCorrect: number;
+  };
+
+  export type SubjectMistakeCountDTO = {
+    subject: string;
+    count: number;
+    unmastered: number;
+  };
+
+  export type MistakeExamConfigDTO = {
+    subject?: string;
+    count: number;
+    difficulty?: string;
+    focus?: string;
+    durationSec?: number;
   };
 
   export type UserDTO = {
@@ -735,6 +788,11 @@ export type ExamResultDTO = Server.ExamResultDTO;
 export type WeakTopicDTO = Server.WeakTopicDTO;
 export type LeaderboardEntryDTO = Server.LeaderboardEntryDTO;
 export type DailyQuizHistoryItemDTO = Server.DailyQuizHistoryItemDTO;
+export type MistakeItemDTO = Server.MistakeItemDTO;
+export type MistakeStatsDTO = Server.MistakeStatsDTO;
+export type SubjectMistakeCountDTO = Server.SubjectMistakeCountDTO;
+export type MistakeExamConfigDTO = Server.MistakeExamConfigDTO;
+export type MasteryStatus = Server.MasteryStatus;
 export type TutorMessage = Client.TutorMessage;
 export type FlashNews = Client.FlashNews;
 export type SubjectCard = Client.SubjectCard;

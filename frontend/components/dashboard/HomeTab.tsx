@@ -11,6 +11,7 @@ import {
   Trophy,
   ClipboardList,
   Flag,
+  BookX,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-ctx";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
@@ -181,6 +182,8 @@ export default function HomeTab() {
   const [results, setResults] = useState<Server.MockTestResultDTO[]>([]);
   const [news, setNews] = useState<Server.FlashNewsDTO[]>([]);
   const [pendingMistakes, setPendingMistakes] = useState(0);
+  const [mistakeStatsData, setMistakeStatsData] = useState(0);
+  const [mistakeSubjectsData, setMistakeSubjectsData] = useState<Server.SubjectMistakeCountDTO[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadFailed, setLoadFailed] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
@@ -189,7 +192,7 @@ export default function HomeTab() {
     let cancelled = false;
     void (async () => {
       try {
-        const [s, r, e, t, m, n, w] = await Promise.allSettled([
+        const [s, r, e, t, m, n, w, ms, msub] = await Promise.allSettled([
           api.dashboardStats(),
           api.subjectReports(),
           api.examSchedule(),
@@ -197,6 +200,8 @@ export default function HomeTab() {
           api.mockTestResults(),
           api.news(),
           api.wrongAnswers({ limit: 1 }),
+          api.mistakeStats(),
+          api.mistakeSubjects(),
         ]);
         if (cancelled) return;
         if (s.status === "fulfilled") setStats(s.value);
@@ -211,6 +216,8 @@ export default function HomeTab() {
         if (m.status === "fulfilled") setResults(m.value);
         if (n.status === "fulfilled") setNews(n.value);
         if (w.status === "fulfilled") setPendingMistakes(w.value.total);
+        if (ms.status === "fulfilled") setMistakeStatsData(ms.value.totalMistakes);
+        if (msub.status === "fulfilled") setMistakeSubjectsData(msub.value);
         // Surface a total outage instead of silently rendering zeros.
         if ([s, r, e, t, m, n, w].every((p) => p.status === "rejected")) {
           setLoadFailed(true);
@@ -694,6 +701,53 @@ export default function HomeTab() {
           )}
         </motion.div>
       </div>
+
+      {/* Weak spots / mistakes */}
+      {mistakeStatsData > 0 && (
+        <div className="[content-visibility:auto] [contain-intrinsic-size:auto_260px]">
+          <motion.div
+            variants={STAGGER_ITEM}
+            className="glass-card rounded-2xl border border-terminal-border overflow-hidden"
+          >
+            <div className="px-5 py-4 border-b border-terminal-border flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <BookX className="w-4 h-4 text-rose-400" />
+                <h3 className="text-sm font-semibold text-white uppercase tracking-wider">
+                  Your Weak Spots
+                </h3>
+              </div>
+              <button
+                onClick={() => setActiveTab("wrong-answers")}
+                className="text-xs text-emerald-400 font-mono hover:text-emerald-300 transition-colors flex items-center gap-1"
+              >
+                Practice Mistakes <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+            <div className="p-4">
+              <p className="text-sm text-zinc-200 font-mono mb-3">
+                {mistakeStatsData} question{mistakeStatsData !== 1 ? "s" : ""} need attention
+              </p>
+              <div className="space-y-2">
+                {mistakeSubjectsData.slice(0, 3).map((s) => (
+                  <button
+                    key={s.subject}
+                    onClick={() => setActiveTab("wrong-answers")}
+                    className="w-full flex items-center justify-between p-2.5 rounded-lg border border-terminal-border hover:bg-zinc-900/50 transition-colors text-left"
+                  >
+                    <span className="text-sm text-zinc-200 font-mono truncate">{s.subject}</span>
+                    <span className="text-xs text-rose-400 font-mono shrink-0 ml-2">
+                      {s.unmastered} unresolved
+                    </span>
+                  </button>
+                ))}
+              </div>
+              <p className="text-[11px] text-zinc-500 font-mono mt-3">
+                You&apos;re improving — every practice brings you closer to mastery.
+              </p>
+            </div>
+          </motion.div>
+        </div>
+      )}
 
       {/* Daily quiz */}
       <div className="[content-visibility:auto] [contain-intrinsic-size:auto_360px]">

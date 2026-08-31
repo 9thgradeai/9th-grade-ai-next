@@ -9,6 +9,7 @@ import { prisma } from "~backend/db";
 import { AppError, InternalServerError } from "~backend/errors";
 import { recomputeAndAward } from "~backend/repositories/progress.repository";
 import { emit } from "~backend/events/bus";
+import { recordQuestionAttempt } from "./question-progress";
 
 export type SubmittedAnswer = {
   questionId: number;
@@ -20,6 +21,8 @@ export type SubmissionSummary = {
   total: number;
   score: number; // percentage 0-100
   pointsEarned: number;
+  /** Per-question mastery feedback, keyed by questionId (mistake practice). */
+  feedback?: Record<number, { masteryStatus: string; isMistake: boolean; justMastered: boolean }>;
 };
 
 const POINTS_PER_CORRECT = 10;
@@ -110,12 +113,32 @@ export async function submitPracticeAnswers(
     });
 
     const pointsEarned = correct * POINTS_PER_CORRECT;
+    const feedback: NonNullable<SubmissionSummary["feedback"]> = {};
     await prisma.$transaction(async (tx) => {
       await recordAttemptsAtomically(tx, userId, attempts, pointsEarned);
+      // Record per-question mastery progress for mistake tracking.
+      for (const a of answered) {
+        const q = byId.get(a.questionId);
+        const isCorrect = a.selected.trim() === q?.correctAnswer.trim();
+        const fb = await recordQuestionAttempt(tx, {
+          userId,
+          questionId: a.questionId,
+          isCorrect,
+          subject: q?.subject?.nameBn,
+          topic: q?.topic,
+        });
+        if (fb && fb.masteryStatus) {
+          feedback[a.questionId] = {
+            masteryStatus: fb.masteryStatus,
+            isMistake: fb.isMistake,
+            justMastered: fb.justMastered,
+          };
+        }
+      }
     });
     // Domain event (Phase 11) — emitted only after the transaction committed.
     emit({ name: "PRACTICE_SUBMITTED", userId, correct, total, score: total > 0 ? Math.round((correct / total) * 100) : 0 });
-    return { correct, total, score: total > 0 ? Math.round((correct / total) * 100) : 0, pointsEarned };
+    return { correct, total, score: total > 0 ? Math.round((correct / total) * 100) : 0, pointsEarned, feedback };
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new InternalServerError("Failed to record practice answers");
@@ -183,6 +206,18 @@ export async function submitDailyQuiz(
           completedAt: new Date(),
         },
       });
+      // Record per-question mastery progress for mistake tracking.
+      for (const a of answered) {
+        const q = byId.get(a.questionId);
+        const isCorrect = a.selected.trim() === q?.correctAnswer.trim();
+        await recordQuestionAttempt(tx, {
+          userId,
+          questionId: a.questionId,
+          isCorrect,
+          subject: q?.subject,
+          topic: q?.topic,
+        });
+      }
     });
 
     emit({ name: "DAILY_QUIZ_COMPLETED", userId, quizId, score });

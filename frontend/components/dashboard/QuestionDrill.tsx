@@ -1,15 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-import { CheckCircle2, XCircle, ArrowRight, RotateCcw } from "lucide-react";
+import { CheckCircle2, XCircle, ArrowRight, RotateCcw, TrendingUp } from "lucide-react";
 import { api } from "@/lib/services/api";
 import type { QuestionDTO } from "@/lib/types";
 
-type Answered = {
+export type DrillAnswered = {
   questionId: number;
   selected: string;
   correct: boolean;
+  masteryStatus?: string | null;
+  justMastered?: boolean;
 };
 
 /**
@@ -21,20 +23,46 @@ type Answered = {
  * The question set is treated as immutable for the component's lifetime — the
  * caller should pass a `key` to remount when a different set is drilled.
  */
+
 export default function QuestionDrill({
   questions,
   onExit,
   title = "প্র্যাকটিস",
+  onComplete,
 }: {
   questions: QuestionDTO[];
   onExit?: () => void;
   title?: string;
+  /** Called with the answered records (incl. mastery feedback) once the set is finished. */
+  onComplete?: (answered: DrillAnswered[]) => void;
 }) {
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
   const [revealed, setRevealed] = useState(false);
-  const [answered, setAnswered] = useState<Answered[]>([]);
+  const [answered, setAnswered] = useState<DrillAnswered[]>([]);
   const [submitting, setSubmitting] = useState(false);
+  const [lastFeedback, setLastFeedback] = useState<{ masteryStatus?: string | null; justMastered?: boolean } | null>(null);
+
+  const reportedRef = useRef(false);
+
+  const correctCount = answered.filter((a) => a.correct).length;
+  const done = index >= questions.length - 1 && revealed;
+
+  useEffect(() => {
+    if (done && !reportedRef.current) {
+      reportedRef.current = true;
+      onComplete?.(answered);
+    }
+  }, [done, answered, onComplete]);
+
+  const resetDrill = () => {
+    setIndex(0);
+    setSelected(null);
+    setRevealed(false);
+    setAnswered([]);
+    setLastFeedback(null);
+    reportedRef.current = false;
+  };
 
   if (questions.length === 0) {
     return (
@@ -51,16 +79,22 @@ export default function QuestionDrill({
   const handleSubmit = async () => {
     if (selected === null || revealed || submitting) return;
     setSubmitting(true);
+    let fb: { masteryStatus?: string | null; justMastered?: boolean } = {};
     try {
-      await api.submitPractice([{ questionId: current.id, selected }]);
+      const res = await api.submitPractice([{ questionId: current.id, selected }]);
+      const questionFb = res.feedback?.[current.id];
+      if (questionFb) {
+        fb = { masteryStatus: questionFb.masteryStatus, justMastered: questionFb.justMastered };
+      }
     } catch {
       /* Recording failure shouldn't block the user from reviewing the answer. */
     } finally {
       setSubmitting(false);
       setRevealed(true);
+      setLastFeedback(fb);
       setAnswered((prev) => [
         ...prev,
-        { questionId: current.id, selected, correct: isCorrect },
+        { questionId: current.id, selected, correct: isCorrect, ...fb },
       ]);
     }
   };
@@ -70,10 +104,8 @@ export default function QuestionDrill({
     setIndex((i) => i + 1);
     setSelected(null);
     setRevealed(false);
+    setLastFeedback(null);
   };
-
-  const correctCount = answered.filter((a) => a.correct).length;
-  const done = index >= questions.length - 1 && revealed;
 
   if (done) {
     const score = Math.round((correctCount / questions.length) * 100);
@@ -88,12 +120,7 @@ export default function QuestionDrill({
         </p>
         <div className="flex gap-3 justify-center">
           <button
-            onClick={() => {
-              setIndex(0);
-              setSelected(null);
-              setRevealed(false);
-              setAnswered([]);
-            }}
+            onClick={resetDrill}
             className="px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-300 font-mono text-sm hover:text-white transition-colors flex items-center gap-2"
           >
             <RotateCcw className="w-4 h-4" /> আবার
@@ -172,6 +199,46 @@ export default function QuestionDrill({
           </p>
         )}
       </div>
+
+      {revealed && lastFeedback && (
+        <motion.div
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          className={`rounded-terminal-rounded border px-4 py-3 flex items-center gap-3 ${
+            lastFeedback.justMastered
+              ? "bg-emerald-500/15 border-emerald-500/40"
+              : isCorrect
+                ? "bg-emerald-500/10 border-emerald-500/25"
+                : "bg-amber-500/10 border-amber-500/25"
+          }`}
+        >
+          {lastFeedback.justMastered ? (
+            <>
+              <TrendingUp className="w-5 h-5 text-emerald-400" />
+              <div>
+                <p className="text-sm font-mono font-bold text-emerald-300">Mastered!</p>
+                <p className="text-xs font-mono text-emerald-500/80">এই প্রশ্নটি এখন আয়ত্ত — চমৎকার!</p>
+              </div>
+            </>
+          ) : isCorrect ? (
+            <>
+              <TrendingUp className="w-5 h-5 text-emerald-400" />
+              <div>
+                <p className="text-sm font-mono font-bold text-emerald-300">Improved!</p>
+                <p className="text-xs font-mono text-emerald-500/80">সঠিক উত্তর — অগ্রগতি হয়েছে।</p>
+              </div>
+            </>
+          ) : (
+            <>
+              <XCircle className="w-5 h-5 text-amber-400" />
+              <div>
+                <p className="text-sm font-mono font-bold text-amber-300">Keep Working On It</p>
+                <p className="text-xs font-mono text-amber-500/80">ভুল হয়েছে — ব্যাখ্যা পড়ে আবার চেষ্টা করুন।</p>
+              </div>
+            </>
+          )}
+        </motion.div>
+      )}
 
       <div className="flex items-center justify-between">
         {!revealed ? (

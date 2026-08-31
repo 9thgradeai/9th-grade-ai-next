@@ -134,6 +134,14 @@ source; default to `UNKNOWN` and only promote on verified evidence.
 - `CURATED`
 - `UNKNOWN`
 
+#### MasteryStatus
+Per-question mastery stage in the mistake-practice model (see `UserQuestionProgress`).
+- `NEW` — never attempted
+- `STRUGGLING` — recently answered incorrectly
+- `REVIEWING` — 1 correct after a mistake
+- `IMPROVING` — 2 consecutive correct
+- `MASTERED` — 3 consecutive correct
+
 ### Models
 
 #### User
@@ -525,6 +533,41 @@ Per-user record of every answered question (practice, mock test, daily quiz). Po
 - `source` String — `practice` | `mock` | `daily`
 - `createdAt` DateTime — default `now()`
 - Indexes: `[userId, createdAt]`, `[userId, subjectId]`, `[userId, subjectName]`, `[userId, topic]` (the last two back the raw-SQL analytics group-bys)
+
+#### UserQuestionProgress
+One persistent row per `(userId, questionId)` recording mastery and mistake
+history. Written atomically inside the existing attempt-submission transaction
+via `backend/services/question-progress.ts::recordQuestionAttempt`. Never delete
+mastery history when a question becomes mastered — repeated mistakes increase
+`mistakeCount` and boost priority.
+- `id` Int — PK, auto-increment
+- `userId` String — FK to User (cascade)
+- `user` User — relation
+- `questionId` Int — FK to Question (cascade)
+- `question` Question — relation
+- `totalAttempts` Int — default `0`
+- `correctAttempts` Int — default `0`
+- `incorrectAttempts` Int — default `0`
+- `consecutiveCorrect` Int — default `0` (resets to 0 on a wrong answer)
+- `consecutiveIncorrect` Int — default `0` (resets to 0 on a correct answer)
+- `mistakeCount` Int — default `0` (total times answered incorrectly; never reset)
+- `masteryScore` Float — default `0` (0-100, driven by score deltas on correct/incorrect)
+- `masteryStatus` MasteryStatus — default `NEW`
+- `masteredAt` DateTime? — when status first reached `MASTERED`
+- `isMistake` Boolean — default `false` (true while the question needs practice; cleared at `MASTERED`)
+- `firstIncorrectAt` DateTime?
+- `lastIncorrectAt` DateTime?
+- `lastCorrectAt` DateTime?
+- `reviewCount` Int — default `0` (times reviewed after the initial mistake)
+- `lastReviewedAt` DateTime?
+- `nextReviewAt` DateTime? — spaced-repetition next review target
+- `lastSubject` String — default `""` (context of the last attempt)
+- `lastTopic` String — default `""`
+- `lastExam` String — default `""`
+- `createdAt` DateTime — default `now()`
+- `updatedAt` DateTime — updatedAt
+- Unique constraint: `[userId, questionId]`
+- Indexes: `[userId, isMistake]`, `[userId, lastSubject]`, `[userId, masteryStatus]`, `[userId, lastIncorrectAt]`, `[userId, nextReviewAt]`, `[questionId]`
 
 #### MockTestResult
 A graded mock-test attempt (history + exam KPIs).

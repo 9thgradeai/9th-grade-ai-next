@@ -119,6 +119,14 @@ enum DailyQuizParticipationStatus {
   COMPLETED
 }
 
+enum MasteryStatus {
+  NEW
+  STRUGGLING
+  REVIEWING
+  IMPROVING
+  MASTERED
+}
+
 // ── Auth ──────────────────────────────────────────────────
 model User {
   id           String         @id @default(cuid())
@@ -180,6 +188,7 @@ model User {
   flashcardUserStates     FlashcardUserState[]
   studyTaskCompletions    StudyTaskCompletion[]
   userBadges              UserBadge[]
+  questionProgress        UserQuestionProgress[]
 
   // NOTE: `email` and `handle` are @unique — their backing indexes already
   // serve lookups; explicit duplicates were removed (write amplification).
@@ -321,6 +330,7 @@ model Question {
   updatedAt      DateTime @updatedAt
   bookmarks      Bookmark[]
   attempts       QuestionAttempt[]
+  userProgress   UserQuestionProgress[]
 
   @@index([subjectId, difficulty])
   @@index([subjectId, path])
@@ -855,4 +865,61 @@ model AIFeedback {
 
   @@index([userId, createdAt])
   @@index([messageId])
+}
+
+// ── Per-user question mastery / mistake tracking ───────────
+// One persistent row per (user, question). Updated atomically on every answer
+// submission across all practice modes. Powers the Mistake Practice system.
+model UserQuestionProgress {
+  id                 Int           @id @default(autoincrement())
+  userId             String
+  user               User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  questionId         Int
+  question           Question      @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  // ── Performance counters ──
+  totalAttempts      Int           @default(0)
+  correctAttempts    Int           @default(0)
+  incorrectAttempts  Int           @default(0)
+  consecutiveCorrect Int           @default(0)
+  consecutiveIncorrect Int         @default(0)
+  mistakeCount       Int           @default(0) // times answered incorrectly (total history)
+
+  // ── Mastery scoring ──
+  masteryScore       Float         @default(0) // 0–100, computed from attempt history
+  masteryStatus      MasteryStatus @default(NEW)
+  masteredAt         DateTime?     // timestamp when status first reached MASTERED
+
+  // ── Mistake tracking ──
+  isMistake          Boolean       @default(false) // true while the question needs practice
+  firstIncorrectAt   DateTime?     // when the user first got this wrong
+  lastIncorrectAt    DateTime?     // most recent incorrect attempt
+  lastCorrectAt      DateTime?     // most recent correct attempt
+
+  // ── Review scheduling ──
+  reviewCount        Int           @default(0) // times reviewed after initial mistake
+  lastReviewedAt     DateTime?
+  nextReviewAt       DateTime?     // spaced-repetition next review target
+
+  // ── Context (last seen) ──
+  lastSubject        String        @default("")
+  lastTopic          String        @default("")
+  lastExam           String        @default("")
+
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  @@unique([userId, questionId])
+  // Mistake list: filter by (userId, isMistake) — the primary query pattern.
+  @@index([userId, isMistake])
+  // Subject breakdown: aggregate mistakes per subject.
+  @@index([userId, lastSubject])
+  // Status filtering: filter by (userId, masteryStatus).
+  @@index([userId, masteryStatus])
+  // Sort by recency: order by lastIncorrectAt for "recently wrong" sort.
+  @@index([userId, lastIncorrectAt])
+  // Review scheduling: find questions due for review.
+  @@index([userId, nextReviewAt])
+  // FK-side: Question cascade deletes must not seq-scan this table.
+  @@index([questionId])
 }

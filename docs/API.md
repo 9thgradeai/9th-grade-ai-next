@@ -56,7 +56,7 @@ All mutating endpoints (auth and non-auth) reject cross-origin requests via an O
 | POST | `/api/study-plan/tasks/:id/toggle` | **Auth required** — Toggle task completion (per-user completion marker; template tasks toggleable) |
 | POST | `/api/flashcards/review` | **Auth required** — Grade a flashcard `{ flashcardId, rating: 0\|1\|2\|3 }` (0=again, 1=hard, 2=good, 3=easy) → per-user SM-2 state `{ state: { nextReview, interval, easeFactor, repetitions, lapses } }` |
 | GET | `/api/dashboard-stats` | **Auth required** — Caller's dashboard stats (per-user) |
-| POST | `/api/practice/submit` | **Auth required** — Grade practice answers `{ answers: [{ questionId, selected }] }` |
+| POST | `/api/practice/submit` | **Auth required** — Grade practice answers `{ answers: [{ questionId, selected }] }` → `{ summary: { correct, total, score, pointsEarned, feedback? } }`. `feedback` is a per-question map `{ [questionId]: { masteryStatus, isMistake, justMastered } }` powering the mistake-drill's mastery labels (see `MistakeFeedback`). |
 | POST | `/api/daily-quiz/submit` | **Auth required** — Grade + persist daily quiz answers `{ quizId, answers }` |
 | POST | `/api/notifications/:id/read` | **Auth required** — Mark a notification read |
 | GET | `/api/exam/config` | List the custom-exam selection tree (subjects → topics → subtopics with question counts) |
@@ -85,6 +85,10 @@ All mutating endpoints (auth and non-auth) reject cross-origin requests via an O
 | GET | `/api/weak-topics` | **Auth required** — Topics ranked weakest-first by accuracy from the caller's attempts. Query: `?minAttempts=` (default 3), `?limit=` (default 10). Response: `{ topics: [{ subject, topic, attempted, correct, score }] }` (ascending `score`) |
 | GET | `/api/leaderboard` | **Auth required** — Points-ranked leaderboard. Query: `?limit=` (default 20, max 50). Response: `{ entries: [{ rank, name, points, streak }], me: { rank, points } \| null }` |
 | GET | `/api/daily-quiz/history` | **Auth required** — The caller's completed daily quizzes (newest-first, default 14). Response: `{ history: [{ quizId, date, score, correct, total, completedAt }] }` (dates stringified) |
+| GET | `/api/mistakes` | **Auth required** — The caller's persistent mistake list (questions answered incorrectly, tracked until mastered). Query: `?page=` (default 1), `?limit=` (default 20, max 100), `?subject=`, `?status=`, `?sort=`. Response: `{ data: [MistakeItem], total, page, limit, totalPages }` |
+| GET | `/api/mistakes/stats` | **Auth required** — Mistake summary metrics. Response: `{ totalMistakes, unmastered, struggling, reviewing, improving, mastered, totalAttempts, totalCorrect, accuracy }` |
+| GET | `/api/mistakes/subjects` | **Auth required** — Mistake count broken down by subject. Response: `{ subjects: [{ subject, count, unmastered }] }` |
+| POST | `/api/mistakes/exam` | **Auth required** — Build a mistake-focused exam from the caller's tracked mistakes. Body: `{ subject?, count, focus }`. Reuses the exam engine. Returns `ExamBuild`-shaped `{ questions: [MistakeExamQuestion] }` (no correct answers). 404 if there are no mistakes to practice |
 
 ## Response Shapes
 
@@ -181,6 +185,52 @@ Now **streams** a `application/json` token stream (same shape as below). Headers
 ```json
 { "history": [{ "quizId": 1, "date": "2026-01-01", "score": 80, "correct": 4, "total": 5, "completedAt": "2026-01-01T10:00:00.000Z" }] }
 ```
+
+### MistakeItem
+One tracked mistake (`GET /api/mistakes` list item).
+```json
+{
+  "id": 1, "questionId": 101,
+  "totalAttempts": 3, "correctAttempts": 1, "incorrectAttempts": 2,
+  "consecutiveCorrect": 0, "consecutiveIncorrect": 2,
+  "mistakeCount": 2, "masteryScore": 30, "masteryStatus": "STRUGGLING",
+  "masteredAt": null, "isMistake": true,
+  "firstIncorrectAt": "2024-01-01T00:00:00Z", "lastIncorrectAt": "2024-01-02T00:00:00Z",
+  "lastCorrectAt": null, "reviewCount": 0, "lastReviewedAt": null, "nextReviewAt": null,
+  "lastSubject": "Math", "lastTopic": "Algebra", "lastExam": "",
+  "createdAt": "2024-01-01T00:00:00Z", "updatedAt": "2024-01-02T00:00:00Z",
+  "question": { "id": 101, "subjectId": 1, "subject": "Math", "topic": "Algebra", "subtopic": "Linear Equation", "question": "...", "options": ["a","b","c","d"], "correctAnswer": "a", "explanation": "...", "difficulty": "MEDIUM", "year": null, "sourceExam": "BCS", "bcsTerm": null }
+}
+```
+`masteryStatus` is one of `NEW | STRUGGLING | REVIEWING | IMPROVING | MASTERED`.
+
+### MistakeStats
+```json
+{ "totalMistakes": 5, "unmastered": 4, "struggling": 3, "reviewing": 1, "improving": 0, "mastered": 1, "totalAttempts": 12, "totalCorrect": 5, "accuracy": 42 }
+```
+
+### MistakeSubjects
+```json
+{ "subjects": [{ "subject": "Math", "count": 3, "unmastered": 2 }] }
+```
+
+### MistakeExamBuild
+`POST /api/mistakes/exam` returns an `ExamBuild`-shaped payload limited to
+question fields (no `correctAnswer`/`explanation`) so in-flight attempts can't be
+auto-answered. `focus` is one of `most_wrong | recently_wrong | weakest_topics | due_for_review | random`.
+```json
+{ "questions": [{ "id": 101, "subjectId": 1, "subject": "Math", "topic": "Algebra", "subtopic": "", "question": "...", "options": ["a","b","c","d"], "difficulty": "MEDIUM", "year": null, "sourceExam": "BCS" }] }
+```
+
+### MistakeFeedback
+Per-question mastery feedback returned on `POST /api/practice/submit` (and per
+review item on `POST /api/exam/submit`). The mistake drill uses it to show
+question-level labels: **Improved!** (correct, still a mistake), **Keep Working
+On It** (wrong), and **Mastered!** (`justMastered: true`).
+```json
+{ "feedback": { "101": { "masteryStatus": "MASTERED", "isMistake": false, "justMastered": true } } }
+```
+`masteryStatus` is one of `NEW | STRUGGLING | REVIEWING | IMPROVING | MASTERED`.
 
 ### ExamConfig (selection tree)
 The tree mirrors the recursive Topic taxonomy. Every node carries its aggregated

@@ -371,8 +371,22 @@ export const api = {
 
   submitPractice: async (
     answers: { questionId: number; selected: string }[],
-  ): Promise<{ correct: number; total: number; score: number; pointsEarned: number }> => {
-    const data = await request<{ summary: { correct: number; total: number; score: number; pointsEarned: number } }>(
+  ): Promise<{
+    correct: number;
+    total: number;
+    score: number;
+    pointsEarned: number;
+    feedback?: Record<number, { masteryStatus: string; isMistake: boolean; justMastered: boolean }>;
+  }> => {
+    const data = await request<{
+      summary: {
+        correct: number;
+        total: number;
+        score: number;
+        pointsEarned: number;
+        feedback?: Record<number, { masteryStatus: string; isMistake: boolean; justMastered: boolean }>;
+      };
+    }>(
       "/api/practice/submit",
       {
         method: "POST",
@@ -395,6 +409,57 @@ export const api = {
 
   toggleStudyTask: (taskId: number): Promise<{ completed: boolean }> =>
     mutate(`/api/study-plan/tasks/${taskId}/toggle`, "POST"),
+
+  // ── Mistake / Mastery system ─────────────────────────────
+
+  /** Paginated mistake list with filters. */
+  mistakes: (params?: {
+    page?: number;
+    limit?: number;
+    subject?: string;
+    status?: string;
+    difficulty?: string;
+    topic?: string;
+    sort?: string;
+  }): Promise<{
+    data: Server.MistakeItemDTO[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }> => {
+    const qs = new URLSearchParams();
+    if (params) {
+      for (const [k, v] of Object.entries(params)) {
+        if (v !== undefined && String(v).length > 0) qs.set(k, String(v));
+      }
+    }
+    const suffix = qs.toString() ? `?${qs.toString()}` : "";
+    return cachedGet(`/api/mistakes${suffix}`);
+  },
+
+  /** Mistake statistics for the signed-in user. */
+  mistakeStats: (): Promise<Server.MistakeStatsDTO> =>
+    cachedGet<Server.MistakeStatsDTO>("/api/mistakes/stats"),
+
+  /** Mistake counts per subject. */
+  mistakeSubjects: (): Promise<Server.SubjectMistakeCountDTO[]> =>
+    cachedGet<{ subjects: Server.SubjectMistakeCountDTO[] }>("/api/mistakes/subjects").then(
+      (d) => d.subjects,
+    ),
+
+  /** Build a mistake practice exam. */
+  buildMistakeExam: async (
+    config: Server.MistakeExamConfigDTO,
+  ): Promise<Server.ExamBuildResultDTO> => {
+    const data = await request<{ result: Server.ExamBuildResultDTO }>("/api/mistakes/exam", {
+      method: "POST",
+      ...AUTH_FETCH_INIT,
+      body: JSON.stringify(config),
+      headers: { "Content-Type": "application/json" },
+    });
+    return data.result;
+  },
 };
 
 // ── Account / settings methods (auth endpoints) ─────────────
