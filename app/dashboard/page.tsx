@@ -43,6 +43,7 @@ const TAB_COMPONENTS: Record<TabId, React.ComponentType> = {
   "question-bank": dynamic(() => import("@/components/dashboard/QuestionBankTab"), { loading: TabChunkLoading }),
   progress: dynamic(() => import("@/components/dashboard/ProgressTab"), { loading: TabChunkLoading }),
   "wrong-answers": dynamic(() => import("@/components/dashboard/WrongAnswerNotebookTab"), { loading: TabChunkLoading }),
+  mistakes: dynamic(() => import("@/components/dashboard/MistakesTab"), { loading: TabChunkLoading }),
   settings: dynamic(() => import("@/components/dashboard/SettingsTab"), { loading: TabChunkLoading }),
 };
 

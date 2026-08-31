@@ -11,12 +11,15 @@ import { shuffleWithSeed } from "./exam";
 import {
   getMistakeQuestionIds,
   getCrossSubjectMistakeIds,
+  getMistakeQuestionIdsBySelection,
 } from "~backend/repositories/question-progress.repository";
 import { scoreMistakeQuestions } from "./question-progress";
 import type { ExamQuestionDTO, ExamBuildResultDTO } from "@/lib/types";
 
 export type MistakeExamConfig = {
   subject?: string; // undefined = all subjects
+  topic?: string; // optional topic preference (over the mistake pool)
+  subtopic?: string; // optional subtopic preference (over the mistake pool)
   count: number; // number of questions
   difficulty?: string;
   focus?: string; // most_wrong | recently_wrong | weakest_topics | due_for_review | random
@@ -45,6 +48,8 @@ function validateMistakeExamConfig(config: MistakeExamConfig) {
   }
   return {
     subject: config.subject ?? "",
+    topic: config.topic ?? "",
+    subtopic: config.subtopic ?? "",
     count: config.count,
     difficulty: config.difficulty ?? "",
     focus: config.focus ?? "most_wrong",
@@ -65,7 +70,24 @@ export async function buildMistakeExam(
   try {
     let questionIds: number[];
 
-    if (validated.subject) {
+    // When the caller expresses a subject/topic/subtopic preference, draw
+    // strictly from the user's mistake pool that matches that preference.
+    // Otherwise fall back to the existing subject-only or cross-subject paths.
+    if (validated.topic || validated.subtopic) {
+      const rows = await getMistakeQuestionIdsBySelection(
+        userId,
+        {
+          subject: validated.subject || undefined,
+          topic: validated.topic || undefined,
+          subtopic: validated.subtopic || undefined,
+          difficulty: validated.difficulty || undefined,
+        },
+        validated.count,
+        validated.focus,
+      );
+      const scored = scoreMistakeQuestions(rows);
+      questionIds = scored.slice(0, validated.count).map((s) => s.questionId);
+    } else if (validated.subject) {
       // Subject-specific mistake exam
       const rows = await getMistakeQuestionIds(userId, {
         subject: validated.subject,

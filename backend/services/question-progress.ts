@@ -14,6 +14,9 @@ import {
   getMistakes,
   getMistakeQuestionIds,
   getCrossSubjectMistakeIds,
+  getOverallStats,
+  getMistakeSelectionTree,
+  getMistakeQuestionIdsBySelection,
   type MistakeFilters,
 } from "~backend/repositories/question-progress.repository";
 import {
@@ -173,6 +176,35 @@ export async function getMistakeStatsForUser(userId: string) {
     return await getMistakeStats(userId);
   } catch {
     throw new InternalServerError("Failed to fetch mistake statistics");
+  }
+}
+
+export async function getOverallStatsForUser(userId: string) {
+  try {
+    return await getOverallStats(userId);
+  } catch {
+    throw new InternalServerError("Failed to fetch accuracy statistics");
+  }
+}
+
+export async function getMistakeSelectionTreeForUser(userId: string) {
+  try {
+    return await getMistakeSelectionTree(userId);
+  } catch {
+    throw new InternalServerError("Failed to fetch mistake selection tree");
+  }
+}
+
+export async function getMistakeQuestionIdsBySelectionForUser(
+  userId: string,
+  filters: { subject?: string; topic?: string; subtopic?: string; difficulty?: string },
+  limit: number,
+  focus?: string,
+) {
+  try {
+    return await getMistakeQuestionIdsBySelection(userId, filters, limit, focus);
+  } catch {
+    throw new InternalServerError("Failed to fetch mistake question IDs");
   }
 }
 

@@ -9,6 +9,8 @@ import { hash } from "bcryptjs";
 
 import { GET as mistakesGET } from "~app/api/mistakes/route";
 import { GET as statsGET } from "~app/api/mistakes/stats/route";
+import { GET as overallGET } from "~app/api/mistakes/stats/overall/route";
+import { GET as examConfigGET } from "~app/api/mistakes/exam/config/route";
 import { GET as subjectsGET } from "~app/api/mistakes/subjects/route";
 import { POST as examPOST } from "~app/api/mistakes/exam/route";
 import { signSession } from "~backend/auth";
@@ -190,6 +192,103 @@ describe("GET /api/mistakes/stats", () => {
   });
 });
 
+describe("GET /api/mistakes/stats/overall", () => {
+  it("returns 401 without a session cookie", async () => {
+    const res = await overallGET(getRequest("/api/mistakes/stats/overall"));
+    expect(res.status).toBe(401);
+  });
+
+  it("returns overall answer-history accuracy/right/wrong for an authenticated user", async () => {
+    const cookie = await sessionCookie();
+    vi.mocked(prisma.user.findUnique).mockResolvedValue(mockUser() as never);
+    vi.mocked(prisma.$queryRaw).mockResolvedValue([
+      {
+        totalAttempts: 120,
+        totalCorrect: 84,
+        totalWrong: 36,
+        questionsAttempted: 25,
+      },
+    ] as never);
+
+    const res = await overallGET(getRequest("/api/mistakes/stats/overall", { cookie }));
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.totalAttempts).toBe(120);
+    expect(body.totalCorrect).toBe(84);
+    expect(body.totalWrong).toBe(36);
+    expect(body.accuracy).toBe(70);
+    expect(body.questionsAttempted).toBe(25);
+  });
+
+  it("returns zeroed stats when there is no attempt history", async () => {
+    const cookie = await sessionCookie();
+    vi.mocked(prisma.user.findUnique).mockResolvedValue(mockUser() as never);
+    vi.mocked(prisma.$queryRaw).mockResolvedValue([
+      {
+        totalAttempts: 0,
+        totalCorrect: 0,
+        totalWrong: 0,
+        questionsAttempted: 0,
+      },
+    ] as never);
+
+    const res = await overallGET(getRequest("/api/mistakes/stats/overall", { cookie }));
+    const body = await res.json();
+    expect(body.accuracy).toBe(0);
+    expect(body.totalWrong).toBe(0);
+  });
+});
+
+describe("GET /api/mistakes/exam/config", () => {
+  it("returns 401 without a session cookie", async () => {
+    const res = await examConfigGET(getRequest("/api/mistakes/exam/config"));
+    expect(res.status).toBe(401);
+  });
+
+  it("builds a mistake-scoped subject→topic→subtopic selection tree", async () => {
+    const cookie = await sessionCookie();
+    vi.mocked(prisma.user.findUnique).mockResolvedValue(mockUser() as never);
+    vi.mocked(prisma.userQuestionProgress.findMany).mockResolvedValue([
+      {
+        question: { subject: { nameBn: "Math" }, topic: "Algebra", subtopic: "Linear" },
+      },
+      {
+        question: { subject: { nameBn: "Math" }, topic: "Algebra", subtopic: "Linear" },
+      },
+      {
+        question: { subject: { nameBn: "Math" }, topic: "Algebra", subtopic: "Quadratics" },
+      },
+      {
+        question: { subject: { nameBn: "English" }, topic: "Grammar", subtopic: "" },
+      },
+    ] as never);
+
+    const res = await examConfigGET(getRequest("/api/mistakes/exam/config", { cookie }));
+    expect(res.status).toBe(200);
+    const body = await res.json();
+
+    const math = body.subjects.find((s: { subject: string }) => s.subject === "Math");
+    expect(math.count).toBe(3);
+    const algebra = math.topics.find((t: { topic: string }) => t.topic === "Algebra");
+    expect(algebra.count).toBe(3);
+    const linear = algebra.subtopics.find((st: { subtopic: string }) => st.subtopic === "Linear");
+    expect(linear.count).toBe(2);
+
+    const english = body.subjects.find((s: { subject: string }) => s.subject === "English");
+    expect(english.count).toBe(1);
+  });
+
+  it("returns empty subjects when the user has no mistakes", async () => {
+    const cookie = await sessionCookie();
+    vi.mocked(prisma.user.findUnique).mockResolvedValue(mockUser() as never);
+    vi.mocked(prisma.userQuestionProgress.findMany).mockResolvedValue([] as never);
+
+    const res = await examConfigGET(getRequest("/api/mistakes/exam/config", { cookie }));
+    const body = await res.json();
+    expect(body.subjects).toEqual([]);
+  });
+});
+
 describe("GET /api/mistakes/subjects", () => {
   it("returns 401 without a session cookie", async () => {
     const res = await subjectsGET(getRequest("/api/mistakes/subjects"));
@@ -239,5 +338,43 @@ describe("POST /api/mistakes/exam", () => {
       jsonRequest("/api/mistakes/exam", { count: 10 }, { cookie }),
     );
     expect(res.status).toBe(404);
+  });
+
+  it("builds a mistake exam filtered by topic preference", async () => {
+    const cookie = await sessionCookie();
+    vi.mocked(prisma.user.findUnique).mockResolvedValue(mockUser() as never);
+    vi.mocked(prisma.userQuestionProgress.findMany).mockResolvedValue([
+      {
+        questionId: 101,
+        mistakeCount: 2,
+        masteryScore: 30,
+        lastIncorrectAt: null,
+        nextReviewAt: null,
+        totalAttempts: 3,
+        question: { difficulty: "MEDIUM" },
+      },
+    ] as never);
+    vi.mocked(prisma.question.findMany).mockResolvedValue([
+      {
+        id: 101,
+        subjectId: 1,
+        topic: "Algebra",
+        subtopic: "Linear",
+        question: "Which of the following is linear?",
+        options: ["a", "b", "c", "d"],
+        difficulty: "MEDIUM",
+        sourceExam: "BCS",
+        year: null,
+        subject: { nameBn: "Math" },
+      },
+    ] as never);
+
+    const res = await examPOST(
+      jsonRequest("/api/mistakes/exam", { count: 5, topic: "Algebra" }, { cookie }),
+    );
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.result.questions).toHaveLength(1);
+    expect(body.result.questions[0].topic).toBe("Algebra");
   });
 });

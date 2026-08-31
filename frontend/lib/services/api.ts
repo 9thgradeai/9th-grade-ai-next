@@ -442,6 +442,16 @@ export const api = {
   mistakeStats: (): Promise<Server.MistakeStatsDTO> =>
     cachedGet<Server.MistakeStatsDTO>("/api/mistakes/stats"),
 
+  /** Overall answer-history accuracy stats for the signed-in user. */
+  mistakeOverallStats: (): Promise<Server.OverallStatsDTO> =>
+    cachedGet<Server.OverallStatsDTO>("/api/mistakes/stats/overall"),
+
+  /** Subject → topic → subtopic selection tree over the user's own mistakes. */
+  mistakeExamSelection: (): Promise<Server.MistakeSelectionSubjectDTO[]> =>
+    cachedGet<{ subjects: Server.MistakeSelectionSubjectDTO[] }>("/api/mistakes/exam/config").then(
+      (d) => d.subjects,
+    ),
+
   /** Mistake counts per subject. */
   mistakeSubjects: (): Promise<Server.SubjectMistakeCountDTO[]> =>
     cachedGet<{ subjects: Server.SubjectMistakeCountDTO[] }>("/api/mistakes/subjects").then(

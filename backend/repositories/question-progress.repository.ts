@@ -197,6 +197,52 @@ export type MistakeStats = {
   totalCorrect: number;
 };
 
+export type OverallStats = {
+  totalAttempts: number;
+  totalCorrect: number;
+  totalWrong: number;
+  accuracy: number;
+  questionsAttempted: number;
+};
+
+/**
+ * Overall answer-history statistics for a user (across every question flow).
+ * Sourced from the accumulated UserQuestionProgress counters, which are updated
+ * by recordQuestionAttempt for every answered question (practice, exam,
+ * daily quiz, etc.). WHERE has no isMistake filter, so this reflects ALL
+ * attempts — not just the mistake pool.
+ */
+export async function getOverallStats(userId: string): Promise<OverallStats> {
+  const rows = await prisma.$queryRaw<
+    {
+      totalAttempts: number;
+      totalCorrect: number;
+      totalWrong: number;
+      questionsAttempted: number;
+    }[]
+  >`
+    SELECT
+      COALESCE(SUM("totalAttempts"), 0)::int AS "totalAttempts",
+      COALESCE(SUM("correctAttempts"), 0)::int AS "totalCorrect",
+      COALESCE(SUM("incorrectAttempts"), 0)::int AS "totalWrong",
+      COUNT(*)::int AS "questionsAttempted"
+    FROM "UserQuestionProgress"
+    WHERE "userId" = ${userId}
+  `;
+
+  const r = rows[0];
+  const totalAttempts = Number(r?.totalAttempts ?? 0);
+  const totalCorrect = Number(r?.totalCorrect ?? 0);
+  const totalWrong = Number(r?.totalWrong ?? 0);
+  return {
+    totalAttempts,
+    totalCorrect,
+    totalWrong,
+    accuracy: totalAttempts > 0 ? Math.round((totalCorrect / totalAttempts) * 100) : 0,
+    questionsAttempted: Number(r?.questionsAttempted ?? 0),
+  };
+}
+
 /**
  * Aggregate mistake statistics for a user.
  */
@@ -354,4 +400,137 @@ export async function getCrossSubjectMistakeIds(
   }
 
   return allIds;
+}
+
+export type MistakeSelectionFilters = {
+  subject?: string;
+  topic?: string;
+  subtopic?: string;
+  difficulty?: string;
+};
+
+/**
+ * Get question IDs for a mistake exam that respects the caller's
+ * subject/topic/subtopic preference. Every candidate is drawn ONLY from the
+ * user's own mistake pool (isMistake = true, not mastered), then ordered by the
+ * same priority scoring used elsewhere.
+ */
+export async function getMistakeQuestionIdsBySelection(
+  userId: string,
+  filters: MistakeSelectionFilters,
+  limit: number,
+  focus?: string,
+): Promise<
+  {
+    questionId: number;
+    mistakeCount: number;
+    masteryScore: number;
+    lastIncorrectAt: Date | null;
+    nextReviewAt: Date | null;
+    difficulty: string;
+    totalAttempts: number;
+  }[]
+> {
+  const questionFilter: Prisma.QuestionWhereInput = {};
+  if (filters.difficulty) {
+    questionFilter.difficulty = filters.difficulty as "EASY" | "MEDIUM" | "HARD";
+  }
+  if (filters.subject && filters.subject !== "অন্যান্য") {
+    questionFilter.subject = { nameBn: filters.subject };
+  }
+
+  const where: Prisma.UserQuestionProgressWhereInput = {
+    userId,
+    isMistake: true,
+    masteryStatus: { not: "MASTERED" },
+  };
+
+  if (filters.topic) {
+    questionFilter.topic = { contains: filters.topic, mode: "insensitive" };
+  }
+  if (filters.subtopic) {
+    questionFilter.subtopic = { contains: filters.subtopic, mode: "insensitive" };
+  }
+
+  if (Object.keys(questionFilter).length > 0) {
+    where.question = questionFilter;
+  }
+
+  const orderBy: Prisma.UserQuestionProgressOrderByWithRelationInput =
+    focus === "due_for_review"
+      ? { nextReviewAt: "asc" }
+      : focus === "most_wrong"
+        ? { mistakeCount: "desc" }
+        : focus === "recently_wrong"
+          ? { lastIncorrectAt: "desc" }
+          : focus === "weakest_topics"
+            ? { masteryScore: "asc" }
+            : { masteryScore: "asc", mistakeCount: "desc" };
+
+  const fetchLimit = Math.min(limit * 3, 500);
+  const rows = await prisma.userQuestionProgress.findMany({
+    where,
+    select: {
+      questionId: true,
+      mistakeCount: true,
+      masteryScore: true,
+      lastIncorrectAt: true,
+      nextReviewAt: true,
+      totalAttempts: true,
+      question: { select: { difficulty: true } },
+    },
+    orderBy,
+    take: fetchLimit,
+  });
+
+  return rows.map((r) => ({
+    questionId: r.questionId,
+    mistakeCount: r.mistakeCount,
+    masteryScore: r.masteryScore,
+    lastIncorrectAt: r.lastIncorrectAt,
+    nextReviewAt: r.nextReviewAt,
+    difficulty: r.question.difficulty,
+    totalAttempts: r.totalAttempts,
+  }));
+}
+
+/**
+ * Build a subject → topic → subtopic selection tree scoped ONLY to the user's
+ * own mistake pool. Each node carries the number of wrong questions available
+ * under it so the dashboard can offer subject/topic/subtopic preference when
+ * building a mistake exam. Includes unmastered + mastered so "wrong questions"
+ * (the full history) can be surfaced; the builder itself ignores MASTERED.
+ */
+export async function getMistakeSelectionTree(
+  userId: string,
+): Promise<
+  { subject: string; topic: string; subtopic: string; count: number }[]
+> {
+  const rows = await prisma.userQuestionProgress.findMany({
+    where: { userId, isMistake: true },
+    select: {
+      question: {
+        select: {
+          subject: { select: { nameBn: true } },
+          topic: true,
+          subtopic: true,
+        },
+      },
+    },
+  });
+
+  // Aggregate into a flattened (subject, topic, subtopic) -> count map.
+  const counts = new Map<string, number>();
+  for (const r of rows) {
+    const subject = r.question?.subject?.nameBn || "অন্যান্য";
+    const topic = r.question?.topic || "";
+    const subtopic = r.question?.subtopic || "";
+    const key = `${subject}|||${topic}|||${subtopic}`;
+    counts.set(key, (counts.get(key) ?? 0) + 1);
+  }
+
+  return [...counts.entries()].map(([key, count]) => {
+    const [subject, topic, subtopic] = key.split("|||");
+    return { subject, topic, subtopic, count };
+  });
 }

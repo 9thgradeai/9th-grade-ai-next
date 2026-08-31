@@ -725,10 +725,34 @@ export namespace Server {
 
   export type MistakeExamConfigDTO = {
     subject?: string;
+    topic?: string;
+    subtopic?: string;
     count: number;
     difficulty?: string;
     focus?: string;
     durationSec?: number;
+  };
+
+  /** Overall answer-history accuracy stats (ALL attempts, not just mistakes). */
+  export type OverallStatsDTO = {
+    totalAttempts: number;
+    totalCorrect: number;
+    totalWrong: number;
+    accuracy: number;
+    questionsAttempted: number;
+  };
+
+  /** Mistake-scoped subject → topic → subtopic selection tree with wrong-question counts. */
+  export type MistakeSelectionSubtopicDTO = { subtopic: string; count: number };
+  export type MistakeSelectionTopicDTO = {
+    topic: string;
+    count: number;
+    subtopics: MistakeSelectionSubtopicDTO[];
+  };
+  export type MistakeSelectionSubjectDTO = {
+    subject: string;
+    count: number;
+    topics: MistakeSelectionTopicDTO[];
   };
 
   export type UserDTO = {
@@ -793,6 +817,10 @@ export type MistakeStatsDTO = Server.MistakeStatsDTO;
 export type SubjectMistakeCountDTO = Server.SubjectMistakeCountDTO;
 export type MistakeExamConfigDTO = Server.MistakeExamConfigDTO;
 export type MasteryStatus = Server.MasteryStatus;
+export type OverallStatsDTO = Server.OverallStatsDTO;
+export type MistakeSelectionSubjectDTO = Server.MistakeSelectionSubjectDTO;
+export type MistakeSelectionTopicDTO = Server.MistakeSelectionTopicDTO;
+export type MistakeSelectionSubtopicDTO = Server.MistakeSelectionSubtopicDTO;
 export type TutorMessage = Client.TutorMessage;
 export type FlashNews = Client.FlashNews;
 export type SubjectCard = Client.SubjectCard;

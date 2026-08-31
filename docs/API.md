@@ -87,8 +87,10 @@ All mutating endpoints (auth and non-auth) reject cross-origin requests via an O
 | GET | `/api/daily-quiz/history` | **Auth required** — The caller's completed daily quizzes (newest-first, default 14). Response: `{ history: [{ quizId, date, score, correct, total, completedAt }] }` (dates stringified) |
 | GET | `/api/mistakes` | **Auth required** — The caller's persistent mistake list (questions answered incorrectly, tracked until mastered). Query: `?page=` (default 1), `?limit=` (default 20, max 100), `?subject=`, `?status=`, `?sort=`. Response: `{ data: [MistakeItem], total, page, limit, totalPages }` |
 | GET | `/api/mistakes/stats` | **Auth required** — Mistake summary metrics. Response: `{ totalMistakes, unmastered, struggling, reviewing, improving, mastered, totalAttempts, totalCorrect, accuracy }` |
+| GET | `/api/mistakes/stats/overall` | **Auth required** — Overall answer-history accuracy across ALL attempts (not just mistakes). Response: `{ totalAttempts, totalCorrect, totalWrong, accuracy, questionsAttempted }` |
+| GET | `/api/mistakes/exam/config` | **Auth required** — Subject → topic → subtopic selection tree scoped ONLY to the caller's wrong questions, each with the number of wrong questions available under it. Response: `{ subjects: [{ subject, count, topics: [{ topic, count, subtopics: [{ subtopic, count }] }] }] }` |
 | GET | `/api/mistakes/subjects` | **Auth required** — Mistake count broken down by subject. Response: `{ subjects: [{ subject, count, unmastered }] }` |
-| POST | `/api/mistakes/exam` | **Auth required** — Build a mistake-focused exam from the caller's tracked mistakes. Body: `{ subject?, count, focus }`. Reuses the exam engine. Returns `ExamBuild`-shaped `{ questions: [MistakeExamQuestion] }` (no correct answers). 404 if there are no mistakes to practice |
+| POST | `/api/mistakes/exam` | **Auth required** — Build a mistake-focused exam from the caller's tracked mistakes. Body: `{ subject?, topic?, subtopic?, count, focus }`. `topic`/`subtopic` narrow selection strictly to the caller's wrong questions in that preference. Reuses the exam engine. Returns `ExamBuild`-shaped `{ questions: [MistakeExamQuestion] }` (no correct answers). 404 if there are no mistakes to practice |
 
 ## Response Shapes
 
@@ -214,10 +216,27 @@ One tracked mistake (`GET /api/mistakes` list item).
 { "subjects": [{ "subject": "Math", "count": 3, "unmastered": 2 }] }
 ```
 
+### OverallStats
+`GET /api/mistakes/stats/overall` — overall answer-history accuracy across every
+question flow (practice, exams, daily quizzes). `accuracy = round(totalCorrect / totalAttempts * 100)`.
+```json
+{ "totalAttempts": 120, "totalCorrect": 84, "totalWrong": 36, "accuracy": 70, "questionsAttempted": 25 }
+```
+
+### MistakeSelection
+`GET /api/mistakes/exam/config` — a subject → topic → subtopic tree scoped
+strictly to the user's own wrong questions. Each node carries the count of wrong
+questions available under it, so the dashboard can offer subject/topic/subtopic
+preferences when building a mistake exam.
+```json
+{ "subjects": [{ "subject": "Math", "count": 8, "topics": [{ "topic": "Algebra", "count": 5, "subtopics": [{ "subtopic": "Quadratics", "count": 3 }] }] }] }
+```
+
 ### MistakeExamBuild
 `POST /api/mistakes/exam` returns an `ExamBuild`-shaped payload limited to
 question fields (no `correctAnswer`/`explanation`) so in-flight attempts can't be
 auto-answered. `focus` is one of `most_wrong | recently_wrong | weakest_topics | due_for_review | random`.
+Optional `topic`/`subtopic` narrow selection to the caller's wrong questions matching that preference.
 ```json
 { "questions": [{ "id": 101, "subjectId": 1, "subject": "Math", "topic": "Algebra", "subtopic": "", "question": "...", "options": ["a","b","c","d"], "difficulty": "MEDIUM", "year": null, "sourceExam": "BCS" }] }
 ```

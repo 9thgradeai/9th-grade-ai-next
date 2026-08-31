@@ -19,6 +19,8 @@ export async function POST(request: Request) {
     const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
     const config = {
       subject: typeof body.subject === "string" ? body.subject : undefined,
+      topic: typeof body.topic === "string" ? body.topic : undefined,
+      subtopic: typeof body.subtopic === "string" ? body.subtopic : undefined,
       count: typeof body.count === "number" ? body.count : 20,
       difficulty: typeof body.difficulty === "string" ? body.difficulty : undefined,
       focus: typeof body.focus === "string" ? body.focus : undefined,
