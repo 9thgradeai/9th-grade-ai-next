@@ -58,8 +58,8 @@ export default function BottomNav({ activeTab, onChange }: BottomNavProps) {
                 {active && (
                   <span className="absolute top-0 w-8 h-0.5 rounded-full" style={{ background: "var(--dashboard-primary)" }} aria-hidden="true" />
                 )}
-                <Icon className="w-5 h-5" strokeWidth={active ? 2.3 : 1.8} style={{ color: active ? "var(--dashboard-primary)" : "var(--dashboard-text-muted)" }} />
-                <span className="text-[10px] font-medium leading-none" style={{ color: active ? "var(--dashboard-primary)" : "var(--dashboard-text-muted)" }}>
+                <Icon className="w-5 h-5" strokeWidth={active ? 2.3 : 1.9} style={{ color: active ? "var(--dashboard-primary)" : "var(--dashboard-text-secondary)" }} />
+                <span className="text-[10px] font-semibold leading-none" style={{ color: active ? "var(--dashboard-primary)" : "var(--dashboard-text-secondary)" }}>
                   {tab.short}
                 </span>
               </button>
@@ -71,11 +71,11 @@ export default function BottomNav({ activeTab, onChange }: BottomNavProps) {
             aria-label="More options"
             aria-haspopup="dialog"
             aria-expanded={moreOpen}
-            style={{ color: isMoreActive ? "var(--dashboard-primary)" : "var(--dashboard-text-muted)" }}
+            style={{ color: isMoreActive ? "var(--dashboard-primary)" : "var(--dashboard-text-secondary)" }}
           >
             {isMoreActive && <span className="absolute top-0 w-8 h-0.5 rounded-full" style={{ background: "var(--dashboard-primary)" }} aria-hidden="true" />}
-            <MoreHorizontal className="w-5 h-5" />
-            <span className="text-[10px] font-medium leading-none">আরও</span>
+            <MoreHorizontal className="w-5 h-5" strokeWidth={isMoreActive ? 2.2 : 1.9} />
+            <span className="text-[10px] font-semibold leading-none">আরও</span>
           </button>
         </div>
       </nav>

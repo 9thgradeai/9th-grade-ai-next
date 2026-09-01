@@ -16,7 +16,7 @@ const NAV_GROUPS: { label: string; labelBn: string; ids: TabId[] }[] = [
 
 function GroupLabel({ label }: { label: string }) {
   return (
-    <p className="px-3 pt-4 pb-1.5 text-[10px] font-semibold tracking-[0.14em] uppercase text-[var(--dashboard-text-muted)]">
+    <p className="px-3 pt-5 pb-1.5 text-[10px] font-bold tracking-[0.14em] uppercase" style={{ color: "var(--dashboard-text-secondary)", opacity: 0.82 }}>
       {label}
     </p>
   );
@@ -34,7 +34,7 @@ export default function SideNav({ activeTab, onChange }: SideNavProps) {
 
   return (
     <nav
-      className="hidden lg:flex flex-col w-[272px] h-full shrink-0 border-r z-30"
+      className="hidden lg:flex flex-col w-[272px] h-full shrink-0 border-r z-30 shadow-[1px_0_0_var(--dashboard-sidebar-border)]"
       style={{ background: "var(--dashboard-sidebar-bg)", borderColor: "var(--dashboard-sidebar-border)" }}
       aria-label="Desktop navigation"
     >
@@ -68,11 +68,11 @@ export default function SideNav({ activeTab, onChange }: SideNavProps) {
                       key={tab.id}
                       onClick={() => onChange(tab.id)}
                       aria-current={isActive ? "page" : undefined}
-                      className="relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                      className="relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] hover:translate-x-[1px]"
                       style={
                         isActive
-                          ? { background: "var(--dashboard-primary-subtle)", color: "var(--dashboard-primary)" }
-                          : { color: "var(--dashboard-text-secondary)" }
+                          ? { background: "var(--dashboard-primary-subtle)", color: "var(--dashboard-primary)", border: "1px solid color-mix(in srgb, var(--dashboard-primary) 16%, transparent)", boxShadow: "0 1px 2px rgb(23 32 51 / 0.04)" }
+                          : { color: "var(--dashboard-text-primary)", background: "transparent", border: "1px solid transparent" }
                       }
                     >
                       {isActive && (
@@ -82,10 +82,10 @@ export default function SideNav({ activeTab, onChange }: SideNavProps) {
                           aria-hidden="true"
                         />
                       )}
-                      <Icon className="w-[18px] h-[18px] shrink-0" strokeWidth={isActive ? 2.2 : 1.7} />
+                      <Icon className="w-[18px] h-[18px] shrink-0" strokeWidth={isActive ? 2.2 : 1.9} style={{ color: isActive ? "var(--dashboard-primary)" : "var(--dashboard-text-secondary)" }} />
                       <span className="flex flex-col min-w-0">
-                        <span className="text-[13px] font-medium leading-none truncate">{tab.label}</span>
-                        <span className="text-[11px] leading-none mt-1 truncate" style={{ color: isActive ? "var(--dashboard-primary)" : "var(--dashboard-text-muted)", opacity: isActive ? 0.85 : 1 }}>
+                        <span className="text-[13px] font-semibold leading-none truncate" style={{ color: isActive ? "var(--dashboard-primary)" : "var(--dashboard-text-primary)" }}>{tab.label}</span>
+                        <span className="text-[11px] leading-none mt-1 truncate font-medium" style={{ color: isActive ? "var(--dashboard-primary)" : "var(--dashboard-text-secondary)", opacity: isActive ? 0.82 : 0.88 }}>
                           {tab.bengali}
                         </span>
                       </span>

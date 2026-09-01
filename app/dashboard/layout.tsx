@@ -2,10 +2,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { MotionConfig } from "framer-motion";
+import { MotionConfig, AnimatePresence, motion } from "framer-motion";
 import SideNav from "@/components/dashboard/SideNav";
 import BottomNav from "@/components/dashboard/BottomNav";
 import NotificationCenter from "@/components/dashboard/NotificationCenter";
@@ -19,12 +19,79 @@ import BrandMark from "@/components/ui/BrandMark";
 import LanguageToggle from "@/components/ui/LanguageToggle";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 import { LogoutFarewellProvider } from "@/lib/farewell-ctx";
+import { useDialogA11y } from "@/lib/use-dialog-a11y";
+import { Menu, X } from "lucide-react";
+import { TAB_ICONS } from "@/lib/exam-ui";
+import { useAuth as useAuthForDrawer } from "@/lib/auth-ctx";
+import LogoutButton from "@/components/dashboard/LogoutButton";
 
 // The voice tutor (speech-recognition stack) is only needed when launched —
 // keep it out of the critical dashboard bundle.
 const VoiceAITutor = dynamic(() => import("@/components/dashboard/VoiceAITutor"), {
   ssr: false,
 });
+
+const DRAWER_GROUPS: { label: string; ids: TabId[] }[] = [
+  { label: "Primary", ids: ["home", "study-planner", "practice", "ai-mock-test"] },
+  { label: "Study", ids: ["question-bank", "flashcards", "ai-solver", "ai-evaluate", "ai-voice"] },
+  { label: "Review & Insights", ids: ["progress", "mistakes", "wrong-answers"] },
+  { label: "Career", ids: ["ai-advisor"] },
+  { label: "Account", ids: ["ai-model", "settings"] },
+];
+
+function SideNavDrawerContent({ activeTab, onChange }: { activeTab: TabId; onChange: (t: TabId) => void }) {
+  const { user } = useAuthForDrawer();
+  const initial = user?.name?.charAt(0) ?? "G";
+  return (
+    <div className="flex flex-col h-full">
+      <div className="flex-1 min-h-0 overflow-y-auto px-3 py-3">
+        {DRAWER_GROUPS.map((group) => {
+          const tabs = group.ids.map((id) => TABS.find((t) => t.id === id)!).filter(Boolean);
+          if (!tabs.length) return null;
+          return (
+            <div key={group.label} className="mb-1">
+              <p className="px-3 pt-5 pb-1.5 text-[10px] font-bold tracking-[0.14em] uppercase" style={{ color: "var(--dashboard-text-secondary)", opacity: 0.82 }}>{group.label}</p>
+              <div className="space-y-0.5">
+                {tabs.map((tab) => {
+                  const Icon = TAB_ICONS[tab.id];
+                  const isActive = activeTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => onChange(tab.id)}
+                      aria-current={isActive ? "page" : undefined}
+                      className="relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                      style={isActive ? { background: "var(--dashboard-primary-subtle)", color: "var(--dashboard-primary)", border: "1px solid color-mix(in srgb, var(--dashboard-primary) 16%, transparent)" } : { color: "var(--dashboard-text-primary)", border: "1px solid transparent" }}
+                    >
+                      {isActive && <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-6 rounded-r-full" style={{ background: "var(--dashboard-primary)" }} aria-hidden="true" />}
+                      <Icon className="w-[18px] h-[18px] shrink-0" strokeWidth={isActive ? 2.2 : 1.9} style={{ color: isActive ? "var(--dashboard-primary)" : "var(--dashboard-text-secondary)" }} />
+                      <span className="flex flex-col min-w-0">
+                        <span className="text-[13px] font-semibold leading-none truncate" style={{ color: isActive ? "var(--dashboard-primary)" : "var(--dashboard-text-primary)" }}>{tab.label}</span>
+                        <span className="text-[11px] leading-none mt-1 truncate font-medium" style={{ color: isActive ? "var(--dashboard-primary)" : "var(--dashboard-text-secondary)", opacity: isActive ? 0.82 : 0.88 }}>{tab.bengali}</span>
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <div className="border-t px-3 py-4 space-y-3" style={{ borderColor: "var(--dashboard-sidebar-border)" }}>
+        <div className="flex items-center gap-3 px-2">
+          <div className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold border" style={{ background: "var(--dashboard-primary-subtle)", color: "var(--dashboard-primary)", borderColor: "var(--dashboard-border-muted)" }}>{initial}</div>
+          <div className="min-w-0">
+            <p className="text-[13px] font-medium truncate" style={{ color: "var(--dashboard-text-primary)" }}>{user?.name ?? "Guest"}</p>
+            <p className="text-[11px] truncate" style={{ color: "var(--dashboard-text-muted)" }}>@{user?.handle ?? "student"}</p>
+          </div>
+        </div>
+        <div className="pt-2 border-t" style={{ borderColor: "var(--dashboard-border-muted)" }}>
+          <LogoutButton aria-label="Log out" />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function EmailVerificationGate({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -79,6 +146,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const router = useRouter();
   const { activeTab, setActiveTab } = useDashboardStore();
   const { theme: dashboardTheme, toggleTheme, setTheme } = useDashboardTheme();
+  const [navDrawerOpen, setNavDrawerOpen] = useState(false);
+  const closeNavDrawer = useCallback(() => setNavDrawerOpen(false), []);
+  const drawerRef = useDialogA11y<HTMLDivElement>(navDrawerOpen, closeNavDrawer);
 
   const activeLabel = TABS.find((t) => t.id === activeTab)?.label ?? "DASHBOARD";
 
@@ -95,6 +165,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const handleTabChange = (tab: TabId) => {
     setActiveTab(tab);
     router.push(`/dashboard?tab=${tab}`);
+    closeNavDrawer();
   };
 
   return (
@@ -114,11 +185,64 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             {/* Desktop Side Navigation (>=1024px) — locked column, never scrolls away */}
             <SideNav activeTab={activeTab} onChange={handleTabChange} />
 
+            {/* Tablet/Mobile Drawer — makes left tab sections fully visible on <lg */}
+            <AnimatePresence>
+              {navDrawerOpen && (
+                <motion.div
+                  className="fixed inset-0 z-50 lg:hidden"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  role="dialog"
+                  aria-modal="true"
+                  aria-label="Navigation menu"
+                >
+                  <div className="absolute inset-0 backdrop-blur-sm" style={{ background: "var(--dashboard-overlay)" }} onClick={closeNavDrawer} />
+                  <motion.div
+                    ref={drawerRef}
+                    tabIndex={-1}
+                    role="document"
+                    initial={{ x: "-100%" }}
+                    animate={{ x: 0 }}
+                    exit={{ x: "-100%" }}
+                    transition={{ type: "spring", stiffness: 340, damping: 32 }}
+                    className="absolute left-0 top-0 bottom-0 w-[300px] max-w-[86vw] border-r shadow-2xl flex flex-col overflow-hidden"
+                    style={{ background: "var(--dashboard-sidebar-bg)", borderColor: "var(--dashboard-sidebar-border)" }}
+                  >
+                    <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: "var(--dashboard-sidebar-border)" }}>
+                      <div className="flex items-center gap-3">
+                        <BrandMark className="h-8 w-8 rounded-lg ring-1 ring-black/5" />
+                        <span className="font-display font-bold text-[15px]" style={{ color: "var(--dashboard-text-primary)" }}>9th-grade-ai</span>
+                      </div>
+                      <button onClick={closeNavDrawer} className="p-2 rounded-xl border" style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-secondary)", background: "var(--dashboard-surface-muted)" }} aria-label="Close navigation">
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <div className="flex-1 min-h-0 overflow-y-auto">
+                      {/* Reuse same grouped nav inline for drawer — avoids duplicating SideNav hidden logic */}
+                      <SideNavDrawerContent activeTab={activeTab} onChange={handleTabChange} />
+                    </div>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             {/* Main Column */}
             <div className="flex-1 min-w-0 flex flex-col h-full">
               {/* Fixed Top Header — academic premium */}
               <header className="shrink-0 z-30 border-b pt-safe backdrop-blur-md" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}>
                 <div className="flex items-center gap-3 px-4 sm:px-6 h-14 lg:h-16">
+                  {/* Hamburger — visible on tablet + mobile (<lg) to expose left tabs */}
+                  <button
+                    onClick={() => setNavDrawerOpen(true)}
+                    className="lg:hidden inline-flex items-center justify-center w-9 h-9 rounded-xl border shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                    style={{ borderColor: "var(--dashboard-border-muted)", background: "var(--dashboard-surface-muted)", color: "var(--dashboard-text-primary)" }}
+                    aria-label="Open navigation"
+                    aria-expanded={navDrawerOpen}
+                    aria-controls="dashboard-nav-drawer"
+                  >
+                    <Menu className="w-5 h-5" />
+                  </button>
                   {/* Mobile logo */}
                   <Link
                     href="/"
