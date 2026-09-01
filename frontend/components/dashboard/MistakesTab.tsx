@@ -24,7 +24,7 @@ import type {
   MistakeSelectionSubjectDTO,
   ExamBuildResultDTO,
 } from "@/lib/types";
-import QuestionDrill, { type DrillAnswered } from "./QuestionDrill";
+import ScrollPractice, { type DrillAnswered } from "./ScrollPractice";
 import { useToastSafe } from "@/lib/toast-ctx";
 
 type ViewMode = "dashboard" | "drilling" | "exam-result";
@@ -143,7 +143,7 @@ export default function MistakesTab() {
   // ── Drilling view ──────────────────────────────────────
   if (view === "drilling" && examResult) {
     return (
-      <QuestionDrill
+      <ScrollPractice
         key="mistakes-drill"
         questions={examResult.questions.map((q) => ({
           id: q.id,

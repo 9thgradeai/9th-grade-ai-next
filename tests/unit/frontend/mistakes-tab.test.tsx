@@ -17,7 +17,7 @@ vi.mock("@/lib/toast-ctx", () => ({
   useToastSafe: () => ({ error: vi.fn(), success: vi.fn() }),
 }));
 
-vi.mock("@/components/dashboard/QuestionDrill", () => ({
+vi.mock("@/components/dashboard/ScrollPractice", () => ({
   default: ({
     title,
     questions,
@@ -28,7 +28,7 @@ vi.mock("@/components/dashboard/QuestionDrill", () => ({
     onComplete?: (answered: { questionId: number; correct: boolean; justMastered?: boolean }[]) => void;
   }) => (
     <div>
-      <span>DRILL:{title}</span>
+      <span>SCROLL:{title}</span>
       <span>ANSWER:{questions[0]?.correctAnswer ?? ""}</span>
       <span>EXPL:{questions[0]?.explanation ?? ""}</span>
       <button
@@ -38,7 +38,7 @@ vi.mock("@/components/dashboard/QuestionDrill", () => ({
           ])
         }
       >
-        finish-drill
+        finish-scroll
       </button>
     </div>
   ),
@@ -195,7 +195,7 @@ describe("MistakesTab", () => {
     fireEvent.click(await screen.findByText("Start Mistake Exam"));
 
     await waitFor(() => {
-      expect(screen.getByText("DRILL:Mistake Exam")).toBeTruthy();
+      expect(screen.getByText("SCROLL:Mistake Exam")).toBeTruthy();
     });
     expect(api.buildMistakeExam).toHaveBeenCalledWith(
       expect.objectContaining({ subject: "Math", topic: "Algebra" }),
@@ -228,8 +228,8 @@ describe("MistakesTab", () => {
     fireEvent.click(await screen.findByText("Customize", { exact: false }));
     fireEvent.click(await screen.findByText("Start Mistake Exam"));
 
-    await waitFor(() => expect(screen.getByText("DRILL:Mistake Exam")).toBeTruthy());
-    fireEvent.click(screen.getByText("finish-drill"));
+    await waitFor(() => expect(screen.getByText("SCROLL:Mistake Exam")).toBeTruthy());
+    fireEvent.click(screen.getByText("finish-scroll"));
 
     await waitFor(() => {
       expect(screen.getByText(/Mistake Exam সম্পন্ন/)).toBeTruthy();

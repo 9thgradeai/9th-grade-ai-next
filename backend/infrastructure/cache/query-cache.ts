@@ -82,6 +82,11 @@ export async function queryCacheInvalidate(prefix: string, pattern: string): Pro
   }
 }
 
+// Test helper - clear all in-memory cache
+export function clearQueryCache(): void {
+  mem.clear();
+}
+
 // Higher-level helpers for specific query types
 export const QueryCache = {
   // Exam selection tree - changes only when questions are added/removed
