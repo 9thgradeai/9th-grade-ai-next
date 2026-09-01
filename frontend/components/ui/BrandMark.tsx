@@ -8,6 +8,8 @@ import { useId } from "react";
  * Source of truth: /assets/favicon.svg. Rendered inline (not an <img>) so it
  * stays crisp at any size and inherits layout like any other element.
  * Gradient ids are namespaced per instance so multiple marks can coexist.
+ * Uses currentColor so it inherits the text color of its parent context,
+ * making it theme-aware across light/dark dashboard modes.
  */
 export default function BrandMark({
   className = "",
@@ -35,13 +37,13 @@ export default function BrandMark({
           <stop offset="100%" stopColor="#8b5cf6" />
         </radialGradient>
       </defs>
-      <rect width="64" height="64" rx="14" fill="#05060a" />
+      <rect width="64" height="64" rx="14" fill="currentColor" />
       <circle cx="32" cy="32" r="26" fill="none" stroke={`url(#${gid}-g)`} strokeWidth="2" opacity="0.55" />
-      <circle cx="32" cy="32" r="6" fill={`url(#${gid}-g)`} />
-      <circle cx="32" cy="10" r="3" fill="#22d3ee" />
-      <circle cx="12" cy="26" r="3" fill="#4f7cff" />
-      <circle cx="52" cy="26" r="3" fill="#8b5cf6" />
-      <circle cx="32" cy="54" r="3" fill="#22d3ee" />
+      <circle cx="32" cy="32" r="6" fill="currentColor" />
+      <circle cx="32" cy="10" r="3" fill="currentColor" />
+      <circle cx="12" cy="26" r="3" fill="currentColor" />
+      <circle cx="52" cy="26" r="3" fill="currentColor" />
+      <circle cx="32" cy="54" r="3" fill="currentColor" />
       <g stroke="#9aa3b8" strokeWidth="1.2" opacity="0.7">
         <line x1="32" y1="32" x2="32" y2="10" />
         <line x1="32" y1="32" x2="12" y2="26" />

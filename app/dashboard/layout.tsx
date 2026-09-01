@@ -10,7 +10,7 @@ import SideNav from "@/components/dashboard/SideNav";
 import BottomNav from "@/components/dashboard/BottomNav";
 import NotificationCenter from "@/components/dashboard/NotificationCenter";
 import CommandBar from "@/components/dashboard/CommandBar";
-import { useDashboardTheme, ThemeToggle } from "@/lib/dashboard-theme-ctx";
+import { useDashboardTheme, ThemeToggle, DashboardThemeProvider } from "@/lib/dashboard-theme-ctx";
 import { useAuth } from "@/lib/auth-ctx";
 import { AuroraRing, StatusText } from "@/components/ui/Loader";
 import { useFarewell } from "@/lib/farewell-ctx";
@@ -78,7 +78,7 @@ function EmailVerificationGate({ children }: { children: React.ReactNode }) {
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { activeTab, setActiveTab } = useDashboardStore();
-  const { theme: dashboardTheme, toggleTheme } = useDashboardTheme();
+  const { theme: dashboardTheme, toggleTheme, setTheme } = useDashboardTheme();
 
   const activeLabel = TABS.find((t) => t.id === activeTab)?.label ?? "DASHBOARD";
 
@@ -98,79 +98,81 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   };
 
   return (
-    <LogoutFarewellProvider>
-      <EmailVerificationGate>
-        <MotionConfig reducedMotion="user">
-          <div className="dashboard-shell h-dvh overflow-hidden flex">
-          {/* Skip link — first focusable element for keyboard users */}
-          <a
-            href="#dashboard-content"
-            className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-emerald-500 focus:text-zinc-950 focus:font-mono focus:text-sm"
-          >
-            Skip to content
-          </a>
+    <DashboardThemeProvider>
+      <LogoutFarewellProvider>
+        <EmailVerificationGate>
+          <MotionConfig reducedMotion="user">
+            <div className="dashboard-shell h-dvh overflow-hidden flex">
+            {/* Skip link — first focusable element for keyboard users */}
+            <a
+              href="#dashboard-content"
+              className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-emerald-500 focus:text-zinc-950 focus:font-mono focus:text-sm"
+            >
+              Skip to content
+            </a>
 
-          {/* Desktop Side Navigation (>=1024px) — locked column, never scrolls away */}
-          <SideNav activeTab={activeTab} onChange={handleTabChange} />
+            {/* Desktop Side Navigation (>=1024px) — locked column, never scrolls away */}
+            <SideNav activeTab={activeTab} onChange={handleTabChange} />
 
-          {/* Main Column */}
-          <div className="flex-1 min-w-0 flex flex-col h-full">
-            {/* Fixed Top Header (all viewports) */}
-            <header className="shrink-0 z-30 glass border-b border-default pt-safe">
-              <div className="flex items-center gap-3 px-4 sm:px-6 h-14 lg:h-16">
-                {/* Mobile logo */}
-                <Link
-                  href="/"
-                  className="lg:hidden flex items-center gap-2 font-display font-semibold text-white text-base"
-                  aria-label="9th-grade-ai home"
-                >
-                  <BrandMark className="h-7 w-7 rounded-lg shadow-[0_0_16px_rgba(16,185,129,0.35)]" />
-                  <span>9th-grade-ai</span>
-                </Link>
-
-                {/* Desktop page title */}
-                <span className="hidden lg:flex items-center gap-2.5 text-sm font-mono text-zinc-500">
-                  <span className="text-emerald-500">{"$"}</span>
-                  <span className="text-white font-semibold tracking-wide">{activeLabel}</span>
-                </span>
-
-                <div className="ml-auto flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => window.dispatchEvent(new Event("app:open-command"))}
-                    aria-label="কমান্ড প্যানেল খুলুন"
-                    className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-white/10 text-[11px] font-mono text-zinc-400 hover:text-emerald-300 hover:border-emerald-500/30 transition-colors"
+            {/* Main Column */}
+            <div className="flex-1 min-w-0 flex flex-col h-full">
+              {/* Fixed Top Header (all viewports) */}
+              <header className="shrink-0 z-30 glass border-b border-default pt-safe">
+                <div className="flex items-center gap-3 px-4 sm:px-6 h-14 lg:h-16">
+                  {/* Mobile logo */}
+                  <Link
+                    href="/"
+                    className="lg:hidden flex items-center gap-2 font-display font-semibold text-white text-base"
+                    aria-label="9th-grade-ai home"
                   >
-                    <span>⌘K</span>
-                  </button>
-                  <span className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-emerald-500/20 bg-emerald-500/8 text-[11px] font-mono uppercase tracking-wider text-emerald-400">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.8)]" aria-hidden="true" />
-                    session
+                    <BrandMark className="h-7 w-7 rounded-lg shadow-[0_0_16px_rgba(16,185,129,0.35)]" />
+                    <span>9th-grade-ai</span>
+                  </Link>
+
+                  {/* Desktop page title */}
+                  <span className="hidden lg:flex items-center gap-2.5 text-sm font-mono text-zinc-500">
+                    <span className="text-emerald-500">{"$"}</span>
+                    <span className="text-white font-semibold tracking-wide">{activeLabel}</span>
                   </span>
-                  <NotificationCenter />
-                  <ThemeToggle />
-                  <LanguageToggle />
+
+                  <div className="ml-auto flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => window.dispatchEvent(new Event("app:open-command"))}
+                      aria-label="কমান্ড প্যানেল খুলুন"
+                      className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-white/10 text-[11px] font-mono text-zinc-400 hover:text-emerald-300 hover:border-emerald-500/30 transition-colors"
+                    >
+                      <span>⌘K</span>
+                    </button>
+                    <span className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-emerald-500/20 bg-emerald-500/8 text-[11px] font-mono uppercase tracking-wider text-emerald-400">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.8)]" aria-hidden="true" />
+                      session
+                    </span>
+                    <NotificationCenter />
+                    <ThemeToggle />
+                    <LanguageToggle />
+                  </div>
                 </div>
-              </div>
-            </header>
+              </header>
 
-            {/* Scrollable Content — the only thing that moves */}
-            <main id="dashboard-content" className="flex-1 min-h-0 overflow-y-auto overscroll-contain pb-40 lg:pb-8">
-              <div className="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 min-w-0">
-                {children}
-              </div>
-            </main>
-          </div>
+              {/* Scrollable Content — the only thing that moves */}
+              <main id="dashboard-content" className="flex-1 min-h-0 overflow-y-auto overscroll-contain pb-40 lg:pb-8">
+                <div className="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 min-w-0">
+                  {children}
+                </div>
+              </main>
+            </div>
 
-          {/* Mobile Bottom Navigation (<1024px) */}
-          <BottomNav activeTab={activeTab} onChange={handleTabChange} />
+            {/* Mobile Bottom Navigation (<1024px) */}
+            <BottomNav activeTab={activeTab} onChange={handleTabChange} />
 
-          {/* Global Components */}
-          <VoiceAITutor />
-          <CommandBar />
-          </div>
-        </MotionConfig>
-      </EmailVerificationGate>
-    </LogoutFarewellProvider>
+            {/* Global Components */}
+            <VoiceAITutor />
+            <CommandBar />
+            </div>
+          </MotionConfig>
+        </EmailVerificationGate>
+      </LogoutFarewellProvider>
+    </DashboardThemeProvider>
   );
 }
