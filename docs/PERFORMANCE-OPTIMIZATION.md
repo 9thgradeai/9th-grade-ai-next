@@ -208,19 +208,23 @@ needs infra/budget decisions).
 
 ### Phase 1 — Confirmed bundle wins (P0, reversible)
 - [x] Profile the big chunks (see §5): 93 = Sentry (164 KB parsed) + Next (80 KB);
-      3794 & 4bd1b696 = Next runtime (234 + 196 KB); 4a7b0c69 = Sentry (121 KB);
+      3794 & 4bd1b696 = Next runtime (234 + 196 KB); 4a7b0c69 = Sentry replay (121 KB);
       5875 = framer-motion (81 KB) + motion-dom (41 KB). The two biggest *levers*
-      are Sentry client (~285 KB parsed) and Next runtime (~663 KB parsed).
+      were Sentry client and Next runtime.
 - [ ] Enforce tree-shaken `lucide-react` imports (per-icon paths) — audit passed:
       `exam-ui.ts` already uses a named ESM import from `"lucide-react"`, which the
       bundler tree-shakes; confirm with a follow-up treemap that no unused icons ship.
 - [ ] Lazy-load the chat Markdown renderer on first open — audit: Markdown only loads
       when `ChatMessage` mounts inside the already-lazy `VoiceInterviewTab` /
       `AISolverTab`; confirm no shared-chunk leak in a follow-up treemap.
-- [ ] Reduce the Sentry client footprint (the top lever): trim Sentry integrations,
-      gate traces/replays sample rates already at 0.1, and confirm `replayIntegration`
-      + `browserTracingIntegration` don't both need to ship to every route. Re-check
-      with `npm run perf:check` after any change.
+- [x] **Reduce the Sentry client footprint** (top lever, done): removed
+      `replayIntegration` (session replay, 121 KB, was eager on every route) and
+      `browserTracingIntegration` + `tracesSampleRate` from `frontend/lib/sentry.tsx`
+      (ADR-0013). Sentry client 92.0 → 50.3 KB gzip; replay code absent, metrics/
+      web-vitals instrumentation shaken out. Server HTTP tracing in
+      `instrumentation.ts` retained. Verified with `npm run perf:check` + re-captured
+      baseline. Decided via review — replay/tracing can be re-added if observability
+      outweighs the per-page cost.
 - [ ] Trim Next runtime only when a new Next release lands — pin upgrades and
       re-measure the `next-runtime` namespace against the baseline.
 
@@ -275,37 +279,38 @@ deliberate, reviewed change.
 
 | Namespace | Parsed | Gzip | Notes |
 |-----------|-------:|-----:|-------|
-| Sentry client | 285.3 KB | 92.0 KB | **largest controllable lever** (chunks 93 + 4a7b0c69) |
-| Next runtime | 662.7 KB | 197.8 KB | framework floor; framework(185) + main(143) + 3794(234) + 4bd1b696(196) |
-| Framer Motion | 160.9 KB | 56.4 KB | isolated (framer 81 + motion-dom 41 + motion-utils), only on animating routes |
-| First-party src | 679.4 KB | 211.4 KB | app/ + frontend/ (incl. lazy tab chunks) |
-| **Total client JS** | **2163.4 KB** | **692.2 KB** | across all 162 client assets |
+| Sentry client | 156.0 KB | 50.3 KB | **trimmed to error-monitoring only (ADR-0013)**; was 285.3 KB / 92.0 KB |
+| Next runtime | 662.7 KB | 197.3 KB | framework floor; framework(189) + main(146) + 3794(241) + 4bd1b696(201) |
+| Framer Motion | 160.9 KB | 56.4 KB | isolated, only on animating routes |
+| First-party src | 679.3 KB | 211.3 KB | app/ + frontend/ (incl. lazy tab chunks) |
 
 ### 5.2 Top client assets (gzip)
 
 | Asset | Parsed | Gzip |
 |-------|-------:|-----:|
-| static/chunks/93 (Sentry + Next) | 245.5 KB | 80.5 KB |
+| static/chunks/9974 (Sentry + Next) | 237.0 KB | 76.3 KB |
 | static/chunks/3794 (Next runtime) | 235.9 KB | 64.0 KB |
 | static/chunks/4bd1b696 (Next runtime) | 196.3 KB | 61.7 KB |
 | static/chunks/framework | 185.2 KB | 58.4 KB |
 | static/chunks/main | 143.1 KB | 41.9 KB |
 | static/chunks/5875 (framer-motion) | 125.0 KB | 41.0 KB |
-| static/chunks/4a7b0c69 (Sentry) | 121.3 KB | 38.1 KB |
 | static/chunks/app/dashboard/layout | 38.1 KB | 11.3 KB |
 | static/chunks/app/login/page | 48.8 KB | 13.4 KB |
 | static/chunks/app/page (landing) | 22.3 KB | 8.2 KB |
 
+> The old `93` (Sentry+Next) and `4a7b0c69` (Sentry replay) chunks no longer
+> exist; replay code is absent from the build and the tracing/metrics
+> instrumentation was shaken out.
+
 ### 5.3 What this means
 
 - **Every route pays the base floor**: framework + main + polyfills + Sentry
-  client + Next runtime ⇒ **≈344.5 KB gzip before any app code**. That floor is
-  dominated by **Sentry (~92 KB gzip)** and **Next runtime (~198 KB gzip)** — the
-  two things to watch the hardest.
+  client + Next runtime. Sentry client has dropped from ~92 KB to **~50 KB gzip**
+  (~45% cut), so the floor no longer carries the 121 KB session-replay runtime.
 - Framer Motion adds ~41 KB gzip but **only on routes that actually animate**
   (landing, auth, dashboard shell), because it is code-split. This is correct.
 - The budget gate covers Regression-only enforcement via namespaces + hard
-  ceilings for Sentry and per-asset gzip.
+  ceilings for Sentry and per-asset gzip, and now runs in CI (see §6).
 
 Build config: Next 16.3.1, React 19.2.8, Tailwind v4, PWA on.
 
@@ -313,6 +318,17 @@ Build config: Next 16.3.1, React 19.2.8, Tailwind v4, PWA on.
 
 ## 6. Changelog
 
+- **2026-09-01** — Trimmed the **Sentry client** to error-monitoring only
+  (max trim): removed `replayIntegration` (session replay, ~121 KB parsed / 38 KB
+  gzip, chunk `4a7b0c69`) and `browserTracingIntegration` + `tracesSampleRate`
+  (browser tracing/metrics logic) from `frontend/lib/sentry.tsx`. Replay and
+  metrics/web-vitals instrumentation were verified gone from the built chunks;
+  the replays were bundled in the **eager preload set of every route** via the
+  root layout even at `replaysSessionSampleRate: 0.1`. Result: **Sentry client
+  ~92 KB → 50.3 KB gzip (~45% cut)**. Server-side HTTP tracing in
+  `instrumentation.ts` is unaffected. Re-captured the §5 baseline (ADR-0013) and
+  wired `npm run perf:check` into CI (`.github/workflows/ci.yml` — dedicated
+  `perf` job) so the gate now blocks Sentry regressions on every push/PR.
 - **2026-09-01** — Created this plan from a full five-pillar audit. The audit
   **verified** several checks already pass (scroll/rAF handlers are passive +
   throttled in `ScrollProgress`/`BackToTop`; `framer-motion` is off the initial
@@ -329,8 +345,8 @@ Build config: Next 16.3.1, React 19.2.8, Tailwind v4, PWA on.
   `npm run perf:check`, with namespace regression tolerances + absolute ceilings.
   **Next actionable:** trim the Sentry client footprint (`@sentry:nextjs`
   ~285 KB parsed / 92 KB gzip) and re-run `npm run perf:check`.
-- **Remaining, in order of value:** Sentry client trim → cache Prisma-derived
-  public counts / add SWR to cache-safe public API responses → `content-visibility`
-  on long lists → `overflow`/`min-w-0` chart audit → images/CDN (only once real
-  media exists). See §3 for full roadmap.
+- **Remaining, in order of value:** cache Prisma-derived public counts / add SWR
+  to cache-safe public API responses → `content-visibility` on long lists →
+  `overflow`/`min-w-0` chart audit → images/CDN (only once real media exists).
+  See §3 for full roadmap.
 

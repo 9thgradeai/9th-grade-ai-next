@@ -261,3 +261,54 @@ relative namespace check catches smaller, subtler regressions.
 baseline. Operators must re-run `npm run perf:baseline` only on a deliberate,
 reviewed footprint change — never to hide a regression. CI should run
 `npm run perf:check` on the analyze build.
+
+## ADR-0013 — Sentry client: error-monitoring only (drop replay + browser tracing)
+
+**Date**: 2026-09
+**Status**: Accepted
+**Context**: The perf-budget baseline showed Sentry client at ~285 KB parsed /
+92 KB gzip across chunks `93` (SDK core) and `4a7b0c69` (`@sentry/replay`, 121 KB
+parsed / 38 KB gzip). The replay chunk was verified in the **eager preload set of
+every route** (served HTML test on a static page) because `SentryClientProvider`
+runs in the root layout — so 100% of users downloaded the session-replay runtime
+even though only 10% of sessions were recorded (`replaysSessionSampleRate: 0.1`).
+`browserTracingIntegration` additionally shipped browser-tracing/metrics
+instrumentation (`browserMetrics`, `webVitalSpans`).
+**Decision**: Trim `frontend/lib/sentry.tsx` to error-monitoring only:
+- Remove `replayIntegration` + `replaysSessionSampleRate` /
+  `replaysOnErrorSampleRate` (deletes the 121 KB replay runtime).
+- Remove `browserTracingIntegration` + `tracesSampleRate` (deletes the browser
+  tracing/metrics instrumentation).
+- Remove the unused `onRouterTransitionStart` export.
+- Keep `@sentry/nextjs` `Sentry.init` for error events + breadcrumbs + context;
+  keep the `beforeSend` dev-gating.
+Server-side HTTP tracing in `instrumentation.ts` is untouched (it adds zero
+client-bundle cost) and still provides backend latency visibility.
+**Rationale**: Session replay was the single largest removable blob on the initial
+payload of every page, and replay is masked (`maskAllText`, `blockAllMedia`) so its
+diagnostic value on this text-heavy dashboard is limited. Removing it cut the
+Sentry client to **~156 KB parsed / 50.3 KB gzip (~45%)**, and the replay code was
+verified absent from the built chunks afterward. Chosen as the **max trim** via
+review (option: drop replay + tracing).
+**Consequences**: No more session replay or per-route browser performance tracing /
+web-vitals spans. Error monitoring, breadcrumbs, and app context remain. Re-enable
+either feature deliberately if observability needs outweigh the ~121 KB replay /
+~25-35 KB tracing per-page cost. Re-captured `docs/perf/client-baseline.json` and
+wired `npm run perf:check` into CI (`.github/workflows/ci.yml` `perf` job) so the
+gate now guards Sentry regressions on every push/PR.
+
+## ADR-0014 — Wire perf-budget gate into CI
+
+**Date**: 2026-09
+**Status**: Accepted
+**Context**: ADR-0012 created the gate but it only ran manually; nothing stopped a
+Sentry/bundle regression landing on `main`.
+**Decision**: Add a `perf` job to `.github/workflows/ci.yml` that builds with
+`ANALYZE=true` (`npm run perf:check`) and fails on regression; it runs in parallel
+with the existing `test` job and uploads the analyzer treemaps as an artifact on
+failure for triage.
+**Rationale**: The gate is cheap (one build) and the whole point of a committed
+baseline is CI enforcement; a parallel job keeps it off the critical path of the
+slower integration suite.
+**Consequences**: Every push/PR to `main` now enforces the Sentry ceiling and
+namespace regression tolerances automatically.

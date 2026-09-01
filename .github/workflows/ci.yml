@@ -48,3 +48,31 @@ jobs:
           npm run build
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/app_test
+
+  # Client-JS perf-budget gate (docs/PERFORMANCE-OPTIMIZATION.md §3 Phase 0).
+  # Builds with the bundle analyzer and fails if the initial-JS footprint
+  # regresses against the committed baseline (docs/perf/client-baseline.json).
+  # Runs in parallel with `test` so it never slows the regression suite.
+  perf:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NODE_ENV: production
+      CI: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+      - run: npm ci
+      - name: Analyze build + run perf budget gate
+        run: npm run perf:check
+      - name: Upload analyzer report (on failure, for triage)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: analyze-treemaps
+          path: .next/analyze/
+          retention-days: 7
+          if-no-files-found: ignore
