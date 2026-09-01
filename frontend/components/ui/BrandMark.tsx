@@ -8,6 +8,7 @@
  * Gradient ids are namespaced per instance so multiple marks can coexist.
  * Uses currentColor so it inherits the text color of its parent context,
  * making it theme-aware across light/dark dashboard modes.
+ * No intrinsic shadow — the wrapper controls any elevation.
  */
 export default function BrandMark({
   className = "",

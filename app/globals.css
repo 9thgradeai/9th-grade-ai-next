@@ -38,6 +38,7 @@
   /* Custom shadows — aurora-tinted elevation */
   --shadow-neon-glow: 0 0 20px rgba(45, 212, 191, 0.13);
   --shadow-glow: 0 0 24px rgba(45, 212, 191, 0.32);
+  --shadow-neon-glow: var(--shadow-elevation-medium);
   --shadow-glow-sm: 0 0 20px rgba(45, 212, 191, 0.26);
   --shadow-glow-lg: 0 12px 48px rgba(129, 140, 248, 0.16), 0 0 0 1px rgb(45 212 191 / 0.18);
   --shadow-neon-glow-lg: 0 12px 48px rgba(129, 140, 248, 0.16), 0 0 0 1px rgb(45 212 191 / 0.18);
@@ -100,42 +101,42 @@ html.light {
    that existing Tailwind utilities (text-emerald-400, bg-emerald-500/10, etc.)
    automatically use the dashboard palette without being changed. */
 [data-dashboard-theme="light"] {
-  --dashboard-background: #f8fafc;
+  --dashboard-background: #fafcfb;
   --dashboard-surface: #ffffff;
   --dashboard-surface-solid: #ffffff;
-  --dashboard-surface-raised: rgba(255, 255, 255, 0.96);
-  --dashboard-surface-muted: rgba(244, 253, 255, 0.8);
-  --dashboard-border-muted: rgb(13 84 92 / 0.16);
-  --dashboard-border-strong: rgb(20 184 166 / 0.5);
-  --dashboard-text-primary: #101828;
-  --dashboard-text-secondary: #4f5a76;
-  --dashboard-text-muted: #7f8c9e;
-  --dashboard-border-subtle: rgb(13 84 92 / 0.16);
+  --dashboard-surface-raised: rgba(255, 255, 255, 0.97);
+  --dashboard-surface-muted: rgba(244, 253, 254, 0.85);
+  --dashboard-border-muted: rgb(13 84 92 / 0.14);
+  --dashboard-border-strong: rgb(20 184 166 / 0.45);
+  --dashboard-text-primary: #0f172a;
+  --dashboard-text-secondary: #64748b;
+  --dashboard-text-muted: #94a3b8;
+  --dashboard-border-subtle: rgb(13 84 92 / 0.14);
 
-  --dashboard-primary: #0d9488;
-  --dashboard-primary-hover: #0f766e;
-  --dashboard-primary-active: #0f766e;
+  --dashboard-primary: #0f766e;
+  --dashboard-primary-hover: #10b981;
+  --dashboard-primary-active: #0d9488;
 
-  --dashboard-success: #0d9488;
+  --dashboard-success: #0f766e;
   --dashboard-warning: #b45309;
   --dashboard-danger: #dc2626;
-  --dashboard-info: #0e7490;
+  --dashboard-info: #0891b2;
 
   --dashboard-border-focus: rgb(20 184 166 / 0.4);
 
-  --dashboard-chart-1: #0d9488;
-  --dashboard-chart-2: #553c9a;
+  --dashboard-chart-1: #0f766e;
+  --dashboard-chart-2: #14b8a6;
   --dashboard-chart-3: #a78bfa;
   --dashboard-chart-4: #f472b6;
   --dashboard-chart-grid: rgb(13 84 92 / 0.1);
-  --dashboard-chart-axis: #7f8c9e;
+  --dashboard-chart-axis: #64748b;
 
   --dashboard-input-bg: #ffffff;
   --dashboard-input-border: rgb(13 84 92 / 0.2);
-  --dashboard-input-focus: #0d9488;
+  --dashboard-input-focus: #0f766e;
 
-  --dashboard-disabled-bg: rgba(255, 255, 255, 0.4);
-  --dashboard-disabled-text: rgba(31, 41, 55, 0.4);
+  --dashboard-disabled-bg: rgba(255, 255, 255, 0.35);
+  --dashboard-disabled-text: rgba(150, 170, 180, 0.35);
 
   /* Map existing --color-* variables to --dashboard-* so Tailwind utilities
      like text-emerald-400, bg-emerald-500/10, etc. use the dashboard palette. */
@@ -145,16 +146,16 @@ html.light {
   --color-emerald-100: var(--dashboard-surface);
   --color-cyan-400: var(--dashboard-info);
   --color-indigo-400: #6366f1;
-  --color-zinc-50: #f3f4f6;
-  --color-zinc-100: #e4e6e7;
+  --color-zinc-50: #f8fafc;
+  --color-zinc-100: #f1f5f9;
   --color-zinc-200: #e2e8f0;
   --color-zinc-300: #cbd5e1;
-  --color-zinc-400: #9ca3af;
-  --color-zinc-500: #6b7280;
-  --color-zinc-600: #4b5563;
-  --color-zinc-700: #3f3f4f;
-  --color-zinc-800: #27272a;
-  --color-zinc-900: #18181b;
+  --color-zinc-400: #94a3b8;
+  --color-zinc-500: #64748b;
+  --color-zinc-600: #475569;
+  --color-zinc-700: #334155;
+  --color-zinc-800: #1e293b;
+  --color-zinc-900: #0f172a;
   --color-white: #ffffff;
   --color-black: #000000;
 }
@@ -170,39 +171,39 @@ html.light {
   --dashboard-background: #0a0e17;
   --dashboard-surface: #111827;
   --dashboard-surface-solid: #171f36;
-  --dashboard-surface-raised: rgba(17, 31, 54, 0.8);
-  --dashboard-surface-muted: rgba(30, 41, 69, 0.5);
-  --dashboard-border-muted: rgb(100 116 139 / 0.15);
+  --dashboard-surface-raised: rgba(17, 31, 54, 0.85);
+  --dashboard-surface-muted: rgba(30, 43, 63, 0.5);
+  --dashboard-border-muted: rgb(100 116 139 / 0.14);
   --dashboard-border-strong: rgb(100 116 139 / 0.35);
   --dashboard-text-primary: #f8fafc;
   --dashboard-text-secondary: #cbd5e1;
   --dashboard-text-muted: #64748b;
-  --dashboard-border-subtle: rgb(100 116 139 / 0.15);
+  --dashboard-border-subtle: rgb(100 116 139 / 0.14);
 
-  --dashboard-primary: #10b981;
-  --dashboard-primary-hover: #059669;
-  --dashboard-primary-active: #059669;
+  --dashboard-primary: #0f766e;
+  --dashboard-primary-hover: #10b981;
+  --dashboard-primary-active: #0f766e;
 
-  --dashboard-success: #22c55e;
+  --dashboard-success: #0f766e;
   --dashboard-warning: #f59e0b;
   --dashboard-danger: #ef4444;
-  --dashboard-info: #3b82f6;
+  --dashboard-info: #0891b2;
 
   --dashboard-border-focus: rgb(100 116 139 / 0.4);
 
-  --dashboard-chart-1: #10b981;
-  --dashboard-chart-2: #8b5cf6;
+  --dashboard-chart-1: #0f766e;
+  --dashboard-chart-2: #14b8a6;
   --dashboard-chart-3: #a78bfa;
   --dashboard-chart-4: #f472b6;
-  --dashboard-chart-grid: rgb(100 116 139 / 0.2);
+  --dashboard-chart-grid: rgb(100 116 139 / 0.15);
   --dashboard-chart-axis: #64748b;
 
   --dashboard-input-bg: #1e293b;
-  --dashboard-input-border: rgb(100 116 139 / 0.3);
-  --dashboard-input-focus: #10b981;
+  --dashboard-input-border: rgb(100 116 139 / 0.25);
+  --dashboard-input-focus: #0f766e;
 
-  --dashboard-disabled-bg: rgba(17, 31, 54, 0.4);
-  --dashboard-disabled-text: rgba(100 116 139 / 0.4);
+  --dashboard-disabled-bg: rgba(17, 31, 54, 0.35);
+  --dashboard-disabled-text: rgba(150, 170, 180, 0.35);
 
   /* Map existing --color-* variables to --dashboard-* so Tailwind utilities
      like text-emerald-400, bg-emerald-500/10, etc. use the dashboard palette. */
@@ -212,16 +213,16 @@ html.light {
   --color-emerald-100: var(--dashboard-surface-solid);
   --color-cyan-400: var(--dashboard-info);
   --color-indigo-400: #6366f1;
-  --color-zinc-50: #18181b;
-  --color-zinc-100: #1f2937;
-  --color-zinc-200: #3f3f4f;
-  --color-zinc-300: #52525b;
-  --color-zinc-400: #6b7280;
-  --color-zinc-500: #71717a;
+  --color-zinc-50: #0f172a;
+  --color-zinc-100: #1e293b;
+  --color-zinc-200: #334155;
+  --color-zinc-300: #475569;
+  --color-zinc-400: #64748b;
+  --color-zinc-500: #64748b;
   --color-zinc-600: #a3a3a3;
-  --color-zinc-700: #d4d4d8;
-  --color-zinc-800: #f3f4f6;
-  --color-zinc-900: #ffffff;
+  --color-zinc-700: #f1f5f9;
+  --color-zinc-800: #e2e8f0;
+  --color-zinc-900: #f8fafc;
   --color-white: #ffffff;
   --color-black: #000000;
 }
@@ -1189,4 +1190,146 @@ html.light .skeleton-shimmer {
 }
 .boot-seg {
   animation: boot-seg 1.7s ease-in-out infinite;
+}
+
+/* ── Typography Refinement ────────────────────────────────────────
+   Enhance readability and Bangla text rendering */
+pre {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Liberation Mono", monospace;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+blockquote {
+  font-size: 1rem;
+  line-height: 1.6;
+  border-left: 4px solid var(--dashboard-primary);
+  padding-left: 1rem;
+  color: var(--dashboard-text-secondary);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  line-height: 1.25;
+  margin-top: 0;
+  margin-bottom: 0.5em;
+}
+
+/* Bangla text rendering */
+.bengali,
+[lang="bn"] {
+  font-family: "Hind Siliguri", "Noto Sans Bangla", "SolaimanLipi",
+    system-ui, sans-serif;
+  line-height: 1.5;
+}
+
+/* Ensure Latin text doesn't override Bangla */
+*:lang(bn) {
+  font-family: "Hind Siliguri", "Noto Sans Bangla", "SolaimanLipi",
+    system-ui, sans-serif;
+}
+
+/* Improve readability of mixed Latin/Bangla text */
+.mixed-text {
+  font-feature-settings: "rlig" 1, "calt" 1;
+}
+
+/* Improvedd a letter-spacing for headings */
+h1,
+h2,
+h3 {
+  letter-spacing: -0.02em;
+}
+
+/* Improve paragraph spacing */
+p {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+/* Ensure headings have proper bottom spacing */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin-bottom: 0.75em;
+}
+
+/* Improvedd list spacing */
+ul,
+ol {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+}
+
+/* Improvedd definition list */
+dt {
+  font-weight: 600;
+  margin-top: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+dd {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+/* Improveddhr graphics */
+hr {
+  border: 0;
+  border-top: 1px solid var(--dashboard-border-subtle);
+  margin: 2rem 0;
+}
+
+/* Improvedd ableness */
+@media (preferred-color-scheme: dark) {
+  body {
+    color-scheme: dark;
+  }
+}
+
+/* ── Shadow System — Premium Elevation ────────────────────────────────────────
+   Restrained elevation that feels sophisticated, not neon-glowy.
+   Dark mode relies on surface contrast rather than large shadows.
+*/
+
+/* Elevation levels */
+--shadow-elevation-soft: 0 1px 2px rgb(0 0 0 / 0.05);
+--shadow-elevation-medium: 0 4px 6px rgb(0 0 0 / 0.1);
+--shadow-elevation-bold: 0 10px 15px rgb(0 0 0 / 0.15);
+--shadow-elevation-focus: 0 0 0 1px var(--dashboard-border-focus);
+
+/* Card shadows */
+.shadow-card {
+  box-shadow: var(--shadow-elevation-soft);
+}
+.shadow-card-hover:hover {
+  box-shadow: var(--shadow-elevation-medium);
+}
+
+/* Focus ring */
+.focus-visible\:outline-none:focus-visible {
+  outline: 2px solid var(--dashboard-border-focus);
+  outline-offset: 2px;
+}
+
+/* Reduced motion safe */
+@media (prefers-reduced-motion: reduce) {
+  .boot-ring,
+  .boot-orbit,
+  .boot-twinkle,
+  .boot-core,
+  .boot-msg,
+  .boot-scanline {
+    animation-play-state: paused !important;
+  }
 }
