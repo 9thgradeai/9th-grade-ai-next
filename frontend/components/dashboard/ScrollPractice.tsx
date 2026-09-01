@@ -184,7 +184,7 @@ export default function ScrollPractice({
               </div>
 
               <div className="rounded-xl border p-3 mb-3" style={{ background: "var(--dashboard-surface-raised)", borderColor: "var(--dashboard-border-muted)" }}>
-                <h4 className="text-[15px] font-semibold leading-relaxed" style={{ color: "#0f172a", lineHeight: "1.6" }}>{q.question}</h4>
+                <h4 className="text-[15px] font-semibold leading-relaxed" style={{ color: "var(--dashboard-text-primary)", lineHeight: "1.6" }}>{q.question}</h4>
               </div>
 
               <div className="space-y-2">

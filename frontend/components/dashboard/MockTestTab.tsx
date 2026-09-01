@@ -521,7 +521,7 @@ export default function MockTestTab() {
             </div>
 
             <div className="rounded-xl border p-4 mb-5" style={{ background: "var(--dashboard-surface-raised)", borderColor: "var(--dashboard-border-muted)", boxShadow: "var(--dashboard-shadow-sm)" }}>
-              <h3 className="text-base md:text-[16px] font-semibold leading-relaxed" style={{ color: "#0f172a", lineHeight: "1.6" }}>{q.question}</h3>
+              <h3 className="text-base md:text-[16px] font-semibold leading-relaxed" style={{ color: "var(--dashboard-text-primary)", lineHeight: "1.6" }}>{q.question}</h3>
             </div>
 
             <div className="space-y-2.5" role="radiogroup" aria-label={`প্রশ্ন ${currentQuestion + 1} — উত্তর নির্বাচন করুন`}>

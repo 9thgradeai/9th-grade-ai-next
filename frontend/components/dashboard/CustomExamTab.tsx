@@ -759,7 +759,7 @@ export default function CustomExamTab() {
                 </div>
 
                 <div className="rounded-xl border p-4 mb-4" style={{ background: "var(--dashboard-surface-raised)", borderColor: "var(--dashboard-border-muted)", boxShadow: "var(--dashboard-shadow-sm)" }}>
-                  <h3 className="text-sm md:text-[15px] font-semibold leading-relaxed" style={{ color: "#0f172a", lineHeight: "1.6" }}>{q.question}</h3>
+                  <h3 className="text-sm md:text-[15px] font-semibold leading-relaxed" style={{ color: "var(--dashboard-text-primary)", lineHeight: "1.6" }}>{q.question}</h3>
                 </div>
 
                 <div className="space-y-2.5">
