@@ -69,7 +69,9 @@ export default function QuestionDrill({
     const prefersReduced = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const behavior: ScrollBehavior = prefersReduced ? "instant" as ScrollBehavior : "smooth";
     const dash = typeof document !== "undefined" ? document.getElementById("dashboard-content") : null;
-    if (dash) dash.scrollTo({ top: 0, behavior });
+    if (dash) {
+      if (typeof dash.scrollTo === "function") { try { dash.scrollTo({ top: 0, behavior }); } catch { dash.scrollTop = 0; } } else dash.scrollTop = 0;
+    }
   }, [index, done]);
 
   if (questions.length === 0) {

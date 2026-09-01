@@ -88,8 +88,13 @@ export default function ScrollPractice({
       const prefersReduced = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       const behavior: ScrollBehavior = prefersReduced ? "instant" as ScrollBehavior : "smooth";
       const dash = typeof document !== "undefined" ? document.getElementById("dashboard-content") : null;
-      if (dash) dash.scrollTo({ top: 0, behavior });
-      listRef.current?.scrollTo({ top: 0, behavior });
+      if (dash) {
+        if (typeof dash.scrollTo === "function") { try { dash.scrollTo({ top: 0, behavior }); } catch { dash.scrollTop = 0; } } else dash.scrollTop = 0;
+      }
+      const lr = listRef.current;
+      if (lr) {
+        if (typeof lr.scrollTo === "function") { try { lr.scrollTo({ top: 0, behavior }); } catch { lr.scrollTop = 0; } } else lr.scrollTop = 0;
+      }
     }
   };
 
@@ -98,7 +103,10 @@ export default function ScrollPractice({
     setSubmitted(false);
     setFeedback({});
     setExpanded({});
-    listRef.current?.scrollTo({ top: 0 });
+    const lr = listRef.current;
+    if (lr) {
+      if (typeof lr.scrollTo === "function") { try { lr.scrollTo({ top: 0 }); } catch { lr.scrollTop = 0; } } else lr.scrollTop = 0;
+    }
   };
 
   const finish = () => {

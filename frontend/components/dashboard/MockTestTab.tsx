@@ -78,8 +78,14 @@ export default function MockTestTab() {
     const prefersReduced = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const behavior: ScrollBehavior = prefersReduced ? "instant" as ScrollBehavior : "smooth";
     const el = typeof document !== "undefined" ? document.getElementById("dashboard-content") : null;
-    if (el) el.scrollTo({ top: 0, behavior });
-    else if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior });
+    if (el) {
+      if (typeof el.scrollTo === "function") { try { el.scrollTo({ top: 0, behavior }); return; } catch {} }
+      el.scrollTop = 0;
+      return;
+    }
+    if (typeof window !== "undefined" && typeof window.scrollTo === "function") {
+      try { window.scrollTo({ top: 0, behavior }); } catch { window.scrollTo(0, 0); }
+    }
   }, []);
   // Latest questions/answers for the timer's auto-submit without re-subscribing.
   const questionsRef = useRef<Server.ExamQuestionDTO[]>([]);
