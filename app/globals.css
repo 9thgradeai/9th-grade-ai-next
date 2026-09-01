@@ -92,6 +92,13 @@ html.light {
   --text-muted: #4f5a76;
 }
 
+/* ── Dashboard Light Mode ────────────────────────────────────────
+   Scoped to [data-dashboard-theme="light"] — these rules ONLY apply
+   when the dashboard is mounted. They do NOT affect landing pages,
+   auth, or any other route.
+   The --color-* variables are remapped to --dashboard-* values so
+   that existing Tailwind utilities (text-emerald-400, bg-emerald-500/10, etc.)
+   automatically use the dashboard palette without being changed. */
 [data-dashboard-theme="light"] {
   --dashboard-background: #f8fafc;
   --dashboard-surface: #ffffff;

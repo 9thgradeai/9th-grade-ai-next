@@ -1,5 +1,3 @@
-import { useId } from "react";
-
 /**
  * The official 9Th-Grade AI brand mark — a knowledge constellation:
  * four connected nodes orbiting a luminous core on a deep-space tile,
@@ -19,7 +17,7 @@ export default function BrandMark({
   /** Accessible name; omit when the surrounding link already labels the mark. */
   title?: string;
 }) {
-  const gid = `brandmark-${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
+  const gid = `brandmark-${Math.random().toString(36).substring(2, 11)}`;
 
   return (
     <svg
