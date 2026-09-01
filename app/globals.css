@@ -94,66 +94,68 @@ html.light {
 }
 
 /* ── Dashboard Light Mode ────────────────────────────────────────
-   Scoped to [data-dashboard-theme="light"] — these rules ONLY apply
-   when the dashboard is mounted. They do NOT affect landing pages,
-   auth, or any other route. Premium academic: #F7F9FC canvas, indigo primary. */
+   Softer, calmer, premium study environment.
+   NOT stark white — soft cool-neutral canvas #F6F8FB with subtle hierarchy.
+   Only token values change; no architecture/route changes. */
 [data-dashboard-theme="light"] {
-  --dashboard-background: #f6f7fb;
-  --dashboard-surface: #ffffff;
-  --dashboard-surface-solid: #ffffff;
+  --dashboard-background: #f6f8fb;
+  --dashboard-surface: #fbfcfe;
+  --dashboard-surface-solid: #fbfcfe;
   --dashboard-surface-raised: #ffffff;
   --dashboard-surface-muted: #f1f5f9;
-  --dashboard-surface-hover: #f8fafc;
-  --dashboard-sidebar-bg: #fbfcfe;
-  --dashboard-sidebar-border: #e2e8f0;
-  --dashboard-border-muted: #e2e8f0;
-  --dashboard-border-strong: #cbd5e1;
-  --dashboard-text-primary: #0f172a;
-  --dashboard-text-secondary: #475569;
-  --dashboard-text-muted: #94a3b8;
+  --dashboard-surface-hover: #f3f6fb;
+  --dashboard-sidebar-bg: #f8fafc;
+  --dashboard-sidebar-border: #e6eaf0;
+  --dashboard-border-muted: #e6eaf0;
+  --dashboard-border-subtle: #eef2f7;
+  --dashboard-border-strong: #d8dfe9;
+
+  --dashboard-text-primary: #172033;
+  --dashboard-text-secondary: #526075;
+  --dashboard-text-muted: #7a8798;
   --dashboard-text-inverse: #ffffff;
-  --dashboard-border-subtle: #f1f5f9;
 
   --dashboard-primary: #4f46e5;
   --dashboard-primary-hover: #4338ca;
   --dashboard-primary-active: #3730a3;
   --dashboard-primary-subtle: #eef2ff;
 
-  --dashboard-success: #059669;
-  --dashboard-success-subtle: #ecfdf5;
-  --dashboard-warning: #d97706;
-  --dashboard-warning-subtle: #fffbeb;
-  --dashboard-danger: #dc2626;
-  --dashboard-danger-subtle: #fef2f2;
-  --dashboard-info: #0284c7;
-  --dashboard-info-subtle: #f0f9ff;
+  --dashboard-success: #0e7a5a;
+  --dashboard-success-subtle: #eef8f3;
+  --dashboard-warning: #b45309;
+  --dashboard-warning-subtle: #fef7ec;
+  --dashboard-danger: #c2412b;
+  --dashboard-danger-subtle: #fdf2f0;
+  --dashboard-info: #0e7490;
+  --dashboard-info-subtle: #eef6fb;
 
-  --dashboard-focus-ring: rgb(79 70 229 / 0.35);
-  --dashboard-border-focus: rgb(79 70 229 / 0.35);
-  --dashboard-overlay: rgb(15 23 42 / 0.45);
+  --dashboard-focus-ring: rgb(79 70 229 / 0.22);
+  --dashboard-border-focus: rgb(79 70 229 / 0.28);
+  --dashboard-overlay: rgb(23 32 51 / 0.38);
 
   --dashboard-chart-1: #4f46e5;
-  --dashboard-chart-2: #06b6d4;
-  --dashboard-chart-3: #059669;
-  --dashboard-chart-4: #f59e0b;
-  --dashboard-chart-grid: #e2e8f0;
-  --dashboard-chart-axis: #64748b;
+  --dashboard-chart-2: #0891b2;
+  --dashboard-chart-3: #0e7a5a;
+  --dashboard-chart-4: #b45309;
+  --dashboard-chart-grid: #e6eaf0;
+  --dashboard-chart-axis: #7a8798;
 
-  --dashboard-input-bg: #ffffff;
-  --dashboard-input-border: #cbd5e1;
+  --dashboard-input-bg: #fbfcfe;
+  --dashboard-input-border: #e1e7ef;
   --dashboard-input-focus: #4f46e5;
 
   --dashboard-disabled-bg: #f1f5f9;
-  --dashboard-disabled-text: #94a3b8;
+  --dashboard-disabled-text: #8a96a8;
 
-  --dashboard-shadow-sm: 0 1px 3px rgb(15 23 42 / 0.06), 0 1px 2px rgb(15 23 42 / 0.08);
-  --dashboard-shadow-md: 0 4px 12px rgb(15 23 42 / 0.08), 0 2px 4px rgb(15 23 42 / 0.06);
-  --dashboard-shadow-lg: 0 10px 24px rgb(15 23 42 / 0.09), 0 4px 8px rgb(15 23 42 / 0.06);
+  /* Extremely soft elevation — depth via surface contrast, not heavy shadows */
+  --dashboard-shadow-sm: 0 1px 2px rgb(23 32 51 / 0.04), 0 1px 3px rgb(23 32 51 / 0.03);
+  --dashboard-shadow-md: 0 2px 8px rgb(23 32 51 / 0.05), 0 1px 3px rgb(23 32 51 / 0.04);
+  --dashboard-shadow-lg: 0 8px 20px rgb(23 32 51 / 0.06), 0 2px 6px rgb(23 32 51 / 0.04);
   --dashboard-radius-sm: 10px;
   --dashboard-radius-md: 14px;
   --dashboard-radius-lg: 18px;
 
-  /* Map existing --color-* variables so Tailwind utilities adapt */
+  /* Map existing Tailwind utilities to soft light palette */
   --color-emerald-500: var(--dashboard-primary);
   --color-emerald-400: #6366f1;
   --color-emerald-50: var(--dashboard-primary-subtle);
@@ -162,24 +164,24 @@ html.light {
   --color-indigo-400: #6366f1;
   --color-zinc-50: #f8fafc;
   --color-zinc-100: #f1f5f9;
-  --color-zinc-200: #e2e8f0;
-  --color-zinc-300: #cbd5e1;
-  --color-zinc-400: #94a3b8;
-  --color-zinc-500: #64748b;
-  --color-zinc-600: #475569;
-  --color-zinc-700: #334155;
-  --color-zinc-800: #1e293b;
-  --color-zinc-900: #0f172a;
+  --color-zinc-200: #e6eaf0;
+  --color-zinc-300: #d8dfe9;
+  --color-zinc-400: #8a96a8;
+  --color-zinc-500: #7a8798;
+  --color-zinc-600: #526075;
+  --color-zinc-700: #2f3d52;
+  --color-zinc-800: #172033;
+  --color-zinc-900: #172033;
   --color-white: #ffffff;
-  --color-black: #000000;
+  --color-black: #172033;
 }
 
-/* Dashboard canvas — subtle mesh so white doesn't feel flat (light) / depth (dark) */
+/* Dashboard canvas — extremely subtle wash for soft light (hint of color, not a gradient) */
 [data-dashboard-theme="light"] .dashboard-shell,
 [data-dashboard-theme="light"] #dashboard-content {
   background:
-    radial-gradient(ellipse 900px 420px at 14% -8%, rgb(99 102 241 / 0.06), transparent 60%),
-    radial-gradient(ellipse 700px 360px at 92% 0%, rgb(6 182 214 / 0.05), transparent 60%),
+    radial-gradient(ellipse 900px 420px at 14% -8%, rgb(99 102 241 / 0.035), transparent 64%),
+    radial-gradient(ellipse 700px 360px at 92% 0%, rgb(14 116 144 / 0.028), transparent 64%),
     var(--dashboard-background) !important;
 }
 [data-dashboard-theme="dark"] .dashboard-shell,
