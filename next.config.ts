@@ -59,4 +59,14 @@ const baseConfig: NextConfig = {
   headers: async () => [{ source: "/(.*)", headers: securityHeaders }],
 } satisfies NextConfig;
 
-module.exports = withPWA(baseConfig);
+// Bundle analysis is opt-in via `ANALYZE=true npm run build` (the existing
+// `npm run analyze` script). Wrapping the withPWA output keeps the PWA and
+// analyzer orthogonal: normal builds are byte-identical, analysis builds emit
+// .next/analyze/*.html treemaps for chunk-profile work (see
+// docs/PERFORMANCE-OPTIMIZATION.md §3 Phase 0).
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const withBundleAnalyzer = require("@next/bundle-analyzer")({
+  enabled: process.env.ANALYZE === "true",
+});
+
+module.exports = withBundleAnalyzer(withPWA(baseConfig));

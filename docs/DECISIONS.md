@@ -216,3 +216,23 @@ by the launch requirement for working email verification. When no transport is
 configured, the app keeps the documented auto-verify fallback so accounts are never
 locked out. Operators must set SMTP (or `RESEND_API_KEY`) env vars for real delivery
 — see `docs/EMAIL.md`.
+
+## ADR-0011 — Bundle analyzer for performance instrumentation
+
+**Date**: 2026-09
+**Status**: Accepted
+**Context**: The audit (docs/PERFORMANCE-OPTIMIZATION.md) found several large
+unprofiled shared client chunks (196–245 KB) whose contents are unknown. Before any
+chunk trimming or dependency surgery we need a way to see *what* ships in each chunk.
+Webpack tooling is required only during analysis, not at runtime.
+**Decision**: Add `@next/bundle-analyzer` as a **devDependency** (16.3.4, matching
+Next 16.3.1) and wrap the existing `withPWA(...)` config so treemaps emit only when
+`ANALYZE=true` (the existing `npm run analyze` script). Opt-in only.
+**Rationale**: It is dev-only, zero runtime cost, and its output ("client.html" /
+"edge.html" / "nodejs.html") is the source of truth for the §3 Phase 0 chunk-profile
+and the §5 baseline table. It composes cleanly with next-pwa because it wraps the
+final config object. Tying it to the existing `ANALYZE=true` env flag means normal
+CI/prod builds are byte-identical to before.
+**Consequences**: One dev-only dependency added; `.next/analyze/*.html` artifacts
+are generated on analysis builds (gitignored, see §5 note). Reject the Perf-budget
+CI gate and all chunk trimming until the baseline treemaps are captured.
