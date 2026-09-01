@@ -28,7 +28,7 @@ export default function KpiTile({
   return (
     <div
       className="rounded-2xl border p-4 transition-colors"
-      style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}
+      style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)", boxShadow: "var(--dashboard-shadow-sm)" }}
     >
       <p className="flex items-center gap-1.5 truncate text-[10px] font-semibold uppercase tracking-[0.12em]" style={{ color: "var(--dashboard-text-muted)" }}>
         <span className={`w-1.5 h-1.5 rounded-full ${tone.dot}`} aria-hidden="true" />

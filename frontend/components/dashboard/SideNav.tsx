@@ -38,14 +38,14 @@ export default function SideNav({ activeTab, onChange }: SideNavProps) {
       style={{ background: "var(--dashboard-sidebar-bg)", borderColor: "var(--dashboard-sidebar-border)" }}
       aria-label="Desktop navigation"
     >
-      {/* Brand */}
-      <div className="px-5 py-5 border-b flex items-center gap-3" style={{ borderColor: "var(--dashboard-sidebar-border)" }}>
-        <BrandMark className="h-9 w-9 rounded-xl shadow-sm" />
+      {/* Brand — premium tile + soft border, works on white & dark */}
+      <div className="px-5 py-[18px] border-b flex items-center gap-3.5" style={{ borderColor: "var(--dashboard-sidebar-border)", background: "linear-gradient(180deg, var(--dashboard-sidebar-bg) 0%, color-mix(in srgb, var(--dashboard-sidebar-bg) 92%, var(--dashboard-primary) 8%) 100%)" }}>
+        <BrandMark className="h-10 w-10 rounded-xl shadow-[0_2px_10px_rgba(79,70,229,0.28),0_1px_2px_rgba(15,23,42,0.08)] ring-1 ring-black/5" />
         <div className="min-w-0">
-          <p className="font-display font-semibold tracking-tight leading-none text-[15px]" style={{ color: "var(--dashboard-text-primary)" }}>
+          <p className="font-display font-bold tracking-tight leading-none text-[15.5px]" style={{ color: "var(--dashboard-text-primary)" }}>
             9th-grade-ai
           </p>
-          <p className="text-[11px] font-medium mt-0.5" style={{ color: "var(--dashboard-text-muted)" }}>
+          <p className="text-[11px] font-semibold tracking-wide mt-1" style={{ color: "var(--dashboard-text-muted)" }}>
             বিসিএস • ব্যাংক • চাকরি
           </p>
         </div>

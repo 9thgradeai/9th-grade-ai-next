@@ -33,24 +33,31 @@ export default function BrandMark({
     >
       {title ? <title>{title}</title> : null}
       <defs>
-        <radialGradient id={`${gid}-g`} cx="50%" cy="50%" r="60%">
-          <stop offset="0%" stopColor="#4f7cff" />
+        <radialGradient id={`${gid}-g`} cx="50%" cy="50%" r="68%">
+          <stop offset="0%" stopColor="#6366f1" />
           <stop offset="55%" stopColor="#22d3ee" />
           <stop offset="100%" stopColor="#8b5cf6" />
         </radialGradient>
+        <linearGradient id={`${gid}-bg`} x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#111827" />
+          <stop offset="100%" stopColor="#1e1b4b" />
+        </linearGradient>
       </defs>
-      <rect width="64" height="64" rx="14" fill="currentColor" />
-      <circle cx="32" cy="32" r="26" fill="none" stroke={`url(#${gid}-g)`} strokeWidth="2" opacity="0.55" />
-      <circle cx="32" cy="32" r="6" fill="currentColor" />
-      <circle cx="32" cy="10" r="3" fill="currentColor" />
-      <circle cx="12" cy="26" r="3" fill="currentColor" />
-      <circle cx="52" cy="26" r="3" fill="currentColor" />
-      <circle cx="32" cy="54" r="3" fill="currentColor" />
-      <g stroke="#9aa3b8" strokeWidth="1.2" opacity="0.7">
-        <line x1="32" y1="32" x2="32" y2="10" />
-        <line x1="32" y1="32" x2="12" y2="26" />
-        <line x1="32" y1="32" x2="52" y2="26" />
-        <line x1="32" y1="32" x2="32" y2="54" />
+      {/* Fixed premium tile — always dark/indigo so it pops on white sidebar & dark sidebar */}
+      <rect width="64" height="64" rx="14" fill={`url(#${gid}-bg)`} />
+      <rect width="64" height="64" rx="14" fill="none" stroke="white" strokeOpacity="0.08" />
+      <circle cx="32" cy="32" r="24" fill="none" stroke={`url(#${gid}-g)`} strokeWidth="1.8" opacity="0.9" />
+      <circle cx="32" cy="32" r="6.5" fill="white" />
+      <circle cx="32" cy="32" r="6.5" fill={`url(#${gid}-g)`} opacity="0.95" />
+      <circle cx="32" cy="11.5" r="3.2" fill="white" fillOpacity="0.96" />
+      <circle cx="13.5" cy="26" r="3.2" fill="white" fillOpacity="0.96" />
+      <circle cx="50.5" cy="26" r="3.2" fill="white" fillOpacity="0.96" />
+      <circle cx="32" cy="52.5" r="3.2" fill="white" fillOpacity="0.96" />
+      <g stroke="white" strokeWidth="1.15" opacity="0.55">
+        <line x1="32" y1="32" x2="32" y2="11.5" />
+        <line x1="32" y1="32" x2="13.5" y2="26" />
+        <line x1="32" y1="32" x2="50.5" y2="26" />
+        <line x1="32" y1="32" x2="32" y2="52.5" />
       </g>
     </svg>
   );

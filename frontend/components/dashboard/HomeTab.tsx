@@ -69,13 +69,13 @@ function CountdownRing({ daysLeft }: { daysLeft: number }) {
   const offset = circ * (1 - fraction);
   return (
     <svg viewBox="0 0 64 64" className="w-16 h-16 -rotate-90" aria-hidden="true">
-      <circle cx="32" cy="32" r={r} fill="none" stroke="rgb(148 155 195 / 0.18)" strokeWidth="5" />
+      <circle cx="32" cy="32" r={r} fill="none" stroke="var(--dashboard-border-muted)" strokeWidth="5" />
       <circle
         cx="32"
         cy="32"
         r={r}
         fill="none"
-        stroke="#2dd4bf"
+        stroke="var(--dashboard-primary)"
         strokeWidth="5"
         strokeLinecap="round"
         strokeDasharray={circ}
@@ -122,7 +122,7 @@ function useCountdown(target: string) {
 function CountdownClock({ target }: { target: string }) {
   const remaining = useCountdown(target);
   return (
-    <span className="text-emerald-400 font-bold text-lg tracking-widest tabular-nums">
+    <span className="font-bold text-lg tracking-widest tabular-nums" style={{ color: "var(--dashboard-primary)" }}>
       {remaining.d}:{remaining.h}:{remaining.m}:{remaining.s}
     </span>
   );
@@ -331,26 +331,28 @@ export default function HomeTab() {
       animate="show"
       className="space-y-6 pb-24 sm:pb-6"
     >
-      {/* Welcome — calm academic header */}
-      <motion.div variants={STAGGER_ITEM} className="rounded-2xl border p-5 sm:p-6" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}>
-        <div className="flex flex-wrap items-start justify-between gap-4">
+      {/* Welcome — premium header with subtle top accent */}
+      <motion.div variants={STAGGER_ITEM} className="rounded-2xl border p-5 sm:p-6 overflow-hidden relative" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)", boxShadow: "var(--dashboard-shadow-sm)" }}>
+        <div className="absolute inset-x-0 top-0 h-[3px]" style={{ background: "linear-gradient(90deg, #4f46e5, #06b6d4, #8b5cf6)" }} aria-hidden="true" />
+        <div className="absolute -top-24 -right-24 w-72 h-72 rounded-full blur-3xl opacity-[0.06]" style={{ background: "radial-gradient(circle, #4f46e5 0%, transparent 70%)" }} aria-hidden="true" />
+        <div className="relative flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em]" style={{ color: "var(--dashboard-text-muted)" }}>
+            <p className="text-[11px] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--dashboard-primary)" }}>
               স্বাগতম
             </p>
-            <h1 className="font-display text-[22px] sm:text-[26px] font-semibold leading-tight mt-1 text-balance" style={{ color: "var(--dashboard-text-primary)" }}>
+            <h1 className="font-display text-[22px] sm:text-[26px] font-bold leading-tight mt-1.5 text-balance" style={{ color: "var(--dashboard-text-primary)" }}>
               {user?.name ? `হ্যালো, ${user.name}` : "হ্যালো, শিক্ষার্থী"}
             </h1>
-            <p className="text-sm mt-1" style={{ color: "var(--dashboard-text-secondary)" }}>
+            <p className="text-sm mt-1.5" style={{ color: "var(--dashboard-text-secondary)" }}>
               {user?.examTarget ? `${user.examTarget} প্রস্তুতি` : "আপনার লক্ষ্য নির্ধারণ করুন"} {nextExam ? `• ${t(lang, nextExam.titleBn, nextExam.titleEn)}` : ""}
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium" style={{ background: "var(--dashboard-primary-subtle)", borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-primary)" }}>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold shadow-sm" style={{ background: "var(--dashboard-primary-subtle)", borderColor: "color-mix(in srgb, var(--dashboard-primary) 18%, var(--dashboard-border-muted))", color: "var(--dashboard-primary)" }}>
               <Target className="w-3.5 h-3.5" />
               {nextExam ? t(lang, nextExam.titleBn, nextExam.titleEn) : "কোনো আসন্ন পরীক্ষা নেই"}
             </span>
-            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-medium" style={{ background: "var(--dashboard-warning-subtle)", borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-warning)" }}>
+            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-semibold shadow-sm" style={{ background: "var(--dashboard-warning-subtle)", borderColor: "color-mix(in srgb, var(--dashboard-warning) 18%, var(--dashboard-border-muted))", color: "var(--dashboard-warning)" }}>
               <Flame className="w-3.5 h-3.5" />
               <span>{stats?.streak ?? 0} দিন স্ট্রিক</span>
               <StreakHeatmap activeDays={activityDays} labels={WEEKDAY_LABELS_7} />
@@ -362,32 +364,34 @@ export default function HomeTab() {
       {/* Next best action — the single most useful thing to do right now */}
       <NextBestAction action={nextAction} />
 
-      {/* Countdown hero — real exam */}
+      {/* Countdown hero — premium with indigo wash */}
       <motion.div
         variants={STAGGER_ITEM}
         className="rounded-2xl border p-6 md:p-7 relative overflow-hidden"
-        style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}
+        style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)", boxShadow: "var(--dashboard-shadow-sm)" }}
       >
-        <div className="absolute -top-16 -right-16 w-64 h-64 rounded-full blur-2xl opacity-40" style={{ background: "var(--dashboard-primary-subtle)" }} aria-hidden="true" />
+        <div className="absolute inset-0 opacity-[0.035]" style={{ background: "radial-gradient(ellipse 600px 300px at 85% -10%, #4f46e5 0%, transparent 60%), radial-gradient(ellipse 500px 280px at -10% 100%, #06b6d4 0%, transparent 62%)" }} aria-hidden="true" />
+        <div className="absolute inset-x-0 top-0 h-px" style={{ background: "linear-gradient(90deg, transparent, var(--dashboard-border-muted), transparent)" }} aria-hidden="true" />
         {nextExam ? (
           <div className="relative flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                <CalendarClock className="w-6 h-6 text-emerald-400" />
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center border" style={{ background: "var(--dashboard-primary-subtle)", borderColor: "color-mix(in srgb, var(--dashboard-primary) 18%, transparent)", color: "var(--dashboard-primary)" }}>
+                <CalendarClock className="w-6 h-6" />
               </div>
               <div>
-                <p className="text-sm text-zinc-400 font-mono mb-1">পরবর্তী পরীক্ষা</p>
-                <h3 className="text-xl md:text-2xl font-bold text-white">{t(lang, nextExam.titleBn, nextExam.titleEn)}</h3>
-                <p className="text-sm text-zinc-400 mt-1">{formatDate(nextExam.date)}</p>
+                <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: "var(--dashboard-text-muted)" }}>পরবর্তী পরীক্ষা</p>
+                <h3 className="text-xl md:text-2xl font-bold" style={{ color: "var(--dashboard-text-primary)" }}>{t(lang, nextExam.titleBn, nextExam.titleEn)}</h3>
+                <p className="text-sm mt-1" style={{ color: "var(--dashboard-text-secondary)" }}>{formatDate(nextExam.date)}</p>
                 {nextExam.note ? (
-                  <p className="text-xs text-zinc-500 mt-1 max-w-md">{nextExam.note}</p>
+                  <p className="text-xs mt-1 max-w-md" style={{ color: "var(--dashboard-text-muted)" }}>{nextExam.note}</p>
                 ) : null}
                 {nextExam.sourceUrl ? (
                   <a
                     href={nextExam.sourceUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-emerald-400 hover:underline mt-1 inline-flex items-center gap-1"
+                    className="text-xs hover:underline mt-1 inline-flex items-center gap-1 font-medium"
+                    style={{ color: "var(--dashboard-primary)" }}
                   >
                     সূত্র ↗
                   </a>
@@ -396,21 +400,22 @@ export default function HomeTab() {
             </div>
             <div className="flex items-center gap-4">
               <CountdownRingLive target={nextExam.date} />
-              <div className="flex flex-col font-mono">
-                <span className="text-xs text-zinc-400 uppercase tracking-wider">Countdown</span>
-                <CountdownClock target={nextExam.date} />
+              <div className="flex flex-col">
+                <span className="text-[11px] font-semibold uppercase tracking-widest" style={{ color: "var(--dashboard-text-muted)" }}>Countdown</span>
+                <span style={{ color: "var(--dashboard-primary)" }}><CountdownClock target={nextExam.date} /></span>
               </div>
             </div>
           </div>
         ) : (
           <div className="relative flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
-              <p className="text-sm text-zinc-400">কোনো আসন্ন পরীক্ষার সময়সূচি নেই</p>
-              <h3 className="text-lg font-semibold text-white mt-1">সিলেবাস থেকে প্রস্তুতি শুরু করুন</h3>
+              <p className="text-sm" style={{ color: "var(--dashboard-text-secondary)" }}>কোনো আসন্ন পরীক্ষার সময়সূচি নেই</p>
+              <h3 className="text-lg font-semibold mt-1" style={{ color: "var(--dashboard-text-primary)" }}>সিলেবাস থেকে প্রস্তুতি শুরু করুন</h3>
             </div>
             <button
               onClick={() => setActiveTab("question-bank")}
-              className="px-4 py-2 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors flex items-center gap-2"
+              className="px-4 py-2.5 text-sm rounded-xl font-semibold transition-colors flex items-center gap-2 shadow-sm"
+              style={{ background: "var(--dashboard-primary)", color: "white" }}
             >
               প্রশ্নব্যাংক দেখুন <ArrowRight className="w-4 h-4" />
             </button>
@@ -436,7 +441,7 @@ export default function HomeTab() {
       {loadFailed && !skeleton && (
         <div
           role="alert"
-          className="glass-card rounded-2xl border border-red-500/30 p-8 text-center"
+          className="rounded-2xl border p-8 text-center" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-danger)" }}
         >
           <p className="text-sm font-medium text-zinc-200">ড্যাশবোর্ড ডেটা লোড করা যায়নি</p>
           <p className="mt-1 text-xs text-zinc-500">
@@ -454,18 +459,18 @@ export default function HomeTab() {
       {/* Weak areas — real subject reports */}
       <motion.div
         variants={STAGGER_ITEM}
-        className="glass-card rounded-2xl border border-terminal-border p-5"
+        className="rounded-2xl border p-5" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)", boxShadow: "var(--dashboard-shadow-sm)" }}
       >
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h3 className="text-sm font-semibold text-white uppercase tracking-wider">
+            <h3 className="text-sm font-semibold uppercase tracking-wider" style={{ color: "var(--dashboard-text-primary)" }}>
               দুর্বল বিষয়সমূহ
             </h3>
-            <p className="text-xs text-zinc-500 mt-0.5">বাস্তব পারফরম্যান্স অনুযায়ী — দুর্বল থেকে শক্তিশালী</p>
+            <p className="text-xs mt-0.5" style={{ color: "var(--dashboard-text-muted)" }}>বাস্তব পারফরম্যান্স অনুযায়ী — দুর্বল থেকে শক্তিশালী</p>
           </div>
           <button
             onClick={() => setActiveTab("practice")}
-            className="text-xs text-emerald-400 font-mono hover:text-emerald-300 transition-colors flex items-center gap-1"
+            className="text-xs font-semibold transition-colors flex items-center gap-1" style={{ color: "var(--dashboard-primary)" }}
           >
             প্র্যাকটিস <ArrowRight className="w-3.5 h-3.5" />
           </button>
@@ -490,8 +495,8 @@ export default function HomeTab() {
             {weakest.map((r) => (
               <div key={r.name} className="flex items-center gap-4">
                 <div className="w-32 flex-shrink-0 sm:w-44">
-                  <p className="text-sm text-zinc-300 truncate">{r.name}</p>
-                  <p className="text-[10px] text-zinc-500 font-mono">{r.attempted}টি সমাধান</p>
+                  <p className="text-sm truncate" style={{ color: "var(--dashboard-text-primary)" }}>{r.name}</p>
+                  <p className="text-[10px]" style={{ color: "var(--dashboard-text-muted)" }}>{r.attempted}টি সমাধান</p>
                 </div>
                 <div className="flex-1 h-2 bg-zinc-800 rounded-full overflow-hidden flex">
                   <div
@@ -516,7 +521,7 @@ export default function HomeTab() {
       <div className="grid md:grid-cols-2 gap-6">
       <motion.div
         variants={STAGGER_ITEM}
-        className="glass-card rounded-2xl border border-terminal-border p-5"
+        className="rounded-2xl border p-5" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)", boxShadow: "var(--dashboard-shadow-sm)" }}
         >
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-semibold text-white uppercase tracking-wider">
@@ -599,7 +604,7 @@ export default function HomeTab() {
 
       <motion.div
         variants={STAGGER_ITEM}
-        className="glass-card rounded-2xl border border-terminal-border p-5"
+        className="rounded-2xl border p-5" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)", boxShadow: "var(--dashboard-shadow-sm)" }}
         >
             <div className="flex items-center justify-between mb-4 gap-3">
               <div>
@@ -679,7 +684,7 @@ export default function HomeTab() {
         <div className="[content-visibility:auto] [contain-intrinsic-size:auto_260px]">
           <motion.div
             variants={STAGGER_ITEM}
-            className="glass-card rounded-2xl border border-terminal-border overflow-hidden"
+            className="rounded-2xl border overflow-hidden" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)", boxShadow: "var(--dashboard-shadow-sm)" }}
           >
             <div className="px-5 py-4 border-b border-terminal-border flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -731,7 +736,7 @@ export default function HomeTab() {
         <div className="[content-visibility:auto] [contain-intrinsic-size:auto_300px]">
       <motion.div
         variants={STAGGER_ITEM}
-        className="glass-card rounded-2xl border border-terminal-border overflow-hidden"
+        className="rounded-2xl border overflow-hidden" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)", boxShadow: "var(--dashboard-shadow-sm)" }}
         >
           <div className="px-5 py-4 border-b border-terminal-border flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-emerald-400" />

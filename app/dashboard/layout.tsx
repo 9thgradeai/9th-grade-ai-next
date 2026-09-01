@@ -122,11 +122,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   {/* Mobile logo */}
                   <Link
                     href="/"
-                    className="lg:hidden flex items-center gap-2 font-display font-semibold text-base"
+                    className="lg:hidden flex items-center gap-2.5 font-display font-bold text-[15px]"
                     style={{ color: "var(--dashboard-text-primary)" }}
                     aria-label="9th-grade-ai home"
                   >
-                    <BrandMark className="h-7 w-7 rounded-lg shadow-sm" />
+                    <BrandMark className="h-8 w-8 rounded-lg shadow-[0_2px_8px_rgba(79,70,229,0.25)] ring-1 ring-black/5" />
                     <span>9th-grade-ai</span>
                   </Link>
 
