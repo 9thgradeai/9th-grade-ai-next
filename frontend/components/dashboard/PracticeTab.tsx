@@ -507,7 +507,7 @@ export default function PracticeTab() {
                       </span>
                     </div>
 
-                    <h3 className="text-base font-medium text-white mb-5">{currentQuestion.question}</h3>
+                    <h3 className="text-base font-medium mb-5" style={{ color: "var(--dashboard-text-primary)" }}>{currentQuestion.question}</h3>
 
                     <div className="space-y-2.5 mb-6" role="radiogroup" aria-label="উত্তর নির্বাচন করুন">
                       {currentQuestion.options.map((option, i) => {
@@ -518,18 +518,19 @@ export default function PracticeTab() {
                             onClick={() => selectAnswer(currentQuestion.id, option)}
                             role="radio"
                             aria-checked={isSelected}
-                            className={`w-full text-left p-3.5 rounded-xl border transition-all ${
+                            className="w-full text-left p-3.5 rounded-xl border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                            style={
                               isSelected
-                                ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-300"
-                                : "bg-subtle border-zinc-800 text-zinc-300 hover:border-emerald-500/20"
-                            }`}
+                                ? { background: "var(--dashboard-primary-subtle)", borderColor: "var(--dashboard-primary)", color: "var(--dashboard-primary)" }
+                                : { background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-strong)", color: "var(--dashboard-text-primary)" }
+                            }
                           >
                             <div className="flex items-center gap-3">
-                              <span className="w-6 h-6 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-xs font-mono flex-shrink-0">
+                              <span className="w-6 h-6 rounded-full border flex items-center justify-center text-xs font-mono flex-shrink-0" style={isSelected ? { background: "var(--dashboard-primary)", color: "white", borderColor: "var(--dashboard-primary)" } : { background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-strong)", color: "var(--dashboard-text-secondary)" }}>
                                 {String.fromCharCode(65 + i)}
                               </span>
-                              <span className="text-sm">{option}</span>
-                              {isSelected && <Check className="w-4 h-4 text-emerald-400 ml-auto" />}
+                              <span className="text-sm font-medium">{option}</span>
+                              {isSelected && <Check className="w-4 h-4 ml-auto" style={{ color: "var(--dashboard-primary)" }} />}
                             </div>
                           </button>
                         );

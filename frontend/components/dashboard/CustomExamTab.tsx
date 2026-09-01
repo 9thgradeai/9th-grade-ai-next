@@ -758,7 +758,7 @@ export default function CustomExamTab() {
                   )}
                 </div>
 
-                <h3 className="text-sm md:text-base font-medium text-white mb-4">{q.question}</h3>
+                <h3 className="text-sm md:text-base font-medium mb-4" style={{ color: "var(--dashboard-text-primary)" }}>{q.question}</h3>
 
                 <div className="space-y-2.5">
                   {q.options.map((option, i) => {
@@ -767,20 +767,19 @@ export default function CustomExamTab() {
                       <button
                         key={i}
                         onClick={() => selectAnswer(q.id, option)}
-                        className={`w-full text-left p-3 rounded-xl border transition-all ${
+                        className="w-full text-left p-3 rounded-xl border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                        style={
                           isSelected
-                            ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-300"
-                            : "bg-subtle border-zinc-800 text-zinc-300 hover:border-emerald-500/20"
-                        }`}
+                            ? { background: "var(--dashboard-primary-subtle)", borderColor: "var(--dashboard-primary)", color: "var(--dashboard-primary)" }
+                            : { background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-strong)", color: "var(--dashboard-text-primary)" }
+                        }
                       >
                         <div className="flex items-center gap-3">
-                          <span className={`w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-mono ${
-                            isSelected ? "bg-emerald-500 text-zinc-950" : "bg-zinc-800 border border-zinc-700 text-zinc-400"
-                          }`}>
+                          <span className="w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-mono border" style={isSelected ? { background: "var(--dashboard-primary)", color: "white", borderColor: "var(--dashboard-primary)" } : { background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-strong)", color: "var(--dashboard-text-secondary)" }}>
                             {OPTION_LABELS[i] ?? i + 1}
                           </span>
-                          <span className="text-sm">{option}</span>
-                          {isSelected && <Check className="w-4 h-4 text-emerald-400 ml-auto" />}
+                          <span className="text-sm font-medium">{option}</span>
+                          {isSelected && <Check className="w-4 h-4 ml-auto" style={{ color: "var(--dashboard-primary)" }} />}
                         </div>
                       </button>
                     );

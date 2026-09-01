@@ -183,20 +183,22 @@ export default function ScrollPractice({
                 {q.sourceExam ? ` • ${q.sourceExam}` : ""}
               </div>
 
-              <h4 className="text-[15px] text-white leading-relaxed mb-3">{q.question}</h4>
+              <h4 className="text-[15px] leading-relaxed mb-3" style={{ color: "var(--dashboard-text-primary)" }}>{q.question}</h4>
 
               <div className="space-y-2">
                 {q.options.map((opt, i) => {
                   const optLetter = String.fromCharCode(65 + i);
                   const isSelected = selected === opt;
                   const isAnswer = opt.trim() === q.correctAnswer.trim();
-                  let cls = "border-zinc-800 hover:border-emerald-500/30 text-zinc-300";
+                  let style: React.CSSProperties = {};
                   if (submitted) {
-                    if (isAnswer) cls = "border-emerald-500/50 bg-emerald-500/10 text-emerald-300";
-                    else if (isSelected) cls = "border-red-500/50 bg-red-500/10 text-red-300";
-                    else cls = "border-zinc-800 text-zinc-500";
+                    if (isAnswer) style = { borderColor: "var(--dashboard-success)", background: "var(--dashboard-success-subtle)", color: "var(--dashboard-success)" };
+                    else if (isSelected) style = { borderColor: "var(--dashboard-danger)", background: "var(--dashboard-danger-subtle)", color: "var(--dashboard-danger)" };
+                    else style = { borderColor: "var(--dashboard-border-strong)", background: "var(--dashboard-surface)", color: "var(--dashboard-text-muted)" };
                   } else if (isSelected) {
-                    cls = "border-emerald-500/50 bg-emerald-500/10 text-emerald-200";
+                    style = { borderColor: "var(--dashboard-primary)", background: "var(--dashboard-primary-subtle)", color: "var(--dashboard-primary)" };
+                  } else {
+                    style = { borderColor: "var(--dashboard-border-strong)", background: "var(--dashboard-surface)", color: "var(--dashboard-text-primary)" };
                   }
                   return (
                     <button
@@ -204,12 +206,13 @@ export default function ScrollPractice({
                       type="button"
                       disabled={submitted}
                       onClick={() => setAnswers((prev) => ({ ...prev, [q.id]: opt }))}
-                      className={`w-full text-left px-3.5 py-2.5 rounded-lg border font-mono text-sm transition-all flex items-center gap-3 ${cls}`}
+                      className="w-full text-left px-3.5 py-2.5 rounded-lg border text-sm transition-all flex items-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                      style={style}
                     >
                       <span className="font-bold">{optLetter}.</span>
-                      <span>{opt}</span>
-                      {submitted && isAnswer && <CheckCircle2 className="w-4 h-4 ml-auto text-emerald-400" />}
-                      {submitted && isSelected && !isAnswer && <XCircle className="w-4 h-4 ml-auto text-red-400" />}
+                      <span className="font-medium">{opt}</span>
+                      {submitted && isAnswer && <CheckCircle2 className="w-4 h-4 ml-auto" style={{ color: "var(--dashboard-success)" }} />}
+                      {submitted && isSelected && !isAnswer && <XCircle className="w-4 h-4 ml-auto" style={{ color: "var(--dashboard-danger)" }} />}
                     </button>
                   );
                 })}

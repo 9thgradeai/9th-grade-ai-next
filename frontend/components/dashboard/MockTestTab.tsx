@@ -520,7 +520,7 @@ export default function MockTestTab() {
               )}
             </div>
 
-            <h3 className="text-base md:text-lg font-medium text-white mb-5">{q.question}</h3>
+            <h3 className="text-base md:text-lg font-medium mb-5" style={{ color: "var(--dashboard-text-primary)" }}>{q.question}</h3>
 
             <div className="space-y-2.5" role="radiogroup" aria-label={`প্রশ্ন ${currentQuestion + 1} — উত্তর নির্বাচন করুন`}>
               {q.options.map((option, i) => {
@@ -531,20 +531,19 @@ export default function MockTestTab() {
                     onClick={() => selectAnswer(q.id, option)}
                     role="radio"
                     aria-checked={isSelected}
-                    className={`w-full text-left p-3.5 rounded-xl border transition-all ${
+                    className="w-full text-left p-3.5 rounded-xl border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                    style={
                       isSelected
-                        ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-300"
-                        : "bg-subtle border-zinc-800 text-zinc-300 hover:border-emerald-500/20"
-                    }`}
+                        ? { background: "var(--dashboard-primary-subtle)", borderColor: "var(--dashboard-primary)", color: "var(--dashboard-primary)" }
+                        : { background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-strong)", color: "var(--dashboard-text-primary)" }
+                    }
                   >
                     <div className="flex items-center gap-3">
-                      <span className={`w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-mono ${
-                        isSelected ? "bg-emerald-500 text-zinc-950" : "bg-zinc-800 border border-zinc-700 text-zinc-400"
-                      }`}>
+                      <span className="w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-mono border" style={isSelected ? { background: "var(--dashboard-primary)", color: "white", borderColor: "var(--dashboard-primary)" } : { background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-strong)", color: "var(--dashboard-text-secondary)" }}>
                         {OPTION_LABELS[i] ?? i + 1}
                       </span>
-                      <span className="text-sm">{option}</span>
-                      {isSelected && <Check className="w-4 h-4 text-emerald-400 ml-auto" />}
+                      <span className="text-sm font-medium">{option}</span>
+                      {isSelected && <Check className="w-4 h-4 ml-auto" style={{ color: "var(--dashboard-primary)" }} />}
                     </div>
                   </button>
                 );
@@ -552,8 +551,8 @@ export default function MockTestTab() {
             </div>
           </motion.div>
         ) : (
-          <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
-            <p className="text-sm text-zinc-400">কোনো প্রশ্ন পাওয়া যায়নি।</p>
+          <div className="rounded-2xl border p-10 text-center" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}>
+            <p className="text-sm" style={{ color: "var(--dashboard-text-secondary)" }}>কোনো প্রশ্ন পাওয়া যায়নি।</p>
           </div>
         )}
 
