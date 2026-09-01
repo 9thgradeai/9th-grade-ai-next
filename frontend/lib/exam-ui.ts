@@ -3,7 +3,7 @@ import type { ComponentType } from "react";
 import type { TabId } from "@/lib/data";
 import AiLogo from "@/components/ui/AiLogo";
 
-export type IconProps = { className?: string; strokeWidth?: number };
+export type IconProps = { className?: string; strokeWidth?: number; style?: React.CSSProperties };
 
 /** Single source of truth for tab icons (SideNav + BottomNav). */
 export const TAB_ICONS: Record<TabId, ComponentType<IconProps>> = {

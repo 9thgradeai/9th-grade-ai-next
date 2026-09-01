@@ -9,12 +9,12 @@ import { useDialogA11y } from "@/lib/use-dialog-a11y";
 import { MoreHorizontal, X } from "lucide-react";
 import LogoutButton from "./LogoutButton";
 
-const BOTTOM_TABS: { id: TabId; icon: ComponentType<IconProps>; short: string }[] = [
-  { id: "home", icon: TAB_ICONS.home, short: "HOM" },
-  { id: "study-planner", icon: TAB_ICONS["study-planner"], short: "PLN" },
-  { id: "practice", icon: TAB_ICONS.practice, short: "PRC" },
-  { id: "flashcards", icon: TAB_ICONS.flashcards, short: "FLC" },
-  { id: "progress", icon: TAB_ICONS.progress, short: "PRG" },
+// Primary 4 — Home, Plan, Practice, Tests per spec
+const BOTTOM_TABS: { id: TabId; icon: ComponentType<IconProps>; label: string; short: string }[] = [
+  { id: "home", icon: TAB_ICONS.home, label: "হোম", short: "হোম" },
+  { id: "study-planner", icon: TAB_ICONS["study-planner"], label: "প্ল্যান", short: "প্ল্যান" },
+  { id: "practice", icon: TAB_ICONS.practice, label: "প্র্যাকটিস", short: "প্র্যাকটিস" },
+  { id: "ai-mock-test", icon: TAB_ICONS["ai-mock-test"], label: "মক টেস্ট", short: "মক" },
 ];
 
 interface BottomNavProps {
@@ -34,41 +34,32 @@ export default function BottomNav({ activeTab, onChange }: BottomNavProps) {
     setMoreOpen(false);
   };
 
+  const isMoreActive = extraTabs.some((t) => t.id === activeTab);
+
   return (
     <>
       <nav
-        className="fixed bottom-0 left-0 right-0 z-40 glass border-t border-terminal-border lg:hidden pb-safe"
+        className="fixed bottom-0 left-0 right-0 z-40 border-t lg:hidden pb-safe backdrop-blur-md"
+        style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}
         aria-label="Mobile navigation"
       >
-        <div className="flex items-stretch justify-around">
+        <div className="flex items-stretch">
           {BOTTOM_TABS.map((tab) => {
             const Icon = tab.icon;
+            const active = isActive(tab.id);
             return (
               <button
                 key={tab.id}
                 onClick={() => selectTab(tab.id)}
-                className="relative flex flex-col items-center justify-center gap-0.5 flex-1 min-h-[56px] py-1.5"
-                aria-label={TABS.find((t) => t.id === tab.id)?.label ?? tab.short}
-                aria-current={isActive(tab.id) ? "page" : undefined}
+                className="relative flex flex-col items-center justify-center gap-1 flex-1 min-h-[64px] py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                aria-label={tab.label}
+                aria-current={active ? "page" : undefined}
               >
-                {isActive(tab.id) && (
-                  <span
-                    className="absolute top-0 w-10 h-0.5 bg-emerald-500 rounded-full"
-                    aria-hidden="true"
-                  />
+                {active && (
+                  <span className="absolute top-0 w-8 h-0.5 rounded-full" style={{ background: "var(--dashboard-primary)" }} aria-hidden="true" />
                 )}
-                <motion.div
-                  animate={{ scale: isActive(tab.id) ? 1.1 : 1, y: isActive(tab.id) ? -2 : 0 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 20 }}
-                  className={isActive(tab.id) ? "text-emerald-400" : "text-zinc-500"}
-                >
-                  <Icon className="w-5 h-5" strokeWidth={isActive(tab.id) ? 2.2 : 1.8} />
-                </motion.div>
-                <span
-                  className={`text-[10px] font-mono tracking-widest ${
-                    isActive(tab.id) ? "text-emerald-400" : "text-zinc-500"
-                  }`}
-                >
+                <Icon className="w-5 h-5" strokeWidth={active ? 2.3 : 1.8} style={{ color: active ? "var(--dashboard-primary)" : "var(--dashboard-text-muted)" }} />
+                <span className="text-[10px] font-medium leading-none" style={{ color: active ? "var(--dashboard-primary)" : "var(--dashboard-text-muted)" }}>
                   {tab.short}
                 </span>
               </button>
@@ -76,18 +67,19 @@ export default function BottomNav({ activeTab, onChange }: BottomNavProps) {
           })}
           <button
             onClick={() => setMoreOpen(true)}
-            className="relative flex flex-col items-center justify-center gap-0.5 flex-1 min-h-[56px] py-1.5 text-zinc-500"
+            className="relative flex flex-col items-center justify-center gap-1 flex-1 min-h-[64px] py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
             aria-label="More options"
-            aria-haspopup="menu"
+            aria-haspopup="dialog"
             aria-expanded={moreOpen}
+            style={{ color: isMoreActive ? "var(--dashboard-primary)" : "var(--dashboard-text-muted)" }}
           >
+            {isMoreActive && <span className="absolute top-0 w-8 h-0.5 rounded-full" style={{ background: "var(--dashboard-primary)" }} aria-hidden="true" />}
             <MoreHorizontal className="w-5 h-5" />
-            <span className="text-[10px] font-mono tracking-widest">MORE</span>
+            <span className="text-[10px] font-medium leading-none">আরও</span>
           </button>
         </div>
       </nav>
 
-      {/* More sheet */}
       <AnimatePresence>
         {moreOpen && (
           <motion.div
@@ -97,12 +89,9 @@ export default function BottomNav({ activeTab, onChange }: BottomNavProps) {
             className="fixed inset-0 z-50 lg:hidden"
             role="dialog"
             aria-modal="true"
-            aria-label="More options"
+            aria-label="More navigation"
           >
-            <div
-              className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-              onClick={() => setMoreOpen(false)}
-            />
+            <div className="absolute inset-0 backdrop-blur-sm" style={{ background: "var(--dashboard-overlay)" }} onClick={closeMore} />
             <motion.div
               ref={sheetRef}
               role="document"
@@ -110,20 +99,20 @@ export default function BottomNav({ activeTab, onChange }: BottomNavProps) {
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
-              transition={{ type: "spring", stiffness: 300, damping: 32 }}
-              className="absolute bottom-0 left-0 right-0 rounded-t-2xl border-t border-default bg-[var(--surface-solid)] shadow-2xl pb-safe"
+              transition={{ type: "spring", stiffness: 340, damping: 32 }}
+              className="absolute bottom-0 left-0 right-0 rounded-t-[20px] border-t shadow-2xl pb-safe max-h-[72vh] overflow-y-auto"
+              style={{ background: "var(--dashboard-surface-solid)", borderColor: "var(--dashboard-border-muted)" }}
             >
-              <div className="flex items-center justify-between px-5 pt-4 pb-2">
-                <h2 className="text-sm font-semibold text-white font-mono">আরও অপশন</h2>
-                <button
-                  onClick={() => setMoreOpen(false)}
-                  className="p-2 text-zinc-400 hover:text-white transition-colors"
-                  aria-label="বন্ধ করুন"
-                >
+              <div className="flex items-center justify-center pt-3 pb-2">
+                <span className="w-9 h-1 rounded-full" style={{ background: "var(--dashboard-border-muted)" }} aria-hidden="true" />
+              </div>
+              <div className="flex items-center justify-between px-5 pb-3">
+                <h2 className="text-sm font-semibold" style={{ color: "var(--dashboard-text-primary)" }}>সকল সুবিধা</h2>
+                <button onClick={closeMore} className="p-2 rounded-lg" style={{ color: "var(--dashboard-text-muted)" }} aria-label="বন্ধ করুন">
                   <X className="w-5 h-5" />
                 </button>
               </div>
-              <div className="grid grid-cols-3 gap-2 p-4 pt-2">
+              <div className="grid grid-cols-3 gap-2 p-4 pt-0">
                 {extraTabs.map((tab) => {
                   const Icon = TAB_ICONS[tab.id];
                   const active = isActive(tab.id);
@@ -131,24 +120,23 @@ export default function BottomNav({ activeTab, onChange }: BottomNavProps) {
                     <button
                       key={tab.id}
                       onClick={() => selectTab(tab.id)}
-                      className={`flex flex-col items-center justify-center gap-2 rounded-xl border p-4 min-h-[72px] transition-all ${
+                      className="flex flex-col items-center justify-center gap-2 rounded-2xl border p-4 min-h-[88px] transition-colors text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                      style={
                         active
-                          ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
-                          : "border-default bg-subtle text-zinc-400 hover:border-emerald-500/30 hover:text-white"
-                      }`}
+                          ? { background: "var(--dashboard-primary-subtle)", borderColor: "var(--dashboard-primary)", color: "var(--dashboard-primary)" }
+                          : { background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-secondary)" }
+                      }
                       aria-current={active ? "page" : undefined}
                     >
                       <Icon className="w-5 h-5" />
-                      <span className="text-[11px] font-mono leading-tight text-center">
-                        {tab.bengali}
-                      </span>
+                      <span className="text-[11px] font-medium leading-tight">{tab.bengali}</span>
                     </button>
                   );
                 })}
               </div>
-              <div className="border-t border-terminal-border mt-3 pt-2 px-4 pb-4">
-                <div onClick={() => setMoreOpen(false)}>
-                  <LogoutButton aria-label="Log out of your account" />
+              <div className="border-t mt-2 pt-3 px-4 pb-4" style={{ borderColor: "var(--dashboard-border-muted)" }}>
+                <div onClick={closeMore}>
+                  <LogoutButton aria-label="Log out" />
                 </div>
               </div>
             </motion.div>

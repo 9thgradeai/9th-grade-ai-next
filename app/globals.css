@@ -96,54 +96,67 @@ html.light {
 /* ── Dashboard Light Mode ────────────────────────────────────────
    Scoped to [data-dashboard-theme="light"] — these rules ONLY apply
    when the dashboard is mounted. They do NOT affect landing pages,
-   auth, or any other route.
-   The --color-* variables are remapped to --dashboard-* values so
-   that existing Tailwind utilities (text-emerald-400, bg-emerald-500/10, etc.)
-   automatically use the dashboard palette without being changed. */
+   auth, or any other route. Premium academic: #F7F9FC canvas, indigo primary. */
 [data-dashboard-theme="light"] {
-  --dashboard-background: #fafcfb;
+  --dashboard-background: #f7f9fc;
   --dashboard-surface: #ffffff;
   --dashboard-surface-solid: #ffffff;
-  --dashboard-surface-raised: rgba(255, 255, 255, 0.97);
-  --dashboard-surface-muted: rgba(244, 253, 254, 0.85);
-  --dashboard-border-muted: rgb(13 84 92 / 0.14);
-  --dashboard-border-strong: rgb(20 184 166 / 0.45);
+  --dashboard-surface-raised: #ffffff;
+  --dashboard-surface-muted: #f1f5f9;
+  --dashboard-surface-hover: #f8fafc;
+  --dashboard-sidebar-bg: #ffffff;
+  --dashboard-sidebar-border: #e2e8f0;
+  --dashboard-border-muted: #e2e8f0;
+  --dashboard-border-strong: #cbd5e1;
   --dashboard-text-primary: #0f172a;
-  --dashboard-text-secondary: #64748b;
+  --dashboard-text-secondary: #475569;
   --dashboard-text-muted: #94a3b8;
-  --dashboard-border-subtle: rgb(13 84 92 / 0.14);
+  --dashboard-text-inverse: #ffffff;
+  --dashboard-border-subtle: #f1f5f9;
 
-  --dashboard-primary: #0f766e;
-  --dashboard-primary-hover: #10b981;
-  --dashboard-primary-active: #0d9488;
+  --dashboard-primary: #4f46e5;
+  --dashboard-primary-hover: #4338ca;
+  --dashboard-primary-active: #3730a3;
+  --dashboard-primary-subtle: #eef2ff;
 
-  --dashboard-success: #0f766e;
-  --dashboard-warning: #b45309;
+  --dashboard-success: #059669;
+  --dashboard-success-subtle: #ecfdf5;
+  --dashboard-warning: #d97706;
+  --dashboard-warning-subtle: #fffbeb;
   --dashboard-danger: #dc2626;
-  --dashboard-info: #0891b2;
+  --dashboard-danger-subtle: #fef2f2;
+  --dashboard-info: #0284c7;
+  --dashboard-info-subtle: #f0f9ff;
 
-  --dashboard-border-focus: rgb(20 184 166 / 0.4);
+  --dashboard-focus-ring: rgb(79 70 229 / 0.35);
+  --dashboard-border-focus: rgb(79 70 229 / 0.35);
+  --dashboard-overlay: rgb(15 23 42 / 0.45);
 
-  --dashboard-chart-1: #0f766e;
-  --dashboard-chart-2: #14b8a6;
-  --dashboard-chart-3: #a78bfa;
-  --dashboard-chart-4: #f472b6;
-  --dashboard-chart-grid: rgb(13 84 92 / 0.1);
+  --dashboard-chart-1: #4f46e5;
+  --dashboard-chart-2: #06b6d4;
+  --dashboard-chart-3: #059669;
+  --dashboard-chart-4: #f59e0b;
+  --dashboard-chart-grid: #e2e8f0;
   --dashboard-chart-axis: #64748b;
 
   --dashboard-input-bg: #ffffff;
-  --dashboard-input-border: rgb(13 84 92 / 0.2);
-  --dashboard-input-focus: #0f766e;
+  --dashboard-input-border: #cbd5e1;
+  --dashboard-input-focus: #4f46e5;
 
-  --dashboard-disabled-bg: rgba(255, 255, 255, 0.35);
-  --dashboard-disabled-text: rgba(150, 170, 180, 0.35);
+  --dashboard-disabled-bg: #f1f5f9;
+  --dashboard-disabled-text: #94a3b8;
 
-  /* Map existing --color-* variables to --dashboard-* so Tailwind utilities
-     like text-emerald-400, bg-emerald-500/10, etc. use the dashboard palette. */
+  --dashboard-shadow-sm: 0 1px 2px rgb(15 23 42 / 0.06), 0 1px 3px rgb(15 23 42 / 0.06);
+  --dashboard-shadow-md: 0 4px 6px rgb(15 23 42 / 0.07), 0 2px 4px rgb(15 23 42 / 0.06);
+  --dashboard-radius-sm: 8px;
+  --dashboard-radius-md: 12px;
+  --dashboard-radius-lg: 16px;
+
+  /* Map existing --color-* variables so Tailwind utilities adapt */
   --color-emerald-500: var(--dashboard-primary);
-  --color-emerald-400: var(--dashboard-primary);
-  --color-emerald-50: var(--dashboard-surface);
-  --color-emerald-100: var(--dashboard-surface);
+  --color-emerald-400: #6366f1;
+  --color-emerald-50: var(--dashboard-primary-subtle);
+  --color-emerald-100: var(--dashboard-primary-subtle);
   --color-cyan-400: var(--dashboard-info);
   --color-indigo-400: #6366f1;
   --color-zinc-50: #f8fafc;
@@ -161,49 +174,61 @@ html.light {
 }
 
 /* ── Dashboard Dark Mode ────────────────────────────────────────
-   Scoped to [data-dashboard-theme="dark"] — these rules ONLY apply
-   when the dashboard is mounted. They do NOT affect landing pages,
-   auth, or any other route.
-   The --color-* variables are remapped to --dashboard-* values so
-   that existing Tailwind utilities (text-emerald-400, bg-emerald-500/10, etc.)
-   automatically use the dashboard palette without being changed. */
+   Deliberately designed dark — not inverted light. Deep navy canvas, desaturated borders. */
 [data-dashboard-theme="dark"] {
-  --dashboard-background: #0a0e17;
-  --dashboard-surface: #111827;
-  --dashboard-surface-solid: #171f36;
-  --dashboard-surface-raised: rgba(17, 31, 54, 0.85);
-  --dashboard-surface-muted: rgba(30, 43, 63, 0.5);
-  --dashboard-border-muted: rgb(100 116 139 / 0.14);
-  --dashboard-border-strong: rgb(100 116 139 / 0.35);
-  --dashboard-text-primary: #f8fafc;
-  --dashboard-text-secondary: #cbd5e1;
+  --dashboard-background: #0f1724;
+  --dashboard-surface: #172033;
+  --dashboard-surface-solid: #172033;
+  --dashboard-surface-raised: #1e2a3d;
+  --dashboard-surface-muted: #1e293b;
+  --dashboard-surface-hover: #243447;
+  --dashboard-sidebar-bg: #0b1220;
+  --dashboard-sidebar-border: #1e293b;
+  --dashboard-border-muted: #1e293b;
+  --dashboard-border-strong: #334155;
+  --dashboard-text-primary: #f1f5f9;
+  --dashboard-text-secondary: #94a3b8;
   --dashboard-text-muted: #64748b;
-  --dashboard-border-subtle: rgb(100 116 139 / 0.14);
+  --dashboard-text-inverse: #0f172a;
+  --dashboard-border-subtle: #1e293b;
 
-  --dashboard-primary: #0f766e;
-  --dashboard-primary-hover: #10b981;
-  --dashboard-primary-active: #0f766e;
+  --dashboard-primary: #818cf8;
+  --dashboard-primary-hover: #6366f1;
+  --dashboard-primary-active: #4f46e5;
+  --dashboard-primary-subtle: rgb(79 70 229 / 0.12);
 
-  --dashboard-success: #0f766e;
-  --dashboard-warning: #f59e0b;
-  --dashboard-danger: #ef4444;
-  --dashboard-info: #0891b2;
+  --dashboard-success: #34d399;
+  --dashboard-success-subtle: rgb(52 211 153 / 0.12);
+  --dashboard-warning: #fbbf24;
+  --dashboard-warning-subtle: rgb(251 191 36 / 0.12);
+  --dashboard-danger: #f87171;
+  --dashboard-danger-subtle: rgb(248 113 113 / 0.12);
+  --dashboard-info: #38bdf8;
+  --dashboard-info-subtle: rgb(56 189 248 / 0.12);
 
-  --dashboard-border-focus: rgb(100 116 139 / 0.4);
+  --dashboard-focus-ring: rgb(129 140 248 / 0.45);
+  --dashboard-border-focus: rgb(129 140 248 / 0.45);
+  --dashboard-overlay: rgb(2 6 23 / 0.65);
 
-  --dashboard-chart-1: #0f766e;
-  --dashboard-chart-2: #14b8a6;
-  --dashboard-chart-3: #a78bfa;
-  --dashboard-chart-4: #f472b6;
-  --dashboard-chart-grid: rgb(100 116 139 / 0.15);
+  --dashboard-chart-1: #818cf8;
+  --dashboard-chart-2: #22d3ee;
+  --dashboard-chart-3: #34d399;
+  --dashboard-chart-4: #fbbf24;
+  --dashboard-chart-grid: #1e293b;
   --dashboard-chart-axis: #64748b;
 
   --dashboard-input-bg: #1e293b;
-  --dashboard-input-border: rgb(100 116 139 / 0.25);
-  --dashboard-input-focus: #0f766e;
+  --dashboard-input-border: #334155;
+  --dashboard-input-focus: #818cf8;
 
-  --dashboard-disabled-bg: rgba(17, 31, 54, 0.35);
-  --dashboard-disabled-text: rgba(150, 170, 180, 0.35);
+  --dashboard-disabled-bg: #1e293b;
+  --dashboard-disabled-text: #475569;
+
+  --dashboard-shadow-sm: 0 1px 2px rgb(0 0 0 / 0.25);
+  --dashboard-shadow-md: 0 4px 12px rgb(0 0 0 / 0.35);
+  --dashboard-radius-sm: 8px;
+  --dashboard-radius-md: 12px;
+  --dashboard-radius-lg: 16px;
 
   /* Map existing --color-* variables to --dashboard-* so Tailwind utilities
      like text-emerald-400, bg-emerald-500/10, etc. use the dashboard palette. */

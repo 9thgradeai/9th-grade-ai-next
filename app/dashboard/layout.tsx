@@ -102,7 +102,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <LogoutFarewellProvider>
         <EmailVerificationGate>
           <MotionConfig reducedMotion="user">
-            <div className="dashboard-shell h-dvh overflow-hidden flex">
+            <div className="dashboard-shell h-dvh overflow-hidden flex" style={{ background: "var(--dashboard-background)" }}>
             {/* Skip link — first focusable element for keyboard users */}
             <a
               href="#dashboard-content"
@@ -116,38 +116,36 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
             {/* Main Column */}
             <div className="flex-1 min-w-0 flex flex-col h-full">
-              {/* Fixed Top Header (all viewports) */}
-              <header className="shrink-0 z-30 glass border-b border-default pt-safe">
+              {/* Fixed Top Header — academic premium */}
+              <header className="shrink-0 z-30 border-b pt-safe backdrop-blur-md" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}>
                 <div className="flex items-center gap-3 px-4 sm:px-6 h-14 lg:h-16">
                   {/* Mobile logo */}
                   <Link
                     href="/"
-                    className="lg:hidden flex items-center gap-2 font-display font-semibold text-white text-base"
+                    className="lg:hidden flex items-center gap-2 font-display font-semibold text-base"
+                    style={{ color: "var(--dashboard-text-primary)" }}
                     aria-label="9th-grade-ai home"
                   >
-                    <BrandMark className="h-7 w-7 rounded-lg shadow-[0_0_16px_rgba(16,185,129,0.35)]" />
+                    <BrandMark className="h-7 w-7 rounded-lg shadow-sm" />
                     <span>9th-grade-ai</span>
                   </Link>
 
-                  {/* Desktop page title */}
-                  <span className="hidden lg:flex items-center gap-2.5 text-sm font-mono text-zinc-500">
-                    <span className="text-emerald-500">{"$"}</span>
-                    <span className="text-white font-semibold tracking-wide">{activeLabel}</span>
-                  </span>
+                  {/* Desktop page title — clean, no terminal $ */}
+                  <div className="hidden lg:flex flex-col">
+                    <span className="text-[13px] font-semibold tracking-tight" style={{ color: "var(--dashboard-text-primary)" }}>{activeLabel}</span>
+                    <span className="text-[11px]" style={{ color: "var(--dashboard-text-muted)" }}>আপনার পড়াশোনার কন্ট্রোল সেন্টার</span>
+                  </div>
 
                   <div className="ml-auto flex items-center gap-2">
                     <button
                       type="button"
                       onClick={() => window.dispatchEvent(new Event("app:open-command"))}
                       aria-label="কমান্ড প্যানেল খুলুন"
-                      className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-white/10 text-[11px] font-mono text-zinc-400 hover:text-emerald-300 hover:border-emerald-500/30 transition-colors"
+                      className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-[11px] font-medium transition-colors"
+                      style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-muted)", background: "var(--dashboard-surface-muted)" }}
                     >
                       <span>⌘K</span>
                     </button>
-                    <span className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-emerald-500/20 bg-emerald-500/8 text-[11px] font-mono uppercase tracking-wider text-emerald-400">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.8)]" aria-hidden="true" />
-                      session
-                    </span>
                     <NotificationCenter />
                     <ThemeToggle />
                     <LanguageToggle />
@@ -155,9 +153,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 </div>
               </header>
 
-              {/* Scrollable Content — the only thing that moves */}
-              <main id="dashboard-content" className="flex-1 min-h-0 overflow-y-auto overscroll-contain pb-40 lg:pb-8">
-                <div className="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 min-w-0">
+              {/* Scrollable Content — isolated dashboard canvas */}
+              <main id="dashboard-content" className="flex-1 min-h-0 overflow-y-auto overscroll-contain pb-40 lg:pb-8" style={{ background: "var(--dashboard-background)" }}>
+                <div className="max-w-[1360px] mx-auto p-4 sm:p-6 lg:p-8 min-w-0">
                   {children}
                 </div>
               </main>

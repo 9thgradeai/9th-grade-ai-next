@@ -66,14 +66,11 @@ export function ThemeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      className="relative w-10 h-10 flex items-center justify-center rounded-lg border border-zinc-500/30 bg-zinc-500/5 text-zinc-400 hover:text-emerald-400 hover:bg-emerald-500/5 transition-colors"
+      className="relative w-10 h-10 flex items-center justify-center rounded-xl border text-[var(--dashboard-text-muted)] hover:text-[var(--dashboard-primary)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+      style={{ borderColor: "var(--dashboard-border-muted)", background: "var(--dashboard-surface-muted)" }}
       aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} dashboard mode`}
     >
-      {theme === "dark" ? (
-        <Moon className="w-5 h-5" />
-      ) : (
-        <Sun className="w-5 h-5" />
-      )}
+      {theme === "dark" ? <Moon className="w-[18px] h-[18px]" /> : <Sun className="w-[18px] h-[18px]" />}
     </button>
   );
 }

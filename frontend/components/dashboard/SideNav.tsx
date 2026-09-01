@@ -1,15 +1,26 @@
-/* src/components/dashboard/SideNav.tsx */
 "use client";
 
 import { TABS, type TabId } from "@/lib/data";
 import { TAB_ICONS } from "@/lib/exam-ui";
-import type { ComponentType } from "react";
 import { useAuth } from "@/lib/auth-ctx";
 import BrandMark from "@/components/ui/BrandMark";
 import LogoutButton from "./LogoutButton";
-import { useDashboardTheme } from "@/lib/dashboard-theme-ctx";
 
-type IconProps = { className?: string; strokeWidth?: number };
+const NAV_GROUPS: { label: string; labelBn: string; ids: TabId[] }[] = [
+  { label: "Primary", labelBn: "প্রধান", ids: ["home", "study-planner", "practice", "ai-mock-test"] },
+  { label: "Study", labelBn: "পড়াশোনা", ids: ["question-bank", "flashcards", "ai-solver", "ai-evaluate", "ai-voice"] },
+  { label: "Review & Insights", labelBn: "পর্যালোচনা", ids: ["progress", "mistakes", "wrong-answers"] },
+  { label: "Career", labelBn: "ক্যারিয়ার", ids: ["ai-advisor"] },
+  { label: "Account", labelBn: "অ্যাকাউন্ট", ids: ["ai-model", "settings"] },
+];
+
+function GroupLabel({ label }: { label: string }) {
+  return (
+    <p className="px-3 pt-4 pb-1.5 text-[10px] font-semibold tracking-[0.14em] uppercase text-[var(--dashboard-text-muted)]">
+      {label}
+    </p>
+  );
+}
 
 interface SideNavProps {
   activeTab: TabId;
@@ -18,86 +29,95 @@ interface SideNavProps {
 
 export default function SideNav({ activeTab, onChange }: SideNavProps) {
   const { user } = useAuth();
-  const { theme } = useDashboardTheme();
   const displayName = user?.name ?? "Guest";
   const displayInitial = user?.name?.charAt(0) ?? "G";
 
-  const bgClass = theme === "dark" ? "bg-dashboard-surface" : "bg-dashboard-background";
-  const borderClass = "border-dashboard-border-muted";
-  const textActiveClass = theme === "dark" ? "text-dashboard-text-primary" : "text-dashboard-text-primary";
-  const textInactiveClass = theme === "dark" ? "text-dashboard-text-secondary" : "text-dashboard-text-secondary";
-  const hoverBgClass = theme === "dark" ? "hover:bg-dashboard-surface-muted" : "hover:bg-dashboard-surface";
-  const borderColorActive = theme === "dark" ? "border-dashboard-border-strong" : "border-dashboard-border-strong";
-
   return (
     <nav
-      className={`hidden lg:flex flex-col w-64 h-full shrink-0 ${borderClass} z-30`}
+      className="hidden lg:flex flex-col w-[272px] h-full shrink-0 border-r z-30"
+      style={{ background: "var(--dashboard-sidebar-bg)", borderColor: "var(--dashboard-sidebar-border)" }}
       aria-label="Desktop navigation"
     >
-      {/* Logo / Brand */}
-      <div className="p-6 border-b ${borderClass}">
-        <div className="flex items-center gap-2.5">
-          <BrandMark className="h-8 w-8 rounded-lg shadow-[0_0_20px_rgba(16,185,129,0.35)]" />
-          <div>
-            <p className="font-display text-dashboard-text-primary font-semibold tracking-tight leading-tight">9th-grade-ai</p>
-            <p className="text-[11px] text-dashboard-text-muted font-mono">বিসিএস • ব্যাংক • চাকরি</p>
-          </div>
+      {/* Brand */}
+      <div className="px-5 py-5 border-b flex items-center gap-3" style={{ borderColor: "var(--dashboard-sidebar-border)" }}>
+        <BrandMark className="h-9 w-9 rounded-xl shadow-sm" />
+        <div className="min-w-0">
+          <p className="font-display font-semibold tracking-tight leading-none text-[15px]" style={{ color: "var(--dashboard-text-primary)" }}>
+            9th-grade-ai
+          </p>
+          <p className="text-[11px] font-medium mt-0.5" style={{ color: "var(--dashboard-text-muted)" }}>
+            বিসিএস • ব্যাংক • চাকরি
+          </p>
         </div>
       </div>
 
-      {/* Tab links — scroll internally if the list outgrows the shell */}
-      <div className="flex-1 min-h-0 overflow-y-auto py-6 px-3 space-y-1">
-        {TABS.map((tab) => {
-          const Icon = TAB_ICONS[tab.id];
-          const isActive = activeTab === tab.id;
+      {/* Grouped navigation */}
+      <div className="flex-1 min-h-0 overflow-y-auto px-3 py-3">
+        {NAV_GROUPS.map((group) => {
+          const tabs = group.ids.map((id) => TABS.find((t) => t.id === id)!).filter(Boolean);
+          if (tabs.length === 0) return null;
           return (
-            <button
-              key={tab.id}
-              onClick={() => onChange(tab.id)}
-              className={`relative w-full flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-left transition-colors ${
-                isActive
-                  ? "text-dashboard-primary"
-                  : textInactiveClass
-                }`}
-              aria-current={isActive ? "page" : undefined}
-            >
-              {isActive && (
-                <span
-                  className="absolute inset-0 rounded-xl ${borderColorActive} bg-gradient-to-r from-emerald-500/15 to-cyan-500/10 border border-emerald-500/25"
-                  aria-hidden="true"
-                />
-              )}
-              {isActive && (
-                <span
-                  className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-6 bg-emerald-400 rounded-r-full shadow-[0_0_12px_rgba(16,185,129,0.9)]"
-                  aria-hidden="true"
-                />
-              )}
-              <Icon className="relative z-10 w-5 h-5" strokeWidth={isActive ? 2.2 : 1.8} />
-              <div className="relative z-10 flex flex-col">
-                <span className="text-sm font-medium">{tab.label}</span>
-                <span className="text-[10px] font-mono text-dashboard-text-muted">{tab.bengali}</span>
+            <div key={group.label} className="mb-1">
+              <GroupLabel label={group.label} />
+              <div className="space-y-0.5">
+                {tabs.map((tab) => {
+                  const Icon = TAB_ICONS[tab.id];
+                  const isActive = activeTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => onChange(tab.id)}
+                      aria-current={isActive ? "page" : undefined}
+                      className="relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-colors min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                      style={
+                        isActive
+                          ? { background: "var(--dashboard-primary-subtle)", color: "var(--dashboard-primary)" }
+                          : { color: "var(--dashboard-text-secondary)" }
+                      }
+                    >
+                      {isActive && (
+                        <span
+                          className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-6 rounded-r-full"
+                          style={{ background: "var(--dashboard-primary)" }}
+                          aria-hidden="true"
+                        />
+                      )}
+                      <Icon className="w-[18px] h-[18px] shrink-0" strokeWidth={isActive ? 2.2 : 1.7} />
+                      <span className="flex flex-col min-w-0">
+                        <span className="text-[13px] font-medium leading-none truncate">{tab.label}</span>
+                        <span className="text-[11px] leading-none mt-1 truncate" style={{ color: isActive ? "var(--dashboard-primary)" : "var(--dashboard-text-muted)", opacity: isActive ? 0.85 : 1 }}>
+                          {tab.bengali}
+                        </span>
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
-            </button>
+            </div>
           );
         })}
       </div>
 
-      {/* User mini-profile */}
-      <div className="p-4 border-t ${borderClass} space-y-2">
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500/25 to-cyan-500/10 border border-emerald-500/30 flex items-center justify-center text-sm font-bold text-emerald-400">
+      {/* User + logout separated */}
+      <div className="border-t px-3 py-4 space-y-3" style={{ borderColor: "var(--dashboard-sidebar-border)" }}>
+        <div className="flex items-center gap-3 px-2">
+          <div className="relative shrink-0">
+            <div
+              className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold border"
+              style={{ background: "var(--dashboard-primary-subtle)", color: "var(--dashboard-primary)", borderColor: "var(--dashboard-border-muted)" }}
+            >
               {displayInitial}
             </div>
-            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-[var(--surface-solid)] shadow-[0_0_8px_rgba(16,185,129,0.9)]" aria-hidden="true" />
+            <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 bg-emerald-500" style={{ borderColor: "var(--dashboard-sidebar-bg)" }} aria-hidden="true" />
           </div>
           <div className="min-w-0">
-            <p className="text-sm text-dashboard-text-primary font-medium truncate">{displayName}</p>
-            <p className="text-[10px] text-dashboard-text-muted font-mono truncate">@{user?.handle ?? "student"}</p>
+            <p className="text-[13px] font-medium truncate" style={{ color: "var(--dashboard-text-primary)" }}>{displayName}</p>
+            <p className="text-[11px] truncate" style={{ color: "var(--dashboard-text-muted)" }}>@{user?.handle ?? "student"}</p>
           </div>
         </div>
-        <LogoutButton aria-label="Log out of your account" />
+        <div className="pt-2 border-t" style={{ borderColor: "var(--dashboard-border-muted)" }}>
+          <LogoutButton aria-label="Log out of your account" />
+        </div>
       </div>
     </nav>
   );

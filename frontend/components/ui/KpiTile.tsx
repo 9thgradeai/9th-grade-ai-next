@@ -1,20 +1,16 @@
 import type { ReactNode } from "react";
 
-const ACCENTS = {
-  emerald: { value: "text-emerald-400", ring: "border-emerald-400/20 bg-emerald-400/[0.04]" },
-  cyan: { value: "text-cyan-400", ring: "border-cyan-400/20 bg-cyan-400/[0.04]" },
-  indigo: { value: "text-indigo-400", ring: "border-indigo-400/20 bg-indigo-400/[0.04]" },
-  amber: { value: "text-amber-400", ring: "border-amber-400/20 bg-amber-400/[0.04]" },
-  rose: { value: "text-rose-400", ring: "border-rose-400/20 bg-rose-400/[0.04]" },
-  zinc: { value: "text-zinc-200", ring: "border-white/10 bg-white/[0.03]" },
+const ACCENTS: Record<string, { dot: string }> = {
+  emerald: { dot: "bg-emerald-500" },
+  cyan: { dot: "bg-cyan-500" },
+  indigo: { dot: "bg-indigo-500" },
+  amber: { dot: "bg-amber-500" },
+  rose: { dot: "bg-rose-500" },
+  zinc: { dot: "bg-slate-400" },
 } as const;
 
 export type KpiAccent = keyof typeof ACCENTS;
 
-/**
- * Unified stat tile — one visual language for every KPI surface
- * (dashboard home strip, progress overview, exam results).
- */
 export default function KpiTile({
   label,
   value,
@@ -28,22 +24,24 @@ export default function KpiTile({
   accent?: KpiAccent;
   loading?: boolean;
 }) {
-  const tone = ACCENTS[accent];
+  const tone = ACCENTS[accent] ?? ACCENTS.zinc;
   return (
     <div
-      className={`rounded-xl border p-4 transition-colors ${tone.ring} hover:border-white/20`}
+      className="rounded-2xl border p-4 transition-colors"
+      style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}
     >
-      <p className="truncate font-mono text-[10px] uppercase tracking-[0.14em] text-zinc-500">
+      <p className="flex items-center gap-1.5 truncate text-[10px] font-semibold uppercase tracking-[0.12em]" style={{ color: "var(--dashboard-text-muted)" }}>
+        <span className={`w-1.5 h-1.5 rounded-full ${tone.dot}`} aria-hidden="true" />
         {label}
       </p>
       {loading ? (
-        <div aria-hidden="true" className="mt-2 h-7 w-16 animate-pulse rounded-md bg-white/10" />
+        <div aria-hidden="true" className="mt-3 h-7 w-16 animate-pulse rounded-md" style={{ background: "var(--dashboard-surface-muted)" }} />
       ) : (
-        <p className={`mt-1.5 font-display text-2xl font-semibold tabular-nums leading-none ${tone.value}`}>
+        <p className="mt-2 font-display text-2xl font-semibold tabular-nums leading-none" style={{ color: "var(--dashboard-text-primary)" }}>
           {value}
         </p>
       )}
-      {hint && !loading && <p className="mt-1.5 truncate text-xs text-zinc-500">{hint}</p>}
+      {hint && !loading && <p className="mt-1.5 truncate text-xs" style={{ color: "var(--dashboard-text-muted)" }}>{hint}</p>}
     </div>
   );
 }

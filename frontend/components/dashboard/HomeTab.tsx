@@ -331,42 +331,30 @@ export default function HomeTab() {
       animate="show"
       className="space-y-6 pb-24 sm:pb-6"
     >
-      {/* Header */}
-      <motion.div
-        variants={STAGGER_ITEM}
-        className="glass-card rounded-2xl border border-default p-5 relative overflow-hidden"
-      >
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(16,185,129,0.08),transparent_60%)] pointer-events-none" aria-hidden="true" />
-        <div className="relative flex flex-wrap items-center justify-between gap-4">
+      {/* Welcome — calm academic header */}
+      <motion.div variants={STAGGER_ITEM} className="rounded-2xl border p-5 sm:p-6" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}>
+        <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="text-xs text-zinc-500 font-mono uppercase tracking-widest flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.8)]" aria-hidden="true" />
-              Mission Control
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em]" style={{ color: "var(--dashboard-text-muted)" }}>
+              স্বাগতম
             </p>
-              <h1 className="font-display text-xl font-semibold text-white mt-1 text-balance">
-                {user?.name ?? "Student"}
-                <span className="text-emerald-400">
-                  {" "}
-                  — {user?.examTarget ? user.examTarget : "চাকরির প্রস্তুতি"}
-                </span>
-              </h1>
+            <h1 className="font-display text-[22px] sm:text-[26px] font-semibold leading-tight mt-1 text-balance" style={{ color: "var(--dashboard-text-primary)" }}>
+              {user?.name ? `হ্যালো, ${user.name}` : "হ্যালো, শিক্ষার্থী"}
+            </h1>
+            <p className="text-sm mt-1" style={{ color: "var(--dashboard-text-secondary)" }}>
+              {user?.examTarget ? `${user.examTarget} প্রস্তুতি` : "আপনার লক্ষ্য নির্ধারণ করুন"} {nextExam ? `• ${t(lang, nextExam.titleBn, nextExam.titleEn)}` : ""}
+            </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <span className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-xs font-mono text-emerald-400 flex items-center gap-1">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium" style={{ background: "var(--dashboard-primary-subtle)", borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-primary)" }}>
               <Target className="w-3.5 h-3.5" />
               {nextExam ? t(lang, nextExam.titleBn, nextExam.titleEn) : "কোনো আসন্ন পরীক্ষা নেই"}
             </span>
-            <span className="px-3 py-1.5 bg-orange-500/10 border border-orange-500/20 rounded-lg text-xs font-mono text-orange-400 flex items-center gap-2">
+            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-medium" style={{ background: "var(--dashboard-warning-subtle)", borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-warning)" }}>
               <Flame className="w-3.5 h-3.5" />
               <span>{stats?.streak ?? 0} দিন স্ট্রিক</span>
               <StreakHeatmap activeDays={activityDays} labels={WEEKDAY_LABELS_7} />
             </span>
-            {user?.goal && (
-              <span className="px-3 py-1.5 bg-indigo-500/10 border border-indigo-500/20 rounded-lg text-xs font-mono text-indigo-300 flex items-center gap-1 max-w-[14rem]">
-                <Target className="w-3.5 h-3.5 flex-shrink-0" />
-                <span className="truncate">{user.goal}</span>
-              </span>
-            )}
           </div>
         </div>
       </motion.div>
@@ -374,29 +362,13 @@ export default function HomeTab() {
       {/* Next best action — the single most useful thing to do right now */}
       <NextBestAction action={nextAction} />
 
-      {/* Sticky mobile primary CTA — one tap to the next best action on small
-          screens, where the in-flow hero is far down the scroll. */}
-      <div className="fixed inset-x-0 bottom-[72px] z-30 sm:hidden bg-gradient-to-t from-zinc-950 via-zinc-950/95 to-transparent p-3">
-        <button
-          type="button"
-          onClick={() => setActiveTab(nextAction.tab)}
-          className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-zinc-950 shadow-lg shadow-emerald-500/20"
-        >
-          {nextAction.cta}
-          <ArrowRight className="h-4 w-4" />
-        </button>
-      </div>
-
       {/* Countdown hero — real exam */}
       <motion.div
         variants={STAGGER_ITEM}
-        className="glass-card rounded-2xl border border-emerald-500/30 p-6 md:p-8 relative overflow-hidden"
+        className="rounded-2xl border p-6 md:p-7 relative overflow-hidden"
+        style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}
       >
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(16,185,129,0.1),transparent_60%)] pointer-events-none" aria-hidden="true" />
-        <div
-          className="absolute -top-16 -right-16 w-64 h-64 bg-emerald-500/10 rounded-full blur-2xl"
-          aria-hidden="true"
-        />
+        <div className="absolute -top-16 -right-16 w-64 h-64 rounded-full blur-2xl opacity-40" style={{ background: "var(--dashboard-primary-subtle)" }} aria-hidden="true" />
         {nextExam ? (
           <div className="relative flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div className="flex items-center gap-4">
