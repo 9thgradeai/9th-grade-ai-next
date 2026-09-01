@@ -187,19 +187,42 @@ needs infra/budget decisions).
       wired into `next.config.ts` (opt-in via `ANALYZE=true npm run build`, the
       existing `npm run analyze` script). Generates `.next/analyze/{client,edge,nodejs}.html`
       treemaps. Normal builds are byte-identical; analysis is opt-in. See ADR in `docs/DECISIONS.md`.
-      **Backfill the §5 baseline from the `client.html` treemap before touching any chunk.**
-- [ ] Add a Perf-budget CI gate: fail `npm run build` if any route's initial
-      client JS exceeds a threshold (start at `480000` bytes). Enforce in CI only.
+- [x] **Baseline captured** (2026-09-01) from `.next/analyze/client.html` — see §5.
+      Profiling verdict: the initial-JS floor is dominated by **Sentry client
+      (~285 KB parsed / 92 KB gzip)** and **Next runtime (~663 KB parsed / 198 KB
+      gzip)**; Framer Motion is correctly isolated (161 KB parsed / 56 KB gzip) and
+      only loads on animating routes.
+- [x] **Perf-budget gate** shipped: `scripts/perf-budget.ts` +
+      `npm run perf:baseline` / `npm run perf:check`. The gate reads the analyzer
+      output and fails (exit 1) if (a) any namespace regresses >5% parsed vs its
+      captured baseline, (b) any single asset exceeds the 90 KB gzip ceiling, or
+      (c) the aggregate Sentry client gzip exceeds its 92 KB ceiling. Captured
+      baseline lives in `docs/perf/client-baseline.json` (committed so CI can
+      diff against a reviewed reference). Enforce `npm run perf:check`
+      in CI on top of the existing analyze build; refresh the baseline only on a
+      deliberate, reviewed change (never to hide a regression).
 - [ ] Add an FPS sampler (dev-only) and a web-vitals logger (dev-only) gated by
       `NEXT_PUBLIC_PERF=1`.
 - [ ] Add Lighthouse CI (or manual runbook) entries for: Landing, `/login`,
       `/dashboard` (authenticated), and a slow-4G pass.
 
 ### Phase 1 — Confirmed bundle wins (P0, reversible)
-- [ ] Profile the big chunks → identify the top modules.
-- [ ] Enforce tree-shaken `lucide-react` imports (per-icon paths).
-- [ ] Lazy-load the chat Markdown renderer on first open.
-- [ ] Move `@types/*` + `pino-pretty` to `devDependencies` (strip from prod).
+- [x] Profile the big chunks (see §5): 93 = Sentry (164 KB parsed) + Next (80 KB);
+      3794 & 4bd1b696 = Next runtime (234 + 196 KB); 4a7b0c69 = Sentry (121 KB);
+      5875 = framer-motion (81 KB) + motion-dom (41 KB). The two biggest *levers*
+      are Sentry client (~285 KB parsed) and Next runtime (~663 KB parsed).
+- [ ] Enforce tree-shaken `lucide-react` imports (per-icon paths) — audit passed:
+      `exam-ui.ts` already uses a named ESM import from `"lucide-react"`, which the
+      bundler tree-shakes; confirm with a follow-up treemap that no unused icons ship.
+- [ ] Lazy-load the chat Markdown renderer on first open — audit: Markdown only loads
+      when `ChatMessage` mounts inside the already-lazy `VoiceInterviewTab` /
+      `AISolverTab`; confirm no shared-chunk leak in a follow-up treemap.
+- [ ] Reduce the Sentry client footprint (the top lever): trim Sentry integrations,
+      gate traces/replays sample rates already at 0.1, and confirm `replayIntegration`
+      + `browserTracingIntegration` don't both need to ship to every route. Re-check
+      with `npm run perf:check` after any change.
+- [ ] Trim Next runtime only when a new Next release lands — pin upgrades and
+      re-measure the `next-runtime` namespace against the baseline.
 
 ### Phase 2 — Data/SSR + auth (P0)
 - [ ] Cache Prisma-derived public counts so `/` avoids a DB round-trip.
@@ -241,16 +264,48 @@ Only once real raster/remote media exists:
 
 ---
 
-## 5. Baseline measurements (to backfill after Phase 0)
+## 5. Baseline measurements — captured 2026-09-01
 
-| Route | Client JS (KB) | Notes |
-|-------|----------------|-------|
-| `/` (landing) | TBD | dynamic chunks deferred |
-| `/login` | TBD | separate 49 KB page chunk seen in inventory |
-| `/dashboard` (auth) | TBD | 16 lazy tabs; big shared chunks 196–245 KB |
-| framework | 185 | |
-| main | 143 | |
-| largest shared chunk | 245 | unprofiled |
+Source: `.next/analyze/client.html` (`ANALYZE=true next build`). Sizes are the
+`parsed`/`gzip` figures the bundler reports. **This is the gate baseline.** Do not
+edit `docs/perf/client-baseline.json` except through `npm run perf:baseline` on a
+deliberate, reviewed change.
+
+### 5.1 Namespace footprint — gzip is what reaches the network
+
+| Namespace | Parsed | Gzip | Notes |
+|-----------|-------:|-----:|-------|
+| Sentry client | 285.3 KB | 92.0 KB | **largest controllable lever** (chunks 93 + 4a7b0c69) |
+| Next runtime | 662.7 KB | 197.8 KB | framework floor; framework(185) + main(143) + 3794(234) + 4bd1b696(196) |
+| Framer Motion | 160.9 KB | 56.4 KB | isolated (framer 81 + motion-dom 41 + motion-utils), only on animating routes |
+| First-party src | 679.4 KB | 211.4 KB | app/ + frontend/ (incl. lazy tab chunks) |
+| **Total client JS** | **2163.4 KB** | **692.2 KB** | across all 162 client assets |
+
+### 5.2 Top client assets (gzip)
+
+| Asset | Parsed | Gzip |
+|-------|-------:|-----:|
+| static/chunks/93 (Sentry + Next) | 245.5 KB | 80.5 KB |
+| static/chunks/3794 (Next runtime) | 235.9 KB | 64.0 KB |
+| static/chunks/4bd1b696 (Next runtime) | 196.3 KB | 61.7 KB |
+| static/chunks/framework | 185.2 KB | 58.4 KB |
+| static/chunks/main | 143.1 KB | 41.9 KB |
+| static/chunks/5875 (framer-motion) | 125.0 KB | 41.0 KB |
+| static/chunks/4a7b0c69 (Sentry) | 121.3 KB | 38.1 KB |
+| static/chunks/app/dashboard/layout | 38.1 KB | 11.3 KB |
+| static/chunks/app/login/page | 48.8 KB | 13.4 KB |
+| static/chunks/app/page (landing) | 22.3 KB | 8.2 KB |
+
+### 5.3 What this means
+
+- **Every route pays the base floor**: framework + main + polyfills + Sentry
+  client + Next runtime ⇒ **≈344.5 KB gzip before any app code**. That floor is
+  dominated by **Sentry (~92 KB gzip)** and **Next runtime (~198 KB gzip)** — the
+  two things to watch the hardest.
+- Framer Motion adds ~41 KB gzip but **only on routes that actually animate**
+  (landing, auth, dashboard shell), because it is code-split. This is correct.
+- The budget gate covers Regression-only enforcement via namespaces + hard
+  ceilings for Sentry and per-asset gzip.
 
 Build config: Next 16.3.1, React 19.2.8, Tailwind v4, PWA on.
 
@@ -268,8 +323,13 @@ Build config: Next 16.3.1, React 19.2.8, Tailwind v4, PWA on.
 - **2026-09-01** — Shipped Phase 0 instrumentation to unblock all chunk work:
   added `@next/bundle-analyzer` (devDep) + enabled `ANALYZE=true npm run build`
   (the existing `npm run analyze`), documented in `docs/DECISIONS.md` ADR-0011.
-  **First follow-up action: capture the §5 baseline from `.next/analyze/client.html`.**
-- **Remaining, in order of value:** Perf-budget CI gate → cache Prisma-derived
+- **2026-09-01** — Captured the §5 binary baseline from `.next/analyze/client.html`,
+  profiled the big chunks (Sentry + Next runtime dominate the floor), and shipped
+  the **Perf-budget gate**: `scripts/perf-budget.ts` + `npm run perf:baseline` /
+  `npm run perf:check`, with namespace regression tolerances + absolute ceilings.
+  **Next actionable:** trim the Sentry client footprint (`@sentry:nextjs`
+  ~285 KB parsed / 92 KB gzip) and re-run `npm run perf:check`.
+- **Remaining, in order of value:** Sentry client trim → cache Prisma-derived
   public counts / add SWR to cache-safe public API responses → `content-visibility`
   on long lists → `overflow`/`min-w-0` chart audit → images/CDN (only once real
   media exists). See §3 for full roadmap.

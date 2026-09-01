@@ -236,3 +236,28 @@ CI/prod builds are byte-identical to before.
 **Consequences**: One dev-only dependency added; `.next/analyze/*.html` artifacts
 are generated on analysis builds (gitignored, see §5 note). Reject the Perf-budget
 CI gate and all chunk trimming until the baseline treemaps are captured.
+
+## ADR-0012 — Committed client-JS perf-budget gate
+
+**Date**: 2026-09
+**Status**: Accepted
+**Context**: ADR-0011 gave us bundle treemaps, and the Phase 0 plan requires a CI
+gate so the initial-JS footprint can't silently regress. Sentry client (~285 KB
+parsed / 92 KB gzip) and Next runtime (~663 KB / 198 KB) dominate the base floor,
+but chunk content-hashes rotate every build, so gating on chunk *names* is fragile.
+**Decision**: Add `scripts/perf-budget.ts` + `npm run perf:baseline` /
+`npm run perf:check`. The gate parses `window.chartData` from the analyzer output
+and fails (exit 1) on: (a) any tracked namespace (Sentry, framer-motion,
+next-runtime, first-party) regressing >5% parsed vs the committed baseline,
+(b) any single asset exceeding the 90 KB gzip ceiling, or (c) aggregate Sentry
+gzip exceeding its 92 KB ceiling. The baseline lives in **committed**
+`docs/perf/client-baseline.json` (not `.next/`, which is gitignored) so CI can
+diff a fresh build against a reviewed reference rather than whatever it just made.
+**Rationale**: Bucketing by stable module namespace survives hash rotation, keeps
+the working data in the committed doc tree, and gives actionable gzip numbers.
+Absolute ceilings stop the baseline being silently re-baselined upward; the
+relative namespace check catches smaller, subtler regressions.
+**Consequences**: One dev-only script + two npm scripts + a committed JSON
+baseline. Operators must re-run `npm run perf:baseline` only on a deliberate,
+reviewed footprint change — never to hide a regression. CI should run
+`npm run perf:check` on the analyze build.

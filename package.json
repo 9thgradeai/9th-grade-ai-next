@@ -31,6 +31,8 @@
     "postinstall": "prisma generate --schema database/prisma/schema.prisma",
     "prepare": "prisma generate --schema database/prisma/schema.prisma",
     "analyze": "ANALYZE=true npm run build",
+    "perf:baseline": "ANALYZE=true npm run build && tsx scripts/perf-budget.ts --baseline",
+    "perf:check": "ANALYZE=true npm run build && tsx scripts/perf-budget.ts",
     "test:coverage": "vitest run --coverage"
   },
   "prisma": {
