@@ -7,19 +7,35 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import dynamic from "next/dynamic";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 import { TABS, type TabId } from "@/lib/data";
-import { SkeletonCard } from "@/components/ui/Skeleton";
+import { Skeleton, SkeletonCard } from "@/components/ui/Skeleton";
+import { AuroraRing } from "@/components/ui/Loader";
 
 // Shown while a lazily-imported tab chunk streams in — never a blank pane.
 function TabChunkLoading() {
   return (
     <div className="space-y-4" role="status" aria-label="Tab loading">
       <span className="sr-only">লোড হচ্ছে…</span>
-      <SkeletonCard />
+      <div className="glass-card rounded-2xl border border-white/10 p-6 flex flex-col items-center justify-center gap-3 text-center">
+        <AuroraRing size={56} label="Tab loading" />
+        <p className="text-emerald-500/90 font-mono text-[11px] tracking-[0.3em] uppercase">
+          Loading module
+        </p>
+      </div>
+      <SkeletonCard className="p-6">
+        <div className="space-y-4">
+          <Skeleton className="h-5 w-40" />
+          <div className="space-y-2.5">
+            <Skeleton className="h-4 w-[88%]" />
+            <Skeleton className="h-4 w-[76%]" />
+            <Skeleton className="h-4 w-[64%]" />
+          </div>
+        </div>
+      </SkeletonCard>
       <SkeletonCard>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          <div aria-hidden="true" className="h-16 animate-pulse rounded-xl bg-white/[0.06]" />
-          <div aria-hidden="true" className="h-16 animate-pulse rounded-xl bg-white/[0.06]" />
-          <div aria-hidden="true" className="hidden sm:block h-16 animate-pulse rounded-xl bg-white/[0.06]" />
+          <Skeleton className="h-16 rounded-xl" />
+          <Skeleton className="h-16 rounded-xl" />
+          <Skeleton className="hidden sm:block h-16 rounded-xl" />
         </div>
       </SkeletonCard>
     </div>
