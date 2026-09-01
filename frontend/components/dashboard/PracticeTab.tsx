@@ -332,7 +332,7 @@ export default function PracticeTab() {
                 <div className="p-5 md:p-6">
                   <div className="flex items-center gap-2 mb-1">
                     <Zap className="w-5 h-5 text-emerald-400" />
-                    <h2 className="text-lg font-bold text-white">কুইক প্র্যাকটিস</h2>
+                    <h2 className="text-lg font-bold" style={{ color: "var(--dashboard-text-primary)" }}>কুইক প্র্যাকটিস</h2>
                   </div>
                   <p className="text-xs text-zinc-500 font-mono">
                     যেকোনো বিষয়ের নির্দিষ্ট টপিক ও সাবটপিক বেছে নিয়ে তৎক্ষণাৎ প্রশ্ন অনুশীলন করুন।
@@ -508,12 +508,12 @@ export default function PracticeTab() {
                         {DIFFICULTY_LABEL[currentQuestion.difficulty] ?? currentQuestion.difficulty}
                       </span>
                       {currentQuestion.topic && (
-                        <span className="px-2 py-0.5 bg-zinc-800 rounded text-[10px] font-mono text-zinc-400">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-mono" style={{ background: "var(--dashboard-surface-muted)", color: "var(--dashboard-text-secondary)", border: "1px solid var(--dashboard-border-muted)" }}>
                           {currentQuestion.topic}
                         </span>
                       )}
                       {currentQuestion.subtopic && (
-                        <span className="px-2 py-0.5 bg-zinc-800 rounded text-[10px] font-mono text-zinc-500">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-mono" style={{ background: "var(--dashboard-surface-muted)", color: "var(--dashboard-text-muted)", border: "1px solid var(--dashboard-border-muted)" }}>
                           {currentQuestion.subtopic}
                         </span>
                       )}
@@ -614,13 +614,14 @@ export default function PracticeTab() {
             <motion.div
               initial={{ opacity: 0, scale: 0.97 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="glass-card rounded-2xl border border-emerald-500/30 overflow-hidden"
+              className="rounded-2xl border overflow-hidden"
+              style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)", boxShadow: "var(--dashboard-shadow-sm)" }}
             >
-              <div className="p-6 text-center border-b border-terminal-border">
+              <div className="p-6 text-center border-b" style={{ borderColor: "var(--dashboard-border-muted)", background: "var(--dashboard-surface-muted)" }}>
                 <Trophy className={`w-12 h-12 mx-auto mb-3 ${
                   result.score >= 80 ? "text-amber-400" : result.score >= 50 ? "text-emerald-400" : "text-red-400"
                 }`} />
-                <h3 className="text-xl font-bold text-white mb-2">প্র্যাকটিস সম্পন্ন!</h3>
+                <h3 className="text-xl font-bold mb-2" style={{ color: "var(--dashboard-text-primary)" }}>প্র্যাকটিস সম্পন্ন!</h3>
                 <div className="text-5xl font-bold font-mono text-emerald-400 mb-2">{result.score}%</div>
                 <p className="text-sm text-zinc-400 font-mono mb-1">
                   {result.correct} / {result.total} সঠিক
@@ -672,7 +673,7 @@ export default function PracticeTab() {
                           <XCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
                         )}
                         <div className="min-w-0 flex-1">
-                          <p className="text-sm text-white mb-1.5">{i + 1}. {q.question}</p>
+                          <p className="text-sm mb-1.5" style={{ color: "var(--dashboard-text-primary)" }}>{i + 1}. {q.question}</p>
                           <p className="text-xs text-zinc-500 font-mono">
                             আপনার উত্তর:{" "}
                             <span className={isCorrect ? "text-emerald-400" : "text-red-400"}>
