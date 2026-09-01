@@ -458,25 +458,26 @@ export default function PracticeTab() {
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="glass-card rounded-2xl border border-emerald-500/30 overflow-hidden"
+              className="rounded-2xl border overflow-hidden"
+              style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)", boxShadow: "var(--dashboard-shadow-sm)" }}
             >
               {/* Header */}
-              <div className="px-5 py-4 border-b border-terminal-border flex items-center justify-between gap-2">
+              <div className="px-5 py-4 border-b flex items-center justify-between gap-2" style={{ borderColor: "var(--dashboard-border-muted)", background: "var(--dashboard-surface-muted)" }}>
                 <div className="flex items-center gap-2 min-w-0">
-                  <BookOpen className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                  <span className="text-sm font-medium text-white truncate">{sessionTitle}</span>
+                  <BookOpen className="w-4 h-4 flex-shrink-0" style={{ color: "var(--dashboard-primary)" }} />
+                  <span className="text-sm font-semibold truncate" style={{ color: "var(--dashboard-text-primary)" }}>{sessionTitle}</span>
                 </div>
-                <span className="text-xs text-zinc-500 font-mono flex-shrink-0">
+                <span className="text-xs font-mono flex-shrink-0" style={{ color: "var(--dashboard-text-muted)" }}>
                   প্রশ্ন {currentIndex + 1}/{totalQuestions}
                 </span>
               </div>
 
               <div className="p-5">
                 {/* Progress bar */}
-                <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden mb-6">
+                <div className="h-1.5 rounded-full overflow-hidden mb-6" style={{ background: "var(--dashboard-surface-muted)" }}>
                   <div
-                    className="h-full w-full origin-left bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-transform duration-300"
-                    style={{ transform: `scaleX(${totalQuestions > 0 ? answeredCount / totalQuestions : 0})` }}
+                    className="h-full w-full origin-left rounded-full transition-transform duration-300"
+                    style={{ transform: `scaleX(${totalQuestions > 0 ? answeredCount / totalQuestions : 0})`, background: "var(--dashboard-primary)" }}
                   />
                 </div>
 
@@ -542,17 +543,19 @@ export default function PracticeTab() {
                       <button
                         onClick={() => setCurrentIndex((i) => Math.max(0, i - 1))}
                         disabled={currentIndex === 0}
-                        className="px-4 py-2 bg-zinc-900 border border-zinc-800 text-zinc-400 font-mono text-sm rounded-lg hover:bg-zinc-800 transition-colors disabled:opacity-40 flex items-center gap-1"
+                        className="px-4 py-2 border font-mono text-sm rounded-lg transition-colors disabled:opacity-40 flex items-center gap-1"
+                        style={{ background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-strong)", color: "var(--dashboard-text-secondary)" }}
                       >
                         <ChevronLeft className="w-4 h-4" /> আগের
                       </button>
-                      <span className="text-xs text-zinc-500 font-mono">
+                      <span className="text-xs font-mono" style={{ color: "var(--dashboard-text-muted)" }}>
                         {currentIndex + 1} / {totalQuestions}
                       </span>
                       {currentIndex < totalQuestions - 1 ? (
                         <button
                           onClick={() => setCurrentIndex((i) => Math.min(totalQuestions - 1, i + 1))}
-                          className="px-4 py-2 bg-zinc-800 text-zinc-300 font-mono text-sm rounded-lg hover:bg-zinc-700 transition-colors flex items-center gap-1"
+                          className="px-4 py-2 border font-mono text-sm rounded-lg transition-colors flex items-center gap-1"
+                          style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-strong)", color: "var(--dashboard-text-primary)" }}
                         >
                           পরের <ChevronRight className="w-4 h-4" />
                         </button>
@@ -560,7 +563,8 @@ export default function PracticeTab() {
                         <button
                           onClick={() => void submitAnswers()}
                           disabled={!allAnswered || submitting}
-                          className="px-5 py-2 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors flex items-center gap-2 shadow-neon-glow disabled:opacity-40 disabled:cursor-not-allowed"
+                          className="px-5 py-2 font-mono text-sm rounded-lg transition-colors flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+                          style={{ background: "var(--dashboard-primary)", color: "white" }}
                         >
                           {submitting ? "জমা হচ্ছে..." : "ফলাফল জমা দিন"}
                         </button>
