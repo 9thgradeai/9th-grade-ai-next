@@ -10,6 +10,8 @@
  * making it theme-aware across light/dark dashboard modes.
  * No intrinsic shadow — the wrapper controls any elevation.
  */
+import { useId } from "react";
+
 export default function BrandMark({
   className = "",
   title,
@@ -18,7 +20,8 @@ export default function BrandMark({
   /** Accessible name; omit when the surrounding link already labels the mark. */
   title?: string;
 }) {
-  const gid = `brandmark-${Math.random().toString(36).substring(2, 11)}`;
+  const reactId = useId();
+  const gid = `brandmark-${reactId.replace(/:/g, "")}`;
 
   return (
     <svg
