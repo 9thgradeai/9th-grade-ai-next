@@ -166,13 +166,15 @@ export default function QuestionDrill({
         />
       </div>
 
-      <div className="glass-card rounded-terminal-rounded border border-terminal-border p-5">
-        <div className="text-[10px] text-zinc-500 font-mono uppercase tracking-wider mb-2">
+      <div className="rounded-xl border p-5" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)", boxShadow: "var(--dashboard-shadow-sm)" }}>
+        <div className="text-[10px] font-mono uppercase tracking-wider mb-2" style={{ color: "var(--dashboard-text-muted)" }}>
           {current.subject} • {current.topic}
           {current.year ? ` • ${current.year}` : ""}
           {current.sourceExam ? ` • ${current.sourceExam}` : ""}
         </div>
-        <h4 className="text-lg leading-relaxed mb-4" style={{ color: "var(--dashboard-text-primary)" }}>{current.question}</h4>
+        <div className="rounded-xl border p-4 mb-4" style={{ background: "var(--dashboard-surface-raised)", borderColor: "var(--dashboard-border-muted)" }}>
+          <h4 className="text-lg font-semibold leading-relaxed" style={{ color: "#0f172a", lineHeight: "1.6" }}>{current.question}</h4>
+        </div>
 
         <div className="space-y-2">
           {current.options.map((opt, i) => {

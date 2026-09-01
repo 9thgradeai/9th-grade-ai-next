@@ -522,7 +522,9 @@ export default function PracticeTab() {
                       </span>
                     </div>
 
-                    <h3 className="text-base font-medium mb-5" style={{ color: "var(--dashboard-text-primary)" }}>{currentQuestion.question}</h3>
+                    <div className="rounded-xl border p-4 mb-5" style={{ background: "var(--dashboard-surface-raised)", borderColor: "var(--dashboard-border-muted)", boxShadow: "var(--dashboard-shadow-sm)" }}>
+                      <h3 className="text-[16px] font-semibold leading-relaxed" style={{ color: "#0f172a", lineHeight: "1.6" }}>{currentQuestion.question}</h3>
+                    </div>
 
                     <div className="space-y-2.5 mb-6" role="radiogroup" aria-label="উত্তর নির্বাচন করুন">
                       {currentQuestion.options.map((option, i) => {
