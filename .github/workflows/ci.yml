@@ -56,9 +56,27 @@ jobs:
   perf:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    # NOTE: no NODE_ENV: production here — that would make `npm ci` skip the
+    # devDependencies (next-pwa, @next/bundle-analyzer, tsx) this build needs.
+    # `next build` is already a production build regardless of NODE_ENV.
     env:
-      NODE_ENV: production
       CI: true
+    # The analyze build (like `test`'s) prerenders SSG routes that query
+    # Prisma, so it needs a reachable DATABASE_URL to complete.
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: app_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -66,8 +84,14 @@ jobs:
           node-version: "22"
           cache: "npm"
       - run: npm ci
+      - name: Prepare perf database (schema push)
+        run: npx prisma db push --skip-generate --schema database/prisma/schema.prisma
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/app_test
       - name: Analyze build + run perf budget gate
         run: npm run perf:check
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/app_test
       - name: Upload analyzer report (on failure, for triage)
         if: failure()
         uses: actions/upload-artifact@v4
