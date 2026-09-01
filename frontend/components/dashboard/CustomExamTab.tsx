@@ -139,6 +139,25 @@ export default function CustomExamTab() {
   // ── Result state ──
   const [result, setResult] = useState<Server.ExamResultDTO | null>(null);
 
+  // Always start at the top when entering exam or showing results — otherwise
+  // the dashboard's scrollable container (#dashboard-content) keeps its previous
+  // offset and the user lands in the middle of the questions or review.
+  const scrollDashboardTop = useCallback(() => {
+    const prefersReduced = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const behavior: ScrollBehavior = prefersReduced ? "instant" as ScrollBehavior : "smooth";
+    const el = typeof document !== "undefined" ? document.getElementById("dashboard-content") : null;
+    if (el) el.scrollTo({ top: 0, behavior });
+    else if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior });
+  }, []);
+
+  useEffect(() => {
+    if (phase === "exam" || phase === "result") {
+      // Wait for the phase's DOM to mount before scrolling.
+      const id = requestAnimationFrame(() => scrollDashboardTop());
+      return () => cancelAnimationFrame(id);
+    }
+  }, [phase, scrollDashboardTop]);
+
   // Load the exam configuration tree. State changes happen after `await`, so
   // no render-phase impurity or effect-driven cascade is introduced.
   const fetchConfig = useCallback(async () => {

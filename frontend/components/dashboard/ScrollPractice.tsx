@@ -85,6 +85,11 @@ export default function ScrollPractice({
     } finally {
       setSubmitting(false);
       setSubmitted(true);
+      const prefersReduced = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const behavior: ScrollBehavior = prefersReduced ? "instant" as ScrollBehavior : "smooth";
+      const dash = typeof document !== "undefined" ? document.getElementById("dashboard-content") : null;
+      if (dash) dash.scrollTo({ top: 0, behavior });
+      listRef.current?.scrollTo({ top: 0, behavior });
     }
   };
 

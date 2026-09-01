@@ -73,6 +73,14 @@ export default function MockTestTab() {
   const submittingRef = useRef(false);
   const startedAtRef = useRef(0);
   const totalSecRef = useRef(0);
+
+  const scrollDashboardTop = useCallback(() => {
+    const prefersReduced = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const behavior: ScrollBehavior = prefersReduced ? "instant" as ScrollBehavior : "smooth";
+    const el = typeof document !== "undefined" ? document.getElementById("dashboard-content") : null;
+    if (el) el.scrollTo({ top: 0, behavior });
+    else if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior });
+  }, []);
   // Latest questions/answers for the timer's auto-submit without re-subscribing.
   const questionsRef = useRef<Server.ExamQuestionDTO[]>([]);
   const answersRef = useRef<Record<number, string>>({});
@@ -205,6 +213,7 @@ export default function MockTestTab() {
       totalSecRef.current = built.durationSec;
       setTimeRemaining(built.durationSec);
       setTestState("active");
+      requestAnimationFrame(() => scrollDashboardTop());
     } catch {
       setBuildError("মক টেস্ট তৈরি করা যায়নি। আবার চেষ্টা করুন।");
     } finally {
@@ -276,6 +285,15 @@ export default function MockTestTab() {
     return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [testState]);
+
+  // Always show the top of the test/result when state switches — fixes landing
+  // in the middle of questions or in the middle of the review.
+  useEffect(() => {
+    if (testState === "active" || testState === "completed") {
+      const id = requestAnimationFrame(() => scrollDashboardTop());
+      return () => cancelAnimationFrame(id);
+    }
+  }, [testState, scrollDashboardTop]);
 
   const resetTest = () => {
     localStorage.removeItem(STORAGE_KEY);

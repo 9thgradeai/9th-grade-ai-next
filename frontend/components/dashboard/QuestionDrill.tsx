@@ -64,6 +64,14 @@ export default function QuestionDrill({
     reportedRef.current = false;
   };
 
+  // When moving to next question or showing the final result, keep the top visible
+  useEffect(() => {
+    const prefersReduced = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const behavior: ScrollBehavior = prefersReduced ? "instant" as ScrollBehavior : "smooth";
+    const dash = typeof document !== "undefined" ? document.getElementById("dashboard-content") : null;
+    if (dash) dash.scrollTo({ top: 0, behavior });
+  }, [index, done]);
+
   if (questions.length === 0) {
     return (
       <div className="glass-card rounded-terminal-rounded border border-terminal-border p-8 text-center">

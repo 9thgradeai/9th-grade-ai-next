@@ -76,6 +76,14 @@ export default function PracticeTab() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
+  const scrollDashboardTop = () => {
+    const prefersReduced = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const behavior: ScrollBehavior = prefersReduced ? "instant" as ScrollBehavior : "smooth";
+    const el = typeof document !== "undefined" ? document.getElementById("dashboard-content") : null;
+    if (el) el.scrollTo({ top: 0, behavior });
+    else if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior });
+  };
+
   // Load the selection tree once (drives quick practice).
   useEffect(() => {
     let cancelled = false;
@@ -171,6 +179,21 @@ export default function PracticeTab() {
     }
   }, [sessionActive, result, questions, answers, currentIndex]);
 
+  // When a quick-practice session starts or its result appears, always show the
+  // top (question 1 / score summary) — fix: previously kept previous scroll.
+  useEffect(() => {
+    if (sessionActive && questions.length > 0) {
+      const id = requestAnimationFrame(() => scrollDashboardTop());
+      return () => cancelAnimationFrame(id);
+    }
+  }, [sessionActive, questions.length]);
+  useEffect(() => {
+    if (result) {
+      const id = requestAnimationFrame(() => scrollDashboardTop());
+      return () => cancelAnimationFrame(id);
+    }
+  }, [result]);
+
   // Fetch full question DTOs (with correct answers for the review panel) for
   // every selected subject/topic/subtopic, then serve the requested count.
   const startSession = async () => {
@@ -200,6 +223,8 @@ export default function PracticeTab() {
         const picked = shuffled(merged).slice(0, Math.min(requested, merged.length));
         setQuestions(picked);
         setSessionActive(true);
+        // Ensure the new session renders from question 1 at the top.
+        requestAnimationFrame(() => scrollDashboardTop());
       }
     } catch {
       setLoadError("প্রশ্ন লোড করা যায়নি। আবার চেষ্টা করুন।");
@@ -225,6 +250,7 @@ export default function PracticeTab() {
         localStorage.removeItem(QUICK_STORAGE_KEY);
       } catch { /* ignore */ }
       setResult(summary);
+      requestAnimationFrame(() => scrollDashboardTop());
     } catch {
       setSubmitError("ফলাফল জমা দেওয়া যায়নি। আবার চেষ্টা করুন।");
     } finally {
