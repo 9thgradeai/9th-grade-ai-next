@@ -332,55 +332,123 @@
    Maps old --dashboard-* tokens to new semantic tokens for backward compat.
    ══════════════════════════════════════════════════════════════════════════════ */
 
-[data-dashboard-theme="dark"],
+/* ═════════════════════════════════════════════════════════════════════════════
+   DASHBOARD LIGHT MODE TOKENS
+   ─────────────────────────────────────────────────────────────────────────────
+   Distinct light-mode surface/text/border tokens for the slate-blue dashboard.
+   Background: #3D4E63 → off-white text and elevated surfaces for readability.
+   ════════════════════════════════════════════════════════════════════════════ */
+
 [data-dashboard-theme="light"] {
-  --dashboard-background: var(--surface-base);
-  --dashboard-surface: var(--surface-raised);
-  --dashboard-surface-solid: var(--surface-raised);
-  --dashboard-surface-raised: var(--surface-overlay);
-  --dashboard-surface-muted: var(--surface-muted);
-  --dashboard-surface-hover: var(--surface-hover);
-  --dashboard-sidebar-bg: var(--sidebar-bg);
-  --dashboard-sidebar-border: var(--border-subtle);
-  --dashboard-border-muted: var(--border-subtle);
-  --dashboard-border-subtle: var(--border-subtle);
-  --dashboard-border-strong: var(--border-default);
-  --dashboard-text-primary: var(--text-primary);
-  --dashboard-text-secondary: var(--text-secondary);
-  --dashboard-text-muted: var(--text-muted);
-  --dashboard-text-inverse: var(--text-inverse);
-  --dashboard-primary: var(--primary);
-  --dashboard-primary-hover: var(--primary-hover);
-  --dashboard-primary-active: var(--primary-active);
-  --dashboard-primary-subtle: var(--primary-soft);
-  --dashboard-success: var(--success);
-  --dashboard-success-subtle: var(--success-soft);
-  --dashboard-warning: var(--warning);
-  --dashboard-warning-subtle: var(--warning-soft);
-  --dashboard-danger: var(--danger);
-  --dashboard-danger-subtle: var(--danger-soft);
-  --dashboard-info: var(--info);
-  --dashboard-info-subtle: var(--info-soft);
-  --dashboard-focus-ring: var(--focus-ring);
-  --dashboard-border-focus: var(--border-focus);
-  --dashboard-overlay: var(--overlay);
-  --dashboard-chart-1: var(--chart-1);
-  --dashboard-chart-2: var(--chart-2);
-  --dashboard-chart-3: var(--chart-3);
-  --dashboard-chart-4: var(--chart-4);
-  --dashboard-chart-grid: var(--chart-grid);
-  --dashboard-chart-axis: var(--chart-axis);
-  --dashboard-input-bg: var(--input-bg);
-  --dashboard-input-border: var(--input-border);
-  --dashboard-input-focus: var(--input-focus);
-  --dashboard-disabled-bg: var(--disabled-bg);
-  --dashboard-disabled-text: var(--disabled-text);
-  --dashboard-shadow-sm: var(--shadow-sm);
-  --dashboard-shadow-md: var(--shadow-md);
-  --dashboard-shadow-lg: var(--shadow-lg);
-  --dashboard-radius-sm: var(--radius-sm);
-  --dashboard-radius-md: var(--radius-md);
-  --dashboard-radius-lg: var(--radius-lg);
+  --dashboard-background: #F0F2F5;
+  --dashboard-surface: #FFFFFF;
+  --dashboard-surface-solid: #F5F7FA;
+  --dashboard-surface-raised: #EDF1F7;
+  --dashboard-surface-muted: #F9FAFC;
+  --dashboard-surface-hover: #E5E8EF;
+
+  --dashboard-border-muted: #CBD3DC;
+  --dashboard-border-subtle: #D1D8E2;
+  --dashboard-border-strong: #98A2B3;
+
+  --dashboard-text-primary: #172033;
+  --dashboard-text-secondary: #5F6A84;
+  --dashboard-text-muted: #8994A5;
+  --dashboard-text-inverse: #FFFFFF;
+
+  --dashboard-primary: #818CF8;
+  --dashboard-primary-hover: #A5B4FC;
+  --dashboard-primary-active: #C7D2FE;
+  --dashboard-primary-subtle: rgb(129 140 248 / 0.12);
+
+  --dashboard-success: #4ADE80;
+  --dashboard-success-subtle: rgb(74 222 128 / 0.14);
+  --dashboard-warning: #FBBF24;
+  --dashboard-warning-subtle: rgb(251 191 36 / 0.14);
+  --dashboard-danger: #F87171;
+  --dashboard-danger-subtle: rgb(248 113 113 / 0.14);
+  --dashboard-info: #38BDF8;
+  --dashboard-info-subtle: rgb(56 190 245 / 0.14);
+
+  --dashboard-focus-ring: rgb(129 140 248 / 0.5);
+  --dashboard-border-focus: rgb(165 180 252 / 0.5);
+  --dashboard-overlay: rgb(13 23 36 / 0.15);
+  --dashboard-chart-1: #A5B4FC;
+  --dashboard-chart-2: #6BC4F5;
+  --dashboard-chart-3: #7BDBA5;
+  --dashboard-chart-4: #FCCD5A;
+  --dashboard-chart-grid: #6B829F;
+  --dashboard-chart-axis: #A9B8CA;
+  --dashboard-input-bg: #FFFFFF;
+  --dashboard-input-border: #A5B4FC;
+  --dashboard-input-focus: #A5B4FC;
+  --dashboard-disabled-bg: #E4E6EF;
+  --dashboard-disabled-text: #A9B8CA;
+  --dashboard-shadow-sm: 0 1px 2px rgb(13 23 36 / 0.1);
+  --dashboard-shadow-md: 0 2px 8px rgb(13 23 36 / 0.15);
+  --dashboard-shadow-lg: 0 8px 20px rgb(13 23 36 / 0.2);
+  --dashboard-radius-sm: 8px;
+  --dashboard-radius-md: 12px;
+  --dashboard-radius-lg: 16px;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   DASHBOARD DARK MODE TOKENS
+   ─────────────────────────────────────────────────────────────────────────────
+   Pure-black foundation preserved for dashboard dark mode.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+[data-dashboard-theme="dark"] {
+  --dashboard-background: #000000;
+  --dashboard-surface: #0D0D0D;
+  --dashboard-surface-solid: #111111;
+  --dashboard-surface-raised: #161616;
+  --dashboard-surface-muted: #0D0D0D;
+  --dashboard-surface-hover: #1A1D24;
+
+  --dashboard-border-muted: #303640;
+  --dashboard-border-subtle: #20242B;
+  --dashboard-border-strong: #404858;
+
+  --dashboard-text-primary: #F5F7FA;
+  --dashboard-text-secondary: #B7BFCC;
+  --dashboard-text-muted: #7F8998;
+  --dashboard-text-inverse: #0A0B10;
+
+  --dashboard-primary: #818CF8;
+  --dashboard-primary-hover: #A5B4FC;
+  --dashboard-primary-active: #C7D2FE;
+  --dashboard-primary-subtle: rgb(129 140 248 / 0.18);
+
+  --dashboard-success: #4ADE80;
+  --dashboard-success-subtle: rgb(74 222 128 / 0.14);
+  --dashboard-warning: #FBBF24;
+  --dashboard-warning-subtle: rgb(251 191 36 / 0.14);
+  --dashboard-danger: #F87171;
+  --dashboard-danger-subtle: rgb(248 113 113 / 0.14);
+  --dashboard-info: #38BDF8;
+  --dashboard-info-subtle: rgb(56 190 245 / 0.14);
+
+  --dashboard-focus-ring: rgb(129 140 248 / 0.6);
+  --dashboard-border-focus: rgb(129 140 248 / 0.6);
+  --dashboard-overlay: rgb(0 0 0 / 0.72);
+  --dashboard-chart-1: #818CF8;
+  --dashboard-chart-2: #38BDF8;
+  --dashboard-chart-3: #4ADE80;
+  --dashboard-chart-4: #FBBF24;
+  --dashboard-chart-grid: #20242B;
+  --dashboard-chart-axis: #7F8998;
+  --dashboard-input-bg: #0D0D0D;
+  --dashboard-input-border: #303640;
+  --dashboard-input-focus: #818CF8;
+  --dashboard-disabled-bg: #0A0A0A;
+  --dashboard-disabled-text: #464D58;
+  --dashboard-shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+  --dashboard-shadow-md: 0 1px 3px rgb(0 0 0 / 0.45), 0 1px 2px rgb(0 0 0 / 0.25);
+  --dashboard-shadow-lg: 0 10px 15px rgb(0 0 0 / 0.5), 0 4px 6px rgb(0 0 0 / 0.3);
+  --dashboard-radius-sm: 8px;
+  --dashboard-radius-md: 12px;
+  --dashboard-radius-lg: 16px;
 }
 
 /* ══════════════════════════════════════════════════════════════════════════════
