@@ -543,7 +543,7 @@ export default function PracticeTab() {
                             }
                           >
                             <div className="flex items-center gap-3">
-                              <span className="w-6 h-6 rounded-full border flex items-center justify-center text-xs font-mono flex-shrink-0" style={isSelected ? { background: "var(--dashboard-primary)", color: "white", borderColor: "var(--dashboard-primary)" } : { background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-strong)", color: "var(--dashboard-text-secondary)" }}>
+                              <span className="w-6 h-6 rounded-full border flex items-center justify-center text-xs font-mono flex-shrink-0" style={isSelected ? { background: "var(--dashboard-primary)", color: "var(--dashboard-text-inverse)", borderColor: "var(--dashboard-primary)" } : { background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-strong)", color: "var(--dashboard-text-secondary)" }}>
                                 {String.fromCharCode(65 + i)}
                               </span>
                               <span className="text-sm font-medium">{option}</span>
@@ -580,7 +580,7 @@ export default function PracticeTab() {
                           onClick={handleSubmitRequest}
                           disabled={submitting}
                           className="px-5 py-2 font-mono text-sm rounded-lg transition-colors flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
-                          style={{ background: "var(--dashboard-primary)", color: "white" }}
+                          style={{ background: "var(--dashboard-primary)", color: "var(--dashboard-text-inverse)" }}
                         >
                           {submitting ? "জমা হচ্ছে..." : "ফলাফল জমা দিন"}
                         </button>
@@ -605,7 +605,7 @@ export default function PracticeTab() {
                 </p>
                 <div className="flex gap-3">
                   <button onClick={() => setShowUnansweredConfirm(false)} className="flex-1 py-2.5 border rounded-xl text-sm" style={{ background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-strong)", color: "var(--dashboard-text-secondary)" }}>ফিরে যান</button>
-                  <button onClick={finalizeSubmit} className="flex-1 py-2.5 rounded-xl text-sm" style={{ background: "var(--dashboard-primary)", color: "white" }}>জমা দিন</button>
+                  <button onClick={finalizeSubmit} className="flex-1 py-2.5 rounded-xl text-sm" style={{ background: "var(--dashboard-primary)", color: "var(--dashboard-text-inverse)" }}>জমা দিন</button>
                 </div>
               </div>
             </div>

@@ -777,7 +777,7 @@ export default function CustomExamTab() {
                         }
                       >
                         <div className="flex items-center gap-3">
-                          <span className="w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-mono border" style={isSelected ? { background: "var(--dashboard-primary)", color: "white", borderColor: "var(--dashboard-primary)" } : { background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-strong)", color: "var(--dashboard-text-secondary)" }}>
+                          <span className="w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-mono border" style={isSelected ? { background: "var(--dashboard-primary)", color: "var(--dashboard-text-inverse)", borderColor: "var(--dashboard-primary)" } : { background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-strong)", color: "var(--dashboard-text-secondary)" }}>
                             {OPTION_LABELS[i] ?? i + 1}
                           </span>
                           <span className="text-sm font-medium">{option}</span>

@@ -174,7 +174,7 @@ export default function VoiceInterviewTab() {
           onClick={toggleMic}
           disabled={!supported || busy}
           className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-colors ${
-            listening ? "bg-[var(--danger)] text-[var(--text-primary)]" : "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] hover:bg-[var(--accent-hover)]"
+            listening ? "bg-[var(--danger)] text-[var(--text-inverse)]" : "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] hover:bg-[var(--accent-hover)]"
           } disabled:opacity-60`}
           aria-label={listening ? "শোনা বন্ধ করো" : "কথা বলো"}
         >
