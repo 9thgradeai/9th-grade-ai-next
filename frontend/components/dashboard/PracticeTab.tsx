@@ -594,7 +594,7 @@ export default function PracticeTab() {
 
           {/* Unanswered confirm for quick practice */}
           {showUnansweredConfirm && (
-            <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setShowUnansweredConfirm(false)}>
+            <div className="fixed inset-0 z-50 bg-[var(--overlay)] backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setShowUnansweredConfirm(false)}>
               <div onClick={(e) => e.stopPropagation()} className="rounded-2xl border p-6 w-full max-w-sm" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)", boxShadow: "var(--dashboard-shadow-lg)" }}>
                 <div className="flex items-center gap-2 mb-3">
                   <AlertTriangle className="w-5 h-5" style={{ color: "var(--dashboard-warning)" }} />

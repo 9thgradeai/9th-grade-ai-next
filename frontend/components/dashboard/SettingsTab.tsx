@@ -627,7 +627,7 @@ export default function SettingsTab() {
             <button
               type="button"
               aria-label="বাতিল করুন"
-              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              className="absolute inset-0 bg-[var(--overlay)] backdrop-blur-sm"
               onClick={() => setConfirmDelete(false)}
             />
             <motion.div

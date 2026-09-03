@@ -94,7 +94,7 @@ export default function CommandBar() {
 
   return (
     <div
-      className="fixed inset-0 z-[80] flex items-start justify-center bg-black/60 backdrop-blur-sm px-4 pt-[18vh]"
+      className="fixed inset-0 z-[80] flex items-start justify-center bg-[var(--overlay)] backdrop-blur-sm px-4 pt-[18vh]"
       role="dialog"
       aria-modal="true"
       aria-label="কমান্ড প্যানেল"

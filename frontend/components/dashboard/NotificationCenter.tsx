@@ -143,7 +143,7 @@ export default function NotificationCenter() {
             aria-label="Notifications and badges"
           >
             <div
-              className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+              className="absolute inset-0 bg-[var(--overlay)] backdrop-blur-sm"
               onClick={() => setIsOpen(false)}
             />
             <motion.div

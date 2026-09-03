@@ -57,158 +57,183 @@
 }
 
 /* ══════════════════════════════════════════════════════════════════════════════
-   DARK MODE (Default)
+   DARK MODE (Default) — Pure Black
    ─────────────────────────────────────────────────────────────────────────────
-   Deep navy canvas with subtle surface hierarchy.
-   Premium feel via surface contrast, not heavy shadows.
+   Black-first foundation with precise hierarchy and a restrained indigo accent.
+   Premium feel via subtle surface levels, crisp borders, not heavy glow.
    ══════════════════════════════════════════════════════════════════════════════ */
 
 :root {
-  /* ── Surfaces (80%) ─────────────────────────────────────────────────────────── */
-  --surface-base: #0f1724;
-  --surface-raised: #172033;
-  --surface-overlay: #1e2a3d;
-  --surface-muted: #1e293b;
-  --surface-hover: #243447;
-  --surface-active: #2a3d52;
+  /* ══════════════════════════════════════════════════════════════════════════
+     PURE BLACK DARK MODE (Default)
+     Black-first foundation, precise hierarchy, controlled indigo accent.
+     Surface levels: #000 → #080808 → #0D0D0D → #111111 → #161616
+     ══════════════════════════════════════════════════════════════════════════ */
 
-  /* ── Text (12%) ─────────────────────────────────────────────────────────────── */
-  --text-primary: #f1f5f9;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  --text-disabled: #475569;
-  --text-inverse: #0f172a;
+  /* ── Canonical Surfaces (80%) ──────────────────────────────────────────────── */
+  --background: #000000;
+  --surface: #0D0D0D;
+  --surface-soft: #0D0D0D;
+  --surface-elevated: #111111;
+  --surface-highest: #161616;
 
-  /* ── Borders (12%) ──────────────────────────────────────────────────────────── */
-  --border-subtle: #1e293b;
-  --border-default: #334155;
-  --border-strong: #475569;
-  --border-focus: rgb(129 140 248 / 0.45);
+  /* ── Legacy Surface Aliases ────────────────────────────────────────────────── */
+  --surface-base: var(--background);
+  --surface-raised: var(--surface-elevated);
+  --surface-overlay: var(--surface-highest);
+  --surface-muted: var(--surface-soft);
+  --surface-hover: #1A1D24;
+  --surface-active: #22262E;
 
-  /* ── Primary (5%) — Indigo ──────────────────────────────────────────────────── */
-  --primary: #818cf8;
-  --primary-hover: #6366f1;
-  --primary-active: #4f46e5;
-  --primary-soft: rgb(79 70 229 / 0.12);
-  --primary-muted: rgb(79 70 229 / 0.06);
+  /* ── Text (12%) ────────────────────────────────────────────────────────────── */
+  --text-primary: #F5F7FA;
+  --text-secondary: #B7BFCC;
+  --text-muted: #7F8998;
+  --text-disabled: #626B78;
+  --text-inverse: #0A0B10;
 
-  /* ── Accent (legacy alias) ──────────────────────────────────────────────────── */
+  /* ── Borders (12%) ─────────────────────────────────────────────────────────── */
+  --border: #20242B;
+  --border-strong: #303640;
+  --border-subtle: var(--border);
+  --border-default: var(--border-strong);
+  --border-focus: rgb(129 140 248 / 0.6);
+
+  /* ── Primary (5%) — Indigo ─────────────────────────────────────────────────── */
+  --primary: #818CF8;
+  --primary-hover: #A5B4FC;
+  --primary-active: #C7D2FE;
+  --primary-soft: #171A35;
+  --primary-muted: #191D33;
+
+  /* ── Accent (legacy alias) ─────────────────────────────────────────────────── */
   --accent: var(--primary);
   --accent-hover: var(--primary-hover);
   --accent-active: var(--primary-active);
   --accent-subtle: var(--primary-soft);
   --accent-muted: var(--primary-muted);
 
-  /* ── Semantic (3%) ──────────────────────────────────────────────────────────── */
-  --success: #34d399;
-  --success-soft: rgb(52 211 153 / 0.12);
-  --warning: #fbbf24;
-  --warning-soft: rgb(251 191 36 / 0.12);
-  --danger: #f87171;
-  --danger-soft: rgb(248 113 113 / 0.12);
-  --info: #38bdf8;
-  --info-soft: rgb(56 189 248 / 0.12);
+  /* ── Semantic (3%) ─────────────────────────────────────────────────────────── */
+  --success: #4ADE80;
+  --success-soft: #10251A;
+  --warning: #FBBF24;
+  --warning-soft: #29210D;
+  --danger: #F87171;
+  --danger-soft: #291316;
+  --info: #38BDF8;
+  --info-soft: #0C202A;
 
-  /* ── Decorative ─────────────────────────────────────────────────────────────── */
-  --overlay: rgb(2 6 23 / 0.65);
+  /* ── Decorative ────────────────────────────────────────────────────────────── */
+  --overlay: rgb(0 0 0 / 0.72);
 
-  /* ── Shadows ────────────────────────────────────────────────────────────────── */
-  --shadow-xs: 0 1px 2px rgb(0 0 0 / 0.25);
-  --shadow-sm: 0 1px 3px rgb(0 0 0 / 0.3), 0 1px 2px rgb(0 0 0 / 0.2);
-  --shadow-md: 0 4px 6px rgb(0 0 0 / 0.35), 0 2px 4px rgb(0 0 0 / 0.2);
-  --shadow-lg: 0 10px 15px rgb(0 0 0 / 0.4), 0 4px 6px rgb(0 0 0 / 0.2);
-  --shadow-xl: 0 20px 25px rgb(0 0 0 / 0.45), 0 8px 10px rgb(0 0 0 / 0.2);
+  /* ── Shadows ───────────────────────────────────────────────────────────────── */
+  --shadow-xs: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-sm: 0 1px 3px rgb(0 0 0 / 0.4), 0 1px 2px rgb(0 0 0 / 0.25);
+  --shadow-md: 0 4px 6px rgb(0 0 0 / 0.45), 0 2px 4px rgb(0 0 0 / 0.25);
+  --shadow-lg: 0 10px 15px rgb(0 0 0 / 0.5), 0 4px 6px rgb(0 0 0 / 0.3);
+  --shadow-xl: 0 20px 25px rgb(0 0 0 / 0.55), 0 8px 10px rgb(0 0 0 / 0.3);
 
-  /* ── Input ──────────────────────────────────────────────────────────────────── */
-  --input-bg: #1e293b;
-  --input-border: #334155;
-  --input-focus: #818cf8;
-  --input-placeholder: #475569;
+  /* ── Input ─────────────────────────────────────────────────────────────────── */
+  --input-bg: #0D0D0D;
+  --input-border: var(--border-strong);
+  --input-focus: var(--primary);
+  --input-placeholder: var(--text-disabled);
 
-  /* ── Disabled ───────────────────────────────────────────────────────────────── */
-  --disabled-bg: #1e293b;
-  --disabled-text: #475569;
+  /* ── Disabled ──────────────────────────────────────────────────────────────── */
+  --disabled-bg: #0A0A0A;
+  --disabled-text: #464D58;
 
-  /* ── Chart ──────────────────────────────────────────────────────────────────── */
-  --chart-1: #818cf8;
-  --chart-2: #38bdf8;
-  --chart-3: #34d399;
-  --chart-4: #fbbf24;
-  --chart-grid: #1e293b;
-  --chart-axis: #64748b;
+  /* ── Chart ─────────────────────────────────────────────────────────────────── */
+  --chart-1: #818CF8;
+  --chart-2: #38BDF8;
+  --chart-3: #4ADE80;
+  --chart-4: #FBBF24;
+  --chart-grid: #20242B;
+  --chart-axis: #7F8998;
 
-  /* ── Focus Ring ─────────────────────────────────────────────────────────────── */
-  --focus-ring: rgb(129 140 248 / 0.45);
+  /* ── Focus Ring ────────────────────────────────────────────────────────────── */
+  --focus-ring: rgb(129 140 248 / 0.6);
   --focus-ring-offset: 2px;
 
-  /* ── Sidebar ────────────────────────────────────────────────────────────────── */
-  --sidebar-bg: var(--surface-raised);
-  --sidebar-border: var(--border-subtle);
+  /* ── Sidebar ───────────────────────────────────────────────────────────────── */
+  --sidebar-bg: var(--surface-soft);
+  --sidebar-border: var(--border);
   --sidebar-text: var(--text-secondary);
   --sidebar-text-active: var(--primary);
   --sidebar-bg-active: var(--primary-soft);
 
-  /* ── Card ───────────────────────────────────────────────────────────────────── */
-  --card-bg: var(--surface-raised);
-  --card-border: var(--border-subtle);
+  /* ── Card ──────────────────────────────────────────────────────────────────── */
+  --card-bg: var(--surface-elevated);
+  --card-border: var(--border);
   --card-radius: 16px;
 
-  /* ── Legacy (terminal) ──────────────────────────────────────────────────────── */
+  /* ── Legacy (terminal) ─────────────────────────────────────────────────────── */
   --color-terminal-bg: var(--surface-base);
   --color-terminal-text: var(--text-primary);
   --color-terminal-border: var(--border-subtle);
   --color-glass-bg: var(--surface);
   --color-glass-border: var(--border-subtle);
+
+  /* ── Global App Tokens (non-dashboard) ─────────────────────────────────────── */
+  --foreground: var(--text-primary);
+  --surface-solid: var(--surface-elevated);
+  --border-muted: var(--border);
+  --border-strong-global: var(--border-strong);
+  --text-muted-global: var(--text-muted);
 }
 
 /* ══════════════════════════════════════════════════════════════════════════════
    LIGHT MODE — Premium Soft
    ─────────────────────────────────────────────────────────────────────────────
-   Soft enough to study for hours, clear enough to understand everything instantly.
-   Not pure white. Not gray-heavy. Calm, intelligent, premium.
+   Same product language as the dark theme, translated into a soft, premium,
+   highly readable light environment. Priority: hierarchy + visibility, calm.
    ══════════════════════════════════════════════════════════════════════════════ */
 
 [data-dashboard-theme="light"] {
-  /* ── Surfaces (80%) ─────────────────────────────────────────────────────────── */
-  --surface-base: #F5F7FA;
+  /* ── Canonical Surfaces ────────────────────────────────────────────────────── */
+  --background: #F4F6F9;
   --surface: #FFFFFF;
-  --surface-raised: #FFFFFF;
-  --surface-soft: #FAFBFC;
-  --surface-overlay: #FAFBFC;
+  --surface-soft: #F9FAFC;
   --surface-elevated: #FFFFFF;
   --surface-highest: #FFFFFF;
-  --surface-muted: #F0F2F5;
-  --surface-hover: #F3F6FA;
-  --surface-active: #E8EDF4;
 
-  /* ── Text (12%) ─────────────────────────────────────────────────────────────── */
+  /* ── Legacy Surface Aliases ────────────────────────────────────────────────── */
+  --surface-base: var(--background);
+  --surface-raised: var(--surface-elevated);
+  --surface-overlay: var(--surface-highest);
+  --surface-muted: var(--surface-soft);
+  --surface-hover: #F0F3F8;
+  --surface-active: #E9EDF4;
+
+  /* ── Text (12%) ────────────────────────────────────────────────────────────── */
   --text-primary: #172033;
   --text-secondary: #596579;
   --text-muted: #8994A5;
   --text-disabled: #AEB7C5;
   --text-inverse: #FFFFFF;
 
-  /* ── Borders (12%) ──────────────────────────────────────────────────────────── */
-  --border-subtle: #E3E8EF;
-  --border-default: #E3E8EF;
-  --border-strong: #D6DDE7;
-  --border-focus: rgb(79 70 229 / 0.35);
+  /* ── Borders (12%) ─────────────────────────────────────────────────────────── */
+  --border: #E1E6EE;
+  --border-strong: #D2D9E3;
+  --border-subtle: var(--border);
+  --border-default: var(--border-strong);
+  --border-focus: rgb(79 70 229 / 0.4);
 
-  /* ── Primary (5%) — Indigo ──────────────────────────────────────────────────── */
+  /* ── Primary (5%) — Indigo ─────────────────────────────────────────────────── */
   --primary: #4F46E5;
   --primary-hover: #4338CA;
   --primary-active: #3730A3;
   --primary-soft: #EEF0FF;
-  --primary-muted: rgb(79 70 229 / 0.04);
+  --primary-muted: rgb(79 70 229 / 0.05);
 
-  /* ── Accent (legacy alias) ──────────────────────────────────────────────────── */
+  /* ── Accent (legacy alias) ─────────────────────────────────────────────────── */
   --accent: var(--primary);
   --accent-hover: var(--primary-hover);
   --accent-active: var(--primary-active);
   --accent-subtle: var(--primary-soft);
   --accent-muted: var(--primary-muted);
 
-  /* ── Semantic (3%) ──────────────────────────────────────────────────────────── */
+  /* ── Semantic (3%) ─────────────────────────────────────────────────────────── */
   --success: #16803C;
   --success-soft: #EAF7EF;
   --warning: #A86200;
@@ -218,49 +243,80 @@
   --info: #087EA4;
   --info-soft: #EAF7FB;
 
-  /* ── Decorative ─────────────────────────────────────────────────────────────── */
-  --overlay: rgb(23 32 51 / 0.38);
+  /* ── Decorative ────────────────────────────────────────────────────────────── */
+  --overlay: rgb(23 32 51 / 0.4);
 
-  /* ── Shadows ────────────────────────────────────────────────────────────────── */
-  --shadow-xs: 0 1px 2px rgb(23 32 51 / 0.04);
-  --shadow-sm: 0 1px 2px rgb(23 32 51 / 0.04), 0 1px 3px rgb(23 32 51 / 0.03);
-  --shadow-md: 0 2px 8px rgb(23 32 51 / 0.05), 0 1px 3px rgb(23 32 51 / 0.04);
-  --shadow-lg: 0 8px 20px rgb(23 32 51 / 0.06), 0 2px 6px rgb(23 32 51 / 0.04);
-  --shadow-xl: 0 12px 32px rgb(23 32 51 / 0.08), 0 4px 8px rgb(23 32 51 / 0.04);
+  /* ── Shadows ───────────────────────────────────────────────────────────────── */
+  --shadow-xs: 0 1px 2px rgb(23 32 51 / 0.05);
+  --shadow-sm: 0 1px 2px rgb(23 32 51 / 0.06), 0 1px 3px rgb(23 32 51 / 0.05);
+  --shadow-md: 0 2px 8px rgb(23 32 51 / 0.08), 0 1px 3px rgb(23 32 51 / 0.06);
+  --shadow-lg: 0 8px 20px rgb(23 32 51 / 0.1), 0 2px 6px rgb(23 32 51 / 0.06);
+  --shadow-xl: 0 12px 32px rgb(23 32 51 / 0.12), 0 4px 8px rgb(23 32 51 / 0.07);
 
-  /* ── Input ──────────────────────────────────────────────────────────────────── */
+  /* ── Input ─────────────────────────────────────────────────────────────────── */
   --input-bg: #FFFFFF;
-  --input-border: #D6DDE7;
+  --input-border: #D2D9E3;
   --input-focus: #4F46E5;
   --input-placeholder: #8994A5;
 
-  /* ── Disabled ───────────────────────────────────────────────────────────────── */
-  --disabled-bg: #F0F2F5;
+  /* ── Disabled ──────────────────────────────────────────────────────────────── */
+  --disabled-bg: #EEF1F6;
   --disabled-text: #AEB7C5;
 
-  /* ── Chart ──────────────────────────────────────────────────────────────────── */
+  /* ── Chart ─────────────────────────────────────────────────────────────────── */
   --chart-1: #4F46E5;
   --chart-2: #087EA4;
   --chart-3: #16803C;
   --chart-4: #A86200;
-  --chart-grid: #E3E8EF;
+  --chart-grid: #E1E6EE;
   --chart-axis: #8994A5;
 
-  /* ── Focus Ring ─────────────────────────────────────────────────────────────── */
-  --focus-ring: rgb(79 70 229 / 0.22);
+  /* ── Focus Ring ────────────────────────────────────────────────────────────── */
+  --focus-ring: rgb(79 70 229 / 0.25);
   --focus-ring-offset: 2px;
 
-  /* ── Sidebar ────────────────────────────────────────────────────────────────── */
+  /* ── Sidebar ───────────────────────────────────────────────────────────────── */
   --sidebar-bg: #FFFFFF;
-  --sidebar-border: #E3E8EF;
+  --sidebar-border: #E1E6EE;
   --sidebar-text: #596579;
   --sidebar-text-active: #3730A3;
   --sidebar-bg-active: #EEF0FF;
 
-  /* ── Card ───────────────────────────────────────────────────────────────────── */
+  /* ── Card ──────────────────────────────────────────────────────────────────── */
   --card-bg: #FFFFFF;
-  --card-border: #E3E8EF;
+  --card-border: #E1E6EE;
   --card-radius: 16px;
+
+  /* ── Global App Tokens (non-dashboard) ─────────────────────────────────────── */
+  --foreground: var(--text-primary);
+  --surface-solid: var(--surface-elevated);
+  --border-muted: var(--border);
+  --border-strong-global: var(--border-strong);
+  --text-muted-global: var(--text-muted);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   DASHBOARD DARK MODE — PURE BLACK
+   ─────────────────────────────────────────────────────────────────────────────
+   Explicit scoped block so the dashboard dark surfaces always resolve against
+   the pure-black foundation even if a non-dashboard :root changes.
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+[data-dashboard-theme="dark"] {
+  --background: #000000;
+  --surface: #0D0D0D;
+  --surface-soft: #0D0D0D;
+  --surface-elevated: #111111;
+  --surface-highest: #161616;
+  --surface-base: var(--background);
+  --surface-raised: var(--surface-elevated);
+  --surface-overlay: var(--surface-highest);
+  --surface-muted: var(--surface-soft);
+  --foreground: var(--text-primary);
+  --surface-solid: var(--surface-elevated);
+  --border-muted: var(--border);
+  --border-strong-global: var(--border-strong);
+  --text-muted-global: var(--text-muted);
 }
 
 /* ══════════════════════════════════════════════════════════════════════════════
@@ -277,7 +333,7 @@
   --dashboard-surface-raised: var(--surface-overlay);
   --dashboard-surface-muted: var(--surface-muted);
   --dashboard-surface-hover: var(--surface-hover);
-  --dashboard-sidebar-bg: var(--surface-base);
+  --dashboard-sidebar-bg: var(--sidebar-bg);
   --dashboard-sidebar-border: var(--border-subtle);
   --dashboard-border-muted: var(--border-subtle);
   --dashboard-border-subtle: var(--border-subtle);
@@ -322,29 +378,27 @@
 
 /* ══════════════════════════════════════════════════════════════════════════════
    GLOBAL APP TOKENS (non-dashboard pages)
+   ─────────────────────────────────────────────────────────────────────────────
+   The canonical tokens live in :root (dark) / [data-dashboard-theme="light"]
+   (dashboard) / html.light (global light). This block forwards the legacy
+   app-surface token names without conflicting with the canonical values.
    ══════════════════════════════════════════════════════════════════════════════ */
 
 :root {
-  --background: #0f1724;
-  --foreground: #f1f5f9;
-  --surface: var(--surface-raised);
+  --foreground: var(--text-primary);
   --surface-solid: var(--surface-raised);
-  --surface-raised: var(--surface-overlay);
-  --surface-muted: var(--surface-muted);
   --border-muted: var(--border-subtle);
-  --border-strong: var(--border-default);
-  --text-muted: var(--text-muted);
 }
 
 html.light {
-  --background: #F5F7FA;
+  --background: #F4F6F9;
   --foreground: #172033;
   --surface: #FFFFFF;
   --surface-solid: #FFFFFF;
-  --surface-raised: #FAFBFC;
-  --surface-muted: #F0F2F5;
-  --border-muted: #E3E8EF;
-  --border-strong: #D6DDE7;
+  --surface-raised: #FFFFFF;
+  --surface-muted: #F9FAFC;
+  --border-muted: #E1E6EE;
+  --border-strong: #D2D9E3;
   --text-muted: #8994A5;
 }
 
@@ -360,19 +414,29 @@ html.light {
   --color-emerald-50: var(--surface-raised);
   --color-emerald-100: var(--surface-raised);
   --color-cyan-400: var(--info);
-  --color-indigo-400: #6366f1;
-  --color-zinc-50: #0f172a;
-  --color-zinc-100: #1e293b;
-  --color-zinc-200: #334155;
-  --color-zinc-300: #475569;
-  --color-zinc-400: #64748b;
-  --color-zinc-500: #64748b;
-  --color-zinc-600: #a3a3a3;
-  --color-zinc-700: #f1f5f9;
-  --color-zinc-800: #e2e8f0;
-  --color-zinc-900: #f8fafc;
+  --color-indigo-400: #818CF8;
+  --color-zinc-50: #0D0D0D;
+  --color-zinc-100: #161616;
+  --color-zinc-200: #20242B;
+  --color-zinc-300: #303640;
+  --color-zinc-400: #7F8998;
+  --color-zinc-500: #9AA3B0;
+  --color-zinc-600: #B7BFCC;
+  --color-zinc-700: #D3D9E2;
+  --color-zinc-800: #EAEDF2;
+  --color-zinc-900: #F5F7FA;
   --color-white: #ffffff;
   --color-black: #000000;
+  --color-amber-400: #FBBF24;
+  --color-amber-500: #FBBF24;
+  --color-red-400: #F87171;
+  --color-red-500: #F87171;
+  --color-orange-400: #FBBF24;
+  --color-yellow-400: #FBBF24;
+  --color-violet-400: #818CF8;
+  --color-purple-400: #A78BFA;
+  --color-rose-400: #F87171;
+  --color-blue-400: #38BDF8;
 }
 
 [data-dashboard-theme="light"] {
@@ -382,10 +446,10 @@ html.light {
   --color-emerald-100: var(--primary-soft);
   --color-cyan-400: var(--info);
   --color-indigo-400: #4F46E5;
-  --color-zinc-50: #F5F7FA;
-  --color-zinc-100: #F0F2F5;
-  --color-zinc-200: #E3E8EF;
-  --color-zinc-300: #D6DDE7;
+  --color-zinc-50: #FFFFFF;
+  --color-zinc-100: #F9FAFC;
+  --color-zinc-200: #E1E6EE;
+  --color-zinc-300: #D2D9E3;
   --color-zinc-400: #8994A5;
   --color-zinc-500: #8994A5;
   --color-zinc-600: #596579;
@@ -408,16 +472,17 @@ html.light {
 
 html.light {
   --color-white: #FFFFFF;
-  --color-zinc-50: #F5F7FA;
-  --color-zinc-100: #F0F2F5;
-  --color-zinc-200: #E3E8EF;
-  --color-zinc-300: #D6DDE7;
+  --color-zinc-50: #FFFFFF;
+  --color-zinc-100: #F9FAFC;
+  --color-zinc-200: #E1E6EE;
+  --color-zinc-300: #D2D9E3;
   --color-zinc-400: #8994A5;
   --color-zinc-500: #8994A5;
   --color-zinc-600: #596579;
   --color-zinc-700: #172033;
   --color-zinc-800: #172033;
   --color-zinc-900: #172033;
+  --color-black: #172033;
   --color-emerald-400: #16803C;
   --color-emerald-500: #16803C;
   --color-cyan-400: #087EA4;

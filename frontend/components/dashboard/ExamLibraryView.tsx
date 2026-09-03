@@ -177,19 +177,19 @@ export default function ExamLibraryView() {
           </div>
 
           <div className="grid grid-cols-3 gap-3 mt-4 text-center">
-            <div className="rounded-lg bg-white/[0.04] border border-terminal-border p-3">
+            <div className="rounded-lg bg-[var(--surface-muted)] border border-terminal-border p-3">
               <div className="flex items-center justify-center gap-1.5 text-[var(--dashboard-primary)] font-mono text-lg font-bold">
                 <ListChecks className="w-4 h-4" /> {paper.availableQuestions}
               </div>
               <div className="text-[10px] text-[var(--dashboard-text-muted)] font-mono mt-1">লোডকৃত প্রশ্ন</div>
             </div>
-            <div className="rounded-lg bg-white/[0.04] border border-terminal-border p-3">
+            <div className="rounded-lg bg-[var(--surface-muted)] border border-terminal-border p-3">
               <div className="flex items-center justify-center gap-1.5 text-[var(--info)] font-mono text-lg font-bold">
                 <Clock className="w-4 h-4" /> {paper.durationMin ?? "—"}
               </div>
               <div className="text-[10px] text-[var(--dashboard-text-muted)] font-mono mt-1">সময় (মিনিট)</div>
             </div>
-            <div className="rounded-lg bg-white/[0.04] border border-terminal-border p-3">
+            <div className="rounded-lg bg-[var(--surface-muted)] border border-terminal-border p-3">
               <div className="flex items-center justify-center gap-1.5 text-[var(--dashboard-warning)] font-mono text-lg font-bold">
                 <Shuffle className="w-4 h-4" /> {paper.totalQuestions ?? "—"}
               </div>
@@ -242,7 +242,7 @@ export default function ExamLibraryView() {
                     {item.options.map((opt, oi) => (
                       <div
                         key={oi}
-                        className="flex items-start gap-2 text-xs text-[var(--dashboard-text-secondary)] bg-white/[0.03] border border-terminal-border rounded px-2.5 py-1.5"
+                        className="flex items-start gap-2 text-xs text-[var(--dashboard-text-secondary)] bg-[var(--surface-muted)] border border-terminal-border rounded px-2.5 py-1.5"
                       >
                         <span className="font-mono text-[var(--dashboard-text-muted)]">{["ক", "খ", "গ", "ঘ"][oi] ?? oi + 1}.</span>
                         <span>{opt}</span>
