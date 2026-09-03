@@ -34,13 +34,13 @@ export default function SideNav({ activeTab, onChange }: SideNavProps) {
 
   return (
     <nav
-      className="hidden lg:flex flex-col w-[272px] h-full shrink-0 border-r z-30 shadow-[1px_0_0_var(--dashboard-sidebar-border)]"
-      style={{ background: "var(--dashboard-sidebar-bg)", borderColor: "var(--dashboard-sidebar-border)" }}
+      className="hidden lg:flex flex-col w-[272px] h-full shrink-0 border-r z-30"
+      style={{ background: "var(--dashboard-sidebar-bg)", borderColor: "var(--dashboard-sidebar-border)", boxShadow: "1px 0 0 var(--dashboard-sidebar-border)" }}
       aria-label="Desktop navigation"
     >
       {/* Brand — premium tile + soft border, works on white & dark */}
       <div className="px-5 py-[18px] border-b flex items-center gap-3.5" style={{ borderColor: "var(--dashboard-sidebar-border)", background: "linear-gradient(180deg, var(--dashboard-sidebar-bg) 0%, color-mix(in srgb, var(--dashboard-sidebar-bg) 92%, var(--dashboard-primary) 8%) 100%)" }}>
-        <BrandMark className="h-10 w-10 rounded-xl shadow-[0_2px_10px_rgba(79,70,229,0.28),0_1px_2px_rgba(15,23,42,0.08)] ring-1 ring-black/5" />
+        <BrandMark className="h-10 w-10 rounded-xl ring-1 ring-black/5" />
         <div className="min-w-0">
           <p className="font-display font-bold tracking-tight leading-none text-[15.5px]" style={{ color: "var(--dashboard-text-primary)" }}>
             9th-grade-ai
@@ -71,7 +71,7 @@ export default function SideNav({ activeTab, onChange }: SideNavProps) {
                       className="relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] hover:translate-x-[1px]"
                       style={
                         isActive
-                          ? { background: "var(--dashboard-primary-subtle)", color: "var(--dashboard-primary)", border: "1px solid color-mix(in srgb, var(--dashboard-primary) 16%, transparent)", boxShadow: "0 1px 2px rgb(23 32 51 / 0.04)" }
+                          ? { background: "var(--dashboard-primary-subtle)", color: "var(--dashboard-primary)", border: "1px solid color-mix(in srgb, var(--dashboard-primary) 16%, transparent)", boxShadow: "0 1px 2px rgb(0 0 0 / 0.04)" }
                           : { color: "var(--dashboard-text-primary)", background: "transparent", border: "1px solid transparent" }
                       }
                     >
@@ -108,7 +108,7 @@ export default function SideNav({ activeTab, onChange }: SideNavProps) {
             >
               {displayInitial}
             </div>
-            <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 bg-emerald-500" style={{ borderColor: "var(--dashboard-sidebar-bg)" }} aria-hidden="true" />
+            <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2" style={{ background: "var(--dashboard-success)", borderColor: "var(--dashboard-sidebar-bg)" }} aria-hidden="true" />
           </div>
           <div className="min-w-0">
             <p className="text-[13px] font-medium truncate" style={{ color: "var(--dashboard-text-primary)" }}>{displayName}</p>

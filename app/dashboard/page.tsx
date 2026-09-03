@@ -15,9 +15,9 @@ function TabChunkLoading() {
   return (
     <div className="space-y-4" role="status" aria-label="Tab loading">
       <span className="sr-only">লোড হচ্ছে…</span>
-      <div className="glass-card rounded-2xl border border-white/10 p-6 flex flex-col items-center justify-center gap-3 text-center">
+      <div className="glass-card rounded-2xl border p-6 flex flex-col items-center justify-center gap-3 text-center" style={{ borderColor: "var(--dashboard-border-muted)" }}>
         <AuroraRing size={56} label="Tab loading" />
-        <p className="text-emerald-500/90 font-mono text-[11px] tracking-[0.3em] uppercase">
+        <p className="font-mono text-[11px] tracking-[0.3em] uppercase" style={{ color: "var(--dashboard-primary)" }}>
           Loading module
         </p>
       </div>

@@ -116,7 +116,7 @@ export default function ScrollPractice({
   if (questions.length === 0) {
     return (
       <div className="glass-card rounded-terminal-rounded border border-terminal-border p-8 text-center">
-        <p className="text-sm text-zinc-400 font-mono">কোনো প্রশ্ন নেই</p>
+        <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">কোনো প্রশ্ন নেই</p>
       </div>
     );
   }
@@ -126,7 +126,7 @@ export default function ScrollPractice({
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-medium text-white font-mono">{title}</h3>
         <div className="flex items-center gap-3">
-          <span className="text-xs text-zinc-500 font-mono">
+          <span className="text-xs text-[var(--dashboard-text-muted)] font-mono">
             {submitted
               ? `${drillResults.filter((a) => a.correct).length}/${total} ঠিক`
               : `${answeredCount}/${total} উত্তর দেওয়া হয়েছে`}
@@ -135,7 +135,7 @@ export default function ScrollPractice({
             <button
               type="button"
               onClick={onExit}
-              className="text-xs text-zinc-500 font-mono hover:text-zinc-300 transition-colors"
+              className="text-xs text-[var(--dashboard-text-muted)] font-mono hover:text-[var(--dashboard-text-secondary)] transition-colors"
             >
               বাতিল
             </button>
@@ -144,8 +144,8 @@ export default function ScrollPractice({
       </div>
 
       {!submitted && (
-        <div className="flex items-center gap-2 text-xs text-zinc-400 font-mono">
-          <span className="px-2 py-1 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-300">
+        <div className="flex items-center gap-2 text-xs text-[var(--dashboard-text-muted)] font-mono">
+          <span className="px-2 py-1 rounded bg-[var(--dashboard-primary-subtle)] border border-emerald-500/20 text-[var(--dashboard-primary)]">
             {answeredCount === total ? "সব প্রশ্নের উত্তর দেওয়া হয়েছে" : `${total - answeredCount}টি উত্তর বাকি`}
           </span>
           <span>প্রতিটি প্রশ্নের নিচে উত্তর দিয়ে একবারে জমা দিন।</span>
@@ -177,7 +177,7 @@ export default function ScrollPractice({
                   : "border-terminal-border"
               }`}
             >
-              <div className="text-[10px] text-zinc-500 font-mono uppercase tracking-wider mb-2">
+              <div className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider mb-2">
                 {q.subject} • {q.topic}
                 {q.year ? ` • ${q.year}` : ""}
                 {q.sourceExam ? ` • ${q.sourceExam}` : ""}
@@ -223,15 +223,15 @@ export default function ScrollPractice({
               {submitted && (
                 <div className="mt-3 flex items-center gap-2 text-xs font-mono flex-wrap">
                   {qFb?.justMastered ? (
-                    <span className="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/40">
+                    <span className="px-2 py-0.5 rounded bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] border border-emerald-500/40">
                       এই প্রশ্নটি এখন আয়ত্ত — চমৎকার!
                     </span>
                   ) : isCorrect ? (
-                    <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/25">
+                    <span className="px-2 py-0.5 rounded bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] border border-emerald-500/25">
                       সঠিক হয়েছে — অগ্রগতি হয়েছে।
                     </span>
                   ) : (
-                    <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/25">
+                    <span className="px-2 py-0.5 rounded bg-[var(--dashboard-warning-subtle)] text-[var(--dashboard-warning)] border border-amber-500/25">
                       ভুল হয়েছে — সঠিক উত্তর সবুজে চিহ্নিত।
                     </span>
                   )}
@@ -240,7 +240,7 @@ export default function ScrollPractice({
                     <button
                       type="button"
                       onClick={() => toggleExpand(q.id)}
-                      className="ml-auto flex items-center gap-1 text-zinc-400 hover:text-white transition-colors"
+                      className="ml-auto flex items-center gap-1 text-[var(--dashboard-text-muted)] hover:text-white transition-colors"
                     >
                       <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isOpen ? "rotate-180" : ""}`} />
                       ব্যাখ্যা
@@ -253,7 +253,7 @@ export default function ScrollPractice({
                 <motion.p
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
-                  className="mt-2 text-sm text-zinc-400 font-mono border-t border-terminal-border pt-3 overflow-hidden"
+                  className="mt-2 text-sm text-[var(--dashboard-text-muted)] font-mono border-t border-terminal-border pt-3 overflow-hidden"
                 >
                   💡 {q.explanation}
                 </motion.p>
@@ -266,13 +266,13 @@ export default function ScrollPractice({
       <div className="flex items-center justify-between gap-3 sticky bottom-0">
         {!submitted ? (
           <>
-            <span className="text-xs text-zinc-500 font-mono">
+            <span className="text-xs text-[var(--dashboard-text-muted)] font-mono">
               {answeredCount === 0 ? "কোনো উত্তর বাছাই হয়নি" : `${answeredCount}/${total} উত্তর বাছাই হয়েছে`}
             </span>
             <button
               onClick={() => void handleSubmit()}
               disabled={!enoughAnswered || submitting}
-              className="px-6 py-2.5 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors disabled:opacity-40 flex items-center gap-2"
+              className="px-6 py-2.5 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors disabled:opacity-40 flex items-center gap-2"
             >
               <Send className="w-4 h-4" /> {submitting ? "সংরক্ষণ হচ্ছে…" : "সব উত্তর জমা দিন"}
             </button>
@@ -281,14 +281,14 @@ export default function ScrollPractice({
           <>
             <button
               onClick={reset}
-              className="px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-300 font-mono text-sm hover:text-white transition-colors flex items-center gap-2"
+              className="px-4 py-2 bg-zinc-900 border border-[var(--dashboard-border-muted)] rounded-lg text-[var(--dashboard-text-secondary)] font-mono text-sm hover:text-white transition-colors flex items-center gap-2"
             >
               <RotateCcw className="w-4 h-4" /> আবার
             </button>
             {(onComplete || onExit) && (
               <button
                 onClick={finish}
-                className="px-5 py-2.5 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors flex items-center gap-2"
+                className="px-5 py-2.5 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors flex items-center gap-2"
               >
                 রেজাল্ট দেখুন
               </button>

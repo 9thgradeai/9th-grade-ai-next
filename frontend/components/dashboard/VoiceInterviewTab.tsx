@@ -116,47 +116,47 @@ export default function VoiceInterviewTab() {
     <div className="mx-auto flex h-full w-full max-w-3xl flex-col gap-4 px-4 py-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-zinc-100">ভয়েস ইন্টারভিউ</h1>
-          <p className="mt-1 text-sm text-zinc-400">
+          <h1 className="text-xl font-semibold text-[var(--dashboard-text-primary)]">ভয়েস ইন্টারভিউ</h1>
+          <p className="mt-1 text-sm text-[var(--dashboard-text-muted)]">
             কথা বলে প্র্যাকটিস করো — মাইক চাপো, উত্তর দাও, আর AI-এর জবাব শুনে নাও।
           </p>
         </div>
-        <label className="flex items-center gap-2 text-xs text-zinc-400">
+        <label className="flex items-center gap-2 text-xs text-[var(--dashboard-text-muted)]">
           <input type="checkbox" checked={autoSpeak} onChange={(e) => setAutoSpeak(e.target.checked)} />
           অটো-বলি
         </label>
       </div>
 
       {!supported && (
-        <p className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-300">
+        <p className="rounded-xl border border-amber-500/30 bg-[var(--dashboard-warning-subtle)] px-3 py-2 text-sm text-[var(--dashboard-warning)]">
           তোমার ব্রাউজারে ভয়েস ইনপুট সাপোর্ট করে না। কীবোর্ড দিয়ে লিখে পাঠাতে পারো।
         </p>
       )}
 
-      <div className="flex-1 space-y-3 overflow-y-auto rounded-2xl border border-white/10 bg-zinc-900/40 p-4">
+      <div className="flex-1 space-y-3 overflow-y-auto rounded-2xl border border-white/10 bg-[var(--dashboard-surface)] p-4">
         {messages.length === 0 && (
-          <p className="text-sm text-zinc-500">
+          <p className="text-sm text-[var(--dashboard-text-muted)]">
             মাইকে চাপ দিয়ে শুরু করো, অথবা নিচে লিখে পাঠাও। যেমন: “BCS প্রিলির জন্য কীভাবে প্রস্তুতি নেব?”
           </p>
         )}
         {messages.map((m) =>
           m.role === "user" ? (
             <div key={m.id} className="flex justify-end">
-              <div className="max-w-[80%] rounded-2xl bg-emerald-500/15 px-3 py-2 text-sm text-zinc-100">
+              <div className="max-w-[80%] rounded-2xl bg-[var(--dashboard-primary-subtle)] px-3 py-2 text-sm text-[var(--dashboard-text-primary)]">
                 {m.text}
               </div>
             </div>
           ) : (
             <div key={m.id} className="flex items-start gap-2">
-              <div className="max-w-[85%] rounded-2xl border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-zinc-100">
-                {m.text ? <Markdown text={m.text} /> : <span className="text-zinc-500">…</span>}
+              <div className="max-w-[85%] rounded-2xl border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-[var(--dashboard-text-primary)]">
+                {m.text ? <Markdown text={m.text} /> : <span className="text-[var(--dashboard-text-muted)]">…</span>}
               </div>
               {m.text && (
                 <button
                   type="button"
                   onClick={() => speak(m.text)}
                   aria-label="শোনো"
-                  className="mt-1 rounded-lg border border-white/10 p-1.5 text-zinc-400 hover:text-emerald-400"
+                  className="mt-1 rounded-lg border border-white/10 p-1.5 text-[var(--dashboard-text-muted)] hover:text-[var(--dashboard-primary)]"
                 >
                   <Volume2 className="h-4 w-4" />
                 </button>
@@ -166,7 +166,7 @@ export default function VoiceInterviewTab() {
         )}
       </div>
 
-      {error && <p className="text-sm text-red-400">{error}</p>}
+      {error && <p className="text-sm text-[var(--dashboard-danger)]">{error}</p>}
 
       <div className="flex items-center gap-2">
         <button
@@ -174,7 +174,7 @@ export default function VoiceInterviewTab() {
           onClick={toggleMic}
           disabled={!supported || busy}
           className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-colors ${
-            listening ? "bg-red-500 text-white" : "bg-emerald-500 text-zinc-950 hover:bg-emerald-400"
+            listening ? "bg-red-500 text-white" : "bg-emerald-500 text-[var(--dashboard-text-inverse)] hover:bg-emerald-400"
           } disabled:opacity-60`}
           aria-label={listening ? "শোনা বন্ধ করো" : "কথা বলো"}
         >
@@ -191,13 +191,13 @@ export default function VoiceInterviewTab() {
           }}
           rows={1}
           placeholder="প্রশ্ন লিখো বা মাইকে কথা বলো…"
-          className="flex-1 resize-none rounded-xl border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 outline-none focus:border-emerald-500/50"
+          className="flex-1 resize-none rounded-xl border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-[var(--dashboard-text-primary)] outline-none focus:border-emerald-500/50"
         />
         <button
           type="button"
           onClick={() => void send(input)}
           disabled={busy || !input.trim()}
-          className="rounded-xl bg-emerald-500 px-4 py-2 text-sm font-medium text-zinc-950 hover:bg-emerald-400 disabled:opacity-60"
+          className="rounded-xl bg-emerald-500 px-4 py-2 text-sm font-medium text-[var(--dashboard-text-inverse)] hover:bg-emerald-400 disabled:opacity-60"
         >
           পাঠাও
         </button>

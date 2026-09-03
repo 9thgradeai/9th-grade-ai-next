@@ -22,7 +22,7 @@ export default function StatusPill({
 
   return (
     <span
-      className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-500/20 bg-emerald-500/8 text-[11px] font-mono uppercase tracking-[0.14em] text-emerald-400 ${className}`}
+      className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-500/20 bg-[var(--dashboard-primary-subtle)] text-[11px] font-mono uppercase tracking-[0.14em] text-[var(--dashboard-primary)] ${className}`}
     >
       <span
         className={`status-dot-pulse w-1.5 h-1.5 rounded-full ${dotColor}`}

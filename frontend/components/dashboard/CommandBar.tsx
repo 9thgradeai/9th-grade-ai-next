@@ -105,7 +105,7 @@ export default function CommandBar() {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center gap-2 border-b border-default px-4">
-          <span className="text-zinc-500 font-mono text-sm">⌘K</span>
+          <span className="text-[var(--dashboard-text-muted)] font-mono text-sm">⌘K</span>
           <input
             ref={inputRef}
             value={query}
@@ -129,12 +129,12 @@ export default function CommandBar() {
             }}
             placeholder="যেখানে যেতে চান খুঁজুন…"
             aria-label="কমান্ড অনুসন্ধান"
-            className="flex-1 bg-transparent py-3 text-sm text-white placeholder:text-zinc-500 focus:outline-none"
+            className="flex-1 bg-transparent py-3 text-sm text-white placeholder:text-[var(--dashboard-text-muted)] focus:outline-none"
           />
         </div>
         <ul className="max-h-72 overflow-y-auto py-2" role="listbox">
           {filtered.length === 0 && (
-            <li className="px-4 py-3 text-xs text-zinc-500">কোনো ফলাফল মেলেনি</li>
+            <li className="px-4 py-3 text-xs text-[var(--dashboard-text-muted)]">কোনো ফলাফল মেলেনি</li>
           )}
           {filtered.map((c, i) => (
             <li key={c.id} role="option" aria-selected={i === active}>
@@ -143,11 +143,11 @@ export default function CommandBar() {
                 onMouseEnter={() => setActive(i)}
                 onClick={() => choose(c)}
                 className={`flex w-full items-center justify-between px-4 py-2.5 text-left text-sm transition-colors ${
-                  i === active ? "bg-emerald-500/10 text-emerald-300" : "text-zinc-300"
+                  i === active ? "bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]" : "text-[var(--dashboard-text-secondary)]"
                 }`}
               >
                 <span>{c.label}</span>
-                <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-[var(--dashboard-text-muted)]">
                   {c.hint}
                 </span>
               </button>

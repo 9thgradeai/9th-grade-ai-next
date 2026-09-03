@@ -109,10 +109,10 @@ export function StatusText({
   return (
     <div className={className}>
       <span
-        className="inline-block text-emerald-300/90 font-mono text-sm tabular-nums boot-msg"
+        className="inline-block text-[var(--dashboard-primary)]/90 font-mono text-sm tabular-nums boot-msg"
         aria-hidden="true"
       >
-        <span className="text-emerald-500">$</span> {current.slice(0, chars)}
+        <span className="text-[var(--dashboard-primary)]">$</span> {current.slice(0, chars)}
         <span className="cursor-blink" aria-hidden="true" />
       </span>
       <span className="sr-only" role="status">

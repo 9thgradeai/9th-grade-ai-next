@@ -12,7 +12,7 @@ const VARIANTS: Record<Variant, string> = {
     "text-zinc-950 bg-emerald-500 hover:bg-emerald-400 shadow-neon-glow hover:shadow-neon-glow-lg",
   secondary:
     "text-white border border-white/15 bg-white/[0.03] hover:border-emerald-400/50 hover:bg-white/[0.06]",
-  ghost: "text-zinc-300 hover:text-emerald-400 hover:bg-white/5",
+  ghost: "text-[var(--dashboard-text-secondary)] hover:text-[var(--dashboard-primary)] hover:bg-white/5",
 };
 
 const SIZES: Record<Size, string> = {

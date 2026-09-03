@@ -20,11 +20,11 @@ export default function StreakHeatmap({ activeDays, labels }: StreakHeatmapProps
             className={`w-5 h-5 rounded-md border transition-colors ${
               active
                 ? "bg-emerald-500 border-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.45)]"
-                : "bg-zinc-800/60 border-zinc-700"
+                : "bg-[var(--dashboard-surface-muted)] border-zinc-700"
             }`}
             aria-hidden="true"
           />
-          <span className="text-[9px] text-zinc-500 font-mono">{dayLabels[i]}</span>
+          <span className="text-[9px] text-[var(--dashboard-text-muted)] font-mono">{dayLabels[i]}</span>
         </div>
       ))}
     </div>

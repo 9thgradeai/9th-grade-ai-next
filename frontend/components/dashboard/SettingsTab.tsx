@@ -88,12 +88,12 @@ function SectionCard({
       className="glass-card rounded-2xl border border-default p-5 sm:p-6"
     >
       <header className="flex items-start gap-3 mb-5">
-        <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center flex-shrink-0">
+        <div className="w-10 h-10 rounded-xl bg-[var(--dashboard-primary-subtle)] border border-emerald-500/25 flex items-center justify-center flex-shrink-0">
           {icon}
         </div>
         <div>
           <h3 className="text-sm font-semibold text-white uppercase tracking-wider">{title}</h3>
-          {description ? <p className="text-xs text-zinc-500 mt-0.5">{description}</p> : null}
+          {description ? <p className="text-xs text-[var(--dashboard-text-muted)] mt-0.5">{description}</p> : null}
         </div>
       </header>
       {children}
@@ -108,13 +108,13 @@ function Field({
 }: React.InputHTMLAttributes<HTMLInputElement> & { label: string }) {
   return (
     <label htmlFor={id} className="block">
-      <span className="block text-[11px] font-mono uppercase tracking-wider text-zinc-500 mb-1.5">
+      <span className="block text-[11px] font-mono uppercase tracking-wider text-[var(--dashboard-text-muted)] mb-1.5">
         {label}
       </span>
       <input
         id={id}
         {...props}
-        className="w-full px-3.5 py-2.5 rounded-xl bg-subtle border border-zinc-800 text-sm text-white placeholder-zinc-600 outline-none transition-colors focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20"
+        className="w-full px-3.5 py-2.5 rounded-xl bg-subtle border border-[var(--dashboard-border-muted)] text-sm text-white placeholder-zinc-600 outline-none transition-colors focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20"
       />
     </label>
   );
@@ -273,24 +273,24 @@ export default function SettingsTab() {
         animate={{ opacity: 1, y: 0 }}
         className="flex items-center gap-3"
       >
-        <div className="w-11 h-11 rounded-2xl bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center">
-          <MonitorSmartphone className="w-5.5 h-5.5 text-emerald-400" aria-hidden="true" />
+        <div className="w-11 h-11 rounded-2xl bg-[var(--dashboard-primary-subtle)] border border-emerald-500/25 flex items-center justify-center">
+          <MonitorSmartphone className="w-5.5 h-5.5 text-[var(--dashboard-primary)]" aria-hidden="true" />
         </div>
         <div>
           <h1 className="font-display text-xl font-semibold text-white">Settings</h1>
-          <p className="text-xs text-zinc-500 font-mono">manage your account, security, and data</p>
+          <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">manage your account, security, and data</p>
         </div>
       </motion.div>
 
       {/* Profile */}
       <SectionCard
-        icon={<User className="w-5 h-5 text-emerald-400" aria-hidden="true" />}
+        icon={<User className="w-5 h-5 text-[var(--dashboard-primary)]" aria-hidden="true" />}
         title="Profile"
         description="Your public identity across the platform"
       >
         <div className="flex items-center gap-4 mb-5">
           <div className="relative">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-emerald-500/30 to-cyan-500/10 border border-emerald-500/35 flex items-center justify-center text-xl font-bold text-emerald-400">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-emerald-500/30 to-cyan-500/10 border border-emerald-500/35 flex items-center justify-center text-xl font-bold text-[var(--dashboard-primary)]">
               {initial}
             </div>
             <span className="absolute bottom-1 right-1 w-3 h-3 rounded-full bg-emerald-500 border-2 border-[var(--surface-solid)]" aria-hidden="true" />
@@ -312,7 +312,7 @@ export default function SettingsTab() {
                 <button
                   onClick={() => void saveName()}
                   disabled={savingName}
-                  className="px-3 py-1.5 rounded-lg bg-emerald-500 text-zinc-950 text-xs font-mono font-semibold hover:bg-emerald-400 transition-colors disabled:opacity-60"
+                  className="px-3 py-1.5 rounded-lg bg-emerald-500 text-[var(--dashboard-text-inverse)] text-xs font-mono font-semibold hover:bg-emerald-400 transition-colors disabled:opacity-60"
                 >
                   {savingName ? "Saving..." : "Save"}
                 </button>
@@ -321,7 +321,7 @@ export default function SettingsTab() {
                     setEditingName(false);
                     setNameMsg(null);
                   }}
-                  className="px-2.5 py-1.5 rounded-lg border border-zinc-700 text-xs font-mono text-zinc-400 hover:text-white transition-colors"
+                  className="px-2.5 py-1.5 rounded-lg border border-zinc-700 text-xs font-mono text-[var(--dashboard-text-muted)] hover:text-white transition-colors"
                   aria-label="Cancel editing"
                 >
                   Cancel
@@ -336,42 +336,42 @@ export default function SettingsTab() {
                     setNameMsg(null);
                     setEditingName(true);
                   }}
-                  className="p-1.5 rounded-lg text-zinc-500 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors"
+                  className="p-1.5 rounded-lg text-[var(--dashboard-text-muted)] hover:text-[var(--dashboard-primary)] hover:bg-[var(--dashboard-primary-subtle)] transition-colors"
                   aria-label="Edit name"
                 >
                   <Pencil className="w-4 h-4" />
                 </button>
               </div>
             )}
-            <p className="text-xs text-zinc-500 font-mono truncate">@{user?.handle ?? "student"}</p>
+            <p className="text-xs text-[var(--dashboard-text-muted)] font-mono truncate">@{user?.handle ?? "student"}</p>
           </div>
         </div>
         {nameMsg ? (
-          <p className={`text-xs font-mono mb-4 flex items-center gap-1.5 ${nameMsg.ok ? "text-emerald-400" : "text-red-400"}`}>
+          <p className={`text-xs font-mono mb-4 flex items-center gap-1.5 ${nameMsg.ok ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-danger)]"}`}>
             <CheckCircle2 className="w-3.5 h-3.5" aria-hidden="true" />
             {nameMsg.text}
           </p>
         ) : null}
         <dl className="grid sm:grid-cols-2 gap-3">
-          <div className="flex items-center gap-2.5 p-3 rounded-xl bg-subtle border border-zinc-800">
-            <Mail className="w-4 h-4 text-emerald-400 flex-shrink-0" aria-hidden="true" />
+          <div className="flex items-center gap-2.5 p-3 rounded-xl bg-subtle border border-[var(--dashboard-border-muted)]">
+            <Mail className="w-4 h-4 text-[var(--dashboard-primary)] flex-shrink-0" aria-hidden="true" />
             <div className="min-w-0">
-              <dt className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Email</dt>
-              <dd className="text-sm text-zinc-200 truncate">{user?.email ?? "—"}</dd>
+              <dt className="text-[10px] font-mono uppercase tracking-wider text-[var(--dashboard-text-muted)]">Email</dt>
+              <dd className="text-sm text-[var(--dashboard-text-primary)] truncate">{user?.email ?? "—"}</dd>
             </div>
           </div>
-          <div className="flex items-center gap-2.5 p-3 rounded-xl bg-subtle border border-zinc-800">
-            <AtSign className="w-4 h-4 text-emerald-400 flex-shrink-0" aria-hidden="true" />
+          <div className="flex items-center gap-2.5 p-3 rounded-xl bg-subtle border border-[var(--dashboard-border-muted)]">
+            <AtSign className="w-4 h-4 text-[var(--dashboard-primary)] flex-shrink-0" aria-hidden="true" />
             <div className="min-w-0">
-              <dt className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Handle</dt>
-              <dd className="text-sm text-zinc-200 truncate">@{user?.handle ?? "student"}</dd>
+              <dt className="text-[10px] font-mono uppercase tracking-wider text-[var(--dashboard-text-muted)]">Handle</dt>
+              <dd className="text-sm text-[var(--dashboard-text-primary)] truncate">@{user?.handle ?? "student"}</dd>
             </div>
           </div>
-          <div className="flex items-center gap-2.5 p-3 rounded-xl bg-subtle border border-zinc-800 sm:col-span-2">
-            <Calendar className="w-4 h-4 text-emerald-400 flex-shrink-0" aria-hidden="true" />
+          <div className="flex items-center gap-2.5 p-3 rounded-xl bg-subtle border border-[var(--dashboard-border-muted)] sm:col-span-2">
+            <Calendar className="w-4 h-4 text-[var(--dashboard-primary)] flex-shrink-0" aria-hidden="true" />
             <div className="min-w-0">
-              <dt className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Member since</dt>
-              <dd className="text-sm text-zinc-200">{formatDate(user?.createdAt)}</dd>
+              <dt className="text-[10px] font-mono uppercase tracking-wider text-[var(--dashboard-text-muted)]">Member since</dt>
+              <dd className="text-sm text-[var(--dashboard-text-primary)]">{formatDate(user?.createdAt)}</dd>
             </div>
           </div>
         </dl>
@@ -379,7 +379,7 @@ export default function SettingsTab() {
 
       {/* Security */}
       <SectionCard
-        icon={<KeyRound className="w-5 h-5 text-emerald-400" aria-hidden="true" />}
+        icon={<KeyRound className="w-5 h-5 text-[var(--dashboard-primary)]" aria-hidden="true" />}
         title="Security"
         description="Keep your account safe"
       >
@@ -410,7 +410,7 @@ export default function SettingsTab() {
           />
         </div>
         {pwMsg ? (
-          <p className={`text-xs font-mono mt-3 flex items-center gap-1.5 ${pwMsg.ok ? "text-emerald-400" : "text-red-400"}`}>
+          <p className={`text-xs font-mono mt-3 flex items-center gap-1.5 ${pwMsg.ok ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-danger)]"}`}>
             <CheckCircle2 className="w-3.5 h-3.5" aria-hidden="true" />
             {pwMsg.text}
           </p>
@@ -418,23 +418,23 @@ export default function SettingsTab() {
         <button
           onClick={() => void changePassword()}
           disabled={changingPw}
-          className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500 text-zinc-950 text-sm font-mono font-semibold hover:bg-emerald-400 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+          className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500 text-[var(--dashboard-text-inverse)] text-sm font-mono font-semibold hover:bg-emerald-400 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {changingPw ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" /> : <KeyRound className="w-4 h-4" aria-hidden="true" />}
           {changingPw ? "Updating..." : "Change password"}
         </button>
-        <p className="mt-3 text-[11px] text-zinc-500 font-mono flex items-center gap-1.5">
-          <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" aria-hidden="true" />
+        <p className="mt-3 text-[11px] text-[var(--dashboard-text-muted)] font-mono flex items-center gap-1.5">
+          <ShieldCheck className="w-3.5 h-3.5 text-[var(--dashboard-primary)]" aria-hidden="true" />
           Passwords are hashed with bcrypt (cost 10) — never stored in plain text.
         </p>
 
         {/* Revoke every active session across devices */}
         <div className="mt-5 pt-5 border-t border-default flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
-            <MonitorSmartphone className="w-4 h-4 text-emerald-400 flex-shrink-0" aria-hidden="true" />
+            <MonitorSmartphone className="w-4 h-4 text-[var(--dashboard-primary)] flex-shrink-0" aria-hidden="true" />
             <div className="min-w-0">
-              <p className="text-sm text-zinc-200 font-medium">Sign out of all devices</p>
-              <p className="text-[11px] text-zinc-500 font-mono">
+              <p className="text-sm text-[var(--dashboard-text-primary)] font-medium">Sign out of all devices</p>
+              <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">
                 Invalidates every active session, including this one.
               </p>
             </div>
@@ -442,14 +442,14 @@ export default function SettingsTab() {
           <button
             onClick={() => void handleRevokeSessions()}
             disabled={revokingAll}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-red-500/40 bg-red-500/10 text-red-300 text-sm font-mono font-semibold hover:bg-red-500/20 transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex-shrink-0"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-red-500/40 bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)] text-sm font-mono font-semibold hover:bg-[var(--dashboard-danger-subtle)] transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex-shrink-0"
           >
             {revokingAll ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" /> : <RefreshCw className="w-4 h-4" aria-hidden="true" />}
             {revokingAll ? "Signing out..." : "Revoke all"}
           </button>
         </div>
         {revokeMsg && !revokeMsg.ok ? (
-          <p className="mt-2 text-xs font-mono text-red-400 flex items-center gap-1.5">
+          <p className="mt-2 text-xs font-mono text-[var(--dashboard-danger)] flex items-center gap-1.5">
             <AlertTriangle className="w-3.5 h-3.5" aria-hidden="true" />
             {revokeMsg.text}
           </p>
@@ -458,17 +458,17 @@ export default function SettingsTab() {
 
       {/* Preferences */}
       <SectionCard
-        icon={<Bell className="w-5 h-5 text-emerald-400" aria-hidden="true" />}
+        icon={<Bell className="w-5 h-5 text-[var(--dashboard-primary)]" aria-hidden="true" />}
         title="Preferences"
         description="Tune how the app looks and notifies you"
       >
         <div className="space-y-3">
-          <div className="flex items-center justify-between gap-4 p-3.5 rounded-xl bg-subtle border border-zinc-800">
+          <div className="flex items-center justify-between gap-4 p-3.5 rounded-xl bg-subtle border border-[var(--dashboard-border-muted)]">
             <div className="flex items-center gap-3">
-              {theme === "dark" ? <Moon className="w-5 h-5 text-emerald-400" aria-hidden="true" /> : <Sun className="w-5 h-5 text-amber-400" aria-hidden="true" />}
+              {theme === "dark" ? <Moon className="w-5 h-5 text-[var(--dashboard-primary)]" aria-hidden="true" /> : <Sun className="w-5 h-5 text-[var(--dashboard-warning)]" aria-hidden="true" />}
               <div>
-                <p className="text-sm text-zinc-200 font-medium">Appearance</p>
-                <p className="text-[11px] text-zinc-500 font-mono">{theme === "dark" ? "Dark mode active" : "Light mode active"}</p>
+                <p className="text-sm text-[var(--dashboard-text-primary)] font-medium">Appearance</p>
+                <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">{theme === "dark" ? "Dark mode active" : "Light mode active"}</p>
               </div>
             </div>
             <button
@@ -486,12 +486,12 @@ export default function SettingsTab() {
             </button>
           </div>
 
-          <div className="flex items-center justify-between gap-4 p-3.5 rounded-xl bg-subtle border border-zinc-800">
+          <div className="flex items-center justify-between gap-4 p-3.5 rounded-xl bg-subtle border border-[var(--dashboard-border-muted)]">
             <div className="flex items-center gap-3">
-              <Bell className="w-5 h-5 text-emerald-400" aria-hidden="true" />
+              <Bell className="w-5 h-5 text-[var(--dashboard-primary)]" aria-hidden="true" />
               <div>
-                <p className="text-sm text-zinc-200 font-medium">Notifications</p>
-                <p className="text-[11px] text-zinc-500 font-mono">Announcements & reminders</p>
+                <p className="text-sm text-[var(--dashboard-text-primary)] font-medium">Notifications</p>
+                <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">Announcements & reminders</p>
               </div>
             </div>
             <button
@@ -513,23 +513,23 @@ export default function SettingsTab() {
 
       {/* Session & data */}
       <SectionCard
-        icon={<Database className="w-5 h-5 text-emerald-400" aria-hidden="true" />}
+        icon={<Database className="w-5 h-5 text-[var(--dashboard-primary)]" aria-hidden="true" />}
         title="Session & data"
         description="Your privacy is in your hands"
       >
         <dl className="grid sm:grid-cols-2 gap-3 mb-5">
-          <div className="flex items-center gap-2.5 p-3 rounded-xl bg-subtle border border-zinc-800">
-            <MonitorSmartphone className="w-4 h-4 text-emerald-400 flex-shrink-0" aria-hidden="true" />
+          <div className="flex items-center gap-2.5 p-3 rounded-xl bg-subtle border border-[var(--dashboard-border-muted)]">
+            <MonitorSmartphone className="w-4 h-4 text-[var(--dashboard-primary)] flex-shrink-0" aria-hidden="true" />
             <div className="min-w-0">
-              <dt className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Signed in as</dt>
-              <dd className="text-sm text-zinc-200 truncate">{user?.email ?? "—"}</dd>
+              <dt className="text-[10px] font-mono uppercase tracking-wider text-[var(--dashboard-text-muted)]">Signed in as</dt>
+              <dd className="text-sm text-[var(--dashboard-text-primary)] truncate">{user?.email ?? "—"}</dd>
             </div>
           </div>
-          <div className="flex items-center gap-2.5 p-3 rounded-xl bg-subtle border border-zinc-800">
-            <RefreshCw className="w-4 h-4 text-emerald-400 flex-shrink-0" aria-hidden="true" />
+          <div className="flex items-center gap-2.5 p-3 rounded-xl bg-subtle border border-[var(--dashboard-border-muted)]">
+            <RefreshCw className="w-4 h-4 text-[var(--dashboard-primary)] flex-shrink-0" aria-hidden="true" />
             <div className="min-w-0">
-              <dt className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Session expiry</dt>
-              <dd className="text-sm text-zinc-200 truncate">{sessionInfo?.expires ?? "—"}</dd>
+              <dt className="text-[10px] font-mono uppercase tracking-wider text-[var(--dashboard-text-muted)]">Session expiry</dt>
+              <dd className="text-sm text-[var(--dashboard-text-primary)] truncate">{sessionInfo?.expires ?? "—"}</dd>
             </div>
           </div>
         </dl>
@@ -537,7 +537,7 @@ export default function SettingsTab() {
         <div className="flex flex-wrap gap-3">
           <button
             onClick={exportData}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-sm font-mono hover:bg-emerald-500/20 transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-emerald-500/30 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] text-sm font-mono hover:bg-[var(--dashboard-primary-subtle)] transition-colors"
           >
             <Download className="w-4 h-4" aria-hidden="true" />
             Export my data
@@ -546,7 +546,7 @@ export default function SettingsTab() {
             onClick={() => {
               resetStore();
             }}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-zinc-700 bg-subtle text-zinc-300 text-sm font-mono hover:border-zinc-500 hover:text-white transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-zinc-700 bg-subtle text-[var(--dashboard-text-secondary)] text-sm font-mono hover:border-zinc-500 hover:text-white transition-colors"
           >
             <Database className="w-4 h-4" aria-hidden="true" />
             Clear local data
@@ -558,22 +558,22 @@ export default function SettingsTab() {
       <motion.section
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="rounded-2xl border border-red-500/25 bg-red-500/[0.04] p-5 sm:p-6"
+        className="rounded-2xl border border-red-500/25 bg-[var(--dashboard-danger-subtle)] p-5 sm:p-6"
       >
         <header className="flex items-start gap-3 mb-4">
-          <div className="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/25 flex items-center justify-center flex-shrink-0">
-            <AlertTriangle className="w-5 h-5 text-red-400" aria-hidden="true" />
+          <div className="w-10 h-10 rounded-xl bg-[var(--dashboard-danger-subtle)] border border-red-500/25 flex items-center justify-center flex-shrink-0">
+            <AlertTriangle className="w-5 h-5 text-[var(--dashboard-danger)]" aria-hidden="true" />
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-red-400 uppercase tracking-wider">Danger zone</h3>
-            <p className="text-xs text-zinc-500 mt-0.5">Irreversible actions for your account</p>
+            <h3 className="text-sm font-semibold text-[var(--dashboard-danger)] uppercase tracking-wider">Danger zone</h3>
+            <p className="text-xs text-[var(--dashboard-text-muted)] mt-0.5">Irreversible actions for your account</p>
           </div>
         </header>
         <div className="flex flex-wrap items-center gap-3">
           <LogoutButton variant="solid" aria-label="Log out of your account" />
           <button
             onClick={() => setConfirmDelete(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm font-mono hover:bg-red-500/20 transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--dashboard-danger-subtle)] border border-red-500/30 text-[var(--dashboard-danger)] text-sm font-mono hover:bg-[var(--dashboard-danger-subtle)] transition-colors"
           >
             <Trash2 className="w-4 h-4" aria-hidden="true" />
             Delete account
@@ -588,26 +588,26 @@ export default function SettingsTab() {
         className="glass-card rounded-2xl border border-default p-5 sm:p-6"
       >
         <header className="flex items-start gap-3 mb-4">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center flex-shrink-0">
-            <Info className="w-5 h-5 text-emerald-400" aria-hidden="true" />
+          <div className="w-10 h-10 rounded-xl bg-[var(--dashboard-primary-subtle)] border border-emerald-500/25 flex items-center justify-center flex-shrink-0">
+            <Info className="w-5 h-5 text-[var(--dashboard-primary)]" aria-hidden="true" />
           </div>
           <div>
             <h3 className="text-sm font-semibold text-white uppercase tracking-wider">About</h3>
-            <p className="text-xs text-zinc-500 mt-0.5">9th-grade-ai — free exam prep for Bangladesh</p>
+            <p className="text-xs text-[var(--dashboard-text-muted)] mt-0.5">9th-grade-ai — free exam prep for Bangladesh</p>
           </div>
         </header>
         <dl className="flex flex-wrap gap-x-8 gap-y-2 text-xs font-mono">
           <div>
-            <dt className="text-zinc-500 uppercase tracking-wider text-[10px]">Version</dt>
-            <dd className="text-zinc-200 mt-0.5">v{APP_VERSION}</dd>
+            <dt className="text-[var(--dashboard-text-muted)] uppercase tracking-wider text-[10px]">Version</dt>
+            <dd className="text-[var(--dashboard-text-primary)] mt-0.5">v{APP_VERSION}</dd>
           </div>
           <div>
-            <dt className="text-zinc-500 uppercase tracking-wider text-[10px]">Plan</dt>
-            <dd className="text-zinc-200 mt-0.5">Free forever</dd>
+            <dt className="text-[var(--dashboard-text-muted)] uppercase tracking-wider text-[10px]">Plan</dt>
+            <dd className="text-[var(--dashboard-text-primary)] mt-0.5">Free forever</dd>
           </div>
           <div>
-            <dt className="text-zinc-500 uppercase tracking-wider text-[10px]">Open source</dt>
-            <dd className="text-zinc-200 mt-0.5">MIT License</dd>
+            <dt className="text-[var(--dashboard-text-muted)] uppercase tracking-wider text-[10px]">Open source</dt>
+            <dd className="text-[var(--dashboard-text-primary)] mt-0.5">MIT License</dd>
           </div>
         </dl>
       </motion.section>
@@ -641,38 +641,38 @@ export default function SettingsTab() {
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/25 flex items-center justify-center">
-                    <Trash2 className="w-5 h-5 text-red-400" aria-hidden="true" />
+                  <div className="w-10 h-10 rounded-xl bg-[var(--dashboard-danger-subtle)] border border-red-500/25 flex items-center justify-center">
+                    <Trash2 className="w-5 h-5 text-[var(--dashboard-danger)]" aria-hidden="true" />
                   </div>
                   <h2 className="text-lg font-semibold text-white">Delete account?</h2>
                 </div>
                 <button
                   onClick={() => setConfirmDelete(false)}
-                  className="p-1.5 rounded-lg text-zinc-500 hover:text-white transition-colors"
+                  className="p-1.5 rounded-lg text-[var(--dashboard-text-muted)] hover:text-white transition-colors"
                   aria-label="Close"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
-              <p className="text-sm text-zinc-400 leading-relaxed">
+              <p className="text-sm text-[var(--dashboard-text-muted)] leading-relaxed">
                 This permanently removes your profile, progress, bookmarks, and study history from our servers.
                 This action cannot be undone.
               </p>
               {deleteError ? (
-                <p className="mt-3 text-xs font-mono text-red-400">{deleteError}</p>
+                <p className="mt-3 text-xs font-mono text-[var(--dashboard-danger)]">{deleteError}</p>
               ) : null}
               <div className="mt-6 flex justify-end gap-3">
                 <button
                   onClick={() => setConfirmDelete(false)}
                   disabled={deleting}
-                  className="px-4 py-2 rounded-xl border border-zinc-700 text-sm font-mono text-zinc-300 hover:text-white transition-colors disabled:opacity-60"
+                  className="px-4 py-2 rounded-xl border border-zinc-700 text-sm font-mono text-[var(--dashboard-text-secondary)] hover:text-white transition-colors disabled:opacity-60"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={() => void handleDelete()}
                   disabled={deleting}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-red-500 text-zinc-950 text-sm font-mono font-semibold hover:bg-red-400 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-red-500 text-[var(--dashboard-text-inverse)] text-sm font-mono font-semibold hover:bg-red-400 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {deleting ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" /> : <Trash2 className="w-4 h-4" aria-hidden="true" />}
                   {deleting ? "Deleting..." : "Delete forever"}

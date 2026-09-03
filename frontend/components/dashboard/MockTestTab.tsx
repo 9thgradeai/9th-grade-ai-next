@@ -326,14 +326,14 @@ export default function MockTestTab() {
         >
           <div className="terminal-window-bar border-b border-terminal-border">
             <div className="dot close" /><div className="dot minimize" /><div className="dot maximize" />
-            <div className="flex-1 text-center text-xs text-zinc-400 font-mono">{"// MOCK_TEST"}</div>
+            <div className="flex-1 text-center text-xs text-[var(--dashboard-text-muted)] font-mono">{"// MOCK_TEST"}</div>
           </div>
           <div className="p-5 md:p-6">
             <div className="flex items-center gap-2 mb-1">
-              <Timer className="w-5 h-5 text-emerald-400" />
+              <Timer className="w-5 h-5 text-[var(--dashboard-primary)]" />
               <h2 className="text-lg font-bold text-white">মক টেস্ট</h2>
             </div>
-            <p className="text-xs text-zinc-500 font-mono">
+            <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">
               বিষয়, টপিক ও সাবটপিক বেছে নিয়ে সময়সীমা সহ পূর্ণাঙ্গ মক পরীক্ষা দিন — নেগেটিভ মার্কিং সহ বিসিএস ধাঁচে।
             </p>
           </div>
@@ -342,21 +342,21 @@ export default function MockTestTab() {
         {configLoading && (
           <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
             <Loader2 className="w-10 h-10 mx-auto mb-3 text-emerald-500 animate-spin" aria-hidden="true" />
-            <p className="text-sm text-zinc-400 font-mono">বিষয় লোড হচ্ছে...</p>
+            <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">বিষয় লোড হচ্ছে...</p>
           </div>
         )}
 
         {configError && (
           <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
             <AlertTriangle className="w-10 h-10 mx-auto mb-3 text-amber-500" aria-hidden="true" />
-            <p className="text-sm text-zinc-400">{configError}</p>
+            <p className="text-sm text-[var(--dashboard-text-muted)]">{configError}</p>
             <button
               onClick={() => {
                 setConfigLoading(true);
                 setConfigError(null);
                 void fetchConfig();
               }}
-              className="mt-4 px-4 py-2 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors"
+              className="mt-4 px-4 py-2 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors"
             >
               আবার চেষ্টা করুন
             </button>
@@ -375,41 +375,41 @@ export default function MockTestTab() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="glass-card rounded-xl border border-terminal-border p-4 flex items-center justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="text-sm text-zinc-300 font-mono">মোট প্রশ্ন</p>
-                  <p className="text-xs text-zinc-500 mt-0.5">
+                  <p className="text-sm text-[var(--dashboard-text-secondary)] font-mono">মোট প্রশ্ন</p>
+                  <p className="text-xs text-[var(--dashboard-text-muted)] mt-0.5">
                     উপলব্ধ:{" "}
-                    <span className={`font-mono ${insufficient ? "text-red-400" : "text-emerald-400"}`}>
+                    <span className={`font-mono ${insufficient ? "text-[var(--dashboard-danger)]" : "text-[var(--dashboard-primary)]"}`}>
                       {availableTotal}টি
                     </span>
                   </p>
                 </div>
                 <span
                   className={`text-2xl font-bold font-mono ${
-                    totalCount > 0 ? "text-emerald-400" : "text-zinc-600"
+                    totalCount > 0 ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-text-secondary)]"
                   }`}
                 >
                   {totalCount}
-                  <span className="text-xs text-zinc-500 ml-1">প্র.</span>
+                  <span className="text-xs text-[var(--dashboard-text-muted)] ml-1">প্র.</span>
                 </span>
               </div>
 
               <div className="glass-card rounded-xl border border-terminal-border p-4 flex items-center justify-between gap-3">
                 <div>
-                  <p className="text-sm text-zinc-300 font-mono">সময়সীমা</p>
-                  <p className="text-xs text-zinc-500 mt-0.5">{durationMin} মিনিট</p>
+                  <p className="text-sm text-[var(--dashboard-text-secondary)] font-mono">সময়সীমা</p>
+                  <p className="text-xs text-[var(--dashboard-text-muted)] mt-0.5">{durationMin} মিনিট</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => adjustDuration(-1)}
-                    className="w-8 h-8 rounded-lg bg-zinc-900 border border-emerald-500/20 flex items-center justify-center text-emerald-400 hover:border-emerald-500/40"
+                    className="w-8 h-8 rounded-lg bg-zinc-900 border border-emerald-500/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-emerald-500/40"
                     aria-label="সময় কমান"
                   >
                     <Minus className="w-4 h-4" />
                   </button>
-                  <span className="text-2xl font-bold text-emerald-400 font-mono w-8 text-center">{durationMin}</span>
+                  <span className="text-2xl font-bold text-[var(--dashboard-primary)] font-mono w-8 text-center">{durationMin}</span>
                   <button
                     onClick={() => adjustDuration(1)}
-                    className="w-8 h-8 rounded-lg bg-zinc-900 border border-emerald-500/20 flex items-center justify-center text-emerald-400 hover:border-emerald-500/40"
+                    className="w-8 h-8 rounded-lg bg-zinc-900 border border-emerald-500/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-emerald-500/40"
                     aria-label="সময় বাড়ান"
                   >
                     <Plus className="w-4 h-4" />
@@ -419,7 +419,7 @@ export default function MockTestTab() {
             </div>
 
             {insufficient && (
-              <div className="flex items-start gap-2 rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 text-xs text-amber-300">
+              <div className="flex items-start gap-2 rounded-xl border border-amber-500/30 bg-[var(--dashboard-warning-subtle)] p-3 text-xs text-[var(--dashboard-warning)]">
                 <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
                 <p>
                   নির্বাচিত টপিক থেকে শুধু <span className="font-mono">{availableTotal}টি</span> প্রশ্ন
@@ -429,7 +429,7 @@ export default function MockTestTab() {
             )}
 
             {buildError && (
-              <div className="flex items-start gap-2 rounded-xl border border-red-500/30 bg-red-500/5 p-3 text-xs text-red-400">
+              <div className="flex items-start gap-2 rounded-xl border border-red-500/30 bg-[var(--dashboard-danger-subtle)] p-3 text-xs text-[var(--dashboard-danger)]">
                 <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
                 <p>{buildError}</p>
               </div>
@@ -438,7 +438,7 @@ export default function MockTestTab() {
             <button
               onClick={() => void buildAndStart()}
               disabled={selectedSubjects.length === 0 || totalCount === 0 || buildLoading}
-              className="mt-4 w-full py-3 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-xl hover:bg-emerald-400 transition-colors flex items-center justify-center gap-2 shadow-neon-glow disabled:opacity-40 disabled:cursor-not-allowed"
+              className="mt-4 w-full py-3 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-emerald-400 transition-colors flex items-center justify-center gap-2 shadow-neon-glow disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <Play className="w-4 h-4" />
               {buildLoading ? "তৈরি হচ্ছে..." : "মক টেস্ট শুরু করুন"}
@@ -462,19 +462,19 @@ export default function MockTestTab() {
           <div className="glass-card rounded-2xl border border-emerald-500/30 px-4 py-3">
             <div className="flex items-center justify-between gap-3 flex-wrap">
               <div className="flex items-center gap-2">
-                <Timer className={`w-4 h-4 ${timeLow ? "text-red-400 animate-pulse" : "text-emerald-400"}`} />
-                <span className={`font-mono text-lg font-bold ${timeLow ? "text-red-400" : "text-emerald-400"}`}>
+                <Timer className={`w-4 h-4 ${timeLow ? "text-[var(--dashboard-danger)] animate-pulse" : "text-[var(--dashboard-primary)]"}`} />
+                <span className={`font-mono text-lg font-bold ${timeLow ? "text-[var(--dashboard-danger)]" : "text-[var(--dashboard-primary)]"}`}>
                   {formatTime(timeRemaining)}
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-zinc-400 font-mono">
-                  উত্তর: <span className="text-emerald-400">{answeredCount}</span> / {totalQuestions}
+                <span className="text-xs text-[var(--dashboard-text-muted)] font-mono">
+                  উত্তর: <span className="text-[var(--dashboard-primary)]">{answeredCount}</span> / {totalQuestions}
                 </span>
                 <button
                   onClick={handleSubmitRequest}
                   disabled={submitting || totalQuestions === 0}
-                  className="px-4 py-1.5 bg-emerald-500 text-zinc-950 font-mono text-xs rounded-lg hover:bg-emerald-400 transition-colors shadow-neon-glow flex items-center gap-1.5 disabled:opacity-40"
+                  className="px-4 py-1.5 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono text-xs rounded-lg hover:bg-emerald-400 transition-colors shadow-neon-glow flex items-center gap-1.5 disabled:opacity-40"
                 >
                   <Flag className="w-3.5 h-3.5" />
                   {submitting ? "জমা হচ্ছে..." : "জমা দিন"}
@@ -498,23 +498,23 @@ export default function MockTestTab() {
             className="glass-card rounded-2xl border border-terminal-border p-4 md:p-6"
           >
             <div className="flex flex-wrap items-center gap-2 mb-3">
-              <span className="px-2 py-0.5 rounded bg-zinc-800 text-[10px] font-mono text-zinc-300">
+              <span className="px-2 py-0.5 rounded bg-zinc-800 text-[10px] font-mono text-[var(--dashboard-text-secondary)]">
                 প্রশ্ন {currentQuestion + 1}/{totalQuestions}
               </span>
-              <span className="px-2 py-0.5 rounded bg-zinc-800 text-[10px] font-mono text-zinc-400">
+              <span className="px-2 py-0.5 rounded bg-zinc-800 text-[10px] font-mono text-[var(--dashboard-text-muted)]">
                 {q.subject}
               </span>
               <span className={`px-2 py-0.5 rounded text-[10px] font-mono ${
                 q.difficulty === "EASY"
-                  ? "bg-emerald-500/10 text-emerald-400"
+                  ? "bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
                   : q.difficulty === "MEDIUM"
-                    ? "bg-amber-500/10 text-amber-400"
-                    : "bg-red-500/10 text-red-400"
+                    ? "bg-[var(--dashboard-warning-subtle)] text-[var(--dashboard-warning)]"
+                    : "bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)]"
               }`}>
                 {DIFFICULTY_LABEL[q.difficulty] ?? q.difficulty}
               </span>
               {q.topic && (
-                <span className="px-2 py-0.5 rounded bg-zinc-800 text-[10px] font-mono text-zinc-500">
+                <span className="px-2 py-0.5 rounded bg-zinc-800 text-[10px] font-mono text-[var(--dashboard-text-muted)]">
                   {q.topic}
                 </span>
               )}
@@ -563,17 +563,17 @@ export default function MockTestTab() {
           <button
             onClick={() => setCurrentQuestion((i) => Math.max(0, i - 1))}
             disabled={currentQuestion === 0}
-            className="px-4 py-2 bg-zinc-900 border border-zinc-800 text-zinc-400 font-mono text-sm rounded-lg hover:bg-zinc-800 transition-colors disabled:opacity-40 flex items-center gap-1"
+            className="px-4 py-2 bg-zinc-900 border border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] font-mono text-sm rounded-lg hover:bg-zinc-800 transition-colors disabled:opacity-40 flex items-center gap-1"
           >
             <ChevronLeft className="w-4 h-4" /> আগের
           </button>
-          <span className="text-xs text-zinc-500 font-mono">
+          <span className="text-xs text-[var(--dashboard-text-muted)] font-mono">
             {answeredCount}/{totalQuestions} উত্তর
           </span>
           {currentQuestion < totalQuestions - 1 ? (
             <button
               onClick={() => setCurrentQuestion((i) => Math.min(totalQuestions - 1, i + 1))}
-              className="px-4 py-2 bg-zinc-800 text-zinc-300 font-mono text-sm rounded-lg hover:bg-zinc-700 transition-colors flex items-center gap-1"
+              className="px-4 py-2 bg-zinc-800 text-[var(--dashboard-text-secondary)] font-mono text-sm rounded-lg hover:bg-zinc-700 transition-colors flex items-center gap-1"
             >
               পরের <ChevronRight className="w-4 h-4" />
             </button>
@@ -581,7 +581,7 @@ export default function MockTestTab() {
             <button
               onClick={handleSubmitRequest}
               disabled={submitting}
-              className="px-5 py-2 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors flex items-center gap-2 shadow-neon-glow disabled:opacity-40"
+              className="px-5 py-2 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors flex items-center gap-2 shadow-neon-glow disabled:opacity-40"
             >
               <Flag className="w-4 h-4" />
               {submitting ? "জমা হচ্ছে..." : "জমা দিন"}
@@ -591,7 +591,7 @@ export default function MockTestTab() {
 
         {/* Question map */}
         <div className="glass-card rounded-2xl border border-terminal-border p-3">
-          <p className="text-[10px] text-zinc-500 font-mono uppercase tracking-widest mb-2">
+          <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-widest mb-2">
             প্রশ্ন তালিকা
           </p>
           <div className="flex flex-wrap gap-1.5">
@@ -603,10 +603,10 @@ export default function MockTestTab() {
                   onClick={() => setCurrentQuestion(i)}
                   className={`min-w-[44px] min-h-[44px] rounded-lg border text-xs font-mono transition-all ${
                     i === currentQuestion
-                      ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-400"
+                      ? "border-emerald-500/40 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
                       : isAnswered
-                        ? "border-emerald-500/20 bg-emerald-500/5 text-emerald-400"
-                        : "border-zinc-800 text-zinc-500 hover:border-zinc-700"
+                        ? "border-emerald-500/20 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
+                        : "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] hover:border-zinc-700"
                   }`}
                   aria-label={`প্রশ্ন ${i + 1}${isAnswered ? " — উত্তর দেওয়া হয়েছে" : ""}`}
                   aria-current={i === currentQuestion ? "true" : undefined}
@@ -619,7 +619,7 @@ export default function MockTestTab() {
         </div>
 
         {submitError && (
-          <p className="text-xs text-red-400 text-center">{submitError}</p>
+          <p className="text-xs text-[var(--dashboard-danger)] text-center">{submitError}</p>
         )}
 
         {/* Unanswered confirmation */}
@@ -645,23 +645,23 @@ export default function MockTestTab() {
                 className="glass-card rounded-2xl border border-amber-500/30 p-6 w-full max-w-sm"
               >
                 <div className="flex items-center gap-2 mb-3">
-                  <AlertTriangle className="w-5 h-5 text-amber-400" />
+                  <AlertTriangle className="w-5 h-5 text-[var(--dashboard-warning)]" />
                   <h3 id="unanswered-confirm-title" className="text-base font-bold text-white">উত্তর দেওয়া বাকি আছে</h3>
                 </div>
-                <p className="text-sm text-zinc-400 mb-5">
-                  <span className="text-amber-400 font-mono">{totalQuestions - answeredCount}টি</span> প্রশ্নে
+                <p className="text-sm text-[var(--dashboard-text-muted)] mb-5">
+                  <span className="text-[var(--dashboard-warning)] font-mono">{totalQuestions - answeredCount}টি</span> প্রশ্নে
                   উত্তর দেওয়া হয়নি। নিশ্চিতভাবে জমা দিতে চান? না দেওয়া প্রশ্নে ০ নম্বর পাবেন।
                 </p>
                 <div className="flex gap-3">
                   <button
                     onClick={() => setShowUnansweredConfirm(false)}
-                    className="flex-1 py-2.5 bg-zinc-900 border border-zinc-800 text-zinc-300 font-mono text-sm rounded-xl hover:bg-zinc-800 transition-colors"
+                    className="flex-1 py-2.5 bg-zinc-900 border border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-secondary)] font-mono text-sm rounded-xl hover:bg-zinc-800 transition-colors"
                   >
                     ফিরে যান
                   </button>
                   <button
                     onClick={finalizeSubmit}
-                    className="flex-1 py-2.5 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-xl hover:bg-emerald-400 transition-colors shadow-neon-glow"
+                    className="flex-1 py-2.5 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-emerald-400 transition-colors shadow-neon-glow"
                   >
                     জমা দিন
                   </button>
@@ -688,35 +688,35 @@ export default function MockTestTab() {
         >
           <div className="p-6 text-center border-b border-terminal-border">
             <Trophy className={`w-12 h-12 mx-auto mb-3 ${
-              percentage >= 80 ? "text-amber-400" : percentage >= 50 ? "text-emerald-400" : "text-red-400"
+              percentage >= 80 ? "text-[var(--dashboard-warning)]" : percentage >= 50 ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-danger)]"
             }`} />
             <h3 className="text-xl font-bold text-white mb-1">মক টেস্ট সম্পন্ন!</h3>
-            <p className="text-sm text-zinc-400 font-mono mb-4">{summary.percentage}% স্কোর</p>
+            <p className="text-sm text-[var(--dashboard-text-muted)] font-mono mb-4">{summary.percentage}% স্কোর</p>
 
             <div className="inline-flex flex-col items-center mb-4">
-              <div className="text-5xl font-bold font-mono text-emerald-400">{summary.finalScore}</div>
-              <div className="text-xs text-zinc-500 font-mono mt-1">মোট নম্বর: {summary.total}</div>
+              <div className="text-5xl font-bold font-mono text-[var(--dashboard-primary)]">{summary.finalScore}</div>
+              <div className="text-xs text-[var(--dashboard-text-muted)] font-mono mt-1">মোট নম্বর: {summary.total}</div>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-w-md mx-auto text-left">
-              <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/20 p-3">
-                <p className="text-[10px] text-zinc-500 font-mono">সঠিক</p>
-                <p className="text-lg font-bold text-emerald-400 font-mono">+{summary.correct}</p>
+              <div className="rounded-xl bg-[var(--dashboard-primary-subtle)] border border-emerald-500/20 p-3">
+                <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">সঠিক</p>
+                <p className="text-lg font-bold text-[var(--dashboard-primary)] font-mono">+{summary.correct}</p>
               </div>
-              <div className="rounded-xl bg-red-500/10 border border-red-500/20 p-3">
-                <p className="text-[10px] text-zinc-500 font-mono">ভুল</p>
-                <p className="text-lg font-bold text-red-400 font-mono">−{summary.wrong}</p>
+              <div className="rounded-xl bg-[var(--dashboard-danger-subtle)] border border-red-500/20 p-3">
+                <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">ভুল</p>
+                <p className="text-lg font-bold text-[var(--dashboard-danger)] font-mono">−{summary.wrong}</p>
               </div>
               <div className="rounded-xl bg-subtle border border-zinc-700 p-3">
-                <p className="text-[10px] text-zinc-500 font-mono">উত্তর দেওয়া হয়নি</p>
-                <p className="text-lg font-bold text-zinc-400 font-mono">{summary.unanswered}</p>
+                <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">উত্তর দেওয়া হয়নি</p>
+                <p className="text-lg font-bold text-[var(--dashboard-text-muted)] font-mono">{summary.unanswered}</p>
               </div>
             </div>
 
             <div className="flex items-center justify-center gap-3 mt-5">
               <button
                 onClick={resetTest}
-                className="px-5 py-2.5 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-xl hover:bg-emerald-400 transition-colors flex items-center gap-2 shadow-neon-glow"
+                className="px-5 py-2.5 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-emerald-400 transition-colors flex items-center gap-2 shadow-neon-glow"
               >
                 <Play className="w-4 h-4" /> আবার মক টেস্ট
               </button>
@@ -726,38 +726,38 @@ export default function MockTestTab() {
 
         {/* Review */}
         <div className="space-y-2 max-h-96 overflow-y-auto">
-          <h4 className="text-sm font-medium text-zinc-400 font-mono uppercase tracking-wider px-1">
+          <h4 className="text-sm font-medium text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider px-1">
             উত্তর পর্যালোচনা
           </h4>
           {result.review.map((r, i) => {
             const isCorrect = r.status === "correct";
             return (
               <div key={r.questionId} className={`p-3.5 rounded-xl border ${
-                isCorrect ? "border-emerald-500/20" : r.status === "wrong" ? "border-red-500/20" : "border-zinc-800"
+                isCorrect ? "border-emerald-500/20" : r.status === "wrong" ? "border-red-500/20" : "border-[var(--dashboard-border-muted)]"
               }`}>
                 <div className="flex items-start gap-3">
                   {isCorrect ? (
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                    <CheckCircle2 className="w-4 h-4 text-[var(--dashboard-primary)] flex-shrink-0 mt-0.5" />
                   ) : r.status === "wrong" ? (
-                    <XCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
+                    <XCircle className="w-4 h-4 text-[var(--dashboard-danger)] flex-shrink-0 mt-0.5" />
                   ) : (
-                    <CircleDashed className="w-4 h-4 text-zinc-500 flex-shrink-0 mt-0.5" />
+                    <CircleDashed className="w-4 h-4 text-[var(--dashboard-text-muted)] flex-shrink-0 mt-0.5" />
                   )}
                   <div className="min-w-0 flex-1">
                     <p className="text-sm text-white mb-1.5">{i + 1}. {r.question}</p>
-                    <p className="text-xs text-zinc-500 font-mono">
+                    <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">
                       আপনার উত্তর:{" "}
-                      <span className={isCorrect ? "text-emerald-400" : "text-red-400"}>
+                      <span className={isCorrect ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-danger)]"}>
                         {r.userAnswer || "উত্তর দেওয়া হয়নি"}
                       </span>
                     </p>
                     {!isCorrect && (
-                      <p className="text-xs text-emerald-400 font-mono mt-0.5">
+                      <p className="text-xs text-[var(--dashboard-primary)] font-mono mt-0.5">
                         সঠিক উত্তর: {r.correctAnswer}
                       </p>
                     )}
                     {r.explanation && (
-                      <p className="text-xs text-zinc-400 mt-1.5">{r.explanation}</p>
+                      <p className="text-xs text-[var(--dashboard-text-muted)] mt-1.5">{r.explanation}</p>
                     )}
                   </div>
                 </div>

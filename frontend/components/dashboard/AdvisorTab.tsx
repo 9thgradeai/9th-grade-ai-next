@@ -34,41 +34,41 @@ export default function AdvisorTab() {
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-5 px-4 py-6">
       <div>
-        <h1 className="text-xl font-semibold text-zinc-100">ক্যারিয়ার ও পরীক্ষা উপদেশক</h1>
-        <p className="mt-1 text-sm text-zinc-400">
+        <h1 className="text-xl font-semibold text-[var(--dashboard-text-primary)]">ক্যারিয়ার ও পরীক্ষা উপদেশক</h1>
+        <p className="mt-1 text-sm text-[var(--dashboard-text-muted)]">
           তোমার ব্যাকগ্রাউন্ড দাও — AI তোমার উপযুক্ত পরীক্ষা এবং ব্যক্তিগতকৃত প্রস্তুতির পরিকল্পনা দেবে।
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-3 rounded-2xl border border-white/10 bg-zinc-900/60 p-4 sm:grid-cols-2">
-        <label className="flex flex-col gap-1 text-sm text-zinc-300">
+      <div className="grid grid-cols-1 gap-3 rounded-2xl border border-white/10 bg-[var(--dashboard-surface)] p-4 sm:grid-cols-2">
+        <label className="flex flex-col gap-1 text-sm text-[var(--dashboard-text-secondary)]">
           শিক্ষাগত যোগ্যতা
           <input
             value={education}
             onChange={(e) => setEducation(e.target.value)}
             placeholder="যেমন: স্নাতক (বিবিএ)"
-            className="rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 outline-none focus:border-emerald-500/50"
+            className="rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-[var(--dashboard-text-primary)] outline-none focus:border-emerald-500/50"
           />
         </label>
-        <label className="flex flex-col gap-1 text-sm text-zinc-300">
+        <label className="flex flex-col gap-1 text-sm text-[var(--dashboard-text-secondary)]">
           পছন্দের বিষয়
           <input
             value={interests}
             onChange={(e) => setInterests(e.target.value)}
             placeholder="যেমন: বিজ্ঞান, বাংলা"
-            className="rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 outline-none focus:border-emerald-500/50"
+            className="rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-[var(--dashboard-text-primary)] outline-none focus:border-emerald-500/50"
           />
         </label>
-        <label className="flex flex-col gap-1 text-sm text-zinc-300">
+        <label className="flex flex-col gap-1 text-sm text-[var(--dashboard-text-secondary)]">
           লক্ষ্য (ঐচ্ছিক)
           <input
             value={targetExam}
             onChange={(e) => setTargetExam(e.target.value)}
             placeholder="যেমন: BCS"
-            className="rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 outline-none focus:border-emerald-500/50"
+            className="rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-[var(--dashboard-text-primary)] outline-none focus:border-emerald-500/50"
           />
         </label>
-        <label className="flex flex-col gap-1 text-sm text-zinc-300">
+        <label className="flex flex-col gap-1 text-sm text-[var(--dashboard-text-secondary)]">
           সপ্তাহে পড়ার সময় (ঘণ্টা)
           <input
             type="number"
@@ -77,7 +77,7 @@ export default function AdvisorTab() {
             value={weeklyHours}
             onChange={(e) => setWeeklyHours(e.target.value)}
             placeholder="যেমন: 10"
-            className="rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 outline-none focus:border-emerald-500/50"
+            className="rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-[var(--dashboard-text-primary)] outline-none focus:border-emerald-500/50"
           />
         </label>
       </div>
@@ -86,28 +86,28 @@ export default function AdvisorTab() {
         type="button"
         onClick={() => void run()}
         disabled={loading}
-        className="self-start rounded-xl bg-emerald-500 px-5 py-2 text-sm font-medium text-zinc-950 hover:bg-emerald-400 disabled:opacity-60"
+        className="self-start rounded-xl bg-emerald-500 px-5 py-2 text-sm font-medium text-[var(--dashboard-text-inverse)] hover:bg-emerald-400 disabled:opacity-60"
       >
         {loading ? "তৈরি হচ্ছে…" : "পরিকল্পনা নাও"}
       </button>
 
-      {error && <p className="text-sm text-red-400">{error}</p>}
+      {error && <p className="text-sm text-[var(--dashboard-danger)]">{error}</p>}
 
       {plan && (
-        <div className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-zinc-900/60 p-5">
-          <p className="text-sm text-zinc-200">{plan.summary}</p>
+        <div className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-[var(--dashboard-surface)] p-5">
+          <p className="text-sm text-[var(--dashboard-text-primary)]">{plan.summary}</p>
           {plan.recommendedExam && (
             <div className="text-sm">
-              <span className="text-zinc-400">প্রস্তাবিত লক্ষ্য: </span>
-              <span className="font-semibold text-emerald-400">{plan.recommendedExam}</span>
+              <span className="text-[var(--dashboard-text-muted)]">প্রস্তাবিত লক্ষ্য: </span>
+              <span className="font-semibold text-[var(--dashboard-primary)]">{plan.recommendedExam}</span>
             </div>
           )}
           {plan.focusAreas.length > 0 && (
             <div>
-              <h3 className="mb-1 text-sm font-semibold text-zinc-200">গুরুত্বপূর্ণ বিষয়</h3>
+              <h3 className="mb-1 text-sm font-semibold text-[var(--dashboard-text-primary)]">গুরুত্বপূর্ণ বিষয়</h3>
               <div className="flex flex-wrap gap-2">
                 {plan.focusAreas.map((f, i) => (
-                  <span key={i} className="rounded-full border border-white/10 bg-zinc-800/60 px-3 py-1 text-xs text-zinc-300">
+                  <span key={i} className="rounded-full border border-white/10 bg-[var(--dashboard-surface-muted)] px-3 py-1 text-xs text-[var(--dashboard-text-secondary)]">
                     {f}
                   </span>
                 ))}
@@ -116,14 +116,14 @@ export default function AdvisorTab() {
           )}
           {plan.weeklyPlan.length > 0 && (
             <div>
-              <h3 className="mb-2 text-sm font-semibold text-zinc-200">
+              <h3 className="mb-2 text-sm font-semibold text-[var(--dashboard-text-primary)]">
                 সাপ্তাহিক পরিকল্পনা ({plan.timelineWeeks} সপ্তাহ)
               </h3>
               <div className="flex flex-col gap-2">
                 {plan.weeklyPlan.map((w, i) => (
                   <div key={i} className="rounded-xl border border-white/10 bg-zinc-900 p-3">
-                    <div className="text-sm font-medium text-emerald-300">সপ্তাহ {w.week}: {w.focus}</div>
-                    <ul className="mt-1 list-disc space-y-0.5 pl-5 text-sm text-zinc-300">
+                    <div className="text-sm font-medium text-[var(--dashboard-primary)]">সপ্তাহ {w.week}: {w.focus}</div>
+                    <ul className="mt-1 list-disc space-y-0.5 pl-5 text-sm text-[var(--dashboard-text-secondary)]">
                       {w.tasks.map((t, j) => (
                         <li key={j}>{t}</li>
                       ))}
@@ -135,15 +135,15 @@ export default function AdvisorTab() {
           )}
           {plan.tips.length > 0 && (
             <div>
-              <h3 className="mb-1 text-sm font-semibold text-zinc-200">টিপস</h3>
-              <ul className="list-disc space-y-0.5 pl-5 text-sm text-zinc-300">
+              <h3 className="mb-1 text-sm font-semibold text-[var(--dashboard-text-primary)]">টিপস</h3>
+              <ul className="list-disc space-y-0.5 pl-5 text-sm text-[var(--dashboard-text-secondary)]">
                 {plan.tips.map((t, i) => (
                   <li key={i}>{t}</li>
                 ))}
               </ul>
             </div>
           )}
-          <p className="text-xs text-zinc-500">সূত্র: {plan.source}</p>
+          <p className="text-xs text-[var(--dashboard-text-muted)]">সূত্র: {plan.source}</p>
         </div>
       )}
     </div>

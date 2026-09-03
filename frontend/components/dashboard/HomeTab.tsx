@@ -333,8 +333,8 @@ export default function HomeTab() {
     >
       {/* Welcome — premium header with subtle top accent */}
       <motion.div variants={STAGGER_ITEM} className="rounded-2xl border p-5 sm:p-6 overflow-hidden relative" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)", boxShadow: "var(--dashboard-shadow-sm)" }}>
-        <div className="absolute inset-x-0 top-0 h-[3px]" style={{ background: "linear-gradient(90deg, #4f46e5, #06b6d4, #8b5cf6)" }} aria-hidden="true" />
-        <div className="absolute -top-24 -right-24 w-72 h-72 rounded-full blur-3xl opacity-[0.06]" style={{ background: "radial-gradient(circle, #4f46e5 0%, transparent 70%)" }} aria-hidden="true" />
+        <div className="absolute inset-x-0 top-0 h-[3px]" style={{ background: "linear-gradient(90deg, var(--dashboard-primary), var(--dashboard-info), var(--dashboard-primary))" }} aria-hidden="true" />
+        <div className="absolute -top-24 -right-24 w-72 h-72 rounded-full blur-3xl opacity-[0.06]" style={{ background: "radial-gradient(circle, var(--dashboard-primary) 0%, transparent 70%)" }} aria-hidden="true" />
         <div className="relative flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="text-[11px] font-bold uppercase tracking-[0.14em]" style={{ color: "var(--dashboard-primary)" }}>
@@ -370,7 +370,7 @@ export default function HomeTab() {
         className="rounded-2xl border p-6 md:p-7 relative overflow-hidden"
         style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)", boxShadow: "var(--dashboard-shadow-sm)" }}
       >
-        <div className="absolute inset-0 opacity-[0.035]" style={{ background: "radial-gradient(ellipse 600px 300px at 85% -10%, #4f46e5 0%, transparent 60%), radial-gradient(ellipse 500px 280px at -10% 100%, #06b6d4 0%, transparent 62%)" }} aria-hidden="true" />
+        <div className="absolute inset-0 opacity-[0.035]" style={{ background: "radial-gradient(ellipse 600px 300px at 85% -10%, var(--dashboard-primary) 0%, transparent 60%), radial-gradient(ellipse 500px 280px at -10% 100%, var(--dashboard-info) 0%, transparent 62%)" }} aria-hidden="true" />
         <div className="absolute inset-x-0 top-0 h-px" style={{ background: "linear-gradient(90deg, transparent, var(--dashboard-border-muted), transparent)" }} aria-hidden="true" />
         {nextExam ? (
           <div className="relative flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
@@ -415,7 +415,7 @@ export default function HomeTab() {
             <button
               onClick={() => setActiveTab("question-bank")}
               className="px-4 py-2.5 text-sm rounded-xl font-semibold transition-colors flex items-center gap-2 shadow-sm"
-              style={{ background: "var(--dashboard-primary)", color: "white" }}
+              style={{ background: "var(--dashboard-primary)", color: "var(--dashboard-text-inverse)" }}
             >
               প্রশ্নব্যাংক দেখুন <ArrowRight className="w-4 h-4" />
             </button>
@@ -443,13 +443,14 @@ export default function HomeTab() {
           role="alert"
           className="rounded-2xl border p-8 text-center" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-danger)" }}
         >
-          <p className="text-sm font-medium text-zinc-200">ড্যাশবোর্ড ডেটা লোড করা যায়নি</p>
-          <p className="mt-1 text-xs text-zinc-500">
+          <p className="text-sm font-medium" style={{ color: "var(--dashboard-text-primary)" }}>ড্যাশবোর্ড ডেটা লোড করা যায়নি</p>
+          <p className="mt-1 text-xs" style={{ color: "var(--dashboard-text-muted)" }}>
             ইন্টারনেট সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।
           </p>
           <button
             onClick={retryLoad}
-            className="mt-4 px-4 py-2 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors"
+            className="mt-4 px-4 py-2 font-semibold text-sm rounded-lg transition-colors"
+            style={{ background: "var(--dashboard-primary)", color: "var(--dashboard-text-inverse)" }}
           >
             আবার চেষ্টা করুন
           </button>
@@ -470,7 +471,8 @@ export default function HomeTab() {
           </div>
           <button
             onClick={() => setActiveTab("practice")}
-            className="text-xs font-semibold transition-colors flex items-center gap-1" style={{ color: "var(--dashboard-primary)" }}
+            className="text-xs font-semibold transition-colors flex items-center gap-1"
+            style={{ color: "var(--dashboard-primary)" }}
           >
             প্র্যাকটিস <ArrowRight className="w-3.5 h-3.5" />
           </button>
@@ -481,12 +483,13 @@ export default function HomeTab() {
             icon={Target}
             title="এখনো কোনো প্রশ্ন সমাধান করেননি।"
             hint="প্র্যাকটিস শুরু করলে বিষয়ভিত্তিক দুর্বলতা এখানে দেখা যাবে।"
-            action={
-              <button
-                onClick={() => setActiveTab("practice")}
-                className="px-4 py-2 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors"
-              >
-                প্র্যাকটিস শুরু করুন
+              action={
+                <button
+                  onClick={() => setActiveTab("practice")}
+                  className="px-4 py-2 font-semibold text-sm rounded-lg transition-colors"
+                  style={{ background: "var(--dashboard-primary)", color: "var(--dashboard-text-inverse)" }}
+                >
+                  প্র্যাকটিস শুরু করুন
               </button>
             }
           />
@@ -498,17 +501,17 @@ export default function HomeTab() {
                   <p className="text-sm truncate" style={{ color: "var(--dashboard-text-primary)" }}>{r.name}</p>
                   <p className="text-[10px]" style={{ color: "var(--dashboard-text-muted)" }}>{r.attempted}টি সমাধান</p>
                 </div>
-                <div className="flex-1 h-2 bg-zinc-800 rounded-full overflow-hidden flex">
+                <div className="flex-1 h-2 rounded-full overflow-hidden flex" style={{ background: "var(--dashboard-surface-muted)" }}>
                   <div
-                    className="h-full bg-emerald-500 transition-[width] duration-700"
-                    style={{ width: `${(r.correct / r.attempted) * 100}%` }}
+                    className="h-full transition-[width] duration-700"
+                    style={{ width: `${(r.correct / r.attempted) * 100}%`, background: "var(--dashboard-success)" }}
                   />
                   <div
-                    className="h-full bg-red-500/80 transition-[width] duration-700"
-                    style={{ width: `${((r.attempted - r.correct) / r.attempted) * 100}%` }}
+                    className="h-full transition-[width] duration-700"
+                    style={{ width: `${((r.attempted - r.correct) / r.attempted) * 100}%`, background: "var(--dashboard-danger)" }}
                   />
                 </div>
-                <span className="w-12 text-right text-sm font-mono text-emerald-400">
+                <span className="w-12 text-right text-sm font-mono" style={{ color: "var(--dashboard-success)" }}>
                   {r.score}%
                 </span>
               </div>
@@ -524,17 +527,18 @@ export default function HomeTab() {
         className="rounded-2xl border p-5" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)", boxShadow: "var(--dashboard-shadow-sm)" }}
         >
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold text-white uppercase tracking-wider">
+            <h3 className="text-sm font-semibold uppercase tracking-wider" style={{ color: "var(--dashboard-text-primary)" }}>
               আজকের রুটিন
               {user?.prepLevel && (
-                <span className="ml-2 align-middle text-[10px] normal-case font-mono text-zinc-400 border border-zinc-700 rounded px-1.5 py-0.5">
+                <span className="ml-2 align-middle text-[10px] normal-case font-mono text-[var(--dashboard-text-muted)] border border-zinc-700 rounded px-1.5 py-0.5">
                   {PREP_LABEL[user.prepLevel]}
                 </span>
               )}
             </h3>
             <button
               onClick={() => setActiveTab("study-planner")}
-              className="text-xs text-emerald-400 font-mono hover:text-emerald-300 transition-colors flex items-center gap-1"
+              className="text-xs font-semibold transition-colors flex items-center gap-1"
+              style={{ color: "var(--dashboard-primary)" }}
             >
               প্ল্যানার <ArrowRight className="w-3.5 h-3.5" />
             </button>
@@ -548,7 +552,8 @@ export default function HomeTab() {
               action={
                 <button
                   onClick={() => setActiveTab("study-planner")}
-                  className="px-4 py-2 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors"
+                  className="px-4 py-2 font-semibold text-sm rounded-lg transition-colors"
+                  style={{ background: "var(--dashboard-primary)", color: "var(--dashboard-text-inverse)" }}
                 >
                   রুটিন দেখুন
                 </button>
@@ -561,38 +566,38 @@ export default function HomeTab() {
                   key={t.id}
                   className={`flex items-center gap-3 p-3 rounded-xl border transition-colors ${
                     t.completed
-                      ? "border-emerald-500/20 bg-emerald-500/5"
-                      : "border-default bg-subtle"
+                      ? "border-[color-mix(in_srgb,var(--dashboard-success)_20%,transparent)]"
+                      : ""
                   }`}
-                >
+                  style={{ background: t.completed ? "var(--dashboard-success-subtle)" : "var(--dashboard-surface-muted)", borderColor: t.completed ? undefined : "var(--dashboard-border-muted)" }}
+                  >
                   <button
                     onClick={() => void toggleTask(t.id)}
                     aria-pressed={t.completed}
                     aria-label={t.completed ? "চিহ্নিত করা হয়েছে" : "সম্পন্ন হিসেবে চিহ্নিত করুন"}
-                    className={`w-5 h-5 rounded-md border flex items-center justify-center flex-shrink-0 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400 ${
-                      t.completed
-                        ? "bg-emerald-500 border-emerald-500 text-zinc-950"
-                        : "border-zinc-600 hover:border-emerald-500"
-                    }`}
+                    className="w-5 h-5 rounded-md border flex items-center justify-center flex-shrink-0 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2"
+                    style={{
+                      background: t.completed ? "var(--dashboard-success)" : "transparent",
+                      borderColor: t.completed ? "var(--dashboard-success)" : "var(--dashboard-border-strong)",
+                      color: t.completed ? "var(--dashboard-text-inverse)" : "transparent",
+                    }}
                   >
                     {t.completed ? <span aria-hidden="true">✓</span> : ""}
                   </button>
                   <div className="flex-1 min-w-0">
-                    <p className={`text-sm ${t.completed ? "text-zinc-500 line-through" : "text-zinc-200"}`}>
+                    <p className="text-sm" style={{ color: t.completed ? "var(--dashboard-text-muted)" : "var(--dashboard-text-primary)", textDecoration: t.completed ? "line-through" : "none" }}>
                       {t.title}
                     </p>
-                    <p className="text-[10px] text-zinc-500 font-mono mt-0.5">
+                    <p className="text-[10px] font-mono mt-0.5" style={{ color: "var(--dashboard-text-muted)" }}>
                       {t.subject} • {t.duration} মিনিট
                     </p>
                   </div>
                   <span
-                    className={`text-[10px] font-mono px-2 py-0.5 rounded ${
-                      t.priority === "high"
-                        ? "bg-red-500/10 text-red-400"
-                        : t.priority === "medium"
-                          ? "bg-amber-500/10 text-amber-400"
-                          : "bg-zinc-700/40 text-zinc-400"
-                    }`}
+                    className="text-[10px] font-mono px-2 py-0.5 rounded"
+                    style={{
+                      background: t.priority === "high" ? "var(--dashboard-danger-subtle)" : t.priority === "medium" ? "var(--dashboard-warning-subtle)" : "var(--dashboard-surface-muted)",
+                      color: t.priority === "high" ? "var(--dashboard-danger)" : t.priority === "medium" ? "var(--dashboard-warning)" : "var(--dashboard-text-muted)",
+                    }}
                   >
                     {t.priority === "high" ? "উচ্চ" : t.priority === "medium" ? "মাঝারি" : "কম"}
                   </span>
@@ -608,11 +613,11 @@ export default function HomeTab() {
         >
             <div className="flex items-center justify-between mb-4 gap-3">
               <div>
-                <h3 className="text-sm font-semibold text-white uppercase tracking-wider">
+                <h3 className="text-sm font-semibold uppercase tracking-wider" style={{ color: "var(--dashboard-text-primary)" }}>
                   সাম্প্রতিক মক পরীক্ষা
                 </h3>
                 {mockTrend.length > 1 && (
-                  <div className="mt-1 w-28 text-emerald-400">
+                  <div className="mt-1 w-28" style={{ color: "var(--dashboard-primary)" }}>
                     <Sparkline
                       values={mockTrend}
                       fillId="mock-trend"
@@ -623,7 +628,8 @@ export default function HomeTab() {
               </div>
               <button
               onClick={() => setActiveTab("practice")}
-              className="text-xs text-emerald-400 font-mono hover:text-emerald-300 transition-colors flex items-center gap-1"
+              className="text-xs font-semibold transition-colors flex items-center gap-1"
+              style={{ color: "var(--dashboard-primary)" }}
             >
               মক টেস্ট <ArrowRight className="w-3.5 h-3.5" />
             </button>
@@ -637,7 +643,8 @@ export default function HomeTab() {
               action={
                 <button
                   onClick={() => setActiveTab("practice")}
-                  className="px-4 py-2 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors"
+                  className="px-4 py-2 font-semibold text-sm rounded-lg transition-colors"
+                  style={{ background: "var(--dashboard-primary)", color: "var(--dashboard-text-inverse)" }}
                 >
                   মক টেস্ট শুরু করুন
                 </button>
@@ -651,19 +658,17 @@ export default function HomeTab() {
                   className="flex items-center gap-3 p-3 rounded-xl border border-default bg-subtle"
                 >
                   <div
-                    className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                      r.score >= 80
-                        ? "bg-emerald-500/10 text-emerald-400"
-                        : r.score >= 50
-                          ? "bg-amber-500/10 text-amber-400"
-                          : "bg-red-500/10 text-red-400"
-                    }`}
+                    className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                    style={{
+                      background: r.score >= 80 ? "var(--dashboard-success-subtle)" : r.score >= 50 ? "var(--dashboard-warning-subtle)" : "var(--dashboard-danger-subtle)",
+                      color: r.score >= 80 ? "var(--dashboard-success)" : r.score >= 50 ? "var(--dashboard-warning)" : "var(--dashboard-danger)",
+                    }}
                   >
                     <Trophy className="w-5 h-5" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-zinc-200 truncate">{r.title}</p>
-                    <p className="text-[10px] text-zinc-500 font-mono mt-0.5">
+                    <p className="text-sm truncate" style={{ color: "var(--dashboard-text-primary)" }}>{r.title}</p>
+                    <p className="text-[10px] font-mono mt-0.5" style={{ color: "var(--dashboard-text-muted)" }}>
                       {r.correct}/{r.total} সঠিক •{" "}
                       {new Date(r.createdAt).toLocaleDateString("bn-BD", {
                         day: "numeric",
@@ -671,7 +676,7 @@ export default function HomeTab() {
                       })}
                     </p>
                   </div>
-                  <span className="text-sm font-mono text-emerald-400">{r.score}%</span>
+                  <span className="text-sm font-mono" style={{ color: "var(--dashboard-success)" }}>{r.score}%</span>
                 </div>
               ))}
             </div>
@@ -686,22 +691,23 @@ export default function HomeTab() {
             variants={STAGGER_ITEM}
             className="rounded-2xl border overflow-hidden" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)", boxShadow: "var(--dashboard-shadow-sm)" }}
           >
-            <div className="px-5 py-4 border-b border-terminal-border flex items-center justify-between">
+            <div className="px-5 py-4 border-b flex items-center justify-between" style={{ borderColor: "var(--dashboard-border-muted)" }}>
               <div className="flex items-center gap-2">
-                <BookX className="w-4 h-4 text-rose-400" />
-                <h3 className="text-sm font-semibold text-white uppercase tracking-wider">
+                <BookX className="w-4 h-4" style={{ color: "var(--dashboard-danger)" }} />
+                <h3 className="text-sm font-semibold uppercase tracking-wider" style={{ color: "var(--dashboard-text-primary)" }}>
                   Your Weak Spots
                 </h3>
               </div>
               <button
                 onClick={() => setActiveTab("wrong-answers")}
-                className="text-xs text-emerald-400 font-mono hover:text-emerald-300 transition-colors flex items-center gap-1"
+                className="text-xs font-semibold transition-colors flex items-center gap-1"
+                style={{ color: "var(--dashboard-primary)" }}
               >
                 Practice Mistakes <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
             <div className="p-4">
-              <p className="text-sm text-zinc-200 font-mono mb-3">
+              <p className="text-sm font-mono mb-3" style={{ color: "var(--dashboard-text-primary)" }}>
                 {mistakeStatsData} question{mistakeStatsData !== 1 ? "s" : ""} need attention
               </p>
               <div className="space-y-2">
@@ -709,16 +715,17 @@ export default function HomeTab() {
                   <button
                     key={s.subject}
                     onClick={() => setActiveTab("wrong-answers")}
-                    className="w-full flex items-center justify-between p-2.5 rounded-lg border border-terminal-border hover:bg-zinc-900/50 transition-colors text-left"
+                    className="w-full flex items-center justify-between p-2.5 rounded-lg border transition-colors text-left"
+                    style={{ borderColor: "var(--dashboard-border-muted)" }}
                   >
-                    <span className="text-sm text-zinc-200 font-mono truncate">{s.subject}</span>
-                    <span className="text-xs text-rose-400 font-mono shrink-0 ml-2">
+                    <span className="text-sm font-mono truncate" style={{ color: "var(--dashboard-text-primary)" }}>{s.subject}</span>
+                    <span className="text-xs font-mono shrink-0 ml-2" style={{ color: "var(--dashboard-danger)" }}>
                       {s.unmastered} unresolved
                     </span>
                   </button>
                 ))}
               </div>
-              <p className="text-[11px] text-zinc-500 font-mono mt-3">
+              <p className="text-[11px] font-mono mt-3" style={{ color: "var(--dashboard-text-muted)" }}>
                 You&apos;re improving — every practice brings you closer to mastery.
               </p>
             </div>
@@ -738,32 +745,33 @@ export default function HomeTab() {
         variants={STAGGER_ITEM}
         className="rounded-2xl border overflow-hidden" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)", boxShadow: "var(--dashboard-shadow-sm)" }}
         >
-          <div className="px-5 py-4 border-b border-terminal-border flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-emerald-400" />
-            <h3 className="text-sm font-semibold text-white uppercase tracking-wider">
+          <div className="px-5 py-4 border-b flex items-center gap-2" style={{ borderColor: "var(--dashboard-border-muted)" }}>
+            <Sparkles className="w-4 h-4" style={{ color: "var(--dashboard-primary)" }} />
+            <h3 className="text-sm font-semibold uppercase tracking-wider" style={{ color: "var(--dashboard-text-primary)" }}>
               ফ্ল্যাশ নিউজ
             </h3>
           </div>
-          <div className="divide-y divide-terminal-border">
+          <div className="divide-y" style={{ borderColor: "var(--dashboard-border-muted)" }}>
             {news.slice(0, 5).map((item) => (
-              <div key={item.id} className="flex items-start gap-3 p-4 hover:bg-emerald-500/5 transition-colors">
-                <span className="px-1.5 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded text-[10px] font-mono text-emerald-400 flex-shrink-0 mt-0.5">
+              <div key={item.id} className="flex items-start gap-3 p-4 transition-colors">
+                <span className="px-1.5 py-0.5 rounded text-[10px] font-mono flex-shrink-0 mt-0.5" style={{ background: "var(--dashboard-primary-subtle)", border: "1px solid color-mix(in srgb, var(--dashboard-primary) 20%, transparent)", color: "var(--dashboard-primary)" }}>
                   {item.tag}
                 </span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm text-zinc-300">{item.text}</p>
+                  <p className="text-sm" style={{ color: "var(--dashboard-text-secondary)" }}>{item.text}</p>
                   {item.sourceUrl ? (
                     <a
                       href={item.sourceUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-[11px] text-emerald-400 hover:underline mt-0.5 inline-flex items-center gap-1"
+                      className="text-[11px] hover:underline mt-0.5 inline-flex items-center gap-1"
+                      style={{ color: "var(--dashboard-primary)" }}
                     >
                       সূত্র ↗
                     </a>
                   ) : null}
                 </div>
-                <span className="text-xs text-zinc-500 font-mono flex-shrink-0">
+                <span className="text-xs font-mono flex-shrink-0" style={{ color: "var(--dashboard-text-muted)" }}>
                   {item.date}
                 </span>
               </div>

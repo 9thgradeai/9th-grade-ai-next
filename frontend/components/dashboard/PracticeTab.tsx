@@ -293,8 +293,8 @@ export default function PracticeTab() {
               onClick={() => setMode(m.id)}
               className={`flex items-center gap-2 px-4 py-2 text-sm font-mono rounded-lg transition-all ${
                 mode === m.id
-                  ? "bg-emerald-500 text-zinc-950 shadow-neon-glow"
-                  : "text-zinc-400 hover:text-white"
+                  ? "bg-emerald-500 text-[var(--dashboard-text-inverse)] shadow-neon-glow"
+                  : "text-[var(--dashboard-text-muted)] hover:text-white"
               }`}
             >
               {m.id === "mock" ? <Timer className="w-4 h-4" /> : m.id === "custom" ? <BookOpen className="w-4 h-4" /> : <Zap className="w-4 h-4" />}
@@ -302,7 +302,7 @@ export default function PracticeTab() {
             </button>
           ))}
         </div>
-        <p className="text-xs text-zinc-500">
+        <p className="text-xs text-[var(--dashboard-text-muted)]">
           {MODES.find((m) => m.id === mode)?.hint}
         </p>
       </motion.div>
@@ -327,14 +327,14 @@ export default function PracticeTab() {
               >
                 <div className="terminal-window-bar border-b border-terminal-border">
                   <div className="dot close" /><div className="dot minimize" /><div className="dot maximize" />
-                  <div className="flex-1 text-center text-xs text-zinc-400 font-mono">{"// QUICK_PRACTICE"}</div>
+                  <div className="flex-1 text-center text-xs text-[var(--dashboard-text-muted)] font-mono">{"// QUICK_PRACTICE"}</div>
                 </div>
                 <div className="p-5 md:p-6">
                   <div className="flex items-center gap-2 mb-1">
-                    <Zap className="w-5 h-5 text-emerald-400" />
+                    <Zap className="w-5 h-5 text-[var(--dashboard-primary)]" />
                     <h2 className="text-lg font-bold" style={{ color: "var(--dashboard-text-primary)" }}>কুইক প্র্যাকটিস</h2>
                   </div>
-                  <p className="text-xs text-zinc-500 font-mono">
+                  <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">
                     যেকোনো বিষয়ের নির্দিষ্ট টপিক ও সাবটপিক বেছে নিয়ে তৎক্ষণাৎ প্রশ্ন অনুশীলন করুন।
                   </p>
                 </div>
@@ -343,14 +343,14 @@ export default function PracticeTab() {
               {configLoading && (
                 <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
                   <Loader2 className="w-10 h-10 mx-auto mb-3 text-emerald-500 animate-spin" aria-hidden="true" />
-                  <p className="text-sm text-zinc-400 font-mono">বিষয় লোড হচ্ছে...</p>
+                  <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">বিষয় লোড হচ্ছে...</p>
                 </div>
               )}
 
               {configError && (
                 <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
                   <AlertTriangle className="w-10 h-10 mx-auto mb-3 text-amber-500" aria-hidden="true" />
-                  <p className="text-sm text-zinc-400">{configError}</p>
+                  <p className="text-sm text-[var(--dashboard-text-muted)]">{configError}</p>
                   <button
                     onClick={() => {
                       setConfigLoading(true);
@@ -366,7 +366,7 @@ export default function PracticeTab() {
                         }
                       })();
                     }}
-                    className="mt-4 px-4 py-2 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors"
+                    className="mt-4 px-4 py-2 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors"
                   >
                     আবার চেষ্টা করুন
                   </button>
@@ -384,26 +384,26 @@ export default function PracticeTab() {
                   {/* Total questions */}
                   <div className="glass-card rounded-xl border border-terminal-border p-4 flex items-center justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="text-sm text-zinc-300 font-mono">মোট প্রশ্ন</p>
-                      <p className="text-xs text-zinc-500 mt-0.5">
+                      <p className="text-sm text-[var(--dashboard-text-secondary)] font-mono">মোট প্রশ্ন</p>
+                      <p className="text-xs text-[var(--dashboard-text-muted)] mt-0.5">
                         উপলব্ধ:{" "}
-                        <span className={`font-mono ${insufficient ? "text-red-400" : "text-emerald-400"}`}>
+                        <span className={`font-mono ${insufficient ? "text-[var(--dashboard-danger)]" : "text-[var(--dashboard-primary)]"}`}>
                           {availableTotal}টি
                         </span>
                       </p>
                     </div>
                     <span
                       className={`text-2xl font-bold font-mono ${
-                        totalCount > 0 ? "text-emerald-400" : "text-zinc-600"
+                        totalCount > 0 ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-text-secondary)]"
                       }`}
                     >
                       {totalCount}
-                      <span className="text-xs text-zinc-500 ml-1">প্র.</span>
+                      <span className="text-xs text-[var(--dashboard-text-muted)] ml-1">প্র.</span>
                     </span>
                   </div>
 
                   {insufficient && (
-                    <div className="flex items-start gap-2 rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 text-xs text-amber-300">
+                    <div className="flex items-start gap-2 rounded-xl border border-amber-500/30 bg-[var(--dashboard-warning-subtle)] p-3 text-xs text-[var(--dashboard-warning)]">
                       <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
                       <p>
                         নির্বাচিত টপিক থেকে শুধু <span className="font-mono">{availableTotal}টি</span> প্রশ্ন
@@ -415,7 +415,7 @@ export default function PracticeTab() {
                   <button
                     onClick={() => void startSession()}
                     disabled={selectedSubjects.length === 0 || totalCount === 0 || loading}
-                    className="mt-4 w-full py-3 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-xl hover:bg-emerald-400 transition-colors flex items-center justify-center gap-2 shadow-neon-glow disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="mt-4 w-full py-3 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-emerald-400 transition-colors flex items-center justify-center gap-2 shadow-neon-glow disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     <Play className="w-4 h-4" />
                     প্র্যাকটিস শুরু করুন
@@ -429,7 +429,7 @@ export default function PracticeTab() {
           {sessionActive && loading && (
             <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
               <Loader2 className="w-10 h-10 mx-auto mb-3 text-emerald-500 animate-spin" aria-hidden="true" />
-              <p className="text-sm text-zinc-400 font-mono">প্রশ্ন লোড হচ্ছে...</p>
+              <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">প্রশ্ন লোড হচ্ছে...</p>
             </div>
           )}
 
@@ -437,16 +437,16 @@ export default function PracticeTab() {
           {sessionActive && !loading && loadError && (
             <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
               <AlertTriangle className="w-10 h-10 mx-auto mb-3 text-amber-500" aria-hidden="true" />
-              <p className="text-sm text-zinc-400">{loadError}</p>
+              <p className="text-sm text-[var(--dashboard-text-muted)]">{loadError}</p>
               <button
                 onClick={() => void startSession()}
-                className="mt-4 px-4 py-2 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors"
+                className="mt-4 px-4 py-2 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors"
               >
                 আবার চেষ্টা করুন
               </button>
               <button
                 onClick={resetSession}
-                className="mt-4 ml-2 px-4 py-2 bg-zinc-800 text-zinc-300 font-mono text-sm rounded-lg hover:bg-zinc-700 transition-colors"
+                className="mt-4 ml-2 px-4 py-2 bg-zinc-800 text-[var(--dashboard-text-secondary)] font-mono text-sm rounded-lg hover:bg-zinc-700 transition-colors"
               >
                 ফিরে যান
               </button>
@@ -456,11 +456,11 @@ export default function PracticeTab() {
           {/* Empty state */}
           {sessionActive && !loading && !loadError && questions.length === 0 && !result && (
             <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
-              <Inbox className="w-10 h-10 mx-auto mb-3 text-zinc-600" aria-hidden="true" />
-              <p className="text-sm text-zinc-400">কোনো প্রশ্ন পাওয়া যায়নি।</p>
+              <Inbox className="w-10 h-10 mx-auto mb-3 text-[var(--dashboard-text-secondary)]" aria-hidden="true" />
+              <p className="text-sm text-[var(--dashboard-text-muted)]">কোনো প্রশ্ন পাওয়া যায়নি।</p>
               <button
                 onClick={resetSession}
-                className="mt-4 px-4 py-2 bg-zinc-800 text-zinc-300 font-mono text-sm rounded-lg hover:bg-zinc-700 transition-colors"
+                className="mt-4 px-4 py-2 bg-zinc-800 text-[var(--dashboard-text-secondary)] font-mono text-sm rounded-lg hover:bg-zinc-700 transition-colors"
               >
                 ফিরে যান
               </button>
@@ -500,10 +500,10 @@ export default function PracticeTab() {
                     <div className="flex flex-wrap items-center gap-2 mb-3">
                       <span className={`px-2 py-0.5 rounded text-[10px] font-mono ${
                         currentQuestion.difficulty === "EASY"
-                          ? "bg-emerald-500/10 text-emerald-400"
+                          ? "bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
                           : currentQuestion.difficulty === "MEDIUM"
-                            ? "bg-amber-500/10 text-amber-400"
-                            : "bg-red-500/10 text-red-400"
+                            ? "bg-[var(--dashboard-warning-subtle)] text-[var(--dashboard-warning)]"
+                            : "bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)]"
                       }`}>
                         {DIFFICULTY_LABEL[currentQuestion.difficulty] ?? currentQuestion.difficulty}
                       </span>
@@ -517,7 +517,7 @@ export default function PracticeTab() {
                           {currentQuestion.subtopic}
                         </span>
                       )}
-                      <span className="text-[10px] text-zinc-500 font-mono ml-auto">
+                      <span className="text-[10px] text-[var(--dashboard-text-muted)] font-mono ml-auto">
                         {answeredCount}/{totalQuestions} উত্তর
                       </span>
                     </div>
@@ -621,18 +621,18 @@ export default function PracticeTab() {
             >
               <div className="p-6 text-center border-b" style={{ borderColor: "var(--dashboard-border-muted)", background: "var(--dashboard-surface-muted)" }}>
                 <Trophy className={`w-12 h-12 mx-auto mb-3 ${
-                  result.score >= 80 ? "text-amber-400" : result.score >= 50 ? "text-emerald-400" : "text-red-400"
+                  result.score >= 80 ? "text-[var(--dashboard-warning)]" : result.score >= 50 ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-danger)]"
                 }`} />
                 <h3 className="text-xl font-bold mb-2" style={{ color: "var(--dashboard-text-primary)" }}>প্র্যাকটিস সম্পন্ন!</h3>
-                <div className="text-5xl font-bold font-mono text-emerald-400 mb-2">{result.score}%</div>
-                <p className="text-sm text-zinc-400 font-mono mb-1">
+                <div className="text-5xl font-bold font-mono text-[var(--dashboard-primary)] mb-2">{result.score}%</div>
+                <p className="text-sm text-[var(--dashboard-text-muted)] font-mono mb-1">
                   {result.correct} / {result.total} সঠিক
                 </p>
-                <p className="text-xs text-zinc-500 font-mono">
+                <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">
                   +{result.pointsEarned} পয়েন্ট অর্জিত
                 </p>
                 {submitError && (
-                  <p className="mt-3 text-xs text-red-400">{submitError}</p>
+                  <p className="mt-3 text-xs text-[var(--dashboard-danger)]">{submitError}</p>
                 )}
                 <div className="flex items-center justify-center gap-3 mt-5">
                   <button
@@ -646,13 +646,13 @@ export default function PracticeTab() {
                       setCurrentIndex(0);
                       setQuestions([]);
                     }}
-                    className="px-5 py-2.5 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-xl hover:bg-emerald-400 transition-colors flex items-center gap-2 shadow-neon-glow"
+                    className="px-5 py-2.5 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-emerald-400 transition-colors flex items-center gap-2 shadow-neon-glow"
                   >
                     <RotateCcw className="w-4 h-4" /> আবার প্র্যাকটিস
                   </button>
                   <button
                     onClick={resetSession}
-                    className="px-5 py-2.5 bg-zinc-900 border border-zinc-800 text-zinc-300 font-mono text-sm rounded-xl hover:bg-zinc-800 transition-colors flex items-center gap-2"
+                    className="px-5 py-2.5 bg-zinc-900 border border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-secondary)] font-mono text-sm rounded-xl hover:bg-zinc-800 transition-colors flex items-center gap-2"
                   >
                     <Target className="w-4 h-4" /> নতুন নির্বাচন
                   </button>
@@ -670,25 +670,25 @@ export default function PracticeTab() {
                     }`}>
                       <div className="flex items-start gap-3">
                         {isCorrect ? (
-                          <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                          <CheckCircle2 className="w-4 h-4 text-[var(--dashboard-primary)] flex-shrink-0 mt-0.5" />
                         ) : (
-                          <XCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
+                          <XCircle className="w-4 h-4 text-[var(--dashboard-danger)] flex-shrink-0 mt-0.5" />
                         )}
                         <div className="min-w-0 flex-1">
                           <p className="text-sm mb-1.5" style={{ color: "var(--dashboard-text-primary)" }}>{i + 1}. {q.question}</p>
-                          <p className="text-xs text-zinc-500 font-mono">
+                          <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">
                             আপনার উত্তর:{" "}
-                            <span className={isCorrect ? "text-emerald-400" : "text-red-400"}>
+                            <span className={isCorrect ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-danger)]"}>
                               {userAnswer || "উত্তর দেওয়া হয়নি"}
                             </span>
                           </p>
                           {!isCorrect && (
-                            <p className="text-xs text-emerald-400 font-mono mt-0.5">
+                            <p className="text-xs text-[var(--dashboard-primary)] font-mono mt-0.5">
                               সঠিক উত্তর: {q.correctAnswer}
                             </p>
                           )}
                           {q.explanation && (
-                            <p className="text-xs text-zinc-400 mt-1.5">{q.explanation}</p>
+                            <p className="text-xs text-[var(--dashboard-text-muted)] mt-1.5">{q.explanation}</p>
                           )}
                         </div>
                       </div>

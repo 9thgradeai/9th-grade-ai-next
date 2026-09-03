@@ -90,10 +90,10 @@ export default function StudyPlannerTab() {
 
   const priorityColor = (p: string) => {
     switch (p) {
-      case "high": return "text-red-400 bg-red-500/10 border-red-500/20";
-      case "medium": return "text-amber-400 bg-amber-500/10 border-amber-500/20";
-      case "low": return "text-emerald-400 bg-emerald-500/10 border-emerald-500/20";
-      default: return "text-zinc-400 bg-zinc-500/10 border-zinc-500/20";
+      case "high": return "text-[var(--dashboard-danger)] bg-[var(--dashboard-danger-subtle)] border-red-500/20";
+      case "medium": return "text-[var(--dashboard-warning)] bg-[var(--dashboard-warning-subtle)] border-amber-500/20";
+      case "low": return "text-[var(--dashboard-primary)] bg-[var(--dashboard-primary-subtle)] border-emerald-500/20";
+      default: return "text-[var(--dashboard-text-muted)] bg-zinc-500/10 border-[var(--dashboard-border-muted)]";
     }
   };
 
@@ -107,28 +107,28 @@ export default function StudyPlannerTab() {
       >
         <div className="terminal-window-bar mb-4 border-b border-terminal-border">
           <div className="dot close" /><div className="dot minimize" /><div className="dot maximize" />
-          <div className="flex-1 text-center text-xs text-zinc-400 font-mono">{"// AI_STUDY_PLANNER"}</div>
+          <div className="flex-1 text-center text-xs text-[var(--dashboard-text-muted)] font-mono">{"// AI_STUDY_PLANNER"}</div>
         </div>
 
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <Sparkles className="w-5 h-5 text-emerald-400" />
+              <Sparkles className="w-5 h-5 text-[var(--dashboard-primary)]" />
               <h2 className="text-xl font-bold text-white">AI Study Planner</h2>
             </div>
-            <p className="text-sm text-zinc-400 font-mono">
+            <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">
               A structured study schedule — mark tasks complete as you progress.
             </p>
           </div>
 
           <div className="flex items-center gap-4">
             <div className="text-center px-4 py-2 bg-subtle border border-emerald-500/20 rounded-terminal-rounded">
-              <div className="text-2xl font-bold text-emerald-400 font-mono">{progress}%</div>
-              <div className="text-[10px] text-zinc-500 font-mono uppercase">Progress</div>
+              <div className="text-2xl font-bold text-[var(--dashboard-primary)] font-mono">{progress}%</div>
+              <div className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase">Progress</div>
             </div>
             <div className="text-center px-4 py-2 bg-subtle border border-emerald-500/20 rounded-terminal-rounded">
-              <div className="text-2xl font-bold text-emerald-400 font-mono">{completedMinutes}m</div>
-              <div className="text-[10px] text-zinc-500 font-mono uppercase">Studied</div>
+              <div className="text-2xl font-bold text-[var(--dashboard-primary)] font-mono">{completedMinutes}m</div>
+              <div className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase">Studied</div>
             </div>
           </div>
         </div>
@@ -157,12 +157,12 @@ export default function StudyPlannerTab() {
               onClick={() => setSelectedDay(i)}
               className={`flex-shrink-0 px-4 py-3 rounded-terminal-rounded border transition-all ${
                 selectedDay === i
-                  ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
-                  : "bg-subtle border-zinc-800 text-zinc-400 hover:border-emerald-500/20"
+                  ? "bg-[var(--dashboard-primary-subtle)] border-emerald-500/30 text-[var(--dashboard-primary)]"
+                  : "bg-subtle border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] hover:border-emerald-500/20"
               }`}
             >
               <div className="text-sm font-mono font-medium">{dayName}</div>
-              <div className="text-[10px] text-zinc-500 font-mono">{date}</div>
+              <div className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">{date}</div>
               <div className="text-[10px] font-mono mt-1">
                 {done}/{dayTasks.length}
               </div>
@@ -180,12 +180,12 @@ export default function StudyPlannerTab() {
         {Array.from(new Set(dayPlan.tasks.map((t) => t.subject))).map((area) => (
           <span
             key={area}
-            className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-xs font-mono text-emerald-400"
+            className="px-3 py-1 bg-[var(--dashboard-primary-subtle)] border border-emerald-500/20 rounded-full text-xs font-mono text-[var(--dashboard-primary)]"
           >
             {area}
           </span>
         ))}
-        <span className="px-3 py-1 bg-subtle border border-zinc-800 rounded-full text-xs font-mono text-zinc-400">
+        <span className="px-3 py-1 bg-subtle border border-[var(--dashboard-border-muted)] rounded-full text-xs font-mono text-[var(--dashboard-text-muted)]">
           {dayPlan.tasks.reduce((sum, t) => sum + t.duration, 0)} min total
         </span>
       </motion.div>
@@ -203,7 +203,7 @@ export default function StudyPlannerTab() {
                 exit={{ opacity: 0, x: 20 }}
                 transition={{ delay: i * 0.05 }}
                 className={`glass-card rounded-terminal-rounded border p-4 transition-all ${
-                  isCompleted ? "border-emerald-500/30 bg-emerald-500/5" : "border-terminal-border"
+                  isCompleted ? "border-emerald-500/30 bg-[var(--dashboard-primary-subtle)]" : "border-terminal-border"
                 }`}
               >
                 <div className="flex items-start gap-4">
@@ -215,7 +215,7 @@ export default function StudyPlannerTab() {
                     aria-pressed={isCompleted}
                     className={`mt-0.5 w-5 h-5 rounded border-2 flex items-center justify-center transition-all flex-shrink-0 ${
                       isCompleted
-                        ? "bg-emerald-500 border-emerald-500 text-zinc-950"
+                        ? "bg-emerald-500 border-emerald-500 text-[var(--dashboard-text-inverse)]"
                         : "border-emerald-500/30 hover:border-emerald-500/50"
                     }`}
                   >
@@ -225,10 +225,10 @@ export default function StudyPlannerTab() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <h4 className={`text-sm font-medium ${isCompleted ? "text-zinc-500 line-through" : "text-white"}`}>
+                        <h4 className={`text-sm font-medium ${isCompleted ? "text-[var(--dashboard-text-muted)] line-through" : "text-white"}`}>
                           {task.title}
                         </h4>
-                        <p className="text-xs text-zinc-500 font-mono mt-0.5">{task.description}</p>
+                        <p className="text-xs text-[var(--dashboard-text-muted)] font-mono mt-0.5">{task.description}</p>
                       </div>
                       <span className={`px-2 py-0.5 rounded text-[10px] font-mono border ${priorityColor(task.priority)}`}>
                         {task.priority.toUpperCase()}
@@ -236,15 +236,15 @@ export default function StudyPlannerTab() {
                     </div>
 
                     <div className="flex items-center gap-4 mt-3">
-                      <span className="flex items-center gap-1 text-xs text-zinc-500 font-mono">
+                      <span className="flex items-center gap-1 text-xs text-[var(--dashboard-text-muted)] font-mono">
                         <Clock className="w-3 h-3" />
                         {task.duration} min
                       </span>
-                      <span className="flex items-center gap-1 text-xs text-zinc-500 font-mono">
+                      <span className="flex items-center gap-1 text-xs text-[var(--dashboard-text-muted)] font-mono">
                         <Target className="w-3 h-3" />
                         {task.subject}
                       </span>
-                      <span className="flex items-center gap-1 text-xs text-zinc-500 font-mono">
+                      <span className="flex items-center gap-1 text-xs text-[var(--dashboard-text-muted)] font-mono">
                         <Calendar className="w-3 h-3" />
                         {dayPlan.day}
                       </span>
@@ -258,7 +258,7 @@ export default function StudyPlannerTab() {
                       onClick={() => {
                         void toggleTask(task.id);
                       }}
-                      className="px-3 py-1.5 bg-emerald-500 text-zinc-950 font-mono text-xs rounded hover:bg-emerald-400 transition-colors flex items-center gap-1 shadow-neon-glow"
+                      className="px-3 py-1.5 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono text-xs rounded hover:bg-emerald-400 transition-colors flex items-center gap-1 shadow-neon-glow"
                     >
                       Start <ChevronRight className="w-3 h-3" />
                     </motion.button>
@@ -274,12 +274,12 @@ export default function StudyPlannerTab() {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-terminal-rounded flex items-start gap-3"
+        className="p-4 bg-[var(--dashboard-primary-subtle)] border border-emerald-500/20 rounded-terminal-rounded flex items-start gap-3"
       >
-        <Sparkles className="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5" />
+        <Sparkles className="w-5 h-5 text-[var(--dashboard-primary)] flex-shrink-0 mt-0.5" />
         <div>
-          <p className="text-sm text-zinc-300">
-            <span className="text-emerald-400 font-mono">স্টাডি টিপ:</span> প্রতিদিন অন্তত একটি দুর্বল টপিকে ১৫ মিনিট
+          <p className="text-sm text-[var(--dashboard-text-secondary)]">
+            <span className="text-[var(--dashboard-primary)] font-mono">স্টাডি টিপ:</span> প্রতিদিন অন্তত একটি দুর্বল টপিকে ১৫ মিনিট
             অতিরিক্ত সময় দিন। ছোট ছোট নিয়মিত প্র্যাকটিস সেশন ধারাবাহিকতা তৈরি করে — পরীক্ষার আগের রাতের ভরোসা।
           </p>
         </div>
@@ -290,11 +290,11 @@ export default function StudyPlannerTab() {
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="p-6 bg-amber-500/10 border border-amber-500/30 rounded-terminal-rounded text-center"
+          className="p-6 bg-[var(--dashboard-warning-subtle)] border border-amber-500/30 rounded-terminal-rounded text-center"
         >
-          <Trophy className="w-12 h-12 text-amber-400 mx-auto mb-2" />
-          <h3 className="text-lg font-bold text-amber-400 font-mono">DAY COMPLETE!</h3>
-          <p className="text-sm text-zinc-400 mt-1">You&apos;ve completed all tasks for today. Keep it up!</p>
+          <Trophy className="w-12 h-12 text-[var(--dashboard-warning)] mx-auto mb-2" />
+          <h3 className="text-lg font-bold text-[var(--dashboard-warning)] font-mono">DAY COMPLETE!</h3>
+          <p className="text-sm text-[var(--dashboard-text-muted)] mt-1">You&apos;ve completed all tasks for today. Keep it up!</p>
         </motion.div>
       )}
     </div>

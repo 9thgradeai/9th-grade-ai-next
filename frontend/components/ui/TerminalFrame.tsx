@@ -26,7 +26,7 @@ export default function TerminalFrame({
         <span className="dot close" aria-hidden="true" />
         <span className="dot minimize" aria-hidden="true" />
         <span className="dot maximize" aria-hidden="true" />
-        <div className="flex-1 truncate text-center font-mono text-xs text-zinc-400">{title}</div>
+        <div className="flex-1 truncate text-center font-mono text-xs text-[var(--dashboard-text-muted)]">{title}</div>
         {/* Balance the centered title against the dot cluster width */}
         <span aria-hidden="true" className="w-[52px]" />
       </div>
@@ -47,7 +47,7 @@ export function CardHeader({
 }) {
   return (
     <div className="mb-4 flex items-center justify-between gap-3">
-      <h3 className="flex items-center gap-2 font-mono text-xs uppercase tracking-[0.16em] text-zinc-400">
+      <h3 className="flex items-center gap-2 font-mono text-xs uppercase tracking-[0.16em] text-[var(--dashboard-text-muted)]">
         {icon}
         {title}
       </h3>

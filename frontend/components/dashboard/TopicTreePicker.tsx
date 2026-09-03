@@ -98,7 +98,7 @@ function TopicNodeRow({
     <div>
       <div
         className={`flex items-center gap-2 rounded-lg border px-2.5 py-2 transition-colors ${
-          selected ? "border-emerald-500/30 bg-emerald-500/5" : "border-transparent hover:border-zinc-800"
+          selected ? "border-emerald-500/30 bg-[var(--dashboard-primary-subtle)]" : "border-transparent hover:border-[var(--dashboard-border-muted)]"
         }`}
         style={{ marginLeft: (depth - 1) * 16 }}
       >
@@ -111,11 +111,11 @@ function TopicNodeRow({
             selected ? "bg-emerald-500 border-emerald-500" : "border-zinc-600"
           }`}
         >
-          {selected && <Check className="w-3 h-3 text-zinc-950" />}
+          {selected && <Check className="w-3 h-3 text-[var(--dashboard-text-inverse)]" />}
         </button>
         <button onClick={() => onToggle(node)} className="flex-1 text-left min-w-0">
           <span className="text-xs font-medium text-white break-words">{node.name}</span>
-          <span className="block text-[10px] text-zinc-500 font-mono">{node.questionCount}টি প্রশ্ন</span>
+          <span className="block text-[10px] text-[var(--dashboard-text-muted)] font-mono">{node.questionCount}টি প্রশ্ন</span>
         </button>
       </div>
       {expanded && node.children.length > 0 && (
@@ -200,7 +200,7 @@ export default function TopicTreePicker({
     <div className="space-y-6">
       {/* Subject multi-select */}
       <div>
-        <p className="text-xs text-zinc-500 font-mono uppercase tracking-widest mb-2">
+        <p className="text-xs text-[var(--dashboard-text-muted)] font-mono uppercase tracking-widest mb-2">
           ১. বিষয় নির্বাচন করুন
         </p>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
@@ -216,7 +216,7 @@ export default function TopicTreePicker({
                 onClick={() => toggleSubject(subject)}
                 className={`glass-card rounded-2xl border p-3 text-left transition-all ${
                   selected
-                    ? "border-emerald-500/40 bg-emerald-500/10 shadow-neon-glow"
+                    ? "border-emerald-500/40 bg-[var(--dashboard-primary-subtle)] shadow-neon-glow"
                     : "border-terminal-border hover:border-emerald-500/20"
                 }`}
               >
@@ -232,10 +232,10 @@ export default function TopicTreePicker({
                       selected ? "bg-emerald-500 border-emerald-500" : "border-zinc-600"
                     }`}
                   >
-                    {selected && <Check className="w-3 h-3 text-zinc-950" />}
+                    {selected && <Check className="w-3 h-3 text-[var(--dashboard-text-inverse)]" />}
                   </span>
                 </div>
-                <p className="text-[10px] text-zinc-500 font-mono mt-1.5">
+                <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono mt-1.5">
                   {subject.questionCount}টি প্রশ্ন
                 </p>
               </motion.button>
@@ -267,8 +267,8 @@ export default function TopicTreePicker({
                   onClick={() => toggleWholeSubject(subject)}
                   className={`px-2.5 py-1 rounded-lg text-[10px] font-mono border transition-colors flex-shrink-0 ${
                     allSelected
-                      ? "bg-emerald-500 text-zinc-950 border-emerald-500"
-                      : "border-zinc-700 text-zinc-400 hover:border-emerald-500/40"
+                      ? "bg-emerald-500 text-[var(--dashboard-text-inverse)] border-emerald-500"
+                      : "border-zinc-700 text-[var(--dashboard-text-muted)] hover:border-emerald-500/40"
                   }`}
                 >
                   {allSelected ? "পুরো বিষয় ✓" : "সব টপিক নির্বাচন"}
@@ -276,7 +276,7 @@ export default function TopicTreePicker({
               </div>
 
               {allSelected ? (
-                <p className="text-xs text-zinc-500 font-mono mb-3">
+                <p className="text-xs text-[var(--dashboard-text-muted)] font-mono mb-3">
                   বিষয়ের সব টপিক নির্বাচিত — {subject.questionCount}টি প্রশ্ন
                 </p>
               ) : null}
@@ -294,17 +294,17 @@ export default function TopicTreePicker({
               </div>
 
               {/* Per-subject question count */}
-              <div className="mt-3 pt-3 border-t border-zinc-800 flex items-center justify-between gap-3">
+              <div className="mt-3 pt-3 border-t border-[var(--dashboard-border-muted)] flex items-center justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="text-xs text-zinc-300 font-mono">এই বিষয় থেকে প্রশ্ন</p>
-                  <p className="text-[10px] text-zinc-500 font-mono">
-                    উপলব্ধ: <span className="text-emerald-400">{availableForSubject(subject, selection)}টি</span>
+                  <p className="text-xs text-[var(--dashboard-text-secondary)] font-mono">এই বিষয় থেকে প্রশ্ন</p>
+                  <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">
+                    উপলব্ধ: <span className="text-[var(--dashboard-primary)]">{availableForSubject(subject, selection)}টি</span>
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setSubjectCount(subject, (sel.count ?? 0) - 1)}
-                    className="w-8 h-8 rounded-lg bg-zinc-900 border border-emerald-500/20 flex items-center justify-center text-emerald-400 hover:border-emerald-500/40"
+                    className="w-8 h-8 rounded-lg bg-zinc-900 border border-emerald-500/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-emerald-500/40"
                     aria-label="বিষয়ের প্রশ্ন কমান"
                   >
                     <Minus className="w-4 h-4" />
@@ -316,11 +316,11 @@ export default function TopicTreePicker({
                     value={sel.count ?? 0}
                     onChange={(e) => setSubjectCount(subject, Number(e.target.value))}
                     aria-label={`${subject.nameBn} এর প্রশ্ন সংখ্যা`}
-                    className="w-16 text-center bg-zinc-900 border border-emerald-500/20 rounded-lg py-2 text-emerald-400 font-mono text-sm focus:outline-none focus:border-emerald-500/50 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                    className="w-16 text-center bg-zinc-900 border border-emerald-500/20 rounded-lg py-2 text-[var(--dashboard-primary)] font-mono text-sm focus:outline-none focus:border-emerald-500/50 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                   />
                   <button
                     onClick={() => setSubjectCount(subject, (sel.count ?? 0) + 1)}
-                    className="w-8 h-8 rounded-lg bg-zinc-900 border border-emerald-500/20 flex items-center justify-center text-emerald-400 hover:border-emerald-500/40"
+                    className="w-8 h-8 rounded-lg bg-zinc-900 border border-emerald-500/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-emerald-500/40"
                     aria-label="বিষয়ের প্রশ্ন বাড়ান"
                   >
                     <Plus className="w-4 h-4" />

@@ -525,7 +525,7 @@ export default function VoiceAITutor() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={closeModal}
-              className="absolute inset-0 bg-zinc-950/70 backdrop-blur-sm"
+              className="absolute inset-0 bg-[var(--dashboard-overlay)] backdrop-blur-sm"
               aria-hidden="true"
             />
 
@@ -547,7 +547,7 @@ export default function VoiceAITutor() {
                   <button
                     type="button"
                     onClick={() => setSidebarOpen((v) => !v)}
-                    className="flex p-2 text-zinc-400 transition-colors hover:text-white lg:hidden"
+                    className="flex p-2 text-[var(--dashboard-text-muted)] transition-colors hover:text-white lg:hidden"
                     aria-label="Toggle conversation list"
                   >
                     <PanelLeft className="h-5 w-5" />
@@ -558,14 +558,14 @@ export default function VoiceAITutor() {
                   </span>
 
                   {/* Mode switch */}
-                  <div className="ml-1 flex items-center gap-1 rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-0.5 sm:ml-2">
+                  <div className="ml-1 flex items-center gap-1 rounded-lg border border-emerald-500/20 bg-[var(--dashboard-primary-subtle)] p-0.5 sm:ml-2">
                     <button
                       type="button"
                       onClick={() => setMode("tutor")}
                       className={`rounded-md px-2.5 py-1 font-mono text-xs transition-colors ${
                         mode === "tutor"
-                          ? "bg-emerald-500 text-zinc-950"
-                          : "text-emerald-400 hover:text-white"
+                          ? "bg-emerald-500 text-[var(--dashboard-text-inverse)]"
+                          : "text-[var(--dashboard-primary)] hover:text-white"
                       }`}
                     >
                       টিউটর
@@ -575,8 +575,8 @@ export default function VoiceAITutor() {
                       onClick={() => setMode("assistant")}
                       className={`rounded-md px-2.5 py-1 font-mono text-xs transition-colors ${
                         mode === "assistant"
-                          ? "bg-emerald-500 text-zinc-950"
-                          : "text-emerald-400 hover:text-white"
+                          ? "bg-emerald-500 text-[var(--dashboard-text-inverse)]"
+                          : "text-[var(--dashboard-primary)] hover:text-white"
                       }`}
                     >
                       সহায়ক
@@ -587,12 +587,12 @@ export default function VoiceAITutor() {
                     aria-live="polite"
                     className={`hidden items-center gap-1 rounded-full px-2 py-0.5 font-mono text-xs sm:inline-flex ${
                       status === "listening"
-                        ? "bg-red-500/10 text-red-400 animate-pulse"
+                        ? "bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)] animate-pulse"
                         : status === "generating"
                           ? "bg-cyan-500/10 text-cyan-400 animate-pulse"
                           : status === "error"
-                            ? "bg-red-500/10 text-red-400"
-                            : "bg-emerald-500/10 text-emerald-400"
+                            ? "bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)]"
+                            : "bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
                     }`}
                   >
                     {status === "listening" ? <Mic className="h-3 w-3" /> : null}
@@ -605,7 +605,7 @@ export default function VoiceAITutor() {
                     <button
                       type="button"
                       onClick={startNewConversation}
-                      className="p-2 text-zinc-400 transition-colors hover:text-white lg:hidden"
+                      className="p-2 text-[var(--dashboard-text-muted)] transition-colors hover:text-white lg:hidden"
                       aria-label="New conversation"
                     >
                       <Plus className="h-5 w-5" />
@@ -614,7 +614,7 @@ export default function VoiceAITutor() {
                   <button
                     type="button"
                     onClick={closeModal}
-                    className="p-2 text-zinc-400 transition-colors hover:text-white"
+                    className="p-2 text-[var(--dashboard-text-muted)] transition-colors hover:text-white"
                     aria-label="Close AI workspace"
                   >
                     <X className="h-5 w-5" />
@@ -638,7 +638,7 @@ export default function VoiceAITutor() {
                         initial={{ opacity: 0, y: -8 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0 }}
-                        className="mx-4 mt-3 flex items-center gap-2 rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-xs text-red-300"
+                        className="mx-4 mt-3 flex items-center gap-2 rounded-lg border border-red-500/20 bg-[var(--dashboard-danger-subtle)] px-3 py-2 text-xs text-[var(--dashboard-danger)]"
                       >
                         <span className="flex-1">{error}</span>
                         <button type="button" onClick={() => setError(null)} className="p-1 hover:text-white" aria-label="Dismiss error">
@@ -658,7 +658,7 @@ export default function VoiceAITutor() {
                           ) : (
                             <GraduationCap className="mx-auto mb-3 h-12 w-12 text-emerald-500/60" aria-hidden="true" />
                           )}
-                          <p className="font-mono text-sm text-zinc-400">
+                          <p className="font-mono text-sm text-[var(--dashboard-text-muted)]">
                             {mode === "assistant"
                               ? "আপনার পড়াশোনার সহায়ক — প্রগ্রেস দেখে পরামর্শ দেব।"
                               : "আমি আপনার পড়াশোনার জন্য সাহায্য করতে পারি।"}
@@ -672,7 +672,7 @@ export default function VoiceAITutor() {
                                   key={p.id}
                                   type="button"
                                   onClick={() => runPreset(p.label.bn)}
-                                  className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-1.5 text-xs text-zinc-300 transition-colors hover:border-emerald-500/40 hover:bg-emerald-500/10 hover:text-emerald-300"
+                                  className="rounded-xl border border-emerald-500/20 bg-[var(--dashboard-primary-subtle)] px-3 py-1.5 text-xs text-[var(--dashboard-text-secondary)] transition-colors hover:border-emerald-500/40 hover:bg-[var(--dashboard-primary-subtle)] hover:text-[var(--dashboard-primary)]"
                                 >
                                   {p.label.bn}
                                 </button>
@@ -682,7 +682,7 @@ export default function VoiceAITutor() {
                                   key={a.labelBn}
                                   type="button"
                                   onClick={() => runAssistantAction(a.prompt)}
-                                  className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-1.5 text-xs text-zinc-300 transition-colors hover:border-emerald-500/40 hover:bg-emerald-500/10 hover:text-emerald-300"
+                                  className="rounded-xl border border-emerald-500/20 bg-[var(--dashboard-primary-subtle)] px-3 py-1.5 text-xs text-[var(--dashboard-text-secondary)] transition-colors hover:border-emerald-500/40 hover:bg-[var(--dashboard-primary-subtle)] hover:text-[var(--dashboard-primary)]"
                                 >
                                   {a.labelBn}
                                 </button>
@@ -714,7 +714,7 @@ export default function VoiceAITutor() {
 
                         {showThinkingRow && (
                           <div className="flex items-start gap-3">
-                            <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-400 ring-1 ring-emerald-500/20">
+                            <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] ring-1 ring-emerald-500/20">
                               <AiLogo solid={false} className="h-4 w-4" />
                             </div>
                             <TypingIndicator />
@@ -731,7 +731,7 @@ export default function VoiceAITutor() {
                         <button
                           type="button"
                           onClick={stopGeneration}
-                          className="rounded-md border border-red-500/20 px-2.5 py-1 font-mono text-xs text-red-300 transition-colors hover:bg-red-500/10"
+                          className="rounded-md border border-red-500/20 px-2.5 py-1 font-mono text-xs text-[var(--dashboard-danger)] transition-colors hover:bg-[var(--dashboard-danger-subtle)]"
                         >
                           Stop
                         </button>
@@ -739,7 +739,7 @@ export default function VoiceAITutor() {
                         <button
                           type="button"
                           onClick={retryLast}
-                          className="flex items-center gap-1.5 rounded-md border border-emerald-500/20 px-2.5 py-1 font-mono text-xs text-emerald-300 transition-colors hover:bg-emerald-500/10"
+                          className="flex items-center gap-1.5 rounded-md border border-emerald-500/20 px-2.5 py-1 font-mono text-xs text-[var(--dashboard-primary)] transition-colors hover:bg-[var(--dashboard-primary-subtle)]"
                         >
                           <RefreshCw className="h-3.5 w-3.5" /> Retry
                         </button>
@@ -761,8 +761,8 @@ export default function VoiceAITutor() {
                         onClick={toggleListening}
                         className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl border transition-all ${
                           isListening
-                            ? "border-red-500/30 bg-red-500/10 text-red-400 animate-pulse"
-                            : "border-zinc-700/60 text-zinc-400 hover:text-white"
+                            ? "border-red-500/30 bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)] animate-pulse"
+                            : "border-[var(--dashboard-border-strong)] text-[var(--dashboard-text-muted)] hover:text-white"
                         }`}
                         title={isListening ? "Stop listening" : "Start voice input"}
                         aria-label={isListening ? "Stop listening" : "Start voice input"}
@@ -779,12 +779,12 @@ export default function VoiceAITutor() {
                         onChange={handleInputChange}
                         onKeyDown={handleInputKeyDown}
                         disabled={status === "generating"}
-                        className="max-h-40 min-h-[38px] flex-1 resize-none bg-transparent px-1 py-2 text-sm leading-relaxed text-zinc-300 placeholder:text-zinc-500 focus:outline-none disabled:opacity-60"
+                        className="max-h-40 min-h-[38px] flex-1 resize-none bg-transparent px-1 py-2 text-sm leading-relaxed text-[var(--dashboard-text-secondary)] placeholder:text-[var(--dashboard-text-muted)] focus:outline-none disabled:opacity-60"
                       />
                       <button
                         type="submit"
                         disabled={status === "generating" || !input.trim()}
-                        className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-emerald-500 text-zinc-950 transition-colors hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-40"
+                        className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-emerald-500 text-[var(--dashboard-text-inverse)] transition-colors hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-40"
                         aria-label="Send message"
                       >
                         {status === "generating" ? (
@@ -794,7 +794,7 @@ export default function VoiceAITutor() {
                         )}
                       </button>
                     </div>
-                    <p className="mt-1.5 text-center font-mono text-[10px] text-zinc-500">
+                    <p className="mt-1.5 text-center font-mono text-[10px] text-[var(--dashboard-text-muted)]">
                       9Th-Grade AI can make mistakes. Verify important facts.
                     </p>
                   </form>
@@ -811,7 +811,7 @@ export default function VoiceAITutor() {
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     onClick={() => setSidebarOpen(false)}
-                    className="absolute inset-0 z-20 bg-zinc-950/60 lg:hidden"
+                    className="absolute inset-0 z-20 bg-[var(--dashboard-overlay)] lg:hidden"
                     aria-hidden="true"
                   />
                   <motion.aside

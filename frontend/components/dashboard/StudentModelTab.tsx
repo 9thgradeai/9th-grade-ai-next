@@ -21,10 +21,10 @@ export default function StudentModelTab() {
   }, []);
 
   if (loading) {
-    return <div className="px-4 py-6 text-sm text-zinc-400">লোড হচ্ছে…</div>;
+    return <div className="px-4 py-6 text-sm text-[var(--dashboard-text-muted)]">লোড হচ্ছে…</div>;
   }
   if (error) {
-    return <div className="px-4 py-6 text-sm text-red-400">{error}</div>;
+    return <div className="px-4 py-6 text-sm text-[var(--dashboard-danger)]">{error}</div>;
   }
   if (!model) return null;
 
@@ -37,14 +37,14 @@ export default function StudentModelTab() {
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-5 px-4 py-6">
       <div>
-        <h1 className="text-xl font-semibold text-zinc-100">দীর্ঘমেয়াদী শিক্ষার্থী প্রোফাইল</h1>
-        <p className="mt-1 text-sm text-zinc-400">
+        <h1 className="text-xl font-semibold text-[var(--dashboard-text-primary)]">দীর্ঘমেয়াদী শিক্ষার্থী প্রোফাইল</h1>
+        <p className="mt-1 text-sm text-[var(--dashboard-text-muted)]">
           তোমার লক্ষ্য, ভাষা এবং দুর্বল-শক্ত বিষয় AI ধরে রাখে — যাতে পরবর্তী পড়াশোনা ব্যক্তিগতকৃত হয়।
         </p>
       </div>
 
       {!hasData && (
-        <p className="rounded-xl border border-white/10 bg-zinc-900/60 px-3 py-2 text-sm text-zinc-400">
+        <p className="rounded-xl border border-white/10 bg-[var(--dashboard-surface)] px-3 py-2 text-sm text-[var(--dashboard-text-muted)]">
           এখনো যথেষ্ট তথ্য নেই। &quot;উত্তর মূল্যায়ন&quot; বা &quot;AI সলভার&quot; ব্যবহার করলে এখানে তোমার দুর্বল বিষয় জমা হবে।
         </p>
       )}
@@ -65,13 +65,13 @@ export default function StudentModelTab() {
       </div>
 
       {model.weakTopics.length > 0 && (
-        <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-4">
-          <h3 className="mb-2 text-sm font-semibold text-red-300">দুর্বল বিষয় (উন্নতি করো)</h3>
+        <div className="rounded-2xl border border-red-500/20 bg-[var(--dashboard-danger-subtle)] p-4">
+          <h3 className="mb-2 text-sm font-semibold text-[var(--dashboard-danger)]">দুর্বল বিষয় (উন্নতি করো)</h3>
           <ul className="space-y-2">
             {model.weakTopics.map((t, i) => (
-              <li key={i} className="text-sm text-zinc-300">
-                <span className="font-medium text-zinc-100">{t.topic}</span>
-                {t.detail && <span className="text-zinc-400"> — {t.detail}</span>}
+              <li key={i} className="text-sm text-[var(--dashboard-text-secondary)]">
+                <span className="font-medium text-[var(--dashboard-text-primary)]">{t.topic}</span>
+                {t.detail && <span className="text-[var(--dashboard-text-muted)]"> — {t.detail}</span>}
               </li>
             ))}
           </ul>
@@ -79,13 +79,13 @@ export default function StudentModelTab() {
       )}
 
       {model.strongTopics.length > 0 && (
-        <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4">
-          <h3 className="mb-2 text-sm font-semibold text-emerald-300">শক্ত বিষয়</h3>
+        <div className="rounded-2xl border border-emerald-500/20 bg-[var(--dashboard-primary-subtle)] p-4">
+          <h3 className="mb-2 text-sm font-semibold text-[var(--dashboard-primary)]">শক্ত বিষয়</h3>
           <ul className="space-y-1">
             {model.strongTopics.map((t, i) => (
-              <li key={i} className="text-sm text-zinc-300">
-                <span className="font-medium text-zinc-100">{t.topic}</span>
-                {t.detail && <span className="text-zinc-400"> — {t.detail}</span>}
+              <li key={i} className="text-sm text-[var(--dashboard-text-secondary)]">
+                <span className="font-medium text-[var(--dashboard-text-primary)]">{t.topic}</span>
+                {t.detail && <span className="text-[var(--dashboard-text-muted)]"> — {t.detail}</span>}
               </li>
             ))}
           </ul>
@@ -93,11 +93,11 @@ export default function StudentModelTab() {
       )}
 
       {model.usageByTask.length > 0 && (
-        <div className="rounded-2xl border border-white/10 bg-zinc-900/60 p-4">
-          <h3 className="mb-2 text-sm font-semibold text-zinc-200">ব্যবহারের ধরন</h3>
+        <div className="rounded-2xl border border-white/10 bg-[var(--dashboard-surface)] p-4">
+          <h3 className="mb-2 text-sm font-semibold text-[var(--dashboard-text-primary)]">ব্যবহারের ধরন</h3>
           <div className="flex flex-wrap gap-2">
             {model.usageByTask.map((u) => (
-              <span key={u.task} className="rounded-full border border-white/10 bg-zinc-800/60 px-3 py-1 text-xs text-zinc-300">
+              <span key={u.task} className="rounded-full border border-white/10 bg-[var(--dashboard-surface-muted)] px-3 py-1 text-xs text-[var(--dashboard-text-secondary)]">
                 {u.task}: {u.count}
               </span>
             ))}
@@ -106,7 +106,7 @@ export default function StudentModelTab() {
       )}
 
       {model.lastActive && (
-        <p className="text-xs text-zinc-500">সর্বশেষ সক্রিয়: {new Date(model.lastActive).toLocaleString("bn-BD")}</p>
+        <p className="text-xs text-[var(--dashboard-text-muted)]">সর্বশেষ সক্রিয়: {new Date(model.lastActive).toLocaleString("bn-BD")}</p>
       )}
     </div>
   );
@@ -114,13 +114,13 @@ export default function StudentModelTab() {
 
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-zinc-900/60 p-4">
-      <div className="text-xs uppercase tracking-wide text-zinc-500">{title}</div>
-      <div className="mt-1 text-sm text-zinc-100">{children}</div>
+    <div className="rounded-2xl border border-white/10 bg-[var(--dashboard-surface)] p-4">
+      <div className="text-xs uppercase tracking-wide text-[var(--dashboard-text-muted)]">{title}</div>
+      <div className="mt-1 text-sm text-[var(--dashboard-text-primary)]">{children}</div>
     </div>
   );
 }
 
 function Muted({ children }: { children: React.ReactNode }) {
-  return <span className="text-zinc-500">{children}</span>;
+  return <span className="text-[var(--dashboard-text-muted)]">{children}</span>;
 }

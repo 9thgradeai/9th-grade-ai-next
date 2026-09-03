@@ -110,7 +110,7 @@ function EmailVerificationGate({ children }: { children: React.ReactNode }) {
       <div className="dashboard-shell min-h-dvh flex items-center justify-center">
         <div className="flex flex-col items-center gap-5">
           <AuroraRing size={72} label="Verifying credentials" />
-          <div className="flex items-center gap-3 text-emerald-400 font-mono text-sm">
+          <div className="flex items-center gap-3 font-mono text-sm" style={{ color: "var(--dashboard-primary)" }}>
             <StatusText
               messages={["verifying credentials", "checking session", "securing access"]}
             />
@@ -129,7 +129,7 @@ function EmailVerificationGate({ children }: { children: React.ReactNode }) {
       <div className="dashboard-shell min-h-dvh flex items-center justify-center">
         <div className="flex flex-col items-center gap-5">
           <AuroraRing size={72} label="Redirecting to email verification" />
-          <div className="flex items-center gap-3 text-emerald-400 font-mono text-sm">
+          <div className="flex items-center gap-3 font-mono text-sm" style={{ color: "var(--dashboard-primary)" }}>
             <StatusText
               messages={["email verification required", "redirecting to verification"]}
             />
@@ -250,7 +250,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     style={{ color: "var(--dashboard-text-primary)" }}
                     aria-label="9th-grade-ai home"
                   >
-                    <BrandMark className="h-8 w-8 rounded-lg shadow-[0_2px_8px_rgba(79,70,229,0.25)] ring-1 ring-black/5" />
+                    <BrandMark className="h-8 w-8 rounded-lg ring-1 ring-black/5" />
                     <span>9th-grade-ai</span>
                   </Link>
 

@@ -62,7 +62,7 @@ export default function LogoutButton({
         disabled={pending}
         aria-label={ariaLabel}
         className={
-          "rounded-xl bg-red-500/10 border border-red-500/25 text-red-400 px-4 py-2 hover:bg-red-500/20 " +
+          "rounded-xl bg-[var(--dashboard-danger-subtle)] border border-red-500/25 text-[var(--dashboard-danger)] px-4 py-2 hover:bg-[var(--dashboard-danger-subtle)] " +
           base
         }
       >
@@ -82,7 +82,7 @@ export default function LogoutButton({
       disabled={pending}
       aria-label={ariaLabel}
       className={
-        "w-full min-h-[44px] rounded-xl px-3 py-2 text-left text-zinc-400 hover:text-red-400 hover:bg-red-500/10 " +
+        "w-full min-h-[44px] rounded-xl px-3 py-2 text-left text-[var(--dashboard-text-muted)] hover:text-[var(--dashboard-danger)] hover:bg-[var(--dashboard-danger-subtle)] " +
         base
       }
     >

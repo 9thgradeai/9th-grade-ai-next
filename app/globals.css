@@ -36,9 +36,8 @@
   --font-mono: "Fira Code", Menlo, Consolas, var(--font-hind-siliguri), monospace;
 
   /* Custom shadows — aurora-tinted elevation */
-  --shadow-neon-glow: 0 0 20px rgba(45, 212, 191, 0.13);
+  --shadow-neon-glow: 0 1px 3px rgba(45, 212, 191, 0.18), 0 0 0 1px rgba(45, 212, 191, 0.08);
   --shadow-glow: 0 0 24px rgba(45, 212, 191, 0.32);
-  --shadow-neon-glow: var(--shadow-elevation-medium);
   --shadow-glow-sm: 0 0 20px rgba(45, 212, 191, 0.26);
   --shadow-glow-lg: 0 12px 48px rgba(129, 140, 248, 0.16), 0 0 0 1px rgb(45 212 191 / 0.18);
   --shadow-neon-glow-lg: 0 12px 48px rgba(129, 140, 248, 0.16), 0 0 0 1px rgb(45 212 191 / 0.18);
@@ -57,6 +56,32 @@
   /* Border radius */
   --radius-terminal-square: 6px;
   --radius-terminal-rounded: 10px;
+
+  /* Spacing scale — consistent 4px base grid */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* Type scale — consistent heading/body sizes */
+  --text-xs: 0.6875rem;
+  --text-sm: 0.8125rem;
+  --text-base: 0.9375rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+
+  /* Border radius scale — 3 tiers */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
 
   /* Touch / tap target minimum (web: 24px, mobile touch: 44px) */
   --touch-target-min: 44px;
@@ -245,6 +270,7 @@ html.light {
 
   --dashboard-shadow-sm: 0 1px 2px rgb(0 0 0 / 0.25);
   --dashboard-shadow-md: 0 4px 12px rgb(0 0 0 / 0.35);
+  --dashboard-shadow-lg: 0 8px 24px rgb(0 0 0 / 0.45), 0 2px 8px rgb(0 0 0 / 0.25);
   --dashboard-radius-sm: 8px;
   --dashboard-radius-md: 12px;
   --dashboard-radius-lg: 16px;
@@ -1261,7 +1287,7 @@ h5,
 h6 {
   line-height: 1.25;
   margin-top: 0;
-  margin-bottom: 0.5em;
+  margin-bottom: 0.75em;
 }
 
 /* Bangla text rendering */
@@ -1283,7 +1309,7 @@ h6 {
   font-feature-settings: "rlig" 1, "calt" 1;
 }
 
-/* Improvedd a letter-spacing for headings */
+/* Improved letter-spacing for headings */
 h1,
 h2,
 h3 {
@@ -1297,17 +1323,7 @@ p {
   line-height: 1.6;
 }
 
-/* Ensure headings have proper bottom spacing */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  margin-bottom: 0.75em;
-}
-
-/* Improvedd list spacing */
+/* Improved list spacing */
 ul,
 ol {
   margin-top: 0;
@@ -1315,7 +1331,7 @@ ol {
   padding-left: 1.5rem;
 }
 
-/* Improvedd definition list */
+/* Improved definition list */
 dt {
   font-weight: 600;
   margin-top: 0.5rem;
@@ -1327,14 +1343,14 @@ dd {
   margin-bottom: 0.5rem;
 }
 
-/* Improveddhr graphics */
+/* Improved hr graphics */
 hr {
   border: 0;
   border-top: 1px solid var(--dashboard-border-subtle);
   margin: 2rem 0;
 }
 
-/* Improvedd ableness */
+/* Improved color scheme */
 @media (preferred-color-scheme: dark) {
   body {
     color-scheme: dark;

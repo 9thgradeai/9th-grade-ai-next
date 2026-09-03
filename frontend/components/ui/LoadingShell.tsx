@@ -40,7 +40,7 @@ export function LoadingShell({
 
         {/* Terminal-style status block */}
         <div className="space-y-2">
-          <p className="text-emerald-500/90 font-mono text-sm tracking-[0.3em] uppercase">
+          <p className="text-[var(--dashboard-primary)]/90 font-mono text-sm tracking-[0.3em] uppercase">
             {title}
           </p>
           <StatusText

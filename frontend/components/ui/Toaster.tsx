@@ -5,8 +5,8 @@ import { CheckCircle2, AlertCircle, Info, X } from "lucide-react";
 import { useToast, type ToastVariant } from "@/lib/toast-ctx";
 
 const VARIANT_STYLES: Record<ToastVariant, string> = {
-  success: "border-emerald-500/30 bg-emerald-500/10 text-emerald-300",
-  error: "border-red-500/30 bg-red-500/10 text-red-300",
+  success: "border-emerald-500/30 bg-emerald-500/10 text-[var(--dashboard-primary)]",
+  error: "border-red-500/30 bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)]",
   info: "border-sky-500/30 bg-sky-500/10 text-sky-300",
 };
 
@@ -46,7 +46,7 @@ export default function Toaster() {
                 type="button"
                 onClick={() => dismiss(toast.id)}
                 aria-label="Dismiss notification"
-                className="shrink-0 rounded p-1 min-h-[24px] min-w-[24px] flex items-center justify-center text-zinc-400 hover:text-white transition-colors"
+                className="shrink-0 rounded p-1 min-h-[24px] min-w-[24px] flex items-center justify-center text-[var(--dashboard-text-muted)] hover:text-white transition-colors"
               >
                 <X size={14} aria-hidden="true" />
               </button>

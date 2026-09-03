@@ -32,12 +32,12 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
         return this.props.fallback(this.state.error, this.reset);
       }
       return (
-        <div className="flex flex-col items-center justify-center p-8 rounded-terminal-rounded border border-red-500/20 bg-red-500/5">
-          <p className="text-red-400 font-mono text-sm mb-2">Something went wrong</p>
-          <p className="text-zinc-500 text-xs mb-4 font-mono">{this.state.error.message}</p>
+        <div className="flex flex-col items-center justify-center p-8 rounded-terminal-rounded border border-red-500/20 bg-[var(--dashboard-danger-subtle)]">
+          <p className="text-[var(--dashboard-danger)] font-mono text-sm mb-2">Something went wrong</p>
+          <p className="text-[var(--dashboard-text-muted)] text-xs mb-4 font-mono">{this.state.error.message}</p>
           <button
             onClick={this.reset}
-            className="px-4 py-2 bg-red-500/10 border border-red-500/30 rounded-terminal-rounded text-red-400 font-mono text-sm hover:bg-red-500/20 transition-colors"
+            className="px-4 py-2 bg-[var(--dashboard-danger-subtle)] border border-red-500/30 rounded-terminal-rounded text-[var(--dashboard-danger)] font-mono text-sm hover:bg-[var(--dashboard-danger-subtle)] transition-colors"
           >
             Try again
           </button>

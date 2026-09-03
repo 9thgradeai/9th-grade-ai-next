@@ -196,40 +196,40 @@ export default function MistakesTab() {
           <div className="p-6 text-center border-b border-terminal-border">
             <Trophy
               className={`w-12 h-12 mx-auto mb-3 ${
-                score >= 80 ? "text-amber-400" : score >= 50 ? "text-emerald-400" : "text-red-400"
+                score >= 80 ? "text-[var(--dashboard-warning)]" : score >= 50 ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-danger)]"
               }`}
             />
             <h3 className="text-xl font-bold text-white font-mono mb-1">Mistake Exam সম্পন্ন!</h3>
-            <p className="text-sm font-mono text-zinc-400 mb-4">
+            <p className="text-sm font-mono text-[var(--dashboard-text-muted)] mb-4">
               সঠিক: {correct}/{total} • স্কোর {score}%
             </p>
 
             <div className="grid grid-cols-3 gap-2 max-w-lg mx-auto text-left">
-              <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/25 p-3">
-                <p className="text-[10px] text-zinc-500 font-mono">সঠিক</p>
-                <p className="text-lg font-bold text-emerald-400 font-mono">{correct}</p>
+              <div className="rounded-xl bg-[var(--dashboard-primary-subtle)] border border-emerald-500/25 p-3">
+                <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">সঠিক</p>
+                <p className="text-lg font-bold text-[var(--dashboard-primary)] font-mono">{correct}</p>
               </div>
-              <div className="rounded-xl bg-red-500/10 border border-red-500/25 p-3">
-                <p className="text-[10px] text-zinc-500 font-mono">আবার ভুল</p>
-                <p className="text-lg font-bold text-red-400 font-mono">{stillErrors}</p>
+              <div className="rounded-xl bg-[var(--dashboard-danger-subtle)] border border-red-500/25 p-3">
+                <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">আবার ভুল</p>
+                <p className="text-lg font-bold text-[var(--dashboard-danger)] font-mono">{stillErrors}</p>
               </div>
-              <div className="rounded-xl bg-emerald-500/5 border border-emerald-500/20 p-3">
-                <p className="text-[10px] text-zinc-500 font-mono">Mastered</p>
-                <p className="text-lg font-bold text-emerald-300 font-mono">{justMastered}</p>
+              <div className="rounded-xl bg-[var(--dashboard-primary-subtle)] border border-emerald-500/20 p-3">
+                <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">Mastered</p>
+                <p className="text-lg font-bold text-[var(--dashboard-primary)] font-mono">{justMastered}</p>
               </div>
             </div>
-            <p className="text-xs text-zinc-500 font-mono mt-3">{stayPositive}</p>
+            <p className="text-xs text-[var(--dashboard-text-muted)] font-mono mt-3">{stayPositive}</p>
 
             <div className="flex items-center justify-center gap-3 mt-6">
               <button
                 onClick={() => { setView("dashboard"); setExamResult(null); setDrillResults(null); }}
-                className="px-5 py-2.5 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-xl hover:bg-emerald-400 transition-colors flex items-center gap-2 shadow-neon-glow"
+                className="px-5 py-2.5 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-emerald-400 transition-colors flex items-center gap-2 shadow-neon-glow"
               >
                 <RotateCcw className="w-4 h-4" /> ড্যাশবোর্ডে ফিরুন
               </button>
               <button
                 onClick={() => { setView("dashboard"); setExamResult(null); setDrillResults(null); setShowSelection(true); }}
-                className="px-5 py-2.5 bg-zinc-900 border border-zinc-800 text-zinc-300 font-mono text-sm rounded-xl hover:text-white transition-colors"
+                className="px-5 py-2.5 bg-zinc-900 border border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-secondary)] font-mono text-sm rounded-xl hover:text-white transition-colors"
               >
                 আবার Practice করুন
               </button>
@@ -238,7 +238,7 @@ export default function MistakesTab() {
         </motion.div>
 
         <div className="space-y-3">
-          <h4 className="text-sm font-medium text-zinc-400 font-mono uppercase tracking-wider">প্রশ্ন-ভিত্তিক রিভিউ</h4>
+          <h4 className="text-sm font-medium text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider">প্রশ্ন-ভিত্তিক রিভিউ</h4>
           {examResult.questions.map((q, i) => {
             const a = answered.find((x) => x.questionId === q.id);
             const isCorrect = a?.correct ?? false;
@@ -255,19 +255,19 @@ export default function MistakesTab() {
               >
                 <div className="flex items-start gap-3">
                   <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
-                    isMastered ? "bg-emerald-500/15 text-emerald-300" : isCorrect ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"
+                    isMastered ? "bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]" : isCorrect ? "bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]" : "bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)]"
                   }`}>
                     {isMastered ? <Award className="w-3.5 h-3.5" /> : isCorrect ? <CheckCircle2 className="w-3.5 h-3.5" /> : <XCircle className="w-3.5 h-3.5" />}
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                      <span className="text-[10px] font-mono text-zinc-500">প্রশ্ন {i + 1}</span>
-                      <span className="text-[10px] font-mono text-zinc-500">{q.subject}</span>
+                      <span className="text-[10px] font-mono text-[var(--dashboard-text-muted)]">প্রশ্ন {i + 1}</span>
+                      <span className="text-[10px] font-mono text-[var(--dashboard-text-muted)]">{q.subject}</span>
                       {isMastered && (
-                        <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-emerald-500/10 text-emerald-300">Mastered</span>
+                        <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]">Mastered</span>
                       )}
                       {!isCorrect && (
-                        <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-red-500/10 text-red-400">আবার ভুল</span>
+                        <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)]">আবার ভুল</span>
                       )}
                     </div>
                     <p className="text-sm text-white">{q.question}</p>
@@ -296,18 +296,18 @@ export default function MistakesTab() {
       >
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
-            <Target className="w-5 h-5 text-rose-400" />
+            <Target className="w-5 h-5 text-[var(--dashboard-danger)]" />
             <h2 className="text-lg font-bold text-white font-mono">Mistake Analytics</h2>
           </div>
           <button
             onClick={() => { setLoading(true); void loadData().then(() => setLoading(false)); }}
             aria-label="Refresh"
-            className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-400 hover:text-white transition-colors"
+            className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center bg-zinc-900 border border-[var(--dashboard-border-muted)] rounded-lg text-[var(--dashboard-text-muted)] hover:text-white transition-colors"
           >
             <RefreshCw className="w-4 h-4" />
           </button>
         </div>
-        <p className="text-sm text-zinc-400 font-mono">
+        <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">
           Track overall accuracy, review every question you got wrong across all subjects, and re-practice them by subject, topic or subtopic.
         </p>
       </motion.div>
@@ -321,27 +321,27 @@ export default function MistakesTab() {
       >
         <motion.div variants={STAGGER_ITEM} className="glass-card rounded-terminal-rounded border border-terminal-border p-4">
           <div className="flex items-center gap-2 mb-1">
-            <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            <span className="text-[10px] text-zinc-500 font-mono uppercase">Accuracy</span>
+            <ShieldCheck className="w-4 h-4 text-[var(--dashboard-primary)]" />
+            <span className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase">Accuracy</span>
           </div>
           <p className="text-3xl font-bold text-white font-mono">{accuracy}%</p>
-          <p className="text-[10px] text-zinc-500 font-mono mt-1">{overall?.totalAttempts ?? 0} total attempts</p>
+          <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono mt-1">{overall?.totalAttempts ?? 0} total attempts</p>
         </motion.div>
         <motion.div variants={STAGGER_ITEM} className="glass-card rounded-terminal-rounded border border-emerald-500/20 p-4">
           <div className="flex items-center gap-2 mb-1">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-            <span className="text-[10px] text-zinc-500 font-mono uppercase">Right Answers</span>
+            <CheckCircle2 className="w-4 h-4 text-[var(--dashboard-primary)]" />
+            <span className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase">Right Answers</span>
           </div>
-          <p className="text-3xl font-bold text-emerald-400 font-mono">{totalRight}</p>
-          <p className="text-[10px] text-zinc-500 font-mono mt-1">across {overall?.questionsAttempted ?? 0} questions</p>
+          <p className="text-3xl font-bold text-[var(--dashboard-primary)] font-mono">{totalRight}</p>
+          <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono mt-1">across {overall?.questionsAttempted ?? 0} questions</p>
         </motion.div>
         <motion.div variants={STAGGER_ITEM} className="glass-card rounded-terminal-rounded border border-rose-500/20 p-4">
           <div className="flex items-center gap-2 mb-1">
-            <XCircle className="w-4 h-4 text-rose-400" />
-            <span className="text-[10px] text-zinc-500 font-mono uppercase">Wrong Answers</span>
+            <XCircle className="w-4 h-4 text-[var(--dashboard-danger)]" />
+            <span className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase">Wrong Answers</span>
           </div>
-          <p className="text-3xl font-bold text-rose-400 font-mono">{totalWrong}</p>
-          <p className="text-[10px] text-zinc-500 font-mono mt-1">to review &amp; re-practice</p>
+          <p className="text-3xl font-bold text-[var(--dashboard-danger)] font-mono">{totalWrong}</p>
+          <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono mt-1">to review &amp; re-practice</p>
         </motion.div>
       </motion.div>
 
@@ -350,18 +350,18 @@ export default function MistakesTab() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="glass-card rounded-terminal-rounded border border-emerald-500/20 bg-emerald-500/5 p-5"
+        className="glass-card rounded-terminal-rounded border border-emerald-500/20 bg-[var(--dashboard-primary-subtle)] p-5"
       >
         <div className="flex items-center justify-between mb-1">
-          <h3 className="text-sm font-bold text-emerald-300 font-mono">Practice Your Wrong Questions</h3>
+          <h3 className="text-sm font-bold text-[var(--dashboard-primary)] font-mono">Practice Your Wrong Questions</h3>
           <button
             onClick={() => setShowSelection(!showSelection)}
-            className="text-xs text-emerald-400 font-mono hover:text-emerald-300 transition-colors flex items-center gap-1"
+            className="text-xs text-[var(--dashboard-primary)] font-mono hover:text-[var(--dashboard-primary)] transition-colors flex items-center gap-1"
           >
             {showSelection ? "Hide" : "Customize"} <ChevronDown className={`w-3 h-3 transition-transform ${showSelection ? "rotate-180" : ""}`} />
           </button>
         </div>
-        <p className="text-xs text-zinc-400 font-mono">
+        <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">
           Build a focused exam strictly from questions you answered wrong — narrowed by subject, topic and subtopic of your choice.
         </p>
 
@@ -376,11 +376,11 @@ export default function MistakesTab() {
               <div className="mt-4 space-y-4">
                 {/* Subject */}
                 <div>
-                  <label className="block text-[10px] text-zinc-500 font-mono uppercase tracking-wider mb-1.5">Subject</label>
+                  <label className="block text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider mb-1.5">Subject</label>
                   <select
                     value={selSubject}
                     onChange={(e) => { setSelSubject(e.target.value); setSelTopic(""); setSelSubtopic(""); }}
-                    className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2.5 text-sm text-white font-mono focus:outline-none focus:border-emerald-500/50"
+                    className="w-full bg-zinc-900 border border-[var(--dashboard-border-muted)] rounded-lg px-3 py-2.5 text-sm text-white font-mono focus:outline-none focus:border-emerald-500/50"
                   >
                     <option value="">All Subjects</option>
                     {selection.map((s) => (
@@ -394,11 +394,11 @@ export default function MistakesTab() {
                 {/* Topic (dependent on subject) */}
                 {currentSubject && (
                   <div>
-                    <label className="block text-[10px] text-zinc-500 font-mono uppercase tracking-wider mb-1.5">Topic</label>
+                    <label className="block text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider mb-1.5">Topic</label>
                     <select
                       value={selTopic}
                       onChange={(e) => { setSelTopic(e.target.value); setSelSubtopic(""); }}
-                      className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2.5 text-sm text-white font-mono focus:outline-none focus:border-emerald-500/50"
+                      className="w-full bg-zinc-900 border border-[var(--dashboard-border-muted)] rounded-lg px-3 py-2.5 text-sm text-white font-mono focus:outline-none focus:border-emerald-500/50"
                     >
                       <option value="">Whole Subject</option>
                       {currentSubject.topics.map((t) => (
@@ -413,11 +413,11 @@ export default function MistakesTab() {
                 {/* Subtopic (dependent on topic) */}
                 {currentTopic && currentTopic.subtopics.length > 0 && (
                   <div>
-                    <label className="block text-[10px] text-zinc-500 font-mono uppercase tracking-wider mb-1.5">Subtopic</label>
+                    <label className="block text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider mb-1.5">Subtopic</label>
                     <select
                       value={selSubtopic}
                       onChange={(e) => setSelSubtopic(e.target.value)}
-                      className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2.5 text-sm text-white font-mono focus:outline-none focus:border-emerald-500/50"
+                      className="w-full bg-zinc-900 border border-[var(--dashboard-border-muted)] rounded-lg px-3 py-2.5 text-sm text-white font-mono focus:outline-none focus:border-emerald-500/50"
                     >
                       <option value="">Whole Topic</option>
                       {currentTopic.subtopics.map((st) => (
@@ -431,7 +431,7 @@ export default function MistakesTab() {
 
                 {/* Count */}
                 <div>
-                  <label className="block text-[10px] text-zinc-500 font-mono uppercase tracking-wider mb-1.5">Questions</label>
+                  <label className="block text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider mb-1.5">Questions</label>
                   <div className="grid grid-cols-5 gap-2">
                     {[10, 20, 30, 50].map((n) => (
                       <button
@@ -439,8 +439,8 @@ export default function MistakesTab() {
                         onClick={() => setExamCount(n)}
                         className={`px-3 py-2 rounded-lg border text-sm font-mono transition-colors ${
                           examCount === n
-                            ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-300"
-                            : "border-zinc-800 text-zinc-400 hover:border-zinc-700"
+                            ? "border-emerald-500/50 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
+                            : "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] hover:border-zinc-700"
                         }`}
                       >
                         {n}
@@ -450,8 +450,8 @@ export default function MistakesTab() {
                       onClick={() => setExamCount(availableForSelection)}
                       className={`px-3 py-2 rounded-lg border text-sm font-mono transition-colors ${
                         examCount === availableForSelection
-                          ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-300"
-                          : "border-zinc-800 text-zinc-400 hover:border-zinc-700"
+                          ? "border-emerald-500/50 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
+                          : "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] hover:border-zinc-700"
                       }`}
                     >
                       All
@@ -460,13 +460,13 @@ export default function MistakesTab() {
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3 pt-1">
-                  <span className="text-xs text-zinc-500 font-mono">
+                  <span className="text-xs text-[var(--dashboard-text-muted)] font-mono">
                     {availableForSelection} wrong question{availableForSelection !== 1 ? "s" : ""} available
                   </span>
                   {(selSubject || selTopic || selSubtopic) && (
                     <button
                       onClick={resetFilters}
-                      className="flex items-center gap-1 text-xs text-zinc-500 font-mono hover:text-zinc-300 transition-colors"
+                      className="flex items-center gap-1 text-xs text-[var(--dashboard-text-muted)] font-mono hover:text-[var(--dashboard-text-secondary)] transition-colors"
                     >
                       <X className="w-3 h-3" /> Reset
                     </button>
@@ -476,7 +476,7 @@ export default function MistakesTab() {
                 <button
                   onClick={() => void startExam()}
                   disabled={building || availableForSelection === 0}
-                  className="w-full px-6 py-3 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors disabled:opacity-40 flex items-center justify-center gap-2"
+                  className="w-full px-6 py-3 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors disabled:opacity-40 flex items-center justify-center gap-2"
                 >
                   {building ? (
                     "Building Exam…"
@@ -500,19 +500,19 @@ export default function MistakesTab() {
         className="glass-card rounded-terminal-rounded border border-terminal-border p-5"
       >
         <div className="flex items-center gap-2 mb-1">
-          <BarChart3 className="w-4 h-4 text-zinc-400" />
+          <BarChart3 className="w-4 h-4 text-[var(--dashboard-text-muted)]" />
           <h3 className="text-sm font-bold text-white font-mono">Wrong Questions by Date</h3>
         </div>
-        <p className="text-xs text-zinc-500 font-mono mb-4">
+        <p className="text-xs text-[var(--dashboard-text-muted)] font-mono mb-4">
           Every question you&apos;ve answered incorrectly across all subjects.
         </p>
 
         {loading ? (
-          <p className="text-sm text-zinc-400 font-mono">Loading…</p>
+          <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">Loading…</p>
         ) : mistakes.length === 0 ? (
           <div className="text-center py-8">
-            <p className="text-sm text-emerald-400 font-mono mb-1">Amazing work!</p>
-            <p className="text-xs text-zinc-500 font-mono">No wrong answers to show yet.</p>
+            <p className="text-sm text-[var(--dashboard-primary)] font-mono mb-1">Amazing work!</p>
+            <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">No wrong answers to show yet.</p>
           </div>
         ) : (
           <>
@@ -527,32 +527,32 @@ export default function MistakesTab() {
                     className="border border-terminal-border rounded-xl overflow-hidden"
                   >
                     <div
-                      className="p-3.5 flex items-start justify-between gap-3 cursor-pointer hover:bg-zinc-900/40 transition-colors"
+                      className="p-3.5 flex items-start justify-between gap-3 cursor-pointer hover:bg-[var(--dashboard-surface)] transition-colors"
                       onClick={() => setExpandedId(isExpanded ? null : m.id)}
                     >
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2 mb-1 flex-wrap">
-                          <span className="text-[10px] text-zinc-500 font-mono uppercase tracking-wider">
+                          <span className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider">
                             {q.subject} • {q.topic || "General"}
                           </span>
                           {q.subtopic && (
-                            <span className="text-[10px] text-zinc-600 font-mono">{q.subtopic}</span>
+                            <span className="text-[10px] text-[var(--dashboard-text-secondary)] font-mono">{q.subtopic}</span>
                           )}
                         </div>
-                        <p className="text-sm text-zinc-200 leading-relaxed line-clamp-2">{q.question}</p>
+                        <p className="text-sm text-[var(--dashboard-text-primary)] leading-relaxed line-clamp-2">{q.question}</p>
                       </div>
                       <ChevronDown
-                        className={`w-4 h-4 text-zinc-500 shrink-0 transition-transform mt-1 ${isExpanded ? "rotate-180" : ""}`}
+                        className={`w-4 h-4 text-[var(--dashboard-text-muted)] shrink-0 transition-transform mt-1 ${isExpanded ? "rotate-180" : ""}`}
                       />
                     </div>
 
-                    <div className="flex items-center gap-4 px-3.5 pb-3 text-[10px] text-zinc-500 font-mono">
+                    <div className="flex items-center gap-4 px-3.5 pb-3 text-[10px] text-[var(--dashboard-text-muted)] font-mono">
                       <span className="flex items-center gap-1">
                         <Clock className="w-3 h-3" />
                         {m.lastIncorrectAt ? `Wrong on ${new Date(m.lastIncorrectAt).toLocaleDateString()}` : "No date"}
                       </span>
                       <span>Wrong {m.mistakeCount}×</span>
-                      <span className="text-rose-400">{m.incorrectAttempts} wrong attempts</span>
+                      <span className="text-[var(--dashboard-danger)]">{m.incorrectAttempts} wrong attempts</span>
                     </div>
 
                     <AnimatePresence>
@@ -573,8 +573,8 @@ export default function MistakesTab() {
                                     key={letter}
                                     className={`text-xs font-mono px-3 py-2 rounded-lg border ${
                                       isCorrect
-                                        ? "border-emerald-500/30 bg-emerald-500/5 text-emerald-300"
-                                        : "border-zinc-800 text-zinc-400"
+                                        ? "border-emerald-500/30 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
+                                        : "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)]"
                                     }`}
                                   >
                                     <span className="font-bold mr-2">{letter}.</span>
@@ -584,7 +584,7 @@ export default function MistakesTab() {
                               })}
                             </div>
                             {q.explanation && (
-                              <p className="text-xs text-zinc-400 font-mono border-t border-terminal-border pt-3">
+                              <p className="text-xs text-[var(--dashboard-text-muted)] font-mono border-t border-terminal-border pt-3">
                                 💡 {q.explanation}
                               </p>
                             )}
@@ -602,15 +602,15 @@ export default function MistakesTab() {
                 <button
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page === 1}
-                  className="px-3 py-1.5 bg-zinc-900 border border-zinc-800 rounded-lg text-xs text-zinc-400 font-mono disabled:opacity-40 hover:text-white transition-colors"
+                  className="px-3 py-1.5 bg-zinc-900 border border-[var(--dashboard-border-muted)] rounded-lg text-xs text-[var(--dashboard-text-muted)] font-mono disabled:opacity-40 hover:text-white transition-colors"
                 >
                   Previous
                 </button>
-                <span className="text-xs text-zinc-500 font-mono">{page} / {totalPages}</span>
+                <span className="text-xs text-[var(--dashboard-text-muted)] font-mono">{page} / {totalPages}</span>
                 <button
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={page === totalPages}
-                  className="px-3 py-1.5 bg-zinc-900 border border-zinc-800 rounded-lg text-xs text-zinc-400 font-mono disabled:opacity-40 hover:text-white transition-colors"
+                  className="px-3 py-1.5 bg-zinc-900 border border-[var(--dashboard-border-muted)] rounded-lg text-xs text-[var(--dashboard-text-muted)] font-mono disabled:opacity-40 hover:text-white transition-colors"
                 >
                   Next
                 </button>

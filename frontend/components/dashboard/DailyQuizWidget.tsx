@@ -123,12 +123,12 @@ export default function DailyQuizWidget() {
           }
         }}
       >
-        <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center flex-shrink-0">
-          <Zap className="w-5 h-5 text-amber-400" />
+        <div className="w-10 h-10 rounded-xl bg-[var(--dashboard-warning-subtle)] border border-amber-500/20 flex items-center justify-center flex-shrink-0">
+          <Zap className="w-5 h-5 text-[var(--dashboard-warning)]" />
         </div>
         <div className="flex-1 min-w-0">
           <h3 className="text-sm font-medium text-white">দৈনিক কুইজ</h3>
-          <p className="text-xs text-zinc-500 font-mono">
+          <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">
             {loading
               ? "লোড হচ্ছে..."
               : quiz?.completed
@@ -138,7 +138,7 @@ export default function DailyQuizWidget() {
                   : "আজকের কুইজ শীঘ্রই আসছে"}
           </p>
         </div>
-        <ArrowRight className="w-4 h-4 text-amber-400" />
+        <ArrowRight className="w-4 h-4 text-[var(--dashboard-warning)]" />
       </motion.div>
     );
   }
@@ -150,12 +150,12 @@ export default function DailyQuizWidget() {
         animate={{ opacity: 1 }}
         className="glass-card rounded-2xl border border-amber-500/20 p-6 flex flex-col items-center text-center"
       >
-        <Inbox className="w-10 h-10 mb-3 text-zinc-600" aria-hidden="true" />
+        <Inbox className="w-10 h-10 mb-3 text-[var(--dashboard-text-secondary)]" aria-hidden="true" />
         <h3 className="text-sm font-semibold text-white">আজকের জন্য কোনো কুইজ নেই</h3>
-        <p className="text-xs text-zinc-500 mt-1">নতুন কুইজ প্রকাশিত হলে এখানে দেখা যাবে।</p>
+        <p className="text-xs text-[var(--dashboard-text-muted)] mt-1">নতুন কুইজ প্রকাশিত হলে এখানে দেখা যাবে।</p>
         <button
           onClick={() => setIsOpen(false)}
-          className="mt-4 px-4 py-2 bg-zinc-800 text-zinc-300 font-mono text-sm rounded-lg hover:bg-zinc-700 transition-colors"
+          className="mt-4 px-4 py-2 bg-zinc-800 text-[var(--dashboard-text-secondary)] font-mono text-sm rounded-lg hover:bg-zinc-700 transition-colors"
         >
           বন্ধ করুন
         </button>
@@ -183,9 +183,9 @@ export default function DailyQuizWidget() {
         tabIndex={-1}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-3 border-b border-zinc-800">
-          <span className="text-xs text-zinc-400 font-mono">দৈনিক কুইজ</span>
-          <button onClick={() => setIsOpen(false)} className="text-zinc-500 hover:text-white" aria-label="বন্ধ করুন">
+        <div className="flex items-center justify-between px-5 py-3 border-b border-[var(--dashboard-border-muted)]">
+          <span className="text-xs text-[var(--dashboard-text-muted)] font-mono">দৈনিক কুইজ</span>
+          <button onClick={() => setIsOpen(false)} className="text-[var(--dashboard-text-muted)] hover:text-white" aria-label="বন্ধ করুন">
             <X className="w-4 h-4" />
           </button>
         </div>
@@ -197,14 +197,14 @@ export default function DailyQuizWidget() {
               animate={{ opacity: 1, scale: 1 }}
               className="text-center py-6"
             >
-              <Trophy className="w-12 h-12 mx-auto mb-3 text-amber-400" />
+              <Trophy className="w-12 h-12 mx-auto mb-3 text-[var(--dashboard-warning)]" />
               <h3 className="text-xl font-bold text-white mb-2">আজকের কুইজ সম্পন্ন!</h3>
-              <div className="text-4xl font-bold font-mono text-emerald-400 mb-2">{quiz.score}%</div>
-              <p className="text-xs text-zinc-500 font-mono mb-6">আজকের কুইজ শেষ — কাল আবার চেষ্টা করুন।</p>
+              <div className="text-4xl font-bold font-mono text-[var(--dashboard-primary)] mb-2">{quiz.score}%</div>
+              <p className="text-xs text-[var(--dashboard-text-muted)] font-mono mb-6">আজকের কুইজ শেষ — কাল আবার চেষ্টা করুন।</p>
 
               {history.length > 0 && (
                 <div className="mb-6">
-                  <p className="text-[10px] text-zinc-500 font-mono uppercase tracking-wider mb-2">সাম্প্রতিক ইতিহাস</p>
+                  <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider mb-2">সাম্প্রতিক ইতিহাস</p>
                   <div className="flex items-center justify-center gap-1.5">
                     {history.slice(0, 7).map((h) => (
                       <div
@@ -212,10 +212,10 @@ export default function DailyQuizWidget() {
                         title={`${h.score}% • ${h.correct}/${h.total}`}
                         className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-mono ${
                           h.score >= 80
-                            ? "bg-amber-500/20 text-amber-300"
+                            ? "bg-[var(--dashboard-warning-subtle)] text-[var(--dashboard-warning)]"
                             : h.score >= 50
-                            ? "bg-emerald-500/20 text-emerald-300"
-                            : "bg-red-500/20 text-red-300"
+                            ? "bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
+                            : "bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)]"
                         }`}
                       >
                         {h.score}
@@ -231,13 +231,13 @@ export default function DailyQuizWidget() {
                     resetQuiz();
                     setReviewMode(true);
                   }}
-                  className="px-4 py-2 bg-zinc-900 border border-zinc-800 text-zinc-300 font-mono text-sm rounded-lg hover:bg-zinc-800 transition-colors"
+                  className="px-4 py-2 bg-zinc-900 border border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-secondary)] font-mono text-sm rounded-lg hover:bg-zinc-800 transition-colors"
                 >
                   আবার চেষ্টা করুন
                 </button>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="px-4 py-2 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors"
+                  className="px-4 py-2 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors"
                 >
                   বন্ধ করুন
                 </button>
@@ -246,10 +246,10 @@ export default function DailyQuizWidget() {
           ) : !showResult ? (
             <>
               <div className="flex items-center justify-between mb-4">
-                <span className="text-xs text-zinc-500 font-mono">
+                <span className="text-xs text-[var(--dashboard-text-muted)] font-mono">
                   প্রশ্ন {currentIndex + 1}/{totalQuestions}
                 </span>
-                <span className="text-xs text-amber-400 font-mono">
+                <span className="text-xs text-[var(--dashboard-warning)] font-mono">
                   {answeredCount}/{totalQuestions} সমাধান
                 </span>
               </div>
@@ -272,7 +272,7 @@ export default function DailyQuizWidget() {
                   exit={{ opacity: 0, x: -20 }}
                   className="mb-6"
                 >
-                  <span className="text-[10px] text-amber-400 font-mono uppercase tracking-wider mb-2 block">
+                  <span className="text-[10px] text-[var(--dashboard-warning)] font-mono uppercase tracking-wider mb-2 block">
                     {currentQuestion?.subject} • {currentQuestion?.topic}
                   </span>
                   <h3 className="text-base font-medium text-white mb-4">{currentQuestion?.question}</h3>
@@ -287,8 +287,8 @@ export default function DailyQuizWidget() {
                           onClick={() => selectAnswer(option)}
                           className={`w-full text-left p-3 rounded-xl border transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400 ${
                             isSelected
-                              ? "bg-amber-500/10 border-amber-500/30 text-amber-300"
-                              : "bg-subtle border-zinc-800 text-zinc-300 hover:border-amber-500/20"
+                              ? "bg-[var(--dashboard-warning-subtle)] border-amber-500/30 text-[var(--dashboard-warning)]"
+                              : "bg-subtle border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-secondary)] hover:border-amber-500/20"
                           }`}
                         >
                           <div className="flex items-center gap-3">
@@ -296,7 +296,7 @@ export default function DailyQuizWidget() {
                               {String.fromCharCode(65 + i)}
                             </span>
                             <span className="text-sm">{option}</span>
-                            {isSelected && <Check className="w-4 h-4 text-amber-400 ml-auto" />}
+                            {isSelected && <Check className="w-4 h-4 text-[var(--dashboard-warning)] ml-auto" />}
                           </div>
                         </button>
                       );
@@ -309,14 +309,14 @@ export default function DailyQuizWidget() {
                 <button
                   onClick={prevQuestion}
                   disabled={currentIndex === 0}
-                  className="px-4 py-2 bg-zinc-900 border border-zinc-800 text-zinc-400 font-mono text-sm rounded-lg hover:bg-zinc-800 transition-colors disabled:opacity-40"
+                  className="px-4 py-2 bg-zinc-900 border border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] font-mono text-sm rounded-lg hover:bg-zinc-800 transition-colors disabled:opacity-40"
                 >
                   আগের
                 </button>
                 {currentIndex < totalQuestions - 1 ? (
                   <button
                     onClick={nextQuestion}
-                    className="px-4 py-2 bg-amber-500 text-zinc-950 font-mono text-sm rounded-lg hover:bg-amber-400 transition-colors"
+                    className="px-4 py-2 bg-amber-500 text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-amber-400 transition-colors"
                   >
                     পরের
                   </button>
@@ -324,7 +324,7 @@ export default function DailyQuizWidget() {
                   <button
                     onClick={() => void finishQuiz()}
                     disabled={answeredCount < totalQuestions || submitting}
-                    className="px-4 py-2 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors disabled:opacity-40"
+                    className="px-4 py-2 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors disabled:opacity-40"
                   >
                     {submitting ? "জমা হচ্ছে..." : "কুইজ জমা দিন"}
                   </button>
@@ -337,21 +337,21 @@ export default function DailyQuizWidget() {
               animate={{ opacity: 1, scale: 1 }}
               className="text-center py-6"
             >
-              <Trophy className={`w-12 h-12 mx-auto mb-3 ${(summary?.score ?? 0) >= 80 ? "text-amber-400" : (summary?.score ?? 0) >= 50 ? "text-emerald-400" : "text-red-400"}`} />
+              <Trophy className={`w-12 h-12 mx-auto mb-3 ${(summary?.score ?? 0) >= 80 ? "text-[var(--dashboard-warning)]" : (summary?.score ?? 0) >= 50 ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-danger)]"}`} />
               <h3 className="text-xl font-bold text-white mb-2">কুইজ সম্পন্ন!</h3>
               {submitFailed && (
                 <div
                   role="alert"
-                  className="mx-auto mb-4 max-w-xs rounded-xl border border-red-500/30 bg-red-500/5 p-3 text-xs text-red-300 text-left"
+                  className="mx-auto mb-4 max-w-xs rounded-xl border border-red-500/30 bg-[var(--dashboard-danger-subtle)] p-3 text-xs text-[var(--dashboard-danger)] text-left"
                 >
                   সার্ভারে ফলাফল জমা হয়নি — পয়েন্ট বা স্ট্রিক সংরক্ষিত হয়নি। ইন্টারনেট সংযোগ দেখে আবার চেষ্টা করুন।
                 </div>
               )}
-              <div className="text-4xl font-bold font-mono text-emerald-400 mb-2">{summary?.score ?? 0}%</div>
-              <p className="text-sm text-zinc-400 font-mono mb-1">
+              <div className="text-4xl font-bold font-mono text-[var(--dashboard-primary)] mb-2">{summary?.score ?? 0}%</div>
+              <p className="text-sm text-[var(--dashboard-text-muted)] font-mono mb-1">
                 {summary?.correct ?? 0} / {summary?.total ?? 0} সঠিক
               </p>
-              <p className="text-xs text-zinc-500 font-mono mb-6">
+              <p className="text-xs text-[var(--dashboard-text-muted)] font-mono mb-6">
                 +{summary?.pointsEarned ?? 0} পয়েন্ট অর্জিত
               </p>
 
@@ -362,11 +362,11 @@ export default function DailyQuizWidget() {
                   return (
                     <div key={q.id} className={`p-3 rounded-xl border ${isCorrect ? "border-emerald-500/20" : "border-red-500/20"}`}>
                       <p className="text-sm text-white mb-1">{i + 1}. {q.question}</p>
-                      <p className="text-xs text-zinc-500 font-mono">
-                        আপনার উত্তর: <span className={isCorrect ? "text-emerald-400" : "text-red-400"}>{userAnswer || "উত্তর দেওয়া হয়নি"}</span>
+                      <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">
+                        আপনার উত্তর: <span className={isCorrect ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-danger)]"}>{userAnswer || "উত্তর দেওয়া হয়নি"}</span>
                       </p>
                       {!isCorrect && (
-                        <p className="text-xs text-emerald-400 font-mono">সঠিক উত্তর: {q.correctAnswer}</p>
+                        <p className="text-xs text-[var(--dashboard-primary)] font-mono">সঠিক উত্তর: {q.correctAnswer}</p>
                       )}
                     </div>
                   );
@@ -375,7 +375,7 @@ export default function DailyQuizWidget() {
 
               <button
                 onClick={() => setIsOpen(false)}
-                className="px-6 py-2.5 bg-emerald-500 text-zinc-950 font-mono rounded-lg hover:bg-emerald-400 transition-colors"
+                className="px-6 py-2.5 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono rounded-lg hover:bg-emerald-400 transition-colors"
               >
                 বন্ধ করুন
               </button>
