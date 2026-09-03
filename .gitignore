@@ -43,3 +43,4 @@ coverage/
 
 # QB forensics generated artifacts (reproducible via the CLI)
 scripts/qb-forensics/artifacts/
+scripts/qb-audit/backups/

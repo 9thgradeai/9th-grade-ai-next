@@ -25,6 +25,8 @@ export default defineConfig({
     retry: 1,
     coverage: {
       provider: "istanbul",
+      include: ["app/**", "backend/**", "frontend/**"],
+      exclude: ["scripts/qb-audit/**", "scripts/qb-forensics/**"],
       thresholds: {
         // Honest, ENFORCED gates (CI runs with --coverage).
         // Raised progressively as test coverage improves.
