@@ -122,7 +122,7 @@ export default function NotificationCenter() {
         <Bell className="w-5 h-5" />
         {unreadCount > 0 && (
           <span
-            className="absolute -top-0.5 -right-0.5 min-w-4 min-h-4 px-1 bg-red-500 rounded-full text-[10px] font-mono text-white flex items-center justify-center tabular-nums"
+            className="absolute -top-0.5 -right-0.5 min-w-4 min-h-4 px-1 bg-[var(--danger)] rounded-full text-[10px] font-mono text-[var(--text-primary)] flex items-center justify-center tabular-nums"
             aria-hidden="true"
           >
             {unreadCount}
@@ -156,10 +156,10 @@ export default function NotificationCenter() {
             >
               {/* Header */}
               <div className="p-4 border-b border-terminal-border flex items-center justify-between">
-                <h2 className="text-lg font-bold text-white">নোটিফিকেশন</h2>
+                <h2 className="text-lg font-bold text-[var(--text-primary)]">নোটিফিকেশন</h2>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="w-10 h-10 flex items-center justify-center text-[var(--dashboard-text-muted)] hover:text-white transition-colors rounded-lg"
+                  className="w-10 h-10 flex items-center justify-center text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)] transition-colors rounded-lg"
                   aria-label="বন্ধ করুন"
                 >
                   <X className="w-5 h-5" />
@@ -177,7 +177,7 @@ export default function NotificationCenter() {
                     onClick={() => setActiveTab(tab.id)}
                     className={`flex-1 flex items-center justify-center gap-1.5 py-3.5 text-xs font-mono transition-colors ${
                       activeTab === tab.id
-                        ? "text-[var(--dashboard-primary)] border-b-2 border-emerald-500"
+                        ? "text-[var(--dashboard-primary)] border-b-2 border-[var(--accent)]"
                         : "text-[var(--dashboard-text-muted)] hover:text-[var(--dashboard-text-secondary)]"
                     }`}
                   >
@@ -220,7 +220,7 @@ export default function NotificationCenter() {
                               }
                             }}
                             className={`p-3 rounded-2xl border transition-all ${
-                              notif.read ? "border-[var(--dashboard-border-muted)] bg-subtle" : "border-emerald-500/20 bg-[var(--dashboard-primary-subtle)] cursor-pointer"
+                              notif.read ? "border-[var(--dashboard-border-muted)] bg-subtle" : "border-[var(--accent)]/20 bg-[var(--dashboard-primary-subtle)] cursor-pointer"
                             }`}
                             onClick={() => void markAsRead(notif.id)}
                           >
@@ -231,16 +231,16 @@ export default function NotificationCenter() {
                                     ? "bg-[var(--dashboard-warning-subtle)] text-[var(--dashboard-warning)]"
                                     : notif.type === "SUCCESS"
                                       ? "bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
-                                      : "bg-zinc-800 text-[var(--dashboard-text-muted)]"
+                                      : "bg-[var(--surface-overlay)] text-[var(--dashboard-text-muted)]"
                                 }`}
                               >
                                 <TypeIcon className="w-4 h-4" aria-hidden="true" />
                               </span>
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 mb-1">
-                                  <h4 className="text-sm font-medium text-white truncate">{notif.title}</h4>
+                                  <h4 className="text-sm font-medium text-[var(--text-primary)] truncate">{notif.title}</h4>
                                   {!notif.read && (
-                                    <span className="w-2 h-2 bg-emerald-500 rounded-full flex-shrink-0" aria-label="unread" />
+                                    <span className="w-2 h-2 bg-[var(--accent)] rounded-full flex-shrink-0" aria-label="unread" />
                                   )}
                                 </div>
                                 <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">{notif.message}</p>
@@ -268,7 +268,7 @@ export default function NotificationCenter() {
                         animate={{ opacity: 1, y: 0 }}
                         className={`p-3 rounded-2xl border ${
                           badge.unlocked
-                            ? "border-emerald-500/20 bg-[var(--dashboard-primary-subtle)]"
+                            ? "border-[var(--accent)]/20 bg-[var(--dashboard-primary-subtle)]"
                             : "border-[var(--dashboard-border-muted)] bg-subtle opacity-60"
                         }`}
                       >
@@ -277,10 +277,10 @@ export default function NotificationCenter() {
                             {badge.icon}
                           </span>
                           <div className="flex-1 min-w-0">
-                            <h4 className="text-sm font-medium text-white">{badge.name}</h4>
+                            <h4 className="text-sm font-medium text-[var(--text-primary)]">{badge.name}</h4>
                             <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">{badge.description}</p>
                           </div>
-                          <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase bg-zinc-500/10 text-[var(--dashboard-text-muted)]">
+                          <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase bg-[var(--surface-muted)] text-[var(--dashboard-text-muted)]">
                             {badge.unlocked ? "অর্জিত" : "অর্জন করা হয়নি"}
                           </span>
                         </div>

@@ -5,14 +5,14 @@ type Variant = "primary" | "secondary" | "ghost";
 type Size = "sm" | "md" | "lg";
 
 const BASE =
-  "inline-flex items-center justify-center gap-2 font-medium rounded-full transition-[background-color,border-color,color,box-shadow,transform] duration-200 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400 disabled:opacity-50 disabled:pointer-events-none whitespace-nowrap";
+  "inline-flex items-center justify-center gap-2 font-medium rounded-full transition-[background-color,border-color,color,box-shadow,transform] duration-200 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] disabled:opacity-50 disabled:pointer-events-none whitespace-nowrap";
 
 const VARIANTS: Record<Variant, string> = {
   primary:
-    "text-zinc-950 bg-emerald-500 hover:bg-emerald-400 shadow-neon-glow hover:shadow-neon-glow-lg",
+    "text-[var(--text-inverse)] bg-[var(--accent)] hover:bg-[var(--accent-hover)] shadow-sm hover:shadow-md",
   secondary:
-    "text-white border border-white/15 bg-white/[0.03] hover:border-emerald-400/50 hover:bg-white/[0.06]",
-  ghost: "text-[var(--dashboard-text-secondary)] hover:text-[var(--dashboard-primary)] hover:bg-white/5",
+    "text-[var(--text-primary)] border border-[var(--border-default)] bg-[var(--surface-raised)] hover:border-[var(--accent)] hover:bg-[var(--surface-hover)]",
+  ghost: "text-[var(--text-secondary)] hover:text-[var(--accent)] hover:bg-[var(--accent-muted)]",
 };
 
 const SIZES: Record<Size, string> = {

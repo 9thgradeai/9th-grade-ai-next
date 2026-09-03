@@ -25,12 +25,12 @@ export default function EmptyState({
       }`}
     >
       {Icon && (
-        <span className="relative mb-1 inline-flex h-12 w-12 items-center justify-center rounded-full border" style={{ background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-muted)" }}>
-          <Icon className="relative h-5 w-5" style={{ color: "var(--dashboard-primary)" }} aria-hidden="true" />
+        <span className="relative mb-1 inline-flex h-12 w-12 items-center justify-center rounded-full border border-[var(--border-subtle)] bg-[var(--surface-muted)]">
+          <Icon className="relative h-5 w-5" style={{ color: "var(--accent)" }} aria-hidden="true" />
         </span>
       )}
-      <p className="text-sm font-medium" style={{ color: "var(--dashboard-text-primary)" }}>{title}</p>
-      {hint && <p className="max-w-xs text-xs leading-relaxed" style={{ color: "var(--dashboard-text-muted)" }}>{hint}</p>}
+      <p className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>{title}</p>
+      {hint && <p className="max-w-xs text-xs leading-relaxed" style={{ color: "var(--text-muted)" }}>{hint}</p>}
       {action && <div className="mt-2">{action}</div>}
     </div>
   );

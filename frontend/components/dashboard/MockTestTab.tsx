@@ -331,7 +331,7 @@ export default function MockTestTab() {
           <div className="p-5 md:p-6">
             <div className="flex items-center gap-2 mb-1">
               <Timer className="w-5 h-5 text-[var(--dashboard-primary)]" />
-              <h2 className="text-lg font-bold text-white">মক টেস্ট</h2>
+              <h2 className="text-lg font-bold text-[var(--text-primary)]">মক টেস্ট</h2>
             </div>
             <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">
               বিষয়, টপিক ও সাবটপিক বেছে নিয়ে সময়সীমা সহ পূর্ণাঙ্গ মক পরীক্ষা দিন — নেগেটিভ মার্কিং সহ বিসিএস ধাঁচে।
@@ -341,14 +341,14 @@ export default function MockTestTab() {
 
         {configLoading && (
           <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
-            <Loader2 className="w-10 h-10 mx-auto mb-3 text-emerald-500 animate-spin" aria-hidden="true" />
+            <Loader2 className="w-10 h-10 mx-auto mb-3 text-[var(--accent)] animate-spin" aria-hidden="true" />
             <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">বিষয় লোড হচ্ছে...</p>
           </div>
         )}
 
         {configError && (
           <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
-            <AlertTriangle className="w-10 h-10 mx-auto mb-3 text-amber-500" aria-hidden="true" />
+            <AlertTriangle className="w-10 h-10 mx-auto mb-3 text-[var(--warning)]" aria-hidden="true" />
             <p className="text-sm text-[var(--dashboard-text-muted)]">{configError}</p>
             <button
               onClick={() => {
@@ -356,7 +356,7 @@ export default function MockTestTab() {
                 setConfigError(null);
                 void fetchConfig();
               }}
-              className="mt-4 px-4 py-2 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors"
+              className="mt-4 px-4 py-2 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors"
             >
               আবার চেষ্টা করুন
             </button>
@@ -401,7 +401,7 @@ export default function MockTestTab() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => adjustDuration(-1)}
-                    className="w-8 h-8 rounded-lg bg-zinc-900 border border-emerald-500/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-emerald-500/40"
+                    className="w-8 h-8 rounded-lg bg-[var(--surface-raised)] border border-emerald-500/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-emerald-500/40"
                     aria-label="সময় কমান"
                   >
                     <Minus className="w-4 h-4" />
@@ -409,7 +409,7 @@ export default function MockTestTab() {
                   <span className="text-2xl font-bold text-[var(--dashboard-primary)] font-mono w-8 text-center">{durationMin}</span>
                   <button
                     onClick={() => adjustDuration(1)}
-                    className="w-8 h-8 rounded-lg bg-zinc-900 border border-emerald-500/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-emerald-500/40"
+                    className="w-8 h-8 rounded-lg bg-[var(--surface-raised)] border border-emerald-500/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-emerald-500/40"
                     aria-label="সময় বাড়ান"
                   >
                     <Plus className="w-4 h-4" />
@@ -438,7 +438,7 @@ export default function MockTestTab() {
             <button
               onClick={() => void buildAndStart()}
               disabled={selectedSubjects.length === 0 || totalCount === 0 || buildLoading}
-              className="mt-4 w-full py-3 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-emerald-400 transition-colors flex items-center justify-center gap-2 shadow-neon-glow disabled:opacity-40 disabled:cursor-not-allowed"
+              className="mt-4 w-full py-3 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center justify-center gap-2 shadow-neon-glow disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <Play className="w-4 h-4" />
               {buildLoading ? "তৈরি হচ্ছে..." : "মক টেস্ট শুরু করুন"}
@@ -474,14 +474,14 @@ export default function MockTestTab() {
                 <button
                   onClick={handleSubmitRequest}
                   disabled={submitting || totalQuestions === 0}
-                  className="px-4 py-1.5 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono text-xs rounded-lg hover:bg-emerald-400 transition-colors shadow-neon-glow flex items-center gap-1.5 disabled:opacity-40"
+                  className="px-4 py-1.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-xs rounded-lg hover:bg-[var(--accent-hover)] transition-colors shadow-neon-glow flex items-center gap-1.5 disabled:opacity-40"
                 >
                   <Flag className="w-3.5 h-3.5" />
                   {submitting ? "জমা হচ্ছে..." : "জমা দিন"}
                 </button>
               </div>
             </div>
-            <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden mt-2">
+            <div className="h-1.5 bg-[var(--surface-overlay)] rounded-full overflow-hidden mt-2">
               <div
                 className="h-full w-full origin-left bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-transform duration-300"
                 style={{ transform: `scaleX(${progressPct / 100})` }}
@@ -498,10 +498,10 @@ export default function MockTestTab() {
             className="glass-card rounded-2xl border border-terminal-border p-4 md:p-6"
           >
             <div className="flex flex-wrap items-center gap-2 mb-3">
-              <span className="px-2 py-0.5 rounded bg-zinc-800 text-[10px] font-mono text-[var(--dashboard-text-secondary)]">
+              <span className="px-2 py-0.5 rounded bg-[var(--surface-overlay)] text-[10px] font-mono text-[var(--dashboard-text-secondary)]">
                 প্রশ্ন {currentQuestion + 1}/{totalQuestions}
               </span>
-              <span className="px-2 py-0.5 rounded bg-zinc-800 text-[10px] font-mono text-[var(--dashboard-text-muted)]">
+              <span className="px-2 py-0.5 rounded bg-[var(--surface-overlay)] text-[10px] font-mono text-[var(--dashboard-text-muted)]">
                 {q.subject}
               </span>
               <span className={`px-2 py-0.5 rounded text-[10px] font-mono ${
@@ -514,7 +514,7 @@ export default function MockTestTab() {
                 {DIFFICULTY_LABEL[q.difficulty] ?? q.difficulty}
               </span>
               {q.topic && (
-                <span className="px-2 py-0.5 rounded bg-zinc-800 text-[10px] font-mono text-[var(--dashboard-text-muted)]">
+                <span className="px-2 py-0.5 rounded bg-[var(--surface-overlay)] text-[10px] font-mono text-[var(--dashboard-text-muted)]">
                   {q.topic}
                 </span>
               )}
@@ -563,7 +563,7 @@ export default function MockTestTab() {
           <button
             onClick={() => setCurrentQuestion((i) => Math.max(0, i - 1))}
             disabled={currentQuestion === 0}
-            className="px-4 py-2 bg-zinc-900 border border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] font-mono text-sm rounded-lg hover:bg-zinc-800 transition-colors disabled:opacity-40 flex items-center gap-1"
+            className="px-4 py-2 bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] font-mono text-sm rounded-lg hover:bg-[var(--surface-overlay)] transition-colors disabled:opacity-40 flex items-center gap-1"
           >
             <ChevronLeft className="w-4 h-4" /> আগের
           </button>
@@ -573,7 +573,7 @@ export default function MockTestTab() {
           {currentQuestion < totalQuestions - 1 ? (
             <button
               onClick={() => setCurrentQuestion((i) => Math.min(totalQuestions - 1, i + 1))}
-              className="px-4 py-2 bg-zinc-800 text-[var(--dashboard-text-secondary)] font-mono text-sm rounded-lg hover:bg-zinc-700 transition-colors flex items-center gap-1"
+              className="px-4 py-2 bg-[var(--surface-overlay)] text-[var(--dashboard-text-secondary)] font-mono text-sm rounded-lg hover:bg-[var(--surface-muted)] transition-colors flex items-center gap-1"
             >
               পরের <ChevronRight className="w-4 h-4" />
             </button>
@@ -581,7 +581,7 @@ export default function MockTestTab() {
             <button
               onClick={handleSubmitRequest}
               disabled={submitting}
-              className="px-5 py-2 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors flex items-center gap-2 shadow-neon-glow disabled:opacity-40"
+              className="px-5 py-2 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2 shadow-neon-glow disabled:opacity-40"
             >
               <Flag className="w-4 h-4" />
               {submitting ? "জমা হচ্ছে..." : "জমা দিন"}
@@ -646,7 +646,7 @@ export default function MockTestTab() {
               >
                 <div className="flex items-center gap-2 mb-3">
                   <AlertTriangle className="w-5 h-5 text-[var(--dashboard-warning)]" />
-                  <h3 id="unanswered-confirm-title" className="text-base font-bold text-white">উত্তর দেওয়া বাকি আছে</h3>
+                  <h3 id="unanswered-confirm-title" className="text-base font-bold text-[var(--text-primary)]">উত্তর দেওয়া বাকি আছে</h3>
                 </div>
                 <p className="text-sm text-[var(--dashboard-text-muted)] mb-5">
                   <span className="text-[var(--dashboard-warning)] font-mono">{totalQuestions - answeredCount}টি</span> প্রশ্নে
@@ -655,13 +655,13 @@ export default function MockTestTab() {
                 <div className="flex gap-3">
                   <button
                     onClick={() => setShowUnansweredConfirm(false)}
-                    className="flex-1 py-2.5 bg-zinc-900 border border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-secondary)] font-mono text-sm rounded-xl hover:bg-zinc-800 transition-colors"
+                    className="flex-1 py-2.5 bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-secondary)] font-mono text-sm rounded-xl hover:bg-[var(--surface-overlay)] transition-colors"
                   >
                     ফিরে যান
                   </button>
                   <button
                     onClick={finalizeSubmit}
-                    className="flex-1 py-2.5 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-emerald-400 transition-colors shadow-neon-glow"
+                    className="flex-1 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors shadow-neon-glow"
                   >
                     জমা দিন
                   </button>
@@ -690,7 +690,7 @@ export default function MockTestTab() {
             <Trophy className={`w-12 h-12 mx-auto mb-3 ${
               percentage >= 80 ? "text-[var(--dashboard-warning)]" : percentage >= 50 ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-danger)]"
             }`} />
-            <h3 className="text-xl font-bold text-white mb-1">মক টেস্ট সম্পন্ন!</h3>
+            <h3 className="text-xl font-bold text-[var(--text-primary)] mb-1">মক টেস্ট সম্পন্ন!</h3>
             <p className="text-sm text-[var(--dashboard-text-muted)] font-mono mb-4">{summary.percentage}% স্কোর</p>
 
             <div className="inline-flex flex-col items-center mb-4">
@@ -716,7 +716,7 @@ export default function MockTestTab() {
             <div className="flex items-center justify-center gap-3 mt-5">
               <button
                 onClick={resetTest}
-                className="px-5 py-2.5 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-emerald-400 transition-colors flex items-center gap-2 shadow-neon-glow"
+                className="px-5 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2 shadow-neon-glow"
               >
                 <Play className="w-4 h-4" /> আবার মক টেস্ট
               </button>
@@ -744,7 +744,7 @@ export default function MockTestTab() {
                     <CircleDashed className="w-4 h-4 text-[var(--dashboard-text-muted)] flex-shrink-0 mt-0.5" />
                   )}
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm text-white mb-1.5">{i + 1}. {r.question}</p>
+                    <p className="text-sm text-[var(--text-primary)] mb-1.5">{i + 1}. {r.question}</p>
                     <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">
                       আপনার উত্তর:{" "}
                       <span className={isCorrect ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-danger)]"}>

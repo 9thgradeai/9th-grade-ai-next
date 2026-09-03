@@ -129,7 +129,7 @@ export default function CommandBar() {
             }}
             placeholder="যেখানে যেতে চান খুঁজুন…"
             aria-label="কমান্ড অনুসন্ধান"
-            className="flex-1 bg-transparent py-3 text-sm text-white placeholder:text-[var(--dashboard-text-muted)] focus:outline-none"
+            className="flex-1 bg-transparent py-3 text-sm text-[var(--text-primary)] placeholder:text-[var(--dashboard-text-muted)] focus:outline-none"
           />
         </div>
         <ul className="max-h-72 overflow-y-auto py-2" role="listbox">

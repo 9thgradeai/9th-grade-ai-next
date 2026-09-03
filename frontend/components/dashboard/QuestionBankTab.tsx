@@ -262,7 +262,7 @@ export default function QuestionBankTab() {
           <div className="flex-1 text-center text-xs text-[var(--dashboard-text-muted)] font-mono">           {"// QUESTION_BANK_SEARCH"}</div>
         </div>
         <div className="p-1 flex items-center gap-2">
-          <span className="text-emerald-500 font-mono pl-3">$</span>
+          <span className="text-[var(--accent)] font-mono pl-3">$</span>
           <Terminal className="w-4 h-4 text-[var(--dashboard-text-muted)]" />
           <input
             type="text"
@@ -270,7 +270,7 @@ export default function QuestionBankTab() {
             onChange={(e) => setQuery(e.target.value)}
             placeholder="grep -r 'মুক্তিযুদ্ধ' ./question_bank"
             aria-label="Search question bank"
-            className="flex-1 bg-transparent px-2 py-3 font-mono text-sm text-white placeholder-zinc-500 focus:outline-none"
+            className="flex-1 bg-transparent px-2 py-3 font-mono text-sm text-[var(--text-primary)] placeholder-zinc-500 focus:outline-none"
           />
           <span className="pr-3 text-xs text-[var(--dashboard-text-muted)] font-mono">
             {visibleQuestions.length} hits
@@ -284,8 +284,8 @@ export default function QuestionBankTab() {
           onClick={() => setBrowseMode("subject")}
           className={`px-3 py-1.5 rounded-full text-xs font-mono border transition-all ${
             mode === "subject"
-              ? "bg-emerald-500 text-[var(--dashboard-text-inverse)] border-emerald-500 shadow-neon-glow"
-              : "bg-subtle border-emerald-500/20 text-[var(--dashboard-text-muted)] hover:border-emerald-500/40 hover:text-white"
+              ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] border-[var(--accent)] shadow-neon-glow"
+              : "bg-subtle border-[var(--accent)]/20 text-[var(--dashboard-text-muted)] hover:border-[var(--accent)]/40 hover:text-[var(--text-primary)]"
           }`}
         >
           📚 বিষয় অনুযায়ী
@@ -294,8 +294,8 @@ export default function QuestionBankTab() {
           onClick={() => setBrowseMode("exam")}
           className={`px-3 py-1.5 rounded-full text-xs font-mono border transition-all ${
             mode === "exam"
-              ? "bg-emerald-500 text-[var(--dashboard-text-inverse)] border-emerald-500 shadow-neon-glow"
-              : "bg-subtle border-emerald-500/20 text-[var(--dashboard-text-muted)] hover:border-emerald-500/40 hover:text-white"
+              ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] border-[var(--accent)] shadow-neon-glow"
+              : "bg-subtle border-[var(--accent)]/20 text-[var(--dashboard-text-muted)] hover:border-[var(--accent)]/40 hover:text-[var(--text-primary)]"
           }`}
         >
           🎯 পরীক্ষা অনুযায়ী
@@ -308,8 +308,8 @@ export default function QuestionBankTab() {
           onClick={() => setView("all")}
           className={`px-3 py-1.5 rounded-full text-xs font-mono border transition-all ${
             view === "all"
-              ? "bg-emerald-500 text-[var(--dashboard-text-inverse)] border-emerald-500 shadow-neon-glow"
-              : "bg-subtle border-emerald-500/20 text-[var(--dashboard-text-muted)] hover:border-emerald-500/40 hover:text-white"
+              ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] border-[var(--accent)] shadow-neon-glow"
+              : "bg-subtle border-[var(--accent)]/20 text-[var(--dashboard-text-muted)] hover:border-[var(--accent)]/40 hover:text-[var(--text-primary)]"
           }`}
         >
           সব প্রশ্ন
@@ -318,8 +318,8 @@ export default function QuestionBankTab() {
           onClick={() => setView("saved")}
           className={`px-3 py-1.5 rounded-full text-xs font-mono border transition-all flex items-center gap-1.5 ${
             view === "saved"
-              ? "bg-emerald-500 text-[var(--dashboard-text-inverse)] border-emerald-500 shadow-neon-glow"
-              : "bg-subtle border-emerald-500/20 text-[var(--dashboard-text-muted)] hover:border-emerald-500/40 hover:text-white"
+              ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] border-[var(--accent)] shadow-neon-glow"
+              : "bg-subtle border-[var(--accent)]/20 text-[var(--dashboard-text-muted)] hover:border-[var(--accent)]/40 hover:text-[var(--text-primary)]"
           }`}
         >
           <BookMarked className="w-3.5 h-3.5" /> সংরক্ষিত ({bookmarks.length})
@@ -327,7 +327,7 @@ export default function QuestionBankTab() {
         {view === "saved" && savedQuestions.length > 0 && (
           <button
             onClick={() => setDrilling(true)}
-            className="px-3 py-1.5 rounded-full text-xs font-mono border border-emerald-500/30 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] hover:bg-[var(--dashboard-primary-subtle)] transition-all flex items-center gap-1.5"
+            className="px-3 py-1.5 rounded-full text-xs font-mono border border-[var(--accent)]/30 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] hover:bg-[var(--dashboard-primary-subtle)] transition-all flex items-center gap-1.5"
           >
             <Play className="w-3.5 h-3.5" /> প্র্যাকটিস
           </button>
@@ -342,8 +342,8 @@ export default function QuestionBankTab() {
             onClick={() => setYear(null)}
             className={`px-2.5 py-1 rounded-full text-[11px] font-mono border transition-all ${
               year === null
-                ? "bg-[var(--dashboard-primary-subtle)] border-emerald-500/40 text-[var(--dashboard-primary)]"
-                : "border-zinc-700 text-[var(--dashboard-text-muted)] hover:text-white"
+                ? "bg-[var(--dashboard-primary-subtle)] border-[var(--accent)]/40 text-[var(--dashboard-primary)]"
+                : "border-zinc-700 text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)]"
             }`}
           >
             সব বছর
@@ -354,8 +354,8 @@ export default function QuestionBankTab() {
               onClick={() => setYear(y)}
               className={`px-2.5 py-1 rounded-full text-[11px] font-mono border transition-all ${
                 year === y
-                  ? "bg-[var(--dashboard-primary-subtle)] border-emerald-500/40 text-[var(--dashboard-primary)]"
-                  : "border-zinc-700 text-[var(--dashboard-text-muted)] hover:text-white"
+                  ? "bg-[var(--dashboard-primary-subtle)] border-[var(--accent)]/40 text-[var(--dashboard-primary)]"
+                  : "border-zinc-700 text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)]"
               }`}
             >
               {y}
@@ -367,8 +367,8 @@ export default function QuestionBankTab() {
               onClick={() => setSourceExam(sourceExam === se ? null : se)}
               className={`px-2.5 py-1 rounded-full text-[11px] font-mono border transition-all ${
                 sourceExam === se
-                  ? "bg-sky-500/20 border-sky-500/40 text-sky-300"
-                  : "border-zinc-700 text-[var(--dashboard-text-muted)] hover:text-white"
+                  ? "bg-[var(--info)]/20 border-[var(--info)]/40 text-[var(--info)]"
+                  : "border-zinc-700 text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)]"
               }`}
             >
               {se}
@@ -385,8 +385,8 @@ export default function QuestionBankTab() {
             onClick={() => setBcsTerm(null)}
             className={`px-2.5 py-1 rounded-full text-[11px] font-mono border transition-all ${
               bcsTerm === null
-                ? "bg-[var(--dashboard-primary-subtle)] border-emerald-500/40 text-[var(--dashboard-primary)]"
-                : "border-zinc-700 text-[var(--dashboard-text-muted)] hover:text-white"
+                ? "bg-[var(--dashboard-primary-subtle)] border-[var(--accent)]/40 text-[var(--dashboard-primary)]"
+                : "border-zinc-700 text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)]"
             }`}
           >
             সব টার্ম
@@ -398,7 +398,7 @@ export default function QuestionBankTab() {
               className={`px-2.5 py-1 rounded-full text-[11px] font-mono border transition-all ${
                 bcsTerm === term
                   ? "bg-[var(--dashboard-warning-subtle)] border-amber-500/40 text-[var(--dashboard-warning)]"
-                  : "border-zinc-700 text-[var(--dashboard-text-muted)] hover:text-white"
+                  : "border-zinc-700 text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)]"
               }`}
             >
               {term}
@@ -419,8 +419,8 @@ export default function QuestionBankTab() {
               onClick={() => setActiveCategory(cat.label)}
               className={`px-3 py-1.5 rounded-full text-xs font-mono border transition-all ${
                 activeCategory === cat.label
-                  ? "bg-emerald-500 text-[var(--dashboard-text-inverse)] border-emerald-500 shadow-neon-glow"
-                  : "bg-subtle border-emerald-500/20 text-[var(--dashboard-text-muted)] hover:border-emerald-500/40 hover:text-white"
+                  ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] border-[var(--accent)] shadow-neon-glow"
+                  : "bg-subtle border-[var(--accent)]/20 text-[var(--dashboard-text-muted)] hover:border-[var(--accent)]/40 hover:text-[var(--text-primary)]"
               }`}
             >
               {cat.label} ({cat.count?.toLocaleString?.() ?? cat.count})
@@ -452,11 +452,11 @@ export default function QuestionBankTab() {
                 >
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="px-1.5 py-0.5 bg-zinc-800 rounded text-[10px] font-mono text-[var(--dashboard-text-muted)]">#{String(i + 1).padStart(3, "0")}</span>
+                      <span className="px-1.5 py-0.5 bg-[var(--surface-overlay)] rounded text-[10px] font-mono text-[var(--dashboard-text-muted)]">#{String(i + 1).padStart(3, "0")}</span>
                       <span
                         className={`px-1.5 py-0.5 rounded text-[10px] font-mono ${
                           item.difficulty === "EASY"
-                            ? "bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] border border-emerald-500/20"
+                            ? "bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] border border-[var(--accent)]/20"
                             : item.difficulty === "MEDIUM"
                             ? "bg-yellow-500/10 text-yellow-400 border border-yellow-500/20"
                             : "bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)] border border-red-500/20"
@@ -465,7 +465,7 @@ export default function QuestionBankTab() {
                         {item.difficulty}
                       </span>
                       {item.year ? (
-                        <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-sky-500/10 text-sky-300 border border-sky-500/20">
+                        <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-[var(--info)]/10 text-[var(--info)] border border-[var(--info)]/20">
                           {item.year}
                         </span>
                       ) : null}
@@ -485,7 +485,7 @@ export default function QuestionBankTab() {
                       {isSaved ? <BookmarkCheck className="w-4 h-4 text-[var(--dashboard-primary)]" /> : <Bookmark className="w-4 h-4" />}
                     </button>
                   </div>
-                  <p className="text-sm text-white mb-3">
+                  <p className="text-sm text-[var(--text-primary)] mb-3">
                     <Highlight text={item.question} query={query} />
                   </p>
                   {(view === "saved" || item.options.length === 0) && (

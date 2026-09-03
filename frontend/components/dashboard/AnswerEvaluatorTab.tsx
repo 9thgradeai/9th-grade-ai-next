@@ -50,7 +50,7 @@ export default function AnswerEvaluatorTab() {
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
             rows={3}
-            className="mt-1 w-full rounded-xl border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-[var(--dashboard-text-primary)] outline-none focus:border-emerald-500/50"
+            className="mt-1 w-full rounded-xl border border-white/10 bg-[var(--surface-raised)] px-3 py-2 text-sm text-[var(--dashboard-text-primary)] outline-none focus:border-emerald-500/50"
             placeholder="যে প্রশ্নটির উত্তর দিয়েছো, সেটি এখানে লিখো…"
           />
         </label>
@@ -61,7 +61,7 @@ export default function AnswerEvaluatorTab() {
             value={answer}
             onChange={(e) => setAnswer(e.target.value)}
             rows={5}
-            className="mt-1 w-full rounded-xl border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-[var(--dashboard-text-primary)] outline-none focus:border-emerald-500/50"
+            className="mt-1 w-full rounded-xl border border-white/10 bg-[var(--surface-raised)] px-3 py-2 text-sm text-[var(--dashboard-text-primary)] outline-none focus:border-emerald-500/50"
             placeholder="তোমার নিজের লেখা উত্তর এখানে দাও…"
           />
         </label>
@@ -72,7 +72,7 @@ export default function AnswerEvaluatorTab() {
           type="button"
           onClick={() => void run()}
           disabled={loading}
-          className="self-start rounded-xl bg-emerald-500 px-5 py-2 text-sm font-medium text-[var(--dashboard-text-inverse)] transition-colors hover:bg-emerald-400 disabled:opacity-60"
+          className="self-start rounded-xl bg-[var(--accent)] px-5 py-2 text-sm font-medium text-[var(--dashboard-text-inverse)] transition-colors hover:bg-[var(--accent-hover)] disabled:opacity-60"
         >
           {loading ? "মূল্যায়ন হচ্ছে…" : "মূল্যায়ন করো"}
         </button>

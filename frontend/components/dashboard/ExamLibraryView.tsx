@@ -102,7 +102,7 @@ export default function ExamLibraryView() {
     if (selection) crumbs.push({ label: selection.paper.titleBn, onClick: () => {} });
     return (
       <div className="flex items-center gap-1 flex-wrap text-xs font-mono text-[var(--dashboard-text-muted)]">
-        <button onClick={reset} className="hover:text-white transition-colors">
+        <button onClick={reset} className="hover:text-[var(--text-primary)] transition-colors">
           পরীক্ষার লাইব্রেরি
         </button>
         {crumbs.map((c, i) => (
@@ -110,7 +110,7 @@ export default function ExamLibraryView() {
             <ChevronRight className="w-3 h-3 text-[var(--dashboard-text-secondary)]" />
             <button
               onClick={c.onClick}
-              className={`${i === crumbs.length - 1 ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-text-muted)]"} hover:text-white transition-colors`}
+              className={`${i === crumbs.length - 1 ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-text-muted)]"} hover:text-[var(--text-primary)] transition-colors`}
             >
               {c.label}
             </button>
@@ -151,12 +151,12 @@ export default function ExamLibraryView() {
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-2xl">{category.icon}</span>
-                <h3 className="text-lg font-bold text-white font-mono">{paper.titleBn}</h3>
+                <h3 className="text-lg font-bold text-[var(--text-primary)] font-mono">{paper.titleBn}</h3>
               </div>
               <div className="flex items-center gap-2 text-[11px] text-[var(--dashboard-text-muted)] font-mono">
-                <span className="px-1.5 py-0.5 rounded bg-zinc-800 text-[var(--dashboard-text-secondary)]">{category.nameBn} · {exam.nameBn}</span>
+                <span className="px-1.5 py-0.5 rounded bg-[var(--surface-overlay)] text-[var(--dashboard-text-secondary)]">{category.nameBn} · {exam.nameBn}</span>
                 {paper.bcsTerm ? (
-                  <span className="px-1.5 py-0.5 rounded bg-sky-500/10 text-sky-300 border border-sky-500/20">
+                  <span className="px-1.5 py-0.5 rounded bg-[var(--info)]/10 text-[var(--info)] border border-sky-500/20">
                     {paper.termLabel} BCS
                   </span>
                 ) : null}
@@ -184,7 +184,7 @@ export default function ExamLibraryView() {
               <div className="text-[10px] text-[var(--dashboard-text-muted)] font-mono mt-1">লোডকৃত প্রশ্ন</div>
             </div>
             <div className="rounded-lg bg-white/[0.04] border border-terminal-border p-3">
-              <div className="flex items-center justify-center gap-1.5 text-sky-300 font-mono text-lg font-bold">
+              <div className="flex items-center justify-center gap-1.5 text-[var(--info)] font-mono text-lg font-bold">
                 <Clock className="w-4 h-4" /> {paper.durationMin ?? "—"}
               </div>
               <div className="text-[10px] text-[var(--dashboard-text-muted)] font-mono mt-1">সময় (মিনিট)</div>
@@ -201,7 +201,7 @@ export default function ExamLibraryView() {
         <div className="text-[11px] text-[var(--dashboard-text-muted)] font-mono flex items-center justify-between">
           <span>নিচের প্রশ্নগুলো এই পেপার থেকে</span>
           <span className="flex items-center gap-1">
-            <span className={`px-1.5 py-0.5 rounded text-[10px] ${paper.verified ? "text-[var(--dashboard-primary)] bg-[var(--dashboard-primary-subtle)]" : "text-[var(--dashboard-text-muted)] bg-zinc-800"}`}>
+            <span className={`px-1.5 py-0.5 rounded text-[10px] ${paper.verified ? "text-[var(--dashboard-primary)] bg-[var(--dashboard-primary-subtle)]" : "text-[var(--dashboard-text-muted)] bg-[var(--surface-overlay)]"}`}>
               {paper.provenance}
             </span>
           </span>
@@ -229,15 +229,15 @@ export default function ExamLibraryView() {
                 >
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="px-1.5 py-0.5 bg-zinc-800 rounded text-[10px] font-mono text-[var(--dashboard-text-muted)]">
+                      <span className="px-1.5 py-0.5 bg-[var(--surface-overlay)] rounded text-[10px] font-mono text-[var(--dashboard-text-muted)]">
                         #{item.questionNumber ?? String(i + 1).padStart(3, "0")}
                       </span>
-                      <span className="px-1.5 py-0.5 rounded text-[10px] font-mono text-[var(--dashboard-primary)] bg-[var(--dashboard-primary-subtle)] border border-emerald-500/20">
+                      <span className="px-1.5 py-0.5 rounded text-[10px] font-mono text-[var(--dashboard-primary)] bg-[var(--dashboard-primary-subtle)] border border-[var(--accent)]/20">
                         {item.subtopic || item.topic || "পরীক্ষা"}
                       </span>
                     </div>
                   </div>
-                  <p className="text-sm text-white">{item.question}</p>
+                  <p className="text-sm text-[var(--text-primary)]">{item.question}</p>
                   <div className="grid sm:grid-cols-2 gap-1.5 mt-3">
                     {item.options.map((opt, oi) => (
                       <div
@@ -290,7 +290,7 @@ export default function ExamLibraryView() {
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-2xl">{cat.icon}</span>
-                    <h3 className="font-bold text-white font-mono">{cat.nameBn}</h3>
+                    <h3 className="font-bold text-[var(--text-primary)] font-mono">{cat.nameBn}</h3>
                   </div>
                   <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">{cat.nameEn}</p>
                   <p className="text-[11px] text-[var(--dashboard-primary)] font-mono mt-2">{cat.exams.length}টি পরীক্ষা</p>
@@ -311,7 +311,7 @@ export default function ExamLibraryView() {
                     className={`px-3 py-1.5 rounded-full text-xs font-mono border transition-all ${
                       activeExam?.id === exam.id
                         ? "bg-[var(--dashboard-primary-subtle)] border-emerald-500/40 text-[var(--dashboard-primary)]"
-                        : "bg-subtle border-emerald-500/20 text-[var(--dashboard-text-muted)] hover:border-emerald-500/40 hover:text-white"
+                        : "bg-subtle border-[var(--accent)]/20 text-[var(--dashboard-text-muted)] hover:border-[var(--accent)]/40 hover:text-[var(--text-primary)]"
                     }`}
                   >
                     {exam.nameBn} ({exam.papers.length})
@@ -340,12 +340,12 @@ export default function ExamLibraryView() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: Math.min(i * 0.04, 0.4) }}
                       onClick={() => void choosePaper(paper, activeExam, activeCategory!)}
-                      className="glass-card rounded-terminal-rounded border border-terminal-border p-4 text-left hover:border-emerald-500/40 transition-all group"
+                      className="glass-card rounded-terminal-rounded border border-terminal-border p-4 text-left hover:border-[var(--accent)]/40 transition-all group"
                     >
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
                           <BookOpen className="w-4 h-4 text-[var(--dashboard-primary)]" />
-                          <span className="font-semibold text-white font-mono text-sm">{paper.titleBn}</span>
+                          <span className="font-semibold text-[var(--text-primary)] font-mono text-sm">{paper.titleBn}</span>
                         </div>
                         <ChevronRight className="w-4 h-4 text-[var(--dashboard-text-secondary)] group-hover:text-[var(--dashboard-primary)] transition-colors" />
                       </div>
@@ -354,7 +354,7 @@ export default function ExamLibraryView() {
                           <ListChecks className="w-3 h-3" /> {paper.availableQuestions} প্রশ্ন
                         </span>
                         {paper.bcsTerm ? (
-                          <span className="px-1.5 py-0.5 rounded bg-sky-500/10 text-sky-300 border border-sky-500/20">
+                          <span className="px-1.5 py-0.5 rounded bg-[var(--info)]/10 text-[var(--info)] border border-sky-500/20">
                             {paper.termLabel} BCS
                           </span>
                         ) : null}

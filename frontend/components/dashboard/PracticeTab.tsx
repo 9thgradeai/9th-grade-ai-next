@@ -293,8 +293,8 @@ export default function PracticeTab() {
               onClick={() => setMode(m.id)}
               className={`flex items-center gap-2 px-4 py-2 text-sm font-mono rounded-lg transition-all ${
                 mode === m.id
-                  ? "bg-emerald-500 text-[var(--dashboard-text-inverse)] shadow-neon-glow"
-                  : "text-[var(--dashboard-text-muted)] hover:text-white"
+                  ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] shadow-neon-glow"
+                  : "text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)]"
               }`}
             >
               {m.id === "mock" ? <Timer className="w-4 h-4" /> : m.id === "custom" ? <BookOpen className="w-4 h-4" /> : <Zap className="w-4 h-4" />}
@@ -342,14 +342,14 @@ export default function PracticeTab() {
 
               {configLoading && (
                 <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
-                  <Loader2 className="w-10 h-10 mx-auto mb-3 text-emerald-500 animate-spin" aria-hidden="true" />
+                  <Loader2 className="w-10 h-10 mx-auto mb-3 text-[var(--accent)] animate-spin" aria-hidden="true" />
                   <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">বিষয় লোড হচ্ছে...</p>
                 </div>
               )}
 
               {configError && (
                 <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
-                  <AlertTriangle className="w-10 h-10 mx-auto mb-3 text-amber-500" aria-hidden="true" />
+                  <AlertTriangle className="w-10 h-10 mx-auto mb-3 text-[var(--warning)]" aria-hidden="true" />
                   <p className="text-sm text-[var(--dashboard-text-muted)]">{configError}</p>
                   <button
                     onClick={() => {
@@ -366,7 +366,7 @@ export default function PracticeTab() {
                         }
                       })();
                     }}
-                    className="mt-4 px-4 py-2 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors"
+                    className="mt-4 px-4 py-2 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors"
                   >
                     আবার চেষ্টা করুন
                   </button>
@@ -415,7 +415,7 @@ export default function PracticeTab() {
                   <button
                     onClick={() => void startSession()}
                     disabled={selectedSubjects.length === 0 || totalCount === 0 || loading}
-                    className="mt-4 w-full py-3 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-emerald-400 transition-colors flex items-center justify-center gap-2 shadow-neon-glow disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="mt-4 w-full py-3 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center justify-center gap-2 shadow-neon-glow disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     <Play className="w-4 h-4" />
                     প্র্যাকটিস শুরু করুন
@@ -428,7 +428,7 @@ export default function PracticeTab() {
           {/* Loading state */}
           {sessionActive && loading && (
             <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
-              <Loader2 className="w-10 h-10 mx-auto mb-3 text-emerald-500 animate-spin" aria-hidden="true" />
+              <Loader2 className="w-10 h-10 mx-auto mb-3 text-[var(--accent)] animate-spin" aria-hidden="true" />
               <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">প্রশ্ন লোড হচ্ছে...</p>
             </div>
           )}
@@ -436,17 +436,17 @@ export default function PracticeTab() {
           {/* Error state */}
           {sessionActive && !loading && loadError && (
             <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
-              <AlertTriangle className="w-10 h-10 mx-auto mb-3 text-amber-500" aria-hidden="true" />
+              <AlertTriangle className="w-10 h-10 mx-auto mb-3 text-[var(--warning)]" aria-hidden="true" />
               <p className="text-sm text-[var(--dashboard-text-muted)]">{loadError}</p>
               <button
                 onClick={() => void startSession()}
-                className="mt-4 px-4 py-2 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors"
+                className="mt-4 px-4 py-2 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors"
               >
                 আবার চেষ্টা করুন
               </button>
               <button
                 onClick={resetSession}
-                className="mt-4 ml-2 px-4 py-2 bg-zinc-800 text-[var(--dashboard-text-secondary)] font-mono text-sm rounded-lg hover:bg-zinc-700 transition-colors"
+                className="mt-4 ml-2 px-4 py-2 bg-[var(--surface-overlay)] text-[var(--dashboard-text-secondary)] font-mono text-sm rounded-lg hover:bg-[var(--surface-muted)] transition-colors"
               >
                 ফিরে যান
               </button>
@@ -460,7 +460,7 @@ export default function PracticeTab() {
               <p className="text-sm text-[var(--dashboard-text-muted)]">কোনো প্রশ্ন পাওয়া যায়নি।</p>
               <button
                 onClick={resetSession}
-                className="mt-4 px-4 py-2 bg-zinc-800 text-[var(--dashboard-text-secondary)] font-mono text-sm rounded-lg hover:bg-zinc-700 transition-colors"
+                className="mt-4 px-4 py-2 bg-[var(--surface-overlay)] text-[var(--dashboard-text-secondary)] font-mono text-sm rounded-lg hover:bg-[var(--surface-muted)] transition-colors"
               >
                 ফিরে যান
               </button>
@@ -646,13 +646,13 @@ export default function PracticeTab() {
                       setCurrentIndex(0);
                       setQuestions([]);
                     }}
-                    className="px-5 py-2.5 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-emerald-400 transition-colors flex items-center gap-2 shadow-neon-glow"
+                    className="px-5 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2 shadow-neon-glow"
                   >
                     <RotateCcw className="w-4 h-4" /> আবার প্র্যাকটিস
                   </button>
                   <button
                     onClick={resetSession}
-                    className="px-5 py-2.5 bg-zinc-900 border border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-secondary)] font-mono text-sm rounded-xl hover:bg-zinc-800 transition-colors flex items-center gap-2"
+                    className="px-5 py-2.5 bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-secondary)] font-mono text-sm rounded-xl hover:bg-[var(--surface-overlay)] transition-colors flex items-center gap-2"
                   >
                     <Target className="w-4 h-4" /> নতুন নির্বাচন
                   </button>

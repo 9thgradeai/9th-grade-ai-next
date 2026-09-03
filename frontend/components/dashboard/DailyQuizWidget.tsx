@@ -127,7 +127,7 @@ export default function DailyQuizWidget() {
           <Zap className="w-5 h-5 text-[var(--dashboard-warning)]" />
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="text-sm font-medium text-white">দৈনিক কুইজ</h3>
+          <h3 className="text-sm font-medium text-[var(--text-primary)]">দৈনিক কুইজ</h3>
           <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">
             {loading
               ? "লোড হচ্ছে..."
@@ -151,11 +151,11 @@ export default function DailyQuizWidget() {
         className="glass-card rounded-2xl border border-amber-500/20 p-6 flex flex-col items-center text-center"
       >
         <Inbox className="w-10 h-10 mb-3 text-[var(--dashboard-text-secondary)]" aria-hidden="true" />
-        <h3 className="text-sm font-semibold text-white">আজকের জন্য কোনো কুইজ নেই</h3>
+        <h3 className="text-sm font-semibold text-[var(--text-primary)]">আজকের জন্য কোনো কুইজ নেই</h3>
         <p className="text-xs text-[var(--dashboard-text-muted)] mt-1">নতুন কুইজ প্রকাশিত হলে এখানে দেখা যাবে।</p>
         <button
           onClick={() => setIsOpen(false)}
-          className="mt-4 px-4 py-2 bg-zinc-800 text-[var(--dashboard-text-secondary)] font-mono text-sm rounded-lg hover:bg-zinc-700 transition-colors"
+          className="mt-4 px-4 py-2 bg-[var(--surface-overlay)] text-[var(--dashboard-text-secondary)] font-mono text-sm rounded-lg hover:bg-[var(--surface-muted)] transition-colors"
         >
           বন্ধ করুন
         </button>
@@ -185,7 +185,7 @@ export default function DailyQuizWidget() {
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-3 border-b border-[var(--dashboard-border-muted)]">
           <span className="text-xs text-[var(--dashboard-text-muted)] font-mono">দৈনিক কুইজ</span>
-          <button onClick={() => setIsOpen(false)} className="text-[var(--dashboard-text-muted)] hover:text-white" aria-label="বন্ধ করুন">
+          <button onClick={() => setIsOpen(false)} className="text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)]" aria-label="বন্ধ করুন">
             <X className="w-4 h-4" />
           </button>
         </div>
@@ -198,7 +198,7 @@ export default function DailyQuizWidget() {
               className="text-center py-6"
             >
               <Trophy className="w-12 h-12 mx-auto mb-3 text-[var(--dashboard-warning)]" />
-              <h3 className="text-xl font-bold text-white mb-2">আজকের কুইজ সম্পন্ন!</h3>
+              <h3 className="text-xl font-bold text-[var(--text-primary)] mb-2">আজকের কুইজ সম্পন্ন!</h3>
               <div className="text-4xl font-bold font-mono text-[var(--dashboard-primary)] mb-2">{quiz.score}%</div>
               <p className="text-xs text-[var(--dashboard-text-muted)] font-mono mb-6">আজকের কুইজ শেষ — কাল আবার চেষ্টা করুন।</p>
 
@@ -231,13 +231,13 @@ export default function DailyQuizWidget() {
                     resetQuiz();
                     setReviewMode(true);
                   }}
-                  className="px-4 py-2 bg-zinc-900 border border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-secondary)] font-mono text-sm rounded-lg hover:bg-zinc-800 transition-colors"
+                  className="px-4 py-2 bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-secondary)] font-mono text-sm rounded-lg hover:bg-[var(--surface-overlay)] transition-colors"
                 >
                   আবার চেষ্টা করুন
                 </button>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="px-4 py-2 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors"
+                  className="px-4 py-2 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors"
                 >
                   বন্ধ করুন
                 </button>
@@ -254,7 +254,7 @@ export default function DailyQuizWidget() {
                 </span>
               </div>
 
-              <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden mb-6">
+              <div className="h-1.5 bg-[var(--surface-overlay)] rounded-full overflow-hidden mb-6">
                 <motion.div
                   initial={false}
                   animate={{ scaleX: totalQuestions > 0 ? answeredCount / totalQuestions : 0 }}
@@ -275,7 +275,7 @@ export default function DailyQuizWidget() {
                   <span className="text-[10px] text-[var(--dashboard-warning)] font-mono uppercase tracking-wider mb-2 block">
                     {currentQuestion?.subject} • {currentQuestion?.topic}
                   </span>
-                  <h3 className="text-base font-medium text-white mb-4">{currentQuestion?.question}</h3>
+                  <h3 className="text-base font-medium text-[var(--text-primary)] mb-4">{currentQuestion?.question}</h3>
                   <div className="space-y-2" role="radiogroup" aria-label="উত্তর নির্বাচন করুন">
                     {currentQuestion?.options.map((option, i) => {
                       const isSelected = answers[currentIndex] === option;
@@ -292,7 +292,7 @@ export default function DailyQuizWidget() {
                           }`}
                         >
                           <div className="flex items-center gap-3">
-                            <span className="w-6 h-6 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-xs font-mono">
+                            <span className="w-6 h-6 rounded-full bg-[var(--surface-overlay)] border border-zinc-700 flex items-center justify-center text-xs font-mono">
                               {String.fromCharCode(65 + i)}
                             </span>
                             <span className="text-sm">{option}</span>
@@ -309,14 +309,14 @@ export default function DailyQuizWidget() {
                 <button
                   onClick={prevQuestion}
                   disabled={currentIndex === 0}
-                  className="px-4 py-2 bg-zinc-900 border border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] font-mono text-sm rounded-lg hover:bg-zinc-800 transition-colors disabled:opacity-40"
+                  className="px-4 py-2 bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] font-mono text-sm rounded-lg hover:bg-[var(--surface-overlay)] transition-colors disabled:opacity-40"
                 >
                   আগের
                 </button>
                 {currentIndex < totalQuestions - 1 ? (
                   <button
                     onClick={nextQuestion}
-                    className="px-4 py-2 bg-amber-500 text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-amber-400 transition-colors"
+                    className="px-4 py-2 bg-[var(--warning)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--warning)] transition-colors"
                   >
                     পরের
                   </button>
@@ -324,7 +324,7 @@ export default function DailyQuizWidget() {
                   <button
                     onClick={() => void finishQuiz()}
                     disabled={answeredCount < totalQuestions || submitting}
-                    className="px-4 py-2 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors disabled:opacity-40"
+                    className="px-4 py-2 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors disabled:opacity-40"
                   >
                     {submitting ? "জমা হচ্ছে..." : "কুইজ জমা দিন"}
                   </button>
@@ -338,7 +338,7 @@ export default function DailyQuizWidget() {
               className="text-center py-6"
             >
               <Trophy className={`w-12 h-12 mx-auto mb-3 ${(summary?.score ?? 0) >= 80 ? "text-[var(--dashboard-warning)]" : (summary?.score ?? 0) >= 50 ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-danger)]"}`} />
-              <h3 className="text-xl font-bold text-white mb-2">কুইজ সম্পন্ন!</h3>
+              <h3 className="text-xl font-bold text-[var(--text-primary)] mb-2">কুইজ সম্পন্ন!</h3>
               {submitFailed && (
                 <div
                   role="alert"
@@ -360,8 +360,8 @@ export default function DailyQuizWidget() {
                   const userAnswer = answers[i];
                   const isCorrect = userAnswer === q.correctAnswer;
                   return (
-                    <div key={q.id} className={`p-3 rounded-xl border ${isCorrect ? "border-emerald-500/20" : "border-red-500/20"}`}>
-                      <p className="text-sm text-white mb-1">{i + 1}. {q.question}</p>
+                    <div key={q.id} className={`p-3 rounded-xl border ${isCorrect ? "border-[var(--accent)]/20" : "border-red-500/20"}`}>
+                      <p className="text-sm text-[var(--text-primary)] mb-1">{i + 1}. {q.question}</p>
                       <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">
                         আপনার উত্তর: <span className={isCorrect ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-danger)]"}>{userAnswer || "উত্তর দেওয়া হয়নি"}</span>
                       </p>
@@ -375,7 +375,7 @@ export default function DailyQuizWidget() {
 
               <button
                 onClick={() => setIsOpen(false)}
-                className="px-6 py-2.5 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono rounded-lg hover:bg-emerald-400 transition-colors"
+                className="px-6 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono rounded-lg hover:bg-[var(--accent-hover)] transition-colors"
               >
                 বন্ধ করুন
               </button>

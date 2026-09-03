@@ -199,7 +199,7 @@ export default function MistakesTab() {
                 score >= 80 ? "text-[var(--dashboard-warning)]" : score >= 50 ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-danger)]"
               }`}
             />
-            <h3 className="text-xl font-bold text-white font-mono mb-1">Mistake Exam সম্পন্ন!</h3>
+            <h3 className="text-xl font-bold text-[var(--text-primary)] font-mono mb-1">Mistake Exam সম্পন্ন!</h3>
             <p className="text-sm font-mono text-[var(--dashboard-text-muted)] mb-4">
               সঠিক: {correct}/{total} • স্কোর {score}%
             </p>
@@ -223,13 +223,13 @@ export default function MistakesTab() {
             <div className="flex items-center justify-center gap-3 mt-6">
               <button
                 onClick={() => { setView("dashboard"); setExamResult(null); setDrillResults(null); }}
-                className="px-5 py-2.5 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-emerald-400 transition-colors flex items-center gap-2 shadow-neon-glow"
+                className="px-5 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2 shadow-neon-glow"
               >
                 <RotateCcw className="w-4 h-4" /> ড্যাশবোর্ডে ফিরুন
               </button>
               <button
                 onClick={() => { setView("dashboard"); setExamResult(null); setDrillResults(null); setShowSelection(true); }}
-                className="px-5 py-2.5 bg-zinc-900 border border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-secondary)] font-mono text-sm rounded-xl hover:text-white transition-colors"
+                className="px-5 py-2.5 bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-secondary)] font-mono text-sm rounded-xl hover:text-[var(--text-primary)] transition-colors"
               >
                 আবার Practice করুন
               </button>
@@ -270,7 +270,7 @@ export default function MistakesTab() {
                         <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)]">আবার ভুল</span>
                       )}
                     </div>
-                    <p className="text-sm text-white">{q.question}</p>
+                    <p className="text-sm text-[var(--text-primary)]">{q.question}</p>
                   </div>
                 </div>
               </motion.div>
@@ -297,12 +297,12 @@ export default function MistakesTab() {
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             <Target className="w-5 h-5 text-[var(--dashboard-danger)]" />
-            <h2 className="text-lg font-bold text-white font-mono">Mistake Analytics</h2>
+            <h2 className="text-lg font-bold text-[var(--text-primary)] font-mono">Mistake Analytics</h2>
           </div>
           <button
             onClick={() => { setLoading(true); void loadData().then(() => setLoading(false)); }}
             aria-label="Refresh"
-            className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center bg-zinc-900 border border-[var(--dashboard-border-muted)] rounded-lg text-[var(--dashboard-text-muted)] hover:text-white transition-colors"
+            className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] rounded-lg text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)] transition-colors"
           >
             <RefreshCw className="w-4 h-4" />
           </button>
@@ -324,7 +324,7 @@ export default function MistakesTab() {
             <ShieldCheck className="w-4 h-4 text-[var(--dashboard-primary)]" />
             <span className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase">Accuracy</span>
           </div>
-          <p className="text-3xl font-bold text-white font-mono">{accuracy}%</p>
+          <p className="text-3xl font-bold text-[var(--text-primary)] font-mono">{accuracy}%</p>
           <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono mt-1">{overall?.totalAttempts ?? 0} total attempts</p>
         </motion.div>
         <motion.div variants={STAGGER_ITEM} className="glass-card rounded-terminal-rounded border border-emerald-500/20 p-4">
@@ -380,7 +380,7 @@ export default function MistakesTab() {
                   <select
                     value={selSubject}
                     onChange={(e) => { setSelSubject(e.target.value); setSelTopic(""); setSelSubtopic(""); }}
-                    className="w-full bg-zinc-900 border border-[var(--dashboard-border-muted)] rounded-lg px-3 py-2.5 text-sm text-white font-mono focus:outline-none focus:border-emerald-500/50"
+                    className="w-full bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] rounded-lg px-3 py-2.5 text-sm text-[var(--text-primary)] font-mono focus:outline-none focus:border-emerald-500/50"
                   >
                     <option value="">All Subjects</option>
                     {selection.map((s) => (
@@ -398,7 +398,7 @@ export default function MistakesTab() {
                     <select
                       value={selTopic}
                       onChange={(e) => { setSelTopic(e.target.value); setSelSubtopic(""); }}
-                      className="w-full bg-zinc-900 border border-[var(--dashboard-border-muted)] rounded-lg px-3 py-2.5 text-sm text-white font-mono focus:outline-none focus:border-emerald-500/50"
+                      className="w-full bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] rounded-lg px-3 py-2.5 text-sm text-[var(--text-primary)] font-mono focus:outline-none focus:border-emerald-500/50"
                     >
                       <option value="">Whole Subject</option>
                       {currentSubject.topics.map((t) => (
@@ -417,7 +417,7 @@ export default function MistakesTab() {
                     <select
                       value={selSubtopic}
                       onChange={(e) => setSelSubtopic(e.target.value)}
-                      className="w-full bg-zinc-900 border border-[var(--dashboard-border-muted)] rounded-lg px-3 py-2.5 text-sm text-white font-mono focus:outline-none focus:border-emerald-500/50"
+                      className="w-full bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] rounded-lg px-3 py-2.5 text-sm text-[var(--text-primary)] font-mono focus:outline-none focus:border-emerald-500/50"
                     >
                       <option value="">Whole Topic</option>
                       {currentTopic.subtopics.map((st) => (
@@ -476,7 +476,7 @@ export default function MistakesTab() {
                 <button
                   onClick={() => void startExam()}
                   disabled={building || availableForSelection === 0}
-                  className="w-full px-6 py-3 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors disabled:opacity-40 flex items-center justify-center gap-2"
+                  className="w-full px-6 py-3 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors disabled:opacity-40 flex items-center justify-center gap-2"
                 >
                   {building ? (
                     "Building Exam…"
@@ -501,7 +501,7 @@ export default function MistakesTab() {
       >
         <div className="flex items-center gap-2 mb-1">
           <BarChart3 className="w-4 h-4 text-[var(--dashboard-text-muted)]" />
-          <h3 className="text-sm font-bold text-white font-mono">Wrong Questions by Date</h3>
+          <h3 className="text-sm font-bold text-[var(--text-primary)] font-mono">Wrong Questions by Date</h3>
         </div>
         <p className="text-xs text-[var(--dashboard-text-muted)] font-mono mb-4">
           Every question you&apos;ve answered incorrectly across all subjects.
@@ -602,7 +602,7 @@ export default function MistakesTab() {
                 <button
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page === 1}
-                  className="px-3 py-1.5 bg-zinc-900 border border-[var(--dashboard-border-muted)] rounded-lg text-xs text-[var(--dashboard-text-muted)] font-mono disabled:opacity-40 hover:text-white transition-colors"
+                  className="px-3 py-1.5 bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] rounded-lg text-xs text-[var(--dashboard-text-muted)] font-mono disabled:opacity-40 hover:text-[var(--text-primary)] transition-colors"
                 >
                   Previous
                 </button>
@@ -610,7 +610,7 @@ export default function MistakesTab() {
                 <button
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={page === totalPages}
-                  className="px-3 py-1.5 bg-zinc-900 border border-[var(--dashboard-border-muted)] rounded-lg text-xs text-[var(--dashboard-text-muted)] font-mono disabled:opacity-40 hover:text-white transition-colors"
+                  className="px-3 py-1.5 bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] rounded-lg text-xs text-[var(--dashboard-text-muted)] font-mono disabled:opacity-40 hover:text-[var(--text-primary)] transition-colors"
                 >
                   Next
                 </button>

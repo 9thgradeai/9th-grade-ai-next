@@ -88,11 +88,11 @@ function SectionCard({
       className="glass-card rounded-2xl border border-default p-5 sm:p-6"
     >
       <header className="flex items-start gap-3 mb-5">
-        <div className="w-10 h-10 rounded-xl bg-[var(--dashboard-primary-subtle)] border border-emerald-500/25 flex items-center justify-center flex-shrink-0">
+        <div className="w-10 h-10 rounded-xl bg-[var(--dashboard-primary-subtle)] border border-[var(--accent)]/25 flex items-center justify-center flex-shrink-0">
           {icon}
         </div>
         <div>
-          <h3 className="text-sm font-semibold text-white uppercase tracking-wider">{title}</h3>
+          <h3 className="text-sm font-semibold text-[var(--text-primary)] uppercase tracking-wider">{title}</h3>
           {description ? <p className="text-xs text-[var(--dashboard-text-muted)] mt-0.5">{description}</p> : null}
         </div>
       </header>
@@ -114,7 +114,7 @@ function Field({
       <input
         id={id}
         {...props}
-        className="w-full px-3.5 py-2.5 rounded-xl bg-subtle border border-[var(--dashboard-border-muted)] text-sm text-white placeholder-zinc-600 outline-none transition-colors focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20"
+        className="w-full px-3.5 py-2.5 rounded-xl bg-subtle border border-[var(--dashboard-border-muted)] text-sm text-[var(--text-primary)] placeholder-zinc-600 outline-none transition-colors focus:border-[var(--accent)]/50 focus:ring-2 focus:ring-emerald-500/20"
       />
     </label>
   );
@@ -273,11 +273,11 @@ export default function SettingsTab() {
         animate={{ opacity: 1, y: 0 }}
         className="flex items-center gap-3"
       >
-        <div className="w-11 h-11 rounded-2xl bg-[var(--dashboard-primary-subtle)] border border-emerald-500/25 flex items-center justify-center">
+        <div className="w-11 h-11 rounded-2xl bg-[var(--dashboard-primary-subtle)] border border-[var(--accent)]/25 flex items-center justify-center">
           <MonitorSmartphone className="w-5.5 h-5.5 text-[var(--dashboard-primary)]" aria-hidden="true" />
         </div>
         <div>
-          <h1 className="font-display text-xl font-semibold text-white">Settings</h1>
+          <h1 className="font-display text-xl font-semibold text-[var(--text-primary)]">Settings</h1>
           <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">manage your account, security, and data</p>
         </div>
       </motion.div>
@@ -290,10 +290,10 @@ export default function SettingsTab() {
       >
         <div className="flex items-center gap-4 mb-5">
           <div className="relative">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-emerald-500/30 to-cyan-500/10 border border-emerald-500/35 flex items-center justify-center text-xl font-bold text-[var(--dashboard-primary)]">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-emerald-500/30 to-cyan-500/10 border border-[var(--accent)]/35 flex items-center justify-center text-xl font-bold text-[var(--dashboard-primary)]">
               {initial}
             </div>
-            <span className="absolute bottom-1 right-1 w-3 h-3 rounded-full bg-emerald-500 border-2 border-[var(--surface-solid)]" aria-hidden="true" />
+            <span className="absolute bottom-1 right-1 w-3 h-3 rounded-full bg-[var(--accent)] border-2 border-[var(--surface-solid)]" aria-hidden="true" />
           </div>
           <div className="min-w-0">
             {editingName ? (
@@ -307,12 +307,12 @@ export default function SettingsTab() {
                   }}
                   autoFocus
                   aria-label="Edit display name"
-                  className="px-3 py-1.5 rounded-lg bg-subtle border border-emerald-500/40 text-sm text-white outline-none"
+                  className="px-3 py-1.5 rounded-lg bg-subtle border border-[var(--accent)]/40 text-sm text-[var(--text-primary)] outline-none"
                 />
                 <button
                   onClick={() => void saveName()}
                   disabled={savingName}
-                  className="px-3 py-1.5 rounded-lg bg-emerald-500 text-[var(--dashboard-text-inverse)] text-xs font-mono font-semibold hover:bg-emerald-400 transition-colors disabled:opacity-60"
+                  className="px-3 py-1.5 rounded-lg bg-[var(--accent)] text-[var(--dashboard-text-inverse)] text-xs font-mono font-semibold hover:bg-[var(--accent-hover)] transition-colors disabled:opacity-60"
                 >
                   {savingName ? "Saving..." : "Save"}
                 </button>
@@ -321,7 +321,7 @@ export default function SettingsTab() {
                     setEditingName(false);
                     setNameMsg(null);
                   }}
-                  className="px-2.5 py-1.5 rounded-lg border border-zinc-700 text-xs font-mono text-[var(--dashboard-text-muted)] hover:text-white transition-colors"
+                  className="px-2.5 py-1.5 rounded-lg border border-zinc-700 text-xs font-mono text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)] transition-colors"
                   aria-label="Cancel editing"
                 >
                   Cancel
@@ -329,7 +329,7 @@ export default function SettingsTab() {
               </div>
             ) : (
               <div className="flex items-center gap-2">
-                <p className="text-lg font-semibold text-white truncate">{user?.name ?? "Student"}</p>
+                <p className="text-lg font-semibold text-[var(--text-primary)] truncate">{user?.name ?? "Student"}</p>
                 <button
                   onClick={() => {
                     setNameDraft(user?.name ?? "");
@@ -418,7 +418,7 @@ export default function SettingsTab() {
         <button
           onClick={() => void changePassword()}
           disabled={changingPw}
-          className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500 text-[var(--dashboard-text-inverse)] text-sm font-mono font-semibold hover:bg-emerald-400 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+          className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--accent)] text-[var(--dashboard-text-inverse)] text-sm font-mono font-semibold hover:bg-[var(--accent-hover)] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {changingPw ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" /> : <KeyRound className="w-4 h-4" aria-hidden="true" />}
           {changingPw ? "Updating..." : "Change password"}
@@ -473,7 +473,7 @@ export default function SettingsTab() {
             </div>
             <button
               onClick={toggleTheme}
-              className="relative w-14 h-7 rounded-full bg-zinc-800 border border-zinc-700 transition-colors"
+              className="relative w-14 h-7 rounded-full bg-[var(--surface-overlay)] border border-zinc-700 transition-colors"
               role="switch"
               aria-checked={theme === "light"}
               aria-label="Toggle theme"
@@ -481,7 +481,7 @@ export default function SettingsTab() {
               <motion.span
                 layout
                 transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                className={`absolute top-0.5 w-6 h-6 rounded-full bg-emerald-500 shadow-neon-glow ${theme === "light" ? "left-[30px]" : "left-0.5"}`}
+                className={`absolute top-0.5 w-6 h-6 rounded-full bg-[var(--accent)] shadow-neon-glow ${theme === "light" ? "left-[30px]" : "left-0.5"}`}
               />
             </button>
           </div>
@@ -496,7 +496,7 @@ export default function SettingsTab() {
             </div>
             <button
               onClick={toggleNotif}
-              className="relative w-14 h-7 rounded-full bg-zinc-800 border border-zinc-700 transition-colors"
+              className="relative w-14 h-7 rounded-full bg-[var(--surface-overlay)] border border-zinc-700 transition-colors"
               role="switch"
               aria-checked={notifPref}
               aria-label="Toggle notifications"
@@ -504,7 +504,7 @@ export default function SettingsTab() {
               <motion.span
                 layout
                 transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                className={`absolute top-0.5 w-6 h-6 rounded-full bg-emerald-500 shadow-neon-glow ${notifPref ? "left-[30px]" : "left-0.5"}`}
+                className={`absolute top-0.5 w-6 h-6 rounded-full bg-[var(--accent)] shadow-neon-glow ${notifPref ? "left-[30px]" : "left-0.5"}`}
               />
             </button>
           </div>
@@ -537,7 +537,7 @@ export default function SettingsTab() {
         <div className="flex flex-wrap gap-3">
           <button
             onClick={exportData}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-emerald-500/30 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] text-sm font-mono hover:bg-[var(--dashboard-primary-subtle)] transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-[var(--accent)]/30 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] text-sm font-mono hover:bg-[var(--dashboard-primary-subtle)] transition-colors"
           >
             <Download className="w-4 h-4" aria-hidden="true" />
             Export my data
@@ -546,7 +546,7 @@ export default function SettingsTab() {
             onClick={() => {
               resetStore();
             }}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-zinc-700 bg-subtle text-[var(--dashboard-text-secondary)] text-sm font-mono hover:border-zinc-500 hover:text-white transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-zinc-700 bg-subtle text-[var(--dashboard-text-secondary)] text-sm font-mono hover:border-zinc-500 hover:text-[var(--text-primary)] transition-colors"
           >
             <Database className="w-4 h-4" aria-hidden="true" />
             Clear local data
@@ -588,11 +588,11 @@ export default function SettingsTab() {
         className="glass-card rounded-2xl border border-default p-5 sm:p-6"
       >
         <header className="flex items-start gap-3 mb-4">
-          <div className="w-10 h-10 rounded-xl bg-[var(--dashboard-primary-subtle)] border border-emerald-500/25 flex items-center justify-center flex-shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-[var(--dashboard-primary-subtle)] border border-[var(--accent)]/25 flex items-center justify-center flex-shrink-0">
             <Info className="w-5 h-5 text-[var(--dashboard-primary)]" aria-hidden="true" />
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-white uppercase tracking-wider">About</h3>
+            <h3 className="text-sm font-semibold text-[var(--text-primary)] uppercase tracking-wider">About</h3>
             <p className="text-xs text-[var(--dashboard-text-muted)] mt-0.5">9th-grade-ai — free exam prep for Bangladesh</p>
           </div>
         </header>
@@ -644,11 +644,11 @@ export default function SettingsTab() {
                   <div className="w-10 h-10 rounded-xl bg-[var(--dashboard-danger-subtle)] border border-red-500/25 flex items-center justify-center">
                     <Trash2 className="w-5 h-5 text-[var(--dashboard-danger)]" aria-hidden="true" />
                   </div>
-                  <h2 className="text-lg font-semibold text-white">Delete account?</h2>
+                  <h2 className="text-lg font-semibold text-[var(--text-primary)]">Delete account?</h2>
                 </div>
                 <button
                   onClick={() => setConfirmDelete(false)}
-                  className="p-1.5 rounded-lg text-[var(--dashboard-text-muted)] hover:text-white transition-colors"
+                  className="p-1.5 rounded-lg text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)] transition-colors"
                   aria-label="Close"
                 >
                   <X className="w-5 h-5" />
@@ -665,14 +665,14 @@ export default function SettingsTab() {
                 <button
                   onClick={() => setConfirmDelete(false)}
                   disabled={deleting}
-                  className="px-4 py-2 rounded-xl border border-zinc-700 text-sm font-mono text-[var(--dashboard-text-secondary)] hover:text-white transition-colors disabled:opacity-60"
+                  className="px-4 py-2 rounded-xl border border-zinc-700 text-sm font-mono text-[var(--dashboard-text-secondary)] hover:text-[var(--text-primary)] transition-colors disabled:opacity-60"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={() => void handleDelete()}
                   disabled={deleting}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-red-500 text-[var(--dashboard-text-inverse)] text-sm font-mono font-semibold hover:bg-red-400 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--danger)] text-[var(--dashboard-text-inverse)] text-sm font-mono font-semibold hover:bg-[var(--danger)] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {deleting ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" /> : <Trash2 className="w-4 h-4" aria-hidden="true" />}
                   {deleting ? "Deleting..." : "Delete forever"}

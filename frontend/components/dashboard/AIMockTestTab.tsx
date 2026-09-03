@@ -55,7 +55,7 @@ export default function AIMockTestTab() {
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
             placeholder="যেমন: ইতিহাস"
-            className="w-40 rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-[var(--dashboard-text-primary)] outline-none focus:border-emerald-500/50"
+            className="w-40 rounded-lg border border-white/10 bg-[var(--surface-raised)] px-3 py-2 text-sm text-[var(--dashboard-text-primary)] outline-none focus:border-emerald-500/50"
           />
         </label>
         <label className="flex flex-col gap-1 text-sm text-[var(--dashboard-text-secondary)]">
@@ -66,7 +66,7 @@ export default function AIMockTestTab() {
             max={25}
             value={count}
             onChange={(e) => setCount(Math.max(1, Math.min(25, Number(e.target.value) || 10)))}
-            className="w-24 rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-[var(--dashboard-text-primary)] outline-none focus:border-emerald-500/50"
+            className="w-24 rounded-lg border border-white/10 bg-[var(--surface-raised)] px-3 py-2 text-sm text-[var(--dashboard-text-primary)] outline-none focus:border-emerald-500/50"
           />
         </label>
         <label className="flex flex-col gap-1 text-sm text-[var(--dashboard-text-secondary)]">
@@ -74,7 +74,7 @@ export default function AIMockTestTab() {
           <select
             value={difficulty}
             onChange={(e) => setDifficulty(e.target.value as Difficulty | "")}
-            className="w-32 rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-[var(--dashboard-text-primary)] outline-none focus:border-emerald-500/50"
+            className="w-32 rounded-lg border border-white/10 bg-[var(--surface-raised)] px-3 py-2 text-sm text-[var(--dashboard-text-primary)] outline-none focus:border-emerald-500/50"
           >
             <option value="">যেকোনো</option>
             <option value="EASY">সহজ</option>
@@ -86,7 +86,7 @@ export default function AIMockTestTab() {
           type="button"
           onClick={() => void generate()}
           disabled={loading}
-          className="rounded-xl bg-emerald-500 px-5 py-2 text-sm font-medium text-[var(--dashboard-text-inverse)] transition-colors hover:bg-emerald-400 disabled:opacity-60"
+          className="rounded-xl bg-[var(--accent)] px-5 py-2 text-sm font-medium text-[var(--dashboard-text-inverse)] transition-colors hover:bg-[var(--accent-hover)] disabled:opacity-60"
         >
           {loading ? "তৈরি হচ্ছে…" : "টেস্ট তৈরি করো"}
         </button>
@@ -130,7 +130,7 @@ export default function AIMockTestTab() {
             <button
               type="button"
               onClick={() => setSubmitted(true)}
-              className="self-start rounded-xl bg-emerald-500 px-5 py-2 text-sm font-medium text-[var(--dashboard-text-inverse)] hover:bg-emerald-400"
+              className="self-start rounded-xl bg-[var(--accent)] px-5 py-2 text-sm font-medium text-[var(--dashboard-text-inverse)] hover:bg-[var(--accent-hover)]"
             >
               দাখিল করো
             </button>

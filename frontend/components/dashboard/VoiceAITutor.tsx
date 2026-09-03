@@ -547,13 +547,13 @@ export default function VoiceAITutor() {
                   <button
                     type="button"
                     onClick={() => setSidebarOpen((v) => !v)}
-                    className="flex p-2 text-[var(--dashboard-text-muted)] transition-colors hover:text-white lg:hidden"
+                    className="flex p-2 text-[var(--dashboard-text-muted)] transition-colors hover:text-[var(--text-primary)] lg:hidden"
                     aria-label="Toggle conversation list"
                   >
                     <PanelLeft className="h-5 w-5" />
                   </button>
                   <AiLogo className="h-7 w-7 flex-shrink-0" />
-                  <span id="ai-workspace-title" className="truncate font-bold text-emerald-500">
+                  <span id="ai-workspace-title" className="truncate font-bold text-[var(--accent)]">
                     9Th-Grade AI
                   </span>
 
@@ -564,8 +564,8 @@ export default function VoiceAITutor() {
                       onClick={() => setMode("tutor")}
                       className={`rounded-md px-2.5 py-1 font-mono text-xs transition-colors ${
                         mode === "tutor"
-                          ? "bg-emerald-500 text-[var(--dashboard-text-inverse)]"
-                          : "text-[var(--dashboard-primary)] hover:text-white"
+                          ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)]"
+                          : "text-[var(--dashboard-primary)] hover:text-[var(--text-primary)]"
                       }`}
                     >
                       টিউটর
@@ -575,8 +575,8 @@ export default function VoiceAITutor() {
                       onClick={() => setMode("assistant")}
                       className={`rounded-md px-2.5 py-1 font-mono text-xs transition-colors ${
                         mode === "assistant"
-                          ? "bg-emerald-500 text-[var(--dashboard-text-inverse)]"
-                          : "text-[var(--dashboard-primary)] hover:text-white"
+                          ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)]"
+                          : "text-[var(--dashboard-primary)] hover:text-[var(--text-primary)]"
                       }`}
                     >
                       সহায়ক
@@ -605,7 +605,7 @@ export default function VoiceAITutor() {
                     <button
                       type="button"
                       onClick={startNewConversation}
-                      className="p-2 text-[var(--dashboard-text-muted)] transition-colors hover:text-white lg:hidden"
+                      className="p-2 text-[var(--dashboard-text-muted)] transition-colors hover:text-[var(--text-primary)] lg:hidden"
                       aria-label="New conversation"
                     >
                       <Plus className="h-5 w-5" />
@@ -614,7 +614,7 @@ export default function VoiceAITutor() {
                   <button
                     type="button"
                     onClick={closeModal}
-                    className="p-2 text-[var(--dashboard-text-muted)] transition-colors hover:text-white"
+                    className="p-2 text-[var(--dashboard-text-muted)] transition-colors hover:text-[var(--text-primary)]"
                     aria-label="Close AI workspace"
                   >
                     <X className="h-5 w-5" />
@@ -641,7 +641,7 @@ export default function VoiceAITutor() {
                         className="mx-4 mt-3 flex items-center gap-2 rounded-lg border border-red-500/20 bg-[var(--dashboard-danger-subtle)] px-3 py-2 text-xs text-[var(--dashboard-danger)]"
                       >
                         <span className="flex-1">{error}</span>
-                        <button type="button" onClick={() => setError(null)} className="p-1 hover:text-white" aria-label="Dismiss error">
+                        <button type="button" onClick={() => setError(null)} className="p-1 hover:text-[var(--text-primary)]" aria-label="Dismiss error">
                           <X className="h-3.5 w-3.5" />
                         </button>
                       </motion.div>
@@ -654,9 +654,9 @@ export default function VoiceAITutor() {
                       <div className="flex min-h-full flex-col items-center justify-center px-4 py-8">
                         <div className="text-center">
                           {mode === "assistant" ? (
-                            <BrainCircuit className="mx-auto mb-3 h-12 w-12 text-emerald-500/60" aria-hidden="true" />
+                            <BrainCircuit className="mx-auto mb-3 h-12 w-12 text-[var(--accent)]/60" aria-hidden="true" />
                           ) : (
-                            <GraduationCap className="mx-auto mb-3 h-12 w-12 text-emerald-500/60" aria-hidden="true" />
+                            <GraduationCap className="mx-auto mb-3 h-12 w-12 text-[var(--accent)]/60" aria-hidden="true" />
                           )}
                           <p className="font-mono text-sm text-[var(--dashboard-text-muted)]">
                             {mode === "assistant"
@@ -762,7 +762,7 @@ export default function VoiceAITutor() {
                         className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl border transition-all ${
                           isListening
                             ? "border-red-500/30 bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)] animate-pulse"
-                            : "border-[var(--dashboard-border-strong)] text-[var(--dashboard-text-muted)] hover:text-white"
+                            : "border-[var(--dashboard-border-strong)] text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)]"
                         }`}
                         title={isListening ? "Stop listening" : "Start voice input"}
                         aria-label={isListening ? "Stop listening" : "Start voice input"}
@@ -784,7 +784,7 @@ export default function VoiceAITutor() {
                       <button
                         type="submit"
                         disabled={status === "generating" || !input.trim()}
-                        className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-emerald-500 text-[var(--dashboard-text-inverse)] transition-colors hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-40"
+                        className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-[var(--accent)] text-[var(--dashboard-text-inverse)] transition-colors hover:bg-[var(--accent-hover)] disabled:cursor-not-allowed disabled:opacity-40"
                         aria-label="Send message"
                       >
                         {status === "generating" ? (

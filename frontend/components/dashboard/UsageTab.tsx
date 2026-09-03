@@ -50,9 +50,9 @@ export default function UsageTab() {
             {data.byProvider.map((p) => (
               <div key={p.provider} className="flex items-center gap-3">
                 <span className="w-24 shrink-0 text-xs text-[var(--dashboard-text-muted)]">{p.provider}</span>
-                <div className="h-2 flex-1 overflow-hidden rounded-full bg-zinc-800">
+                <div className="h-2 flex-1 overflow-hidden rounded-full bg-[var(--surface-overlay)]">
                   <div
-                    className="h-full rounded-full bg-emerald-500"
+                    className="h-full rounded-full bg-[var(--accent)]"
                     style={{ width: `${(p.calls / maxProv) * 100}%` }}
                   />
                 </div>
@@ -70,7 +70,7 @@ export default function UsageTab() {
             {data.byDay.map((d) => (
               <div key={d.date} className="flex flex-1 flex-col items-center gap-1" title={`${d.date}: ${d.calls}`}>
                 <div
-                  className="w-full rounded-t bg-emerald-500/70"
+                  className="w-full rounded-t bg-[var(--accent)]/70"
                   style={{ height: `${Math.max(4, (d.calls / maxDay) * 64)}px` }}
                 />
                 <span className="text-[9px] text-[var(--dashboard-text-muted)]">{d.date.slice(5)}</span>

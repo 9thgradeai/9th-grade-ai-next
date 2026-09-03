@@ -98,7 +98,7 @@ function TopicNodeRow({
     <div>
       <div
         className={`flex items-center gap-2 rounded-lg border px-2.5 py-2 transition-colors ${
-          selected ? "border-emerald-500/30 bg-[var(--dashboard-primary-subtle)]" : "border-transparent hover:border-[var(--dashboard-border-muted)]"
+          selected ? "border-[var(--accent)]/30 bg-[var(--dashboard-primary-subtle)]" : "border-transparent hover:border-[var(--dashboard-border-muted)]"
         }`}
         style={{ marginLeft: (depth - 1) * 16 }}
       >
@@ -108,13 +108,13 @@ function TopicNodeRow({
           aria-checked={selected}
           aria-label={`${node.name} (${node.questionCount}টি প্রশ্ন)`}
           className={`w-4 h-4 rounded border flex-shrink-0 flex items-center justify-center ${
-            selected ? "bg-emerald-500 border-emerald-500" : "border-zinc-600"
+            selected ? "bg-[var(--accent)] border-[var(--accent)]" : "border-[var(--border-default)]"
           }`}
         >
           {selected && <Check className="w-3 h-3 text-[var(--dashboard-text-inverse)]" />}
         </button>
         <button onClick={() => onToggle(node)} className="flex-1 text-left min-w-0">
-          <span className="text-xs font-medium text-white break-words">{node.name}</span>
+          <span className="text-xs font-medium text-[var(--text-primary)] break-words">{node.name}</span>
           <span className="block text-[10px] text-[var(--dashboard-text-muted)] font-mono">{node.questionCount}টি প্রশ্ন</span>
         </button>
       </div>
@@ -216,8 +216,8 @@ export default function TopicTreePicker({
                 onClick={() => toggleSubject(subject)}
                 className={`glass-card rounded-2xl border p-3 text-left transition-all ${
                   selected
-                    ? "border-emerald-500/40 bg-[var(--dashboard-primary-subtle)] shadow-neon-glow"
-                    : "border-terminal-border hover:border-emerald-500/20"
+                    ? "border-[var(--accent)]/40 bg-[var(--dashboard-primary-subtle)] shadow-neon-glow"
+                    : "border-terminal-border hover:border-[var(--accent)]/20"
                 }`}
               >
                 <div className="flex items-center gap-2">
@@ -229,7 +229,7 @@ export default function TopicTreePicker({
                   </span>
                   <span
                     className={`ml-auto w-4 h-4 rounded border flex-shrink-0 flex items-center justify-center ${
-                      selected ? "bg-emerald-500 border-emerald-500" : "border-zinc-600"
+                      selected ? "bg-[var(--accent)] border-[var(--accent)]" : "border-[var(--border-default)]"
                     }`}
                   >
                     {selected && <Check className="w-3 h-3 text-[var(--dashboard-text-inverse)]" />}
@@ -256,19 +256,19 @@ export default function TopicTreePicker({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               layout
-              className="glass-card rounded-2xl border border-emerald-500/20 p-4 md:p-5"
+              className="glass-card rounded-2xl border border-[var(--accent)]/20 p-4 md:p-5"
             >
               <div className="flex items-center justify-between gap-3 mb-3">
                 <div className="flex items-center gap-2 min-w-0">
                   <span className="text-lg">{subject.icon}</span>
-                  <h3 className="text-sm font-semibold text-white truncate">{subject.nameBn}</h3>
+                  <h3 className="text-sm font-semibold text-[var(--text-primary)] truncate">{subject.nameBn}</h3>
                 </div>
                 <button
                   onClick={() => toggleWholeSubject(subject)}
                   className={`px-2.5 py-1 rounded-lg text-[10px] font-mono border transition-colors flex-shrink-0 ${
                     allSelected
-                      ? "bg-emerald-500 text-[var(--dashboard-text-inverse)] border-emerald-500"
-                      : "border-zinc-700 text-[var(--dashboard-text-muted)] hover:border-emerald-500/40"
+                      ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] border-[var(--accent)]"
+                      : "border-zinc-700 text-[var(--dashboard-text-muted)] hover:border-[var(--accent)]/40"
                   }`}
                 >
                   {allSelected ? "পুরো বিষয় ✓" : "সব টপিক নির্বাচন"}
@@ -304,7 +304,7 @@ export default function TopicTreePicker({
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setSubjectCount(subject, (sel.count ?? 0) - 1)}
-                    className="w-8 h-8 rounded-lg bg-zinc-900 border border-emerald-500/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-emerald-500/40"
+                    className="w-8 h-8 rounded-lg bg-[var(--surface-raised)] border border-[var(--accent)]/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-[var(--accent)]/40"
                     aria-label="বিষয়ের প্রশ্ন কমান"
                   >
                     <Minus className="w-4 h-4" />
@@ -316,11 +316,11 @@ export default function TopicTreePicker({
                     value={sel.count ?? 0}
                     onChange={(e) => setSubjectCount(subject, Number(e.target.value))}
                     aria-label={`${subject.nameBn} এর প্রশ্ন সংখ্যা`}
-                    className="w-16 text-center bg-zinc-900 border border-emerald-500/20 rounded-lg py-2 text-[var(--dashboard-primary)] font-mono text-sm focus:outline-none focus:border-emerald-500/50 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                    className="w-16 text-center bg-[var(--surface-raised)] border border-[var(--accent)]/20 rounded-lg py-2 text-[var(--dashboard-primary)] font-mono text-sm focus:outline-none focus:border-[var(--accent)]/50 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                   />
                   <button
                     onClick={() => setSubjectCount(subject, (sel.count ?? 0) + 1)}
-                    className="w-8 h-8 rounded-lg bg-zinc-900 border border-emerald-500/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-emerald-500/40"
+                    className="w-8 h-8 rounded-lg bg-[var(--surface-raised)] border border-[var(--accent)]/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-[var(--accent)]/40"
                     aria-label="বিষয়ের প্রশ্ন বাড়ান"
                   >
                     <Plus className="w-4 h-4" />

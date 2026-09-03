@@ -47,7 +47,7 @@ export default function AdvisorTab() {
             value={education}
             onChange={(e) => setEducation(e.target.value)}
             placeholder="যেমন: স্নাতক (বিবিএ)"
-            className="rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-[var(--dashboard-text-primary)] outline-none focus:border-emerald-500/50"
+            className="rounded-lg border border-white/10 bg-[var(--surface-raised)] px-3 py-2 text-sm text-[var(--dashboard-text-primary)] outline-none focus:border-emerald-500/50"
           />
         </label>
         <label className="flex flex-col gap-1 text-sm text-[var(--dashboard-text-secondary)]">
@@ -56,7 +56,7 @@ export default function AdvisorTab() {
             value={interests}
             onChange={(e) => setInterests(e.target.value)}
             placeholder="যেমন: বিজ্ঞান, বাংলা"
-            className="rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-[var(--dashboard-text-primary)] outline-none focus:border-emerald-500/50"
+            className="rounded-lg border border-white/10 bg-[var(--surface-raised)] px-3 py-2 text-sm text-[var(--dashboard-text-primary)] outline-none focus:border-emerald-500/50"
           />
         </label>
         <label className="flex flex-col gap-1 text-sm text-[var(--dashboard-text-secondary)]">
@@ -65,7 +65,7 @@ export default function AdvisorTab() {
             value={targetExam}
             onChange={(e) => setTargetExam(e.target.value)}
             placeholder="যেমন: BCS"
-            className="rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-[var(--dashboard-text-primary)] outline-none focus:border-emerald-500/50"
+            className="rounded-lg border border-white/10 bg-[var(--surface-raised)] px-3 py-2 text-sm text-[var(--dashboard-text-primary)] outline-none focus:border-emerald-500/50"
           />
         </label>
         <label className="flex flex-col gap-1 text-sm text-[var(--dashboard-text-secondary)]">
@@ -77,7 +77,7 @@ export default function AdvisorTab() {
             value={weeklyHours}
             onChange={(e) => setWeeklyHours(e.target.value)}
             placeholder="যেমন: 10"
-            className="rounded-lg border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-[var(--dashboard-text-primary)] outline-none focus:border-emerald-500/50"
+            className="rounded-lg border border-white/10 bg-[var(--surface-raised)] px-3 py-2 text-sm text-[var(--dashboard-text-primary)] outline-none focus:border-emerald-500/50"
           />
         </label>
       </div>
@@ -86,7 +86,7 @@ export default function AdvisorTab() {
         type="button"
         onClick={() => void run()}
         disabled={loading}
-        className="self-start rounded-xl bg-emerald-500 px-5 py-2 text-sm font-medium text-[var(--dashboard-text-inverse)] hover:bg-emerald-400 disabled:opacity-60"
+        className="self-start rounded-xl bg-[var(--accent)] px-5 py-2 text-sm font-medium text-[var(--dashboard-text-inverse)] hover:bg-[var(--accent-hover)] disabled:opacity-60"
       >
         {loading ? "তৈরি হচ্ছে…" : "পরিকল্পনা নাও"}
       </button>
@@ -121,7 +121,7 @@ export default function AdvisorTab() {
               </h3>
               <div className="flex flex-col gap-2">
                 {plan.weeklyPlan.map((w, i) => (
-                  <div key={i} className="rounded-xl border border-white/10 bg-zinc-900 p-3">
+                  <div key={i} className="rounded-xl border border-white/10 bg-[var(--surface-raised)] p-3">
                     <div className="text-sm font-medium text-[var(--dashboard-primary)]">সপ্তাহ {w.week}: {w.focus}</div>
                     <ul className="mt-1 list-disc space-y-0.5 pl-5 text-sm text-[var(--dashboard-text-secondary)]">
                       {w.tasks.map((t, j) => (

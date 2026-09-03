@@ -121,7 +121,7 @@ export default function QuestionDrill({
     const score = Math.round((correctCount / questions.length) * 100);
     return (
       <div className="glass-card rounded-terminal-rounded border border-terminal-border p-8 text-center space-y-4">
-        <h3 className="text-lg font-bold text-white font-mono">{title} — শেষ</h3>
+        <h3 className="text-lg font-bold text-[var(--text-primary)] font-mono">{title} — শেষ</h3>
         <div className={`text-3xl font-bold font-mono ${score >= 60 ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-warning)]"}`}>
           {score}%
         </div>
@@ -131,14 +131,14 @@ export default function QuestionDrill({
         <div className="flex gap-3 justify-center">
           <button
             onClick={resetDrill}
-            className="px-4 py-2 bg-zinc-900 border border-[var(--dashboard-border-muted)] rounded-lg text-[var(--dashboard-text-secondary)] font-mono text-sm hover:text-white transition-colors flex items-center gap-2"
+            className="px-4 py-2 bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] rounded-lg text-[var(--dashboard-text-secondary)] font-mono text-sm hover:text-[var(--text-primary)] transition-colors flex items-center gap-2"
           >
             <RotateCcw className="w-4 h-4" /> আবার
           </button>
           {onExit && (
             <button
               onClick={onExit}
-              className="px-4 py-2 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors"
+              className="px-4 py-2 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors"
             >
               শেষ করুন
             </button>
@@ -151,13 +151,13 @@ export default function QuestionDrill({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium text-white font-mono">{title}</h3>
+        <h3 className="text-sm font-medium text-[var(--text-primary)] font-mono">{title}</h3>
         <span className="text-xs text-[var(--dashboard-text-muted)] font-mono">
           {index + 1} / {questions.length}
         </span>
       </div>
 
-      <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+      <div className="h-1.5 bg-[var(--surface-overlay)] rounded-full overflow-hidden">
         <motion.div
           initial={false}
           animate={{ scaleX: (index + (revealed ? 1 : 0)) / questions.length }}
@@ -232,7 +232,7 @@ export default function QuestionDrill({
               <TrendingUp className="w-5 h-5 text-[var(--dashboard-primary)]" />
               <div>
                 <p className="text-sm font-mono font-bold text-[var(--dashboard-primary)]">Mastered!</p>
-                <p className="text-xs font-mono text-emerald-500/80">এই প্রশ্নটি এখন আয়ত্ত — চমৎকার!</p>
+                <p className="text-xs font-mono text-[var(--accent)]/80">এই প্রশ্নটি এখন আয়ত্ত — চমৎকার!</p>
               </div>
             </>
           ) : isCorrect ? (
@@ -240,7 +240,7 @@ export default function QuestionDrill({
               <TrendingUp className="w-5 h-5 text-[var(--dashboard-primary)]" />
               <div>
                 <p className="text-sm font-mono font-bold text-[var(--dashboard-primary)]">Improved!</p>
-                <p className="text-xs font-mono text-emerald-500/80">সঠিক উত্তর — অগ্রগতি হয়েছে।</p>
+                <p className="text-xs font-mono text-[var(--accent)]/80">সঠিক উত্তর — অগ্রগতি হয়েছে।</p>
               </div>
             </>
           ) : (
@@ -248,7 +248,7 @@ export default function QuestionDrill({
               <XCircle className="w-5 h-5 text-[var(--dashboard-warning)]" />
               <div>
                 <p className="text-sm font-mono font-bold text-[var(--dashboard-warning)]">Keep Working On It</p>
-                <p className="text-xs font-mono text-amber-500/80">ভুল হয়েছে — ব্যাখ্যা পড়ে আবার চেষ্টা করুন।</p>
+                <p className="text-xs font-mono text-[var(--warning)]/80">ভুল হয়েছে — ব্যাখ্যা পড়ে আবার চেষ্টা করুন।</p>
               </div>
             </>
           )}
@@ -260,14 +260,14 @@ export default function QuestionDrill({
           <button
             onClick={() => void handleSubmit()}
             disabled={selected === null || submitting}
-            className="px-5 py-2 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors disabled:opacity-40"
+            className="px-5 py-2 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors disabled:opacity-40"
           >
             {submitting ? "সংরক্ষণ হচ্ছে…" : "জমা দিন"}
           </button>
         ) : (
           <button
             onClick={next}
-            className="px-5 py-2 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors flex items-center gap-2"
+            className="px-5 py-2 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2"
           >
             {isLast ? "শেষ" : "পরবর্তী"} <ArrowRight className="w-4 h-4" />
           </button>

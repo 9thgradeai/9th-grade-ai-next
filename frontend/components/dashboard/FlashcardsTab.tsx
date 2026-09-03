@@ -51,7 +51,7 @@ const RATING_CONFIG: Record<ReviewRating, { label: string; color: string }> = {
   again: { label: "Again", color: "text-[var(--dashboard-danger)] bg-[var(--dashboard-danger-subtle)] border-red-500/30" },
   hard: { label: "Hard", color: "text-[var(--dashboard-warning)] bg-[var(--dashboard-warning-subtle)] border-amber-500/30" },
   good: { label: "Good", color: "text-[var(--dashboard-primary)] bg-[var(--dashboard-primary-subtle)] border-emerald-500/30" },
-  easy: { label: "Easy", color: "text-sky-400 bg-sky-500/10 border-sky-500/30" },
+  easy: { label: "Easy", color: "text-[var(--info)] bg-[var(--info)]/10 border-sky-500/30" },
 };
 
 export default function FlashcardsTab() {
@@ -233,7 +233,7 @@ export default function FlashcardsTab() {
 
             <div className="flex items-center gap-2 mb-4">
               <BarChart3 className="w-5 h-5 text-[var(--dashboard-primary)]" />
-              <h2 className="text-lg font-bold text-white">Flashcards</h2>
+              <h2 className="text-lg font-bold text-[var(--text-primary)]">Flashcards</h2>
               <span className="text-xs text-[var(--dashboard-text-muted)] font-mono">Spaced Repetition System</span>
             </div>
 
@@ -261,11 +261,11 @@ export default function FlashcardsTab() {
                     transition={{ delay: i * 0.05 }}
                     whileHover={{ y: -2 }}
                     onClick={() => startSession(deckName)}
-                    className="glass-card rounded-terminal-rounded border border-terminal-border p-4 text-left hover:border-emerald-500/40 transition-all"
+                    className="glass-card rounded-terminal-rounded border border-terminal-border p-4 text-left hover:border-[var(--accent)]/40 transition-all"
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-sm font-medium text-white">{deckName}</h3>
-                      <span className="px-2 py-0.5 bg-[var(--dashboard-primary-subtle)] border border-emerald-500/20 rounded text-[10px] font-mono text-[var(--dashboard-primary)]">
+                      <h3 className="text-sm font-medium text-[var(--text-primary)]">{deckName}</h3>
+                      <span className="px-2 py-0.5 bg-[var(--dashboard-primary-subtle)] border border-[var(--accent)]/20 rounded text-[10px] font-mono text-[var(--dashboard-primary)]">
                         {dueCount} due
                       </span>
                     </div>
@@ -285,7 +285,7 @@ export default function FlashcardsTab() {
             {[
               { label: "Total Cards", value: Object.values(decks).flat().length, color: "text-[var(--dashboard-primary)]" },
               { label: "Due Today", value: Object.values(decks).flat().filter((c) => c.nextReview <= now).length, color: "text-[var(--dashboard-warning)]" },
-              { label: "Decks", value: Object.keys(decks).length, color: "text-sky-400" },
+              { label: "Decks", value: Object.keys(decks).length, color: "text-[var(--info)]" },
             ].map((stat) => (
               <div key={stat.label} className="glass-card rounded-terminal-rounded border border-terminal-border p-4 text-center">
                 <div className={`text-2xl font-bold font-mono ${stat.color}`}>{stat.value}</div>
@@ -299,21 +299,21 @@ export default function FlashcardsTab() {
           {/* Flashcard Session */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <h3 className="text-sm font-medium text-white">{selectedDeck}</h3>
+              <h3 className="text-sm font-medium text-[var(--text-primary)]">{selectedDeck}</h3>
               <span className="text-xs text-[var(--dashboard-text-muted)] font-mono">
                 {currentIndex + 1} / {reviewQueue.length}
               </span>
             </div>
             <button
               onClick={exitDeck}
-              className="px-3 py-1.5 bg-zinc-900 border border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] font-mono text-xs rounded hover:bg-zinc-800 transition-colors"
+              className="px-3 py-1.5 bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] font-mono text-xs rounded hover:bg-[var(--surface-overlay)] transition-colors"
             >
               Exit Deck
             </button>
           </div>
 
           {/* Progress */}
-          <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+          <div className="h-1.5 bg-[var(--surface-overlay)] rounded-full overflow-hidden">
             <motion.div
               initial={false}
               animate={{ scaleX: reviewQueue.length > 0 ? currentIndex / reviewQueue.length : 0 }}
@@ -355,17 +355,17 @@ export default function FlashcardsTab() {
                   className={`w-full h-full rounded-terminal-rounded border-2 cursor-pointer transition-all flex items-center justify-center p-6 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400 ${
                     isFlipped
                       ? "bg-[var(--dashboard-primary-subtle)] border-emerald-500/30"
-                      : "bg-subtle border-[var(--dashboard-border-muted)] hover:border-emerald-500/20"
+                      : "bg-subtle border-[var(--dashboard-border-muted)] hover:border-[var(--accent)]/20"
                   }`}
                 >
                   <div className="text-center max-w-lg">
                      <div className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider mb-3">
                         {currentCard.subject} • {currentCard.difficulty}
                      </div>
-                    <h4 className={`text-xl font-medium mb-4 ${isFlipped ? "text-[var(--dashboard-primary)]" : "text-white"}`}>
+                    <h4 className={`text-xl font-medium mb-4 ${isFlipped ? "text-[var(--dashboard-primary)]" : "text-[var(--text-primary)]"}`}>
                       {isFlipped ? "Answer" : "Question"}
                     </h4>
-                    <p className={`text-lg leading-relaxed ${isFlipped ? "text-emerald-200 font-mono" : "text-[var(--dashboard-text-primary)]"}`}>
+                    <p className={`text-lg leading-relaxed ${isFlipped ? "text-[var(--success)] font-mono" : "text-[var(--dashboard-text-primary)]"}`}>
                       {isFlipped ? currentCard.answer : currentCard.question}
                     </p>
 
@@ -405,7 +405,7 @@ export default function FlashcardsTab() {
                 <button
                   onClick={() => setShowHint(!showHint)}
                   aria-label={showHint ? "Hide hint" : "Show hint"}
-                  className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center bg-zinc-900 border border-[var(--dashboard-border-muted)] rounded-lg text-[var(--dashboard-warning)] hover:border-amber-500/30 transition-colors"
+                  className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] rounded-lg text-[var(--dashboard-warning)] hover:border-amber-500/30 transition-colors"
                 >
                   <Lightbulb className="w-5 h-5" />
                 </button>
@@ -413,7 +413,7 @@ export default function FlashcardsTab() {
               <button
                 onClick={resetSession}
                 aria-label="Reset session"
-                className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center bg-zinc-900 border border-[var(--dashboard-border-muted)] rounded-lg text-[var(--dashboard-text-muted)] hover:text-white transition-colors"
+                className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] rounded-lg text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)] transition-colors"
               >
                 <RotateCcw className="w-5 h-5" />
               </button>
@@ -424,7 +424,7 @@ export default function FlashcardsTab() {
                 <button
                   onClick={() => { setCurrentIndex((i) => i - 1); setIsFlipped(false); setShowHint(false); }}
                   aria-label="Previous card"
-                  className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center bg-zinc-900 border border-[var(--dashboard-border-muted)] rounded-lg text-[var(--dashboard-text-muted)] hover:text-white transition-colors"
+                  className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] rounded-lg text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)] transition-colors"
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
@@ -444,7 +444,7 @@ export default function FlashcardsTab() {
               ) : (
                 <button
                   onClick={handleFlip}
-                  className="px-4 py-2 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors flex items-center gap-1"
+                  className="px-4 py-2 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-1"
                 >
                   Show Answer <ChevronRight className="w-4 h-4" />
                 </button>
@@ -453,7 +453,7 @@ export default function FlashcardsTab() {
                 <button
                   onClick={() => { setCurrentIndex((i) => i + 1); setIsFlipped(false); setShowHint(false); }}
                   aria-label="Next card"
-                  className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center bg-zinc-900 border border-[var(--dashboard-border-muted)] rounded-lg text-[var(--dashboard-text-muted)] hover:text-white transition-colors"
+                  className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] rounded-lg text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)] transition-colors"
                 >
                   <ChevronRight className="w-5 h-5" />
                 </button>

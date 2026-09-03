@@ -92,8 +92,8 @@ export default function StudyPlannerTab() {
     switch (p) {
       case "high": return "text-[var(--dashboard-danger)] bg-[var(--dashboard-danger-subtle)] border-red-500/20";
       case "medium": return "text-[var(--dashboard-warning)] bg-[var(--dashboard-warning-subtle)] border-amber-500/20";
-      case "low": return "text-[var(--dashboard-primary)] bg-[var(--dashboard-primary-subtle)] border-emerald-500/20";
-      default: return "text-[var(--dashboard-text-muted)] bg-zinc-500/10 border-[var(--dashboard-border-muted)]";
+      case "low": return "text-[var(--dashboard-primary)] bg-[var(--dashboard-primary-subtle)] border-[var(--accent)]/20";
+      default: return "text-[var(--dashboard-text-muted)] bg-[var(--surface-muted)] border-[var(--dashboard-border-muted)]";
     }
   };
 
@@ -114,7 +114,7 @@ export default function StudyPlannerTab() {
           <div>
             <div className="flex items-center gap-2 mb-2">
               <Sparkles className="w-5 h-5 text-[var(--dashboard-primary)]" />
-              <h2 className="text-xl font-bold text-white">AI Study Planner</h2>
+              <h2 className="text-xl font-bold text-[var(--text-primary)]">AI Study Planner</h2>
             </div>
             <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">
               A structured study schedule — mark tasks complete as you progress.
@@ -122,11 +122,11 @@ export default function StudyPlannerTab() {
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="text-center px-4 py-2 bg-subtle border border-emerald-500/20 rounded-terminal-rounded">
+            <div className="text-center px-4 py-2 bg-subtle border border-[var(--accent)]/20 rounded-terminal-rounded">
               <div className="text-2xl font-bold text-[var(--dashboard-primary)] font-mono">{progress}%</div>
               <div className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase">Progress</div>
             </div>
-            <div className="text-center px-4 py-2 bg-subtle border border-emerald-500/20 rounded-terminal-rounded">
+            <div className="text-center px-4 py-2 bg-subtle border border-[var(--accent)]/20 rounded-terminal-rounded">
               <div className="text-2xl font-bold text-[var(--dashboard-primary)] font-mono">{completedMinutes}m</div>
               <div className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase">Studied</div>
             </div>
@@ -134,7 +134,7 @@ export default function StudyPlannerTab() {
         </div>
 
         {/* Progress Bar */}
-        <div className="mt-4 h-2 bg-zinc-800 rounded-full overflow-hidden">
+        <div className="mt-4 h-2 bg-[var(--surface-overlay)] rounded-full overflow-hidden">
           <motion.div
             initial={false}
             animate={{ scaleX: progress / 100 }}
@@ -157,8 +157,8 @@ export default function StudyPlannerTab() {
               onClick={() => setSelectedDay(i)}
               className={`flex-shrink-0 px-4 py-3 rounded-terminal-rounded border transition-all ${
                 selectedDay === i
-                  ? "bg-[var(--dashboard-primary-subtle)] border-emerald-500/30 text-[var(--dashboard-primary)]"
-                  : "bg-subtle border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] hover:border-emerald-500/20"
+                  ? "bg-[var(--dashboard-primary-subtle)] border-[var(--accent)]/30 text-[var(--dashboard-primary)]"
+                  : "bg-subtle border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] hover:border-[var(--accent)]/20"
               }`}
             >
               <div className="text-sm font-mono font-medium">{dayName}</div>
@@ -180,7 +180,7 @@ export default function StudyPlannerTab() {
         {Array.from(new Set(dayPlan.tasks.map((t) => t.subject))).map((area) => (
           <span
             key={area}
-            className="px-3 py-1 bg-[var(--dashboard-primary-subtle)] border border-emerald-500/20 rounded-full text-xs font-mono text-[var(--dashboard-primary)]"
+            className="px-3 py-1 bg-[var(--dashboard-primary-subtle)] border border-[var(--accent)]/20 rounded-full text-xs font-mono text-[var(--dashboard-primary)]"
           >
             {area}
           </span>
@@ -203,7 +203,7 @@ export default function StudyPlannerTab() {
                 exit={{ opacity: 0, x: 20 }}
                 transition={{ delay: i * 0.05 }}
                 className={`glass-card rounded-terminal-rounded border p-4 transition-all ${
-                  isCompleted ? "border-emerald-500/30 bg-[var(--dashboard-primary-subtle)]" : "border-terminal-border"
+                  isCompleted ? "border-[var(--accent)]/30 bg-[var(--dashboard-primary-subtle)]" : "border-terminal-border"
                 }`}
               >
                 <div className="flex items-start gap-4">
@@ -215,8 +215,8 @@ export default function StudyPlannerTab() {
                     aria-pressed={isCompleted}
                     className={`mt-0.5 w-5 h-5 rounded border-2 flex items-center justify-center transition-all flex-shrink-0 ${
                       isCompleted
-                        ? "bg-emerald-500 border-emerald-500 text-[var(--dashboard-text-inverse)]"
-                        : "border-emerald-500/30 hover:border-emerald-500/50"
+                        ? "bg-[var(--accent)] border-[var(--accent)] text-[var(--dashboard-text-inverse)]"
+                        : "border-[var(--accent)]/30 hover:border-[var(--accent)]/50"
                     }`}
                   >
                     {isCompleted && <Check className="w-3 h-3" />}
@@ -225,7 +225,7 @@ export default function StudyPlannerTab() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <h4 className={`text-sm font-medium ${isCompleted ? "text-[var(--dashboard-text-muted)] line-through" : "text-white"}`}>
+                        <h4 className={`text-sm font-medium ${isCompleted ? "text-[var(--dashboard-text-muted)] line-through" : "text-[var(--text-primary)]"}`}>
                           {task.title}
                         </h4>
                         <p className="text-xs text-[var(--dashboard-text-muted)] font-mono mt-0.5">{task.description}</p>
@@ -258,7 +258,7 @@ export default function StudyPlannerTab() {
                       onClick={() => {
                         void toggleTask(task.id);
                       }}
-                      className="px-3 py-1.5 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono text-xs rounded hover:bg-emerald-400 transition-colors flex items-center gap-1 shadow-neon-glow"
+                      className="px-3 py-1.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-xs rounded hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-1 shadow-neon-glow"
                     >
                       Start <ChevronRight className="w-3 h-3" />
                     </motion.button>
@@ -274,7 +274,7 @@ export default function StudyPlannerTab() {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="p-4 bg-[var(--dashboard-primary-subtle)] border border-emerald-500/20 rounded-terminal-rounded flex items-start gap-3"
+        className="p-4 bg-[var(--dashboard-primary-subtle)] border border-[var(--accent)]/20 rounded-terminal-rounded flex items-start gap-3"
       >
         <Sparkles className="w-5 h-5 text-[var(--dashboard-primary)] flex-shrink-0 mt-0.5" />
         <div>

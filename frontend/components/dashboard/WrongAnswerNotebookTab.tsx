@@ -35,8 +35,8 @@ const MASTERY_COLORS: Record<string, string> = {
   STRUGGLING: "text-[var(--dashboard-danger)] bg-[var(--dashboard-danger-subtle)] border-red-500/20",
   REVIEWING: "text-[var(--dashboard-warning)] bg-[var(--dashboard-warning-subtle)] border-amber-500/20",
   IMPROVING: "text-blue-400 bg-blue-500/10 border-blue-500/20",
-  MASTERED: "text-[var(--dashboard-primary)] bg-[var(--dashboard-primary-subtle)] border-emerald-500/20",
-  NEW: "text-[var(--dashboard-text-muted)] bg-zinc-500/10 border-[var(--dashboard-border-muted)]",
+  MASTERED: "text-[var(--dashboard-primary)] bg-[var(--dashboard-primary-subtle)] border-[var(--accent)]/20",
+  NEW: "text-[var(--dashboard-text-muted)] bg-[var(--surface-muted)] border-[var(--dashboard-border-muted)]",
 };
 
 const MASTERY_LABELS: Record<string, string> = {
@@ -174,13 +174,13 @@ export default function WrongAnswerNotebookTab() {
           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[var(--dashboard-primary-subtle)] flex items-center justify-center">
             <Award className="w-8 h-8 text-[var(--dashboard-primary)]" />
           </div>
-          <h2 className="text-xl font-bold text-white font-mono mb-2">You&apos;re doing great!</h2>
+          <h2 className="text-xl font-bold text-[var(--text-primary)] font-mono mb-2">You&apos;re doing great!</h2>
           <p className="text-sm text-[var(--dashboard-text-muted)] font-mono mb-6 max-w-md mx-auto">
             You haven&apos;t made any mistakes yet. Start practicing questions and we&apos;ll keep track of the areas that need more attention.
           </p>
           <button
             onClick={() => setView("exam-config")}
-            className="px-6 py-3 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors"
+            className="px-6 py-3 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors"
           >
             Start Practicing
           </button>
@@ -200,7 +200,7 @@ export default function WrongAnswerNotebookTab() {
         >
           <div className="flex items-center gap-2 mb-1">
             <Target className="w-5 h-5 text-[var(--dashboard-primary)]" />
-            <h2 className="text-lg font-bold text-white font-mono">Practice My Mistakes</h2>
+            <h2 className="text-lg font-bold text-[var(--text-primary)] font-mono">Practice My Mistakes</h2>
           </div>
           <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">
             Build a focused exam from questions you&apos; previously got wrong.
@@ -219,7 +219,7 @@ export default function WrongAnswerNotebookTab() {
             <select
               value={examSubject}
               onChange={(e) => setExamSubject(e.target.value)}
-              className="w-full bg-zinc-900 border border-[var(--dashboard-border-muted)] rounded-lg px-3 py-2.5 text-sm text-white font-mono focus:outline-none focus:border-emerald-500/50"
+              className="w-full bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] rounded-lg px-3 py-2.5 text-sm text-[var(--text-primary)] font-mono focus:outline-none focus:border-[var(--accent)]/50"
             >
               <option value="">All Subjects</option>
               {subjects.map((s) => (
@@ -240,7 +240,7 @@ export default function WrongAnswerNotebookTab() {
                   onClick={() => setExamCount(n)}
                   className={`px-3 py-2 rounded-lg border text-sm font-mono transition-colors ${
                     examCount === n
-                      ? "border-emerald-500/50 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
+                      ? "border-[var(--accent)]/50 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
                       : "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] hover:border-zinc-700"
                   }`}
                 >
@@ -251,7 +251,7 @@ export default function WrongAnswerNotebookTab() {
                 onClick={() => setExamCount(totalMistakes)}
                 className={`px-3 py-2 rounded-lg border text-sm font-mono transition-colors ${
                   examCount === totalMistakes
-                    ? "border-emerald-500/50 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
+                    ? "border-[var(--accent)]/50 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
                     : "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] hover:border-zinc-700"
                 }`}
               >
@@ -270,7 +270,7 @@ export default function WrongAnswerNotebookTab() {
                   onClick={() => setExamFocus(opt.value)}
                   className={`px-3 py-2 rounded-lg border text-sm font-mono transition-colors ${
                     examFocus === opt.value
-                      ? "border-emerald-500/50 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
+                      ? "border-[var(--accent)]/50 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
                       : "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] hover:border-zinc-700"
                   }`}
                 >
@@ -283,14 +283,14 @@ export default function WrongAnswerNotebookTab() {
           <div className="flex gap-3 pt-2">
             <button
               onClick={() => setView("dashboard")}
-              className="px-4 py-2.5 bg-zinc-900 border border-[var(--dashboard-border-muted)] rounded-lg text-[var(--dashboard-text-muted)] font-mono text-sm hover:text-white transition-colors"
+              className="px-4 py-2.5 bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] rounded-lg text-[var(--dashboard-text-muted)] font-mono text-sm hover:text-[var(--text-primary)] transition-colors"
             >
               Back
             </button>
             <button
               onClick={() => void startMistakeExam()}
               disabled={building}
-              className="flex-1 px-6 py-2.5 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors disabled:opacity-40 flex items-center justify-center gap-2"
+              className="flex-1 px-6 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors disabled:opacity-40 flex items-center justify-center gap-2"
             >
               {building ? (
                 "Building Exam…"
@@ -359,7 +359,7 @@ export default function WrongAnswerNotebookTab() {
         <motion.div
           initial={{ opacity: 0, scale: 0.97 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="glass-card rounded-2xl border border-emerald-500/30 overflow-hidden"
+          className="glass-card rounded-2xl border border-[var(--accent)]/30 overflow-hidden"
         >
           <div className="p-6 text-center border-b border-terminal-border">
             <Trophy
@@ -367,13 +367,13 @@ export default function WrongAnswerNotebookTab() {
                 score >= 80 ? "text-[var(--dashboard-warning)]" : score >= 50 ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-danger)]"
               }`}
             />
-            <h3 className="text-xl font-bold text-white font-mono mb-1">Mistake Practice সম্পন্ন!</h3>
+            <h3 className="text-xl font-bold text-[var(--text-primary)] font-mono mb-1">Mistake Practice সম্পন্ন!</h3>
             <p className="text-sm font-mono text-[var(--dashboard-text-muted)] mb-4">
               সঠিক: {correct}/{total} • স্কোর {score}%
             </p>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-w-lg mx-auto text-left">
-              <div className="rounded-xl bg-[var(--dashboard-primary-subtle)] border border-emerald-500/25 p-3">
+              <div className="rounded-xl bg-[var(--dashboard-primary-subtle)] border border-[var(--accent)]/25 p-3">
                 <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">সঠিক</p>
                 <p className="text-lg font-bold text-[var(--dashboard-primary)] font-mono">{correct}</p>
               </div>
@@ -381,7 +381,7 @@ export default function WrongAnswerNotebookTab() {
                 <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">আবার ভুল</p>
                 <p className="text-lg font-bold text-[var(--dashboard-danger)] font-mono">{stillErrors}</p>
               </div>
-              <div className="rounded-xl bg-[var(--dashboard-primary-subtle)] border border-emerald-500/20 p-3">
+              <div className="rounded-xl bg-[var(--dashboard-primary-subtle)] border border-[var(--accent)]/20 p-3">
                 <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">এরমধ্যে Mastered</p>
                 <p className="text-lg font-bold text-[var(--dashboard-primary)] font-mono">{justMastered}</p>
               </div>
@@ -391,13 +391,13 @@ export default function WrongAnswerNotebookTab() {
             <div className="flex items-center justify-center gap-3 mt-6">
               <button
                 onClick={() => { setView("dashboard"); setExamResult(null); setDrillResults(null); void loadStats().then(() => loadMistakes()); }}
-                className="px-5 py-2.5 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-emerald-400 transition-colors flex items-center gap-2 shadow-neon-glow"
+                className="px-5 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2 shadow-neon-glow"
               >
                 <RotateCcw className="w-4 h-4" /> ড্যাশবোর্ডে ফিরুন
               </button>
               <button
                 onClick={() => { setView("exam-config"); setTimeout(() => setDrillResults(null), 0); }}
-                className="px-5 py-2.5 bg-zinc-900 border border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-secondary)] font-mono text-sm rounded-xl hover:text-white transition-colors"
+                className="px-5 py-2.5 bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-secondary)] font-mono text-sm rounded-xl hover:text-[var(--text-primary)] transition-colors"
               >
                 আবার Practice করুন
               </button>
@@ -418,7 +418,7 @@ export default function WrongAnswerNotebookTab() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: Math.min(i * 0.03, 0.5) }}
                 className={`glass-card rounded-2xl border p-4 ${
-                  isMastered ? "border-emerald-500/40" : isCorrect ? "border-emerald-500/20" : "border-red-500/20"
+                  isMastered ? "border-[var(--accent)]/40" : isCorrect ? "border-[var(--accent)]/20" : "border-red-500/20"
                 }`}
               >
                 <div className="flex items-start gap-3">
@@ -448,7 +448,7 @@ export default function WrongAnswerNotebookTab() {
                         </span>
                       )}
                     </div>
-                    <p className="text-sm text-white">{q.question}</p>
+                    <p className="text-sm text-[var(--text-primary)]">{q.question}</p>
                   </div>
                 </div>
               </motion.div>
@@ -474,12 +474,12 @@ export default function WrongAnswerNotebookTab() {
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             <BookX className="w-5 h-5 text-[var(--dashboard-danger)]" />
-            <h2 className="text-lg font-bold text-white font-mono">Your Mistakes</h2>
+            <h2 className="text-lg font-bold text-[var(--text-primary)] font-mono">Your Mistakes</h2>
           </div>
           <button
             onClick={() => { setLoading(true); void loadStats().then(() => loadMistakes()).then(() => setLoading(false)); }}
             aria-label="Refresh"
-            className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center bg-zinc-900 border border-[var(--dashboard-border-muted)] rounded-lg text-[var(--dashboard-text-muted)] hover:text-white transition-colors"
+            className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] rounded-lg text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)] transition-colors"
           >
             <RefreshCw className="w-4 h-4" />
           </button>
@@ -502,28 +502,28 @@ export default function WrongAnswerNotebookTab() {
               <AlertTriangle className="w-4 h-4 text-[var(--dashboard-danger)]" />
               <span className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase">Total Mistakes</span>
             </div>
-            <p className="text-2xl font-bold text-white font-mono">{stats.totalMistakes}</p>
+            <p className="text-2xl font-bold text-[var(--text-primary)] font-mono">{stats.totalMistakes}</p>
           </motion.div>
           <motion.div variants={STAGGER_ITEM} className="glass-card rounded-terminal-rounded border border-terminal-border p-4">
             <div className="flex items-center gap-2 mb-1">
               <Zap className="w-4 h-4 text-[var(--dashboard-warning)]" />
               <span className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase">Unmastered</span>
             </div>
-            <p className="text-2xl font-bold text-white font-mono">{unmastered}</p>
+            <p className="text-2xl font-bold text-[var(--text-primary)] font-mono">{unmastered}</p>
           </motion.div>
           <motion.div variants={STAGGER_ITEM} className="glass-card rounded-terminal-rounded border border-terminal-border p-4">
             <div className="flex items-center gap-2 mb-1">
               <TrendingUp className="w-4 h-4 text-blue-400" />
               <span className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase">Improving</span>
             </div>
-            <p className="text-2xl font-bold text-white font-mono">{stats.improving}</p>
+            <p className="text-2xl font-bold text-[var(--text-primary)] font-mono">{stats.improving}</p>
           </motion.div>
           <motion.div variants={STAGGER_ITEM} className="glass-card rounded-terminal-rounded border border-terminal-border p-4">
             <div className="flex items-center gap-2 mb-1">
               <Award className="w-4 h-4 text-[var(--dashboard-primary)]" />
               <span className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase">Mastered</span>
             </div>
-            <p className="text-2xl font-bold text-white font-mono">{mastered}</p>
+            <p className="text-2xl font-bold text-[var(--text-primary)] font-mono">{mastered}</p>
           </motion.div>
         </motion.div>
       )}
@@ -533,7 +533,7 @@ export default function WrongAnswerNotebookTab() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.15 }}
-        className="glass-card rounded-terminal-rounded border border-emerald-500/20 bg-[var(--dashboard-primary-subtle)] p-5"
+        className="glass-card rounded-terminal-rounded border border-[var(--accent)]/20 bg-[var(--dashboard-primary-subtle)] p-5"
       >
         <div className="flex items-center justify-between">
           <div>
@@ -549,7 +549,7 @@ export default function WrongAnswerNotebookTab() {
           <button
             onClick={() => setView("exam-config")}
             disabled={unmastered === 0}
-            className="px-5 py-2.5 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors disabled:opacity-40 flex items-center gap-2 shrink-0"
+            className="px-5 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors disabled:opacity-40 flex items-center gap-2 shrink-0"
           >
             <Brain className="w-4 h-4" /> Practice My Mistakes
           </button>
@@ -566,7 +566,7 @@ export default function WrongAnswerNotebookTab() {
         >
           <div className="flex items-center gap-2 mb-3">
             <BarChart3 className="w-4 h-4 text-[var(--dashboard-text-muted)]" />
-            <h3 className="text-sm font-bold text-white font-mono">Mistakes by Subject</h3>
+            <h3 className="text-sm font-bold text-[var(--text-primary)] font-mono">Mistakes by Subject</h3>
           </div>
           <div className="space-y-2">
             {subjects.slice(0, 10).map((s) => {
@@ -581,28 +581,28 @@ export default function WrongAnswerNotebookTab() {
                   }}
                   className={`w-full flex items-center gap-3 p-2.5 rounded-lg border transition-colors text-left ${
                     filterSubject === s.subject
-                      ? "border-emerald-500/30 bg-[var(--dashboard-primary-subtle)]"
-                      : "border-transparent hover:bg-zinc-900/50"
+                      ? "border-[var(--accent)]/30 bg-[var(--dashboard-primary-subtle)]"
+                      : "border-transparent hover:bg-[var(--surface-raised)]/50"
                   }`}
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm text-white font-mono truncate">{s.subject}</span>
+                      <span className="text-sm text-[var(--text-primary)] font-mono truncate">{s.subject}</span>
                       {isHot && (
                         <span className="text-[9px] px-1.5 py-0.5 rounded bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)] font-mono border border-rose-500/20">
                           NEEDS ATTENTION
                         </span>
                       )}
                     </div>
-                    <div className="mt-1 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                    <div className="mt-1 h-1.5 bg-[var(--surface-overlay)] rounded-full overflow-hidden">
                       <div
-                        className={`h-full rounded-full ${isHot ? "bg-rose-500" : "bg-emerald-500"}`}
+                        className={`h-full rounded-full ${isHot ? "bg-rose-500" : "bg-[var(--accent)]"}`}
                         style={{ width: `${pct}%` }}
                       />
                     </div>
                   </div>
                   <div className="text-right shrink-0">
-                    <p className="text-sm font-bold text-white font-mono">{s.count}</p>
+                    <p className="text-sm font-bold text-[var(--text-primary)] font-mono">{s.count}</p>
                     <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">{s.unmastered} active</p>
                   </div>
                 </button>
@@ -620,7 +620,7 @@ export default function WrongAnswerNotebookTab() {
       >
         <button
           onClick={() => setShowFilters(!showFilters)}
-          className="flex items-center gap-2 text-sm text-[var(--dashboard-text-muted)] font-mono hover:text-white transition-colors mb-3"
+          className="flex items-center gap-2 text-sm text-[var(--dashboard-text-muted)] font-mono hover:text-[var(--text-primary)] transition-colors mb-3"
         >
           <Filter className="w-4 h-4" />
           Filters
@@ -651,7 +651,7 @@ export default function WrongAnswerNotebookTab() {
                         onClick={() => { setFilterStatus(s); setPage(1); }}
                         className={`px-2.5 py-1.5 rounded-lg border text-xs font-mono transition-colors ${
                           filterStatus === s
-                            ? "border-emerald-500/50 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
+                            ? "border-[var(--accent)]/50 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
                             : "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] hover:border-zinc-700"
                         }`}
                       >
@@ -667,7 +667,7 @@ export default function WrongAnswerNotebookTab() {
                   <select
                     value={filterSort}
                     onChange={(e) => { setFilterSort(e.target.value); setPage(1); }}
-                    className="w-full bg-zinc-900 border border-[var(--dashboard-border-muted)] rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-emerald-500/50"
+                    className="w-full bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] rounded-lg px-3 py-2 text-sm text-[var(--text-primary)] font-mono focus:outline-none focus:border-[var(--accent)]/50"
                   >
                     {SORT_OPTIONS.map((opt) => (
                       <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -770,14 +770,14 @@ export default function WrongAnswerNotebookTab() {
                   <span>Accuracy: {accuracy}%</span>
                   <span>Score: {Math.round(m.masteryScore)}</span>
                   {m.masteryStatus !== "MASTERED" && toGo > 0 && (
-                    <span className="text-emerald-500">{toGo} more to master</span>
+                    <span className="text-[var(--accent)]">{toGo} more to master</span>
                   )}
                 </div>
 
                 {/* Progress bar */}
-                <div className="mt-2 h-1 bg-zinc-800 rounded-full overflow-hidden">
+                <div className="mt-2 h-1 bg-[var(--surface-overlay)] rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-emerald-500 rounded-full transition-all"
+                    className="h-full bg-[var(--accent)] rounded-full transition-all"
                     style={{ width: `${Math.min(100, m.masteryScore)}%` }}
                   />
                 </div>
@@ -802,7 +802,7 @@ export default function WrongAnswerNotebookTab() {
                                 key={letter}
                                 className={`text-xs font-mono px-3 py-2 rounded-lg border ${
                                   isCorrect
-                                    ? "border-emerald-500/30 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
+                                    ? "border-[var(--accent)]/30 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
                                     : "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)]"
                                 }`}
                               >
@@ -849,7 +849,7 @@ export default function WrongAnswerNotebookTab() {
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="px-3 py-1.5 bg-zinc-900 border border-[var(--dashboard-border-muted)] rounded-lg text-xs text-[var(--dashboard-text-muted)] font-mono disabled:opacity-40 hover:text-white transition-colors"
+            className="px-3 py-1.5 bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] rounded-lg text-xs text-[var(--dashboard-text-muted)] font-mono disabled:opacity-40 hover:text-[var(--text-primary)] transition-colors"
           >
             Previous
           </button>
@@ -859,7 +859,7 @@ export default function WrongAnswerNotebookTab() {
           <button
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
-            className="px-3 py-1.5 bg-zinc-900 border border-[var(--dashboard-border-muted)] rounded-lg text-xs text-[var(--dashboard-text-muted)] font-mono disabled:opacity-40 hover:text-white transition-colors"
+            className="px-3 py-1.5 bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] rounded-lg text-xs text-[var(--dashboard-text-muted)] font-mono disabled:opacity-40 hover:text-[var(--text-primary)] transition-colors"
           >
             Next
           </button>

@@ -148,7 +148,7 @@ export default function VoiceInterviewTab() {
             </div>
           ) : (
             <div key={m.id} className="flex items-start gap-2">
-              <div className="max-w-[85%] rounded-2xl border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-[var(--dashboard-text-primary)]">
+              <div className="max-w-[85%] rounded-2xl border border-white/10 bg-[var(--surface-raised)] px-3 py-2 text-sm text-[var(--dashboard-text-primary)]">
                 {m.text ? <Markdown text={m.text} /> : <span className="text-[var(--dashboard-text-muted)]">…</span>}
               </div>
               {m.text && (
@@ -174,7 +174,7 @@ export default function VoiceInterviewTab() {
           onClick={toggleMic}
           disabled={!supported || busy}
           className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-colors ${
-            listening ? "bg-red-500 text-white" : "bg-emerald-500 text-[var(--dashboard-text-inverse)] hover:bg-emerald-400"
+            listening ? "bg-[var(--danger)] text-[var(--text-primary)]" : "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] hover:bg-[var(--accent-hover)]"
           } disabled:opacity-60`}
           aria-label={listening ? "শোনা বন্ধ করো" : "কথা বলো"}
         >
@@ -191,13 +191,13 @@ export default function VoiceInterviewTab() {
           }}
           rows={1}
           placeholder="প্রশ্ন লিখো বা মাইকে কথা বলো…"
-          className="flex-1 resize-none rounded-xl border border-white/10 bg-zinc-900 px-3 py-2 text-sm text-[var(--dashboard-text-primary)] outline-none focus:border-emerald-500/50"
+          className="flex-1 resize-none rounded-xl border border-white/10 bg-[var(--surface-raised)] px-3 py-2 text-sm text-[var(--dashboard-text-primary)] outline-none focus:border-emerald-500/50"
         />
         <button
           type="button"
           onClick={() => void send(input)}
           disabled={busy || !input.trim()}
-          className="rounded-xl bg-emerald-500 px-4 py-2 text-sm font-medium text-[var(--dashboard-text-inverse)] hover:bg-emerald-400 disabled:opacity-60"
+          className="rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-medium text-[var(--dashboard-text-inverse)] hover:bg-[var(--accent-hover)] disabled:opacity-60"
         >
           পাঠাও
         </button>

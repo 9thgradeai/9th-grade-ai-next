@@ -97,7 +97,7 @@ export default function AISolverTab() {
 
         <div className="flex items-center gap-2 mb-4">
           <AiLogo className="w-5 h-5" />
-          <h2 className="text-lg font-bold text-white">AI Question Solver</h2>
+          <h2 className="text-lg font-bold text-[var(--text-primary)]">AI Question Solver</h2>
           <span className="text-xs text-[var(--dashboard-text-muted)] font-mono">Text & Image Input</span>
         </div>
 
@@ -160,7 +160,7 @@ export default function AISolverTab() {
               {textInput && (
                 <button
                   onClick={clearAll}
-                  className="absolute top-3 right-3 p-1 text-[var(--dashboard-text-muted)] hover:text-white transition-colors"
+                  className="absolute top-3 right-3 p-1 text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)] transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -185,7 +185,7 @@ export default function AISolverTab() {
                   />
                   <button
                     onClick={clearAll}
-                    className="absolute top-3 right-3 p-1.5 bg-subtle border border-zinc-700 rounded-lg text-[var(--dashboard-text-muted)] hover:text-white transition-colors"
+                    className="absolute top-3 right-3 p-1.5 bg-subtle border border-zinc-700 rounded-lg text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)] transition-colors"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -225,7 +225,7 @@ export default function AISolverTab() {
               void solveQuestion();
             }}
             disabled={isSolving || (!textInput.trim() && !imagePreview)}
-            className="w-full py-3 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono rounded-lg hover:bg-emerald-400 transition-colors flex items-center justify-center gap-2 shadow-neon-glow disabled:opacity-40 disabled:cursor-not-allowed"
+            className="w-full py-3 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono rounded-lg hover:bg-[var(--accent-hover)] transition-colors flex items-center justify-center gap-2 shadow-neon-glow disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {isSolving ? (
               <>
@@ -253,7 +253,7 @@ export default function AISolverTab() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <Lightbulb className="w-5 h-5 text-[var(--dashboard-warning)]" />
-                <h3 className="text-sm font-medium text-white">Solution</h3>
+                <h3 className="text-sm font-medium text-[var(--text-primary)]">Solution</h3>
               </div>
               <button
                 onClick={() => copyToClipboard(solution)}
@@ -309,7 +309,7 @@ export default function AISolverTab() {
 
             <button
               onClick={askTutorToExplain}
-              className="mt-4 w-full flex items-center justify-center gap-2 py-2.5 bg-zinc-900 border border-emerald-500/20 text-[var(--dashboard-primary)] rounded-lg text-sm font-mono hover:bg-[var(--dashboard-primary-subtle)] transition-colors"
+              className="mt-4 w-full flex items-center justify-center gap-2 py-2.5 bg-[var(--surface-raised)] border border-emerald-500/20 text-[var(--dashboard-primary)] rounded-lg text-sm font-mono hover:bg-[var(--dashboard-primary-subtle)] transition-colors"
             >
               <MessageSquare className="w-4 h-4" />
               Ask the AI Tutor to explain this step by step

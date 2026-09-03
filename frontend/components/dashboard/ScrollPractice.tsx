@@ -124,7 +124,7 @@ export default function ScrollPractice({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium text-white font-mono">{title}</h3>
+        <h3 className="text-sm font-medium text-[var(--text-primary)] font-mono">{title}</h3>
         <div className="flex items-center gap-3">
           <span className="text-xs text-[var(--dashboard-text-muted)] font-mono">
             {submitted
@@ -240,7 +240,7 @@ export default function ScrollPractice({
                     <button
                       type="button"
                       onClick={() => toggleExpand(q.id)}
-                      className="ml-auto flex items-center gap-1 text-[var(--dashboard-text-muted)] hover:text-white transition-colors"
+                      className="ml-auto flex items-center gap-1 text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)] transition-colors"
                     >
                       <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isOpen ? "rotate-180" : ""}`} />
                       ব্যাখ্যা
@@ -272,7 +272,7 @@ export default function ScrollPractice({
             <button
               onClick={() => void handleSubmit()}
               disabled={!enoughAnswered || submitting}
-              className="px-6 py-2.5 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors disabled:opacity-40 flex items-center gap-2"
+              className="px-6 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors disabled:opacity-40 flex items-center gap-2"
             >
               <Send className="w-4 h-4" /> {submitting ? "সংরক্ষণ হচ্ছে…" : "সব উত্তর জমা দিন"}
             </button>
@@ -281,14 +281,14 @@ export default function ScrollPractice({
           <>
             <button
               onClick={reset}
-              className="px-4 py-2 bg-zinc-900 border border-[var(--dashboard-border-muted)] rounded-lg text-[var(--dashboard-text-secondary)] font-mono text-sm hover:text-white transition-colors flex items-center gap-2"
+              className="px-4 py-2 bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] rounded-lg text-[var(--dashboard-text-secondary)] font-mono text-sm hover:text-[var(--text-primary)] transition-colors flex items-center gap-2"
             >
               <RotateCcw className="w-4 h-4" /> আবার
             </button>
             {(onComplete || onExit) && (
               <button
                 onClick={finish}
-                className="px-5 py-2.5 bg-emerald-500 text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors flex items-center gap-2"
+                className="px-5 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2"
               >
                 রেজাল্ট দেখুন
               </button>
