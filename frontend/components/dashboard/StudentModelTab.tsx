@@ -44,7 +44,7 @@ export default function StudentModelTab() {
       </div>
 
       {!hasData && (
-        <p className="rounded-xl border border-white/10 bg-[var(--dashboard-surface)] px-3 py-2 text-sm text-[var(--dashboard-text-muted)]">
+        <p className="rounded-xl border border-[var(--border-subtle)] bg-[var(--dashboard-surface)] px-3 py-2 text-sm text-[var(--dashboard-text-muted)]">
           এখনো যথেষ্ট তথ্য নেই। &quot;উত্তর মূল্যায়ন&quot; বা &quot;AI সলভার&quot; ব্যবহার করলে এখানে তোমার দুর্বল বিষয় জমা হবে।
         </p>
       )}
@@ -65,7 +65,7 @@ export default function StudentModelTab() {
       </div>
 
       {model.weakTopics.length > 0 && (
-        <div className="rounded-2xl border border-red-500/20 bg-[var(--dashboard-danger-subtle)] p-4">
+        <div className="rounded-2xl border border-[var(--danger)]/20 bg-[var(--dashboard-danger-subtle)] p-4">
           <h3 className="mb-2 text-sm font-semibold text-[var(--dashboard-danger)]">দুর্বল বিষয় (উন্নতি করো)</h3>
           <ul className="space-y-2">
             {model.weakTopics.map((t, i) => (
@@ -79,7 +79,7 @@ export default function StudentModelTab() {
       )}
 
       {model.strongTopics.length > 0 && (
-        <div className="rounded-2xl border border-emerald-500/20 bg-[var(--dashboard-primary-subtle)] p-4">
+        <div className="rounded-2xl border border-[var(--primary)]/20 bg-[var(--dashboard-primary-subtle)] p-4">
           <h3 className="mb-2 text-sm font-semibold text-[var(--dashboard-primary)]">শক্ত বিষয়</h3>
           <ul className="space-y-1">
             {model.strongTopics.map((t, i) => (
@@ -93,11 +93,11 @@ export default function StudentModelTab() {
       )}
 
       {model.usageByTask.length > 0 && (
-        <div className="rounded-2xl border border-white/10 bg-[var(--dashboard-surface)] p-4">
+        <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--dashboard-surface)] p-4">
           <h3 className="mb-2 text-sm font-semibold text-[var(--dashboard-text-primary)]">ব্যবহারের ধরন</h3>
           <div className="flex flex-wrap gap-2">
             {model.usageByTask.map((u) => (
-              <span key={u.task} className="rounded-full border border-white/10 bg-[var(--dashboard-surface-muted)] px-3 py-1 text-xs text-[var(--dashboard-text-secondary)]">
+              <span key={u.task} className="rounded-full border border-[var(--border-subtle)] bg-[var(--dashboard-surface-muted)] px-3 py-1 text-xs text-[var(--dashboard-text-secondary)]">
                 {u.task}: {u.count}
               </span>
             ))}
@@ -114,7 +114,7 @@ export default function StudentModelTab() {
 
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-[var(--dashboard-surface)] p-4">
+    <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--dashboard-surface)] p-4">
       <div className="text-xs uppercase tracking-wide text-[var(--dashboard-text-muted)]">{title}</div>
       <div className="mt-1 text-sm text-[var(--dashboard-text-primary)]">{children}</div>
     </div>

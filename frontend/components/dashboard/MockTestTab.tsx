@@ -401,7 +401,7 @@ export default function MockTestTab() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => adjustDuration(-1)}
-                    className="w-8 h-8 rounded-lg bg-[var(--surface-raised)] border border-emerald-500/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-emerald-500/40"
+                    className="w-8 h-8 rounded-lg bg-[var(--surface-raised)] border border-[var(--primary)]/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-[var(--primary)]/40"
                     aria-label="সময় কমান"
                   >
                     <Minus className="w-4 h-4" />
@@ -409,7 +409,7 @@ export default function MockTestTab() {
                   <span className="text-2xl font-bold text-[var(--dashboard-primary)] font-mono w-8 text-center">{durationMin}</span>
                   <button
                     onClick={() => adjustDuration(1)}
-                    className="w-8 h-8 rounded-lg bg-[var(--surface-raised)] border border-emerald-500/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-emerald-500/40"
+                    className="w-8 h-8 rounded-lg bg-[var(--surface-raised)] border border-[var(--primary)]/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-[var(--primary)]/40"
                     aria-label="সময় বাড়ান"
                   >
                     <Plus className="w-4 h-4" />
@@ -419,7 +419,7 @@ export default function MockTestTab() {
             </div>
 
             {insufficient && (
-              <div className="flex items-start gap-2 rounded-xl border border-amber-500/30 bg-[var(--dashboard-warning-subtle)] p-3 text-xs text-[var(--dashboard-warning)]">
+              <div className="flex items-start gap-2 rounded-xl border border-[var(--warning)]/30 bg-[var(--dashboard-warning-subtle)] p-3 text-xs text-[var(--dashboard-warning)]">
                 <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
                 <p>
                   নির্বাচিত টপিক থেকে শুধু <span className="font-mono">{availableTotal}টি</span> প্রশ্ন
@@ -429,7 +429,7 @@ export default function MockTestTab() {
             )}
 
             {buildError && (
-              <div className="flex items-start gap-2 rounded-xl border border-red-500/30 bg-[var(--dashboard-danger-subtle)] p-3 text-xs text-[var(--dashboard-danger)]">
+              <div className="flex items-start gap-2 rounded-xl border border-[var(--danger)]/30 bg-[var(--dashboard-danger-subtle)] p-3 text-xs text-[var(--dashboard-danger)]">
                 <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
                 <p>{buildError}</p>
               </div>
@@ -459,7 +459,7 @@ export default function MockTestTab() {
       <div className="space-y-4">
         {/* Sticky header: timer + progress + submit */}
         <div className="sticky top-0 z-40 -mx-1 px-1">
-          <div className="glass-card rounded-2xl border border-emerald-500/30 px-4 py-3">
+          <div className="glass-card rounded-2xl border border-[var(--primary)]/30 px-4 py-3">
             <div className="flex items-center justify-between gap-3 flex-wrap">
               <div className="flex items-center gap-2">
                 <Timer className={`w-4 h-4 ${timeLow ? "text-[var(--dashboard-danger)] animate-pulse" : "text-[var(--dashboard-primary)]"}`} />
@@ -483,7 +483,7 @@ export default function MockTestTab() {
             </div>
             <div className="h-1.5 bg-[var(--surface-overlay)] rounded-full overflow-hidden mt-2">
               <div
-                className="h-full w-full origin-left bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-transform duration-300"
+                className="h-full w-full origin-left bg-gradient-to-r from-[var(--success)] to-[var(--success)] rounded-full transition-transform duration-300"
                 style={{ transform: `scaleX(${progressPct / 100})` }}
               />
             </div>
@@ -603,10 +603,10 @@ export default function MockTestTab() {
                   onClick={() => setCurrentQuestion(i)}
                   className={`min-w-[44px] min-h-[44px] rounded-lg border text-xs font-mono transition-all ${
                     i === currentQuestion
-                      ? "border-emerald-500/40 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
+                      ? "border-[var(--primary)]/40 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
                       : isAnswered
-                        ? "border-emerald-500/20 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
-                        : "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] hover:border-zinc-700"
+                        ? "border-[var(--primary)]/20 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
+                        : "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] hover:border-[var(--border-strong)]"
                   }`}
                   aria-label={`প্রশ্ন ${i + 1}${isAnswered ? " — উত্তর দেওয়া হয়েছে" : ""}`}
                   aria-current={i === currentQuestion ? "true" : undefined}
@@ -642,7 +642,7 @@ export default function MockTestTab() {
                 animate={{ scale: 1, y: 0 }}
                 exit={{ scale: 0.95, y: 10 }}
                 onClick={(e) => e.stopPropagation()}
-                className="glass-card rounded-2xl border border-amber-500/30 p-6 w-full max-w-sm"
+                className="glass-card rounded-2xl border border-[var(--warning)]/30 p-6 w-full max-w-sm"
               >
                 <div className="flex items-center gap-2 mb-3">
                   <AlertTriangle className="w-5 h-5 text-[var(--dashboard-warning)]" />
@@ -684,7 +684,7 @@ export default function MockTestTab() {
         <motion.div
           initial={{ opacity: 0, scale: 0.97 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="glass-card rounded-2xl border border-emerald-500/30 overflow-hidden"
+          className="glass-card rounded-2xl border border-[var(--primary)]/30 overflow-hidden"
         >
           <div className="p-6 text-center border-b border-terminal-border">
             <Trophy className={`w-12 h-12 mx-auto mb-3 ${
@@ -699,15 +699,15 @@ export default function MockTestTab() {
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-w-md mx-auto text-left">
-              <div className="rounded-xl bg-[var(--dashboard-primary-subtle)] border border-emerald-500/20 p-3">
+              <div className="rounded-xl bg-[var(--dashboard-primary-subtle)] border border-[var(--primary)]/20 p-3">
                 <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">সঠিক</p>
                 <p className="text-lg font-bold text-[var(--dashboard-primary)] font-mono">+{summary.correct}</p>
               </div>
-              <div className="rounded-xl bg-[var(--dashboard-danger-subtle)] border border-red-500/20 p-3">
+              <div className="rounded-xl bg-[var(--dashboard-danger-subtle)] border border-[var(--danger)]/20 p-3">
                 <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">ভুল</p>
                 <p className="text-lg font-bold text-[var(--dashboard-danger)] font-mono">−{summary.wrong}</p>
               </div>
-              <div className="rounded-xl bg-subtle border border-zinc-700 p-3">
+              <div className="rounded-xl bg-subtle border border-[var(--border-strong)] p-3">
                 <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">উত্তর দেওয়া হয়নি</p>
                 <p className="text-lg font-bold text-[var(--dashboard-text-muted)] font-mono">{summary.unanswered}</p>
               </div>
@@ -733,7 +733,7 @@ export default function MockTestTab() {
             const isCorrect = r.status === "correct";
             return (
               <div key={r.questionId} className={`p-3.5 rounded-xl border ${
-                isCorrect ? "border-emerald-500/20" : r.status === "wrong" ? "border-red-500/20" : "border-[var(--dashboard-border-muted)]"
+                isCorrect ? "border-[var(--primary)]/20" : r.status === "wrong" ? "border-[var(--danger)]/20" : "border-[var(--dashboard-border-muted)]"
               }`}>
                 <div className="flex items-start gap-3">
                   {isCorrect ? (

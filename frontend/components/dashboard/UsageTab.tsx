@@ -44,7 +44,7 @@ export default function UsageTab() {
       </div>
 
       {data.byProvider.length > 0 && (
-        <div className="rounded-2xl border border-white/10 bg-[var(--dashboard-surface)] p-4">
+        <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--dashboard-surface)] p-4">
           <h3 className="mb-3 text-sm font-semibold text-[var(--dashboard-text-primary)]">প্রোভাইডার অনুযায়ী</h3>
           <div className="space-y-2">
             {data.byProvider.map((p) => (
@@ -64,7 +64,7 @@ export default function UsageTab() {
       )}
 
       {data.byDay.length > 0 && (
-        <div className="rounded-2xl border border-white/10 bg-[var(--dashboard-surface)] p-4">
+        <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--dashboard-surface)] p-4">
           <h3 className="mb-3 text-sm font-semibold text-[var(--dashboard-text-primary)]">দৈনিক কল (১৪ দিন)</h3>
           <div className="flex items-end gap-1">
             {data.byDay.map((d) => (
@@ -89,7 +89,7 @@ export default function UsageTab() {
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-[var(--dashboard-surface)] p-4">
+    <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--dashboard-surface)] p-4">
       <div className="text-xs uppercase tracking-wide text-[var(--dashboard-text-muted)]">{label}</div>
       <div className="mt-1 text-lg font-semibold text-[var(--dashboard-text-primary)]">{value}</div>
     </div>

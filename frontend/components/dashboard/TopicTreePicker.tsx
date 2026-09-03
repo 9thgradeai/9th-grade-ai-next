@@ -268,7 +268,7 @@ export default function TopicTreePicker({
                   className={`px-2.5 py-1 rounded-lg text-[10px] font-mono border transition-colors flex-shrink-0 ${
                     allSelected
                       ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] border-[var(--accent)]"
-                      : "border-zinc-700 text-[var(--dashboard-text-muted)] hover:border-[var(--accent)]/40"
+                      : "border-[var(--border-strong)] text-[var(--dashboard-text-muted)] hover:border-[var(--accent)]/40"
                   }`}
                 >
                   {allSelected ? "পুরো বিষয় ✓" : "সব টপিক নির্বাচন"}

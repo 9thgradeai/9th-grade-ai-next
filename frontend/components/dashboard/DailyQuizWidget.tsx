@@ -114,7 +114,7 @@ export default function DailyQuizWidget() {
         transition={{ delay: 0.26 }}
         role="button"
         tabIndex={0}
-        className="glass-card rounded-2xl border border-amber-500/20 p-4 flex items-center gap-3 hover:border-amber-500/40 transition-all cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
+        className="glass-card rounded-2xl border border-[var(--warning)]/20 p-4 flex items-center gap-3 hover:border-[var(--warning)]/40 transition-all cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
         onClick={() => setIsOpen(true)}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
@@ -123,7 +123,7 @@ export default function DailyQuizWidget() {
           }
         }}
       >
-        <div className="w-10 h-10 rounded-xl bg-[var(--dashboard-warning-subtle)] border border-amber-500/20 flex items-center justify-center flex-shrink-0">
+        <div className="w-10 h-10 rounded-xl bg-[var(--dashboard-warning-subtle)] border border-[var(--warning)]/20 flex items-center justify-center flex-shrink-0">
           <Zap className="w-5 h-5 text-[var(--dashboard-warning)]" />
         </div>
         <div className="flex-1 min-w-0">
@@ -148,7 +148,7 @@ export default function DailyQuizWidget() {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="glass-card rounded-2xl border border-amber-500/20 p-6 flex flex-col items-center text-center"
+        className="glass-card rounded-2xl border border-[var(--warning)]/20 p-6 flex flex-col items-center text-center"
       >
         <Inbox className="w-10 h-10 mb-3 text-[var(--dashboard-text-secondary)]" aria-hidden="true" />
         <h3 className="text-sm font-semibold text-[var(--text-primary)]">আজকের জন্য কোনো কুইজ নেই</h3>
@@ -176,7 +176,7 @@ export default function DailyQuizWidget() {
         ref={dialogRef}
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        className="w-full max-w-lg bg-[var(--surface-solid)] border border-amber-500/30 rounded-2xl shadow-2xl overflow-hidden"
+        className="w-full max-w-lg bg-[var(--surface-solid)] border border-[var(--warning)]/30 rounded-2xl shadow-2xl overflow-hidden"
         role="dialog"
         aria-modal="true"
         aria-label="দৈনিক কুইজ"
@@ -260,7 +260,7 @@ export default function DailyQuizWidget() {
                   animate={{ scaleX: totalQuestions > 0 ? answeredCount / totalQuestions : 0 }}
                   transition={{ duration: 0.3, ease: "easeOut" }}
                   style={{ transformOrigin: "left" }}
-                  className="h-full w-full bg-gradient-to-r from-amber-500 to-amber-400 rounded-full"
+                  className="h-full w-full bg-gradient-to-r from-[var(--warning)] to-[var(--warning)] rounded-full"
                 />
               </div>
 
@@ -285,14 +285,14 @@ export default function DailyQuizWidget() {
                           role="radio"
                           aria-checked={isSelected}
                           onClick={() => selectAnswer(option)}
-                          className={`w-full text-left p-3 rounded-xl border transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400 ${
+                          className={`w-full text-left p-3 rounded-xl border transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)] ${
                             isSelected
-                              ? "bg-[var(--dashboard-warning-subtle)] border-amber-500/30 text-[var(--dashboard-warning)]"
-                              : "bg-subtle border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-secondary)] hover:border-amber-500/20"
+                              ? "bg-[var(--dashboard-warning-subtle)] border-[var(--warning)]/30 text-[var(--dashboard-warning)]"
+                              : "bg-subtle border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-secondary)] hover:border-[var(--warning)]/20"
                           }`}
                         >
                           <div className="flex items-center gap-3">
-                            <span className="w-6 h-6 rounded-full bg-[var(--surface-overlay)] border border-zinc-700 flex items-center justify-center text-xs font-mono">
+                            <span className="w-6 h-6 rounded-full bg-[var(--surface-overlay)] border border-[var(--border-strong)] flex items-center justify-center text-xs font-mono">
                               {String.fromCharCode(65 + i)}
                             </span>
                             <span className="text-sm">{option}</span>
@@ -342,7 +342,7 @@ export default function DailyQuizWidget() {
               {submitFailed && (
                 <div
                   role="alert"
-                  className="mx-auto mb-4 max-w-xs rounded-xl border border-red-500/30 bg-[var(--dashboard-danger-subtle)] p-3 text-xs text-[var(--dashboard-danger)] text-left"
+                  className="mx-auto mb-4 max-w-xs rounded-xl border border-[var(--danger)]/30 bg-[var(--dashboard-danger-subtle)] p-3 text-xs text-[var(--dashboard-danger)] text-left"
                 >
                   সার্ভারে ফলাফল জমা হয়নি — পয়েন্ট বা স্ট্রিক সংরক্ষিত হয়নি। ইন্টারনেট সংযোগ দেখে আবার চেষ্টা করুন।
                 </div>
@@ -360,7 +360,7 @@ export default function DailyQuizWidget() {
                   const userAnswer = answers[i];
                   const isCorrect = userAnswer === q.correctAnswer;
                   return (
-                    <div key={q.id} className={`p-3 rounded-xl border ${isCorrect ? "border-[var(--accent)]/20" : "border-red-500/20"}`}>
+                    <div key={q.id} className={`p-3 rounded-xl border ${isCorrect ? "border-[var(--accent)]/20" : "border-[var(--danger)]/20"}`}>
                       <p className="text-sm text-[var(--text-primary)] mb-1">{i + 1}. {q.question}</p>
                       <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">
                         আপনার উত্তর: <span className={isCorrect ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-danger)]"}>{userAnswer || "উত্তর দেওয়া হয়নি"}</span>

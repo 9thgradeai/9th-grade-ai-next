@@ -90,8 +90,8 @@ export default function StudyPlannerTab() {
 
   const priorityColor = (p: string) => {
     switch (p) {
-      case "high": return "text-[var(--dashboard-danger)] bg-[var(--dashboard-danger-subtle)] border-red-500/20";
-      case "medium": return "text-[var(--dashboard-warning)] bg-[var(--dashboard-warning-subtle)] border-amber-500/20";
+      case "high": return "text-[var(--dashboard-danger)] bg-[var(--dashboard-danger-subtle)] border-[var(--danger)]/20";
+      case "medium": return "text-[var(--dashboard-warning)] bg-[var(--dashboard-warning-subtle)] border-[var(--warning)]/20";
       case "low": return "text-[var(--dashboard-primary)] bg-[var(--dashboard-primary-subtle)] border-[var(--accent)]/20";
       default: return "text-[var(--dashboard-text-muted)] bg-[var(--surface-muted)] border-[var(--dashboard-border-muted)]";
     }
@@ -140,7 +140,7 @@ export default function StudyPlannerTab() {
             animate={{ scaleX: progress / 100 }}
             transition={{ duration: 0.5 }}
             style={{ transformOrigin: "left" }}
-            className="h-full w-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full"
+            className="h-full w-full bg-gradient-to-r from-[var(--success)] to-[var(--success)] rounded-full"
           />
         </div>
       </motion.div>
@@ -290,7 +290,7 @@ export default function StudyPlannerTab() {
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="p-6 bg-[var(--dashboard-warning-subtle)] border border-amber-500/30 rounded-terminal-rounded text-center"
+          className="p-6 bg-[var(--dashboard-warning-subtle)] border border-[var(--warning)]/30 rounded-terminal-rounded text-center"
         >
           <Trophy className="w-12 h-12 text-[var(--dashboard-warning)] mx-auto mb-2" />
           <h3 className="text-lg font-bold text-[var(--dashboard-warning)] font-mono">DAY COMPLETE!</h3>

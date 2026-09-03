@@ -38,8 +38,8 @@ export default function SideNav({ activeTab, onChange }: SideNavProps) {
       style={{ background: "var(--dashboard-sidebar-bg)", borderColor: "var(--dashboard-sidebar-border)", boxShadow: "1px 0 0 var(--dashboard-sidebar-border)" }}
       aria-label="Desktop navigation"
     >
-      {/* Brand — premium tile + soft border, works on white & dark */}
-      <div className="px-5 py-[18px] border-b flex items-center gap-3.5" style={{ borderColor: "var(--dashboard-sidebar-border)", background: "linear-gradient(180deg, var(--dashboard-sidebar-bg) 0%, color-mix(in srgb, var(--dashboard-sidebar-bg) 92%, var(--dashboard-primary) 8%) 100%)" }}>
+      {/* Brand — clean white with subtle border, premium minimal */}
+      <div className="px-5 py-[18px] border-b flex items-center gap-3.5" style={{ borderColor: "var(--sidebar-border, var(--dashboard-sidebar-border))", background: "var(--sidebar-bg, var(--dashboard-sidebar-bg))" }}>
         <BrandMark className="h-10 w-10 rounded-xl ring-1 ring-black/5" />
         <div className="min-w-0">
           <p className="font-display font-bold tracking-tight leading-none text-[15.5px]" style={{ color: "var(--dashboard-text-primary)" }}>
@@ -68,11 +68,15 @@ export default function SideNav({ activeTab, onChange }: SideNavProps) {
                       key={tab.id}
                       onClick={() => onChange(tab.id)}
                       aria-current={isActive ? "page" : undefined}
-                      className="relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] hover:translate-x-[1px]"
+                      className={
+                        isActive
+                          ? "relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] bg-[var(--sidebar-bg-active,var(--dashboard-primary-subtle))]"
+                          : "relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] hover:translate-x-[1px] hover:bg-[var(--sidebar-bg-active,var(--dashboard-primary-subtle))]/60"
+                      }
                       style={
                         isActive
-                          ? { background: "var(--dashboard-primary-subtle)", color: "var(--dashboard-primary)", border: "1px solid color-mix(in srgb, var(--dashboard-primary) 16%, transparent)", boxShadow: "0 1px 2px rgb(0 0 0 / 0.04)" }
-                          : { color: "var(--dashboard-text-primary)", background: "transparent", border: "1px solid transparent" }
+                          ? { color: "var(--sidebar-text-active, var(--dashboard-primary))", border: "1px solid transparent" }
+                          : { color: "var(--sidebar-text, var(--dashboard-text-primary))", border: "1px solid transparent" }
                       }
                     >
                       {isActive && (
@@ -82,9 +86,9 @@ export default function SideNav({ activeTab, onChange }: SideNavProps) {
                           aria-hidden="true"
                         />
                       )}
-                      <Icon className="w-[18px] h-[18px] shrink-0" strokeWidth={isActive ? 2.2 : 1.9} style={{ color: isActive ? "var(--dashboard-primary)" : "var(--dashboard-text-secondary)" }} />
+                      <Icon className="w-[18px] h-[18px] shrink-0" strokeWidth={isActive ? 2.2 : 1.9} style={{ color: isActive ? "var(--sidebar-text-active, var(--dashboard-primary))" : "var(--dashboard-text-secondary)" }} />
                       <span className="flex flex-col min-w-0">
-                        <span className="text-[13px] font-semibold leading-none truncate" style={{ color: isActive ? "var(--dashboard-primary)" : "var(--dashboard-text-primary)" }}>{tab.label}</span>
+                        <span className="text-[13px] font-semibold leading-none truncate" style={{ color: isActive ? "var(--sidebar-text-active, var(--dashboard-primary))" : "var(--sidebar-text, var(--dashboard-text-primary))" }}>{tab.label}</span>
                         <span className="text-[11px] leading-none mt-1 truncate font-medium" style={{ color: isActive ? "var(--dashboard-primary)" : "var(--dashboard-text-secondary)", opacity: isActive ? 0.82 : 0.88 }}>
                           {tab.bengali}
                         </span>

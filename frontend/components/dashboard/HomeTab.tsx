@@ -530,7 +530,7 @@ export default function HomeTab() {
             <h3 className="text-sm font-semibold uppercase tracking-wider" style={{ color: "var(--dashboard-text-primary)" }}>
               আজকের রুটিন
               {user?.prepLevel && (
-                <span className="ml-2 align-middle text-[10px] normal-case font-mono text-[var(--dashboard-text-muted)] border border-zinc-700 rounded px-1.5 py-0.5">
+                <span className="ml-2 align-middle text-[10px] normal-case font-mono text-[var(--dashboard-text-muted)] border border-[var(--border-strong)] rounded px-1.5 py-0.5">
                   {PREP_LABEL[user.prepLevel]}
                 </span>
               )}

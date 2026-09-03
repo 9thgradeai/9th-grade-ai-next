@@ -15,14 +15,14 @@ export default function StatusPill({
 }) {
   const dotColor =
     color === "emerald"
-      ? "bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.8)]"
+      ? "bg-[var(--primary)] shadow-[0_0_12px_var(--primary)]"
       : color === "cyan"
-        ? "bg-cyan-400 shadow-[0_0_12px_rgba(34,211,238,0.8)]"
-        : "bg-indigo-400 shadow-[0_0_12px_rgba(129,140,248,0.8)]";
+        ? "bg-[var(--info)] shadow-[0_0_12px_var(--info)]"
+        : "bg-[var(--primary)] shadow-[0_0_12px_var(--primary)]";
 
   return (
     <span
-      className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-500/20 bg-[var(--dashboard-primary-subtle)] text-[11px] font-mono uppercase tracking-[0.14em] text-[var(--dashboard-primary)] ${className}`}
+      className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[var(--primary)]/20 bg-[var(--dashboard-primary-subtle)] text-[11px] font-mono uppercase tracking-[0.14em] text-[var(--dashboard-primary)] ${className}`}
     >
       <span
         className={`status-dot-pulse w-1.5 h-1.5 rounded-full ${dotColor}`}

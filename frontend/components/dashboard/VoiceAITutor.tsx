@@ -539,10 +539,10 @@ export default function VoiceAITutor() {
               role="dialog"
               aria-modal="true"
               aria-labelledby="ai-workspace-title"
-              className="absolute inset-x-0 bottom-0 flex h-[92dvh] w-full flex-col overflow-hidden rounded-t-2xl border border-emerald-500/20 bg-[var(--surface-solid)] shadow-2xl outline-none sm:inset-x-4 sm:bottom-6 sm:mx-auto sm:h-[min(88dvh,900px)] sm:max-w-4xl sm:rounded-2xl"
+              className="absolute inset-x-0 bottom-0 flex h-[92dvh] w-full flex-col overflow-hidden rounded-t-2xl border border-[var(--primary)]/20 bg-[var(--surface-solid)] shadow-2xl outline-none sm:inset-x-4 sm:bottom-6 sm:mx-auto sm:h-[min(88dvh,900px)] sm:max-w-4xl sm:rounded-2xl"
             >
               {/* Header */}
-              <div className="flex items-center justify-between gap-2 border-b border-emerald-500/20 px-3 py-2.5 sm:px-4 sm:py-3">
+              <div className="flex items-center justify-between gap-2 border-b border-[var(--primary)]/20 px-3 py-2.5 sm:px-4 sm:py-3">
                 <div className="flex min-w-0 items-center gap-2">
                   <button
                     type="button"
@@ -558,7 +558,7 @@ export default function VoiceAITutor() {
                   </span>
 
                   {/* Mode switch */}
-                  <div className="ml-1 flex items-center gap-1 rounded-lg border border-emerald-500/20 bg-[var(--dashboard-primary-subtle)] p-0.5 sm:ml-2">
+                  <div className="ml-1 flex items-center gap-1 rounded-lg border border-[var(--primary)]/20 bg-[var(--dashboard-primary-subtle)] p-0.5 sm:ml-2">
                     <button
                       type="button"
                       onClick={() => setMode("tutor")}
@@ -589,7 +589,7 @@ export default function VoiceAITutor() {
                       status === "listening"
                         ? "bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)] animate-pulse"
                         : status === "generating"
-                          ? "bg-cyan-500/10 text-cyan-400 animate-pulse"
+                          ? "bg-[var(--info-soft)] text-[var(--info)] animate-pulse"
                           : status === "error"
                             ? "bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)]"
                             : "bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
@@ -625,7 +625,7 @@ export default function VoiceAITutor() {
               {/* Body */}
               <div className="flex min-h-0 flex-1">
                 {/* Conversation sidebar (desktop) */}
-                <aside className="hidden w-64 flex-shrink-0 flex-col border-r border-emerald-500/10 bg-subtle lg:flex">
+                <aside className="hidden w-64 flex-shrink-0 flex-col border-r border-[var(--primary)]/10 bg-subtle lg:flex">
                   {conversationList}
                 </aside>
 
@@ -638,7 +638,7 @@ export default function VoiceAITutor() {
                         initial={{ opacity: 0, y: -8 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0 }}
-                        className="mx-4 mt-3 flex items-center gap-2 rounded-lg border border-red-500/20 bg-[var(--dashboard-danger-subtle)] px-3 py-2 text-xs text-[var(--dashboard-danger)]"
+                        className="mx-4 mt-3 flex items-center gap-2 rounded-lg border border-[var(--danger)]/20 bg-[var(--dashboard-danger-subtle)] px-3 py-2 text-xs text-[var(--dashboard-danger)]"
                       >
                         <span className="flex-1">{error}</span>
                         <button type="button" onClick={() => setError(null)} className="p-1 hover:text-[var(--text-primary)]" aria-label="Dismiss error">
@@ -672,7 +672,7 @@ export default function VoiceAITutor() {
                                   key={p.id}
                                   type="button"
                                   onClick={() => runPreset(p.label.bn)}
-                                  className="rounded-xl border border-emerald-500/20 bg-[var(--dashboard-primary-subtle)] px-3 py-1.5 text-xs text-[var(--dashboard-text-secondary)] transition-colors hover:border-emerald-500/40 hover:bg-[var(--dashboard-primary-subtle)] hover:text-[var(--dashboard-primary)]"
+                                  className="rounded-xl border border-[var(--primary)]/20 bg-[var(--dashboard-primary-subtle)] px-3 py-1.5 text-xs text-[var(--dashboard-text-secondary)] transition-colors hover:border-[var(--primary)]/40 hover:bg-[var(--dashboard-primary-subtle)] hover:text-[var(--dashboard-primary)]"
                                 >
                                   {p.label.bn}
                                 </button>
@@ -682,7 +682,7 @@ export default function VoiceAITutor() {
                                   key={a.labelBn}
                                   type="button"
                                   onClick={() => runAssistantAction(a.prompt)}
-                                  className="rounded-xl border border-emerald-500/20 bg-[var(--dashboard-primary-subtle)] px-3 py-1.5 text-xs text-[var(--dashboard-text-secondary)] transition-colors hover:border-emerald-500/40 hover:bg-[var(--dashboard-primary-subtle)] hover:text-[var(--dashboard-primary)]"
+                                  className="rounded-xl border border-[var(--primary)]/20 bg-[var(--dashboard-primary-subtle)] px-3 py-1.5 text-xs text-[var(--dashboard-text-secondary)] transition-colors hover:border-[var(--primary)]/40 hover:bg-[var(--dashboard-primary-subtle)] hover:text-[var(--dashboard-primary)]"
                                 >
                                   {a.labelBn}
                                 </button>
@@ -731,7 +731,7 @@ export default function VoiceAITutor() {
                         <button
                           type="button"
                           onClick={stopGeneration}
-                          className="rounded-md border border-red-500/20 px-2.5 py-1 font-mono text-xs text-[var(--dashboard-danger)] transition-colors hover:bg-[var(--dashboard-danger-subtle)]"
+                          className="rounded-md border border-[var(--danger)]/20 px-2.5 py-1 font-mono text-xs text-[var(--dashboard-danger)] transition-colors hover:bg-[var(--dashboard-danger-subtle)]"
                         >
                           Stop
                         </button>
@@ -739,7 +739,7 @@ export default function VoiceAITutor() {
                         <button
                           type="button"
                           onClick={retryLast}
-                          className="flex items-center gap-1.5 rounded-md border border-emerald-500/20 px-2.5 py-1 font-mono text-xs text-[var(--dashboard-primary)] transition-colors hover:bg-[var(--dashboard-primary-subtle)]"
+                          className="flex items-center gap-1.5 rounded-md border border-[var(--primary)]/20 px-2.5 py-1 font-mono text-xs text-[var(--dashboard-primary)] transition-colors hover:bg-[var(--dashboard-primary-subtle)]"
                         >
                           <RefreshCw className="h-3.5 w-3.5" /> Retry
                         </button>
@@ -753,15 +753,15 @@ export default function VoiceAITutor() {
                       e.preventDefault();
                       void sendTurn(input);
                     }}
-                    className="border-t border-emerald-500/20 p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:p-4 sm:pb-4"
+                    className="border-t border-[var(--primary)]/20 p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:p-4 sm:pb-4"
                   >
-                    <div className="mx-auto flex max-w-3xl items-end gap-2 rounded-2xl border border-emerald-500/25 bg-subtle px-2 py-1.5 transition-colors focus-within:border-emerald-500/50">
+                    <div className="mx-auto flex max-w-3xl items-end gap-2 rounded-2xl border border-[var(--primary)]/25 bg-subtle px-2 py-1.5 transition-colors focus-within:border-[var(--primary)]/50">
                       <button
                         type="button"
                         onClick={toggleListening}
                         className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl border transition-all ${
                           isListening
-                            ? "border-red-500/30 bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)] animate-pulse"
+                            ? "border-[var(--danger)]/30 bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)] animate-pulse"
                             : "border-[var(--dashboard-border-strong)] text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)]"
                         }`}
                         title={isListening ? "Stop listening" : "Start voice input"}
@@ -819,7 +819,7 @@ export default function VoiceAITutor() {
                     animate={{ x: 0 }}
                     exit={{ x: -280 }}
                     transition={{ type: "spring", damping: 30, stiffness: 300 }}
-                    className="absolute inset-y-0 left-0 z-30 w-72 max-w-[85vw] border-r border-emerald-500/10 bg-[var(--surface-solid)] shadow-2xl lg:hidden"
+                    className="absolute inset-y-0 left-0 z-30 w-72 max-w-[85vw] border-r border-[var(--primary)]/10 bg-[var(--surface-solid)] shadow-2xl lg:hidden"
                     aria-label="Conversation list"
                   >
                     {conversationList}

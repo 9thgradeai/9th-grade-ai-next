@@ -191,7 +191,7 @@ export default function MistakesTab() {
         <motion.div
           initial={{ opacity: 0, scale: 0.97 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="glass-card rounded-2xl border border-emerald-500/30 overflow-hidden"
+          className="glass-card rounded-2xl border border-[var(--primary)]/30 overflow-hidden"
         >
           <div className="p-6 text-center border-b border-terminal-border">
             <Trophy
@@ -205,15 +205,15 @@ export default function MistakesTab() {
             </p>
 
             <div className="grid grid-cols-3 gap-2 max-w-lg mx-auto text-left">
-              <div className="rounded-xl bg-[var(--dashboard-primary-subtle)] border border-emerald-500/25 p-3">
+              <div className="rounded-xl bg-[var(--dashboard-primary-subtle)] border border-[var(--primary)]/25 p-3">
                 <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">সঠিক</p>
                 <p className="text-lg font-bold text-[var(--dashboard-primary)] font-mono">{correct}</p>
               </div>
-              <div className="rounded-xl bg-[var(--dashboard-danger-subtle)] border border-red-500/25 p-3">
+              <div className="rounded-xl bg-[var(--dashboard-danger-subtle)] border border-[var(--danger)]/25 p-3">
                 <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">আবার ভুল</p>
                 <p className="text-lg font-bold text-[var(--dashboard-danger)] font-mono">{stillErrors}</p>
               </div>
-              <div className="rounded-xl bg-[var(--dashboard-primary-subtle)] border border-emerald-500/20 p-3">
+              <div className="rounded-xl bg-[var(--dashboard-primary-subtle)] border border-[var(--primary)]/20 p-3">
                 <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">Mastered</p>
                 <p className="text-lg font-bold text-[var(--dashboard-primary)] font-mono">{justMastered}</p>
               </div>
@@ -250,7 +250,7 @@ export default function MistakesTab() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: Math.min(i * 0.03, 0.5) }}
                 className={`glass-card rounded-2xl border p-4 ${
-                  isMastered ? "border-emerald-500/40" : isCorrect ? "border-emerald-500/20" : "border-red-500/20"
+                  isMastered ? "border-[var(--primary)]/40" : isCorrect ? "border-[var(--primary)]/20" : "border-[var(--danger)]/20"
                 }`}
               >
                 <div className="flex items-start gap-3">
@@ -327,7 +327,7 @@ export default function MistakesTab() {
           <p className="text-3xl font-bold text-[var(--text-primary)] font-mono">{accuracy}%</p>
           <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono mt-1">{overall?.totalAttempts ?? 0} total attempts</p>
         </motion.div>
-        <motion.div variants={STAGGER_ITEM} className="glass-card rounded-terminal-rounded border border-emerald-500/20 p-4">
+        <motion.div variants={STAGGER_ITEM} className="glass-card rounded-terminal-rounded border border-[var(--primary)]/20 p-4">
           <div className="flex items-center gap-2 mb-1">
             <CheckCircle2 className="w-4 h-4 text-[var(--dashboard-primary)]" />
             <span className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase">Right Answers</span>
@@ -335,7 +335,7 @@ export default function MistakesTab() {
           <p className="text-3xl font-bold text-[var(--dashboard-primary)] font-mono">{totalRight}</p>
           <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono mt-1">across {overall?.questionsAttempted ?? 0} questions</p>
         </motion.div>
-        <motion.div variants={STAGGER_ITEM} className="glass-card rounded-terminal-rounded border border-rose-500/20 p-4">
+        <motion.div variants={STAGGER_ITEM} className="glass-card rounded-terminal-rounded border border-[var(--danger)]/20 p-4">
           <div className="flex items-center gap-2 mb-1">
             <XCircle className="w-4 h-4 text-[var(--dashboard-danger)]" />
             <span className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase">Wrong Answers</span>
@@ -350,7 +350,7 @@ export default function MistakesTab() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="glass-card rounded-terminal-rounded border border-emerald-500/20 bg-[var(--dashboard-primary-subtle)] p-5"
+        className="glass-card rounded-terminal-rounded border border-[var(--primary)]/20 bg-[var(--dashboard-primary-subtle)] p-5"
       >
         <div className="flex items-center justify-between mb-1">
           <h3 className="text-sm font-bold text-[var(--dashboard-primary)] font-mono">Practice Your Wrong Questions</h3>
@@ -380,7 +380,7 @@ export default function MistakesTab() {
                   <select
                     value={selSubject}
                     onChange={(e) => { setSelSubject(e.target.value); setSelTopic(""); setSelSubtopic(""); }}
-                    className="w-full bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] rounded-lg px-3 py-2.5 text-sm text-[var(--text-primary)] font-mono focus:outline-none focus:border-emerald-500/50"
+                    className="w-full bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] rounded-lg px-3 py-2.5 text-sm text-[var(--text-primary)] font-mono focus:outline-none focus:border-[var(--primary)]/50"
                   >
                     <option value="">All Subjects</option>
                     {selection.map((s) => (
@@ -398,7 +398,7 @@ export default function MistakesTab() {
                     <select
                       value={selTopic}
                       onChange={(e) => { setSelTopic(e.target.value); setSelSubtopic(""); }}
-                      className="w-full bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] rounded-lg px-3 py-2.5 text-sm text-[var(--text-primary)] font-mono focus:outline-none focus:border-emerald-500/50"
+                      className="w-full bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] rounded-lg px-3 py-2.5 text-sm text-[var(--text-primary)] font-mono focus:outline-none focus:border-[var(--primary)]/50"
                     >
                       <option value="">Whole Subject</option>
                       {currentSubject.topics.map((t) => (
@@ -417,7 +417,7 @@ export default function MistakesTab() {
                     <select
                       value={selSubtopic}
                       onChange={(e) => setSelSubtopic(e.target.value)}
-                      className="w-full bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] rounded-lg px-3 py-2.5 text-sm text-[var(--text-primary)] font-mono focus:outline-none focus:border-emerald-500/50"
+                      className="w-full bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] rounded-lg px-3 py-2.5 text-sm text-[var(--text-primary)] font-mono focus:outline-none focus:border-[var(--primary)]/50"
                     >
                       <option value="">Whole Topic</option>
                       {currentTopic.subtopics.map((st) => (
@@ -440,7 +440,7 @@ export default function MistakesTab() {
                         className={`px-3 py-2 rounded-lg border text-sm font-mono transition-colors ${
                           examCount === n
                             ? "border-emerald-500/50 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
-                            : "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] hover:border-zinc-700"
+                            : "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] hover:border-[var(--border-strong)]"
                         }`}
                       >
                         {n}
@@ -451,7 +451,7 @@ export default function MistakesTab() {
                       className={`px-3 py-2 rounded-lg border text-sm font-mono transition-colors ${
                         examCount === availableForSelection
                           ? "border-emerald-500/50 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
-                          : "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] hover:border-zinc-700"
+                          : "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] hover:border-[var(--border-strong)]"
                       }`}
                     >
                       All
@@ -573,7 +573,7 @@ export default function MistakesTab() {
                                     key={letter}
                                     className={`text-xs font-mono px-3 py-2 rounded-lg border ${
                                       isCorrect
-                                        ? "border-emerald-500/30 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
+                                        ? "border-[var(--primary)]/30 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
                                         : "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)]"
                                     }`}
                                   >

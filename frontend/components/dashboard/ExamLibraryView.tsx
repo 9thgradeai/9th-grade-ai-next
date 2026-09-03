@@ -156,12 +156,12 @@ export default function ExamLibraryView() {
               <div className="flex items-center gap-2 text-[11px] text-[var(--dashboard-text-muted)] font-mono">
                 <span className="px-1.5 py-0.5 rounded bg-[var(--surface-overlay)] text-[var(--dashboard-text-secondary)]">{category.nameBn} · {exam.nameBn}</span>
                 {paper.bcsTerm ? (
-                  <span className="px-1.5 py-0.5 rounded bg-[var(--info)]/10 text-[var(--info)] border border-sky-500/20">
+                  <span className="px-1.5 py-0.5 rounded bg-[var(--info)]/10 text-[var(--info)] border border-[var(--info)]/20">
                     {paper.termLabel} BCS
                   </span>
                 ) : null}
                 {paper.year ? (
-                  <span className="px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-300 border border-purple-500/20 flex items-center gap-1">
+                  <span className="px-1.5 py-0.5 rounded bg-[var(--primary-soft)] text-[var(--primary)] border border-[var(--primary)]/20 flex items-center gap-1">
                     <Calendar className="w-3 h-3" /> {paper.year}
                   </span>
                 ) : null}
@@ -170,7 +170,7 @@ export default function ExamLibraryView() {
             <button
               onClick={() => (questions.length ? setDrilling(true) : null)}
               disabled={questions.length === 0}
-              className="px-3 py-1.5 rounded-full text-xs font-mono border border-emerald-500/30 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] hover:bg-[var(--dashboard-primary-subtle)] disabled:opacity-40 flex items-center gap-1.5 transition-all"
+              className="px-3 py-1.5 rounded-full text-xs font-mono border border-[var(--primary)]/30 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] hover:bg-[var(--dashboard-primary-subtle)] disabled:opacity-40 flex items-center gap-1.5 transition-all"
             >
               <Play className="w-3.5 h-3.5" /> প্র্যাকটিস ({questions.length})
             </button>
@@ -284,8 +284,8 @@ export default function ExamLibraryView() {
                   }}
                   className={`glass-card rounded-terminal-rounded border p-4 text-left transition-all ${
                     activeCategory?.id === cat.id
-                      ? "border-emerald-500/50 bg-[var(--dashboard-primary-subtle)]"
-                      : "border-terminal-border hover:border-emerald-500/30"
+                      ? "border-[var(--primary)]/50 bg-[var(--dashboard-primary-subtle)]"
+                      : "border-terminal-border hover:border-[var(--primary)]/30"
                   }`}
                 >
                   <div className="flex items-center gap-2 mb-1">
@@ -310,7 +310,7 @@ export default function ExamLibraryView() {
                     onClick={() => chooseExam(exam)}
                     className={`px-3 py-1.5 rounded-full text-xs font-mono border transition-all ${
                       activeExam?.id === exam.id
-                        ? "bg-[var(--dashboard-primary-subtle)] border-emerald-500/40 text-[var(--dashboard-primary)]"
+                        ? "bg-[var(--dashboard-primary-subtle)] border-[var(--primary)]/40 text-[var(--dashboard-primary)]"
                         : "bg-subtle border-[var(--accent)]/20 text-[var(--dashboard-text-muted)] hover:border-[var(--accent)]/40 hover:text-[var(--text-primary)]"
                     }`}
                   >
@@ -354,7 +354,7 @@ export default function ExamLibraryView() {
                           <ListChecks className="w-3 h-3" /> {paper.availableQuestions} প্রশ্ন
                         </span>
                         {paper.bcsTerm ? (
-                          <span className="px-1.5 py-0.5 rounded bg-[var(--info)]/10 text-[var(--info)] border border-sky-500/20">
+                          <span className="px-1.5 py-0.5 rounded bg-[var(--info)]/10 text-[var(--info)] border border-[var(--info)]/20">
                             {paper.termLabel} BCS
                           </span>
                         ) : null}

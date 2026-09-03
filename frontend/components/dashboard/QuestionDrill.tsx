@@ -162,7 +162,7 @@ export default function QuestionDrill({
           initial={false}
           animate={{ scaleX: (index + (revealed ? 1 : 0)) / questions.length }}
           style={{ transformOrigin: "left" }}
-          className="h-full w-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full"
+          className="h-full w-full bg-gradient-to-r from-[var(--success)] to-[var(--success)] rounded-full"
         />
       </div>
 
@@ -221,9 +221,9 @@ export default function QuestionDrill({
           animate={{ opacity: 1, y: 0 }}
           className={`rounded-terminal-rounded border px-4 py-3 flex items-center gap-3 ${
             lastFeedback.justMastered
-              ? "bg-[var(--dashboard-primary-subtle)] border-emerald-500/40"
+              ? "bg-[var(--dashboard-primary-subtle)] border-[var(--primary)]/40"
               : isCorrect
-                ? "bg-[var(--dashboard-primary-subtle)] border-emerald-500/25"
+                ? "bg-[var(--dashboard-primary-subtle)] border-[var(--primary)]/25"
                 : "bg-[var(--dashboard-warning-subtle)] border-amber-500/25"
           }`}
         >

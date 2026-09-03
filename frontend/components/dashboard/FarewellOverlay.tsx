@@ -57,7 +57,7 @@ export function FarewellOverlay({ onComplete, onCancel }: { onComplete: () => vo
           type="button"
           onClick={onCancel}
           autoFocus
-          className="mt-2 rounded-full border border-zinc-700 px-5 py-2.5 text-sm text-[var(--dashboard-text-secondary)] transition-colors hover:border-emerald-400/60 hover:text-[var(--dashboard-primary)] focus-visible:ring-2 focus-visible:ring-emerald-400/80"
+          className="mt-2 rounded-full border border-[var(--border-strong)] px-5 py-2.5 text-sm text-[var(--dashboard-text-secondary)] transition-colors hover:border-emerald-400/60 hover:text-[var(--dashboard-primary)] focus-visible:ring-2 focus-visible:ring-emerald-400/80"
         >
           Actually, I&apos;ll stay
         </button>

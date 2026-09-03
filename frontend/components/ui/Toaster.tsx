@@ -5,15 +5,21 @@ import { CheckCircle2, AlertCircle, Info, X } from "lucide-react";
 import { useToast, type ToastVariant } from "@/lib/toast-ctx";
 
 const VARIANT_STYLES: Record<ToastVariant, string> = {
-  success: "border-emerald-500/30 bg-emerald-500/10 text-[var(--dashboard-primary)]",
-  error: "border-red-500/30 bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)]",
-  info: "border-sky-500/30 bg-sky-500/10 text-sky-300",
+  success: "border-[var(--success)]/30 bg-[var(--success-soft)] text-[var(--text-primary)]",
+  error: "border-[var(--danger)]/30 bg-[var(--danger-soft)] text-[var(--text-primary)]",
+  info: "border-[var(--info)]/30 bg-[var(--info-soft)] text-[var(--text-primary)]",
 };
 
 const VARIANT_ICONS: Record<ToastVariant, typeof CheckCircle2> = {
   success: CheckCircle2,
   error: AlertCircle,
   info: Info,
+};
+
+const VARIANT_ICON_COLOR: Record<ToastVariant, string> = {
+  success: "text-[var(--success)]",
+  error: "text-[var(--danger)]",
+  info: "text-[var(--info)]",
 };
 
 export default function Toaster() {
@@ -40,13 +46,13 @@ export default function Toaster() {
               transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.18, ease: "easeOut" }}
               className={`pointer-events-auto flex w-full max-w-sm items-center gap-3 rounded-terminal-rounded border px-4 py-3 glass shadow-panel ${VARIANT_STYLES[toast.variant]}`}
             >
-              <Icon size={18} className="shrink-0" aria-hidden="true" />
-              <p className="flex-1 text-sm font-medium text-white">{toast.message}</p>
+              <Icon size={18} className={`shrink-0 ${VARIANT_ICON_COLOR[toast.variant]}`} aria-hidden="true" />
+              <p className="flex-1 text-sm font-medium text-[var(--text-primary)]">{toast.message}</p>
               <button
                 type="button"
                 onClick={() => dismiss(toast.id)}
                 aria-label="Dismiss notification"
-                className="shrink-0 rounded p-1 min-h-[24px] min-w-[24px] flex items-center justify-center text-[var(--dashboard-text-muted)] hover:text-white transition-colors"
+                className="shrink-0 rounded p-1 min-h-[24px] min-w-[24px] flex items-center justify-center text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)] transition-colors"
               >
                 <X size={14} aria-hidden="true" />
               </button>

@@ -286,7 +286,7 @@ export default function PracticeTab() {
         animate={{ opacity: 1, y: 0 }}
         className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4"
       >
-        <div className="flex gap-2 bg-subtle border border-emerald-500/20 rounded-xl p-1 w-fit">
+        <div className="flex gap-2 bg-[var(--surface-muted)] border border-[var(--border-subtle)] rounded-xl p-1 w-fit">
           {MODES.map((m) => (
             <button
               key={m.id}
@@ -325,7 +325,7 @@ export default function PracticeTab() {
                 animate={{ opacity: 1, y: 0 }}
                 className="glass-card rounded-2xl border border-terminal-border overflow-hidden"
               >
-                <div className="terminal-window-bar border-b border-terminal-border">
+                <div className="terminal-window-bar border-b border-[var(--border-subtle)]">
                   <div className="dot close" /><div className="dot minimize" /><div className="dot maximize" />
                   <div className="flex-1 text-center text-xs text-[var(--dashboard-text-muted)] font-mono">{"// QUICK_PRACTICE"}</div>
                 </div>
@@ -403,7 +403,7 @@ export default function PracticeTab() {
                   </div>
 
                   {insufficient && (
-                    <div className="flex items-start gap-2 rounded-xl border border-amber-500/30 bg-[var(--dashboard-warning-subtle)] p-3 text-xs text-[var(--dashboard-warning)]">
+                    <div className="flex items-start gap-2 rounded-xl border border-[var(--warning)]/30 bg-[var(--dashboard-warning-subtle)] p-3 text-xs text-[var(--dashboard-warning)]">
                       <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
                       <p>
                         নির্বাচিত টপিক থেকে শুধু <span className="font-mono">{availableTotal}টি</span> প্রশ্ন
@@ -666,7 +666,7 @@ export default function PracticeTab() {
                   const isCorrect = userAnswer === q.correctAnswer;
                   return (
                     <div key={q.id} className={`p-3.5 rounded-xl border ${
-                      isCorrect ? "border-emerald-500/20" : "border-red-500/20"
+                      isCorrect ? "border-[var(--success)]/20" : "border-[var(--danger)]/20"
                     }`}>
                       <div className="flex items-start gap-3">
                         {isCorrect ? (

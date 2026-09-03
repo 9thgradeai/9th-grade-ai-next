@@ -1,21 +1,15 @@
 @import "tailwindcss";
 
 /* ══════════════════════════════════════════════════════════════════════════════
-   PREMIUM MINIMAL DESIGN TOKEN SYSTEM
+   PREMIUM SOFT DESIGN TOKEN SYSTEM
    ─────────────────────────────────────────────────────────────────────────────
-   80/10/5/5 Rule:
-   • 80% neutral — backgrounds, text, borders
-   • 10% accent — primary brand color (indigo)
-   • 5% semantic — success/warning/danger
-   • 5% decorative — subtle gradients, shadows, borders
+   80 / 12 / 5 / 3 Rule:
+   • 80% neutral — backgrounds, surfaces
+   • 12% typography and borders — hierarchy and structure
+   • 5% primary interaction — indigo accent
+   • 3% semantic — success/warning/danger/info
    
-   Semantic token naming:
-   • --surface-*    → background layers
-   • --text-*       → text hierarchy
-   • --border-*     → border hierarchy
-   • --interactive-* → interactive states (hover, active, focus)
-   • --accent-*     → brand accent
-   • --semantic-*   → success/warning/danger
+   Visual language: Soft, Minimal, Calm, Premium, Academic, Intelligent
    ══════════════════════════════════════════════════════════════════════════════ */
 
 @theme {
@@ -49,6 +43,8 @@
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
 
   /* ── Touch Targets ──────────────────────────────────────────────────────────── */
   --touch-target-min: 44px;
@@ -76,38 +72,45 @@
   --surface-hover: #243447;
   --surface-active: #2a3d52;
 
-  /* ── Text (80%) ─────────────────────────────────────────────────────────────── */
+  /* ── Text (12%) ─────────────────────────────────────────────────────────────── */
   --text-primary: #f1f5f9;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
+  --text-disabled: #475569;
   --text-inverse: #0f172a;
 
-  /* ── Borders (80%) ──────────────────────────────────────────────────────────── */
+  /* ── Borders (12%) ──────────────────────────────────────────────────────────── */
   --border-subtle: #1e293b;
   --border-default: #334155;
   --border-strong: #475569;
   --border-focus: rgb(129 140 248 / 0.45);
 
-  /* ── Accent (10%) — Indigo ──────────────────────────────────────────────────── */
-  --accent: #818cf8;
-  --accent-hover: #6366f1;
-  --accent-active: #4f46e5;
-  --accent-subtle: rgb(79 70 229 / 0.12);
-  --accent-muted: rgb(79 70 229 / 0.06);
+  /* ── Primary (5%) — Indigo ──────────────────────────────────────────────────── */
+  --primary: #818cf8;
+  --primary-hover: #6366f1;
+  --primary-active: #4f46e5;
+  --primary-soft: rgb(79 70 229 / 0.12);
+  --primary-muted: rgb(79 70 229 / 0.06);
 
-  /* ── Semantic (5%) ──────────────────────────────────────────────────────────── */
+  /* ── Accent (legacy alias) ──────────────────────────────────────────────────── */
+  --accent: var(--primary);
+  --accent-hover: var(--primary-hover);
+  --accent-active: var(--primary-active);
+  --accent-subtle: var(--primary-soft);
+  --accent-muted: var(--primary-muted);
+
+  /* ── Semantic (3%) ──────────────────────────────────────────────────────────── */
   --success: #34d399;
-  --success-subtle: rgb(52 211 153 / 0.12);
+  --success-soft: rgb(52 211 153 / 0.12);
   --warning: #fbbf24;
-  --warning-subtle: rgb(251 191 36 / 0.12);
+  --warning-soft: rgb(251 191 36 / 0.12);
   --danger: #f87171;
-  --danger-subtle: rgb(248 113 113 / 0.12);
+  --danger-soft: rgb(248 113 113 / 0.12);
   --info: #38bdf8;
-  --info-subtle: rgb(56 189 248 / 0.12);
+  --info-soft: rgb(56 189 248 / 0.12);
 
-  /* ── Decorative (5%) ────────────────────────────────────────────────────────── */
+  /* ── Decorative ─────────────────────────────────────────────────────────────── */
   --overlay: rgb(2 6 23 / 0.65);
-  --glow: rgb(129 140 248 / 0.18);
 
   /* ── Shadows ────────────────────────────────────────────────────────────────── */
   --shadow-xs: 0 1px 2px rgb(0 0 0 / 0.25);
@@ -138,7 +141,19 @@
   --focus-ring: rgb(129 140 248 / 0.45);
   --focus-ring-offset: 2px;
 
-  /* ── Terminal (legacy) ──────────────────────────────────────────────────────── */
+  /* ── Sidebar ────────────────────────────────────────────────────────────────── */
+  --sidebar-bg: var(--surface-raised);
+  --sidebar-border: var(--border-subtle);
+  --sidebar-text: var(--text-secondary);
+  --sidebar-text-active: var(--primary);
+  --sidebar-bg-active: var(--primary-soft);
+
+  /* ── Card ───────────────────────────────────────────────────────────────────── */
+  --card-bg: var(--surface-raised);
+  --card-border: var(--border-subtle);
+  --card-radius: 16px;
+
+  /* ── Legacy (terminal) ──────────────────────────────────────────────────────── */
   --color-terminal-bg: var(--surface-base);
   --color-terminal-text: var(--text-primary);
   --color-terminal-border: var(--border-subtle);
@@ -147,53 +162,64 @@
 }
 
 /* ══════════════════════════════════════════════════════════════════════════════
-   LIGHT MODE
+   LIGHT MODE — Premium Soft
    ─────────────────────────────────────────────────────────────────────────────
-   Soft cool-neutral canvas, NOT stark white.
-   Subtle hierarchy via surface contrast.
+   Soft enough to study for hours, clear enough to understand everything instantly.
+   Not pure white. Not gray-heavy. Calm, intelligent, premium.
    ══════════════════════════════════════════════════════════════════════════════ */
 
 [data-dashboard-theme="light"] {
   /* ── Surfaces (80%) ─────────────────────────────────────────────────────────── */
-  --surface-base: #f6f8fb;
-  --surface-raised: #ffffff;
-  --surface-overlay: #fbfcfe;
-  --surface-muted: #f1f5f9;
-  --surface-hover: #f3f6fb;
-  --surface-active: #e8edf4;
+  --surface-base: #F5F7FA;
+  --surface: #FFFFFF;
+  --surface-raised: #FFFFFF;
+  --surface-soft: #FAFBFC;
+  --surface-overlay: #FAFBFC;
+  --surface-elevated: #FFFFFF;
+  --surface-highest: #FFFFFF;
+  --surface-muted: #F0F2F5;
+  --surface-hover: #F3F6FA;
+  --surface-active: #E8EDF4;
 
-  /* ── Text (80%) ─────────────────────────────────────────────────────────────── */
+  /* ── Text (12%) ─────────────────────────────────────────────────────────────── */
   --text-primary: #172033;
-  --text-secondary: #526075;
-  --text-muted: #7a8798;
-  --text-inverse: #ffffff;
+  --text-secondary: #596579;
+  --text-muted: #8994A5;
+  --text-disabled: #AEB7C5;
+  --text-inverse: #FFFFFF;
 
-  /* ── Borders (80%) ──────────────────────────────────────────────────────────── */
-  --border-subtle: #eef2f7;
-  --border-default: #e6eaf0;
-  --border-strong: #d8dfe9;
+  /* ── Borders (12%) ──────────────────────────────────────────────────────────── */
+  --border-subtle: #E3E8EF;
+  --border-default: #E3E8EF;
+  --border-strong: #D6DDE7;
   --border-focus: rgb(79 70 229 / 0.35);
 
-  /* ── Accent (10%) — Indigo ──────────────────────────────────────────────────── */
-  --accent: #4f46e5;
-  --accent-hover: #4338ca;
-  --accent-active: #3730a3;
-  --accent-subtle: #eef2ff;
-  --accent-muted: rgb(79 70 229 / 0.04);
+  /* ── Primary (5%) — Indigo ──────────────────────────────────────────────────── */
+  --primary: #4F46E5;
+  --primary-hover: #4338CA;
+  --primary-active: #3730A3;
+  --primary-soft: #EEF0FF;
+  --primary-muted: rgb(79 70 229 / 0.04);
 
-  /* ── Semantic (5%) ──────────────────────────────────────────────────────────── */
-  --success: #0e7a5a;
-  --success-subtle: #eef8f3;
-  --warning: #b45309;
-  --warning-subtle: #fef7ec;
-  --danger: #c2412b;
-  --danger-subtle: #fdf2f0;
-  --info: #0e7490;
-  --info-subtle: #eef6fb;
+  /* ── Accent (legacy alias) ──────────────────────────────────────────────────── */
+  --accent: var(--primary);
+  --accent-hover: var(--primary-hover);
+  --accent-active: var(--primary-active);
+  --accent-subtle: var(--primary-soft);
+  --accent-muted: var(--primary-muted);
 
-  /* ── Decorative (5%) ────────────────────────────────────────────────────────── */
+  /* ── Semantic (3%) ──────────────────────────────────────────────────────────── */
+  --success: #16803C;
+  --success-soft: #EAF7EF;
+  --warning: #A86200;
+  --warning-soft: #FFF6E5;
+  --danger: #C62828;
+  --danger-soft: #FDEEEE;
+  --info: #087EA4;
+  --info-soft: #EAF7FB;
+
+  /* ── Decorative ─────────────────────────────────────────────────────────────── */
   --overlay: rgb(23 32 51 / 0.38);
-  --glow: rgb(79 70 229 / 0.08);
 
   /* ── Shadows ────────────────────────────────────────────────────────────────── */
   --shadow-xs: 0 1px 2px rgb(23 32 51 / 0.04);
@@ -203,40 +229,44 @@
   --shadow-xl: 0 12px 32px rgb(23 32 51 / 0.08), 0 4px 8px rgb(23 32 51 / 0.04);
 
   /* ── Input ──────────────────────────────────────────────────────────────────── */
-  --input-bg: #fbfcfe;
-  --input-border: #e1e7ef;
-  --input-focus: #4f46e5;
-  --input-placeholder: #8a96a8;
+  --input-bg: #FFFFFF;
+  --input-border: #D6DDE7;
+  --input-focus: #4F46E5;
+  --input-placeholder: #8994A5;
 
   /* ── Disabled ───────────────────────────────────────────────────────────────── */
-  --disabled-bg: #f1f5f9;
-  --disabled-text: #8a96a8;
+  --disabled-bg: #F0F2F5;
+  --disabled-text: #AEB7C5;
 
   /* ── Chart ──────────────────────────────────────────────────────────────────── */
-  --chart-1: #4f46e5;
-  --chart-2: #0891b2;
-  --chart-3: #0e7a5a;
-  --chart-4: #b45309;
-  --chart-grid: #e6eaf0;
-  --chart-axis: #7a8798;
+  --chart-1: #4F46E5;
+  --chart-2: #087EA4;
+  --chart-3: #16803C;
+  --chart-4: #A86200;
+  --chart-grid: #E3E8EF;
+  --chart-axis: #8994A5;
 
   /* ── Focus Ring ─────────────────────────────────────────────────────────────── */
   --focus-ring: rgb(79 70 229 / 0.22);
   --focus-ring-offset: 2px;
 
-  /* ── Terminal (legacy) ──────────────────────────────────────────────────────── */
-  --color-terminal-bg: var(--surface-base);
-  --color-terminal-text: var(--text-primary);
-  --color-terminal-border: var(--border-subtle);
-  --color-glass-bg: var(--surface);
-  --color-glass-border: var(--border-subtle);
+  /* ── Sidebar ────────────────────────────────────────────────────────────────── */
+  --sidebar-bg: #FFFFFF;
+  --sidebar-border: #E3E8EF;
+  --sidebar-text: #596579;
+  --sidebar-text-active: #3730A3;
+  --sidebar-bg-active: #EEF0FF;
+
+  /* ── Card ───────────────────────────────────────────────────────────────────── */
+  --card-bg: #FFFFFF;
+  --card-border: #E3E8EF;
+  --card-radius: 16px;
 }
 
 /* ══════════════════════════════════════════════════════════════════════════════
    LEGACY TOKEN MAPPING
    ─────────────────────────────────────────────────────────────────────────────
    Maps old --dashboard-* tokens to new semantic tokens for backward compat.
-   Components should migrate to the new tokens over time.
    ══════════════════════════════════════════════════════════════════════════════ */
 
 [data-dashboard-theme="dark"],
@@ -256,18 +286,18 @@
   --dashboard-text-secondary: var(--text-secondary);
   --dashboard-text-muted: var(--text-muted);
   --dashboard-text-inverse: var(--text-inverse);
-  --dashboard-primary: var(--accent);
-  --dashboard-primary-hover: var(--accent-hover);
-  --dashboard-primary-active: var(--accent-active);
-  --dashboard-primary-subtle: var(--accent-subtle);
+  --dashboard-primary: var(--primary);
+  --dashboard-primary-hover: var(--primary-hover);
+  --dashboard-primary-active: var(--primary-active);
+  --dashboard-primary-subtle: var(--primary-soft);
   --dashboard-success: var(--success);
-  --dashboard-success-subtle: var(--success-subtle);
+  --dashboard-success-subtle: var(--success-soft);
   --dashboard-warning: var(--warning);
-  --dashboard-warning-subtle: var(--warning-subtle);
+  --dashboard-warning-subtle: var(--warning-soft);
   --dashboard-danger: var(--danger);
-  --dashboard-danger-subtle: var(--danger-subtle);
+  --dashboard-danger-subtle: var(--danger-soft);
   --dashboard-info: var(--info);
-  --dashboard-info-subtle: var(--info-subtle);
+  --dashboard-info-subtle: var(--info-soft);
   --dashboard-focus-ring: var(--focus-ring);
   --dashboard-border-focus: var(--border-focus);
   --dashboard-overlay: var(--overlay);
@@ -307,27 +337,26 @@
 }
 
 html.light {
-  --background: #f6f8fb;
+  --background: #F5F7FA;
   --foreground: #172033;
-  --surface: rgba(255, 255, 255, 0.82);
-  --surface-solid: #ffffff;
-  --surface-raised: rgba(255, 255, 255, 0.96);
-  --surface-muted: rgba(241, 245, 249, 0.65);
-  --border-muted: rgb(13 84 92 / 0.16);
-  --border-strong: rgb(20 184 166 / 0.5);
-  --text-muted: #4f5a76;
+  --surface: #FFFFFF;
+  --surface-solid: #FFFFFF;
+  --surface-raised: #FAFBFC;
+  --surface-muted: #F0F2F5;
+  --border-muted: #E3E8EF;
+  --border-strong: #D6DDE7;
+  --text-muted: #8994A5;
 }
 
 /* ══════════════════════════════════════════════════════════════════════════════
    TAILWIND COLOR OVERRIDES
    ─────────────────────────────────────────────────────────────────────────────
-   Maps Tailwind utility colors to our design tokens so utilities like
-   text-emerald-400, bg-zinc-800, etc. use our palette.
+   Maps Tailwind utility colors to our design tokens.
    ══════════════════════════════════════════════════════════════════════════════ */
 
 [data-dashboard-theme="dark"] {
-  --color-emerald-500: var(--accent);
-  --color-emerald-400: var(--accent);
+  --color-emerald-500: var(--primary);
+  --color-emerald-400: var(--primary);
   --color-emerald-50: var(--surface-raised);
   --color-emerald-100: var(--surface-raised);
   --color-cyan-400: var(--info);
@@ -347,55 +376,62 @@ html.light {
 }
 
 [data-dashboard-theme="light"] {
-  --color-emerald-500: var(--accent);
+  --color-emerald-500: var(--primary);
   --color-emerald-400: #6366f1;
-  --color-emerald-50: var(--accent-subtle);
-  --color-emerald-100: var(--accent-subtle);
+  --color-emerald-50: var(--primary-soft);
+  --color-emerald-100: var(--primary-soft);
   --color-cyan-400: var(--info);
-  --color-indigo-400: #6366f1;
-  --color-zinc-50: #f8fafc;
-  --color-zinc-100: #f1f5f9;
-  --color-zinc-200: #e6eaf0;
-  --color-zinc-300: #d8dfe9;
-  --color-zinc-400: #8a96a8;
-  --color-zinc-500: #7a8798;
-  --color-zinc-600: #526075;
-  --color-zinc-700: #2f3d52;
+  --color-indigo-400: #4F46E5;
+  --color-zinc-50: #F5F7FA;
+  --color-zinc-100: #F0F2F5;
+  --color-zinc-200: #E3E8EF;
+  --color-zinc-300: #D6DDE7;
+  --color-zinc-400: #8994A5;
+  --color-zinc-500: #8994A5;
+  --color-zinc-600: #596579;
+  --color-zinc-700: #172033;
   --color-zinc-800: #172033;
   --color-zinc-900: #172033;
-  --color-white: #ffffff;
+  --color-white: #FFFFFF;
   --color-black: #172033;
+  --color-amber-400: #A86200;
+  --color-amber-500: #A86200;
+  --color-red-400: #C62828;
+  --color-red-500: #C62828;
+  --color-orange-400: #A86200;
+  --color-yellow-400: #A86200;
+  --color-violet-400: #4F46E5;
+  --color-purple-400: #4F46E5;
+  --color-rose-400: #C62828;
+  --color-blue-400: #087EA4;
 }
 
 html.light {
-  --color-white: #101828;
-  --color-zinc-50: #1a2636;
-  --color-zinc-100: #223047;
-  --color-zinc-200: #2b3648;
-  --color-zinc-300: #415163;
-  --color-zinc-400: #55647a;
-  --color-zinc-500: #6b7a8f;
-  --color-zinc-600: #8b99a8;
-  --color-zinc-700: #cbd5d1;
-  --color-zinc-800: #dde5e2;
-  --color-zinc-900: #ffffff;
-  --color-emerald-200: #0f766e;
-  --color-emerald-300: #0d9488;
-  --color-emerald-400: #0d9488;
-  --color-emerald-500: #0d9488;
-  --color-cyan-400: #0e7490;
-  --color-indigo-400: #4f46e5;
-  --color-sky-400: #0369a1;
-  --color-teal-400: #0f766e;
-  --color-red-300: #dc2626;
-  --color-red-400: #dc2626;
-  --color-amber-300: #b45309;
-  --color-amber-400: #b45309;
-  --color-amber-500: #b45309;
-  --color-orange-400: #c2410c;
-  --color-yellow-400: #a16207;
-  --color-violet-400: #7c3aed;
-  --color-fuchsia-400: #a21caf;
+  --color-white: #FFFFFF;
+  --color-zinc-50: #F5F7FA;
+  --color-zinc-100: #F0F2F5;
+  --color-zinc-200: #E3E8EF;
+  --color-zinc-300: #D6DDE7;
+  --color-zinc-400: #8994A5;
+  --color-zinc-500: #8994A5;
+  --color-zinc-600: #596579;
+  --color-zinc-700: #172033;
+  --color-zinc-800: #172033;
+  --color-zinc-900: #172033;
+  --color-emerald-400: #16803C;
+  --color-emerald-500: #16803C;
+  --color-cyan-400: #087EA4;
+  --color-indigo-400: #4F46E5;
+  --color-amber-400: #A86200;
+  --color-amber-500: #A86200;
+  --color-red-400: #C62828;
+  --color-red-500: #C62828;
+  --color-orange-400: #A86200;
+  --color-yellow-400: #A86200;
+  --color-violet-400: #4F46E5;
+  --color-purple-400: #4F46E5;
+  --color-rose-400: #C62828;
+  --color-blue-400: #087EA4;
 }
 
 /* ══════════════════════════════════════════════════════════════════════════════
@@ -438,7 +474,7 @@ label {
 
 /* ══════════════════════════════════════════════════════════════════════════════
    DASHBOARD CANVAS
-   ╀═════════════════════════════════════════════════════════════════════════════ */
+   ══════════════════════════════════════════════════════════════════════════════ */
 
 [data-dashboard-theme="light"] .dashboard-shell,
 [data-dashboard-theme="light"] #dashboard-content {
@@ -455,8 +491,9 @@ label {
    ══════════════════════════════════════════════════════════════════════════════ */
 
 .card {
-  background: var(--surface-raised);
-  border: 1px solid var(--border-subtle);
+  background: var(--card-bg, var(--surface-raised));
+  border: 1px solid var(--card-border, var(--border-subtle));
+  border-radius: var(--card-radius, 16px);
   box-shadow: var(--shadow-sm);
 }
 
@@ -470,7 +507,7 @@ label {
 .card-interactive:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
-  border-color: var(--border-default);
+  border-color: var(--border-strong);
 }
 
 .glass {
@@ -505,7 +542,7 @@ label {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--accent);
+  background: var(--primary);
 }
 
 /* ══════════════════════════════════════════════════════════════════════════════
@@ -628,7 +665,7 @@ pre {
 blockquote {
   font-size: 1rem;
   line-height: 1.6;
-  border-left: 4px solid var(--accent);
+  border-left: 4px solid var(--primary);
   padding-left: 1rem;
   color: var(--text-secondary);
 }
@@ -925,7 +962,7 @@ html {
 .cursor-blink::after {
   content: "_";
   animation: blink 1s infinite;
-  color: var(--accent);
+  color: var(--primary);
 }
 
 /* ══════════════════════════════════════════════════════════════════════════════
@@ -943,7 +980,7 @@ html {
   inset: 0;
   border-radius: inherit;
   padding: 1.5px;
-  background: linear-gradient(120deg, var(--accent), var(--info), var(--accent));
+  background: linear-gradient(120deg, var(--primary), var(--info), var(--primary));
   background-size: 300% 100%;
   animation: gradient-pan 6s linear infinite;
   -webkit-mask:
@@ -1034,7 +1071,7 @@ html[data-app-hidden="true"] .pulse-soft {
 
 .dot.close { background: #fb7185; }
 .dot.minimize { background: #fbbf24; }
-.dot.maximize { background: var(--accent); }
+.dot.maximize { background: var(--primary); }
 
 html.light .terminal-window-bar {
   background: rgb(2 6 12 / 0.04);
@@ -1053,14 +1090,14 @@ html.light .terminal-window-bar {
    ══════════════════════════════════════════════════════════════════════════════ */
 
 .text-gradient {
-  background: linear-gradient(100deg, var(--accent) 0%, var(--info) 50%, var(--accent) 100%);
+  background: linear-gradient(100deg, var(--primary) 0%, var(--info) 50%, var(--primary) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
 html.light .text-gradient {
-  background: linear-gradient(100deg, var(--accent) 0%, var(--info) 50%, var(--accent) 100%);
+  background: linear-gradient(100deg, var(--primary) 0%, var(--info) 50%, var(--primary) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -1078,7 +1115,7 @@ html.light .text-gradient {
   font-size: 0.75rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--primary);
 }
 
 /* ══════════════════════════════════════════════════════════════════════════════
@@ -1252,11 +1289,11 @@ html.light .skeleton-shimmer {
   border-radius: 9999px;
   background: conic-gradient(
     from 0deg,
-    var(--accent),
+    var(--primary),
     var(--info) 22%,
-    var(--accent) 48%,
+    var(--primary) 48%,
     var(--info) 68%,
-    var(--accent)
+    var(--primary)
   );
   -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px));
   mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px));

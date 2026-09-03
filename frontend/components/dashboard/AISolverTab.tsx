@@ -113,8 +113,8 @@ export default function AISolverTab() {
               onClick={() => setSelectedSubject(subject)}
               className={`px-3 py-1.5 rounded-lg border text-xs font-mono transition-all ${
                 selectedSubject === subject
-                  ? "bg-[var(--dashboard-primary-subtle)] border-emerald-500/30 text-[var(--dashboard-primary)]"
-                  : "bg-subtle border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] hover:border-emerald-500/20"
+                  ? "bg-[var(--dashboard-primary-subtle)] border-[var(--primary)]/30 text-[var(--dashboard-primary)]"
+                  : "bg-subtle border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] hover:border-[var(--primary)]/20"
               }`}
             >
               {subject}
@@ -128,7 +128,7 @@ export default function AISolverTab() {
             onClick={() => setInputType("text")}
             className={`flex-1 py-2.5 rounded-lg border font-mono text-sm transition-all ${
               inputType === "text"
-                ? "bg-[var(--dashboard-primary-subtle)] border-emerald-500/30 text-[var(--dashboard-primary)]"
+                ? "bg-[var(--dashboard-primary-subtle)] border-[var(--primary)]/30 text-[var(--dashboard-primary)]"
                 : "bg-subtle border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)]"
             }`}
           >
@@ -138,7 +138,7 @@ export default function AISolverTab() {
             onClick={() => setInputType("image")}
             className={`flex-1 py-2.5 rounded-lg border font-mono text-sm transition-all ${
               inputType === "image"
-                ? "bg-[var(--dashboard-primary-subtle)] border-emerald-500/30 text-[var(--dashboard-primary)]"
+                ? "bg-[var(--dashboard-primary-subtle)] border-[var(--primary)]/30 text-[var(--dashboard-primary)]"
                 : "bg-subtle border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)]"
             }`}
           >
@@ -155,7 +155,7 @@ export default function AISolverTab() {
                 value={textInput}
                 onChange={(e) => setTextInput(e.target.value)}
                 placeholder="Type your question here... (e.g., 'Solve: 2x + 5 = 15')"
-                className="w-full h-32 bg-subtle border border-emerald-500/20 rounded-terminal-rounded p-4 text-sm text-[var(--dashboard-text-secondary)] font-mono resize-none focus:outline-none focus:border-emerald-500/40"
+                className="w-full h-32 bg-subtle border border-[var(--primary)]/20 rounded-terminal-rounded p-4 text-sm text-[var(--dashboard-text-secondary)] font-mono resize-none focus:outline-none focus:border-[var(--primary)]/40"
               />
               {textInput && (
                 <button
@@ -181,11 +181,11 @@ export default function AISolverTab() {
                   <img
                     src={imagePreview}
                     alt="Uploaded question"
-                    className="w-full max-h-64 object-contain rounded-terminal-rounded border border-emerald-500/20"
+                    className="w-full max-h-64 object-contain rounded-terminal-rounded border border-[var(--primary)]/20"
                   />
                   <button
                     onClick={clearAll}
-                    className="absolute top-3 right-3 p-1.5 bg-subtle border border-zinc-700 rounded-lg text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)] transition-colors"
+                    className="absolute top-3 right-3 p-1.5 bg-subtle border border-[var(--border-strong)] rounded-lg text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)] transition-colors"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -193,7 +193,7 @@ export default function AISolverTab() {
               ) : (
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  className="w-full h-32 border-2 border-dashed border-emerald-500/20 rounded-terminal-rounded flex flex-col items-center justify-center gap-2 hover:border-emerald-500/40 transition-colors"
+                  className="w-full h-32 border-2 border-dashed border-[var(--primary)]/20 rounded-terminal-rounded flex flex-col items-center justify-center gap-2 hover:border-[var(--primary)]/40 transition-colors"
                 >
                   <Upload className="w-8 h-8 text-[var(--dashboard-primary)]" />
                   <span className="text-sm text-[var(--dashboard-text-muted)] font-mono">Click to upload question image</span>
@@ -210,7 +210,7 @@ export default function AISolverTab() {
                 <button
                   key={i}
                   onClick={() => { setTextInput(ex.question); setInputType("text"); }}
-                  className="px-3 py-1.5 bg-subtle border border-[var(--dashboard-border-muted)] rounded-lg text-xs text-[var(--dashboard-text-muted)] hover:border-emerald-500/20 hover:text-[var(--dashboard-primary)] transition-all"
+                  className="px-3 py-1.5 bg-subtle border border-[var(--dashboard-border-muted)] rounded-lg text-xs text-[var(--dashboard-text-muted)] hover:border-[var(--primary)]/20 hover:text-[var(--dashboard-primary)] transition-all"
                 >
                   {ex.subject}: {ex.question.slice(0, 40)}...
                 </button>
@@ -248,7 +248,7 @@ export default function AISolverTab() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="glass-card rounded-terminal-rounded border border-emerald-500/30 p-5"
+            className="glass-card rounded-terminal-rounded border border-[var(--primary)]/30 p-5"
           >
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
@@ -275,7 +275,7 @@ export default function AISolverTab() {
                     transition={{ delay: i * 0.1 }}
                     className="flex items-start gap-3"
                   >
-                    <div className="w-6 h-6 rounded-full bg-[var(--dashboard-primary-subtle)] border border-emerald-500/20 flex items-center justify-center text-xs font-mono text-[var(--dashboard-primary)] flex-shrink-0">
+                    <div className="w-6 h-6 rounded-full bg-[var(--dashboard-primary-subtle)] border border-[var(--primary)]/20 flex items-center justify-center text-xs font-mono text-[var(--dashboard-primary)] flex-shrink-0">
                       {i + 1}
                     </div>
                     <p className="text-sm text-[var(--dashboard-text-secondary)] font-mono">{step}</p>
@@ -285,7 +285,7 @@ export default function AISolverTab() {
             )}
 
             {/* Final Answer */}
-            <div className="p-4 bg-subtle border border-emerald-500/20 rounded-terminal-rounded">
+            <div className="p-4 bg-subtle border border-[var(--primary)]/20 rounded-terminal-rounded">
               <Markdown text={solution} />
             </div>
 
@@ -309,7 +309,7 @@ export default function AISolverTab() {
 
             <button
               onClick={askTutorToExplain}
-              className="mt-4 w-full flex items-center justify-center gap-2 py-2.5 bg-[var(--surface-raised)] border border-emerald-500/20 text-[var(--dashboard-primary)] rounded-lg text-sm font-mono hover:bg-[var(--dashboard-primary-subtle)] transition-colors"
+              className="mt-4 w-full flex items-center justify-center gap-2 py-2.5 bg-[var(--surface-raised)] border border-[var(--primary)]/20 text-[var(--dashboard-primary)] rounded-lg text-sm font-mono hover:bg-[var(--dashboard-primary-subtle)] transition-colors"
             >
               <MessageSquare className="w-4 h-4" />
               Ask the AI Tutor to explain this step by step

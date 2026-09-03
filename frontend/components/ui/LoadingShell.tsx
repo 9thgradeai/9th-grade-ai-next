@@ -54,10 +54,10 @@ export function LoadingShell({
 
       {/* faint corner HUD brackets for terminal flair */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-        <span className="absolute top-3 left-3 h-4 w-4 border-l-2 border-t-2 border-emerald-500/30" />
-        <span className="absolute top-3 right-3 h-4 w-4 border-r-2 border-t-2 border-emerald-500/30" />
-        <span className="absolute bottom-3 left-3 h-4 w-4 border-l-2 border-b-2 border-emerald-500/30" />
-        <span className="absolute bottom-3 right-3 h-4 w-4 border-r-2 border-b-2 border-emerald-500/30" />
+        <span className="absolute top-3 left-3 h-4 w-4 border-l-2 border-t-2 border-[var(--primary)]/30" />
+        <span className="absolute top-3 right-3 h-4 w-4 border-r-2 border-t-2 border-[var(--primary)]/30" />
+        <span className="absolute bottom-3 left-3 h-4 w-4 border-l-2 border-b-2 border-[var(--primary)]/30" />
+        <span className="absolute bottom-3 right-3 h-4 w-4 border-r-2 border-b-2 border-[var(--primary)]/30" />
       </div>
     </div>
   );

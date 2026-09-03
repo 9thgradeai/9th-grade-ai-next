@@ -128,12 +128,12 @@ export default function VoiceInterviewTab() {
       </div>
 
       {!supported && (
-        <p className="rounded-xl border border-amber-500/30 bg-[var(--dashboard-warning-subtle)] px-3 py-2 text-sm text-[var(--dashboard-warning)]">
+        <p className="rounded-xl border border-[var(--warning)]/30 bg-[var(--dashboard-warning-subtle)] px-3 py-2 text-sm text-[var(--dashboard-warning)]">
           তোমার ব্রাউজারে ভয়েস ইনপুট সাপোর্ট করে না। কীবোর্ড দিয়ে লিখে পাঠাতে পারো।
         </p>
       )}
 
-      <div className="flex-1 space-y-3 overflow-y-auto rounded-2xl border border-white/10 bg-[var(--dashboard-surface)] p-4">
+      <div className="flex-1 space-y-3 overflow-y-auto rounded-2xl border border-[var(--border-subtle)] bg-[var(--dashboard-surface)] p-4">
         {messages.length === 0 && (
           <p className="text-sm text-[var(--dashboard-text-muted)]">
             মাইকে চাপ দিয়ে শুরু করো, অথবা নিচে লিখে পাঠাও। যেমন: “BCS প্রিলির জন্য কীভাবে প্রস্তুতি নেব?”
@@ -148,7 +148,7 @@ export default function VoiceInterviewTab() {
             </div>
           ) : (
             <div key={m.id} className="flex items-start gap-2">
-              <div className="max-w-[85%] rounded-2xl border border-white/10 bg-[var(--surface-raised)] px-3 py-2 text-sm text-[var(--dashboard-text-primary)]">
+              <div className="max-w-[85%] rounded-2xl border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-3 py-2 text-sm text-[var(--dashboard-text-primary)]">
                 {m.text ? <Markdown text={m.text} /> : <span className="text-[var(--dashboard-text-muted)]">…</span>}
               </div>
               {m.text && (
@@ -156,7 +156,7 @@ export default function VoiceInterviewTab() {
                   type="button"
                   onClick={() => speak(m.text)}
                   aria-label="শোনো"
-                  className="mt-1 rounded-lg border border-white/10 p-1.5 text-[var(--dashboard-text-muted)] hover:text-[var(--dashboard-primary)]"
+                  className="mt-1 rounded-lg border border-[var(--border-subtle)] p-1.5 text-[var(--dashboard-text-muted)] hover:text-[var(--dashboard-primary)]"
                 >
                   <Volume2 className="h-4 w-4" />
                 </button>
@@ -191,7 +191,7 @@ export default function VoiceInterviewTab() {
           }}
           rows={1}
           placeholder="প্রশ্ন লিখো বা মাইকে কথা বলো…"
-          className="flex-1 resize-none rounded-xl border border-white/10 bg-[var(--surface-raised)] px-3 py-2 text-sm text-[var(--dashboard-text-primary)] outline-none focus:border-emerald-500/50"
+          className="flex-1 resize-none rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-3 py-2 text-sm text-[var(--dashboard-text-primary)] outline-none focus:border-[var(--primary)]/50"
         />
         <button
           type="button"

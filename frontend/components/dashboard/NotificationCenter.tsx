@@ -196,7 +196,7 @@ export default function NotificationCenter() {
                 ) : activeTab === "notifications" ? (
                   notifications.length === 0 ? (
                     <div className="text-center py-12">
-                      <Bell className="w-10 h-10 mx-auto mb-3 text-zinc-700" />
+                      <Bell className="w-10 h-10 mx-auto mb-3 text-[var(--text-muted)]" />
                       <p className="text-sm text-[var(--dashboard-text-muted)]">কোনো নোটিফিকেশন নেই</p>
                     </div>
                   ) : (
@@ -256,7 +256,7 @@ export default function NotificationCenter() {
                   )
                 ) : badges.length === 0 ? (
                   <div className="text-center py-12">
-                    <Medal className="w-10 h-10 mx-auto mb-3 text-zinc-700" />
+                    <Medal className="w-10 h-10 mx-auto mb-3 text-[var(--text-muted)]" />
                     <p className="text-sm text-[var(--dashboard-text-muted)]">কোনো ব্যাজ নেই</p>
                   </div>
                 ) : (

@@ -36,7 +36,7 @@ export function SkeletonCard({
     <div
       role="status"
       aria-label="Loading"
-      className={`glass-card rounded-2xl border border-white/10 p-6 ${className}`}
+      className={`glass-card rounded-2xl border border-[var(--border-subtle)] p-6 ${className}`}
     >
       <span className="sr-only">Loading…</span>
       {children ?? (

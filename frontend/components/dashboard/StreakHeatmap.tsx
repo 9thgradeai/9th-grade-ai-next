@@ -19,8 +19,8 @@ export default function StreakHeatmap({ activeDays, labels }: StreakHeatmapProps
           <span
             className={`w-5 h-5 rounded-md border transition-colors ${
               active
-                ? "bg-[var(--accent)] border-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.45)]"
-                : "bg-[var(--dashboard-surface-muted)] border-zinc-700"
+                ? "bg-[var(--accent)] border-[var(--primary)] shadow-[0_0_10px_var(--primary)]"
+                : "bg-[var(--dashboard-surface-muted)] border-[var(--border-strong)]"
             }`}
             aria-hidden="true"
           />

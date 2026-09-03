@@ -280,12 +280,12 @@ export default function ProgressTab() {
 
   const kpis = useMemo(
     () => [
-      { icon: Star, label: "পয়েন্ট", value: String(stats?.points ?? 0), color: "text-[var(--dashboard-warning)]", bg: "bg-[var(--dashboard-warning-subtle)]", border: "border-amber-500/20" },
-      { icon: Target, label: "নির্ভুলতা", value: `${stats?.accuracy ?? 0}%`, color: "text-[var(--info)]", bg: "bg-[var(--info)]/10", border: "border-[var(--info)]/20" },
-      { icon: Trophy, label: "র‍্যাংক", value: `#${stats?.rank ?? 0}`, color: "text-[var(--dashboard-primary)]", bg: "bg-[var(--dashboard-primary-subtle)]", border: "border-[var(--accent)]/20" },
-      { icon: Flame, label: "স্ট্রিক", value: `${stats?.streak ?? 0} দিন`, color: "text-orange-400", bg: "bg-orange-500/10", border: "border-orange-500/20" },
-      { icon: BookOpenCheck, label: "মোট প্রশ্ন", value: String(stats?.questionsAnswered ?? 0), color: "text-[var(--accent)]", bg: "bg-[var(--accent)]/10", border: "border-[var(--accent)]/20" },
-      { icon: BrainCircuit, label: "AI প্রশ্ন", value: String(stats?.aiQuestionsAsked ?? 0), color: "text-cyan-400", bg: "bg-cyan-500/10", border: "border-cyan-500/20" },
+      { icon: Star, label: "পয়েন্ট", value: String(stats?.points ?? 0), color: "text-[var(--dashboard-warning)]", bg: "bg-[var(--dashboard-warning-subtle)]", border: "border-[var(--warning)]/20" },
+      { icon: Target, label: "নির্ভুলতা", value: `${stats?.accuracy ?? 0}%`, color: "text-[var(--info)]", bg: "bg-[var(--info-soft)]", border: "border-[var(--info)]/20" },
+      { icon: Trophy, label: "র‍্যাংক", value: `#${stats?.rank ?? 0}`, color: "text-[var(--dashboard-primary)]", bg: "bg-[var(--dashboard-primary-subtle)]", border: "border-[var(--primary)]/20" },
+      { icon: Flame, label: "স্ট্রিক", value: `${stats?.streak ?? 0} দিন`, color: "text-[var(--warning)]", bg: "bg-[var(--warning-soft)]", border: "border-[var(--warning)]/20" },
+      { icon: BookOpenCheck, label: "মোট প্রশ্ন", value: String(stats?.questionsAnswered ?? 0), color: "text-[var(--primary)]", bg: "bg-[var(--primary-soft)]", border: "border-[var(--primary)]/20" },
+      { icon: BrainCircuit, label: "AI প্রশ্ন", value: String(stats?.aiQuestionsAsked ?? 0), color: "text-[var(--info)]", bg: "bg-[var(--info-soft)]", border: "border-[var(--info)]/20" },
     ],
     [stats],
   );

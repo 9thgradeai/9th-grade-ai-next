@@ -48,14 +48,14 @@ export default function AIMockTestTab() {
         </p>
       </div>
 
-      <div className="flex flex-wrap items-end gap-3 rounded-2xl border border-white/10 bg-[var(--dashboard-surface)] p-4">
+      <div className="flex flex-wrap items-end gap-3 rounded-2xl border border-[var(--border-subtle)] bg-[var(--dashboard-surface)] p-4">
         <label className="flex flex-col gap-1 text-sm text-[var(--dashboard-text-secondary)]">
           বিষয়
           <input
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
             placeholder="যেমন: ইতিহাস"
-            className="w-40 rounded-lg border border-white/10 bg-[var(--surface-raised)] px-3 py-2 text-sm text-[var(--dashboard-text-primary)] outline-none focus:border-emerald-500/50"
+            className="w-40 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-3 py-2 text-sm text-[var(--dashboard-text-primary)] outline-none focus:border-[var(--primary)]/50"
           />
         </label>
         <label className="flex flex-col gap-1 text-sm text-[var(--dashboard-text-secondary)]">
@@ -66,7 +66,7 @@ export default function AIMockTestTab() {
             max={25}
             value={count}
             onChange={(e) => setCount(Math.max(1, Math.min(25, Number(e.target.value) || 10)))}
-            className="w-24 rounded-lg border border-white/10 bg-[var(--surface-raised)] px-3 py-2 text-sm text-[var(--dashboard-text-primary)] outline-none focus:border-emerald-500/50"
+            className="w-24 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-3 py-2 text-sm text-[var(--dashboard-text-primary)] outline-none focus:border-[var(--primary)]/50"
           />
         </label>
         <label className="flex flex-col gap-1 text-sm text-[var(--dashboard-text-secondary)]">
@@ -74,7 +74,7 @@ export default function AIMockTestTab() {
           <select
             value={difficulty}
             onChange={(e) => setDifficulty(e.target.value as Difficulty | "")}
-            className="w-32 rounded-lg border border-white/10 bg-[var(--surface-raised)] px-3 py-2 text-sm text-[var(--dashboard-text-primary)] outline-none focus:border-emerald-500/50"
+            className="w-32 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-3 py-2 text-sm text-[var(--dashboard-text-primary)] outline-none focus:border-[var(--primary)]/50"
           >
             <option value="">যেকোনো</option>
             <option value="EASY">সহজ</option>
@@ -96,7 +96,7 @@ export default function AIMockTestTab() {
 
       {test && test.questions.length > 0 && (
         <>
-          <div className="flex items-center justify-between rounded-xl border border-white/10 bg-[var(--dashboard-surface)] px-4 py-3">
+          <div className="flex items-center justify-between rounded-xl border border-[var(--border-subtle)] bg-[var(--dashboard-surface)] px-4 py-3">
             <div>
               <h2 className="font-semibold text-[var(--dashboard-text-primary)]">{test.title}</h2>
               <p className="text-xs text-[var(--dashboard-text-muted)]">সূত্র: {test.source}</p>
@@ -141,7 +141,7 @@ export default function AIMockTestTab() {
                 setSubmitted(false);
                 setAnswers({});
               }}
-              className="self-start rounded-xl border border-white/10 px-5 py-2 text-sm text-[var(--dashboard-text-primary)] hover:border-emerald-500/50"
+              className="self-start rounded-xl border border-[var(--border-subtle)] px-5 py-2 text-sm text-[var(--dashboard-text-primary)] hover:border-[var(--primary)]/50"
             >
               আবার চেষ্টা করো
             </button>
@@ -170,7 +170,7 @@ function QuestionCard({
   showAnswer: boolean;
 }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-[var(--dashboard-surface)] p-4">
+    <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--dashboard-surface)] p-4">
       <div className="mb-3 flex items-start gap-2">
         <span className="mt-0.5 font-mono text-xs text-[var(--dashboard-text-muted)]">{index}.</span>
         <div>
@@ -184,13 +184,13 @@ function QuestionCard({
           const isCorrect = opt.id === q.answer;
           const cls = showAnswer
             ? isCorrect
-              ? "border-emerald-500/60 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
+              ? "border-[var(--primary)]/60 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
               : isSelected
-                ? "border-red-500/60 bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)]"
-                : "border-white/10 text-[var(--dashboard-text-secondary)]"
+                ? "border-[var(--danger)]/60 bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)]"
+                : "border-[var(--border-subtle)] text-[var(--dashboard-text-secondary)]"
             : isSelected
-              ? "border-emerald-500/50 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-text-primary)]"
-              : "border-white/10 text-[var(--dashboard-text-secondary)] hover:border-emerald-500/30";
+              ? "border-[var(--primary)]/50 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-text-primary)]"
+              : "border-[var(--border-subtle)] text-[var(--dashboard-text-secondary)] hover:border-[var(--primary)]/30";
           return (
             <button
               key={opt.id}

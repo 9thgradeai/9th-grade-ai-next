@@ -145,7 +145,7 @@ export default function ScrollPractice({
 
       {!submitted && (
         <div className="flex items-center gap-2 text-xs text-[var(--dashboard-text-muted)] font-mono">
-          <span className="px-2 py-1 rounded bg-[var(--dashboard-primary-subtle)] border border-emerald-500/20 text-[var(--dashboard-primary)]">
+          <span className="px-2 py-1 rounded bg-[var(--dashboard-primary-subtle)] border border-[var(--primary)]/20 text-[var(--dashboard-primary)]">
             {answeredCount === total ? "সব প্রশ্নের উত্তর দেওয়া হয়েছে" : `${total - answeredCount}টি উত্তর বাকি`}
           </span>
           <span>প্রতিটি প্রশ্নের নিচে উত্তর দিয়ে একবারে জমা দিন।</span>
@@ -170,10 +170,10 @@ export default function ScrollPractice({
               className={`glass-card rounded-terminal-rounded border p-4 ${
                 submitted
                   ? qFb?.justMastered
-                    ? "border-emerald-500/40"
+                    ? "border-[var(--primary)]/40"
                     : isCorrect
-                      ? "border-emerald-500/20"
-                      : "border-red-500/30"
+                      ? "border-[var(--primary)]/20"
+                      : "border-[var(--danger)]/30"
                   : "border-terminal-border"
               }`}
             >
@@ -223,11 +223,11 @@ export default function ScrollPractice({
               {submitted && (
                 <div className="mt-3 flex items-center gap-2 text-xs font-mono flex-wrap">
                   {qFb?.justMastered ? (
-                    <span className="px-2 py-0.5 rounded bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] border border-emerald-500/40">
+                    <span className="px-2 py-0.5 rounded bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] border border-[var(--primary)]/40">
                       এই প্রশ্নটি এখন আয়ত্ত — চমৎকার!
                     </span>
                   ) : isCorrect ? (
-                    <span className="px-2 py-0.5 rounded bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] border border-emerald-500/25">
+                    <span className="px-2 py-0.5 rounded bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] border border-[var(--primary)]/25">
                       সঠিক হয়েছে — অগ্রগতি হয়েছে।
                     </span>
                   ) : (

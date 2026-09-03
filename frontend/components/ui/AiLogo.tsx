@@ -38,9 +38,9 @@ export default function AiLogo({ className, solid = true }: AiLogoProps) {
     >
       <defs>
         <linearGradient id={`${gid}-g`} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#34d399" />
-          <stop offset="55%" stopColor="#10b981" />
-          <stop offset="100%" stopColor="#06b6d4" />
+          <stop offset="0%" stopColor="var(--success)" />
+          <stop offset="55%" stopColor="var(--primary)" />
+          <stop offset="100%" stopColor="var(--info)" />
         </linearGradient>
       </defs>
       {solid && (

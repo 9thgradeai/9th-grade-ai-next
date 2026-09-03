@@ -27,12 +27,12 @@ export function AuroraRing({
       {/* soft ambient halo behind the ring */}
       <div
         aria-hidden="true"
-        className="absolute inset-[-18%] rounded-full bg-emerald-500/10 blur-2xl boot-core"
+        className="absolute inset-[-18%] rounded-full bg-[rgb(from_var(--primary)_r_g_b_/_0.1)] blur-2xl boot-core"
       />
       {/* rotating aurora ring */}
       <div
         aria-hidden="true"
-        className="boot-ring absolute inset-0 shadow-[0_0_30px_rgba(45,212,191,0.35)]"
+        className="boot-ring absolute inset-0 shadow-[0_0_30px_rgb(from_var(--primary)_r_g_b_/_0.35)]"
       />
       {/* core */}
       <div
@@ -42,8 +42,8 @@ export function AuroraRing({
           width: size * 0.34,
           height: size * 0.34,
           background:
-            "radial-gradient(circle at 30% 30%, #2dd4bf, #818cf8 70%, #e879f9)",
-          boxShadow: "0 0 24px rgba(129,140,248,0.65)",
+            "radial-gradient(circle at 30% 30%, var(--primary), var(--info) 70%, var(--primary))",
+          boxShadow: "0 0 24px rgb(from var(--primary) r g b / 0.65)",
         }}
       />
       {/* orbiting satellites */}
@@ -61,7 +61,7 @@ export function AuroraRing({
               top: "50%",
               width: size * 0.09,
               height: size * 0.09,
-              background: deg % 180 === 0 ? "#22d3ee" : "#e879f9",
+              background: deg % 180 === 0 ? "var(--info)" : "var(--primary)",
               transform: `rotate(${deg}deg) translateX(${size / 2}px)`,
               animationDelay: `${deg * 0.12}s`,
             }}
@@ -132,12 +132,12 @@ export function BootProgress({
 }) {
   return (
     <div role="progressbar" aria-label={label} className="w-full max-w-xs">
-      <div className="boot-progress-bar h-1.5 w-full overflow-hidden rounded-full bg-white/10">
+      <div className="boot-progress-bar h-1.5 w-full overflow-hidden rounded-full bg-[var(--surface-muted)]">
         <span
           style={{
             background:
-              "linear-gradient(90deg,#14b8a6,#22d3ee 40%,#a78bfa 70%,#e879f9)",
-            boxShadow: "0 0 12px rgba(45,212,191,0.6)",
+              "linear-gradient(90deg, var(--primary), var(--info) 40%, var(--primary) 70%, var(--info))",
+            boxShadow: "0 0 12px rgb(from var(--primary) r g b / 0.6)",
           }}
         />
       </div>
@@ -145,7 +145,7 @@ export function BootProgress({
         {Array.from({ length: segments }, (_, s) => (
           <span
             key={s}
-            className="boot-seg h-1 flex-1 rounded-full bg-emerald-400/60"
+            className="boot-seg h-1 flex-1 rounded-full bg-[rgb(from_var(--primary)_r_g_b_/_0.6)]"
             style={{ animationDelay: `${s * 0.12}s` }}
           />
         ))}

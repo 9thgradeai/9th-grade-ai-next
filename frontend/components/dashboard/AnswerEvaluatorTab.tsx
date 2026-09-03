@@ -50,7 +50,7 @@ export default function AnswerEvaluatorTab() {
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
             rows={3}
-            className="mt-1 w-full rounded-xl border border-white/10 bg-[var(--surface-raised)] px-3 py-2 text-sm text-[var(--dashboard-text-primary)] outline-none focus:border-emerald-500/50"
+            className="mt-1 w-full rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-3 py-2 text-sm text-[var(--dashboard-text-primary)] outline-none focus:border-[var(--primary)]/50"
             placeholder="যে প্রশ্নটির উত্তর দিয়েছো, সেটি এখানে লিখো…"
           />
         </label>
@@ -61,7 +61,7 @@ export default function AnswerEvaluatorTab() {
             value={answer}
             onChange={(e) => setAnswer(e.target.value)}
             rows={5}
-            className="mt-1 w-full rounded-xl border border-white/10 bg-[var(--surface-raised)] px-3 py-2 text-sm text-[var(--dashboard-text-primary)] outline-none focus:border-emerald-500/50"
+            className="mt-1 w-full rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-3 py-2 text-sm text-[var(--dashboard-text-primary)] outline-none focus:border-[var(--primary)]/50"
             placeholder="তোমার নিজের লেখা উত্তর এখানে দাও…"
           />
         </label>
@@ -79,9 +79,9 @@ export default function AnswerEvaluatorTab() {
       </div>
 
       {result && (
-        <div className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-[var(--dashboard-surface)] p-5">
+        <div className="flex flex-col gap-4 rounded-2xl border border-[var(--border-subtle)] bg-[var(--dashboard-surface)] p-5">
           <div className="flex items-center gap-4">
-            <div className="flex h-20 w-20 flex-col items-center justify-center rounded-2xl bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] ring-1 ring-emerald-500/20">
+            <div className="flex h-20 w-20 flex-col items-center justify-center rounded-2xl bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] ring-1 ring-[var(--primary)]/20">
               <span className="text-2xl font-bold">{result.score}</span>
               <span className="text-[10px] uppercase tracking-wide">/ 100</span>
             </div>

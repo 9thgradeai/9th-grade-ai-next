@@ -48,9 +48,9 @@ const RATING_VALUE: Record<ReviewRating, 0 | 1 | 2 | 3> = {
 };
 
 const RATING_CONFIG: Record<ReviewRating, { label: string; color: string }> = {
-  again: { label: "Again", color: "text-[var(--dashboard-danger)] bg-[var(--dashboard-danger-subtle)] border-red-500/30" },
-  hard: { label: "Hard", color: "text-[var(--dashboard-warning)] bg-[var(--dashboard-warning-subtle)] border-amber-500/30" },
-  good: { label: "Good", color: "text-[var(--dashboard-primary)] bg-[var(--dashboard-primary-subtle)] border-emerald-500/30" },
+  again: { label: "Again", color: "text-[var(--dashboard-danger)] bg-[var(--dashboard-danger-subtle)] border-[var(--danger)]/30" },
+  hard: { label: "Hard", color: "text-[var(--dashboard-warning)] bg-[var(--dashboard-warning-subtle)] border-[var(--warning)]/30" },
+  good: { label: "Good", color: "text-[var(--dashboard-primary)] bg-[var(--dashboard-primary-subtle)] border-[var(--primary)]/30" },
   easy: { label: "Easy", color: "text-[var(--info)] bg-[var(--info)]/10 border-sky-500/30" },
 };
 
@@ -243,7 +243,7 @@ export default function FlashcardsTab() {
 
             <button
               onClick={startMixedSession}
-              className="w-full mb-4 px-4 py-3 bg-[var(--dashboard-primary-subtle)] border border-emerald-500/30 rounded-lg text-[var(--dashboard-primary)] font-mono text-sm hover:bg-[var(--dashboard-primary-subtle)] transition-colors flex items-center justify-center gap-2"
+              className="w-full mb-4 px-4 py-3 bg-[var(--dashboard-primary-subtle)] border border-[var(--primary)]/30 rounded-lg text-[var(--dashboard-primary)] font-mono text-sm hover:bg-[var(--dashboard-primary-subtle)] transition-colors flex items-center justify-center gap-2"
             >
               <BarChart3 className="w-4 h-4" />
               সব ডিউ কার্ড একসাথে রিভিউ করুন
@@ -318,7 +318,7 @@ export default function FlashcardsTab() {
               initial={false}
               animate={{ scaleX: reviewQueue.length > 0 ? currentIndex / reviewQueue.length : 0 }}
               style={{ transformOrigin: "left" }}
-              className="h-full w-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full"
+              className="h-full w-full bg-gradient-to-r from-[var(--success)] to-[var(--success)] rounded-full"
             />
           </div>
 
@@ -352,9 +352,9 @@ export default function FlashcardsTab() {
                     }
                   }}
                   onClick={handleFlip}
-                  className={`w-full h-full rounded-terminal-rounded border-2 cursor-pointer transition-all flex items-center justify-center p-6 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400 ${
+                  className={`w-full h-full rounded-terminal-rounded border-2 cursor-pointer transition-all flex items-center justify-center p-6 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)] ${
                     isFlipped
-                      ? "bg-[var(--dashboard-primary-subtle)] border-emerald-500/30"
+                      ? "bg-[var(--dashboard-primary-subtle)] border-[var(--primary)]/30"
                       : "bg-subtle border-[var(--dashboard-border-muted)] hover:border-[var(--accent)]/20"
                   }`}
                 >
@@ -405,7 +405,7 @@ export default function FlashcardsTab() {
                 <button
                   onClick={() => setShowHint(!showHint)}
                   aria-label={showHint ? "Hide hint" : "Show hint"}
-                  className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] rounded-lg text-[var(--dashboard-warning)] hover:border-amber-500/30 transition-colors"
+                  className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] rounded-lg text-[var(--dashboard-warning)] hover:border-[var(--warning)]/30 transition-colors"
                 >
                   <Lightbulb className="w-5 h-5" />
                 </button>

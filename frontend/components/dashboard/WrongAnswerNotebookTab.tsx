@@ -32,9 +32,9 @@ import { useToastSafe } from "@/lib/toast-ctx";
 type ViewMode = "dashboard" | "exam-config" | "drilling" | "exam-result";
 
 const MASTERY_COLORS: Record<string, string> = {
-  STRUGGLING: "text-[var(--dashboard-danger)] bg-[var(--dashboard-danger-subtle)] border-red-500/20",
-  REVIEWING: "text-[var(--dashboard-warning)] bg-[var(--dashboard-warning-subtle)] border-amber-500/20",
-  IMPROVING: "text-blue-400 bg-blue-500/10 border-blue-500/20",
+  STRUGGLING: "text-[var(--dashboard-danger)] bg-[var(--dashboard-danger-subtle)] border-[var(--danger)]/20",
+  REVIEWING: "text-[var(--dashboard-warning)] bg-[var(--dashboard-warning-subtle)] border-[var(--warning)]/20",
+  IMPROVING: "text-[var(--info)] bg-[var(--info-soft)] border-[var(--info)]/20",
   MASTERED: "text-[var(--dashboard-primary)] bg-[var(--dashboard-primary-subtle)] border-[var(--accent)]/20",
   NEW: "text-[var(--dashboard-text-muted)] bg-[var(--surface-muted)] border-[var(--dashboard-border-muted)]",
 };
@@ -241,7 +241,7 @@ export default function WrongAnswerNotebookTab() {
                   className={`px-3 py-2 rounded-lg border text-sm font-mono transition-colors ${
                     examCount === n
                       ? "border-[var(--accent)]/50 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
-                      : "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] hover:border-zinc-700"
+                      : "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] hover:border-[var(--border-strong)]"
                   }`}
                 >
                   {n}
@@ -252,7 +252,7 @@ export default function WrongAnswerNotebookTab() {
                 className={`px-3 py-2 rounded-lg border text-sm font-mono transition-colors ${
                   examCount === totalMistakes
                     ? "border-[var(--accent)]/50 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
-                    : "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] hover:border-zinc-700"
+                    : "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] hover:border-[var(--border-strong)]"
                 }`}
               >
                 All
@@ -271,7 +271,7 @@ export default function WrongAnswerNotebookTab() {
                   className={`px-3 py-2 rounded-lg border text-sm font-mono transition-colors ${
                     examFocus === opt.value
                       ? "border-[var(--accent)]/50 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
-                      : "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] hover:border-zinc-700"
+                      : "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] hover:border-[var(--border-strong)]"
                   }`}
                 >
                   {opt.label}
@@ -377,7 +377,7 @@ export default function WrongAnswerNotebookTab() {
                 <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">সঠিক</p>
                 <p className="text-lg font-bold text-[var(--dashboard-primary)] font-mono">{correct}</p>
               </div>
-              <div className="rounded-xl bg-[var(--dashboard-danger-subtle)] border border-red-500/25 p-3">
+              <div className="rounded-xl bg-[var(--dashboard-danger-subtle)] border border-[var(--danger)]/25 p-3">
                 <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">আবার ভুল</p>
                 <p className="text-lg font-bold text-[var(--dashboard-danger)] font-mono">{stillErrors}</p>
               </div>
@@ -418,7 +418,7 @@ export default function WrongAnswerNotebookTab() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: Math.min(i * 0.03, 0.5) }}
                 className={`glass-card rounded-2xl border p-4 ${
-                  isMastered ? "border-[var(--accent)]/40" : isCorrect ? "border-[var(--accent)]/20" : "border-red-500/20"
+                  isMastered ? "border-[var(--accent)]/40" : isCorrect ? "border-[var(--accent)]/20" : "border-[var(--danger)]/20"
                 }`}
               >
                 <div className="flex items-start gap-3">
@@ -513,7 +513,7 @@ export default function WrongAnswerNotebookTab() {
           </motion.div>
           <motion.div variants={STAGGER_ITEM} className="glass-card rounded-terminal-rounded border border-terminal-border p-4">
             <div className="flex items-center gap-2 mb-1">
-              <TrendingUp className="w-4 h-4 text-blue-400" />
+              <TrendingUp className="w-4 h-4 text-[var(--info)]" />
               <span className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase">Improving</span>
             </div>
             <p className="text-2xl font-bold text-[var(--text-primary)] font-mono">{stats.improving}</p>
@@ -589,14 +589,14 @@ export default function WrongAnswerNotebookTab() {
                     <div className="flex items-center gap-2">
                       <span className="text-sm text-[var(--text-primary)] font-mono truncate">{s.subject}</span>
                       {isHot && (
-                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)] font-mono border border-rose-500/20">
+                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)] font-mono border border-[var(--danger)]/20">
                           NEEDS ATTENTION
                         </span>
                       )}
                     </div>
                     <div className="mt-1 h-1.5 bg-[var(--surface-overlay)] rounded-full overflow-hidden">
                       <div
-                        className={`h-full rounded-full ${isHot ? "bg-rose-500" : "bg-[var(--accent)]"}`}
+                        className={`h-full rounded-full ${isHot ? "bg-[var(--danger)]" : "bg-[var(--accent)]"}`}
                         style={{ width: `${pct}%` }}
                       />
                     </div>
@@ -652,7 +652,7 @@ export default function WrongAnswerNotebookTab() {
                         className={`px-2.5 py-1.5 rounded-lg border text-xs font-mono transition-colors ${
                           filterStatus === s
                             ? "border-[var(--accent)]/50 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
-                            : "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] hover:border-zinc-700"
+                            : "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] hover:border-[var(--border-strong)]"
                         }`}
                       >
                         {s === "" ? "All" : MASTERY_LABELS[s] ?? s}

@@ -270,7 +270,7 @@ export default function QuestionBankTab() {
             onChange={(e) => setQuery(e.target.value)}
             placeholder="grep -r 'মুক্তিযুদ্ধ' ./question_bank"
             aria-label="Search question bank"
-            className="flex-1 bg-transparent px-2 py-3 font-mono text-sm text-[var(--text-primary)] placeholder-zinc-500 focus:outline-none"
+            className="flex-1 bg-transparent px-2 py-3 font-mono text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none"
           />
           <span className="pr-3 text-xs text-[var(--dashboard-text-muted)] font-mono">
             {visibleQuestions.length} hits
@@ -343,7 +343,7 @@ export default function QuestionBankTab() {
             className={`px-2.5 py-1 rounded-full text-[11px] font-mono border transition-all ${
               year === null
                 ? "bg-[var(--dashboard-primary-subtle)] border-[var(--accent)]/40 text-[var(--dashboard-primary)]"
-                : "border-zinc-700 text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)]"
+                : "border-[var(--border-subtle)] text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)]"
             }`}
           >
             সব বছর
@@ -355,7 +355,7 @@ export default function QuestionBankTab() {
               className={`px-2.5 py-1 rounded-full text-[11px] font-mono border transition-all ${
                 year === y
                   ? "bg-[var(--dashboard-primary-subtle)] border-[var(--accent)]/40 text-[var(--dashboard-primary)]"
-                  : "border-zinc-700 text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)]"
+                  : "border-[var(--border-subtle)] text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)]"
               }`}
             >
               {y}
@@ -368,7 +368,7 @@ export default function QuestionBankTab() {
               className={`px-2.5 py-1 rounded-full text-[11px] font-mono border transition-all ${
                 sourceExam === se
                   ? "bg-[var(--info)]/20 border-[var(--info)]/40 text-[var(--info)]"
-                  : "border-zinc-700 text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)]"
+                  : "border-[var(--border-subtle)] text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)]"
               }`}
             >
               {se}
@@ -386,7 +386,7 @@ export default function QuestionBankTab() {
             className={`px-2.5 py-1 rounded-full text-[11px] font-mono border transition-all ${
               bcsTerm === null
                 ? "bg-[var(--dashboard-primary-subtle)] border-[var(--accent)]/40 text-[var(--dashboard-primary)]"
-                : "border-zinc-700 text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)]"
+                : "border-[var(--border-subtle)] text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)]"
             }`}
           >
             সব টার্ম
@@ -398,7 +398,7 @@ export default function QuestionBankTab() {
               className={`px-2.5 py-1 rounded-full text-[11px] font-mono border transition-all ${
                 bcsTerm === term
                   ? "bg-[var(--dashboard-warning-subtle)] border-amber-500/40 text-[var(--dashboard-warning)]"
-                  : "border-zinc-700 text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)]"
+                  : "border-[var(--border-subtle)] text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)]"
               }`}
             >
               {term}
@@ -458,8 +458,8 @@ export default function QuestionBankTab() {
                           item.difficulty === "EASY"
                             ? "bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] border border-[var(--accent)]/20"
                             : item.difficulty === "MEDIUM"
-                            ? "bg-yellow-500/10 text-yellow-400 border border-yellow-500/20"
-                            : "bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)] border border-red-500/20"
+                            ? "bg-[var(--warning-soft)] text-[var(--warning)] border border-[var(--warning)]/20"
+                            : "bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)] border border-[var(--danger)]/20"
                         }`}
                       >
                         {item.difficulty}
@@ -470,7 +470,7 @@ export default function QuestionBankTab() {
                         </span>
                       ) : null}
                       {item.sourceExam ? (
-                        <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-purple-500/10 text-purple-300 border border-purple-500/20">
+                        <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-[var(--primary-soft)] text-[var(--primary)] border border-[var(--primary)]/20">
                           {item.sourceExam}
                         </span>
                       ) : null}

@@ -114,7 +114,7 @@ function Field({
       <input
         id={id}
         {...props}
-        className="w-full px-3.5 py-2.5 rounded-xl bg-subtle border border-[var(--dashboard-border-muted)] text-sm text-[var(--text-primary)] placeholder-zinc-600 outline-none transition-colors focus:border-[var(--accent)]/50 focus:ring-2 focus:ring-emerald-500/20"
+        className="w-full px-3.5 py-2.5 rounded-xl bg-subtle border border-[var(--dashboard-border-muted)] text-sm text-[var(--text-primary)] placeholder:text-[var(--text-secondary)] outline-none transition-colors focus:border-[var(--accent)]/50 focus:ring-2 focus:ring-emerald-500/20"
       />
     </label>
   );
@@ -290,7 +290,7 @@ export default function SettingsTab() {
       >
         <div className="flex items-center gap-4 mb-5">
           <div className="relative">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-emerald-500/30 to-cyan-500/10 border border-[var(--accent)]/35 flex items-center justify-center text-xl font-bold text-[var(--dashboard-primary)]">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[var(--primary)]/30 to-[var(--info)]/10 border border-[var(--accent)]/35 flex items-center justify-center text-xl font-bold text-[var(--dashboard-primary)]">
               {initial}
             </div>
             <span className="absolute bottom-1 right-1 w-3 h-3 rounded-full bg-[var(--accent)] border-2 border-[var(--surface-solid)]" aria-hidden="true" />
@@ -321,7 +321,7 @@ export default function SettingsTab() {
                     setEditingName(false);
                     setNameMsg(null);
                   }}
-                  className="px-2.5 py-1.5 rounded-lg border border-zinc-700 text-xs font-mono text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)] transition-colors"
+                  className="px-2.5 py-1.5 rounded-lg border border-[var(--border-strong)] text-xs font-mono text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)] transition-colors"
                   aria-label="Cancel editing"
                 >
                   Cancel
@@ -442,7 +442,7 @@ export default function SettingsTab() {
           <button
             onClick={() => void handleRevokeSessions()}
             disabled={revokingAll}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-red-500/40 bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)] text-sm font-mono font-semibold hover:bg-[var(--dashboard-danger-subtle)] transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex-shrink-0"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-[var(--danger)]/40 bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)] text-sm font-mono font-semibold hover:bg-[var(--dashboard-danger-subtle)] transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex-shrink-0"
           >
             {revokingAll ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" /> : <RefreshCw className="w-4 h-4" aria-hidden="true" />}
             {revokingAll ? "Signing out..." : "Revoke all"}
@@ -473,7 +473,7 @@ export default function SettingsTab() {
             </div>
             <button
               onClick={toggleTheme}
-              className="relative w-14 h-7 rounded-full bg-[var(--surface-overlay)] border border-zinc-700 transition-colors"
+              className="relative w-14 h-7 rounded-full bg-[var(--surface-overlay)] border border-[var(--border-strong)] transition-colors"
               role="switch"
               aria-checked={theme === "light"}
               aria-label="Toggle theme"
@@ -496,7 +496,7 @@ export default function SettingsTab() {
             </div>
             <button
               onClick={toggleNotif}
-              className="relative w-14 h-7 rounded-full bg-[var(--surface-overlay)] border border-zinc-700 transition-colors"
+              className="relative w-14 h-7 rounded-full bg-[var(--surface-overlay)] border border-[var(--border-strong)] transition-colors"
               role="switch"
               aria-checked={notifPref}
               aria-label="Toggle notifications"
@@ -546,7 +546,7 @@ export default function SettingsTab() {
             onClick={() => {
               resetStore();
             }}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-zinc-700 bg-subtle text-[var(--dashboard-text-secondary)] text-sm font-mono hover:border-zinc-500 hover:text-[var(--text-primary)] transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-[var(--border-strong)] bg-subtle text-[var(--dashboard-text-secondary)] text-sm font-mono hover:border-[var(--border-default)] hover:text-[var(--text-primary)] transition-colors"
           >
             <Database className="w-4 h-4" aria-hidden="true" />
             Clear local data
@@ -558,10 +558,10 @@ export default function SettingsTab() {
       <motion.section
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="rounded-2xl border border-red-500/25 bg-[var(--dashboard-danger-subtle)] p-5 sm:p-6"
+        className="rounded-2xl border border-[var(--danger)]/25 bg-[var(--dashboard-danger-subtle)] p-5 sm:p-6"
       >
         <header className="flex items-start gap-3 mb-4">
-          <div className="w-10 h-10 rounded-xl bg-[var(--dashboard-danger-subtle)] border border-red-500/25 flex items-center justify-center flex-shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-[var(--dashboard-danger-subtle)] border border-[var(--danger)]/25 flex items-center justify-center flex-shrink-0">
             <AlertTriangle className="w-5 h-5 text-[var(--dashboard-danger)]" aria-hidden="true" />
           </div>
           <div>
@@ -573,7 +573,7 @@ export default function SettingsTab() {
           <LogoutButton variant="solid" aria-label="Log out of your account" />
           <button
             onClick={() => setConfirmDelete(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--dashboard-danger-subtle)] border border-red-500/30 text-[var(--dashboard-danger)] text-sm font-mono hover:bg-[var(--dashboard-danger-subtle)] transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--dashboard-danger-subtle)] border border-[var(--danger)]/30 text-[var(--dashboard-danger)] text-sm font-mono hover:bg-[var(--dashboard-danger-subtle)] transition-colors"
           >
             <Trash2 className="w-4 h-4" aria-hidden="true" />
             Delete account
@@ -637,11 +637,11 @@ export default function SettingsTab() {
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0 }}
               transition={{ type: "spring", stiffness: 400, damping: 30 }}
-              className="relative w-full max-w-md rounded-2xl border border-red-500/25 bg-[var(--surface-raised)] p-6 shadow-panel"
+              className="relative w-full max-w-md rounded-2xl border border-[var(--danger)]/25 bg-[var(--surface-raised)] p-6 shadow-panel"
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[var(--dashboard-danger-subtle)] border border-red-500/25 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl bg-[var(--dashboard-danger-subtle)] border border-[var(--danger)]/25 flex items-center justify-center">
                     <Trash2 className="w-5 h-5 text-[var(--dashboard-danger)]" aria-hidden="true" />
                   </div>
                   <h2 className="text-lg font-semibold text-[var(--text-primary)]">Delete account?</h2>
@@ -665,7 +665,7 @@ export default function SettingsTab() {
                 <button
                   onClick={() => setConfirmDelete(false)}
                   disabled={deleting}
-                  className="px-4 py-2 rounded-xl border border-zinc-700 text-sm font-mono text-[var(--dashboard-text-secondary)] hover:text-[var(--text-primary)] transition-colors disabled:opacity-60"
+                  className="px-4 py-2 rounded-xl border border-[var(--border-strong)] text-sm font-mono text-[var(--dashboard-text-secondary)] hover:text-[var(--text-primary)] transition-colors disabled:opacity-60"
                 >
                   Cancel
                 </button>
