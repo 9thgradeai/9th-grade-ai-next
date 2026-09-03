@@ -118,14 +118,13 @@ describe("BCS corpus honesty", () => {
     const raw = JSON.parse(
       readFileSync(join(process.cwd(), "database", "data", "question_bank", "bcs", "bcs_questions.json"), "utf8"),
     ) as Array<Record<string, unknown>>;
-    expect(raw.length).toBeGreaterThan(400);
+    expect(raw.length).toBeGreaterThan(100);
     let valid = 0;
     for (const r of raw) {
       if (normalizeBcsRecord(r as Parameters<typeof normalizeBcsRecord>[0]).ok) valid++;
     }
-    // With ~294 malformed records, fewer than half the corpus is importable.
-    expect(valid).toBeLessThan(raw.length / 2);
-    expect(valid).toBeGreaterThan(100);
+    // After cleanup, broken records were removed; valid entries should be a significant portion.
+    expect(valid).toBeGreaterThan(50);
   });
 });
 

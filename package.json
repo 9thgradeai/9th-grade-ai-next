@@ -33,7 +33,13 @@
     "analyze": "ANALYZE=true npm run build",
     "perf:baseline": "ANALYZE=true npm run build && tsx scripts/perf-budget.ts --baseline",
     "perf:check": "ANALYZE=true npm run build && tsx scripts/perf-budget.ts",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "qa:audit": "npx tsx scripts/qb-audit/index.ts audit",
+    "qa:audit:report": "npx tsx scripts/qb-audit/index.ts report",
+    "qa:normalize": "npx tsx scripts/qb-audit/index.ts normalize",
+    "qa:normalize:apply": "npx tsx scripts/qb-audit/index.ts normalize:apply",
+    "qa:validate": "npx tsx scripts/qb-audit/index.ts validate",
+    "qb:forensics": "npx tsx scripts/qb-forensics/index.ts"
   },
   "prisma": {
     "seed": "tsx database/prisma/seed.ts"

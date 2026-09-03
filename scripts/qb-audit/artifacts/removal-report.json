@@ -1,0 +1,24 @@
+{
+  "generatedAt": "2026-09-03T18:41:05.986Z",
+  "summary": {
+    "totalBefore": 2929,
+    "totalAfter": 2928,
+    "totalRemoved": 1,
+    "percentRemoved": 0
+  },
+  "removedByReason": {
+    "MISSING_QUESTION": 1
+  },
+  "removedByFile": {
+    "bcs_questions.json": 1
+  },
+  "removed": [
+    {
+      "file": "bcs_questions.json",
+      "lineIndex": 102,
+      "reason": "MISSING_QUESTION",
+      "detail": "Option markers found in question text",
+      "originalLine": "{\"examTerm\":\"৩১তম বিসিএস\",\"examNum\":31,\"year\":null,\"subject\":\"আন্তর্জাতিক বিষয়াবলী\",\"qnum\":0,\"question\":\"(ক) তামা (খ) ইস্পাত (গ) পিতল (ঘ)ব্বর্ণ 205\",\"options\":[\"তামা\",\"ইস্পাত\",\"পিতল\",\"ব্বর্ণ\\n\\n205\"]"
+    }
+  ]
+}

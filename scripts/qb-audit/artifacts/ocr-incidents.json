@@ -1,0 +1,317 @@
+[
+  {
+    "recordId": 962,
+    "field": "question",
+    "type": "PAGE_ARTIFACT",
+    "original": "সরকারি চাকরি",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"সরকারি চাকরি\""
+  },
+  {
+    "recordId": 1157,
+    "field": "options[0]",
+    "type": "PAGE_ARTIFACT",
+    "original": "সরকারি চাকরি",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"সরকারি চাকরি\""
+  },
+  {
+    "recordId": 1591,
+    "field": "question",
+    "type": "PAGE_ARTIFACT",
+    "original": "সরকারি চাকরি",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"সরকারি চাকরি\""
+  },
+  {
+    "recordId": 1853,
+    "field": "options[0]",
+    "type": "PAGE_ARTIFACT",
+    "original": "সরকারি চাকরি",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"সরকারি চাকরি\""
+  },
+  {
+    "recordId": 1957,
+    "field": "question",
+    "type": "PAGE_ARTIFACT",
+    "original": "সরকারি চাকরি",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"সরকারি চাকরি\""
+  },
+  {
+    "recordId": 2189,
+    "field": "question",
+    "type": "PAGE_ARTIFACT",
+    "original": "সরকারি চাকরি",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"সরকারি চাকরি\""
+  },
+  {
+    "recordId": 2241,
+    "field": "question",
+    "type": "DUPLICATED_CHAR",
+    "original": "_____",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 5 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 2245,
+    "field": "question",
+    "type": "DUPLICATED_CHAR",
+    "original": "_____",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 5 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 2247,
+    "field": "question",
+    "type": "DUPLICATED_CHAR",
+    "original": "_____",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 5 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 2349,
+    "field": "explanation",
+    "type": "PAGE_ARTIFACT",
+    "original": "4 - 9",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"4 - 9\""
+  },
+  {
+    "recordId": 2351,
+    "field": "explanation",
+    "type": "PAGE_ARTIFACT",
+    "original": "8 - 6",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"8 - 6\""
+  },
+  {
+    "recordId": 2355,
+    "field": "explanation",
+    "type": "PAGE_ARTIFACT",
+    "original": "10-1",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"10-1\""
+  },
+  {
+    "recordId": 2358,
+    "field": "explanation",
+    "type": "PAGE_ARTIFACT",
+    "original": "5-3",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"5-3\""
+  },
+  {
+    "recordId": 2360,
+    "field": "explanation",
+    "type": "PAGE_ARTIFACT",
+    "original": "7-1",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"7-1\""
+  },
+  {
+    "recordId": 2376,
+    "field": "explanation",
+    "type": "PAGE_ARTIFACT",
+    "original": "30 - 60",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"30 - 60\""
+  },
+  {
+    "recordId": 2466,
+    "field": "question",
+    "type": "DUPLICATED_CHAR",
+    "original": "ইইইই",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 2472,
+    "field": "explanation",
+    "type": "SOURCE_LEAK",
+    "original": "www.google.com)।",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Source reference leaked into content: \"www.google.com)।\""
+  },
+  {
+    "recordId": 2472,
+    "field": "explanation",
+    "type": "SOURCE_LEAK",
+    "original": "https://www.google.com)।",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Source reference leaked into content: \"https://www.google.com)।\""
+  },
+  {
+    "recordId": 2527,
+    "field": "correctAnswer",
+    "type": "DUPLICATED_CHAR",
+    "original": "১১১১",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 2527,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "১১১১",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 2527,
+    "field": "options[2]",
+    "type": "DUPLICATED_CHAR",
+    "original": "১১১১",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 2580,
+    "field": "explanation",
+    "type": "SOURCE_LEAK",
+    "original": "https://google.com\">Google</a>)।",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Source reference leaked into content: \"https://google.com\">Google</a>)।\""
+  },
+  {
+    "recordId": 2592,
+    "field": "correctAnswer",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 2592,
+    "field": "options[1]",
+    "type": "DUPLICATED_CHAR",
+    "original": "০০০০",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 2592,
+    "field": "options[2]",
+    "type": "DUPLICATED_CHAR",
+    "original": "১১১১",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 2824,
+    "field": "explanation",
+    "type": "PAGE_ARTIFACT",
+    "original": "21-40",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"21-40\""
+  },
+  {
+    "recordId": 2834,
+    "field": "explanation",
+    "type": "DUPLICATED_CHAR",
+    "original": "____",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 4 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 2835,
+    "field": "explanation",
+    "type": "SOURCE_LEAK",
+    "original": "উৎস: ",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Source reference leaked into content: \"উৎস: \""
+  },
+  {
+    "recordId": 2837,
+    "field": "question",
+    "type": "PAGE_ARTIFACT",
+    "original": "80710101190917- 34",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"80710101190917- 34\""
+  },
+  {
+    "recordId": 2857,
+    "field": "explanation",
+    "type": "RANDOM_PUNCTUATION",
+    "original": "এটি একটি গুণোন্তর ধারা, যেখানে প্রতিটি প",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Excessive consecutive punctuation marks"
+  },
+  {
+    "recordId": 2871,
+    "field": "question",
+    "type": "DUPLICATED_CHAR",
+    "original": ".....",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Character duplicated 5 times (possible OCR stutter)"
+  },
+  {
+    "recordId": 2871,
+    "field": "question",
+    "type": "RANDOM_PUNCTUATION",
+    "original": "3, ৭, ১০, ১৪,.....২৩ ধারার শুন্যস্থানের ",
+    "suspected": "",
+    "confidence": "LOW",
+    "reason": "Excessive consecutive punctuation marks"
+  },
+  {
+    "recordId": 2898,
+    "field": "explanation",
+    "type": "PAGE_ARTIFACT",
+    "original": "10 -16",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"10 -16\""
+  },
+  {
+    "recordId": 2915,
+    "field": "explanation",
+    "type": "PAGE_ARTIFACT",
+    "original": "বিসিএস প্রিলিমিনারি",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"বিসিএস প্রিলিমিনারি\""
+  },
+  {
+    "recordId": 2923,
+    "field": "explanation",
+    "type": "PAGE_ARTIFACT",
+    "original": "বিসিএস প্রিলিমিনারি",
+    "suspected": "",
+    "confidence": "MEDIUM",
+    "reason": "Page header/footer artifact detected: \"বিসিএস প্রিলিমিনারি\""
+  }
+]
