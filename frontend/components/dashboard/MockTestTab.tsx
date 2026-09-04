@@ -19,6 +19,12 @@ import {
   XCircle,
 } from "lucide-react";
 import { api } from "@/lib/services/api";
+import {
+  submitExamAttempt as canonicalSubmitExamAttempt,
+  registerExam,
+  ensureAttemptId,
+  clearAttemptId,
+} from "@/lib/services/exam-submission";
 import { useDialogA11y } from "@/lib/use-dialog-a11y";
 import { DIFFICULTY_LABEL } from "@/lib/exam-ui";
 import type { Server } from "@/lib/types";
@@ -37,6 +43,9 @@ const OPTION_LABELS = ["A", "B", "C", "D", "E", "F"];
 const STORAGE_KEY = "ninth-grade-ai:mock-test:active";
 
 type PersistedMockTest = {
+  /** Client-minted idempotency token. Reused for every submit retry so the
+   * server can dedupe concurrent or repeated submissions. */
+  attemptId: string;
   questions: Server.ExamQuestionDTO[];
   answers: Record<number, string>;
   currentQuestion: number;
@@ -141,6 +150,19 @@ export default function MockTestTab() {
           localStorage.removeItem(STORAGE_KEY);
           return;
         }
+        // Resume uses the persisted attemptId if present, otherwise mints a
+        // fresh one and re-registers with the server (fire-and-forget).
+        const attemptId = saved.attemptId ?? ensureAttemptId(STORAGE_KEY);
+        if (!saved.attemptId) {
+          try {
+            localStorage.setItem(
+              STORAGE_KEY,
+              JSON.stringify({ ...saved, attemptId }),
+            );
+          } catch {
+            /* ignore */
+          }
+        }
         startedAtRef.current = saved.startsAt;
         totalSecRef.current = saved.durationSec;
         setQuestions(saved.questions);
@@ -148,6 +170,14 @@ export default function MockTestTab() {
         setCurrentQuestion(Math.min(saved.currentQuestion ?? 0, saved.questions.length - 1));
         setTimeRemaining(Math.max(0, saved.durationSec - elapsedSec));
         setTestState("active");
+        if (!saved.attemptId) {
+          void registerExam({
+            attemptId,
+            questionIds: saved.questions.map((q) => q.id),
+          }).catch(() => {
+            /* non-fatal */
+          });
+        }
       } catch {
         /* corrupt storage — ignore */
       }
@@ -166,8 +196,10 @@ export default function MockTestTab() {
   // Keep the persisted snapshot in sync while a test is active.
   useEffect(() => {
     if (testState !== "active" || questions.length === 0 || startedAtRef.current === 0) return;
+    const attemptId = ensureAttemptId(STORAGE_KEY);
     try {
       const snapshot: PersistedMockTest = {
+        attemptId,
         questions,
         answers,
         currentQuestion,
@@ -213,6 +245,7 @@ export default function MockTestTab() {
         setBuildError("এই কনফিগারেশনে কোনো প্রশ্ন পাওয়া যায়নি।");
         return;
       }
+      const attemptId = ensureAttemptId(STORAGE_KEY);
       setQuestions(built.questions);
       setAnswers({});
       setLockedQuestions(new Set());
@@ -222,6 +255,14 @@ export default function MockTestTab() {
       setTimeRemaining(built.durationSec);
       setTestState("active");
       requestAnimationFrame(() => scrollDashboardTop());
+      // Best-effort server registration. The submit endpoint will upsert the
+      // attempt row on its own if this call fails.
+      void registerExam({
+        attemptId,
+        questionIds: built.questions.map((q) => q.id),
+      }).catch(() => {
+        /* non-fatal */
+      });
     } catch {
       setBuildError("মক টেস্ট তৈরি করা যায়নি। আবার চেষ্টা করুন।");
     } finally {
@@ -241,17 +282,37 @@ export default function MockTestTab() {
   const submit = useCallback(
     async (qs: Server.ExamQuestionDTO[], ans: Record<number, string>) => {
       if (qs.length === 0 || submittingRef.current) return;
+      const attemptId = ensureAttemptId(STORAGE_KEY);
+      if (!attemptId) {
+        setSubmitError("পরীক্ষার সেশন শনাক্ত করা যায়নি। পৃষ্ঠা রিফ্রেশ করে আবার চেষ্টা করুন।");
+        return;
+      }
       submittingRef.current = true;
       setSubmitting(true);
       setSubmitError(null);
       try {
-        const payload = qs.map((q) => ({ questionId: q.id, selected: ans[q.id] ?? "" }));
-        const res = await api.submitExam(payload);
+        const elapsedSec = Math.max(
+          0,
+          Math.floor(
+            (Date.now() - (startedAtRef.current || Date.now())) / 1000,
+          ),
+        );
+        const { result } = await canonicalSubmitExamAttempt({
+          attemptId,
+          questionIds: qs.map((q) => q.id),
+          durationSec: elapsedSec,
+          answers: ans,
+        });
+        clearAttemptId(STORAGE_KEY);
         localStorage.removeItem(STORAGE_KEY);
-        setResult(res);
+        setResult(result);
         setTestState("completed");
-      } catch {
-        setSubmitError("ফলাফল জমা দেওয়া যায়নি। আবার চেষ্টা করুন।");
+      } catch (err) {
+        const message =
+          err instanceof Error && err.message
+            ? err.message
+            : "ফলাফল জমা দেওয়া যায়নি। আবার চেষ্টা করুন।";
+        setSubmitError(message);
       } finally {
         submittingRef.current = false;
         setSubmitting(false);

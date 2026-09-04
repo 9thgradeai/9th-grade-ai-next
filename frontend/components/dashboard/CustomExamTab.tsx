@@ -23,6 +23,12 @@ import {
   Loader2,
 } from "lucide-react";
 import { api } from "@/lib/services/api";
+import {
+  submitExamAttempt as canonicalSubmitExamAttempt,
+  registerExam,
+  ensureAttemptId,
+  clearAttemptId,
+} from "@/lib/services/exam-submission";
 import type { Server } from "@/lib/types";
 import TopicTreePicker, {
   type Selection,
@@ -46,6 +52,9 @@ const STORAGE_KEY = "ninth-grade-ai:exam:active";
 
 type PersistedExam = {
   examId: string;
+  /** Client-minted idempotency token. Persisted alongside the exam so the
+   * submit retry uses the same token and the server can dedupe. */
+  attemptId: string;
   questions: Server.ExamQuestionDTO[];
   answers: Record<number, string>;
   startsAt: number;
@@ -210,11 +219,30 @@ export default function CustomExamTab() {
         if (!raw) return;
         const saved = JSON.parse(raw) as PersistedExam;
         if (!saved?.questions?.length) return;
-        setExam(saved);
+        // Resume uses the persisted attemptId if present, otherwise mints a
+        // new one — but in that case a server-side re-register is required.
+        // For simplicity we always mint on resume if missing, then fire-and-
+        // forget the register call below.
+        const attemptId = saved.attemptId ?? ensureAttemptId(STORAGE_KEY);
+        const withAttempt: PersistedExam = { ...saved, attemptId };
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(withAttempt));
+        } catch {
+          /* ignore */
+        }
+        setExam(withAttempt);
         setAnswers(saved.answers ?? {});
         const elapsed = Math.floor((Date.now() - saved.startsAt) / 1000);
         void elapsed;
         setPhase("exam");
+        if (!saved.attemptId) {
+          void registerExam({
+            attemptId,
+            questionIds: saved.questions.map((q) => q.id),
+          }).catch(() => {
+            /* non-fatal */
+          });
+        }
       } catch {
         /* corrupt storage — ignore */
       }
@@ -292,8 +320,10 @@ export default function CustomExamTab() {
         setBuildError("এই কনফিগারেশনে কোনো প্রশ্ন পাওয়া যায়নি।");
         return;
       }
+      const attemptId = ensureAttemptId(STORAGE_KEY);
       const persisted: PersistedExam = {
         examId: built.examId,
+        attemptId,
         questions: built.questions,
         answers: {},
         startsAt: Date.now(),
@@ -312,6 +342,15 @@ export default function CustomExamTab() {
       setLockedQuestions(new Set());
       setShowConfirm(false);
       setPhase("exam");
+      // Best-effort: register the attempt server-side so /api/exam/submit has
+      // a row to upsert. A failure here is non-fatal — submit will retry the
+      // upsert path itself.
+      void registerExam({
+        attemptId,
+        questionIds: built.questions.map((q) => q.id),
+      }).catch(() => {
+        /* ignore — submit will surface a real error if it actually fails */
+      });
     } catch {
       setBuildError("পরীক্ষা তৈরি করা যায়নি। আবার চেষ্টা করুন।");
     } finally {
@@ -349,27 +388,45 @@ export default function CustomExamTab() {
   const submit = useCallback(
     async (qs: Server.ExamQuestionDTO[], ans: Record<number, string>) => {
       if (qs.length === 0 || submittingRef.current) return;
+      const examSnapshot = exam;
+      if (!examSnapshot?.attemptId) {
+        setSubmitError("পরীক্ষার সেশন শনাক্ত করা যায়নি। পৃষ্ঠা রিফ্রেশ করে আবার চেষ্টা করুন।");
+        return;
+      }
       submittingRef.current = true;
       setSubmitting(true);
       setSubmitError(null);
       try {
-        const payload = qs.map((q) => ({ questionId: q.id, selected: ans[q.id] ?? "" }));
-        const res = await api.submitExam(payload);
-        setResult(res);
+        const elapsedSec = Math.max(
+          0,
+          Math.floor((Date.now() - examSnapshot.startsAt) / 1000),
+        );
+        const { result } = await canonicalSubmitExamAttempt({
+          attemptId: examSnapshot.attemptId,
+          questionIds: qs.map((q) => q.id),
+          durationSec: elapsedSec,
+          answers: ans,
+        });
+        setResult(result);
         setPhase("result");
         try {
           localStorage.removeItem(STORAGE_KEY);
+          clearAttemptId(STORAGE_KEY);
         } catch {
           /* ignore */
         }
-      } catch {
-        setSubmitError("ফলাফল জমা দেওয়া যায়নি। আবার চেষ্টা করুন।");
+      } catch (err) {
+        const message =
+          err instanceof Error && err.message
+            ? err.message
+            : "ফলাফল জমা দেওয়া যায়নি। আবার চেষ্টা করুন।";
+        setSubmitError(message);
       } finally {
         submittingRef.current = false;
         setSubmitting(false);
       }
     },
-    [],
+    [exam],
   );
 
   const handleSubmitRequest = () => {

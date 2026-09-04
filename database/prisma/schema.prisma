@@ -178,6 +178,7 @@ model User {
   notifications AppNotification[]
   attempts     QuestionAttempt[]
   mockTestResults MockTestResult[]
+  examAttempts ExamAttempt[]
   flashcardReviews FlashcardReview[]
   notificationReads NotificationRead[]
   aiConversations AIConversation[]
@@ -732,10 +733,61 @@ model MockTestResult {
   total       Int      @default(0)
   durationSec Int      @default(0)
   createdAt   DateTime @default(now())
+  // Back-reference from ExamAttempt (one-to-one). Populated when a custom exam
+  // submission creates this result row. Uniqueness ensures two attempts never
+  // share the same result row.
+  examAttempt ExamAttempt? @relation("ExamAttemptResult")
 
   @@index([userId, createdAt])
   // FK-side index for MockTest SetNull.
   @@index([mockTestId])
+}
+
+// Canonical exam attempt record — THE single source of truth for whether an
+// exam was submitted. Every custom-exam submission must create exactly one row
+// here; duplicate submissions for the same (userId, idempotencyKey) are
+// resolved by returning the existing SUBMITTED result, never by re-writing.
+//
+// Why this exists:
+//   • Exam submissions previously created MockTestResult rows with
+//     mockTestId=null and durationSec=0, indistinguishable from a real mock
+//     test result, with no attempt token to dedupe against.
+//   • Without this table, network retries and double-clicks double-counted
+//     points and produced duplicate result rows.
+model ExamAttempt {
+  id              Int      @id @default(autoincrement())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Client-minted UUID minted at exam start, persisted with the exam state
+  // and reused on every submission retry. Unique per (user, attempt) so a
+  // duplicate submit is detected server-side without trusting the payload.
+  idempotencyKey  String
+  // Stable fingerprint of the question set (sorted SHA-256 hex). Verifies the
+  // submission actually corresponds to the built exam — prevents a client
+  // from silently swapping question IDs under the same attempt token.
+  questionSetHash String
+  status          ExamAttemptStatus @default(IN_PROGRESS)
+  // Total wall-clock seconds the user spent on this attempt. Captured at
+  // submit-time so we never record 0 (the legacy MockTestResult default).
+  durationSec     Int      @default(0)
+  startedAt       DateTime @default(now())
+  submittedAt     DateTime?
+  // Snapshot of the graded summary (matches ExamResultDTO.summary).
+  summaryJson     Json?
+  // FK to the MockTestResult row that represents this attempt, set at submit
+  // time. Lets the existing history endpoint continue to work unchanged.
+  resultId        Int?     @unique
+  result          MockTestResult? @relation("ExamAttemptResult", fields: [resultId], references: [id], onDelete: SetNull)
+
+  @@unique([userId, idempotencyKey])
+  @@index([userId, status])
+  @@index([userId, submittedAt])
+}
+
+enum ExamAttemptStatus {
+  IN_PROGRESS
+  SUBMITTING
+  SUBMITTED
 }
 
 // Per-user flashcard SRS reviews (log). nextReview scheduling is derived

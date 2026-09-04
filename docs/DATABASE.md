@@ -38,6 +38,7 @@ ever rebuilt outside migrations:
 | AIMemory | confidence range | `confidence` 0–100 |
 | AIUsage | nonnegative | tokens, latencyMs, estimatedCostUsd ≥ 0 |
 | QuestionAttempt | source enum | `source` ∈ practice/daily/exam/mock |
+| ExamAttempt | uniqueness / idempotency | `(userId, idempotencyKey)` unique; `status` ∈ IN_PROGRESS/SUBMITTING/SUBMITTED; `durationSec ≥ 0` |
 
 **Documented decisions (Phase 3):**
 - *Date-label columns stay String* (`DailyQuiz.date`, `FlashNews.date`, `StudyPlanDay.date`,
@@ -581,7 +582,30 @@ A graded mock-test attempt (history + exam KPIs).
 - `total` Int
 - `durationSec` Int
 - `createdAt` DateTime — default `now()`
+- `examAttempt` ExamAttempt? — back-relation (one-to-one) created when this row represents a custom exam submission
 - Index: `[userId, createdAt]`
+
+#### ExamAttempt
+The canonical per-user exam attempt record — single source of truth for whether a custom exam was submitted. Backed by a unique `(userId, idempotencyKey)` constraint so duplicate submit requests resolve to the existing result instead of double-writing.
+- `id` Int — PK, auto-increment
+- `userId` String — FK to User (cascade)
+- `user` User — relation
+- `idempotencyKey` String — client-minted UUID minted at exam start; reused on every retry
+- `questionSetHash` String — SHA-256 hex of the sorted question IDs (server-asserted against the submission payload)
+- `status` `ExamAttemptStatus` (`IN_PROGRESS` / `SUBMITTING` / `SUBMITTED`) — lifecycle enforced in a transaction
+- `durationSec` Int — actual seconds the user spent on the attempt
+- `startedAt` DateTime — default `now()`
+- `submittedAt` DateTime? — set when status flips to `SUBMITTED`
+- `summaryJson` Json? — snapshot of the graded `ExamResultDTO.summary`
+- `resultId` Int? — unique FK to the `MockTestResult` row that represents this attempt
+- `result` MockTestResult? — relation (`@relation("ExamAttemptResult")`)
+- Unique: `[userId, idempotencyKey]`
+- Indexes: `[userId, status]`, `[userId, submittedAt]`
+
+#### ExamAttemptStatus (enum)
+- `IN_PROGRESS` — attempt created via `/api/exam/start`
+- `SUBMITTING` — submit request received, transaction in flight
+- `SUBMITTED` — terminal; further submits for the same `idempotencyKey` resolve to the existing result
 
 #### FlashcardReview
 Per-user SRS review log for flashcards (nextReview scheduling is derived from these).

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import MockTestTab from "@/components/dashboard/MockTestTab";
 import type { Server } from "@/lib/types";
 
@@ -118,5 +118,92 @@ describe("MockTestTab (subtopic selection + build)", () => {
 
     // Available for the subtopic is 4 (the leaf count).
     expect(screen.getAllByText("4টি").length).toBeGreaterThan(0);
+  });
+});
+
+describe("MockTestTab — submit flow (regression: canonical submission)", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    stubFetch({
+      "/api/exam/config": { subjects: subjectFixture },
+      "/api/exam/build": { exam: builtExam },
+      "/api/exam/start": { attemptId: "x", status: "IN_PROGRESS" },
+      "/api/exam/submit": {
+        result: {
+          summary: {
+            total: 1,
+            attempted: 1,
+            correct: 1,
+            wrong: 0,
+            unanswered: 0,
+            positiveMarks: 1,
+            negativeMarks: 0,
+            finalScore: 1,
+            accuracy: 100,
+            percentage: 100,
+            pointsEarned: 10,
+          },
+          review: [],
+          attemptId: "x",
+          outcome: "submitted",
+          submittedAt: "2026-01-01T00:00:00.000Z",
+        },
+      },
+    });
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("clicking the submit button triggers /api/exam/submit with an attemptId", async () => {
+    render(<MockTestTab />);
+    fireEvent.click(await screen.findByText("বাংলা ভাষা ও সাহিত্য"));
+    fireEvent.click(screen.getByText("ভাষা"));
+    fireEvent.click(screen.getByText("বানান ও শুদ্ধি"));
+    fireEvent.click(screen.getByText("মক টেস্ট শুরু করুন"));
+
+    // Pick an answer so the submit button becomes enabled.
+    const option = await screen.findByText("শুদ্ধ");
+    fireEvent.click(option);
+
+    // The submit button text is "জমা দিন" (Bangla for "submit"). It appears
+    // in both the sticky header and the sticky bottom bar of the active
+    // phase — pick the first one (header).
+    const submitBtnText = await screen.findAllByText("জমা দিন");
+    expect(submitBtnText.length).toBeGreaterThan(0);
+    // The button wraps the text node — find the enclosing <button> element.
+    let el: HTMLElement | null = submitBtnText[0] as HTMLElement;
+    while (el && el.tagName !== "BUTTON") {
+      el = el.parentElement;
+    }
+    expect(el).not.toBeNull();
+    fireEvent.click(el as HTMLElement);
+
+    await waitFor(() => {
+      const fetchMock = vi.mocked(fetch);
+      const submitCall = fetchMock.mock.calls.find((c) =>
+        String(c[0]).startsWith("/api/exam/submit"),
+      );
+      expect(submitCall).toBeDefined();
+    });
+
+    const fetchMock = vi.mocked(fetch);
+    const submitCall = fetchMock.mock.calls.find((c) =>
+      String(c[0]).startsWith("/api/exam/submit"),
+    );
+    const body = JSON.parse(String(submitCall?.[1]?.body)) as {
+      attemptId: string;
+      questionIds: number[];
+      durationSec: number;
+      answers: { questionId: number; selected: string }[];
+    };
+    // Canonical contract: attemptId is a UUID.
+    expect(body.attemptId).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+    );
+    expect(body.questionIds).toEqual([10]);
+    expect(body.answers).toEqual([{ questionId: 10, selected: "শুদ্ধ" }]);
+    expect(typeof body.durationSec).toBe("number");
   });
 });

@@ -61,7 +61,8 @@ All mutating endpoints (auth and non-auth) reject cross-origin requests via an O
 | POST | `/api/notifications/:id/read` | **Auth required** — Mark a notification read |
 | GET | `/api/exam/config` | List the custom-exam selection tree (subjects → topics → subtopics with question counts) |
 | POST | `/api/exam/build` | **Auth required** — Build a custom BCS-style exam `{ subjects: [{ subjectId, groups, count? }], questionCount, durationSec }` (401 without a session — construction is DB-heavy) |
-| POST | `/api/exam/submit` | **Auth required** — Grade + persist a custom exam `{ answers: [{ questionId, selected }] }` |
+| POST | `/api/exam/start` | **Auth required** — Register a freshly built exam as `IN_PROGRESS`. Body: `{ attemptId: UUID, questionIds: number[] }`. Idempotent — subsequent calls for the same `attemptId` are no-ops when the row is still `IN_PROGRESS`. |
+| POST | `/api/exam/submit` | **Auth required, idempotent** — Grade + persist a custom exam. Body: `{ attemptId: UUID, questionIds: number[], durationSec: number, answers: [{ questionId, selected }] }`. Re-submits for the same `(userId, attemptId)` return the original `SUBMITTED` result with `outcome: "resumed"` and never double-count points or duplicate attempts. |
 | POST | `/api/ai/solver` | **Auth required** — Solve a question `{ text?, imageBase64?, subject?, subjectId?, questionId? }` → `{ solution, steps, explanation, relatedConcept, source }` |
 | POST | `/api/ai/tutor` | **Auth required** — **Streaming** AI tutor turn `{ messages: [{ role, content }], conversationId?, subjectId?, topicId?, questionId?, topicPath?, intent? }` |
 | POST | `/api/ai/assistant` | **Auth required** — Study guidance `{ messages, conversationId?, questionId?, intent? }` → `{ reply, suggestedActions, source }` |

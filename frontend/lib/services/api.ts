@@ -341,17 +341,31 @@ export const api = {
     return data.exam;
   },
 
-  submitExam: async (
-    answers: { questionId: number; selected: string }[],
-  ): Promise<Server.ExamResultDTO> => {
+  submitExam: async (params: {
+    attemptId: string;
+    questionIds: number[];
+    durationSec: number;
+    answers: { questionId: number; selected: string }[];
+  }): Promise<Server.ExamResultDTO> => {
     const data = await request<{ result: Server.ExamResultDTO }>("/api/exam/submit", {
       method: "POST",
       ...AUTH_FETCH_INIT,
-      body: JSON.stringify({ answers }),
+      body: JSON.stringify(params),
       headers: { "Content-Type": "application/json" },
     });
     return data.result;
   },
+
+  startExam: async (params: {
+    attemptId: string;
+    questionIds: number[];
+  }): Promise<{ attemptId: string; status: "IN_PROGRESS" }> =>
+    request<{ attemptId: string; status: "IN_PROGRESS" }>("/api/exam/start", {
+      method: "POST",
+      ...AUTH_FETCH_INIT,
+      body: JSON.stringify(params),
+      headers: { "Content-Type": "application/json" },
+    }),
 
   submitDailyQuiz: async (
     quizId: number,
