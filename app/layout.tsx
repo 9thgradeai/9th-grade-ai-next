@@ -79,7 +79,11 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-const THEME_INIT_SCRIPT = `(function(){try{var t=localStorage.getItem("9th-grade-ai-theme");if(t==="light"){document.documentElement.classList.add("light")}else{document.documentElement.classList.remove("light")}}catch(e){}})()`;
+// Public pages (landing, marketing, auth, navbar) ship a single unified dark
+// design — light/dark switching is restricted to the user dashboard. We still
+// migrate any legacy "light" preference out of localStorage so prior users
+// land on the dark public design on next visit.
+const THEME_INIT_SCRIPT = `(function(){try{document.documentElement.classList.remove("light");localStorage.removeItem("9th-grade-ai-theme");}catch(e){}})()`;
 
 const LANG_INIT_SCRIPT = `(function(){try{var l=localStorage.getItem("${LANGUAGE_KEY}");document.documentElement.lang=(l==="en")?"en":"bn";}catch(e){}})()`;
 
