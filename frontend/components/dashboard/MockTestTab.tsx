@@ -522,37 +522,42 @@ export default function MockTestTab() {
     return (
       <div className="space-y-4">
         {/* Sticky header: timer + progress + submit */}
-        <div className="sticky top-0 z-40 -mx-1 px-1">
-          <div className="glass-card rounded-2xl border border-[var(--primary)]/30 px-4 py-3">
-            <div className="flex items-center justify-between gap-3 flex-wrap">
-              <div className="flex items-center gap-2">
-                <Timer className={`w-4 h-4 ${timeLow ? "text-[var(--dashboard-danger)] animate-pulse" : "text-[var(--dashboard-primary)]"}`} />
-                <span className={`font-mono text-lg font-bold ${timeLow ? "text-[var(--dashboard-danger)]" : "text-[var(--dashboard-primary)]"}`}>
-                  {formatTime(timeRemaining)}
-                </span>
+          <div className="sticky top-0 z-50 -mx-1 px-1">
+            <div className="glass-card rounded-2xl border border-[var(--primary)]/30 px-4 py-3">
+              <div className="flex items-center justify-between gap-3 flex-wrap">
+                <div className="flex items-center gap-2">
+                  <Timer className={`w-4 h-4 ${timeLow ? "text-[var(--dashboard-danger)] animate-pulse" : "text-[var(--dashboard-primary)]"}`} />
+                  <span className={`font-mono text-lg font-bold ${timeLow ? "text-[var(--dashboard-danger)]" : "text-[var(--dashboard-primary)]"}`}>
+                    {formatTime(timeRemaining)}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-[var(--dashboard-text-muted)] font-mono">
+                    উত্তর: <span className="text-[var(--dashboard-primary)]">{answeredCount}</span> / {totalQuestions}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleSubmitRequest();
+                    }}
+                    disabled={submitting || totalQuestions === 0}
+                    className="px-4 py-1.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-xs rounded-lg hover:bg-[var(--accent-hover)] transition-colors shadow-neon-glow flex items-center gap-1.5 disabled:opacity-40 z-50 relative"
+                  >
+                    <Flag className="w-3.5 h-3.5" />
+                    {submitting ? "জমা হচ্ছে..." : "জমা দিন"}
+                  </button>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-[var(--dashboard-text-muted)] font-mono">
-                  উত্তর: <span className="text-[var(--dashboard-primary)]">{answeredCount}</span> / {totalQuestions}
-                </span>
-                <button
-                  onClick={handleSubmitRequest}
-                  disabled={submitting || totalQuestions === 0}
-                  className="px-4 py-1.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-xs rounded-lg hover:bg-[var(--accent-hover)] transition-colors shadow-neon-glow flex items-center gap-1.5 disabled:opacity-40"
-                >
-                  <Flag className="w-3.5 h-3.5" />
-                  {submitting ? "জমা হচ্ছে..." : "জমা দিন"}
-                </button>
+              <div className="h-1.5 bg-[var(--surface-overlay)] rounded-full overflow-hidden mt-2">
+                <div
+                  className="h-full w-full origin-left bg-gradient-to-r from-[var(--success)] to-[var(--success)] rounded-full transition-transform duration-300"
+                  style={{ transform: `scaleX(${progressPct / 100})` }}
+                />
               </div>
-            </div>
-            <div className="h-1.5 bg-[var(--surface-overlay)] rounded-full overflow-hidden mt-2">
-              <div
-                className="h-full w-full origin-left bg-gradient-to-r from-[var(--success)] to-[var(--success)] rounded-full transition-transform duration-300"
-                style={{ transform: `scaleX(${progressPct / 100})` }}
-              />
             </div>
           </div>
-        </div>
+
 
         {q ? (
           <motion.div
@@ -645,9 +650,13 @@ export default function MockTestTab() {
             </button>
           ) : (
             <button
-              onClick={handleSubmitRequest}
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                handleSubmitRequest();
+              }}
               disabled={submitting}
-              className="px-5 py-2 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2 shadow-neon-glow disabled:opacity-40"
+              className="px-5 py-2 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2 shadow-neon-glow disabled:opacity-40 z-50 relative"
             >
               <Flag className="w-4 h-4" />
               {submitting ? "জমা হচ্ছে..." : "জমা দিন"}

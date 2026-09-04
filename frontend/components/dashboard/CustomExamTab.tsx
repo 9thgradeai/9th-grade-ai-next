@@ -733,14 +733,19 @@ export default function CustomExamTab() {
                 <span className="text-xs text-[var(--dashboard-text-muted)] font-mono">
                   উত্তর: <span className="text-[var(--dashboard-primary)]">{answeredCount}</span> / {totalQuestions}
                 </span>
-                <button
-                  onClick={handleSubmitRequest}
-                  disabled={submitting || totalQuestions === 0}
-                  className="px-4 py-1.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-xs rounded-lg hover:bg-[var(--accent-hover)] transition-colors shadow-neon-glow flex items-center gap-1.5 disabled:opacity-40"
-                >
-                  <Flag className="w-3.5 h-3.5" />
-                  {submitting ? "জমা হচ্ছে..." : "জমা দিন"}
-                </button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                handleSubmitRequest();
+              }}
+              disabled={submitting || totalQuestions === 0}
+              className="px-4 py-1.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-xs rounded-lg hover:bg-[var(--accent-hover)] transition-colors shadow-neon-glow flex items-center gap-1.5 disabled:opacity-40 z-50 relative"
+            >
+              <Flag className="w-3.5 h-3.5" />
+              {submitting ? "জমা হচ্ছে..." : "জমা দিন"}
+            </button>
+
               </div>
             </div>
             <div className="h-1.5 bg-[var(--surface-overlay)] rounded-full overflow-hidden mt-2">
@@ -867,9 +872,13 @@ export default function CustomExamTab() {
               )}
             </div>
             <button
-              onClick={handleSubmitRequest}
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                handleSubmitRequest();
+              }}
               disabled={submitting}
-              className="px-6 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors shadow-neon-glow flex items-center gap-2 disabled:opacity-40"
+              className="px-6 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors shadow-neon-glow flex items-center gap-2 disabled:opacity-40 z-50 relative"
             >
               {submitting ? "জমা হচ্ছে..." : (
                 <>
