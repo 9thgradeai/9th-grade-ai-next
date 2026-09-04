@@ -8,13 +8,14 @@ type Difficulty = "EASY" | "MEDIUM" | "HARD";
 
 export default function AIMockTestTab() {
   const [subject, setSubject] = useState("");
-  const [count, setCount] = useState(10);
+  const [count, setCount] = useState<number>(10);
   const [difficulty, setDifficulty] = useState<Difficulty | "">("");
   const [test, setTest] = useState<GeneratedMockTest | null>(null);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showResults, setShowResults] = useState(false);
 
   const generate = async () => {
     setError(null);
@@ -39,26 +40,28 @@ export default function AIMockTestTab() {
     ? test.questions.filter((q) => answers[q.id] === q.answer).length
     : 0;
 
+  const percentage = test ? Math.round((score / test.questions.length) * 100) : 0;
+
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-5 px-4 py-6">
+    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-8">
       <div>
-        <h1 className="text-xl font-semibold text-[var(--dashboard-text-primary)]">AI মক টেস্ট</h1>
-        <p className="mt-1 text-sm text-[var(--dashboard-text-muted)]">
+        <h1 className="text-2xl font-bold text-text-primary">AI মক টেস্ট</h1>
+        <p className="text-sm text-text-muted">
           AI তোমার বিষয় অনুযায়ী মাল্টিপল চয়েস প্রশ্ন তৈরি করবে। উত্তর দাও আর নিজের প্রস্তুতি যাচাই করো।
         </p>
       </div>
 
-      <div className="flex flex-wrap items-end gap-3 rounded-2xl border border-[var(--border-subtle)] bg-[var(--dashboard-surface)] p-4">
-        <label className="flex flex-col gap-1 text-sm text-[var(--dashboard-text-secondary)]">
+      <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-surface p-4">
+        <label className="flex flex-col gap-1 text-sm text-text-secondary">
           বিষয়
           <input
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
             placeholder="যেমন: ইতিহাস"
-            className="w-40 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-3 py-2 text-sm text-[var(--dashboard-text-primary)] outline-none focus:border-[var(--primary)]/50"
+            className="w-48 rounded-lg border border-border bg-surface-raised px-3 py-2 text-sm text-text-primary outline-none focus:border-primary/50"
           />
         </label>
-        <label className="flex flex-col gap-1 text-sm text-[var(--dashboard-text-secondary)]">
+        <label className="flex flex-col gap-1 text-sm text-text-secondary">
           প্রশ্ন সংখ্যা
           <input
             type="number"
@@ -66,15 +69,15 @@ export default function AIMockTestTab() {
             max={25}
             value={count}
             onChange={(e) => setCount(Math.max(1, Math.min(25, Number(e.target.value) || 10)))}
-            className="w-24 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-3 py-2 text-sm text-[var(--dashboard-text-primary)] outline-none focus:border-[var(--primary)]/50"
+            className="w-32 rounded-lg border border-border bg-surface-raised px-3 py-2 text-sm text-text-primary outline-none focus:border-primary/50"
           />
         </label>
-        <label className="flex flex-col gap-1 text-sm text-[var(--dashboard-text-secondary)]">
+        <label className="flex flex-col gap-1 text-sm text-text-secondary">
           কঠিনতা
           <select
             value={difficulty}
             onChange={(e) => setDifficulty(e.target.value as Difficulty | "")}
-            className="w-32 rounded-lg border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-3 py-2 text-sm text-[var(--dashboard-text-primary)] outline-none focus:border-[var(--primary)]/50"
+            className="w-40 rounded-lg border border-border bg-surface-raised px-3 py-2 text-sm text-text-primary outline-none focus:border-primary/50"
           >
             <option value="">যেকোনো</option>
             <option value="EASY">সহজ</option>
@@ -86,34 +89,34 @@ export default function AIMockTestTab() {
           type="button"
           onClick={() => void generate()}
           disabled={loading}
-          className="rounded-xl bg-[var(--accent)] px-5 py-2 text-sm font-medium text-[var(--dashboard-text-inverse)] transition-colors hover:bg-[var(--accent-hover)] disabled:opacity-60"
+          className="rounded-xl bg-accent px-5 py-2 text-sm font-medium text-text-inverse transition-colors hover:bg-accent-hover disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {loading ? "তৈরি হচ্ছে…" : "টেস্ট তৈরি করো"}
         </button>
       </div>
 
-      {error && <p className="text-sm text-[var(--dashboard-danger)]">{error}</p>}
+      {error && <p className="text-sm text-dashboard-danger">{error}</p>}
 
       {test && test.questions.length > 0 && (
         <>
-          <div className="flex items-center justify-between rounded-xl border border-[var(--border-subtle)] bg-[var(--dashboard-surface)] px-4 py-3">
-            <div>
-              <h2 className="font-semibold text-[var(--dashboard-text-primary)]">{test.title}</h2>
-              <p className="text-xs text-[var(--dashboard-text-muted)]">সূত্র: {test.source}</p>
+          <div className="rounded-2xl border border-border bg-surface px-5 py-4">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="font-semibold text-text-primary">{test.title}</h2>
+              <p className="text-xs text-text-muted">{test.source}</p>
             </div>
             {submitted && (
-              <div className="text-right">
-                <div className="text-2xl font-bold text-[var(--dashboard-primary)]">
+              <div className="flex items-center gap-3">
+                <div className="text-2xl font-bold text-primary">
                   {score}/{test.questions.length}
                 </div>
-                <div className="text-xs text-[var(--dashboard-text-muted)]">
-                  {Math.round((score / test.questions.length) * 100)}%
+                <div className="text-xs text-text-muted">
+                  {percentage}%
                 </div>
               </div>
             )}
           </div>
 
-          <div className="flex flex-col gap-4">
+          <div className="space-y-4">
             {test.questions.map((q, i) => (
               <QuestionCard
                 key={q.id}
@@ -121,36 +124,48 @@ export default function AIMockTestTab() {
                 q={q}
                 selected={answers[q.id]}
                 onSelect={(optId) => setAnswers((a) => ({ ...a, [q.id]: optId }))}
-                showAnswer={submitted}
+                showAnswer={submitted || showResults}
+                showResults={showResults}
               />
             ))}
-          </div>
 
-          {!submitted ? (
-            <button
-              type="button"
-              onClick={() => setSubmitted(true)}
-              className="self-start rounded-xl bg-[var(--accent)] px-5 py-2 text-sm font-medium text-[var(--dashboard-text-inverse)] hover:bg-[var(--accent-hover)]"
-            >
-              দাখিল করো
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={() => {
-                setSubmitted(false);
-                setAnswers({});
-              }}
-              className="self-start rounded-xl border border-[var(--border-subtle)] px-5 py-2 text-sm text-[var(--dashboard-text-primary)] hover:border-[var(--primary)]/50"
-            >
-              আবার চেষ্টা করো
-            </button>
-          )}
+            {!submitted && !showResults && (
+              <button
+                type="button"
+                onClick={() => setShowResults(true)}
+                className="w-full rounded-xl bg-accent px-6 py-2.5 text-sm font-medium text-text-inverse transition-colors hover:bg-accent-hover"
+              >
+                সমাধান দেখুন
+              </button>
+            )}
+
+            {submitted ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setSubmitted(false);
+                  setAnswers({});
+                  setShowResults(false);
+                }}
+                className="w-full rounded-xl border border-border px-6 py-2.5 text-sm text-text-primary transition-colors hover:border-primary/50"
+              >
+                আবার চেষ্টা করো
+              </button>
+            ) : showResults && (
+              <button
+                type="button"
+                onClick={() => setShowResults(false)}
+                className="w-full rounded-xl border border-border px-6 py-2.5 text-sm text-text-primary transition-colors hover:border-primary/50"
+              >
+                পরীক্ষা ধরে নagain
+              </button>
+            )}
+          </div>
         </>
       )}
 
       {test && test.questions.length === 0 && !loading && (
-        <p className="text-sm text-[var(--dashboard-text-muted)]">কোনো প্রশ্ন তৈরি হয়নি। আবার চেষ্টা করো।</p>
+        <p className="text-sm text-text-muted">কোনো প্রশ্ন তৈরি হয়নি। আবার চেষ্টা করো。</p>
       )}
     </div>
   );
@@ -162,54 +177,60 @@ function QuestionCard({
   selected,
   onSelect,
   showAnswer,
+  showResults,
 }: {
   index: number;
   q: GeneratedMockQuestion;
   selected?: string;
   onSelect: (optId: string) => void;
   showAnswer: boolean;
+  showResults?: boolean;
 }) {
   return (
-    <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--dashboard-surface)] p-4">
-      <div className="mb-3 flex items-start gap-2">
-        <span className="mt-0.5 font-mono text-xs text-[var(--dashboard-text-muted)]">{index}.</span>
+    <div className="rounded-2xl border border-border bg-surface p-5">
+      <div className="mb-4 flex items-start gap-2">
+        <span className="mt-0.5 font-mono text-xs text-text-muted">{index}.</span>
         <div>
-          <p className="text-sm text-[var(--dashboard-text-primary)]">{q.question}</p>
-          {q.topic && <span className="text-[11px] text-[var(--dashboard-text-muted)]">{q.topic}</span>}
+          <p className="text-sm text-text-primary">{q.question}</p>
+          {q.topic && <span className="text-[10px] text-text-muted">{q.topic}</span>}
         </div>
       </div>
-      <div className="flex flex-col gap-2 pl-6">
+
+      <div className="flex flex-col gap-3 pl-8">
         {q.options.map((opt) => {
           const isSelected = selected === opt.id;
           const isCorrect = opt.id === q.answer;
-          const cls = showAnswer
+          const isShowing = showAnswer || (showResults ?? false);
+          const cls = isShowing
             ? isCorrect
-              ? "border-[var(--primary)]/60 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
+              ? "border-primary/60 bg-primary-subtle text-primary"
               : isSelected
-                ? "border-[var(--danger)]/60 bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)]"
-                : "border-[var(--border-subtle)] text-[var(--dashboard-text-secondary)]"
+                ? "border-danger/60 bg-danger-subtle text-danger"
+                : "border-border text-text-secondary"
             : isSelected
-              ? "border-[var(--primary)]/50 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-text-primary)]"
-              : "border-[var(--border-subtle)] text-[var(--dashboard-text-secondary)] hover:border-[var(--primary)]/30";
+              ? "border-primary/50 bg-primary-subtle text-text-primary"
+              : "border-border text-text-secondary hover:border-primary/30";
+
           return (
             <button
               key={opt.id}
               type="button"
-              disabled={showAnswer}
+              disabled={isShowing}
               onClick={() => onSelect(opt.id)}
-              className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-left text-sm transition-colors ${cls}`}
+              className={`flex items-center gap-2 rounded-lg border px-4 py-2.5 text-left text-sm transition-colors ${cls}`}
             >
-              <span className="font-mono text-xs text-[var(--dashboard-text-muted)]">{opt.id}.</span>
+              <span className="font-mono text-xs text-text-muted">{opt.id}.</span>
               <span>{opt.text}</span>
             </button>
           );
         })}
+
+        {showAnswer && q.explanation && (
+          <p className="mt-3 rounded-lg bg-surface-muted px-4 py-2 text-xs text-text-secondary">
+            {q.explanation}
+          </p>
+        )}
       </div>
-      {showAnswer && q.explanation && (
-        <p className="mt-3 rounded-lg bg-[var(--dashboard-surface-muted)] px-3 py-2 text-xs text-[var(--dashboard-text-secondary)]">
-          {q.explanation}
-        </p>
-      )}
     </div>
   );
 }

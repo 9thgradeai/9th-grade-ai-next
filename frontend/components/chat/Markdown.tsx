@@ -5,7 +5,7 @@
 // Renders the subset of Markdown the AI models emit — bold, italic, inline
 // code, fenced code blocks, ATX headings, bullet/numbered lists, blockquotes,
 // links and horizontal rules — while aggressively cleaning the decorative
-// asterisk noise (stray `**`, `****` separators, empty emphasis) that makes
+// asterisk noise (stray `**`, `****`, empty emphasis) that makes
 // raw responses look broken.
 
 import { Fragment, useMemo, useState, type ReactNode } from "react";

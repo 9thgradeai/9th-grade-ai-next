@@ -3,16 +3,17 @@
 // ChatGPT-style message bubble. AI replies render on the left with an avatar
 // and a properly formatted Markdown body; the learner's own messages render as
 // a right-aligned bubble. Includes action chips, copy, read-aloud and feedback
-// controls.
+// controls with smooth micro-interactions.
 
 import { useState } from "react";
-import { Check, Copy, ThumbsDown, ThumbsUp, Volume2, VolumeX } from "lucide-react";
+import { Check, Copy, ThumbsDown, ThumbsUp, Volume2, VolumeX, Loader2 } from "lucide-react";
 import Markdown from "./Markdown";
 import AiLogo from "@/components/ui/AiLogo";
 
 export type SuggestedAction = {
   id: string;
   labelBn: string;
+  labelEn?: string;
 };
 
 export type ChatMessageData = {
@@ -24,7 +25,6 @@ export type ChatMessageData = {
   error?: boolean;
 };
 
-// Module-level handle so only one message is read aloud at a time.
 let activeTts: SpeechSynthesisUtterance | null = null;
 
 function detectSpeechLang(text: string): string {
@@ -72,6 +72,7 @@ export default function ChatMessage({
   onAction,
 }: ChatMessageProps) {
   const [speaking, setSpeaking] = useState(false);
+  const [isCopying, setIsCopying] = useState(false);
 
   const handleSpeak = () => {
     if (typeof window === "undefined" || !window.speechSynthesis) return;
@@ -94,6 +95,15 @@ export default function ChatMessage({
     activeTts = u;
     window.speechSynthesis.speak(u);
     setSpeaking(true);
+  };
+
+  const handleCopy = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      onCopy(message.id, message.text);
+    } catch {
+      // ignore clipboard failures
+    }
   };
 
   if (message.role === "user") {
@@ -149,7 +159,7 @@ export default function ChatMessage({
               aria-label="Copy response"
               title="Copy"
             >
-              {copied ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
+              {copied && <Check className="h-3.5 w-3.5 text-emerald-400" />}{!copied && <Copy className="h-3.5 w-3.5" />}
             </button>
             <button
               type="button"

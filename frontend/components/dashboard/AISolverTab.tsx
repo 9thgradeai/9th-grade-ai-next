@@ -1,8 +1,11 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Upload, Camera, Sparkles, X, Copy, Check, Loader2, Lightbulb, MessageSquare } from "lucide-react";
+import { motion, AnimatePresence, spring } from "framer-motion";
+import {
+  Upload, Camera, Sparkles, X, Copy, Check, Loader2,
+  Lightbulb, MessageSquare, Target, Zap,
+} from "lucide-react";
 import { SOLVER_EXAMPLES } from "@/lib/data/study";
 import { solve } from "@/lib/services/ai";
 import { launchAI } from "@/lib/ai-launcher";
@@ -22,7 +25,7 @@ export default function AISolverTab() {
   const [selectedSubject, setSelectedSubject] = useState("General");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const subjects = ["General", "Physics", "Mathematics", "Biology", "Chemistry", "English", "বাংলা", "বাংলাদেশ বিষয়াবলি", "Computer"];
+  const subjects = ["General", "Physics", "Mathematics", "Biology", "Chemistry", "English", "বাংলা", "বangladesh বিষয়াবলি", "Computer"];
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -52,7 +55,7 @@ export default function AISolverTab() {
       setSteps(result.steps ?? []);
       setExplanation(result.explanation ?? "");
       setRelatedConcept(result.relatedConcept ?? "");
-    } catch {
+    } catch (e) {
       setSolution("Sorry, the AI solver is temporarily unavailable. Please try again.");
       setSteps([]);
       setExplanation("");
@@ -69,10 +72,14 @@ export default function AISolverTab() {
     });
   };
 
-  const copyToClipboard = (text: string) => {
-    void navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // ignore clipboard failures
+    }
   };
 
   const clearAll = () => {
@@ -80,6 +87,8 @@ export default function AISolverTab() {
     setImagePreview(null);
     setSolution(null);
     setSteps([]);
+    setExplanation("");
+    setRelatedConcept("");
   };
 
   return (
@@ -88,20 +97,21 @@ export default function AISolverTab() {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="glass-card rounded-2xl border border-terminal-border p-5"
+        transition={{ type: "spring" }}
+        className="glass-card rounded-2xl border border-border p-5"
       >
-        <div className="terminal-window-bar mb-4 border-b border-terminal-border">
+        <div className="terminal-window-bar mb-4 border-b border-border">
           <div className="dot close" /><div className="dot minimize" /><div className="dot maximize" />
-          <div className="flex-1 text-center text-xs text-[var(--dashboard-text-muted)] font-mono">{"// AI_QUESTION_SOLVER"}</div>
+          <div className="flex-1 text-center text-xs text-text-muted font-mono">// AI_QUESTION_SOLVER</div>
         </div>
 
         <div className="flex items-center gap-2 mb-4">
           <AiLogo className="w-5 h-5" />
-          <h2 className="text-lg font-bold text-[var(--text-primary)]">AI Question Solver</h2>
-          <span className="text-xs text-[var(--dashboard-text-muted)] font-mono">Text & Image Input</span>
+          <h2 className="text-lg font-bold text-text-primary">AI Question Solver</h2>
+          <span className="text-xs text-text-muted font-mono">Text & Image Input</span>
         </div>
 
-        <p className="text-sm text-[var(--dashboard-text-muted)] font-mono mb-4">
+        <p className="text-sm text-text-muted font-mono mb-4">
           Type or upload a photo of any question. Our AI will solve it step by step.
         </p>
 
@@ -111,10 +121,10 @@ export default function AISolverTab() {
             <button
               key={subject}
               onClick={() => setSelectedSubject(subject)}
-              className={`px-3 py-1.5 rounded-lg border text-xs font-mono transition-all ${
+              className={`px-3 py-1.5 rounded-lg border border-border text-xs font-mono transition-all ${
                 selectedSubject === subject
-                  ? "bg-[var(--dashboard-primary-subtle)] border-[var(--primary)]/30 text-[var(--dashboard-primary)]"
-                  : "bg-subtle border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] hover:border-[var(--primary)]/20"
+                  ? "bg-primary-subtle border-primary/30 text-primary"
+                  : "bg-subtle border-border-muted text-text-muted hover:border-primary/20"
               }`}
             >
               {subject}
@@ -126,20 +136,20 @@ export default function AISolverTab() {
         <div className="flex gap-2 mb-4">
           <button
             onClick={() => setInputType("text")}
-            className={`flex-1 py-2.5 rounded-lg border font-mono text-sm transition-all ${
+            className={`flex-1 py-2.5 rounded-lg border border-border font-mono text-sm transition-all ${
               inputType === "text"
-                ? "bg-[var(--dashboard-primary-subtle)] border-[var(--primary)]/30 text-[var(--dashboard-primary)]"
-                : "bg-subtle border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)]"
+                ? "bg-primary-subtle border-primary/30 text-primary"
+                : "bg-subtle border-border-muted text-text-muted"
             }`}
           >
             Text Input
           </button>
           <button
             onClick={() => setInputType("image")}
-            className={`flex-1 py-2.5 rounded-lg border font-mono text-sm transition-all ${
+            className={`flex-1 py-2.5 rounded-lg border border-border font-mono text-sm transition-all ${
               inputType === "image"
-                ? "bg-[var(--dashboard-primary-subtle)] border-[var(--primary)]/30 text-[var(--dashboard-primary)]"
-                : "bg-subtle border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)]"
+                ? "bg-primary-subtle border-primary/30 text-primary"
+                : "bg-subtle border-border-muted text-text-muted"
             }`}
           >
             <Camera className="w-4 h-4 inline mr-1" />
@@ -155,12 +165,12 @@ export default function AISolverTab() {
                 value={textInput}
                 onChange={(e) => setTextInput(e.target.value)}
                 placeholder="Type your question here... (e.g., 'Solve: 2x + 5 = 15')"
-                className="w-full h-32 bg-subtle border border-[var(--primary)]/20 rounded-2xl p-4 text-sm text-[var(--dashboard-text-secondary)] font-mono resize-none focus:outline-none focus:border-[var(--primary)]/40"
+                className="w-full h-32 bg-subtle border border-primary/20 rounded-2xl p-4 text-sm text-text-secondary font-mono resize-none focus:outline-none focus:border-primary/40"
               />
               {textInput && (
                 <button
                   onClick={clearAll}
-                  className="absolute top-3 right-3 p-1 text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)] transition-colors"
+                  className="absolute top-3 right-3 p-1 text-text-muted hover:text-text-primary transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -177,15 +187,14 @@ export default function AISolverTab() {
               />
               {imagePreview ? (
                 <div className="relative">
-                  {/* eslint-disable-next-line @next/next/no-img-element -- data/blob URL preview, not a static asset */}
                   <img
                     src={imagePreview}
                     alt="Uploaded question"
-                    className="w-full max-h-64 object-contain rounded-2xl border border-[var(--primary)]/20"
+                    className="w-full max-h-64 object-contain rounded-2xl border border-primary/20"
                   />
                   <button
                     onClick={clearAll}
-                    className="absolute top-3 right-3 p-1.5 bg-subtle border border-[var(--border-strong)] rounded-lg text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)] transition-colors"
+                    className="absolute top-3 right-3 p-1.5 bg-subtle border border-border rounded-lg text-text-muted hover:text-text-primary transition-colors"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -193,10 +202,10 @@ export default function AISolverTab() {
               ) : (
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  className="w-full h-32 border-2 border-dashed border-[var(--primary)]/20 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-[var(--primary)]/40 transition-colors"
+                  className="w-full h-32 border-2 border-dashed border-primary/20 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-primary/40 transition-colors"
                 >
-                  <Upload className="w-8 h-8 text-[var(--dashboard-primary)]" />
-                  <span className="text-sm text-[var(--dashboard-text-muted)] font-mono">Click to upload question image</span>
+                  <Upload className="w-8 h-8 text-primary" />
+                  <span className="text-sm text-text-muted font-mono">Click to upload question image</span>
                 </button>
               )}
             </div>
@@ -204,13 +213,13 @@ export default function AISolverTab() {
 
           {/* Example Questions */}
           <div className="space-y-2">
-            <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">Try an example:</p>
+            <p className="text-xs text-text-muted font-mono">Try an example:</p>
             <div className="flex flex-wrap gap-2">
               {SOLVER_EXAMPLES.map((ex, i) => (
                 <button
                   key={i}
                   onClick={() => { setTextInput(ex.question); setInputType("text"); }}
-                  className="px-3 py-1.5 bg-subtle border border-[var(--dashboard-border-muted)] rounded-lg text-xs text-[var(--dashboard-text-muted)] hover:border-[var(--primary)]/20 hover:text-[var(--dashboard-primary)] transition-all"
+                  className="px-3 py-1.5 bg-subtle border border-border rounded-lg text-xs text-text-muted hover:border-primary/20 hover:text-text-primary transition-all"
                 >
                   {ex.subject}: {ex.question.slice(0, 40)}...
                 </button>
@@ -221,11 +230,9 @@ export default function AISolverTab() {
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            onClick={() => {
-              void solveQuestion();
-            }}
+            onClick={() => void solveQuestion()}
             disabled={isSolving || (!textInput.trim() && !imagePreview)}
-            className="w-full py-3 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono rounded-lg hover:bg-[var(--accent-hover)] transition-colors flex items-center justify-center gap-2 shadow-neon-glow disabled:opacity-40 disabled:cursor-not-allowed"
+            className="w-full py-3 bg-accent text-text-inverse font-mono rounded-lg hover:bg-accent-hover transition-colors flex items-center justify-center gap-2 shadow-neon-glow disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {isSolving ? (
               <>
@@ -248,17 +255,19 @@ export default function AISolverTab() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="glass-card rounded-2xl border border-[var(--primary)]/30 p-5"
+            transition={{ type: "spring" }}
+            className="glass-card rounded-2xl border border-primary/30 p-5"
           >
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <Lightbulb className="w-5 h-5 text-[var(--dashboard-warning)]" />
-                <h3 className="text-sm font-medium text-[var(--text-primary)]">Solution</h3>
+                <Lightbulb className="w-5 h-5 text-dashboard-warning" />
+                <h3 className="text-sm font-medium text-text-primary">Solution</h3>
               </div>
               <button
                 onClick={() => copyToClipboard(solution)}
-                aria-label={copied ? "কপি করা হয়েছে" : "সমাধান কপি করুন"}
-                className="p-1.5 text-[var(--dashboard-text-muted)] hover:text-[var(--dashboard-primary)] transition-colors"
+                aria-label={copied ? "Copied!" : "Copy solution"}
+                className="p-1.5 text-text-muted hover:text-primary transition-colors"
+                title={copied ? "Copied!" : "Copy solution"}
               >
                 {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
               </button>
@@ -272,35 +281,35 @@ export default function AISolverTab() {
                     key={i}
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.1 }}
+                    transition={{ type: "spring", stiffness: 200, damping: 30 }}
                     className="flex items-start gap-3"
                   >
-                    <div className="w-6 h-6 rounded-full bg-[var(--dashboard-primary-subtle)] border border-[var(--primary)]/20 flex items-center justify-center text-xs font-mono text-[var(--dashboard-primary)] flex-shrink-0">
+                    <div className="w-6 h-6 rounded-full bg-primary-subtle border border-primary/20 flex items-center justify-center text-xs font-mono text-primary flex-shrink-0">
                       {i + 1}
                     </div>
-                    <p className="text-sm text-[var(--dashboard-text-secondary)] font-mono">{step}</p>
+                    <p className="text-sm text-text-secondary font-mono">{step}</p>
                   </motion.div>
                 ))}
               </div>
             )}
 
             {/* Final Answer */}
-            <div className="p-4 bg-subtle border border-[var(--primary)]/20 rounded-2xl">
+            <div className="p-4 bg-subtle border border-primary/20 rounded-2xl">
               <Markdown text={solution} />
             </div>
 
             {/* Concept explanation + tutor handoff */}
             {(explanation || relatedConcept) && (
-              <div className="mt-4 space-y-2 text-sm text-[var(--dashboard-text-muted)]">
+              <div className="mt-4 space-y-2 text-sm text-text-muted">
                 {explanation && (
                   <p>
-                    <span className="text-[var(--dashboard-primary)] font-mono text-xs">CONCEPT: </span>
+                    <span className="text-primary font-mono text-xs">CONCEPT: </span>
                     {explanation}
                   </p>
                 )}
                 {relatedConcept && (
                   <p>
-                    <span className="text-[var(--dashboard-primary)] font-mono text-xs">NEXT: </span>
+                    <span className="text-primary font-mono text-xs">NEXT: </span>
                     Study related concept — {relatedConcept}
                   </p>
                 )}
@@ -309,7 +318,7 @@ export default function AISolverTab() {
 
             <button
               onClick={askTutorToExplain}
-              className="mt-4 w-full flex items-center justify-center gap-2 py-2.5 bg-[var(--surface-raised)] border border-[var(--primary)]/20 text-[var(--dashboard-primary)] rounded-lg text-sm font-mono hover:bg-[var(--dashboard-primary-subtle)] transition-colors"
+              className="mt-4 w-full flex items-center justify-center gap-2 py-2.5 bg-surface-raised border border-primary/20 text-primary rounded-lg text-sm font-mono hover:bg-primary-subtle transition-colors"
             >
               <MessageSquare className="w-4 h-4" />
               Ask the AI Tutor to explain this step by step

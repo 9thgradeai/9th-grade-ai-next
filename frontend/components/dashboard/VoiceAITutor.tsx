@@ -14,10 +14,11 @@ import {
   useState, useRef, useEffect, useCallback,
   type ChangeEvent, type KeyboardEvent as ReactKeyboardEvent,
 } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, spring } from "framer-motion";
 import {
   Mic, MicOff, Send, X, Loader2,
   Plus, RefreshCw, GraduationCap, BrainCircuit, PanelLeft,
+  ThumbsUp, ThumbsDown, Volume2, VolumeX, Copy,
 } from "lucide-react";
 import AiLogo from "@/components/ui/AiLogo";
 import { PRESET_PROMPTS } from "@/lib/data/ai";
@@ -44,7 +45,7 @@ import ConversationList from "@/components/chat/ConversationList";
 
 type Mode = "tutor" | "assistant";
 
-type Status = "idle" | "generating" | "listening" | "error";
+type Status = "idle" | "generating" | "listening" | "error" | "stopped";
 
 type UIMessage = {
   id: string;
@@ -71,11 +72,15 @@ interface SpeechRecognitionLike {
 }
 type SpeechRecognitionCtor = new () => SpeechRecognitionLike;
 
-const ASSISTANT_QUICK_ACTIONS: { labelBn: string; prompt: string }[] = [
-  { labelBn: "আজ কী পড়ব?", prompt: "আজ কী পড়ব? আমার প্রগ্রেস ও দুর্বল বিষয় দেখে পরামর্শ দাও।" },
-  { labelBn: "দুর্বল বিষয়গুলো", prompt: "আমার দুর্বল বিষয়গুলো কী কী? সেগুলো শুরুর জন্য কী করব?" },
-  { labelBn: "প্র্যাকটিস শুরু করো", prompt: "আমাকে একটি প্র্যাকটিস সেশন পরামর্শ দাও।" },
-  { labelBn: "কারেন্ট অ্যাফেয়ার্স", prompt: "সাম্প্রতিক কারেন্ট অ্যাফেয়ার্স কী কী?" },
+const QUICK_ACTIONS: { labelBn: string; prompt: string; category: "tutor" | "assistant" }[] = [
+  { labelBn: "আজ কী পড়ব?", prompt: "আজ কী পড়ব? আমার প্রগ্রesso ও দুর্বল বিষয় দেখে পরামর্শ দাও.", category: "assistant" },
+  { labelBn: "দুর্বল বিষয়গুলো", prompt: "আমার দুর্বল বিষয়গুলো কী কী? সেগুলো শুরুর জন্য কী করব?", category: "assistant" },
+  { labelBn: "প্র্যাক্টিস শুরু করো", prompt: "আমাকে একটি প্র্যাক্টিস সেশন পরামর্শ দাও.", category: "assistant" },
+  { labelBn: "কারেন্ট অ্যাফেয়ার্স", prompt: "সাম্প্রতিক কারেন্ট অ্যাফেয়ার্স কী কী?", category: "assistant" },
+  { labelBn: "গত বিশ্লেষণ", prompt: "আমার পдыду সেশনগুলো বিশ্লেষণ করো এবং পরামর্শ দাও.", category: "assistant" },
+  { labelBn: "Exam টিপস", prompt: "ব vigorously, targeted exam preparation tips দাও", category: "assistant" },
+  { labelBn: "শূন্য থেকে setup", prompt: "এক নতুনtopic থেকে শুরু করি, ধাপ-ধাপ-guide দাও", category: "tutor" },
+  { labelBn: " concepto clearance", prompt: "কোনো conceito clearance করো ধাপে ধাপ", category: "tutor" },
 ];
 
 const STATUS_LABEL: Record<Status, string> = {
@@ -83,6 +88,7 @@ const STATUS_LABEL: Record<Status, string> = {
   generating: "GENERATING",
   listening: "LISTENING",
   error: "ERROR",
+  stopped: "STOPPED",
 };
 
 function messageToUI(m: AIMessageDto): UIMessage {
@@ -564,7 +570,7 @@ export default function VoiceAITutor() {
                       onClick={() => setMode("tutor")}
                       className={`rounded-md px-2.5 py-1 font-mono text-xs transition-colors ${
                         mode === "tutor"
-                          ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)]"
+                          ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] hover:bg-[var(--accent-hover)]"
                           : "text-[var(--dashboard-primary)] hover:text-[var(--text-primary)]"
                       }`}
                     >
@@ -575,12 +581,28 @@ export default function VoiceAITutor() {
                       onClick={() => setMode("assistant")}
                       className={`rounded-md px-2.5 py-1 font-mono text-xs transition-colors ${
                         mode === "assistant"
-                          ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)]"
+                          ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] hover:bg-[var(--accent-hover)]"
                           : "text-[var(--dashboard-primary)] hover:text-[var(--text-primary)]"
                       }`}
                     >
                       সহায়ক
                     </button>
+                  </div>
+
+                  {/* Quick action suggestions based on mode */}
+                  <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
+                    {QUICK_ACTIONS
+                      .filter((a) => a.category === mode)
+                      .map((a) => (
+                        <button
+                          key={a.labelBn}
+                          type="button"
+                          onClick={() => runAssistantAction(a.prompt)}
+                          className="rounded-lg border border-[var(--primary)]/20 bg-[var(--dashboard-primary-subtle)] px-2.5 py-1 text-xs text-[var(--dashboard-text-secondary)] transition-colors hover:border-[var(--primary)]/40 hover:bg-[var(--dashboard-primary-subtle)] hover:text-[var(--dashboard-primary)] truncate max-w-xs"
+                        >
+                          {a.labelBn}
+                        </button>
+                      ))}
                   </div>
 
                   <span
@@ -677,7 +699,7 @@ export default function VoiceAITutor() {
                                   {p.label.bn}
                                 </button>
                               ))
-                            : ASSISTANT_QUICK_ACTIONS.map((a) => (
+                            : QUICK_ACTIONS.map((a) => (
                                 <button
                                   key={a.labelBn}
                                   type="button"
