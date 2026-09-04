@@ -26,7 +26,7 @@ export default function NextBestAction({ action }: { action: NextAction }) {
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border"
             style={
               isHigh
-                ? { background: "rgba(10,11,16,0.14)", borderColor: "rgba(10,11,16,0.18)", color: "var(--dashboard-text-inverse)" }
+                ? { background: "color-mix(in srgb, var(--dashboard-text-inverse) 14%, transparent)", borderColor: "color-mix(in srgb, var(--dashboard-text-inverse) 18%, transparent)", color: "var(--dashboard-text-inverse)" }
                 : { background: "var(--dashboard-primary-subtle)", borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-primary)" }
             }
           >

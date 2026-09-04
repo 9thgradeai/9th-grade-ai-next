@@ -26,7 +26,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-ctx";
-import { useTheme } from "@/lib/theme-ctx";
+import { useDashboardTheme } from "@/lib/dashboard-theme-ctx";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 import { useDialogA11y } from "@/lib/use-dialog-a11y";
 import { account } from "@/lib/services/api";
@@ -114,7 +114,7 @@ function Field({
       <input
         id={id}
         {...props}
-        className="w-full px-3.5 py-2.5 rounded-xl bg-subtle border border-[var(--dashboard-border-muted)] text-sm text-[var(--text-primary)] placeholder:text-[var(--text-secondary)] outline-none transition-colors focus:border-[var(--accent)]/50 focus:ring-2 focus:ring-emerald-500/20"
+        className="w-full px-3.5 py-2.5 rounded-xl bg-subtle border border-[var(--dashboard-border-muted)] text-sm text-[var(--text-primary)] placeholder:text-[var(--text-secondary)] outline-none transition-colors focus:border-[var(--accent)]/50 focus:ring-2 focus:ring-[var(--accent)]/20"
       />
     </label>
   );
@@ -124,7 +124,7 @@ export default function SettingsTab() {
   const router = useRouter();
   const shouldReduceMotion = useReducedMotion();
   const { user, updateProfile, logout, tokenExpiry, refreshToken } = useAuth();
-  const { theme, toggleTheme } = useTheme();
+  const { theme, toggleTheme } = useDashboardTheme();
   const { resetStore } = useDashboardStore();
 
   // ── Profile edit ──

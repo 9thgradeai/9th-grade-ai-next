@@ -510,7 +510,7 @@ export default function VoiceAITutor() {
           setShowModal(true);
           setError(null);
         }}
-        className="fixed bottom-20 right-4 z-40 rounded-2xl drop-shadow-[0_8px_24px_rgba(16,185,129,0.45)] transition-transform sm:bottom-24 sm:right-6"
+        className="fixed bottom-20 right-4 z-40 rounded-2xl drop-shadow-[0_8px_24px_var(--dashboard-primary)] transition-transform sm:bottom-24 sm:right-6"
         aria-label="Open AI Tutor and Assistant"
       >
         <AiLogo className="h-12 w-12 sm:h-14 sm:w-14" />
@@ -714,7 +714,7 @@ export default function VoiceAITutor() {
 
                         {showThinkingRow && (
                           <div className="flex items-start gap-3">
-                            <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] ring-1 ring-emerald-500/20">
+                            <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] ring-1 ring-[var(--dashboard-primary)]/20">
                               <AiLogo solid={false} className="h-4 w-4" />
                             </div>
                             <TypingIndicator />
