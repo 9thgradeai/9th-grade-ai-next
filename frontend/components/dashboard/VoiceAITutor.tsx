@@ -531,7 +531,7 @@ export default function VoiceAITutor() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={closeModal}
-              className="absolute inset-0 bg-[var(--dashboard-overlay)] backdrop-blur-sm"
+              className="absolute inset-0 bg-[var(--dashboard-overlay)] backdrop-blur-sm z-50"
               aria-hidden="true"
             />
 
@@ -545,7 +545,7 @@ export default function VoiceAITutor() {
               role="dialog"
               aria-modal="true"
               aria-labelledby="ai-workspace-title"
-              className="absolute inset-x-0 bottom-0 flex h-[92dvh] w-full flex-col overflow-hidden rounded-t-2xl border border-[var(--primary)]/20 bg-[var(--surface-solid)] shadow-2xl outline-none sm:inset-x-4 sm:bottom-6 sm:mx-auto sm:h-[min(88dvh,900px)] sm:max-w-4xl sm:rounded-2xl"
+              className="absolute inset-x-0 bottom-0 flex h-[96dvh] w-full flex-col overflow-hidden rounded-t-2xl border border-[var(--primary)]/20 bg-[var(--surface-solid)] shadow-2xl outline-none z-50 sm:inset-x-4 sm:bottom-6 sm:mx-auto sm:h-[min(92dvh,950px)] sm:max-w-4xl sm:rounded-2xl"
             >
               {/* Header */}
               <div className="flex items-center justify-between gap-2 border-b border-[var(--primary)]/20 px-3 py-2.5 sm:px-4 sm:py-3">
