@@ -191,47 +191,46 @@
 
 [data-dashboard-theme="light"] {
   /* ══════════════════════════════════════════════════════════════════════════
-     SLATE BLUE LIGHT MODE
-     The user-facing dashboard surfaces are slate blue (#4b6584) instead of
-     white. Text/borders/semantics are flipped to light-on-slate so contrast
-     and hierarchy stay readable.
+     NEUTRAL GRAY LIGHT MODE
+     Clean white/gray surfaces with dark text — standard professional dashboard.
+     Surface hierarchy: #F8F9FC → #FFFFFF → #FFFFFF → #F1F3F6
      ══════════════════════════════════════════════════════════════════════════ */
 
   /* ── Canonical Surfaces ────────────────────────────────────────────────────── */
-  --background: #384B60;
-  --surface: #455D78;
-  --surface-soft: #455D78;
-  --surface-elevated: #4F6B87;
-  --surface-highest: #5A7AA0;
+  --background: #F3F4F8;
+  --surface: #FFFFFF;
+  --surface-soft: #F8F9FC;
+  --surface-elevated: #FFFFFF;
+  --surface-highest: #FFFFFF;
 
   /* ── Legacy Surface Aliases ────────────────────────────────────────────────── */
   --surface-base: var(--background);
   --surface-raised: var(--surface-elevated);
   --surface-overlay: var(--surface-highest);
   --surface-muted: var(--surface-soft);
-  --surface-hover: #567390;
-  --surface-active: #64809F;
+  --surface-hover: #F1F3F6;
+  --surface-active: #E8EAF0;
 
-  /* ── Text (light-on-slate — WCAG AA compliant) ────────────────────────────── */
-  --text-primary: #F1F5FB;
-  --text-secondary: #D0DAE8;
-  --text-muted: #B0C1D4;
-  --text-disabled: #8899AD;
-  --text-inverse: #0F1B29;
+  /* ── Text (dark-on-white — WCAG AA compliant) ─────────────────────────────── */
+  --text-primary: #111827;
+  --text-secondary: #4B5563;
+  --text-muted: #6B7280;
+  --text-disabled: #9CA3AF;
+  --text-inverse: #FFFFFF;
 
   /* ── Borders ───────────────────────────────────────────────────────────────── */
-  --border: #5E7A98;
-  --border-strong: #7390AD;
+  --border: #E5E7EB;
+  --border-strong: #D1D5DB;
   --border-subtle: var(--border);
   --border-default: var(--border-strong);
-  --border-focus: rgb(165 180 252 / 0.5);
+  --border-focus: rgb(99 102 241 / 0.5);
 
-  /* ── Primary (5%) — Indigo ─────────────────────────────────────────────────── */
-  --primary: #A5B4FC;
-  --primary-hover: #C7D2FE;
-  --primary-active: #DBE2FF;
-  --primary-soft: rgb(165 180 252 / 0.18);
-  --primary-muted: rgb(165 180 252 / 0.1);
+  /* ── Primary — Indigo ──────────────────────────────────────────────────────── */
+  --primary: #6366F1;
+  --primary-hover: #4F46E5;
+  --primary-active: #4338CA;
+  --primary-soft: rgb(99 102 241 / 0.08);
+  --primary-muted: rgb(99 102 241 / 0.05);
 
   /* ── Accent (legacy alias) ─────────────────────────────────────────────────── */
   --accent: var(--primary);
@@ -240,58 +239,58 @@
   --accent-subtle: var(--primary-soft);
   --accent-muted: var(--primary-muted);
 
-  /* ── Semantic — vibrant on slate ────────────────────────────────────────────── */
-  --success: #6DD9A0;
-  --success-soft: rgb(109 217 160 / 0.16);
-  --warning: #FBC84E;
-  --warning-soft: rgb(251 200 78 / 0.16);
-  --danger: #F58686;
-  --danger-soft: rgb(245 134 134 / 0.16);
-  --info: #5CB8EE;
-  --info-soft: rgb(92 184 238 / 0.16);
+  /* ── Semantic — vivid on white ─────────────────────────────────────────────── */
+  --success: #059669;
+  --success-soft: rgb(5 150 105 / 0.08);
+  --warning: #D97706;
+  --warning-soft: rgb(217 119 6 / 0.08);
+  --danger: #DC2626;
+  --danger-soft: rgb(220 38 38 / 0.08);
+  --info: #2563EB;
+  --info-soft: rgb(37 99 235 / 0.08);
 
   /* ── Decorative ────────────────────────────────────────────────────────────── */
-  --overlay: rgb(13 23 36 / 0.55);
+  --overlay: rgb(0 0 0 / 0.4);
 
-  /* ── Shadows (deeper for card depth on slate) ──────────────────────────────── */
-  --shadow-xs: 0 1px 2px rgb(10 18 30 / 0.22);
-  --shadow-sm: 0 1px 3px rgb(10 18 30 / 0.24), 0 1px 2px rgb(10 18 30 / 0.16);
-  --shadow-md: 0 3px 10px rgb(10 18 30 / 0.28), 0 1px 3px rgb(10 18 30 / 0.18);
-  --shadow-lg: 0 8px 24px rgb(10 18 30 / 0.32), 0 2px 6px rgb(10 18 30 / 0.2);
-  --shadow-xl: 0 14px 36px rgb(10 18 30 / 0.36), 0 4px 10px rgb(10 18 30 / 0.22);
+  /* ── Shadows (soft gray on white) ──────────────────────────────────────────── */
+  --shadow-xs: 0 1px 2px rgb(0 0 0 / 0.05);
+  --shadow-sm: 0 1px 3px rgb(0 0 0 / 0.08), 0 1px 2px rgb(0 0 0 / 0.04);
+  --shadow-md: 0 4px 6px rgb(0 0 0 / 0.07), 0 2px 4px rgb(0 0 0 / 0.04);
+  --shadow-lg: 0 10px 15px rgb(0 0 0 / 0.08), 0 4px 6px rgb(0 0 0 / 0.04);
+  --shadow-xl: 0 20px 25px rgb(0 0 0 / 0.1), 0 8px 10px rgb(0 0 0 / 0.04);
 
   /* ── Input ─────────────────────────────────────────────────────────────────── */
-  --input-bg: #3B5270;
-  --input-border: #5E7A98;
-  --input-focus: #A5B4FC;
-  --input-placeholder: #B0C1D4;
+  --input-bg: #FFFFFF;
+  --input-border: #D1D5DB;
+  --input-focus: #6366F1;
+  --input-placeholder: #9CA3AF;
 
   /* ── Disabled ──────────────────────────────────────────────────────────────── */
-  --disabled-bg: #364A63;
-  --disabled-text: #8899AD;
+  --disabled-bg: #F3F4F6;
+  --disabled-text: #9CA3AF;
 
   /* ── Chart ─────────────────────────────────────────────────────────────────── */
-  --chart-1: #A5B4FC;
-  --chart-2: #5CB8EE;
-  --chart-3: #6DD9A0;
-  --chart-4: #FBC84E;
-  --chart-grid: #5E7A98;
-  --chart-axis: #B0C1D4;
+  --chart-1: #6366F1;
+  --chart-2: #2563EB;
+  --chart-3: #059669;
+  --chart-4: #D97706;
+  --chart-grid: #E5E7EB;
+  --chart-axis: #6B7280;
 
   /* ── Focus Ring ────────────────────────────────────────────────────────────── */
-  --focus-ring: rgb(165 180 252 / 0.5);
+  --focus-ring: rgb(99 102 241 / 0.4);
   --focus-ring-offset: 2px;
 
   /* ── Sidebar ───────────────────────────────────────────────────────────────── */
-  --sidebar-bg: #3E5575;
-  --sidebar-border: #5E7A98;
-  --sidebar-text: #D0DAE8;
-  --sidebar-text-active: #F1F5FB;
-  --sidebar-bg-active: #324562;
+  --sidebar-bg: #FFFFFF;
+  --sidebar-border: #E5E7EB;
+  --sidebar-text: #4B5563;
+  --sidebar-text-active: #6366F1;
+  --sidebar-bg-active: rgb(99 102 241 / 0.08);
 
   /* ── Card ──────────────────────────────────────────────────────────────────── */
-  --card-bg: #455D78;
-  --card-border: #5E7A98;
+  --card-bg: #FFFFFF;
+  --card-border: #E5E7EB;
   --card-radius: 16px;
 
   /* ── Global App Tokens (non-dashboard) ─────────────────────────────────────── */
@@ -447,34 +446,34 @@ html.light {
 }
 
 [data-dashboard-theme="light"] {
-  --color-emerald-500: var(--primary);
-  --color-emerald-400: #6366f1;
-  --color-emerald-50: var(--primary-soft);
-  --color-emerald-100: var(--primary-soft);
-  --color-cyan-400: var(--info);
-  --color-indigo-400: #A5B4FC;
-  --color-zinc-50: #F1F5FB;
-  --color-zinc-100: #D0DAE8;
-  --color-zinc-200: #B0C1D4;
-  --color-zinc-300: #8899AD;
-  --color-zinc-400: #7390AD;
-  --color-zinc-500: #5E7A98;
-  --color-zinc-600: #4F6B87;
-  --color-zinc-700: #455D78;
-  --color-zinc-800: #3B5270;
-  --color-zinc-900: #384B60;
+  --color-emerald-500: #059669;
+  --color-emerald-400: #059669;
+  --color-emerald-50: #ECFDF5;
+  --color-emerald-100: #D1FAE5;
+  --color-cyan-400: #2563EB;
+  --color-indigo-400: #6366F1;
+  --color-zinc-50: #F9FAFB;
+  --color-zinc-100: #F3F4F6;
+  --color-zinc-200: #E5E7EB;
+  --color-zinc-300: #D1D5DB;
+  --color-zinc-400: #9CA3AF;
+  --color-zinc-500: #6B7280;
+  --color-zinc-600: #4B5563;
+  --color-zinc-700: #374151;
+  --color-zinc-800: #1F2937;
+  --color-zinc-900: #111827;
   --color-white: #FFFFFF;
-  --color-black: #F1F5FB;
-  --color-amber-400: #FBC84E;
-  --color-amber-500: #FBC84E;
-  --color-red-400: #F58686;
-  --color-red-500: #F58686;
-  --color-orange-400: #FBC84E;
-  --color-yellow-400: #FBC84E;
-  --color-violet-400: #A5B4FC;
-  --color-purple-400: #C4B5FD;
-  --color-rose-400: #F58686;
-  --color-blue-400: #5CB8EE;
+  --color-black: #111827;
+  --color-amber-400: #D97706;
+  --color-amber-500: #D97706;
+  --color-red-400: #DC2626;
+  --color-red-500: #DC2626;
+  --color-orange-400: #D97706;
+  --color-yellow-400: #D97706;
+  --color-violet-400: #6366F1;
+  --color-purple-400: #7C3AED;
+  --color-rose-400: #DC2626;
+  --color-blue-400: #2563EB;
 }
 
 html.light {
