@@ -13,12 +13,12 @@ import CommandBar from "@/components/dashboard/CommandBar";
 import { useDashboardTheme, ThemeToggle, DashboardThemeProvider } from "@/lib/dashboard-theme-ctx";
 import { useAuth } from "@/lib/auth-ctx";
 import { AuroraRing, StatusText } from "@/components/ui/Loader";
-import { useFarewell } from "@/lib/farewell-ctx";
+
 import { TABS, type TabId } from "@/lib/data";
 import BrandMark from "@/components/ui/BrandMark";
 import LanguageToggle from "@/components/ui/LanguageToggle";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
-import { LogoutFarewellProvider } from "@/lib/farewell-ctx";
+
 import { useDialogA11y } from "@/lib/use-dialog-a11y";
 import { Menu, X } from "lucide-react";
 import { TAB_ICONS } from "@/lib/exam-ui";
@@ -32,11 +32,9 @@ const VoiceAITutor = dynamic(() => import("@/components/dashboard/VoiceAITutor")
 });
 
 const DRAWER_GROUPS: { label: string; ids: TabId[] }[] = [
-  { label: "Primary", ids: ["home", "study-planner", "practice", "ai-mock-test"] },
-  { label: "Study", ids: ["question-bank", "flashcards", "ai-solver", "ai-evaluate", "ai-voice"] },
-  { label: "Review & Insights", ids: ["progress", "mistakes", "wrong-answers"] },
-  { label: "Career", ids: ["ai-advisor"] },
-  { label: "Account", ids: ["ai-model", "settings"] },
+  { label: "Primary", ids: ["home", "practice", "question-bank", "mistakes", "progress"] },
+  { label: "Study", ids: ["study-planner", "flashcards"] },
+  { label: "Account", ids: ["settings"] },
 ];
 
 function SideNavDrawerContent({ activeTab, onChange }: { activeTab: TabId; onChange: (t: TabId) => void }) {
@@ -168,10 +166,28 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     closeNavDrawer();
   };
 
+  // Keyboard shortcuts: 1-8 to switch tabs, Cmd+K for command bar
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      // Don't trigger shortcuts when typing in inputs
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      
+      // Number keys 1-8 for tab switching
+      const num = parseInt(e.key);
+      if (num >= 1 && num <= 8 && !e.metaKey && !e.ctrlKey && !e.altKey) {
+        const tab = TABS[num - 1];
+        if (tab) {
+          handleTabChange(tab.id);
+        }
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
   return (
     <DashboardThemeProvider>
-      <LogoutFarewellProvider>
-        <EmailVerificationGate>
+      <EmailVerificationGate>
           <MotionConfig reducedMotion="user">
             <div className="dashboard-shell h-dvh overflow-hidden flex" style={{ background: "var(--dashboard-background)" }}>
             {/* Skip link — first focusable element for keyboard users */}
@@ -294,7 +310,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </div>
           </MotionConfig>
         </EmailVerificationGate>
-      </LogoutFarewellProvider>
     </DashboardThemeProvider>
   );
 }

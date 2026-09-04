@@ -103,7 +103,7 @@ export default function StudyPlannerTab() {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="glass-card rounded-terminal-rounded border border-terminal-border p-5 md:p-6"
+        className="glass-card rounded-2xl border border-terminal-border p-5 md:p-6"
       >
         <div className="terminal-window-bar mb-4 border-b border-terminal-border">
           <div className="dot close" /><div className="dot minimize" /><div className="dot maximize" />
@@ -122,11 +122,11 @@ export default function StudyPlannerTab() {
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="text-center px-4 py-2 bg-subtle border border-[var(--accent)]/20 rounded-terminal-rounded">
+            <div className="text-center px-4 py-2 bg-subtle border border-[var(--accent)]/20 rounded-2xl">
               <div className="text-2xl font-bold text-[var(--dashboard-primary)] font-mono">{progress}%</div>
               <div className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase">Progress</div>
             </div>
-            <div className="text-center px-4 py-2 bg-subtle border border-[var(--accent)]/20 rounded-terminal-rounded">
+            <div className="text-center px-4 py-2 bg-subtle border border-[var(--accent)]/20 rounded-2xl">
               <div className="text-2xl font-bold text-[var(--dashboard-primary)] font-mono">{completedMinutes}m</div>
               <div className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase">Studied</div>
             </div>
@@ -155,7 +155,7 @@ export default function StudyPlannerTab() {
             <button
               key={dayName}
               onClick={() => setSelectedDay(i)}
-              className={`flex-shrink-0 px-4 py-3 rounded-terminal-rounded border transition-all ${
+              className={`flex-shrink-0 px-4 py-3 rounded-2xl border transition-all ${
                 selectedDay === i
                   ? "bg-[var(--dashboard-primary-subtle)] border-[var(--accent)]/30 text-[var(--dashboard-primary)]"
                   : "bg-subtle border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] hover:border-[var(--accent)]/20"
@@ -202,7 +202,7 @@ export default function StudyPlannerTab() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
                 transition={{ delay: i * 0.05 }}
-                className={`glass-card rounded-terminal-rounded border p-4 transition-all ${
+                className={`glass-card rounded-2xl border p-4 transition-all ${
                   isCompleted ? "border-[var(--accent)]/30 bg-[var(--dashboard-primary-subtle)]" : "border-terminal-border"
                 }`}
               >
@@ -274,7 +274,7 @@ export default function StudyPlannerTab() {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="p-4 bg-[var(--dashboard-primary-subtle)] border border-[var(--accent)]/20 rounded-terminal-rounded flex items-start gap-3"
+        className="p-4 bg-[var(--dashboard-primary-subtle)] border border-[var(--accent)]/20 rounded-2xl flex items-start gap-3"
       >
         <Sparkles className="w-5 h-5 text-[var(--dashboard-primary)] flex-shrink-0 mt-0.5" />
         <div>
@@ -290,7 +290,7 @@ export default function StudyPlannerTab() {
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="p-6 bg-[var(--dashboard-warning-subtle)] border border-[var(--warning)]/30 rounded-terminal-rounded text-center"
+          className="p-6 bg-[var(--dashboard-warning-subtle)] border border-[var(--warning)]/30 rounded-2xl text-center"
         >
           <Trophy className="w-12 h-12 text-[var(--dashboard-warning)] mx-auto mb-2" />
           <h3 className="text-lg font-bold text-[var(--dashboard-warning)] font-mono">DAY COMPLETE!</h3>

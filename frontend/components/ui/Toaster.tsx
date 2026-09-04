@@ -44,7 +44,7 @@ export default function Toaster() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 8, scale: 0.96 }}
               transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.18, ease: "easeOut" }}
-              className={`pointer-events-auto flex w-full max-w-sm items-center gap-3 rounded-terminal-rounded border px-4 py-3 glass shadow-panel ${VARIANT_STYLES[toast.variant]}`}
+              className={`pointer-events-auto flex w-full max-w-sm items-center gap-3 rounded-2xl border px-4 py-3 glass shadow-panel ${VARIANT_STYLES[toast.variant]}`}
             >
               <Icon size={18} className={`shrink-0 ${VARIANT_ICON_COLOR[toast.variant]}`} aria-hidden="true" />
               <p className="flex-1 text-sm font-medium text-[var(--text-primary)]">{toast.message}</p>

@@ -115,7 +115,7 @@ export default function ScrollPractice({
 
   if (questions.length === 0) {
     return (
-      <div className="glass-card rounded-terminal-rounded border border-terminal-border p-8 text-center">
+      <div className="glass-card rounded-2xl border border-terminal-border p-8 text-center">
         <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">কোনো প্রশ্ন নেই</p>
       </div>
     );
@@ -167,7 +167,7 @@ export default function ScrollPractice({
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: Math.min(qi * 0.03, 0.4) }}
-              className={`glass-card rounded-terminal-rounded border p-4 ${
+              className={`glass-card rounded-2xl border p-4 ${
                 submitted
                   ? qFb?.justMastered
                     ? "border-[var(--primary)]/40"

@@ -9,12 +9,13 @@ import { useDialogA11y } from "@/lib/use-dialog-a11y";
 import { MoreHorizontal, X } from "lucide-react";
 import LogoutButton from "./LogoutButton";
 
-// Primary 4 — Home, Plan, Practice, Tests per spec
+// Primary 5 — Home, Practice, Question Bank, Mistakes, Progress per new IA
 const BOTTOM_TABS: { id: TabId; icon: ComponentType<IconProps>; label: string; short: string }[] = [
   { id: "home", icon: TAB_ICONS.home, label: "হোম", short: "হোম" },
-  { id: "study-planner", icon: TAB_ICONS["study-planner"], label: "প্ল্যান", short: "প্ল্যান" },
   { id: "practice", icon: TAB_ICONS.practice, label: "প্র্যাকটিস", short: "প্র্যাকটিস" },
-  { id: "ai-mock-test", icon: TAB_ICONS["ai-mock-test"], label: "মক টেস্ট", short: "মক" },
+  { id: "question-bank", icon: TAB_ICONS["question-bank"], label: "প্রশ্নব্যাংক", short: "ব্যাংক" },
+  { id: "mistakes", icon: TAB_ICONS.mistakes, label: "ভুল বিশ্লেষণ", short: "ভুল" },
+  { id: "progress", icon: TAB_ICONS.progress, label: "প্রোগ্রেস", short: "প্রোগ্রেস" },
 ];
 
 interface BottomNavProps {

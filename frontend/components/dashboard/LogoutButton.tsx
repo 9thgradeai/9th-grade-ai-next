@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { LogOut, Loader2 } from "lucide-react";
 import { useAuth } from "@/lib/auth-ctx";
-import { useFarewellSafe } from "@/lib/farewell-ctx";
 
 interface LogoutButtonProps {
   variant?: "solid" | "ghost";
@@ -11,26 +10,16 @@ interface LogoutButtonProps {
   "aria-label"?: string;
 }
 
-/**
- * Reusable sign-out control. When a LogoutFarewellProvider is present it opens
- * the cinematic farewell overlay (the session ends after the farewell plays);
- * otherwise it falls back to a direct logout.
- */
 export default function LogoutButton({
   variant = "ghost",
   className = "",
   "aria-label": ariaLabel = "Log out",
 }: LogoutButtonProps) {
   const { logout } = useAuth();
-  const farewell = useFarewellSafe();
   const [pending, setPending] = useState(false);
 
   const handleLogout = async () => {
     if (pending) return;
-    if (farewell) {
-      farewell.beginLogout();
-      return;
-    }
     setPending(true);
     try {
       await logout();

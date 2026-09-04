@@ -18,7 +18,7 @@ export default function DashboardError({
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[400px] p-4">
-      <div className="max-w-md w-full glass rounded-terminal-rounded border border-red-500/30 p-6 text-center">
+      <div className="max-w-md w-full glass rounded-2xl border border-red-500/30 p-6 text-center">
         <div className="w-12 h-12 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 font-mono font-bold text-xl mx-auto mb-4">
           !
         </div>

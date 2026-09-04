@@ -88,7 +88,7 @@ export default function AISolverTab() {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="glass-card rounded-terminal-rounded border border-terminal-border p-5"
+        className="glass-card rounded-2xl border border-terminal-border p-5"
       >
         <div className="terminal-window-bar mb-4 border-b border-terminal-border">
           <div className="dot close" /><div className="dot minimize" /><div className="dot maximize" />
@@ -155,7 +155,7 @@ export default function AISolverTab() {
                 value={textInput}
                 onChange={(e) => setTextInput(e.target.value)}
                 placeholder="Type your question here... (e.g., 'Solve: 2x + 5 = 15')"
-                className="w-full h-32 bg-subtle border border-[var(--primary)]/20 rounded-terminal-rounded p-4 text-sm text-[var(--dashboard-text-secondary)] font-mono resize-none focus:outline-none focus:border-[var(--primary)]/40"
+                className="w-full h-32 bg-subtle border border-[var(--primary)]/20 rounded-2xl p-4 text-sm text-[var(--dashboard-text-secondary)] font-mono resize-none focus:outline-none focus:border-[var(--primary)]/40"
               />
               {textInput && (
                 <button
@@ -181,7 +181,7 @@ export default function AISolverTab() {
                   <img
                     src={imagePreview}
                     alt="Uploaded question"
-                    className="w-full max-h-64 object-contain rounded-terminal-rounded border border-[var(--primary)]/20"
+                    className="w-full max-h-64 object-contain rounded-2xl border border-[var(--primary)]/20"
                   />
                   <button
                     onClick={clearAll}
@@ -193,7 +193,7 @@ export default function AISolverTab() {
               ) : (
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  className="w-full h-32 border-2 border-dashed border-[var(--primary)]/20 rounded-terminal-rounded flex flex-col items-center justify-center gap-2 hover:border-[var(--primary)]/40 transition-colors"
+                  className="w-full h-32 border-2 border-dashed border-[var(--primary)]/20 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-[var(--primary)]/40 transition-colors"
                 >
                   <Upload className="w-8 h-8 text-[var(--dashboard-primary)]" />
                   <span className="text-sm text-[var(--dashboard-text-muted)] font-mono">Click to upload question image</span>
@@ -248,7 +248,7 @@ export default function AISolverTab() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="glass-card rounded-terminal-rounded border border-[var(--primary)]/30 p-5"
+            className="glass-card rounded-2xl border border-[var(--primary)]/30 p-5"
           >
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
@@ -285,7 +285,7 @@ export default function AISolverTab() {
             )}
 
             {/* Final Answer */}
-            <div className="p-4 bg-subtle border border-[var(--primary)]/20 rounded-terminal-rounded">
+            <div className="p-4 bg-subtle border border-[var(--primary)]/20 rounded-2xl">
               <Markdown text={solution} />
             </div>
 

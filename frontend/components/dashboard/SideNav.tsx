@@ -7,11 +7,9 @@ import BrandMark from "@/components/ui/BrandMark";
 import LogoutButton from "./LogoutButton";
 
 const NAV_GROUPS: { label: string; labelBn: string; ids: TabId[] }[] = [
-  { label: "Primary", labelBn: "প্রধান", ids: ["home", "study-planner", "practice", "ai-mock-test"] },
-  { label: "Study", labelBn: "পড়াশোনা", ids: ["question-bank", "flashcards", "ai-solver", "ai-evaluate", "ai-voice"] },
-  { label: "Review & Insights", labelBn: "পর্যালোচনা", ids: ["progress", "mistakes", "wrong-answers"] },
-  { label: "Career", labelBn: "ক্যারিয়ার", ids: ["ai-advisor"] },
-  { label: "Account", labelBn: "অ্যাকাউন্ট", ids: ["ai-model", "settings"] },
+  { label: "Primary", labelBn: "প্রধান", ids: ["home", "practice", "question-bank", "mistakes", "progress"] },
+  { label: "Study", labelBn: "পড়াশোনা", ids: ["study-planner", "flashcards"] },
+  { label: "Account", labelBn: "অ্যাকাউন্ট", ids: ["settings"] },
 ];
 
 function GroupLabel({ label }: { label: string }) {

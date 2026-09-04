@@ -1,23 +1,15 @@
 // Centralized static data for the 9Th-Grade AI dashboard and seed.
 
-export type TabId = "home" | "study-planner" | "practice" | "flashcards" | "ai-solver" | "ai-evaluate" | "ai-mock-test" | "ai-voice" | "ai-advisor" | "ai-model" | "ai-usage" | "question-bank" | "progress" | "wrong-answers" | "mistakes" | "settings";
+export type TabId = "home" | "study-planner" | "practice" | "flashcards" | "question-bank" | "progress" | "mistakes" | "settings";
 
 export const TABS: { id: TabId; label: string; short: string; bengali: string; icon: string }[] = [
   { id: "home", label: "HOME", short: "HOM", bengali: "হোম", icon: "🏠" },
-  { id: "study-planner", label: "PLANNER", short: "PLN", bengali: "প্ল্যানার", icon: "📅" },
   { id: "practice", label: "PRACTICE", short: "PRC", bengali: "প্র্যাকটিস", icon: "⚡" },
-  { id: "flashcards", label: "FLASHCARDS", short: "FLC", bengali: "ফ্ল্যাশকার্ড", icon: "🧠" },
-  { id: "ai-solver", label: "AI SOLVER", short: "AIS", bengali: "AI সলভার", icon: "🤖" },
-  { id: "ai-evaluate", label: "EVALUATE", short: "EVL", bengali: "উত্তর মূল্যায়ন", icon: "✅" },
-  { id: "ai-mock-test", label: "MOCK TEST", short: "MKT", bengali: "AI মক টেস্ট", icon: "📝" },
-  { id: "ai-voice", label: "VOICE", short: "VOX", bengali: "ভয়েস ইন্টারভিউ", icon: "🎤" },
-  { id: "ai-advisor", label: "ADVISOR", short: "ADV", bengali: "ক্যারিয়ার উপদেশক", icon: "🧭" },
-  { id: "ai-model", label: "PROFILE", short: "MDL", bengali: "শিক্ষার্থী প্রোফাইল", icon: "🧠" },
-  { id: "ai-usage", label: "USAGE", short: "USG", bengali: "AI ব্যবহার", icon: "📊" },
   { id: "question-bank", label: "QUESTION BANK", short: "QBK", bengali: "প্রশ্নব্যাংক", icon: "📚" },
-  { id: "progress", label: "PROGRESS", short: "PRG", bengali: "প্রোগ্রেস", icon: "📈" },
-  { id: "wrong-answers", label: "NOTEBOOK", short: "NTE", bengali: "ভুলের নোট", icon: "📕" },
   { id: "mistakes", label: "MISTAKES", short: "MST", bengali: "ভুল বিশ্লেষণ", icon: "🎯" },
+  { id: "progress", label: "PROGRESS", short: "PRG", bengali: "প্রোগ্রেস", icon: "📈" },
+  { id: "flashcards", label: "FLASHCARDS", short: "FLC", bengali: "ফ্ল্যাশকার্ড", icon: "🧠" },
+  { id: "study-planner", label: "PLANNER", short: "PLN", bengali: "প্ল্যানার", icon: "📅" },
   { id: "settings", label: "SETTINGS", short: "SET", bengali: "সেটিংস", icon: "⚙️" },
 ];
 

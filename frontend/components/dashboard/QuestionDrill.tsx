@@ -76,7 +76,7 @@ export default function QuestionDrill({
 
   if (questions.length === 0) {
     return (
-      <div className="glass-card rounded-terminal-rounded border border-terminal-border p-8 text-center">
+      <div className="glass-card rounded-2xl border border-terminal-border p-8 text-center">
         <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">কোনো প্রশ্ন নেই</p>
       </div>
     );
@@ -120,7 +120,7 @@ export default function QuestionDrill({
   if (done) {
     const score = Math.round((correctCount / questions.length) * 100);
     return (
-      <div className="glass-card rounded-terminal-rounded border border-terminal-border p-8 text-center space-y-4">
+      <div className="glass-card rounded-2xl border border-terminal-border p-8 text-center space-y-4">
         <h3 className="text-lg font-bold text-[var(--text-primary)] font-mono">{title} — শেষ</h3>
         <div className={`text-3xl font-bold font-mono ${score >= 60 ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-warning)]"}`}>
           {score}%
@@ -219,7 +219,7 @@ export default function QuestionDrill({
         <motion.div
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
-          className={`rounded-terminal-rounded border px-4 py-3 flex items-center gap-3 ${
+          className={`rounded-2xl border px-4 py-3 flex items-center gap-3 ${
             lastFeedback.justMastered
               ? "bg-[var(--dashboard-primary-subtle)] border-[var(--primary)]/40"
               : isCorrect

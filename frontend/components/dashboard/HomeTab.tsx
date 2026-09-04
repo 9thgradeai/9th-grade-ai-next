@@ -28,6 +28,12 @@ import Sparkline from "@/components/ui/Sparkline";
 import StreakHeatmap from "./StreakHeatmap";
 import NextBestAction from "./NextBestAction";
 import { deriveNextAction } from "@/lib/dashboard/recommend";
+import {
+  CountdownClock,
+  CountdownRingLive,
+  useExamDaysLeft,
+  formatDate,
+} from "./HomeTabHelpers";
 
 const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const WEEKDAY_SHORT_BN = ["শনি", "রবি", "সোম", "মঙ্গল", "বুধ", "বৃহ", "শুক্র"];
@@ -61,98 +67,6 @@ function lastSevenDayLabels(): string[] {
 }
 
 const WEEKDAY_LABELS_7 = lastSevenDayLabels();
-
-function CountdownRing({ daysLeft }: { daysLeft: number }) {
-  const fraction = Math.max(0, Math.min(1, daysLeft / 90));
-  const r = 26;
-  const circ = 2 * Math.PI * r;
-  const offset = circ * (1 - fraction);
-  return (
-    <svg viewBox="0 0 64 64" className="w-16 h-16 -rotate-90" aria-hidden="true">
-      <circle cx="32" cy="32" r={r} fill="none" stroke="var(--dashboard-border-muted)" strokeWidth="5" />
-      <circle
-        cx="32"
-        cy="32"
-        r={r}
-        fill="none"
-        stroke="var(--dashboard-primary)"
-        strokeWidth="5"
-        strokeLinecap="round"
-        strokeDasharray={circ}
-        strokeDashoffset={offset}
-      />
-    </svg>
-  );
-}
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("bn-BD", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-}
-
-function useCountdown(target: string) {
-  const [remaining, setRemaining] = useState({ d: "00", h: "00", m: "00", s: "00" });
-  useEffect(() => {
-    const tick = () => {
-      const diff = new Date(target).getTime() - Date.now();
-      if (diff <= 0) {
-        setRemaining({ d: "00", h: "00", m: "00", s: "00" });
-        return;
-      }
-      const pad = (n: number) => String(n).padStart(2, "0");
-      setRemaining({
-        d: pad(Math.floor(diff / 86400000)),
-        h: pad(Math.floor((diff % 86400000) / 3600000)),
-        m: pad(Math.floor((diff % 3600000) / 60000)),
-        s: pad(Math.floor((diff % 60000) / 1000)),
-      });
-    };
-    tick();
-    const id = setInterval(tick, 1000);
-    return () => clearInterval(id);
-  }, [target]);
-  return remaining;
-}
-
-// Isolated leaf: the 1-second tick only re-renders this tiny node, not the
-// whole HomeTab.
-function CountdownClock({ target }: { target: string }) {
-  const remaining = useCountdown(target);
-  return (
-    <span className="font-bold text-lg tracking-widest tabular-nums" style={{ color: "var(--dashboard-primary)" }}>
-      {remaining.d}:{remaining.h}:{remaining.m}:{remaining.s}
-    </span>
-  );
-}
-
-// Ring driven by the same isolated countdown (no Date.now() during render).
-function CountdownRingLive({ target }: { target: string }) {
-  const remaining = useCountdown(target);
-  return <CountdownRing daysLeft={Number(remaining.d) || 0} />;
-}
-
-// Days until an exam. Mirrors useCountdown's effect-based pattern so it is not
-// evaluated during render (Date.now() is impure).
-function useExamDaysLeft(target: string | null): number | null {
-  const [days, setDays] = useState<number | null>(null);
-  useEffect(() => {
-    if (!target) {
-      queueMicrotask(() => setDays(null));
-      return;
-    }
-    const tick = () => {
-      const diff = new Date(target).getTime() - Date.now();
-      setDays(Math.max(0, Math.ceil(diff / 86400000)));
-    };
-    queueMicrotask(tick);
-    const id = setInterval(tick, 60000);
-    return () => clearInterval(id);
-  }, [target]);
-  return days;
-}
 
 const KPI_KEYS: {
   key: keyof Server.DashboardStatsDTO;
@@ -699,7 +613,7 @@ export default function HomeTab() {
                 </h3>
               </div>
               <button
-                onClick={() => setActiveTab("wrong-answers")}
+                onClick={() => setActiveTab("mistakes")}
                 className="text-xs font-semibold transition-colors flex items-center gap-1"
                 style={{ color: "var(--dashboard-primary)" }}
               >
@@ -714,7 +628,7 @@ export default function HomeTab() {
                 {mistakeSubjectsData.slice(0, 3).map((s) => (
                   <button
                     key={s.subject}
-                    onClick={() => setActiveTab("wrong-answers")}
+                    onClick={() => setActiveTab("mistakes")}
                     className="w-full flex items-center justify-between p-2.5 rounded-lg border transition-colors text-left"
                     style={{ borderColor: "var(--dashboard-border-muted)" }}
                   >

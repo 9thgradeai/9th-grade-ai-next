@@ -3,7 +3,6 @@
 import { useEffect, useRef, type PointerEvent } from "react";
 import { ArrowRight, ChevronDown } from "lucide-react";
 import Button from "@/components/ui/Button";
-import BlackholeCanvas from "@/components/landing/BlackholeCanvas";
 import { trackCtaClick, trackHeroView } from "@/lib/analytics";
 import { useMotionCapabilities } from "@/lib/motion/device";
 
@@ -148,8 +147,6 @@ export default function HeroSection({ subjectCount }: { subjectCount: number }) 
           backgroundPosition: "center",
         }}
       />
-
-      <BlackholeCanvas />
 
       <div
         aria-hidden="true"

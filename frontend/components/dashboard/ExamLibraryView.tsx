@@ -123,7 +123,7 @@ export default function ExamLibraryView() {
   // ── Empty (no taxonomy yet) --------------------
   if (!loadingTree && categories.length === 0) {
     return (
-      <div className="glass-card rounded-terminal-rounded border border-terminal-border p-10 text-center">
+      <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
         <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">কোনো পরীক্ষার লাইব্রেরি নেই — BCS ডেটা এখনো ইমপোর্ট করা হয়নি।</p>
       </div>
     );
@@ -146,7 +146,7 @@ export default function ExamLibraryView() {
       <div className="space-y-4">
         {renderBreadcrumb()}
 
-        <div className="glass-card rounded-terminal-rounded border border-terminal-border p-5">
+        <div className="glass-card rounded-2xl border border-terminal-border p-5">
           <div className="flex items-start justify-between gap-3 flex-wrap">
             <div>
               <div className="flex items-center gap-2 mb-1">
@@ -208,12 +208,12 @@ export default function ExamLibraryView() {
         </div>
 
         {loadingQuestions ? (
-          <div className="glass-card rounded-terminal-rounded border border-terminal-border p-8 text-center" role="status">
+          <div className="glass-card rounded-2xl border border-terminal-border p-8 text-center" role="status">
             <span className="sr-only">লোড হচ্ছে…</span>
             <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">প্রশ্ন লোড হচ্ছে...</p>
           </div>
         ) : questions.length === 0 ? (
-          <div className="glass-card rounded-terminal-rounded border border-terminal-border p-8 text-center">
+          <div className="glass-card rounded-2xl border border-terminal-border p-8 text-center">
             <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">কোনো বৈধ প্রশ্ন নেই</p>
           </div>
         ) : (
@@ -225,7 +225,7 @@ export default function ExamLibraryView() {
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: Math.min(i * 0.04, 0.3) }}
-                  className="glass-card rounded-terminal-rounded border border-terminal-border p-4"
+                  className="glass-card rounded-2xl border border-terminal-border p-4"
                 >
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <div className="flex items-center gap-2 flex-wrap">
@@ -265,7 +265,7 @@ export default function ExamLibraryView() {
       {renderBreadcrumb()}
 
       {loadingTree ? (
-        <div className="glass-card rounded-terminal-rounded border border-terminal-border p-10 text-center" role="status">
+        <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center" role="status">
           <span className="sr-only">লোড হচ্ছে…</span>
           <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">পরীক্ষার লাইব্রেরি লোড হচ্ছে...</p>
         </div>
@@ -282,7 +282,7 @@ export default function ExamLibraryView() {
                     setSelectedCategory(cat);
                     setSelectedExam(null);
                   }}
-                  className={`glass-card rounded-terminal-rounded border p-4 text-left transition-all ${
+                  className={`glass-card rounded-2xl border p-4 text-left transition-all ${
                     activeCategory?.id === cat.id
                       ? "border-[var(--primary)]/50 bg-[var(--dashboard-primary-subtle)]"
                       : "border-terminal-border hover:border-[var(--primary)]/30"
@@ -328,7 +328,7 @@ export default function ExamLibraryView() {
                 {activeExam.nameBn} — সিলেক্ট করুন
               </p>
               {papersToShow.length === 0 ? (
-                <div className="glass-card rounded-terminal-rounded border border-terminal-border p-6 text-center">
+                <div className="glass-card rounded-2xl border border-terminal-border p-6 text-center">
                   <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">এই পরীক্ষার জন্য এখনো কোনো পেপার ইমপোর্ট হয়নি।</p>
                 </div>
               ) : (
@@ -340,7 +340,7 @@ export default function ExamLibraryView() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: Math.min(i * 0.04, 0.4) }}
                       onClick={() => void choosePaper(paper, activeExam, activeCategory!)}
-                      className="glass-card rounded-terminal-rounded border border-terminal-border p-4 text-left hover:border-[var(--accent)]/40 transition-all group"
+                      className="glass-card rounded-2xl border border-terminal-border p-4 text-left hover:border-[var(--accent)]/40 transition-all group"
                     >
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">

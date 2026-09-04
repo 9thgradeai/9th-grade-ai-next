@@ -169,7 +169,7 @@ export default function WrongAnswerNotebookTab() {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass-card rounded-terminal-rounded border border-terminal-border p-8 text-center"
+          className="glass-card rounded-2xl border border-terminal-border p-8 text-center"
         >
           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[var(--dashboard-primary-subtle)] flex items-center justify-center">
             <Award className="w-8 h-8 text-[var(--dashboard-primary)]" />
@@ -196,7 +196,7 @@ export default function WrongAnswerNotebookTab() {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass-card rounded-terminal-rounded border border-terminal-border p-5"
+          className="glass-card rounded-2xl border border-terminal-border p-5"
         >
           <div className="flex items-center gap-2 mb-1">
             <Target className="w-5 h-5 text-[var(--dashboard-primary)]" />
@@ -211,7 +211,7 @@ export default function WrongAnswerNotebookTab() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.05 }}
-          className="glass-card rounded-terminal-rounded border border-terminal-border p-5 space-y-5"
+          className="glass-card rounded-2xl border border-terminal-border p-5 space-y-5"
         >
           {/* Subject */}
           <div>
@@ -469,7 +469,7 @@ export default function WrongAnswerNotebookTab() {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="glass-card rounded-terminal-rounded border border-terminal-border p-5"
+        className="glass-card rounded-2xl border border-terminal-border p-5"
       >
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
@@ -497,28 +497,28 @@ export default function WrongAnswerNotebookTab() {
           animate="show"
           className="grid grid-cols-2 sm:grid-cols-4 gap-3"
         >
-          <motion.div variants={STAGGER_ITEM} className="glass-card rounded-terminal-rounded border border-terminal-border p-4">
+          <motion.div variants={STAGGER_ITEM} className="glass-card rounded-2xl border border-terminal-border p-4">
             <div className="flex items-center gap-2 mb-1">
               <AlertTriangle className="w-4 h-4 text-[var(--dashboard-danger)]" />
               <span className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase">Total Mistakes</span>
             </div>
             <p className="text-2xl font-bold text-[var(--text-primary)] font-mono">{stats.totalMistakes}</p>
           </motion.div>
-          <motion.div variants={STAGGER_ITEM} className="glass-card rounded-terminal-rounded border border-terminal-border p-4">
+          <motion.div variants={STAGGER_ITEM} className="glass-card rounded-2xl border border-terminal-border p-4">
             <div className="flex items-center gap-2 mb-1">
               <Zap className="w-4 h-4 text-[var(--dashboard-warning)]" />
               <span className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase">Unmastered</span>
             </div>
             <p className="text-2xl font-bold text-[var(--text-primary)] font-mono">{unmastered}</p>
           </motion.div>
-          <motion.div variants={STAGGER_ITEM} className="glass-card rounded-terminal-rounded border border-terminal-border p-4">
+          <motion.div variants={STAGGER_ITEM} className="glass-card rounded-2xl border border-terminal-border p-4">
             <div className="flex items-center gap-2 mb-1">
               <TrendingUp className="w-4 h-4 text-[var(--info)]" />
               <span className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase">Improving</span>
             </div>
             <p className="text-2xl font-bold text-[var(--text-primary)] font-mono">{stats.improving}</p>
           </motion.div>
-          <motion.div variants={STAGGER_ITEM} className="glass-card rounded-terminal-rounded border border-terminal-border p-4">
+          <motion.div variants={STAGGER_ITEM} className="glass-card rounded-2xl border border-terminal-border p-4">
             <div className="flex items-center gap-2 mb-1">
               <Award className="w-4 h-4 text-[var(--dashboard-primary)]" />
               <span className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase">Mastered</span>
@@ -533,7 +533,7 @@ export default function WrongAnswerNotebookTab() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.15 }}
-        className="glass-card rounded-terminal-rounded border border-[var(--accent)]/20 bg-[var(--dashboard-primary-subtle)] p-5"
+        className="glass-card rounded-2xl border border-[var(--accent)]/20 bg-[var(--dashboard-primary-subtle)] p-5"
       >
         <div className="flex items-center justify-between">
           <div>
@@ -562,7 +562,7 @@ export default function WrongAnswerNotebookTab() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="glass-card rounded-terminal-rounded border border-terminal-border p-5"
+          className="glass-card rounded-2xl border border-terminal-border p-5"
         >
           <div className="flex items-center gap-2 mb-3">
             <BarChart3 className="w-4 h-4 text-[var(--dashboard-text-muted)]" />
@@ -640,7 +640,7 @@ export default function WrongAnswerNotebookTab() {
               exit={{ height: 0, opacity: 0 }}
               className="overflow-hidden"
             >
-              <div className="glass-card rounded-terminal-rounded border border-terminal-border p-4 space-y-3">
+              <div className="glass-card rounded-2xl border border-terminal-border p-4 space-y-3">
                 {/* Status filter */}
                 <div>
                   <label className="block text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider mb-1.5">Status</label>
@@ -705,11 +705,11 @@ export default function WrongAnswerNotebookTab() {
 
       {/* Mistake list */}
       {loading ? (
-        <div className="glass-card rounded-terminal-rounded border border-terminal-border p-10 text-center">
+        <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
           <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">Loading mistakes…</p>
         </div>
       ) : mistakes.length === 0 ? (
-        <div className="glass-card rounded-terminal-rounded border border-terminal-border p-10 text-center">
+        <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
           {filterSubject || filterStatus ? (
             <>
               <p className="text-sm text-[var(--dashboard-text-muted)] font-mono mb-1">Nothing to review here yet.</p>
@@ -742,7 +742,7 @@ export default function WrongAnswerNotebookTab() {
               <motion.div
                 key={m.id}
                 variants={STAGGER_ITEM}
-                className="glass-card rounded-terminal-rounded border border-terminal-border p-4"
+                className="glass-card rounded-2xl border border-terminal-border p-4"
               >
                 <div
                   className="flex items-start justify-between gap-3 cursor-pointer"

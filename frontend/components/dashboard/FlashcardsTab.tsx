@@ -224,7 +224,7 @@ export default function FlashcardsTab() {
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="glass-card rounded-terminal-rounded border border-terminal-border p-5"
+            className="glass-card rounded-2xl border border-terminal-border p-5"
           >
             <div className="terminal-window-bar mb-4 border-b border-terminal-border">
               <div className="dot close" /><div className="dot minimize" /><div className="dot maximize" />
@@ -261,7 +261,7 @@ export default function FlashcardsTab() {
                     transition={{ delay: i * 0.05 }}
                     whileHover={{ y: -2 }}
                     onClick={() => startSession(deckName)}
-                    className="glass-card rounded-terminal-rounded border border-terminal-border p-4 text-left hover:border-[var(--accent)]/40 transition-all"
+                    className="glass-card rounded-2xl border border-terminal-border p-4 text-left hover:border-[var(--accent)]/40 transition-all"
                   >
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="text-sm font-medium text-[var(--text-primary)]">{deckName}</h3>
@@ -287,7 +287,7 @@ export default function FlashcardsTab() {
               { label: "Due Today", value: Object.values(decks).flat().filter((c) => c.nextReview <= now).length, color: "text-[var(--dashboard-warning)]" },
               { label: "Decks", value: Object.keys(decks).length, color: "text-[var(--info)]" },
             ].map((stat) => (
-              <div key={stat.label} className="glass-card rounded-terminal-rounded border border-terminal-border p-4 text-center">
+              <div key={stat.label} className="glass-card rounded-2xl border border-terminal-border p-4 text-center">
                 <div className={`text-2xl font-bold font-mono ${stat.color}`}>{stat.value}</div>
                 <div className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider">{stat.label}</div>
               </div>
@@ -352,7 +352,7 @@ export default function FlashcardsTab() {
                     }
                   }}
                   onClick={handleFlip}
-                  className={`w-full h-full rounded-terminal-rounded border-2 cursor-pointer transition-all flex items-center justify-center p-6 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)] ${
+                  className={`w-full h-full rounded-2xl border-2 cursor-pointer transition-all flex items-center justify-center p-6 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)] ${
                     isFlipped
                       ? "bg-[var(--dashboard-primary-subtle)] border-[var(--primary)]/30"
                       : "bg-subtle border-[var(--dashboard-border-muted)] hover:border-[var(--accent)]/20"
@@ -390,7 +390,7 @@ export default function FlashcardsTab() {
 
           {/* Empty queue state */}
           {!currentCard && (
-            <div className="glass-card rounded-terminal-rounded border border-terminal-border p-10 text-center">
+            <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
               <p className="text-sm text-[var(--dashboard-text-muted)] font-mono mb-1">$ deck empty</p>
               <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">
                 No cards due in this deck right now — come back later or reset the session.

@@ -49,17 +49,9 @@ const TAB_COMPONENTS: Record<TabId, React.ComponentType> = {
   "study-planner": dynamic(() => import("@/components/dashboard/StudyPlannerTab"), { loading: TabChunkLoading }),
   practice: dynamic(() => import("@/components/dashboard/PracticeTab"), { loading: TabChunkLoading }),
   flashcards: dynamic(() => import("@/components/dashboard/FlashcardsTab"), { loading: TabChunkLoading }),
-  "ai-solver": dynamic(() => import("@/components/dashboard/AISolverTab"), { loading: TabChunkLoading }),
-  "ai-evaluate": dynamic(() => import("@/components/dashboard/AnswerEvaluatorTab"), { loading: TabChunkLoading }),
-  "ai-mock-test": dynamic(() => import("@/components/dashboard/AIMockTestTab"), { loading: TabChunkLoading }),
-  "ai-voice": dynamic(() => import("@/components/dashboard/VoiceInterviewTab"), { loading: TabChunkLoading }),
-  "ai-advisor": dynamic(() => import("@/components/dashboard/AdvisorTab"), { loading: TabChunkLoading }),
-  "ai-model": dynamic(() => import("@/components/dashboard/StudentModelTab"), { loading: TabChunkLoading }),
-  "ai-usage": dynamic(() => import("@/components/dashboard/UsageTab"), { loading: TabChunkLoading }),
   "question-bank": dynamic(() => import("@/components/dashboard/QuestionBankTab"), { loading: TabChunkLoading }),
   progress: dynamic(() => import("@/components/dashboard/ProgressTab"), { loading: TabChunkLoading }),
-  "wrong-answers": dynamic(() => import("@/components/dashboard/WrongAnswerNotebookTab"), { loading: TabChunkLoading }),
-  mistakes: dynamic(() => import("@/components/dashboard/MistakesTab"), { loading: TabChunkLoading }),
+  mistakes: dynamic(() => import("@/components/dashboard/WrongAnswerNotebookTab"), { loading: TabChunkLoading }),
   settings: dynamic(() => import("@/components/dashboard/SettingsTab"), { loading: TabChunkLoading }),
 };
 
