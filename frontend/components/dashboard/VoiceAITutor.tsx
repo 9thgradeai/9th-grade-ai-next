@@ -541,7 +541,7 @@ export default function VoiceAITutor() {
               initial={{ y: 48, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 48, opacity: 0 }}
-              transition={{ type: "spring", damping: 28, stiffness: 260 }}
+              transition={{ type: "spring", damping: 30, stiffness: 250 }}
               role="dialog"
               aria-modal="true"
               aria-labelledby="ai-workspace-title"
@@ -721,6 +721,7 @@ export default function VoiceAITutor() {
                             key={msg.id}
                             initial={{ opacity: 0, y: 8 }}
                             animate={{ opacity: 1, y: 0 }}
+                            transition={{ type: "spring", stiffness: 120, damping: 20 }}
                           >
                             <ChatMessage
                               message={msg as ChatMessageData}
