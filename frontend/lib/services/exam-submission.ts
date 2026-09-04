@@ -62,17 +62,22 @@ export type CanonicalSubmitResult = {
   result: import("@/lib/types").Server.ExamResultDTO;
 };
 
+// A global lock to prevent concurrent submissions across the entire app,
+// solving the race between Timer and Manual click regardless of component remounts.
+let isSubmittingGlobal = false;
+
+export function getSubmissionLock(): boolean {
+  return isSubmittingGlobal;
+}
+
+export function setSubmissionLock(locked: boolean): void {
+  isSubmittingGlobal = locked;
+}
+
 /**
  * The single submission entry point. Takes an attemptId (must already be
  * minted via ensureAttemptId), the question set, the elapsed seconds, and
  * the answers map. Calls /api/exam/submit and returns the canonical result.
- *
- * Throws an `Error` with a user-facing Bangla message on failure — the
- * caller is responsible for surfacing it in the UI. Never resolves to a
- * partial state: if the server returns a non-OK, we throw.
- *
- * Does NOT call /api/exam/start — the caller must do that at exam build time
- * (see `registerExam()` below).
  */
 export async function submitExamAttempt(params: {
   attemptId: string;
@@ -80,18 +85,24 @@ export async function submitExamAttempt(params: {
   durationSec: number;
   answers: Record<number, string>;
 }): Promise<CanonicalSubmitResult> {
+  if (isSubmittingGlobal) {
+    throw new Error("ইতিমধ্যেই জমা দেওয়া হচ্ছে। অনুগ্রহ করে অপেক্ষা করুন।");
+  }
+
   if (!isUuid(params.attemptId)) {
     throw new Error("পরীক্ষার সেশন শনাক্ত করা যায়নি। পৃষ্ঠা রিফ্রেশ করে আবার চেষ্টা করুন।");
   }
-  const payload = params.questionIds.map((qid) => ({
-    questionId: qid,
-    selected: (params.answers[qid] ?? "").toString(),
-  }));
-  if (payload.length === 0) {
-    throw new Error("কোনো প্রশ্ন জমা দেওয়ার জন্য পাওয়া যায়নি।");
-  }
 
+  setSubmissionLock(true);
   try {
+    const payload = params.questionIds.map((qid) => ({
+      questionId: qid,
+      selected: (params.answers[qid] ?? "").toString(),
+    }));
+    if (payload.length === 0) {
+      throw new Error("কোনো প্রশ্ন জমা দেওয়ার জন্য পাওয়া যায়নি।");
+    }
+
     const result = await api.submitExam({
       attemptId: params.attemptId,
       questionIds: params.questionIds,
@@ -104,6 +115,8 @@ export async function submitExamAttempt(params: {
     };
   } catch (err) {
     throw normalizeSubmitError(err);
+  } finally {
+    setSubmissionLock(false);
   }
 }
 

@@ -387,13 +387,12 @@ export default function CustomExamTab() {
 
   const submit = useCallback(
     async (qs: Server.ExamQuestionDTO[], ans: Record<number, string>) => {
-      if (qs.length === 0 || submittingRef.current) return;
+      if (qs.length === 0) return;
       const examSnapshot = exam;
       if (!examSnapshot?.attemptId) {
         setSubmitError("পরীক্ষার সেশন শনাক্ত করা যায়নি। পৃষ্ঠা রিফ্রেশ করে আবার চেষ্টা করুন।");
         return;
       }
-      submittingRef.current = true;
       setSubmitting(true);
       setSubmitError(null);
       try {
@@ -422,7 +421,6 @@ export default function CustomExamTab() {
             : "ফলাফল জমা দেওয়া যায়নি। আবার চেষ্টা করুন।";
         setSubmitError(message);
       } finally {
-        submittingRef.current = false;
         setSubmitting(false);
       }
     },
