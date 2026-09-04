@@ -593,7 +593,7 @@ export default function SettingsTab() {
           </div>
           <div>
             <h3 className="text-sm font-semibold text-[var(--text-primary)] uppercase tracking-wider">About</h3>
-            <p className="text-xs text-[var(--dashboard-text-muted)] mt-0.5">9th-grade-ai — free exam prep for Bangladesh</p>
+            <p className="text-xs text-[var(--dashboard-text-muted)] mt-0.5">              9Th-Grade AI — free exam prep for Bangladesh</p>
           </div>
         </header>
         <dl className="flex flex-wrap gap-x-8 gap-y-2 text-xs font-mono">

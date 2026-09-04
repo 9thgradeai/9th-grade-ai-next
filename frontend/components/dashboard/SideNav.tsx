@@ -41,7 +41,7 @@ export default function SideNav({ activeTab, onChange }: SideNavProps) {
         <BrandMark className="h-10 w-10 rounded-xl ring-1 ring-black/5" />
         <div className="min-w-0">
           <p className="font-display font-bold tracking-tight leading-none text-[15.5px]" style={{ color: "var(--dashboard-text-primary)" }}>
-            9th-grade-ai
+            9Th-Grade AI
           </p>
           <p className="text-[11px] font-semibold tracking-wide mt-1" style={{ color: "var(--dashboard-text-muted)" }}>
             বিসিএস • ব্যাংক • চাকরি

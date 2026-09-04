@@ -228,7 +228,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: "var(--dashboard-sidebar-border)" }}>
                       <div className="flex items-center gap-3">
                         <BrandMark className="h-8 w-8 rounded-lg ring-1 ring-black/5" />
-                        <span className="font-display font-bold text-[15px]" style={{ color: "var(--dashboard-text-primary)" }}>9th-grade-ai</span>
+                        <span className="font-display font-bold text-[15px]" style={{ color: "var(--dashboard-text-primary)" }}>9Th-Grade AI</span>
                       </div>
                       <button onClick={closeNavDrawer} className="p-2 rounded-xl border" style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-secondary)", background: "var(--dashboard-surface-muted)" }} aria-label="Close navigation">
                         <X className="w-4 h-4" />
@@ -264,10 +264,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     href="/"
                     className="lg:hidden flex items-center gap-2.5 font-display font-bold text-[15px]"
                     style={{ color: "var(--dashboard-text-primary)" }}
-                    aria-label="9th-grade-ai home"
+                    aria-label="9Th-Grade AI home"
                   >
                     <BrandMark className="h-8 w-8 rounded-lg ring-1 ring-black/5" />
-                    <span>9th-grade-ai</span>
+                    <span>9Th-Grade AI</span>
                   </Link>
 
                   {/* Desktop page title — clean, no terminal $ */}

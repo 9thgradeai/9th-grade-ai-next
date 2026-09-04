@@ -63,7 +63,7 @@ export default function Footer() {
           <div className="md:col-span-2">
             <Link href="/" className="flex items-center gap-2.5 font-display text-xl font-semibold text-white tracking-tight mb-6">
               <BrandMark className="h-8 w-8 rounded-lg shadow-glow-sm" />
-              <span>9th-grade-ai</span>
+              <span>9Th-Grade AI</span>
             </Link>
             <p className="text-sm text-zinc-500 max-w-xs mb-6 leading-relaxed">
               AI-powered study planner and exam prep platform for competitive exams in Bangladesh. Master BCS, Bank, and Teacher recruitment with precision.

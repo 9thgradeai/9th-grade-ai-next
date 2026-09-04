@@ -115,12 +115,12 @@ export default function TerminalHeader() {
             <Link
               href="/"
               className="flex items-center gap-2.5 font-display text-lg font-semibold text-white tracking-tight hover:opacity-90 transition-opacity"
-              aria-label="9th-grade-ai home"
+              aria-label="9Th-Grade AI home"
             >
               <span className="brand-pulse inline-flex">
                 <BrandMark className="h-8 w-8 rounded-lg shadow-glow-sm" />
               </span>
-              <span>9th-grade-ai</span>
+              <span>9Th-Grade AI</span>
             </Link>
 
             <StatusPill label="SYSTEM: ONLINE" className="hidden sm:inline-flex" />
