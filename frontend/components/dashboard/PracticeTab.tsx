@@ -545,7 +545,7 @@ export default function PracticeTab() {
                     <PracticeTimer
                       key={`timer-${timerKey}`}
                       remaining={QUESTION_TIME_LIMIT}
-                      onExpire={handleAutoSubmit}
+                      onExpire={() => { void handleAutoSubmit(); }}
                     />
                   )}
                   <span className="text-xs font-mono flex-shrink-0" style={{ color: "var(--dashboard-text-muted)" }}>

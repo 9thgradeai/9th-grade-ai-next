@@ -80,6 +80,9 @@ export default function QuestionDrill({
 
   const correctCount = answered.filter((a) => a.correct).length;
   const done = index >= questions.length - 1 && revealed;
+  const current = questions[index];
+  const isLast = index >= questions.length - 1;
+  const isCorrect = selected !== null && selected.trim() === current.correctAnswer.trim();
 
   useEffect(() => {
     if (done && !reportedRef.current) {
@@ -108,18 +111,6 @@ export default function QuestionDrill({
       if (typeof dash.scrollTo === "function") { try { dash.scrollTo({ top: 0, behavior }); } catch { dash.scrollTop = 0; } } else dash.scrollTop = 0;
     }
   }, [index, done]);
-
-  if (questions.length === 0) {
-    return (
-      <div className="glass-card rounded-2xl border border-terminal-border p-8 text-center">
-        <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">কোনো প্রশ্ন নেই</p>
-      </div>
-    );
-  }
-
-  const current = questions[index];
-  const isLast = index >= questions.length - 1;
-  const isCorrect = selected !== null && selected.trim() === current.correctAnswer.trim();
 
   const handleAutoSubmit = useCallback(async () => {
     if (revealed || submitting) return;
@@ -177,6 +168,14 @@ export default function QuestionDrill({
     setTimerKey((k) => k + 1);
   };
 
+  if (questions.length === 0) {
+    return (
+      <div className="glass-card rounded-2xl border border-terminal-border p-8 text-center">
+        <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">কোনো প্রশ্ন নেই</p>
+      </div>
+    );
+  }
+
   if (done) {
     const score = Math.round((correctCount / questions.length) * 100);
     return (
@@ -217,7 +216,7 @@ export default function QuestionDrill({
             <DrillTimer
               key={`timer-${timerKey}`}
               remaining={QUESTION_TIME_LIMIT}
-              onExpire={handleAutoSubmit}
+              onExpire={() => { void handleAutoSubmit(); }}
             />
           )}
           <span className="text-xs text-[var(--dashboard-text-muted)] font-mono">
