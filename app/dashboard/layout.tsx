@@ -10,7 +10,7 @@ import SideNav from "@/components/dashboard/SideNav";
 import BottomNav from "@/components/dashboard/BottomNav";
 import NotificationCenter from "@/components/dashboard/NotificationCenter";
 import CommandBar from "@/components/dashboard/CommandBar";
-import { useDashboardTheme, ThemeToggle, DashboardThemeProvider } from "@/lib/dashboard-theme-ctx";
+import { ThemeToggle, DashboardThemeProvider } from "@/lib/dashboard-theme-ctx";
 import { useAuth } from "@/lib/auth-ctx";
 import { AuroraRing, StatusText } from "@/components/ui/Loader";
 
@@ -143,22 +143,11 @@ function EmailVerificationGate({ children }: { children: React.ReactNode }) {
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { activeTab, setActiveTab } = useDashboardStore();
-  const { theme: dashboardTheme, toggleTheme, setTheme } = useDashboardTheme();
   const [navDrawerOpen, setNavDrawerOpen] = useState(false);
   const closeNavDrawer = useCallback(() => setNavDrawerOpen(false), []);
   const drawerRef = useDialogA11y<HTMLDivElement>(navDrawerOpen, closeNavDrawer);
 
   const activeLabel = TABS.find((t) => t.id === activeTab)?.label ?? "DASHBOARD";
-
-  // Initialize dashboard theme attribute on mount, and ensure the
-  // global <html> theme is NOT affected by dashboard theme changes.
-  useEffect(() => {
-    // Set data-dashboard-theme attribute on the documentElement so the
-    // scoped CSS rules [data-dashboard-theme="light"] / [data-dashboard-theme="dark"]
-    // take effect. This completely isolates the dashboard theme from the global
-    // html.light/html.dark rules that affect other pages.
-    document.documentElement.dataset.dashboardTheme = dashboardTheme;
-  }, [dashboardTheme]);
 
   const handleTabChange = (tab: TabId) => {
     setActiveTab(tab);

@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useLayoutEffect, useRef } from "react";
 import { Sun, Moon } from "lucide-react";
 
 type DashboardTheme = "light" | "dark";
@@ -21,13 +21,14 @@ function readStoredTheme(): DashboardTheme {
 
 export function DashboardThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<DashboardTheme>(readStoredTheme);
+  const scopeRef = useRef<HTMLDivElement>(null);
 
-  // Sync the data-dashboard-theme attribute whenever theme changes
-  useEffect(() => {
-    document.documentElement.dataset.dashboardTheme = theme;
+  useLayoutEffect(() => {
+    if (scopeRef.current) {
+      scopeRef.current.dataset.dashboardTheme = theme;
+    }
   }, [theme]);
 
-  // Persist to localStorage whenever theme changes
   useEffect(() => {
     try {
       localStorage.setItem(DASHBOARD_THEME_KEY, theme);
@@ -44,7 +45,9 @@ export function DashboardThemeProvider({ children }: { children: React.ReactNode
 
   return (
     <DashboardThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>
-      {children}
+      <div ref={scopeRef} className="dashboard-theme-scope">
+        {children}
+      </div>
     </DashboardThemeContext.Provider>
   );
 }

@@ -189,7 +189,7 @@
    highly readable light environment. Priority: hierarchy + visibility, calm.
    ══════════════════════════════════════════════════════════════════════════════ */
 
-[data-dashboard-theme="light"] {
+.dashboard-theme-scope[data-dashboard-theme="light"] {
   /* ══════════════════════════════════════════════════════════════════════════
      NEUTRAL GRAY LIGHT MODE
      Clean white/gray surfaces with dark text — standard professional dashboard.
@@ -308,7 +308,7 @@
    the pure-black foundation even if a non-dashboard :root changes.
    ══════════════════════════════════════════════════════════════════════════════ */
 
-[data-dashboard-theme="dark"] {
+.dashboard-theme-scope[data-dashboard-theme="dark"] {
   --background: #000000;
   --surface: #0D0D0D;
   --surface-soft: #0D0D0D;
@@ -331,8 +331,8 @@
    Maps old --dashboard-* tokens to new semantic tokens for backward compat.
    ══════════════════════════════════════════════════════════════════════════════ */
 
-[data-dashboard-theme="dark"],
-[data-dashboard-theme="light"] {
+.dashboard-theme-scope[data-dashboard-theme="dark"],
+.dashboard-theme-scope[data-dashboard-theme="light"] {
   --dashboard-background: var(--surface-base);
   --dashboard-surface: var(--surface-raised);
   --dashboard-surface-solid: var(--surface-raised);
@@ -385,7 +385,7 @@
 /* ══════════════════════════════════════════════════════════════════════════════
    GLOBAL APP TOKENS (non-dashboard pages)
    ─────────────────────────────────────────────────────────────────────────────
-   The canonical tokens live in :root (dark) / [data-dashboard-theme="light"]
+   The canonical tokens live in :root (dark) / .dashboard-theme-scope[data-dashboard-theme="light"]
    (dashboard) / html.light (global light). This block forwards the legacy
    app-surface token names without conflicting with the canonical values.
    ══════════════════════════════════════════════════════════════════════════════ */
@@ -414,7 +414,7 @@ html.light {
    Maps Tailwind utility colors to our design tokens.
    ══════════════════════════════════════════════════════════════════════════════ */
 
-[data-dashboard-theme="dark"] {
+.dashboard-theme-scope[data-dashboard-theme="dark"] {
   --color-emerald-500: var(--primary);
   --color-emerald-400: var(--primary);
   --color-emerald-50: var(--surface-raised);
@@ -445,7 +445,7 @@ html.light {
   --color-blue-400: #38BDF8;
 }
 
-[data-dashboard-theme="light"] {
+.dashboard-theme-scope[data-dashboard-theme="light"] {
   --color-emerald-500: #059669;
   --color-emerald-400: #059669;
   --color-emerald-50: #ECFDF5;
@@ -547,13 +547,13 @@ label {
    DASHBOARD CANVAS
    ══════════════════════════════════════════════════════════════════════════════ */
 
-[data-dashboard-theme="light"] .dashboard-shell,
-[data-dashboard-theme="light"] #dashboard-content {
+.dashboard-theme-scope[data-dashboard-theme="light"] .dashboard-shell,
+.dashboard-theme-scope[data-dashboard-theme="light"] #dashboard-content {
   background: var(--surface-base) !important;
 }
 
-[data-dashboard-theme="dark"] .dashboard-shell,
-[data-dashboard-theme="dark"] #dashboard-content {
+.dashboard-theme-scope[data-dashboard-theme="dark"] .dashboard-shell,
+.dashboard-theme-scope[data-dashboard-theme="dark"] #dashboard-content {
   background: var(--surface-base) !important;
 }
 
