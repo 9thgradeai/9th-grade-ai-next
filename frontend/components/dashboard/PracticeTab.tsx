@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
 import {
   Check,
@@ -31,6 +31,8 @@ import TopicTreePicker, {
 
 type PracticeMode = "custom" | "mock" | "quick";
 
+const QUESTION_TIME_LIMIT = 30;
+
 // Quick-practice sessions survive tab switches/remounts via localStorage.
 const QUICK_STORAGE_KEY = "ninth-grade-ai:practice:quick";
 
@@ -56,6 +58,35 @@ const MODES: { id: PracticeMode; label: string; hint: string }[] = [
   { id: "quick", label: "QUICK_PRACTICE", hint: "বিষয়, টপিক, সাবটপিক থেকে দ্রুত প্র্যাকটিস" },
 ];
 
+function PracticeTimer({
+  remaining,
+  onExpire,
+}: {
+  remaining: number;
+  onExpire: () => void;
+}) {
+  const onExpireRef = useRef(onExpire);
+  useEffect(() => { onExpireRef.current = onExpire; }, [onExpire]);
+  const [secs, setSecs] = useState(remaining);
+  useEffect(() => {
+    if (secs <= 0) { onExpireRef.current(); return; }
+    const id = setInterval(() => {
+      setSecs((s) => {
+        if (s <= 1) { onExpireRef.current(); return 0; }
+        return s - 1;
+      });
+    }, 1000);
+    return () => clearInterval(id);
+  }, [secs <= 0]);
+  const timeLow = secs > 0 && secs <= 10;
+  return (
+    <span className={`font-mono text-xs ${timeLow ? "text-[var(--dashboard-danger)] animate-pulse" : "text-[var(--dashboard-text-muted)]"}`}>
+      <Timer className="w-3 h-3 inline mr-1" />
+      {Math.floor(secs / 60)}:{(secs % 60).toString().padStart(2, "0")}
+    </span>
+  );
+}
+
 export default function PracticeTab() {
   const [mode, setMode] = useState<PracticeMode>("custom");
 
@@ -76,6 +107,8 @@ export default function PracticeTab() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [showUnansweredConfirm, setShowUnansweredConfirm] = useState(false);
+  const [lockedQuestions, setLockedQuestions] = useState<Set<number>>(new Set());
+  const [timerKey, setTimerKey] = useState(0);
 
   const scrollDashboardTop = () => {
     const prefersReduced = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -148,6 +181,8 @@ export default function PracticeTab() {
     setResult(null);
     setLoadError(null);
     setSubmitError(null);
+    setLockedQuestions(new Set());
+    setTimerKey((k) => k + 1);
   };
 
   // Resume an interrupted quick-practice session so tab switches never
@@ -210,6 +245,8 @@ export default function PracticeTab() {
     setSubmitError(null);
     setAnswers({});
     setCurrentIndex(0);
+    setLockedQuestions(new Set());
+    setTimerKey((k) => k + 1);
     try {
       const pools = await Promise.all(
         selectedSubjects.map(async (s) => {
@@ -242,7 +279,9 @@ export default function PracticeTab() {
   };
 
   const selectAnswer = (questionId: number, option: string) => {
+    if (lockedQuestions.has(questionId)) return;
     setAnswers((prev) => ({ ...prev, [questionId]: option }));
+    setLockedQuestions((prev) => new Set(prev).add(questionId));
   };
 
   const submitAnswers = async () => {
@@ -277,6 +316,26 @@ export default function PracticeTab() {
     setShowUnansweredConfirm(false);
     void submitAnswers();
   };
+
+  const handleAutoSubmit = useCallback(async () => {
+    if (result || submitting) return;
+    setSubmitting(true);
+    setSubmitError(null);
+    try {
+      const summary = await api.submitPractice(
+        sessionQuestions.map((q) => ({ questionId: q.id, selected: answers[q.id] ?? "" })),
+      );
+      try {
+        localStorage.removeItem(QUICK_STORAGE_KEY);
+      } catch { /* ignore */ }
+      setResult(summary);
+      requestAnimationFrame(() => scrollDashboardTop());
+    } catch {
+      setSubmitError("ফলাফল জমা দেওয়া যায়নি। আবার চেষ্টা করুন।");
+    } finally {
+      setSubmitting(false);
+    }
+  }, [result, submitting, sessionQuestions, answers]);
 
   return (
     <div className="space-y-6">
@@ -481,9 +540,18 @@ export default function PracticeTab() {
                   <BookOpen className="w-4 h-4 flex-shrink-0" style={{ color: "var(--dashboard-primary)" }} />
                   <span className="text-sm font-semibold truncate" style={{ color: "var(--dashboard-text-primary)" }}>{sessionTitle}</span>
                 </div>
-                <span className="text-xs font-mono flex-shrink-0" style={{ color: "var(--dashboard-text-muted)" }}>
-                  প্রশ্ন {currentIndex + 1}/{totalQuestions}
-                </span>
+                <div className="flex items-center gap-3">
+                  {!result && (
+                    <PracticeTimer
+                      key={`timer-${timerKey}`}
+                      remaining={QUESTION_TIME_LIMIT}
+                      onExpire={handleAutoSubmit}
+                    />
+                  )}
+                  <span className="text-xs font-mono flex-shrink-0" style={{ color: "var(--dashboard-text-muted)" }}>
+                    প্রশ্ন {currentIndex + 1}/{totalQuestions}
+                  </span>
+                </div>
               </div>
 
               <div className="p-5">
@@ -529,13 +597,15 @@ export default function PracticeTab() {
                     <div className="space-y-2.5 mb-6" role="radiogroup" aria-label="উত্তর নির্বাচন করুন">
                       {currentQuestion.options.map((option, i) => {
                         const isSelected = answers[currentQuestion.id] === option;
+                        const isLocked = lockedQuestions.has(currentQuestion.id);
                         return (
                           <button
                             key={i}
                             onClick={() => selectAnswer(currentQuestion.id, option)}
+                            disabled={isLocked}
                             role="radio"
                             aria-checked={isSelected}
-                            className="w-full text-left p-3.5 rounded-xl border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                            className="w-full text-left p-3.5 rounded-xl border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] disabled:cursor-not-allowed"
                             style={
                               isSelected
                                 ? { background: "var(--dashboard-primary-subtle)", borderColor: "var(--dashboard-primary)", color: "var(--dashboard-primary)" }
@@ -645,6 +715,8 @@ export default function PracticeTab() {
                       setAnswers({});
                       setCurrentIndex(0);
                       setQuestions([]);
+                      setLockedQuestions(new Set());
+                      setTimerKey((k) => k + 1);
                     }}
                     className="px-5 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2 shadow-neon-glow"
                   >

@@ -135,6 +135,7 @@ export default function CustomExamTab() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const questionRefs = useRef<Record<number, HTMLDivElement | null>>({});
   const submittingRef = useRef(false);
+  const [lockedQuestions, setLockedQuestions] = useState<Set<number>>(new Set());
 
   // ── Result state ──
   const [result, setResult] = useState<Server.ExamResultDTO | null>(null);
@@ -308,6 +309,7 @@ export default function CustomExamTab() {
       }
       setExam(persisted);
       setAnswers({});
+      setLockedQuestions(new Set());
       setShowConfirm(false);
       setPhase("exam");
     } catch {
@@ -318,6 +320,7 @@ export default function CustomExamTab() {
   };
 
   const selectAnswer = (questionId: number, option: string) => {
+    if (lockedQuestions.has(questionId)) return;
     setAnswers((prev) => {
       const next = { ...prev, [questionId]: option };
       if (exam) {
@@ -332,6 +335,7 @@ export default function CustomExamTab() {
       }
       return next;
     });
+    setLockedQuestions((prev) => new Set(prev).add(questionId));
   };
 
   const answeredCount = Object.keys(answers).length;
@@ -385,6 +389,7 @@ export default function CustomExamTab() {
     setPhase("config");
     setExam(null);
     setAnswers({});
+    setLockedQuestions(new Set());
     setResult(null);
     setSubmitError(null);
     setShowUnansweredConfirm(false);
@@ -765,11 +770,13 @@ export default function CustomExamTab() {
                 <div className="space-y-2.5">
                   {q.options.map((option, i) => {
                     const isSelected = userAnswer === option;
+                    const isLocked = lockedQuestions.has(q.id);
                     return (
                       <button
                         key={i}
                         onClick={() => selectAnswer(q.id, option)}
-                        className="w-full text-left p-3 rounded-xl border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                        disabled={isLocked}
+                        className="w-full text-left p-3 rounded-xl border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] disabled:cursor-not-allowed"
                         style={
                           isSelected
                             ? { background: "var(--dashboard-primary-subtle)", borderColor: "var(--dashboard-primary)", color: "var(--dashboard-primary)" }

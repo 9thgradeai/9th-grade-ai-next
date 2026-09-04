@@ -73,6 +73,7 @@ export default function MockTestTab() {
   const submittingRef = useRef(false);
   const startedAtRef = useRef(0);
   const totalSecRef = useRef(0);
+  const [lockedQuestions, setLockedQuestions] = useState<Set<number>>(new Set());
 
   const scrollDashboardTop = useCallback(() => {
     const prefersReduced = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -214,6 +215,7 @@ export default function MockTestTab() {
       }
       setQuestions(built.questions);
       setAnswers({});
+      setLockedQuestions(new Set());
       setCurrentQuestion(0);
       startedAtRef.current = Date.now();
       totalSecRef.current = built.durationSec;
@@ -228,7 +230,9 @@ export default function MockTestTab() {
   };
 
   const selectAnswer = (questionId: number, option: string) => {
+    if (lockedQuestions.has(questionId)) return;
     setAnswers((prev) => ({ ...prev, [questionId]: option }));
+    setLockedQuestions((prev) => new Set(prev).add(questionId));
   };
 
   const answeredCount = Object.keys(answers).length;
@@ -308,6 +312,7 @@ export default function MockTestTab() {
     setDurationMin(30);
     setQuestions([]);
     setAnswers({});
+    setLockedQuestions(new Set());
     setCurrentQuestion(0);
     setTimeRemaining(0);
     setResult(null);
@@ -527,13 +532,15 @@ export default function MockTestTab() {
             <div className="space-y-2.5" role="radiogroup" aria-label={`প্রশ্ন ${currentQuestion + 1} — উত্তর নির্বাচন করুন`}>
               {q.options.map((option, i) => {
                 const isSelected = answers[q.id] === option;
+                const isLocked = lockedQuestions.has(q.id);
                 return (
                   <button
                     key={i}
                     onClick={() => selectAnswer(q.id, option)}
+                    disabled={isLocked}
                     role="radio"
                     aria-checked={isSelected}
-                    className="w-full text-left p-3.5 rounded-xl border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                    className="w-full text-left p-3.5 rounded-xl border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] disabled:cursor-not-allowed"
                     style={
                       isSelected
                         ? { background: "var(--dashboard-primary-subtle)", borderColor: "var(--dashboard-primary)", color: "var(--dashboard-primary)" }

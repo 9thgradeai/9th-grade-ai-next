@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
-import { CheckCircle2, XCircle, ArrowRight, RotateCcw, TrendingUp } from "lucide-react";
+import { CheckCircle2, XCircle, ArrowRight, RotateCcw, TrendingUp, Timer } from "lucide-react";
 import { api } from "@/lib/services/api";
 import type { QuestionDTO } from "@/lib/types";
 
@@ -24,6 +24,37 @@ export type DrillAnswered = {
  * caller should pass a `key` to remount when a different set is drilled.
  */
 
+const QUESTION_TIME_LIMIT = 30;
+
+function DrillTimer({
+  remaining,
+  onExpire,
+}: {
+  remaining: number;
+  onExpire: () => void;
+}) {
+  const onExpireRef = useRef(onExpire);
+  useEffect(() => { onExpireRef.current = onExpire; }, [onExpire]);
+  const [secs, setSecs] = useState(remaining);
+  useEffect(() => {
+    if (secs <= 0) { onExpireRef.current(); return; }
+    const id = setInterval(() => {
+      setSecs((s) => {
+        if (s <= 1) { onExpireRef.current(); return 0; }
+        return s - 1;
+      });
+    }, 1000);
+    return () => clearInterval(id);
+  }, [secs <= 0]);
+  const timeLow = secs > 0 && secs <= 10;
+  return (
+    <span className={`font-mono text-xs ${timeLow ? "text-[var(--dashboard-danger)] animate-pulse" : "text-[var(--dashboard-text-muted)]"}`}>
+      <Timer className="w-3 h-3 inline mr-1" />
+      {Math.floor(secs / 60)}:{(secs % 60).toString().padStart(2, "0")}
+    </span>
+  );
+}
+
 export default function QuestionDrill({
   questions,
   onExit,
@@ -38,10 +69,12 @@ export default function QuestionDrill({
 }) {
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
+  const [locked, setLocked] = useState(false);
   const [revealed, setRevealed] = useState(false);
   const [answered, setAnswered] = useState<DrillAnswered[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [lastFeedback, setLastFeedback] = useState<{ masteryStatus?: string | null; justMastered?: boolean } | null>(null);
+  const [timerKey, setTimerKey] = useState(0);
 
   const reportedRef = useRef(false);
 
@@ -58,9 +91,11 @@ export default function QuestionDrill({
   const resetDrill = () => {
     setIndex(0);
     setSelected(null);
+    setLocked(false);
     setRevealed(false);
     setAnswered([]);
     setLastFeedback(null);
+    setTimerKey((k) => k + 1);
     reportedRef.current = false;
   };
 
@@ -85,6 +120,29 @@ export default function QuestionDrill({
   const current = questions[index];
   const isLast = index >= questions.length - 1;
   const isCorrect = selected !== null && selected.trim() === current.correctAnswer.trim();
+
+  const handleAutoSubmit = useCallback(async () => {
+    if (revealed || submitting) return;
+    setSubmitting(true);
+    let fb: { masteryStatus?: string | null; justMastered?: boolean } = {};
+    try {
+      const res = await api.submitPractice([{ questionId: current.id, selected: selected ?? "" }]);
+      const questionFb = res.feedback?.[current.id];
+      if (questionFb) {
+        fb = { masteryStatus: questionFb.masteryStatus, justMastered: questionFb.justMastered };
+      }
+    } catch {
+      /* Recording failure shouldn't block the user from reviewing the answer. */
+    } finally {
+      setSubmitting(false);
+      setRevealed(true);
+      setLastFeedback(fb);
+      setAnswered((prev) => [
+        ...prev,
+        { questionId: current.id, selected: selected ?? "", correct: selected !== null && selected.trim() === current.correctAnswer.trim(), ...fb },
+      ]);
+    }
+  }, [revealed, submitting, current.id, current.correctAnswer, selected]);
 
   const handleSubmit = async () => {
     if (selected === null || revealed || submitting) return;
@@ -113,8 +171,10 @@ export default function QuestionDrill({
     if (isLast) return;
     setIndex((i) => i + 1);
     setSelected(null);
+    setLocked(false);
     setRevealed(false);
     setLastFeedback(null);
+    setTimerKey((k) => k + 1);
   };
 
   if (done) {
@@ -152,9 +212,18 @@ export default function QuestionDrill({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-medium text-[var(--text-primary)] font-mono">{title}</h3>
-        <span className="text-xs text-[var(--dashboard-text-muted)] font-mono">
-          {index + 1} / {questions.length}
-        </span>
+        <div className="flex items-center gap-3">
+          {!revealed && (
+            <DrillTimer
+              key={`timer-${timerKey}`}
+              remaining={QUESTION_TIME_LIMIT}
+              onExpire={handleAutoSubmit}
+            />
+          )}
+          <span className="text-xs text-[var(--dashboard-text-muted)] font-mono">
+            {index + 1} / {questions.length}
+          </span>
+        </div>
       </div>
 
       <div className="h-1.5 bg-[var(--surface-overlay)] rounded-full overflow-hidden">
@@ -181,6 +250,7 @@ export default function QuestionDrill({
             const optLetter = String.fromCharCode(65 + i);
             const isSelected = selected === opt;
             const isAnswer = opt.trim() === current.correctAnswer.trim();
+            const disabled = revealed || locked;
             let style: React.CSSProperties = {};
             if (revealed) {
               if (isAnswer) style = { borderColor: "var(--dashboard-success)", background: "var(--dashboard-success-subtle)", color: "var(--dashboard-success)" };
@@ -194,8 +264,8 @@ export default function QuestionDrill({
             return (
               <button
                 key={optLetter}
-                disabled={revealed}
-                onClick={() => setSelected(opt)}
+                disabled={disabled}
+                onClick={() => { if (!locked) { setSelected(opt); setLocked(true); } }}
                 className="w-full text-left px-4 py-3 rounded-lg border text-sm transition-all flex items-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
                 style={style}
               >
