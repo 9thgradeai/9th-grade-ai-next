@@ -1557,22 +1557,37 @@ html.light .skeleton-shimmer {
   border-bottom: 1px solid var(--ai-border);
 }
 
-/* Composer surface — elevated, crisp, focus-aware */
+/* Composer surface — elevated, crisp, focus-aware.
+   The composer is a single inline flex row: auto-growing textarea on the left
+   (stretches vertically with content) and bottom-aligned action buttons on the
+   right. Radius/padding are tuned for touch: generous hit areas, no cramped
+   edges, soft ambient shadow that deepens on focus. */
 .ai-composer {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
   background: var(--ai-surface);
   border: 1px solid var(--ai-border-strong);
-  border-radius: 18px;
+  border-radius: 22px;
+  padding: 0.6rem 0.6rem 0.6rem 1rem;
   box-shadow: var(--shadow-md);
-  transition: border-color 160ms ease, box-shadow 160ms ease;
+  transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+}
+.ai-composer:hover {
+  border-color: color-mix(in srgb, var(--ai-accent) 35%, var(--ai-border-strong));
 }
 .ai-composer:focus-within {
   border-color: var(--ai-accent);
   box-shadow:
-    0 0 0 3px color-mix(in srgb, var(--ai-accent) 20%, transparent),
-    var(--shadow-md);
+    0 0 0 4px color-mix(in srgb, var(--ai-accent) 16%, transparent),
+    var(--shadow-lg);
+}
+.ai-composer:disabled {
+  opacity: 0.6;
 }
 
 .ai-send {
+  border-radius: 14px;
   background: linear-gradient(
     135deg,
     var(--ai-accent),
@@ -1580,6 +1595,7 @@ html.light .skeleton-shimmer {
   );
   color: #ffffff;
   box-shadow: 0 4px 14px -6px color-mix(in srgb, var(--ai-accent) 60%, transparent);
+  transition: opacity 150ms ease, transform 120ms ease, box-shadow 150ms ease;
 }
 .ai-send:hover:not(:disabled) {
   background: linear-gradient(
@@ -1587,20 +1603,25 @@ html.light .skeleton-shimmer {
     var(--ai-accent-hover),
     color-mix(in srgb, var(--ai-accent-hover) 76%, var(--info))
   );
+  transform: translateY(-1px);
 }
 .ai-send:disabled {
-  opacity: 0.45;
+  opacity: 0.35;
   cursor: not-allowed;
   box-shadow: none;
+  transform: none;
 }
 
 .ai-stop {
+  border-radius: 14px;
   background: var(--ai-danger-soft);
   color: var(--ai-danger);
   border: 1px solid color-mix(in srgb, var(--ai-danger) 30%, transparent);
+  transition: background-color 150ms ease, transform 120ms ease;
 }
 .ai-stop:hover:not(:disabled) {
   background: color-mix(in srgb, var(--ai-danger) 16%, var(--ai-soft));
+  transform: translateY(-1px);
 }
 
 /* Icon button — quiet until hovered/focused, never invisible */

@@ -62,10 +62,6 @@ export default function EmptyState({ mode, contextChip, onPrompt }: EmptyStatePr
             </button>
           ))}
         </div>
-
-        <p className="mt-6 hidden font-mono text-[10px] text-[var(--dashboard-text-muted)] sm:block">
-          Enter to send · Shift+Enter for a new line
-        </p>
       </div>
     </div>
   );
