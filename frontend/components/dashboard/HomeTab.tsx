@@ -27,6 +27,7 @@ import EmptyState from "@/components/ui/EmptyState";
 import Sparkline from "@/components/ui/Sparkline";
 import StreakHeatmap from "./StreakHeatmap";
 import NextBestAction from "./NextBestAction";
+import HomeCoach from "./ai/HomeCoach";
 import { deriveNextAction } from "@/lib/dashboard/recommend";
 import {
   CountdownClock,
@@ -170,6 +171,14 @@ export default function HomeTab() {
     setReloadKey((k) => k + 1);
   };
 
+  // AI coach "refresh" action → reload the home feed so stats reflect any
+  // practice the user just did from the coach's recommended action.
+  useEffect(() => {
+    const onRefresh = () => retryLoad();
+    window.addEventListener("ai:refresh-home", onRefresh);
+    return () => window.removeEventListener("ai:refresh-home", onRefresh);
+  }, [reloadKey]);
+
   const weakest = useMemo(
     () =>
       [...reports]
@@ -277,6 +286,9 @@ export default function HomeTab() {
 
       {/* Next best action — the single most useful thing to do right now */}
       <NextBestAction action={nextAction} />
+
+      {/* AI study coach — on-demand, streaming study guidance */}
+      <HomeCoach />
 
       {/* Countdown hero — premium with indigo wash */}
       <motion.div

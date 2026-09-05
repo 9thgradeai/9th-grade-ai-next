@@ -78,6 +78,18 @@ export default function QuestionDrill({
 
   const reportedRef = useRef(false);
 
+  // When a question is mounted start the wall-clock for the per-answer
+  // duration signal (Phase 4): reset on next/retry/index change so the
+  // submitted durationSec reflects time-on-this-question.
+  const startedAtRef = useRef(0);
+
+  useEffect(() => {
+    startedAtRef.current = Date.now();
+  }, [index, questions]);
+
+  const elapsedSec = () =>
+    Math.max(1, Math.round((Date.now() - startedAtRef.current) / 1000));
+
   const correctCount = answered.filter((a) => a.correct).length;
   const done = index >= questions.length - 1 && revealed;
   const current = questions[index];
@@ -117,7 +129,7 @@ export default function QuestionDrill({
     setSubmitting(true);
     let fb: { masteryStatus?: string | null; justMastered?: boolean } = {};
     try {
-      const res = await api.submitPractice([{ questionId: current.id, selected: selected ?? "" }]);
+      const res = await api.submitPractice([{ questionId: current.id, selected: selected ?? "", durationSec: elapsedSec() }]);
       const questionFb = res.feedback?.[current.id];
       if (questionFb) {
         fb = { masteryStatus: questionFb.masteryStatus, justMastered: questionFb.justMastered };
@@ -133,14 +145,14 @@ export default function QuestionDrill({
         { questionId: current.id, selected: selected ?? "", correct: selected !== null && selected.trim() === current.correctAnswer.trim(), ...fb },
       ]);
     }
-  }, [revealed, submitting, current.id, current.correctAnswer, selected]);
+  }, [revealed, submitting, current.id, current.correctAnswer, selected, startedAtRef]);
 
   const handleSubmit = async () => {
     if (selected === null || revealed || submitting) return;
     setSubmitting(true);
     let fb: { masteryStatus?: string | null; justMastered?: boolean } = {};
     try {
-      const res = await api.submitPractice([{ questionId: current.id, selected }]);
+      const res = await api.submitPractice([{ questionId: current.id, selected, durationSec: elapsedSec() }]);
       const questionFb = res.feedback?.[current.id];
       if (questionFb) {
         fb = { masteryStatus: questionFb.masteryStatus, justMastered: questionFb.justMastered };

@@ -21,6 +21,7 @@ import {
   getExamWeightage,
   searchCurrentAffairs,
 } from "./knowledge";
+import { createPracticeSession, createMockExam } from "./session";
 import { recommendNextAction } from "./planner";
 
 const REGISTRY: ToolDefinition[] = [
@@ -38,6 +39,8 @@ const REGISTRY: ToolDefinition[] = [
   calculateReadiness,
   recommendNextAction,
   searchCurrentAffairs,
+  createPracticeSession,
+  createMockExam,
 ];
 
 const BY_NAME = new Map(REGISTRY.map((t) => [t.name, t]));

@@ -17,6 +17,7 @@ import {
 } from "../persistence/conversations";
 import { bumpAIQuestions, recordUsage } from "../usage/usage";
 import { runAfterResponse } from "~backend/schedule";
+import { emit } from "~backend/events/bus";
 import { searchForIntent } from "../tools/search";
 import { retrieveQuestionBank } from "../retrieval";
 import { runAgentTurn, agentResponseText, type AgentStatus } from "../agent";
@@ -426,6 +427,7 @@ export async function createTutorTurn(opts: {
         errorCode: success ? undefined : "AI_EMPTY_RESPONSE",
       });
       if (success) await bumpAIQuestions(userId);
+      if (success) emit({ name: "AI_TUTOR_TURN", userId, intent, kind: "tutor" });
     } catch (err) {
       console.error("[ai:tutor] persistence failed", err);
     }
@@ -753,6 +755,7 @@ export async function assistantTurn(opts: {
       metadata: { intent, webResults: web.results },
     });
     await bumpAIQuestions(userId);
+    emit({ name: "AI_TUTOR_TURN", userId, intent, kind: "assistant" });
     if (conversation.title === DEFAULT_TITLE) void summarizeConversationTitle(userId, conversation.id);
     await aiCacheSet(cacheKey, rawText);
     await finalizeUsage({ userId, task: "assistant", provider: name, model: modelName, started, inputText: system + modelMessages.map((m) => m.content).join("\n"), outputText: rawText, success: rawText.length > 0, errorCode: rawText.length > 0 ? undefined : "AI_EMPTY_RESPONSE", intent });
@@ -854,6 +857,7 @@ export async function createAgentTurn(opts: {
     metadata: { kind: "agent", runId: result.runId, blocks: result.response.blocks },
   });
   await bumpAIQuestions(userId);
+  emit({ name: "AI_TUTOR_TURN", userId, intent, kind: "agent" });
   if (conversation.title === DEFAULT_TITLE) {
     void summarizeConversationTitle(userId, conversation.id);
   }

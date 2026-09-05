@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getMistakesForUser } from "~backend/services/question-progress";
+import { parseErrorType } from "~backend/services/error-classifier";
 import { getUserIdFromRequest } from "~backend/services/user";
 import { AppError, toHttpResponse } from "~backend/errors";
 import { getRequestId, startTiming, applySecurityHeaders } from "../_middleware";
@@ -21,11 +22,12 @@ export async function GET(request: Request) {
     const status = searchParams.get("status") ?? undefined;
     const difficulty = searchParams.get("difficulty") ?? undefined;
     const topic = searchParams.get("topic") ?? undefined;
+    const errorType = parseErrorType(searchParams.get("errorType"));
     const sort = searchParams.get("sort") ?? undefined;
 
     const result = await getMistakesForUser(
       userId,
-      { subject, status: status as "STRUGGLING" | "REVIEWING" | "IMPROVING" | "MASTERED" | undefined, difficulty, topic, sort },
+      { subject, status: status as "STRUGGLING" | "REVIEWING" | "IMPROVING" | "MASTERED" | undefined, difficulty, topic, errorType, sort },
       page,
       limit,
     );
@@ -64,6 +66,11 @@ export async function GET(request: Request) {
         year: (row.question as Record<string, unknown>).year,
         sourceExam: (row.question as Record<string, unknown>).sourceExam,
         bcsTerm: null,
+        // Latest error classification (Phase 2) — from the question's newest attempt.
+        latestErrorType:
+          (((row.question as Record<string, unknown>).attempts as
+            | Array<{ errorType?: string | null }>
+            | undefined)?.[0]?.errorType) ?? null,
       },
     }));
 

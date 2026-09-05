@@ -4,6 +4,8 @@
 import "server-only";
 
 import { prisma } from "~backend/db";
+import type { MistakeErrorType } from "@prisma/client";
+import { parseErrorType } from "~backend/services/error-classifier";
 import {
   getQuestionBankCategories,
   getQuestionBankExams,
@@ -17,17 +19,27 @@ import { clamp, posInt, str, type ToolContext, type ToolDefinition, type ToolRes
 export const getWrongAnswers: ToolDefinition = {
   name: "get_wrong_answers",
   description:
-    "The learner's most recent wrong answers (mistake book): question text, topic, mastery state and mistake count, newest first. Optional arguments: subject (Bangla or English name), limit (default 15, max 30).",
-  inputShape: '{"subject": "বাংলা", "limit": 15}',
+    "The learner's most recent wrong answers (mistake book): question text, topic, mastery state, mistake count and the latest server-classified mistake type, newest first. Optional arguments: subject (Bangla or English name), errorType (one of GUESSING|CARELESS_MISTAKE|CONFUSION|CONCEPTUAL_GAP|MEMORY_FAILURE|UNKNOWN), limit (default 15, max 30).",
+  inputShape: '{"subject": "বাংলা", "errorType": "CONCEPTUAL_GAP", "limit": 15}',
   validateInput(raw) {
     const args = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
-    return { subject: str(args, "subject"), limit: posInt(args, "limit", 15) ?? 15 };
+    return {
+      subject: str(args, "subject"),
+      errorType: parseErrorType(str(args, "errorType")),
+      limit: posInt(args, "limit", 15) ?? 15,
+    };
   },
   async execute(ctx: ToolContext, args: Record<string, unknown>): Promise<ToolResult> {
     const limit = clamp(args.limit as number, 1, 30);
     const subject = (args.subject as string) || undefined;
+    const errorType = args.errorType as string | undefined;
     const rows = await prisma.userQuestionProgress.findMany({
-      where: { userId: ctx.userId, isMistake: true, ...(subject ? { lastSubject: subject } : {}) },
+      where: {
+        userId: ctx.userId,
+        isMistake: true,
+        ...(subject ? { lastSubject: subject } : {}),
+        ...(errorType ? { question: { attempts: { some: { errorType: errorType as MistakeErrorType } } } } : {}),
+      },
       orderBy: { lastIncorrectAt: "desc" },
       take: limit,
       select: {
@@ -37,7 +49,13 @@ export const getWrongAnswers: ToolDefinition = {
         mistakeCount: true,
         masteryStatus: true,
         lastIncorrectAt: true,
-        question: { select: { question: true, correctAnswer: true } },
+        question: {
+          select: {
+            question: true,
+            correctAnswer: true,
+            attempts: { orderBy: { createdAt: "desc" }, take: 1, select: { errorType: true } },
+          },
+        },
       },
     });
     const total = await prisma.userQuestionProgress.count({
@@ -59,6 +77,7 @@ export const getWrongAnswers: ToolDefinition = {
           wrongCount: r.mistakeCount,
           status: r.masteryStatus,
           lastIncorrectAt: r.lastIncorrectAt,
+          latestErrorType: r.question?.attempts?.[0]?.errorType ?? null,
           text: r.question?.question ?? "",
         })),
       },
@@ -223,19 +242,26 @@ export const getExamWeightage: ToolDefinition = {
 export const searchCurrentAffairs: ToolDefinition = {
   name: "search_current_affairs",
   description:
-    "Recent verified current-affairs news items (title, category, date). Argument: category (optional: জাতীয়, আন্তর্জাতিক, অর্থনীতি, বিজ্ঞান ও প্রযুক্তি, খেলাধুলা, বিসিএস), limit (default 6, max 15).",
-  inputShape: '{"category": "জাতীয়", "limit": 6}',
+    "Recent VERIFIED current-affairs news items (only from the platform's fact-checked feed; sourceUrl included). Arguments: q (optional search text), category (optional: জাতীয়, আন্তর্জাতিক, অর্থনীতি, বিজ্ঞান ও প্রযুক্তি, খেলাধুলা, বিসিএস), limit (default 6, max 15).",
+  inputShape: '{"q": "মহাকাশ", "category": "জাতীয়", "limit": 6}',
   validateInput(raw) {
     const args = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
-    return { category: str(args, "category"), limit: posInt(args, "limit", 6) ?? 6 };
+    return { q: str(args, "q"), category: str(args, "category"), limit: posInt(args, "limit", 6) ?? 6 };
   },
   async execute(ctx: ToolContext, args: Record<string, unknown>): Promise<ToolResult> {
     const limit = clamp(args.limit as number, 1, 15);
     const category = (args.category as string) || undefined;
+    const q = ((args.q as string) || "").toLowerCase();
     const items = await getFlashNews();
-    const filtered = category
-      ? items.filter((n) => n.categoryBn === category || n.categoryEn === category)
-      : items;
+    const filtered = items.filter((n) => {
+      const categoryMatch = category ? n.categoryBn === category || n.categoryEn === category : true;
+      const textMatch = q
+        ? [n.titleBn, n.titleEn, n.text]
+            .filter(Boolean)
+            .some((t) => (t || "").toLowerCase().includes(q))
+        : true;
+      return categoryMatch && textMatch;
+    });
     if (filtered.length === 0) return { summary: "No current-affairs items found.", data: { items: [] } };
     return {
       summary: filtered
@@ -243,11 +269,14 @@ export const searchCurrentAffairs: ToolDefinition = {
         .map((n) => `[${n.categoryBn}] ${n.titleBn}`)
         .join("; "),
       data: {
+        verified: true,
         items: filtered.slice(0, limit).map((n) => ({
           id: n.id,
           titleBn: n.titleBn,
           categoryBn: n.categoryBn,
           date: n.date,
+          sourceUrl: n.sourceUrl ?? null,
+          verified: true,
         })),
       },
     };

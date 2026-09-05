@@ -184,3 +184,48 @@ export function agentResponseText(response: AgentResponse): string {
     .filter(Boolean)
     .join("\n\n");
 }
+
+// Which session-builder tool feeds a given action type. Practice/exam actions
+// emitted WITHOUT explicit questionIds get them injected from the tool result
+// that ran during THIS loop — the LLM never guesses question sets.
+const ACTION_TO_SESSION_TOOL: Partial<Record<AgentActionType, string>> = {
+  practice: "create_practice_session",
+  mock_exam: "create_mock_exam",
+};
+
+const MAX_INJECTED_QUESTIONS = 20;
+
+/**
+ * Deterministic post-processing: inject `questionIds` (produced by the
+ * create_practice_session / create_mock_exam tools) into practice/mock_exam
+ * actions that otherwise lack them. Idempotent — actions that already carry
+ * questionIds are left untouched.
+ */
+export function augmentActionsWithQuestionIds(
+  response: AgentResponse,
+  toolResults: Record<string, { questionIds?: unknown } | undefined> | undefined,
+): AgentResponse {
+  if (!toolResults) return response;
+  const blocks = response.blocks.map((block) => {
+    if (!("actions" in block) || !Array.isArray(block.actions) || block.actions.length === 0) {
+      return block;
+    }
+    const actions = block.actions.map((action) => {
+      const existing = action.params?.questionIds;
+      if (Array.isArray(existing) && existing.length > 0) return action;
+      const toolName = ACTION_TO_SESSION_TOOL[action.type];
+      if (!toolName) return action;
+      const raw = toolResults[toolName]?.questionIds;
+      const ids = Array.isArray(raw)
+        ? (raw as unknown[]).filter((n): n is number => Number.isInteger(n) && (n as number) > 0)
+        : [];
+      if (ids.length === 0) return action;
+      return {
+        ...action,
+        params: { ...(action.params ?? {}), questionIds: ids.slice(0, MAX_INJECTED_QUESTIONS) },
+      };
+    });
+    return { ...block, actions };
+  });
+  return { blocks };
+}

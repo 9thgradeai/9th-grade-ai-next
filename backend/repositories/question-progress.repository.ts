@@ -7,7 +7,7 @@
 import "server-only";
 
 import { prisma } from "~backend/db";
-import type { Prisma } from "@prisma/client";
+import type { MistakeErrorType, Prisma } from "@prisma/client";
 
 type MasteryStatus = "NEW" | "STRUGGLING" | "REVIEWING" | "IMPROVING" | "MASTERED";
 
@@ -53,6 +53,7 @@ export type MistakeFilters = {
   status?: MasteryStatus;
   difficulty?: string;
   topic?: string;
+  errorType?: string;
   exam?: string;
   sort?: string;
 };
@@ -105,8 +106,19 @@ export async function getMistakes(
   if (filters.status) {
     where.masteryStatus = filters.status;
   }
+
+  const questionFilter: Prisma.QuestionWhereInput = {};
   if (filters.difficulty) {
-    where.question = { difficulty: filters.difficulty as "EASY" | "MEDIUM" | "HARD" };
+    questionFilter.difficulty = filters.difficulty as "EASY" | "MEDIUM" | "HARD";
+  }
+  if (filters.errorType) {
+    // Latest classification on the question's attempt history.
+    questionFilter.attempts = {
+      some: { errorType: filters.errorType as MistakeErrorType },
+    };
+  }
+  if (Object.keys(questionFilter).length > 0) {
+    where.question = questionFilter;
   }
   if (filters.topic) {
     where.lastTopic = { contains: filters.topic, mode: "insensitive" };
@@ -143,6 +155,12 @@ export async function getMistakes(
             year: true,
             sourceExam: true,
             subject: { select: { nameBn: true } },
+            // Latest attempt classification for the notebook row (Phase 2).
+            attempts: {
+              orderBy: { createdAt: "desc" },
+              take: 1,
+              select: { errorType: true },
+            },
           },
         },
       },

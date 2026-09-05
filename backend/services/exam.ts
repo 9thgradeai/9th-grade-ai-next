@@ -585,12 +585,27 @@ export async function submitCustomExam(
         }
       }
     });
+    // Persistent attempt facts (answered questions) for the LearningEvent
+    // timeline — the transaction above already committed before we emit.
+    const attemptFacts = (attempts as Array<{
+      userId: string;
+      questionId: number | null;
+      subjectId: number | null;
+      correct: boolean;
+    }>).map((a) => ({
+      questionId: a.questionId,
+      correct: a.correct,
+      answered: true,
+      subjectId: a.subjectId,
+    }));
+
     emit({
       name: "EXAM_COMPLETED",
       userId,
       correct,
       wrong,
       finalScore,
+      attempts: attemptFacts,
     });
 
     return {

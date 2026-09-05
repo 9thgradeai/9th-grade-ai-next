@@ -5,9 +5,9 @@ import type { ToolDefinition, ToolContext } from "~backend/ai/tools/types";
 const ctx: ToolContext = { userId: "tool-test-user" };
 
 describe("agent tool registry", () => {
-  it("registers the 14 read-only tools", () => {
+  it("registers the 16 read-only tools", () => {
     const tools = getTools();
-    expect(tools.length).toBe(14);
+    expect(tools.length).toBe(16);
     const names = tools.map((t) => t.name);
     expect(names).toContain("get_my_profile");
     expect(names).toContain("get_my_mastery");
@@ -17,6 +17,8 @@ describe("agent tool registry", () => {
     expect(names).toContain("calculate_readiness");
     expect(names).toContain("recommend_next_action");
     expect(names).toContain("search_current_affairs");
+    expect(names).toContain("create_practice_session");
+    expect(names).toContain("create_mock_exam");
     for (const t of tools) {
       expect(t.execute).toBeInstanceOf(Function);
       expect(t.validateInput).toBeInstanceOf(Function);

@@ -47,6 +47,19 @@ const MASTERY_LABELS: Record<string, string> = {
   NEW: "New",
 };
 
+// Mirror of backend/services/error-classifier.ts ERROR_TYPE_LABELS (Bengali).
+export const ERROR_TYPE_LABELS: Record<string, string> = {
+  UNKNOWN: "অনিশ্চিত",
+  GUESSING: "অনুমান করা",
+  CARELESS_MISTAKE: "অসাবধানতাজনিত ভুল",
+  CONFUSION: "বিভ্রান্তি",
+  CONCEPTUAL_GAP: "ধারণাগত দুর্বলতা",
+  MEMORY_FAILURE: "ভুলে যাওয়া",
+  MISREADING: "প্রশ্ন না-বোঝা",
+  CALCULATION_ERROR: "হিসাবের ভুল",
+  TIME_PRESSURE: "সময়ের চাপ",
+};
+
 const SORT_OPTIONS = [
   { value: "most_wrong", label: "Most Frequently Wrong" },
   { value: "recently_wrong", label: "Recently Wrong" },
@@ -90,6 +103,7 @@ export default function WrongAnswerNotebookTab() {
   // Filters
   const [filterSubject, setFilterSubject] = useState<string>("");
   const [filterStatus, setFilterStatus] = useState<string>("");
+  const [filterErrorType, setFilterErrorType] = useState<string>("");
   const [filterSort, setFilterSort] = useState<string>("most_wrong");
   const [showFilters, setShowFilters] = useState(false);
 
@@ -124,6 +138,7 @@ export default function WrongAnswerNotebookTab() {
         limit,
         subject: filterSubject || undefined,
         status: filterStatus || undefined,
+        errorType: filterErrorType || undefined,
         sort: filterSort,
       });
       setMistakes(res.data);
@@ -132,7 +147,7 @@ export default function WrongAnswerNotebookTab() {
     } catch {
       toast.error("Failed to load mistakes");
     }
-  }, [page, limit, filterSubject, filterStatus, filterSort, toast]);
+  }, [page, limit, filterSubject, filterStatus, filterErrorType, filterSort, toast]);
 
   useEffect(() => {
     let cancelled = false;
@@ -624,7 +639,7 @@ export default function WrongAnswerNotebookTab() {
         >
           <Filter className="w-4 h-4" />
           Filters
-          {(filterSubject || filterStatus) && (
+          {(filterSubject || filterStatus || filterErrorType) && (
             <span className="px-1.5 py-0.5 text-[10px] bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] rounded font-mono">
               Active
             </span>
@@ -661,6 +676,27 @@ export default function WrongAnswerNotebookTab() {
                   </div>
                 </div>
 
+                {/* Error-type filter (Phase 2 classification) */}
+                <div>
+                  <label className="block text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider mb-1.5">Error Type</label>
+                  <div className="flex flex-wrap gap-1.5">
+                    {["", ...Object.keys(ERROR_TYPE_LABELS)].map((t) => (
+                      <button
+                        key={t}
+                        onClick={() => { setFilterErrorType(t); setPage(1); }}
+                        className={`px-2.5 py-1.5 rounded-lg border text-xs font-mono transition-colors ${
+                          filterErrorType === t
+                            ? "border-[var(--accent)]/50 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
+                            : "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] hover:border-[var(--border-strong)]"
+                        }`}
+                        title={t}
+                      >
+                        {t === "" ? "All" : ERROR_TYPE_LABELS[t]}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
                 {/* Sort */}
                 <div>
                   <label className="block text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider mb-1.5">Sort By</label>
@@ -676,9 +712,9 @@ export default function WrongAnswerNotebookTab() {
                 </div>
 
                 {/* Clear filters */}
-                {(filterSubject || filterStatus) && (
+                {(filterSubject || filterStatus || filterErrorType) && (
                   <button
-                    onClick={() => { setFilterSubject(""); setFilterStatus(""); setPage(1); }}
+                    onClick={() => { setFilterSubject(""); setFilterStatus(""); setFilterErrorType(""); setPage(1); }}
                     className="flex items-center gap-1.5 text-xs text-[var(--dashboard-text-muted)] font-mono hover:text-[var(--dashboard-text-secondary)] transition-colors"
                   >
                     <X className="w-3 h-3" /> Clear all filters
@@ -710,7 +746,7 @@ export default function WrongAnswerNotebookTab() {
         </div>
       ) : mistakes.length === 0 ? (
         <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
-          {filterSubject || filterStatus ? (
+          {filterSubject || filterStatus || filterErrorType ? (
             <>
               <p className="text-sm text-[var(--dashboard-text-muted)] font-mono mb-1">Nothing to review here yet.</p>
               <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">Try adjusting your filters or practicing more questions.</p>
@@ -756,6 +792,15 @@ export default function WrongAnswerNotebookTab() {
                       <span className={`text-[10px] px-1.5 py-0.5 rounded border font-mono ${statusCls}`}>
                         {MASTERY_LABELS[m.masteryStatus]}
                       </span>
+                      {m.latestErrorType && (
+                        <span
+                          className="text-[10px] px-1.5 py-0.5 rounded border font-mono"
+                          style={{ color: "var(--dashboard-warning)", borderColor: "color-mix(in srgb, var(--dashboard-warning) 25%, transparent)", background: "var(--dashboard-warning-subtle)" }}
+                          title={`${m.latestErrorType} — latest mistake classification`}
+                        >
+                          {ERROR_TYPE_LABELS[m.latestErrorType] ?? m.latestErrorType}
+                        </span>
+                      )}
                     </div>
                     <p className="text-sm text-[var(--dashboard-text-primary)] leading-relaxed line-clamp-2">{q.question}</p>
                   </div>

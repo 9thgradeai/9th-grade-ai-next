@@ -18,6 +18,10 @@ import {
 } from "./types";
 
 const GROQ_MODEL = process.env.AI_GROQ_MODEL ?? "openai/gpt-oss-120b";
+// Provider-swap point (Phase 4): Groq serves an OpenAI-compatible API, so
+// pointing AI_GROQ_BASE_URL at another OpenAI-compatible gateway swaps the
+// inference backend without changing any provider code.
+const GROQ_BASE_URL = process.env.AI_GROQ_BASE_URL;
 const RETRY_ATTEMPTS = 3;
 const RETRY_DELAY_MS = 500;
 
@@ -41,7 +45,7 @@ export class GroqProvider implements LLMProvider {
 
   constructor(apiKey: string, model: string = GROQ_MODEL) {
     this.model = model;
-    this.client = createGroq({ apiKey });
+    this.client = createGroq({ apiKey, ...(GROQ_BASE_URL ? { baseURL: GROQ_BASE_URL } : {}) });
   }
 
   async generate(req: LLMRequest): Promise<LLMResult> {

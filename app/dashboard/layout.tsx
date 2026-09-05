@@ -31,6 +31,13 @@ const VoiceAITutor = dynamic(() => import("@/components/dashboard/VoiceAITutor")
   ssr: false,
 });
 
+// The AI coach's practice-drill modal is small but only needed when an agent
+// action carries a server-minted question set — load it lazily too.
+const PracticeDrillOverlay = dynamic(
+  () => import("@/components/dashboard/ai/PracticeDrillOverlay"),
+  { ssr: false },
+);
+
 const DRAWER_GROUPS: { label: string; ids: TabId[] }[] = [
   { label: "Primary", ids: ["home", "practice", "question-bank", "mistakes", "progress"] },
   { label: "Study", ids: ["study-planner", "flashcards"] },
@@ -295,6 +302,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
             {/* Global Components */}
             <VoiceAITutor />
+            <PracticeDrillOverlay />
             <CommandBar />
             </div>
           </MotionConfig>

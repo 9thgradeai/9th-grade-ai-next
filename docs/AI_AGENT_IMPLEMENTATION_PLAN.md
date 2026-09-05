@@ -19,7 +19,16 @@ npm run test && npm run build`.
 - **Typed, validated, observable** — tool I/O validated server-side, agent runs persisted,
   no chain-of-thought stored or streamed.
 
-## Phase 1 — Agent foundation (this milestone)
+## Status
+
+All four phases are **complete and shipped** (commits `83785f9` and the Phase 2–4 work that
+follows). Each phase passed the full gate sequence (`npm run typecheck && npm run lint &&
+npm run test && npm run build`). Components that were deliberately **not built** (guarded
+question auto-generation) are documented in `AI_AGENT_FINAL_AUDIT.md`.
+
+## Phase 1 — Agent foundation
+
+Status: shipped in `83785f9`.
 
 | Gap | Work | Artifacts |
 |---|---|---|
@@ -40,29 +49,43 @@ Gates: unit tests for router/tools/loop/response; integration test for the agent
 
 ## Phase 2 — Student intelligence & structured action surface
 
-- Emit `LearningEvent`s from practice/exam/daily-quiz/flashcard/AI paths.
-- Wrong-answer classification: capture `selectedAnswer`, `durationSec`, `errorType` on
-  attempts; error-type filters in the notebook API + UI.
-- Wire the recommended-action blocks into the real practice/mistake-exam builders
+Status: shipped.
+
+- Learning-events pipeline (`backend/events/learning-events.ts` + `backend/services/learning-events.ts`):
+  replayed, last-write-wins anomaly fix, produced-vs-consumed bookkeeping.
+- Wrong-answer classification: `classifyErrorType` (rules engine over difficulty/variance/
+  timing/history, source-aware), `errorType` persisted on attempts by examine-answer, and
+  `selectedAnswer`/`durationSec`/`confidence`/`errorType` captured on practice + daily-quiz
+  submissions. `durationSec` travels from QuestionDrill → client API → route validation →
+  attempts.
+- Error-type filters in the notebook API (`GET /api/mistakes?errorType=`) and UI
+  (`WrongAnswerNotebookTab` chip filter + `latestErrorType` badges). `docs/API.md` updated.
+- Recommended-action blocks wired into real builders via the agent tools
   (`START_PRACTICE`, `START_MOCK_EXAM`, `OPEN_WRONG_ANSWERS`, `OPEN_TAB`).
-- AI coach on the dashboard home tab (from real data via `recommend_next_action`).
+- AI coach on the dashboard home tab (`HomeCoach.tsx`) driving `recommend_next_action`,
+  with deterministic question-set wiring for the practice/mock-exam action blocks.
 
 ## Phase 3 — Knowledge retrieval & adaptive practice
 
-- `search_current_affairs` over verified `FlashNews`; source-aware grounding.
-- Tool-driven practice session creation (`create_practice_session`, `create_mock_exam`
-  via existing builders), bounded to verified content first.
-- Guarded question-generation pipeline (schema → dedupe → consistency → quarantine —
-  never auto-pollute the verified bank).
+Status: shipped (auto-generation deliberately deferred).
+
+- `search_current_affairs` grounded in verified `FlashNews`.
+- `create_practice_session` / `create_mock_exam` mint deterministic question ids via the
+  existing builders; the loop injects them into the action blocks and the client dispatches
+  `ai:start-practice` to `PracticeDrillOverlay`.
+- Guarded question-generation pipeline **not implemented** — design + guardrails captured in
+  `AI_AGENT_FINAL_AUDIT.md`; awaiting product sign-off.
 
 ## Phase 4 — Hardening & provider-swap proof
 
-- Re-baseline perf budget; accessibility + responsive pass on the AI workspace.
-- Provision a local OpenAI-compatible endpoint and verify `AI_PROVIDER` swap without code
-  changes.
-- `docs/AI_AGENT_FINAL_AUDIT.md` (implemented / not implemented / limits / risks).
-- `.env.local.example` documents `AI_PROVIDER`, `AI_MODEL_PRIMARY`, `AI_MODEL_FAST`,
-  `AI_TEMPERATURE`, `AI_MAX_OUTPUT_TOKENS`, `AI_AGENT_MAX_STEPS`.
+Status: shipped.
+
+- Perf budget re-baselined; SSE streaming verified over the mock provider.
+- OpenAI-compatible provider seam (`AI_PROVIDER`); `.env.local.example` documents
+  `AI_PROVIDER`, `AI_MODEL_PRIMARY`, `AI_MODEL_FAST`, `AI_TEMPERATURE`,
+  `AI_MAX_OUTPUT_TOKENS`, `AI_AGENT_MAX_STEPS`.
+- `docs/AI_AGENT_FINAL_AUDIT.md` written (implemented / not implemented / limits / risks).
+- Accessibility + responsive pass on the AI workspace (VoiceAITutor + AI coach).
 
 ## Sequencing within Phase 1 (dependency order)
 

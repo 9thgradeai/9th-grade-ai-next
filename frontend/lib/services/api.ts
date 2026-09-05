@@ -384,7 +384,7 @@ export const api = {
   },
 
   submitPractice: async (
-    answers: { questionId: number; selected: string }[],
+    answers: { questionId: number; selected: string; durationSec?: number; confidence?: number }[],
   ): Promise<{
     correct: number;
     total: number;
@@ -434,6 +434,7 @@ export const api = {
     status?: string;
     difficulty?: string;
     topic?: string;
+    errorType?: string;
     sort?: string;
   }): Promise<{
     data: Server.MistakeItemDTO[];

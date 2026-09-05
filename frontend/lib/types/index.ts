@@ -763,6 +763,18 @@ export namespace Server {
   // ── Mistake / Mastery system ─────────────────────────────
   export type MasteryStatus = "NEW" | "STRUGGLING" | "REVIEWING" | "IMPROVING" | "MASTERED";
 
+  /** Server-validated error classification for a wrong answer (Phase 2). */
+  export type MistakeErrorType =
+    | "CONCEPTUAL_GAP"
+    | "CARELESS_MISTAKE"
+    | "MEMORY_FAILURE"
+    | "MISREADING"
+    | "CALCULATION_ERROR"
+    | "CONFUSION"
+    | "GUESSING"
+    | "TIME_PRESSURE"
+    | "UNKNOWN";
+
   export type MistakeItemDTO = {
     id: number;
     questionId: number;
@@ -781,6 +793,7 @@ export namespace Server {
     reviewCount: number;
     lastSubject: string;
     lastTopic: string;
+    latestErrorType: MistakeErrorType | null;
     question: QuestionDTO;
   };
 
@@ -892,6 +905,7 @@ export type WeakTopicDTO = Server.WeakTopicDTO;
 export type LeaderboardEntryDTO = Server.LeaderboardEntryDTO;
 export type DailyQuizHistoryItemDTO = Server.DailyQuizHistoryItemDTO;
 export type MistakeItemDTO = Server.MistakeItemDTO;
+export type MistakeErrorType = Server.MistakeErrorType;
 export type MistakeStatsDTO = Server.MistakeStatsDTO;
 export type SubjectMistakeCountDTO = Server.SubjectMistakeCountDTO;
 export type MistakeExamConfigDTO = Server.MistakeExamConfigDTO;

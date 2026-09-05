@@ -8,7 +8,7 @@ import { resolveCandidatesForModelTask } from "../providers";
 import type { LLMProvider } from "../providers/types";
 import type { AIMessageInput, AIIntent } from "../types";
 import { findTool, executeTool, getTools, type ToolContext } from "../tools/index";
-import { validateAgentOutput, type AgentBlock, type AgentResponse } from "./response";
+import { validateAgentOutput, augmentActionsWithQuestionIds, type AgentBlock, type AgentResponse } from "./response";
 import { buildAgentSystemPrompt, MAX_AGENT_STEPS, MAX_AGENT_OUTPUT_CHARS, parseAgentTurn } from "./prompt";
 import { buildContext } from "../context/context-engine";
 import { createRun, finalizeRun, recordToolCall } from "./persistence";
@@ -104,6 +104,9 @@ export async function runAgentTurn(opts: {
   let isMock = false;
   const inputTokens = 0;
   let outputTokens = 0;
+  // Question-set payloads from session-builder tools, injected into the final
+  // practice/mock_exam actions so the client drills REAL builder-selected ids.
+  const sessionToolResults: Record<string, { questionIds?: unknown }> = {};
 
   try {
     const candidates = resolveCandidatesForModelTask("agent_reasoning");
@@ -127,13 +130,16 @@ export async function runAgentTurn(opts: {
             const def = findTool(name);
             const t0 = Date.now();
             const argObj = (args && typeof args === "object" ? args : {}) as Record<string, unknown>;
-            let result: { ok?: boolean; summary: string };
+            let result: { ok?: boolean; summary: string; data?: Record<string, unknown> };
             let success = false;
             if (!def) {
               result = { ok: false, summary: `Unknown tool: ${name}.` };
             } else {
               result = await executeTool(def, toolContext, argObj);
               success = result.ok !== false;
+              if ((name === "create_practice_session" || name === "create_mock_exam") && result.data) {
+                sessionToolResults[name] = result.data;
+              }
             }
             const durationMs = Date.now() - t0;
             await recordToolCall({
@@ -156,7 +162,10 @@ export async function runAgentTurn(opts: {
 
           // No tool call → final structured output.
           const finalBlocksText = (turn.blocksText || msg.content).trim();
-          const response = validateAgentOutput(parseMaybeJson(finalBlocksText), finalBlocksText);
+          const response = augmentActionsWithQuestionIds(
+            validateAgentOutput(parseMaybeJson(finalBlocksText), finalBlocksText),
+            sessionToolResults,
+          );
           opts.onStatus?.({ blocks: response.blocks });
           outputTokens = Math.max(1, Math.ceil(finalBlocksText.length / 4));
           await finalizeRun({

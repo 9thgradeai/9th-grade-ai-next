@@ -63,6 +63,24 @@ function useBlockDispatcher(onClose?: () => void) {
         onClose?.();
         return;
       }
+      // Practice / mock-exam actions that carry a concrete, server-minted
+      // question set launch the drill overlay directly instead of merely
+      // switching tabs (the LLM never picks the questions — the session
+      // tools injected the ids, see backend/ai/agent/response.ts).
+      if (action.type === "practice" || action.type === "mock_exam") {
+        const ids = Array.isArray(action.params?.questionIds)
+          ? (action.params.questionIds as unknown[]).filter((v): v is number => typeof v === "number")
+          : [];
+        if (ids.length > 0) {
+          window.dispatchEvent(
+            new CustomEvent("ai:start-practice", {
+              detail: { questionIds: ids, title: action.label },
+            }),
+          );
+          onClose?.();
+          return;
+        }
+      }
       const tab = actionToTab(action);
       if (tab) {
         setActiveTab(tab);

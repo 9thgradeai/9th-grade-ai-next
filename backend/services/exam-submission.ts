@@ -39,10 +39,13 @@ import "server-only";
 
 import { createHash } from "crypto";
 import { Prisma } from "@prisma/client";
+import type { MistakeErrorType } from "@prisma/client";
 import { prisma } from "~backend/db";
 import { AppError, InternalServerError } from "~backend/errors";
 import { recomputeAndAward } from "~backend/repositories/progress.repository";
 import { emit } from "~backend/events/bus";
+import type { AttemptFact } from "~backend/events/types";
+import { classifyErrorType } from "./error-classifier";
 import { recordQuestionAttempt } from "./question-progress";
 import type { SubmittedAnswer } from "./activity";
 import type { ExamReviewDTO } from "@/lib/types";
@@ -274,12 +277,14 @@ export async function submitExamAttempt(
       select: {
         id: true,
         subjectId: true,
+        topicId: true,
         topic: true,
         subtopic: true,
         question: true,
         options: true,
         correctAnswer: true,
         explanation: true,
+        difficulty: true,
         subject: { select: { nameBn: true } },
       },
     });
@@ -292,6 +297,20 @@ export async function submitExamAttempt(
     }
     const byId = new Map(questions.map((q) => [q.id, q]));
     const { correct, wrong, attempted, review } = gradeAnswers(answers, byId);
+
+    // Previous per-question progress — read before the transaction so the
+    // error classifier sees the state PRIOR to this exam, not after.
+    const priorProgress = (await prisma.userQuestionProgress.findMany({
+      where: { userId, questionId: { in: submittedIds } },
+      select: {
+        questionId: true,
+        masteryStatus: true,
+        consecutiveIncorrect: true,
+        mistakeCount: true,
+        totalAttempts: true,
+      },
+    })) ?? [];
+    const priorById = new Map(priorProgress.map((p) => [p.questionId, p]));
 
     const total = review.length;
     const unanswered = total - attempted;
@@ -325,21 +344,45 @@ export async function submitExamAttempt(
       topic: string;
       correct: boolean;
       source: string;
+      selectedAnswer: string;
+      errorType?: MistakeErrorType;
     }> = [];
     for (const a of answers) {
       const userAnswer = (a.selected ?? "").trim();
       if (userAnswer.length === 0) continue; // unanswered — not an attempt
       const q = byId.get(a.questionId);
+      const isCorrect = userAnswer === (q?.correctAnswer ?? "").trim();
+      const errorType = classifyErrorType({
+        isCorrect,
+        difficulty: q?.difficulty ?? null,
+        durationSec: 0,
+        previous: priorById.get(a.questionId),
+      });
       attempts.push({
         userId,
         questionId: q?.id ?? null,
         subjectId: q?.subjectId ?? null,
         subjectName: q?.subject?.nameBn ?? "",
         topic: q?.topic ?? "",
-        correct: userAnswer === (q?.correctAnswer ?? "").trim(),
+        correct: isCorrect,
         source: "exam",
+        selectedAnswer: a.selected,
+        errorType: errorType ?? undefined,
       });
     }
+    // Full per-question outcome (incl. deliberately unanswered) for the
+    // LearningEvent timeline — emitted only after the transaction commits.
+    const attemptFacts: AttemptFact[] = answers.map((a) => {
+      const userAnswer = (a.selected ?? "").trim();
+      const q = byId.get(a.questionId);
+      return {
+        questionId: a.questionId,
+        correct: userAnswer.length > 0 && userAnswer === (q?.correctAnswer ?? "").trim(),
+        answered: userAnswer.length > 0,
+        subjectId: q?.subjectId ?? null,
+        topicId: q?.topicId ?? null,
+      };
+    });
 
     let submittedAt: Date = new Date();
 
@@ -490,6 +533,8 @@ export async function submitExamAttempt(
       correct,
       wrong,
       finalScore,
+      attemptId,
+      attempts: attemptFacts,
     });
 
     return {
