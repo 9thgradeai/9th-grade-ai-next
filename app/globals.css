@@ -1587,6 +1587,9 @@ html.light .skeleton-shimmer {
 }
 
 .ai-send {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 14px;
   background: linear-gradient(
     135deg,
@@ -1613,6 +1616,9 @@ html.light .skeleton-shimmer {
 }
 
 .ai-stop {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 14px;
   background: var(--ai-danger-soft);
   color: var(--ai-danger);

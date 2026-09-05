@@ -498,9 +498,12 @@ export default function AIWorkspace() {
   );
 
   const closeWorkspace = useCallback(() => {
+    // Dismissing the panel must NOT stop an in-flight generation. The stream
+    // keeps running in the background (launcher shows a live pulse) so users
+    // can browse any dashboard tab while the AI finishes; only the explicit
+    // Stop button aborts.
     setShowModal(false);
-    stopGeneration();
-  }, [stopGeneration]);
+  }, []);
 
   const handleInputChange = useCallback((e: ChangeEvent<HTMLTextAreaElement>) => {
     const el = e.target;
@@ -577,19 +580,54 @@ export default function AIWorkspace() {
 
   return (
     <>
-      {/* Floating AI launcher */}
-      <motion.button
-        whileHover={{ scale: 1.06 }}
-        whileTap={{ scale: 0.92 }}
-        onClick={() => {
-          setShowModal(true);
-          setError(null);
-        }}
-        className="ai-launcher fixed bottom-20 right-4 z-40 flex h-12 w-12 items-center justify-center rounded-2xl sm:bottom-24 sm:right-6 sm:h-14 sm:w-14"
-        aria-label="Open AI Tutor and Assistant"
-      >
-        <AiLogo className="h-10 w-10 sm:h-12 sm:w-12" />
-      </motion.button>
+      {/* Floating AI launcher — with a live pulse while a background
+          generation is running with the panel dismissed. The launcher itself
+          is bottom-anchored; the pulse pill stacks above it. */}
+      <div className="fixed bottom-20 right-4 z-40 flex flex-col items-end gap-2 sm:bottom-24 sm:right-6">
+        <AnimatePresence>
+          {status === "generating" && !showModal && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 8 }}
+              role="status"
+              className="flex items-center gap-2 rounded-full border px-3 py-1.5 font-mono text-[11px] shadow-lg"
+              style={{
+                borderColor: "var(--dashboard-border-muted)",
+                background: "var(--dashboard-surface-muted)",
+                color: "var(--dashboard-primary)",
+              }}
+            >
+              <span className="relative flex h-2 w-2 flex-shrink-0">
+                <span
+                  className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-75"
+                  style={{ background: "var(--dashboard-primary)" }}
+                />
+                <span
+                  className="relative inline-flex h-2 w-2 rounded-full"
+                  style={{ background: "var(--dashboard-primary)" }}
+                />
+              </span>
+              <span className="max-w-[180px] truncate">
+                {activity ?? STATUS_LABEL.generating}
+              </span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <motion.button
+          whileHover={{ scale: 1.06 }}
+          whileTap={{ scale: 0.92 }}
+          onClick={() => {
+            setShowModal(true);
+            setError(null);
+          }}
+          className="ai-launcher flex h-12 w-12 items-center justify-center rounded-2xl sm:h-14 sm:w-14"
+          aria-label="Open AI Tutor and Assistant"
+        >
+          <AiLogo className="h-10 w-10 sm:h-12 sm:w-12" />
+        </motion.button>
+      </div>
 
       <AnimatePresence>
         {showModal && (
