@@ -1474,3 +1474,464 @@ html.light .skeleton-shimmer {
     animation-play-state: paused !important;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   AI WORKSPACE DESIGN SYSTEM (v2)
+   ─────────────────────────────────────────────────────────────────────────────
+   Next-generation AI workspace presentation layer, built on the canonical
+   surface/text/border/primary tokens so both dashboard themes (light + dark)
+   resolve every value with full contrast. Deliberately sparse: subtle
+   surfaces, crisp borders, one restrained accent, no fake glow.
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+.ai-workspace {
+  /* ── Local semantic aliases (all resolve per dashboard theme) ── */
+  --ai-bg: var(--surface-base);
+  --ai-panel: var(--surface-raised);
+  --ai-surface: var(--surface-elevated);
+  --ai-soft: var(--surface-muted);
+  --ai-hover: var(--surface-hover);
+  --ai-border: var(--border-subtle);
+  --ai-border-strong: var(--border-default);
+  --ai-fg: var(--text-primary);
+  --ai-fg-2: var(--text-secondary);
+  --ai-fg-3: var(--text-muted);
+  --ai-accent: var(--primary);
+  --ai-accent-hover: var(--primary-hover);
+  --ai-accent-soft: var(--primary-soft);
+  --ai-danger: var(--danger);
+  --ai-danger-soft: var(--danger-soft);
+  --ai-success: var(--success);
+  --ai-success-soft: var(--success-soft);
+  --ai-warning: var(--warning);
+  --ai-info: var(--info);
+  --ai-info-soft: var(--info-soft);
+  --ai-focus: var(--focus-ring);
+  background: var(--ai-bg);
+  color: var(--ai-fg);
+  font-family: var(--font-sans);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Strong, visible keyboard focus inside the workspace for every control. */
+.ai-workspace button:focus-visible,
+.ai-workspace input:focus-visible,
+.ai-workspace textarea:focus-visible,
+.ai-workspace a:focus-visible,
+.ai-workspace [tabindex]:focus-visible {
+  outline: 2px solid var(--ai-accent);
+  outline-offset: 2px;
+  border-radius: 10px;
+}
+
+/* Floating launcher — restrained gradient tile with a soft lift. */
+.ai-launcher {
+  background:
+    radial-gradient(120% 130% at 20% 10%, var(--info), transparent 58%),
+    linear-gradient(135deg, var(--ai-accent), color-mix(in srgb, var(--ai-accent) 70%, var(--success)));
+  border: 1px solid color-mix(in srgb, var(--ai-accent) 48%, transparent);
+  box-shadow:
+    0 12px 30px -10px color-mix(in srgb, var(--ai-accent) 55%, transparent),
+    0 2px 8px rgb(0 0 0 / 0.22);
+}
+
+/* Workspace panel surface */
+.ai-panel {
+  background: var(--ai-panel);
+  border-color: var(--ai-border-strong);
+  box-shadow: var(--shadow-xl);
+}
+
+/* Conversation rail */
+.ai-rail {
+  background: var(--ai-soft);
+  border-right: 1px solid var(--ai-border);
+}
+
+/* Slim translucent header */
+.ai-header {
+  background: color-mix(in srgb, var(--ai-panel) 86%, transparent);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--ai-border);
+}
+
+/* Composer surface — elevated, crisp, focus-aware */
+.ai-composer {
+  background: var(--ai-surface);
+  border: 1px solid var(--ai-border-strong);
+  border-radius: 18px;
+  box-shadow: var(--shadow-md);
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+.ai-composer:focus-within {
+  border-color: var(--ai-accent);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--ai-accent) 20%, transparent),
+    var(--shadow-md);
+}
+
+.ai-send {
+  background: linear-gradient(
+    135deg,
+    var(--ai-accent),
+    color-mix(in srgb, var(--ai-accent) 76%, var(--info))
+  );
+  color: #ffffff;
+  box-shadow: 0 4px 14px -6px color-mix(in srgb, var(--ai-accent) 60%, transparent);
+}
+.ai-send:hover:not(:disabled) {
+  background: linear-gradient(
+    135deg,
+    var(--ai-accent-hover),
+    color-mix(in srgb, var(--ai-accent-hover) 76%, var(--info))
+  );
+}
+.ai-send:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.ai-stop {
+  background: var(--ai-danger-soft);
+  color: var(--ai-danger);
+  border: 1px solid color-mix(in srgb, var(--ai-danger) 30%, transparent);
+}
+.ai-stop:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--ai-danger) 16%, var(--ai-soft));
+}
+
+/* Icon button — quiet until hovered/focused, never invisible */
+.ai-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  color: var(--ai-fg-2);
+  background: transparent;
+  transition: color 150ms ease, background-color 150ms ease, opacity 150ms ease;
+}
+.ai-icon-btn:hover:not(:disabled),
+.ai-icon-btn:focus-visible {
+  background: var(--ai-soft);
+  color: var(--ai-fg);
+}
+.ai-icon-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Accent ghost button */
+.ai-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 12px;
+  border: 1px solid var(--ai-border-strong);
+  background: var(--ai-soft);
+  color: var(--ai-fg-2);
+  transition: border-color 150ms ease, color 150ms ease, background-color 150ms ease;
+}
+.ai-ghost:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--ai-accent) 45%, transparent);
+  color: var(--ai-accent);
+}
+.ai-ghost:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Chips — prompt suggestions + agent actions */
+.ai-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 12px;
+  border: 1px solid var(--ai-border-strong);
+  background: var(--ai-soft);
+  color: var(--ai-fg-2);
+  font-size: 0.75rem;
+  line-height: 1.4;
+  font-weight: 500;
+  padding: 0.4rem 0.7rem;
+  transition: border-color 150ms ease, color 150ms ease, background-color 150ms ease, transform 120ms ease;
+  text-align: left;
+}
+.ai-chip:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--ai-accent) 50%, transparent);
+  background: var(--ai-accent-soft);
+  color: var(--ai-accent);
+  transform: translateY(-1px);
+}
+.ai-chip:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Status pill — honest AI state, quiet not flashy */
+.ai-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: 999px;
+  border: 1px solid var(--ai-border-strong);
+  background: var(--ai-soft);
+  color: var(--ai-fg-2);
+  padding: 0.2rem 0.65rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.ai-status::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--ai-fg-3);
+  flex-shrink: 0;
+}
+.ai-status.is-ready::before { background: var(--ai-success); }
+.ai-status.is-working::before {
+  background: var(--ai-accent);
+  animation: ai-status-pulse 1.4s ease-in-out infinite;
+}
+.ai-status.is-listening::before {
+  background: var(--ai-danger);
+  animation: ai-status-pulse 1s ease-in-out infinite;
+}
+.ai-status.is-error::before { background: var(--ai-danger); }
+
+@keyframes ai-status-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+/* Avatar tile for AI messages */
+.ai-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  flex-shrink: 0;
+  background: var(--ai-accent-soft);
+  color: var(--ai-accent);
+  border: 1px solid color-mix(in srgb, var(--ai-accent) 22%, transparent);
+}
+
+/* Prose (shared markdown body) — editorial, not bubbled */
+.ai-prose {
+  color: var(--ai-fg);
+  font-size: 0.9375rem;
+  line-height: 1.75;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+.ai-prose p {
+  margin: 0 0 0.875rem;
+}
+.ai-prose p:last-child {
+  margin-bottom: 0;
+}
+.ai-prose h1, .ai-prose h2, .ai-prose h3, .ai-prose h4 {
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--ai-fg);
+  line-height: 1.3;
+}
+.ai-prose h1, .ai-prose h2, .ai-prose h3 {
+  margin: 1.15rem 0 0.5rem;
+  font-size: 0.985rem;
+}
+.ai-prose h4 {
+  margin: 1rem 0 0.4rem;
+  font-size: 0.9rem;
+}
+.ai-prose ul, .ai-prose ol {
+  margin: 0 0 0.875rem;
+  padding-left: 1.4rem;
+}
+.ai-prose ul { list-style: none; padding-left: 0; }
+.ai-prose ul > li {
+  position: relative;
+  padding-left: 1.05rem;
+  margin: 0.3rem 0;
+}
+.ai-prose ul > li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ai-accent) 75%, transparent);
+}
+.ai-prose ol { list-style: decimal; }
+.ai-prose ol > li {
+  margin: 0.3rem 0;
+  padding-left: 0.2rem;
+}
+.ai-prose ol > li::marker {
+  color: color-mix(in srgb, var(--ai-accent) 80%, var(--ai-fg-3));
+  font-weight: 600;
+  font-family: var(--font-mono);
+  font-size: 0.8em;
+}
+.ai-prose li:last-child,
+.ai-prose li p { margin-bottom: 0; }
+.ai-prose blockquote {
+  margin: 0.5rem 0 0.875rem;
+  border-left: 3px solid var(--ai-accent);
+  padding: 0.1rem 0 0.1rem 0.85rem;
+  color: var(--ai-fg-2);
+  font-style: italic;
+}
+.ai-prose code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  border-radius: 6px;
+  padding: 0.15em 0.4em;
+  background: color-mix(in srgb, var(--ai-accent) 12%, var(--ai-soft));
+  border: 1px solid color-mix(in srgb, var(--ai-accent) 14%, transparent);
+  color: var(--ai-accent);
+  white-space: normal;
+}
+.ai-prose a {
+  color: var(--ai-accent);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--ai-accent) 40%, transparent);
+  text-underline-offset: 3px;
+}
+.ai-prose a:hover { color: var(--ai-accent-hover); text-decoration-color: currentColor; }
+.ai-prose hr {
+  border: 0;
+  border-top: 1px solid var(--ai-border-strong);
+  margin: 1.25rem 0;
+}
+.ai-prose strong { color: var(--ai-fg); font-weight: 700; }
+
+/* Code blocks — scroll horizontally, never break the shell */
+.ai-codeblock {
+  margin: 0.75rem 0 1rem;
+  border: 1px solid var(--ai-border-strong);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--ai-surface);
+  box-shadow: var(--shadow-sm);
+}
+.ai-codeblock-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.4rem 0.9rem;
+  border-bottom: 1px solid var(--ai-border);
+  background: var(--ai-soft);
+}
+.ai-codeblock pre {
+  margin: 0;
+  padding: 0.85rem 1rem;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  line-height: 1.65;
+  color: var(--ai-fg);
+  tab-size: 2;
+}
+.ai-codeblock pre code {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  white-space: pre;
+}
+
+/* Tables — wide content scrolls within a contained column */
+.ai-table-wrap {
+  margin: 0.75rem 0 1rem;
+  overflow-x: auto;
+  border: 1px solid var(--ai-border-strong);
+  border-radius: 12px;
+  max-width: 100%;
+}
+.ai-prose-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  min-width: 420px;
+}
+.ai-prose-table th {
+  text-align: left;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ai-fg-2);
+  background: var(--ai-soft);
+  padding: 0.55rem 0.85rem;
+  border-bottom: 1px solid var(--ai-border-strong);
+  white-space: nowrap;
+}
+.ai-prose-table td {
+  padding: 0.55rem 0.85rem;
+  border-bottom: 1px solid var(--ai-border);
+  vertical-align: top;
+  color: var(--ai-fg);
+}
+.ai-prose-table tr:last-child td { border-bottom: 0; }
+.ai-prose-table tbody tr:hover { background: var(--ai-soft); }
+.ai-prose-table td code,
+.ai-prose-table th code { background: transparent; border: 0; padding: 0; }
+
+/* Message entrance — only the latest completed message animates */
+@keyframes ai-msg-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.ai-msg-enter {
+  animation: ai-msg-in 240ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Streaming caret — a real "generating" affordance, not fake thinking. */
+.ai-stream-caret::after {
+  content: "";
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  margin-left: 2px;
+  vertical-align: -0.15em;
+  background: var(--ai-accent);
+  animation: ai-caret-blink 1s steps(2) infinite;
+}
+@keyframes ai-caret-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Message actions toolbar — hidden until the row is hovered/focused on
+   pointer devices, always visible (and opacity is never 0) on touch. */
+@media (hover: hover) and (pointer: fine) {
+  .ai-actions {
+    opacity: 0;
+    transition: opacity 150ms ease;
+  }
+  .ai-turn:hover .ai-actions,
+  .ai-actions:focus-within {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-msg-enter,
+  .ai-stream-caret::after,
+  .ai-status.is-working::before,
+  .ai-status.is-listening::before {
+    animation: none !important;
+  }
+}

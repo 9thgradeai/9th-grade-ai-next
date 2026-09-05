@@ -1,12 +1,15 @@
 "use client";
 
-// ChatGPT-style message bubble. AI replies render on the left with an avatar
-// and a properly formatted Markdown body; the learner's own messages render as
-// a right-aligned bubble. Includes action chips, copy, read-aloud and feedback
-// controls with smooth micro-interactions.
+// AI message row for the workspace. AI replies render on the left behind an
+// avatar with a prose Markdown body, quiet action chips and a compact action
+// toolbar (copy, read-aloud, feedback) that reveals on hover/focus. The
+// learner's own messages render as a right-aligned surface row.
+//
+// The visual layer is token-driven (`.ai-prose`, `.ai-avatar`, `.ai-actions`)
+// so both dashboard themes keep full contrast.
 
-import { useState } from "react";
-import { Check, Copy, ThumbsDown, ThumbsUp, Volume2, VolumeX, Loader2 } from "lucide-react";
+import { memo, useState } from "react";
+import { Check, Copy, ThumbsDown, ThumbsUp, Volume2, VolumeX } from "lucide-react";
 import Markdown from "./Markdown";
 import AiLogo from "@/components/ui/AiLogo";
 
@@ -25,17 +28,13 @@ export type ChatMessageData = {
   error?: boolean;
 };
 
-let activeTts: SpeechSynthesisUtterance | null = null;
-
 function detectSpeechLang(text: string): string {
   return /[ঀ-৿]/.test(text) ? "bn-BD" : "en-US";
 }
 
 function stopTts() {
-  if (typeof window !== "undefined" && window.speechSynthesis) {
-    window.speechSynthesis.cancel();
-  }
-  activeTts = null;
+  if (typeof window === "undefined") return;
+  window.speechSynthesis.cancel();
 }
 
 type ChatMessageProps = {
@@ -54,7 +53,7 @@ export function TypingIndicator() {
       {[0, 1, 2].map((i) => (
         <span
           key={i}
-          className="h-1.5 w-1.5 animate-bounce rounded-full bg-emerald-400"
+          className="h-1.5 w-1.5 animate-bounce rounded-full bg-[var(--dashboard-success)]"
           style={{ animationDelay: `${i * 150}ms` }}
         />
       ))}
@@ -62,7 +61,7 @@ export function TypingIndicator() {
   );
 }
 
-export default function ChatMessage({
+function ChatMessageInner({
   message,
   copied,
   feedbackSent,
@@ -72,10 +71,9 @@ export default function ChatMessage({
   onAction,
 }: ChatMessageProps) {
   const [speaking, setSpeaking] = useState(false);
-  const [isCopying, setIsCopying] = useState(false);
 
   const handleSpeak = () => {
-    if (typeof window === "undefined" || !window.speechSynthesis) return;
+    if (typeof window === "undefined") return;
     if (speaking) {
       stopTts();
       setSpeaking(false);
@@ -84,32 +82,16 @@ export default function ChatMessage({
     stopTts();
     const u = new SpeechSynthesisUtterance(message.text);
     u.lang = detectSpeechLang(message.text);
-    u.onend = () => {
-      setSpeaking(false);
-      activeTts = null;
-    };
-    u.onerror = () => {
-      setSpeaking(false);
-      activeTts = null;
-    };
-    activeTts = u;
+    u.onend = () => setSpeaking(false);
+    u.onerror = () => setSpeaking(false);
     window.speechSynthesis.speak(u);
     setSpeaking(true);
-  };
-
-  const handleCopy = async (text: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      onCopy(message.id, message.text);
-    } catch {
-      // ignore clipboard failures
-    }
   };
 
   if (message.role === "user") {
     return (
       <div className="flex justify-end">
-        <div className="max-w-[88%] whitespace-pre-wrap rounded-2xl rounded-br-md bg-zinc-800 px-4 py-2.5 text-sm leading-relaxed text-zinc-100 shadow-sm sm:max-w-[72%]">
+        <div className="max-w-[88%] whitespace-pre-wrap rounded-2xl rounded-br-md bg-[var(--dashboard-primary-subtle)] px-4 py-2.5 text-sm leading-relaxed text-[var(--text-primary)] shadow-sm ring-1 ring-[var(--border-strong)]/40 sm:max-w-[72%]">
           {message.text}
         </div>
       </div>
@@ -120,18 +102,21 @@ export default function ChatMessage({
 
   return (
     <div className="flex items-start gap-3">
-      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-500 ring-1 ring-emerald-500/20">
+      <div className="ai-avatar h-8 w-8">
         <AiLogo solid={false} className="h-4 w-4" />
       </div>
       <div className="min-w-0 flex-1">
         {message.error ? (
-          <div className="rounded-xl border border-red-500/20 bg-red-500/10 px-3 py-2.5 text-sm text-red-300">
+          <div className="rounded-xl border border-red-500/25 bg-[var(--dashboard-danger-subtle)] px-3 py-2.5 text-sm text-red-300">
             {message.text}
           </div>
         ) : (
           <div className="min-w-0">
             <Markdown text={message.text} />
             {message.text === "" && streaming && <TypingIndicator />}
+            {message.text !== "" && streaming && (
+              <span className="ai-stream-caret" role="presentation" aria-hidden="true" />
+            )}
           </div>
         )}
 
@@ -142,7 +127,7 @@ export default function ChatMessage({
                 key={`${message.id}-${a.id}`}
                 type="button"
                 onClick={() => onAction(a.labelBn)}
-                className="rounded-lg border border-emerald-500/25 bg-emerald-500/10 px-2.5 py-1 text-xs text-emerald-300 transition-colors hover:bg-emerald-500/20"
+                className="rounded-lg border border-[var(--dashboard-primary)]/25 bg-[var(--dashboard-primary-subtle)] px-2.5 py-1 text-xs text-[var(--dashboard-primary)] transition-colors hover:bg-[var(--dashboard-primary)]/15"
               >
                 {a.labelBn}
               </button>
@@ -151,50 +136,45 @@ export default function ChatMessage({
         )}
 
         {showMeta && (
-          <div className="mt-1 flex items-center gap-0.5 opacity-60 transition-opacity hover:opacity-100">
+          <div className="ai-actions -ml-2 mt-1 flex items-center gap-0.5">
             <button
               type="button"
               onClick={() => onCopy(message.id, message.text)}
-              className="flex h-7 w-7 items-center justify-center rounded-lg text-zinc-400 transition-colors hover:text-emerald-400"
+              className="ai-icon-btn h-8 w-8"
               aria-label="Copy response"
               title="Copy"
             >
-              {copied && <Check className="h-3.5 w-3.5 text-emerald-400" />}{!copied && <Copy className="h-3.5 w-3.5" />}
+              {copied && <Check className="h-4 w-4 text-[var(--dashboard-success)]" />}
+              {!copied && <Copy className="h-4 w-4" />}
             </button>
             <button
               type="button"
               onClick={handleSpeak}
-              className={`flex h-7 w-7 items-center justify-center rounded-lg transition-colors ${
-                speaking ? "text-emerald-400" : "text-zinc-400 hover:text-emerald-400"
-              }`}
+              className={`ai-icon-btn h-8 w-8 ${speaking ? "text-[var(--dashboard-success)]" : ""}`}
               aria-label={speaking ? "Stop reading aloud" : "Read aloud"}
               title={speaking ? "Stop" : "Read aloud"}
             >
-              {speaking ? <VolumeX className="h-3.5 w-3.5" /> : <Volume2 className="h-3.5 w-3.5" />}
+              {speaking ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
             </button>
             <button
               type="button"
               onClick={() => onFeedback(message.messageId, "HELPFUL")}
               disabled={feedbackSent}
-              className={`flex h-7 w-7 items-center justify-center rounded-lg transition-colors ${
-                feedbackSent ? "text-emerald-400" : "text-zinc-400 hover:text-emerald-400"
-              }`}
+              className={`ai-icon-btn h-8 w-8 ${feedbackSent ? "text-[var(--dashboard-success)]" : ""}`}
               aria-label="Helpful"
               title="Helpful"
             >
-              <ThumbsUp className="h-3.5 w-3.5" />
+              <ThumbsUp className="h-4 w-4" />
             </button>
             <button
               type="button"
               onClick={() => onFeedback(message.messageId, "NOT_HELPFUL")}
               disabled={feedbackSent}
-              className={`flex h-7 w-7 items-center justify-center rounded-lg transition-colors ${
-                feedbackSent ? "text-red-400" : "text-zinc-400 hover:text-red-400"
-              }`}
+              className={`ai-icon-btn h-8 w-8 ${feedbackSent ? "text-[var(--dashboard-danger)]" : ""}`}
               aria-label="Not helpful"
               title="Not helpful"
             >
-              <ThumbsDown className="h-3.5 w-3.5" />
+              <ThumbsDown className="h-4 w-4" />
             </button>
           </div>
         )}
@@ -202,3 +182,5 @@ export default function ChatMessage({
     </div>
   );
 }
+
+export default memo(ChatMessageInner);

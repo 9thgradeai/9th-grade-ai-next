@@ -1,11 +1,11 @@
 "use client";
 
 // Typed renderer for the AI study coach's structured blocks. Each block kind
-// renders as a native card (progress, weakness, recommendation, practice /
-// revision / exam action). Action chips execute allowlisted UI actions:
-// switching dashboard tabs, opening the question bank filtered to a question,
-// or refreshing the home feed. The leading text block is omitted here — the
-// chat bubble already renders it as prose.
+// renders as a native insight card (progress, weakness, recommendation,
+// practice / revision / exam action). Action chips execute allowlisted UI
+// actions: switching dashboard tabs, opening the question bank filtered to a
+// question, or refreshing the home feed. The leading text block is omitted
+// here — the chat bubble already renders it as prose.
 
 import { useMemo } from "react";
 import { motion } from "framer-motion";
@@ -100,7 +100,7 @@ function ActionChips({ actions, onDispatch }: { actions?: AgentActionDto[]; onDi
           key={`${a.type}-${i}`}
           type="button"
           onClick={() => onDispatch(a)}
-          className="group inline-flex items-center gap-1 rounded-lg border border-[var(--primary)]/25 bg-[var(--dashboard-primary-subtle)] px-2.5 py-1 text-xs font-medium text-[var(--dashboard-primary)] transition-colors hover:border-[var(--primary)]/50"
+          className="ai-chip group"
         >
           {a.label}
           <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
@@ -110,7 +110,8 @@ function ActionChips({ actions, onDispatch }: { actions?: AgentActionDto[]; onDi
   );
 }
 
-const CARD = "rounded-xl border border-[var(--primary)]/15 bg-[var(--dashboard-primary-subtle)]/60 p-3.5 text-left shadow-sm";
+const CARD =
+  "rounded-xl border border-[var(--dashboard-border-muted)] bg-[var(--dashboard-surface-muted)]/80 p-3.5 text-left shadow-sm";
 
 function BlockCard({ block, onDispatch }: { block: AgentBlockDto; onDispatch: (a: AgentActionDto) => void }) {
   switch (block.type) {
@@ -118,13 +119,14 @@ function BlockCard({ block, onDispatch }: { block: AgentBlockDto; onDispatch: (a
       return (
         <div className={CARD}>
           <div className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-[var(--dashboard-text-muted)]">
-            <TrendingUp className="h-3.5 w-3.5 text-[var(--accent)]" aria-hidden="true" />
+            <TrendingUp className="h-3.5 w-3.5 text-[var(--dashboard-primary)]" aria-hidden="true" />
             Progress
           </div>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 text-sm">
-            <span className="font-mono font-bold text-[var(--dashboard-primary)]">{Math.round(block.accuracy)}%</span>
+            <span className="font-mono text-base font-bold text-[var(--dashboard-primary)]">{Math.round(block.accuracy)}%</span>
             <span className="text-[var(--dashboard-text-secondary)]">
-              streak <b>{block.streak}</b> · questions <b>{block.questionsAnswered}</b>
+              streak <b className="text-[var(--dashboard-text-primary)]">{block.streak}</b> · questions{" "}
+              <b className="text-[var(--dashboard-text-primary)]">{block.questionsAnswered}</b>
             </span>
           </div>
           <ActionChips actions={block.actions} onDispatch={onDispatch} />
@@ -150,7 +152,7 @@ function BlockCard({ block, onDispatch }: { block: AgentBlockDto; onDispatch: (a
     case "study_recommendation":
       return (
         <div className={CARD}>
-          <div className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-[var(--accent)]">
+          <div className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-[var(--dashboard-primary)]">
             <Target className="h-3.5 w-3.5" aria-hidden="true" />
             Recommended next step
           </div>
@@ -162,7 +164,7 @@ function BlockCard({ block, onDispatch }: { block: AgentBlockDto; onDispatch: (a
     case "practice_action":
       return (
         <div className={CARD}>
-          <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-[var(--accent)]">
+          <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-[var(--dashboard-primary)]">
             <FileQuestion className="h-3.5 w-3.5" aria-hidden="true" />
             Practice
             {block.questionCount ? (
@@ -176,7 +178,7 @@ function BlockCard({ block, onDispatch }: { block: AgentBlockDto; onDispatch: (a
     case "revision_action":
       return (
         <div className={CARD}>
-          <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-[var(--accent)]">
+          <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-[var(--dashboard-primary)]">
             <BookOpen className="h-3.5 w-3.5" aria-hidden="true" />
             Revision
           </div>
@@ -187,7 +189,7 @@ function BlockCard({ block, onDispatch }: { block: AgentBlockDto; onDispatch: (a
     case "exam_action":
       return (
         <div className={CARD}>
-          <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-[var(--accent)]">
+          <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-[var(--dashboard-primary)]">
             <ListChecks className="h-3.5 w-3.5" aria-hidden="true" />
             Mock exam
           </div>

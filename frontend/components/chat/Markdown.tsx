@@ -4,9 +4,14 @@
 //
 // Renders the subset of Markdown the AI models emit — bold, italic, inline
 // code, fenced code blocks, ATX headings, bullet/numbered lists, blockquotes,
-// links and horizontal rules — while aggressively cleaning the decorative
-// asterisk noise (stray `**`, `****`, empty emphasis) that makes
+// tables, links and horizontal rules — while aggressively cleaning the
+// decorative asterisk noise (stray `**`, `****`, empty emphasis) that makes
 // raw responses look broken.
+//
+// The visual layer lives in `.ai-prose` (see the AI workspace design system in
+// `app/globals.css`) so light + dark themes resolve every node with tokenized
+// colors, and tables scroll horizontally inside the column without breaking
+// the application shell.
 
 import { Fragment, useMemo, useState, type ReactNode } from "react";
 import { Check, Copy } from "lucide-react";
@@ -18,6 +23,7 @@ type Block =
   | { type: "ol"; items: string[] }
   | { type: "quote"; content: string }
   | { type: "code"; lang: string; code: string }
+  | { type: "table"; headers: string[]; rows: string[][] }
   | { type: "hr" };
 
 // Lines that are only stray decoration (1–2 stars/dashes/underscores).
@@ -29,15 +35,27 @@ const HEADING = /^(#{1,4})\s+(.+)$/;
 const QUOTE = /^>\s?(.*)$/;
 const BULLET = /^\s*[-*]\s+(.+)$/;
 const NUMBERED = /^\s*\d+[.)]\s+(.+)$/;
+// Pipe table divider, e.g. `| :--- | ---: |`.
+const TABLE_SEP = /^\s*\|?[\s:|-]*:?-{2,}[\s:|-]*\|?\s*$/;
+const TABLE_ROW = /^\s*\|/;
 
 function cleanInline(raw: string): string {
   // Remove empty emphasis like `** **`, `* *`, `**  **`.
   return raw.replace(/(^|[\s,.;:()])[*]{1,2}\s+[*]{1,2}(?=[\s,.;:()]|$)/g, "$1 ");
 }
 
+function splitRow(line: string): string[] {
+  return line
+    .replace(/^\s*\|/, "")
+    .replace(/\|\s*$/, "")
+    .split("|")
+    .map((cell) => cell.trim());
+}
+
 function tokenize(text: string): Block[] {
   const lines = text
     .replace(/\r\n?/g, "\n")
+    .replace(/^\s*\|{3,}\s*$/gm, "")
     .replace(/\n{3,}/g, "\n\n")
     .split("\n")
     .map((l) => l.replace(/\s+$/g, ""));
@@ -76,6 +94,23 @@ function tokenize(text: string): Block[] {
       continue;
     }
 
+    // Pipe table: a table header row followed by a divider row.
+    const hasPipe = line.includes("|");
+    if (hasPipe && i + 1 < lines.length && TABLE_SEP.test(lines[i + 1])) {
+      const headers = splitRow(line);
+      i += 2;
+      const rows: string[][] = [];
+      while (i < lines.length && lines[i].trim() && TABLE_ROW.test(lines[i]) && !TABLE_SEP.test(lines[i])) {
+        const cells = splitRow(lines[i]);
+        if (cells.length > 0) rows.push(cells);
+        i++;
+      }
+      if (headers.length > 0) {
+        blocks.push({ type: "table", headers, rows });
+        continue;
+      }
+    }
+
     const heading = line.match(HEADING);
     if (heading) {
       blocks.push({ type: "heading", level: heading[1].length, content: heading[2] });
@@ -112,7 +147,8 @@ function tokenize(text: string): Block[] {
           !NUMBERED.test(lines[i]) &&
           !HEADING.test(lines[i]) &&
           !FENCE.test(lines[i]) &&
-          !QUOTE.test(lines[i])
+          !QUOTE.test(lines[i]) &&
+          !(TABLE_ROW.test(lines[i]) && i + 1 < lines.length && TABLE_SEP.test(lines[i + 1]))
         ) {
           items[items.length - 1] += " " + lines[i].trim();
           i++;
@@ -137,7 +173,8 @@ function tokenize(text: string): Block[] {
           !NUMBERED.test(lines[i]) &&
           !HEADING.test(lines[i]) &&
           !FENCE.test(lines[i]) &&
-          !QUOTE.test(lines[i])
+          !QUOTE.test(lines[i]) &&
+          !(TABLE_ROW.test(lines[i]) && i + 1 < lines.length && TABLE_SEP.test(lines[i + 1]))
         ) {
           items[items.length - 1] += " " + lines[i].trim();
           i++;
@@ -158,7 +195,8 @@ function tokenize(text: string): Block[] {
       !HEADING.test(lines[i]) &&
       !QUOTE.test(lines[i]) &&
       !BULLET.test(lines[i]) &&
-      !NUMBERED.test(lines[i])
+      !NUMBERED.test(lines[i]) &&
+      !(TABLE_ROW.test(lines[i]) && i + 1 < lines.length && TABLE_SEP.test(lines[i + 1]))
     ) {
       para.push(lines[i].trim());
       i++;
@@ -211,7 +249,7 @@ function renderInline(text: string, keyBase: string): ReactNode[] {
         nodes.push(
           <code
             key={`${keyBase}-c${token++}`}
-            className="rounded bg-zinc-800/80 px-1.5 py-0.5 font-mono text-[0.85em] text-emerald-300"
+            className="font-mono"
           >
             {text.slice(i + 1, end)}
           </code>,
@@ -234,7 +272,6 @@ function renderInline(text: string, keyBase: string): ReactNode[] {
               href={url}
               target="_blank"
               rel="noreferrer noopener"
-              className="text-emerald-400 underline decoration-emerald-500/40 underline-offset-2"
             >
               {renderInline(text.slice(i + 1, close), `${keyBase}-l${token}`)}
             </a>,
@@ -300,11 +337,11 @@ function renderInline(text: string, keyBase: string): ReactNode[] {
   return nodes;
 }
 
-const HEADING_CLASS: Record<number, string> = {
-  1: "mt-4 mb-2 text-[15px] font-bold text-zinc-100",
-  2: "mt-4 mb-2 text-[15px] font-bold text-zinc-100",
-  3: "mt-3 mb-1.5 text-sm font-semibold text-zinc-100",
-  4: "mt-3 mb-1.5 text-sm font-semibold text-zinc-100",
+const HEADING_TAG: Record<number, "h1" | "h2" | "h3" | "h4"> = {
+  1: "h3",
+  2: "h3",
+  3: "h4",
+  4: "h4",
 };
 
 function CodeBlock({ lang, code }: { lang: string; code: string }) {
@@ -321,22 +358,22 @@ function CodeBlock({ lang, code }: { lang: string; code: string }) {
   };
 
   return (
-    <div className="my-3 overflow-hidden rounded-xl border border-[#26304a] bg-[#0b1020]">
-      <div className="flex items-center justify-between border-b border-[#26304a] bg-[#0d1424] px-3 py-1.5">
-        <span className="font-mono text-[10px] uppercase tracking-wider text-[#7a8aa8]">
+    <div className="ai-codeblock">
+      <div className="ai-codeblock-header">
+        <span className="font-mono text-[10px] uppercase tracking-wider text-[var(--dashboard-text-muted)]">
           {lang || "code"}
         </span>
         <button
           type="button"
           onClick={() => void copy()}
-          className="flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[10px] text-[#7a8aa8] transition-colors hover:text-emerald-300"
+          className="flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[10px] font-mono text-[var(--dashboard-text-muted)] transition-colors hover:text-[var(--dashboard-primary)]"
           aria-label="Copy code"
         >
-          {copied ? <Check className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3" />}
+          {copied ? <Check className="h-3 w-3 text-[var(--dashboard-success)]" /> : <Copy className="h-3 w-3" />}
           {copied ? "Copied" : "Copy"}
         </button>
       </div>
-      <pre className="overflow-x-auto p-3 font-mono text-[13px] leading-relaxed text-[#e6edf7]">
+      <pre>
         <code>{code}</code>
       </pre>
     </div>
@@ -347,22 +384,23 @@ function renderBlock(block: Block, index: number): ReactNode {
   switch (block.type) {
     case "paragraph":
       return (
-        <p key={index} className="my-1.5 whitespace-pre-line text-sm leading-relaxed text-zinc-300">
+        <p key={index} className="whitespace-pre-line">
           {renderInline(block.content, `p${index}`)}
         </p>
       );
-    case "heading":
+    case "heading": {
+      const Tag = HEADING_TAG[block.level];
       return (
-        <p key={index} className={HEADING_CLASS[block.level]}>
+        <Tag key={index}>
           {renderInline(block.content, `h${index}`)}
-        </p>
+        </Tag>
       );
+    }
     case "ul":
       return (
-        <ul key={index} className="my-2 space-y-1.5 pl-5 text-sm leading-relaxed text-zinc-300">
+        <ul key={index}>
           {block.items.map((item, itemIndex) => (
-            <li key={itemIndex} className="relative pl-1">
-              <span className="absolute -left-4 top-0 h-1.5 w-1.5 rounded-full bg-emerald-500/70" aria-hidden="true" />
+            <li key={itemIndex}>
               {renderInline(item, `u${index}-${itemIndex}`)}
             </li>
           ))}
@@ -370,9 +408,9 @@ function renderBlock(block: Block, index: number): ReactNode {
       );
     case "ol":
       return (
-        <ol key={index} className="my-2 space-y-1.5 pl-5 text-sm leading-relaxed text-zinc-300">
+        <ol key={index}>
           {block.items.map((item, itemIndex) => (
-            <li key={itemIndex} className="list-decimal pl-1 marker:text-emerald-500/80">
+            <li key={itemIndex}>
               {renderInline(item, `o${index}-${itemIndex}`)}
             </li>
           ))}
@@ -380,14 +418,37 @@ function renderBlock(block: Block, index: number): ReactNode {
       );
     case "quote":
       return (
-        <blockquote key={index} className="my-2 border-l-2 border-emerald-500/40 pl-3 text-sm leading-relaxed text-zinc-400 italic">
+        <blockquote key={index}>
           {renderInline(block.content, `q${index}`)}
         </blockquote>
       );
     case "code":
       return <CodeBlock key={index} lang={block.lang} code={block.code} />;
+    case "table":
+      return (
+        <div key={index} className="ai-table-wrap">
+          <table className="ai-prose-table">
+            <thead>
+              <tr>
+                {block.headers.map((h, hi) => (
+                  <th key={hi}>{renderInline(h, `th${index}-${hi}`)}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {block.rows.map((row, ri) => (
+                <tr key={ri}>
+                  {row.map((cell, ci) => (
+                    <td key={ci}>{renderInline(cell, `td${index}-${ri}-${ci}`)}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
     case "hr":
-      return <hr key={index} className="my-3 border-zinc-700/60" />;
+      return <hr key={index} />;
     default:
       return null;
   }
@@ -395,5 +456,6 @@ function renderBlock(block: Block, index: number): ReactNode {
 
 export default function Markdown({ text, className = "" }: { text: string; className?: string }) {
   const blocks = useMemo(() => tokenize(text), [text]);
-  return <div className={className}>{blocks.map(renderBlock)}</div>;
+  const cls = className ? `ai-prose ${className}` : "ai-prose";
+  return <div className={cls}>{blocks.map(renderBlock)}</div>;
 }
