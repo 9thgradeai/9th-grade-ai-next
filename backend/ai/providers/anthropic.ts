@@ -52,12 +52,13 @@ function toCoreMessages(
 
 export class AnthropicProvider implements LLMProvider {
   readonly name = "anthropic" as const;
-  readonly model = ANTHROPIC_MODEL;
+  readonly model: string;
   readonly supportsVision = true;
 
   private client;
 
-  constructor(apiKey: string) {
+  constructor(apiKey: string, model: string = ANTHROPIC_MODEL) {
+    this.model = model;
     this.client = createAnthropic({ apiKey });
   }
 

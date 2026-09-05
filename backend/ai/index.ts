@@ -30,3 +30,13 @@ export type { UsageSummary } from "./usage/usage";
 export { getMemories, upsertMemory, setExamGoal } from "./memory/memory-store";
 export { getStudentModel } from "./student-model";
 export type { StudentModel } from "./student-model";
+
+// AI agent (Phase 1)
+export { createAgentTurn } from "./application/services";
+export type { AgentTurnRequest } from "./application/services";
+export { runAgentTurn } from "./agent/loop";
+export type { AgentTurnResult, AgentStatus } from "./agent/loop";
+export { validateAgentRequest } from "./schemas";
+export { validateAgentOutput, agentResponseText } from "./agent/response";
+export type { AgentResponse, AgentBlock, AgentAction } from "./agent/response";
+export { MAX_AGENT_STEPS } from "./agent/prompt";

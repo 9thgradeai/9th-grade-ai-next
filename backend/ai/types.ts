@@ -1,7 +1,7 @@
 // Core AI domain types shared across the backend AI layer.
 // Pure types — no server-only imports so the modules stay testable.
 
-export type AITask = "tutor" | "solver" | "assistant";
+export type AITask = "tutor" | "solver" | "assistant" | "agent";
 
 export type AIIntent =
   | "tutor"

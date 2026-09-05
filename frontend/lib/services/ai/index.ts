@@ -9,6 +9,8 @@ export { solve } from "./solver";
 export type { SolverTurnOptions } from "./solver";
 export { askAssistant } from "./assistant";
 export type { AssistantTurnOptions } from "./assistant";
+export { runAgentTurn } from "./agent";
+export type { AgentTurnOptions, AgentToolEvent } from "./agent";
 export {
   listConversations,
   createConversation,

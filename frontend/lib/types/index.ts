@@ -289,6 +289,78 @@ export namespace Client {
     content: string;
   };
 
+  // ── AI study coach (tool-using agent) ─────────────
+  export type AgentActionType =
+    | "practice"
+    | "revision"
+    | "mock_exam"
+    | "open_tab"
+    | "open_question"
+    | "open_wrong_answers"
+    | "open_study_plan"
+    | "refresh";
+
+  export type AgentActionDto = {
+    type: AgentActionType;
+    label: string;
+    params?: Record<string, unknown>;
+  };
+
+  export type AgentBlockDto =
+    | { type: "text"; text: string }
+    | {
+        type: "study_recommendation";
+        title: string;
+        reason: string;
+        subject?: string;
+        topic?: string;
+        actions: AgentActionDto[];
+      }
+    | {
+        type: "weakness";
+        subject: string;
+        topic: string;
+        accuracy: number;
+        attempts: number;
+        wrongCount: number;
+        advice: string;
+        actions: AgentActionDto[];
+      }
+    | {
+        type: "practice_action";
+        label: string;
+        questionCount?: number;
+        actions?: AgentActionDto[];
+      }
+    | {
+        type: "revision_action";
+        label: string;
+        actions?: AgentActionDto[];
+      }
+    | {
+        type: "exam_action";
+        label: string;
+        actions?: AgentActionDto[];
+      }
+    | {
+        type: "progress";
+        accuracy: number;
+        streak: number;
+        questionsAnswered: number;
+        actions?: AgentActionDto[];
+      };
+
+  export type AgentTurnResultDto = {
+    conversationId: string;
+    runId: string;
+    provider: string;
+    model: string;
+    steps: number;
+    text: string;
+    blocks: AgentBlockDto[];
+    source: string;
+  };
+
   export type Notification = {
     id: string;
     title: string;
@@ -855,3 +927,7 @@ export type AdvisorPlanDto = Client.AdvisorPlanDto;
 export type StudentModelDto = Client.StudentModelDto;
 export type UsageSummaryDto = Client.UsageSummaryDto;
 export type ChatTurn = Client.ChatTurn;
+export type AgentActionType = Client.AgentActionType;
+export type AgentActionDto = Client.AgentActionDto;
+export type AgentBlockDto = Client.AgentBlockDto;
+export type AgentTurnResultDto = Client.AgentTurnResultDto;

@@ -113,6 +113,27 @@ ever rebuilt outside migrations:
 - `USER`
 - `SYSTEM`
 
+#### AgentRunStatus
+- `IN_PROGRESS` — run started but not finalized
+- `COMPLETED` — loop produced a validated typed response
+- `FAILED` — provider/validation failure (errorCode set)
+
+#### LearningEventType
+- `attempt` — a question attempt recorded
+- `practice` — a practice session started/completed
+- `mock_exam` — a mock exam event
+- `review` — a revision/spaced-repetition review event
+- `milestone` — a derived milestone (streak, level-up)
+
+#### MistakeErrorType
+- `CONCEPTUAL` — misunderstanding of a concept
+- `CARELESS` — slip/reading error
+- `FORMULA` — formula misuse
+- `UNIT` — units/conversion errors
+- `TIMING` — time management on timed practice
+- `RECALL` — forgetfulness / inability to recall
+- `OTHER` — the classifier could not determine a category
+
 #### AIUsageTask
 - `TUTOR`
 - `SOLVER`
@@ -170,7 +191,7 @@ Per-question mastery stage in the mistake-practice model (see `UserQuestionProgr
  - `emailVerifyExpires` DateTime? — expiry for `emailVerifyToken`
  - `passwordResetToken` String? — SHA-256 hash of the password-reset token (raw token is emailed)
  - `passwordResetExpires` DateTime? — expiry for `passwordResetToken` (1 hour)
- - Relations: `progress`, `bookmarks`, `studyTasks`, `notifications`, `sessions`, `aiConversations`, `aiMemories`, `aiUsage`, `aiFeedback`
+ - Relations: `progress`, `bookmarks`, `studyTasks`, `notifications`, `sessions`, `aiConversations`, `aiMemories`, `aiUsage`, `aiFeedback`, `agentRuns`, `learningEvents`
 
 #### Subject
 - `id` Int — PK, auto-increment
@@ -532,6 +553,10 @@ Per-user record of every answered question (practice, mock test, daily quiz). Po
 - `topic` String
 - `correct` Boolean
 - `source` String — `practice` | `mock` | `daily`
+- `selectedAnswer` String — default `""` (the learner's chosen option, for wrong-answer analysis)
+- `durationSec` Int — default `0` (time spent on the question)
+- `confidence` Int? — optional learner-reported confidence 0–100
+- `errorType` MistakeErrorType? — server-classified mistake category (Phase 2 wrong-answer analytics; written by the AI classifier, never trust client-submitted values)
 - `createdAt` DateTime — default `now()`
 - Indexes: `[userId, createdAt]`, `[userId, subjectId]`, `[userId, subjectName]`, `[userId, topic]` (the last two back the raw-SQL analytics group-bys)
 
@@ -643,7 +668,7 @@ A persisted AI chat thread (Tutor, Assistant, or Solver), always owned by one us
 - `topicPath` String — default `""` (Topic path when the conversation is topic-scoped)
 - `createdAt` DateTime — default `now()`
 - `updatedAt` DateTime — updatedAt
-- Relations: `messages`
+- Relations: `messages`, `agentRuns`
 - Indexes: `[userId, updatedAt]`, `[userId, kind, updatedAt]` (list queries order by `pinned` desc first)
 
 #### AIMessage
@@ -678,6 +703,49 @@ Persistent learning memory about the learner. Written deliberately by the AI app
 - `updatedAt` DateTime — updatedAt
 - Unique constraint: `[userId, type, key]`
 - Index: `[userId, type]`
+
+#### AgentRun
+One bounded study-coach run. Written by `backend/ai/agent/persistence.ts`; keys the typed-block audit trail. Never stores chain-of-thought.
+- `id` String (cuid) — PK
+- `userId` String — FK to User (cascade)
+- `user` User — relation
+- `conversationId` String? — FK to AIConversation (set-null; the run's chat thread)
+- `conversation` AIConversation? — relation
+- `intent` String — default `""` (e.g. `agent:recommend`)
+- `status` AgentRunStatus — default `IN_PROGRESS` (`IN_PROGRESS | COMPLETED | FAILED`)
+- `steps` Int — default `0` (tool/model turns used, ≤ MAX_AGENT_STEPS)
+- `model` String? — default `""`; `provider` String? — default `""`
+- `inputTokens` Int / `outputTokens` Int — default `0`
+- `latencyMs` Int — default `0`
+- `errorCode` String? — default `""`
+- `responseJson` Json? — validated final AgentResponse blocks (typed, chain-of-thought excluded)
+- `createdAt` / `updatedAt`
+- Relations: `toolCalls`
+- Indexes: `[userId, createdAt]`, `[conversationId]`
+
+#### AgentToolCall
+A single tool invocation inside an AgentRun loop.
+- `id` String (cuid) — PK
+- `runId` String — FK to AgentRun (cascade)
+- `run` AgentRun — relation
+- `name` String — allowlisted tool name
+- `argumentsJson` Json — validated tool arguments
+- `resultJson` Json? — tool result summary
+- `durationMs` Int — default `0`; `success` Boolean — default `true`; `errorCode` String? — default `""`
+- `createdAt`
+- Index: `[runId]`
+
+#### LearningEvent
+Append-only learning+review activity feed (Phase 2 learning-events pipeline: attempt, practice, mock, review, milestone).
+- `id` String (cuid) — PK
+- `userId` String — FK to User (cascade)
+- `user` User — relation
+- `type` LearningEventType — `attempt | practice | mock_exam | review | milestone`
+- `subjectId` Int? / `topicId` Int? / `questionId` Int? — optional FK context
+- `metadata` Json? — replay payload: attempt state, score, session id, …
+- `occurredAt` DateTime — default `now()` (event time)
+- `createdAt`
+- Indexes: `[userId, occurredAt]`, `[userId, type]`, `[userId, subjectId, occurredAt]`, `[userId, topicId, occurredAt]`
 
 #### AIUsage
 Usage/cost/observability ledger for every AI call. No prompt content stored.

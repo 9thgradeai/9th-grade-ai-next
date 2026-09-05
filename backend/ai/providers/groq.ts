@@ -34,12 +34,13 @@ function toCoreMessages(messages: AIMessageInput[]): CoreMessage[] {
 
 export class GroqProvider implements LLMProvider {
   readonly name = "groq" as const;
-  readonly model = GROQ_MODEL;
+  readonly model: string;
   readonly supportsVision = false;
 
   private client;
 
-  constructor(apiKey: string) {
+  constructor(apiKey: string, model: string = GROQ_MODEL) {
+    this.model = model;
     this.client = createGroq({ apiKey });
   }
 

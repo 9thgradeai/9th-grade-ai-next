@@ -127,6 +127,40 @@ enum MasteryStatus {
   MASTERED
 }
 
+enum AgentRunStatus {
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+}
+
+enum LearningEventType {
+  SESSION_STARTED
+  SESSION_COMPLETED
+  QUESTION_ATTEMPTED
+  QUESTION_CORRECT
+  QUESTION_WRONG
+  QUESTION_SKIPPED
+  TOPIC_REVIEWED
+  REVISION_COMPLETED
+  MOCK_EXAM_COMPLETED
+  AI_EXPLANATION_REQUESTED
+  AI_TUTOR_SESSION
+  STUDY_PLAN_CREATED
+  STUDY_PLAN_COMPLETED
+}
+
+enum MistakeErrorType {
+  CONCEPTUAL_GAP
+  CARELESS_MISTAKE
+  MEMORY_FAILURE
+  MISREADING
+  CALCULATION_ERROR
+  CONFUSION
+  GUESSING
+  TIME_PRESSURE
+  UNKNOWN
+}
+
 // ── Auth ──────────────────────────────────────────────────
 model User {
   id           String         @id @default(cuid())
@@ -190,6 +224,8 @@ model User {
   studyTaskCompletions    StudyTaskCompletion[]
   userBadges              UserBadge[]
   questionProgress        UserQuestionProgress[]
+  agentRuns               AgentRun[]
+  learningEvents          LearningEvent[]
 
   // NOTE: `email` and `handle` are @unique — their backing indexes already
   // serve lookups; explicit duplicates were removed (write amplification).
@@ -710,6 +746,11 @@ model QuestionAttempt {
   topic      String    @default("")
   correct    Boolean
   source     String    @default("practice") // practice | mock | daily
+  // ── Extended fields (Phase 1 — agent foundation) ──
+  selectedAnswer String @default("")
+  durationSec    Int    @default(0)
+  confidence     Int?             // 0–100, optional learner confidence
+  errorType      MistakeErrorType? // server-validated error classification
   createdAt  DateTime  @default(now())
 
   @@index([userId, createdAt])
@@ -836,6 +877,7 @@ model AIConversation {
   createdAt  DateTime           @default(now())
   updatedAt  DateTime           @updatedAt
   messages   AIMessage[]
+  agentRuns  AgentRun[]
 
   @@index([userId, updatedAt])
   @@index([userId, kind, updatedAt])
@@ -974,4 +1016,65 @@ model UserQuestionProgress {
   @@index([userId, nextReviewAt])
   // FK-side: Question cascade deletes must not seq-scan this table.
   @@index([questionId])
+}
+
+// ══════════════════════════════════════════════════════════════════════
+//  AI Agent (Phase 1 — agent foundation)
+// ══════════════════════════════════════════════════════════════════════
+
+model AgentRun {
+  id             String          @id @default(cuid())
+  userId         String
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  conversationId String?
+  conversation   AIConversation? @relation(fields: [conversationId], references: [id], onDelete: SetNull)
+  intent         String          @default("")
+  status         AgentRunStatus  @default(IN_PROGRESS)
+  steps          Int             @default(0)
+  model          String?         @default("")
+  provider       String?         @default("")
+  inputTokens    Int             @default(0)
+  outputTokens   Int             @default(0)
+  latencyMs      Int             @default(0)
+  errorCode      String?         @default("")
+  responseJson   Json?           // validated final AgentResponse blocks (never chain-of-thought)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  toolCalls      AgentToolCall[]
+
+  @@index([userId, createdAt])
+  @@index([conversationId])
+}
+
+model AgentToolCall {
+  id            String   @id @default(cuid())
+  runId         String
+  run           AgentRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  name          String
+  argumentsJson Json
+  resultJson    Json?
+  durationMs    Int      @default(0)
+  success       Boolean  @default(true)
+  errorCode     String?  @default("")
+  createdAt     DateTime @default(now())
+
+  @@index([runId])
+}
+
+model LearningEvent {
+  id         String            @id @default(cuid())
+  userId     String
+  user       User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type       LearningEventType
+  subjectId  Int?
+  topicId    Int?
+  questionId Int?
+  metadata   Json?             // replay payload: attempt state, score, session id, …
+  occurredAt DateTime          @default(now())
+  createdAt  DateTime          @default(now())
+
+  @@index([userId, occurredAt])
+  @@index([userId, type])
+  @@index([userId, subjectId, occurredAt])
+  @@index([userId, topicId, occurredAt])
 }

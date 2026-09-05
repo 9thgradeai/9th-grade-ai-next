@@ -18,7 +18,7 @@ import { motion, AnimatePresence, spring } from "framer-motion";
 import {
   Mic, MicOff, Send, X, Loader2,
   Plus, RefreshCw, GraduationCap, BrainCircuit, PanelLeft,
-  ThumbsUp, ThumbsDown, Volume2, VolumeX, Copy,
+  ThumbsUp, ThumbsDown, Volume2, VolumeX, Copy, Target,
 } from "lucide-react";
 import AiLogo from "@/components/ui/AiLogo";
 import { PRESET_PROMPTS } from "@/lib/data/ai";
@@ -27,6 +27,7 @@ import {
   getConversation,
   tutorTurn,
   askAssistant,
+  runAgentTurn,
   renameConversation,
   pinConversation,
   deleteConversation,
@@ -38,12 +39,14 @@ import type {
   AIMessageDto,
   SuggestedActionDto,
 } from "@/lib/services/ai/types";
+import type { AgentBlockDto } from "@/lib/types";
+import AgentBlocks from "@/components/dashboard/ai/AgentBlocks";
 import { subscribeToLaunch } from "@/lib/ai-launcher";
 import { useAuth } from "@/lib/auth-ctx";
 import ChatMessage, { TypingIndicator, type ChatMessageData } from "@/components/chat/ChatMessage";
 import ConversationList from "@/components/chat/ConversationList";
 
-type Mode = "tutor" | "assistant";
+type Mode = "tutor" | "assistant" | "agent";
 
 type Status = "idle" | "generating" | "listening" | "error" | "stopped";
 
@@ -53,6 +56,7 @@ type UIMessage = {
   text: string;
   messageId?: string;
   actions?: SuggestedActionDto[];
+  blocks?: AgentBlockDto[];
   error?: boolean;
 };
 
@@ -72,15 +76,19 @@ interface SpeechRecognitionLike {
 }
 type SpeechRecognitionCtor = new () => SpeechRecognitionLike;
 
-const QUICK_ACTIONS: { labelBn: string; prompt: string; category: "tutor" | "assistant" }[] = [
-  { labelBn: "আজ কী পড়ব?", prompt: "আজ কী পড়ব? আমার প্রগ্রesso ও দুর্বল বিষয় দেখে পরামর্শ দাও.", category: "assistant" },
+const QUICK_ACTIONS: { labelBn: string; prompt: string; category: "tutor" | "assistant" | "agent" }[] = [
+  { labelBn: "আজ কী পড়ব?", prompt: "আজ কী পড়ব? আমার প্রগ্রesso ও দুর্বল বিষয় দেখে পরামর্শ দাও।", category: "assistant" },
   { labelBn: "দুর্বল বিষয়গুলো", prompt: "আমার দুর্বল বিষয়গুলো কী কী? সেগুলো শুরুর জন্য কী করব?", category: "assistant" },
-  { labelBn: "প্র্যাক্টিস শুরু করো", prompt: "আমাকে একটি প্র্যাক্টিস সেশন পরামর্শ দাও.", category: "assistant" },
+  { labelBn: "প্র্যাক্টিস শুরু করো", prompt: "আমাকে একটি প্র্যাক্টিস সেশন পরামর্শ দাও।", category: "assistant" },
   { labelBn: "কারেন্ট অ্যাফেয়ার্স", prompt: "সাম্প্রতিক কারেন্ট অ্যাফেয়ার্স কী কী?", category: "assistant" },
-  { labelBn: "গত বিশ্লেষণ", prompt: "আমার পдыду সেশনগুলো বিশ্লেষণ করো এবং পরামর্শ দাও.", category: "assistant" },
+  { labelBn: "গত বিশ্লেষণ", prompt: "আমার পдыду সেশনগুলো বিশ্লেষণ করো এবং পরামর্শ দাও।", category: "assistant" },
   { labelBn: "Exam টিপস", prompt: "ব vigorously, targeted exam preparation tips দাও", category: "assistant" },
   { labelBn: "শূন্য থেকে setup", prompt: "এক নতুনtopic থেকে শুরু করি, ধাপ-ধাপ-guide দাও", category: "tutor" },
   { labelBn: " concepto clearance", prompt: "কোনো conceito clearance করো ধাপে ধাপ", category: "tutor" },
+  { labelBn: "পরের ধাপ কী?", prompt: "আমার পড়াশোনার পরবর্তী ধাপ কী হওয়া উচিত? প্রগ্রেস ও দুর্বল বিষয় দেখে পরামর্শ দাও।", category: "agent" },
+  { labelBn: "দুর্বল বিষয় + প্র্যাক্টিস", prompt: "আমার দুর্বল বিষয়গুলো চিহ্নিত করো এবং সেগুলোর জন্য প্র্যাক্টিস শুরু করার পরামর্শ দাও।", category: "agent" },
+  { labelBn: "আজকের প্ল্যান", prompt: "আজকের দিনের জন্য একটি স্ট্রাকচার্ড স্টাডি প্ল্যান তৈরি করে দাও।", category: "agent" },
+  { labelBn: "মক পরীক্ষা প্রস্তুতি", prompt: "মক পরীক্ষার জন্য আমার প্রস্তুতি কেমন এবং কী করা দরকার?", category: "agent" },
 ];
 
 const STATUS_LABEL: Record<Status, string> = {
@@ -300,6 +308,72 @@ export default function VoiceAITutor() {
 
     const ctx = pendingContext;
     const isAssistant = mode === "assistant";
+
+    // AI study coach — bounded tool loop, streams tool activity + typed blocks.
+    if (mode === "agent") {
+      const abortController = new AbortController();
+      abortRef.current = abortController;
+      const placeholderId = `stream-${Date.now()}`;
+      setMessages((prev) => [...prev, { id: placeholderId, role: "ai", text: "" }]);
+
+      let assistantText = "";
+      const blocks: AgentBlockDto[] = [];
+      try {
+        const result = await runAgentTurn({
+          conversationId: activeConversationId ?? undefined,
+          question: text,
+          context: {
+            subjectId: ctx.subjectId,
+            topicId: ctx.topicId,
+            topicPath: ctx.topicPath,
+            questionId: ctx.questionId,
+          },
+          onDelta: (chunk) => {
+            assistantText += chunk;
+            setMessages((prev) =>
+              prev.map((m) => (m.id === placeholderId ? { ...m, text: assistantText } : m)),
+            );
+          },
+          onStatus: (message) => {
+            if (assistantText === "") {
+              setMessages((prev) =>
+                prev.map((m) => (m.id === placeholderId ? { ...m, text: message } : m)),
+              );
+            }
+          },
+          onBlock: (block) => {
+            blocks.push(block);
+            setMessages((prev) =>
+              prev.map((m) => (m.id === placeholderId ? { ...m, blocks: [...blocks] } : m)),
+            );
+          },
+          signal: abortController.signal,
+        });
+        abortRef.current = null;
+        setStatus("idle");
+        if (result.conversationId) {
+          setActiveConversationId(result.conversationId);
+          void refreshConversations();
+          void syncFromServer(result.conversationId);
+        }
+        setPendingContext({});
+      } catch (e) {
+        abortRef.current = null;
+        if (e instanceof DOMException && e.name === "AbortError") {
+          setStatus("idle");
+          return;
+        }
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === placeholderId
+              ? { ...m, text: m.text || "দুঃখিত, এখন উত্তর তৈরি করা যাচ্ছে না।", error: true }
+              : m,
+          ),
+        );
+        handleError(e);
+      }
+      return;
+    }
 
     if (isAssistant) {
       try {
@@ -587,22 +661,17 @@ export default function VoiceAITutor() {
                     >
                       সহায়ক
                     </button>
-                  </div>
-
-                  {/* Quick action suggestions based on mode */}
-                  <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
-                    {QUICK_ACTIONS
-                      .filter((a) => a.category === mode)
-                      .map((a) => (
-                        <button
-                          key={a.labelBn}
-                          type="button"
-                          onClick={() => runAssistantAction(a.prompt)}
-                          className="rounded-lg border border-[var(--primary)]/20 bg-[var(--dashboard-primary-subtle)] px-2.5 py-1 text-xs text-[var(--dashboard-text-secondary)] transition-colors hover:border-[var(--primary)]/40 hover:bg-[var(--dashboard-primary-subtle)] hover:text-[var(--dashboard-primary)] truncate max-w-xs"
-                        >
-                          {a.labelBn}
-                        </button>
-                      ))}
+                    <button
+                      type="button"
+                      onClick={() => setMode("agent")}
+                      className={`rounded-md px-2.5 py-1 font-mono text-xs transition-colors ${
+                        mode === "agent"
+                          ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] hover:bg-[var(--accent-hover)]"
+                          : "text-[var(--dashboard-primary)] hover:text-[var(--text-primary)]"
+                      }`}
+                    >
+                      কোচ
+                    </button>
                   </div>
 
                   <span
@@ -675,15 +744,19 @@ export default function VoiceAITutor() {
                     <div className="flex-1 overflow-y-auto">
                       <div className="flex min-h-full flex-col items-center justify-center px-4 py-8">
                         <div className="text-center">
-                          {mode === "assistant" ? (
+                          {mode === "agent" ? (
+                            <Target className="mx-auto mb-3 h-12 w-12 text-[var(--accent)]/60" aria-hidden="true" />
+                          ) : mode === "assistant" ? (
                             <BrainCircuit className="mx-auto mb-3 h-12 w-12 text-[var(--accent)]/60" aria-hidden="true" />
                           ) : (
                             <GraduationCap className="mx-auto mb-3 h-12 w-12 text-[var(--accent)]/60" aria-hidden="true" />
                           )}
                           <p className="font-mono text-sm text-[var(--dashboard-text-muted)]">
-                            {mode === "assistant"
-                              ? "আপনার পড়াশোনার সহায়ক — প্রগ্রেস দেখে পরামর্শ দেব।"
-                              : "আমি আপনার পড়াশোনার জন্য সাহায্য করতে পারি।"}
+                            {mode === "agent"
+                              ? "স্টাডি কোচ — আপনার প্রগ্রেস বিশ্লেষণ করে পরের পদক্ষেপের পরামর্শ দেবে।"
+                              : mode === "assistant"
+                                ? "আপনার পড়াশোনার সহায়ক — প্রগ্রেস দেখে পরামর্শ দেব।"
+                                : "আমি আপনার পড়াশোনার জন্য সাহায্য করতে পারি।"}
                           </p>
                         </div>
 
@@ -732,6 +805,9 @@ export default function VoiceAITutor() {
                               onFeedback={(messageId, rating) => void sendFeedback(messageId, rating)}
                               onAction={runAssistantAction}
                             />
+                            {msg.blocks && msg.blocks.length > 0 && (
+                              <AgentBlocks blocks={msg.blocks} onAction={() => closeModal()} />
+                            )}
                           </motion.div>
                         ))}
 

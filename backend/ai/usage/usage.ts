@@ -32,6 +32,7 @@ function taskToEnum(task: AITask): "TUTOR" | "SOLVER" | "ASSISTANT" {
     case "solver":
       return "SOLVER";
     case "assistant":
+    case "agent":
       return "ASSISTANT";
     default:
       return "TUTOR";

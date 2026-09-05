@@ -16,6 +16,18 @@ function mockText(task: string, messages: AIMessageInput[]): string {
   const lastUser = [...messages].reverse().find((m) => m.role === "user")?.content ?? "";
   const label = "MOCK — no API key configured. Set GROQ_API_KEY / ANTHROPIC_API_KEY for real AI.";
   const question = lastUser ? `Your question: "${lastUser.slice(0, 120)}"` : "";
+  if (task === "agent") {
+    // Valid ToolCallEnvelope so the agent loop pipeline is exercised end-to-end.
+    return JSON.stringify({
+      thought: "No real provider configured — returning a labelled text only response.",
+      blocks: [
+        {
+          type: "text",
+          text: `${label}\n\n${question}\n\nআপনার শেখার অগ্রগতি বিশ্লেষণ করতে একটি API key কনফিগার করুন। For real AI answers, configure GROQ_API_KEY / ANTHROPIC_API_KEY.`,
+        },
+      ],
+    });
+  }
   if (task === "solver") {
     return (
       `${label}\n\n${question}\n\n` +

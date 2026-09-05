@@ -166,3 +166,36 @@ export function validateFeedbackBody(body: unknown): {
     typeof body.comment === "string" ? body.comment.slice(0, 500) : undefined;
   return { messageId, rating, category, comment };
 }
+
+/** Validate the AI agent request body (Phase 1 — bounded tool loop). */
+export function validateAgentRequest(body: unknown): {
+  question: string;
+  context: { subjectId?: number; topicId?: number; topicPath?: string; questionId?: number };
+  intent?: AIIntent;
+  conversationId?: string;
+} {
+  if (!isRecord(body)) {
+    throw new ValidationError("Request body must be a JSON object.");
+  }
+  const question =
+    typeof body.question === "string" ? body.question.trim().slice(0, MAX_AI_INPUT_CHARS) : "";
+  if (!question) {
+    throw new ValidationError("A non-empty 'question' is required.");
+  }
+  const ctx = isRecord(body.context) ? body.context : {};
+  const context = {
+    subjectId: asOptionalInt(ctx.subjectId),
+    topicId: asOptionalInt(ctx.topicId),
+    topicPath: typeof ctx.topicPath === "string" ? ctx.topicPath.slice(0, 300) : undefined,
+    questionId: asOptionalInt(ctx.questionId),
+  };
+  const intent =
+    typeof body.intent === "string" && VALID_INTENTS.has(body.intent as AIIntent)
+      ? (body.intent as AIIntent)
+      : undefined;
+  const conversationId =
+    typeof body.conversationId === "string" && body.conversationId
+      ? body.conversationId
+      : undefined;
+  return { question, context, intent, conversationId };
+}

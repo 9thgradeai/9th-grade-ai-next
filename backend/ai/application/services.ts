@@ -19,6 +19,8 @@ import { bumpAIQuestions, recordUsage } from "../usage/usage";
 import { runAfterResponse } from "~backend/schedule";
 import { searchForIntent } from "../tools/search";
 import { retrieveQuestionBank } from "../retrieval";
+import { runAgentTurn, agentResponseText, type AgentStatus } from "../agent";
+import { validateAgentRequest } from "../schemas";
 import { validateSolverOutput, validateEvaluationOutput, validateMockTestOutput, validateAdvisorOutput, type EvaluationResult, type GeneratedMockTest, type AdvisorPlan, sanitizeReply, parseJsonObject } from "../validation/outputs";
 import { validateChatRequest, validateSolverRequest } from "../schemas";
 import { DEFAULT_TITLE, summarizeConversationTitle } from "./title";
@@ -757,6 +759,126 @@ export async function assistantTurn(opts: {
   });
 
   return { stream: wrapped, conversationId: conversation.id, provider: name, model: modelName };
+}
+
+// ── AI agent service (bounded tool-using loop) ─────────────
+//
+// Wraps the agent loop with conversation persistence + usage accounting,
+// mirroring the tutor/assistant service contract so the route stays thin.
+
+export type AgentTurnRequest = {
+  question: string;
+  context?: {
+    subjectId?: number;
+    topicId?: number;
+    topicPath?: string;
+    questionId?: number;
+  };
+  intent?: AIIntent;
+  conversationId?: string;
+};
+
+/**
+ * Run the agent loop, persist the user/assistant messages in a conversation,
+ * and record usage. `onStatus` streams live loop events (status labels, tool
+ * progress) — the SSE route forwards them to the client.
+ */
+export async function createAgentTurn(opts: {
+  userId: string;
+  request: unknown;
+  onStatus?: (status: AgentStatus) => void;
+}): Promise<{
+  conversationId: string;
+  runId: string;
+  provider: string;
+  model: string;
+  blocks: import("../agent").AgentBlock[];
+  text: string;
+  steps: number;
+}> {
+  const { userId, request: raw } = opts;
+  const parsed = validateAgentRequest(raw);
+  const intent = parsed.intent ?? (detectIntent(parsed.question, "recommend") as AIIntent);
+
+  const context = await buildContext({
+    userId,
+    task: "assistant",
+    intent,
+    subjectId: parsed.context.subjectId,
+    topicId: parsed.context.topicId,
+    questionId: parsed.context.questionId,
+  });
+
+  const conversation = await ensureConversation(
+    userId,
+    "ASSISTANT",
+    {
+      conversationId: parsed.conversationId,
+      subjectId: parsed.context.subjectId ?? context.subject?.id,
+      topicId: parsed.context.topicId ?? context.topic?.id,
+      topicPath: parsed.context.topicPath,
+      title: DEFAULT_TITLE,
+    },
+    context,
+  );
+
+  await addMessage(userId, conversation.id, {
+    role: "USER",
+    status: "COMPLETE",
+    content: parsed.question,
+    intent,
+  });
+  await notePreferredLanguage(userId, [parsed.question]);
+
+  const started = Date.now();
+  const result = await runAgentTurn({
+    userId,
+    question: parsed.question,
+    subjectId: parsed.context.subjectId,
+    topicId: parsed.context.topicId,
+    topicPath: parsed.context.topicPath,
+    questionId: parsed.context.questionId,
+    conversationId: conversation.id,
+    intent,
+    onStatus: opts.onStatus,
+  });
+
+  const text = agentResponseText(result.response);
+  await addMessage(userId, conversation.id, {
+    role: "ASSISTANT",
+    status: "COMPLETE",
+    content: text,
+    intent: `agent:${intent}`,
+    provider: result.provider,
+    model: result.model,
+    metadata: { kind: "agent", runId: result.runId, blocks: result.response.blocks },
+  });
+  await bumpAIQuestions(userId);
+  if (conversation.title === DEFAULT_TITLE) {
+    void summarizeConversationTitle(userId, conversation.id);
+  }
+  await recordUsage({
+    task: "agent",
+    provider: result.provider,
+    model: result.model,
+    inputTokens: result.inputTokens,
+    outputTokens: result.outputTokens,
+    latencyMs: Date.now() - started,
+    success: true,
+    estimatedCostUsd: 0,
+    userId,
+    intent: `agent:${intent}`,
+  });
+
+  return {
+    conversationId: conversation.id,
+    runId: result.runId,
+    provider: result.provider,
+    model: result.model,
+    blocks: result.response.blocks,
+    text,
+    steps: result.steps,
+  };
 }
 
 // Re-export the validated request type helpers for tests.

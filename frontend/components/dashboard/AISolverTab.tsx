@@ -102,7 +102,7 @@ export default function AISolverTab() {
       >
         <div className="terminal-window-bar mb-4 border-b border-border">
           <div className="dot close" /><div className="dot minimize" /><div className="dot maximize" />
-          <div className="flex-1 text-center text-xs text-text-muted font-mono">// AI_QUESTION_SOLVER</div>
+          <div className="flex-1 text-center text-xs text-text-muted font-mono">{`//_AI_QUESTION_SOLVER`}</div>
         </div>
 
         <div className="flex items-center gap-2 mb-4">
@@ -264,7 +264,9 @@ export default function AISolverTab() {
                 <h3 className="text-sm font-medium text-text-primary">Solution</h3>
               </div>
               <button
-                onClick={() => copyToClipboard(solution)}
+                onClick={() => {
+                  void copyToClipboard(solution);
+                }}
                 aria-label={copied ? "Copied!" : "Copy solution"}
                 className="p-1.5 text-text-muted hover:text-primary transition-colors"
                 title={copied ? "Copied!" : "Copy solution"}
