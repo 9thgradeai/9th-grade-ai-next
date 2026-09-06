@@ -402,7 +402,7 @@ export default function PracticeTab() {
               className={`flex items-center gap-2 px-4 py-2 text-sm font-mono rounded-lg transition-all ${
                 mode === m.id
                   ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] shadow-neon-glow"
-                  : "text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)]"
+                  : "text-[var(--dashboard-text-secondary)] hover:text-[var(--dashboard-text-primary)] hover:bg-[var(--surface-hover)]"
               }`}
             >
               {m.id === "mock" ? <Timer className="w-4 h-4" /> : m.id === "custom" ? <BookOpen className="w-4 h-4" /> : <Zap className="w-4 h-4" />}
@@ -410,9 +410,10 @@ export default function PracticeTab() {
             </button>
           ))}
         </div>
-        <p className="text-xs text-[var(--dashboard-text-muted)]">
+        <p className="text-xs font-medium" style={{ color: "var(--dashboard-text-secondary)" }}>
           {MODES.find((m) => m.id === mode)?.hint}
         </p>
+
       </motion.div>
 
       {mode === "custom" ? (

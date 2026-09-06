@@ -224,7 +224,8 @@ export default function TopicTreePicker({
                   <span className={`w-8 h-8 rounded-lg ${subject.bg} flex items-center justify-center text-base flex-shrink-0`}>
                     {subject.icon}
                   </span>
-                  <span className={`text-[11px] font-mono leading-tight line-clamp-2 ${subject.color}`}>
+                  {/* Use semantic text-primary so label is legible in both light & dark */}
+                  <span className="text-[11px] font-semibold leading-tight line-clamp-2" style={{ color: "var(--dashboard-text-primary)" }}>
                     {subject.nameBn}
                   </span>
                   <span
@@ -235,7 +236,7 @@ export default function TopicTreePicker({
                     {selected && <Check className="w-3 h-3 text-[var(--dashboard-text-inverse)]" />}
                   </span>
                 </div>
-                <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono mt-1.5">
+                <p className="text-[10px] font-mono mt-1.5" style={{ color: "var(--dashboard-text-muted)" }}>
                   {subject.questionCount}টি প্রশ্ন
                 </p>
               </motion.button>
