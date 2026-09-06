@@ -221,8 +221,8 @@ export default function HomeTab() {
         </motion.div>
       </div>
 
-      {/* ── Quick actions ── */}
-      <motion.div variants={STAGGER_ITEM}><QuickActions onAction={(tab)=>setActiveTab(tab)} /></motion.div>
+      {/* ── Quick actions — every button is a real workflow entry ── */}
+      <motion.div variants={STAGGER_ITEM}><QuickActions /></motion.div>
 
       {/* ── Next best action ── */}
       <motion.div variants={STAGGER_ITEM} className="rounded-2xl border p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3" style={{ background: nextAction.intensity==="high" ? "var(--dashboard-primary)" : "var(--dashboard-surface)", borderColor: nextAction.intensity==="high" ? "var(--dashboard-primary)" : "var(--dashboard-border-muted)", color: nextAction.intensity==="high" ? "var(--dashboard-text-inverse)" : "var(--dashboard-text-primary)" }}>
@@ -233,7 +233,7 @@ export default function HomeTab() {
         <button onClick={()=>setActiveTab(nextAction.tab)} className="shrink-0 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold" style={nextAction.intensity==="high" ? { background:"var(--dashboard-text-inverse)", color:"var(--dashboard-primary)" } : { background:"var(--dashboard-primary)", color:"var(--dashboard-text-inverse)" }}>{nextAction.cta} <ArrowRight className="w-4 h-4" /></button>
       </motion.div>
 
-      <motion.div ref={coachRef as unknown as React.RefObject<HTMLDivElement>} variants={STAGGER_ITEM}><HomeCoach /></motion.div>
+      <motion.div ref={coachRef as unknown as React.RefObject<HTMLDivElement>} variants={STAGGER_ITEM} id="dashboard-ai-coach"><HomeCoach /></motion.div>
 
       {/* ── Performance + Today ── */}
       <div className="grid lg:grid-cols-[1.45fr_0.85fr] gap-5">

@@ -1060,6 +1060,275 @@ hr {
 }
 
 /* ══════════════════════════════════════════════════════════════════════════════
+   20X PREMIUM UPGRADE — Futuristic Command Center 2.0
+   ─────────────────────────────────────────────────────────────────────────────
+   Dramatically enhanced typography, color depth, and motion system.
+   Both light + pure-black dark modes get richer palettes, fluid type,
+   aurora meshes, shimmer, and orchestrated micro-interactions.
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* ── Fluid Typography Scale ─────────────────────────────────────────────── */
+.dashboard-theme-scope {
+  --font-display-weight: 800;
+  --font-display-tracking: -0.035em;
+  --font-display-leading: 0.95;
+}
+
+/* Display headlines get optical sizing + gradient-capable color */
+.font-display {
+  font-weight: var(--font-display-weight);
+  letter-spacing: var(--font-display-tracking);
+  line-height: var(--font-display-leading);
+  font-optical-sizing: auto;
+  font-variation-settings: "opsz" 32;
+}
+
+/* Eyebrow refinement — tighter, more editorial */
+.command-eyebrow {
+  letter-spacing: 0.22em;
+  font-weight: 800;
+  font-size: 10.5px;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, var(--dashboard-primary), color-mix(in oklch, var(--dashboard-primary) 72%, var(--dashboard-info)));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Enhanced Color Depth — Dark: richer indigo/violet aurora ──────────── */
+:root {
+  --primary: oklch(0.68 0.18 278);
+  --primary-hover: oklch(0.74 0.16 278);
+  --primary-active: oklch(0.80 0.12 278);
+  --primary-soft: oklch(0.22 0.08 278 / 0.18);
+  --primary-muted: oklch(0.18 0.06 278 / 0.10);
+  --info: oklch(0.72 0.15 230);
+  --success: oklch(0.72 0.16 155);
+  --warning: oklch(0.78 0.15 75);
+  --danger: oklch(0.65 0.20 22);
+}
+.dashboard-theme-scope[data-dashboard-theme="light"] {
+  --primary: oklch(0.58 0.20 278);
+  --primary-hover: oklch(0.52 0.22 278);
+  --primary-soft: oklch(0.95 0.04 278);
+  --primary-muted: oklch(0.97 0.02 278);
+  --background: oklch(0.985 0.005 260);
+  --surface: oklch(1 0 0);
+  --surface-soft: oklch(0.985 0.008 260);
+  --surface-elevated: oklch(1 0 0);
+  --border: oklch(0.92 0.01 260);
+  --border-strong: oklch(0.88 0.015 260);
+  --text-primary: oklch(0.22 0.02 260);
+  --text-secondary: oklch(0.45 0.015 260);
+  --text-muted: oklch(0.58 0.012 260);
+  --shadow-sm: 0 1px 2px oklch(0.2 0.02 260 / 0.06), 0 4px 12px oklch(0.2 0.02 260 / 0.05);
+  --shadow-md: 0 4px 16px oklch(0.2 0.02 260 / 0.08), 0 8px 24px oklch(0.2 0.02 260 / 0.06);
+  --shadow-lg: 0 12px 32px oklch(0.2 0.02 260 / 0.10), 0 4px 8px oklch(0.2 0.02 260 / 0.06);
+}
+
+/* ── Card Depth Upgrade — dual-layer border + inner glow ──────────────── */
+.command-card {
+  border: 1px solid color-mix(in oklch, var(--command-card-border) 88%, transparent);
+  background:
+    radial-gradient(120% 90% at 100% 0%, color-mix(in oklch, var(--dashboard-primary) 5%, transparent) 0%, transparent 52%),
+    radial-gradient(80% 60% at 0% 100%, color-mix(in oklch, var(--dashboard-info) 4%, transparent) 0%, transparent 60%),
+    var(--command-card-bg);
+  box-shadow:
+    0 1px 2px oklch(0 0 0 / 0.04),
+    0 8px 24px oklch(0 0 0 / 0.06),
+    inset 0 1px 0 oklch(1 0 0 / 0.04);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.dashboard-theme-scope[data-dashboard-theme="dark"] .command-card {
+  box-shadow:
+    0 1px 0 oklch(1 0 0 / 0.04) inset,
+    0 8px 24px oklch(0 0 0 / 0.45),
+    0 0 0 1px oklch(1 0 0 / 0.04);
+}
+.command-card--glow {
+  background:
+    radial-gradient(140% 100% at 100% 0%, color-mix(in oklch, var(--dashboard-primary) 9%, transparent) 0%, transparent 58%),
+    radial-gradient(90% 70% at 0% 100%, color-mix(in oklch, var(--dashboard-info) 6%, transparent) 0%, transparent 62%),
+    var(--command-card-bg);
+}
+.command-card--interactive:hover {
+  transform: translateY(-3px) scale(1.005);
+  box-shadow:
+    0 12px 32px oklch(0 0 0 / 0.10),
+    0 0 0 1px color-mix(in oklch, var(--dashboard-primary) 14%, transparent);
+  border-color: color-mix(in oklch, var(--dashboard-primary) 22%, var(--command-card-border));
+}
+.command-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(105deg, transparent 40%, oklch(1 0 0 / 0.035) 50%, transparent 60%);
+  opacity: 0;
+  transition: opacity 400ms ease;
+}
+.command-card:hover::after {
+  opacity: 1;
+}
+
+/* ── Aurora Mesh Upgrade ─────────────────────────────────────────────── */
+.command-aurora {
+  background:
+    radial-gradient(ellipse 520px 300px at 92% -8%, color-mix(in oklch, var(--dashboard-primary) 14%, transparent) 0%, transparent 60%),
+    radial-gradient(ellipse 420px 260px at 8% 108%, color-mix(in oklch, var(--dashboard-info) 10%, transparent) 0%, transparent 62%),
+    radial-gradient(ellipse 300px 200px at 50% 50%, color-mix(in oklch, var(--dashboard-primary) 3%, transparent) 0%, transparent 70%);
+  opacity: 0.85;
+  filter: blur(0.5px);
+}
+
+/* ── Button Upgrade — gradient border + shimmer ─────────────────────── */
+.command-primary-btn {
+  background: linear-gradient(135deg, var(--dashboard-primary) 0%, color-mix(in oklch, var(--dashboard-primary) 88%, var(--dashboard-info)) 100%);
+  box-shadow:
+    0 1px 2px oklch(0 0 0 / 0.12),
+    0 4px 12px color-mix(in oklch, var(--dashboard-primary) 28%, transparent),
+    inset 0 1px 0 oklch(1 0 0 / 0.18);
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition: transform 180ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 220ms ease, filter 200ms ease;
+}
+.command-primary-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 30%, oklch(1 0 0 / 0.18) 50%, transparent 70%);
+  transform: translateX(-100%);
+  transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.command-primary-btn:hover::before {
+  transform: translateX(100%);
+}
+.command-primary-btn:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 4px 16px color-mix(in oklch, var(--dashboard-primary) 32%, transparent),
+    0 8px 24px oklch(0 0 0 / 0.10);
+  filter: brightness(1.05) saturate(1.08);
+}
+.command-primary-btn:active {
+  transform: scale(0.97);
+}
+.command-secondary-btn {
+  backdrop-filter: blur(6px);
+  transition: all 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.command-secondary-btn:hover {
+  background: var(--command-card-bg);
+  border-color: color-mix(in oklch, var(--dashboard-primary) 32%, var(--dashboard-border-muted));
+  box-shadow: 0 2px 8px oklch(0 0 0 / 0.06);
+}
+
+/* ── Dock Upgrade — spring hover + active indicator ─────────────────── */
+.command-dock-btn {
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(4px);
+  transition: transform 260ms cubic-bezier(0.34, 1.56, 0.64, 1), border-color 200ms ease, background 200ms ease, color 200ms ease, box-shadow 200ms ease;
+}
+.command-dock-btn::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: var(--dashboard-primary);
+  border-radius: 999px;
+  transform: translateX(-50%);
+  transition: width 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.command-dock-btn:hover::after {
+  width: 56%;
+}
+.command-dock-btn:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 8px 20px oklch(0 0 0 / 0.08);
+}
+.command-dock-btn:active {
+  transform: scale(0.96);
+}
+.command-dock-btn:focus-visible {
+  outline: 2px solid var(--dashboard-primary);
+  outline-offset: 2px;
+}
+
+/* ── Keyframes — orchestrated entrance & ambient motion ─────────────── */
+@keyframes commandCardIn {
+  from { opacity: 0; transform: translateY(14px) scale(0.98); filter: blur(4px); }
+  to   { opacity: 1; transform: none; filter: blur(0); }
+}
+@keyframes shimmerSweep {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(200%); }
+}
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes floatSubtle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+@keyframes progressFill {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+@keyframes countPop {
+  0% { transform: scale(0.92); opacity: 0; }
+  60% { transform: scale(1.04); }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes ringDraw {
+  from { stroke-dashoffset: var(--ring-circ, 326); }
+  to { stroke-dashoffset: var(--ring-offset, 0); }
+}
+
+/* Apply entrance to command cards */
+.command-card {
+  animation: commandCardIn 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.command-card:nth-child(1) { animation-delay: 0ms; }
+.command-card:nth-child(2) { animation-delay: 60ms; }
+.command-card:nth-child(3) { animation-delay: 110ms; }
+.command-card:nth-child(4) { animation-delay: 160ms; }
+
+/* Hero metric pop */
+.font-display {
+  animation: countPop 420ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* Progress bars fill */
+.command-card [style*="scaleX"], .command-card [style*="width:"] {
+  transform-origin: left;
+}
+
+/* ── Grain Texture (subtle) ─────────────────────────────────────────── */
+.dashboard-shell::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.015;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  z-index: 0;
+}
+
+/* ── Scrollbar Upgrade ─────────────────────────────────────────────── */
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--dashboard-primary), color-mix(in oklch, var(--dashboard-primary) 70%, var(--dashboard-info)));
+  border-radius: 999px;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
    COLOR SCHEME
    ══════════════════════════════════════════════════════════════════════════════ */
 

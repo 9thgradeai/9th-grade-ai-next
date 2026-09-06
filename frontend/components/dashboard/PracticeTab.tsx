@@ -175,6 +175,23 @@ export default function PracticeTab() {
       }
     }
   }, [practiceIntent, subjects, selection, setPracticeIntent]);
+  // Mode-only intent (Mock Exam vs Practice) — no subject
+  useEffect(() => {
+    if (practiceIntent?.mode && !practiceIntent.subject) {
+      const m = practiceIntent.mode;
+      if (m === "mock" || m === "quick" || m === "custom") {
+        queueMicrotask(() => {
+          setMode(m);
+          setPracticeIntent(null);
+        });
+      }
+    } else if (practiceIntent?.mode && practiceIntent.subject) {
+      // subject + mode together
+      queueMicrotask(() => {
+        setMode(practiceIntent.mode as typeof mode);
+      });
+    }
+  }, [practiceIntent, setPracticeIntent]);
 
   const selectedSubjects = useMemo(
     () => subjects.filter((s) => selection[s.id] !== undefined),
