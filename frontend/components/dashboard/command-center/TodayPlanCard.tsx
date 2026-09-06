@@ -89,7 +89,7 @@ export default function TodayPlanCard({ tasks, onToggle, onTaskAdded }: Props) {
 
       {/* Quick Add Form */}
       {showAddForm && (
-        <form onSubmit={handleAddTask} className="mt-3 p-3 rounded-xl border space-y-2 animate-in fade-in" style={{ background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-primary)" }}>
+        <form onSubmit={(e) => { void handleAddTask(e); }} className="mt-3 p-3 rounded-xl border space-y-2 animate-in fade-in" style={{ background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-primary)" }}>
           <p className="text-xs font-bold" style={{ color: "var(--dashboard-text-primary)" }}>Add Task to Today&apos;s Target</p>
           <input
             type="text"
