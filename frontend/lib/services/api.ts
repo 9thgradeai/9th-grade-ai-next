@@ -457,6 +457,9 @@ export const api = {
   toggleStudyTask: (taskId: number): Promise<{ completed: boolean }> =>
     mutate(`/api/study-plan/tasks/${taskId}/toggle`, "POST"),
 
+  createStudyTask: (task: { title: string; subject: string; day: string; duration?: number; priority?: string }): Promise<{ task: Server.StudyTaskDTO }> =>
+    mutate<{ task: Server.StudyTaskDTO }>("/api/study-plan", "POST", task),
+
   // ── Mistake / Mastery system ─────────────────────────────
 
   /** Paginated mistake list with filters. */
