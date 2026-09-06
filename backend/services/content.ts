@@ -623,7 +623,12 @@ export async function getMockTestResults(userId: string): Promise<MockTestResult
 // ── Dashboard stats (real, per-user) ─────────────────────
 // All attempt-derived numbers come from DB-side aggregates (Phase 6): cost is
 // O(subjects/days) rows regardless of how much history the user accumulates.
-export async function getDashboardStats(userId: string): Promise<{
+// `activityDays` sizes the per-day activity window the client charts against
+// (7 = week, 30 = month, 365 = "all time"); it is clamped defensively.
+export async function getDashboardStats(
+  userId: string,
+  activityDays: number = 7,
+): Promise<{
   points: number;
   exams: number;
   rank: number;
@@ -635,6 +640,9 @@ export async function getDashboardStats(userId: string): Promise<{
   aiQuestionsAsked: number;
   activity: { date: string; answered: number; correct: number }[];
 }> {
+  const days = Number.isFinite(activityDays)
+    ? Math.min(365, Math.max(1, Math.round(activityDays)))
+    : 7;
   try {
     const [questionCount, progress, activity, streak] = await Promise.all([
       prisma.question.count(),
@@ -643,7 +651,7 @@ export async function getDashboardStats(userId: string): Promise<{
         update: {},
         create: { userId },
       }),
-      aggregateDailyActivity(userId, 7),
+      aggregateDailyActivity(userId, days),
       // Derived from the attempt log — never trusts the stored counter,
       // which clients could previously write to directly.
       computeStreak(userId),
@@ -667,7 +675,7 @@ export async function getDashboardStats(userId: string): Promise<{
           : 0,
       flashcardsReviewed: progress.flashcardsReviewed,
       aiQuestionsAsked: progress.aiQuestionsAsked,
-      activity: buildActivityWindow(activity, 7),
+      activity: buildActivityWindow(activity, days),
     };
   } catch {
     throw new InternalServerError("Failed to fetch dashboard stats");

@@ -343,8 +343,10 @@ export const api = {
   subjectReports: (): Promise<Array<{ name: string; score: number; attempted: number; correct: number }>> =>
     cachedGet<{ reports: Array<{ name: string; score: number; attempted: number; correct: number }> }>("/api/subject-reports").then((d) => d.reports),
 
-  dashboardStats: (): Promise<Server.DashboardStatsDTO> =>
-    cachedGet<{ stats: Server.DashboardStatsDTO }>("/api/dashboard-stats").then((d) => d.stats),
+  dashboardStats: (days?: number): Promise<Server.DashboardStatsDTO> => {
+    const suffix = days && days > 7 ? `?days=${days}` : "";
+    return cachedGet<{ stats: Server.DashboardStatsDTO }>(`/api/dashboard-stats${suffix}`).then((d) => d.stats);
+  },
 
   examSchedule: (): Promise<Server.ExamScheduleDTO[]> =>
     cachedGet<{ exams: Server.ExamScheduleDTO[] }>("/api/exam-schedule").then((d) => d.exams),
