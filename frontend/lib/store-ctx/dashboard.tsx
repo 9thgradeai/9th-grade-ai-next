@@ -12,6 +12,9 @@ type DashboardState = {
   activeTab: TabId;
   // Tab-scoped UI state that must survive tab switches/remounts.
   questionBankFilters: { query: string; category: string };
+  // Cross-tab intents — consumed once by target tab then cleared.
+  practiceIntent?: { subject?: string; mode?: "quick" | "mock" | "custom" } | null;
+  mistakeIntent?: { subject?: string; status?: string } | null;
 };
 
 const STORAGE_KEY = "9th_grade_ai_store_v2";
@@ -19,6 +22,8 @@ const STORAGE_KEY = "9th_grade_ai_store_v2";
 const defaultState: DashboardState = {
   activeTab: "home",
   questionBankFilters: { query: "", category: "" },
+  practiceIntent: null,
+  mistakeIntent: null,
 };
 
 function loadState(): DashboardState {
@@ -32,7 +37,9 @@ function loadState(): DashboardState {
         ? (parsed.activeTab as TabId)
         : "home";
     const questionBankFilters = parsed.questionBankFilters ?? defaultState.questionBankFilters;
-    return { activeTab, questionBankFilters };
+    const practiceIntent = (parsed as DashboardState).practiceIntent ?? null;
+    const mistakeIntent = (parsed as DashboardState).mistakeIntent ?? null;
+    return { activeTab, questionBankFilters, practiceIntent, mistakeIntent };
   } catch {
     return defaultState;
   }
@@ -85,13 +92,22 @@ function setQuestionBankFilters(filters: Partial<{ query: string; category: stri
     questionBankFilters: { ...prev.questionBankFilters, ...filters },
   }));
 }
+function setPracticeIntent(intent: DashboardState["practiceIntent"]) {
+  setStore((prev) => ({ ...prev, practiceIntent: intent ?? null }));
+}
+function setMistakeIntent(intent: DashboardState["mistakeIntent"]) {
+  setStore((prev) => ({ ...prev, mistakeIntent: intent ?? null }));
+}
+function clearIntents() {
+  setStore((prev) => ({ ...prev, practiceIntent: null, mistakeIntent: null }));
+}
 function resetStore() {
   storeState = defaultState;
   saveState(storeState);
   listeners.forEach((l) => l());
 }
 
-const actions = { setActiveTab, setQuestionBankFilters, resetStore };
+const actions = { setActiveTab, setQuestionBankFilters, setPracticeIntent, setMistakeIntent, clearIntents, resetStore };
 export type DashboardActions = typeof actions;
 
 // ── Hook ───────────────────────────────────────────────────

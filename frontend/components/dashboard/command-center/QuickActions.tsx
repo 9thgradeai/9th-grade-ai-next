@@ -14,14 +14,18 @@ const ACTIONS: { label: string; icon: React.ComponentType<{ className?: string }
   { label: "Analytics", icon: BarChart3, tab: "progress" },
 ];
 
-export default function QuickActions() {
+export default function QuickActions({ onAction }: { onAction?: (tab: TabId) => void }) {
   const { setActiveTab } = useDashboardStore();
+  const handle = (tab: TabId) => {
+    if (onAction) onAction(tab);
+    else setActiveTab(tab);
+  };
   return (
     <div className="command-card p-4">
       <p className="command-eyebrow !text-[10px]">Quick Actions</p>
       <div className="mt-3 grid grid-cols-4 sm:grid-cols-8 gap-2">
         {ACTIONS.map((a) => (
-          <button key={a.label} onClick={() => setActiveTab(a.tab)} className={`command-dock-btn ${a.primary ? "command-dock-btn--primary" : ""}`}>
+          <button key={a.label} onClick={() => handle(a.tab)} aria-label={a.label} className={`command-dock-btn ${a.primary ? "command-dock-btn--primary" : ""}`}>
             <a.icon className="w-5 h-5" />
             <span>{a.label}</span>
           </button>

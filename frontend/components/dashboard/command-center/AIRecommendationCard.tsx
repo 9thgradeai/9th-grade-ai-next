@@ -1,16 +1,16 @@
 "use client";
 import { Sparkles, ArrowRight, AlertTriangle } from "lucide-react";
-import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 
 type Props = {
   weakestName: string | null;
   weakestScore: number | null;
   weakestAttempts: number | null;
   pendingMistakes: number;
+  onStartFocus: () => void;
+  onBrowse: () => void;
 };
 
-export default function AIRecommendationCard({ weakestName, weakestScore, weakestAttempts, pendingMistakes }: Props) {
-  const { setActiveTab } = useDashboardStore();
+export default function AIRecommendationCard({ weakestName, weakestScore, weakestAttempts, pendingMistakes, onStartFocus, onBrowse }: Props) {
   const hasWeak = !!weakestName && weakestScore != null && weakestScore < 75;
   return (
     <div className="command-card command-card--glow command-card--hero flex flex-col justify-between overflow-hidden">
@@ -55,10 +55,10 @@ export default function AIRecommendationCard({ weakestName, weakestScore, weakes
       </div>
 
       <div className="mt-6 flex gap-2">
-        <button onClick={() => setActiveTab(hasWeak || pendingMistakes > 0 ? "mistakes" : "practice")} className="command-primary-btn flex-1">
+        <button onClick={onStartFocus} className="command-primary-btn flex-1">
           {hasWeak ? "Start Focus Session" : pendingMistakes > 0 ? "Review Mistakes" : "Start Practice"} <ArrowRight className="w-4 h-4" />
         </button>
-        <button onClick={() => setActiveTab("practice")} className="command-secondary-btn">Browse Practice</button>
+        <button onClick={onBrowse} className="command-secondary-btn">Browse Practice</button>
       </div>
 
       <p className="mt-3 text-[11px]" style={{ color: "var(--dashboard-text-muted)" }}>Powered by your real attempt history · updates in real time</p>

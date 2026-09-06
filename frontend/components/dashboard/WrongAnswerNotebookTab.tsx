@@ -28,6 +28,7 @@ import { api } from "@/lib/services/api";
 import type { MistakeItemDTO, MistakeStatsDTO, SubjectMistakeCountDTO, ExamBuildResultDTO } from "@/lib/types";
 import QuestionDrill, { type DrillAnswered } from "./QuestionDrill";
 import { useToastSafe } from "@/lib/toast-ctx";
+import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 
 type ViewMode = "dashboard" | "exam-config" | "drilling" | "exam-result";
 
@@ -88,6 +89,7 @@ const STAGGER_ITEM = {
 
 export default function WrongAnswerNotebookTab() {
   const toast = useToastSafe();
+  const { mistakeIntent, setMistakeIntent } = useDashboardStore(s => ({ mistakeIntent: s.mistakeIntent, setMistakeIntent: s.setMistakeIntent }));
 
   // ── State ──────────────────────────────────────────────
   const [view, setView] = useState<ViewMode>("dashboard");
@@ -158,6 +160,19 @@ export default function WrongAnswerNotebookTab() {
     })();
     return () => { cancelled = true; };
   }, [loadStats, loadMistakes]);
+
+  // Consume cross-tab mistake intent (from Command Center) — filter by subject.
+  useEffect(() => {
+    if (mistakeIntent?.subject && mistakeIntent.subject !== filterSubject) {
+      queueMicrotask(() => {
+        setFilterSubject(mistakeIntent.subject!);
+        setPage(1);
+        setMistakeIntent(null);
+      });
+    } else if (mistakeIntent && !mistakeIntent.subject) {
+      queueMicrotask(() => setMistakeIntent(null));
+    }
+  }, [mistakeIntent, filterSubject, setMistakeIntent]);
 
   // ── Exam builder ───────────────────────────────────────
   const startMistakeExam = useCallback(async () => {

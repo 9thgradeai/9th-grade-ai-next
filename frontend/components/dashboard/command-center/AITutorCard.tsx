@@ -1,9 +1,9 @@
 "use client";
 import { Sparkles, MessageCircle, ArrowRight } from "lucide-react";
-import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 
-export default function AITutorCard({ weakestName }: { weakestName: string | null }) {
-  const { setActiveTab } = useDashboardStore();
+type Props = { weakestName: string | null; onAsk: () => void; onGuided: () => void };
+
+export default function AITutorCard({ weakestName, onAsk, onGuided }: Props) {
   return (
     <div className="command-card command-card--glow p-5 sm:p-6 flex flex-col">
       <div className="flex items-center gap-2">
@@ -21,8 +21,8 @@ export default function AITutorCard({ weakestName }: { weakestName: string | nul
         </p>
       </div>
       <div className="mt-4 flex gap-2">
-        <button onClick={() => setActiveTab("practice")} className="command-primary-btn flex-1"><MessageCircle className="w-4 h-4" /> Ask AI Tutor</button>
-        <button onClick={() => setActiveTab("practice")} className="command-secondary-btn">Guided Session <ArrowRight className="w-4 h-4" /></button>
+        <button onClick={onAsk} className="command-primary-btn flex-1"><MessageCircle className="w-4 h-4" /> Ask AI Tutor</button>
+        <button onClick={onGuided} className="command-secondary-btn">Guided Session <ArrowRight className="w-4 h-4" /></button>
       </div>
       <p className="mt-3 text-[11px]" style={{ color: "var(--dashboard-text-muted)" }}>Native to your dashboard · private · never used for grading</p>
     </div>

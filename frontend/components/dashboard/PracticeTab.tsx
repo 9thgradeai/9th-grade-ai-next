@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { api } from "@/lib/services/api";
 import { DIFFICULTY_LABEL } from "@/lib/exam-ui";
+import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 import type { Server } from "@/lib/types";
 import MockTestTab from "./MockTestTab";
 import CustomExamTab from "./CustomExamTab";
@@ -88,6 +89,7 @@ function PracticeTimer({
 }
 
 export default function PracticeTab() {
+  const { practiceIntent, setPracticeIntent } = useDashboardStore(s => ({ practiceIntent: s.practiceIntent, setPracticeIntent: s.setPracticeIntent }));
   const [mode, setMode] = useState<PracticeMode>("custom");
 
   // ── Config state (quick practice selection tree) ──
@@ -143,6 +145,36 @@ export default function PracticeTab() {
       cancelled = true;
     };
   }, []);
+
+  // Consume cross-tab practice intent (from Command Center) — pre-select subject and open quick practice.
+  useEffect(() => {
+    if (!practiceIntent?.subject || subjects.length === 0) return;
+    if (mode !== "quick") {
+      const match = subjects.find(s => s.nameBn === practiceIntent.subject || s.nameEn === practiceIntent.subject);
+      if (match) queueMicrotask(() => setMode("quick"));
+      return;
+    }
+    const match = subjects.find(s => s.nameBn === practiceIntent.subject || s.nameEn === practiceIntent.subject || s.nameBn.includes(practiceIntent.subject!) || practiceIntent.subject!.includes(s.nameBn));
+    if (match && !selection[match.id]) {
+      queueMicrotask(() => {
+        setSelection(prev => ({ ...prev, [match.id]: { paths: [], count: Math.min(match.questionCount, 20) } }));
+        setPracticeIntent(null);
+      });
+    }
+  }, [practiceIntent, subjects, mode, selection, setPracticeIntent]);
+  // Also handle intent regardless of current mode by switching to quick when nothing selected
+  useEffect(() => {
+    if (practiceIntent?.subject && subjects.length > 0 && !Object.keys(selection).length) {
+      const match = subjects.find(s => s.nameBn === practiceIntent.subject || s.nameEn === practiceIntent.subject);
+      if (match) {
+        queueMicrotask(() => {
+          setMode("quick");
+          setSelection({ [match.id]: { paths: [], count: Math.min(match.questionCount, 20) } });
+          setPracticeIntent(null);
+        });
+      }
+    }
+  }, [practiceIntent, subjects, selection, setPracticeIntent]);
 
   const selectedSubjects = useMemo(
     () => subjects.filter((s) => selection[s.id] !== undefined),

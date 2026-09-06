@@ -3,7 +3,7 @@ import { AlertCircle, ArrowRight } from "lucide-react";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 
 type Report = { name: string; score: number; attempted: number; correct: number };
-export default function FocusAreasCard({ reports }: { reports: Report[] }) {
+export default function FocusAreasCard({ reports, onPractice, onOpenMistakes }: { reports: Report[]; onPractice: (subject: string) => void; onOpenMistakes: (subject?: string) => void }) {
   const { setActiveTab } = useDashboardStore();
   const weakest = [...reports].filter((r) => r.attempted > 0).sort((a, b) => a.score - b.score).slice(0, 3);
   return (
@@ -24,12 +24,12 @@ export default function FocusAreasCard({ reports }: { reports: Report[] }) {
                 <p className="text-xs" style={{ color: "var(--dashboard-text-muted)" }}>{r.score}% accuracy · {r.attempted} attempted</p>
               </div>
               <span className="text-xs font-mono font-bold" style={{ color: "var(--dashboard-danger)" }}>{r.score}%</span>
-              <button onClick={() => setActiveTab("practice")} className="command-secondary-btn !px-3 !py-1.5 !text-xs shrink-0">Practice</button>
+              <button onClick={() => onPractice(r.name)} className="command-secondary-btn !px-3 !py-1.5 !text-xs shrink-0">Practice</button>
             </div>
           ))}
         </div>
       )}
-      <button onClick={() => setActiveTab("mistakes")} className="mt-4 w-full inline-flex items-center justify-center gap-1.5 text-xs font-semibold py-2.5 rounded-xl border" style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-primary)", background: "var(--dashboard-surface)" }}>
+      <button onClick={() => onOpenMistakes()} className="mt-4 w-full inline-flex items-center justify-center gap-1.5 text-xs font-semibold py-2.5 rounded-xl border" style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-primary)", background: "var(--dashboard-surface)" }}>
         Open Wrong Answers <ArrowRight className="w-3.5 h-3.5" />
       </button>
     </div>
