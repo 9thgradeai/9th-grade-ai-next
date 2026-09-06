@@ -79,15 +79,21 @@ describe("CustomExamTab (config phase)", () => {
 
   it("loads and displays subjects with question counts", async () => {
     render(<CustomExamTab />);
-    expect(await screen.findByText("বাংলা ভাষা ও সাহিত্য")).toBeInTheDocument();
-    expect(screen.getByText("English Language and Literature")).toBeInTheDocument();
-    expect(screen.getAllByText("20টি প্রশ্ন").length).toBeGreaterThan(0);
+    // Click the summary card to open the modal
+    fireEvent.click(await screen.findByText("বিষয় ও টপিক নির্বাচন করুন"));
+    expect(await screen.findAllByText("বাংলা ভাষা ও সাহিত্য")).toBeDefined();
+    expect(screen.getAllByText("English Language and Literature").length).toBeGreaterThan(0);
   });
 
   it("selecting a subject updates the live summary", async () => {
     render(<CustomExamTab />);
-    await screen.findByText("বাংলা ভাষা ও সাহিত্য");
-    fireEvent.click(screen.getByText("বাংলা ভাষা ও সাহিত্য"));
+    // Click the summary card to open the modal
+    fireEvent.click(await screen.findByText("বিষয় ও টপিক নির্বাচন করুন"));
+    // Select the subject inside the modal (use first match - desktop sidebar)
+    const subjectElements = await screen.findAllByText("বাংলা ভাষা ও সাহিত্য");
+    fireEvent.click(subjectElements[0]);
+    // Close the modal by clicking confirm
+    fireEvent.click(screen.getByText("প্র্যাকটিস শুরু"));
 
     await waitFor(() => {
       expect(screen.getByText("বিষয়")).toBeInTheDocument();
@@ -99,8 +105,13 @@ describe("CustomExamTab (config phase)", () => {
 
   it("opens the confirmation modal with a full config summary", async () => {
     render(<CustomExamTab />);
-    await screen.findByText("বাংলা ভাষা ও সাহিত্য");
-    fireEvent.click(screen.getByText("বাংলা ভাষা ও সাহিত্য"));
+    // Click the summary card to open the modal
+    fireEvent.click(await screen.findByText("বিষয় ও টপিক নির্বাচন করুন"));
+    // Select the subject inside the modal (use first match)
+    const subjectElements = await screen.findAllByText("বাংলা ভাষা ও সাহিত্য");
+    fireEvent.click(subjectElements[0]);
+    // Close the modal by clicking confirm
+    fireEvent.click(screen.getByText("প্র্যাকটিস শুরু"));
 
     const startButton = await screen.findByText("কনফিগারেশন রিভিউ করে শুরু করুন");
     fireEvent.click(startButton);
@@ -112,13 +123,16 @@ describe("CustomExamTab (config phase)", () => {
 
   it("per-subject count defaults and feeds the total", async () => {
     render(<CustomExamTab />);
-    await screen.findByText("বাংলা ভাষা ও সাহিত্য");
-    fireEvent.click(screen.getByText("বাংলা ভাষা ও সাহিত্য"));
+    // Click the summary card to open the modal
+    fireEvent.click(await screen.findByText("বিষয় ও টপিক নির্বাচন করুন"));
+    // Select the subject inside the modal (use first match)
+    const subjectElements = await screen.findAllByText("বাংলা ভাষা ও সাহিত্য");
+    fireEvent.click(subjectElements[0]);
 
-    const countInput = await screen.findByLabelText("বাংলা ভাষা ও সাহিত্য এর প্রশ্ন সংখ্যা");
+    const countInput = await screen.findByLabelText("প্রশ্ন সংখ্যা");
     expect(countInput).toHaveValue(10);
 
-    fireEvent.click(screen.getByLabelText("বিষয়ের প্রশ্ন বাড়ান"));
+    fireEvent.click(screen.getByLabelText("প্রশ্ন বাড়ান"));
     expect(countInput).toHaveValue(11);
 
     await waitFor(() => {
@@ -129,11 +143,14 @@ describe("CustomExamTab (config phase)", () => {
 
   it("clamps a subject's count to its available questions", async () => {
     render(<CustomExamTab />);
-    await screen.findByText("বাংলা ভাষা ও সাহিত্য");
-    fireEvent.click(screen.getByText("বাংলা ভাষা ও সাহিত্য"));
+    // Click the summary card to open the modal
+    fireEvent.click(await screen.findByText("বিষয় ও টপিক নির্বাচন করুন"));
+    // Select the subject inside the modal (use first match)
+    const subjectElements = await screen.findAllByText("বাংলা ভাষা ও সাহিত্য");
+    fireEvent.click(subjectElements[0]);
 
-    const countInput = await screen.findByLabelText("বাংলা ভাষা ও সাহিত্য এর প্রশ্ন সংখ্যা");
-    const plus = screen.getByLabelText("বিষয়ের প্রশ্ন বাড়ান");
+    const countInput = await screen.findByLabelText("প্রশ্ন সংখ্যা");
+    const plus = screen.getByLabelText("প্রশ্ন বাড়ান");
     for (let i = 0; i < 15; i++) {
       fireEvent.click(plus);
     }

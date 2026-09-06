@@ -87,13 +87,16 @@ describe("MockTestTab (subtopic selection + build)", () => {
   it("drills into a subtopic and starts a timed mock", async () => {
     render(<MockTestTab />);
 
-    // Select the subject → topic tree appears.
-    fireEvent.click(await screen.findByText("বাংলা ভাষা ও সাহিত্য"));
-    expect(await screen.findByText("ভাষা")).toBeInTheDocument();
-
+    // Click the summary card to open the modal
+    fireEvent.click(await screen.findByText("বিষয় ও টপিক নির্বাচন করুন"));
+    // Select the subject inside the modal (use first match)
+    const subjectElements = await screen.findAllByText("বাংলা ভাষা ও সাহিত্য");
+    fireEvent.click(subjectElements[0]);
     // Expand the topic, then pick a specific subtopic under it.
     fireEvent.click(screen.getByText("ভাষা"));
     fireEvent.click(screen.getByText("বানান ও শুদ্ধি"));
+    // Close the modal by clicking confirm
+    fireEvent.click(screen.getByText("প্র্যাকটিস শুরু"));
 
     // Start the mock.
     fireEvent.click(screen.getByText("মক টেস্ট শুরু করুন"));
@@ -112,7 +115,11 @@ describe("MockTestTab (subtopic selection + build)", () => {
 
   it("shows the available count for a selected subtopic", async () => {
     render(<MockTestTab />);
-    fireEvent.click(await screen.findByText("বাংলা ভাষা ও সাহিত্য"));
+    // Click the summary card to open the modal
+    fireEvent.click(await screen.findByText("বিষয় ও টপিক নির্বাচন করুন"));
+    // Select the subject inside the modal (use first match)
+    const subjectElements = await screen.findAllByText("বাংলা ভাষা ও সাহিত্য");
+    fireEvent.click(subjectElements[0]);
     fireEvent.click(screen.getByText("ভাষা"));
     fireEvent.click(screen.getByText("বানান ও শুদ্ধি"));
 
@@ -158,9 +165,15 @@ describe("MockTestTab — submit flow (regression: canonical submission)", () =>
 
   it("clicking the submit button triggers /api/exam/submit with an attemptId", async () => {
     render(<MockTestTab />);
-    fireEvent.click(await screen.findByText("বাংলা ভাষা ও সাহিত্য"));
+    // Click the summary card to open the modal
+    fireEvent.click(await screen.findByText("বিষয় ও টপিক নির্বাচন করুন"));
+    // Select the subject inside the modal (use first match)
+    const subjectElements = await screen.findAllByText("বাংলা ভাষা ও সাহিত্য");
+    fireEvent.click(subjectElements[0]);
     fireEvent.click(screen.getByText("ভাষা"));
     fireEvent.click(screen.getByText("বানান ও শুদ্ধি"));
+    // Close the modal by clicking confirm
+    fireEvent.click(screen.getByText("প্র্যাকটিস শুরু"));
     fireEvent.click(screen.getByText("মক টেস্ট শুরু করুন"));
 
     // Pick an answer so the submit button becomes enabled.

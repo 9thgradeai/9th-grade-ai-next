@@ -15,7 +15,6 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { X, Check, ChevronRight, Minus, Plus, Search, Zap } from "lucide-react";
 import type { Server } from "@/lib/types";
 import {
@@ -94,29 +93,21 @@ function TopicRow({
         )}
       </button>
 
-      <AnimatePresence>
-        {expanded && node.children.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.18 }}
-            className="overflow-hidden"
-          >
-            <div className="mt-1 space-y-0.5 pb-1">
-              {node.children.map((child) => (
-                <TopicRow
-                  key={child.path}
-                  node={child}
-                  depth={depth + 1}
-                  selectedPaths={selectedPaths}
-                  onToggle={onToggle}
-                />
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {expanded && node.children.length > 0 && (
+        <div className="overflow-hidden">
+          <div className="mt-1 space-y-0.5 pb-1">
+            {node.children.map((child) => (
+              <TopicRow
+                key={child.path}
+                node={child}
+                depth={depth + 1}
+                selectedPaths={selectedPaths}
+                onToggle={onToggle}
+              />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -245,16 +236,12 @@ export default function SubjectTopicModal({
     : [];
 
   return (
-    <AnimatePresence>
+    <>
       {open && (
         <>
           {/* Backdrop */}
-          <motion.div
+          <div
             key="backdrop"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.18 }}
             className="fixed inset-0 z-[60]"
             style={{ background: "rgba(0,0,0,0.55)", backdropFilter: "blur(5px)", WebkitBackdropFilter: "blur(5px)" }}
             onClick={onClose}
@@ -262,15 +249,11 @@ export default function SubjectTopicModal({
           />
 
           {/* Dialog */}
-          <motion.div
+          <div
             key="dialog"
             role="dialog"
             aria-modal="true"
             aria-label="বিষয় ও টপিক নির্বাচন"
-            initial={{ opacity: 0, scale: 0.97, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.97, y: 20 }}
-            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
             className="fixed inset-x-0 bottom-0 sm:inset-0 sm:flex sm:items-center sm:justify-center z-[61] sm:p-4"
           >
             <div
@@ -378,10 +361,13 @@ export default function SubjectTopicModal({
                       const isActive = activeSubjectId === subject.id;
                       const count = selection[subject.id]?.count ?? 0;
                       return (
-                        <button
+                        <div
                           key={subject.id}
+                          role="button"
+                          tabIndex={0}
                           onClick={() => setActiveSubjectId(subject.id)}
-                          className="w-full flex items-center gap-2 px-2.5 py-2 rounded-xl text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-primary)]"
+                          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") setActiveSubjectId(subject.id); }}
+                          className="w-full flex items-center gap-2 px-2.5 py-2 rounded-xl text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-primary)] cursor-pointer"
                           style={
                             isActive
                               ? { background: "var(--dashboard-primary-subtle)", border: "1px solid color-mix(in oklch, var(--dashboard-primary) 20%, transparent)" }
@@ -415,7 +401,7 @@ export default function SubjectTopicModal({
                           >
                             {isSelected && <Check className="w-3 h-3 text-white" />}
                           </button>
-                        </button>
+                        </div>
                       );
                     })}
                   </div>
@@ -631,9 +617,9 @@ export default function SubjectTopicModal({
                 </div>
               </div>
             </div>
-          </motion.div>
+          </div>
         </>
       )}
-    </AnimatePresence>
+    </>
   );
 }
