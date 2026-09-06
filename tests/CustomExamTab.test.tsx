@@ -93,7 +93,7 @@ describe("CustomExamTab (config phase)", () => {
     const subjectElements = await screen.findAllByText("বাংলা ভাষা ও সাহিত্য");
     fireEvent.click(subjectElements[0]);
     // Close the modal by clicking confirm
-    fireEvent.click(screen.getByText("প্র্যাকটিস শুরু"));
+    fireEvent.click(screen.getByText("শুরু করুন"));
 
     await waitFor(() => {
       expect(screen.getByText("বিষয়")).toBeInTheDocument();
@@ -111,7 +111,7 @@ describe("CustomExamTab (config phase)", () => {
     const subjectElements = await screen.findAllByText("বাংলা ভাষা ও সাহিত্য");
     fireEvent.click(subjectElements[0]);
     // Close the modal by clicking confirm
-    fireEvent.click(screen.getByText("প্র্যাকটিস শুরু"));
+    fireEvent.click(screen.getByText("শুরু করুন"));
 
     const startButton = await screen.findByText("কনফিগারেশন রিভিউ করে শুরু করুন");
     fireEvent.click(startButton);
@@ -129,11 +129,11 @@ describe("CustomExamTab (config phase)", () => {
     const subjectElements = await screen.findAllByText("বাংলা ভাষা ও সাহিত্য");
     fireEvent.click(subjectElements[0]);
 
-    const countInput = await screen.findByLabelText("প্রশ্ন সংখ্যা");
-    expect(countInput).toHaveValue(10);
+    const countInputs = screen.getAllByLabelText("প্রশ্ন সংখ্যা");
+    expect(countInputs[0]).toHaveValue(10);
 
-    fireEvent.click(screen.getByLabelText("প্রশ্ন বাড়ান"));
-    expect(countInput).toHaveValue(11);
+    fireEvent.click(screen.getAllByLabelText("প্রশ্ন বাড়ান")[0]);
+    expect(countInputs[0]).toHaveValue(11);
 
     await waitFor(() => {
       expect(screen.getAllByText("11").length).toBeGreaterThan(0);
@@ -149,14 +149,15 @@ describe("CustomExamTab (config phase)", () => {
     const subjectElements = await screen.findAllByText("বাংলা ভাষা ও সাহিত্য");
     fireEvent.click(subjectElements[0]);
 
-    const countInput = await screen.findByLabelText("প্রশ্ন সংখ্যা");
-    const plus = screen.getByLabelText("প্রশ্ন বাড়ান");
+    const countInputs = screen.getAllByLabelText("প্রশ্ন সংখ্যা");
+    const plusButtons = screen.getAllByLabelText("প্রশ্ন বাড়ান");
+    const plus = plusButtons[0];
     for (let i = 0; i < 15; i++) {
       fireEvent.click(plus);
     }
 
     // Available for the whole subject is 20 — the count clamps there.
-    expect(countInput).toHaveValue(20);
+    expect(countInputs[0]).toHaveValue(20);
     await waitFor(() => {
       expect(screen.getAllByText("20").length).toBeGreaterThan(0);
     });

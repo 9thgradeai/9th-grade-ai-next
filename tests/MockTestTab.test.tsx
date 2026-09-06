@@ -93,10 +93,12 @@ describe("MockTestTab (subtopic selection + build)", () => {
     const subjectElements = await screen.findAllByText("বাংলা ভাষা ও সাহিত্য");
     fireEvent.click(subjectElements[0]);
     // Expand the topic, then pick a specific subtopic under it.
-    fireEvent.click(screen.getByText("ভাষা"));
-    fireEvent.click(screen.getByText("বানান ও শুদ্ধি"));
+    const topicElements = screen.getAllByText("ভাষা");
+    fireEvent.click(topicElements[0]);
+    const subtopicElements = screen.getAllByText("বানান ও শুদ্ধি");
+    fireEvent.click(subtopicElements[0]);
     // Close the modal by clicking confirm
-    fireEvent.click(screen.getByText("প্র্যাকটিস শুরু"));
+    fireEvent.click(screen.getByText("শুরু করুন"));
 
     // Start the mock.
     fireEvent.click(screen.getByText("মক টেস্ট শুরু করুন"));
@@ -120,8 +122,10 @@ describe("MockTestTab (subtopic selection + build)", () => {
     // Select the subject inside the modal (use first match)
     const subjectElements = await screen.findAllByText("বাংলা ভাষা ও সাহিত্য");
     fireEvent.click(subjectElements[0]);
-    fireEvent.click(screen.getByText("ভাষা"));
-    fireEvent.click(screen.getByText("বানান ও শুদ্ধি"));
+    const topicElements = screen.getAllByText("ভাষা");
+    fireEvent.click(topicElements[0]);
+    const subtopicElements = screen.getAllByText("বানান ও শুদ্ধি");
+    fireEvent.click(subtopicElements[0]);
 
     // Available for the subtopic is 4 (the leaf count).
     expect(screen.getAllByText("4টি").length).toBeGreaterThan(0);
@@ -170,10 +174,12 @@ describe("MockTestTab — submit flow (regression: canonical submission)", () =>
     // Select the subject inside the modal (use first match)
     const subjectElements = await screen.findAllByText("বাংলা ভাষা ও সাহিত্য");
     fireEvent.click(subjectElements[0]);
-    fireEvent.click(screen.getByText("ভাষা"));
-    fireEvent.click(screen.getByText("বানান ও শুদ্ধি"));
+    const topicElements = screen.getAllByText("ভাষা");
+    fireEvent.click(topicElements[0]);
+    const subtopicElements = screen.getAllByText("বানান ও শুদ্ধি");
+    fireEvent.click(subtopicElements[0]);
     // Close the modal by clicking confirm
-    fireEvent.click(screen.getByText("প্র্যাকটিস শুরু"));
+    fireEvent.click(screen.getByText("শুরু করুন"));
     fireEvent.click(screen.getByText("মক টেস্ট শুরু করুন"));
 
     // Pick an answer so the submit button becomes enabled.
