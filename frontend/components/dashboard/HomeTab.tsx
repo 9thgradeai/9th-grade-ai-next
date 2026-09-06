@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, useRef } from "react";
+import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Clock, ArrowRight, Trophy, BookX, Brain, Flame, Target, ClipboardCheck, Sparkles, ChevronRight, Activity, Command, RefreshCw } from "lucide-react";
 import { useAuth } from "@/lib/auth-ctx";
@@ -22,6 +22,7 @@ import AITutorCard from "./command-center/AITutorCard";
 import TodayPlanCard from "./command-center/TodayPlanCard";
 import QuickActions from "./command-center/QuickActions";
 import ExamCountdownCard from "./command-center/ExamCountdownCard";
+import { launchAI } from "@/lib/ai-launcher";
 
 const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const WEEKDAY_SHORT_BN = ["শনি", "রবি", "সোম", "মঙ্গল", "বুধ", "বৃহ", "শুক্র"];
@@ -236,10 +237,10 @@ export default function HomeTab() {
     }
   };
 
-  const handleAskTutor = () => {
-    coachRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-    window.dispatchEvent(new CustomEvent("dashboard:ask-tutor", { detail: { subject: focusIntent } }));
-  };
+  const handleAskTutor = useCallback(() => {
+    // Open the floating AI Workspace tutor modal from anywhere in the dashboard.
+    launchAI({ mode: "tutor" });
+  }, []);
 
   const handleGuidedSession = () => {
     if (focusIntent) practiceSubject(focusIntent);
@@ -283,7 +284,7 @@ export default function HomeTab() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [setActiveTab, setPracticeIntent, toast]);
+  }, [setActiveTab, setPracticeIntent, toast, handleAskTutor]);
 
   const skeleton = loading && !stats;
   const prepScore = useMemo(() => {

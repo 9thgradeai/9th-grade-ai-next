@@ -2,22 +2,26 @@
 
 import { Zap, BookOpen, Target, Brain, Calendar, BarChart3, ClipboardCheck, Sparkles, Command } from "lucide-react";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
+import { launchAI } from "@/lib/ai-launcher";
 import type { TabId } from "@/lib/data";
 
 type Action = {
   keyLabel: string;
   label: string;
   icon: React.ComponentType<{ className?: string }>;
-  tab: TabId;
+  /** tab to switch to, or null for special actions */
+  tab: TabId | null;
   primary?: boolean;
   mode?: "quick" | "mock";
+  /** special action: "ai-tutor" opens the floating AI workspace */
+  special?: "ai-tutor";
   badge?: number | string;
 };
 
 type Props = {
   pendingMistakes?: number;
   flashcardsDue?: number | null;
-  onAction?: (tab: TabId, action: Action) => void;
+  onAction?: (tab: TabId | null, action: Action) => void;
 };
 
 export default function QuickActions({ pendingMistakes = 0, flashcardsDue = null, onAction }: Props) {
@@ -27,14 +31,14 @@ export default function QuickActions({ pendingMistakes = 0, flashcardsDue = null
   }));
 
   const ACTIONS: Action[] = [
-    { keyLabel: "P", label: "Practice", icon: Zap, tab: "practice", primary: true, mode: "quick" },
-    { keyLabel: "M", label: "Mock Exam", icon: ClipboardCheck, tab: "practice", mode: "mock" },
-    { keyLabel: "W", label: "Wrong Ans", icon: Target, tab: "mistakes", badge: pendingMistakes > 0 ? pendingMistakes : undefined },
-    { keyLabel: "A", label: "AI Tutor", icon: Sparkles, tab: "practice" },
-    { keyLabel: "L", label: "Planner", icon: Calendar, tab: "study-planner" },
-    { keyLabel: "Q", label: "Q-Bank", icon: BookOpen, tab: "question-bank" },
-    { keyLabel: "F", label: "Flashcards", icon: Brain, tab: "flashcards", badge: flashcardsDue && flashcardsDue > 0 ? flashcardsDue : undefined },
-    { keyLabel: "K", label: "Analytics", icon: BarChart3, tab: "progress" },
+    { keyLabel: "P", label: "Practice",   icon: Zap,           tab: "practice",      primary: true, mode: "quick" },
+    { keyLabel: "M", label: "Mock Exam",  icon: ClipboardCheck, tab: "practice",     mode: "mock" },
+    { keyLabel: "W", label: "Wrong Ans",  icon: Target,         tab: "mistakes",     badge: pendingMistakes > 0 ? pendingMistakes : undefined },
+    { keyLabel: "A", label: "AI Tutor",   icon: Sparkles,       tab: null,           special: "ai-tutor" },
+    { keyLabel: "L", label: "Planner",    icon: Calendar,       tab: "study-planner" },
+    { keyLabel: "Q", label: "Q-Bank",     icon: BookOpen,       tab: "question-bank" },
+    { keyLabel: "F", label: "Flashcards", icon: Brain,          tab: "flashcards",   badge: flashcardsDue && flashcardsDue > 0 ? flashcardsDue : undefined },
+    { keyLabel: "K", label: "Analytics",  icon: BarChart3,      tab: "progress" },
   ];
 
   const handle = (a: Action) => {
@@ -42,21 +46,18 @@ export default function QuickActions({ pendingMistakes = 0, flashcardsDue = null
       onAction(a.tab, a);
       return;
     }
-    if (a.label === "AI Tutor") {
-      const el = document.getElementById("dashboard-ai-coach");
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth", block: "start" });
-        window.dispatchEvent(new CustomEvent("dashboard:quick-ai-tutor"));
-      } else {
-        setPracticeIntent({ mode: "quick" });
-        setActiveTab("practice");
-      }
+    // AI Tutor: open the floating AI workspace modal via the global launcher event.
+    if (a.special === "ai-tutor") {
+      launchAI({ mode: "tutor" });
       return;
     }
+    // Practice / Mock Exam: set intent so PracticeTab auto-enters the right mode.
     if (a.mode) {
       setPracticeIntent({ mode: a.mode });
     }
-    setActiveTab(a.tab);
+    if (a.tab) {
+      setActiveTab(a.tab);
+    }
   };
 
   return (
