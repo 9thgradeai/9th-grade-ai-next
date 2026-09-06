@@ -24,6 +24,7 @@ import {
   registerExam,
   ensureAttemptId,
   clearAttemptId,
+  recoverPendingSubmission,
 } from "@/lib/services/exam-submission";
 import { useDialogA11y } from "@/lib/use-dialog-a11y";
 import { DIFFICULTY_LABEL } from "@/lib/exam-ui";
@@ -139,6 +140,30 @@ export default function MockTestTab() {
     void (async () => {
       await Promise.resolve();
       if (cancelled) return;
+      // 1) Finish an interrupted submission FIRST: if a previous submit reached
+      //    the server (or is recoverable), show its result rather than reviving
+      //    the attempted exam. Idempotent — the server dedupes by attemptId.
+      try {
+        const recovered = await recoverPendingSubmission(STORAGE_KEY);
+        if (cancelled) return;
+        if (recovered) {
+          clearAttemptId(STORAGE_KEY);
+          try {
+            localStorage.removeItem(STORAGE_KEY);
+          } catch {
+            /* ignore */
+          }
+          setResult(recovered.result);
+          setTestState("completed");
+          return;
+        }
+      } catch {
+        /* network still unusable — fall through to resume; submit will retry */
+      }
+      if (cancelled) return;
+      // 2) Resume an in-progress attempt from localStorage so tab switches or a
+      //    refresh never destroy an active test. The wall-clock timer below
+      //    auto-submits if time ran out while away.
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
         if (!raw) return;
@@ -281,7 +306,11 @@ export default function MockTestTab() {
 
   const submit = useCallback(
     async (qs: Server.ExamQuestionDTO[], ans: Record<number, string>) => {
-      if (qs.length === 0) return;
+      // Never a silent no-op: every click path ends in a visible outcome.
+      if (qs.length === 0) {
+        setSubmitError("পরীক্ষার প্রশ্ন পাওয়া যায়নি। মক টেস্ট আবার শুরু করুন।");
+        return;
+      }
       const attemptId = ensureAttemptId(STORAGE_KEY);
       if (!attemptId) {
         setSubmitError("পরীক্ষার সেশন শনাক্ত করা যায়নি। পৃষ্ঠা রিফ্রেশ করে আবার চেষ্টা করুন।");
@@ -301,6 +330,7 @@ export default function MockTestTab() {
           questionIds: qs.map((q) => q.id),
           durationSec: elapsedSec,
           answers: ans,
+          storageKey: STORAGE_KEY,
         });
         clearAttemptId(STORAGE_KEY);
         localStorage.removeItem(STORAGE_KEY);
@@ -322,7 +352,7 @@ export default function MockTestTab() {
   const handleSubmitRequest = () => {
     if (totalQuestions - answeredCount > 0) {
       setShowUnansweredConfirm(true);
-    } else if (questions.length > 0) {
+    } else {
       void submit(questions, answers);
     }
   };

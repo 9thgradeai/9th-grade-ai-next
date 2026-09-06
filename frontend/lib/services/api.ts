@@ -28,11 +28,24 @@ export class ApiError extends Error {
 
 // ── Internal helpers ───────────────────────────────────────
 
+function isAbortError(error: unknown): boolean {
+  return error instanceof Error && error.name === "AbortError";
+}
+
+/**
+ * Timeout-aware fetch that covers the ENTIRE request lifecycle — header
+ * arrival AND the response body read. Previously the timer was cleared as soon
+ * as `fetch()` resolved, leaving `response.json()` (the actual body) with no
+ * timeout and no abort signal: a stalled body would hang the caller forever
+ * (submitting state stuck, submission lock wedged — "submit button does
+ * nothing"). The timer now lives until the body has been consumed, and an
+ * abort at any stage surfaces as a retryable TIMEOUT ApiError.
+ */
 async function fetchWithTimeout(
   url: string,
   options: RequestInit = {},
   timeoutMs = DEFAULT_TIMEOUT_MS,
-): Promise<Response> {
+): Promise<{ response: Response; raw: unknown }> {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
@@ -41,16 +54,28 @@ async function fetchWithTimeout(
       ...options,
       signal: controller.signal,
     });
-    return response;
+    let raw: unknown;
+    if (response.status !== 204) {
+      try {
+        raw = await response.json();
+      } catch (error) {
+        // The only signal in play is our internal one (it overrides any caller
+        // signal), so an AbortError mid-read = the timeout fired. A non-JSON
+        // body (e.g. an edge error page) degrades to `null`; the caller falls
+        // back to statusText for the message.
+        if (isAbortError(error)) {
+          throw new ApiError("Request timed out.", "TIMEOUT", 408);
+        }
+        raw = null;
+      }
+    }
+    return { response, raw };
   } catch (error) {
-    if ((error as Error).name === "AbortError") {
+    if (isAbortError(error)) {
       throw new ApiError("Request timed out.", "TIMEOUT", 408);
     }
-    throw new ApiError(
-      "Network request failed.",
-      "NETWORK_ERROR",
-      0,
-    );
+    if (error instanceof ApiError) throw error;
+    throw new ApiError("Network request failed.", "NETWORK_ERROR", 0);
   } finally {
     clearTimeout(timeoutId);
   }
@@ -60,7 +85,7 @@ function getBackoffDelay(attempt: number): number {
   return RETRY_DELAY_BASE_MS * Math.pow(2, attempt);
 }
 
-type RequestOptions = RequestInit & { retries?: number };
+type RequestOptions = RequestInit & { retries?: number; timeoutMs?: number };
 
 /**
  * Single gateway for every browser → API call. Adds request correlation,
@@ -68,8 +93,9 @@ type RequestOptions = RequestInit & { retries?: number };
  *
  * Retries apply ONLY to idempotent verbs by default — mutations (POST/PATCH/
  * DELETE) are never retried automatically so a timeout can never double-apply
- * an action (e.g. an SRS review or exam submission). Pass `retries` explicitly
- * to opt a safe mutation back in.
+ * an action (e.g. an SRS review). Pass `retries` explicitly to opt a safe
+ * mutation back in. Exam submission opts in because it is idempotent by
+ * attemptId: the server resolves re-sends to the same token.
  */
 async function request<T>(
   url: string,
@@ -87,23 +113,22 @@ async function request<T>(
     retries = Math.min(retries, options.retries ?? 0);
   }
 
+  const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
   const fetchOptions: RequestInit = { ...options, headers };
   delete (fetchOptions as RequestOptions).retries;
+  delete (fetchOptions as RequestOptions).timeoutMs;
 
   let lastError: Error | null = null;
 
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
-      const response = await fetchWithTimeout(url, fetchOptions);
+      const { response, raw } = await fetchWithTimeout(url, fetchOptions, timeoutMs);
 
       if (!response.ok) {
-        let body: { error?: string; code?: string };
-        try {
-          body = await response.json();
-        } catch {
-          body = { error: response.statusText };
-        }
-
+        const body =
+          raw && typeof raw === "object"
+            ? (raw as { error?: string; code?: string })
+            : {};
         const errorMessage = body.error ?? response.statusText;
         const errorCode = body.code ?? `HTTP_${response.status}`;
 
@@ -126,8 +151,7 @@ async function request<T>(
         return undefined as T;
       }
 
-      const data = (await response.json()) as T;
-      return data;
+      return raw as T;
     } catch (error) {
       lastError = error as Error;
 
@@ -352,6 +376,13 @@ export const api = {
       ...AUTH_FETCH_INIT,
       body: JSON.stringify(params),
       headers: { "Content-Type": "application/json" },
+      // Safe to retry: the server is idempotent by attemptId and resolves
+      // re-sends to the original result. Mobile blips become invisible
+      // recoveries instead of hard failures.
+      retries: 2,
+      // Grading is a heavy transaction — give slow networks / cold starts a
+      // fair window before giving up.
+      timeoutMs: 45_000,
     });
     return data.result;
   },

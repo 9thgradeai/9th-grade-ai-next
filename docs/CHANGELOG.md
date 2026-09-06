@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+### Fixed
+- **Exam submission reliability** — the submit button can no longer silently get stuck. The API gateway timeout now covers the full request lifecycle (headers **and** body read), so a stalled grading body surfaces a retryable `TIMEOUT` instead of hanging the UI forever. Exam submissions now auto-retry transient failures (2 retries, 45s budget) against the idempotent `/api/exam/submit` endpoint. A per-attempt in-flight guard replaces the old global lock (double-clicks join the same submit), and pending submissions are persisted to localStorage so a crash or refresh mid-submit recovers automatically via `outcome: "resumed"`.
+
 ## [0.5.0] - 2026-08-21
 
 ### Added

@@ -28,6 +28,7 @@ import {
   registerExam,
   ensureAttemptId,
   clearAttemptId,
+  recoverPendingSubmission,
 } from "@/lib/services/exam-submission";
 import type { Server } from "@/lib/types";
 import TopicTreePicker, {
@@ -208,11 +209,30 @@ export default function CustomExamTab() {
 
   // Resume an in-progress exam from localStorage so refresh/navigation does not
   // corrupt an active attempt. Runs after an async boundary; the countdown
-  // effect auto-submits if the timer already ran out while away.
+  // effect auto-submits if the timer already ran out while away. An interrupted
+  // submission is finalized FIRST via idempotent recovery.
   useEffect(() => {
     let cancelled = false;
     void (async () => {
       await Promise.resolve();
+      if (cancelled) return;
+      try {
+        const recovered = await recoverPendingSubmission(STORAGE_KEY);
+        if (cancelled) return;
+        if (recovered) {
+          clearAttemptId(STORAGE_KEY);
+          try {
+            localStorage.removeItem(STORAGE_KEY);
+          } catch {
+            /* ignore */
+          }
+          setResult(recovered.result);
+          setPhase("result");
+          return;
+        }
+      } catch {
+        /* network still unusable — fall through to resume; submit will retry */
+      }
       if (cancelled) return;
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
@@ -387,7 +407,11 @@ export default function CustomExamTab() {
 
   const submit = useCallback(
     async (qs: Server.ExamQuestionDTO[], ans: Record<number, string>) => {
-      if (qs.length === 0) return;
+      // Never a silent no-op: every click path ends in a visible outcome.
+      if (qs.length === 0) {
+        setSubmitError("পরীক্ষার প্রশ্ন পাওয়া যায়নি। আবার চেষ্টা করুন।");
+        return;
+      }
       const examSnapshot = exam;
       if (!examSnapshot?.attemptId) {
         setSubmitError("পরীক্ষার সেশন শনাক্ত করা যায়নি। পৃষ্ঠা রিফ্রেশ করে আবার চেষ্টা করুন।");
@@ -405,6 +429,7 @@ export default function CustomExamTab() {
           questionIds: qs.map((q) => q.id),
           durationSec: elapsedSec,
           answers: ans,
+          storageKey: STORAGE_KEY,
         });
         setResult(result);
         setPhase("result");
@@ -432,6 +457,8 @@ export default function CustomExamTab() {
       setShowUnansweredConfirm(true);
     } else if (exam) {
       void submit(exam.questions, answers);
+    } else {
+      setSubmitError("পরীক্ষা শনাক্ত করা যায়নি। আবার চেষ্টা করুন।");
     }
   };
 
