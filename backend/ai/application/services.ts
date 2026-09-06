@@ -698,7 +698,7 @@ export async function assistantTurn(opts: {
   let streamResult;
   try {
     const fo = await withFailover("assistant", {}, (p) =>
-      p.stream({ system: system + instructions, messages: modelMessages, maxTokens: 1024 }),
+      p.stream({ system: system + instructions, messages: modelMessages, maxTokens: 2048 }),
     );
     streamResult = fo.value;
     name = fo.provider;

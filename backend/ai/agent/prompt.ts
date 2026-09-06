@@ -6,6 +6,7 @@
 // transcript (tool calls + results) is what constitutes the model's context.
 
 import type { ToolDefinition } from "../tools/types";
+import { FORMATTING_RULES } from "../prompts/formatting";
 
 export const MAX_AGENT_STEPS = 8;
 export const MAX_AGENT_OUTPUT_CHARS = 4000;
@@ -19,7 +20,10 @@ const BLOCK_SPEC = `You respond with a JSON array of typed blocks. Block types:
 - {"type":"exam_action","label":"...","actions":[...]}
 - {"type":"progress","accuracy":0,"streak":0,"questionsAnswered":0,"actions":[...]}
 Action types: practice | revision | mock_exam | open_tab | open_question | open_wrong_answers | open_study_plan | refresh
-Prefer to reflect real tool data (accuracy, counts, subjects) into blocks.`;
+Prefer to reflect real tool data (accuracy, counts, subjects) into blocks.
+
+The "text" block is regular response prose and MUST follow these formatting rules:
+${FORMATTING_RULES}`;
 
 export function buildAgentSystemPrompt(
   tools: ToolDefinition[],

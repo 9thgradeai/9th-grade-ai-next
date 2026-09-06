@@ -101,9 +101,13 @@ Every AI call records an `AIUsage` row (tokens, latency, success, estimated cost
   button), headings, bullet/numbered lists, blockquotes, links and dividers. It also strips the
   decorative asterisk noise models occasionally emit (stray `**`, `****` separators, empty emphasis)
   so responses never show raw `*`/`**` characters.
-- **Formatting guidance in prompts**: `tutor.ts` and `assistant.ts` include a `FORMATTING` block that
-  tells the model to use minimal Markdown (`-` bullets, numbered steps, brief headings) and to avoid
-  asterisk-heavy or decoration-only lines, which break on small screens.
+- **Formatting guidance in prompts**: tutor, assistant and agent prompts all pull the same
+  `FORMATTING_RULES` constant in `backend/ai/prompts/formatting.ts` (minimal Markdown — `-` bullets,
+  numbered steps, brief headings — no asterisk-heavy or decoration-only lines). A single source of
+  truth keeps output style consistent across every mode.
+- **Temperature default**: `backend/ai/router/config.ts` exposes `resolveTemperature()`; the Groq and
+  Anthropic providers apply it whenever a request does not specify its own temperature, honoring
+  `AI_TEMPERATURE` (clamped to 0–2) with a default of 0.4 for predictable exam-prep answers.
 - **Chat UI**: `frontend/components/dashboard/VoiceAITutor.tsx` is a responsive,
   ChatGPT/Gemini-inspired shell (mobile bottom sheet + slide-over conversation drawer; desktop
   centered panel with an always-visible sidebar). Message bubbles live in

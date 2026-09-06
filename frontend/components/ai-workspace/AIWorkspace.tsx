@@ -262,7 +262,31 @@ export default function AIWorkspace() {
   const syncFromServer = useCallback(async (conversationId: string) => {
     try {
       const data = await getConversation(conversationId);
-      setMessages(data.messages.map(messageToUI));
+      setMessages((prev) => {
+        // Non-destructive reconciliation. Server rows are authoritative for
+        // ids, but we never drop a local row whose server copy is still
+        // in-flight, and we keep any richer local payload (agent blocks,
+        // suggested actions) the server DTO doesn't carry.
+        const serverRows = data.messages.map(messageToUI);
+        const merged: UIMessage[] = [...serverRows];
+        for (const local of prev) {
+          if (local.text === "" && local.role === "ai") continue;
+          const idx = merged.findIndex((m) => m.role === local.role && m.text === local.text);
+          if (idx === -1) {
+            merged.push(local);
+          } else if (
+            (merged[idx].blocks !== local.blocks || merged[idx].actions !== local.actions) &&
+            (local.blocks?.length || local.actions?.length)
+          ) {
+            // Local copy is richer (blocks/actions not surfaced by the DTO);
+            // keep its payload but keep the server's persisted messageId
+            // (the local placeholder id is not a real DB row id and would
+            // break feedback + dedupe).
+            merged[idx] = { ...merged[idx], blocks: local.blocks, actions: local.actions };
+          }
+        }
+        return merged;
+      });
     } catch {
       // keep local state
     }
@@ -652,54 +676,62 @@ export default function AIWorkspace() {
               role="dialog"
               aria-modal="true"
               aria-labelledby="ai-workspace-title"
-              className="ai-panel relative m-auto flex h-full w-full flex-col overflow-hidden border sm:h-[min(94dvh,940px)] sm:w-[min(1160px,96vw)] sm:rounded-2xl sm:shadow-2xl"
+              className="ai-panel relative m-auto flex h-dvh w-full flex-col overflow-hidden border sm:h-[min(94dvh,940px)] sm:w-[min(1160px,96vw)] sm:rounded-2xl sm:shadow-2xl"
             >
-              {/* Header */}
-              <div className="ai-header flex items-center justify-between gap-2 px-3 py-2.5 sm:px-4 sm:py-3">
-                <div className="flex min-w-0 items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setSidebarOpen((v) => !v)}
-                    className="ai-icon-btn h-9 w-9 lg:hidden"
-                    aria-label="Toggle conversation list"
-                  >
-                    <PanelLeft className="h-5 w-5" />
-                  </button>
-                  <AiLogo className="h-7 w-7 flex-shrink-0" />
-                  <span id="ai-workspace-title" className="truncate font-mono font-bold text-[var(--accent)]">
-                    9Th-Grade AI
-                  </span>
-                  <div className="ml-1 flex-shrink-0">
-                    <ModeSwitcher mode={mode} onChange={setMode} />
-                  </div>
-                </div>
-
-                <div className="flex flex-shrink-0 items-center gap-1">
-                  <span
-                    aria-live="polite"
-                    className={`ai-status ${statusVariant(status)} hidden font-mono text-xs md:inline-flex`}
-                  >
-                    {STATUS_LABEL[status]}
-                  </span>
-
-                  {activeConversationId && (
+              {/* Header — single flex-wrap row. On <md the mode switcher wraps
+                  full-width onto its own line; on md+ it sits centered inline.
+                  Rendered once, repositioned with order — never duplicated. */}
+              <div className="ai-header shrink-0">
+                <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-2 px-3 py-2 sm:px-4 sm:py-3">
+                  <div className="order-1 flex min-w-0 items-center gap-2">
                     <button
                       type="button"
-                      onClick={startNewConversation}
-                      className="ai-icon-btn h-9 w-9 lg:hidden"
-                      aria-label="New conversation"
+                      onClick={() => setSidebarOpen((v) => !v)}
+                      className="ai-icon-btn h-9 w-9 flex-shrink-0 lg:hidden"
+                      aria-label="Toggle conversation list"
                     >
-                      <Plus className="h-5 w-5" />
+                      <PanelLeft className="h-5 w-5" />
                     </button>
-                  )}
-                  <button
-                    type="button"
-                    onClick={closeWorkspace}
-                    className="ai-icon-btn h-9 w-9"
-                    aria-label="Close AI workspace"
-                  >
-                    <X className="h-5 w-5" />
-                  </button>
+                    <AiLogo className="h-7 w-7 flex-shrink-0" />
+                    <span
+                      id="ai-workspace-title"
+                      className="hidden min-w-0 truncate font-mono font-bold text-[var(--accent)] md:inline"
+                    >
+                      9Th-Grade AI
+                    </span>
+                  </div>
+
+                  <div className="order-2 flex min-w-0 flex-shrink-0 items-center gap-1 md:order-3">
+                    <span
+                      aria-live="polite"
+                      className={`ai-status ${statusVariant(status)} hidden font-mono text-xs lg:inline-flex`}
+                    >
+                      {STATUS_LABEL[status]}
+                    </span>
+
+                    {activeConversationId && (
+                      <button
+                        type="button"
+                        onClick={startNewConversation}
+                        className="ai-icon-btn h-9 w-9 flex-shrink-0 lg:hidden"
+                        aria-label="New conversation"
+                      >
+                        <Plus className="h-5 w-5" />
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={closeWorkspace}
+                      className="ai-icon-btn h-9 w-9 flex-shrink-0"
+                      aria-label="Close AI workspace"
+                    >
+                      <X className="h-5 w-5" />
+                    </button>
+                  </div>
+
+                  <div className="order-3 w-full min-w-0 md:order-2 md:w-auto">
+                    <ModeSwitcher mode={mode} onChange={setMode} />
+                  </div>
                 </div>
               </div>
 

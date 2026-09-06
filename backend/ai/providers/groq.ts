@@ -9,6 +9,7 @@ import { generateText, streamText, type CoreMessage } from "ai";
 import { createGroq } from "@ai-sdk/groq";
 import { AppError } from "~backend/errors";
 import type { AIMessageInput } from "../types";
+import { resolveTemperature } from "../router";
 import {
   type LLMProvider,
   type LLMRequest,
@@ -64,7 +65,7 @@ export class GroqProvider implements LLMProvider {
           system: req.system,
           messages,
           maxTokens: req.maxTokens ?? 2048,
-          temperature: req.temperature,
+          temperature: req.temperature ?? resolveTemperature(),
         });
         if (result.text.trim()) {
           text = result.text;
@@ -112,7 +113,7 @@ export class GroqProvider implements LLMProvider {
       system: req.system,
       messages: toCoreMessages(req.messages),
       maxTokens: req.maxTokens ?? 2048,
-      temperature: req.temperature,
+      temperature: req.temperature ?? resolveTemperature(),
     });
 
     const { stream, done, getFullText } =

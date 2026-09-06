@@ -9,10 +9,15 @@
 import "server-only";
 
 import type { LLMProviderName } from "../providers/types";
-import { AI_CONFIG, resolveModelName, type AIProviderName, type AITier } from "./config";
+import {
+  AI_CONFIG,
+  resolveModelName,
+  type AIProviderName,
+  type AITier,
+} from "./config";
 import { tierForTask, type ModelTask } from "./tasks";
 
-export { AI_CONFIG, resolveModelName, type AIProviderName, type AITier } from "./config";
+export { AI_CONFIG, resolveModelName, resolveTemperature, type AIProviderName, type AITier } from "./config";
 export { tierForTask, type ModelTask } from "./tasks";
 
 export type ModelRoute = {

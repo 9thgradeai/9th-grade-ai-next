@@ -3,6 +3,7 @@
 // contextual guidance — not generic ChatGPT answers.
 
 import type { AIContext } from "../types";
+import { FORMATTING_RULES } from "./formatting";
 
 export const ASSISTANT_PROMPT_VERSION = "assistant-v1";
 
@@ -15,15 +16,6 @@ const PERSONA =
   "- Answer in Bengali (Bangla) or English or a natural mix, matching the learner.\n" +
   "- Be concise, encouraging and practical. Never invent progress numbers — only use the provided context.\n" +
   "- If the question is off-topic for studying, answer helpfully but steer back to exam preparation.";
-
-const FORMATTING =
-  "## Formatting\n" +
-  "- Use clean, minimal Markdown: `-` bullets for lists, numbered steps for procedures, and short " +
-  "`###` headings only when they genuinely help.\n" +
-  "- Do NOT over-emphasize: avoid asterisk-heavy text, and never emit decorative lines made only of " +
-  "`*`, `**`, `***` or `---` (they render as broken blocks on small screens).\n" +
-  "- Keep paragraphs short. Wrap formulas or code in single backticks, and multi-line code in fenced " +
-  "code blocks with a language tag (```).\n";
 
 const LEARNING_CONTEXT = (ctx: AIContext): string => {
   const lines: string[] = [];
@@ -64,7 +56,7 @@ const WEB_RULES =
 export function buildAssistantSystem(ctx: AIContext, webBlock = ""): string {
   return [
     PERSONA,
-    FORMATTING,
+    FORMATTING_RULES,
     LEARNING_CONTEXT(ctx),
     MEMORY_CONTEXT(ctx),
     webBlock ? WEB_RULES + webBlock : "",

@@ -37,3 +37,16 @@ export function resolveModelName(provider: AIProviderName, tier: AITier): string
   if (provider === "groq") return process.env.AI_GROQ_MODEL ?? "openai/gpt-oss-120b";
   return process.env.AI_ANTHROPIC_MODEL ?? "claude-sonnet-4-6";
 }
+
+/**
+ * Resolve the sampling temperature for an LLM call. Honors `AI_TEMPERATURE`
+ * when set; otherwise returns a deterministic profile so responses stay
+ * consistent across prompt types instead of drifting with provider SDK defaults.
+ */
+export function resolveTemperature(): number {
+  const t = AI_CONFIG.temperature;
+  if (t !== undefined && Number.isFinite(t) && t >= 0 && t <= 2) return t;
+  // Default profile: low temperature keeps factual exam answers grounded and
+  // consistent while still allowing natural, varied phrasing.
+  return 0.4;
+}

@@ -3,6 +3,7 @@
 // user-performance-aware tutoring. Bilingual (Bengali-first).
 
 import type { AIContext } from "../types";
+import { FORMATTING_RULES } from "./formatting";
 
 export const TUTOR_PROMPT_VERSION = "tutor-v1";
 
@@ -17,15 +18,6 @@ const PERSONA =
   "- Be accurate first. If unsure about a fact, say so instead of guessing.\n" +
   "- Be concise, encouraging and exam-focused. Never invent dates, numbers or names.\n" +
   "- When the learner makes an error, address the misconception explicitly, then re-teach.";
-
-const FORMATTING =
-  "## Formatting\n" +
-  "- Use clean, minimal Markdown: `-` bullets for lists, numbered steps for procedures, and short " +
-  "`###` headings only when they genuinely help.\n" +
-  "- Do NOT over-emphasize: avoid asterisk-heavy text, and never emit decorative lines made only of " +
-  "`*`, `**`, `***` or `---` (they render as broken blocks on small screens).\n" +
-  "- Keep paragraphs short. Wrap formulas or code in single backticks, and multi-line code in fenced " +
-  "code blocks with a language tag (```).\n";
 
 const LEARNING_CONTEXT = (ctx: AIContext): string => {
   const lines: string[] = [];
@@ -88,7 +80,7 @@ const DOMAIN_RULES =
 export function buildTutorSystem(ctx: AIContext, webBlock = "", domainBlock = ""): string {
   return [
     PERSONA,
-    FORMATTING,
+    FORMATTING_RULES,
     LEARNING_CONTEXT(ctx),
     MEMORY_CONTEXT(ctx),
     domainBlock ? DOMAIN_RULES + domainBlock : "",
