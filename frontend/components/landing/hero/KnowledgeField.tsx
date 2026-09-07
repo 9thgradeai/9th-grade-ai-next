@@ -185,8 +185,8 @@ export default function KnowledgeField({
         // ease intro
         const easedIntro = 1 - Math.pow(1 - intro, 3);
 
-        mouseX += (targetX - mouseX) * 0.04;
-        mouseY += (targetY - mouseY) * 0.04;
+        mouseX += (targetX - mouseX) * 0.065;
+        mouseY += (targetY - mouseY) * 0.065;
 
         ctx.clearRect(0, 0, w, h);
 
@@ -197,17 +197,17 @@ export default function KnowledgeField({
         const baseCx = isMobileView ? 0.5 : isTabletView ? 0.56 : isWideView ? 0.66 : 0.62;
         const baseCy = isMobileView ? 0.42 : 0.48;
         const baseScale = isMobileView ? 0.52 : isTabletView ? 0.55 : isWideView ? 0.62 : 0.58;
-        const parallaxStrength = isMobileView ? 0.015 : 0.03;
+        const parallaxStrength = isMobileView ? 0.018 : 0.034;
         const cx = w * baseCx + mouseX * w * parallaxStrength;
         const cy = h * baseCy + mouseY * h * (parallaxStrength * 0.8);
         const scaleBase = Math.min(w, h) * baseScale;
-        const time = now * 0.00022;
+        const time = now * 0.00034;
         const scrollFade = 1 - scrollProgress * 0.85;
         const scrollScale = 1 - scrollProgress * 0.18;
 
-        // slight global rotation
-        const rotY = time * 0.12 + mouseX * 0.18;
-        const rotX = time * 0.06 + mouseY * 0.12;
+        // slightly faster global rotation — still calm, more alive
+        const rotY = time * 0.18 + mouseX * 0.22;
+        const rotX = time * 0.09 + mouseY * 0.15;
 
         // project particles
         const projected: { x: number; y: number; z: number; alpha: number; size: number; col: string }[] = [];
@@ -221,10 +221,10 @@ export default function KnowledgeField({
           // subtle organic drift + intro reveal (particles spawn outward)
           const appear = Math.min(1, easedIntro * 1.6 - i * 0.0009);
           if (appear <= 0) continue;
-          // weak spot pulse every 4.2s: pick cluster index
-          const pulseCluster = Math.floor((now / 4200) % CLUSTERS.length);
-          const isWeak = i % CLUSTERS.length === pulseCluster && Math.sin(now * 0.0012 + p.ph) > 0.6;
-          const pulse = isWeak ? 1.4 : 1;
+          // weak spot pulse every 3.2s — a bit faster rhythm
+          const pulseCluster = Math.floor((now / 3200) % CLUSTERS.length);
+          const isWeak = i % CLUSTERS.length === pulseCluster && Math.sin(now * 0.0018 + p.ph) > 0.6;
+          const pulse = isWeak ? 1.45 : 1;
 
           // rotate
           let x = p.ox * cosY - p.oz * sinY;
@@ -232,8 +232,8 @@ export default function KnowledgeField({
           let y = p.oy * cosX - z * sinX;
           z = p.oy * sinX + z * cosX;
 
-          // breathing
-          const breathe = 1 + Math.sin(time * 0.9 + p.ph) * 0.015 * pulse;
+          // faster breathing
+          const breathe = 1 + Math.sin(time * 1.32 + p.ph) * 0.016 * pulse;
           x *= breathe;
           y *= breathe;
           z *= breathe;
@@ -273,9 +273,9 @@ export default function KnowledgeField({
           ctx.quadraticCurveTo(mx, my, pb.x, pb.y);
           ctx.stroke();
 
-          // traveling pulse every few seconds along a subset
+          // traveling pulse — faster flow
           if (intro > 0.55 && (a + b) % 97 === 0) {
-            const t = ((now * 0.00045 + a * 0.13) % 1);
+            const t = ((now * 0.00068 + a * 0.13) % 1);
             const px = pa.x + (pb.x - pa.x) * t;
             const py = pa.y + (pb.y - pa.y) * t;
             ctx.fillStyle = `rgba(45,212,191,${0.85 * reveal * scrollFade})`;
