@@ -17,6 +17,7 @@ import { AdmitCard, deriveDisplayName } from "./AdmitCard"
 import { VerificationSequence } from "./ceremony/VerificationSequence"
 import { EnterHallTransition } from "./ceremony/EnterHallTransition"
 import BrandMark from "@/components/ui/BrandMark"
+import LanguageToggle from "@/components/ui/LanguageToggle"
 import { LoginForm, type LoginValues } from "./LoginForm"
 import { SignupForm, type SignupValues } from "./SignupForm"
 import { resolveScene } from "./animation/AnimationDirector"
@@ -565,6 +566,7 @@ export default function AuthExperience({
             <BrandMark className="h-7 w-7 rounded-lg shadow-[0_0_18px_rgba(16,185,129,0.35)]" />
             9Th-Grade AI
           </Link>
+          <LanguageToggle className="min-h-[44px] px-3 flex items-center gap-1.5 text-[var(--text-muted)] hover:text-emerald-400 border border-white/10 hover:border-emerald-400/30 rounded-full text-xs font-mono uppercase tracking-wider transition-colors" />
         </header>
 
         <main className="flex min-h-0 w-full flex-1 flex-col items-center justify-center gap-3 self-center overflow-hidden px-4 pb-4 pt-1 sm:gap-5 sm:px-6 sm:pb-6 sm:pt-3">

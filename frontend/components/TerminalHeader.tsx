@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import StatusPill from "./ui/StatusPill";
 import BrandMark from "./ui/BrandMark";
+import LanguageToggle from "./ui/LanguageToggle";
 
 const navLinks = [
   { href: "/#features", label: "Features", anchor: "#features" },
@@ -152,6 +153,7 @@ export default function TerminalHeader() {
             ))}
 
             <div className="flex items-center gap-3 ml-2">
+              <LanguageToggle className="text-zinc-300 hover:text-emerald-400 border border-white/10 hover:border-emerald-400/30" />
               <Link
                 href="/login"
                 className="px-4 py-1.5 text-sm font-medium text-zinc-100 border border-white/15 rounded-full hover:border-emerald-400/50 hover:bg-white/5 transition-colors hover:scale-[1.03] active:scale-[0.97]"
@@ -167,14 +169,15 @@ export default function TerminalHeader() {
             </div>
           </div>
 
-          {/* Mobile Menu Button */}
-          <button
-            className="md:hidden p-2.5 rounded-lg hover:bg-white/5 transition-colors"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
-            aria-expanded={isMobileMenuOpen}
-            aria-controls="mobile-menu"
-          >
+          <div className="flex items-center gap-2 md:hidden">
+            <LanguageToggle className="min-h-[44px] px-2.5 flex items-center gap-1.5 text-zinc-300 hover:text-emerald-400 border border-white/10 hover:border-emerald-400/30 rounded-full text-xs font-mono uppercase tracking-wider transition-colors" />
+            <button
+              className="p-2.5 rounded-lg hover:bg-white/5 transition-colors"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={isMobileMenuOpen}
+              aria-controls="mobile-menu"
+            >
             <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               {isMobileMenuOpen ? (
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -183,6 +186,7 @@ export default function TerminalHeader() {
               )}
             </svg>
           </button>
+          </div>
         </div>
 
         {/* Mobile Menu */}
@@ -211,6 +215,9 @@ export default function TerminalHeader() {
               </Link>
             ))}
             <div className="flex flex-col gap-2 pt-4 border-t border-white/10">
+              <div className="flex justify-center">
+                <LanguageToggle className="min-h-[44px] px-4 flex items-center gap-1.5 text-zinc-300 hover:text-emerald-400 border border-white/15 rounded-full text-sm font-mono uppercase tracking-wider transition-colors" />
+              </div>
               <Link
                 href="/login"
                 onClick={() => setIsMobileMenuOpen(false)}
