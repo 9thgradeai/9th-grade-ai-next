@@ -7,6 +7,7 @@ import { LanguageProvider } from "@/lib/lang-ctx";
 import { LANGUAGE_KEY } from "@/lib/lang-key";
 import ScrollProgress from "@/components/ui/ScrollProgress";
 import Toaster from "@/components/ui/ToasterLazy";
+import CommandPalette from "@/components/navigation/CommandPalette";
 import { SentryClientProvider } from "@/lib/sentry";
 import "./globals.css";
 
@@ -123,6 +124,7 @@ export default function RootLayout({
             <AuthProvider>
               <ThemeProvider>
                 <SentryClientProvider>{children}</SentryClientProvider>
+                <CommandPalette />
               </ThemeProvider>
             </AuthProvider>
           </LanguageProvider>
