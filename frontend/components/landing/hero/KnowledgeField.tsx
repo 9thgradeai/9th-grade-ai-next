@@ -32,9 +32,10 @@ const CLUSTERS = [
 
 function qualityConfig(q: Quality, isDark: boolean) {
   if (q === "static") return { count: 0, connections: 0, dpr: 1, fps: 0 };
-  if (q === "low") return { count: 180, connections: 0.22, dpr: 1.2, fps: 30 };
-  if (q === "medium") return { count: 480, connections: 0.28, dpr: 1.35, fps: 45 };
-  return { count: 900, connections: 0.32, dpr: 1.5, fps: 60 };
+  if (q === "low") return { count: 180, connections: 0.22, dpr: 1.15, fps: 30 };
+  if (q === "medium") return { count: 480, connections: 0.28, dpr: 1.3, fps: 60 };
+  // high: 120fps on capable displays — DPR capped for 120hz performance
+  return { count: 900, connections: 0.32, dpr: 1.4, fps: 120 };
 }
 
 export default function KnowledgeField({
@@ -53,7 +54,7 @@ export default function KnowledgeField({
     const cfg = qualityConfig(quality, isDark);
     if (cfg.count === 0) return;
 
-    const ctx = canvas.getContext("2d", { alpha: true });
+    const ctx = canvas.getContext("2d", { alpha: true, desynchronized: true, willReadFrequently: false } as unknown as CanvasRenderingContext2DSettings);
     if (!ctx) return;
 
     let w = 0,
@@ -114,13 +115,25 @@ export default function KnowledgeField({
     if (canvas.parentElement) ro.observe(canvas.parentElement);
 
     const onPointerMove = (e: PointerEvent) => {
-      if (!pointerEffects || quality === "low" || quality === "static") return;
+      if (quality === "static") return;
+      // allow pointer on all, but reduce intensity on touch/low
+      const isTouch = (e as unknown as { pointerType?: string }).pointerType === "touch";
+      const intensity = isTouch || quality === "low" ? 0.45 : 0.9;
       const rect = canvas.getBoundingClientRect();
-      targetX = ((e.clientX - rect.left) / rect.width - 0.5) * 0.9;
-      targetY = ((e.clientY - rect.top) / rect.height - 0.5) * 0.6;
+      targetX = ((e.clientX - rect.left) / rect.width - 0.5) * intensity;
+      targetY = ((e.clientY - rect.top) / rect.height - 0.5) * (intensity * 0.66);
+    };
+    const onTouchMove = (e: TouchEvent) => {
+      if (quality === "static") return;
+      const t = e.touches[0];
+      if (!t) return;
+      const rect = canvas.getBoundingClientRect();
+      targetX = ((t.clientX - rect.left) / rect.width - 0.5) * 0.55;
+      targetY = ((t.clientY - rect.top) / rect.height - 0.5) * 0.38;
     };
     const section = canvas.parentElement;
     section?.addEventListener("pointermove", onPointerMove as unknown as EventListener, { passive: true } as AddEventListenerOptions);
+    section?.addEventListener("touchmove", onTouchMove as unknown as EventListener, { passive: true } as AddEventListenerOptions);
 
     const onScroll = () => {
       const rect = section?.getBoundingClientRect();
@@ -177,10 +190,17 @@ export default function KnowledgeField({
 
         ctx.clearRect(0, 0, w, h);
 
-        // perspective projection
-        const cx = w * 0.62 + mouseX * w * 0.03;
-        const cy = h * 0.46 + mouseY * h * 0.025;
-        const scaleBase = Math.min(w, h) * 0.58;
+        // responsive viewing angle — fully centered on mobile, offset right on desktop
+        const isMobileView = w < 640 * dpr;
+        const isTabletView = w < 1024 * dpr;
+        const isWideView = w > 1440 * dpr;
+        const baseCx = isMobileView ? 0.5 : isTabletView ? 0.56 : isWideView ? 0.66 : 0.62;
+        const baseCy = isMobileView ? 0.42 : 0.48;
+        const baseScale = isMobileView ? 0.52 : isTabletView ? 0.55 : isWideView ? 0.62 : 0.58;
+        const parallaxStrength = isMobileView ? 0.015 : 0.03;
+        const cx = w * baseCx + mouseX * w * parallaxStrength;
+        const cy = h * baseCy + mouseY * h * (parallaxStrength * 0.8);
+        const scaleBase = Math.min(w, h) * baseScale;
         const time = now * 0.00022;
         const scrollFade = 1 - scrollProgress * 0.85;
         const scrollScale = 1 - scrollProgress * 0.18;
@@ -265,24 +285,14 @@ export default function KnowledgeField({
           }
         }
 
-        // draw nodes
+        // draw nodes — pure knowledge nodes, no central 9G sphere
         for (const pr of projected) {
-          // highlight active cluster pulse
-          const coreDist = Math.hypot(pr.x - cx, pr.y - cy);
-          const isCore = coreDist < 18 * dpr && pr.z > 0.2;
-          ctx.globalAlpha = pr.alpha * (isCore ? 1 : 1);
-          if (isCore) {
-            // tiny core glow
-            ctx.fillStyle = isDark ? "rgba(45,212,191,0.95)" : "rgba(99,102,241,0.9)";
-            ctx.beginPath();
-            ctx.arc(pr.x, pr.y, pr.size * 1.6 + 1.2, 0, Math.PI * 2);
-            ctx.fill();
-          }
+          ctx.globalAlpha = pr.alpha;
           ctx.fillStyle = pr.col;
-          // nodes closer have slight glow
-          if (pr.z > 0.3) {
+          // closer nodes have subtle glow, responsive sizing
+          if (pr.z > 0.32) {
             ctx.shadowColor = pr.col;
-            ctx.shadowBlur = 6 * dpr;
+            ctx.shadowBlur = (isMobileView ? 4 : 6) * dpr;
           } else {
             ctx.shadowBlur = 0;
           }
@@ -292,23 +302,6 @@ export default function KnowledgeField({
           ctx.shadowBlur = 0;
         }
         ctx.globalAlpha = 1;
-
-        // central 9G core — appears at 5.5s, subtle
-        if (intro > 0.78) {
-          const coreReveal = Math.min(1, (intro - 0.78) / 0.14);
-          const coreAlpha = coreReveal * 0.16 * scrollFade * (isDark ? 1 : 0.5);
-          ctx.fillStyle = isDark ? `rgba(167,139,250,${coreAlpha})` : `rgba(99,102,241,${coreAlpha * 0.7})`;
-          ctx.beginPath();
-          ctx.arc(cx, cy, 42 * dpr * coreReveal, 0, Math.PI * 2);
-          ctx.fill();
-          if (intro > 0.86) {
-            ctx.fillStyle = isDark ? `rgba(255,255,255,${0.92 * coreReveal * scrollFade})` : `rgba(15,23,42,${0.85 * coreReveal})`;
-            ctx.font = `${12 * dpr}px var(--font-display, system-ui)`;
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
-            ctx.fillText("9G", cx, cy);
-          }
-        }
 
         loop();
       });
@@ -323,6 +316,7 @@ export default function KnowledgeField({
       document.removeEventListener("visibilitychange", onVis);
       window.removeEventListener("scroll", onScroll);
       section?.removeEventListener("pointermove", onPointerMove as unknown as EventListener);
+      section?.removeEventListener("touchmove", onTouchMove as unknown as EventListener);
     };
   }, [quality, isDark, pointerEffects]);
 
