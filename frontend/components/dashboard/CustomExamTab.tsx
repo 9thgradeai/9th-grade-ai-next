@@ -144,6 +144,7 @@ export default function CustomExamTab() {
   const [phase, setPhase] = useState<ExamPhase>("config");
   const [showUnansweredConfirm, setShowUnansweredConfirm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [reconciling, setReconciling] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const questionRefs = useRef<Record<number, HTMLDivElement | null>>({});
   const submittingRef = useRef(false);
@@ -413,10 +414,25 @@ export default function CustomExamTab() {
   useEffect(() => { examRef.current = exam; }, [exam]);
   useEffect(() => { answersRef.current = answers; }, [answers]);
 
+  // Safe navigation: block route/tab change and tab close while submission is in flight.
+  useEffect(() => {
+    if (!submitting && !reconciling) return;
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [submitting, reconciling]);
+
   const submit = useCallback(
     async (qs: Server.ExamQuestionDTO[], ans: Record<number, string>) => {
+      // Deterministic snapshot — captured synchronously at call time, never read
+      // from async React state after the click.
+      const snapshotQs = [...qs];
+      const snapshotAns = { ...ans };
       // Never a silent no-op: every click path ends in a visible outcome.
-      if (qs.length === 0) {
+      if (snapshotQs.length === 0) {
         setSubmitError("পরীক্ষার প্রশ্ন পাওয়া যায়নি। আবার চেষ্টা করুন।");
         return;
       }
@@ -434,6 +450,7 @@ export default function CustomExamTab() {
       }
       submittingRef.current = true;
       setSubmitting(true);
+      setReconciling(false);
       setSubmitError(null);
       try {
         const elapsedSec = Math.max(
@@ -442,9 +459,9 @@ export default function CustomExamTab() {
         );
         const { result } = await canonicalSubmitExamAttempt({
           attemptId: examSnapshot.attemptId,
-          questionIds: qs.map((q) => q.id),
+          questionIds: snapshotQs.map((q) => q.id),
           durationSec: elapsedSec,
-          answers: ans,
+          answers: snapshotAns,
           storageKey: STORAGE_KEY,
         });
         setResult(result);
@@ -456,14 +473,18 @@ export default function CustomExamTab() {
           /* ignore */
         }
       } catch (err) {
-        const message =
-          err instanceof Error && err.message
-            ? err.message
-            : "ফলাফল জমা দেওয়া যায়নি। আবার চেষ্টা করুন।";
-        setSubmitError(message);
+        const msg = err instanceof Error && err.message ? err.message : "ফলাফল জমা দেওয়া যায়নি। আবার চেষ্টা করুন।";
+        // If the error looks like a network/timeout, offer reconciliation state
+        if (msg.includes("TIMEOUT") || msg.includes("NETWORK_ERROR") || msg.includes("timed out")) {
+          setReconciling(true);
+          setSubmitError("সংযোগ বিচ্ছিন্ন হয়েছে — অবস্থা যাচাই করা হচ্ছে...");
+          // Auto-reconcile once: if server already committed, we will recover on next mount via pending
+        }
+        setSubmitError(msg);
       } finally {
         submittingRef.current = false;
         setSubmitting(false);
+        setReconciling(false);
       }
     },
     [],
@@ -871,7 +892,7 @@ export default function CustomExamTab() {
               className="px-4 py-1.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-xs rounded-lg hover:bg-[var(--accent-hover)] transition-colors shadow-neon-glow flex items-center gap-1.5 disabled:opacity-40 z-50 relative pointer-events-auto cursor-pointer"
             >
               <Flag className="w-3.5 h-3.5" />
-              {submitting ? "জমা হচ্ছে..." : "জমা দিন"}
+              {(submitting || reconciling) ? (reconciling ? "যাচাই করা হচ্ছে..." : "জমা হচ্ছে...") : "জমা দিন"}
             </button>
 
               </div>
@@ -1063,7 +1084,7 @@ export default function CustomExamTab() {
                     aria-busy={submitting}
                     className="flex-1 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors shadow-neon-glow disabled:opacity-40"
                   >
-                    {submitting ? "জমা হচ্ছে..." : "জমা দিন"}
+                    {(submitting || reconciling) ? (reconciling ? "যাচাই করা হচ্ছে..." : "জমা হচ্ছে...") : "জমা দিন"}
                   </button>
                 </div>
               </motion.div>

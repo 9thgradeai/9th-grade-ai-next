@@ -174,6 +174,23 @@ async function submitCore(pending: PendingSubmission): Promise<CanonicalSubmitRe
       result,
     };
   } catch (err) {
+    // Network interruption reconciliation: if the request timed out or dropped
+    // AFTER the DB commit, the authoritative result already exists. Check
+    // status before treating it as a failure.
+    if (err instanceof ApiError && (err.code === "TIMEOUT" || err.code === "NETWORK_ERROR" || err.status === 408 || err.status === 0)) {
+      try {
+        const status = await api.getExamSubmissionStatus(pending.attemptId);
+        if (status.status === "SUBMITTED" && status.result) {
+          clearPending(pending.storageKey);
+          return {
+            outcome: "resumed",
+            result: status.result as CanonicalSubmitResult["result"],
+          };
+        }
+      } catch {
+        // reconciliation itself failed — keep pending for manual retry
+      }
+    }
     // Keep the pending payload — `recoverPendingSubmission()` will retry.
     throw normalizeSubmitError(err);
   }

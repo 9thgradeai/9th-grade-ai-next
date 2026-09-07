@@ -373,12 +373,12 @@ export const api = {
     durationSec: number;
     answers: { questionId: number; selected: string }[];
   }): Promise<Server.ExamResultDTO> => {
-    const data = await request<{ result: Server.ExamResultDTO }>("/api/exam/submit", {
+    const data = await request<{ result: Server.ExamResultDTO }>(`/api/exams/${params.attemptId}/submit`, {
       method: "POST",
       ...AUTH_FETCH_INIT,
-      body: JSON.stringify(params),
-      headers: { "Content-Type": "application/json" },
-      // Safe to retry: the server is idempotent by attemptId and resolves
+      body: JSON.stringify({ questionIds: params.questionIds, durationSec: params.durationSec, answers: params.answers }),
+      headers: { "Content-Type": "application/json", "Idempotency-Key": params.attemptId },
+      // Safe to retry: the server is idempotent by Idempotency-Key and resolves
       // re-sends to the original result. Mobile blips become invisible
       // recoveries instead of hard failures.
       retries: 2,
@@ -388,6 +388,13 @@ export const api = {
     });
     return data.result;
   },
+
+  /** Reconciliation check after a timeout/drop — must be called before retrying. */
+  getExamSubmissionStatus: (attemptId: string): Promise<{ attemptId: string; status: string; result?: Server.ExamResultDTO }> =>
+    request<{ attemptId: string; status: string; result?: Server.ExamResultDTO }>(`/api/exams/${attemptId}/submission-status`, {
+      method: "GET",
+      ...AUTH_FETCH_INIT,
+    }),
 
   startExam: async (params: {
     attemptId: string;

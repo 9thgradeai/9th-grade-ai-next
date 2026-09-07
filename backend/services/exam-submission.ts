@@ -611,3 +611,46 @@ async function canRewriteHash(
   if (existing.questionSetHash !== expectedHash) return false;
   return true;
 }
+
+/**
+ * Server-authoritative status reconciliation — the single endpoint the client
+ * must call after a timeout/drop before retrying. Returns the current attempt
+ * state and, if SUBMITTED, the authoritative result snapshot (identical to the
+ * submit response).
+ */
+export type SubmissionStatusDTO = {
+  attemptId: string;
+  status: "NOT_FOUND" | "IN_PROGRESS" | "SUBMITTING" | "SUBMITTED";
+  result?: ExamResultDTO;
+};
+
+export async function getSubmissionStatus(
+  userId: string,
+  attemptId: string,
+): Promise<SubmissionStatusDTO> {
+  const key = validateAttemptId(attemptId);
+  const row = await prisma.examAttempt.findUnique({
+    where: { userId_idempotencyKey: { userId, idempotencyKey: key } },
+  });
+  if (!row) {
+    return { attemptId: key, status: "NOT_FOUND" };
+  }
+  if (row.status !== "SUBMITTED") {
+    return { attemptId: key, status: row.status as SubmissionStatusDTO["status"] };
+  }
+  const snapshot = (row.summaryJson as SnapshotPayload | null) ?? null;
+  if (!snapshot) {
+    throw new InternalServerError("Exam attempt is marked submitted but its result is missing.");
+  }
+  return {
+    attemptId: key,
+    status: "SUBMITTED",
+    result: {
+      summary: snapshot.summary,
+      review: snapshot.review,
+      attemptId: key,
+      outcome: "resumed",
+      submittedAt: row.submittedAt?.toISOString() ?? new Date().toISOString(),
+    },
+  };
+}

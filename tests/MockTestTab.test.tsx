@@ -135,31 +135,33 @@ describe("MockTestTab (subtopic selection + build)", () => {
 describe("MockTestTab — submit flow (regression: canonical submission)", () => {
   beforeEach(() => {
     localStorage.clear();
+    const submitResult = {
+      result: {
+        summary: {
+          total: 1,
+          attempted: 1,
+          correct: 1,
+          wrong: 0,
+          unanswered: 0,
+          positiveMarks: 1,
+          negativeMarks: 0,
+          finalScore: 1,
+          accuracy: 100,
+          percentage: 100,
+          pointsEarned: 10,
+        },
+        review: [],
+        attemptId: "x",
+        outcome: "submitted",
+        submittedAt: "2026-01-01T00:00:00.000Z",
+      },
+    };
     stubFetch({
       "/api/exam/config": { subjects: subjectFixture },
       "/api/exam/build": { exam: builtExam },
       "/api/exam/start": { attemptId: "x", status: "IN_PROGRESS" },
-      "/api/exam/submit": {
-        result: {
-          summary: {
-            total: 1,
-            attempted: 1,
-            correct: 1,
-            wrong: 0,
-            unanswered: 0,
-            positiveMarks: 1,
-            negativeMarks: 0,
-            finalScore: 1,
-            accuracy: 100,
-            percentage: 100,
-            pointsEarned: 10,
-          },
-          review: [],
-          attemptId: "x",
-          outcome: "submitted",
-          submittedAt: "2026-01-01T00:00:00.000Z",
-        },
-      },
+      "/api/exam/submit": submitResult,
+      "/api/exams": submitResult,
     });
   });
 
@@ -202,23 +204,29 @@ describe("MockTestTab — submit flow (regression: canonical submission)", () =>
     await waitFor(() => {
       const fetchMock = vi.mocked(fetch);
       const submitCall = fetchMock.mock.calls.find((c) =>
-        String(c[0]).startsWith("/api/exam/submit"),
+        String(c[0]).includes("/submit"),
       );
       expect(submitCall).toBeDefined();
     });
 
     const fetchMock = vi.mocked(fetch);
     const submitCall = fetchMock.mock.calls.find((c) =>
-      String(c[0]).startsWith("/api/exam/submit"),
+      String(c[0]).includes("/submit"),
     );
     const body = JSON.parse(String(submitCall?.[1]?.body)) as {
-      attemptId: string;
       questionIds: number[];
       durationSec: number;
       answers: { questionId: number; selected: string }[];
     };
-    // Canonical contract: attemptId is a UUID.
-    expect(body.attemptId).toMatch(
+    // Canonical contract: Idempotency-Key header carries the UUID (attemptId moved to URL/header)
+    const headers = (submitCall?.[1]?.headers as Record<string, string> | Headers | undefined);
+    let idempotencyKey = "";
+    if (headers instanceof Headers) idempotencyKey = headers.get("Idempotency-Key") || "";
+    else if (headers && typeof headers === "object") idempotencyKey = (headers as Record<string,string>)["Idempotency-Key"] || (headers as Record<string,string>)["idempotency-key"] || "";
+    // Also check URL contains the UUID
+    const url = String(submitCall?.[0]);
+    const urlMatch = url.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i);
+    expect(idempotencyKey || urlMatch?.[0] || "").toMatch(
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
     );
     expect(body.questionIds).toEqual([10]);

@@ -40,13 +40,19 @@ export async function POST(request: Request) {
     }
     await assertSubmitAllowed(userId);
 
+    const headerKey = request.headers.get("Idempotency-Key") || request.headers.get("idempotency-key") || "";
     const body = (await request.json().catch(() => ({}))) as Partial<SubmitExamRequest>;
     if (!body || typeof body !== "object") {
       throw new AppError(400, "Request body must be an object.", "VALIDATION_ERROR");
     }
+    // Idempotency-Key header is authoritative per spec; falls back to body for backward compat
+    const attemptIdFromHeader = headerKey && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(headerKey) ? headerKey : "";
+    if (attemptIdFromHeader && typeof body.attemptId === "string" && body.attemptId !== "" && body.attemptId !== attemptIdFromHeader) {
+      throw new AppError(400, "Idempotency-Key header must match body attemptId.", "VALIDATION_ERROR");
+    }
 
     const result = await submitExamAttempt(userId, {
-      attemptId: typeof body.attemptId === "string" ? body.attemptId : "",
+      attemptId: attemptIdFromHeader || (typeof body.attemptId === "string" ? body.attemptId : ""),
       questionIds: Array.isArray(body.questionIds)
         ? (body.questionIds.filter((id): id is number => Number.isInteger(id)))
         : [],
