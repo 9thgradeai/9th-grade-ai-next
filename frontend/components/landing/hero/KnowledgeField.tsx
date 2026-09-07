@@ -70,20 +70,47 @@ export default function KnowledgeField({
     let intro = 0; // 0→1 over 6.5s
     const start = performance.now();
 
-    // reused buffers
+    // spiral galaxy buffers — premium, realistic, elegant
     const particles: { x: number; y: number; z: number; ox: number; oy: number; oz: number; c: string; s: number; ph: number }[] = [];
-    const R = 1.15;
+    const ARM_COUNT = 2;
+    const ARM_TURNS = 2.35;
+    const INNER_R = 0.13;
+    const OUTER_R = 1.18;
+    const BULGE_RATIO = 0.14;
     for (let i = 0; i < cfg.count; i++) {
       const cluster = CLUSTERS[i % CLUSTERS.length];
-      // spherical jitter around cluster center
-      const theta = cluster.theta + (Math.random() - 0.5) * 0.9;
-      const phi = cluster.phi + (Math.random() - 0.5) * 0.7;
-      const r = R * (0.55 + Math.random() * 0.45);
-      const x = r * Math.sin(phi) * Math.cos(theta);
-      const y = r * Math.cos(phi);
-      const z = r * Math.sin(phi) * Math.sin(theta);
       const col = SUBJECT_COLORS[cluster.id] || "#a78bfa";
-      particles.push({ x, y, z, ox: x, oy: y, oz: z, c: col, s: 0.7 + Math.random() * 1.1, ph: Math.random() * Math.PI * 2 });
+      let x: number, y: number, z: number;
+      if (i < cfg.count * BULGE_RATIO) {
+        // central bulge — dense spherical core
+        const u = Math.random();
+        const v = Math.random();
+        const thetaB = 2 * Math.PI * u;
+        const phiB = Math.acos(2 * v - 1);
+        const rB = 0.04 + Math.pow(Math.random(), 0.9) * 0.18;
+        x = rB * Math.sin(phiB) * Math.cos(thetaB);
+        y = rB * Math.cos(phiB) * 0.62;
+        z = rB * Math.sin(phiB) * Math.sin(thetaB);
+      } else {
+        // spiral arms — logarithmic, subject tinted
+        const arm = i % ARM_COUNT;
+        const t = Math.pow(Math.random(), 0.68); // density falls outward, premium
+        const armOffset = arm * Math.PI + (CLUSTERS.findIndex((c) => c.id === cluster.id) * 0.06);
+        const spread = (0.42 - t * 0.16) * (quality === "low" ? 0.85 : 1);
+        const theta = armOffset + t * ARM_TURNS * Math.PI * 2 + (Math.random() - 0.5) * spread;
+        const r = INNER_R + t * (OUTER_R - INNER_R) + (Math.random() - 0.5) * 0.07;
+        const thickness = (0.18 - t * 0.09) * (0.9 + Math.random() * 0.2);
+        const yJitter = (Math.random() - 0.5) * thickness;
+        // subtle warp for realism
+        const warp = Math.sin(theta * 1.8) * 0.018 * t;
+        x = r * Math.cos(theta);
+        z = r * Math.sin(theta);
+        y = yJitter + warp;
+      }
+      // size: bulge slightly larger, arm taper
+      const isBulge = i < cfg.count * BULGE_RATIO;
+      const s = (isBulge ? 0.9 : 0.62) + Math.random() * (isBulge ? 0.7 : 1.05);
+      particles.push({ x, y, z, ox: x, oy: y, oz: z, c: col, s, ph: Math.random() * Math.PI * 2 });
     }
 
     // connections: precompute pairs within threshold in spherical space (sparse)
@@ -233,9 +260,9 @@ export default function KnowledgeField({
         const scrollFade = 1 - scrollProgress * 0.85;
         const scrollScale = 1 - scrollProgress * 0.18;
 
-        // slightly faster global rotation — still calm, more alive, scroll modulates speed
+        // galaxy tilt: 22° base + subtle animate, scroll modulates speed
         const rotY = time * (0.18 + sp * 0.06) + mouseX * 0.22;
-        const rotX = time * (0.09 + sp * 0.04) + mouseY * 0.15;
+        const rotX = 0.38 + time * (0.09 + sp * 0.04) + mouseY * 0.15;
 
         // project particles
         const projected: { x: number; y: number; z: number; alpha: number; size: number; col: string }[] = [];
@@ -362,6 +389,21 @@ export default function KnowledgeField({
           ctx.shadowBlur = 0;
         }
         ctx.globalAlpha = 1;
+
+        // subtle spiral galaxy core glow — premium, no text
+        if (intro > 0.55) {
+          const coreReveal = Math.min(1, (intro - 0.55) / 0.9);
+          const coreAlpha = coreReveal * 0.11 * scrollFade * (isDark ? 1 : 0.45);
+          ctx.fillStyle = isDark ? `rgba(167,139,250,${coreAlpha})` : `rgba(99,102,241,${coreAlpha * 0.7})`;
+          ctx.beginPath();
+          ctx.arc(cx, cy, (isMobileView ? 22 : 30) * dpr * coreReveal, 0, Math.PI * 2);
+          ctx.fill();
+          // inner bright nucleus
+          ctx.fillStyle = isDark ? `rgba(255,255,255,${coreAlpha * 0.42})` : `rgba(99,102,241,${coreAlpha * 0.5})`;
+          ctx.beginPath();
+          ctx.arc(cx, cy, (isMobileView ? 7 : 9) * dpr * coreReveal, 0, Math.PI * 2);
+          ctx.fill();
+        }
 
         loop();
       });
