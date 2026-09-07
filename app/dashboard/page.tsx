@@ -8,7 +8,7 @@ import dynamic from "next/dynamic";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 import { TABS, type TabId } from "@/lib/data";
 import { Skeleton, SkeletonCard } from "@/components/ui/Skeleton";
-import { AuroraRing } from "@/components/ui/Loader";
+import { LoadingShell } from "@/components/ui/LoadingShell";
 import { useT } from "@/lib/i18n";
 
 // Shown while a lazily-imported tab chunk streams in — never a blank pane.
@@ -17,12 +17,8 @@ function TabChunkLoading() {
   return (
     <div className="space-y-4" role="status" aria-label={t("dashboard.loadingModule")}>
       <span className="sr-only">{t("common.loading")}</span>
-      <div className="glass-card rounded-2xl border p-6 flex flex-col items-center justify-center gap-3 text-center" style={{ borderColor: "var(--dashboard-border-muted)" }}>
-        <AuroraRing size={56} label={t("dashboard.loadingModule")} />
-        <p className="font-mono text-[11px] tracking-[0.3em] uppercase" style={{ color: "var(--dashboard-primary)" }}>
-          {t("dashboard.loadingModule")}
-        </p>
-      </div>
+      <LoadingShell title={t("dashboard.loadingModule")} messages={[t("common.loading"), t("dashboard.loadingModule"), "syncing progress"]} progressLabel={t("dashboard.loadingModule")} />
+
       <SkeletonCard className="p-6">
         <div className="space-y-4">
           <Skeleton className="h-5 w-40" />

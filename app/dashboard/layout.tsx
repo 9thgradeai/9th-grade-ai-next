@@ -12,7 +12,7 @@ import NotificationCenter from "@/components/dashboard/NotificationCenter";
 import CommandBar from "@/components/dashboard/CommandBar";
 import { ThemeToggle, DashboardThemeProvider } from "@/lib/dashboard-theme-ctx";
 import { useAuth } from "@/lib/auth-ctx";
-import { AuroraRing, StatusText } from "@/components/ui/Loader";
+import { LoadingShell } from "@/components/ui/LoadingShell";
 
 import { TABS, type TabId } from "@/lib/data";
 import BrandMark from "@/components/ui/BrandMark";
@@ -113,15 +113,8 @@ function EmailVerificationGate({ children }: { children: React.ReactNode }) {
 
   if (authLoading) {
     return (
-      <div className="dashboard-shell min-h-dvh flex items-center justify-center">
-        <div className="flex flex-col items-center gap-5">
-          <AuroraRing size={72} label="Verifying credentials" />
-          <div className="flex items-center gap-3 font-mono text-sm" style={{ color: "var(--dashboard-primary)" }}>
-            <StatusText
-              messages={["verifying credentials", "checking session", "securing access"]}
-            />
-          </div>
-        </div>
+      <div className="dashboard-shell min-h-dvh flex items-center justify-center p-4">
+        <LoadingShell title="VERIFYING_CREDENTIALS" messages={["verifying credentials", "checking session", "securing access"]} progressLabel="auth check" className="w-full max-w-[560px]" />
       </div>
     );
   }
@@ -132,15 +125,8 @@ function EmailVerificationGate({ children }: { children: React.ReactNode }) {
 
   if (!user.emailVerified) {
     return (
-      <div className="dashboard-shell min-h-dvh flex items-center justify-center">
-        <div className="flex flex-col items-center gap-5">
-          <AuroraRing size={72} label="Redirecting to email verification" />
-          <div className="flex items-center gap-3 font-mono text-sm" style={{ color: "var(--dashboard-primary)" }}>
-            <StatusText
-              messages={["email verification required", "redirecting to verification"]}
-            />
-          </div>
-        </div>
+      <div className="dashboard-shell min-h-dvh flex items-center justify-center p-4">
+        <LoadingShell title="REDIRECTING_VERIFICATION" messages={["email verification required", "redirecting to verification"]} progressLabel="redirect" className="w-full max-w-[560px]" />
       </div>
     );
   }
