@@ -1,7 +1,10 @@
+"use client";
 import SectionHeading from "@/components/ui/SectionHeading";
+import { useT } from "@/lib/i18n";
 import SubjectConstellation from "@/components/landing/SubjectConstellation";
 
 export default function SubjectUniverseSection() {
+  const t = useT();
   return (
     <section id="syllabus" className="relative scroll-mt-16 px-4 py-24 sm:px-6 md:py-32" aria-labelledby="subjects-heading">
       <div
@@ -14,10 +17,10 @@ export default function SubjectUniverseSection() {
       />
       <div className="relative mx-auto max-w-7xl">
         <SectionHeading
-          eyebrow="SUBJECT UNIVERSE"
-          title="Nine subjects orbiting"
-          highlight="one knowledge core"
-          description="Every subject in the preliminary syllabus, wired into the same intelligence system — question coverage and guided study time computed from the live question bank."
+          eyebrow={t("landing.subjects.eyebrow")}
+          title={t("landing.subjects.title")}
+          highlight={t("landing.subjects.highlight")}
+          description={t("landing.subjects.description")}
         />
         <SubjectConstellation />
 

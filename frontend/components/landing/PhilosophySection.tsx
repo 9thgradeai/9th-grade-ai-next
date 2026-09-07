@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import { useT } from "@/lib/i18n";
 import {
   motion,
   motionValue,
@@ -9,12 +10,6 @@ import {
   useTransform,
   type MotionValue,
 } from "framer-motion";
-
-const LINES = [
-  { text: "DON'T JUST MEASURE PREPARATION.", gradient: false },
-  { text: "UNDERSTAND IT.", gradient: false },
-  { text: "IMPROVE IT.", gradient: true },
-];
 
 // Constant MotionValue so reduced-motion renders skip scroll linkage.
 const FULL_OPACITY: MotionValue<number> = motionValue(1);
@@ -25,6 +20,12 @@ const FULL_OPACITY: MotionValue<number> = motionValue(1);
  * reduced motion renders everything fully visible.
  */
 export default function PhilosophySection() {
+  const t = useT();
+  const LINES = [
+    { text: t("landing.philosophy.line1"), gradient: false },
+    { text: t("landing.philosophy.line2"), gradient: false },
+    { text: t("landing.philosophy.line3"), gradient: true },
+  ];
   const ref = useRef<HTMLDivElement>(null);
   const shouldReduceMotion = useReducedMotion();
   const { scrollYProgress } = useScroll({

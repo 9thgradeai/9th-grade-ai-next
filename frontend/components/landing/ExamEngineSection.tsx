@@ -1,49 +1,51 @@
+"use client";
 import Link from "next/link";
+import { useT } from "@/lib/i18n";
 import { ArrowUpRight, Building2, GraduationCap, Landmark, Scale } from "lucide-react";
 import SectionHeading from "@/components/ui/SectionHeading";
 import Reveal from "@/components/ui/Reveal";
 
-const tracks = [
-  {
-    icon: Landmark,
-    name: "BCS",
-    blurb: "Preliminary through viva — the full civil-service pipeline, mapped question by question.",
-    href: "/tracks#bcs-preliminary",
-  },
-  {
-    icon: Building2,
-    name: "Bangladesh Bank",
-    blurb: "Officer and cashier roles — math-heavy patterns drilled until they're reflexes.",
-    href: "/tracks#bank-jobs",
-  },
-  {
-    icon: GraduationCap,
-    name: "NTRCA",
-    blurb: "Teacher recruitment at every level — subject depth plus pedagogy coverage.",
-    href: "/tracks#teacher-recruitment",
-  },
-  {
-    icon: Scale,
-    name: "Other Govt Exams",
-    blurb: "PSC, ministries, defense civilian posts — one engine tuned to each format.",
-    href: "/tracks#psc-and-other",
-  },
-];
-
 /**
- * Exam Engine — pure server component. The coordinated card interaction
+ * Exam Engine — The coordinated card interaction
  * (rise, border, icon illumination, arrow slide) is CSS-only via group-hover,
  * so no client JS ships for this section.
  */
 export default function ExamEngineSection() {
+  const t = useT();
+  const tracks = [
+  {
+    icon: Landmark,
+    name: t("landing.examEngine.track.bcs"),
+    blurb: t("landing.examEngine.track.bcs.blurb"),
+    href: "/tracks#bcs-preliminary",
+  },
+  {
+    icon: Building2,
+    name: t("landing.examEngine.track.bank"),
+    blurb: t("landing.examEngine.track.bank.blurb"),
+    href: "/tracks#bank-jobs",
+  },
+  {
+    icon: GraduationCap,
+    name: t("landing.examEngine.track.ntrca"),
+    blurb: t("landing.examEngine.track.ntrca.blurb"),
+    href: "/tracks#teacher-recruitment",
+  },
+  {
+    icon: Scale,
+    name: t("landing.examEngine.track.other"),
+    blurb: t("landing.examEngine.track.other.blurb"),
+    href: "/tracks#psc-and-other",
+  },
+];
   return (
     <section id="exams" className="relative scroll-mt-16 px-4 py-24 sm:px-6 md:py-32" aria-labelledby="exams-heading">
       <div className="mx-auto max-w-7xl">
         <SectionHeading
-          eyebrow="EXAM ENGINE"
-          title="Tuned for the exams"
-          highlight="you're actually sitting"
-          description="Four exam families, four calibrated engines — marking schemes, timing pressure, and syllabus weighting modeled on the real papers."
+          eyebrow={t("landing.examEngine.eyebrow")}
+          title={t("landing.examEngine.title")}
+          highlight={t("landing.examEngine.highlight")}
+          description={t("landing.examEngine.description")}
         />
 
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -71,7 +73,7 @@ export default function ExamEngineSection() {
                   {track.blurb}
                 </p>
                 <span className="relative mt-6 inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-[0.14em] text-zinc-500 transition-colors duration-300 group-hover:text-emerald-400">
-                  Open track
+                  {t("landing.examEngine.openTrack")}
                   <ArrowUpRight className="h-3.5 w-3.5 translate-x-0 opacity-60 transition-all duration-300 group-hover:translate-x-0.5 group-hover:opacity-100" aria-hidden="true" />
                 </span>
               </Link>

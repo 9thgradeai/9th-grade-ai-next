@@ -3,6 +3,7 @@
 import { useEffect, useState, type FormEvent } from "react"
 import Link from "next/link"
 import { Eye, EyeOff, ShieldCheck } from "lucide-react"
+import { useT } from "@/lib/i18n";
 import { SurfaceField } from "./SurfaceField"
 import { AuthSubmitButton } from "./AuthSubmitButton"
 import { CapsLockWarning, readCapsLock } from "./CapsLockWarning"
@@ -35,6 +36,7 @@ export function LoginForm({
   const [password, setPassword] = useState("")
   const [remember, setRemember] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  const t = useT();
   const [capsLock, setCapsLock] = useState(false)
   const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({})
   // Privacy: after a rejected attempt the password is wiped; the email stays.
@@ -57,10 +59,10 @@ export function LoginForm({
 
   const validate = () => {
     const next: typeof fieldErrors = {}
-    if (!email.trim()) next.email = "Email is required."
+    if (!email.trim()) next.email = t("auth.emailRequired")
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()))
-      next.email = "That doesn't look like a valid email."
-    if (!password) next.password = "Password is required."
+      next.email = t("auth.emailInvalid")
+    if (!password) next.password = t("auth.passwordRequired")
     setFieldErrors(next)
     return Object.keys(next).length === 0
   }
@@ -76,7 +78,7 @@ export function LoginForm({
     <form onSubmit={handleSubmit} className="flex w-full flex-col gap-4 sm:gap-5" noValidate>
       <SurfaceField
         id="login-email"
-        label="Email"
+        label={t("auth.email")}
         type="email"
         name="email"
         value={email}
@@ -96,7 +98,7 @@ export function LoginForm({
       <div>
         <SurfaceField
           id="login-password"
-          label="Password"
+          label={t("auth.password")}
           type={showPassword ? "text" : "password"}
           name="password"
           value={password}
@@ -120,7 +122,7 @@ export function LoginForm({
             <button
               type="button"
               onClick={() => setShowPassword((s) => !s)}
-              aria-label={showPassword ? "Hide password" : "Show password"}
+              aria-label={showPassword ? t("auth.hidePassword") : t("auth.showPassword")}
               className="rounded-lg p-1.5 text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)] focus-visible:ring-2 focus-visible:ring-emerald-400/80"
             >
               {showPassword ? (
@@ -142,13 +144,13 @@ export function LoginForm({
             onChange={(e) => setRemember(e.target.checked)}
             className="h-4 w-4 rounded border-[var(--border-muted)] bg-transparent text-emerald-500 accent-emerald-500 focus-visible:ring-2 focus-visible:ring-emerald-400/80"
           />
-          Stay signed in
+          {t("auth.remember")}
         </label>
         <Link
           href="/forgot-password"
           className="text-sm text-emerald-400/80 transition-colors hover:text-emerald-400 focus-visible:ring-2 focus-visible:ring-emerald-400/80"
         >
-          Forgot your password?
+          {t("auth.forgotPassword")}
         </Link>
       </div>
 
@@ -168,17 +170,17 @@ export function LoginForm({
           role="alert"
           className="rounded-xl border border-amber-400/30 bg-amber-500/10 px-4 py-2.5 text-center text-sm text-amber-300"
         >
-          Too many attempts — try again in {secondsLeft}s.
+          {t("auth.tooManyAttempts").replace("{seconds}", String(secondsLeft))}
         </p>
       )}
 
       <AuthSubmitButton
         busy={busy}
         disabled={locked}
-        busyLabel="Signing in..."
+        busyLabel={t("auth.signingIn")}
         icon={<ShieldCheck className="h-4 w-4" aria-hidden="true" />}
       >
-        Enter the hall
+        {t("auth.enterHall")}
       </AuthSubmitButton>
     </form>
   )
