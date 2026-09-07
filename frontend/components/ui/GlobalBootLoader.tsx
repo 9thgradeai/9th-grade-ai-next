@@ -18,7 +18,7 @@ export default function GlobalBootLoader() {
   const [visible, setVisible] = useState(true);
   const [step, setStep] = useState(0);
   const [progress, setProgress] = useState(0);
-  const startRef = useRef<number>(Date.now());
+  const startRef = useRef<number>(0);
   const allowedToDismissRef = useRef(false);
 
   // every hard navigation shows boot — no sessionStorage skip
