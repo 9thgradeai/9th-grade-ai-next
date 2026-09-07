@@ -1,9 +1,12 @@
 "use client";
 
+import { useEffect, useState, useCallback, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { Zap, BookOpen, Target, Brain, Calendar, BarChart3, ClipboardCheck, Sparkles, Command } from "lucide-react";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 import { launchAI } from "@/lib/ai-launcher";
 import type { TabId } from "@/lib/data";
+import { api } from "@/lib/services/api";
 
 type Action = {
   keyLabel: string;
@@ -25,40 +28,67 @@ type Props = {
 };
 
 export default function QuickActions({ pendingMistakes = 0, flashcardsDue = null, onAction }: Props) {
+  const router = useRouter();
   const { setActiveTab, setPracticeIntent } = useDashboardStore((s) => ({
     setActiveTab: s.setActiveTab,
     setPracticeIntent: s.setPracticeIntent,
   }));
+  const [qbankCount, setQbankCount] = useState<number | undefined>(undefined);
 
-  const ACTIONS: Action[] = [
+  useEffect(() => {
+    let cancelled = false;
+    void api.questionBankCategories().then(cats => { if (!cancelled) setQbankCount(cats.reduce((a,c)=>a+(c.count??0),0)); }).catch(()=>{});
+    return () => { cancelled=true; };
+  }, []);
+
+  const ACTIONS: Action[] = useMemo(() => [
     { keyLabel: "P", label: "Practice",   icon: Zap,           tab: "practice",      primary: true, mode: "quick" },
     { keyLabel: "M", label: "Mock Exam",  icon: ClipboardCheck, tab: "practice",     mode: "mock" },
     { keyLabel: "W", label: "Wrong Ans",  icon: Target,         tab: "mistakes",     badge: pendingMistakes > 0 ? pendingMistakes : undefined },
     { keyLabel: "A", label: "AI Tutor",   icon: Sparkles,       tab: null,           special: "ai-tutor" },
     { keyLabel: "L", label: "Planner",    icon: Calendar,       tab: "study-planner" },
-    { keyLabel: "Q", label: "Q-Bank",     icon: BookOpen,       tab: "question-bank" },
+    { keyLabel: "Q", label: "Q-Bank",     icon: BookOpen,       tab: "question-bank", badge: qbankCount && qbankCount>0 ? (qbankCount>999?"999+":String(qbankCount)) : undefined },
     { keyLabel: "F", label: "Flashcards", icon: Brain,          tab: "flashcards",   badge: flashcardsDue && flashcardsDue > 0 ? flashcardsDue : undefined },
     { keyLabel: "K", label: "Analytics",  icon: BarChart3,      tab: "progress" },
-  ];
+  ], [pendingMistakes, flashcardsDue, qbankCount]);
 
-  const handle = (a: Action) => {
+  const navigate = useCallback((tab: TabId) => {
+    setActiveTab(tab);
+    router.push(`/dashboard?tab=${tab}`);
+  }, [setActiveTab, router]);
+
+  const handle = useCallback((a: Action) => {
     if (onAction) {
       onAction(a.tab, a);
       return;
     }
-    // AI Tutor: open the floating AI workspace modal via the global launcher event.
     if (a.special === "ai-tutor") {
       launchAI({ mode: "tutor" });
       return;
     }
-    // Practice / Mock Exam: set intent so PracticeTab auto-enters the right mode.
     if (a.mode) {
       setPracticeIntent({ mode: a.mode });
+    } else {
+      setPracticeIntent(null);
     }
     if (a.tab) {
-      setActiveTab(a.tab);
+      navigate(a.tab);
     }
-  };
+  }, [onAction, navigate, setPracticeIntent]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement || (e.target as HTMLElement)?.isContentEditable) return;
+      const key = e.key.toUpperCase();
+      const hit = ACTIONS.find(ax => ax.keyLabel === key);
+      if (!hit) return;
+      e.preventDefault();
+      handle(hit);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [ACTIONS, handle]);
 
   return (
     <div className="command-card p-4">
