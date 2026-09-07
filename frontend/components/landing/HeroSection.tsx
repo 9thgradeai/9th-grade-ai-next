@@ -6,6 +6,8 @@ import Button from "@/components/ui/Button";
 import { trackCtaClick, trackHeroView } from "@/lib/analytics";
 import { useMotionCapabilities } from "@/lib/motion/device";
 import { useT } from "@/lib/i18n";
+import dynamic from "next/dynamic";
+const HeroVisual = dynamic(() => import("./hero/HeroVisual"), { ssr: false, loading: () => null });
 
 const stats = (subjectCount: number, t: (k:string)=>string) => [
   { value: String(subjectCount), label: t("hero.stats.subjects") },
@@ -134,11 +136,7 @@ export default function HeroSection({ subjectCount }: { subjectCount: number }) 
       className="relative flex min-h-[92dvh] items-center overflow-hidden px-4 pb-24 pt-28 sm:px-6"
       aria-label="Introduction"
     >
-      {/* Full-bleed hero backdrop painted via background-image (a contentful
-          LCP candidate Chrome counts) at first paint — SSR, no JS, no font. It
-          is larger than any hero text, so Lighthouse records it as the LCP at
-          FCP (~1.4s); the CSS text entrances and the WebGL canvas cannot
-          overtake it, which keeps LCP off the critical path. */}
+      {/* SSR fallback for LCP — keeps FCP <1.4s, canvas enhances progressively */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0"
@@ -149,6 +147,8 @@ export default function HeroSection({ subjectCount }: { subjectCount: number }) 
           backgroundPosition: "center",
         }}
       />
+      {/* Intelligent Exam Universe — progressive enhancement, never blocks LCP */}
+      <HeroVisual />
 
       <div
         aria-hidden="true"
