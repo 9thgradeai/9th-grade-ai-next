@@ -8,6 +8,8 @@ import LanguageToggle from "@/components/ui/LanguageToggle";
 import { useAuth } from "@/lib/auth-ctx";
 import { visibleMenus } from "@/lib/navigation";
 import { useT } from "@/lib/i18n";
+import { LanguageContext } from "@/lib/lang-ctx";
+import { useContext } from "react";
 
 function isActiveLink(href: string, pathname: string, tab: string | null): boolean {
   if (href.startsWith("/dashboard?tab=")) {
@@ -22,6 +24,7 @@ function isActiveLink(href: string, pathname: string, tab: string | null): boole
 export default function AppNavbar() {
   const { user, logout } = useAuth();
   const t = useT();
+  const lang = useContext(LanguageContext)?.lang ?? "en";
   const router = useRouter();
   const pathname = usePathname() ?? "/";
   const searchParams = useSearchParams();
@@ -97,7 +100,7 @@ export default function AppNavbar() {
         ref={headerRef}
         className={`fixed top-0 inset-x-0 z-50 pt-safe border-b transition-[background-color,border-color,backdrop-filter,box-shadow] duration-200 ${scrolled || openId || mobileOpen ? "bg-[#07080A]/85 backdrop-blur-xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.45)] supports-[backdrop-filter]:bg-[#07080A]/75" : "bg-transparent border-transparent"}`}
       >
-        <nav className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8" aria-label="Primary navigation">
+        <nav className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8" aria-label={t("nav.primaryNavigation")}>
           <div className="flex h-14 sm:h-16 items-center gap-2">
             <Link href="/" className="flex shrink-0 items-center gap-2.5 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400" aria-label="9Th-Grade AI home">
               <BrandMark className="h-8 w-8 rounded-lg shadow-glow-sm" />
@@ -113,7 +116,7 @@ export default function AppNavbar() {
                   aria-current={pathname === "/dashboard" ? "page" : undefined}
                   className={`rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 ${pathname.startsWith("/dashboard") ? "bg-white text-black" : "text-zinc-300 hover:bg-white/10 hover:text-white"}`}
                 >
-                  Dashboard
+                  {t("nav.dashboard")}
                 </Link>
               )}
               {menus.map(m => {
@@ -132,7 +135,7 @@ export default function AppNavbar() {
                     onClick={() => setOpenId(expanded ? null : m.id)}
                     className={`inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 ${expanded ? "bg-white text-black" : "text-zinc-300 hover:bg-white/10 hover:text-white"}`}
                   >
-                    {m.label} {m.id === "ai" && <Sparkles className="h-3 w-3 text-violet-400" aria-hidden="true" />} <ChevronDown className={`h-3.5 w-3.5 transition-transform ${expanded ? "rotate-180" : ""}`} aria-hidden="true" />
+                    {(m.labelBn && lang==="bn" ? m.labelBn : m.label)} {m.id === "ai" && <Sparkles className="h-3 w-3 text-violet-400" aria-hidden="true" />} <ChevronDown className={`h-3.5 w-3.5 transition-transform ${expanded ? "rotate-180" : ""}`} aria-hidden="true" />
                   </button>
                 );
               })}
@@ -144,7 +147,7 @@ export default function AppNavbar() {
               <button
                 type="button"
                 onClick={() => window.dispatchEvent(new Event("app:open-command"))}
-                aria-label="Open command palette (Ctrl+K)"
+                aria-label={t("nav.search")}
                 className="hidden sm:inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-3 py-1.5 text-xs font-medium text-zinc-300 hover:border-white/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
               >
                 <Search className="h-3.5 w-3.5" aria-hidden="true" /> <span className="hidden xl:inline">Search</span> <span className="hidden lg:inline-flex items-center gap-1 rounded bg-white/10 px-1.5 py-0.5 font-mono text-[10px]">⌘K</span>
@@ -152,7 +155,7 @@ export default function AppNavbar() {
               <button
                 type="button"
                 onClick={() => window.dispatchEvent(new Event("app:open-command"))}
-                aria-label="Search"
+                aria-label={t("nav.search")}
                 className="inline-flex sm:hidden p-2 rounded-full border border-white/10 text-zinc-300 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
               >
                 <Search className="h-4 w-4" aria-hidden="true" />
@@ -164,15 +167,15 @@ export default function AppNavbar() {
 
               {!isAuthed ? (
                 <>
-                  <Link href="/login" className="hidden sm:inline-flex rounded-full border border-white/15 px-4 py-1.5 text-sm font-medium text-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400">Login</Link>
-                  <Link href="/login?register=true" className="inline-flex rounded-full bg-white px-4 py-1.5 text-sm font-semibold text-black hover:bg-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400">Get Started</Link>
+                  <Link href="/login" className="hidden sm:inline-flex rounded-full border border-white/15 px-4 py-1.5 text-sm font-medium text-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400">{t("nav.login")}</Link>
+                  <Link href="/login?register=true" className="inline-flex rounded-full bg-white px-4 py-1.5 text-sm font-semibold text-black hover:bg-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400">{t("nav.getStarted")}</Link>
                 </>
               ) : (
                 <>
                   <button
                     type="button"
                     onClick={() => router.push("/dashboard?tab=progress")}
-                    aria-label="Notifications"
+                    aria-label={t("nav.notifications")}
                     className="hidden sm:inline-flex p-2 rounded-full border border-white/10 text-zinc-300 hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
                   >
                     <Bell className="h-4 w-4" aria-hidden="true" />
@@ -191,7 +194,7 @@ export default function AppNavbar() {
                       <ChevronDown className={`hidden sm:block h-3.5 w-3.5 text-zinc-400 transition-transform ${profileOpen ? "rotate-180" : ""}`} aria-hidden="true" />
                     </button>
                     {profileOpen && (
-                      <div id="profile-menu" role="menu" aria-label="Account" className="absolute right-0 mt-2 w-64 overflow-hidden rounded-2xl border border-white/10 bg-[#111214] p-1.5 shadow-xl">
+                      <div id="profile-menu" role="menu" aria-label={t("nav.account")} className="absolute right-0 mt-2 w-64 overflow-hidden rounded-2xl border border-white/10 bg-[#111214] p-1.5 shadow-xl">
                         <div className="flex items-center gap-3 px-3 py-3">
                           <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-500 text-sm font-bold text-white" aria-hidden="true">{user?.name?.trim()?.charAt(0)?.toUpperCase() ?? "U"}</span>
                           <div className="min-w-0">
@@ -200,11 +203,11 @@ export default function AppNavbar() {
                           </div>
                         </div>
                         <div className="my-1 h-px bg-white/10" />
-                        <Link href="/dashboard" role="menuitem" onClick={closeAll} className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-zinc-300 hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"><LayoutDashboard className="h-4 w-4" aria-hidden="true" /> Dashboard</Link>
-                        <Link href="/dashboard?tab=settings" role="menuitem" onClick={closeAll} className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-zinc-300 hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"><Settings className="h-4 w-4" aria-hidden="true" /> Settings</Link>
-                        <Link href="/about" role="menuitem" onClick={closeAll} className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-zinc-300 hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"><UserIcon className="h-4 w-4" aria-hidden="true" /> About</Link>
+                        <Link href="/dashboard" role="menuitem" onClick={closeAll} className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-zinc-300 hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"><LayoutDashboard className="h-4 w-4" aria-hidden="true" /> {t("nav.dashboard")}</Link>
+                        <Link href="/dashboard?tab=settings" role="menuitem" onClick={closeAll} className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-zinc-300 hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"><Settings className="h-4 w-4" aria-hidden="true" /> {t("auth.settings")}</Link>
+                        <Link href="/about" role="menuitem" onClick={closeAll} className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-zinc-300 hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"><UserIcon className="h-4 w-4" aria-hidden="true" /> {t("nav.about")}</Link>
                         <div className="my-1 h-px bg-white/10" />
-                        <button role="menuitem" onClick={() => { closeAll(); void logout(); }} className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm text-red-400 hover:bg-red-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"><LogOut className="h-4 w-4" aria-hidden="true" /> Log out</button>
+                        <button role="menuitem" onClick={() => { closeAll(); void logout(); }} className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm text-red-400 hover:bg-red-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"><LogOut className="h-4 w-4" aria-hidden="true" /> {t("auth.logout")}</button>
                       </div>
                     )}
                   </div>
@@ -236,7 +239,7 @@ export default function AppNavbar() {
             <div className="mx-auto max-w-[1440px] px-6 lg:px-8 py-6">
               <div className="grid grid-cols-12 gap-6">
                 <div className="col-span-3">
-                  <p className="text-xs font-bold tracking-[0.14em] uppercase text-violet-300">{activeMenu.label}</p>
+                  <p className="text-xs font-bold tracking-[0.14em] uppercase text-violet-300">{(activeMenu.labelBn && lang==="bn" ? activeMenu.labelBn : activeMenu.label)}</p>
                   {activeMenu.highlight && (
                     <div className="mt-4 rounded-2xl border border-white/10 bg-gradient-to-br from-violet-500/15 via-indigo-500/10 to-transparent p-4">
                       <p className="text-sm font-semibold text-white">{activeMenu.highlight.title}</p>
@@ -298,7 +301,7 @@ export default function AppNavbar() {
             </div>
             <div className="flex-1 overflow-y-auto overscroll-contain px-3 py-3 space-y-1 pb-safe">
               {isAuthed && (
-                <Link href="/dashboard" onClick={() => setMobileOpen(false)} aria-current={pathname.startsWith("/dashboard") ? "page" : undefined} className={`flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold ${pathname.startsWith("/dashboard") ? "bg-white text-black" : "bg-white/5 text-white"}`}><LayoutDashboard className="h-4 w-4" aria-hidden="true" /> Dashboard</Link>
+                <Link href="/dashboard" onClick={() => setMobileOpen(false)} aria-current={pathname.startsWith("/dashboard") ? "page" : undefined} className={`flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold ${pathname.startsWith("/dashboard") ? "bg-white text-black" : "bg-white/5 text-white"}`}><LayoutDashboard className="h-4 w-4" aria-hidden="true" /> {t("nav.dashboard")}</Link>
               )}
               {menus.map(m => {
                 const expanded = mobileExpanded === m.id;
@@ -311,7 +314,7 @@ export default function AppNavbar() {
                       aria-controls={`mob-${m.id}`}
                       className="flex w-full items-center justify-between px-3 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 rounded-xl"
                     >
-                      <span className="flex items-center gap-2 text-sm font-semibold text-white">{m.label}{m.id === "ai" && <Sparkles className="h-3.5 w-3.5 text-violet-400" aria-hidden="true" />}</span>
+                      <span className="flex items-center gap-2 text-sm font-semibold text-white">{(m.labelBn && lang==="bn" ? m.labelBn : m.label)}{m.id === "ai" && <Sparkles className="h-3.5 w-3.5 text-violet-400" aria-hidden="true" />}</span>
                       <ChevronDown className={`h-4 w-4 text-zinc-500 transition-transform ${expanded ? "rotate-180" : ""}`} aria-hidden="true" />
                     </button>
                     {expanded && (
@@ -340,14 +343,14 @@ export default function AppNavbar() {
               <div className="flex justify-center"><LanguageToggle className="rounded-full border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:text-white" /></div>
               {!isAuthed ? (
                 <div className="grid grid-cols-2 gap-2">
-                  <Link href="/login" onClick={() => setMobileOpen(false)} className="rounded-full border border-white/15 py-3 text-center text-sm font-medium text-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400">Login</Link>
-                  <Link href="/login?register=true" onClick={() => setMobileOpen(false)} className="rounded-full bg-white py-3 text-center text-sm font-semibold text-black hover:bg-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400">Get Started</Link>
+                  <Link href="/login" onClick={() => setMobileOpen(false)} className="rounded-full border border-white/15 py-3 text-center text-sm font-medium text-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400">{t("nav.login")}</Link>
+                  <Link href="/login?register=true" onClick={() => setMobileOpen(false)} className="rounded-full bg-white py-3 text-center text-sm font-semibold text-black hover:bg-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400">{t("nav.getStarted")}</Link>
                 </div>
               ) : (
                 <div className="flex items-center gap-3 px-2 py-1">
                   <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-500 text-xs font-bold text-white" aria-hidden="true">{user?.name?.trim()?.charAt(0)?.toUpperCase() ?? "U"}</span>
                   <span className="truncate text-sm font-medium text-white">{user?.name}</span>
-                  <button type="button" onClick={() => { setMobileOpen(false); void logout(); }} className="ml-auto rounded-full border border-white/10 px-3 py-1.5 text-xs font-medium text-zinc-300 hover:text-white">Log out</button>
+                  <button type="button" onClick={() => { setMobileOpen(false); void logout(); }} className="ml-auto rounded-full border border-white/10 px-3 py-1.5 text-xs font-medium text-zinc-300 hover:text-white">{t("auth.logout")}</button>
                 </div>
               )}
             </div>
