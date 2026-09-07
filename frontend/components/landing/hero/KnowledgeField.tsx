@@ -70,46 +70,88 @@ export default function KnowledgeField({
     let intro = 0; // 0→1 over 6.5s
     const start = performance.now();
 
-    // spiral galaxy buffers — premium, realistic, elegant
+    // BARRED SPIRAL MILKY WAY — SBc exact: bar + 4 arms + bulge + thin/thick disk + halo
     const particles: { x: number; y: number; z: number; ox: number; oy: number; oz: number; c: string; s: number; ph: number }[] = [];
-    const ARM_COUNT = 2;
-    const ARM_TURNS = 2.35;
-    const INNER_R = 0.13;
-    const OUTER_R = 1.18;
-    const BULGE_RATIO = 0.14;
+    const BAR_HALF = 0.32;
+    const BULGE_R = 0.19;
+    const ARM_COUNT = 4;
+    const PITCH = 12 * (Math.PI / 180); // 12° Milky Way pitch
+    const B = Math.tan(PITCH); // ~0.212
+    const ARM_SWEEP = 2.9; // radians per arm
+    // realistic stellar palette
+    const BULGE_COL = "#FFD9A0";
+    const BAR_COL = "#FFC07A";
+    const ARM_BLUE = "#8EC8FF";
+    const ARM_WHITE = "#E6F0FF";
+    const HALO_COL = "#8A99BB";
     for (let i = 0; i < cfg.count; i++) {
-      const cluster = CLUSTERS[i % CLUSTERS.length];
-      const col = SUBJECT_COLORS[cluster.id] || "#a78bfa";
+      const rRand = Math.random();
       let x: number, y: number, z: number;
-      if (i < cfg.count * BULGE_RATIO) {
-        // central bulge — dense spherical core
+      let col: string;
+      let s: number;
+      if (i < cfg.count * 0.11) {
+        // central bulge + SMBH region — old yellow spheroid, dense
         const u = Math.random();
         const v = Math.random();
-        const thetaB = 2 * Math.PI * u;
-        const phiB = Math.acos(2 * v - 1);
-        const rB = 0.04 + Math.pow(Math.random(), 0.9) * 0.18;
-        x = rB * Math.sin(phiB) * Math.cos(thetaB);
-        y = rB * Math.cos(phiB) * 0.62;
-        z = rB * Math.sin(phiB) * Math.sin(thetaB);
+        const th = 2 * Math.PI * u;
+        const ph = Math.acos(2 * v - 1);
+        const r = 0.03 + Math.pow(Math.random(), 0.85) * BULGE_R;
+        x = r * Math.sin(ph) * Math.cos(th) * 0.95;
+        y = r * Math.cos(ph) * 0.58;
+        z = r * Math.sin(ph) * Math.sin(th) * 0.95;
+        col = i < cfg.count * 0.02 ? "#FFF4D6" : BULGE_COL; // innermost brightest
+        s = 0.85 + Math.random() * 0.9;
+      } else if (i < cfg.count * 0.26) {
+        // bar — elongated, slightly peanut-shaped, yellow-orange population
+        const tBar = (Math.random() - 0.5) * 2; // -1 to 1 along bar X
+        const bx = tBar * BAR_HALF;
+        const by = (Math.random() - 0.5) * 0.09 * (1 - Math.abs(tBar) * 0.3);
+        const bz = (Math.random() - 0.5) * 0.07 * (1 - Math.abs(tBar) * 0.2);
+        // ansae brightening at bar ends
+        const ansae = Math.abs(tBar) > 0.75 ? 1.18 : 1;
+        x = bx * ansae;
+        y = by;
+        z = bz;
+        col = Math.abs(tBar) > 0.6 ? "#FFD9A0" : BAR_COL;
+        s = 0.72 + Math.random() * 0.88;
+      } else if (i < cfg.count * 0.86) {
+        // 4 spiral arms — Perseus, Sagittarius, Scutum-Centaurus, Outer
+        const arm = Math.floor((Math.random() * ARM_COUNT)) % ARM_COUNT;
+        const isBarEnd = arm < 2;
+        const barEndX = isBarEnd ? BAR_HALF : -BAR_HALF;
+        const barEndZ = 0;
+        const t = Math.pow(Math.random(), 0.72); // concentrated inward, thins outward
+        const armOffset = arm * (Math.PI / 2) + (arm < 2 ? 0 : 0.18); // slight asymmetry real MW
+        const thetaArm = t * ARM_SWEEP;
+        // logarithmic radius
+        const rSpiral = (BAR_HALF * 0.92) * Math.exp(B * thetaArm) * (0.92 + t * 0.18);
+        const theta = armOffset + thetaArm;
+        // arm width tightens then fattens slightly outward (dust lane + star formation)
+        const armWidth = (0.11 - t * 0.04) + (Math.random() - 0.5) * 0.09 * (1 - t * 0.3);
+        const across = (Math.random() - 0.5) * armWidth;
+        const radial = rSpiral + across * 0.35;
+        // thin disk thickness
+        const thick = (0.14 - t * 0.065) * (0.85 + Math.random() * 0.3);
+        const wy = (Math.random() - 0.5) * thick;
+        const warp = Math.sin(theta * 1.6 + t * 2.1) * 0.015 * t; // galactic warp
+        x = radial * Math.cos(theta) + (isBarEnd ? barEndX * (1 - t * 0.08) : 0);
+        z = radial * Math.sin(theta) + (isBarEnd ? barEndZ : 0);
+        y = wy + warp;
+        // arm stellar population: blue young stars on leading edge, dust lane trailing
+        const onLeading = across > 0.02;
+        col = onLeading ? (Math.random() > 0.32 ? ARM_BLUE : ARM_WHITE) : ARM_WHITE;
+        s = 0.58 + Math.random() * (onLeading ? 1.15 : 0.9);
       } else {
-        // spiral arms — logarithmic, subject tinted
-        const arm = i % ARM_COUNT;
-        const t = Math.pow(Math.random(), 0.68); // density falls outward, premium
-        const armOffset = arm * Math.PI + (CLUSTERS.findIndex((c) => c.id === cluster.id) * 0.06);
-        const spread = (0.42 - t * 0.16) * (quality === "low" ? 0.85 : 1);
-        const theta = armOffset + t * ARM_TURNS * Math.PI * 2 + (Math.random() - 0.5) * spread;
-        const r = INNER_R + t * (OUTER_R - INNER_R) + (Math.random() - 0.5) * 0.07;
-        const thickness = (0.18 - t * 0.09) * (0.9 + Math.random() * 0.2);
-        const yJitter = (Math.random() - 0.5) * thickness;
-        // subtle warp for realism
-        const warp = Math.sin(theta * 1.8) * 0.018 * t;
-        x = r * Math.cos(theta);
-        z = r * Math.sin(theta);
-        y = yJitter + warp;
+        // halo + thick disk — sparse, old, faint
+        const th = Math.random() * Math.PI * 2;
+        const ph = Math.acos(2 * Math.random() - 1);
+        const rH = 0.85 + Math.random() * 0.55;
+        x = rH * Math.sin(ph) * Math.cos(th) * 0.92;
+        y = rH * Math.cos(ph) * 0.42 + (Math.random() - 0.5) * 0.12;
+        z = rH * Math.sin(ph) * Math.sin(th) * 0.92;
+        col = HALO_COL;
+        s = 0.42 + Math.random() * 0.62;
       }
-      // size: bulge slightly larger, arm taper
-      const isBulge = i < cfg.count * BULGE_RATIO;
-      const s = (isBulge ? 0.9 : 0.62) + Math.random() * (isBulge ? 0.7 : 1.05);
       particles.push({ x, y, z, ox: x, oy: y, oz: z, c: col, s, ph: Math.random() * Math.PI * 2 });
     }
 
