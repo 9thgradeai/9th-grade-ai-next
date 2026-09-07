@@ -407,6 +407,12 @@ export default function CustomExamTab() {
     questionRefs.current[questionId]?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  // Keep latest exam/answers in refs so timer expiry and rapid clicks never use a stale closure.
+  const examRef = useRef(exam);
+  const answersRef = useRef(answers);
+  useEffect(() => { examRef.current = exam; }, [exam]);
+  useEffect(() => { answersRef.current = answers; }, [answers]);
+
   const submit = useCallback(
     async (qs: Server.ExamQuestionDTO[], ans: Record<number, string>) => {
       // Never a silent no-op: every click path ends in a visible outcome.
@@ -414,11 +420,19 @@ export default function CustomExamTab() {
         setSubmitError("পরীক্ষার প্রশ্ন পাওয়া যায়নি। আবার চেষ্টা করুন।");
         return;
       }
-      const examSnapshot = exam;
+      const examSnapshot = examRef.current;
       if (!examSnapshot?.attemptId) {
         setSubmitError("পরীক্ষার সেশন শনাক্ত করা যায়নি। পৃষ্ঠা রিফ্রেশ করে আবার চেষ্টা করুন।");
         return;
       }
+      // Immediate ref guard — React state `submitting` is async; the ref prevents wedging on rapid hits
+      // while the canonical `submitExamAttempt` rendezvous ensures duplicate hits JOIN instead of being dropped.
+      if (submittingRef.current) {
+        // A submission is already in flight — the canonical layer will join it; just surface busy state.
+        setSubmitting(true);
+        return;
+      }
+      submittingRef.current = true;
       setSubmitting(true);
       setSubmitError(null);
       try {
@@ -448,26 +462,34 @@ export default function CustomExamTab() {
             : "ফলাফল জমা দেওয়া যায়নি। আবার চেষ্টা করুন।";
         setSubmitError(message);
       } finally {
+        submittingRef.current = false;
         setSubmitting(false);
       }
     },
-    [exam],
+    [],
   );
 
-  const handleSubmitRequest = () => {
-    if (unanswered > 0) {
-      setShowUnansweredConfirm(true);
-    } else if (exam) {
-      void submit(exam.questions, answers);
-    } else {
+  const handleSubmitRequest = useCallback(() => {
+    const snapExam = examRef.current;
+    const snapAnswers = answersRef.current;
+    if (!snapExam) {
       setSubmitError("পরীক্ষা শনাক্ত করা যায়নি। আবার চেষ্টা করুন।");
+      return;
     }
-  };
+    const snapUnanswered = (snapExam.questions.length ?? 0) - Object.keys(snapAnswers).length;
+    if (snapUnanswered > 0) {
+      setShowUnansweredConfirm(true);
+    } else {
+      void submit(snapExam.questions, snapAnswers);
+    }
+  }, [submit]);
 
-  const finalizeSubmit = () => {
+  const finalizeSubmit = useCallback(() => {
     setShowUnansweredConfirm(false);
-    if (exam) void submit(exam.questions, answers);
-  };
+    const snapExam = examRef.current;
+    const snapAnswers = answersRef.current;
+    if (snapExam) void submit(snapExam.questions, snapAnswers);
+  }, [submit]);
 
   const resetAll = () => {
     setPhase("config");
@@ -826,7 +848,9 @@ export default function CustomExamTab() {
                   startsAt={exam.startsAt}
                   durationSec={exam.durationSec}
                   onExpire={() => {
-                    void submit(exam.questions, answers);
+                    const snap = examRef.current;
+                    const snapAns = answersRef.current;
+                    if (snap) void submit(snap.questions, snapAns);
                   }}
                 />
               </div>
@@ -838,10 +862,13 @@ export default function CustomExamTab() {
               type="button"
               onClick={(e) => {
                 e.preventDefault();
+                e.stopPropagation();
                 handleSubmitRequest();
               }}
               disabled={submitting || totalQuestions === 0}
-              className="px-4 py-1.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-xs rounded-lg hover:bg-[var(--accent-hover)] transition-colors shadow-neon-glow flex items-center gap-1.5 disabled:opacity-40 z-50 relative"
+              aria-busy={submitting}
+              aria-label="পরীক্ষা জমা দিন"
+              className="px-4 py-1.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-xs rounded-lg hover:bg-[var(--accent-hover)] transition-colors shadow-neon-glow flex items-center gap-1.5 disabled:opacity-40 z-50 relative pointer-events-auto cursor-pointer"
             >
               <Flag className="w-3.5 h-3.5" />
               {submitting ? "জমা হচ্ছে..." : "জমা দিন"}
@@ -976,10 +1003,13 @@ export default function CustomExamTab() {
               type="button"
               onClick={(e) => {
                 e.preventDefault();
+                e.stopPropagation();
                 handleSubmitRequest();
               }}
               disabled={submitting}
-              className="px-6 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors shadow-neon-glow flex items-center gap-2 disabled:opacity-40 z-50 relative"
+              aria-busy={submitting}
+              aria-label="পরীক্ষা জমা দিন"
+              className="px-6 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors shadow-neon-glow flex items-center gap-2 disabled:opacity-40 z-50 relative pointer-events-auto cursor-pointer"
             >
               {submitting ? "জমা হচ্ছে..." : (
                 <>
@@ -1027,10 +1057,13 @@ export default function CustomExamTab() {
                     ফিরে যান
                   </button>
                   <button
-                    onClick={finalizeSubmit}
-                    className="flex-1 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors shadow-neon-glow"
+                    type="button"
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); finalizeSubmit(); }}
+                    disabled={submitting}
+                    aria-busy={submitting}
+                    className="flex-1 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors shadow-neon-glow disabled:opacity-40"
                   >
-                    জমা দিন
+                    {submitting ? "জমা হচ্ছে..." : "জমা দিন"}
                   </button>
                 </div>
               </motion.div>

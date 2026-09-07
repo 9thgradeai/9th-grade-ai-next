@@ -335,58 +335,68 @@ export default function PracticeTab() {
     setLockedQuestions((prev) => new Set(prev).add(questionId));
   };
 
-  const submitAnswers = async () => {
-    if (totalQuestions === 0) return;
+  // ── Production-grade submit guard: duplicate hits JOIN the in-flight
+  // request instead of wedging the button. Covers double-click, mobile
+  // double-tap, and timer auto-submit racing a manual submit.
+  const practiceSubmitInFlight = useRef<Promise<void> | null>(null);
+  const sessionQuestionsRef = useRef(sessionQuestions);
+  const answersRef = useRef(answers);
+  const resultRef = useRef(result);
+  useEffect(() => { sessionQuestionsRef.current = sessionQuestions; }, [sessionQuestions]);
+  useEffect(() => { answersRef.current = answers; }, [answers]);
+  useEffect(() => { resultRef.current = result; }, [result]);
+
+  const submitAnswers = useCallback(async () => {
+    if (practiceSubmitInFlight.current) return practiceSubmitInFlight.current;
+    const qs = sessionQuestionsRef.current;
+    if (qs.length === 0) {
+      setSubmitError("প্রশ্ন পাওয়া যায়নি। আবার চেষ্টা করুন।");
+      return;
+    }
     setSubmitting(true);
     setSubmitError(null);
-    try {
+    const p = (async () => {
       const summary = await api.submitPractice(
-        sessionQuestions.map((q) => ({ questionId: q.id, selected: answers[q.id] ?? "" })),
+        qs.map((q) => ({ questionId: q.id, selected: answersRef.current[q.id] ?? "" })),
       );
       try {
         localStorage.removeItem(QUICK_STORAGE_KEY);
       } catch { /* ignore */ }
       setResult(summary);
       requestAnimationFrame(() => scrollDashboardTop());
+    })();
+    practiceSubmitInFlight.current = p;
+    try {
+      await p;
     } catch {
       setSubmitError("ফলাফল জমা দেওয়া যায়নি। আবার চেষ্টা করুন।");
+      throw new Error("practice submit failed");
     } finally {
+      practiceSubmitInFlight.current = null;
       setSubmitting(false);
     }
-  };
+  }, []);
 
-  const handleSubmitRequest = () => {
+  const handleSubmitRequest = useCallback(() => {
+    if (practiceSubmitInFlight.current) { void practiceSubmitInFlight.current.catch(() => {}); return; }
     if (!allAnswered) {
       setShowUnansweredConfirm(true);
     } else {
-      void submitAnswers();
+      void submitAnswers().catch(() => {});
     }
-  };
+  }, [allAnswered, submitAnswers]);
 
-  const finalizeSubmit = () => {
+  const finalizeSubmit = useCallback(() => {
     setShowUnansweredConfirm(false);
-    void submitAnswers();
-  };
+    if (practiceSubmitInFlight.current) { void practiceSubmitInFlight.current.catch(() => {}); return; }
+    void submitAnswers().catch(() => {});
+  }, [submitAnswers]);
 
   const handleAutoSubmit = useCallback(async () => {
-    if (result || submitting) return;
-    setSubmitting(true);
-    setSubmitError(null);
-    try {
-      const summary = await api.submitPractice(
-        sessionQuestions.map((q) => ({ questionId: q.id, selected: answers[q.id] ?? "" })),
-      );
-      try {
-        localStorage.removeItem(QUICK_STORAGE_KEY);
-      } catch { /* ignore */ }
-      setResult(summary);
-      requestAnimationFrame(() => scrollDashboardTop());
-    } catch {
-      setSubmitError("ফলাফল জমা দেওয়া যায়নি। আবার চেষ্টা করুন।");
-    } finally {
-      setSubmitting(false);
-    }
-  }, [result, submitting, sessionQuestions, answers]);
+    if (resultRef.current) return;
+    if (practiceSubmitInFlight.current) return practiceSubmitInFlight.current;
+    try { await submitAnswers(); } catch { /* error surfaced via submitError */ }
+  }, [submitAnswers]);
 
   return (
     <div className="space-y-6">
@@ -759,9 +769,11 @@ export default function PracticeTab() {
                         </button>
                       ) : (
                         <button
-                          onClick={handleSubmitRequest}
+                          type="button"
+                          onClick={(e) => { e.preventDefault(); handleSubmitRequest(); }}
                           disabled={submitting}
-                          className="px-5 py-2 font-mono text-sm rounded-lg transition-colors flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+                          aria-busy={submitting}
+                          className="px-5 py-2 font-mono text-sm rounded-lg transition-colors flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed relative z-10 pointer-events-auto"
                           style={{ background: "var(--dashboard-primary)", color: "var(--dashboard-text-inverse)" }}
                         >
                           {submitting ? "জমা হচ্ছে..." : "ফলাফল জমা দিন"}
@@ -786,8 +798,8 @@ export default function PracticeTab() {
                   <span className="font-mono" style={{ color: "var(--dashboard-warning)" }}>{totalQuestions - answeredCount}টি</span> প্রশ্নে উত্তর দেওয়া হয়নি। নিশ্চিতভাবে জমা দিতে চান?
                 </p>
                 <div className="flex gap-3">
-                  <button onClick={() => setShowUnansweredConfirm(false)} className="flex-1 py-2.5 border rounded-xl text-sm" style={{ background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-strong)", color: "var(--dashboard-text-secondary)" }}>ফিরে যান</button>
-                  <button onClick={finalizeSubmit} className="flex-1 py-2.5 rounded-xl text-sm" style={{ background: "var(--dashboard-primary)", color: "var(--dashboard-text-inverse)" }}>জমা দিন</button>
+                  <button type="button" onClick={() => setShowUnansweredConfirm(false)} className="flex-1 py-2.5 border rounded-xl text-sm" style={{ background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-strong)", color: "var(--dashboard-text-secondary)" }}>ফিরে যান</button>
+                  <button type="button" onClick={(e) => { e.preventDefault(); finalizeSubmit(); }} disabled={submitting} aria-busy={submitting} className="flex-1 py-2.5 rounded-xl text-sm disabled:opacity-40" style={{ background: "var(--dashboard-primary)", color: "var(--dashboard-text-inverse)" }}>জমা দিন</button>
                 </div>
               </div>
             </div>

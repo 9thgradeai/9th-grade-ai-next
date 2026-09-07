@@ -440,6 +440,10 @@ export const api = {
         ...AUTH_FETCH_INIT,
         body: JSON.stringify({ answers }),
         headers: { "Content-Type": "application/json" },
+        // No auto-retry: practice writes attempts without an idempotency key;
+        // a retry could double-count points. The caller surfaces the error and
+        // the user can tap again (joined via in-flight guard, never wedged).
+        timeoutMs: 30_000,
       },
     );
     return data.summary;
