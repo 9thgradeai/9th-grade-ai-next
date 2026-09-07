@@ -86,7 +86,7 @@ export const viewport: Viewport = {
 // land on the dark public design on next visit.
 const THEME_INIT_SCRIPT = `(function(){try{document.documentElement.classList.remove("light");localStorage.removeItem("9th-grade-ai-theme");}catch(e){}})()`;
 
-const LANG_INIT_SCRIPT = `(function(){try{var l=localStorage.getItem("${LANGUAGE_KEY}");document.documentElement.lang=(l==="en")?"en":"bn";}catch(e){}})()`;
+const LANG_INIT_SCRIPT = `(function(){try{var l=localStorage.getItem("${LANGUAGE_KEY}");document.documentElement.lang=(l==="bn")?"bn":"en";}catch(e){}})()`;
 
 // Failsafe: landing sections are server-rendered with `opacity:0` and only
 // revealed by framer-motion JS animations. If hydration stalls (e.g. a chunk
@@ -102,7 +102,7 @@ export default function RootLayout({
 }) {
   return (
     <html
-      lang="bn"
+      lang="en"
       className={`${inter.variable} ${spaceGrotesk.variable} ${hindSiliguri.variable} h-full antialiased`}
       suppressHydrationWarning
     >

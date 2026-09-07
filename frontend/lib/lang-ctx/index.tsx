@@ -21,7 +21,7 @@ type LanguageContextType = {
 
 export const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
-const DEFAULT_LANG: Language = "bn";
+const DEFAULT_LANG: Language = "en";
 
 function readLang(): Language {
   if (typeof window === "undefined") return DEFAULT_LANG;

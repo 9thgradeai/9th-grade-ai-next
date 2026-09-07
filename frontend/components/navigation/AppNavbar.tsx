@@ -7,6 +7,7 @@ import BrandMark from "@/components/ui/BrandMark";
 import LanguageToggle from "@/components/ui/LanguageToggle";
 import { useAuth } from "@/lib/auth-ctx";
 import { visibleMenus } from "@/lib/navigation";
+import { useT } from "@/lib/i18n";
 
 function isActiveLink(href: string, pathname: string, tab: string | null): boolean {
   if (href.startsWith("/dashboard?tab=")) {
@@ -20,6 +21,7 @@ function isActiveLink(href: string, pathname: string, tab: string | null): boole
 
 export default function AppNavbar() {
   const { user, logout } = useAuth();
+  const t = useT();
   const router = useRouter();
   const pathname = usePathname() ?? "/";
   const searchParams = useSearchParams();
