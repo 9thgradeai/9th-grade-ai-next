@@ -190,6 +190,34 @@ export default function KnowledgeField({
 
         ctx.clearRect(0, 0, w, h);
 
+        // scroll-driven intelligence state: discover → master
+        // 0-0.2 discover (loose), 0.2-0.4 analyze, 0.4-0.6 practice, 0.6-0.8 improve, 0.8-1 master (ordered)
+        const sp = scrollProgress;
+        let stateIntensity = 0.92;
+        let connBoost = 1;
+        let pulseBoost = 1;
+        if (sp < 0.2) {
+          stateIntensity = 0.78 + sp * 0.7; // 0.78→0.92
+          connBoost = 0.72;
+          pulseBoost = 0.7;
+        } else if (sp < 0.4) {
+          stateIntensity = 0.92 + (sp - 0.2) * 0.6;
+          connBoost = 1.05;
+          pulseBoost = 0.95;
+        } else if (sp < 0.6) {
+          stateIntensity = 1.04 + (sp - 0.4) * 0.8; // practice — peak activity
+          connBoost = 1.18;
+          pulseBoost = 1.25;
+        } else if (sp < 0.8) {
+          stateIntensity = 1.2 - (sp - 0.6) * 0.5; // improve — reorganize brighten
+          connBoost = 1.08;
+          pulseBoost = 1.1;
+        } else {
+          stateIntensity = 1.1 - (sp - 0.8) * 0.75; // master — stable ordered
+          connBoost = 0.92;
+          pulseBoost = 0.85;
+        }
+
         // responsive viewing angle — fully centered on mobile, offset right on desktop
         const isMobileView = w < 640 * dpr;
         const isTabletView = w < 1024 * dpr;
@@ -200,14 +228,14 @@ export default function KnowledgeField({
         const parallaxStrength = isMobileView ? 0.018 : 0.034;
         const cx = w * baseCx + mouseX * w * parallaxStrength;
         const cy = h * baseCy + mouseY * h * (parallaxStrength * 0.8);
-        const scaleBase = Math.min(w, h) * baseScale;
+        const scaleBase = Math.min(w, h) * baseScale * stateIntensity;
         const time = now * 0.00034;
         const scrollFade = 1 - scrollProgress * 0.85;
         const scrollScale = 1 - scrollProgress * 0.18;
 
-        // slightly faster global rotation — still calm, more alive
-        const rotY = time * 0.18 + mouseX * 0.22;
-        const rotX = time * 0.09 + mouseY * 0.15;
+        // slightly faster global rotation — still calm, more alive, scroll modulates speed
+        const rotY = time * (0.18 + sp * 0.06) + mouseX * 0.22;
+        const rotX = time * (0.09 + sp * 0.04) + mouseY * 0.15;
 
         // project particles
         const projected: { x: number; y: number; z: number; alpha: number; size: number; col: string }[] = [];
@@ -221,16 +249,31 @@ export default function KnowledgeField({
           // subtle organic drift + intro reveal (particles spawn outward)
           const appear = Math.min(1, easedIntro * 1.6 - i * 0.0009);
           if (appear <= 0) continue;
-          // weak spot pulse every 3.2s — a bit faster rhythm
-          const pulseCluster = Math.floor((now / 3200) % CLUSTERS.length);
-          const isWeak = i % CLUSTERS.length === pulseCluster && Math.sin(now * 0.0018 + p.ph) > 0.6;
-          const pulse = isWeak ? 1.45 : 1;
+          // weak spot — reorganize: dim → pulse → jitter → brighten
+          const weakPeriod = 3200;
+          const weakPhase = (now % weakPeriod) / weakPeriod; // 0→1
+          const pulseCluster = Math.floor((now / weakPeriod) % CLUSTERS.length);
+          const inWeakCluster = i % CLUSTERS.length === pulseCluster;
+          // jitter during 0.05-0.35 of period, brighten 0.35-0.65
+          const isJittering = inWeakCluster && weakPhase > 0.05 && weakPhase < 0.32;
+          const isBrightening = inWeakCluster && weakPhase >= 0.32 && weakPhase < 0.62;
+          const isWeak = inWeakCluster && Math.sin(now * 0.0018 + p.ph) > 0.6;
+          const pulse = isBrightening ? 1.55 : isWeak ? 1.45 : 1;
 
           // rotate
           let x = p.ox * cosY - p.oz * sinY;
           let z = p.ox * sinY + p.oz * cosY;
           let y = p.oy * cosX - z * sinX;
           z = p.oy * sinX + z * cosX;
+
+          // weak-spot reorganize jitter
+          if (isJittering) {
+            const j = (weakPhase - 0.05) / 0.27; // 0→1
+            const jitterAmp = Math.sin(j * Math.PI) * 0.045 * (1 - Math.abs(p.ox) * 0.3);
+            x += Math.sin(now * 0.008 + p.ph * 1.7) * jitterAmp;
+            y += Math.cos(now * 0.007 + p.ph * 1.3) * jitterAmp;
+            z += Math.sin(now * 0.006 + p.ph) * jitterAmp * 0.6;
+          }
 
           // faster breathing
           const breathe = 1 + Math.sin(time * 1.32 + p.ph) * 0.016 * pulse;
@@ -242,13 +285,17 @@ export default function KnowledgeField({
           const persp = 2.2 / (2.2 + z);
           const px = cx + x * scaleBase * persp * scrollScale;
           const py = cy + y * scaleBase * persp * scrollScale;
-          const alpha = Math.max(0, Math.min(1, persp * 0.95 * appear * scrollFade * (isWeak ? 0.95 : 0.72)));
-          const size = p.s * persp * dpr * (isDark ? 1 : 0.9) * pulse;
+          let alpha = Math.max(0, Math.min(1, persp * 0.95 * appear * scrollFade * (isBrightening ? 1 : isWeak ? 0.95 : 0.72)));
+          // brightening phase boosts alpha
+          if (isBrightening) alpha = Math.min(1, alpha * 1.28);
+          // scroll state modulates alpha slightly
+          alpha *= 0.92 + stateIntensity * 0.08;
+          const size = p.s * persp * dpr * (isDark ? 1 : 0.9) * pulse * (0.92 + stateIntensity * 0.08);
 
           projected.push({ x: px, y: py, z, alpha, size, col: p.c });
         }
 
-        // draw connections (behind nodes)
+        // draw connections (behind nodes) — scroll state boosts density/opacity
         ctx.lineWidth = (isDark ? 0.7 : 0.6) * dpr;
         for (const [a, b] of pairs) {
           if (a >= projected.length || b >= projected.length) continue;
@@ -258,41 +305,54 @@ export default function KnowledgeField({
           const avgZ = (pa.z + pb.z) * 0.5;
           if (avgZ < -0.6) continue;
           const dist = Math.hypot(pa.x - pb.x, pa.y - pb.y);
-          if (dist > w * 0.22) continue;
-          // reveal connections after 1.5s
+          if (dist > w * (0.22 + (stateIntensity - 1) * 0.04)) continue;
+          // reveal connections after 1.5s, scroll state controls density
           if (intro < 0.22) continue;
-          const reveal = Math.min(1, (intro - 0.22) / 0.28);
-          const op = Math.min(pa.alpha, pb.alpha) * 0.18 * reveal * (isDark ? 1 : 0.55) * (avgZ > 0 ? 1 : 0.35);
+          const reveal = Math.min(1, (intro - 0.22) / 0.28) * (0.82 + connBoost * 0.18);
+          const op = Math.min(pa.alpha, pb.alpha) * 0.18 * reveal * connBoost * (isDark ? 1 : 0.55) * (avgZ > 0 ? 1 : 0.35);
           if (op < 0.02) continue;
           ctx.strokeStyle = isDark ? `rgba(148,155,195,${op})` : `rgba(100,105,150,${op})`;
           ctx.beginPath();
           ctx.moveTo(pa.x, pa.y);
-          // slight curve
-          const mx = (pa.x + pb.x) * 0.5 + (pa.z - pb.z) * 8;
+          // slight curve — scroll state tightens/loosens
+          const mx = (pa.x + pb.x) * 0.5 + (pa.z - pb.z) * (8 + (stateIntensity - 1) * 4);
           const my = (pa.y + pb.y) * 0.5;
           ctx.quadraticCurveTo(mx, my, pb.x, pb.y);
           ctx.stroke();
 
-          // traveling pulse — faster flow
+          // traveling pulse — scroll state speeds it
           if (intro > 0.55 && (a + b) % 97 === 0) {
-            const t = ((now * 0.00068 + a * 0.13) % 1);
+            const t = ((now * (0.00068 * pulseBoost) + a * 0.13) % 1);
             const px = pa.x + (pb.x - pa.x) * t;
             const py = pa.y + (pb.y - pa.y) * t;
-            ctx.fillStyle = `rgba(45,212,191,${0.85 * reveal * scrollFade})`;
+            ctx.fillStyle = `rgba(45,212,191,${0.85 * reveal * scrollFade * pulseBoost})`;
             ctx.beginPath();
             ctx.arc(px, py, 1.2 * dpr, 0, Math.PI * 2);
             ctx.fill();
           }
         }
 
-        // draw nodes — pure knowledge nodes, no central 9G sphere
+        // draw nodes — depth-of-field: far nodes desaturated + no glow, near nodes crisp + glow
         for (const pr of projected) {
-          ctx.globalAlpha = pr.alpha;
-          ctx.fillStyle = pr.col;
-          // closer nodes have subtle glow, responsive sizing
+          let col = pr.col;
+          // desaturate far depth for true DOF
+          if (pr.z < -0.18) {
+            const r = parseInt(col.slice(1, 3), 16);
+            const g = parseInt(col.slice(3, 5), 16);
+            const b = parseInt(col.slice(5, 7), 16);
+            const gray = Math.round(r * 0.299 + g * 0.587 + b * 0.114);
+            const mix = pr.z < -0.48 ? 0.58 : 0.38;
+            const nr = Math.round(r * (1 - mix) + gray * mix);
+            const ng = Math.round(g * (1 - mix) + gray * mix);
+            const nb = Math.round(b * (1 - mix) + gray * mix);
+            col = `rgb(${nr},${ng},${nb})`;
+          }
+          ctx.globalAlpha = pr.alpha * (pr.z < -0.35 ? 0.72 : 1);
+          ctx.fillStyle = col;
+          // only near nodes glow — far stay matte for depth
           if (pr.z > 0.32) {
-            ctx.shadowColor = pr.col;
-            ctx.shadowBlur = (isMobileView ? 4 : 6) * dpr;
+            ctx.shadowColor = col;
+            ctx.shadowBlur = (isMobileView ? 4 : 7) * dpr;
           } else {
             ctx.shadowBlur = 0;
           }
