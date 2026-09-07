@@ -109,15 +109,10 @@ export function resolveSubjectNode(root: TaxonomyNode, folder: string): Taxonomy
 
 // Walks down from `node` matching each path segment by NFC-normalised name.
 // Returns the deepest matched node, or null if any segment is unknown.
-const NODE_ALIASES: Record<string, string> = {
-  "বাংলা ভাষা": "ভাষা",
-};
-
 export function matchNodePath(node: TaxonomyNode, segments: string[]): TaxonomyNode | null {
   let current = node;
-  for (const rawSeg of segments) {
-    const alias = NODE_ALIASES[rawSeg.trim().normalize("NFC")] ?? rawSeg;
-    const norm = alias.normalize("NFC");
+  for (const seg of segments) {
+    const norm = seg.normalize("NFC");
     const child = current.children.find((c) => c.name.normalize("NFC") === norm);
     if (!child) return null;
     current = child;
