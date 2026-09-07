@@ -6,6 +6,7 @@ import { Clock, ArrowRight, Trophy, BookX, Brain, Flame, Target, ClipboardCheck,
 import { useAuth } from "@/lib/auth-ctx";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 import { useLanguage, t } from "@/lib/lang-ctx";
+import { useT } from "@/lib/i18n";
 import { useToastSafe } from "@/lib/toast-ctx";
 import { api } from "@/lib/services/api";
 import type { Server } from "@/lib/types";
@@ -41,17 +42,18 @@ const STAGGER_ITEM = {
   show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 280, damping: 28 } },
 };
 
-function timeGreeting() {
+function timeGreeting(t: (k:string)=>string) {
   const h = new Date().getHours();
-  if (h < 12) return "Good morning";
-  if (h < 17) return "Good afternoon";
-  return "Good evening";
+  if (h < 12) return t("home.greeting.morning");
+  if (h < 17) return t("home.greeting.afternoon");
+  return t("home.greeting.evening");
 }
 
 export default function HomeTab() {
   const { user } = useAuth();
   const { setActiveTab, setPracticeIntent, setMistakeIntent, setQuestionBankFilters } = useDashboardStore();
   const { lang } = useLanguage();
+  const tUI = useT();
   const toast = useToastSafe();
   const coachRef = useRef<HTMLDivElement>(null);
 
@@ -341,7 +343,7 @@ export default function HomeTab() {
           </div>
 
           <h1 className="font-display font-black text-[26px] sm:text-[32px] leading-none tracking-tight mt-2" style={{ color: "var(--dashboard-text-primary)" }}>
-            {timeGreeting()}, <span style={{ color: "var(--dashboard-primary)" }}>{user?.name ?? "Scholar"}</span> —
+            {timeGreeting(tUI)}, <span style={{ color: "var(--dashboard-primary)" }}>{user?.name ?? "Scholar"}</span> —
           </h1>
 
           <p className="text-sm mt-2 flex flex-wrap items-center gap-2" style={{ color: "var(--dashboard-text-secondary)" }}>

@@ -5,11 +5,12 @@ import { ArrowRight, ChevronDown } from "lucide-react";
 import Button from "@/components/ui/Button";
 import { trackCtaClick, trackHeroView } from "@/lib/analytics";
 import { useMotionCapabilities } from "@/lib/motion/device";
+import { useT } from "@/lib/i18n";
 
-const stats = (subjectCount: number) => [
-  { value: String(subjectCount), label: "Subjects" },
-  { value: "2", label: "Languages" },
-  { value: "100%", label: "Free" },
+const stats = (subjectCount: number, t: (k:string)=>string) => [
+  { value: String(subjectCount), label: t("hero.stats.subjects") },
+  { value: "2", label: t("hero.stats.languages") },
+  { value: "100%", label: t("hero.stats.free") },
 ];
 
 /** Lightweight word-reveal that mirrors the previous Framer Motion entrance
@@ -51,6 +52,7 @@ function WordReveal({
 }
 
 export default function HeroSection({ subjectCount }: { subjectCount: number }) {
+  const t = useT();
   const sectionRef = useRef<HTMLElement>(null);
   const copyRef = useRef<HTMLDivElement>(null);
 
@@ -226,15 +228,15 @@ export default function HeroSection({ subjectCount }: { subjectCount: number }) 
               />
               <circle cx="15.1" cy="6.3" r="1.1" fill="url(#hero-ai-cap)" />
             </svg>
-            AI-Powered Application, Built for Job Aspirants
+            {t("hero.eyebrow")}
           </p>
 
           <h1 className="mb-6 font-display text-[clamp(2.75rem,8vw,5.25rem)] font-semibold leading-[1.02] tracking-tight text-white">
-            <WordReveal text="Stop guessing." className="hero-title" />
+            <WordReveal text={t("hero.title1")} className="hero-title" />
             <br />
             <span className="relative inline-block">
               <WordReveal
-                text="Start passing."
+                text={t("hero.title2")}
                 className="hero-title"
                 wordClassName="text-gradient"
                 delay={0.15}
@@ -280,8 +282,7 @@ export default function HeroSection({ subjectCount }: { subjectCount: number }) 
           </h1>
 
           <p className="hero-sub mb-9 max-w-xl text-lg leading-relaxed text-[var(--text-muted)] md:text-xl">
-            AI that learns your weak spots, builds custom practice sets, and turns
-            9th-grade pay-scale exams into predictable outcomes.
+            {t("hero.subtitle")}
           </p>
 
           <div className="hero-cta flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-4">
@@ -295,7 +296,7 @@ export default function HeroSection({ subjectCount }: { subjectCount: number }) 
                 className="glow-border w-full font-semibold sm:w-auto"
                 onClick={() => trackCtaClick("primary")}
               >
-                Start for free
+                {t("hero.cta.primary")}
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </Button>
             </span>
@@ -306,13 +307,13 @@ export default function HeroSection({ subjectCount }: { subjectCount: number }) 
               className="w-full sm:w-auto"
               onClick={() => trackCtaClick("secondary")}
             >
-              See how it works
+              {t("hero.cta.secondary")}
               <ChevronDown className="h-4 w-4" aria-hidden="true" />
             </Button>
           </div>
 
           <dl className="hero-stats mt-12 flex flex-wrap items-center gap-x-8 gap-y-4 sm:gap-x-12">
-            {stats(subjectCount).map((stat, i) => (
+            {stats(subjectCount, t).map((stat, i) => (
               <div
                 key={stat.label}
                 className={`flex items-baseline gap-8 sm:gap-12 ${
@@ -333,7 +334,7 @@ export default function HeroSection({ subjectCount }: { subjectCount: number }) 
       </div>
 
       <div className="hero-scroll absolute bottom-7 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-1.5 text-zinc-500">
-        <span className="font-mono text-[0.65rem] uppercase tracking-[0.22em]">Scroll</span>
+        <span className="font-mono text-[0.65rem] uppercase tracking-[0.22em]">{t("common.scroll")}</span>
         <ChevronDown className="h-4 w-4" />
       </div>
     </section>

@@ -9,16 +9,18 @@ import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 import { TABS, type TabId } from "@/lib/data";
 import { Skeleton, SkeletonCard } from "@/components/ui/Skeleton";
 import { AuroraRing } from "@/components/ui/Loader";
+import { useT } from "@/lib/i18n";
 
 // Shown while a lazily-imported tab chunk streams in — never a blank pane.
 function TabChunkLoading() {
+  const t = useT();
   return (
-    <div className="space-y-4" role="status" aria-label="Tab loading">
-      <span className="sr-only">লোড হচ্ছে…</span>
+    <div className="space-y-4" role="status" aria-label={t("dashboard.loadingModule")}>
+      <span className="sr-only">{t("common.loading")}</span>
       <div className="glass-card rounded-2xl border p-6 flex flex-col items-center justify-center gap-3 text-center" style={{ borderColor: "var(--dashboard-border-muted)" }}>
-        <AuroraRing size={56} label="Tab loading" />
+        <AuroraRing size={56} label={t("dashboard.loadingModule")} />
         <p className="font-mono text-[11px] tracking-[0.3em] uppercase" style={{ color: "var(--dashboard-primary)" }}>
-          Loading module
+          {t("dashboard.loadingModule")}
         </p>
       </div>
       <SkeletonCard className="p-6">

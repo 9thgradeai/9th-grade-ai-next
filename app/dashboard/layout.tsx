@@ -24,6 +24,7 @@ import { Menu, X } from "lucide-react";
 import { TAB_ICONS } from "@/lib/exam-ui";
 import { useAuth as useAuthForDrawer } from "@/lib/auth-ctx";
 import LogoutButton from "@/components/dashboard/LogoutButton";
+import { useT } from "@/lib/i18n";
 
 // The voice tutor (speech-recognition stack) is only needed when launched —
 // keep it out of the critical dashboard bundle.
@@ -148,6 +149,7 @@ function EmailVerificationGate({ children }: { children: React.ReactNode }) {
 }
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const t = useT();
   const router = useRouter();
   const { activeTab, setActiveTab } = useDashboardStore();
   const [navDrawerOpen, setNavDrawerOpen] = useState(false);
@@ -191,7 +193,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               href="#dashboard-content"
               className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-emerald-500 focus:text-zinc-950 focus:font-mono focus:text-sm"
             >
-              Skip to content
+              {t("dashboard.skipToContent")}
             </a>
 
             {/* Desktop Side Navigation (>=1024px) — locked column, never scrolls away */}
@@ -269,7 +271,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   {/* Desktop page title — clean, no terminal $ */}
                   <div className="hidden lg:flex flex-col">
                     <span className="text-[13px] font-semibold tracking-tight" style={{ color: "var(--dashboard-text-primary)" }}>{activeLabel}</span>
-                    <span className="text-[11px]" style={{ color: "var(--dashboard-text-muted)" }}>আপনার পড়াশোনার কন্ট্রোল সেন্টার</span>
+                    <span className="text-[11px]" style={{ color: "var(--dashboard-text-muted)" }}>{t("dashboard.controlCenter")}</span>
                   </div>
 
                   <div className="ml-auto flex items-center gap-2">

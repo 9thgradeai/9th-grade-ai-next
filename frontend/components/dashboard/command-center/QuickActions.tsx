@@ -7,6 +7,7 @@ import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 import { launchAI } from "@/lib/ai-launcher";
 import type { TabId } from "@/lib/data";
 import { api } from "@/lib/services/api";
+import { useT } from "@/lib/i18n";
 
 type Action = {
   keyLabel: string;
@@ -28,6 +29,7 @@ type Props = {
 };
 
 export default function QuickActions({ pendingMistakes = 0, flashcardsDue = null, onAction }: Props) {
+  const t = useT();
   const router = useRouter();
   const { setActiveTab, setPracticeIntent } = useDashboardStore((s) => ({
     setActiveTab: s.setActiveTab,
@@ -42,15 +44,15 @@ export default function QuickActions({ pendingMistakes = 0, flashcardsDue = null
   }, []);
 
   const ACTIONS: Action[] = useMemo(() => [
-    { keyLabel: "P", label: "Practice",   icon: Zap,           tab: "practice",      primary: true, mode: "quick" },
-    { keyLabel: "M", label: "Mock Exam",  icon: ClipboardCheck, tab: "practice",     mode: "mock" },
-    { keyLabel: "W", label: "Wrong Ans",  icon: Target,         tab: "mistakes",     badge: pendingMistakes > 0 ? pendingMistakes : undefined },
-    { keyLabel: "A", label: "AI Tutor",   icon: Sparkles,       tab: null,           special: "ai-tutor" },
-    { keyLabel: "L", label: "Planner",    icon: Calendar,       tab: "study-planner" },
-    { keyLabel: "Q", label: "Q-Bank",     icon: BookOpen,       tab: "question-bank", badge: qbankCount && qbankCount>0 ? (qbankCount>999?"999+":String(qbankCount)) : undefined },
-    { keyLabel: "F", label: "Flashcards", icon: Brain,          tab: "flashcards",   badge: flashcardsDue && flashcardsDue > 0 ? flashcardsDue : undefined },
-    { keyLabel: "K", label: "Analytics",  icon: BarChart3,      tab: "progress" },
-  ], [pendingMistakes, flashcardsDue, qbankCount]);
+    { keyLabel: "P", label: t("dock.practice"),   icon: Zap,           tab: "practice",      primary: true, mode: "quick" },
+    { keyLabel: "M", label: t("dock.mockExam"),  icon: ClipboardCheck, tab: "practice",     mode: "mock" },
+    { keyLabel: "W", label: t("dock.wrongAns"),  icon: Target,         tab: "mistakes",     badge: pendingMistakes > 0 ? pendingMistakes : undefined },
+    { keyLabel: "A", label: t("dock.aiTutor"),   icon: Sparkles,       tab: null,           special: "ai-tutor" },
+    { keyLabel: "L", label: t("dock.planner"),    icon: Calendar,       tab: "study-planner" },
+    { keyLabel: "Q", label: t("dock.qbank"),     icon: BookOpen,       tab: "question-bank", badge: qbankCount && qbankCount>0 ? (qbankCount>999?"999+":String(qbankCount)) : undefined },
+    { keyLabel: "F", label: t("dock.flashcards"), icon: Brain,          tab: "flashcards",   badge: flashcardsDue && flashcardsDue > 0 ? flashcardsDue : undefined },
+    { keyLabel: "K", label: t("dock.analytics"),  icon: BarChart3,      tab: "progress" },
+  ], [t, pendingMistakes, flashcardsDue, qbankCount]);
 
   const navigate = useCallback((tab: TabId) => {
     setActiveTab(tab);
@@ -94,10 +96,10 @@ export default function QuickActions({ pendingMistakes = 0, flashcardsDue = null
     <div className="command-card p-4">
       <div className="flex items-center justify-between mb-3">
         <p className="command-eyebrow !text-[10px] flex items-center gap-1.5">
-          <Command className="w-3 h-3 text-[var(--dashboard-primary)]" /> HUD Command Dock
+          <Command className="w-3 h-3 text-[var(--dashboard-primary)]" /> {t("dock.title")}
         </p>
         <span className="text-[10px] font-mono text-[var(--dashboard-text-muted)] hidden sm:inline-block">
-          Press hotkeys <kbd className="px-1.5 py-0.5 rounded border bg-[var(--dashboard-surface-muted)] text-[var(--dashboard-primary)] font-bold">P</kbd> <kbd className="px-1.5 py-0.5 rounded border bg-[var(--dashboard-surface-muted)] text-[var(--dashboard-primary)] font-bold">M</kbd> <kbd className="px-1.5 py-0.5 rounded border bg-[var(--dashboard-surface-muted)] text-[var(--dashboard-primary)] font-bold">A</kbd> for instant navigation
+          {t("dock.hotkeys")}
         </span>
       </div>
 
