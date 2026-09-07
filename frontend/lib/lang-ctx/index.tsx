@@ -19,7 +19,7 @@ type LanguageContextType = {
   toggleLang: () => void;
 };
 
-const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+export const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 const DEFAULT_LANG: Language = "bn";
 
