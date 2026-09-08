@@ -91,11 +91,29 @@
 ## ADR-0012: Hero black hole — raw WebGL, no 3D dependency
 
 - **Date**: 2026-08
-- **Status**: Accepted
+- **Status**: Superseded (see ADR-0014)
 - **Context**: The landing hero needed to read as a "next-level AI product": a realistic 3D black hole with a lensed accretion disk and a true event horizon. Initial request also named "UI/UX pro" (not a real npm package) and a UI component kit.
 - **Decision**: Render the black hole with **raw WebGL** (a hand-written vertex/fragment shader in `frontend/components/landing/BlackholeCanvas.tsx`) — no `three`, `@react-three/fiber`, or `@react-three/drei`. Photon paths are integrated with the standard bending acceleration `a = -1.5·h²·p/r⁵`; the event horizon swallows captured rays, disk crossings emit temperature-graded + Doppler-beamed light, and surviving rays sample a procedural starfield (producing the Einstein-ring arcs). Quality is governed by the existing `useVisualQuality` / `useMotionCapabilities` hooks: reduced/low tiers render a single static frame at low resolution and never loop. A WebGL-unavailable fallback paints a calm radial void.
 - **Rationale**: A realistic black hole is a shader problem, not a Framer Motion problem; `framer-motion` is already installed (v13) and still drives the copy entrance + Magnetic CTAs, but cannot bend light. Three.js would add ~150 kB+ for a single fullscreen shader we fully control by hand. This honors the repo's "no dependency without justification" rule (see ADR-0007/0009) and keeps the client bundle lean.
 - **Consequences**: Must be maintained as GLSL, not a scene-graph. If richer 3D surfaces (interactive 3D subjects, orbit controls) are needed later, revisit `three` + `react-three-fiber` behind a measured ADR. `KnowledgeField.tsx` is now unused by the hero but retained as a tested canvas utility.
+
+## ADR-0014: Living Milky Way galaxy — Canvas2D procedural barred spiral
+
+- **Date**: 2026-09
+- **Status**: Accepted
+- **Context**: The black hole hero (ADR-0012) was visually impressive but semantically disconnected from the product's "knowledge universe" metaphor. The brief called for a cinematic, physically convincing barred spiral galaxy (Milky Way-inspired) that communicates: real galaxy → alive motion → intelligent learning system, with the metaphor hidden beneath realism. The existing `KnowledgeField.tsx` (a neural-mesh particle field) was the starting point but suffered from visible network topology, synthetic particle feel, and rigid rotation.
+- **Decision**: Refactor the hero visual into a **living barred spiral galaxy** using **Canvas2D only** (no Three.js, no WebGL shaders beyond Canvas2D). Implementation:
+  - Procedural generation: bulge (boxy/peanut), central bar (ansae), 4 density-wave arms, exponential old disk, sparse halo, star-forming clusters.
+  - Stellar populations with astrophysically inspired colors (warm bulge/bar, blue-white arms, gray-blue halo), realistic brightness distribution (66% dim, 18% medium, 13% bright, <3% luminous).
+  - Dust lanes as dark alpha blobs on trailing edges; emission nebulae at star-forming clusters.
+  - True 3D depth via camera inclination (~22°), perspective projection, depth-based size/alpha shading.
+  - Differential rotation (inner fast, outer slow), local turbulence, slow density-wave phase evolution — no rigid rotation.
+  - Cinematic 6.5s intro revealing the galaxy from core → arms → dust → nebulae.
+  - Weak-spot events (dim → blue star-formation bloom → settle) and slow luminosity riders replace the old "progress dot."
+  - Adaptive quality tiers (ultra/high/medium/low/static) with FPS governor that demotes at runtime.
+  - Static SVG fallback for reduced motion / WebGL-unavailable.
+- **Rationale**: Canvas2D with precomputed typed arrays, instanced sprite draws (`drawImage`), and a single RAF loop delivers 60 FPS on desktop / 45+ on mid-range / 30+ on low-end with 1500 stars + dust + nebulae. Zero per-frame allocations, no React state in the render loop, clean React ↔ renderer seam. No new dependencies — honors the dependency-minimization rule. The galaxy reads as astronomical photography, not a particle system.
+- **Consequences**: `KnowledgeField.tsx` is now the React wrapper around `GalaxyRenderer` (new modules: `GalaxyGenerator`, `GalaxyMotion`, `GalaxyQuality`, `GalaxyFallback`, `StarField`, `DustField`, `GalaxyTypes`, `GalaxyRandom`). The old neural-mesh code is removed. `BlackholeCanvas.tsx` remains in the repo but is no longer used by the hero.
 
 ## ADR-0013: Hero UI — keep the bespoke component system (no shadcn/Radix migration)
 

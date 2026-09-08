@@ -1,6 +1,6 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useSyncExternalStore, useEffect, useRef } from "react";
 
 /**
  * Lightweight capability detection for the landing experience.
@@ -69,33 +69,85 @@ const STATIC_CAPS: MotionCapabilities = {
   continuousEffects: false,
 };
 
-let clientCaps: MotionCapabilities | null = null;
+// Reactive store for motion capabilities
+let currentCaps: MotionCapabilities = STATIC_CAPS;
+let capsInitialized = false;
+const listeners = new Set<() => void>();
 
-function getClientCaps(): MotionCapabilities {
-  if (!clientCaps) {
-    const tier = detectDeviceTier();
-    clientCaps = {
-      tier,
-      pointerEffects: hasFinePointer() && !prefersReducedMotion() && tier !== "low",
-      continuousEffects:
-        !prefersReducedMotion() && tier !== "low" && document.visibilityState === "visible",
-    };
-  }
-  return clientCaps;
+function computeCaps(): MotionCapabilities {
+  if (typeof window === "undefined") return STATIC_CAPS;
+  const tier = detectDeviceTier();
+  return {
+    tier,
+    pointerEffects: hasFinePointer() && !prefersReducedMotion() && tier !== "low",
+    continuousEffects:
+      !prefersReducedMotion() &&
+      tier !== "low" &&
+      document.visibilityState === "visible",
+  };
 }
 
-function noopSubscribe() {
-  return () => {};
+function notify() {
+  for (const cb of listeners) cb();
+}
+
+function subscribe(cb: () => void) {
+  listeners.add(cb);
+  return () => listeners.delete(cb);
+}
+
+function getSnapshot() {
+  // Lazy-initialize on first client snapshot request
+  if (!capsInitialized && typeof window !== "undefined") {
+    currentCaps = computeCaps();
+    capsInitialized = true;
+  }
+  return currentCaps;
+}
+
+function getServerSnapshot() {
+  return STATIC_CAPS;
+}
+
+// Initialize on client - also handles visibility/reduced-motion changes
+if (typeof window !== "undefined") {
+  // Initial compute after a microtask to ensure document is ready
+  queueMicrotask(() => {
+    currentCaps = computeCaps();
+    capsInitialized = true;
+    notify();
+  });
+
+  // Update on visibility change
+  document.addEventListener("visibilitychange", () => {
+    currentCaps = computeCaps();
+    notify();
+  });
+
+  // Update on reduced-motion change
+  const mql = window.matchMedia("(prefers-reduced-motion: reduce)");
+  mql.addEventListener?.("change", () => {
+    currentCaps = computeCaps();
+    notify();
+  });
 }
 
 /**
- * Returns capabilities. During SSR and hydration it reports a conservative
+ * Returns capabilities. During SSR it reports a conservative
  * baseline (no pointer effects, no continuous loops); after mount React
- * re-renders with the detected client capabilities — without a mismatch
- * warning, thanks to useSyncExternalStore.
+ * re-renders with the detected client capabilities.
  */
 export function useMotionCapabilities(): MotionCapabilities {
-  return useSyncExternalStore(noopSubscribe, getClientCaps, () => STATIC_CAPS);
+  const caps = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  // Force a re-check on mount in case microtask hasn't run yet
+  const mountedRef = useRef(false);
+  useEffect(() => {
+    mountedRef.current = true;
+    currentCaps = computeCaps();
+    capsInitialized = true;
+    notify();
+  }, []);
+  return caps;
 }
 
 /* ── Visual quality governor ──────────────────────────────────────── */
@@ -127,6 +179,10 @@ export function detectVisualQuality(): VisualQuality {
 }
 
 const QUALITY_STATIC: VisualQuality = "medium";
+
+function noopSubscribe() {
+  return () => {};
+}
 
 export function useVisualQuality(): VisualQuality {
   return useSyncExternalStore(noopSubscribe, detectVisualQuality, () => QUALITY_STATIC);

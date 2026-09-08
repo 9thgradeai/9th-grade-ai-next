@@ -108,10 +108,11 @@ Shared primitives live in `frontend/components/ui/`:
   glow via CSS variables. Zero React state per pointer frame; disabled on
   touch, reduced motion, and low-tier devices.
 - **Magnetic** — CTA wrapper drifting ≤5px toward the cursor; same gating.
-- **KnowledgeField** — shared hero Canvas 2D "knowledge intelligence field"
-  (drifting nodes + neural mesh). DPR capped at 1.5 (1 on low tier), particle
-  count scales with area AND device tier, pauses offscreen/tab-hidden,
-  renders one static frame under reduced motion or low tier.
+- **KnowledgeField** — shared hero Canvas 2D living Milky Way galaxy (barred spiral
+  with differential rotation, organic dust lanes, stellar populations,
+  additive accumulation). DPR capped at 1.5 (1 on low tier), star count scales
+  with device tier (1500 ultra → 300 low), pauses offscreen/tab-hidden,
+  renders one static SVG frame under reduced motion or low tier.
 - **Device tiers** — `frontend/lib/motion/device.ts`: `detectDeviceTier()`
   classifies high/mid/low from cores, memory, SaveData, pointer type;
   `useMotionCapabilities()` gates pointer/continuous effects after mount.

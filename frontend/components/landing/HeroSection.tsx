@@ -2,12 +2,12 @@
 
 import { useEffect, useRef, type PointerEvent } from "react";
 import { ArrowRight, ChevronDown } from "lucide-react";
+import dynamic from "next/dynamic";
+const HeroVideoBackground = dynamic(() => import("./hero/HeroVideoBackground"), { ssr: false, loading: () => null });
 import Button from "@/components/ui/Button";
 import { trackCtaClick, trackHeroView } from "@/lib/analytics";
 import { useMotionCapabilities } from "@/lib/motion/device";
 import { useT } from "@/lib/i18n";
-import dynamic from "next/dynamic";
-const HeroVisual = dynamic(() => import("./hero/HeroVisual"), { ssr: false, loading: () => null });
 
 const stats = (subjectCount: number, t: (k:string)=>string) => [
   { value: String(subjectCount), label: t("hero.stats.subjects") },
@@ -136,44 +136,10 @@ export default function HeroSection({ subjectCount }: { subjectCount: number }) 
       className="relative flex min-h-[92dvh] items-center overflow-hidden px-4 pb-24 pt-28 sm:px-6"
       aria-label="Introduction"
     >
-      {/* SSR fallback for LCP — keeps FCP <1.4s, canvas enhances progressively */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0"
-        style={{
-          backgroundImage:
-            "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' preserveAspectRatio='none'%3E%3Cdefs%3E%3CradialGradient id='g' cx='50%25' cy='46%25' r='62%25'%3E%3Cstop offset='0%25' stop-color='%231b1130'/%3E%3Cstop offset='38%25' stop-color='%230a0a14'/%3E%3Cstop offset='70%25' stop-color='%23050507'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width='100' height='100' fill='url(%23g)'/%3E%3C/svg%3E\")",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      />
-      {/* Intelligent Exam Universe — progressive enhancement, never blocks LCP */}
-      <HeroVisual />
+      {/* Cinematic Video Background */}
+      <HeroVideoBackground />
 
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-[1]"
-        style={{
-          background:
-            "radial-gradient(125% 125% at 50% 38%, transparent 30%, rgba(5,5,9,0.5) 100%)",
-        }}
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-[1] hidden sm:block"
-        style={{
-          background:
-            "linear-gradient(100deg, rgba(5,5,9,0.92) 0%, rgba(5,5,9,0.55) 30%, rgba(5,5,9,0.08) 60%, transparent 100%)",
-        }}
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-[1] block sm:hidden"
-        style={{
-          background:
-            "linear-gradient(to top, rgba(5,5,9,0.92) 0%, rgba(5,5,9,0.5) 38%, rgba(5,5,9,0.12) 70%, transparent 100%)",
-        }}
-      />
+
 
       <div
         ref={copyRef}
