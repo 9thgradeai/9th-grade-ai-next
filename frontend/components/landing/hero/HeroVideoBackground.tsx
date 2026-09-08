@@ -175,21 +175,22 @@ export default function HeroVideoBackground() {
       ref={containerRef}
       className="pointer-events-none absolute inset-0 z-0 overflow-hidden bg-black"
     >
-      <video loading="eager" disablePictureInPicture crossOrigin="anonymous"
-        ref={videoRef}
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="auto"
-        style={{
-          transform: "translateZ(0)",
-          backfaceVisibility: "hidden",
-          WebkitBackfaceVisibility: "hidden",
-        }}
-        className="absolute inset-0 h-full w-full object-cover will-change-transform"
-        aria-hidden="true"
-      />
+<video
+          ref={videoRef}
+          autoPlay
+          muted
+          loop
+          crossOrigin="anonymous"
+          playsInline
+          preload="auto"
+          style={{
+            transform: "translateZ(0)",
+            backfaceVisibility: "hidden",
+            WebkitBackfaceVisibility: "hidden",
+          }}
+          className="absolute inset-0 h-full w-full object-cover will-change-transform"
+          aria-hidden="true"
+        />
 
       {/* Cinematic vignette & text contrast overlay */}
       <div
