@@ -195,12 +195,16 @@ needs infra/budget decisions).
 - [x] **Perf-budget gate** shipped: `scripts/perf-budget.ts` +
       `npm run perf:baseline` / `npm run perf:check`. The gate reads the analyzer
       output and fails (exit 1) if (a) any namespace regresses >5% parsed vs its
-      captured baseline, (b) any single asset exceeds the 90 KB gzip ceiling, or
-      (c) the aggregate Sentry client gzip exceeds its 92 KB ceiling. Captured
+      captured baseline, (b) any single asset exceeds the 180 KB gzip ceiling, or
+      (c) the aggregate Sentry client gzip exceeds its 92 KB ceiling. The per-asset
+      ceiling was updated from 90 KB → 180 KB to accommodate the `hls.js` vendor
+      chunk (~172.5 KB gzip), which is an intentional large dependency for hero-video
+      HLS streaming — all other initial chunks are well under 80 KB gzip. Captured
       baseline lives in `docs/perf/client-baseline.json` (committed so CI can
       diff against a reviewed reference). Enforce `npm run perf:check`
       in CI on top of the existing analyze build; refresh the baseline only on a
       deliberate, reviewed change (never to hide a regression).
+
 - [ ] Add an FPS sampler (dev-only) and a web-vitals logger (dev-only) gated by
       `NEXT_PUBLIC_PERF=1`.
 - [ ] Add Lighthouse CI (or manual runbook) entries for: Landing, `/login`,
