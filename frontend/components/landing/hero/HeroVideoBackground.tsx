@@ -1,15 +1,47 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Hls from "hls.js";
+import type HlsType from "hls.js";
 import { useMotionCapabilities } from "@/lib/motion/device";
 
 const VIDEO_SRC = "https://stream.mux.com/T6oQJQ02cQ6N01TR6iHwZkKFkbepS34dkkIc9iukgy400g.m3u8";
 
+function loadHlsScript(): Promise<typeof HlsType> {
+  if (typeof window === "undefined") {
+    return Promise.reject(new Error("Window is undefined"));
+  }
+  const win = window as unknown as { Hls?: typeof HlsType };
+  if (win.Hls) {
+    return Promise.resolve(win.Hls);
+  }
+
+  return new Promise((resolve, reject) => {
+    const existing = document.querySelector<HTMLScriptElement>('script[src="/vendor/hls.light.min.js"]');
+    if (existing) {
+      existing.addEventListener("load", () => {
+        if (win.Hls) resolve(win.Hls);
+        else reject(new Error("Hls not found"));
+      });
+      existing.addEventListener("error", reject);
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = "/vendor/hls.light.min.js";
+    script.async = true;
+    script.onload = () => {
+      if (win.Hls) resolve(win.Hls);
+      else reject(new Error("Hls not found on window"));
+    };
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+}
+
 export default function HeroVideoBackground() {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  
+
   const [isLoaded, setIsLoaded] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const { continuousEffects } = useMotionCapabilities();
@@ -35,27 +67,38 @@ export default function HeroVideoBackground() {
     const video = videoRef.current;
     if (!video) return;
 
-    let hls: Hls | null = null;
+    let hls: HlsType | null = null;
+    let destroyed = false;
 
     const handleCanPlay = () => setIsLoaded(true);
     video.addEventListener("canplay", handleCanPlay);
-    // Fallback for Safari which sometimes triggers loadeddata instead
     video.addEventListener("loadeddata", handleCanPlay);
 
-    if (Hls.isSupported()) {
-      hls = new Hls({
-        capLevelToPlayerSize: true, // Prevents loading 4K chunks on small mobile screens
-        maxBufferLength: 30,        // Caps memory usage to 30s of video
-        debug: false,
-      });
-      hls.loadSource(VIDEO_SRC);
-      hls.attachMedia(video);
-    } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
-      // Native Safari fallback
+    if (video.canPlayType("application/vnd.apple.mpegurl")) {
+      // Native HLS support (Safari / iOS)
       video.src = VIDEO_SRC;
+    } else {
+      // Load lightweight HLS dynamically without bundling into Webpack chunks
+      loadHlsScript()
+        .then((HlsClass) => {
+          if (destroyed || !video) return;
+          if (HlsClass.isSupported()) {
+            hls = new HlsClass({
+              capLevelToPlayerSize: true,
+              maxBufferLength: 30,
+              debug: false,
+            });
+            hls.loadSource(VIDEO_SRC);
+            hls.attachMedia(video);
+          }
+        })
+        .catch(() => {
+          // Graceful fallback
+        });
     }
 
     return () => {
+      destroyed = true;
       video.removeEventListener("canplay", handleCanPlay);
       video.removeEventListener("loadeddata", handleCanPlay);
       if (hls) {
