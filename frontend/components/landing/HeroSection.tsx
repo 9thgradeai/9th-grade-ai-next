@@ -2,8 +2,7 @@
 
 import { useEffect, useRef, type PointerEvent } from "react";
 import { ArrowRight, ChevronDown } from "lucide-react";
-import dynamic from "next/dynamic";
-const HeroVideoBackground = dynamic(() => import("./hero/HeroVideoBackground"), { ssr: false, loading: () => null });
+import HeroVideoBackground from "./hero/HeroVideoBackground";
 import Button from "@/components/ui/Button";
 import { trackCtaClick, trackHeroView } from "@/lib/analytics";
 import { useMotionCapabilities } from "@/lib/motion/device";

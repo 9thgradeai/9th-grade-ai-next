@@ -7,13 +7,14 @@ describe("HeroVideoBackground", () => {
     vi.clearAllMocks();
   });
 
-  it("renders the video element and fallback poster", () => {
+  it("renders the video element with immediate playback attributes", () => {
     const { container } = render(<HeroVideoBackground />);
     const video = container.querySelector("video");
     expect(video).toBeDefined();
     expect(video?.getAttribute("playsinline")).not.toBeNull();
-    expect(video?.getAttribute("poster")).toBe("/hero-poster.webp");
     expect(video?.muted).toBe(true);
     expect(video?.loop).toBe(true);
+    expect(video?.autoplay).toBe(true);
   });
 });
+

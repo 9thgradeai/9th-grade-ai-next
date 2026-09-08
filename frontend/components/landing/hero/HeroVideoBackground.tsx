@@ -1,68 +1,39 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type HlsType from "hls.js";
-import { useMotionCapabilities } from "@/lib/motion/device";
+import Hls from "hls.js";
 
 const VIDEO_SRC = "https://stream.mux.com/T6oQJQ02cQ6N01TR6iHwZkKFkbepS34dkkIc9iukgy400g.m3u8";
-const POSTER_SRC = "/hero-poster.webp";
 
-function safePlay(video: HTMLVideoElement) {
+function safePlay(video: HTMLVideoElement | null) {
+  if (!video) return;
+  video.muted = true;
+  video.defaultMuted = true;
   try {
     const playPromise = video.play();
-    if (playPromise && typeof playPromise.catch === "function") {
-      playPromise.catch(() => {});
+    if (playPromise !== undefined) {
+      playPromise.catch(() => {
+        video.muted = true;
+        void video.play().catch(() => {});
+      });
     }
   } catch {
-    // Ignore autoplay restrictions or DOM exceptions
+    // Ignore DOM exceptions
   }
-}
-
-function loadHlsScript(): Promise<typeof HlsType> {
-  if (typeof window === "undefined") {
-    return Promise.reject(new Error("Window is undefined"));
-  }
-  const win = window as unknown as { Hls?: typeof HlsType };
-  if (win.Hls) {
-    return Promise.resolve(win.Hls);
-  }
-
-  return new Promise((resolve, reject) => {
-    const existing = document.querySelector<HTMLScriptElement>('script[src="/vendor/hls.light.min.js"]');
-    if (existing) {
-      existing.addEventListener("load", () => {
-        if (win.Hls) resolve(win.Hls);
-        else reject(new Error("Hls not found"));
-      });
-      existing.addEventListener("error", reject);
-      return;
-    }
-
-    const script = document.createElement("script");
-    script.src = "/vendor/hls.light.min.js";
-    script.async = true;
-    script.onload = () => {
-      if (win.Hls) resolve(win.Hls);
-      else reject(new Error("Hls not found on window"));
-    };
-    script.onerror = reject;
-    document.head.appendChild(script);
-  });
 }
 
 export default function HeroVideoBackground() {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-
-  const [isLoaded, setIsLoaded] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
-  const { continuousEffects } = useMotionCapabilities();
 
-  // 1. Intersection Observer for Off-screen Pausing
+  // 1. Intersection Observer for viewport visibility
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        setIsVisible(entries[0].isIntersecting);
+        if (entries[0]) {
+          setIsVisible(entries[0].isIntersecting);
+        }
       },
       { threshold: 0 }
     );
@@ -74,128 +45,149 @@ export default function HeroVideoBackground() {
     return () => observer.disconnect();
   }, []);
 
-  // 2. HLS Setup and Lifecycle Management
+  // 2. Video & HLS Setup
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
-    let hls: HlsType | null = null;
+    let hls: Hls | null = null;
     let destroyed = false;
 
-    const markLoadedAndPlay = () => {
-      setIsLoaded(true);
-      if (continuousEffects) {
+    // Ensure muted & playsInline attributes/properties
+    video.muted = true;
+    video.defaultMuted = true;
+    video.playsInline = true;
+    video.setAttribute("playsinline", "");
+    video.setAttribute("webkit-playsinline", "");
+    video.setAttribute("muted", "");
+
+    const onPlaybackReady = () => {
+      if (destroyed) return;
+      safePlay(video);
+    };
+
+    video.addEventListener("canplay", onPlaybackReady);
+    video.addEventListener("loadeddata", onPlaybackReady);
+    video.addEventListener("loadedmetadata", onPlaybackReady);
+    video.addEventListener("playing", onPlaybackReady);
+    video.addEventListener("timeupdate", onPlaybackReady);
+
+    // Interaction fallback for strict autoplay policy bypass
+    const unlockOnInteraction = () => {
+      if (video && video.paused) {
         safePlay(video);
       }
     };
-
-    video.addEventListener("canplay", markLoadedAndPlay);
-    video.addEventListener("loadeddata", markLoadedAndPlay);
-    video.addEventListener("playing", markLoadedAndPlay);
+    window.addEventListener("pointerdown", unlockOnInteraction, { once: true, passive: true });
+    window.addEventListener("touchstart", unlockOnInteraction, { once: true, passive: true });
+    window.addEventListener("keydown", unlockOnInteraction, { once: true, passive: true });
+    window.addEventListener("scroll", unlockOnInteraction, { once: true, passive: true });
+    window.addEventListener("mousemove", unlockOnInteraction, { once: true, passive: true });
 
     if (video.canPlayType("application/vnd.apple.mpegurl")) {
-      // Native HLS support (Safari / iOS)
+      // Native HLS for Safari & iOS
       video.src = VIDEO_SRC;
-      if (continuousEffects) {
+      video.load();
+      safePlay(video);
+    } else if (Hls.isSupported()) {
+      hls = new Hls({
+        maxBufferLength: 30,
+        maxMaxBufferLength: 60,
+        backBufferLength: 15,
+        debug: false,
+        enableWorker: true,
+        lowLatencyMode: false,
+        autoStartLoad: true,
+      });
+
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        if (destroyed) return;
+        safePlay(video);
+      });
+
+      hls.on(Hls.Events.FRAG_BUFFERED, () => {
+        if (destroyed) return;
+        safePlay(video);
+      });
+
+      hls.on(Hls.Events.ERROR, (_event, data) => {
+        if (data.fatal && hls) {
+          switch (data.type) {
+            case Hls.ErrorTypes.NETWORK_ERROR:
+              hls.startLoad();
+              break;
+            case Hls.ErrorTypes.MEDIA_ERROR:
+              hls.recoverMediaError();
+              break;
+            default:
+              break;
+          }
+        }
+      });
+
+      hls.loadSource(VIDEO_SRC);
+      hls.attachMedia(video);
+    } else {
+      video.src = VIDEO_SRC;
+      safePlay(video);
+    }
+
+    // Interval check to ensure video plays continuously
+    const playCheckInterval = setInterval(() => {
+      if (!destroyed && video && video.paused) {
         safePlay(video);
       }
-    } else {
-      // Load lightweight HLS dynamically without bundling into Webpack chunks
-      loadHlsScript()
-        .then((HlsClass) => {
-          if (destroyed || !video) return;
-          if (HlsClass.isSupported()) {
-            hls = new HlsClass({
-              capLevelToPlayerSize: true,
-              maxBufferLength: 30,
-              debug: false,
-            });
-
-            hls.attachMedia(video);
-            hls.on(HlsClass.Events.MEDIA_ATTACHED, () => {
-              if (destroyed || !hls) return;
-              hls.loadSource(VIDEO_SRC);
-            });
-
-            hls.on(HlsClass.Events.MANIFEST_PARSED, () => {
-              if (destroyed) return;
-              setIsLoaded(true);
-              if (continuousEffects) {
-                safePlay(video);
-              }
-            });
-
-            hls.on(HlsClass.Events.ERROR, (_event, data) => {
-              if (data.fatal && hls) {
-                switch (data.type) {
-                  case HlsClass.ErrorTypes.NETWORK_ERROR:
-                    hls.startLoad();
-                    break;
-                  case HlsClass.ErrorTypes.MEDIA_ERROR:
-                    hls.recoverMediaError();
-                    break;
-                  default:
-                    hls.destroy();
-                    break;
-                }
-              }
-            });
-          }
-        })
-        .catch(() => {
-          // Fallback to static poster
-        });
-    }
+    }, 1000);
 
     return () => {
       destroyed = true;
-      video.removeEventListener("canplay", markLoadedAndPlay);
-      video.removeEventListener("loadeddata", markLoadedAndPlay);
-      video.removeEventListener("playing", markLoadedAndPlay);
+      clearInterval(playCheckInterval);
+      video.removeEventListener("canplay", onPlaybackReady);
+      video.removeEventListener("loadeddata", onPlaybackReady);
+      video.removeEventListener("loadedmetadata", onPlaybackReady);
+      video.removeEventListener("playing", onPlaybackReady);
+      video.removeEventListener("timeupdate", onPlaybackReady);
+      window.removeEventListener("pointerdown", unlockOnInteraction);
+      window.removeEventListener("touchstart", unlockOnInteraction);
+      window.removeEventListener("keydown", unlockOnInteraction);
+      window.removeEventListener("scroll", unlockOnInteraction);
+      window.removeEventListener("mousemove", unlockOnInteraction);
       if (hls) {
         hls.destroy();
       }
     };
-  }, [continuousEffects]);
+  }, []);
 
-  // 3. Playback control: Reacts to visibility and continuousEffects
+  // 3. Viewport visibility pause/resume
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
-    if (isVisible && continuousEffects) {
+    if (isVisible) {
       safePlay(video);
     } else {
       video.pause();
     }
-  }, [isVisible, continuousEffects]);
+  }, [isVisible]);
 
   return (
     <div
       ref={containerRef}
       className="pointer-events-none absolute inset-0 z-0 overflow-hidden bg-black"
     >
-      {/* Immediate backdrop poster: Prevents black screen while video streams / initial load */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ease-out"
-        style={{
-          backgroundImage: `url(${POSTER_SRC})`,
-          opacity: isLoaded ? 0.4 : 1,
-        }}
-      />
-
-      <video
+      <video loading="eager" disablePictureInPicture crossOrigin="anonymous"
         ref={videoRef}
         autoPlay
         muted
         loop
         playsInline
         preload="auto"
-        poster={POSTER_SRC}
-        className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-[1500ms] ease-out ${
-          isLoaded ? "opacity-100" : "opacity-0"
-        }`}
+        style={{
+          transform: "translateZ(0)",
+          backfaceVisibility: "hidden",
+          WebkitBackfaceVisibility: "hidden",
+        }}
+        className="absolute inset-0 h-full w-full object-cover will-change-transform"
         aria-hidden="true"
       />
 
