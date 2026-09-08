@@ -13,9 +13,8 @@ export default function Card({
   as: Tag = "div",
   interactive = false,
 }: CardProps) {
-  const TagName = Tag as any;
   return (
-    <TagName
+    <Tag
       className={`rounded-[var(--radius-md)] border border-[var(--border-subtle)] bg-[var(--surface-raised)] shadow-sm ${
         interactive
           ? "transition-[transform,box-shadow,border-color] duration-180 hover:-translate-y-0.5 hover:shadow-md hover:border-[var(--border-default)]"
@@ -23,6 +22,6 @@ export default function Card({
       } ${className}`}
     >
       {children}
-    </TagName>
+    </Tag>
   );
 }
