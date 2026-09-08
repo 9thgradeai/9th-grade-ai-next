@@ -188,10 +188,13 @@ export default function HeroVideoBackground() {
             backfaceVisibility: "hidden",
             WebkitBackfaceVisibility: "hidden",
           }}
-          className="absolute inset-0 h-full w-full object-cover will-change-transform"
+          className="absolute inset-0 h-full w-full object-cover will-change-transform opacity-0 transition-opacity duration-1000 ease-out"
           aria-hidden="true"
+          onLoadedData={() => {
+            const video = videoRef.current;
+            if (video) video.style.opacity = '1';
+          }}
         />
-
       {/* Cinematic vignette & text contrast overlay */}
       <div
         aria-hidden="true"
