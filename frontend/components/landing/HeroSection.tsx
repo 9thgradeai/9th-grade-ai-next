@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, type PointerEvent } from "react";
+import { useEffect, useRef } from "react";
 import { ArrowRight, ChevronDown } from "lucide-react";
 import HeroVideoBackground from "./hero/HeroVideoBackground";
 import Button from "@/components/ui/Button";
@@ -146,7 +146,7 @@ export default function HeroSection({ subjectCount }: { subjectCount: number }) 
         style={{ textShadow: "0 1px 22px rgba(0,0,0,0.55)" }}
       >
         <div className="max-w-2xl">
-          <p className="hero-eyebrow section-eyebrow mb-6">
+          <p className="hero-eyebrow section-eyebrow mb-6 text-[#A5B4FC]">
             <svg
               viewBox="0 0 24 24"
               fill="none"
@@ -246,7 +246,7 @@ export default function HeroSection({ subjectCount }: { subjectCount: number }) 
             </span>
           </h1>
 
-          <p className="hero-sub mb-9 max-w-xl text-lg leading-relaxed text-[var(--text-muted)] md:text-xl">
+          <p className="hero-sub mb-9 max-w-xl text-lg leading-relaxed text-white/75 md:text-xl">
             {t("hero.subtitle")}
           </p>
 
@@ -268,7 +268,7 @@ export default function HeroSection({ subjectCount }: { subjectCount: number }) 
             <Button
               href="#signal"
               size="lg"
-              variant="secondary"
+              variant="hero"
               className="w-full sm:w-auto"
               onClick={() => trackCtaClick("secondary")}
             >
@@ -286,9 +286,9 @@ export default function HeroSection({ subjectCount }: { subjectCount: number }) 
                 }`}
               >
                 <dt className="sr-only">{stat.label}</dt>
-                <dd className="font-display text-2xl font-semibold text-emerald-400 tabular-nums sm:text-3xl">
+                <dd className="font-display text-2xl font-semibold text-emerald-300 tabular-nums sm:text-3xl">
                   {stat.value}
-                  <span className="ml-2 align-middle text-sm font-normal text-zinc-500">
+                  <span className="ml-2 align-middle text-sm font-normal text-white/60">
                     {stat.label}
                   </span>
                 </dd>
@@ -298,7 +298,7 @@ export default function HeroSection({ subjectCount }: { subjectCount: number }) 
         </div>
       </div>
 
-      <div className="hero-scroll absolute bottom-7 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-1.5 text-zinc-500">
+      <div className="hero-scroll absolute bottom-7 left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-1.5 text-white/45 sm:flex">
         <span className="font-mono text-[0.65rem] uppercase tracking-[0.22em]">{t("common.scroll")}</span>
         <ChevronDown className="h-4 w-4" />
       </div>

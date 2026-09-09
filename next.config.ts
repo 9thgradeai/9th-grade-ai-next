@@ -14,7 +14,7 @@ const cspDirectives = [
   "img-src 'self' data: blob: https://*.mux.com https://*.fastly.mux.com https://image.mux.com",
   "font-src 'self' data: https://frontend-cdn.perplexity.ai https://fonts.gstatic.com",
   `connect-src 'self' blob: data: https://*.sentry.io https://api.groq.com https://api.anthropic.com https://api.resend.com https://api.sendgrid.com https://api.pwnedpasswords.com https://*.mux.com https://*.fastly.mux.com https://*.litix.io https://*.fastly.net https://stream.mux.com`,
-  "media-src 'self' blob: data: https://*.mux.com https://*.fastly.mux.com https://*.fastly.net https://stream.mux.com",
+  "media-src 'self' blob: data: https://*.mux.com https://*.fastly.mux.com https://*.fastly.net https://stream.mux.com https://d8j0ntlcm91z4.cloudfront.net",
   "worker-src 'self' blob:",
   "object-src 'none'",
   "base-uri 'self'",

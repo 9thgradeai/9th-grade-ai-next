@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 
-type Variant = "primary" | "secondary" | "ghost";
+type Variant = "primary" | "secondary" | "ghost" | "hero";
 type Size = "sm" | "md" | "lg";
 
 const BASE =
@@ -13,6 +13,9 @@ const VARIANTS: Record<Variant, string> = {
   secondary:
     "text-[var(--text-primary)] border border-[var(--border-default)] bg-[var(--surface-raised)] hover:border-[var(--accent)] hover:bg-[var(--surface-hover)]",
   ghost: "text-[var(--text-secondary)] hover:text-[var(--accent)] hover:bg-[var(--accent-muted)]",
+  // Cinematic glass CTA for always-dark hero media — theme-independent
+  // by design (styling lives in .hero-btn-secondary / globals.css).
+  hero: "hero-btn-secondary text-white",
 };
 
 const SIZES: Record<Size, string> = {
