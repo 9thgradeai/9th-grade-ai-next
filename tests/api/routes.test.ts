@@ -147,8 +147,7 @@ describe("POST /api/auth/login", () => {
 describe("POST /api/auth/register", () => {
   it("creates a user and returns 201", async () => {
     vi.mocked(prisma.user.findUnique)
-      .mockResolvedValueOnce(null) // route uniqueness pre-check
-      .mockResolvedValueOnce(null) // createUser internal re-check
+      .mockResolvedValueOnce(null) // route pre-check
       .mockResolvedValueOnce(mockUser()); // re-fetch after create
     vi.mocked(prisma.user.create).mockResolvedValue(mockUser());
     vi.mocked(prisma.userProgress.create as ReturnType<typeof vi.fn>).mockResolvedValue({});

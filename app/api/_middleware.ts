@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { AppError } from "~backend/errors";
+import { randomUUID } from "crypto";
 
 export function getRequestId(req: Request): string {
-  return req.headers.get("x-request-id") ?? crypto.randomUUID();
+  return req.headers.get("x-request-id") ?? randomUUID();
 }
 
 /**
@@ -37,7 +38,7 @@ export function startTiming() {
   return () => Date.now() - start;
 }
 
-export function applyCorsHeaders(res: Response, origin = "*") {
+export function applyCorsHeaders(res: Response, origin: string = getAllowedOrigin()) {
   res.headers.set("Access-Control-Allow-Origin", origin);
   res.headers.set("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS");
   res.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
@@ -48,6 +49,16 @@ export function applySecurityHeaders(res: Response) {
   res.headers.set("X-Content-Type-Options", "nosniff");
   res.headers.set("X-Frame-Options", "DENY");
   res.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  // Content Security Policy
+//   res.headers.set(
+//     "Content-Security-Policy",
+//     "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https:; frame-ancestors 'none';"
+//   );
+  // Additional security headers
+  res.headers.set("X-DNS-Prefetch-Control", "off");
+  res.headers.set("X-Download-Options", "noopen");
+  res.headers.set("X-Permitted-Cross-Domain-Policies", "none");
+  res.headers.set("X-YSS-Protection", "1; mode=block");
 }
 
 export function applyCacheHeaders(
@@ -75,4 +86,23 @@ export function jsonResponse<T>(
   init?: ResponseInit,
 ): NextResponse {
   return NextResponse.json(data, init);
+}
+
+// Helper to get allowed origin based on environment
+function getAllowedOrigin(): string {
+  const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",") || [];
+  const requestOrigin = typeof window !== "undefined" ? window.location.origin : "";
+  
+  // In development, allow localhost
+  if (process.env.NODE_ENV === "development") {
+    return requestOrigin || "*";
+  }
+  
+  // In production, check against allowed origins
+  if (allowedOrigins.length > 0 && requestOrigin && allowedOrigins.includes(requestOrigin)) {
+    return requestOrigin;
+  }
+  
+  // Fallback to first allowed origin or empty string (which will be replaced by frontend)
+  return allowedOrigins[0] || "";
 }

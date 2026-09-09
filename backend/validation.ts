@@ -17,6 +17,7 @@ import zxcvbn from "zxcvbn";
 export interface LoginInput {
   email: string;
   password: string;
+  remember?: boolean;
 }
 
 /** Password strength result for client feedback. */
@@ -98,12 +99,6 @@ export interface RegisterInput {
   password: string;
 }
 
-export interface RegisterInput {
-  name: string;
-  email: string;
-  password: string;
-}
-
 export interface UpdateProfileInput {
   name?: string;
 }
@@ -112,6 +107,72 @@ export interface ChangePasswordInput {
   currentPassword: string;
   newPassword: string;
   confirmPassword: string;
+}
+
+export interface OnboardingInput {
+  examTarget?: string;
+  examDate?: Date;
+  prepLevel?: "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
+  studyHoursPerDay?: number;
+  goal?: string;
+}
+
+export async function validateOnboardingInput(body: unknown): Promise<OnboardingInput> {
+  assertNoUnknownFields(body, ["examTarget", "examDate", "prepLevel", "studyHoursPerDay", "goal"]);
+  if (!isRecord(body)) {
+    throw new ValidationError("Request body must be an object.");
+  }
+
+  const input: OnboardingInput = {};
+
+  if (body.examTarget !== undefined) {
+    if (!isString(body.examTarget) || body.examTarget.trim().length === 0 || body.examTarget.length > 120) {
+      throw new ValidationError("Exam target must be between 1 and 120 characters.");
+    }
+    input.examTarget = body.examTarget.trim();
+  }
+
+  if (body.examDate !== undefined) {
+    if (!isString(body.examDate)) {
+      throw new ValidationError("Exam date must be a valid date string.");
+    }
+    const date = new Date(body.examDate);
+    if (Number.isNaN(date.getTime())) {
+      throw new ValidationError("Exam date is not a valid date.");
+    }
+    input.examDate = date;
+  }
+
+  if (body.prepLevel !== undefined) {
+    if (body.prepLevel !== null && body.prepLevel !== undefined) {
+      if (!isString(body.prepLevel)) {
+        throw new ValidationError("Prep level must be a string.");
+      }
+      if (!["BEGINNER", "INTERMEDIATE", "ADVANCED"].includes(body.prepLevel)) {
+        throw new ValidationError("Prep level must be BEGINNER, INTERMEDIATE, or ADVANCED.");
+      }
+      input.prepLevel = body.prepLevel as "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
+    } else if (body.prepLevel === null) {
+      input.prepLevel = undefined;
+    }
+  }
+
+  if (body.studyHoursPerDay !== undefined) {
+    const n = Number(body.studyHoursPerDay);
+    if (!Number.isInteger(n) || n < 0 || n > 24) {
+      throw new ValidationError("Study hours per day must be a whole number between 0 and 24.");
+    }
+    input.studyHoursPerDay = n;
+  }
+
+  if (body.goal !== undefined) {
+    if (!isString(body.goal) || body.goal.trim().length === 0 || body.goal.length > 280) {
+      throw new ValidationError("Goal must be between 1 and 280 characters.");
+    }
+    input.goal = body.goal.trim();
+  }
+
+  return input;
 }
 
 export interface QuestionSearchFilters {
@@ -235,6 +296,35 @@ export function requirePositiveInteger(value: unknown, fieldName: string): numbe
  */
 export function validatePositiveInteger(value: unknown, fieldName: string): number {
   return requirePositiveInteger(value, fieldName);
+}
+
+export interface ResetPasswordInput {
+  token: string;
+  password: string;
+}
+
+export async function validateResetPasswordInput(body: unknown): Promise<ResetPasswordInput> {
+  assertNoUnknownFields(body, ["token", "password"]);
+  if (!isRecord(body)) {
+    throw new ValidationError("Request body must be an object.");
+  }
+
+  const token = body.token;
+  const password = body.password;
+
+  if (!isString(token) || token.length < 32) {
+    throw new ValidationError("Invalid reset token.");
+  }
+
+  if (!isString(password) || password.length < 8) {
+    throw new ValidationError("Password must be at least 8 characters.");
+  }
+
+  assertPasswordLength(password);
+
+  await validatePasswordStrength(password);
+
+  return { token, password };
 }
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

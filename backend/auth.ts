@@ -5,6 +5,7 @@
    -------------------------------------------------------------- */
 
 import "server-only";
+import * as crypto from "crypto";
 
 import { SignJWT, jwtVerify } from "jose";
 import { NextResponse } from "next/server";
@@ -16,16 +17,23 @@ let JOSE_SECRET: Uint8Array | null = null;
 
 function getJoseSecret(): Uint8Array {
   if (JOSE_SECRET) return JOSE_SECRET;
-  const secret = process.env.AUTH_SECRET;
+  let secret = process.env.AUTH_SECRET;
   if (!secret) {
-    throw new Error(
-      "AUTH_SECRET is not set. Create a .env.local with AUTH_SECRET=$(openssl rand -base64 32).",
-    );
+    if (process.env.NODE_ENV !== "production") {
+      // In development, generate a temporary secret to avoid crashes.
+      secret = crypto.randomBytes(32).toString("base64");
+      console.warn("[auth] AUTH_SECRET not set – using temporary dev secret.");
+    } else {
+      throw new Error(
+        "AUTH_SECRET is not set. Create a .env.local with AUTH_SECRET=$(openssl rand -base64 32).",
+      );
+    }
   }
   const encoder = new TextEncoder();
   JOSE_SECRET = encoder.encode(secret);
   return JOSE_SECRET;
 }
+
 
 // Cookie name used across all API routes
 const SESSION_COOKIE = "auth_token";

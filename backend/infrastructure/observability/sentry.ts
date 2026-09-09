@@ -8,4 +8,6 @@ Sentry.init({
   debug: process.env.NODE_ENV !== "production",
   // Only send events in production
   enabled: process.env.NODE_ENV === "production" || process.env.VERCEL_ENV === "production",
+  // Prevent OpenTelemetry version conflict
+  skipOpenTelemetrySetup: true,
 });
