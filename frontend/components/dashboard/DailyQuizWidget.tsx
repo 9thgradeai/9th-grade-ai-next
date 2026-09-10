@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Check, Trophy, Zap, ArrowRight, Inbox } from "lucide-react";
 import { api } from "@/lib/services/api";
@@ -19,6 +19,7 @@ export default function DailyQuizWidget() {
   const [submitting, setSubmitting] = useState(false);
   const [submitFailed, setSubmitFailed] = useState(false);
   const [reviewMode, setReviewMode] = useState(false);
+  const finishingRef = useRef(false);
 
   // Shared dialog behavior: Escape, focus trap, initial focus, restore focus
   // to the trigger card on close.
@@ -66,6 +67,12 @@ export default function DailyQuizWidget() {
 
   const finishQuiz = async () => {
     if (!quiz) return;
+    // Synchronous in-flight guard — React's `submitting` state is async, so a
+    // rapid mobile double-tap could fire two non-idempotent submits before the
+    // re-render disables the button (duplicate attempts/points). The ref closes
+    // that window.
+    if (finishingRef.current) return;
+    finishingRef.current = true;
     setSubmitting(true);
     try {
       const res = await api.submitDailyQuiz(
@@ -92,6 +99,7 @@ export default function DailyQuizWidget() {
       });
       setSubmitFailed(true);
     } finally {
+      finishingRef.current = false;
       setSubmitting(false);
       setShowResult(true);
     }
@@ -324,7 +332,7 @@ export default function DailyQuizWidget() {
                   <button
                     onClick={() => void finishQuiz()}
                     disabled={answeredCount < totalQuestions || submitting}
-                    className="px-4 py-2 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors disabled:opacity-40"
+                    className="px-4 py-2 min-h-11 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors disabled:opacity-40"
                   >
                     {submitting ? "জমা হচ্ছে..." : "কুইজ জমা দিন"}
                   </button>
@@ -373,12 +381,23 @@ export default function DailyQuizWidget() {
                 })}
               </div>
 
-              <button
-                onClick={() => setIsOpen(false)}
-                className="px-6 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono rounded-lg hover:bg-[var(--accent-hover)] transition-colors"
-              >
-                বন্ধ করুন
-              </button>
+              <div className="flex gap-3 justify-center">
+                {submitFailed && (
+                  <button
+                    onClick={() => void finishQuiz()}
+                    disabled={submitting}
+                    className="px-6 py-2.5 min-h-11 bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-secondary)] font-mono text-sm rounded-lg hover:bg-[var(--surface-overlay)] transition-colors disabled:opacity-40"
+                  >
+                    {submitting ? "জমা হচ্ছে..." : "আবার চেষ্টা করুন"}
+                  </button>
+                )}
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="px-6 py-2.5 min-h-11 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono rounded-lg hover:bg-[var(--accent-hover)] transition-colors"
+                >
+                  বন্ধ করুন
+                </button>
+              </div>
             </motion.div>
           )}
         </div>

@@ -77,6 +77,10 @@ export default function QuestionDrill({
   const [timerKey, setTimerKey] = useState(0);
 
   const reportedRef = useRef(false);
+  // Synchronous guard shared by the manual and timer-auto submit paths — both
+  // hit the non-idempotent /api/practice/submit, so a timer expiry racing a
+  // tap (or a mobile double-tap) must never fire the request twice.
+  const submitInFlightRef = useRef(false);
 
   // When a question is mounted start the wall-clock for the per-answer
   // duration signal (Phase 4): reset on next/retry/index change so the
@@ -125,7 +129,8 @@ export default function QuestionDrill({
   }, [index, done]);
 
   const handleAutoSubmit = useCallback(async () => {
-    if (revealed || submitting) return;
+    if (revealed || submitting || submitInFlightRef.current) return;
+    submitInFlightRef.current = true;
     setSubmitting(true);
     let fb: { masteryStatus?: string | null; justMastered?: boolean } = {};
     try {
@@ -137,6 +142,7 @@ export default function QuestionDrill({
     } catch {
       /* Recording failure shouldn't block the user from reviewing the answer. */
     } finally {
+      submitInFlightRef.current = false;
       setSubmitting(false);
       setRevealed(true);
       setLastFeedback(fb);
@@ -148,7 +154,8 @@ export default function QuestionDrill({
   }, [revealed, submitting, current.id, current.correctAnswer, selected, startedAtRef]);
 
   const handleSubmit = async () => {
-    if (selected === null || revealed || submitting) return;
+    if (selected === null || revealed || submitting || submitInFlightRef.current) return;
+    submitInFlightRef.current = true;
     setSubmitting(true);
     let fb: { masteryStatus?: string | null; justMastered?: boolean } = {};
     try {
@@ -160,6 +167,7 @@ export default function QuestionDrill({
     } catch {
       /* Recording failure shouldn't block the user from reviewing the answer. */
     } finally {
+      submitInFlightRef.current = false;
       setSubmitting(false);
       setRevealed(true);
       setLastFeedback(fb);
@@ -202,14 +210,14 @@ export default function QuestionDrill({
         <div className="flex gap-3 justify-center">
           <button
             onClick={resetDrill}
-            className="px-4 py-2 bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] rounded-lg text-[var(--dashboard-text-secondary)] font-mono text-sm hover:text-[var(--text-primary)] transition-colors flex items-center gap-2"
+            className="px-4 py-2 min-h-11 bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] rounded-lg text-[var(--dashboard-text-secondary)] font-mono text-sm hover:text-[var(--text-primary)] transition-colors flex items-center gap-2"
           >
             <RotateCcw className="w-4 h-4" /> আবার
           </button>
           {onExit && (
             <button
               onClick={onExit}
-              className="px-4 py-2 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors"
+              className="px-4 py-2 min-h-11 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors"
             >
               শেষ করুন
             </button>
@@ -341,14 +349,14 @@ export default function QuestionDrill({
           <button
             onClick={() => void handleSubmit()}
             disabled={selected === null || submitting}
-            className="px-5 py-2 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors disabled:opacity-40"
+            className="px-5 py-2 min-h-11 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors disabled:opacity-40"
           >
             {submitting ? "সংরক্ষণ হচ্ছে…" : "জমা দিন"}
           </button>
         ) : (
           <button
             onClick={next}
-            className="px-5 py-2 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2"
+            className="px-5 py-2 min-h-11 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2"
           >
             {isLast ? "শেষ" : "পরবর্তী"} <ArrowRight className="w-4 h-4" />
           </button>

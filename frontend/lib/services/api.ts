@@ -348,6 +348,11 @@ export const api = {
     return cachedGet<{ stats: Server.DashboardStatsDTO }>(`/api/dashboard-stats${suffix}`).then((d) => d.stats);
   },
 
+  preparationIntelligence: (): Promise<Server.PreparationIntelligenceDTO> =>
+    request<{ intelligence: Server.PreparationIntelligenceDTO }>("/api/preparation-intelligence").then(
+      (d) => d.intelligence,
+    ),
+
   examSchedule: (): Promise<Server.ExamScheduleDTO[]> =>
     cachedGet<{ exams: Server.ExamScheduleDTO[] }>("/api/exam-schedule").then((d) => d.exams),
 

@@ -1,11 +1,26 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Activity, TrendingUp, BarChart2, Layers } from "lucide-react";
+import { useMemo, useRef, useState } from "react";
+import { Activity, TrendingUp, BarChart2, Timer } from "lucide-react";
 
-type ActivityPoint = { date: string; answered: number; correct: number };
-type MetricMode = "solved" | "accuracy";
+type ActivityPoint = { date: string; answered: number; correct: number; durationSec?: number };
+export type PerfRange = "7D" | "30D" | "90D" | "ALL";
+type MetricMode = "solved" | "accuracy" | "time";
 
+export const PERF_RANGES: PerfRange[] = ["7D", "30D", "90D", "ALL"];
+
+function fmtTime(sec: number): string {
+  const min = Math.round(sec / 60);
+  if (min < 60) return `${min}m`;
+  const h = Math.floor(min / 60);
+  const m = min % 60;
+  return m > 0 ? `${h}h ${m}m` : `${h}h`;
+}
+
+/**
+ * Lightweight, dependency-free performance trend. Ranges pick a contiguous
+ * slice of the (server-provided) activity window; ALL uses the full window.
+ */
 export default function PerformanceCard({
   activity,
   results,
@@ -15,24 +30,30 @@ export default function PerformanceCard({
 }: {
   activity: ActivityPoint[];
   results: { score: number }[];
-  range: "7D" | "30D" | "ALL";
-  onRangeChange: (r: "7D" | "30D" | "ALL") => void;
+  range: PerfRange;
+  onRangeChange: (r: PerfRange) => void;
   loading?: boolean;
 }) {
   const [metric, setMetric] = useState<MetricMode>("solved");
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+  const dotRefs = useRef<(SVGGElement | null)[]>([]);
 
-  const points = activity;
+  const points = useMemo(() => {
+    const count = range === "7D" ? 7 : range === "30D" ? 30 : range === "90D" ? 90 : activity.length;
+    return activity.slice(-count);
+  }, [activity, range]);
+
   const totalSolved = useMemo(() => points.reduce((s, p) => s + p.answered, 0), [points]);
+  const totalTime = useMemo(() => points.reduce((s, p) => s + (p.durationSec ?? 0), 0), [points]);
   const overallAccuracy = useMemo(() => {
     const tot = points.reduce((s, p) => s + p.answered, 0);
     const cor = points.reduce((s, p) => s + p.correct, 0);
     return tot ? Math.round((cor / tot) * 100) : 0;
   }, [points]);
 
-  // Max scale calculation depending on active metric
   const maxVal = useMemo(() => {
     if (metric === "accuracy") return 100;
+    if (metric === "time") return Math.max(1, ...points.map((p) => p.durationSec ?? 0));
     return Math.max(1, ...points.map((p) => p.answered));
   }, [points, metric]);
 
@@ -41,13 +62,19 @@ export default function PerformanceCard({
   const pad = 8;
   const step = points.length > 1 ? (W - pad * 2) / (points.length - 1) : 0;
 
-  // Build SVG path points
   const coords = useMemo(() => {
     return points.map((p, i) => {
-      const val = metric === "accuracy" ? (p.answered > 0 ? Math.round((p.correct / p.answered) * 100) : 0) : p.answered;
+      const val =
+        metric === "accuracy"
+          ? p.answered > 0
+            ? Math.round((p.correct / p.answered) * 100)
+            : 0
+          : metric === "time"
+            ? (p.durationSec ?? 0)
+            : p.answered;
       const x = pad + i * step;
       const y = H - pad - (val / maxVal) * (H - pad * 2);
-      return { x, y, val, date: p.date, answered: p.answered, correct: p.correct };
+      return { x, y, val, date: p.date, answered: p.answered, correct: p.correct, durationSec: p.durationSec ?? 0 };
     });
   }, [points, metric, maxVal, step]);
 
@@ -64,9 +91,23 @@ export default function PerformanceCard({
 
   const hoveredPoint = hoveredIdx !== null ? coords[hoveredIdx] : null;
 
+  const tooltipText = (p: (typeof coords)[number]) => {
+    if (metric === "solved") return `${p.answered} ${p.answered === 1 ? "question" : "questions"}`;
+    if (metric === "time") return `${fmtTime(p.durationSec)}`;
+    return `${p.answered > 0 ? Math.round((p.correct / p.answered) * 100) : 0}% accuracy (${p.correct}/${p.answered})`;
+  };
+
+  const moveFocus = (dir: 1 | -1) => {
+    if (hoveredIdx === null) return setHoveredIdx(0);
+    const next = Math.max(0, Math.min(coords.length - 1, hoveredIdx + dir));
+    setHoveredIdx(next);
+    dotRefs.current[next]?.focus();
+  };
+
+  const metricLabel = metric === "time" ? "Study time" : metric === "accuracy" ? "Accuracy" : "Solved";
+
   return (
     <div className="command-card p-5 sm:p-6 flex flex-col justify-between h-full">
-      {/* Card Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <p className="command-eyebrow flex items-center gap-1.5">
@@ -76,35 +117,34 @@ export default function PerformanceCard({
             Preparation Overview
           </h3>
           <p className="text-xs mt-0.5" style={{ color: "var(--dashboard-text-muted)" }}>
-            {totalSolved} questions solved · {overallAccuracy}% accuracy {loading ? "· Refreshing…" : ""}
+            {totalSolved} questions · {overallAccuracy}% accuracy · {fmtTime(totalTime)} {loading ? "· Refreshing…" : ""}
           </p>
         </div>
 
-        {/* Controls: Metric Switch + Range Selector */}
-        <div className="flex items-center gap-2">
-          {/* Solved vs Accuracy Toggle */}
-          <div className="flex items-center rounded-lg border p-0.5" style={{ borderColor: "var(--dashboard-border-muted)", background: "var(--dashboard-surface-muted)" }}>
-            <button
-              onClick={() => setMetric("solved")}
-              className={`px-2 py-1 text-[10px] font-bold rounded-md transition-colors ${
-                metric === "solved" ? "bg-[var(--dashboard-primary)] text-white shadow-sm" : "text-[var(--dashboard-text-muted)]"
-              }`}
-            >
-              Solved
-            </button>
-            <button
-              onClick={() => setMetric("accuracy")}
-              className={`px-2 py-1 text-[10px] font-bold rounded-md transition-colors ${
-                metric === "accuracy" ? "bg-[var(--dashboard-primary)] text-white shadow-sm" : "text-[var(--dashboard-text-muted)]"
-              }`}
-            >
-              Accuracy %
-            </button>
+        <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center rounded-lg border p-0.5" style={{ borderColor: "var(--dashboard-border-muted)", background: "var(--dashboard-surface-muted)" }} role="group" aria-label="Chart metric">
+            {(
+              [
+                ["solved", "Solved"] as const,
+                ["accuracy", "Accuracy"] as const,
+                ["time", "Time"] as const,
+              ]
+            ).map(([val, label]) => (
+              <button
+                key={val}
+                onClick={() => setMetric(val)}
+                aria-pressed={metric === val}
+                className={`px-2 py-1 text-[10px] font-bold rounded-md transition-colors ${
+                  metric === val ? "bg-[var(--dashboard-primary)] text-white shadow-sm" : "text-[var(--dashboard-text-muted)]"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
           </div>
 
-          {/* Time Range Selector */}
-          <div className="flex items-center rounded-full border p-1 gap-0.5" style={{ borderColor: "var(--dashboard-border-muted)", background: "var(--dashboard-surface-muted)" }}>
-            {(["7D", "30D", "ALL"] as const).map((r) => (
+          <div className="flex items-center rounded-full border p-1 gap-0.5" style={{ borderColor: "var(--dashboard-border-muted)", background: "var(--dashboard-surface-muted)" }} role="group" aria-label="Time range">
+            {PERF_RANGES.map((r) => (
               <button
                 key={r}
                 onClick={() => onRangeChange(r)}
@@ -123,15 +163,13 @@ export default function PerformanceCard({
         </div>
       </div>
 
-      {/* SVG Chart Container */}
       <div className="relative mt-5 rounded-xl border p-4" style={{ borderColor: "var(--dashboard-border-muted)", background: "var(--dashboard-surface-muted)" }}>
-        {coords.length === 0 ? (
+        {coords.length === 0 || points.every((p) => p.answered === 0 && metric !== "time") ? (
           <p className="text-sm py-8 text-center" style={{ color: "var(--dashboard-text-muted)" }}>
-            No activity points in selected window — start practicing to see performance curves.
+            No activity points in the selected window — start practicing to see performance curves.
           </p>
         ) : (
           <>
-            {/* Hover Tooltip Overlay */}
             {hoveredPoint && (
               <div
                 className="absolute top-2 left-4 px-3 py-1.5 rounded-lg border text-xs font-mono shadow-md z-10 flex items-center gap-3 animate-in fade-in"
@@ -140,9 +178,7 @@ export default function PerformanceCard({
                 <span className="font-bold text-[var(--dashboard-primary)]">
                   {new Date(hoveredPoint.date).toLocaleDateString("en-GB", { day: "2-digit", month: "short" })}
                 </span>
-                <span>
-                  {metric === "solved" ? `${hoveredPoint.val} questions` : `${hoveredPoint.val}% accuracy (${hoveredPoint.correct}/${hoveredPoint.answered})`}
-                </span>
+                <span>{metricLabel}: {tooltipText(hoveredPoint)}</span>
               </div>
             )}
 
@@ -150,7 +186,7 @@ export default function PerformanceCard({
               viewBox={`0 0 ${W} ${H}`}
               className="w-full h-[100px] overflow-visible"
               role="img"
-              aria-label="Performance trend chart"
+              aria-label={`${metricLabel} trend over the last ${range}`}
               onMouseLeave={() => setHoveredIdx(null)}
             >
               <defs>
@@ -160,10 +196,8 @@ export default function PerformanceCard({
                 </linearGradient>
               </defs>
 
-              {/* Area Under Curve */}
               <path d={areaD} fill="url(#chartAreaGrad)" />
 
-              {/* Curve Stroke */}
               <path
                 d={pathD}
                 fill="none"
@@ -173,9 +207,28 @@ export default function PerformanceCard({
                 strokeLinejoin="round"
               />
 
-              {/* Interactive Data Dots */}
               {coords.map((c, i) => (
-                <g key={i} className="cursor-pointer" onMouseEnter={() => setHoveredIdx(i)}>
+                <g
+                  key={c.date}
+                  ref={(el) => {
+                    dotRefs.current[i] = el;
+                  }}
+                  className="cursor-pointer focus:outline-none"
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`${new Date(c.date).toLocaleDateString("en-GB", { day: "2-digit", month: "short" })}: ${tooltipText(c)}`}
+                  onMouseEnter={() => setHoveredIdx(i)}
+                  onFocus={() => setHoveredIdx(i)}
+                  onKeyDown={(e) => {
+                    if (e.key === "ArrowRight") {
+                      e.preventDefault();
+                      moveFocus(1);
+                    } else if (e.key === "ArrowLeft") {
+                      e.preventDefault();
+                      moveFocus(-1);
+                    }
+                  }}
+                >
                   <circle
                     cx={c.x}
                     cy={c.y}
@@ -183,7 +236,7 @@ export default function PerformanceCard({
                     fill={hoveredIdx === i ? "var(--dashboard-text-inverse)" : "var(--dashboard-primary)"}
                     stroke="var(--dashboard-primary)"
                     strokeWidth={hoveredIdx === i ? 3 : 1.5}
-                    className="transition-all duration-150"
+                    style={{ outline: hoveredIdx === i ? `2px solid var(--dashboard-focus-ring)` : undefined }}
                   />
                 </g>
               ))}
@@ -200,14 +253,13 @@ export default function PerformanceCard({
         )}
       </div>
 
-      {/* Summary KPI Badges */}
       <div className="mt-4 grid grid-cols-3 gap-2">
         <div className="rounded-xl border px-3 py-2 text-center" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}>
           <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--dashboard-text-muted)" }}>
-            Total Solved
+            {metric === "time" ? "Total Time" : "Total Solved"}
           </p>
           <p className="text-sm font-extrabold mt-0.5" style={{ color: "var(--dashboard-text-primary)" }}>
-            {totalSolved}
+            {metric === "time" ? fmtTime(totalTime) : totalSolved}
           </p>
         </div>
         <div className="rounded-xl border px-3 py-2 text-center" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}>
@@ -220,10 +272,15 @@ export default function PerformanceCard({
         </div>
         <div className="rounded-xl border px-3 py-2 text-center" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}>
           <p className="text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-1" style={{ color: "var(--dashboard-text-muted)" }}>
-            <Activity className="w-3 h-3 text-[var(--dashboard-info)]" /> Last Score
+            {metric === "time" ? <Timer className="w-3 h-3 text-[var(--dashboard-info)]" /> : <Activity className="w-3 h-3 text-[var(--dashboard-info)]" />}
+            {metric === "accuracy" ? "Best Day" : "Last Score"}
           </p>
           <p className="text-sm font-extrabold mt-0.5" style={{ color: "var(--dashboard-text-primary)" }}>
-            {results.length ? `${results[results.length - 1]?.score ?? 0}%` : "—"}
+            {metric === "accuracy"
+              ? `${coords.length ? Math.max(...coords.map((c) => (c.answered > 0 ? Math.round((c.correct / c.answered) * 100) : 0))) : 0}%`
+              : results.length
+                ? `${results[results.length - 1]?.score ?? 0}%`
+                : "—"}
           </p>
         </div>
       </div>

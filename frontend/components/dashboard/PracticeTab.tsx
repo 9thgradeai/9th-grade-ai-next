@@ -398,6 +398,18 @@ export default function PracticeTab() {
     try { await submitAnswers(); } catch { /* error surfaced via submitError */ }
   }, [submitAnswers]);
 
+  // Safe navigation: block route/tab close while a quick-practice submission is
+  // in flight so a mobile browser kill can't abandon the request mid-flight.
+  useEffect(() => {
+    if (!submitting) return;
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [submitting]);
+
   return (
     <div className="space-y-6">
       {/* Mode toggle */}
@@ -773,7 +785,7 @@ export default function PracticeTab() {
                           onClick={(e) => { e.preventDefault(); handleSubmitRequest(); }}
                           disabled={submitting}
                           aria-busy={submitting}
-                          className="px-5 py-2 font-mono text-sm rounded-lg transition-colors flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed relative z-10 pointer-events-auto"
+                          className="px-5 py-2 min-h-11 font-mono text-sm rounded-lg transition-colors flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed relative z-10 pointer-events-auto"
                           style={{ background: "var(--dashboard-primary)", color: "var(--dashboard-text-inverse)" }}
                         >
                           {submitting ? "জমা হচ্ছে..." : "ফলাফল জমা দিন"}
@@ -799,7 +811,7 @@ export default function PracticeTab() {
                 </p>
                 <div className="flex gap-3">
                   <button type="button" onClick={() => setShowUnansweredConfirm(false)} className="flex-1 py-2.5 border rounded-xl text-sm" style={{ background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-strong)", color: "var(--dashboard-text-secondary)" }}>ফিরে যান</button>
-                  <button type="button" onClick={(e) => { e.preventDefault(); finalizeSubmit(); }} disabled={submitting} aria-busy={submitting} className="flex-1 py-2.5 rounded-xl text-sm disabled:opacity-40" style={{ background: "var(--dashboard-primary)", color: "var(--dashboard-text-inverse)" }}>জমা দিন</button>
+                  <button type="button" onClick={(e) => { e.preventDefault(); finalizeSubmit(); }} disabled={submitting} aria-busy={submitting} className="flex-1 py-2.5 min-h-11 rounded-xl text-sm disabled:opacity-40" style={{ background: "var(--dashboard-primary)", color: "var(--dashboard-text-inverse)" }}>জমা দিন</button>
                 </div>
               </div>
             </div>

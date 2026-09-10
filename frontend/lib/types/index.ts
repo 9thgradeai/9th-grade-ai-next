@@ -864,6 +864,123 @@ export namespace Server {
     studyHoursPerDay?: number;
     goal?: string;
   };
+
+  // ── Preparation Intelligence (unified dashboard analytics) ──
+
+  export type PrepIntelligenceOverall = {
+    totalAttempts: number;
+    totalCorrect: number;
+    totalWrong: number;
+    accuracy: number;
+    questionsAttempted: number;
+    points: number;
+    rank: number;
+    streak: number;
+    flashcardsReviewed: number;
+    aiQuestionsAsked: number;
+    examsAttempted: number;
+    /** Sum of QuestionAttempt + MockTestResult durationSec (whole history). */
+    studyTimeSec: number;
+  };
+
+  export type PrepIntelligencePeriodComparison = {
+    currentAccuracy: number;
+    previousAccuracy: number;
+    accuracyDelta: number;
+    currentAttempts: number;
+    previousAttempts: number;
+    attemptsDelta: number;
+    currentCorrect: number;
+    previousCorrect: number;
+    correctDelta: number;
+    currentStudyTimeSec: number;
+    previousStudyTimeSec: number;
+    studyTimeDeltaSec: number;
+  };
+
+  export type PrepIntelligenceTopicPerformance = {
+    subject: string;
+    topic: string;
+    attempted: number;
+    correct: number;
+    accuracy: number;
+  };
+
+  export type PrepIntelligenceSubjectPerformance = {
+    subject: string;
+    attempted: number;
+    correct: number;
+    accuracy: number;
+    topics: PrepIntelligenceTopicPerformance[];
+  };
+
+  export type PrepIntelligenceWeaknessItem = {
+    subject: string;
+    topic: string;
+    attempted: number;
+    correct: number;
+    accuracy: number;
+  };
+
+  export type PrepIntelligenceMasteryDistribution = {
+    status: MasteryStatus;
+    count: number;
+  };
+
+  export type PrepIntelligenceMistakes = {
+    totalMistakes: number;
+    unmastered: number;
+    struggling: number;
+    reviewing: number;
+    improving: number;
+    mastered: number;
+    bySubject: SubjectMistakeCountDTO[];
+  };
+
+  export type PrepIntelligenceUnfinishedActivity = {
+    type: "mock_test" | "daily_quiz";
+    id: string;
+    startedAt: string;
+  };
+
+  export type PrepIntelligenceRecommendation = {
+    /** Stable rule id — the client maps it to localized copy. */
+    id:
+      | "resume-exam"
+      | "practice-weak-subject"
+      | "practice-weak-topic"
+      | "review-mistakes"
+      | "review-flashcards"
+      | "daily-quiz"
+      | "daily-warmup"
+      | "exam-near"
+      | "keep-going";
+    /** Expected preparation value, not urgency. Decides tab priority ordering. */
+    priority: "high" | "medium" | "low";
+    target: "practice" | "mistakes" | "flashcards" | "study-planner" | "question-bank";
+    subject?: string;
+    topic?: string;
+    accuracy?: number;
+    count?: number;
+  };
+
+  export type PreparationIntelligenceDTO = {
+    overall: PrepIntelligenceOverall;
+    activity: { date: string; answered: number; correct: number; durationSec: number }[];
+    period: PrepIntelligencePeriodComparison;
+    subjectPerformance: PrepIntelligenceSubjectPerformance[];
+    weakTopics: WeakTopicDTO[];
+    flashcardsDue: number;
+    streak: number;
+    masteryDistribution: PrepIntelligenceMasteryDistribution[];
+    mistakes: PrepIntelligenceMistakes;
+    recentResults: MockTestResultDTO[];
+    nextExam: ExamScheduleDTO | null;
+    studyTasks: StudyTaskDTO[];
+    unfinishedActivities: PrepIntelligenceUnfinishedActivity[];
+    recommendations: PrepIntelligenceRecommendation[];
+    dailyQuizAvailable: boolean;
+  };
 }
 
 // ── Re-exports for convenience ──────────────────────────────
@@ -945,3 +1062,13 @@ export type AgentActionType = Client.AgentActionType;
 export type AgentActionDto = Client.AgentActionDto;
 export type AgentBlockDto = Client.AgentBlockDto;
 export type AgentTurnResultDto = Client.AgentTurnResultDto;
+export type PreparationIntelligenceDTO = Server.PreparationIntelligenceDTO;
+export type PrepIntelligenceOverall = Server.PrepIntelligenceOverall;
+export type PrepIntelligencePeriodComparison = Server.PrepIntelligencePeriodComparison;
+export type PrepIntelligenceSubjectPerformance = Server.PrepIntelligenceSubjectPerformance;
+export type PrepIntelligenceTopicPerformance = Server.PrepIntelligenceTopicPerformance;
+export type PrepIntelligenceWeaknessItem = Server.PrepIntelligenceWeaknessItem;
+export type PrepIntelligenceMasteryDistribution = Server.PrepIntelligenceMasteryDistribution;
+export type PrepIntelligenceMistakes = Server.PrepIntelligenceMistakes;
+export type PrepIntelligenceRecommendation = Server.PrepIntelligenceRecommendation;
+export type PrepIntelligenceUnfinishedActivity = Server.PrepIntelligenceUnfinishedActivity;

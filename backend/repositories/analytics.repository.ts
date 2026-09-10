@@ -146,17 +146,20 @@ export async function aggregateRecentAccuracy(
   return { total: Number(r?.total ?? 0), correct: Number(r?.correct ?? 0) };
 }
 
-export type DayActivity = { date: string; answered: number; correct: number };
+export type DayActivity = { date: string; answered: number; correct: number; durationSec: number };
 
 /** Per-UTC-day totals since `${days}-1` days ago, grouped IN THE DATABASE. */
 export async function aggregateDailyActivity(
   userId: string,
   days = 7,
 ): Promise<DayActivity[]> {
-  const rows = await prisma.$queryRaw<{ date: string; answered: number; correct: number }[]>`
+  const rows = await prisma.$queryRaw<
+    { date: string; answered: number; correct: number; durationSec: number }[]
+  >`
     SELECT to_char(date_trunc('day', "createdAt"), 'YYYY-MM-DD') AS "date",
            COUNT(*)::int AS "answered",
-           COALESCE(SUM(CASE WHEN "correct" THEN 1 ELSE 0 END), 0)::int AS "correct"
+           COALESCE(SUM(CASE WHEN "correct" THEN 1 ELSE 0 END), 0)::int AS "correct",
+           COALESCE(SUM("durationSec"), 0)::int AS "durationSec"
     FROM "QuestionAttempt"
     WHERE "userId" = ${userId}
       AND "createdAt" >= now() - ${days} * interval '1 day'
@@ -166,6 +169,7 @@ export async function aggregateDailyActivity(
     date: String(r.date),
     answered: Number(r.answered),
     correct: Number(r.correct),
+    durationSec: Number(r.durationSec),
   }));
 }
 
@@ -184,7 +188,12 @@ export function buildActivityWindow(
     const d = new Date(nowMs - i * 86_400_000);
     const key = d.toISOString().slice(0, 10);
     const hit = byDate.get(key);
-    out.push({ date: key, answered: hit?.answered ?? 0, correct: hit?.correct ?? 0 });
+    out.push({
+      date: key,
+      answered: hit?.answered ?? 0,
+      correct: hit?.correct ?? 0,
+      durationSec: hit?.durationSec ?? 0,
+    });
   }
   return out;
 }

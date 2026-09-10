@@ -889,7 +889,7 @@ export default function CustomExamTab() {
               disabled={submitting || totalQuestions === 0}
               aria-busy={submitting}
               aria-label="পরীক্ষা জমা দিন"
-              className="px-4 py-1.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-xs rounded-lg hover:bg-[var(--accent-hover)] transition-colors shadow-neon-glow flex items-center gap-1.5 disabled:opacity-40 z-50 relative pointer-events-auto cursor-pointer"
+              className="px-4 py-2 min-h-11 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-xs rounded-lg hover:bg-[var(--accent-hover)] transition-colors shadow-neon-glow flex items-center gap-1.5 disabled:opacity-40 z-50 relative pointer-events-auto cursor-pointer"
             >
               <Flag className="w-3.5 h-3.5" />
               {(submitting || reconciling) ? (reconciling ? "যাচাই করা হচ্ছে..." : "জমা হচ্ছে...") : "জমা দিন"}
@@ -919,7 +919,7 @@ export default function CustomExamTab() {
                 <button
                   key={q.id}
                   onClick={() => scrollToQuestion(q.id)}
-                  className={`w-8 h-8 rounded-lg border text-xs font-mono transition-all ${
+                  className={`min-w-11 min-h-11 rounded-lg border text-xs font-mono transition-all flex items-center justify-center ${
                     isAnswered
                       ? "border-[var(--primary)]/40 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
                       : "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] hover:border-[var(--border-strong)]"
@@ -1082,7 +1082,7 @@ export default function CustomExamTab() {
                     onClick={(e) => { e.preventDefault(); e.stopPropagation(); finalizeSubmit(); }}
                     disabled={submitting}
                     aria-busy={submitting}
-                    className="flex-1 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors shadow-neon-glow disabled:opacity-40"
+                    className="flex-1 py-2.5 min-h-11 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors shadow-neon-glow disabled:opacity-40"
                   >
                     {(submitting || reconciling) ? (reconciling ? "যাচাই করা হচ্ছে..." : "জমা হচ্ছে...") : "জমা দিন"}
                   </button>

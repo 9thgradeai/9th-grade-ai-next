@@ -46,6 +46,10 @@ export default function ScrollPractice({
   >({});
   const [expanded, setExpanded] = useState<Record<number, boolean>>({});
   const listRef = useRef<HTMLDivElement>(null);
+  // Synchronous in-flight guard: /api/practice/submit is non-idempotent, so a
+  // rapid mobile double-tap must never fire the request twice before React
+  // re-renders with `submitting=true`.
+  const submitInFlightRef = useRef(false);
 
   const answeredCount = Object.keys(answers).length;
   const total = questions.length;
@@ -71,7 +75,8 @@ export default function ScrollPractice({
   };
 
   const handleSubmit = async () => {
-    if (submitting || !enoughAnswered) return;
+    if (submitting || submitInFlightRef.current || !enoughAnswered) return;
+    submitInFlightRef.current = true;
     setSubmitting(true);
     const payload = questions
       .filter((q) => answers[q.id] != null)
@@ -83,6 +88,7 @@ export default function ScrollPractice({
     } catch {
       /* Recording failure shouldn't block the user from reviewing the answers. */
     } finally {
+      submitInFlightRef.current = false;
       setSubmitting(false);
       setSubmitted(true);
       const prefersReduced = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -263,7 +269,7 @@ export default function ScrollPractice({
         })}
       </div>
 
-      <div className="flex items-center justify-between gap-3 sticky bottom-0">
+      <div className="flex items-center justify-between gap-3 sticky bottom-0 z-30 -mx-1 px-1 pb-1 bg-[var(--dashboard-surface)]">
         {!submitted ? (
           <>
             <span className="text-xs text-[var(--dashboard-text-muted)] font-mono">
@@ -272,7 +278,7 @@ export default function ScrollPractice({
             <button
               onClick={() => void handleSubmit()}
               disabled={!enoughAnswered || submitting}
-              className="px-6 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors disabled:opacity-40 flex items-center gap-2"
+              className="px-6 py-2.5 min-h-11 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors disabled:opacity-40 flex items-center gap-2"
             >
               <Send className="w-4 h-4" /> {submitting ? "সংরক্ষণ হচ্ছে…" : "সব উত্তর জমা দিন"}
             </button>
@@ -288,7 +294,7 @@ export default function ScrollPractice({
             {(onComplete || onExit) && (
               <button
                 onClick={finish}
-                className="px-5 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2"
+                className="px-5 py-2.5 min-h-11 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2"
               >
                 রেজাল্ট দেখুন
               </button>

@@ -306,6 +306,18 @@ export default function MockTestTab() {
   const answeredCount = Object.keys(answers).length;
   const totalQuestions = questions.length;
 
+  // Safe navigation: block route/tab close while submission is in flight so a
+  // mobile browser kill/suspend can't abandon a submission before it commits.
+  useEffect(() => {
+    if (!submitting) return;
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [submitting]);
+
   const submit = useCallback(
     async (qs: Server.ExamQuestionDTO[], ans: Record<number, string>) => {
       // Never a silent no-op: every click path ends in a visible outcome.
@@ -318,6 +330,14 @@ export default function MockTestTab() {
         setSubmitError("পরীক্ষার সেশন শনাক্ত করা যায়নি। পৃষ্ঠা রিফ্রেশ করে আবার চেষ্টা করুন।");
         return;
       }
+      // Immediate ref guard — state `submitting` updates async, so without this a
+      // mobile double-tap could double-trigger. Duplicate hits are safe anyway
+      // (the canonical layer joins in-flight same-attempt submissions).
+      if (submittingRef.current) {
+        setSubmitting(true);
+        return;
+      }
+      submittingRef.current = true;
       setSubmitting(true);
       setSubmitError(null);
       try {
@@ -345,6 +365,7 @@ export default function MockTestTab() {
             : "ফলাফল জমা দেওয়া যায়নি। আবার চেষ্টা করুন।";
         setSubmitError(message);
       } finally {
+        submittingRef.current = false;
         setSubmitting(false);
       }
     },
@@ -647,7 +668,7 @@ export default function MockTestTab() {
                       handleSubmitRequest();
                     }}
                     disabled={submitting || totalQuestions === 0}
-                    className="px-4 py-1.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-xs rounded-lg hover:bg-[var(--accent-hover)] transition-colors shadow-neon-glow flex items-center gap-1.5 disabled:opacity-40 z-50 relative"
+                    className="px-4 py-2 min-h-11 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-xs rounded-lg hover:bg-[var(--accent-hover)] transition-colors shadow-neon-glow flex items-center gap-1.5 disabled:opacity-40 z-50 relative"
                   >
                     <Flag className="w-3.5 h-3.5" />
                     {submitting ? "জমা হচ্ছে..." : "জমা দিন"}
@@ -761,7 +782,7 @@ export default function MockTestTab() {
                 handleSubmitRequest();
               }}
               disabled={submitting}
-              className="px-5 py-2 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2 shadow-neon-glow disabled:opacity-40 z-50 relative"
+              className="px-5 py-2 min-h-11 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2 shadow-neon-glow disabled:opacity-40 z-50 relative"
             >
               <Flag className="w-4 h-4" />
               {submitting ? "জমা হচ্ছে..." : "জমা দিন"}
@@ -835,13 +856,13 @@ export default function MockTestTab() {
                 <div className="flex gap-3">
                   <button
                     onClick={() => setShowUnansweredConfirm(false)}
-                    className="flex-1 py-2.5 bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-secondary)] font-mono text-sm rounded-xl hover:bg-[var(--surface-overlay)] transition-colors"
+                    className="flex-1 py-2.5 min-h-11 bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-secondary)] font-mono text-sm rounded-xl hover:bg-[var(--surface-overlay)] transition-colors"
                   >
                     ফিরে যান
                   </button>
                   <button
                     onClick={finalizeSubmit}
-                    className="flex-1 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors shadow-neon-glow"
+                    className="flex-1 py-2.5 min-h-11 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors shadow-neon-glow"
                   >
                     জমা দিন
                   </button>

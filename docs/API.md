@@ -56,6 +56,7 @@ All mutating endpoints (auth and non-auth) reject cross-origin requests via an O
 | POST | `/api/study-plan/tasks/:id/toggle` | **Auth required** — Toggle task completion (per-user completion marker; template tasks toggleable) |
 | POST | `/api/flashcards/review` | **Auth required** — Grade a flashcard `{ flashcardId, rating: 0\|1\|2\|3 }` (0=again, 1=hard, 2=good, 3=easy) → per-user SM-2 state `{ state: { nextReview, interval, easeFactor, repetitions, lapses } }` |
 | GET | `/api/dashboard-stats` | **Auth required** — Caller's dashboard stats (per-user) |
+| GET | `/api/preparation-intelligence` | **Auth required** — Unified preparation analytics powering the dashboard Home + Progress tabs (see `PreparationIntelligence` shape). Returns (per-user, never cached): overall accuracy/streak/study-time, 365-day activity window, 30-day period comparison with deltas, subject+topic performance, confidence-aware weak topics, mastery distribution, mistake-recovery stats, unfinished mock tests, flashcard due count, next exam, study tasks, and the deterministic recommendation list. |
 | POST | `/api/practice/submit` | **Auth required** — Grade practice answers `{ answers: [{ questionId, selected }] }` → `{ summary: { correct, total, score, pointsEarned, feedback? } }`. `feedback` is a per-question map `{ [questionId]: { masteryStatus, isMistake, justMastered } }` powering the mistake-drill's mastery labels (see `MistakeFeedback`). |
 | POST | `/api/daily-quiz/submit` | **Auth required** — Grade + persist daily quiz answers `{ quizId, answers }` |
 | POST | `/api/notifications/:id/read` | **Auth required** — Mark a notification read |
@@ -143,6 +144,29 @@ All mutating endpoints (auth and non-auth) reject cross-origin requests via an O
 ```json
 { "stats": { "points": 120, "exams": 2, "rank": 1, "streak": 3, "questionsAnswered": 40, "accuracy": 75, "completion": 8, "flashcardsReviewed": 5, "aiQuestionsAsked": 2, "activity": [{ "date": "2026-08-18", "answered": 6, "correct": 5 }] } }
 ```
+
+### PreparationIntelligence
+`GET /api/preparation-intelligence` returns the object directly (no wrapper). Every number is server-derived from real attempt/mistake/exam/flashcard records — none are fabricated. When the user has no data, `overall.*` are zeros and `recommendations` is empty (clients render honest empty states).
+```json
+{
+  "overall": { "totalAttempts": 40, "totalCorrect": 32, "totalWrong": 8, "accuracy": 80, "questionsAttempted": 40, "points": 120, "rank": 1, "streak": 3, "flashcardsReviewed": 5, "aiQuestionsAsked": 2, "examsAttempted": 2, "studyTimeSec": 5400 },
+  "activity": [{ "date": "2026-08-18", "answered": 6, "correct": 5, "durationSec": 780 }],
+  "period": { "currentAccuracy": 80, "previousAccuracy": 70, "accuracyDelta": 10, "currentAttempts": 20, "previousAttempts": 12, "attemptsDelta": 8, "currentCorrect": 17, "previousCorrect": 8, "correctDelta": 9, "currentStudyTimeSec": 3000, "previousStudyTimeSec": 1800, "studyTimeDeltaSec": 1200 },
+  "subjectPerformance": [{ "subject": "বাংলা", "attempted": 12, "correct": 10, "accuracy": 83, "topics": [{ "subject": "বাংলা", "topic": "ব্যাকরণ", "attempted": 6, "correct": 5, "accuracy": 83 }] }],
+  "weakTopics": [{ "subject": "বাংলা", "topic": "নাতিহ", "attempted": 10, "correct": 3, "score": 30 }],
+  "flashcardsDue": 4,
+  "streak": 3,
+  "masteryDistribution": [{ "status": "NEW"|"STRUGGLING"|"REVIEWING"|"IMPROVING"|"MASTERED", "count": 12 }],
+  "mistakes": { "totalMistakes": 7, "unmastered": 4, "struggling": 2, "reviewing": 1, "improving": 0, "mastered": 0, "bySubject": [{ "subject": "বাংলা", "count": 3, "unmastered": 2 }] },
+  "recentResults": [{ "id": 1, "title": "মডেল টেস্ট ১", "score": 72, "correct": 36, "total": 50, "createdAt": "2026-08-18T00:00:00Z" }],
+  "nextExam": { "id": 1, "titleBn": "সরকারি নিয়োগ পরীক্ষা", "titleEn": "Govt. job exam", "type": "BCS", "date": "2026-11-01T00:00:00Z", "year": 2026 } | null,
+  "studyTasks": [{ "id": 1, "day": "Sunday", "subject": "বাংলা ভাষা ও সাহিত্য", "title": "চাকরির প্রস্তুতি - বাংলা ১ম পত্র", "completed": false, "priority": "high", "duration": 20 }],
+  "unfinishedActivities": [{ "type": "mock_test"|"daily_quiz", "id": "cuid", "startedAt": "2026-08-18T00:00:00Z" }],
+  "recommendations": [{ "id": "resume-exam"|"practice-weak-subject"|"practice-weak-topic"|"review-mistakes"|"review-flashcards"|"daily-quiz"|"daily-warmup"|"exam-near"|"keep-going", "priority": "high"|"medium"|"low", "target": "practice"|"mistakes"|"flashcards"|"study-planner"|"question-bank", "subject"?: string, "topic"?: string, "accuracy"?: number, "count"?: number }],
+  "dailyQuizAvailable": true
+}
+```
+`recommendations` are deterministic and ordered by expected preparation value (max 4). Accuracy deltas are in percentage points; `activity` is a 365-day zero-filled UTC window; `period` compares the trailing 30 days vs the preceding 30.
 
 ### AI Solver
 Now **streams** a `application/json` token stream (same shape as below). Headers:
