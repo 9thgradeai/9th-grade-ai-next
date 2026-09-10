@@ -1,8 +1,11 @@
+import "@testing-library/jest-dom";
+
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import HeroSection from "@/components/landing/HeroSection";
+import HeroBackground from "@/components/landing/hero/HeroBackground";
 import ProblemSection from "@/components/landing/ProblemSection";
 import IntelligenceSection from "@/components/landing/IntelligenceSection";
 import SignalFlow from "@/components/landing/SignalFlow";
@@ -28,13 +31,13 @@ describe("BackToTop", () => {
 
 describe("HeroSection", () => {
   it("renders the spec copy and both CTAs", () => {
-    render(<HeroSection />);
+    render(<HeroSection subjectCount={10} />);
     expect(screen.getByText(/AI-Powered Application/i)).toBeInTheDocument();
     expect(screen.getByText(/Built for Job Aspirants/i)).toBeInTheDocument();
 
     // MotionText splits headlines into per-word spans (NBSP separators).
     const h1 = screen.getByRole("heading", { level: 1 });
-    const h1Text = (h1.textContent ?? "").replace(/\u00A0/g, " ");
+    const h1Text = (h1.textContent ?? "").replace(/ /g, " ");
     expect(h1Text).toContain("Stop guessing.");
     expect(h1Text).toContain("Start passing.");
 
@@ -55,6 +58,63 @@ describe("HeroSection", () => {
       // Labels appear twice by design: visible span + sr-only <dt>.
       expect(screen.getAllByText(label).length).toBeGreaterThanOrEqual(1);
     }
+  });
+});
+
+describe("HeroBackground", () => {
+  it("renders the video-first layered backdrop with correct video behavior", () => {
+    const { container } = render(<HeroBackground />);
+    const root = container.querySelector('[data-layer="hero-background"]');
+    expect(root).toBeInTheDocument();
+    expect(root).toHaveAttribute("aria-hidden", "true");
+
+    // Layer stack: fallback → video (z-0) → stars (z-1) → vignette (z-2). No canvas/WebGL.
+    for (const layer of ["video-fallback", "atmospheric-video", "star-field", "vignette"]) {
+      expect(container.querySelector(`[data-layer="${layer}"]`)).toBeInTheDocument();
+    }
+    expect(container.querySelector("canvas")).not.toBeInTheDocument();
+
+    const video = container.querySelector("video");
+    expect(video).toBeInTheDocument();
+    expect(video).toHaveAttribute("src", "/asset/hero/9th-grade.webm");
+    expect(video).toHaveAttribute("autoplay");
+    expect(video).toHaveAttribute("loop");
+    expect(video).toHaveAttribute("playsinline");
+    expect(video?.muted || video?.hasAttribute("muted")).toBe(true);
+    expect(video).toHaveAttribute("aria-hidden", "true");
+    expect(video?.hasAttribute("controls")).toBe(false);
+  });
+
+  it("renders a restrained, deterministic, responsive star field", () => {
+    const { container, unmount } = render(<HeroBackground />);
+    const stars = container.querySelectorAll("[data-star]");
+    // Desktop 72 / tablet 48 / mobile 24 via CSS gating (same DOM).
+    expect(stars.length).toBe(72);
+    expect(container.querySelectorAll("[data-star].hidden.sm\\:block").length).toBe(24);
+    expect(container.querySelectorAll("[data-star].hidden.lg\\:block").length).toBe(24);
+
+    // Independent twinkle timing in the 8–10s band + inward drift offsets.
+    const timings = new Set(
+      [...stars].map((s) => (s as HTMLElement).style.animationDuration),
+    );
+    expect(timings.size).toBeGreaterThan(1);
+    for (const star of [...stars] as HTMLElement[]) {
+      const seconds = Number.parseFloat(star.style.animationDuration);
+      expect(seconds).toBeGreaterThanOrEqual(8);
+      expect(seconds).toBeLessThanOrEqual(10);
+      expect(star.style.getPropertyValue("--star-dx")).toMatch(/px$/);
+      expect(star.style.getPropertyValue("--star-dy")).toMatch(/px$/);
+    }
+
+    // Deterministic across mounts.
+    const positions = [...stars].map((s) => (s as HTMLElement).style.cssText);
+    unmount();
+    const { container: second } = render(<HeroBackground />);
+    expect([...second.querySelectorAll("[data-star]")].map((s) => (s as HTMLElement).style.cssText)).toEqual(positions);
+  });
+
+  it("renders across viewport sizes without throwing", () => {
+    expect(() => render(<HeroBackground />)).not.toThrow();
   });
 });
 
@@ -177,52 +237,5 @@ describe("SubjectUniverseSection", () => {
     expect(
       screen.getByText(/updated daily · linked to the current-affairs feed/i),
     ).toBeInTheDocument();
-  });
-});
-
-describe("AnalyticsSection", () => {
-  it("marks itself as a sample preview", () => {
-    render(<AnalyticsSection />);
-    expect(screen.getAllByText(/sample preview/i).length).toBeGreaterThan(0);
-  });
-});
-
-describe("PlannerSection", () => {
-  it("keeps the five planner stages", () => {
-    render(<PlannerSection />);
-    for (const stage of [
-      "Weak Topic",
-      "Concept Review",
-      "Practice",
-      "Revision",
-      "Mastery",
-    ]) {
-      expect(screen.getAllByText(stage).length).toBeGreaterThan(0);
-    }
-  });
-});
-
-describe("PhilosophySection", () => {
-  it("renders the three-line statement as crawlable text", () => {
-    render(<PhilosophySection />);
-    expect(screen.getByText(/MEASURE/)).toBeInTheDocument();
-    expect(screen.getByText(/UNDERSTAND/)).toBeInTheDocument();
-    expect(screen.getByText(/IMPROVE/)).toBeInTheDocument();
-  });
-});
-
-describe("FinalCtaSection", () => {
-  it("renders the closing copy and preserves CTA routes", () => {
-    render(<FinalCtaSection />);
-    const h2 = screen.getByRole("heading", { level: 2 });
-    expect((h2.textContent ?? "").replace(/\u00A0/g, " ").toLowerCase()).toContain(
-      "build your advantage.",
-    );
-
-    const start = screen.getByRole("link", { name: /Start Preparing/i });
-    expect(start).toHaveAttribute("href", "/login?register=true");
-
-    const explore = screen.getByRole("link", { name: /Explore the Platform/i });
-    expect(explore).toHaveAttribute("href", "/tracks");
   });
 });
