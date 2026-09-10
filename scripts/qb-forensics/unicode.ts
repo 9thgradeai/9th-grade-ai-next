@@ -25,13 +25,16 @@ export const CONTROL_MASK =
 /** U+00A0 / U+1680 / U+2028 / U+2029 / U+202F / U+205F / U+3000 treated as regular spaces. */
 export const EXTRA_SPACE = /[\u00A0\u1680\u2028\u2029\u202F\u205F\u3000\u2027]/g;
 
+// Non-global copy for safe boolean tests (a /g regex's test() is stateful).
+const NON_STANDARD_SPACE_TEST = /[\u00A0\u1680\u2028\u2029\u202F\u205F\u3000\u2027]/;
+
 export function hasReplacementChar(s: string): boolean {
   return s.includes(REPLACEMENT_CHAR);
 }
 
 /** Detect non-space whitespace characters that should be normalized to U+0020. */
 export function hasNonStandardSpace(s: string): boolean {
-  return EXTRA_SPACE.test(s);
+  return NON_STANDARD_SPACE_TEST.test(s);
 }
 
 export function hasControlChars(s: string): boolean {

@@ -51,9 +51,10 @@ describe("BCS record normalization", () => {
     const n = normalizeBcsRecord({
       examTerm: "৫০তম বিসিএস",
       subject: "বাংলা ভাষা ও সাহিত্য",
-      question: "'ন্বর্গ' শব্দের সঠিক সমার্থক শব্দজোড়া কোনটি?",
-      options: ["হরিদশ্ব", "দ্ষিতি", "দিনমণি", "ত্রিদিব"],
-      correctAnswer: "গ. দিনমণি",
+      question: "'স্বর্গ' শব্দের সঠিক সমার্থক শব্দজোড়া কোনটি?",
+      options: ["দিনমণি", "দক্ষিণা", "নদী", "ত্রিদিব"],
+      correctAnswer: "ক. দিনমণি",
+      explanation: "স্বর্গ, সুরলোক, দিব — দিনমণি এই অর্থে ব্যবহৃত হয়।",
       qnum: 42,
     });
     expect(n.ok).toBe(true);

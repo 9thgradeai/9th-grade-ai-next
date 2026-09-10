@@ -247,6 +247,17 @@ Per-question mastery stage in the mistake-practice model (see `UserQuestionProgr
 - Relations: `bookmarks`, `attempts`
 - Indexes: `[subjectId, difficulty]`, `[subjectId, topic]`, `[subjectId, topic, subtopic]`, `[subjectId, path]`, `[topicId]`, `[examId]`, `[paperId, questionNumber]`; Unique: `[subjectId, sourceKey]`
 
+> **Content-quality gate**: every Question row is importable per
+> `scripts/qb-forensics/import-gate.ts` — Unicode-healthy (NFC, no replacement
+> chars / mojibake / control chars / visual-order Bengali), structurally valid
+> (4 non-empty options, answer matches an option), with a **mandatory
+> explanation**, and globally unique by normalized
+> (question | correctAnswer | explanation). The seeder and BCS importer enforce
+> this on reseed; the one-time sweep `npm run qb:clean-broken` (ADR-0015) removed
+> 293 rows (2,700 → 2,407). Deleting a Question cascades to `Bookmark` and
+> `UserQuestionProgress`; `QuestionAttempt.questionId` is set NULL (analytics
+> survive).
+
 #### ExamCategory
 - `id` Int — PK, auto-increment
 - `slug` String — unique

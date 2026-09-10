@@ -15,9 +15,15 @@
  *   2. Reading database/data/question_bank/bcs/bcs_questions.json and
  *      validating/normalizing each record. Only structurally VALID MCQs are
  *      imported (question text + ≥4 options + a resolvable correct answer).
+ *      Every accepted record ALSO passes the shared import gate
+ *      (scripts/qb-forensics/import-gate.ts): Unicode health (replacement
+ *      chars / mojibake / visual-order corruption), mandatory explanation,
+ *      NFC normalization, and a GLOBAL duplicate identity check (normalized
+ *      question+answer+explanation) against the whole database.
  *      Malformed records (OCR preamble, empty options, unresolved answer,
- *      unknown subject, duplicate) are counted and REPORTED — they are never
- *      silently discarded, and never force-fabricated into a fake question.
+ *      unknown subject, duplicate, broken Unicode) are counted and REPORTED —
+ *      they are never silently discarded, and never force-fabricated into a
+ *      fake question.
  *
  *   3. Upserting questions keyed by sourceKey = md5(subjectId|exam:<term>|question)
  *      — a distinct key space from the subject-wise corpus, so exam-wise rows
@@ -33,6 +39,7 @@ import { PrismaClient, type Difficulty, type Provenance } from "@prisma/client";
 import { readFileSync } from "fs";
 import { join } from "path";
 import { sourceKey } from "./seed-keys";
+import { scanMca, mcaSignature } from "./qb-forensics/import-gate";
 import { SUBJECT_META } from "./taxonomy";
 
 // ── Raw record shape as produced by the OCR/parse pipeline ──
@@ -140,16 +147,24 @@ export function normalizeBcsRecord(raw: RawBcsRecord): NormalizedBcs {
   // qnum is frequently garbage (huge/zero) — treat implausible as unknown.
   const qn = typeof raw.qnum === "number" && raw.qnum >= 1 && raw.qnum <= 1000 ? raw.qnum : null;
 
+  // ── Import gate (shared with the subject-wise seeder) ───────────────────
+  // Unicode health + structure + mandatory-explanation policy + normalization.
+  // Rejected records are never fabricated into a usable MCQ.
+  const gate = scanMca({ question, options, correctAnswer, explanation });
+  if (gate.verdict === "REJECT") {
+    return { ok: false, reason: `failed import gate: ${gate.fatal.map((f) => f.code).join(", ")}` };
+  }
+
   return {
     ok: true,
     examNum: parsedNum,
     paperTitleBn: `${enDigitsToBn(parsedNum)}তম বিসিএস প্রিলিমিনারি`,
     termLabel: `${parsedNum}th`,
     subject,
-    question,
-    options,
-    correctAnswer,
-    explanation,
+    question: gate.normalized.question,
+    options: gate.normalized.options,
+    correctAnswer: gate.normalized.correctAnswer,
+    explanation: gate.normalized.explanation,
     year,
     questionNumber: qn,
     examTerm: examTerm || `${parsedNum}th বিসিএস`,
@@ -283,6 +298,19 @@ export async function importBcsExams(
   }
 
   const seen = new Set<string>();
+
+  // Global duplicate identity index: the same normalized MCQ (question +
+  // correctAnswer + explanation) may exist only once across the whole database
+  // (subject-wise corpus or exam-wise records alike). Would-be INSERTs that
+  // collide are skipped; existing rows are refreshed in place instead.
+  const globalSigs = new Set<string>();
+  const existingForDedup = await prisma.question.findMany({
+    select: { question: true, correctAnswer: true, explanation: true },
+  });
+  for (const r of existingForDedup) {
+    globalSigs.add(mcaSignature({ question: r.question, options: [], correctAnswer: r.correctAnswer, explanation: r.explanation }));
+  }
+
   for (const c of candidates) {
     const subjectId = subjectIdByNameBn.get(c.subject.normalize("NFC"));
     if (subjectId === undefined) {
@@ -322,6 +350,14 @@ export async function importBcsExams(
       await prisma.question.update({ where: { subjectId_sourceKey: { subjectId, sourceKey: key } }, data: content });
       report.updated++;
     } else {
+      // Import gate duplicate guard: an identical MCQ already lives somewhere
+      // in the database (any subject). Skipped — never duplicated.
+      const sig = mcaSignature({ question: c.question, options: c.options, correctAnswer: c.correctAnswer, explanation: c.explanation });
+      if (globalSigs.has(sig)) {
+        report.duplicates++;
+        continue;
+      }
+      globalSigs.add(sig);
       await prisma.question.create({ data: { sourceKey: key, ...content } });
       report.imported++;
     }

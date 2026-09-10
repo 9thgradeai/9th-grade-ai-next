@@ -39,7 +39,10 @@
     "qa:normalize": "npx tsx scripts/qb-audit/index.ts normalize",
     "qa:normalize:apply": "npx tsx scripts/qb-audit/index.ts normalize:apply",
     "qa:validate": "npx tsx scripts/qb-audit/index.ts validate",
-    "qb:forensics": "npx tsx scripts/qb-forensics/index.ts"
+    "qb:forensics": "npx tsx scripts/qb-forensics/index.ts",
+    "qb:clean-broken": "npx tsx scripts/clean-broken-questions.ts",
+    "qb:clean-broken:apply": "npx tsx scripts/clean-broken-questions.ts --yes",
+    "qb:clean-broken:verify": "npx tsx scripts/clean-broken-questions.ts --verify"
   },
   "prisma": {
     "seed": "tsx database/prisma/seed.ts"

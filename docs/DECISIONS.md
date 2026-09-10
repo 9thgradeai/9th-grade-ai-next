@@ -330,3 +330,52 @@ baseline is CI enforcement; a parallel job keeps it off the critical path of the
 slower integration suite.
 **Consequences**: Every push/PR to `main` now enforces the Sentry ceiling and
 namespace regression tolerances automatically.
+
+## ADR-0015 — Question-bank import gate + one-time cleanup sweep
+
+**Date**: 2026-09
+**Status**: Accepted
+**Context**: The application database held 2,700 MCQs, of which a material share
+were unusable: broken Unicode (visual-order / cluster-split Bengali from OCR,
+replacement chars, mojibake, control chars), structurally invalid rows (<4
+options, empty options, answers matching no option), and ~279 rows with no
+explanation. A forensic audit (`scripts/qb-forensics/index.ts`) finally
+quantified the damage, but there was no single, enforced rule for "may this MCQ
+enter the database?" — the seeder and the BCS importer both had weak ad-hoc
+checks, so a clean sweep would have been undone by the next reseed.
+**Decision**:
+- Introduce **`scripts/qb-forensics/import-gate.ts`** — one pure, side-effect free
+  gate (`scanMca`) that is the single source of truth for importability. FATAL
+  reasons reject a record outright (replacement char / mojibake / double-encoding
+  / control chars / visual-order Bengali / mangled header / option-markers in
+  options / <4 options / empty question-option-answer / answer matches no option /
+  empty explanation, an explicit question-bank policy). NON-FATAL issues (non-NFC
+  composition, non-standard spaces, BOM) are auto-normalized and the record is
+  imported using the normalized content. ZWJ/ZWNJ are preserved.
+- **Wire the gate into every import path so reseeds can never re-add removed
+  content**: `scripts/seed-questions.ts` (subject-wise corpus) and
+  `scripts/import-bcs-exams.ts` (BCS JSON, which carries explanations on all
+  120 records). Both also enforce a **GLOBAL duplicate identity** — normalized
+  (question | correctAnswer | explanation) — across the whole database, skipping
+  would-be INSERTs that collide while refreshing existing rows in place.
+- **`scripts/clean-broken-questions.ts`** sweeps the live database with the same
+  gate: dry-run by default (writes `scripts/qb-forensics/artifacts/cleanup-plan.*`),
+  `--yes` = pg_dump backup (reuses `backupDatabase`) + transactional deleteMany,
+  `--verify` = post-clean invariant check. Removal reasons: UNICODE_CORRUPTION,
+  STRUCTURAL_BROKEN, EMPTY_EXPLANATION, DUPLICATE (oldest row kept). Deletes
+  cascade to Bookmarks / UserQuestionProgress and SetNull on QuestionAttempt
+  (both verified against `schema.prisma`).
+- **Raw corpus stays untouched**: `database/data/ques/*.txt` and
+  `bcs_questions.json` are sources, not sinks — the DB + seed guard is the
+  authoritative, clean layer.
+**Rationale**: The gate is deliberately shared so "forensic classification",
+"cleanup decision", and "import policy" can never drift apart. Running the
+corruption checks against fully *normalized* field values (BOM / NBSP /
+composition applied first) means harmless file artifacts are salvaged while true
+corruption still fails.
+**Consequences**: Gate-on-reseed is idempotent with the cleanup: the sweep
+removes 293 rows (2,700 → 2,407); future reseeds hold the line, rejecting any
+returning broken MCQ and silently skipping global duplicates. `npm run db:seed`
+/ `db:seed-questions` now log rejected counts per source. Also fixed a latent
+bug: `hasNonStandardSpace` used a stateful `/g` regex, so boolean checks now use
+a non-global copy in `scripts/qb-forensics/unicode.ts`.

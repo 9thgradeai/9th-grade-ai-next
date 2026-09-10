@@ -38,6 +38,7 @@ import { readFileSync, readdirSync } from "fs";
 import { join } from "path";
 import { PrismaClient } from "@prisma/client";
 import { sourceKey } from "./seed-keys";
+import { scanMca, mcaSignature, type GateIssue } from "./qb-forensics/import-gate";
 import {
   loadTaxonomy,
   SUBJECT_META,
@@ -177,6 +178,73 @@ function parseQuestionLine(line: string): ParsedQuestion | null {
   return { question: questionText, options, correctAnswer, explanation };
 }
 
+/**
+ * IMPORT GATE — every parsed question must pass the shared unicode/structure
+ * gate (scripts/qb-forensics/import-gate.ts) before it may enter the database.
+ * REJECTED records (broken Unicode, broken structure, missing explanation) are
+ * reported and skipped — never fabricated. ACCEPTED records are returned with
+ * gate-normalized content (NFC, spaces, entities decoded; ZWJ/ZWNJ kept) so
+ * the seeded text is already fully "unicode-optimized".
+ */
+function parseSanitizedLines(lines: string[]): {
+  accepted: ParsedQuestion[];
+  rejected: Array<{ reason: string; question: string }>;
+} {
+  const accepted: ParsedQuestion[] = [];
+  const rejected: Array<{ reason: string; question: string }> = [];
+  for (const line of lines) {
+    const p = parseQuestionLine(line);
+    if (!p) continue;
+    const gate = scanMca({
+      question: p.question,
+      options: p.options,
+      correctAnswer: p.correctAnswer,
+      explanation: p.explanation,
+    });
+    if (gate.verdict === "REJECT") {
+      rejected.push({
+        reason: gate.fatal.map((f: GateIssue) => `${f.code}@${f.field}`).join(","),
+        question: p.question.slice(0, 60),
+      });
+      continue;
+    }
+    accepted.push({
+      question: gate.normalized.question,
+      options: gate.normalized.options,
+      correctAnswer: gate.normalized.correctAnswer,
+      explanation: gate.normalized.explanation,
+    });
+  }
+  return { accepted, rejected };
+}
+
+/**
+ * Global duplicate registry keyed on the normalized (question | correctAnswer |
+ * explanation) identity. Spans every subject and every import within one run
+ * so the same MCQ can never be inserted twice anywhere in the database.
+ */
+class DuplicateRegistry {
+  private sigs = new Set<string>();
+  private batch = new Set<string>();
+
+  constructor(existing?: Iterable<string>) {
+    if (existing) for (const s of existing) this.sigs.add(s);
+  }
+
+  isDuplicate(sig: string): boolean {
+    return this.sigs.has(sig) || this.batch.has(sig);
+  }
+
+  claim(sig: string): void {
+    this.batch.add(sig);
+  }
+
+  commit(): void {
+    for (const s of this.batch) this.sigs.add(s);
+    this.batch.clear();
+  }
+}
+
 // Finds or updates the Subject row for a canonical Bengali name (upsert by
 // the unique nameBn key).
 async function ensureSubject(
@@ -282,6 +350,7 @@ async function syncSubjectQuestions(
   prisma: PrismaClient,
   subjectId: number,
   candidates: QuestionCandidate[],
+  duplicateRegistry: DuplicateRegistry,
 ): Promise<{ inserted: number; updated: number }> {
   if (candidates.length === 0) return { inserted: 0, updated: 0 };
 
@@ -319,6 +388,7 @@ async function syncSubjectQuestions(
   const creates: Array<Record<string, unknown>> = [];
   let updated = 0;
   let migrated = 0;
+  let dupSkipped = 0;
   const updates: Promise<unknown>[] = [];
 
   for (const c of uniqueCandidates.values()) {
@@ -351,6 +421,21 @@ async function syncSubjectQuestions(
       updated += 1;
       if (byText !== undefined) migrated += 1;
     } else {
+      // NEW row: enforce the global duplicate identity gate — the same
+      // normalized (question | correctAnswer | explanation) may exist only once
+      // anywhere in the database. Existing rows are refreshed above; only
+      // would-be INSERTs are checked here.
+      const sig = mcaSignature({
+        question: c.parsed.question,
+        options: c.parsed.options,
+        correctAnswer: c.parsed.correctAnswer,
+        explanation: c.parsed.explanation,
+      });
+      if (duplicateRegistry.isDuplicate(sig)) {
+        dupSkipped += 1;
+        continue;
+      }
+      duplicateRegistry.claim(sig);
       creates.push({
         subjectId,
         sourceKey: key,
@@ -369,6 +454,10 @@ async function syncSubjectQuestions(
   }
   if (creates.length > 0) {
     await prisma.question.createMany({ data: creates as never });
+  }
+  duplicateRegistry.commit();
+  if (dupSkipped > 0) {
+    console.warn(`  ⚠ ${dupSkipped} question(s) skipped — already exist (global duplicate identity)`);
   }
   return { inserted: creates.length, updated };
 }
@@ -435,6 +524,18 @@ export async function seedQuestions(prisma: PrismaClient): Promise<number> {
   }
 
   let totalInserted = 0;
+  let totalRejected = 0;
+
+  // Global duplicate index: every existing row's identity signature, so a
+  // would-be INSERT that duplicates any live MCQ (any subject) is skipped.
+  const existingRows = await prisma.question.findMany({
+    select: { question: true, correctAnswer: true, explanation: true },
+  });
+  const duplicateRegistry = new DuplicateRegistry(
+    existingRows.map((r) =>
+      mcaSignature({ question: r.question, options: [], correctAnswer: r.correctAnswer, explanation: r.explanation }),
+    ),
+  );
 
   // ── Flat files: questions distributed round-robin across taxonomy leaves ──
   const raw = files
@@ -470,13 +571,15 @@ export async function seedQuestions(prisma: PrismaClient): Promise<number> {
     }
     const subjectId = subjectIds[canonical.normalize("NFC")];
 
-    const parsed = section.lines
-      .map((l) => parseQuestionLine(l))
-      .filter((q): q is ParsedQuestion => q !== null);
+    const { accepted: parsed, rejected } = parseSanitizedLines(section.lines);
+    totalRejected += rejected.length;
 
     if (parsed.length === 0) {
-      console.warn(`⚠ No questions parsed for ${canonical}`);
+      console.warn(`⚠ No questions passed the import gate for ${canonical} (${rejected.length} rejected)`);
       continue;
+    }
+    if (rejected.length > 0) {
+      console.warn(`  ⚠ ${rejected.length} broken/unoptimized question(s) skipped via import gate (${canonical}): ${rejected[0].reason}`);
     }
 
     // Round-robin across the subject's taxonomy leaves (in file order, stable
@@ -509,7 +612,7 @@ export async function seedQuestions(prisma: PrismaClient): Promise<number> {
       };
     });
 
-    const { inserted } = await syncSubjectQuestions(prisma, subjectId, candidates);
+    const { inserted } = await syncSubjectQuestions(prisma, subjectId, candidates, duplicateRegistry);
     totalInserted += inserted;
     console.log(`✓ ${canonical}: ${parsed.length} synced (${inserted} new)`);
   }
@@ -543,12 +646,14 @@ export async function seedQuestions(prisma: PrismaClient): Promise<number> {
         .split(/\r?\n/)
         .map((l) => l.trim())
         .filter(Boolean);
-      const parsed = lines
-        .map((l) => parseQuestionLine(l))
-        .filter((q): q is ParsedQuestion => q !== null);
+      const { accepted: parsed, rejected } = parseSanitizedLines(lines);
+      totalRejected += rejected.length;
       if (parsed.length === 0) {
-        console.warn(`⚠ No questions parsed for ${spec.parts[0]}`);
+        console.warn(`⚠ No questions passed the import gate for ${spec.parts[0]} (${rejected.length} rejected)`);
         continue;
+      }
+      if (rejected.length > 0) {
+        console.warn(`  ⚠ ${rejected.length} broken/unoptimized question(s) skipped via import gate (${spec.parts[0]}): ${rejected[0].reason}`);
       }
       const leaves = collectLeaves(subjectNode);
       const leafIds = leafIdsBySubject.get(subjectId) ?? new Map<string, number>();
@@ -563,7 +668,7 @@ export async function seedQuestions(prisma: PrismaClient): Promise<number> {
           parsed: q,
         };
       });
-      const { inserted } = await syncSubjectQuestions(prisma, subjectId, candidates);
+      const { inserted } = await syncSubjectQuestions(prisma, subjectId, candidates, duplicateRegistry);
       totalInserted += inserted;
       console.log(`✓ ${meta.nameBn} (subject file): ${parsed.length} synced (${inserted} new)`);
       continue;
@@ -575,20 +680,24 @@ export async function seedQuestions(prisma: PrismaClient): Promise<number> {
       continue;
     }
 
+    const path = contentPath(leaf);
+    const tags = leafTags(leaf);
+    const leafIds = leafIdsBySubject.get(subjectId) ?? new Map<string, number>();
+
     const lines = readFileSync(spec.file, "utf8")
       .replace(/^\uFEFF/, "")
       .split(/\r?\n/)
       .map((l) => l.trim())
       .filter(Boolean);
-    const parsed = lines.map((l) => parseQuestionLine(l)).filter((q): q is ParsedQuestion => q !== null);
+    const { accepted: parsed, rejected } = parseSanitizedLines(lines);
+    totalRejected += rejected.length;
     if (parsed.length === 0) {
-      console.warn(`⚠ No questions parsed for ${spec.parts.slice(0, -1).join(" / ")}`);
+      console.warn(`⚠ No questions passed the import gate for ${spec.parts.slice(0, -1).join(" / ")} (${rejected.length} rejected)`);
       continue;
     }
-
-    const path = contentPath(leaf);
-    const tags = leafTags(leaf);
-    const leafIds = leafIdsBySubject.get(subjectId) ?? new Map<string, number>();
+    if (rejected.length > 0) {
+      console.warn(`  ⚠ ${rejected.length} broken/unoptimized question(s) skipped via import gate (${path}): ${rejected[0].reason}`);
+    }
 
     const candidates: QuestionCandidate[] = parsed.map((q) => ({
       topicId: leafIds.get(path) ?? null,
@@ -598,7 +707,7 @@ export async function seedQuestions(prisma: PrismaClient): Promise<number> {
       parsed: q,
     }));
 
-    const { inserted } = await syncSubjectQuestions(prisma, subjectId, candidates);
+    const { inserted } = await syncSubjectQuestions(prisma, subjectId, candidates, duplicateRegistry);
     totalInserted += inserted;
     console.log(`✓ ${meta.nameBn} → ${path}: ${parsed.length} synced (${inserted} new)`);
   }
@@ -639,6 +748,9 @@ export async function seedQuestions(prisma: PrismaClient): Promise<number> {
   }
 
   console.log(`  (pruned ${pruned} stale topic(s))`);
+  if (totalRejected > 0) {
+    console.log(`  (import gate skipped ${totalRejected} broken/unoptimized question(s))`);
+  }
   return totalInserted;
 }
 
