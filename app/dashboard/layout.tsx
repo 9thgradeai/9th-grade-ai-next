@@ -114,7 +114,7 @@ function EmailVerificationGate({ children }: { children: React.ReactNode }) {
   if (authLoading) {
     return (
       <div className="dashboard-shell min-h-dvh flex items-center justify-center p-4">
-        <LoadingShell title="VERIFYING_CREDENTIALS" messages={["verifying credentials", "checking session", "securing access"]} progressLabel="auth check" className="w-full max-w-[560px]" />
+        <LoadingShell title="VERIFYING_CREDENTIALS" progressLabel="auth check" className="w-full max-w-[560px]" />
       </div>
     );
   }
@@ -126,7 +126,7 @@ function EmailVerificationGate({ children }: { children: React.ReactNode }) {
   if (!user.emailVerified) {
     return (
       <div className="dashboard-shell min-h-dvh flex items-center justify-center p-4">
-        <LoadingShell title="REDIRECTING_VERIFICATION" messages={["email verification required", "redirecting to verification"]} progressLabel="redirect" className="w-full max-w-[560px]" />
+        <LoadingShell title="REDIRECTING_VERIFICATION" progressLabel="redirect" className="w-full max-w-[560px]" />
       </div>
     );
   }

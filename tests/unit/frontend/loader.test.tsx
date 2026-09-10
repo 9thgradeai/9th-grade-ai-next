@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen, act } from "@testing-library/react";
-import { AuroraRing, StatusText, BootProgress } from "@/components/ui/Loader";
+import { render, screen } from "@testing-library/react";
+import { AuroraRing, BootProgress } from "@/components/ui/Loader";
 import { LoadingShell } from "@/components/ui/LoadingShell";
 
 vi.mock("framer-motion", () => ({
@@ -21,32 +21,6 @@ describe("AuroraRing", () => {
   });
 });
 
-describe("StatusText", () => {
-  it("types out the current message and cycles to the next", () => {
-    vi.useFakeTimers();
-    try {
-      render(<StatusText messages={["first step", "second step"]} interval={50} />);
-      // Real announced copy is hidden; the visible line starts with a prompt.
-      expect(screen.getByText(/^\$/)).toBeTruthy();
-
-      // Advance well past typing the whole first message plus the hold interval
-      // so the typewriter loop deterministically advances to the next message.
-      act(() => {
-        vi.advanceTimersByTime(2000);
-      });
-
-      // The live region announces the full active message; because it has
-      // cycled, it must no longer be the opening message.
-      const live = screen.getByRole("status")?.textContent ?? "";
-      expect(live).not.toBe("");
-      expect(["first step", "second step"]).toContain(live);
-      expect(screen.getByRole("status")?.textContent).toContain("step");
-    } finally {
-      vi.useRealTimers();
-    }
-  });
-});
-
 describe("BootProgress", () => {
   it("renders an indeterminate progress bar with segments", () => {
     render(<BootProgress label="boot" segments={8} />);
@@ -56,9 +30,12 @@ describe("BootProgress", () => {
 });
 
 describe("LoadingShell", () => {
-  it("renders title, status line and progress bar", () => {
+  it("renders title, 9G mark and progress bar", () => {
     render(<LoadingShell title="LOADING_TEST" />);
     expect(screen.getByText("LOADING_TEST")).toBeTruthy();
-    expect(screen.getByRole("progressbar", { name: "dashboard boot" })).toBeTruthy();
+    expect(screen.getByText("9G")).toBeTruthy();
+    expect(screen.getByRole("progressbar", { name: "loading" })).toBeTruthy();
+    // No terminal step list.
+    expect(document.querySelector("[class*='LOADING_TERMINAL']")).toBeNull();
   });
 });

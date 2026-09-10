@@ -1,12 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
 /* ── Data-boot loader primitives (dashboard loading vocabulary) ────────────
-   Pure CSS visuals driven by the keyframes in globals.css. The only client
-   piece is StatusText, which cycles a terminal status line. All decorative
-   elements are aria-hidden; the real status message is announced to screen
-   readers via a visually-hidden live region. */
+   Pure CSS visuals driven by the keyframes in globals.css. AuroraRing is the
+   9G circle mark; BootProgress is the slim segmented bar. All decorative
+   elements are aria-hidden; roles/labels announce state to screen readers. */
 
 /** Rotating aurora conic ring + core with orbiting satellites. */
 export function AuroraRing({
@@ -74,50 +71,6 @@ export function AuroraRing({
           9G
         </span>
       </div>
-    </div>
-  );
-}
-
-/** Typewriter / cycling terminal status line with a blinking cursor. */
-export function StatusText({
-  messages = ["initializing modules", "syncing data", "calibrating accuracy"],
-  interval = 1800,
-  className = "",
-}: {
-  messages?: string[];
-  interval?: number;
-  className?: string;
-}) {
-  const [i, setI] = useState(0);
-  const [chars, setChars] = useState(0);
-
-  useEffect(() => {
-    const msg = messages[i % messages.length] ?? "";
-    if (chars < msg.length) {
-      const t = setTimeout(() => setChars((c) => c + 1), 28);
-      return () => clearTimeout(t);
-    }
-    const t = setTimeout(() => {
-      setI((v) => v + 1);
-      setChars(0);
-    }, interval);
-    return () => clearTimeout(t);
-  }, [i, chars, messages, interval]);
-
-  const current = messages[i % messages.length] ?? "";
-
-  return (
-    <div className={className}>
-      <span
-        className="inline-block text-[var(--dashboard-primary)]/90 font-mono text-sm tabular-nums boot-msg"
-        aria-hidden="true"
-      >
-        <span className="text-[var(--dashboard-primary)]">$</span> {current.slice(0, chars)}
-        <span className="cursor-blink" aria-hidden="true" />
-      </span>
-      <span className="sr-only" role="status">
-        {current}
-      </span>
     </div>
   );
 }

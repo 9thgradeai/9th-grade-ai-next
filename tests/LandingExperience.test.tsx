@@ -88,12 +88,12 @@ describe("HeroBackground", () => {
   it("renders a restrained, deterministic, responsive star field", () => {
     const { container, unmount } = render(<HeroBackground />);
     const stars = container.querySelectorAll("[data-star]");
-    // Desktop 72 / tablet 48 / mobile 24 via CSS gating (same DOM).
-    expect(stars.length).toBe(72);
-    expect(container.querySelectorAll("[data-star].hidden.sm\\:block").length).toBe(24);
-    expect(container.querySelectorAll("[data-star].hidden.lg\\:block").length).toBe(24);
+    // Desktop 110 / tablet 72 / mobile 36 via CSS gating (same DOM).
+    expect(stars.length).toBe(110);
+    expect(container.querySelectorAll("[data-star].hidden.sm\\:block").length).toBe(36);
+    expect(container.querySelectorAll("[data-star].hidden.lg\\:block").length).toBe(38);
 
-    // Independent twinkle timing in the 8–10s band + inward drift offsets.
+    // Independent twinkle timing in the 8–10s band + per-star --transform offsets.
     const timings = new Set(
       [...stars].map((s) => (s as HTMLElement).style.animationDuration),
     );
@@ -102,8 +102,8 @@ describe("HeroBackground", () => {
       const seconds = Number.parseFloat(star.style.animationDuration);
       expect(seconds).toBeGreaterThanOrEqual(8);
       expect(seconds).toBeLessThanOrEqual(10);
-      expect(star.style.getPropertyValue("--star-dx")).toMatch(/px$/);
-      expect(star.style.getPropertyValue("--star-dy")).toMatch(/px$/);
+      expect(star.style.getPropertyValue("--transform")).toMatch(/^translate\(-?\d+(\.\d+)?px, -?\d+(\.\d+)?px\)$/);
+      expect(star.style.getPropertyValue("--star-color")).toMatch(/^\d+, \d+, \d+$/);
     }
 
     // Deterministic across mounts.

@@ -17,7 +17,7 @@ function TabChunkLoading() {
   return (
     <div className="space-y-4" role="status" aria-label={t("dashboard.loadingModule")}>
       <span className="sr-only">{t("common.loading")}</span>
-      <LoadingShell title={t("dashboard.loadingModule")} messages={[t("common.loading"), t("dashboard.loadingModule"), "syncing progress"]} progressLabel={t("dashboard.loadingModule")} />
+      <LoadingShell title={t("dashboard.loadingModule")} progressLabel={t("dashboard.loadingModule")} />
 
       <SkeletonCard className="p-6">
         <div className="space-y-4">

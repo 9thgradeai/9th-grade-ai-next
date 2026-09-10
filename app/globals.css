@@ -1528,46 +1528,48 @@ hr {
 .hero-stars-rotate {
   animation: heroStarsRotate 70s linear infinite;
   will-change: transform;
+  /* Ring mask, tuned to the field size so the luminous band sits inside the
+     hero viewport: transparent core and feathered rim, visible band only. */
+  -webkit-mask-image: radial-gradient(circle, transparent 18%, black 26%, black 66%, transparent 85%);
+  mask-image: radial-gradient(circle, transparent 18%, black 26%, black 66%, transparent 85%);
 }
 
 @keyframes heroStarsRotate {
   from {
-    transform: translate3d(-50%, -50%, 0) rotate(0deg);
+    transform: translateZ(0px) translate(-50%, -50%) rotate(0deg);
   }
-  to {
-    transform: translate3d(-50%, -50%, 0) rotate(-360deg);
+  100% {
+    transform: translateZ(0px) translate(-50%, -50%) rotate(-360deg);
   }
 }
 
 .hero-star {
   animation-name: heroStarTwinkle;
-  animation-timing-function: ease-in-out;
+  animation-timing-function: linear;
   animation-iteration-count: infinite;
-  /* Per-star duration (8–10s) and delay are set inline for organic timing. */
+  animation-fill-mode: backwards;
+  /* Per-star duration (8–10s), delay, and --transform offset are set inline
+     for organic, distributed timing. */
 }
 
 @keyframes heroStarTwinkle {
-  /* Invisible loop point: the snap-back from full drift to origin happens
-     at opacity 0, so infall reads as continuous (Reflect technique). */
+  /* Stars streak outward from the core along --transform, igniting fast and
+     shrinking as they arrive; the loop resets at transparent, so the
+     snap-back is never seen. */
   0% {
-    opacity: 0;
-    transform: translate3d(0, 0, 0) scale(0.7);
+    background-color: rgba(255, 255, 255, 0);
+    transform: translateZ(0px) translate(0px, 0px) scale(1);
   }
-  18% {
-    opacity: var(--star-peak, 0.5);
-    transform: translate3d(calc(var(--star-dx, 0px) * 0.25), calc(var(--star-dy, 0px) * 0.25), 0) scale(0.9);
-  }
-  60% {
-    opacity: var(--star-peak, 0.5);
-    transform: translate3d(calc(var(--star-dx, 0px) * 0.7), calc(var(--star-dy, 0px) * 0.7), 0) scale(1);
+  10% {
+    background-color: rgb(var(--star-color, 255, 255, 255));
   }
   100% {
-    opacity: 0;
-    transform: translate3d(var(--star-dx, 0px), var(--star-dy, 0px), 0) scale(0.5);
+    background-color: rgb(var(--star-color, 255, 255, 255));
+    transform: translateZ(0px) var(--transform) scale(0.5);
   }
 }
 
-/* Reduced-motion: static stars + static backdrop, full readability. */
+/* Reduced-motion: static dispersed field, full readability. */
 @media (prefers-reduced-motion: reduce) {
   .hero-stars-rotate {
     animation: none !important;
@@ -1575,7 +1577,9 @@ hr {
   }
   .hero-star {
     animation: none !important;
-    transform: none !important;
+    transform: var(--transform) !important;
+    background-color: rgb(var(--star-color, 255, 255, 255)) !important;
+    opacity: 0.5 !important;
   }
 }
 
@@ -1680,21 +1684,6 @@ html {
   overflow-x: clip;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
-}
-
-/* ══════════════════════════════════════════════════════════════════════════════
-   TERMINAL CURSOR
-   ══════════════════════════════════════════════════════════════════════════════ */
-
-@keyframes blink {
-  0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0; }
-}
-
-.cursor-blink::after {
-  content: "_";
-  animation: blink 1s infinite;
-  color: var(--primary);
 }
 
 /* ══════════════════════════════════════════════════════════════════════════════
@@ -2116,15 +2105,6 @@ html.light .skeleton-shimmer {
   transform-origin: center;
 }
 
-@keyframes boot-msg {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.86; }
-}
-
-.boot-msg {
-  animation: boot-msg 2s ease-in-out infinite;
-}
-
 @keyframes boot-scanline {
   0% { transform: translateY(-120%); opacity: 0; }
   12% { opacity: 1; }
@@ -2173,7 +2153,6 @@ html.light .skeleton-shimmer {
   .boot-orbit,
   .boot-twinkle,
   .boot-core,
-  .boot-msg,
   .boot-scanline {
     animation-play-state: paused !important;
   }
