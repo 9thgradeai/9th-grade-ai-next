@@ -31,7 +31,6 @@ export default function AppNavbar() {
   const tab = searchParams?.get("tab") ?? null;
   const isAuthed = !!user;
 
-  const [scrolled, setScrolled] = useState(false);
   const [openId, setOpenId] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
@@ -44,13 +43,6 @@ export default function AppNavbar() {
 
   const closeAll = useCallback(() => { setOpenId(null); setProfileOpen(false); }, []);
 
-  // Scroll state
-  useEffect(() => {
-    let raf = 0;
-    const onScroll = () => { if (raf) return; raf = requestAnimationFrame(() => { raf = 0; setScrolled(window.scrollY > 8); }); };
-    onScroll(); window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
   // Close on route change — deferred to avoid react-hooks/set-state-in-effect
   useEffect(() => {
     queueMicrotask(() => {
@@ -98,7 +90,7 @@ export default function AppNavbar() {
     <>
       <header
         ref={headerRef}
-        className={`fixed top-0 inset-x-0 z-50 pt-safe border-b transition-[background-color,border-color,backdrop-filter,box-shadow] duration-200 ${scrolled || openId || mobileOpen ? "bg-[#07080A]/85 backdrop-blur-xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.45)] supports-[backdrop-filter]:bg-[#07080A]/75" : "bg-transparent border-transparent"}`}
+        className="fixed top-0 inset-x-0 z-50 pt-safe border-b border-transparent bg-transparent backdrop-blur-xl"
       >
         <nav className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8" aria-label={t("nav.primaryNavigation")}>
           <div className="flex h-14 sm:h-16 items-center gap-2">
@@ -194,7 +186,7 @@ export default function AppNavbar() {
                       <ChevronDown className={`hidden sm:block h-3.5 w-3.5 text-zinc-400 transition-transform ${profileOpen ? "rotate-180" : ""}`} aria-hidden="true" />
                     </button>
                     {profileOpen && (
-                      <div id="profile-menu" role="menu" aria-label={t("nav.account")} className="absolute right-0 mt-2 w-64 overflow-hidden rounded-2xl border border-white/10 bg-[#111214] p-1.5 shadow-xl">
+                      <div id="profile-menu" role="menu" aria-label={t("nav.account")} className="absolute right-0 mt-2 w-64 overflow-hidden rounded-2xl border border-white/10 bg-transparent backdrop-blur-2xl p-1.5 shadow-xl">
                         <div className="flex items-center gap-3 px-3 py-3">
                           <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-500 text-sm font-bold text-white" aria-hidden="true">{user?.name?.trim()?.charAt(0)?.toUpperCase() ?? "U"}</span>
                           <div className="min-w-0">
@@ -234,7 +226,7 @@ export default function AppNavbar() {
             id={`nav-panel-${activeMenu.id}`}
             role="menu"
             aria-labelledby={`nav-trigger-${activeMenu.id}`}
-            className="hidden lg:block border-t border-white/10 bg-[#0B0C0F]/95 backdrop-blur-xl"
+            className="hidden lg:block border-t border-white/10 bg-transparent backdrop-blur-2xl"
           >
             <div className="mx-auto max-w-[1440px] px-6 lg:px-8 py-6">
               <div className="grid grid-cols-12 gap-6">
@@ -294,7 +286,7 @@ export default function AppNavbar() {
       {mobileOpen && (
         <div className="fixed inset-0 z-[60] lg:hidden" role="dialog" aria-modal="true" aria-label="Navigation">
           <button aria-label="Close navigation" className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
-          <div id="mobile-drawer" className="absolute right-0 top-0 bottom-0 flex w-[88%] max-w-[380px] flex-col overflow-hidden border-l border-white/10 bg-[#0B0C0F] pt-safe">
+          <div id="mobile-drawer" className="absolute right-0 top-0 bottom-0 flex w-[88%] max-w-[380px] flex-col overflow-hidden border-l border-white/10 bg-transparent backdrop-blur-2xl pt-safe">
             <div className="flex h-14 shrink-0 items-center justify-between border-b border-white/10 px-4">
               <span className="flex items-center gap-2 font-display font-semibold text-white"><BrandMark className="h-7 w-7 rounded-lg" aria-hidden="true" /> 9Th-Grade AI</span>
               <button type="button" onClick={() => setMobileOpen(false)} aria-label="Close navigation" className="p-2 rounded-xl border border-white/10 text-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"><X className="h-4 w-4" aria-hidden="true" /></button>
