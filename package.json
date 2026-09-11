@@ -54,7 +54,7 @@
     "@sentry/nextjs": "^10.72.0",
     "@sentry/node": "^10.72.0",
     "@types/zxcvbn": "^4.4.5",
-    "ai": "^4.3.16",
+    "ai": "^7.0.93",
     "bcryptjs": "^3.0.3",
     "framer-motion": "^13.1.0",
     "hls.js": "^1.7.2",
