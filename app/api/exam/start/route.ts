@@ -20,8 +20,13 @@ import {
  * The client mints the attemptId (UUID) and stores it alongside the local
  * exam state, then reuses it for every retry.
  *
- * Body: { attemptId: string, questionIds: number[] }
+ * Body: { attemptId: string, questionIds: number[], durationSec?: number }
  * Returns: { attemptId: string, status: "IN_PROGRESS" }
+ *
+ * durationSec (optional) is the configured exam length in seconds (0 =
+ * unlimited). The server stores it and enforces the timer deadline at submit
+ * time, so the client can never extend a timed exam. The submit request's
+ * durationSec remains the client-reported elapsed wall-clock time.
  */
 export async function POST(request: Request) {
   const requestId = getRequestId(request);
@@ -39,6 +44,7 @@ export async function POST(request: Request) {
     const body = (await request.json().catch(() => ({}))) as {
       attemptId?: unknown;
       questionIds?: unknown;
+      durationSec?: unknown;
     };
 
     if (typeof body.attemptId !== "string") {
@@ -65,8 +71,26 @@ export async function POST(request: Request) {
         "VALIDATION_ERROR",
       );
     }
+    if (
+      body.durationSec !== undefined &&
+      (typeof body.durationSec !== "number" ||
+        !Number.isFinite(body.durationSec) ||
+        body.durationSec < 0 ||
+        body.durationSec > 6 * 60 * 60)
+    ) {
+      throw new AppError(
+        400,
+        "durationSec must be a number in [0, 21600].",
+        "VALIDATION_ERROR",
+      );
+    }
 
-    await registerExamAttempt(userId, body.attemptId, body.questionIds as number[]);
+    await registerExamAttempt(
+      userId,
+      body.attemptId,
+      body.questionIds as number[],
+      body.durationSec as number | undefined,
+    );
 
     const res = NextResponse.json({
       attemptId: body.attemptId,

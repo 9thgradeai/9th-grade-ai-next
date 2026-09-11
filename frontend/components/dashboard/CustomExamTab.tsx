@@ -242,6 +242,21 @@ export default function CustomExamTab() {
         if (!raw) return;
         const saved = JSON.parse(raw) as PersistedExam;
         if (!saved?.questions?.length) return;
+        // If the exam had a fixed duration and the wall-clock time has since
+        // elapsed beyond the grace window, the server will reject the submit
+        // (ATTEMPT_DEADLINE_EXCEEDED). Drop the stale resume instead of
+        // surfacing an unresolvable error.
+        if (saved.durationSec > 0) {
+          const elapsedSec = Math.floor((Date.now() - saved.startsAt) / 1000);
+          if (elapsedSec >= saved.durationSec + 15) {
+            try {
+              localStorage.removeItem(STORAGE_KEY);
+            } catch {
+              /* ignore */
+            }
+            return;
+          }
+        }
         // Resume uses the persisted attemptId if present, otherwise mints a
         // new one — but in that case a server-side re-register is required.
         // For simplicity we always mint on resume if missing, then fire-and-
@@ -255,13 +270,12 @@ export default function CustomExamTab() {
         }
         setExam(withAttempt);
         setAnswers(saved.answers ?? {});
-        const elapsed = Math.floor((Date.now() - saved.startsAt) / 1000);
-        void elapsed;
         setPhase("exam");
         if (!saved.attemptId) {
           void registerExam({
             attemptId,
             questionIds: saved.questions.map((q) => q.id),
+            durationSec: saved.durationSec,
           }).catch(() => {
             /* non-fatal */
           });
@@ -371,6 +385,7 @@ export default function CustomExamTab() {
       void registerExam({
         attemptId,
         questionIds: built.questions.map((q) => q.id),
+        durationSec: built.durationSec,
       }).catch(() => {
         /* ignore — submit will surface a real error if it actually fails */
       });

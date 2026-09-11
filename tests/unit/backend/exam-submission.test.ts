@@ -103,6 +103,108 @@ describe("submitExamAttempt — canonical, idempotent submission", () => {
     ).rejects.toMatchObject({ statusCode: 400, code: "VALIDATION_ERROR" });
   });
 
+  it("rejects an answer referencing a question outside the registered set", async () => {
+    vi.mocked(prisma.examAttempt.findUnique).mockResolvedValue(null);
+
+    await expect(
+      submitExamAttempt("user-1", {
+        attemptId: ATTEMPT_ID,
+        questionIds: [1, 2],
+        durationSec: 60,
+        answers: [{ questionId: 3, selected: "ক" }], // 3 ∉ {1,2}
+      }),
+    ).rejects.toMatchObject({ statusCode: 400, code: "VALIDATION_ERROR" });
+  });
+
+  it("rejects an IN_PROGRESS submit past the server-clock deadline", async () => {
+    // Registered at /exam/start with a 60s exam; submit arrives ~2min later
+    // (past deadline + 15s grace). The server clock — not the client's — is
+    // authoritative.
+    vi.mocked(prisma.examAttempt.findUnique).mockResolvedValue({
+      id: 1,
+      userId: "user-1",
+      idempotencyKey: ATTEMPT_ID,
+      questionSetHash: HASH_FOR_1_2_3,
+      status: "IN_PROGRESS",
+      durationSec: 0,
+      examDurationSec: 60,
+      startedAt: new Date(Date.now() - 120_000),
+      submittedAt: null,
+      summaryJson: null,
+      resultId: null,
+    } as never);
+
+    await expect(
+      submitExamAttempt("user-1", {
+        attemptId: ATTEMPT_ID,
+        questionIds: [1, 2, 3],
+        durationSec: 120,
+        answers: [
+          { questionId: 1, selected: "ক" },
+          { questionId: 2, selected: "খ" },
+          { questionId: 3, selected: "" },
+        ],
+      }),
+    ).rejects.toMatchObject({
+      statusCode: 409,
+      code: "ATTEMPT_DEADLINE_EXCEEDED",
+    });
+  });
+
+  it("accepts an IN_PROGRESS submit inside the deadline grace window", async () => {
+    // 60s exam, submit arrives at 70s — inside the 15s grace buffer.
+    vi.mocked(prisma.examAttempt.findUnique).mockResolvedValue({
+      id: 1,
+      userId: "user-1",
+      idempotencyKey: ATTEMPT_ID,
+      questionSetHash: HASH_FOR_1,
+      status: "IN_PROGRESS",
+      durationSec: 0,
+      examDurationSec: 60,
+      startedAt: new Date(Date.now() - 70_000),
+      submittedAt: null,
+      summaryJson: null,
+      resultId: null,
+    } as never);
+    vi.mocked(prisma.question.findMany).mockResolvedValue([
+      fullQuestion(1, "ক"),
+    ] as never);
+    vi.mocked(prisma.userQuestionProgress.findMany).mockResolvedValue([]);
+    vi.mocked(prisma.questionAttempt.createMany).mockResolvedValue({ count: 1 } as never);
+    vi.mocked(prisma.mockTestResult.create).mockResolvedValue({ id: 500 } as never);
+    vi.mocked(prisma.examAttempt.update).mockResolvedValue({} as never);
+    vi.mocked(prisma.$executeRaw).mockResolvedValue(1 as never);
+    vi.mocked(prisma.examAttempt.upsert).mockImplementation(async (args) => {
+      const a = args as { create: { questionSetHash: string }; update?: unknown };
+      return {
+        id: 1,
+        userId: "user-1",
+        idempotencyKey: ATTEMPT_ID,
+        questionSetHash: a.create.questionSetHash,
+        status: "SUBMITTING",
+        durationSec: 70,
+        startedAt: new Date(Date.now() - 70_000),
+        submittedAt: null,
+        summaryJson: null,
+        resultId: null,
+      } as never;
+    });
+    vi.mocked(prisma.$transaction).mockImplementation(
+      async (arg) =>
+        (arg as (tx: unknown) => Promise<unknown>)(prisma) as never,
+    );
+    vi.mocked(prisma.userQuestionProgress.findUnique).mockResolvedValue(null);
+
+    const result = await submitExamAttempt("user-1", {
+      attemptId: ATTEMPT_ID,
+      questionIds: [1],
+      durationSec: 70,
+      answers: [{ questionId: 1, selected: "ক" }],
+    });
+
+    expect(result.outcome).toBe("submitted");
+  });
+
   it("grades BCS-style (+1 / −0.5 / 0), persists atomically, returns summary", async () => {
     vi.mocked(prisma.examAttempt.findUnique).mockResolvedValue(null);
     vi.mocked(prisma.question.findMany).mockResolvedValue([

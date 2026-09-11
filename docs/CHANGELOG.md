@@ -7,7 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Fixed
-- **Exam submission reliability** — the submit button can no longer silently get stuck. The API gateway timeout now covers the full request lifecycle (headers **and** body read), so a stalled grading body surfaces a retryable `TIMEOUT` instead of hanging the UI forever. Exam submissions now auto-retry transient failures (2 retries, 45s budget) against the idempotent `/api/exam/submit` endpoint. A per-attempt in-flight guard replaces the old global lock (double-clicks join the same submit), and pending submissions are persisted to localStorage so a crash or refresh mid-submit recovers automatically via `outcome: "resumed"`.
+- **Server-authoritative exam submission** — `ATTEMPT_HASH_MISMATCH` can no longer fire for legitimate submits. The question-set hash is now computed from the authoritative `questionIds` (never the client's answer-serialization shape), ranked/deduplicated canonically — the same form registered at `/api/exam/start` — so answer-reordering, -subsetting, or -deduping can never cause a false mismatch. Answers referencing questions outside the registered set are rejected with `400` instead of being silently graded.
+- **Server-clock deadline enforcement** — `/api/exam/start` now accepts an optional `durationSec` (the configured exam length), stored as `examDurationSec` on the attempt. `/api/exam/submit` verifies against the server clock (`startedAt + examDurationSec + 15s grace`) and rejects expired timed attempts with `409 ATTEMPT_DEADLINE_EXCEEDED` — a client can no longer extend a timed exam by delaying the submit call. Fresh residues of long-expired custom exams are dropped on resume instead of surfacing an unresolvable error.
+- **Concurrent-submit hardening** — serializable-transaction failures (`P2034`) are now recovered by re-reading the committed peer result instead of surfacing an opaque `500`, closing the last race window for duplicate resubmits.
 
 ## [0.5.0] - 2026-08-21
 

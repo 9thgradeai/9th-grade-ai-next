@@ -201,6 +201,7 @@ export default function MockTestTab() {
           void registerExam({
             attemptId,
             questionIds: saved.questions.map((q) => q.id),
+            durationSec: saved.durationSec,
           }).catch(() => {
             /* non-fatal */
           });
@@ -287,6 +288,7 @@ export default function MockTestTab() {
       void registerExam({
         attemptId,
         questionIds: built.questions.map((q) => q.id),
+        durationSec: built.durationSec,
       }).catch(() => {
         /* non-fatal */
       });

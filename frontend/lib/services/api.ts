@@ -404,6 +404,7 @@ export const api = {
   startExam: async (params: {
     attemptId: string;
     questionIds: number[];
+    durationSec?: number;
   }): Promise<{ attemptId: string; status: "IN_PROGRESS" }> =>
     request<{ attemptId: string; status: "IN_PROGRESS" }>("/api/exam/start", {
       method: "POST",

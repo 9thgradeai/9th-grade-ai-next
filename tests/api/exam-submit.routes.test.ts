@@ -136,6 +136,66 @@ describe("POST /api/exam/start", () => {
     );
     expect(res.status).toBe(400);
   });
+
+  it("accepts an optional durationSec and stores it as the server-side deadline", async () => {
+    await setupAuthedUser();
+    vi.mocked(prisma.examAttempt.findUnique).mockResolvedValue(null);
+    vi.mocked(prisma.examAttempt.upsert).mockResolvedValue({} as never);
+
+    const cookie = await sessionCookie();
+    const res = await startPOST(
+      jsonRequest(
+        "/api/exam/start",
+        {
+          attemptId: ATTEMPT_ID,
+          questionIds: [1, 2, 3],
+          durationSec: 1800,
+        },
+        { cookie },
+      ),
+    );
+    expect(res.status).toBe(200);
+
+    const upsertCall = vi.mocked(prisma.examAttempt.upsert).mock.calls[0];
+    expect(upsertCall?.[0]?.create).toMatchObject({
+      status: "IN_PROGRESS",
+      examDurationSec: 1800,
+    });
+  });
+
+  it("rejects a non-finite durationSec with 400", async () => {
+    await setupAuthedUser();
+    const cookie = await sessionCookie();
+    const res = await startPOST(
+      jsonRequest(
+        "/api/exam/start",
+        {
+          attemptId: ATTEMPT_ID,
+          questionIds: [1, 2, 3],
+          durationSec: "thirty",
+        },
+        { cookie },
+      ),
+    );
+    expect(res.status).toBe(400);
+  });
+
+  it("rejects a durationSec above the 6h ceiling with 400", async () => {
+    await setupAuthedUser();
+    const cookie = await sessionCookie();
+    const res = await startPOST(
+      jsonRequest(
+        "/api/exam/start",
+        {
+          attemptId: ATTEMPT_ID,
+          questionIds: [1, 2, 3],
+          durationSec: 7 * 60 * 60,
+        },
+        { cookie },
+      ),
+    );
+    expect(res.status).toBe(400);
+  });
 });
 
 describe("POST /api/exam/submit", () => {

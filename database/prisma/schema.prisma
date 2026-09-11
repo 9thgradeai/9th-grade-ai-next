@@ -813,6 +813,10 @@ model ExamAttempt {
   durationSec     Int      @default(0)
   startedAt       DateTime @default(now())
   submittedAt     DateTime?
+  // Authoritative exam length (seconds) registered at /exam/start. 0 = unlimited.
+  // The server enforces the timer deadline against this + grace, so the client
+  // can never extend a timed exam by delaying the submit call.
+  examDurationSec Int      @default(0)
   // Snapshot of the graded summary (matches ExamResultDTO.summary).
   summaryJson     Json?
   // FK to the MockTestResult row that represents this attempt, set at submit

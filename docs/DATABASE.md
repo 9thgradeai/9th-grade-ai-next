@@ -629,7 +629,8 @@ The canonical per-user exam attempt record — single source of truth for whethe
 - `idempotencyKey` String — client-minted UUID minted at exam start; reused on every retry
 - `questionSetHash` String — SHA-256 hex of the sorted question IDs (server-asserted against the submission payload)
 - `status` `ExamAttemptStatus` (`IN_PROGRESS` / `SUBMITTING` / `SUBMITTED`) — lifecycle enforced in a transaction
-- `durationSec` Int — actual seconds the user spent on the attempt
+- `durationSec` Int — actual seconds the user spent on the attempt (client-reported elapsed, clamped to a sane ceiling)
+- `examDurationSec` Int — configured exam length registered at `/api/exam/start` (0 = unlimited). The server enforces the timer deadline as `startedAt + examDurationSec + 15s grace` — a client can never extend a timed exam by delaying the submit call.
 - `startedAt` DateTime — default `now()`
 - `submittedAt` DateTime? — set when status flips to `SUBMITTED`
 - `summaryJson` Json? — snapshot of the graded `ExamResultDTO.summary`

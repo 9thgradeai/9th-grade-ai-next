@@ -52,6 +52,11 @@ import type { ExamReviewDTO } from "@/lib/types";
 
 const POINTS_PER_CORRECT = 10;
 
+// Network grace window granted past the configured exam deadline. The client
+// auto-submits on timer expiry, so a legitimate submit lands within ~1s of the
+// deadline; this buffer absorbs clock skew and high-latency deployments.
+const SUBMIT_DEADLINE_GRACE_SEC = 15;
+
 export type ExamSummaryDTO = {
   total: number;
   attempted: number;
@@ -121,6 +126,40 @@ function validateDuration(value: unknown): number {
     );
   }
   return Math.floor(value);
+}
+
+function validateQuestionIds(value: unknown): number[] {
+  if (!Array.isArray(value)) {
+    throw new AppError(
+      400,
+      "questionIds must be an array of question IDs.",
+      "VALIDATION_ERROR",
+    );
+  }
+  if (value.length === 0) {
+    throw new AppError(
+      400,
+      "questionIds must contain at least one question.",
+      "VALIDATION_ERROR",
+    );
+  }
+  if (value.length > 200) {
+    throw new AppError(
+      400,
+      "questionIds must contain at most 200 entries.",
+      "VALIDATION_ERROR",
+    );
+  }
+  if (value.some((id) => !Number.isInteger(id))) {
+    throw new AppError(
+      400,
+      "questionIds must be an array of integers.",
+      "VALIDATION_ERROR",
+    );
+  }
+  // The hash is computed over the deduplicated, sorted set — same canonical
+  // form the server used at /exam/start and the uniqueness the txn depends on.
+  return [...new Set(value as number[])];
 }
 
 function hashQuestionSet(ids: number[]): string {
@@ -209,6 +248,7 @@ export async function submitExamAttempt(
 ): Promise<ExamResultDTO> {
   try {
     const attemptId = validateAttemptId(request.attemptId);
+    const questionIds = validateQuestionIds(request.questionIds);
     const durationSec = validateDuration(request.durationSec);
     const answers = request.answers ?? [];
 
@@ -227,10 +267,24 @@ export async function submitExamAttempt(
       );
     }
 
-    const submittedIds = answers
-      .map((a) => a.questionId)
-      .filter((id): id is number => Number.isInteger(id));
-    const expectedHash = hashQuestionSet(submittedIds);
+    // The canonical question set is the AUTHORITATIVE questionIds, never the
+    // shape of the client's answer serialization. The hash registered at
+    // /exam/start is over the same canonical form, so any answer-subset drift
+    // (reordering, filtering, dedup) can never produce a false mismatch.
+    const expectedHash = hashQuestionSet(questionIds);
+
+    const questionIdSet = new Set(questionIds);
+    for (const a of answers) {
+      if (!Number.isInteger(a.questionId) || !questionIdSet.has(a.questionId)) {
+        // A stray answer pointing outside the registered question set is either
+        // tampering or a corrupt client — reject rather than silently grading.
+        throw new AppError(
+          400,
+          "answers must reference only the questions in this attempt.",
+          "VALIDATION_ERROR",
+        );
+      }
+    }
 
     // ── Fast path: this attempt was already finalized. ───────────
     // Reading outside the transaction is safe because the unique constraint
@@ -270,10 +324,30 @@ export async function submitExamAttempt(
       };
     }
 
+    if (existing) {
+      // Server-authoritative deadline verification against the CONFIGURED exam
+      // length registered at /exam/start (examDurationSec, 0 = unlimited),
+      // never the client-reported elapsed (durationSec).
+      //
+      // Grant a safe network grace window beyond the deadline so a legitimate
+      // auto-submit at expiry lands within it.
+      if (existing.examDurationSec > 0 && existing.startedAt) {
+        const elapsed = Date.now() - existing.startedAt.getTime();
+        const deadlineMs = (existing.examDurationSec + SUBMIT_DEADLINE_GRACE_SEC) * 1000;
+        if (elapsed > deadlineMs) {
+          throw new AppError(
+            409,
+            "Server clock exceeded the permitted deadline.",
+            "ATTEMPT_DEADLINE_EXCEEDED",
+          );
+        }
+      }
+    }
+
     // ── Slow path: grade, persist, mark submitted — atomically. ──
     // Fetch reference data OUTSIDE the transaction (read-only, big query).
     const questions = await prisma.question.findMany({
-      where: { id: { in: submittedIds } },
+      where: { id: { in: questionIds } },
       select: {
         id: true,
         subjectId: true,
@@ -288,7 +362,7 @@ export async function submitExamAttempt(
         subject: { select: { nameBn: true } },
       },
     });
-    if (questions.length !== new Set(submittedIds).size) {
+    if (questions.length !== new Set(questionIds).size) {
       throw new AppError(
         400,
         "One or more questions were not found.",
@@ -301,7 +375,7 @@ export async function submitExamAttempt(
     // Previous per-question progress — read before the transaction so the
     // error classifier sees the state PRIOR to this exam, not after.
     const priorProgress = (await prisma.userQuestionProgress.findMany({
-      where: { userId, questionId: { in: submittedIds } },
+      where: { userId, questionId: { in: questionIds } },
       select: {
         questionId: true,
         masteryStatus: true,
@@ -523,6 +597,27 @@ export async function submitExamAttempt(
           }
         }
       }
+      // Serializable isolation failed — optimistic crash-and-retry. A peer
+      // committed first; re-read to recover their result.
+      if (isPrismaSerializationFailure(err)) {
+        const postRace = await prisma.examAttempt.findUnique({
+          where: { userId_idempotencyKey: { userId, idempotencyKey: attemptId } },
+          include: { result: true },
+        });
+        if (postRace?.status === "SUBMITTED") {
+          const snap = (postRace.summaryJson as SnapshotPayload | null) ?? null;
+          if (snap) {
+            return {
+              summary: snap.summary,
+              review: snap.review,
+              attemptId,
+              outcome: "resumed",
+              submittedAt:
+                postRace.submittedAt?.toISOString() ?? new Date().toISOString(),
+            };
+          }
+        }
+      }
       throw new InternalServerError("Failed to submit exam attempt.");
     }
 
@@ -559,6 +654,15 @@ function isPrismaUniqueViolation(err: unknown): boolean {
   );
 }
 
+function isPrismaSerializationFailure(err: unknown): boolean {
+  return (
+    typeof err === "object" &&
+    err !== null &&
+    "code" in err &&
+    (err as { code?: string }).code === "P2034"
+  );
+}
+
 /**
  * Register a freshly built exam as IN_PROGRESS so the next submit call has a
  * target row to upsert. Returns nothing — the attemptId itself is the only
@@ -566,14 +670,25 @@ function isPrismaUniqueViolation(err: unknown): boolean {
  *
  * Safe to call multiple times for the same (userId, attemptId): the unique
  * constraint makes it a no-op when the row already exists.
+ *
+ * durationSec (optional) is the configured exam length (0 = unlimited). The
+ * server uses this to enforce the timer deadline at submit time — the client
+ * can never extend a timed exam by delaying the submit call.
  */
 export async function registerExamAttempt(
   userId: string,
   attemptId: string,
   questionIds: number[],
+  durationSec?: number,
 ): Promise<void> {
   const key = validateAttemptId(attemptId);
   const hash = hashQuestionSet(questionIds);
+  // Preserve the existing server-side deadline on a re-register unless the
+  // caller explicitly (re)provides one — never silently zero it out.
+  const deadlineProvided = typeof durationSec === "number";
+  const deadlineSec = deadlineProvided && durationSec > 0
+    ? validateDuration(durationSec)
+    : 0;
   try {
     await prisma.examAttempt.upsert({
       where: { userId_idempotencyKey: { userId, idempotencyKey: key } },
@@ -582,12 +697,16 @@ export async function registerExamAttempt(
         idempotencyKey: key,
         questionSetHash: hash,
         status: "IN_PROGRESS",
+        examDurationSec: deadlineSec,
       },
       update: {
-        // Refresh only the hash if the attempt is still IN_PROGRESS. A
-        // SUBMITTED attempt is immutable; tampering here throws.
+        // Refresh only the hash and deadline if the attempt is still
+        // IN_PROGRESS. A SUBMITTED attempt is immutable; tampering here throws.
         ...(await canRewriteHash(userId, key, hash)
-          ? { questionSetHash: hash }
+          ? {
+              questionSetHash: hash,
+              ...(deadlineProvided ? { examDurationSec: deadlineSec } : {}),
+            }
           : {}),
       },
     });

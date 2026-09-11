@@ -237,6 +237,7 @@ export async function recoverPendingSubmission(
 export async function registerExam(params: {
   attemptId: string;
   questionIds: number[];
+  durationSec?: number;
 }): Promise<void> {
   if (!isUuid(params.attemptId)) {
     throw new Error("পরীক্ষার সেশন শনাক্ত করা যায়নি। পৃষ্ঠা রিফ্রেশ করে আবার চেষ্টা করুন।");
