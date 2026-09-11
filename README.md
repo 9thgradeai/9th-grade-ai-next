@@ -980,7 +980,7 @@ npm run start         # PORT env var (default 3000)
 
 ### Production Database
 
-1. Provision PostgreSQL (Neon, Supabase, AWS RDS, Railway).
+1. Provision PostgreSQL (Neon recommended; Supabase/AWS RDS also work). Use Neon's **pooled** connection string in serverless. See `docs/backend/neon-migration-runbook.md`.
 2. Set `DATABASE_URL` in your environment.
 3. Run `npm run db:push && npm run db:seed` (or rely on Vercel prebuild).
 
@@ -989,7 +989,7 @@ npm run start         # PORT env var (default 3000)
 | Platform | Status |
 |----------|--------|
 | **Vercel** | Recommended — zero-config Next.js |
-| **Railway** | Supported — PostgreSQL + Node.js |
+| **Neon** | Recommended database — PostgreSQL, pooled serverless host |
 | **Render** | Supported — Docker or Node.js |
 | **Docker** | Not currently configured |
 
@@ -1004,7 +1004,7 @@ npm run start         # PORT env var (default 3000)
 - [ ] **Structured logging** — Replace `console.error` with a logging library
 - [ ] **Monitoring** — Vercel Analytics or Sentry integration
 - [ ] **RBAC** — Admin role features beyond the current `STUDENT`/`ADMIN` enum
-- [ ] **AI knowledge base v2** — pgvector embeddings on Railway Postgres for precision retrieval
+- [ ] **AI knowledge base v2** — pgvector embeddings on Neon Postgres for precision retrieval
 - [ ] **Offline mode** — Service worker for fully offline exam practice
 - [ ] **Performance testing** — Lighthouse CI, bundle size tracking
 

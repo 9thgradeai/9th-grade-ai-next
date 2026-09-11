@@ -12,7 +12,7 @@ Production deployment for 9Th-Grade AI exam preparation platform.
 
 | Variable | Description | Required |
 |----------|-------------|----------|
-| `DATABASE_URL` | PostgreSQL connection string (Railway/Neon) | ✅ |
+| `DATABASE_URL` | PostgreSQL connection string (Neon, pooled host) | ✅ |
 | `REDIS_URL` | Redis connection (Upstash/Railway) | ✅ |
 | `AUTH_SECRET` | JWT signing key (32+ bytes, `openssl rand -base64 32`) | ✅ |
 | `NEXT_PUBLIC_SITE_URL` | Production URL (e.g., `https://9thgrade.ai`) | ✅ |
@@ -123,7 +123,7 @@ redis-cli --scan --pattern "qcache:*" | xargs redis-cli DEL
 1. Check Sentry for error patterns
 2. Check `/api/health` for DB/Redis status
 3. Check Vercel function logs
-4. If DB connection issues: verify DATABASE_URL, check Railway/Neon status
+4. If DB connection issues: verify DATABASE_URL, check Neon status
 5. If Redis issues: verify REDIS_URL, check Upstash status
 6. Rollback if recent deploy introduced regression
 
@@ -153,7 +153,7 @@ redis-cli --scan --pattern "qcache:*" | xargs redis-cli DEL
 | Error rate | Sentry | >1% over 5m |
 | p95 latency | Vercel Analytics | >3s |
 | AI daily spend | Sentry/PostHog custom | >$50/day |
-| DB CPU | Railway/Neon dashboard | >80% |
+| DB CPU | Neon dashboard | >80% |
 | Redis memory | Upstash dashboard | >80% |
 | Auth failure rate | Custom log metric | >10% |
 
@@ -163,11 +163,11 @@ redis-cli --scan --pattern "qcache:*" | xargs redis-cli DEL
 
 | Asset | Frequency | Retention |
 |-------|-----------|-----------|
-| PostgreSQL | Daily (managed) | 7 days (Railway) / 30 days (Neon) |
+| PostgreSQL | Daily (managed) | 30 days (Neon) |
 | Redis | Not backed up (ephemeral) | N/A |
 | Code | GitHub | Forever |
 
-**Recovery**: Point-in-time restore via Railway/Neon dashboard.
+**Recovery**: Point-in-time restore via Neon dashboard.
 
 ---
 
@@ -184,7 +184,7 @@ redis-cli --scan --pattern "qcache:*" | xargs redis-cli DEL
 | Role | Contact | When |
 |------|---------|------|
 | Platform (Vercel) | support@vercel.com | Deploy/infra issues |
-| Database (Railway/Neon) | Support portal | DB outages |
+| Database (Neon) | Support portal | DB outages |
 | Redis (Upstash) | support@upstash.com | Cache issues |
 | AI Providers | Status pages / support | Provider outages |
 

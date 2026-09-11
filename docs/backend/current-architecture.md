@@ -19,8 +19,8 @@ Vercel (Next.js 16.3.1, zero-config deploy, .vercel/project.json linked)
 backend/ ("server-only" enforced)  →  PrismaClient singleton
         │
         ▼
-PostgreSQL @ Railway (provider = postgresql, schema.prisma:10-13)
-   DATABASE_URL env var; no migrations directory (db push only)
+PostgreSQL @ Neon (provider = postgresql, schema.prisma:10-13)
+   DATABASE_URL env var (pooled `-pooler.neon.tech` host); migrated from Railway (2026)
 
 External:
    Groq API      (ai SDK, openai/gpt-oss-120b)     tutor/assistant primary
@@ -140,9 +140,9 @@ Known inconsistency: flash-news route's catch returns `{ error: { message, code 
 - `prebuild` script: `if [ "$VERCEL" = "1" ]; then npm run db:sync; fi`
   where `db:sync = db:clean && db:push && db:seed`.
   ⚠ **Every production deploy deletes all Question rows and reseeds** — consequences quantified in database-audit.md §5.
-- CI (`.github/workflows/ci.yml`): node 22, `npm ci → typecheck → lint → vitest → next build`. No database service; tests are jsdom/unit only.
-- No Dockerfile, no railway.toml, no containerization. "Railway" is the **database host only**
-  (schema comment: "production uses Railway Postgres via DATABASE_URL").
+- CI (`.github/workflows/ci.yml`): node 22, `npm ci → typecheck → lint → vitest → next build` against a `postgres:16` service container. No cloud database required.
+- No Dockerfile, no railway.toml, no containerization. "Neon" (PostgreSQL via `DATABASE_URL`) is the **database host only**
+  (schema comment: "production uses Neon Postgres via DATABASE_URL").
 - Vitest aliases `server-only` to a mock so backend modules import safely in tests.
   Coverage thresholds: 70% lines / 60% functions / 70% branches.
 

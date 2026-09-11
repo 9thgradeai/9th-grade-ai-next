@@ -1,6 +1,7 @@
 // Prisma schema for 9Th-Grade AI
-// PostgreSQL for all environments (local + Vercel/Railway). Local dev uses
-// a local Postgres instance; production uses Railway Postgres via DATABASE_URL.
+// PostgreSQL for all environments (local + Vercel/Neon). Local dev uses
+// a local Postgres instance; production uses Neon Postgres via DATABASE_URL
+// (pooled `-pooler.neon.tech` host for serverless function fan-out).
 
 generator client {
   provider = "prisma-client-js"

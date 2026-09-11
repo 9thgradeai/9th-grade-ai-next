@@ -73,7 +73,7 @@ npm run db:seed
 ## Hosting
 
 - **Vercel**: Recommended. Zero-config Next.js deployment.
-- **Railway / Render**: Alternative PaaS options.
+- **Database**: Neon PostgreSQL (pooled `-pooler.neon.tech` connection string in serverless). Other PaaS options (Supabase/AWS RDS) also work via `DATABASE_URL`.
 - **Docker**: Not currently configured, but can be added.
 
 ## Rollback
