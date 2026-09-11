@@ -195,21 +195,30 @@ security-audit queue items 2–6; add the full IDOR/concurrency/idempotency/quot
 **Gate: this is the "hardened" bar required before any infra migration.**
 
 ### Phase 21–22 — Neon migration (only after gate)
-Environments: `dev(local) / staging / prod` branches in Neon (branch-per-env is native).
+**Status: DONE (2026-09-12).** Production now runs on Neon (`ninth_grade_ai`),
+fully independent of Railway. Executed per `neon-migration-runbook.md`, including
+independence proof (fresh Neon DB + repo alone reproduces the content schema) and
+ingress of the stale migration history into one truthful baseline
+(`000000000000_production_schema_baseline`).
 
-Runbook:
-1. Snapshot Railway (`pg_dump` custom format).
-2. Provision Neon staging (pooled connection string noted for serverless).
-3. Apply migrations (now real files) + extensions (`pgvector`, `pg_trgm` when needed).
-4. Import data; reconcile row counts per table; FK orphan check queries.
-5. Index/constraint diff vs schema.
-6. Point staging app at Neon; run integration suite + manual AI flows.
-7. Load test staging (Phase 25 script, 100→1000 users).
-8. Freeze writes window (low-traffic), final Railway dump, cutover `DATABASE_URL`, smoke tests.
-9. Keep Railway live ≥2 weeks as rollback target; monitor error/latency budgets.
-10. Only then decommission planning for Railway (never immediate delete).
+Environments: `prod` = Neon `ninth_grade_ai` (post-migration). Neon branch-per-env
+(`staging`/`dev`) not adopted; Vercel preview envs are the de-facto staging.
 
-Seed/deploy changes: prebuild becomes `migrate deploy` (+ optional guarded seed), never clean.
+Runbook (as executed):
+1. `pg_dump` Railway prod (`...:32516`, PG 18.6) custom format.
+2. Provision dedicated Neon DB `ninth_grade_ai` (fresh — no stray tables).
+3. Schema = `prisma db push` from current schema (canonical, per AGENTS.md);
+   migrations NOT the deploy mechanism.
+4. Restore data into Neon; parity gate row-for-row vs Railway (users/questions/
+   attempts/progress/mock-results/exam-attempts) — PASSED.
+5. Idempotent seed on top; drift check `schema.prisma` vs live Neon = ZERO.
+6. Cutover `DATABASE_URL` → Neon pooled; `DIRECT_DATABASE_URL` → Neon direct.
+7. Redeploy via GitHub (Vercel preview `9th-grade-o3p5ljcwd` Ready; homepage 200).
+8. Keep Railway live ≥14 days as rollback target; monitor.
+9. Decommission planning only after the observation window (never immediate delete).
+
+Seed/deploy changes: `prebuild` = `db:deploy-sync` (heal-source-keys → `db push`
+→ guarded idempotent seed), never clean.
 
 ### Phase 23–24 — Redis + Workers (post-migration)
 Upstash/Railway Redis for rate-limit store + catalog cache + short-lived state;

@@ -53,7 +53,7 @@ RAG primitives, rate-limit semantics incl. injected-Redis parity.
 | 18 Observability | ✅ | structured logger w/ redaction; request-id/timing on routes; Sentry = env-gated drop-in |
 | 19 Security fixes | ✅ | prompt-injection fencing; IP-trust toggle; enumeration-safe throttles; IDOR suite |
 | 20 Test hardening | ✅ | +76 tests incl. concurrency burst, rollback drills, quota enforcement, isolation matrix |
-| 21–22 Neon prep/migration | 🟡 runbook-ready | neon-migration-runbook.md; operator executes baseline resolve + cutover (prod untouched by policy) |
+| 21–22 Neon prep/migration | ✅ | cutover DONE (2026-09-12): prod on Neon `ninth_grade_ai`, parity gate passed, drift-zero, deploy hook `db:deploy-sync`, independence proven, single baseline migration `000000000000_production_schema_baseline`; Railway held ≤14d as rollback |
 | 23 Redis deployment | 🟡 gated | adapter complete; adoption ADR written |
 | 24 Workers deployment | 🟡 gated | interface + driver ready; separate deploy documented |
 | 25 Load testing | 🟡 harness committed | k6 script with SLO thresholds; execution needs staging target |

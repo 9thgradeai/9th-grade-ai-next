@@ -31,42 +31,54 @@ Runs the production server on the port defined by `PORT` (default 3000).
 
 ## Database (Production)
 
-Schema changes ship via **direct push** (`prisma db push`), not migration files.
-On every Vercel deploy the `prebuild` hook runs `npm run db:deploy-sync`
-(schema push + idempotent seed) when `VERCEL=1`, keeping the production schema
-in sync automatically — matching the local `db:push` policy.
+**Production database: Neon PostgreSQL** (`ninth_grade_ai`). Runtime uses the
+**pooled** connection (function fan-out cannot exhaust `max_connections`); the
+build-time schema sync uses the **direct** connection.
 
-**Deploys are non-destructive and fail closed.** The push runs *without*
-`--accept-data-loss`: additive changes apply automatically, but any change that
-would drop data (removed column/table) fails the deploy loudly instead of
-silently destroying production rows. To ship an intentionally destructive
-change, run it once by hand against production, then redeploy:
+| Variable | Purpose |
+|---|---|
+| `DATABASE_URL` | Neon **pooled** URL — runtime reads/writes |
+| `DIRECT_DATABASE_URL` | Neon **direct** URL — build-time `db:deploy-sync` schema push + seed |
+
+Schema changes ship via **direct push** (`prisma db push`), not migration files
+(single truthful baseline migration exists so `migrate deploy` stays a no-op, but
+it is not the deploy mechanism). On every Vercel deploy the `prebuild` hook runs
+`npm run db:deploy-sync` when `VERCEL=1`:
+1. `scripts/heal-source-keys.ts` — dedupe seed-source key collisions, and
+2. `prisma db push --skip-generate --accept-data-loss --schema …`, then
+3. `npm run db:seed` — idempotent upsert-only seed (never deletes content rows).
+
+It targets `DIRECT_DATABASE_URL` when set, falling back to `DATABASE_URL`.
+
+**Deploys are content-safe but schema-forgiving.** The push uses a non-empty
+`--accept-data-loss` diff to drift back to the declared schema — the schema is
+the source of truth and DB content (rows) is never dropped by it except when a
+matching column/table is removed from `schema.prisma`. Before removing a column
+or table, run the force-push flow once by hand against production and review
+the diff first:
 
 ```bash
-DATABASE_URL="<prod-url>" npm run db:push-force   # review the diff first!
+DATABASE_URL="<prod-direct-url>" npm run db:push-force   # review the diff first!
 ```
 
 If a deploy fails during schema sync, the build aborts before the new code goes
 live. Inspect the deploy log for the offending table, fix the schema or run the
 manual command above, then redeploy.
 
-Seeding is idempotent (upserts keyed on stable `sourceKey`s). Mock-test and
-daily-quiz question sets are replaced inside a single transaction, so readers
-never observe partially-replaced content.
+Seeding is idempotent (upserts keyed on stable `sourceKey`s). Per-user data
+(attempts, progress, bookmarks, reviews) is never wiped by a deploy —
+`SEED_RESET_USERS=1` is required to reset it and is never set in builds.
 
-For manual provisioning from scratch:
+For manual provisioning from scratch (from the repo alone — no external dump):
 
 1. Provision a PostgreSQL database (e.g., Neon, Supabase, AWS RDS).
-2. Update `DATABASE_URL` in `.env.local` (or your hosting provider's env config).
+2. Update `DATABASE_URL` (+ `DIRECT_DATABASE_URL` for direct-host syncs) in
+   `.env.local` or your hosting provider's env config.
 3. Push the schema:
-
-```bash
-npm run db:push
-```
-
 4. Seed data:
 
 ```bash
+npm run db:push
 npm run db:seed
 ```
 
