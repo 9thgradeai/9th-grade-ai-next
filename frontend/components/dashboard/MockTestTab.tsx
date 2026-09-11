@@ -197,15 +197,16 @@ export default function MockTestTab() {
         setCurrentQuestion(Math.min(saved.currentQuestion ?? 0, saved.questions.length - 1));
         setTimeRemaining(Math.max(0, saved.durationSec - elapsedSec));
         setTestState("active");
-        if (!saved.attemptId) {
-          void registerExam({
-            attemptId,
-            questionIds: saved.questions.map((q) => q.id),
-            durationSec: saved.durationSec,
-          }).catch(() => {
-            /* non-fatal */
-          });
-        }
+        // Always re-register on resume: idempotent, and with server-side
+        // IN_PROGRESS hash adoption it heals a token whose row still holds an
+        // older question-set hash so the submit can't 409.
+        void registerExam({
+          attemptId,
+          questionIds: saved.questions.map((q) => q.id),
+          durationSec: saved.durationSec,
+        }).catch(() => {
+          /* non-fatal */
+        });
       } catch {
         /* corrupt storage — ignore */
       }
@@ -273,6 +274,10 @@ export default function MockTestTab() {
         setBuildError("এই কনফিগারেশনে কোনো প্রশ্ন পাওয়া যায়নি।");
         return;
       }
+      // A fresh build must bind to a brand-new attempt token — never reuse a
+      // stale one or the server keeps the old question-set hash and the new
+      // exam's submit 409s with ATTEMPT_HASH_MISMATCH.
+      clearAttemptId(STORAGE_KEY);
       const attemptId = ensureAttemptId(STORAGE_KEY);
       setQuestions(built.questions);
       setAnswers({});

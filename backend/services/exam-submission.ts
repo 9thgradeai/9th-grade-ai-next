@@ -702,7 +702,7 @@ export async function registerExamAttempt(
       update: {
         // Refresh only the hash and deadline if the attempt is still
         // IN_PROGRESS. A SUBMITTED attempt is immutable; tampering here throws.
-        ...(await canRewriteHash(userId, key, hash)
+        ...(await canRewriteHash(userId, key)
           ? {
               questionSetHash: hash,
               ...(deadlineProvided ? { examDurationSec: deadlineSec } : {}),
@@ -719,15 +719,19 @@ export async function registerExamAttempt(
 async function canRewriteHash(
   userId: string,
   attemptId: string,
-  expectedHash: string,
 ): Promise<boolean> {
   const existing = await prisma.examAttempt.findUnique({
     where: { userId_idempotencyKey: { userId, idempotencyKey: attemptId } },
     select: { status: true, questionSetHash: true },
   });
   if (!existing) return true; // upsert will create
+  // An IN_PROGRESS attempt can be re-registered with a NEW question set: the
+  // register call is the authoritative binding of "this token now means THIS
+  // exam". Adopting the newest build heals stale tokens (a fresh exam that
+  // reused an abandoned attemptId would otherwise keep the old hash and every
+  // submit would 409 with ATTEMPT_HASH_MISMATCH). SUBMITTED/SUBMITTING rows
+  // stay immutable — re-registering a finalized attempt is a tampering signal.
   if (existing.status !== "IN_PROGRESS") return false;
-  if (existing.questionSetHash !== expectedHash) return false;
   return true;
 }
 

@@ -271,15 +271,16 @@ export default function CustomExamTab() {
         setExam(withAttempt);
         setAnswers(saved.answers ?? {});
         setPhase("exam");
-        if (!saved.attemptId) {
-          void registerExam({
-            attemptId,
-            questionIds: saved.questions.map((q) => q.id),
-            durationSec: saved.durationSec,
-          }).catch(() => {
-            /* non-fatal */
-          });
-        }
+        // Always re-register on resume: idempotent, and with server-side
+        // IN_PROGRESS hash adoption it heals a token whose row still holds an
+        // older question-set hash (stale build reuse) so the submit can't 409.
+        void registerExam({
+          attemptId,
+          questionIds: saved.questions.map((q) => q.id),
+          durationSec: saved.durationSec,
+        }).catch(() => {
+          /* non-fatal */
+        });
       } catch {
         /* corrupt storage — ignore */
       }
@@ -357,6 +358,12 @@ export default function CustomExamTab() {
         setBuildError("এই কনফিগারেশনে কোনো প্রশ্ন পাওয়া যায়নি।");
         return;
       }
+      // A fresh exam build MUST bind to a brand-new attempt token. The token
+      // is only cleared on a confirmed successful submit, so without this a
+      // rebuild after an abandoned/failed attempt would REUSE the old UUID —
+      // the server keeps the old question-set hash for that token and every
+      // submit of the new exam 409s with ATTEMPT_HASH_MISMATCH.
+      clearAttemptId(STORAGE_KEY);
       const attemptId = ensureAttemptId(STORAGE_KEY);
       const persisted: PersistedExam = {
         examId: built.examId,

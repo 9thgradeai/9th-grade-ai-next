@@ -382,18 +382,45 @@ describe("registerExamAttempt", () => {
     });
   });
 
-  it("is a no-op when an existing IN_PROGRESS row has the same question hash", async () => {
-    const hash = HASH_FOR_1_2_3;
+  it("keeps the hash bound on a non-finalized (no-op) register", async () => {
     vi.mocked(prisma.examAttempt.findUnique).mockResolvedValue({
       status: "IN_PROGRESS",
-      questionSetHash: hash,
+      questionSetHash: "stale-hash",
+    } as never);
+    vi.mocked(prisma.examAttempt.upsert).mockResolvedValue({} as never);
+
+    await registerExamAttempt("user-1", ATTEMPT_ID, [4, 5]);
+
+    const upsertCall = vi.mocked(prisma.examAttempt.upsert).mock.calls[0];
+    expect(upsertCall?.[0]?.update).toEqual({
+      questionSetHash: createHash("sha256").update("4,5").digest("hex"),
+    });
+  });
+
+  it("heals a stale IN_PROGRESS row — a reused token re-binds to the new question set", async () => {
+    vi.mocked(prisma.examAttempt.findUnique).mockResolvedValue({
+      status: "IN_PROGRESS",
+      questionSetHash: "stale-hash",
     } as never);
     vi.mocked(prisma.examAttempt.upsert).mockResolvedValue({} as never);
 
     await registerExamAttempt("user-1", ATTEMPT_ID, [1, 2, 3]);
 
     const upsertCall = vi.mocked(prisma.examAttempt.upsert).mock.calls[0];
-    expect(upsertCall?.[0]?.update).toEqual({ questionSetHash: hash });
+    expect(upsertCall?.[0]?.update).toEqual({ questionSetHash: HASH_FOR_1_2_3 });
+  });
+
+  it("never re-binds a SUBMITTED row (tampering signal)", async () => {
+    vi.mocked(prisma.examAttempt.findUnique).mockResolvedValue({
+      status: "SUBMITTED",
+      questionSetHash: "committed-hash",
+    } as never);
+    vi.mocked(prisma.examAttempt.upsert).mockResolvedValue({} as never);
+
+    await registerExamAttempt("user-1", ATTEMPT_ID, [1, 2, 3]);
+
+    const upsertCall = vi.mocked(prisma.examAttempt.upsert).mock.calls[0];
+    expect(upsertCall?.[0]?.update).toEqual({});
   });
 });
 
