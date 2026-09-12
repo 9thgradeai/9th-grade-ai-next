@@ -49,6 +49,31 @@ describe("import gate: Unicode corruption is fatal", () => {
     expect(g.fatal.some((i) => i.code === "VISUAL_ORDER_BANGLA")).toBe(true);
   });
 
+  it("rejects a sibling-Indic-script glyph mixed into Bangla (OCR glyph substitution)", () => {
+    // Devanagari क + ि inside an otherwise-Bangla word (কোकिलকণ্ঠী).
+    const g = scanMca(
+      clean({
+        question: "কোনটি দ্বন্দ্ব সমাস?",
+        options: ["কোकिलকণ্ঠী", "রাতজাগা", "হাটেবাজারে", "মেনিমুখো"],
+        correctAnswer: "হাটেবাজারে",
+      }),
+    );
+    expect(g.verdict).toBe("REJECT");
+    expect(g.fatal.some((i) => i.code === "FOREIGN_SCRIPT")).toBe(true);
+  });
+
+  it("does NOT flag the shared Bangla daṇḍa (।) as a foreign glyph", () => {
+    const g = scanMca(clean({ explanation: "উভয় পদের অর্থ থাকে। এটি দ্বন্দ্ব।" }));
+    expect(g.fatal.some((i) => i.code === "FOREIGN_SCRIPT")).toBe(false);
+    expect(g.verdict).toBe("ACCEPT");
+  });
+
+  it("rejects a Sinhala න substituted for Bangla ন", () => {
+    const g = scanMca(clean({ question: "কোনটি দ\u0D28্ত্য ধ্বনি?" }));
+    expect(g.verdict).toBe("REJECT");
+    expect(g.fatal.some((i) => i.code === "FOREIGN_SCRIPT")).toBe(true);
+  });
+
   it("rejects a Unicode replacement character anywhere", () => {
     const g = scanMca(clean({ correctAnswer: "ক\uFFFD" }));
     expect(g.verdict).toBe("REJECT");

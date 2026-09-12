@@ -42,21 +42,38 @@ export function matchOptionBlock(
   return null;
 }
 
-const LETTER_TO_IDX: Record<string, number> = {
-  ক: 0,
-  খ: 1,
-  গ: 2,
-  ঘ: 3,
-  a: 0,
-  b: 1,
-  c: 2,
-  d: 3,
-};
-
 export const OPTION_LETTERS = ["ক", "খ", "গ", "ঘ"];
 
 export function optionLetterForIndex(idx: number): string {
   return OPTION_LETTERS[idx] ?? "";
+}
+
+/**
+ * Resolve a letter-answer to its option text ONLY when the answer unambiguously
+ * points at exactly one option:
+ *   • a bare letter ("উত্তর: খ", "Ans. গ।" — no remainder)
+ *   • a letter whose remainder is exactly one of the options
+ *     ("উত্তর: খ. সংক্ষেপণ", "Ans. ঘ. নতুনদিল্লি")
+ * Anything else (multi-answer "ক,গ", ambiguous "খ বা ঘ. …", an answer whose
+ * text contradicts its letter, or a letter not from the option set) returns
+ * null so the RAW answer is kept and the import gate's ANSWER_MISMATCH rejects
+ * it. The answer is never silently forced onto a wrong option.
+ */
+export function resolveAnswerToOption(answerRaw: string, options: string[]): string | null {
+  if (!answerRaw) return null;
+  if (options.includes(answerRaw)) return answerRaw;
+
+  const LETTER_TO_IDX: Record<string, number> = {
+    "ক": 0, "খ": 1, "গ": 2, "ঘ": 3,
+    "a": 0, "b": 1, "c": 2, "d": 3,
+  };
+  const head = answerRaw.trim();
+  const letter = head.charAt(0).toLowerCase();
+  if (!(letter in LETTER_TO_IDX)) return null;
+  const idx = LETTER_TO_IDX[letter];
+  const rest = head.replace(/^./u, "").replace(/^[।.]:?\s*/, "");
+  if (rest === "" || rest === options[idx]) return options[idx];
+  return null;
 }
 
 /** The reference line parser (logic mirrors seed-questions.ts parseQuestionLine). */
@@ -69,12 +86,15 @@ export function parseQuestionLine(line: string): ParsedQuestion | null {
     body = line.slice(0, explanationIdx);
   }
 
-  const answerIdx = body.indexOf("উত্তর:");
+  // Answer marker: "উত্তর:" (canonical bank format) or "Ans." (English-keyed
+  // folder files). Case-insensitive so "ans." works too.
+  const answerMarker = /(উত্তর\s*:)|(ans\.)/i;
+  const m = answerMarker.exec(body);
   let answerRaw = "";
   let qAndOpts = body;
-  if (answerIdx >= 0) {
-    answerRaw = body.slice(answerIdx + "উত্তর:".length).trim();
-    qAndOpts = body.slice(0, answerIdx);
+  if (m) {
+    answerRaw = body.slice(m.index + m[0].length).trim();
+    qAndOpts = body.slice(0, m.index);
   }
 
   const opt = matchOptionBlock(qAndOpts);
@@ -85,12 +105,7 @@ export function parseQuestionLine(line: string): ParsedQuestion | null {
 
   const options = [match[1], match[2], match[3], match[4]].map((s) => s.trim());
 
-  let correctAnswer = answerRaw;
-  const ansLetter = answerRaw.charAt(0).toLowerCase();
-  if (ansLetter in LETTER_TO_IDX) {
-    const idx = LETTER_TO_IDX[ansLetter];
-    correctAnswer = options[idx];
-  }
+  const correctAnswer = resolveAnswerToOption(answerRaw, options) ?? answerRaw;
 
   if (!questionText || options.length < 2) return null;
 

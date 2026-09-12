@@ -27,6 +27,7 @@ import {
   hasSourceWatermark,
 } from "../scripts/qb-forensics/bangla";
 import { parseQuestionLine, serializeQuestionLine, splitSections } from "../scripts/qb-forensics/parse-flat";
+import { scanMca } from "../scripts/qb-forensics/import-gate";
 import { classifyRecord, applyTransforms, resolveLetterAnswer } from "../scripts/qb-forensics/classify";
 import type { QuestionRecord } from "../scripts/qb-forensics/issues";
 
@@ -179,6 +180,42 @@ describe("flat-file parser (parity with seeder)", () => {
     const raw = "১. বাংলা ভাষা ও সাহিত্য\n৫. কিছু প্রশ্ন? ক. x খ. y গ. z ঘ. w উত্তর: ঘ. w\n২. সাধারণ বিজ্ঞান\n";
     const sections = splitSections(raw);
     expect(sections.map((s) => s.header)).toEqual(["বাংলা ভাষা ও সাহিত্য", "সাধারণ বিজ্ঞান"]);
+  });
+
+  it("parses the English 'Ans.' answer marker (folder-file format)", () => {
+    const line =
+      "০১. 'সমাস' শব্দের অর্থ কি? ক. সংশ্লেষণ খ. সংক্ষেপণ গ. বিশ্লেষণ ঘ. সংযোজন Ans. খ. সংক্ষেপণ ব্যাখ্যা: সমাস শব্দের অর্থ মিলন বা একাধিক পদের একপদীকরণ।";
+    const p = parseQuestionLine(line);
+    expect(p).not.toBeNull();
+    expect(p!.options).toEqual(["সংশ্লেষণ", "সংক্ষেপণ", "বিশ্লেষণ", "সংযোজন"]);
+    expect(p!.correctAnswer).toBe("সংক্ষেপণ");
+    // A complete সমাস-style MCQ surrounding it must pass the import gate.
+    const g = scanMca({ question: p!.question, options: p!.options, correctAnswer: p!.correctAnswer, explanation: p!.explanation });
+    expect(g.verdict).toBe("ACCEPT");
+  });
+
+  it("keeps an ambiguous multi-answer raw so the gate rejects it (no guessing)", () => {
+    const line =
+      "১৬. যা পরপদের অর্থ প্রধানরূপে বুঝায় তাকে কোন সমাস বলে? ক. কর্মধারয় খ. বহুব্রীহি গ. তৎপুরুষ ঘ. দ্বিগু Ans. ক,গ (উভয়ই) ব্যাখ্যা: কর্মধারয় ও তৎপুরুষ সমাসে পরপদ প্রধান।";
+    const p = parseQuestionLine(line);
+    expect(p).not.toBeNull();
+    // The letter "ক,গ" must NOT silently resolve to options[0].
+    expect(p!.correctAnswer).toBe("ক,গ (উভয়ই)");
+    const g = scanMca({ question: p!.question, options: p!.options, correctAnswer: p!.correctAnswer, explanation: p!.explanation });
+    expect(g.verdict).toBe("REJECT");
+    expect(g.fatal.some((i) => i.code === "ANSWER_MISMATCH")).toBe(true);
+  });
+
+  it("keeps an answer whose letter contradicts its remainder raw (gate rejects)", () => {
+    const line =
+      "৮৫. 'প্রাণভয়' এর ব্যাসবাক্য হবে- ক. প্রাণের ভয় খ. প্রাণ যাওয়ার ভয় গ. প্রাণ হতে ভয় ঘ. ভয়ের প্রাণ Ans. খ. প্রাণ যাওয়ার ভয় = প্রাণভয় ব্যাখ্যা: ব্যাসবাক্যটি ভুল।";
+    const p = parseQuestionLine(line);
+    expect(p).not.toBeNull();
+    // "প্রাণ যাওয়ার ভয় = প্রাণভয়" is NOT the option খ text — never resolved.
+    expect(p!.correctAnswer).toBe("খ. প্রাণ যাওয়ার ভয় = প্রাণভয়");
+    const g = scanMca({ question: p!.question, options: p!.options, correctAnswer: p!.correctAnswer, explanation: p!.explanation });
+    expect(g.verdict).toBe("REJECT");
+    expect(g.fatal.some((i) => i.code === "ANSWER_MISMATCH")).toBe(true);
   });
 });
 

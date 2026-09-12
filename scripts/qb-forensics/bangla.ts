@@ -57,6 +57,45 @@ export function hasMangledHeader(s: string): boolean {
   return /বযাখ্যা|বয্াখয্া|বযাখয্া/.test(s);
 }
 
+/**
+ * Detect glyphs from a Sibling Indic script (Devanagari, Gurmukhi, Gujarati,
+ * Oriya, Tamil, Telugu, Kannada, Malayalam, Sinhala, Tibetan) smuggled into
+ * Bangla text. This is the OCR glyph-substitution corruption where a look-alike
+ * letter from another Indic script replaces the correct Bangla letter
+ * (e.g. Devanagari क ि inside "কোकिलকণ্ঠী", Sinhala න for Bangla ন, Telugu య
+ * for Bangla য). The shared daṇḍa "।" (U+0964/0965) and script digits are
+ * excluded — they legitimately appear inside Bangla text.
+ */
+const FOREIGN_INDIC_RANGES: Array<[number, number]> = [
+  [0x0901, 0x0939], // Devanagari letters / anusvara / candrabindu
+  [0x093a, 0x095f], // Devanagari matras + additional consonants (excl. daṇḍa/digits)
+  [0x0970, 0x097f], // Devanagari extensions
+  [0x0a01, 0x0a5f], // Gurmukhi
+  [0x0a85, 0x0adf], // Gujarati
+  [0x0b05, 0x0b4f], // Oriya
+  [0x0b85, 0x0bcf], // Tamil
+  [0x0c05, 0x0c4f], // Telugu
+  [0x0c85, 0x0ccf], // Kannada
+  [0x0d05, 0x0d4f], // Malayalam
+  [0x0d82, 0x0df3], // Sinhala
+  [0x0f00, 0x0fcf], // Tibetan
+];
+
+/**
+ * True when the string contains any glyph from a sibling Indic script other
+ * than Bangla. The shared daṇḍa ("।") and the foreign digits are excluded —
+ * both legitimately occur inside Bangla text.
+ */
+export function hasForeignIndicScript(s: string): boolean {
+  for (const ch of s) {
+    const c = ch.codePointAt(0)!;
+    for (const [lo, hi] of FOREIGN_INDIC_RANGES) {
+      if (c >= lo && c <= hi) return true;
+    }
+  }
+  return false;
+}
+
 /** Detect any stray multi-question scaffold leaking into a single field. */
 export function hasOptionMarkers(s: string): boolean {
   return /\((ক|খ|গ|ঘ|ঙ|চ)\)/.test(s);

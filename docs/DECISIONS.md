@@ -379,3 +379,17 @@ returning broken MCQ and silently skipping global duplicates. `npm run db:seed`
 / `db:seed-questions` now log rejected counts per source. Also fixed a latent
 bug: `hasNonStandardSpace` used a stateful `/g` regex, so boolean checks now use
 a non-global copy in `scripts/qb-forensics/unicode.ts`.
+
+Addendum (2026-09): two gate extensions made while importing the Bangla
+Grammar **সমাস** folder file (`database/data/ques/বাংলা ভাষা ও সাহিত্য/ভাষা/সমাস/`):
+- **`FOREIGN_SCRIPT`** (fatal): rejects glyphs from sibling Indic scripts
+  (Devanagari/Gurmukhi/Tamil/etc.) smuggled into Bangla text — the OCR
+  glyph-substitution mode that passes `VISUAL_ORDER_BANGLA` (e.g. Devanagari
+  क ि inside "কোकिलकণ্ঠী" and Sinhala න substituting for Bangla ন). The shared
+  daṇḍa "।" and script digits are excluded — they legitimately appear in Bangla.
+- **English `Ans.` answer marker** + **strict letter resolution**: the shared
+  parser now accepts `Ans.` alongside `উত্তর:` (case-insensitive), and a
+  letter-answer only resolves to its option when it unambiguously points at one
+  (bare letter, or a remainder that IS the option). Multi-answer / contradictory
+  answers ("ক,গ (উভয়ই)", "খ বা ঘ. …") are kept raw and rejected by
+  `ANSWER_MISMATCH` instead of silently forcing a wrong option.

@@ -39,7 +39,13 @@ import {
   decodeLiteralEscapes,
   REPLACEMENT_CHAR,
 } from "./unicode";
-import { hasMangleSignature, hasMangledHeader, hasOptionMarkers, hasQuestionScaffold } from "./bangla";
+import {
+  hasMangleSignature,
+  hasMangledHeader,
+  hasOptionMarkers,
+  hasQuestionScaffold,
+  hasForeignIndicScript,
+} from "./bangla";
 import { applyTransforms, resolveLetterAnswer } from "./classify";
 
 export type GateField = "question" | "options" | "correctAnswer" | "explanation" | "record";
@@ -50,6 +56,7 @@ export type GateIssueCode =
   | "DOUBLE_ENCODING"
   | "CONTROL_CHAR"
   | "VISUAL_ORDER_BANGLA"
+  | "FOREIGN_SCRIPT"
   | "MANGLED_HEADER"
   | "OPTION_MARKER_LEAK"
   | "QUESTION_SCAFFOLD"
@@ -227,6 +234,15 @@ export function scanMca(raw: McaInput): McaGateResult {
         snippet: snippet(value),
       });
     }
+    if (hasForeignIndicScript(normValue)) {
+      push({
+        code: "FOREIGN_SCRIPT",
+        field,
+        fatal: true,
+        detail: `${fieldLabel(field, index)} contains a glyph from a sibling Indic script (Devanagari/Gurmukhi/Tamil/etc. OCR glyph-substitution)`,
+        snippet: snippet(value),
+      });
+    }
     if (hasMangledHeader(normValue)) {
       push({
         code: "MANGLED_HEADER",
@@ -395,6 +411,6 @@ export function mcaSignature(rec: McaInput): string {
 /** Convenience: true when any text field is fatally corrupt. */
 export function isCorrupt(rec: McaInput): boolean {
   return scanMca(rec).fatal.some((i) =>
-    ["REPLACEMENT_CHAR", "MOJIBAKE", "DOUBLE_ENCODING", "CONTROL_CHAR", "VISUAL_ORDER_BANGLA", "MANGLED_HEADER", "OPTION_MARKER_LEAK", "QUESTION_SCAFFOLD", "QUESTION_HEADER_LEAK", "EXPLANATION_SCAFFOLD"].includes(i.code),
+    ["REPLACEMENT_CHAR", "MOJIBAKE", "DOUBLE_ENCODING", "CONTROL_CHAR", "VISUAL_ORDER_BANGLA", "FOREIGN_SCRIPT", "MANGLED_HEADER", "OPTION_MARKER_LEAK", "QUESTION_SCAFFOLD", "QUESTION_HEADER_LEAK", "EXPLANATION_SCAFFOLD"].includes(i.code),
   );
 }

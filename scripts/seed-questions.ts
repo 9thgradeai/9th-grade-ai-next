@@ -39,6 +39,7 @@ import { join } from "path";
 import { PrismaClient } from "@prisma/client";
 import { sourceKey } from "./seed-keys";
 import { scanMca, mcaSignature, type GateIssue } from "./qb-forensics/import-gate";
+import { resolveAnswerToOption } from "./qb-forensics/parse-flat";
 import {
   loadTaxonomy,
   SUBJECT_META,
@@ -71,10 +72,6 @@ const HEADER_LOOKUP = new Map<string, string>(
 
 const BANGLA_MARKERS = ["ক.", "খ.", "গ.", "ঘ."];
 const LATIN_MARKERS = ["A.", "B.", "C.", "D."];
-const LETTER_TO_IDX: Record<string, number> = {
-  "ক": 0, "খ": 1, "গ": 2, "ঘ": 3,
-  "a": 0, "b": 1, "c": 2, "d": 3,
-};
 
 // Detect the option-marker style used in a question body: the Bengali set
 // (ক/খ/গ/ঘ) or the Latin set (A/B/C/D). English-section questions use the
@@ -147,12 +144,15 @@ function parseQuestionLine(line: string): ParsedQuestion | null {
     body = line.slice(0, explanationIdx);
   }
 
-  const answerIdx = body.indexOf("উত্তর:");
+  // Answer marker: "উত্তর:" (canonical bank format) or "Ans." (English-keyed
+  // folder files). Case-insensitive so "ans." works too.
+  const answerMarker = /(উত্তর\s*:)|(ans\.)/i;
+  const m = answerMarker.exec(body);
   let answerRaw = "";
   let qAndOpts = body;
-  if (answerIdx >= 0) {
-    answerRaw = body.slice(answerIdx + "উত্তর:".length).trim();
-    qAndOpts = body.slice(0, answerIdx);
+  if (m) {
+    answerRaw = body.slice(m.index + m[0].length).trim();
+    qAndOpts = body.slice(0, m.index);
   }
 
   // Locate option markers (Bengali ক/খ/গ/ঘ or Latin A/B/C/D).
@@ -164,14 +164,12 @@ function parseQuestionLine(line: string): ParsedQuestion | null {
 
   const options = [match[1], match[2], match[3], match[4]].map((s) => s.trim());
 
-  // Resolve correct answer text from the letter in "উত্তর:" ("গ. ১৩টি" or "C. Frank").
-  // The regex above guarantees exactly four options, so idx (0-3) is always valid.
-  let correctAnswer = answerRaw;
-  const ansLetter = answerRaw.charAt(0).toLowerCase();
-  if (ansLetter in LETTER_TO_IDX) {
-    const idx = LETTER_TO_IDX[ansLetter];
-    correctAnswer = options[idx];
-  }
+  // Resolve the correct answer text from the answer marker ("খ. সংক্ষেপণ" or
+  // "C. Frank", or a bare letter). Resolution is strict: the letter must point
+  // at exactly one option (no remainder, or a remainder that IS the option).
+  // Ambiguous / contradictory answers are kept raw so the import gate's
+  // ANSWER_MISMATCH rejects them instead of silently guessing an option.
+  const correctAnswer = resolveAnswerToOption(answerRaw, options) ?? answerRaw;
 
   if (!questionText || options.length < 2) return null;
 
