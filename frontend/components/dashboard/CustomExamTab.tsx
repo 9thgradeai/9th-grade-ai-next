@@ -31,7 +31,7 @@ import {
   recoverPendingSubmission,
 } from "@/lib/services/exam-submission";
 import type { Server } from "@/lib/types";
-import SubjectTopicModal from "./SubjectTopicModal";
+import SubjectTopicSelect from "./SubjectTopicSelect";
 import {
   type Selection,
   flattenNodes,
@@ -135,7 +135,6 @@ export default function CustomExamTab() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [buildLoading, setBuildLoading] = useState(false);
   const [buildError, setBuildError] = useState<string | null>(null);
-  const [showSubjectModal, setShowSubjectModal] = useState(false);
 
   // ── Exam state ──
   const [exam, setExam] = useState<PersistedExam | null>(null);
@@ -599,71 +598,11 @@ export default function CustomExamTab() {
 
         {!configLoading && !configError && (
           <>
-            {/* Selection summary card */}
-            <div 
-              className="glass-card rounded-2xl border border-terminal-border p-4 cursor-pointer hover:border-[var(--dashboard-primary)]/30 transition-colors"
-              onClick={() => setShowSubjectModal(true)}
-            >
-              <div className="flex items-center justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold" style={{ color: "var(--dashboard-text-primary)" }}>
-                    {selectedSubjects.length > 0 
-                      ? `${selectedSubjects.length}টি বিষয় নির্বাচিত`
-                      : "বিষয় ও টপিক নির্বাচন করুন"
-                    }
-                  </p>
-                  {selectedSubjects.length > 0 ? (
-                    <p className="text-xs font-mono mt-1" style={{ color: "var(--dashboard-text-muted)" }}>
-                      {totalCount}টি প্রশ্ন · {availableTotal}টি উপলব্ধ
-                    </p>
-                  ) : (
-                    <p className="text-xs font-mono mt-1" style={{ color: "var(--dashboard-text-muted)" }}>
-                      ট্যাপ করে বিষয় ও টপিক বাছাই করুন
-                    </p>
-                  )}
-                </div>
-                <div className="flex items-center gap-2">
-                  {selectedSubjects.length > 0 && (
-                    <div className="flex -space-x-1">
-                      {selectedSubjects.slice(0, 3).map((s) => (
-                        <span
-                          key={s.id}
-                          className="w-6 h-6 rounded-full flex items-center justify-center text-xs border-2"
-                          style={{ 
-                            background: "var(--dashboard-primary-subtle)", 
-                            borderColor: "var(--dashboard-surface)",
-                            color: "var(--dashboard-primary)"
-                          }}
-                        >
-                          {s.icon}
-                        </span>
-                      ))}
-                      {selectedSubjects.length > 3 && (
-                        <span
-                          className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-mono border-2"
-                          style={{ 
-                            background: "var(--dashboard-surface-muted)", 
-                            borderColor: "var(--dashboard-surface)",
-                            color: "var(--dashboard-text-muted)"
-                          }}
-                        >
-                          +{selectedSubjects.length - 3}
-                        </span>
-                      )}
-                    </div>
-                  )}
-                  <button
-                    className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
-                    style={{ 
-                      background: selectedSubjects.length > 0 ? "var(--dashboard-primary-subtle)" : "var(--dashboard-primary)", 
-                      color: selectedSubjects.length > 0 ? "var(--dashboard-primary)" : "white"
-                    }}
-                  >
-                    {selectedSubjects.length > 0 ? "পরিবর্তন" : "বাছাই করুন"}
-                  </button>
-                </div>
-              </div>
-            </div>
+            <SubjectTopicSelect
+              subjects={subjects}
+              selection={selection}
+              onSelectionChange={setSelection}
+            />
 
             {/* Total question count + duration */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -857,19 +796,6 @@ export default function CustomExamTab() {
                 </motion.div>
               )}
             </AnimatePresence>
-
-            {/* Subject/Topic Selection Modal */}
-            <SubjectTopicModal
-              open={showSubjectModal}
-              subjects={subjects}
-              selection={selection}
-              onSelectionChange={setSelection}
-              onClose={() => setShowSubjectModal(false)}
-              onConfirm={() => setShowSubjectModal(false)}
-              totalCount={totalCount}
-              availableTotal={availableTotal}
-              insufficient={insufficient}
-            />
           </>
         )}
       </div>

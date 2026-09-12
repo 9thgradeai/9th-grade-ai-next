@@ -207,14 +207,14 @@ The dashboard is a **real-data** surface. It loads from live endpoints on mount 
 
 ### Stage 4 — Exam Practice (Three Modes)
 
-The practice tab hosts three modes, all sharing one **recursive topic picker** (`TopicTreePicker`) and one path-based selection model:
+The practice tab hosts three modes, all sharing one **inline subject → topic → subtopic picker** (`SubjectTopicSelect`). Every subject is visible directly (no modal/button step) and topics & subtopics are chosen via cascading dropdowns, all driving one path-based selection model:
 
 ```
                   ┌────────────────────────────────────────────────┐
-                  │   TopicTreePicker:  Subject → Topic → Subtopic │
-                  │   (multi-select, per-subject counts, paths)    │
+                  │    SubjectTopicSelect: Subject → Topic → Subtopic │
+                  │   (inline subject cards + cascading dropdowns)  │
                   └──────────────────────┬─────────────────────────┘
-                                         │
+                                          │
               ┌──────────────────────────┼──────────────────────────┐
               ▼                          ▼                          ▼
      ┌──────────────┐          ┌──────────────┐          ┌──────────────┐
@@ -870,7 +870,7 @@ Open **http://localhost:3000**. Local dev seeding creates a demo account:
 ├── frontend/                   # Client-side code
 │   ├── components/
 │   │   ├── ui/                 # Shared primitives (ErrorBoundary, AnimatedList, Reveal, ...)
-│   │   └── dashboard/          # Dashboard tab components (+ TopicTreePicker)
+│   │   └── dashboard/          # Dashboard tab components (+ SubjectTopicSelect)
 │   └── lib/
 │       ├── services/           # api.ts (typed fetch wrappers)
 │       ├── data/               # Static/mock data + seed-derived constants

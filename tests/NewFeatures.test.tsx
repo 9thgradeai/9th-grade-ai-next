@@ -112,8 +112,7 @@ describe("MockTestTab", () => {
 
   it("displays available subjects with question counts", async () => {
     render(<MockTestTab />);
-    // Click the summary card to open the modal
-    fireEvent.click(await screen.findByText("বিষয় ও টপিক নির্বাচন করুন"));
+    // Subjects are shown inline without needing to open any modal.
     expect(await screen.findAllByText("বাংলা ভাষা ও সাহিত্য")).toBeDefined();
     expect(screen.getAllByText("English Language and Literature").length).toBeGreaterThan(0);
   });
