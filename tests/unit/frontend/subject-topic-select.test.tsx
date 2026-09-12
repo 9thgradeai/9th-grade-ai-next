@@ -98,7 +98,11 @@ function makeSubjects(): Server.ExamSubjectDTO[] {
   ];
 }
 
-describe("SubjectTopicSelect (inline dropdown picker)", () => {
+function optionTexts(select: HTMLSelectElement): string[] {
+  return Array.from(select.options).map((o) => o.textContent ?? "");
+}
+
+describe("SubjectTopicSelect (popup subject picker)", () => {
   it("shows every subject up-front without any button press", () => {
     render(
       <SubjectTopicSelect
@@ -110,10 +114,13 @@ describe("SubjectTopicSelect (inline dropdown picker)", () => {
 
     expect(screen.getByText("বাংলা")).toBeTruthy();
     expect(screen.getByText("ইংরেজি")).toBeTruthy();
+    // No modal-inducing summary button any more — subjects are directly clickable.
     expect(screen.queryByText(/বাছাই করুন/)).toBeNull();
+    // And nothing opens until a subject is clicked.
+    expect(screen.queryByRole("dialog")).toBeNull();
   });
 
-  it("reveals topic/subtopic dropdowns only after a subject is selected", () => {
+  it("opens a popup with topic/subtopic dropdowns when a subject is clicked", () => {
     const onSelectionChange = vi.fn();
     const { rerender } = render(
       <SubjectTopicSelect
@@ -123,8 +130,7 @@ describe("SubjectTopicSelect (inline dropdown picker)", () => {
       />,
     );
 
-    expect(screen.queryByLabelText("টপিক")).toBeNull();
-
+    // Click the subject card → it is added to the selection with defaults.
     const subjectCard = screen.getByText("বাংলা").closest("button");
     fireEvent.click(subjectCard as HTMLElement);
     expect(onSelectionChange).toHaveBeenCalledWith({
@@ -139,12 +145,14 @@ describe("SubjectTopicSelect (inline dropdown picker)", () => {
       />,
     );
 
-    // Topic + subtopic dropdowns now visible for the selected subject.
-    expect(screen.getByLabelText("টপিক")).toBeTruthy();
-    expect(screen.getByLabelText("সাবটপিক")).toBeTruthy();
-    const topicOptions = screen.getByLabelText("টপিক").querySelectorAll("option");
-    expect(Array.from(topicOptions).map((o) => o.textContent)).toContain("ভাষা");
-    expect(Array.from(topicOptions).map((o) => o.textContent)).toContain("সাহিত্য");
+    // The popup is now open with both cascading dropdowns.
+    expect(screen.getByRole("dialog")).toBeTruthy();
+    const comboboxes = screen.getAllByRole("combobox");
+    expect(comboboxes).toHaveLength(2);
+    const topicOptions = optionTexts(comboboxes[0] as HTMLSelectElement);
+    const subjects = makeSubjects();
+    expect(topicOptions).toContain(subjects[0].nodes[0].name);
+    expect(topicOptions).toContain(subjects[0].nodes[1].name);
   });
 
   it("populates the subtopic dropdown from the chosen topic's descendants", () => {
@@ -157,12 +165,15 @@ describe("SubjectTopicSelect (inline dropdown picker)", () => {
       />,
     );
 
+    // Open the subject's popup so the controls are visible.
+    fireEvent.click(screen.getByText("বাংলা").closest("button") as HTMLElement);
+
     // Complete selection = whole subject → subtopic select disabled.
-    const subtopicSelect = screen.getByLabelText("সাবটপিক") as HTMLSelectElement;
+    const subtopicSelect = screen.getAllByRole("combobox")[1] as HTMLSelectElement;
     expect(subtopicSelect.disabled).toBe(true);
 
     // Pick a specific topic → cascades the subtopic dropdown.
-    fireEvent.change(screen.getByLabelText("টপিক"), {
+    fireEvent.change(screen.getAllByRole("combobox")[0], {
       target: { value: "ভাষা" },
     });
     expect(onSelectionChange).toHaveBeenLastCalledWith({
@@ -178,9 +189,9 @@ describe("SubjectTopicSelect (inline dropdown picker)", () => {
     );
 
     // Deep descendants (including depth 3) are all offered as options.
-    const subtopic = screen.getByLabelText("সাবটপিক") as HTMLSelectElement;
+    const subtopic = screen.getAllByRole("combobox")[1] as HTMLSelectElement;
     expect(subtopic.disabled).toBe(false);
-    const options = Array.from(subtopic.options).map((o) => o.textContent);
+    const options = optionTexts(subtopic);
     expect(options).toContain("শব্দ");
     expect(options).toContain("সমাস");
     expect(options).toContain("ধ্বনি");
@@ -192,9 +203,9 @@ describe("SubjectTopicSelect (inline dropdown picker)", () => {
     });
   });
 
-  it("keeps each subject's selection independent", () => {
+  it("keeps each subject's selection independent across popups", () => {
     const onSelectionChange = vi.fn();
-    render(
+    const { rerender } = render(
       <SubjectTopicSelect
         subjects={makeSubjects()}
         selection={{
@@ -205,8 +216,70 @@ describe("SubjectTopicSelect (inline dropdown picker)", () => {
       />,
     );
 
-    // Two subjects → two topic dropdowns.
-    expect(screen.getAllByLabelText("টপিক")).toHaveLength(2);
-    expect(screen.getAllByLabelText("সাবটপিক")).toHaveLength(2);
+    // Both cards reflect their own selected states.
+    const banglaCard = screen.getByText("বাংলা").closest("button") as HTMLElement;
+    const englishCard = screen.getByText("ইংরেজি").closest("button") as HTMLElement;
+    expect(banglaCard.className).toContain("shadow-neon-glow");
+    expect(englishCard.className).toContain("shadow-neon-glow");
+    expect(screen.getByText("নির্বাচিত: 10/30")).toBeTruthy();
+    expect(screen.getByText("নির্বাচিত: 10/20")).toBeTruthy();
+
+    // Opening the Bangla popup shows Bangla's topics only.
+    fireEvent.click(banglaCard);
+    rerender(
+      <SubjectTopicSelect
+        subjects={makeSubjects()}
+        selection={{ 1: { paths: ["ভাষা"], count: 10 }, 2: { paths: [], count: 10 } }}
+        onSelectionChange={onSelectionChange}
+      />,
+    );
+    const banglaTopicOptions = optionTexts(
+      screen.getAllByRole("combobox")[0] as HTMLSelectElement,
+    );
+    const subjects = makeSubjects();
+    expect(banglaTopicOptions).toContain(subjects[0].nodes[0].name);
+    expect(banglaTopicOptions).toContain(subjects[0].nodes[1].name);
+    expect(banglaTopicOptions).not.toContain(subjects[1].nodes[0].name);
+
+    // Close and open the English popup → its topics instead.
+    fireEvent.click(screen.getByText("সম্পন্ন"));
+    expect(screen.queryByRole("dialog")).toBeNull();
+    fireEvent.click(englishCard);
+    rerender(
+      <SubjectTopicSelect
+        subjects={makeSubjects()}
+        selection={{ 1: { paths: ["ভাষা"], count: 10 }, 2: { paths: [], count: 10 } }}
+        onSelectionChange={onSelectionChange}
+      />,
+    );
+    const englishTopicOptions = optionTexts(
+      screen.getAllByRole("combobox")[0] as HTMLSelectElement,
+    );
+    expect(englishTopicOptions).toContain(subjects[1].nodes[0].name);
+    expect(englishTopicOptions).not.toContain(subjects[0].nodes[0].name);
+  });
+
+  it('removes a subject from the selection via "বিষয়টি সরান"', () => {
+    const onSelectionChange = vi.fn();
+    const { rerender } = render(
+      <SubjectTopicSelect
+        subjects={makeSubjects()}
+        selection={{ 1: { paths: [], count: 10 } }}
+        onSelectionChange={onSelectionChange}
+      />,
+    );
+
+    fireEvent.click(screen.getByText("বাংলা").closest("button") as HTMLElement);
+    rerender(
+      <SubjectTopicSelect
+        subjects={makeSubjects()}
+        selection={{ 1: { paths: [], count: 10 } }}
+        onSelectionChange={onSelectionChange}
+      />,
+    );
+    expect(screen.queryByRole("dialog")).toBeTruthy();
+
+    fireEvent.click(screen.getByText("বিষয়টি সরান"));
+    expect(onSelectionChange).toHaveBeenCalledWith({});
   });
 });

@@ -207,12 +207,12 @@ The dashboard is a **real-data** surface. It loads from live endpoints on mount 
 
 ### Stage 4 — Exam Practice (Three Modes)
 
-The practice tab hosts three modes, all sharing one **inline subject → topic → subtopic picker** (`SubjectTopicSelect`). Every subject is visible directly (no modal/button step) and topics & subtopics are chosen via cascading dropdowns, all driving one path-based selection model:
+The practice tab hosts three modes, all sharing one **subject → topic → subtopic picker** (`SubjectTopicSelect`). Every subject is visible up-front as a clickable card; tapping one opens a responsive popup (bottom sheet on mobile, centered dialog on desktop) with cascading topic/subtopic dropdowns and a per-subject count stepper — all driving one path-based selection model:
 
 ```
                   ┌────────────────────────────────────────────────┐
                   │    SubjectTopicSelect: Subject → Topic → Subtopic │
-                  │   (inline subject cards + cascading dropdowns)  │
+                  │  (clickable subject cards → responsive popup)   │
                   └──────────────────────┬─────────────────────────┘
                                           │
               ┌──────────────────────────┼──────────────────────────┐
