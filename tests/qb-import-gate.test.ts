@@ -75,6 +75,58 @@ describe("import gate: Unicode corruption is fatal", () => {
     expect(g.verdict).toBe("REJECT");
     expect(g.fatal.some((i) => i.code === "OPTION_MARKER_LEAK")).toBe(true);
   });
+
+  it("rejects a concatenated MCQ scaffold welded into the question (option lines + watermark)", () => {
+    const g = scanMca(
+      clean({
+        question:
+          "বাংলাদেশে মোট দেশজ উৎপাদনে কৃষিখাতের আবদান-_- \nA দ্বি-জাতি তন্ত্র \nB সামাজিক চেতনা \nC তসাম্প্রদায়িকতা \nD বাঙ্গালী জাতীয়তাবাদ বিসিএস প্রশ্ন ব্যাক ও সমাধান \nA ১৭ \nB ২০ \nC ১৮ \nD ২১",
+      }),
+    );
+    expect(g.verdict).toBe("REJECT");
+    expect(g.fatal.some((i) => i.code === "QUESTION_SCAFFOLD")).toBe(true);
+  });
+
+  it("rejects question text that itself carries the (ক)(খ) option markers", () => {
+    const g = scanMca(clean({ question: "(ক) তামা (খ) ইস্পাত (গ) পিতল (ঘ) বর্ণ" }));
+    expect(g.verdict).toBe("REJECT");
+    expect(g.fatal.some((i) => i.code === "QUESTION_SCAFFOLD")).toBe(true);
+  });
+
+  it("rejects two options holding the same value (unanswerable MCQ)", () => {
+    const g = scanMca(
+      clean({
+        question: "বিশ্ব স্বাস্থ্য সংস্থা পোলিও টিকাদান কর্মসূচি কত সালে গ্রহণ করে?",
+        options: ["১৯৭৮", "১৯৭৫", "১৯৭৮", "১৯৮৮"],
+        correctAnswer: "১৯৭৮",
+      }),
+    );
+    expect(g.verdict).toBe("REJECT");
+    expect(g.fatal.some((i) => i.code === "DUPLICATE_OPTION")).toBe(true);
+  });
+
+  it("does NOT flag near-duplicate but distinct options", () => {
+    const g = scanMca(clean({ options: ["বাংলা", "বাংলাদেশ", "বাঙালি", "বংগ"], correctAnswer: "বাংলাদেশ" }));
+    expect(g.verdict).toBe("ACCEPT");
+    expect(g.fatal.some((i) => i.code === "DUPLICATE_OPTION")).toBe(false);
+  });
+
+  it("rejects an explanation that carries another question's scaffold (option markers)", () => {
+    const g = scanMca(
+      clean({
+        question: "কোন কবি 'মজলুম আদিব' ছদ্মনামে কবিতা লিখতেন?",
+        explanation: "২৪.'বেতার, বিপত্বীক'-শব্দ দুটি কোন সমাসের উদাহরণ? (ক) নঞ তৎপুরুষ (খ) কর্মধারয় (গ) দ্বন্দ্ব (ঘ) তৎপুরুষ",
+      }),
+    );
+    expect(g.verdict).toBe("REJECT");
+    expect(g.fatal.some((i) => i.code === "EXPLANATION_SCAFFOLD")).toBe(true);
+  });
+
+  it("rejects a question that begins with a stray ব্যাখ্যা: header (scaffold shift)", () => {
+    const g = scanMca(clean({ question: "ব্যাখ্যা: তারাশন্কর বন্দ্যোপাধ্যায়ের 'কবি' উপন্যাসে বেদে ও ডোম..." }));
+    expect(g.verdict).toBe("REJECT");
+    expect(g.fatal.some((i) => i.code === "QUESTION_HEADER_LEAK")).toBe(true);
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -181,5 +233,35 @@ describe("cleanup plan builder", () => {
     ]);
     expect(plan.bySubject["বাংলা ভাষা ও সাহিত্য"]).toBe(1);
     expect(plan.bySubject["বাংলাদেশ বিষয়াবলি"]).toBe(1);
+  });
+
+  it("removes duplicate-option and question-scaffold rows without touching clean rows", () => {
+    const plan = buildRemovalPlan([
+      row(1), // clean -> kept
+      row(2, { options: ["১৯৭৮", "১৯৭৫", "১৯৭৮", "১৯৮৮"] }), // duplicate option
+      row(3, { question: "(ক) তামা (খ) ইস্পাত (গ) পিতল (ঘ) বর্ণ" }), // scaffold in question
+    ]);
+    expect(new Set(plan.removedIds)).toEqual(new Set([2, 3]));
+    expect(new Set(plan.keptIds)).toEqual(new Set([1]));
+    expect(plan.byReason.STRUCTURAL_BROKEN).toBe(1); // duplicate option
+    expect(plan.byReason.UNICODE_CORRUPTION).toBe(1); // scaffold in question
+  });
+
+  it("removes a known semantically-scrambled row by exact identity signature", () => {
+    const plan = buildRemovalPlan([
+      row(1),
+      row(2, {
+        question: "বাংলাদেশে মোট দেশজ উৎপাদনে কৃষিখাতের আবদান-_-",
+        options: ["দ্বি-জাতি তন্ত্র", "সামাজিক চেতনা", "তসাম্প্রদায়িকতা", "বাঙ্গালী জাতীয়তাবাদ"],
+        correctAnswer: "বাঙ্গালী জাতীয়তাবাদ",
+        explanation:
+          "ভাষা আন্দোলন ছিল মুলত বাঙালি জাতির আত্মপরিচয় ওসাংস্কৃতিক স্বাতন্ত্য রক্ষার সংগ্রাম, যা বাঙালি জাতীয়তাবাদের উন্মেষে সবচেয়ে গুরুত্বপূর্ণ ভুমিকা পালন করে।",
+        subjectName: "বাংলাদেশ বিষয়াবলি",
+      }),
+    ]);
+    expect(new Set(plan.removedIds)).toEqual(new Set([2]));
+    expect(new Set(plan.keptIds)).toEqual(new Set([1]));
+    expect(plan.byReason.STRUCTURAL_BROKEN).toBe(1);
+    expect(plan.removed[0].code).toBe("SCRAMBLED_CONTENT");
   });
 });

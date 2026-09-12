@@ -23,6 +23,8 @@ import {
   stripSpuriousSpaces,
   reorderToken,
   deshapeCandidate,
+  hasQuestionScaffold,
+  hasSourceWatermark,
 } from "../scripts/qb-forensics/bangla";
 import { parseQuestionLine, serializeQuestionLine, splitSections } from "../scripts/qb-forensics/parse-flat";
 import { classifyRecord, applyTransforms, resolveLetterAnswer } from "../scripts/qb-forensics/classify";
@@ -126,6 +128,26 @@ describe("bangla visual-order detection", () => {
 
   it("combines ে + া into ো via NFC after reorder", () => {
     expect(deshapeCandidate("একসােথ")).toBe("একসাথে");
+  });
+
+  it("detects a concatenated MCQ scaffold in question text", () => {
+    expect(
+      hasQuestionScaffold(
+        "বাংলাদেশে মোট দেশজ উৎপাদনে কৃষিখাতের আবদান-_- \nA দ্বি-জাতি তন্ত্র \nB সামাজিক চেতনা \nC তসাম্প্রদায়িকতা \nD বাঙ্গালী জাতীয়তাবাদ বিসিএস প্রশ্ন ব্যাক ও সমাধান \nA ১৭ \nB ২০ \nC ১৮ \nD ২১",
+      ),
+    ).toBe(true);
+    expect(hasQuestionScaffold("(ক) তামা (খ) ইস্পাত (গ) পিতল (ঘ) বর্ণ")).toBe(true);
+  });
+
+  it("does not flag a plain question with a fill-in-the-blank marker", () => {
+    expect(hasQuestionScaffold("আইন প্রণয়নের ক্ষমতা-_-")).toBe(false);
+    expect(hasQuestionScaffold("Complete the sentence: I _____ you at the station.")).toBe(false);
+  });
+
+  it("detects the question-bank source watermark", () => {
+    expect(hasSourceWatermark("বিসিএস প্রশ্ন ব্যাক ও সমাধান")).toBe(true);
+    expect(hasSourceWatermark("বিসিএস প্রশ্ন ব্যাংক ও সমাধান")).toBe(true);
+    expect(hasSourceWatermark("সাধারণ জ্ঞান প্রশ্ন")).toBe(false);
   });
 });
 

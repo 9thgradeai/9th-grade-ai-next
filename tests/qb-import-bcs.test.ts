@@ -115,17 +115,19 @@ describe("BCS record normalization", () => {
 });
 
 describe("BCS corpus honesty", () => {
-  it("imports only a minority of the degraded corpus (no over-claiming)", () => {
+  it("keeps only importable records after the corruption sweep (no over-claiming)", () => {
     const raw = JSON.parse(
       readFileSync(join(process.cwd(), "database", "data", "question_bank", "bcs", "bcs_questions.json"), "utf8"),
     ) as Array<Record<string, unknown>>;
-    expect(raw.length).toBeGreaterThan(100);
+    // The concatenated/scaffold-shifted majority was purged from the source.
+    expect(raw.length).toBeLessThanOrEqual(60);
     let valid = 0;
     for (const r of raw) {
       if (normalizeBcsRecord(r as Parameters<typeof normalizeBcsRecord>[0]).ok) valid++;
     }
-    // After cleanup, broken records were removed; valid entries should be a significant portion.
-    expect(valid).toBeGreaterThan(50);
+    // Every record that survived the sweep must be importable — nothing broken
+    // may remain in the corpus file.
+    expect(valid).toBe(raw.length);
   });
 });
 

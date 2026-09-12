@@ -10,9 +10,15 @@
  *   1. UNICODE_CORRUPTION  — unreadable content in ANY field
  *      (replacement chars, mojibake, double-encoding, control/invisible chars,
  *       visual-order / cluster-split Bangla, mangled "ব্যাখ্যা" header).
+ *       Also the concatenated-MCQ family — a multi-question scaffold welded
+ *       into the question text (QUESTION_SCAFFOLD), a stray "ব্যাখ্যা:" header
+ *       shifting into the question (QUESTION_HEADER_LEAK), and another
+ *       question's option block (ক)(খ)(গ)(ঘ) leaked into the explanation
+ *       (EXPLANATION_SCAFFOLD), plus option-markers leaking into option text.
  *   2. STRUCTURAL_BROKEN   — readable but structurally unusable
  *      (<4 options, empty option, empty question/answer, answer matches no
- *       option, option-markers leaking into option text).
+ *       option, duplicate option values within one MCQ, and known semantically
+ *       scrambled rows that no structural rule can catch).
  *   3. EMPTY_EXPLANATION   — question-bank policy: explanations are mandatory.
  *   4. DUPLICATE           — duplicate of a kept row by normalized
  *      (question | correctAnswer | explanation) across the WHOLE database;
@@ -82,7 +88,33 @@ const CORRUPT_CODES = new Set([
   "VISUAL_ORDER_BANGLA",
   "MANGLED_HEADER",
   "OPTION_MARKER_LEAK",
+  "QUESTION_SCAFFOLD",
+  "QUESTION_HEADER_LEAK",
+  "EXPLANATION_SCAFFOLD",
 ]);
+
+/**
+ * Known-broken rows that no structural rule can catch because they are
+ * semantically scrambled (correct-looking structure, but the option block and
+ * explanation belong to a DIFFERENT question). Keyed by the exact normalized
+ * identity signature (mcaSignature) so the safe row is removed everywhere the
+ * same content appears while an innocent look-alike is never touched.
+ *
+ * #2512 — "বাংলাদেশে মোট দেশজ উৎপাদনে কৃষিখাতের আবদান-_-" asks about the
+ * agriculture share of GDP, but its options, answer and explanation are about
+ * the language movement / Bengali nationalism. Flagged by the product owner.
+ */
+const KNOWN_BROKEN_BY_SIGNATURE: Record<string, { code: string; detail: string }> = {
+  [mcaSignature({
+    question: "বাংলাদেশে মোট দেশজ উৎপাদনে কৃষিখাতের আবদান-_-",
+    options: ["দ্বি-জাতি তন্ত্র", "সামাজিক চেতনা", "তসাম্প্রদায়িকতা", "বাঙ্গালী জাতীয়তাবাদ"],
+    correctAnswer: "বাঙ্গালী জাতীয়তাবাদ",
+    explanation: "ভাষা আন্দোলন ছিল মুলত বাঙালি জাতির আত্মপরিচয় ওসাংস্কৃতিক স্বাতন্ত্য রক্ষার সংগ্রাম, যা বাঙালি জাতীয়তাবাদের উন্মেষে সবচেয়ে গুরুত্বপূর্ণ ভুমিকা পালন করে।",
+  })]: {
+    code: "SCRAMBLED_CONTENT",
+    detail: "Scrambled MCQ: options/answer/explanation belong to a different question (GDP-agriculture question, language-movement content)",
+  },
+};
 
 /**
  * Pure plan builder — given every Question row (content + optional location
@@ -136,6 +168,11 @@ export function buildRemovalPlan(rows: ScanRow[]): RemovalPlan {
     }
     if (!r.explanation.trim()) {
       entry(r, "EMPTY_EXPLANATION", "EMPTY_EXPLANATION", "Explanation is empty");
+      continue;
+    }
+    const known = KNOWN_BROKEN_BY_SIGNATURE[mcaSignature(r)];
+    if (known) {
+      entry(r, "STRUCTURAL_BROKEN", known.code, known.detail);
       continue;
     }
     kept.push(r);

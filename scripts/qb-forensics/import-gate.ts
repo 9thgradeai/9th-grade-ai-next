@@ -39,7 +39,7 @@ import {
   decodeLiteralEscapes,
   REPLACEMENT_CHAR,
 } from "./unicode";
-import { hasMangleSignature, hasMangledHeader, hasOptionMarkers } from "./bangla";
+import { hasMangleSignature, hasMangledHeader, hasOptionMarkers, hasQuestionScaffold } from "./bangla";
 import { applyTransforms, resolveLetterAnswer } from "./classify";
 
 export type GateField = "question" | "options" | "correctAnswer" | "explanation" | "record";
@@ -52,6 +52,10 @@ export type GateIssueCode =
   | "VISUAL_ORDER_BANGLA"
   | "MANGLED_HEADER"
   | "OPTION_MARKER_LEAK"
+  | "QUESTION_SCAFFOLD"
+  | "QUESTION_HEADER_LEAK"
+  | "EXPLANATION_SCAFFOLD"
+  | "DUPLICATE_OPTION"
   | "EMPTY_QUESTION"
   | "EMPTY_OPTION"
   | "WRONG_OPTION_COUNT"
@@ -263,6 +267,42 @@ export function scanMca(raw: McaInput): McaGateResult {
     }
   }
 
+  // A multi-MCQ scaffold welded into the QUESTION text (option markers, a
+  // second answer key, or a source watermark) = concatenated / OCR-page bleed.
+  if (norm.question && hasQuestionScaffold(norm.question)) {
+    push({
+      code: "QUESTION_SCAFFOLD",
+      field: "question",
+      fatal: true,
+      detail: "Question text contains a concatenated MCQ scaffold (embedded option markers / answer key / source watermark)",
+      snippet: snippet(norm.question),
+    });
+  }
+
+  // Question field that begins with a stray "ব্যাখ্যা:" header — the previous
+  // row's explanation marker shifted into this row's question (scaffold shift).
+  if (norm.question && /^\s*ব্যাখ্যা\s*[:;ঃ]/.test(norm.question)) {
+    push({
+      code: "QUESTION_HEADER_LEAK",
+      field: "question",
+      fatal: true,
+      detail: 'question starts with a stray "ব্যাখ্যা:" header — scaffold shift from an adjacent row',
+      snippet: snippet(norm.question),
+    });
+  }
+
+  // An explanation carrying option markers (ক)(খ)(গ)(ঘ) means a SECOND question's
+  // scaffold (its question + option block) spilled into this row's explanation.
+  if (norm.explanation && hasOptionMarkers(norm.explanation)) {
+    push({
+      code: "EXPLANATION_SCAFFOLD",
+      field: "explanation",
+      fatal: true,
+      detail: "Explanation contains option markers from a different question (concatenated / scaffold-shifted row)",
+      snippet: snippet(norm.explanation),
+    });
+  }
+
   // ── 2. Structural gate ──────────────────────────────────────────────────
   const nq = norm.question;
   const nOpts = norm.options;
@@ -282,6 +322,27 @@ export function scanMca(raw: McaInput): McaGateResult {
   }
   if (nOpts.some((o) => !o)) {
     push({ code: "EMPTY_OPTION", field: "options", fatal: true, detail: "One or more options are empty" });
+  }
+  // Duplicate option values within one MCQ (e.g. A and C both "১৯৭৮") make the
+  // question unanswerable — two options collapse onto a single correct answer.
+  const normOption = (o: string) => o.normalize("NFC").toLowerCase().replace(/\s+/g, " ").trim();
+  if (nOpts.length >= 2) {
+    const seen = new Set<string>();
+    for (const o of nOpts) {
+      const key = normOption(o);
+      if (!key) continue; // empties already handled by EMPTY_OPTION
+      if (seen.has(key)) {
+        push({
+          code: "DUPLICATE_OPTION",
+          field: "options",
+          fatal: true,
+          detail: `options contain a duplicate value: "${snippet(o, 40)}"`,
+          snippet: snippet(o),
+        });
+        break;
+      }
+      seen.add(key);
+    }
   }
   if (!na) {
     push({ code: "EMPTY_ANSWER", field: "correctAnswer", fatal: true, detail: "Correct answer is empty" });
@@ -334,6 +395,6 @@ export function mcaSignature(rec: McaInput): string {
 /** Convenience: true when any text field is fatally corrupt. */
 export function isCorrupt(rec: McaInput): boolean {
   return scanMca(rec).fatal.some((i) =>
-    ["REPLACEMENT_CHAR", "MOJIBAKE", "DOUBLE_ENCODING", "CONTROL_CHAR", "VISUAL_ORDER_BANGLA", "MANGLED_HEADER", "OPTION_MARKER_LEAK"].includes(i.code),
+    ["REPLACEMENT_CHAR", "MOJIBAKE", "DOUBLE_ENCODING", "CONTROL_CHAR", "VISUAL_ORDER_BANGLA", "MANGLED_HEADER", "OPTION_MARKER_LEAK", "QUESTION_SCAFFOLD", "QUESTION_HEADER_LEAK", "EXPLANATION_SCAFFOLD"].includes(i.code),
   );
 }

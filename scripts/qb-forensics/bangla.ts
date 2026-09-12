@@ -62,6 +62,28 @@ export function hasOptionMarkers(s: string): boolean {
   return /\((ক|খ|গ|ঘ|ঙ|চ)\)/.test(s);
 }
 
+/**
+ * Detect a multi-MCQ scaffold embedded inside QUESTION text — the "concatenated
+ * MCQs" corruption where a single question field carries its own option block
+ * plus another question's scaffold (option markers, a source-book watermark,
+ * or a second answer key). Signals (any one is enough):
+ *   • Bangla option-markers (ক)(খ)(গ)(ঘ) inside the question (hasOptionMarkers)
+ *   • ≥2 Latin option lines ("A. …" / "B) …" each on its own line)
+ *   • a question-bank source watermark ("বিসিএস প্রশ্ন ব্যাংক ও সমাধান" and
+ *     its common OCR-mangled spelling "প্রশ্ন ব্যাক ও সমাধান")
+ */
+export function hasQuestionScaffold(s: string): boolean {
+  if (hasOptionMarkers(s)) return true;
+  const latinLines = s.match(/(^|\n)\s*[A-D][.)]\s+\S/g);
+  if (latinLines && latinLines.length >= 2) return true;
+  return hasSourceWatermark(s);
+}
+
+/** Detect a question-bank source-book watermark bleeding into content. */
+export function hasSourceWatermark(s: string): boolean {
+  return /বিসিএস\s*প্রশ্ন\s*ব্যাক\s*ও\s*সমাধান|বিসিএস\s*প্রশ্ন\s*ব্যাংক\s*ও\s*সমাধান|প্রশ্ন\s*ব্যাক\s*ও\s*সমাধান|প্রশ্ন\s*ব্যাংক\s*ও\s*সমাধান/.test(s);
+}
+
 export function hasExplicationMarker(s: string): boolean {
   return /উত্তর|ব্যাখ্যা|বযাখ্যা/.test(s);
 }
