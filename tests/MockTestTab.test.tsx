@@ -90,9 +90,9 @@ describe("MockTestTab (subtopic selection + build)", () => {
     // Subjects are shown inline — click one directly.
     const subjectElements = await screen.findAllByText("বাংলা ভাষা ও সাহিত্য");
     fireEvent.click(subjectElements[0]);
-    // Pick a topic and then a specific subtopic via the cascading dropdowns.
-    fireEvent.change(screen.getByLabelText("টপিক"), { target: { value: "ভাষা" } });
-    fireEvent.change(screen.getByLabelText("সাবটপিক"), { target: { value: "ভাষা/বানান ও শুদ্ধি" } });
+    // Pick a topic and then a specific subtopic via the checkbox tree.
+    fireEvent.click(await screen.findByRole("checkbox", { name: /ভাষা/ }));
+    fireEvent.click(await screen.findByRole("checkbox", { name: /বানান ও শুদ্ধি/ }));
 
     // Start the mock.
     fireEvent.click(screen.getByText("মক টেস্ট শুরু করুন"));
@@ -113,8 +113,8 @@ describe("MockTestTab (subtopic selection + build)", () => {
     render(<MockTestTab />);
     const subjectElements = await screen.findAllByText("বাংলা ভাষা ও সাহিত্য");
     fireEvent.click(subjectElements[0]);
-    fireEvent.change(screen.getByLabelText("টপিক"), { target: { value: "ভাষা" } });
-    fireEvent.change(screen.getByLabelText("সাবটপিক"), { target: { value: "ভাষা/বানান ও শুদ্ধি" } });
+    fireEvent.click(await screen.findByRole("checkbox", { name: /ভাষা/ }));
+    fireEvent.click(await screen.findByRole("checkbox", { name: /বানান ও শুদ্ধি/ }));
 
     // Available for the subtopic is 4 (the leaf count).
     expect(screen.getAllByText("4টি").length).toBeGreaterThan(0);
@@ -163,8 +163,8 @@ describe("MockTestTab — submit flow (regression: canonical submission)", () =>
     // Subjects are shown inline — click one directly.
     const subjectElements = await screen.findAllByText("বাংলা ভাষা ও সাহিত্য");
     fireEvent.click(subjectElements[0]);
-    fireEvent.change(screen.getByLabelText("টপিক"), { target: { value: "ভাষা" } });
-    fireEvent.change(screen.getByLabelText("সাবটপিক"), { target: { value: "ভাষা/বানান ও শুদ্ধি" } });
+    fireEvent.click(await screen.findByRole("checkbox", { name: /ভাষা/ }));
+    fireEvent.click(await screen.findByRole("checkbox", { name: /বানান ও শুদ্ধি/ }));
     fireEvent.click(screen.getByText("মক টেস্ট শুরু করুন"));
 
     // Pick an answer so the submit button becomes enabled.
