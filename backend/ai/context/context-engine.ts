@@ -10,7 +10,7 @@ import {
   aggregateRecentAccuracy,
 } from "~backend/repositories/analytics.repository";
 import { getMemories, type MemoryRow } from "../memory/memory-store";
-import type { AIContext, AIIntent, AITask } from "../types";
+import type { AIContext, AIIntent, AITask, ContextSlices } from "../types";
 
 const EXAM_NAMES: Record<string, string> = {
   BCS: "BCS",
@@ -111,6 +111,8 @@ export type ContextParams = {
   subjectId?: number;
   topicId?: number;
   questionId?: number;
+  /** Task-selected live data slices (from resolveContextPlan + loadContextSlices). */
+  slices?: ContextSlices;
 };
 
 /** Build the context object used to construct prompts for a task. */
@@ -141,6 +143,7 @@ export async function buildContext(params: ContextParams): Promise<AIContext> {
     learningProfile: deriveLearningProfile(memories, performance),
     memories: memories.map((m) => ({ type: m.type, value: m.value, confidence: m.confidence })),
     intent: params.intent,
+    slices: params.slices,
   };
 }
 

@@ -38,6 +38,7 @@ export async function POST(request: Request) {
         events.push(
           sse(status.tool.action === "started" ? "tool.started" : "tool.completed", {
             name: status.tool.name,
+            label: status.tool.label,
             ok: status.tool.ok,
           }),
         );

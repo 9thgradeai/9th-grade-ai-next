@@ -7,7 +7,7 @@ import "server-only";
 import { resolveCandidatesForModelTask } from "../providers";
 import type { LLMProvider } from "../providers/types";
 import type { AIMessageInput, AIIntent } from "../types";
-import { findTool, executeTool, getTools, type ToolContext } from "../tools/index";
+import { findTool, executeTool, getTools, toolActivity, type ToolContext } from "../tools/index";
 import { validateAgentOutput, augmentActionsWithQuestionIds, type AgentBlock, type AgentResponse } from "./response";
 import { buildAgentSystemPrompt, MAX_AGENT_STEPS, MAX_AGENT_OUTPUT_CHARS, parseAgentTurn } from "./prompt";
 import { buildContext } from "../context/context-engine";
@@ -16,7 +16,7 @@ import { AppError } from "~backend/errors";
 
 export type AgentStatus = {
   message?: string;
-  tool?: { name: string; action: "started" | "completed"; ok?: boolean };
+  tool?: { name: string; label?: string; action: "started" | "completed"; ok?: boolean };
   blocks?: AgentBlock[];
   runId?: string;
 };
@@ -126,7 +126,11 @@ export async function runAgentTurn(opts: {
           const turn = parseAgentTurn(msg.content);
           if (turn.toolCall) {
             const { name, arguments: args } = turn.toolCall;
-            opts.onStatus?.({ message: "Reviewing your data", tool: { name, action: "started" } });
+            const activity = toolActivity(name);
+            opts.onStatus?.({
+              message: activity.status,
+              tool: { name, label: activity.labelBn, action: "started" },
+            });
             const def = findTool(name);
             const t0 = Date.now();
             const argObj = (args && typeof args === "object" ? args : {}) as Record<string, unknown>;
@@ -151,7 +155,9 @@ export async function runAgentTurn(opts: {
               success,
               errorCode: success ? "" : "TOOL_ERROR",
             }).catch(() => {});
-            opts.onStatus?.({ tool: { name, action: "completed", ok: success } });
+            opts.onStatus?.({
+              tool: { name, label: activity.labelBn, action: "completed", ok: success },
+            });
             history.push(msg);
             history.push({
               role: "user",

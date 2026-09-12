@@ -40,3 +40,13 @@ export { validateAgentRequest } from "./schemas";
 export { validateAgentOutput, agentResponseText } from "./agent/response";
 export type { AgentResponse, AgentBlock, AgentAction } from "./agent/response";
 export { MAX_AGENT_STEPS } from "./agent/prompt";
+
+// Task-aware context slices + personalization (AI Study Copilot)
+export { resolveContextPlan } from "./context/resolver";
+export type { ContextPlan } from "./context/resolver";
+export { loadContextSlices } from "./context/slices";
+export { renderSlicesForPrompt } from "./context/render";
+export { buildMistakePatterns, analyzeMistakePatterns } from "./analysis/mistakes";
+export type { MistakeRow } from "./analysis/mistakes";
+export { getAIOpening, composeOpening } from "./opening";
+export type { AIOpening, AIOpeningInsight, AIOpeningPrompt, OpeningFacts } from "./opening";

@@ -16,7 +16,12 @@ export type AIIntent =
   | "recommend"
   | "question_generation"
   | "current_affairs"
-  | "general";
+  | "general"
+  | "practice"
+  | "mock_exam"
+  | "exam_strategy"
+  | "career"
+  | "navigation";
 
 export type AIMessageInput = {
   role: "user" | "assistant" | "system";
@@ -49,6 +54,49 @@ export type AIContext = {
   retrievedKnowledge?: string;
   webResults?: number;
   intent?: AIIntent;
+  /** Task-selected live data slices loaded only for the current intent. */
+  slices?: ContextSlices;
+};
+
+// ── Task-aware context slices ─────────────────────────────
+// Each slice is a compact, pre-computed block a task opts into via
+// `resolveContextPlan`. Values are derived in the application layer (never by
+// the LLM); the model only interprets them.
+
+export type MistakePatternDto = {
+  /** Machine key of the pattern (REPEATED_MISTAKE, CARELESS, GUESSING, ...). */
+  pattern: string;
+  /** Bengali label for the UI / prompt. */
+  label: string;
+  /** Confidence-aware severity — never "high" on weak evidence. */
+  severity: "high" | "medium" | "low";
+  topic?: string;
+  count: number;
+  /** Observable evidence (what the data actually shows). */
+  detail: string;
+  /** Concrete next study action for that pattern. */
+  advice: string;
+};
+
+export type ContextSliceKey = keyof ContextSlices;
+
+export type ContextSlices = {
+  exam?: {
+    examTarget?: string;
+    personalExamDate?: string;
+    nextExam?: { titleBn: string; titleEn: string; type: string; date: string } | null;
+    daysLeft: number | null;
+  };
+  todayPlan?: {
+    total: number;
+    remaining: number;
+    highPriorityRemaining: number;
+    firstTitle: string;
+    dayName: string;
+  };
+  revision?: { flashcardsDue: number; mistakeReviewsDue: number };
+  mistakes?: { patterns: MistakePatternDto[]; recentWrongCount: number };
+  mockPerformance?: { average: number | null; count: number };
 };
 
 export type AIUsageRecord = {

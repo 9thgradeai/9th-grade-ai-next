@@ -11,6 +11,8 @@ import type { AgentBlockDto, AgentTurnResultDto } from "@/lib/types";
 
 export type AgentToolEvent = {
   name: string;
+  /** Human-readable activity label; the internal tool name stays internal. */
+  label?: string;
   action: "started" | "completed";
   ok?: boolean;
 };
@@ -115,9 +117,10 @@ export async function runAgentTurn(opts: AgentTurnOptions): Promise<AgentTurnRes
     } else if (event === "agent.status" && parsed && typeof parsed === "object") {
       opts.onStatus?.((parsed as { message?: string }).message ?? "");
     } else if ((event === "tool.started" || event === "tool.completed") && parsed) {
-      const t = parsed as { name?: string; ok?: boolean };
+      const t = parsed as { name?: string; label?: string; ok?: boolean };
       opts.onTool?.({
         name: t.name ?? "tool",
+        label: t.label,
         action: event === "tool.started" ? "started" : "completed",
         ok: t.ok,
       });

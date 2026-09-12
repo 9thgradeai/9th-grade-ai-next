@@ -6,6 +6,8 @@ import "server-only";
 import { AppError, InternalServerError, ValidationError } from "~backend/errors";
 import { prisma } from "~backend/db";
 import { buildContext, questionContextIds } from "../context/context-engine";
+import { loadContextSlices } from "../context/slices";
+import { resolveContextPlan } from "../context/resolver";
 import { buildTutorSystem, buildSolverSystem, buildAssistantSystem, buildEvaluatorSystem, buildMockTestSystem, buildAdvisorSystem } from "../prompts";
 import { resolveModel, resolveModelCandidates, type LLMProvider, type LLMProviderName } from "../providers";
 import { notePreferredLanguage, noteTopicSignal, upsertMemory } from "../memory/memory-store";
@@ -93,17 +95,24 @@ function withStreamTimeout<T>(
 
 // ── Intent routing (deterministic where possible) ──────────
 const INTENT_KEYWORDS: [RegExp, AIIntent][] = [
+  // New task-aware intents — ordered before their aliased older cousins so a
+  // specific request wins over the general bucket.
+  [/মক|\bmock test\b|\bmock exam\b|মডেল টেস্ট|ফুল লেংথ|full length|পরীক্ষার মাধ্যমেব/i, "mock_exam"],
+  [/প্র্যাকটিস|প্র্যাক্টিস|অনুশীলন|\bpractice\b|লক্ষ্য করে সলভ/i, "practice"],
+  [/strategy|স্ট্র্যাটেজি|কৌশল|কাঠামো|exam pattern|কত দিন|কীভাবে এগোব/i, "exam_strategy"],
+  [/career|ক্যারিয়ার|কোন চাকরি|কোন পোস্ট|কোন পরীক্ষা|বিসিএস না ব্যাংক/i, "career"],
+  [/কোথায়|কীভাবে.*(পাব|ট্যাব|টেস্ট|খুঁজব)|where.*(tab|page|find)|navigation|নেভিগেশন/i, "navigation"],
   [/কারেন্ট|current affairs|সমসাময়িক|সাম্প্রতিক/i, "current_affairs"],
   [/solve|সমাধান|calculate|compute|answer this/i, "solve"],
   [/hint|ইঙ্গিত|মনে করাও|clue/i, "hint"],
   [/quiz|প্রশ্নমালা|মডেল টেস্ট|পরীক্ষা|practice/i, "quiz"],
-  [/revise|রিভিশন|পুনরালোচনা|recap/i, "revise"],
+  [/revise|রিভিশন|পুনরালোচনা|recap|আবার পড়|ভুলে যাচ্ছি/i, "revise"],
   [/summarize|সারাংশ|সংক্ষেপে|summary/i, "summarize"],
   [/plan|প্ল্যান|study plan|কী পড়|schedule/i, "plan"],
   [/recommend|পরামর্শ|what should i/i, "recommend"],
   [/analyze|বিশ্লেষণ|performance|কার্যকারিতা/i, "analyze_performance"],
   [/generate|create|উদাহরণ|similar question/i, "question_generation"],
-  [/why|কেন|explain|ব্যাখ্যা/i, "explain"],
+  [/why|কেন|explain|ব্যাখ্যা|বুঝাও/i, "explain"],
 ];
 
 export function detectIntent(text: string, fallback: AIIntent = "tutor"): AIIntent {
@@ -309,7 +318,9 @@ export async function createTutorTurn(opts: {
     topicPath = ids.topicPath;
   }
 
-  const context = await buildContext({ userId, task: "tutor", intent, subjectId, topicId, questionId: request.questionId });
+  const plan = resolveContextPlan(intent);
+  const slices = await loadContextSlices(userId, plan.slices);
+  const context = await buildContext({ userId, task: "tutor", intent, subjectId, topicId, questionId: request.questionId, slices });
   const conversation = await ensureConversation(userId, "TUTOR", { ...request, subjectId, topicId, topicPath }, context);
 
   const normalizedMessages = normalizeUserMessages(request.messages);
@@ -641,7 +652,9 @@ export async function assistantTurn(opts: {
   const request = parsed as AssistantRequest;
   const intent = request.intent ?? detectIntent(parsed.messages[parsed.messages.length - 1]?.content ?? "", "general");
 
-  const context = await buildContext({ userId, task: "assistant", intent, questionId: request.questionId });
+  const plan = resolveContextPlan(intent);
+  const slices = await loadContextSlices(userId, plan.slices);
+  const context = await buildContext({ userId, task: "assistant", intent, questionId: request.questionId, slices });
   const conversation = await ensureConversation(userId, "ASSISTANT", request, context);
 
   const normalizedMessages = normalizeUserMessages(request.messages);
@@ -803,6 +816,8 @@ export async function createAgentTurn(opts: {
   const parsed = validateAgentRequest(raw);
   const intent = parsed.intent ?? (detectIntent(parsed.question, "recommend") as AIIntent);
 
+  const plan = resolveContextPlan(intent);
+  const slices = await loadContextSlices(userId, plan.slices);
   const context = await buildContext({
     userId,
     task: "assistant",
@@ -810,6 +825,7 @@ export async function createAgentTurn(opts: {
     subjectId: parsed.context.subjectId,
     topicId: parsed.context.topicId,
     questionId: parsed.context.questionId,
+    slices,
   });
 
   const conversation = await ensureConversation(

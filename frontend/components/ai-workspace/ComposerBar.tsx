@@ -17,8 +17,8 @@ type ComposerBarProps = {
   status: Status;
   /** Real coach status line surfaced from the agent stream. */
   activity: string | null;
-  /** Tool names actually running during a coach turn. */
-  tools: string[];
+  /** Coach activity surfaced from the agent stream (tool labels, not raw names). */
+  tools: { name: string; label: string }[];
   isListening: boolean;
   textareaRef: RefObject<HTMLTextAreaElement | null>;
   onInputChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
@@ -62,10 +62,10 @@ export default function ComposerBar({
               <span className="flex flex-wrap items-center gap-1">
                 {tools.map((t) => (
                   <span
-                    key={t}
+                    key={t.name}
                     className="rounded-md border border-[var(--dashboard-border-muted)] bg-[var(--dashboard-surface-muted)] px-1.5 py-0.5 text-[10px] text-[var(--dashboard-text-muted)]"
                   >
-                    {t}
+                    {t.label}
                   </span>
                 ))}
               </span>

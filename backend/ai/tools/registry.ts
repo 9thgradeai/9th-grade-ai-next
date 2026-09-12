@@ -23,6 +23,8 @@ import {
 } from "./knowledge";
 import { createPracticeSession, createMockExam } from "./session";
 import { recommendNextAction } from "./planner";
+import { analyzeMyMistakes } from "./mistakes";
+import { createStudyTaskTool } from "./study";
 
 const REGISTRY: ToolDefinition[] = [
   getMyProfile,
@@ -41,6 +43,8 @@ const REGISTRY: ToolDefinition[] = [
   searchCurrentAffairs,
   createPracticeSession,
   createMockExam,
+  analyzeMyMistakes,
+  createStudyTaskTool,
 ];
 
 const BY_NAME = new Map(REGISTRY.map((t) => [t.name, t]));

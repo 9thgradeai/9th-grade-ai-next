@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import VoiceAITutor from "@/components/dashboard/VoiceAITutor";
-import { renameConversation, pinConversation } from "@/lib/services/ai";
+import { getAIOpening, renameConversation, pinConversation } from "@/lib/services/ai";
 
 vi.mock("@/lib/auth-ctx", () => ({
   useAuth: () => ({ user: { id: "u1", name: "Test User", email: "t@t.com" } }),
@@ -43,6 +43,8 @@ vi.mock("@/lib/services/ai", () => ({
   ),
   tutorTurn: vi.fn().mockResolvedValue({ conversationId: "c1" }),
   askAssistant: vi.fn().mockResolvedValue({ conversationId: "c1", reply: "ok" }),
+  runAgentTurn: vi.fn().mockResolvedValue({ runId: "r1", text: "", steps: [], blocks: [], source: "mock" }),
+  getAIOpening: vi.fn().mockResolvedValue(null),
   deleteConversation: vi.fn().mockResolvedValue(undefined),
   renameConversation: vi.fn().mockResolvedValue({ id: "c1", title: "নতুন নাম" }),
   pinConversation: vi.fn().mockResolvedValue({ id: "c1", pinned: true }),
@@ -147,5 +149,26 @@ describe("VoiceAITutor (AI workspace)", () => {
     await waitFor(() => {
       expect(pinConversation).toHaveBeenCalledWith("c1", true);
     });
+  });
+
+  it("shows the personalized opening instead of the static identity tile", async () => {
+    vi.mocked(getAIOpening).mockResolvedValueOnce({
+      greeting: "শুভ সকাল, Test User!",
+      hasHistory: true,
+      summary: ["আজ ২টি কাজ বাকি।", "৩টি ফ্ল্যাশকার্ড রিভিশন বাকি।"],
+      insights: [
+        { id: "i1", type: "revision", text: "৩টি ফ্ল্যাশকার্ড রিভিশন দেরি হয়ে আছে।", priority: "medium" },
+      ],
+      suggestedPrompts: [
+        { id: "p1", labelBn: "আজকের প্ল্যান কী?", prompt: "আজকের প্ল্যান কী?" },
+      ],
+    });
+    render(<VoiceAITutor />);
+    fireEvent.click(screen.getByLabelText("Open AI Tutor and Assistant"));
+    await waitFor(() => {
+      expect(screen.getByText("শুভ সকাল, Test User!")).toBeInTheDocument();
+    });
+    expect(screen.getByText("৩টি ফ্ল্যাশকার্ড রিভিশন বাকি।")).toBeInTheDocument();
+    expect(screen.getByText("আজ ২টি কাজ বাকি।")).toBeInTheDocument();
   });
 });

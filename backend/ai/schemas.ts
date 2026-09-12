@@ -26,6 +26,11 @@ const VALID_INTENTS = new Set<AIIntent>([
   "question_generation",
   "current_affairs",
   "general",
+  "practice",
+  "mock_exam",
+  "exam_strategy",
+  "career",
+  "navigation",
 ]);
 
 function isRecord(value: unknown): value is Record<string, unknown> {

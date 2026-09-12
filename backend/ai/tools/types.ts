@@ -44,6 +44,38 @@ export type ToolDefinition = {
   timeoutMs?: number;
 };
 
+// ── Tool activity labels ────────────────────────────────
+// Human-readable, activity-suggestive labels for the live UI. The internal
+// tool name stays inside the loop/transcript; only these labels surface to
+// the learner. The status phrase feeds the "Checking your recent
+// performance…" style line while a tool is running.
+
+export const TOOL_ACTIVITY_LABELS: Record<string, { labelBn: string; status: string }> = {
+  get_my_profile: { labelBn: "প্রোফাইল", status: "আপনার প্রোফাইল দেখছি…" },
+  get_my_goals: { labelBn: "লক্ষ্য", status: "আপনার লক্ষ্য দেখছি…" },
+  get_my_mastery: { labelBn: "দক্ষতা", status: "আপনার দক্ষতা বিশ্লেষণ করছি…" },
+  get_recent_activity: { labelBn: "কার্যক্রম", status: "সাম্প্রতিক কার্যক্রম দেখছি…" },
+  get_question_history: { labelBn: "প্রশ্ন ইতিহাস", status: "প্রশ্ন ইতিহাস দেখছি…" },
+  get_wrong_answers: { labelBn: "ভুল উত্তর", status: "ভুল উত্তরগুলো দেখছি…" },
+  search_questions: { labelBn: "প্রশ্ন খোঁজা", status: "প্রশ্ন খুঁজছি…" },
+  get_question: { labelBn: "প্রশ্ন", status: "প্রশ্নটি দেখছি…" },
+  search_syllabus: { labelBn: "সিলেবাস", status: "সিলেবাস খুঁজছি…" },
+  get_topic: { labelBn: "টপিক", status: "টপিকের বিস্তারিত দেখছি…" },
+  get_exam_weightage: { labelBn: "পরীক্ষার কাঠামো", status: "পরীক্ষার কাঠামো দেখছি…" },
+  calculate_readiness: { labelBn: "প্রস্তুতি", status: "পড়াশোনার প্রস্তুতি হিসাব করছি…" },
+  recommend_next_action: { labelBn: "পরের ধাপ", status: "পরের সেরা ধাপটি ভাবছি…" },
+  search_current_affairs: { labelBn: "কারেন্ট অ্যাফেয়ার্স", status: "সাম্প্রতিক ঘটনা খুঁজছি…" },
+  create_practice_session: { labelBn: "প্র্যাকটিস", status: "প্র্যাকটিস সেশন তৈরি করছি…" },
+  create_mock_exam: { labelBn: "মক পরীক্ষা", status: "মক পরীক্ষা তৈরি করছি…" },
+  analyze_my_mistakes: { labelBn: "ভুল বিশ্লেষণ", status: "আপনার ভুলের প্যাটার্ন বিশ্লেষণ করছি…" },
+  create_study_task: { labelBn: "প্ল্যান আপডেট", status: "আপনার স্টাডি প্ল্যানে কাজ যোগ করছি…" },
+};
+
+/** Resolve a friendly label + status phrase for a tool name. */
+export function toolActivity(name: string): { labelBn: string; status: string } {
+  return TOOL_ACTIVITY_LABELS[name] ?? { labelBn: "ডেটা", status: "আপনার ডেটা দেখছি…" };
+}
+
 // ── Tiny argument validators (repo convention: dependency-free, no zod) ──
 
 const MAX_STR = 200;

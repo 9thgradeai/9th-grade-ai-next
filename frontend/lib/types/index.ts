@@ -283,6 +283,24 @@ export namespace Client {
     byProvider: { provider: string; calls: number; costUsd: number }[];
     byDay: { date: string; calls: number; costUsd: number }[];
   };
+  export type AIOpeningInsightDto = {
+    id: string;
+    type: string;
+    text: string;
+    priority: "high" | "medium" | "low";
+  };
+  export type AIOpeningPromptDto = {
+    id: string;
+    labelBn: string;
+    prompt: string;
+  };
+  export type AIOpeningDto = {
+    greeting: string;
+    hasHistory: boolean;
+    summary: string[];
+    insights: AIOpeningInsightDto[];
+    suggestedPrompts: AIOpeningPromptDto[];
+  };
 
   export type ChatTurn = {
     role: "user" | "assistant";
@@ -1057,6 +1075,9 @@ export type GeneratedMockQuestion = Client.GeneratedMockQuestion;
 export type AdvisorPlanDto = Client.AdvisorPlanDto;
 export type StudentModelDto = Client.StudentModelDto;
 export type UsageSummaryDto = Client.UsageSummaryDto;
+export type AIOpeningInsightDto = Client.AIOpeningInsightDto;
+export type AIOpeningPromptDto = Client.AIOpeningPromptDto;
+export type AIOpeningDto = Client.AIOpeningDto;
 export type ChatTurn = Client.ChatTurn;
 export type AgentActionType = Client.AgentActionType;
 export type AgentActionDto = Client.AgentActionDto;

@@ -25,6 +25,7 @@ import {
   tutorTurn,
   askAssistant,
   runAgentTurn,
+  getAIOpening,
   renameConversation,
   pinConversation,
   deleteConversation,
@@ -48,7 +49,7 @@ import {
   type SpeechRecognitionLike,
   type SpeechRecognitionCtor,
 } from "./types";
-import type { AgentBlockDto } from "@/lib/types";
+import type { AgentBlockDto, AIOpeningDto } from "@/lib/types";
 
 function messageToUI(m: AIMessageDto): UIMessage {
   return {
@@ -94,8 +95,10 @@ export default function AIWorkspace() {
 
   // Real coach activity surfaced from the agent stream.
   const [activity, setActivity] = useState<string | null>(null);
-  const [tools, setTools] = useState<string[]>([]);
+  const [tools, setTools] = useState<{ name: string; label: string }[]>([]);
   const [meta, setMeta] = useState<WorkspaceMeta>(null);
+  // Personalized opening (greeting, summary, insights, starter prompts).
+  const [opening, setOpening] = useState<AIOpeningDto | null>(null);
 
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const abortRef = useRef<AbortController | null>(null);
@@ -117,6 +120,16 @@ export default function AIWorkspace() {
     }
   }, []);
 
+  // Personalized opening for empty conversations — non-fatal (the workspace
+  // works fine without it if the call fails).
+  const refreshOpening = useCallback(async () => {
+    try {
+      setOpening(await getAIOpening());
+    } catch {
+      setOpening(null);
+    }
+  }, []);
+
   useEffect(() => {
     if (!showModal) return;
     let cancelled = false;
@@ -126,6 +139,13 @@ export default function AIWorkspace() {
       })
       .catch(() => {
         // non-fatal
+      });
+    getAIOpening()
+      .then((op) => {
+        if (!cancelled) setOpening(op);
+      })
+      .catch(() => {
+        if (!cancelled) setOpening(null);
       });
     return () => {
       cancelled = true;
@@ -190,13 +210,15 @@ export default function AIWorkspace() {
     setMeta(null);
     setActivity(null);
     setTools([]);
-  }, []);
+    void refreshOpening();
+  }, [refreshOpening]);
 
   const openConversation = useCallback(async (id: string) => {
     setActiveConversationId(id);
     setError(null);
     setSidebarOpen(false);
     setMeta(null);
+    setOpening(null);
     try {
       const data = await getConversation(id);
       setMessages(data.messages.map(messageToUI));
@@ -344,10 +366,10 @@ export default function AIWorkspace() {
             onTool: (tool) => {
               setTools((prev) =>
                 tool.action === "started"
-                  ? prev.includes(tool.name)
+                  ? prev.some((t) => t.name === tool.name)
                     ? prev
-                    : [...prev, tool.name]
-                  : prev.filter((t) => t !== tool.name),
+                    : [...prev, { name: tool.name, label: tool.label ?? tool.name }]
+                  : prev.filter((t) => t.name !== tool.name),
               );
             },
             onBlock: (block) => {
@@ -767,7 +789,12 @@ export default function AIWorkspace() {
                   </AnimatePresence>
 
                   {messages.length === 0 ? (
-                    <EmptyState mode={mode} contextChip={contextChip} onPrompt={runPrompt} />
+                    <EmptyState
+                      mode={mode}
+                      contextChip={contextChip}
+                      opening={opening}
+                      onPrompt={runPrompt}
+                    />
                   ) : (
                     <ThreadView
                       messages={messages}
