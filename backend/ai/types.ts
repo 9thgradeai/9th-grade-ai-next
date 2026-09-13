@@ -120,6 +120,7 @@ export type TutorRequest = {
   topicPath?: string;
   questionId?: number;
   intent?: AIIntent;
+  imageBase64?: string;
 };
 
 export type SolverRequest = {

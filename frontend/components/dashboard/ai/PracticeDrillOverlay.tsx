@@ -21,6 +21,10 @@ type StartPracticeDetail = {
   title?: string;
 };
 
+type OpenQuestionDetail = {
+  questionId: number;
+};
+
 export default function PracticeDrillOverlay() {
   const [detail, setDetail] = useState<StartPracticeDetail | null>(null);
   const [questions, setQuestions] = useState<QuestionDTO[] | null>(null);
@@ -37,19 +41,16 @@ export default function PracticeDrillOverlay() {
   const panelRef = useDialogA11y<HTMLDivElement>(detail !== null, close);
 
   useEffect(() => {
-    const onStart = (event: Event) => {
-      const payload = (event as CustomEvent).detail as StartPracticeDetail | undefined;
-      if (!payload || !Array.isArray(payload.questionIds) || payload.questionIds.length === 0) {
-        return;
-      }
+    const startPractice = (questionIds: number[], title?: string) => {
+      if (!questionIds.length) return;
       const req = ++requestRef.current;
-      setDetail(payload);
+      setDetail({ questionIds, title });
       setQuestions(null);
       setError(null);
       setLoadingText("প্রশ্ন লোড হচ্ছে…");
       void (async () => {
         try {
-          const qs = await api.questions({ ids: payload.questionIds });
+          const qs = await api.questions({ ids: questionIds });
           if (req !== requestRef.current) return;
           if (qs.length === 0) {
             setError("খুঁজে পাওয়া প্রশ্ন পাওয়া যায়নি — আবার চেষ্টা করুন।");
@@ -64,8 +65,31 @@ export default function PracticeDrillOverlay() {
         }
       })();
     };
+
+    const onStart = (event: Event) => {
+      const payload = (event as CustomEvent).detail as StartPracticeDetail | undefined;
+      if (!payload || !Array.isArray(payload.questionIds) || payload.questionIds.length === 0) {
+        return;
+      }
+      startPractice(payload.questionIds, payload.title);
+    };
+
+    // `ai:open-question` surfaces a single question the coach recommends — load
+    // it through the same drill path so the per-answer submission + errorType
+    // capture is reused (AgentBlocks dispatches this after opening a current
+    // conversation; the tab switch lives in the block dispatcher, not here).
+    const onOpenQuestion = (event: Event) => {
+      const payload = (event as CustomEvent).detail as OpenQuestionDetail | undefined;
+      if (!payload || typeof payload.questionId !== "number") return;
+      startPractice([payload.questionId], "AI সুপারিশকৃত প্রশ্ন");
+    };
+
     window.addEventListener("ai:start-practice", onStart);
-    return () => window.removeEventListener("ai:start-practice", onStart);
+    window.addEventListener("ai:open-question", onOpenQuestion);
+    return () => {
+      window.removeEventListener("ai:start-practice", onStart);
+      window.removeEventListener("ai:open-question", onOpenQuestion);
+    };
   }, []);
 
   return (

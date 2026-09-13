@@ -41,6 +41,7 @@ Model resolution is task-driven via `resolveModel(task, { image })`:
 | `GET /api/ai/usage/summary` | required | Observability: per-caller AI usage (`totalCalls`, `totalCostUsd`, `successRate`, `avgLatencyMs`, `byProvider`, `byDay`) — no prompt content stored |
 | `GET/POST /api/ai/conversations` | required | List / create conversation threads |
 | `GET/PATCH/DELETE /api/ai/conversations/:id` | required | Read / rename / pin / delete one conversation (ownership-checked) |
+| `POST /api/ai/agent` | required | **Study coach** — bounded, tool-using agent loop. SSE events: `agent.started`, `agent.status`, `tool.started`, `tool.completed`, `message.delta`, `block.created`, `agent.completed` (with `latencyMs`), `agent.error` |
 | `POST /api/ai/feedback` | required | Record HELPFUL / NOT_HELPFUL feedback on a message |
 
 Response headers: `X-AI-Source` (`groq` | `anthropic` | `mock`), `X-Conversation-Id`, `X-AI-Intent`, `X-AI-Model`.
@@ -63,7 +64,7 @@ Response headers: `X-AI-Source` (`groq` | `anthropic` | `mock`), `X-Conversation
 
 ## Validation
 
-- **Input** (`backend/ai/schemas.ts`): dependency-free validators. Chat requests need ≥1 user message, valid roles (`user`/`assistant`/`system`), length caps (`MAX_AI_INPUT_CHARS`), solver needs `text` or `imageBase64` (image ≤ 5MB → `413`).
+- **Input** (`backend/ai/schemas.ts`): dependency-free validators. Chat requests need ≥1 user message, valid roles (`user`/`assistant`/`system`), length caps (`MAX_AI_INPUT_CHARS`), solver needs `text` or `imageBase64` (image ≤ 5MB → `413`). The tutor route accepts an optional `imageBase64` too: an image-only question is still valid (placeholder `[Image question]` body), the payload is attached under `images[]` with `provider.supportsVision`, and the image flag forces a vision-capable provider via `withFailover(task, { image: true })`.
 - **Output** (`backend/ai/validation/outputs.ts`): model output is never trusted blindly. JSON is parsed + normalized (`parseJsonObject`, `validateSolverOutput`); assistant actions are validated against a whitelist; replies are sanitized and clamped.
 - **AI Safety**: LLM output is never used for authorization, validation, or security decisions.
 
@@ -113,8 +114,19 @@ Every AI call records an `AIUsage` row (tokens, latency, success, estimated cost
   centered panel with an always-visible sidebar). Message bubbles live in
   `frontend/components/chat/ChatMessage.tsx`; the solver applies the same renderer to its solution
   output (`frontend/components/dashboard/AISolverTab.tsx`).
-- **Text-to-speech is disabled**: the workspace accepts voice input (STT) but never speaks responses
-  aloud (no auto-TTS after generation).
+- **Voice out (TTS)**: the workspace speaks AI replies back through the browser's `speechSynthesis`
+  (Bangla `bn-BD` vs English `en-US` auto-detected per reply). A workspace-level "Auto-read" toggle is
+  on by default; every speak path guards on `speechSynthesis` existing, and the streaming caret /
+  composer show an animated equalizer while a reply is being read. STT (voice input) is unchanged.
+- **Coach persistence & continuity**: agent turns persist as `COACH`-kind conversations (distinct
+  from `ASSISTANT`), rendered with a `Target` icon in the rail. Each completed agent turn writes its
+  structured payload back into the assistant message `metadata` under `{ kind: "agent", runId, blocks,
+  tools }` — the tool-activity log included — so reloading a thread re-renders the coach cards, the
+  "Coach tool steps" activity timeline, and the meta-action follow-up chips exactly as streamed.
+  `agent.completed` carries real end-to-end `latencyMs`, surfaced in the workspace meta line and in
+  the home-tab coach card (no more hardcoded "Latency ~240ms").
+- **Suggested-action cards**: assistant/coach suggested actions render as two-column action cards
+  (Bengali label + English hint + arrow) that re-enter the current mode with a fresh turn.
 - **Conversation titles**: when a new tutor/assistant conversation completes its first turn,
   `backend/ai/application/title.ts` summarizes the WHOLE chat transcript into a short title via the
   model (`backend/ai/prompts/title.ts`), falling back to the first learner message when no model or

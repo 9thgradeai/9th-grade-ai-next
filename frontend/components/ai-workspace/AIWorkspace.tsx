@@ -33,6 +33,7 @@ import {
   AIError,
 } from "@/lib/services/ai";
 import type { AIConversationSummary, AIMessageDto } from "@/lib/services/ai/types";
+import type { AgentBlockDto, AIOpeningDto } from "@/lib/types";
 import { subscribeToLaunch } from "@/lib/ai-launcher";
 import { useAuth } from "@/lib/auth-ctx";
 import ModeSwitcher from "./ModeSwitcher";
@@ -40,8 +41,10 @@ import ConversationRail from "./ConversationRail";
 import ComposerBar from "./ComposerBar";
 import EmptyState from "./EmptyState";
 import ThreadView from "./ThreadView";
+import { AGENT_FOLLOWUPS } from "./prompts";
 import {
   STATUS_LABEL,
+  type AgentActivityStepDto,
   type Mode,
   type Status,
   type UIMessage,
@@ -49,9 +52,17 @@ import {
   type SpeechRecognitionLike,
   type SpeechRecognitionCtor,
 } from "./types";
-import type { AgentBlockDto, AIOpeningDto } from "@/lib/types";
 
 function messageToUI(m: AIMessageDto): UIMessage {
+  // Agent turns persist their structured payload (blocks, tool log) in the
+  // message metadata — surface it here so reloads re-render the full coach
+  // experience (cards + activity timeline + meta-action chips).
+  const meta = m.metadata;
+  const isAgent = meta?.kind === "agent";
+  const blocks =
+    isAgent && Array.isArray(meta.blocks) ? (meta.blocks as AgentBlockDto[]) : undefined;
+  const tools =
+    isAgent && Array.isArray(meta.tools) ? (meta.tools as AgentActivityStepDto[]) : undefined;
   return {
     id: m.id,
     role: m.role === "USER" ? "user" : "ai",
@@ -60,8 +71,15 @@ function messageToUI(m: AIMessageDto): UIMessage {
         ? "দুঃখিত, এখন উত্তর তৈরি করা যাচ্ছে না।"
         : m.content,
     messageId: m.role === "ASSISTANT" ? m.id : undefined,
+    blocks,
+    tools,
+    actions: isAgent ? [...AGENT_FOLLOWUPS] : undefined,
     error: m.status === "FAILED",
   };
+}
+
+function detectSpeechLang(text: string): string {
+  return /[ঀ-৿]/.test(text) ? "bn-BD" : "en-US";
 }
 
 function statusVariant(status: Status): string {
@@ -93,10 +111,24 @@ export default function AIWorkspace() {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [feedbackSent, setFeedbackSent] = useState<Set<string>>(new Set());
 
-  // Real coach activity surfaced from the agent stream.
+  // Real coach activity surfaced from the agent stream. `liveTools` feeds both
+  // the composer's running pills and the thread's activity timeline; on
+  // completion the snapshot is attached to the assistant message and persisted
+  // server-side via metadata.
   const [activity, setActivity] = useState<string | null>(null);
-  const [tools, setTools] = useState<{ name: string; label: string }[]>([]);
+  const [liveTools, setLiveTools] = useState<AgentActivityStepDto[]>([]);
+  const toolMapRef = useRef(new Map<string, AgentActivityStepDto>());
   const [meta, setMeta] = useState<WorkspaceMeta>(null);
+
+  // Tutor photo/question-image upload (tutor mode only).
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  // Auto-read of AI replies (TTS). On by default so the coach voice actually
+  // speaks; every loop guards on speechSynthesis existing in the window.
+  const [speakOnReply, setSpeakOnReply] = useState(true);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+
   // Personalized opening (greeting, summary, insights, starter prompts).
   const [opening, setOpening] = useState<AIOpeningDto | null>(null);
 
@@ -209,9 +241,46 @@ export default function AIWorkspace() {
     setPendingContext({});
     setMeta(null);
     setActivity(null);
-    setTools([]);
+    setLiveTools([]);
+    toolMapRef.current.clear();
+    setImagePreview(null);
     void refreshOpening();
   }, [refreshOpening]);
+
+  // ── TTS helpers ─────────────────────────────────────────────
+  const stopSpeaking = useCallback(() => {
+    if (typeof window === "undefined") return;
+    window.speechSynthesis.cancel();
+    utteranceRef.current = null;
+    setIsSpeaking(false);
+  }, []);
+
+  const speakText = useCallback(
+    (text: string) => {
+      if (
+        typeof window === "undefined" ||
+        typeof window.speechSynthesis === "undefined" ||
+        !speakOnReply ||
+        !text
+      ) {
+        return;
+      }
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = detectSpeechLang(text);
+      u.onstart = () => setIsSpeaking(true);
+      u.onend = () => setIsSpeaking(false);
+      u.onerror = () => setIsSpeaking(false);
+      utteranceRef.current = u;
+      window.speechSynthesis.speak(u);
+    },
+    [speakOnReply],
+  );
+
+  const toggleSpeak = useCallback(() => {
+    if (speakOnReply) stopSpeaking();
+    setSpeakOnReply((v) => !v);
+  }, [speakOnReply, stopSpeaking]);
 
   const openConversation = useCallback(async (id: string) => {
     setActiveConversationId(id);
@@ -219,6 +288,7 @@ export default function AIWorkspace() {
     setSidebarOpen(false);
     setMeta(null);
     setOpening(null);
+    setImagePreview(null);
     try {
       const data = await getConversation(id);
       setMessages(data.messages.map(messageToUI));
@@ -288,7 +358,7 @@ export default function AIWorkspace() {
         // Non-destructive reconciliation. Server rows are authoritative for
         // ids, but we never drop a local row whose server copy is still
         // in-flight, and we keep any richer local payload (agent blocks,
-        // suggested actions) the server DTO doesn't carry.
+        // tool log, suggested actions) the server DTO doesn't carry.
         const serverRows = data.messages.map(messageToUI);
         const merged: UIMessage[] = [...serverRows];
         for (const local of prev) {
@@ -297,14 +367,21 @@ export default function AIWorkspace() {
           if (idx === -1) {
             merged.push(local);
           } else if (
-            (merged[idx].blocks !== local.blocks || merged[idx].actions !== local.actions) &&
-            (local.blocks?.length || local.actions?.length)
+            (merged[idx].blocks !== local.blocks ||
+              merged[idx].actions !== local.actions ||
+              merged[idx].tools !== local.tools) &&
+            (local.blocks?.length || local.actions?.length || local.tools?.length)
           ) {
-            // Local copy is richer (blocks/actions not surfaced by the DTO);
-            // keep its payload but keep the server's persisted messageId
+            // Local copy is richer (blocks/actions/tools not surfaced by the
+            // DTO); keep its payload but keep the server's persisted messageId
             // (the local placeholder id is not a real DB row id and would
             // break feedback + dedupe).
-            merged[idx] = { ...merged[idx], blocks: local.blocks, actions: local.actions };
+            merged[idx] = {
+              ...merged[idx],
+              blocks: local.blocks,
+              actions: local.actions,
+              tools: local.tools,
+            };
           }
         }
         return merged;
@@ -317,16 +394,22 @@ export default function AIWorkspace() {
   const sendTurn = useCallback(
     async (rawText: string) => {
       const text = rawText.trim();
-      if (!text || status === "generating" || !user) return;
+      const hasImage = Boolean(imagePreview) && mode === "tutor";
+      if ((!text && !hasImage) || status === "generating" || !user) return;
+
+      const userText = text || (hasImage ? "[ছবি সহ প্রশ্ন]" : "");
+      const imageBase64 = hasImage && imagePreview ? imagePreview.split(",")[1] ?? undefined : undefined;
 
       setInput("");
       if (inputRef.current) inputRef.current.style.height = "auto";
+      setImagePreview(null);
       setError(null);
       setStatus("generating");
       setMeta(null);
       setActivity(null);
-      setTools([]);
-      setMessages((prev) => [...prev, { id: `u-${Date.now()}`, role: "user", text }]);
+      setLiveTools([]);
+      toolMapRef.current.clear();
+      setMessages((prev) => [...prev, { id: `u-${Date.now()}`, role: "user", text: userText }]);
 
       const ctx = pendingContext;
 
@@ -364,13 +447,22 @@ export default function AIWorkspace() {
               }
             },
             onTool: (tool) => {
-              setTools((prev) =>
-                tool.action === "started"
-                  ? prev.some((t) => t.name === tool.name)
-                    ? prev
-                    : [...prev, { name: tool.name, label: tool.label ?? tool.name }]
-                  : prev.filter((t) => t.name !== tool.name),
-              );
+              if (tool.action === "started") {
+                if (!toolMapRef.current.has(tool.name)) {
+                  toolMapRef.current.set(tool.name, {
+                    name: tool.name,
+                    label: tool.label ?? tool.name,
+                  });
+                }
+              } else {
+                const prev = toolMapRef.current.get(tool.name);
+                toolMapRef.current.set(tool.name, {
+                  name: tool.name,
+                  label: tool.label ?? (prev ? prev.label : tool.name),
+                  ok: tool.ok,
+                });
+              }
+              setLiveTools(Array.from(toolMapRef.current.values()));
             },
             onBlock: (block) => {
               blocks.push(block);
@@ -382,8 +474,28 @@ export default function AIWorkspace() {
           });
           abortRef.current = null;
           setStatus("idle");
-          setTools([]);
-          setMeta({ provider: result.provider, model: result.model });
+          setLiveTools([]);
+          const toolSnapshot = Array.from(toolMapRef.current.values());
+          toolMapRef.current.clear();
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === placeholderId
+                ? {
+                    ...m,
+                    text: assistantText,
+                    blocks: [...blocks],
+                    tools: toolSnapshot,
+                    actions: [...AGENT_FOLLOWUPS],
+                  }
+                : m,
+            ),
+          );
+          setMeta({
+            provider: result.provider,
+            model: result.model,
+            latencyMs: result.latencyMs,
+          });
+          speakText(result.text);
           if (result.conversationId) {
             setActiveConversationId(result.conversationId);
             void refreshConversations();
@@ -392,7 +504,8 @@ export default function AIWorkspace() {
           setPendingContext({});
         } catch (e) {
           abortRef.current = null;
-          setTools([]);
+          setLiveTools([]);
+          toolMapRef.current.clear();
           if (e instanceof DOMException && e.name === "AbortError") {
             setStatus("idle");
             return;
@@ -424,6 +537,7 @@ export default function AIWorkspace() {
           ]);
           setPendingContext({});
           setMeta({ provider: res.source });
+          speakText(res.reply);
           void refreshConversations();
           void syncFromServer(res.conversationId).catch(() => {});
           setStatus("idle");
@@ -444,6 +558,7 @@ export default function AIWorkspace() {
         const res = await tutorTurn({
           conversationId: activeConversationId ?? undefined,
           content: text,
+          imageBase64,
           questionId: ctx.questionId,
           topicId: ctx.topicId,
           subjectId: ctx.subjectId,
@@ -459,6 +574,7 @@ export default function AIWorkspace() {
         abortRef.current = null;
         setStatus("idle");
         setMeta({ provider: res.source, model: res.model });
+        speakText(assistantText);
         if (res.conversationId) {
           setActiveConversationId(res.conversationId);
           void refreshConversations();
@@ -481,7 +597,18 @@ export default function AIWorkspace() {
         handleError(e);
       }
     },
-    [status, user, handleError, refreshConversations, syncFromServer, mode, activeConversationId, pendingContext],
+    [
+      status,
+      user,
+      handleError,
+      refreshConversations,
+      syncFromServer,
+      mode,
+      activeConversationId,
+      pendingContext,
+      imagePreview,
+      speakText,
+    ],
   );
 
   const retryLast = useCallback(() => {
@@ -493,7 +620,8 @@ export default function AIWorkspace() {
     abortRef.current?.abort();
     setStatus("idle");
     setActivity(null);
-    setTools([]);
+    setLiveTools([]);
+    toolMapRef.current.clear();
   }, []);
 
   const copyText = useCallback(async (id: string, text: string) => {
@@ -800,6 +928,8 @@ export default function AIWorkspace() {
                       messages={messages}
                       status={status}
                       meta={meta}
+                      mode={mode}
+                      liveTools={liveTools}
                       copiedId={copiedId}
                       feedbackSent={feedbackSent}
                       terminalRef={terminalRef}
@@ -824,10 +954,15 @@ export default function AIWorkspace() {
                   )}
 
                   <ComposerBar
+                    mode={mode}
                     input={input}
                     status={status}
                     activity={activity}
-                    tools={tools}
+                    tools={liveTools}
+                    imagePreview={imagePreview}
+                    canAttachImage={mode === "tutor"}
+                    speakOnReply={speakOnReply}
+                    isSpeaking={isSpeaking}
                     isListening={isListening}
                     textareaRef={inputRef}
                     onInputChange={handleInputChange}
@@ -835,6 +970,9 @@ export default function AIWorkspace() {
                     onSubmit={() => void sendTurn(input)}
                     onStop={stopGeneration}
                     onToggleVoice={toggleListening}
+                    onAttachImage={setImagePreview}
+                    onRemoveImage={() => setImagePreview(null)}
+                    onToggleSpeak={toggleSpeak}
                   />
                 </div>
               </div>

@@ -45,7 +45,7 @@ describe("runAgentTurn (study coach SSE client)", () => {
                 actions: [],
               },
             },
-            { event: "agent.completed", data: { runId: "r1", conversationId: "c1", provider: "mock", model: "mock", steps: 2 } },
+            { event: "agent.completed", data: { runId: "r1", conversationId: "c1", provider: "mock", model: "mock", steps: 2, latencyMs: 231 } },
           ],
           { "x-run-id": "r1", "x-conversation-id": "c1", "x-ai-source": "mock" },
         ),
@@ -54,10 +54,14 @@ describe("runAgentTurn (study coach SSE client)", () => {
 
     const deltas: string[] = [];
     const tools: Array<{ name: string; action: string }> = [];
+    let completedLatency: number | undefined;
     const result = await runAgentTurn({
       question: "What next?",
       onDelta: (c) => deltas.push(c),
       onTool: (t) => tools.push({ name: t.name, action: t.action }),
+      onCompleted: (meta) => {
+        completedLatency = meta.latencyMs;
+      },
     });
 
     expect(deltas.join("")).toBe("Hello there");
@@ -68,6 +72,8 @@ describe("runAgentTurn (study coach SSE client)", () => {
     expect(result.text).toBe("Hello there");
     expect(result.conversationId).toBe("c1");
     expect(result.steps).toBe(2);
+    expect(result.latencyMs).toBe(231);
+    expect(completedLatency).toBe(231);
     expect(result.blocks[0].type).toBe("weakness");
     if (result.blocks[0].type === "weakness") {
       expect(result.blocks[0].topic).toBe("Algebra");

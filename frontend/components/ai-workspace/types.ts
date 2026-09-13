@@ -6,10 +6,11 @@
 // composer.
 
 import type { SuggestedActionDto } from "@/lib/services/ai/types";
-import type { AgentBlockDto } from "@/lib/types";
+import type { AgentActivityStepDto, AgentBlockDto } from "@/lib/types";
 import type { Mode } from "./modes";
 
 export type { Mode };
+export type { AgentActivityStepDto };
 
 export type Status = "idle" | "generating" | "listening" | "error" | "stopped";
 
@@ -20,6 +21,8 @@ export type UIMessage = {
   messageId?: string;
   actions?: SuggestedActionDto[];
   blocks?: AgentBlockDto[];
+  /** Coach tool activity (started/completed per tool) attached to agent turns. */
+  tools?: AgentActivityStepDto[];
   error?: boolean;
 };
 
@@ -34,6 +37,7 @@ export const STATUS_LABEL: Record<Status, string> = {
 export type WorkspaceMeta = {
   provider?: string;
   model?: string;
+  latencyMs?: number;
 } | null;
 
 // Minimal typings for the vendor-prefixed Web Speech API.

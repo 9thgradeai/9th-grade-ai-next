@@ -4,7 +4,7 @@
 // surfaces (Solver handoff, Exam review, etc.) without restructuring layouts.
 
 export type TutorLaunchContext = {
-  mode?: "tutor" | "assistant";
+  mode?: "tutor" | "assistant" | "agent";
   prompt?: string;
   questionId?: number;
   topicId?: number;

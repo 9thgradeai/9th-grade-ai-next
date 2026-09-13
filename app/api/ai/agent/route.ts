@@ -75,6 +75,7 @@ export async function POST(request: Request) {
               provider: outcome.provider,
               model: outcome.model,
               steps: outcome.steps,
+              latencyMs: outcome.latencyMs,
               source: outcome.provider,
             }),
           );

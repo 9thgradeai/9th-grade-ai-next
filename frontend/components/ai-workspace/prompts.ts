@@ -5,6 +5,7 @@
 // honest follow-ups to the learner's own performance data — nothing here fakes
 // a capability the backend doesn't have.
 
+import type { SuggestedActionDto } from "@/lib/services/ai/types";
 import type { Mode } from "./modes";
 
 export type QuickPrompt = {
@@ -58,5 +59,29 @@ export const QUICK_PROMPTS: QuickPrompt[] = [
     labelBn: "মক পরীক্ষা প্রস্তুতি",
     prompt: "মক পরীক্ষার জন্য আমার প্রস্তুতি কেমন এবং কী করা দরকার?",
     category: "agent",
+  },
+];
+
+// Meta-actions attached to every completed coach reply. These are honest
+// follow-ups that re-enter the agent loop with a fresh, bounded tool turn —
+// never a claim about a capability the backend lacks.
+export const AGENT_FOLLOWUPS: SuggestedActionDto[] = [
+  {
+    id: "agent-simpler",
+    labelBn: "উত্তরটা সহজ ভাষায় বোঝাও",
+    labelEn: "Explain it simpler",
+    action: "followup",
+  },
+  {
+    id: "agent-next",
+    labelBn: "পরের ধাপ কী করবো?",
+    labelEn: "What should I do next?",
+    action: "followup",
+  },
+  {
+    id: "agent-practice",
+    labelBn: "এই টপিকে প্র্যাকটিস চাই",
+    labelEn: "Start practice",
+    action: "followup",
   },
 ];

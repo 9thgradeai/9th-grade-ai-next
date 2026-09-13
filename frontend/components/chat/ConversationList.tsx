@@ -20,6 +20,7 @@ import {
   Pin,
   PinOff,
   Plus,
+  Target,
   Trash2,
 } from "lucide-react"
 import type { AIConversationSummary } from "@/lib/services/ai/types"
@@ -60,6 +61,7 @@ function dayGroup(date: string): string {
 function kindIcon(kind: AIConversationSummary["kind"]) {
   if (kind === "ASSISTANT") return BrainCircuit
   if (kind === "TUTOR") return GraduationCap
+  if (kind === "COACH") return Target
   return MessageSquare
 }
 

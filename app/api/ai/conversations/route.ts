@@ -7,7 +7,7 @@ import { getUserIdFromRequest } from "~backend/services/user";
 import { createConversation, listConversations } from "~backend/ai";
 import { getRequestId, startTiming, applySecurityHeaders, assertSameOrigin } from "../../_middleware";
 
-const KINDS = new Set(["TUTOR", "ASSISTANT", "SOLVER"]);
+const KINDS = new Set(["TUTOR", "ASSISTANT", "SOLVER", "COACH"]);
 
 export async function GET(request: Request) {
   const requestId = getRequestId(request);
@@ -55,13 +55,13 @@ export async function POST(request: Request) {
     const kind = body.kind?.toUpperCase();
     if (!KINDS.has(kind ?? "")) {
       return NextResponse.json(
-        { error: "kind must be TUTOR, ASSISTANT or SOLVER", code: "VALIDATION_ERROR" },
+        { error: "kind must be TUTOR, ASSISTANT, SOLVER or COACH", code: "VALIDATION_ERROR" },
         { status: 400 },
       );
     }
 
     const conversation = await createConversation(userId, {
-      kind: kind as "TUTOR" | "ASSISTANT" | "SOLVER",
+      kind: kind as "TUTOR" | "ASSISTANT" | "SOLVER" | "COACH",
       title: typeof body.title === "string" ? body.title : undefined,
       subjectId: typeof body.subjectId === "number" ? body.subjectId : undefined,
       topicId: typeof body.topicId === "number" ? body.topicId : undefined,

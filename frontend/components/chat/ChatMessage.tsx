@@ -9,7 +9,7 @@
 // so both dashboard themes keep full contrast.
 
 import { memo, useState } from "react";
-import { Check, Copy, ThumbsDown, ThumbsUp, Volume2, VolumeX } from "lucide-react";
+import { ArrowRight, Check, Copy, ThumbsDown, ThumbsUp, Volume2, VolumeX } from "lucide-react";
 import Markdown from "./Markdown";
 import AiLogo from "@/components/ui/AiLogo";
 
@@ -121,15 +121,28 @@ function ChatMessageInner({
         )}
 
         {message.actions && message.actions.length > 0 && (
-          <div className="mt-2 flex flex-wrap gap-2">
+          <div className="mt-2.5 grid gap-1.5 sm:grid-cols-2">
             {message.actions.map((a) => (
               <button
                 key={`${message.id}-${a.id}`}
                 type="button"
                 onClick={() => onAction(a.labelBn)}
-                className="rounded-lg border border-[var(--dashboard-primary)]/25 bg-[var(--dashboard-primary-subtle)] px-2.5 py-1 text-xs text-[var(--dashboard-primary)] transition-colors hover:bg-[var(--dashboard-primary)]/15"
+                className="group flex items-center justify-between gap-2 rounded-xl border border-[var(--dashboard-border-muted)] bg-[var(--dashboard-surface-muted)]/70 px-3 py-2 text-left transition-colors hover:border-[var(--dashboard-primary)]/40 hover:bg-[var(--dashboard-primary-subtle)]"
               >
-                {a.labelBn}
+                <span className="min-w-0">
+                  <span className="block truncate text-xs font-medium text-[var(--text-primary)]">
+                    {a.labelBn}
+                  </span>
+                  {a.labelEn ? (
+                    <span className="block truncate text-[10px] text-[var(--dashboard-text-muted)]">
+                      {a.labelEn}
+                    </span>
+                  ) : null}
+                </span>
+                <ArrowRight
+                  className="h-3.5 w-3.5 flex-shrink-0 text-[var(--dashboard-primary)] transition-transform group-hover:translate-x-0.5"
+                  aria-hidden="true"
+                />
               </button>
             ))}
           </div>

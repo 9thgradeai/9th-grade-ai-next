@@ -9,12 +9,16 @@ import type { RefObject } from "react";
 import ChatMessage, { TypingIndicator, type ChatMessageData } from "@/components/chat/ChatMessage";
 import AgentBlocks from "@/components/dashboard/ai/AgentBlocks";
 import AiLogo from "@/components/ui/AiLogo";
-import type { Status, UIMessage, WorkspaceMeta } from "./types";
+import AgentActivityTimeline from "./AgentActivityTimeline";
+import type { AgentActivityStepDto, Mode, Status, UIMessage, WorkspaceMeta } from "./types";
 
 type ThreadViewProps = {
   messages: UIMessage[];
   status: Status;
   meta: WorkspaceMeta;
+  mode: Mode;
+  /** Live coach tool steps streaming from the current agent turn. */
+  liveTools: AgentActivityStepDto[];
   copiedId: string | null;
   feedbackSent: ReadonlySet<string>;
   terminalRef: RefObject<HTMLDivElement | null>;
@@ -28,6 +32,8 @@ export default function ThreadView({
   messages,
   status,
   meta,
+  mode,
+  liveTools,
   copiedId,
   feedbackSent,
   terminalRef,
@@ -41,6 +47,7 @@ export default function ThreadView({
     status === "generating" && (messages.length === 0 || last.role !== "ai" || last.text !== "");
 
   const lastAiIndex = messages.map((m) => m.role).lastIndexOf("ai");
+  const lastAi = lastAiIndex >= 0 ? messages[lastAiIndex] : null;
   const showMeta =
     meta && lastAiIndex === messages.length - 1 && status !== "generating" && last.text !== "";
 
@@ -64,16 +71,25 @@ export default function ThreadView({
               {msg.blocks && msg.blocks.length > 0 && (
                 <AgentBlocks blocks={msg.blocks} onAction={onBlocksAction} />
               )}
+              {msg.tools && msg.tools.length > 0 && (
+                <AgentActivityTimeline tools={msg.tools} />
+              )}
+              {isStreaming && liveTools.length > 0 && (
+                <AgentActivityTimeline tools={liveTools} />
+              )}
             </div>
           );
         })}
 
         {showThinkingRow && (
           <div className="flex items-start gap-3">
-            <div className="ai-avatar h-8 w-8">
+            <div className="ai-avatar aurora-glow h-8 w-8">
               <AiLogo solid={false} className="h-4 w-4" />
             </div>
-            <TypingIndicator />
+            <div className="min-w-0">
+              <TypingIndicator />
+              {liveTools.length > 0 && <AgentActivityTimeline tools={liveTools} className="mt-2.5" />}
+            </div>
           </div>
         )}
 
@@ -81,6 +97,10 @@ export default function ThreadView({
           <p className="px-1 font-mono text-[10px] tracking-[0.12em] text-[var(--dashboard-text-muted)]">
             source: <span className="text-[var(--dashboard-primary)]">{meta.provider ?? "unset"}</span>
             {meta.model ? ` · ${meta.model}` : ""}
+            {meta.latencyMs !== undefined && meta.latencyMs > 0 ? ` · ${Math.round(meta.latencyMs)}ms` : ""}
+            {mode === "agent"
+              ? ` · ${lastAi?.tools?.length ?? 0} tools`
+              : ""}
             {meta.provider === "mock" ? "  (সেট করা API কী নেই — গণনা ও তথ্য যাচাই করুন)" : ""}
           </p>
         )}

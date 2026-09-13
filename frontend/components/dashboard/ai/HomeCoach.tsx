@@ -36,6 +36,7 @@ type CoachResult = {
   blocks: AgentBlockDto[];
   provider: string;
   model: string;
+  latencyMs?: number;
 };
 
 export default function HomeCoach() {
@@ -46,6 +47,7 @@ export default function HomeCoach() {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<CoachResult | null>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const startTime = useRef(0);
 
   useEffect(() => {
     return () => abortRef.current?.abort();
@@ -62,6 +64,7 @@ export default function HomeCoach() {
       setRunText("");
       setRunBlocks([]);
       setStatusMsg("এআই নিউরাল অ্যানালাইসিস চলছে…");
+      startTime.current = Date.now();
       try {
         const res = await runAgentTurn({
           question: prompt,
@@ -72,7 +75,13 @@ export default function HomeCoach() {
         });
         abortRef.current = null;
         setRunning(false);
-        setResult({ text: res.text, blocks: res.blocks, provider: res.provider, model: res.model });
+        setResult({
+          text: res.text,
+          blocks: res.blocks,
+          provider: res.provider,
+          model: res.model,
+          latencyMs: res.latencyMs ?? Date.now() - startTime.current,
+        });
       } catch (e) {
         abortRef.current = null;
         setRunning(false);
@@ -236,7 +245,9 @@ export default function HomeCoach() {
                     ? "source: mock (AI API fallback active)"
                     : `source: ${result.provider}${result.model ? ` • ${result.model}` : ""}`}
                 </span>
-                <span>Latency ~240ms</span>
+                <span>
+                  {result.latencyMs !== undefined ? `latency ${Math.round(result.latencyMs)}ms` : "latency —"}
+                </span>
               </div>
             </>
           )}

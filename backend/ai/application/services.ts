@@ -131,7 +131,7 @@ function toImageDataUrl(base64: string): string {
 
 async function ensureConversation(
   userId: string,
-  kind: "TUTOR" | "ASSISTANT" | "SOLVER",
+  kind: "TUTOR" | "ASSISTANT" | "SOLVER" | "COACH",
   request: { conversationId?: string; subjectId?: number; topicId?: number; topicPath?: string; title?: string },
   context: AIContext,
 ) {
@@ -307,6 +307,7 @@ export async function createTutorTurn(opts: {
   const parsed = validateChatRequest(raw);
   const request = parsed as TutorRequest;
   const intent = request.intent ?? detectIntent(parsed.messages[parsed.messages.length - 1]?.content ?? "");
+  const hasImage = Boolean(request.imageBase64);
 
   let subjectId = request.subjectId;
   let topicId = request.topicId;
@@ -323,7 +324,16 @@ export async function createTutorTurn(opts: {
   const context = await buildContext({ userId, task: "tutor", intent, subjectId, topicId, questionId: request.questionId, slices });
   const conversation = await ensureConversation(userId, "TUTOR", { ...request, subjectId, topicId, topicPath }, context);
 
-  const normalizedMessages = normalizeUserMessages(request.messages);
+  const rawMessages = normalizeUserMessages(request.messages);
+  // A bare uploaded image (no accompanying text) is still a valid question — give it
+  // a placeholder body so downstream message/content validation stays consistent.
+  const normalizedMessages = rawMessages.map((m, i, arr) => {
+    if (hasImage && m.role === "user" && !m.content.trim()) {
+      const isLastUser = i === arr.length - 1 || arr.slice(i + 1).every((x) => x.role !== "user");
+      return isLastUser ? { ...m, content: "[Image question]" } : m;
+    }
+    return m;
+  });
   const lastUser = await persistUserTurn(userId, conversation.id, normalizedMessages, intent);
   await notePreferredLanguage(userId, [lastUser?.content ?? ""]);
 
@@ -348,8 +358,13 @@ export async function createTutorTurn(opts: {
   let name: LLMProviderName = "mock";
   let modelName = "";
   try {
-    const fo = await withFailover("tutor", {}, (p) =>
-      p.stream({ system, messages: modelMessages, maxTokens: 2048 }),
+    const fo = await withFailover("tutor", { image: hasImage }, (p) =>
+      p.stream({
+        system,
+        messages: modelMessages,
+        images: hasImage && p.supportsVision ? [{ type: "image", dataUrl: toImageDataUrl(request.imageBase64 as string) }] : undefined,
+        maxTokens: 2048,
+      }),
     );
     streamResult = fo.value;
     name = fo.provider;
@@ -375,7 +390,7 @@ export async function createTutorTurn(opts: {
           intent,
           provider: name,
           model: modelName,
-          metadata: { subjectId, topicId, topicPath: topicPath ?? "", intent, webResults: web.results },
+          metadata: { subjectId, topicId, topicPath: topicPath ?? "", intent, webResults: web.results, hasImage },
           errorCode: "AI_UNAVAILABLE",
         });
       } catch (e) {
@@ -434,7 +449,7 @@ export async function createTutorTurn(opts: {
         intent,
         provider: name,
         model: modelName,
-        metadata: { subjectId, topicId, topicPath: topicPath ?? "", intent, webResults: web.results },
+        metadata: { subjectId, topicId, topicPath: topicPath ?? "", intent, webResults: web.results, hasImage },
         errorCode: success ? undefined : "AI_EMPTY_RESPONSE",
       });
       if (success) await bumpAIQuestions(userId);
@@ -798,6 +813,11 @@ export type AgentTurnRequest = {
  * Run the agent loop, persist the user/assistant messages in a conversation,
  * and record usage. `onStatus` streams live loop events (status labels, tool
  * progress) — the SSE route forwards them to the client.
+ *
+ * Coach threads persist as `COACH` conversations so they stay distinguishable
+ * in the workspace rail from tutor/assistant/solver threads. The tool log is
+ * written into the assistant message metadata so the client can re-render the
+ * activity timeline on reload.
  */
 export async function createAgentTurn(opts: {
   userId: string;
@@ -811,10 +831,35 @@ export async function createAgentTurn(opts: {
   blocks: import("../agent").AgentBlock[];
   text: string;
   steps: number;
+  latencyMs: number;
+  isMock: boolean;
 }> {
   const { userId, request: raw } = opts;
   const parsed = validateAgentRequest(raw);
   const intent = parsed.intent ?? (detectIntent(parsed.question, "recommend") as AIIntent);
+
+  // Tap the loop's live status stream to reconstruct the executed tool log
+  // (started/completed for each tool) for the persisted metadata.
+  const toolLog: { name: string; label?: string; ok?: boolean }[] = [];
+  const trackedStatus: (status: AgentStatus) => void = (status) => {
+    if (status.tool) {
+      const idx = toolLog.findIndex((t) => t.name === status.tool?.name);
+      if (status.tool.action === "started") {
+        if (idx === -1) {
+          toolLog.push({ name: status.tool.name, label: status.tool.label });
+        } else {
+          toolLog[idx] = { name: status.tool.name, label: status.tool.label };
+        }
+      } else if (idx !== -1) {
+        toolLog[idx] = {
+          name: status.tool.name,
+          label: status.tool.label ?? toolLog[idx].label,
+          ok: status.tool.ok,
+        };
+      }
+    }
+    opts.onStatus?.(status);
+  };
 
   const plan = resolveContextPlan(intent);
   const slices = await loadContextSlices(userId, plan.slices);
@@ -830,7 +875,7 @@ export async function createAgentTurn(opts: {
 
   const conversation = await ensureConversation(
     userId,
-    "ASSISTANT",
+    "COACH",
     {
       conversationId: parsed.conversationId,
       subjectId: parsed.context.subjectId ?? context.subject?.id,
@@ -859,7 +904,7 @@ export async function createAgentTurn(opts: {
     questionId: parsed.context.questionId,
     conversationId: conversation.id,
     intent,
-    onStatus: opts.onStatus,
+    onStatus: trackedStatus,
   });
 
   const text = agentResponseText(result.response);
@@ -870,7 +915,12 @@ export async function createAgentTurn(opts: {
     intent: `agent:${intent}`,
     provider: result.provider,
     model: result.model,
-    metadata: { kind: "agent", runId: result.runId, blocks: result.response.blocks },
+    metadata: {
+      kind: "agent",
+      runId: result.runId,
+      blocks: result.response.blocks,
+      tools: toolLog,
+    },
   });
   await bumpAIQuestions(userId);
   emit({ name: "AI_TUTOR_TURN", userId, intent, kind: "agent" });
@@ -898,6 +948,8 @@ export async function createAgentTurn(opts: {
     blocks: result.response.blocks,
     text,
     steps: result.steps,
+    latencyMs: Date.now() - started,
+    isMock: result.isMock,
   };
 }
 

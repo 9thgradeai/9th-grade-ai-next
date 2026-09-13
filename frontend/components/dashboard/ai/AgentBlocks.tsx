@@ -3,8 +3,8 @@
 // Typed renderer for the AI study coach's structured blocks. Each block kind
 // renders as a native insight card (progress, weakness, recommendation,
 // practice / revision / exam action). Action chips execute allowlisted UI
-// actions: switching dashboard tabs, opening the question bank filtered to a
-// question, or refreshing the home feed. The leading text block is omitted
+// actions: switching dashboard tabs, opening a question in the practice drill
+// overlay, or refreshing the home feed. The leading text block is omitted
 // here — the chat bubble already renders it as prose.
 
 import { useMemo } from "react";
@@ -55,8 +55,10 @@ function useBlockDispatcher(onClose?: () => void) {
         return;
       }
       if (action.type === "open_question") {
+        // The PracticeDrillOverlay owns this surface: it listens for the
+        // question id and loads it directly. No tab switch here — switching
+        // rows under a mounted drill would tear down the chord overlay.
         const qid = action.params?.questionId as number | undefined;
-        setActiveTab("question-bank");
         if (qid) {
           window.dispatchEvent(new CustomEvent("ai:open-question", { detail: { questionId: qid } }));
         }

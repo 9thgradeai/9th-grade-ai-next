@@ -31,7 +31,11 @@ export type AgentTurnOptions = {
   onStatus?: (message: string) => void;
   onTool?: (tool: AgentToolEvent) => void;
   onBlock?: (block: AgentBlockDto) => void;
-  onCompleted?: (meta: { runId: string; conversationId: string }) => void;
+  onCompleted?: (meta: {
+    runId: string;
+    conversationId: string;
+    latencyMs?: number;
+  }) => void;
   signal?: AbortSignal;
 };
 
@@ -96,6 +100,7 @@ export async function runAgentTurn(opts: AgentTurnOptions): Promise<AgentTurnRes
   let model = res.headers.get("x-ai-model") ?? "";
   let runId = res.headers.get("x-run-id") ?? "";
   let steps = 0;
+  let latencyMs: number | undefined;
 
   const emit = (envelope: { event: string; data: string } | null) => {
     if (!envelope) return;
@@ -131,13 +136,16 @@ export async function runAgentTurn(opts: AgentTurnOptions): Promise<AgentTurnRes
         provider?: string;
         model?: string;
         steps?: number;
+        latencyMs?: number;
+        isMock?: boolean;
       };
       runId = meta.runId ?? runId;
       conversationId = meta.conversationId ?? conversationId;
       provider = meta.provider ?? provider;
       model = meta.model ?? model;
       steps = meta.steps ?? 0;
-      opts.onCompleted?.({ runId, conversationId });
+      if (typeof meta.latencyMs === "number") latencyMs = meta.latencyMs;
+      opts.onCompleted?.({ runId, conversationId, latencyMs });
     } else if (event === "agent.error") {
       // surface as a normal error
       throw new AIError(
@@ -171,5 +179,5 @@ export async function runAgentTurn(opts: AgentTurnOptions): Promise<AgentTurnRes
     reader.releaseLock();
   }
 
-  return { conversationId, runId, provider, model, steps, text, blocks, source: provider };
+  return { conversationId, runId, provider, model, steps, latencyMs, text, blocks, source: provider };
 }

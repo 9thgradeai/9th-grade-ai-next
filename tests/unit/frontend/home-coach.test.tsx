@@ -69,6 +69,29 @@ describe("HomeCoach (home-tab AI coach)", () => {
       expect(screen.getByText("Practice 5 questions")).toBeInTheDocument();
     });
   });
+
+  it("shows the real latency once the agent reports it (no hardcoded 240ms)", async () => {
+    components.runAgentTurn.mockResolvedValue({
+      conversationId: "c1",
+      runId: "r1",
+      provider: "groq",
+      model: "llama-3.1-8b-instant",
+      steps: 1,
+      latencyMs: 812,
+      text: "পরবর্তী ধাপ: অনুশীলন শুরু করুন।",
+      blocks: [],
+      source: "groq",
+    });
+
+    render(<HomeCoach />);
+    fireEvent.click(screen.getByText("বলো আমার কী করা উচিত"));
+
+    await waitFor(() => {
+      expect(screen.getByText(/latency 812ms/)).toBeInTheDocument();
+    });
+    expect(screen.queryByText(/Latency ~240ms/)).not.toBeInTheDocument();
+    expect(screen.getByText(/source: groq/)).toBeInTheDocument();
+  });
 });
 
 describe("PracticeDrillOverlay (AI practice-drill modal)", () => {
@@ -119,6 +142,39 @@ describe("PracticeDrillOverlay (AI practice-drill modal)", () => {
 
     await waitFor(() => {
       expect(screen.getByText(/প্রশ্ন লোড করা যায়নি/)).toBeInTheDocument();
+    });
+  });
+
+  it("opens the drill for a single question on ai:open-question (coach Q-recommend handoff)", async () => {
+    const questions = [
+      {
+        id: 7,
+        subjectId: 1,
+        subject: "Bangla",
+        topic: "ব্যাকরণ",
+        subtopic: "",
+        question: "সমাস কাকে বলে?",
+        options: ["A", "B", "C", "D"],
+        correctAnswer: "A",
+        explanation: "",
+        difficulty: "MEDIUM",
+        year: null,
+        sourceExam: null,
+        bcsTerm: null,
+      },
+    ] as never;
+    vi.mocked(api.questions).mockResolvedValue(questions);
+
+    render(<PracticeDrillOverlay />);
+    window.dispatchEvent(
+      new CustomEvent("ai:open-question", { detail: { questionId: 7 } }),
+    );
+
+    await waitFor(() => {
+      expect(api.questions).toHaveBeenCalledWith({ ids: [7] });
+    });
+    await waitFor(() => {
+      expect(screen.getByText("সমাস কাকে বলে?")).toBeInTheDocument();
     });
   });
 });

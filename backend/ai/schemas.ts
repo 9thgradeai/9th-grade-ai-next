@@ -71,17 +71,23 @@ export function validateMessage(value: unknown): AIMessageInput {
   };
 }
 
-function normalizeMessages(messages: unknown, max: number): AIMessageInput[] {
+function normalizeMessages(
+  messages: unknown,
+  max: number,
+  hasImage = false,
+): AIMessageInput[] {
   if (!Array.isArray(messages) || messages.length === 0) {
     throw new ValidationError("messages is required and must be a non-empty array.");
   }
   if (messages.length > max) {
     throw new ValidationError(`Conversation exceeds ${max} messages.`);
   }
+  // A bare image (no accompanying text) is still a valid question, mirroring
+  // the solver's "text OR image" contract.
   const seenUser = messages.some(
     (m) => isRecord(m) && m.role === "user" && isFiniteString(m.content),
   );
-  if (!seenUser) {
+  if (!seenUser && !hasImage) {
     throw new ValidationError("At least one user message is required.");
   }
   return messages.map(validateMessage);
@@ -96,11 +102,26 @@ export function validateChatRequest(body: unknown): {
   topicPath?: string;
   questionId?: number;
   intent?: AIIntent;
+  imageBase64?: string;
 } {
   if (!isRecord(body)) {
     throw new ValidationError("Request body must be a JSON object.");
   }
-  const messages = normalizeMessages(body.messages, 100);
+  const imageBase64 =
+    typeof body.imageBase64 === "string" && body.imageBase64.length > 0
+      ? body.imageBase64
+      : undefined;
+  if (imageBase64) {
+    const bytes = Math.ceil((imageBase64.length * 3) / 4);
+    if (bytes > MAX_AI_IMAGE_BYTES) {
+      throw new AppError(
+        413,
+        "Image is too large. Maximum size is 5MB.",
+        "PAYLOAD_TOO_LARGE",
+      );
+    }
+  }
+  const messages = normalizeMessages(body.messages, 100, Boolean(imageBase64));
   const conversationId =
     typeof body.conversationId === "string" && body.conversationId
       ? body.conversationId
@@ -115,7 +136,7 @@ export function validateChatRequest(body: unknown): {
       ? (body.intent as AIIntent)
       : undefined;
 
-  return { messages, conversationId, subjectId, topicId, topicPath, questionId, intent };
+  return { messages, conversationId, subjectId, topicId, topicPath, questionId, intent, imageBase64 };
 }
 
 /** Validate the solver request body. */

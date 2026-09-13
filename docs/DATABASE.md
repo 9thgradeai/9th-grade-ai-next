@@ -87,6 +87,8 @@ ever rebuilt outside migrations:
 - `TUTOR` — teaching conversations
 - `ASSISTANT` — study-guidance conversations
 - `SOLVER` — one-shot solve-and-explain conversations
+- `COACH` — tool-using study-coach (agent) conversations; distinct kind so coach
+  threads stay distinguishable from assistant threads in the workspace rail
 
 #### AIMessageRole
 - `USER`

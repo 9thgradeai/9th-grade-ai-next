@@ -177,7 +177,7 @@ export namespace Client {
   };
 
   // ── AI domain (conversations, solver, assistant) ──────────
-  export type AIConversationKind = "TUTOR" | "ASSISTANT" | "SOLVER";
+  export type AIConversationKind = "TUTOR" | "ASSISTANT" | "SOLVER" | "COACH";
 
   export type AIConversationSummary = {
     id: string;
@@ -203,6 +203,7 @@ export namespace Client {
     model: string | null;
     errorCode: string | null;
     createdAt: string;
+    metadata: Record<string, unknown> | null;
   };
 
   export type SolverResultDto = {
@@ -368,12 +369,19 @@ export namespace Client {
         actions?: AgentActionDto[];
       };
 
+  export type AgentActivityStepDto = {
+    name: string;
+    label: string;
+    ok?: boolean;
+  };
+
   export type AgentTurnResultDto = {
     conversationId: string;
     runId: string;
     provider: string;
     model: string;
     steps: number;
+    latencyMs?: number;
     text: string;
     blocks: AgentBlockDto[];
     source: string;
@@ -1083,6 +1091,7 @@ export type AgentActionType = Client.AgentActionType;
 export type AgentActionDto = Client.AgentActionDto;
 export type AgentBlockDto = Client.AgentBlockDto;
 export type AgentTurnResultDto = Client.AgentTurnResultDto;
+  export type AgentActivityStepDto = Client.AgentActivityStepDto;
 export type PreparationIntelligenceDTO = Server.PreparationIntelligenceDTO;
 export type PrepIntelligenceOverall = Server.PrepIntelligenceOverall;
 export type PrepIntelligencePeriodComparison = Server.PrepIntelligencePeriodComparison;
