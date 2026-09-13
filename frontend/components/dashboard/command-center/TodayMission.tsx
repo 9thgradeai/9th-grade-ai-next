@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { Crosshair, Target, ArrowRight, Clock, Sparkles } from "lucide-react";
+import { Crosshair, Target, ArrowRight, Clock, ShieldCheck } from "lucide-react";
 import { useLanguage, t, type Language } from "@/lib/lang-ctx";
 import type { PreparationIntelligenceDTO, PrepIntelligenceRecommendation } from "@/lib/types";
 
@@ -275,7 +275,7 @@ export default function TodayMission({
       </div>
 
       <div className="relative mt-4 flex items-center gap-2 text-[11px]" style={{ color: "var(--dashboard-text-muted)" }}>
-        <Sparkles className="w-3 h-3" aria-hidden="true" />
+        <ShieldCheck className="w-3 h-3" aria-hidden="true" />
         {t(
           lang,
           "মিশনটি আপনার সর্বশেষ ডেটা থেকে তৈরি — প্রতিটি সংখ্যা বাস্তব।",

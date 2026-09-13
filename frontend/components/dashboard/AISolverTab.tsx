@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence, spring } from "framer-motion";
 import {
-  Upload, Camera, Sparkles, X, Copy, Check, Loader2,
+  Upload, Camera, X, Copy, Check, Loader2,
   Lightbulb, MessageSquare, Target, Zap,
 } from "lucide-react";
 import { SOLVER_EXAMPLES } from "@/lib/data/study";
@@ -241,7 +241,7 @@ export default function AISolverTab() {
               </>
             ) : (
               <>
-                <Sparkles className="w-5 h-5" />
+                <AiLogo solid={false} className="w-5 h-5" />
                 Solve with AI
               </>
             )}

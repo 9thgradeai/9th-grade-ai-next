@@ -2,8 +2,9 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
-import { Search, Menu, X, ChevronDown, LogOut, Settings, User as UserIcon, LayoutDashboard, Sparkles, Bell } from "lucide-react";
+import { Search, Menu, X, ChevronDown, LogOut, Settings, User as UserIcon, LayoutDashboard, Bell } from "lucide-react";
 import BrandMark from "@/components/ui/BrandMark";
+import AiLogo from "@/components/ui/AiLogo";
 import LanguageToggle from "@/components/ui/LanguageToggle";
 import { useAuth } from "@/lib/auth-ctx";
 import { visibleMenus } from "@/lib/navigation";
@@ -127,7 +128,7 @@ export default function AppNavbar() {
                     onClick={() => setOpenId(expanded ? null : m.id)}
                     className={`inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 ${expanded ? "bg-white text-black" : "text-zinc-300 hover:bg-white/10 hover:text-white"}`}
                   >
-                    {(m.labelBn && lang==="bn" ? m.labelBn : m.label)} {m.id === "ai" && <Sparkles className="h-3 w-3 text-violet-400" aria-hidden="true" />} <ChevronDown className={`h-3.5 w-3.5 transition-transform ${expanded ? "rotate-180" : ""}`} aria-hidden="true" />
+                    {(m.labelBn && lang==="bn" ? m.labelBn : m.label)} {m.id === "ai" && <AiLogo className="h-3.5 w-3.5" />} <ChevronDown className={`h-3.5 w-3.5 transition-transform ${expanded ? "rotate-180" : ""}`} aria-hidden="true" />
                   </button>
                 );
               })}
@@ -306,7 +307,7 @@ export default function AppNavbar() {
                       aria-controls={`mob-${m.id}`}
                       className="flex w-full items-center justify-between px-3 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 rounded-xl"
                     >
-                      <span className="flex items-center gap-2 text-sm font-semibold text-white">{(m.labelBn && lang==="bn" ? m.labelBn : m.label)}{m.id === "ai" && <Sparkles className="h-3.5 w-3.5 text-violet-400" aria-hidden="true" />}</span>
+                      <span className="flex items-center gap-2 text-sm font-semibold text-white">{(m.labelBn && lang==="bn" ? m.labelBn : m.label)}{m.id === "ai" && <AiLogo className="h-4 w-4" />}</span>
                       <ChevronDown className={`h-4 w-4 text-zinc-500 transition-transform ${expanded ? "rotate-180" : ""}`} aria-hidden="true" />
                     </button>
                     {expanded && (

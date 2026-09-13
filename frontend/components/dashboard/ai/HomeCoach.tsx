@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
-import { BrainCircuit, Loader2, RefreshCw, Sparkles, Target, Zap, Activity, BookOpen } from "lucide-react";
+import { BrainCircuit, Loader2, RefreshCw, Target, Zap, Activity, BookOpen } from "lucide-react";
+import AiLogo from "@/components/ui/AiLogo";
 import { runAgentTurn, AIError } from "@/lib/services/ai";
 import type { AgentBlockDto } from "@/lib/types";
 import AgentBlocks from "./AgentBlocks";
@@ -166,7 +167,7 @@ export default function HomeCoach() {
             </>
           ) : (
             <>
-              <Sparkles className="w-4 h-4" />
+              <AiLogo solid={false} className="w-4 h-4" />
               বলো আমার কী করা উচিত
             </>
           )}

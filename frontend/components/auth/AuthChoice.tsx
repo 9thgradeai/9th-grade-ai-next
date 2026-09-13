@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { motion } from "framer-motion"
-import { ArrowRight, Sparkles } from "lucide-react"
+import { ArrowRight } from "lucide-react"
 
 /** Google "G" mark — inline so we don't add an icon dependency. */
 function GoogleIcon({ className }: { className?: string }) {
@@ -118,7 +118,7 @@ export function AuthChoice({
           <span className="mt-0.5 block text-sm text-[var(--text-muted)]">Start your preparation.</span>
         </span>
         <span className="shrink-0 text-[var(--text-muted)] transition-all group-hover:translate-x-0.5 group-hover:text-emerald-400">
-          <Sparkles className="h-5 w-5" aria-hidden="true" />
+          <ArrowRight className="h-5 w-5" aria-hidden="true" />
         </span>
       </button>
 

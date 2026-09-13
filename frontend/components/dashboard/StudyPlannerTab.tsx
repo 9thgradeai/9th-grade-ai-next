@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, Clock, Target, Calendar, ChevronRight, Sparkles, Trophy } from "lucide-react";
+import { Check, Clock, Target, Calendar, ChevronRight, Lightbulb, Trophy } from "lucide-react";
+import AiLogo from "@/components/ui/AiLogo";
 import { STUDY_PLAN } from "@/lib/data/study";
 import { api } from "@/lib/services/api";
 
@@ -113,7 +114,7 @@ export default function StudyPlannerTab() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <Sparkles className="w-5 h-5 text-[var(--dashboard-primary)]" />
+              <AiLogo solid={false} className="w-5 h-5 text-[var(--dashboard-primary)]" />
               <h2 className="text-xl font-bold text-[var(--text-primary)]">AI Study Planner</h2>
             </div>
             <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">
@@ -276,7 +277,7 @@ export default function StudyPlannerTab() {
         animate={{ opacity: 1, y: 0 }}
         className="p-4 bg-[var(--dashboard-primary-subtle)] border border-[var(--accent)]/20 rounded-2xl flex items-start gap-3"
       >
-        <Sparkles className="w-5 h-5 text-[var(--dashboard-primary)] flex-shrink-0 mt-0.5" />
+        <Lightbulb className="w-5 h-5 text-[var(--dashboard-primary)] flex-shrink-0 mt-0.5" />
         <div>
           <p className="text-sm text-[var(--dashboard-text-secondary)]">
             <span className="text-[var(--dashboard-primary)] font-mono">স্টাডি টিপ:</span> প্রতিদিন অন্তত একটি দুর্বল টপিকে ১৫ মিনিট

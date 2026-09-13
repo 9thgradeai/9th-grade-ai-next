@@ -1,6 +1,6 @@
 "use client";
 
-import { Clock, CalendarClock, ShieldAlert, Sparkles } from "lucide-react";
+import { Clock, CalendarClock, Flame } from "lucide-react";
 import { useCountdown, formatDate } from "../HomeTabHelpers";
 import { useLanguage, t } from "@/lib/lang-ctx";
 import type { Server } from "@/lib/types";
@@ -35,7 +35,7 @@ export default function ExamCountdownCard({ exam }: { exam: Server.ExamScheduleD
                 borderColor: "color-mix(in srgb, var(--dashboard-warning) 20%, transparent)",
               }}
             >
-              <Sparkles className="w-3 h-3" />
+              <Flame className="w-3 h-3" />
               {sprintPhase}
             </span>
           </div>

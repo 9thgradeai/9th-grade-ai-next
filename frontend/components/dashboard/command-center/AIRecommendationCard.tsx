@@ -1,6 +1,7 @@
 "use client";
 
-import { Sparkles, ArrowRight, AlertTriangle, MessageSquare, CheckCircle2 } from "lucide-react";
+import { ArrowRight, AlertTriangle, MessageSquare, CheckCircle2 } from "lucide-react";
+import AiLogo from "@/components/ui/AiLogo";
 
 type Props = {
   weakestName: string | null;
@@ -30,7 +31,7 @@ export default function AIRecommendationCard({
       <div>
         <div className="flex items-center gap-2">
           <span className="w-7 h-7 rounded-lg flex items-center justify-center shadow-sm" style={{ background: "var(--dashboard-primary)", color: "var(--dashboard-text-inverse)" }}>
-            <Sparkles className="w-3.5 h-3.5 animate-pulse" />
+            <AiLogo solid={false} className="w-3.5 h-3.5 animate-pulse" />
           </span>
           <p className="command-eyebrow !text-[10px]">AI Neural Recommendation</p>
           <span className="ml-auto text-[10px] font-bold tracking-widest uppercase px-2.5 py-1 rounded-full border flex items-center gap-1.5" style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-primary)", background: "var(--dashboard-surface-muted)" }}>

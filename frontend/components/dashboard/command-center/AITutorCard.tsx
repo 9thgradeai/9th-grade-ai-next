@@ -1,6 +1,7 @@
 "use client";
 
-import { Sparkles, MessageCircle, ArrowRight, Bot } from "lucide-react";
+import { MessageCircle, ArrowRight } from "lucide-react";
+import AiLogo from "@/components/ui/AiLogo";
 
 type Props = { weakestName: string | null; onAsk: () => void; onGuided: () => void };
 
@@ -14,7 +15,7 @@ export default function AITutorCard({ weakestName, onAsk, onGuided }: Props) {
               className="w-7 h-7 rounded-lg flex items-center justify-center shadow-sm"
               style={{ background: "var(--dashboard-primary)", color: "var(--dashboard-text-inverse)" }}
             >
-              <Sparkles className="w-3.5 h-3.5 animate-pulse" />
+              <AiLogo solid={false} className="w-3.5 h-3.5 animate-pulse" />
             </span>
             <p className="command-eyebrow !text-[10px]">Interactive AI Tutor</p>
           </div>

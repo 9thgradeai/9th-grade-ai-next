@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { TrendingUp, Flame, Target, Trophy, Info, X, ShieldCheck, Sparkles } from "lucide-react";
+import { TrendingUp, Flame, Target, Trophy, Info, X, ShieldCheck } from "lucide-react";
 
 type Props = {
   score: number;
@@ -49,7 +49,7 @@ export default function PreparationScoreCard({ score, accuracy, streak, solved, 
               color: readinessColor,
             }}
           >
-            <Sparkles className="w-3 h-3" />
+            <ShieldCheck className="w-3 h-3" />
             {readinessStatus}
           </span>
           <button

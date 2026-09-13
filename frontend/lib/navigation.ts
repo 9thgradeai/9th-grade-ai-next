@@ -1,12 +1,18 @@
 "use client";
 import {
   BookOpen, Zap, Target, TrendingUp, Brain, Calendar, Home,
-  GraduationCap, FileText, Sparkles, BarChart3, Clock, Bookmark,
-  HelpCircle, Info, Shield, FileCheck, Users, Library, PenTool, Trophy, Layers,
+  GraduationCap, FileText, BarChart3, Clock, Bookmark,
+  HelpCircle, Info, Shield, FileCheck, Users, Library, PenTool, Trophy, Layers, Newspaper, Compass,
 } from "lucide-react";
-import type { ComponentType } from "react";
+import { createElement, type ComponentType } from "react";
+import AiLogo from "@/components/ui/AiLogo";
 
 export type NavIcon = ComponentType<{ className?: string }>;
+
+// Bespoke 9Th-Grade AI emblem as a menu glyph — inherits the tile colour via
+// currentColor so it renders like the other lucide nav icons.
+const AiGlyph = ({ className }: { className?: string }) =>
+  createElement(AiLogo, { solid: false, className });
 export type NavItem = { label: string; href: string; icon?: NavIcon; desc?: string; external?: boolean; auth?: "in" | "out" | "any" };
 export type NavGroup = { label: string; items: NavItem[] };
 export type MegaMenu = {
@@ -30,7 +36,7 @@ export const NAVIGATION: MegaMenu[] = [
         { label: "Current Affairs", href: "/current-affairs", icon: Clock, desc: "Daily updates & quiz" },
         { label: "Vocabulary Builder", href: "/vocab", icon: BookOpen, desc: "Word power drills" },
         { label: "Study Guides", href: "/guides", icon: PenTool, desc: "Expert-written guides" },
-        { label: "Blog & Tips", href: "/blog", icon: Sparkles, desc: "Strategy & motivation" },
+        { label: "Blog & Tips", href: "/blog", icon: Newspaper, desc: "Strategy & motivation" },
       ]},
     ],
     highlight: { title: "Learn smarter", desc: "Syllabus-aligned for BCS, Bank & Teacher recruitment — Bangla + English.", href: "/dashboard?tab=question-bank", cta: "Open Question Bank" },
@@ -68,7 +74,7 @@ export const NAVIGATION: MegaMenu[] = [
     id: "ai", label: "AI", labelBn: "এআই", show: "always",
     groups: [
       { label: "AI Tools", items: [
-        { label: "AI Tutor", href: "/dashboard?tab=practice", icon: Sparkles, desc: "Bilingual doubt solving" },
+        { label: "AI Tutor", href: "/dashboard?tab=practice", icon: AiGlyph, desc: "Bilingual doubt solving" },
         { label: "AI Solver", href: "/dashboard?tab=practice", icon: PenTool, desc: "Explain any question" },
         { label: "Voice Tutor", href: "/dashboard?tab=practice", icon: HelpCircle, desc: "Speak & learn" },
       ]},
@@ -95,7 +101,7 @@ export const NAVIGATION: MegaMenu[] = [
     id: "more", label: "More", show: "always",
     groups: [
       { label: "Product", items: [
-        { label: "How it works", href: "/#features", icon: Sparkles, desc: "Features overview" },
+        { label: "How it works", href: "/#features", icon: Compass, desc: "Features overview" },
         { label: "Syllabus", href: "/#syllabus", icon: Library, desc: "Coverage map" },
         { label: "Exam Engine", href: "/tracks", icon: Trophy, desc: "Tracks & archives" },
       ]},

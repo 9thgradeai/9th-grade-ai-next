@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Calendar, ArrowRight, Check, Plus, Loader2, Sparkles } from "lucide-react";
+import { Calendar, ArrowRight, Check, Plus, Loader2 } from "lucide-react";
 import type { Server } from "@/lib/types";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 import { api } from "@/lib/services/api";

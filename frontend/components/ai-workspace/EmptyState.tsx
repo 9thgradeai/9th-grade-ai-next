@@ -10,7 +10,8 @@
 // data-backed starter prompts. Everything here is deterministic app data —
 // no LLM is involved.
 
-import { FileText, Pin, Sparkles } from "lucide-react";
+import { FileText, Pin } from "lucide-react";
+import AiLogo from "@/components/ui/AiLogo";
 import { PRESET_PROMPTS } from "@/lib/data/ai";
 import { modeMeta } from "./modes";
 import { QUICK_PROMPTS } from "./prompts";
@@ -67,13 +68,13 @@ export default function EmptyState({ mode, contextChip, opening, onPrompt }: Emp
                     key={ins.id}
                     className="flex max-w-full items-center gap-2 rounded-lg border border-[var(--dashboard-border-muted)] bg-[var(--dashboard-surface-muted)] px-3 py-1.5 text-left text-xs text-[var(--dashboard-text-secondary)]"
                   >
-                    <Sparkles
+                    <AiLogo
+                      solid={false}
                       className={`h-3.5 w-3.5 flex-shrink-0 ${
                         ins.priority === "high"
                           ? "text-[var(--dashboard-danger)]"
                           : "text-[var(--dashboard-primary)]"
                       }`}
-                      aria-hidden="true"
                     />
                     <span className="min-w-0 flex-1">{ins.text}</span>
                   </div>

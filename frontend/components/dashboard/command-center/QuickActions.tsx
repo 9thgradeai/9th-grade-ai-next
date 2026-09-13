@@ -2,7 +2,8 @@
 
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Zap, BookOpen, Target, Brain, Calendar, BarChart3, ClipboardCheck, Sparkles, Command } from "lucide-react";
+import { Zap, BookOpen, Target, Brain, Calendar, BarChart3, ClipboardCheck, Command } from "lucide-react";
+import AiLogo from "@/components/ui/AiLogo";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 import { launchAI } from "@/lib/ai-launcher";
 import type { TabId } from "@/lib/data";
@@ -21,6 +22,9 @@ type Action = {
   special?: "ai-tutor";
   badge?: number | string;
 };
+
+// Bespoke 9Th-Grade AI emblem as a dock glyph — inherits the button colour.
+const AiGlyph = ({ className }: { className?: string }) => <AiLogo solid={false} className={className} />;
 
 type Props = {
   pendingMistakes?: number;
@@ -47,7 +51,7 @@ export default function QuickActions({ pendingMistakes = 0, flashcardsDue = null
     { keyLabel: "P", label: t("dock.practice"),   icon: Zap,           tab: "practice",      primary: true, mode: "quick" },
     { keyLabel: "M", label: t("dock.mockExam"),  icon: ClipboardCheck, tab: "practice",     mode: "mock" },
     { keyLabel: "W", label: t("dock.wrongAns"),  icon: Target,         tab: "mistakes",     badge: pendingMistakes > 0 ? pendingMistakes : undefined },
-    { keyLabel: "A", label: t("dock.aiTutor"),   icon: Sparkles,       tab: null,           special: "ai-tutor" },
+    { keyLabel: "A", label: t("dock.aiTutor"),   icon: AiGlyph,       tab: null,           special: "ai-tutor" },
     { keyLabel: "L", label: t("dock.planner"),    icon: Calendar,       tab: "study-planner" },
     { keyLabel: "Q", label: t("dock.qbank"),     icon: BookOpen,       tab: "question-bank", badge: qbankCount && qbankCount>0 ? (qbankCount>999?"999+":String(qbankCount)) : undefined },
     { keyLabel: "F", label: t("dock.flashcards"), icon: Brain,          tab: "flashcards",   badge: flashcardsDue && flashcardsDue > 0 ? flashcardsDue : undefined },
