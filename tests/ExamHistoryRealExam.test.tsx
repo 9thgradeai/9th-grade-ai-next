@@ -13,7 +13,13 @@ function stubFetch(routes: Record<string, unknown>) {
       if (!match) {
         return { ok: false, status: 404, statusText: "Not Found", json: async () => ({}) } as Response;
       }
-      return { ok: true, status: 200, json: async () => routes[match] } as Response;
+      return {
+        ok: true,
+        status: 200,
+        json: async () => routes[match],
+        // PDF exports read the body as a Blob (via api.exportRealExam's downloadFile).
+        blob: async () => new Blob(["%PDF-1.4 fake"], { type: "application/pdf" }),
+      } as Response;
     }),
   );
 }
@@ -199,5 +205,155 @@ describe("RealExamTab", () => {
     fireEvent.click(screen.getByText("উত্তর মিলিয়ে দেখুন"));
 
     expect(await screen.findByText(/স্কোর: 1\/2/)).toBeInTheDocument();
+  });
+});
+
+describe("RealExamTab custom paper builder", () => {
+  const examConfigPayload = {
+    subjects: [
+      {
+        id: 3,
+        nameBn: "বাংলা ভাষা ও সাহিত্য",
+        nameEn: "Bengali",
+        icon: "বাং",
+        color: "#107c41",
+        bg: "bg-emerald-500/10",
+        questionCount: 2,
+        nodes: [
+          {
+            id: 31,
+            name: "ভাষা",
+            path: "ভাষা",
+            depth: 1,
+            questionCount: 1,
+            children: [
+              {
+                id: 311,
+                name: "বানান",
+                path: "ভাষা/বানান",
+                depth: 2,
+                questionCount: 1,
+                children: [],
+              },
+            ],
+          },
+          {
+            id: 32,
+            name: "সাহিত্য",
+            path: "সাহিত্য",
+            depth: 1,
+            questionCount: 1,
+            children: [],
+          },
+        ],
+      },
+    ],
+  };
+
+  const builderQuestionsPayload = {
+    questions: [
+      {
+        id: 1,
+        subjectId: 3,
+        subject: "বাংলা ভাষা ও সাহিত্য",
+        topic: "ভাষা",
+        subtopic: "বানান",
+        question: "শুদ্ধ বানান কোনটি?",
+        options: ["বাংলাদেশ", "বাঙলাদেশ", "বাংলাদশ", "বাঙলাদশ"],
+        correctAnswer: "বাংলাদেশ",
+        explanation: "সঠিক বানান বাংলাদেশ।",
+        difficulty: "EASY",
+        year: 2024,
+        sourceExam: "46th BCS",
+        bcsTerm: null,
+        questionNumber: 1,
+      },
+      {
+        id: 2,
+        subjectId: 3,
+        subject: "বাংলা ভাষা ও সাহিত্য",
+        topic: "সাহিত্য",
+        subtopic: "কবি",
+        question: "গীতাঞ্জলির রচয়িতা কে?",
+        options: ["কাজী নজরুল", "রবীন্দ্রনাথ ঠাকুর", "জসীমউদ্দীন", "সুকান্ত"],
+        correctAnswer: "রবীন্দ্রনাথ ঠাকুর",
+        explanation: "১৯১৩ সালে নোবেল পুরস্কার।",
+        difficulty: "EASY",
+        year: 2024,
+        sourceExam: "46th BCS",
+        bcsTerm: null,
+        questionNumber: 2,
+      },
+    ],
+  };
+
+  it("builds a paper from the subject/topic/subtopic picker and exports a PDF", async () => {
+    stubFetch({
+      "/api/exam-papers": papersPayload,
+      "/api/exam/config": examConfigPayload,
+      "/api/questions": builderQuestionsPayload,
+      "/api/real-exam/export": { ok: true },
+    });
+    vi.stubGlobal(
+      "URL",
+      Object.assign(URL, {
+        createObjectURL: vi.fn(() => "blob:test"),
+        revokeObjectURL: vi.fn(),
+      }),
+    );
+
+    const { default: RealExamTab } = await import("@/components/dashboard/RealExamTab");
+    render(<RealExamTab />);
+
+    // Enter the custom paper builder from the Real Exam landing page.
+    fireEvent.click(await screen.findByText("নতুন প্রশ্নপত্র তৈরি করুন"));
+
+    // The selection tree loads — every subject is shown as in the Practice tab.
+    expect(await screen.findByText("বাংলা ভাষা ও সাহিত্য")).toBeInTheDocument();
+
+    // Open the subject popup, keep the whole subject, and close it.
+    const subjectCard = screen.getByText("বাংলা ভাষা ও সাহিত্য").closest("button") as HTMLElement;
+    fireEvent.click(subjectCard);
+    expect(await screen.findByRole("dialog")).toBeTruthy();
+    fireEvent.click(screen.getByText("সম্পন্ন"));
+
+    // Build the paper from the selected subject.
+    fireEvent.click(screen.getByText("প্রশ্নপত্র তৈরি করুন ও PDF নিন"));
+
+    // Preview shows the questions pulled from /api/questions with PDF options.
+    expect(await screen.findByText("PDF এক্সপোর্ট অপশন")).toBeInTheDocument();
+    expect(screen.getByText("শুদ্ধ বানান কোনটি?")).toBeInTheDocument();
+    expect(screen.getByText("গীতাঞ্জলির রচয়িতা কে?")).toBeInTheDocument();
+
+    // Export (without answers) triggers the PDF download without an error.
+    fireEvent.click(screen.getByText("উত্তর ছাড়া PDF ডাউনলোড"));
+    await waitFor(() => {
+      expect(screen.queryByText("PDF তৈরি করা যায়নি। আবার চেষ্টা করুন।")).not.toBeInTheDocument();
+    });
+  });
+
+  it("previews questions only from the selected topic/subtopic", async () => {
+    stubFetch({
+      "/api/exam-papers": papersPayload,
+      "/api/exam/config": examConfigPayload,
+      "/api/questions": { questions: [builderQuestionsPayload.questions[0]] },
+    });
+
+    const { default: RealExamTab } = await import("@/components/dashboard/RealExamTab");
+    render(<RealExamTab />);
+
+    fireEvent.click(await screen.findByText("নতুন প্রশ্নপত্র তৈরি করুন"));
+    expect(await screen.findByText("বাংলা ভাষা ও সাহিত্য")).toBeInTheDocument();
+
+    // Pick only the "ভাষা" topic (one question).
+    const subjectCard = screen.getByText("বাংলা ভাষা ও সাহিত্য").closest("button") as HTMLElement;
+    fireEvent.click(subjectCard);
+    fireEvent.click(await screen.findByRole("checkbox", { name: /ভাষা/ }));
+
+    fireEvent.click(screen.getByText("সম্পন্ন"));
+    fireEvent.click(screen.getByText("প্রশ্নপত্র তৈরি করুন ও PDF নিন"));
+
+    expect(await screen.findByText("শুদ্ধ বানান কোনটি?")).toBeInTheDocument();
+    expect(screen.queryByText("গীতাঞ্জলির রচয়িতা কে?")).not.toBeInTheDocument();
   });
 });

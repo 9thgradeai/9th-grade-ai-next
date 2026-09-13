@@ -5,6 +5,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   FileDown,
   FileText,
+  FilePlus2,
+  Layers,
+  Minus,
+  Plus,
   Play,
   Check,
   Clock,
@@ -19,6 +23,13 @@ import {
 } from "lucide-react";
 import { api } from "@/lib/services/api";
 import type { Server } from "@/lib/types";
+import SubjectTopicSelect from "./SubjectTopicSelect";
+import {
+  type Selection,
+  flattenNodes,
+  findNodeByPath,
+  availableForSubject,
+} from "./TopicTreePicker";
 
 type PaperMeta = {
   id: number;
@@ -38,9 +49,22 @@ type PaperMeta = {
   subjectNameBn: string | null;
 };
 
-type RealExamPhase = "papers" | "preview" | "offline";
+type RealExamPhase = "papers" | "build" | "preview" | "offline";
 
 const OPTION_LABELS = ["A", "B", "C", "D", "E", "F"];
+
+// Maximum questions the PDF exporter accepts (matches /api/real-exam/export).
+const MAX_PDF_QUESTIONS = 200;
+
+/** Unbiased Fisher-Yates shuffle — used to pick a random sample for a paper. */
+function shuffled<T>(items: T[]): T[] {
+  const out = [...items];
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
+}
 
 function formatMinutes(min: number | null): string {
   if (!min || min <= 0) return "সময় সীমাহীন";
@@ -73,6 +97,20 @@ export default function RealExamTab() {
   const [checked, setChecked] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
 
+  // ── Custom paper builder state (subject → topic → subtopic picker) ──
+  const [subjects, setSubjects] = useState<Server.ExamSubjectDTO[]>([]);
+  const [configLoading, setConfigLoading] = useState(false);
+  const [configError, setConfigError] = useState<string | null>(null);
+  const [selection, setSelection] = useState<Selection>({});
+  const [customDurationMin, setCustomDurationMin] = useState(60);
+  const [buildLoading, setBuildLoading] = useState(false);
+  const [buildError, setBuildError] = useState<string | null>(null);
+  const [generatedMeta, setGeneratedMeta] = useState<{
+    title: string;
+    examName: string;
+    durationMin: number;
+  } | null>(null);
+
   const fetchPapers = useCallback(async () => {
     try {
       setPapersLoading(true);
@@ -91,6 +129,121 @@ export default function RealExamTab() {
       await fetchPapers();
     })();
   }, [fetchPapers]);
+
+  // ── Custom paper builder derived state ──
+  const selectedSubjects = useMemo(
+    () => subjects.filter((s) => Object.prototype.hasOwnProperty.call(selection, s.id)),
+    [subjects, selection],
+  );
+
+  const availableTotal = useMemo(
+    () => selectedSubjects.reduce((acc, s) => acc + availableForSubject(s, selection), 0),
+    [selectedSubjects, selection],
+  );
+
+  const totalCount = useMemo(
+    () => selectedSubjects.reduce((acc, s) => acc + (selection[s.id].count ?? 0), 0),
+    [selectedSubjects, selection],
+  );
+
+  const selectedGroupCount = useMemo(
+    () =>
+      selectedSubjects.reduce((acc, s) => {
+        const sel = selection[s.id];
+        const nodes = flattenNodes(s.nodes);
+        if (sel.paths.length === 0) return acc + nodes.filter((n) => n.depth === 1).length;
+        return acc + sel.paths.filter((p) => findNodeByPath(s.nodes, p)?.depth === 1).length;
+      }, 0),
+    [selectedSubjects, selection],
+  );
+
+  const selectedSubTopicCount = useMemo(
+    () =>
+      selectedSubjects.reduce((acc, s) => {
+        const sel = selection[s.id];
+        const nodes = flattenNodes(s.nodes);
+        if (sel.paths.length === 0) return acc + nodes.filter((n) => n.depth > 1).length;
+        return acc + sel.paths.filter((p) => (findNodeByPath(s.nodes, p)?.depth ?? 1) > 1).length;
+      }, 0),
+    [selectedSubjects, selection],
+  );
+
+  const insufficient = totalCount > availableTotal;
+
+  const enterBuild = useCallback(async () => {
+    setPhase("build");
+    setBuildError(null);
+    setSelection({});
+    setGeneratedMeta(null);
+    setConfigLoading(true);
+    setConfigError(null);
+    try {
+      const list = await api.examConfig();
+      setSubjects(list.filter((s) => s.questionCount > 0));
+    } catch {
+      setConfigError("কনফিগারেশন লোড করা যায়নি। আবার চেষ্টা করুন।");
+    } finally {
+      setConfigLoading(false);
+    }
+  }, []);
+
+  const buildCustomPaper = useCallback(async () => {
+    if (selectedSubjects.length === 0 || totalCount === 0) return;
+    setBuildLoading(true);
+    setBuildError(null);
+    try {
+      // Same data flow as the Practice tab: fetch the full question DTOs for
+      // every selected subject/topic/subtopic, merge, then sample the count.
+      const pools = await Promise.all(
+        selectedSubjects.map(async (s) => {
+          const sel = selection[s.id];
+          return api.questions({
+            subject: s.nameBn,
+            paths: sel.paths.length > 0 ? sel.paths : undefined,
+            limit: 200,
+          });
+        }),
+      );
+      const merged = pools.flat().filter(Boolean);
+      if (merged.length === 0) {
+        setBuildError("নির্বাচিত টপিক থেকে কোনো প্রশ্ন পাওয়া যায়নি।");
+        return;
+      }
+      const requested = Math.min(totalCount > 0 ? totalCount : merged.length, MAX_PDF_QUESTIONS);
+      const picked = shuffled(merged).slice(0, Math.min(requested, merged.length));
+      const qs: Server.RealExamQuestionDTO[] = picked.map((q) => ({
+        id: q.id,
+        question: q.question,
+        options: q.options,
+        correctAnswer: q.correctAnswer,
+        explanation: q.explanation,
+        subject: q.subject,
+        topic: q.topic,
+        subtopic: q.subtopic,
+        difficulty: q.difficulty,
+        year: q.year,
+        sourceExam: q.sourceExam || undefined,
+        questionNumber: q.questionNumber ?? undefined,
+      }));
+      setQuestions(qs);
+      setAnswers({});
+      setChecked(false);
+      setTimeLeft(customDurationMin * 60);
+      setShuffleSeed(null);
+      setIncludeAnswers(false);
+      setIncludeExplanations(false);
+      setGeneratedMeta({
+        title: "কাস্টম রিয়েল এক্সাম প্রশ্নপত্র",
+        examName: selectedSubjects.map((s) => s.nameBn).join(", ") || "বহু বিষয়",
+        durationMin: customDurationMin,
+      });
+      setPhase("preview");
+    } catch {
+      setBuildError("প্রশ্ন লোড করা যায়নি। আবার চেষ্টা করুন।");
+    } finally {
+      setBuildLoading(false);
+    }
+  }, [selectedSubjects, selection, totalCount, customDurationMin]);
 
   const openPaper = useCallback(async (paper: PaperMeta) => {
     try {
@@ -150,22 +303,34 @@ export default function RealExamTab() {
   }, [answers, questions]);
 
   const doExport = useCallback(async () => {
-    if (!selectedPaper || questions.length === 0) return;
+    if (questions.length === 0) return;
+    if (!generatedMeta && !selectedPaper) return;
+    const title = generatedMeta
+      ? generatedMeta.title
+      : `${selectedPaper?.titleBn ?? "প্রশ্নপত্র"} — প্রশ্নপত্র`;
+    const examName = generatedMeta
+      ? generatedMeta.examName
+      : `${selectedPaper?.examNameBn ?? ""} (${selectedPaper?.examType ?? ""})`;
+    const durationMin = generatedMeta
+      ? generatedMeta.durationMin
+      : (selectedPaper?.durationMin ?? 120);
     setExporting(true);
     setExportError(null);
     try {
       const blob = await api.exportRealExam({
         questions,
-        title: `${selectedPaper.titleBn} — প্রশ্নপত্র`,
-        examName: `${selectedPaper.examNameBn} (${selectedPaper.examType})`,
+        title,
+        examName,
         exportOptions: { includeAnswers, includeExplanations, shuffleQuestions: shuffleSeed !== null },
-        durationMin: selectedPaper.durationMin ?? 120,
+        durationMin,
       });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
       const suffix = includeAnswers ? "with-answers" : "questions-only";
-      a.download = `real-exam-paper-${selectedPaper.id}-${suffix}.pdf`;
+      a.download = generatedMeta
+        ? `real-exam-custom-paper-${suffix}.pdf`
+        : `real-exam-paper-${selectedPaper?.id ?? "custom"}-${suffix}.pdf`;
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -175,7 +340,7 @@ export default function RealExamTab() {
     } finally {
       setExporting(false);
     }
-  }, [selectedPaper, questions, includeAnswers, includeExplanations, shuffleSeed]);
+  }, [selectedPaper, questions, includeAnswers, includeExplanations, shuffleSeed, generatedMeta]);
 
   const selectAnswer = (questionId: number, option: string) => {
     if (checked) return;
@@ -185,6 +350,15 @@ export default function RealExamTab() {
   const backToPapers = () => {
     setPhase("papers");
     setSelectedPaper(null);
+    setQuestions([]);
+    setAnswers({});
+    setChecked(false);
+    setGeneratedMeta(null);
+    setSelection({});
+  };
+
+  const backToBuild = () => {
+    setPhase("build");
     setQuestions([]);
     setAnswers({});
     setChecked(false);
@@ -217,6 +391,32 @@ export default function RealExamTab() {
           </div>
         </motion.div>
 
+        {/* Custom paper builder CTA — selects subject → topic → subtopic like Practice */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.03 }}
+          className="glass-card rounded-2xl border border-[var(--primary)]/30 bg-gradient-to-br from-[var(--dashboard-primary-subtle)] via-transparent to-transparent p-4 md:p-5"
+        >
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-[var(--accent)]/15 flex items-center justify-center flex-shrink-0">
+              <FilePlus2 className="w-5 h-5 text-[var(--accent)]" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3 className="text-sm font-bold text-[var(--text-primary)]">নিজের রিয়েল এক্সাম প্রশ্নপত্র বানান</h3>
+              <p className="text-xs text-[var(--dashboard-text-muted)] font-mono mt-0.5">
+                সব বিষয়ের টপিক ও সাবটপিক থেকে নিজের প্রশ্নপত্র তৈরি করুন — PDF-এ ডাউনলোড করে প্রিন্ট করুন।
+              </p>
+            </div>
+            <button
+              onClick={() => void enterBuild()}
+              className="px-4 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center justify-center gap-2 shadow-neon-glow flex-shrink-0"
+            >
+              <Layers className="w-4 h-4" /> নতুন প্রশ্নপত্র তৈরি করুন
+            </button>
+          </div>
+        </motion.div>
+
         {papersLoading && (
           <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
             <Loader2 className="w-10 h-10 mx-auto mb-3 text-[var(--accent)] animate-spin" aria-hidden="true" />
@@ -235,7 +435,13 @@ export default function RealExamTab() {
         )}
 
         {!papersLoading && !papersError && (
-          papers.length === 0 ? (
+          <>
+            <div className="flex items-center gap-3">
+              <div className="flex-1 h-px bg-[var(--border-subtle)]" />
+              <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-widest whitespace-nowrap">অথবা অফিসিয়াল প্রশ্নপত্র থেকে</p>
+              <div className="flex-1 h-px bg-[var(--border-subtle)]" />
+            </div>
+            {papers.length === 0 ? (
             <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
               <FileText className="w-16 h-16 mx-auto mb-4 text-[var(--dashboard-text-muted)]/30" aria-hidden="true" />
               <h4 className="text-lg font-semibold text-[var(--text-primary)] mb-2">কোনো প্রশ্নপত্র নেই</h4>
@@ -269,6 +475,165 @@ export default function RealExamTab() {
               ))}
             </div>
           )
+        }
+        </>
+        )}
+      </div>
+    );
+  }
+
+  // ═══════════ BUILD CUSTOM PAPER ═══════════
+  if (phase === "build") {
+    return (
+      <div className="space-y-6">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-card rounded-2xl border border-terminal-border overflow-hidden">
+          <div className="terminal-window-bar border-b border-terminal-border">
+            <div className="dot close" /><div className="dot minimize" /><div className="dot maximize" />
+            <div className="flex-1 text-center text-xs text-[var(--dashboard-text-muted)] font-mono">{"// REAL_EXAM_PAPER_BUILDER"}</div>
+          </div>
+          <div className="p-5 md:p-6">
+            <button onClick={backToPapers} className="text-xs font-mono text-[var(--dashboard-primary)] hover:underline mb-3">← সব প্রশ্নপত্রে ফিরুন</button>
+            <div className="flex items-center gap-2 mb-1">
+              <Layers className="w-5 h-5 text-[var(--dashboard-primary)]" />
+              <h2 className="text-lg font-bold text-[var(--text-primary)]">নতুন প্রশ্নপত্র তৈরি করুন</h2>
+            </div>
+            <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">
+              যেকোনো বিষয়ের টপিক ও সাবটপিক বেছে নিয়ে নিজের রিয়েল এক্সাম প্রশ্নপত্র বানান — PDF-এ ডাউনলোড করে প্রিন্ট করে আসল পরীক্ষার মতো দিন।
+            </p>
+          </div>
+        </motion.div>
+
+        {configLoading && (
+          <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
+            <Loader2 className="w-10 h-10 mx-auto mb-3 text-[var(--accent)] animate-spin" aria-hidden="true" />
+            <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">বিষয় লোড হচ্ছে...</p>
+          </div>
+        )}
+
+        {configError && (
+          <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
+            <AlertTriangle className="w-10 h-10 mx-auto mb-3 text-[var(--warning)]" aria-hidden="true" />
+            <p className="text-sm text-[var(--dashboard-text-muted)]">{configError}</p>
+            <button onClick={() => void enterBuild()} className="mt-4 px-4 py-2 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors">
+              আবার চেষ্টা করুন
+            </button>
+          </div>
+        )}
+
+        {!configLoading && !configError && (
+          <>
+            <SubjectTopicSelect
+              subjects={subjects}
+              selection={selection}
+              onSelectionChange={setSelection}
+            />
+
+            {/* Total questions + duration */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="glass-card rounded-xl border border-terminal-border p-4 flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-sm text-[var(--dashboard-text-secondary)] font-mono">মোট প্রশ্ন</p>
+                  <p className="text-xs text-[var(--dashboard-text-muted)] mt-0.5">
+                    উপলব্ধ:{" "}
+                    <span className={`font-mono ${insufficient ? "text-[var(--dashboard-danger)]" : "text-[var(--dashboard-primary)]"}`}>
+                      {availableTotal}টি
+                    </span>
+                  </p>
+                </div>
+                <span className={`text-2xl font-bold font-mono ${totalCount > 0 ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-text-secondary)]"}`}>
+                  {totalCount}
+                  <span className="text-xs text-[var(--dashboard-text-muted)] ml-1">প্র.</span>
+                </span>
+              </div>
+
+              <div className="glass-card rounded-xl border border-terminal-border p-4 flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm text-[var(--dashboard-text-secondary)] font-mono">সময়সীমা</p>
+                  <p className="text-xs text-[var(--dashboard-text-muted)] mt-0.5">
+                    {customDurationMin} মিনিট (PDF-এর হেডারে দেখানো হবে)
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setCustomDurationMin((d) => Math.max(5, d - 5))}
+                    aria-label="সময় কমান"
+                    className="w-8 h-8 rounded-lg bg-[var(--surface-raised)] border border-[var(--primary)]/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-[var(--primary)]/40"
+                  >
+                    <Minus className="w-4 h-4" />
+                  </button>
+                  <span className="text-2xl font-bold text-[var(--dashboard-primary)] font-mono w-8 text-center">{customDurationMin}</span>
+                  <button
+                    onClick={() => setCustomDurationMin((d) => Math.min(180, d + 5))}
+                    aria-label="সময় বাড়ান"
+                    className="w-8 h-8 rounded-lg bg-[var(--surface-raised)] border border-[var(--primary)]/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-[var(--primary)]/40"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {insufficient && (
+              <div className="flex items-start gap-2 rounded-xl border border-[var(--warning)]/30 bg-[var(--dashboard-warning-subtle)] p-3 text-xs text-[var(--dashboard-warning)]">
+                <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <p>
+                  নির্বাচিত টপিক থেকে শুধু <span className="font-mono">{availableTotal}টি</span> প্রশ্ন
+                  পাওয়া যায় — মোট <span className="font-mono">{totalCount}টি</span> চাওয়া হয়েছে।
+                </p>
+              </div>
+            )}
+
+            {totalCount > MAX_PDF_QUESTIONS && (
+              <div className="flex items-start gap-2 rounded-xl border border-[var(--warning)]/30 bg-[var(--dashboard-warning-subtle)] p-3 text-xs text-[var(--dashboard-warning)]">
+                <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <p>
+                  PDF-এ সর্বোচ্চ <span className="font-mono">200টি</span> প্রশ্ন যায় — সবার আগের ২০০টি অন্তর্ভুক্ত হবে।
+                </p>
+              </div>
+            )}
+
+            {buildError && (
+              <div className="flex items-start gap-2 rounded-xl border border-[var(--danger)]/30 bg-[var(--dashboard-danger-subtle)] p-3 text-xs text-[var(--dashboard-danger)]">
+                <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <p>{buildError}</p>
+              </div>
+            )}
+
+            {/* Live config summary */}
+            <motion.div layout className="glass-card rounded-2xl border border-[var(--primary)]/30 p-4">
+              <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-widest mb-2">লাইভ কনফিগারেশন সামারি</p>
+              <div className="grid grid-cols-4 gap-3 text-center">
+                <div>
+                  <p className="text-lg font-bold text-[var(--text-primary)] font-mono">{selectedSubjects.length}</p>
+                  <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">বিষয়</p>
+                </div>
+                <div>
+                  <p className="text-lg font-bold text-[var(--text-primary)] font-mono">{selectedGroupCount}</p>
+                  <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">টপিক</p>
+                </div>
+                <div>
+                  <p className="text-lg font-bold text-[var(--text-primary)] font-mono">{selectedSubTopicCount}</p>
+                  <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">সাবটপিক</p>
+                </div>
+                <div>
+                  <p className="text-lg font-bold text-[var(--text-primary)] font-mono">
+                    {totalCount}
+                    <span className="text-xs text-[var(--dashboard-text-muted)] ml-1">প্র.</span>
+                  </p>
+                  <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">{customDurationMin} মিনিট</p>
+                </div>
+              </div>
+            </motion.div>
+
+            <button
+              onClick={() => void buildCustomPaper()}
+              disabled={selectedSubjects.length === 0 || totalCount === 0 || buildLoading}
+              className="mt-4 w-full py-3 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center justify-center gap-2 shadow-neon-glow disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              {buildLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />}
+              {buildLoading ? "প্রশ্নপত্র তৈরি হচ্ছে..." : "প্রশ্নপত্র তৈরি করুন ও PDF নিন"}
+            </button>
+          </>
         )}
       </div>
     );
@@ -278,13 +643,17 @@ export default function RealExamTab() {
   return (
     <div className="space-y-6">
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-card rounded-2xl border border-terminal-border p-5 md:p-6">
-        <button onClick={backToPapers} className="text-xs font-mono text-[var(--dashboard-primary)] hover:underline mb-3">← সব প্রশ্নপত্রে ফিরুন</button>
+        <button onClick={generatedMeta ? backToBuild : backToPapers} className="text-xs font-mono text-[var(--dashboard-primary)] hover:underline mb-3">
+          {generatedMeta ? "← কনফিগারেশনে ফিরুন" : "← সব প্রশ্নপত্রে ফিরুন"}
+        </button>
         <div className="flex items-center gap-2 mb-1">
           <FileText className="w-5 h-5 text-[var(--dashboard-primary)]" />
-          <h2 className="text-lg font-bold text-[var(--text-primary)]">{selectedPaper?.titleBn}</h2>
+          <h2 className="text-lg font-bold text-[var(--text-primary)]">
+            {generatedMeta ? generatedMeta.title : (selectedPaper?.titleBn ?? "প্রশ্নপত্র")}
+          </h2>
         </div>
         <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">
-          {selectedPaper?.examNameBn} • {questions.length}টি প্রশ্ন • {formatMinutes(selectedPaper?.durationMin ?? null)}
+          {generatedMeta ? generatedMeta.examName : (selectedPaper?.examNameBn ?? "")} • {questions.length}টি প্রশ্ন • {formatMinutes(generatedMeta ? generatedMeta.durationMin : (selectedPaper?.durationMin ?? null))}
         </p>
 
         {questionsLoading && (
