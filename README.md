@@ -11,7 +11,7 @@
 [![Prisma 6](https://img.shields.io/badge/Prisma-6-2D3748?logo=prisma)](https://www.prisma.io)
 [![Vercel](https://img.shields.io/badge/Deployed-on-Vercel-000000?logo=vercel)](https://9-delta-ten.vercel.app)
 
-**Live Demo:** [9-delta-ten.vercel.app](https://9-delta-ten.vercel.app)
+**Live Demo:** [https://9th-grade-ai.vercel.app/](https://9th-grade-ai.vercel.app/)
 
 </div>
 
