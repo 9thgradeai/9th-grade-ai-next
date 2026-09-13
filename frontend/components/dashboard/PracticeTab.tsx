@@ -10,6 +10,7 @@ import {
   Zap,
   ChevronLeft,
   ChevronRight,
+  CircleDashed,
   Trophy,
   RotateCcw,
   Target,
@@ -811,13 +812,20 @@ export default function PracticeTab() {
                 {sessionQuestions.map((q, i) => {
                   const userAnswer = answers[q.id];
                   const isCorrect = userAnswer === q.correctAnswer;
+                  const isUnanswered = !userAnswer;
                   return (
                     <div key={q.id} className={`p-3.5 rounded-xl border ${
-                      isCorrect ? "border-[var(--success)]/20" : "border-[var(--danger)]/20"
+                      isCorrect
+                        ? "border-[var(--success)]/20"
+                        : isUnanswered
+                          ? "border-[var(--dashboard-teal)]/25"
+                          : "border-[var(--danger)]/20"
                     }`}>
                       <div className="flex items-start gap-3">
                         {isCorrect ? (
-                          <CheckCircle2 className="w-4 h-4 text-[var(--dashboard-primary)] flex-shrink-0 mt-0.5" />
+                          <CheckCircle2 className="w-4 h-4 text-[var(--dashboard-success)] flex-shrink-0 mt-0.5" />
+                        ) : isUnanswered ? (
+                          <CircleDashed className="w-4 h-4 text-[var(--dashboard-teal)] flex-shrink-0 mt-0.5" />
                         ) : (
                           <XCircle className="w-4 h-4 text-[var(--dashboard-danger)] flex-shrink-0 mt-0.5" />
                         )}
@@ -825,12 +833,12 @@ export default function PracticeTab() {
                           <p className="text-sm mb-1.5" style={{ color: "var(--dashboard-text-primary)" }}>{i + 1}. {q.question}</p>
                           <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">
                             আপনার উত্তর:{" "}
-                            <span className={isCorrect ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-danger)]"}>
+                            <span className={isCorrect ? "text-[var(--dashboard-success)]" : isUnanswered ? "text-[var(--dashboard-teal)]" : "text-[var(--dashboard-danger)]"}>
                               {userAnswer || "উত্তর দেওয়া হয়নি"}
                             </span>
                           </p>
                           {!isCorrect && (
-                            <p className="text-xs text-[var(--dashboard-primary)] font-mono mt-0.5">
+                            <p className="text-xs text-[var(--dashboard-success)] font-mono mt-0.5">
                               সঠিক উত্তর: {q.correctAnswer}
                             </p>
                           )}

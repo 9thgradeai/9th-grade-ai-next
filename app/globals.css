@@ -122,6 +122,8 @@
   --danger-soft: #291316;
   --info: #38BDF8;
   --info-soft: #0C202A;
+  --teal: #2DD4BF;
+  --teal-soft: #0E2422;
 
   /* ── Decorative ────────────────────────────────────────────────────────────── */
   --overlay: rgb(0 0 0 / 0.72);
@@ -248,6 +250,8 @@
   --danger-soft: rgb(220 38 38 / 0.08);
   --info: #2563EB;
   --info-soft: rgb(37 99 235 / 0.08);
+  --teal: #0D9488;
+  --teal-soft: rgb(13 148 136 / 0.08);
 
   /* ── Decorative ────────────────────────────────────────────────────────────── */
   --overlay: rgb(0 0 0 / 0.4);
@@ -360,6 +364,8 @@
   --dashboard-danger-subtle: var(--danger-soft);
   --dashboard-info: var(--info);
   --dashboard-info-subtle: var(--info-soft);
+  --dashboard-teal: var(--teal);
+  --dashboard-teal-subtle: var(--teal-soft);
   --dashboard-focus-ring: var(--focus-ring);
   --dashboard-border-focus: var(--border-focus);
   --dashboard-overlay: var(--overlay);
@@ -1106,12 +1112,15 @@ hr {
   --success: oklch(0.72 0.16 155);
   --warning: oklch(0.78 0.15 75);
   --danger: oklch(0.65 0.20 22);
+  --teal: oklch(0.78 0.13 190);
 }
 .dashboard-theme-scope[data-dashboard-theme="light"] {
   --primary: oklch(0.52 0.22 278);
   --primary-hover: oklch(0.46 0.24 278);
   --primary-soft: oklch(0.95 0.04 278);
   --primary-muted: oklch(0.97 0.02 278);
+  --teal: oklch(0.44 0.11 190);
+  --teal-soft: oklch(0.93 0.03 190);
   --background: oklch(0.982 0.006 260);
   --surface: oklch(1 0 0);
   --surface-soft: oklch(0.978 0.008 260);

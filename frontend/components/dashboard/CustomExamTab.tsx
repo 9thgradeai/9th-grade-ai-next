@@ -151,6 +151,28 @@ export default function CustomExamTab() {
 
   // ── Result state ──
   const [result, setResult] = useState<Server.ExamResultDTO | null>(null);
+  const [highlightedReview, setHighlightedReview] = useState<string | null>(null);
+  const highlightTimeoutRef = useRef<number | null>(null);
+
+  // Jump from the result summary tiles to the first review item in a state
+  // (correct/wrong/unanswered). Scrolls the row into view and flashes a ring.
+  const jumpToReview = useCallback((status: "correct" | "wrong" | "unanswered") => {
+    setHighlightedReview(status);
+    if (highlightTimeoutRef.current !== null) window.clearTimeout(highlightTimeoutRef.current);
+    highlightTimeoutRef.current = window.setTimeout(() => {
+      setHighlightedReview((h) => (h === status ? null : h));
+    }, 2000);
+    const el = document.getElementById(`exam-review-${status}`);
+    if (el && typeof el.scrollIntoView === "function") {
+      el.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
+    }
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (highlightTimeoutRef.current !== null) window.clearTimeout(highlightTimeoutRef.current);
+    };
+  }, []);
 
   // Always start at the top when entering exam or showing results — otherwise
   // the dashboard's scrollable container (#dashboard-content) keeps its previous
@@ -1008,11 +1030,14 @@ export default function CustomExamTab() {
                 animate={{ scale: 1, y: 0 }}
                 exit={{ scale: 0.95, y: 10 }}
                 onClick={(e) => e.stopPropagation()}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="custom-unanswered-confirm-title"
                 className="glass-card rounded-2xl border border-[var(--warning)]/30 p-6 w-full max-w-sm"
               >
                 <div className="flex items-center gap-2 mb-3">
                   <AlertTriangle className="w-5 h-5 text-[var(--dashboard-warning)]" />
-                  <h3 className="text-base font-bold text-[var(--text-primary)]">উত্তর দেওয়া বাকি আছে</h3>
+                  <h3 id="custom-unanswered-confirm-title" className="text-base font-bold text-[var(--text-primary)]">উত্তর দেওয়া বাকি আছে</h3>
                 </div>
                 <p className="text-sm text-[var(--dashboard-text-muted)] mb-5">
                   <span className="text-[var(--dashboard-warning)] font-mono">{unanswered}টি</span> প্রশ্নে উত্তর দেওয়া হয়নি।
@@ -1066,18 +1091,36 @@ export default function CustomExamTab() {
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-w-md mx-auto text-left">
-              <div className="rounded-xl bg-[var(--dashboard-primary-subtle)] border border-[var(--primary)]/20 p-3">
+              <button
+                type="button"
+                onClick={() => jumpToReview("correct")}
+                disabled={summary.correct === 0}
+                aria-label={`সঠিক ${summary.correct}টি প্রশ্ন`}
+                className="rounded-xl bg-[var(--dashboard-success-subtle)] border border-[var(--success)]/20 p-3 text-left transition-all hover:scale-[1.02] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-success)] disabled:opacity-50 disabled:hover:scale-100 disabled:hover:shadow-none disabled:cursor-default cursor-pointer"
+              >
                 <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">সঠিক</p>
-                <p className="text-lg font-bold text-[var(--dashboard-primary)] font-mono">+{summary.correct}</p>
-              </div>
-              <div className="rounded-xl bg-[var(--dashboard-danger-subtle)] border border-[var(--danger)]/20 p-3">
+                <p className="text-lg font-bold text-[var(--dashboard-success)] font-mono">+{summary.correct}</p>
+              </button>
+              <button
+                type="button"
+                onClick={() => jumpToReview("wrong")}
+                disabled={summary.wrong === 0}
+                aria-label={`ভুল ${summary.wrong}টি প্রশ্ন`}
+                className="rounded-xl bg-[var(--dashboard-danger-subtle)] border border-[var(--danger)]/20 p-3 text-left transition-all hover:scale-[1.02] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-danger)] disabled:opacity-50 disabled:hover:scale-100 disabled:hover:shadow-none disabled:cursor-default cursor-pointer"
+              >
                 <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">ভুল</p>
                 <p className="text-lg font-bold text-[var(--dashboard-danger)] font-mono">−{summary.wrong}</p>
-              </div>
-              <div className="rounded-xl bg-subtle border border-[var(--border-strong)] p-3">
+              </button>
+              <button
+                type="button"
+                onClick={() => jumpToReview("unanswered")}
+                disabled={summary.unanswered === 0}
+                aria-label={`উত্তর দেওয়া হয়নি ${summary.unanswered}টি প্রশ্ন`}
+                className="rounded-xl bg-[var(--dashboard-teal-subtle)] border border-[var(--dashboard-teal)]/25 p-3 text-left transition-all hover:scale-[1.02] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-teal)] disabled:opacity-50 disabled:hover:scale-100 disabled:hover:shadow-none disabled:cursor-default cursor-pointer"
+              >
                 <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">উত্তর দেওয়া হয়নি</p>
-                <p className="text-lg font-bold text-[var(--dashboard-text-muted)] font-mono">{summary.unanswered}</p>
-              </div>
+                <p className="text-lg font-bold text-[var(--dashboard-teal)] font-mono">{summary.unanswered}</p>
+              </button>
               <div className="rounded-xl bg-[var(--dashboard-primary-subtle)] border border-[var(--dashboard-border-muted)] p-3">
                 <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">ইতিবাচক</p>
                 <p className="text-lg font-bold text-[var(--dashboard-primary)] font-mono">+{summary.positiveMarks}</p>
@@ -1126,19 +1169,25 @@ export default function CustomExamTab() {
           {result.review.map((item, i) => {
             const isCorrect = item.status === "correct";
             const isUnanswered = item.status === "unanswered";
+            const ringColor = isCorrect
+              ? "ring-[var(--dashboard-success)]"
+              : isUnanswered
+                ? "ring-[var(--dashboard-teal)]"
+                : "ring-[var(--dashboard-danger)]";
             return (
               <motion.div
                 key={item.questionId}
+                id={`exam-review-${item.status}`}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: Math.min(i * 0.03, 0.5) }}
-                className={`glass-card rounded-2xl border p-4 ${
-                  isCorrect ? "border-[var(--primary)]/20" : isUnanswered ? "border-[var(--border-strong)]" : "border-[var(--danger)]/20"
-                }`}
+                className={`glass-card rounded-2xl border p-4 transition-shadow ${
+                  isCorrect ? "border-[var(--success)]/20" : isUnanswered ? "border-[var(--dashboard-teal)]/25" : "border-[var(--danger)]/20"
+                } ${highlightedReview === item.status ? `ring-2 ${ringColor}` : ""}`}
               >
                 <div className="flex items-start gap-3">
                   <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
-                    isCorrect ? "bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]" : isUnanswered ? "bg-[var(--dashboard-surface-muted)] text-[var(--dashboard-text-muted)]" : "bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)]"
+                    isCorrect ? "bg-[var(--dashboard-success-subtle)] text-[var(--dashboard-success)]" : isUnanswered ? "bg-[var(--dashboard-teal-subtle)] text-[var(--dashboard-teal)]" : "bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)]"
                   }`}>
                     {isCorrect ? (
                       <CheckCircle2 className="w-3.5 h-3.5" />
@@ -1153,9 +1202,9 @@ export default function CustomExamTab() {
                       <span className="text-[10px] font-mono text-[var(--dashboard-text-muted)]">প্রশ্ন {i + 1}</span>
                       <span className={`px-1.5 py-0.5 rounded text-[10px] font-mono ${
                         isCorrect
-                          ? "bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
+                          ? "bg-[var(--dashboard-success-subtle)] text-[var(--dashboard-success)]"
                           : isUnanswered
-                            ? "bg-[var(--surface-overlay)] text-[var(--dashboard-text-muted)]"
+                            ? "bg-[var(--dashboard-teal-subtle)] text-[var(--dashboard-teal)]"
                             : "bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)]"
                       }`}>
                         {isCorrect ? "+১" : isUnanswered ? "০" : "−০.৫"}
@@ -1171,13 +1220,13 @@ export default function CustomExamTab() {
                         const isUser = option === item.userAnswer;
                         const isRight = option === item.correctAnswer;
                         let cls = "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)]";
-                        if (isRight) cls = "border-[var(--primary)]/40 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]";
+                        if (isRight) cls = "border-[var(--success)]/40 bg-[var(--dashboard-success-subtle)] text-[var(--dashboard-success)]";
                         else if (isUser) cls = "border-[var(--danger)]/40 bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)]";
                         return (
                           <div key={oi} className={`rounded-lg border px-3 py-1.5 text-xs flex items-center gap-2 ${cls}`}>
                             <span className="font-mono">{OPTION_LABELS[oi] ?? oi + 1}</span>
                             <span className="flex-1">{option}</span>
-                            {isRight && <Check className="w-3.5 h-3.5 text-[var(--dashboard-primary)]" />}
+                            {isRight && <Check className="w-3.5 h-3.5 text-[var(--dashboard-success)]" />}
                             {isUser && !isRight && <X className="w-3.5 h-3.5 text-[var(--dashboard-danger)]" />}
                           </div>
                         );
@@ -1186,12 +1235,12 @@ export default function CustomExamTab() {
 
                     <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">
                       আপনার উত্তর:{" "}
-                      <span className={isCorrect ? "text-[var(--dashboard-primary)]" : isUnanswered ? "text-[var(--dashboard-text-muted)]" : "text-[var(--dashboard-danger)]"}>
+                      <span className={isCorrect ? "text-[var(--dashboard-success)]" : isUnanswered ? "text-[var(--dashboard-teal)]" : "text-[var(--dashboard-danger)]"}>
                         {item.userAnswer || "উত্তর দেওয়া হয়নি"}
                       </span>
                       {!isCorrect && !isUnanswered && (
                         <>
-                          {" "}• সঠিক উত্তর: <span className="text-[var(--dashboard-primary)]">{item.correctAnswer}</span>
+                          {" "}• সঠিক উত্তর: <span className="text-[var(--dashboard-success)]">{item.correctAnswer}</span>
                         </>
                       )}
                     </p>

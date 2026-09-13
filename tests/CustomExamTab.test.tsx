@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor, within } from "@testing-library/react";
 import CustomExamTab from "@/components/dashboard/CustomExamTab";
 import type { Server } from "@/lib/types";
 
@@ -146,5 +146,118 @@ describe("CustomExamTab (config phase)", () => {
     await waitFor(() => {
       expect(screen.getAllByText("20").length).toBeGreaterThan(0);
     });
+  });
+});
+
+describe("CustomExamTab — results review colors + jump tiles", () => {
+  const multiExam: Server.ExamBuildResultDTO = {
+    examId: "exam-custom-results",
+    questions: [
+      { id: 10, subject: "বাংলা ভাষা ও সাহিত্য", subjectId: 1, topic: "ভাষা", subtopic: "বানান ও শুদ্ধি", question: "প্রশ্ন ১", options: ["ক", "খ", "গ", "ঘ"], difficulty: "MEDIUM", sourceExam: "BCS", year: null },
+      { id: 11, subject: "বাংলা ভাষা ও সাহিত্য", subjectId: 1, topic: "ভাষা", subtopic: "বানান ও শুদ্ধি", question: "প্রশ্ন ২", options: ["ক", "খ", "গ", "ঘ"], difficulty: "MEDIUM", sourceExam: "BCS", year: null },
+      { id: 12, subject: "বাংলা ভাষা ও সাহিত্য", subjectId: 1, topic: "ভাষা", subtopic: "বানান ও শুদ্ধি", question: "প্রশ্ন ৩", options: ["ক", "খ", "গ", "ঘ"], difficulty: "EASY", sourceExam: "BCS", year: null },
+    ],
+    totalQuestions: 3,
+    requested: 10,
+    available: 4,
+    shortfall: 6,
+    durationSec: 600,
+    config: {
+      subjects: [{ subjectId: 1, paths: ["ভাষা/বানান ও শুদ্ধি"], count: 10 }],
+      questionCount: 10,
+      durationSec: 600,
+    },
+  };
+
+  const submitResult = {
+    result: {
+      summary: {
+        total: 3,
+        attempted: 1,
+        correct: 1,
+        wrong: 1,
+        unanswered: 1,
+        positiveMarks: 1,
+        negativeMarks: 0.5,
+        finalScore: 1,
+        accuracy: 100,
+        percentage: 100,
+        pointsEarned: 10,
+      },
+      review: [
+        { questionId: 10, subject: "বাংলা ভাষা ও সাহিত্য", topic: "ভাষা", subtopic: "বানান ও শুদ্ধি", question: "প্রশ্ন ১", options: ["ক", "খ", "গ", "ঘ"], correctAnswer: "ক", explanation: "", userAnswer: "ক", status: "correct" as const, marks: 1, masteryStatus: null, justMastered: false },
+        { questionId: 11, subject: "বাংলা ভাষা ও সাহিত্য", topic: "ভাষা", subtopic: "বানান ও শুদ্ধি", question: "প্রশ্ন ২", options: ["ক", "খ", "গ", "ঘ"], correctAnswer: "খ", explanation: "", userAnswer: "ক", status: "wrong" as const, marks: -0.5, masteryStatus: null, justMastered: false },
+        { questionId: 12, subject: "বাংলা ভাষা ও সাহিত্য", topic: "ভাষা", subtopic: "বানান ও শুদ্ধি", question: "প্রশ্ন ৩", options: ["ক", "খ", "গ", "ঘ"], correctAnswer: "গ", explanation: "", userAnswer: "", status: "unanswered" as const, marks: 0, masteryStatus: null, justMastered: false },
+      ],
+      attemptId: "z",
+      outcome: "submitted",
+      submittedAt: "2026-01-01T00:00:00.000Z",
+    },
+  };
+
+  beforeEach(() => {
+    stubFetch({
+      "/api/exam/config": { subjects },
+      "/api/exam/build": { exam: multiExam },
+      "/api/exam/start": { attemptId: "z", status: "IN_PROGRESS" },
+      "/api/exam/submit": submitResult,
+      "/api/exams": submitResult,
+    });
+    localStorage.clear();
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  async function submitExamWithOneAnswer() {
+    render(<CustomExamTab />);
+    const subjectElements = await screen.findAllByText("বাংলা ভাষা ও সাহিত্য");
+    fireEvent.click(subjectElements[0]);
+    fireEvent.click(await screen.findByText("কনফিগারেশন রিভিউ করে শুরু করুন"));
+    fireEvent.click(await screen.findByText("পরীক্ষা শুরু করুন"));
+
+    const firstQuestion = await screen.findByText("প্রশ্ন ১");
+    const card = firstQuestion.closest("div[id^='exam-q-']") as HTMLElement | null;
+    expect(card).not.toBeNull();
+    fireEvent.click(within(card as HTMLElement).getByText("ক"));
+
+    fireEvent.click(screen.getByText("জমা দিন"));
+    const dialog = await screen.findByRole("dialog");
+    fireEvent.click(within(dialog).getByText("জমা দিন"));
+
+    expect(await screen.findByText("পরীক্ষা সম্পন্ন!")).toBeInTheDocument();
+  }
+
+  it("colors correct green, wrong red and unanswered teal on the result tiles", async () => {
+    await submitExamWithOneAnswer();
+
+    const correctTile = screen.getByRole("button", { name: /সঠিক 1টি/ });
+    expect(correctTile.className).toContain("dashboard-success");
+    const wrongTile = screen.getByRole("button", { name: /ভুল 1টি/ });
+    expect(wrongTile.className).toContain("dashboard-danger");
+    const unansweredTile = screen.getByRole("button", { name: /উত্তর দেওয়া হয়নি 1টি/ });
+    expect(unansweredTile.className).toContain("dashboard-teal");
+
+    expect(document.getElementById("exam-review-correct")).not.toBeNull();
+    expect(document.getElementById("exam-review-wrong")).not.toBeNull();
+    expect(document.getElementById("exam-review-unanswered")).not.toBeNull();
+  });
+
+  it("clicking a result tile jumps to (scrolls + highlights) the matching review row", async () => {
+    await submitExamWithOneAnswer();
+
+    const origScrollIntoView = Element.prototype.scrollIntoView;
+    const scrollIntoView = vi.fn();
+    Element.prototype.scrollIntoView = scrollIntoView as never;
+    try {
+      fireEvent.click(screen.getByRole("button", { name: /উত্তর দেওয়া হয়নি 1টি/ }));
+      expect(scrollIntoView).toHaveBeenCalledTimes(1);
+      const unansweredRow = document.getElementById("exam-review-unanswered");
+      expect(unansweredRow!.className).toContain("ring-2");
+      expect(unansweredRow!.className).toContain("ring-[var(--dashboard-teal)]");
+    } finally {
+      Element.prototype.scrollIntoView = origScrollIntoView;
+    }
   });
 });

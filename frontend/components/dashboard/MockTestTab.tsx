@@ -85,6 +85,29 @@ export default function MockTestTab() {
   const startedAtRef = useRef(0);
   const totalSecRef = useRef(0);
   const [lockedQuestions, setLockedQuestions] = useState<Set<number>>(new Set());
+  const [highlightedReview, setHighlightedReview] = useState<string | null>(null);
+  const highlightTimeoutRef = useRef<number | null>(null);
+
+  // Jump from the result summary tiles to the first review item in a state
+  // (correct/wrong/unanswered). The review container scrolls to the row and a
+  // temporary ring highlights it so the jump is visible.
+  const jumpToReview = useCallback((status: "correct" | "wrong" | "unanswered") => {
+    setHighlightedReview(status);
+    if (highlightTimeoutRef.current !== null) window.clearTimeout(highlightTimeoutRef.current);
+    highlightTimeoutRef.current = window.setTimeout(() => {
+      setHighlightedReview((h) => (h === status ? null : h));
+    }, 2000);
+    const el = document.getElementById(`mock-review-${status}`);
+    if (el && typeof el.scrollIntoView === "function") {
+      el.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
+    }
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (highlightTimeoutRef.current !== null) window.clearTimeout(highlightTimeoutRef.current);
+    };
+  }, []);
 
   const scrollDashboardTop = useCallback(() => {
     const prefersReduced = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -833,18 +856,36 @@ export default function MockTestTab() {
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-w-md mx-auto text-left">
-              <div className="rounded-xl bg-[var(--dashboard-primary-subtle)] border border-[var(--primary)]/20 p-3">
+              <button
+                type="button"
+                onClick={() => jumpToReview("correct")}
+                disabled={summary.correct === 0}
+                aria-label={`সঠিক ${summary.correct}টি প্রশ্ন`}
+                className="rounded-xl bg-[var(--dashboard-success-subtle)] border border-[var(--success)]/20 p-3 text-left transition-all hover:scale-[1.02] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-success)] disabled:opacity-50 disabled:hover:scale-100 disabled:hover:shadow-none disabled:cursor-default cursor-pointer"
+              >
                 <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">সঠিক</p>
-                <p className="text-lg font-bold text-[var(--dashboard-primary)] font-mono">+{summary.correct}</p>
-              </div>
-              <div className="rounded-xl bg-[var(--dashboard-danger-subtle)] border border-[var(--danger)]/20 p-3">
+                <p className="text-lg font-bold text-[var(--dashboard-success)] font-mono">+{summary.correct}</p>
+              </button>
+              <button
+                type="button"
+                onClick={() => jumpToReview("wrong")}
+                disabled={summary.wrong === 0}
+                aria-label={`ভুল ${summary.wrong}টি প্রশ্ন`}
+                className="rounded-xl bg-[var(--dashboard-danger-subtle)] border border-[var(--danger)]/20 p-3 text-left transition-all hover:scale-[1.02] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-danger)] disabled:opacity-50 disabled:hover:scale-100 disabled:hover:shadow-none disabled:cursor-default cursor-pointer"
+              >
                 <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">ভুল</p>
                 <p className="text-lg font-bold text-[var(--dashboard-danger)] font-mono">−{summary.wrong}</p>
-              </div>
-              <div className="rounded-xl bg-subtle border border-[var(--border-strong)] p-3">
+              </button>
+              <button
+                type="button"
+                onClick={() => jumpToReview("unanswered")}
+                disabled={summary.unanswered === 0}
+                aria-label={`উত্তর দেওয়া হয়নি ${summary.unanswered}টি প্রশ্ন`}
+                className="rounded-xl bg-[var(--dashboard-teal-subtle)] border border-[var(--dashboard-teal)]/25 p-3 text-left transition-all hover:scale-[1.02] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-teal)] disabled:opacity-50 disabled:hover:scale-100 disabled:hover:shadow-none disabled:cursor-default cursor-pointer"
+              >
                 <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">উত্তর দেওয়া হয়নি</p>
-                <p className="text-lg font-bold text-[var(--dashboard-text-muted)] font-mono">{summary.unanswered}</p>
-              </div>
+                <p className="text-lg font-bold text-[var(--dashboard-teal)] font-mono">{summary.unanswered}</p>
+              </button>
             </div>
 
             <div className="flex items-center justify-center gap-3 mt-5">
@@ -865,28 +906,48 @@ export default function MockTestTab() {
           </h4>
           {result.review.map((r, i) => {
             const isCorrect = r.status === "correct";
+            const isUnanswered = r.status === "unanswered";
+            const ringColor = isCorrect
+              ? "ring-[var(--dashboard-success)]"
+              : isUnanswered
+                ? "ring-[var(--dashboard-teal)]"
+                : "ring-[var(--dashboard-danger)]";
             return (
-              <div key={r.questionId} className={`p-3.5 rounded-xl border ${
-                isCorrect ? "border-[var(--primary)]/20" : r.status === "wrong" ? "border-[var(--danger)]/20" : "border-[var(--dashboard-border-muted)]"
-              }`}>
+              <div
+                key={r.questionId}
+                id={`mock-review-${r.status}`}
+                className={`p-3.5 rounded-xl border transition-shadow ${
+                  isCorrect
+                    ? "border-[var(--success)]/20"
+                    : r.status === "wrong"
+                      ? "border-[var(--danger)]/20"
+                      : "border-[var(--dashboard-teal)]/25"
+                } ${highlightedReview === r.status ? `ring-2 ${ringColor}` : ""}`}
+              >
                 <div className="flex items-start gap-3">
                   {isCorrect ? (
-                    <CheckCircle2 className="w-4 h-4 text-[var(--dashboard-primary)] flex-shrink-0 mt-0.5" />
+                    <CheckCircle2 className="w-4 h-4 text-[var(--dashboard-success)] flex-shrink-0 mt-0.5" />
                   ) : r.status === "wrong" ? (
                     <XCircle className="w-4 h-4 text-[var(--dashboard-danger)] flex-shrink-0 mt-0.5" />
                   ) : (
-                    <CircleDashed className="w-4 h-4 text-[var(--dashboard-text-muted)] flex-shrink-0 mt-0.5" />
+                    <CircleDashed className="w-4 h-4 text-[var(--dashboard-teal)] flex-shrink-0 mt-0.5" />
                   )}
                   <div className="min-w-0 flex-1">
                     <p className="text-sm text-[var(--text-primary)] mb-1.5">{i + 1}. {r.question}</p>
                     <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">
                       আপনার উত্তর:{" "}
-                      <span className={isCorrect ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-danger)]"}>
+                      <span className={
+                        isCorrect
+                          ? "text-[var(--dashboard-success)]"
+                          : isUnanswered
+                            ? "text-[var(--dashboard-teal)]"
+                            : "text-[var(--dashboard-danger)]"
+                      }>
                         {r.userAnswer || "উত্তর দেওয়া হয়নি"}
                       </span>
                     </p>
                     {!isCorrect && (
-                      <p className="text-xs text-[var(--dashboard-primary)] font-mono mt-0.5">
+                      <p className="text-xs text-[var(--dashboard-success)] font-mono mt-0.5">
                         সঠিক উত্তর: {r.correctAnswer}
                       </p>
                     )}
