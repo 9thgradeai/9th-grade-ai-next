@@ -225,6 +225,37 @@ function mutate<T>(
   });
 }
 
+/** File download helper — returns a Blob for binary responses (PDF, etc.). */
+async function downloadFile(
+  url: string,
+  options: RequestInit = {},
+): Promise<Blob> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 60_000);
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      const text = await response.text().catch(() => "");
+      throw new ApiError(text || response.statusText, `HTTP_${response.status}`, response.status);
+    }
+
+    return await response.blob();
+  } catch (error) {
+    if (isAbortError(error)) {
+      throw new ApiError("Download timed out.", "TIMEOUT", 408);
+    }
+    if (error instanceof ApiError) throw error;
+    throw new ApiError("Network request failed.", "NETWORK_ERROR", 0);
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
 const AUTH_FETCH_INIT = { credentials: "include", cache: "no-store" } as const;
 
 // ── Typed API methods ──────────────────────────────────────
@@ -361,6 +392,68 @@ export const api = {
 
   examConfig: (): Promise<Server.ExamSubjectDTO[]> =>
     cachedGet<{ subjects: Server.ExamSubjectDTO[] }>("/api/exam/config").then((d) => d.subjects),
+
+  // ── Exam History & Real Exam ────────────────────────────────
+
+  /** Fetch user's exam history (past attempts + upcoming exams). */
+  examHistory: (): Promise<Server.ExamHistoryDTO> =>
+    cachedGet<{ history: Server.ExamHistoryDTO }>("/api/exam-history").then((d) => d.history),
+
+  /** Fetch available exam papers for real exam (offline PDF). */
+  examPapers: (): Promise<Array<{
+    id: number;
+    titleBn: string;
+    titleEn: string;
+    examId: number;
+    examNameBn: string;
+    examNameEn: string;
+    examType: string;
+    year: number | null;
+    heldOn: string | null;
+    durationMin: number | null;
+    totalQuestions: number | null;
+    availableQuestions: number;
+    provenance: string;
+    subjectId: number | null;
+    subjectNameBn: string | null;
+  }>> =>
+    cachedGet<{ papers: Array<{
+      id: number;
+      titleBn: string;
+      titleEn: string;
+      examId: number;
+      examNameBn: string;
+      examNameEn: string;
+      examType: string;
+      year: number | null;
+      heldOn: string | null;
+      durationMin: number | null;
+      totalQuestions: number | null;
+      availableQuestions: number;
+      provenance: string;
+      subjectId: number | null;
+      subjectNameBn: string | null;
+    }> }>("/api/exam-papers").then((d) => d.papers),
+
+  /** Fetch questions for a specific exam paper. */
+  examPaperQuestions: (paperId: number): Promise<Server.RealExamQuestionDTO[]> =>
+    cachedGet<{ questions: Server.RealExamQuestionDTO[] }>(`/api/exam-papers/${paperId}`).then((d) => d.questions),
+
+  /** Export real exam to PDF. */
+  exportRealExam: async (params: {
+    questions: Server.RealExamQuestionDTO[];
+    title: string;
+    examName: string;
+    exportOptions: Server.RealExamExportOptions;
+    durationMin: number;
+  }): Promise<Blob> => {
+    return downloadFile("/api/real-exam/export", {
+      method: "POST",
+      ...AUTH_FETCH_INIT,
+      body: JSON.stringify(params),
+      headers: { "Content-Type": "application/json" },
+    });
+  },
 
   buildExam: async (config: Server.ExamSelectionRequest): Promise<Server.ExamBuildResultDTO> => {
     const data = await request<{ exam: Server.ExamBuildResultDTO }>("/api/exam/build", {

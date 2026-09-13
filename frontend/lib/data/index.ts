@@ -1,6 +1,6 @@
 // Centralized static data for the 9Th-Grade AI dashboard and seed.
 
-export type TabId = "home" | "study-planner" | "practice" | "flashcards" | "question-bank" | "progress" | "mistakes" | "settings";
+export type TabId = "home" | "study-planner" | "practice" | "flashcards" | "question-bank" | "progress" | "mistakes" | "settings" | "exam-history" | "real-exam";
 
 export const TABS: { id: TabId; label: string; short: string; bengali: string; icon: string }[] = [
   { id: "home", label: "HOME", short: "HOM", bengali: "হোম", icon: "🏠" },
@@ -10,6 +10,8 @@ export const TABS: { id: TabId; label: string; short: string; bengali: string; i
   { id: "progress", label: "PROGRESS", short: "PRG", bengali: "প্রোগ্রেস", icon: "📈" },
   { id: "flashcards", label: "FLASHCARDS", short: "FLC", bengali: "ফ্ল্যাশকার্ড", icon: "🧠" },
   { id: "study-planner", label: "PLANNER", short: "PLN", bengali: "প্ল্যানার", icon: "📅" },
+  { id: "exam-history", label: "EXAM HISTORY", short: "EXH", bengali: "পরীক্ষা ইতিহাস", icon: "📋" },
+  { id: "real-exam", label: "REAL EXAM", short: "REX", bengali: "রিয়েল এক্সাম", icon: "📄" },
   { id: "settings", label: "SETTINGS", short: "SET", bengali: "সেটিংস", icon: "⚙️" },
 ];
 

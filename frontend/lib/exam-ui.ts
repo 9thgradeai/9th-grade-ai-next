@@ -1,4 +1,4 @@
-import { Home, Calendar, Zap, Brain, BookOpen, TrendingUp, Settings, Target } from "lucide-react";
+import { Home, Calendar, Zap, Brain, BookOpen, TrendingUp, Settings, Target, History, FileDown } from "lucide-react";
 import type { ComponentType } from "react";
 import type { TabId } from "@/lib/data";
 
@@ -14,6 +14,8 @@ export const TAB_ICONS: Record<TabId, ComponentType<IconProps>> = {
   progress: TrendingUp,
   mistakes: Target,
   settings: Settings,
+  "exam-history": History,
+  "real-exam": FileDown,
 };
 
 /** Bangla labels for question difficulty tiers. */

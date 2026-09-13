@@ -41,7 +41,7 @@ const PracticeDrillOverlay = dynamic(
 
 const DRAWER_GROUPS: { label: string; ids: TabId[] }[] = [
   { label: "Primary", ids: ["home", "practice", "question-bank", "mistakes", "progress"] },
-  { label: "Study", ids: ["study-planner", "flashcards"] },
+  { label: "Study", ids: ["study-planner", "flashcards", "exam-history", "real-exam"] },
   { label: "Account", ids: ["settings"] },
 ];
 
@@ -150,18 +150,21 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     closeNavDrawer();
   };
 
-  // Keyboard shortcuts: 1-8 to switch tabs, Cmd+K for command bar
+  // Keyboard shortcuts: 1-9/0 to switch tabs, Cmd+K for command bar
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       // Don't trigger shortcuts when typing in inputs
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-      
-      // Number keys 1-8 for tab switching
+
+      // Number keys 1-9 for the first nine tabs, 0 for the tenth
       const num = parseInt(e.key);
-      if (num >= 1 && num <= 8 && !e.metaKey && !e.ctrlKey && !e.altKey) {
-        const tab = TABS[num - 1];
-        if (tab) {
-          handleTabChange(tab.id);
+      if (!e.metaKey && !e.ctrlKey && !e.altKey) {
+        const idx = e.key === "0" ? 9 : num >= 1 && num <= 9 ? num - 1 : -1;
+        if (idx >= 0) {
+          const tab = TABS[idx];
+          if (tab) {
+            handleTabChange(tab.id);
+          }
         }
       }
     };

@@ -659,6 +659,73 @@ export namespace Server {
     verified?: boolean;
   };
 
+  // ── Exam History (previous attempts + upcoming) ─────────────
+  export type ExamHistoryItemDTO = {
+    id: number;
+    attemptId: string;
+    title: string;
+    type: "mock" | "custom" | "daily" | "exam";
+    score: number;
+    correct: number;
+    total: number;
+    durationSec: number;
+    percentage: number;
+    createdAt: string;
+    subject?: string;
+    examId?: number;
+    paperId?: number;
+  };
+
+  export type UpcomingExamDTO = {
+    id: number;
+    titleBn: string;
+    titleEn: string;
+    type: string;
+    date: string;
+    year: string;
+    circularNo: string;
+    note: string;
+    sourceUrl?: string;
+    verified: boolean;
+    daysUntil: number;
+  };
+
+  export type ExamHistoryDTO = {
+    past: ExamHistoryItemDTO[];
+    upcoming: UpcomingExamDTO[];
+  };
+
+  // ── Real Exam (Offline PDF) ────────────────────────────────
+  export type RealExamExportOptions = {
+    includeAnswers: boolean;
+    includeExplanations: boolean;
+    shuffleQuestions: boolean;
+    questionsPerPage?: number;
+  };
+
+  export type RealExamQuestionDTO = {
+    id: number;
+    question: string;
+    options: string[];
+    correctAnswer: string;
+    explanation: string;
+    subject: string;
+    topic: string;
+    subtopic: string;
+    difficulty: "EASY" | "MEDIUM" | "HARD";
+    year?: number | null;
+    sourceExam?: string;
+    questionNumber?: number | null;
+  };
+
+  export type RealExamConfigDTO = {
+    subjectId: number;
+    paths: string[];
+    questionCount: number;
+    durationMin: number;
+    exportOptions: RealExamExportOptions;
+  };
+
   export type MockTestResultDTO = {
     id: number;
     mockTestId: number | null;
@@ -1102,3 +1169,9 @@ export type PrepIntelligenceMasteryDistribution = Server.PrepIntelligenceMastery
 export type PrepIntelligenceMistakes = Server.PrepIntelligenceMistakes;
 export type PrepIntelligenceRecommendation = Server.PrepIntelligenceRecommendation;
 export type PrepIntelligenceUnfinishedActivity = Server.PrepIntelligenceUnfinishedActivity;
+export type ExamHistoryItemDTO = Server.ExamHistoryItemDTO;
+export type UpcomingExamDTO = Server.UpcomingExamDTO;
+export type ExamHistoryDTO = Server.ExamHistoryDTO;
+export type RealExamExportOptions = Server.RealExamExportOptions;
+export type RealExamQuestionDTO = Server.RealExamQuestionDTO;
+export type RealExamConfigDTO = Server.RealExamConfigDTO;

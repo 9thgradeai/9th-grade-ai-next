@@ -94,6 +94,10 @@ All mutating endpoints (auth and non-auth) reject cross-origin requests via an O
 | GET | `/api/mistakes/exam/config` | **Auth required** — Subject → topic → subtopic selection tree scoped ONLY to the caller's wrong questions, each with the number of wrong questions available under it. Response: `{ subjects: [{ subject, count, topics: [{ topic, count, subtopics: [{ subtopic, count }] }] }] }` |
 | GET | `/api/mistakes/subjects` | **Auth required** — Mistake count broken down by subject. Response: `{ subjects: [{ subject, count, unmastered }] }` |
 | POST | `/api/mistakes/exam` | **Auth required** — Build a mistake-focused practice drill from the caller's tracked mistakes. Body: `{ subject?, topic?, subtopic?, count, focus }`. `topic`/`subtopic` narrow selection strictly to the caller's wrong questions in that preference. Returns `ExamBuild`-shaped `{ questions: [MistakeExamQuestion] }` including `correctAnswer` + `explanation` so the practice drill can grade and reveal the answer (this is a study drill, not a graded exam). 404 if there are no mistakes to practice |
+| GET | `/api/exam-history` | **Auth required** — The caller's exam history: past attempts (custom exams, mock tests, daily quizzes, newest-first) plus upcoming verified exam dates with `daysUntil`. Response: `{ history: { past: [ExamHistoryItem], upcoming: [UpcomingExam] } }` |
+| GET | `/api/exam-papers` | **Auth required** — Verified exam papers with available questions for offline real-exam use. Response: `{ papers: [{ id, titleBn, titleEn, examId, examNameBn, examNameEn, examType, year, heldOn, durationMin, totalQuestions, availableQuestions, provenance, subjectId, subjectNameBn }] }`. Cached 5min (`stale-while-revalidate` 10min) |
+| GET | `/api/exam-papers/:paperId` | **Auth required** — Full questions for one paper (ordered by `questionNumber`), including `correctAnswer` + `explanation` so the client can build answer keys and self-grade. Response: `{ questions: [RealExamQuestion] }` |
+| POST | `/api/real-exam/export` | **Auth required** — Generate an offline exam PDF (A4, via `pdfkit`). Body: `{ questions: [RealExamQuestion] (1–200), title, examName, exportOptions: { includeAnswers, includeExplanations, shuffleQuestions }, durationMin }`. Returns `application/pdf` as an attachment. `includeAnswers: false` produces a clean question paper for real-exam simulation; `true` appends an inline answer key (+ explanations when `includeExplanations`). |
 
 ## Response Shapes
 
@@ -315,6 +319,16 @@ questions that could not be sourced from the selection.
 Scoring follows the BCS convention: **+1** per correct answer, **−0.5** per
 wrong answer, **0** for unanswered. `score` = correct − wrong×0.5; `accuracy`
 = correct/attempted; `percentage` = score/total (clamped 0–100).
+
+### ExamHistory
+```json
+{ "history": { "past": [{ "id": 7, "attemptId": "uuid", "title": "...", "type": "custom|mock|daily|exam", "score": 80, "correct": 8, "total": 10, "durationSec": 600, "percentage": 80, "createdAt": "2026-09-01T..." }], "upcoming": [{ "id": 3, "titleBn": "...", "titleEn": "...", "type": "BCS", "date": "2026-12-01T...", "year": "2026", "circularNo": "...", "note": "...", "verified": true, "daysUntil": 42 }] } }
+```
+
+### RealExamQuestion
+```json
+{ "questions": [{ "id": 1, "subjectId": 3, "subject": "বাংলা", "topic": "...", "subtopic": "...", "question": "...", "options": ["A","B","C","D"], "correctAnswer": "A", "explanation": "...", "difficulty": "EASY", "year": 2024, "sourceExam": "46th BCS", "questionNumber": 1 }] }
+```
 
 ## Error Shapes
 

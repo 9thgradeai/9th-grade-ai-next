@@ -260,6 +260,11 @@ vi.mock("~backend/db", () => ({
       findFirst: vi.fn(),
       count: vi.fn(),
     },
+    examSchedule: {
+      findMany: vi.fn(),
+      findFirst: vi.fn(),
+      count: vi.fn(),
+    },
     document: {
       findMany: vi.fn(),
       findFirst: vi.fn(),
