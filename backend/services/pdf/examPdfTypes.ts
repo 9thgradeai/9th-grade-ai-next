@@ -29,12 +29,15 @@ export type ExamPdfQuestion = {
 export type ExamPdfDocument = {
   examId: string;
   title: string;
+  brandName?: string;
+  sequenceLabel?: string;
   subject?: string;
+  subjects?: string[];
   durationMinutes: number;
+  fullMark?: number;
   totalQuestions: number;
-  totalMarks?: number;
   generatedAt: string;
-  instructions: string[];
+  instructions?: string[];
   questions: ExamPdfQuestion[];
 };
 
