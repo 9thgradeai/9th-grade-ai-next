@@ -44,6 +44,7 @@ function buildDoc(texts: string[], extra?: Partial<ExamPdfDocument>): ExamPdfDoc
     examId: "test",
     title: "শুদ্ধ বানান পরীক্ষা সাঁঝবাত প্রশ্নপত্র",
     subject: "বাংলা ভাষা ও সাহিত্য",
+    fullMark: texts.length,
     durationMinutes: 60,
     totalQuestions: texts.length,
     generatedAt: "2026-09-14T00:00:00.000Z",

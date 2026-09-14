@@ -4,7 +4,7 @@
 // Architecture:
 //   authenticate → parse → validate → normalize → render → respond
 //
-// The route is pinned to Node.js runtime (pdfkit + Bengali font TTF loading
+// The route is pinned to Node.js runtime (Chromium + Bengali font TTF loading
 // require Node fs/stream). The Edge runtime cannot run this route.
 
 import { NextResponse } from "next/server";
@@ -21,6 +21,7 @@ import {
   renderExamPdf,
   getFontStatus,
   PdfExportError,
+  sanitizeForPdf,
 } from "~backend/services/pdf";
 import type {
   ExamPdfDocument,
@@ -53,10 +54,12 @@ type RealExamExportRequest = {
     year?: number | null
     sourceExam?: string | null
     questionNumber?: number | null
+    marks?: number | null
   }> | null
   paperId?: number | null
   title?: string | null
   examName?: string | null
+  fullMark?: number | null
   exportOptions?: {
     includeAnswers?: boolean
     includeExplanations?: boolean
@@ -64,26 +67,6 @@ type RealExamExportRequest = {
     questionsPerPage?: number
   } | null
   durationMin?: number | null
-}
-
-// ── Text sanitization ──────────────────────────────────────────
-
-function safeStr(value: unknown): string {
-  if (value === null || value === undefined) return "";
-  if (typeof value === "string") return value;
-  try {
-    return String(value);
-  } catch {
-    return "";
-  }
-}
-
-function sanitizePdfText(value: unknown, maxLen = 2000): string {
-  const s = safeStr(value)
-    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, "")
-    .replace(/[\uD800-\uDBFF](?![\uDC00-\uDFFF])/g, "")
-    .replace(/(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g, "");
-  return s.length > maxLen ? s.slice(0, maxLen) + "\u2026" : s;
 }
 
 // ── Question normalization ─────────────────────────────────────
@@ -100,22 +83,23 @@ function normalizeIncomingQuestion(
   const options = Array.isArray(raw.options)
     ? raw.options
         .filter((o): o is string => typeof o === "string" && o.trim() !== "")
-        .map((o) => sanitizePdfText(o))
+        .map((o) => sanitizeForPdf(o))
         .filter((o) => o !== "")
     : [];
   return {
     id: typeof raw.id === "number" ? raw.id : index + 1,
-    question: sanitizePdfText(raw.question).trim() || `Question ${index + 1}`,
+    question: sanitizeForPdf(raw.question).trim() || `Question ${index + 1}`,
     options,
-    correctAnswer: sanitizePdfText(raw.correctAnswer).trim(),
-    explanation: sanitizePdfText(raw.explanation).trim(),
-    subject: sanitizePdfText(raw.subject, 200).trim(),
-    topic: sanitizePdfText(raw.topic, 200).trim(),
-    subtopic: sanitizePdfText(raw.subtopic, 200).trim(),
-    difficulty: sanitizePdfText(raw.difficulty, 20).trim(),
+    correctAnswer: sanitizeForPdf(raw.correctAnswer).trim(),
+    explanation: sanitizeForPdf(raw.explanation).trim(),
+    subject: sanitizeForPdf(raw.subject, 200).trim(),
+    topic: sanitizeForPdf(raw.topic, 200).trim(),
+    subtopic: sanitizeForPdf(raw.subtopic, 200).trim(),
+    difficulty: sanitizeForPdf(raw.difficulty, 20).trim(),
     year: typeof raw.year === "number" ? raw.year : null,
-    sourceExam: sanitizePdfText(raw.sourceExam, 200).trim(),
+    sourceExam: sanitizeForPdf(raw.sourceExam, 200).trim(),
     questionNumber: typeof raw.questionNumber === "number" ? raw.questionNumber : null,
+    marks: typeof raw.marks === "number" && raw.marks > 0 ? raw.marks : null,
   };
 }
 
@@ -318,6 +302,7 @@ async function runExport(
       year: q.year ?? null,
       sourceExam: q.sourceExam ?? "",
       questionNumber: q.questionNumber ?? null,
+      marks: null,
     }));
   } else {
     throw new PdfExportError(
@@ -332,8 +317,8 @@ async function runExport(
   // ── BUILD CANONICAL PDF DOCUMENT ──────────────────────────
   mark("build-document");
 
-  const title = sanitizePdfText(body?.title, 200).trim() || "Real Exam Question Paper";
-  const examName = sanitizePdfText(body?.examName, 200).trim();
+  const title = sanitizeForPdf(body?.title, 200).trim() || "Real Exam Question Paper";
+  const examName = sanitizeForPdf(body?.examName, 200).trim();
   const durationMin =
     typeof body?.durationMin === "number" &&
     Number.isFinite(body.durationMin) &&
@@ -362,10 +347,24 @@ async function runExport(
   ];
 
   // Build the canonical ExamPdfDocument
+  // Compute fullMark: use request value, or sum question marks (default 1 per question)
+  const computedFullMark =
+    typeof body?.fullMark === "number" && body.fullMark > 0
+      ? body.fullMark
+      : normalized.reduce((sum, q) => sum + (q.marks || 1), 0);
+
+  // Collect unique subjects from questions
+  const uniqueSubjects = [
+    ...new Set(normalized.map((q) => q.subject).filter(Boolean)),
+  ];
+
   const pdfDocument: ExamPdfDocument = {
     examId: paperId !== null ? `paper-${paperId}` : `custom-${requestId}`,
     title,
-    subject: examName || undefined,
+    brandName: "9Th-Grade AI",
+    subject: examName || uniqueSubjects[0] || undefined,
+    subjects: uniqueSubjects.length > 0 ? uniqueSubjects : undefined,
+    fullMark: computedFullMark,
     durationMinutes: durationMin,
     totalQuestions: normalized.length,
     generatedAt: new Date().toISOString(),
@@ -377,6 +376,7 @@ async function runExport(
         key: OPTION_LABELS[j] ?? String(j + 1),
         text: opt,
       })),
+      marks: q.marks || undefined,
       subject: q.subject || undefined,
       topic: q.topic || undefined,
       subtopic: q.subtopic || undefined,
