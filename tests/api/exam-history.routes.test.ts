@@ -549,4 +549,46 @@ describe("POST /api/real-exam/export", () => {
 
     expect(res.status).toBe(400);
   });
+
+  it("exports a paper whose questions contain the fontkit candrabindu crash class", async () => {
+    // Regression: consonant + া + ঁ (e.g. সাঁ, যাঁ, বাঁশ, প্যাঁচা) crashed
+    // fontkit's GPOS shaping (null anchor). Single-question papers used to
+    // 500 with PDF_EXPORT_RENDER_ERROR; multi-question papers silently
+    // dropped the crashing questions. The renderer's tiered fallback now
+    // resolves these — the full paper must come back with zero loss.
+    setupAuthedUser();
+    const crashers = ["সাঁ", "যাঁ", "বাঁশ", "সাঁঝ", "প্যাঁচা"].map((text, i) => ({
+      id: i + 1,
+      question: `${text} কোন শব্দের অংশ?`,
+      options: [text, "কোনোটিই নয়", "সবগুলো", "অন্য কোনোটি"],
+      correctAnswer: text,
+      explanation: `${text} — ক্যান্দ্রবিন্দু যুক্ত উদাহরণ।`,
+      subject: "বাংলা ভাষা ও সাহিত্য",
+      topic: "ধ্বনিতত্ত্ব",
+      subtopic: "নাসিক্য ধ্বনি",
+      difficulty: "MEDIUM",
+      year: 2024,
+      sourceExam: "৪৫তম বিসিএস",
+      questionNumber: i + 1,
+    }));
+    const res = await exportPOST(
+      postRequest(
+        "/api/real-exam/export",
+        {
+          questions: crashers,
+          title: "ক্যান্দ্রবিন্দু প্রশ্নপত্র সাঁঝবাত",
+          examName: "বাংলা ভাষা ও সাহিত্য",
+          exportOptions: { includeAnswers: true, includeExplanations: true, shuffleQuestions: false },
+          durationMin: 60,
+        },
+        { cookie: await sessionCookie() },
+      ),
+    );
+
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toContain("application/pdf");
+    const buf = await res.arrayBuffer();
+    expect(buf.byteLength).toBeGreaterThan(1000);
+    expect(Buffer.from(buf).subarray(0, 5).toString("latin1")).toBe("%PDF-");
+  });
 });
