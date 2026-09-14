@@ -9,7 +9,7 @@ import { sanitizeForPdf } from "./unicode";
 const FONTS_DIR = path.join(process.cwd(), "fonts");
 function loadBase64(name: string): string {
   const p = path.join(FONTS_DIR, name);
-  if (!fs.existsSync(p)) throw new PdfExportError("FONT_MISSING", `Font missing: ${p}`);
+  if (!fs.existsSync(p)) throw new PdfExportError(500, `Font missing: ${p}`, "PDF_EXPORT_FONT_ERROR", "render", "unknown");
   return fs.readFileSync(p).toString("base64");
 }
 function fontFaceCss(): string {
@@ -32,19 +32,19 @@ const LATIN_FONT = "'Noto Sans', 'DejaVu Sans', sans-serif";
 function buildFilename(doc: ExamPdfDocument, seq: string): string {
   const safeSeq = sanitizeForPdf(seq, 40).replace(/[^0-9a-zA-Z-]/g, "-").replace(/-{2,}/g, "-");
   const safeBrand = sanitizeForPdf(doc.brandName || doc.title || "9th-grade-ai", 40).replace(/[^0-9a-zA-Z-]/g, "-").replace(/-{2,}/g, "-");
-  const marks = String(doc.fullMark || doc.totalMarks || 0).replace(/[^0-9]/g, "");
+  const marks = String(doc.fullMark || 0).replace(/[^0-9]/g, "");
   const questions = String(doc.totalQuestions || 0).replace(/[^0-9]/g, "");
   return `${safeBrand}_${safeSeq}_${marks}-Marks_${questions}-Questions.pdf`.toLowerCase();
 }
 export async function renderExamPdf(doc: ExamPdfDocument, opts?: ExamPdfRenderOptions): Promise<ExamPdfRenderResult> {
   const requestId = (opts && "requestId" in opts ? (opts as any).requestId : randomUUID()) || randomUUID();
-  if (!doc || typeof doc !== "object") throw new PdfExportError("INVALID_CONFIG", "Exam document empty");
-  if (!Array.isArray(doc.questions) || doc.questions.length === 0) throw new PdfExportError("INVALID_CONFIG", "No questions");
+  if (!doc || typeof doc !== "object") throw new PdfExportError(400, "Exam document empty", "PDF_EXPORT_INVALID_EXAM", "validate", requestId);
+  if (!Array.isArray(doc.questions) || doc.questions.length === 0) throw new PdfExportError(400, "No questions", "PDF_EXPORT_INVALID_EXAM", "validate", requestId);
   const questions = doc.questions.filter((q) => sanitizeForPdf(q.text, 500).trim().length > 0);
-  if (questions.length === 0) throw new PdfExportError("INVALID_CONFIG", "No renderable questions");
+  if (questions.length === 0) throw new PdfExportError(400, "No renderable questions", "PDF_EXPORT_INVALID_EXAM", "validate", requestId);
   const sequenceLabel = sanitizeForPdf(doc.sequenceLabel || `Custom Real Exam-${String(questions.length).padStart(2,"0")}`);
-  if (doc.fullMark === undefined || Number.isNaN(Number(doc.fullMark))) throw new PdfExportError("INVALID_CONFIG", "Missing full mark");
-  if (doc.durationMinutes === undefined || Number.isNaN(Number(doc.durationMinutes))) throw new PdfExportError("INVALID_CONFIG", "Missing duration");
+  if (doc.fullMark === undefined || Number.isNaN(Number(doc.fullMark))) throw new PdfExportError(400, "Missing full mark", "PDF_EXPORT_INVALID_EXAM", "validate", requestId);
+  if (doc.durationMinutes === undefined || Number.isNaN(Number(doc.durationMinutes))) throw new PdfExportError(400, "Missing duration", "PDF_EXPORT_INVALID_EXAM", "validate", requestId);
   const brand = sanitizeForPdf(doc.brandName || "9Th-Grade AI", 80);
   const titleText = sanitizeForPdf(doc.title || "Real Exam", 200);
   const subjectsStr = (doc.subjects || []).map((s: string) => sanitizeForPdf(s, 100)).join(", ") || "—";
@@ -60,7 +60,7 @@ export async function renderExamPdf(doc: ExamPdfDocument, opts?: ExamPdfRenderOp
     const stack = isBengali ? BENGALI_FONT : DEFAULT_FONT;
     const optionsHtml = (q.options && q.options.length > 0) ? `<ul style="list-style:none;margin:0 0 6px 32px;padding:0;">${q.options.map((o:any)=>{const label=sanitizeForPdf(o.label||"",10);const oText=sanitizeForPdf(o.text,3000);const oSafe=o.text||"";const optBengali=oSafe.length>0&&/[ঀ-৿]/.test(oSafe);const oStack=optBengali?BENGALI_FONT:LATIN_FONT;return `<li style="position:relative;padding-left:22px;margin-bottom:3px;"><span style="position:absolute;left:0;top:0;font-weight:700;color:#111827;font-family:${oStack}">${label}</span><span style="font-family:${oStack}">${oText}</span></li>`;}).join("")}</ul>` : "";
     let answersSection = "";
-    if (opts?.includeAnswers && q.answer !== undefined) { const answerText = sanitizeForPdf(String(q.answer),2000); answersSection += `<div style="margin:14px 0;padding:10px 12px;background:#f3f4f6;border:1px solid #d1d5db;font-family:${DEFAULT_FONT};"><h3 style="font-size:11.5pt;font-weight:700;margin-bottom:6px;">Answer</h3><div style="font-size:9.5pt;"><strong>${num}.</strong> ${answerText}</div>`; }
+    if (opts?.includeAnswers && q.correctAnswer !== undefined) { const answerText = sanitizeForPdf(String(q.correctAnswer),2000); answersSection += `<div style="margin:14px 0;padding:10px 12px;background:#f3f4f6;border:1px solid #d1d5db;font-family:${DEFAULT_FONT};"><h3 style="font-size:11.5pt;font-weight:700;margin-bottom:6px;">Answer</h3><div style="font-size:9.5pt;"><strong>${num}.</strong> ${answerText}</div>`; }
     if (opts?.includeExplanations && q.explanation) { answersSection += `<div style="margin:6px 0 4px 18px;font-size:9pt;color:#4b5563;font-style:italic;font-family:${DEFAULT_FONT};">${sanitizeForPdf(q.explanation,4000)}</div>`; }
     if (answersSection) answersSection += `</div>`;
     return `<section style="font-family:${stack};padding-top:10px;margin-top:10px;border-top:1px solid #d1d5db;page-break-inside:avoid;"><div style="font-weight:700;color:#111827;margin-bottom:3px;">${num}.</div><div style="margin-left:18px;margin-bottom:6px;">${text}</div>${meta?`<div style="font-size:8.5pt;color:#6b7280;margin:4px 0 0 18px;">${meta}</div>`:""}${optionsHtml}${answersSection}</section>`;
@@ -68,8 +68,8 @@ export async function renderExamPdf(doc: ExamPdfDocument, opts?: ExamPdfRenderOp
   const html = `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>${titleText} — ${brand}</title><style>${fontFaceCss()}@page{size:A4;margin:18mm 16mm 20mm 16mm;@bottom-center{content:"9Th-Grade AI — ${sanitizeForPdf(sequenceLabel)} — Page " counter(page) " of " counter(pages);font-family:${DEFAULT_FONT};font-size:8.5pt;color:#6b7280;}}*{box-sizing:border-box;margin:0;padding:0;}body{font-family:${DEFAULT_FONT};font-size:10.5pt;line-height:1.6;color:#111827;background:#fff;}.header{border-bottom:2.5px solid #111827;padding-bottom:10px;margin-bottom:14px;}</style></head><body><div class="header">${headerHtml}</div>${instructionsHtml?`<ul style="margin:0 0 12px 16px;font-size:9.5pt;color:#374151;padding-left:18px;">${instructionsHtml}</ul>`:""}<main>${questionsHtml}</main></body></html>`;
   const { default: chromium } = await import("@sparticuz/chromium");
   const executablePath = await chromium.executablePath();
-  const { launch } = await import("playwright-core");
-  const browser = await launch({ executablePath, args: chromium.args, headless: true });
+  const { default: playwright } = await import("playwright-core");
+  const browser = await playwright.chromium.launch({ executablePath, args: chromium.args, headless: true });
   const page = await browser.newPage();
   await page.setViewportSize({ width: 842, height: 1191 });
   await page.setContent(html, { waitUntil: "load", timeout: 60000 });
@@ -90,7 +90,7 @@ export async function renderExamPdf(doc: ExamPdfDocument, opts?: ExamPdfRenderOp
       if (/^Page[\s>]/.test(nxt)) pageCount++;
     }
   }
-  return { buffer: pdfBuf, byteSize: pdfBuf.length, pageCount, questionCount: questions.length, skippedCount: 0, filename: buildFilename(doc, sequenceLabel), sequenceLabel, validationPassed: errors.length === 0, validationErrors: errors, generatedAt: doc.generatedAt || new Date().toISOString(), durationMs: 2000 };
+  return { buffer: pdfBuf, byteSize: pdfBuf.length, questionCount: questions.length, skippedCount: 0 };
 }
 
 export function getFontStatus() { return { bengaliAvailable: true, mathAvailable: true, regularAvailable: true, boldAvailable: true, symbolsAvailable: true };
