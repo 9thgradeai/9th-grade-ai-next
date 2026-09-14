@@ -58,6 +58,16 @@ const baseConfig: NextConfig = {
   reactStrictMode: true,
   compress: true,
   headers: async () => [{ source: "/(.*)", headers: securityHeaders }],
+  // pdfkit is a CJS package that depends on Node.js built-ins (fs, stream,
+  // zlib). Webpack must NOT bundle it — it runs natively in the Node.js
+  // runtime. Without this, the production build silently corrupts the module,
+  // causing runtime 500s on the PDF export route.
+  serverExternalPackages: ["pdfkit"],
+  // Ensure the Bengali font files are included in the serverless function
+  // bundle for the PDF export route on Vercel.
+  outputFileTracingIncludes: {
+    "/api/real-exam/export": ["./fonts/**/*"],
+  },
 } satisfies NextConfig;
 
 // Bundle analysis is opt-in via `ANALYZE=true npm run build` (the existing

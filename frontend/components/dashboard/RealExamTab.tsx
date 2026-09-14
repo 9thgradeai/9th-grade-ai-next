@@ -365,10 +365,19 @@ export default function RealExamTab() {
       a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 5000);
     } catch (err) {
-      // Log the structured server error (status/code/message) to the browser
-      // console so a failed export is diagnosable from browser logs alone.
+      // Log the structured server error for debugging
       console.error("[real-exam-export] PDF export failed:", err);
-      setExportError("PDF তৈরি করা যায়নি। আবার চেষ্টা করুন।");
+
+      // Show specific server error message when available, otherwise generic Bangla message
+      let errorMsg = "PDF তৈরি করা যায়নি। আবার চেষ্টা করুন।";
+      if (err && typeof err === "object" && "message" in err && typeof (err as { message: unknown }).message === "string") {
+        const msg = (err as { message: string }).message;
+        // Only use server message if it's a safe user-facing string (not a raw HTML/error dump)
+        if (msg.length > 0 && msg.length < 200 && !msg.includes("<")) {
+          errorMsg = msg;
+        }
+      }
+      setExportError(errorMsg);
     } finally {
       setExporting(false);
     }

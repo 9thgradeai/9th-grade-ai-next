@@ -240,8 +240,16 @@ async function downloadFile(
     });
 
     if (!response.ok) {
-      const text = await response.text().catch(() => "");
-      throw new ApiError(text || response.statusText, `HTTP_${response.status}`, response.status);
+      // Try to parse structured JSON error from the server (e.g. PDF_EXPORT_* codes)
+      let errorBody: { error?: string; code?: string; requestId?: string } | null = null;
+      try {
+        errorBody = await response.json();
+      } catch {
+        // Not JSON — fall back to status text
+      }
+      const message = errorBody?.error || response.statusText;
+      const code = errorBody?.code || `HTTP_${response.status}`;
+      throw new ApiError(message, code, response.status);
     }
 
     return await response.blob();
