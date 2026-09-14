@@ -65,8 +65,19 @@ const baseConfig: NextConfig = {
   serverExternalPackages: ["pdfkit"],
   // Ensure the Bengali font files are included in the serverless function
   // bundle for the PDF export route on Vercel.
+  //
+  // pdfkit's own files MUST also be traced wholesale: since v0.20 pdfkit loads
+  // its standard-14 font metrics lazily via Node's package "imports" map
+  // (require("#standard-fonts/Helvetica") → ./js/standard-fonts/Helvetica.cjs
+  // → ./js/chunks/*.cjs). Next's file tracer does NOT follow package-internal
+  // imports-map entries, so the default trace ships only js/pdfkit.js — the
+  // constructor's eager initFonts('Helvetica') then throws
+  // "Cannot find module .../standard-fonts/Helvetica.cjs" inside the lambda,
+  // surfacing as a generic 500 "PDF rendering failed" (reproduced by running
+  // the route's .nft.json trace standalone). Tracing the whole package fixes
+  // it (~3.5MB incl. .afm data) without affecting any other route.
   outputFileTracingIncludes: {
-    "/api/real-exam/export": ["./fonts/**/*"],
+    "/api/real-exam/export": ["./fonts/**/*", "./node_modules/pdfkit/**/*"],
   },
 } satisfies NextConfig;
 
