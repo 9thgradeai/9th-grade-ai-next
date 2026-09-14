@@ -213,14 +213,16 @@ export default function RealExamTab() {
       const picked = shuffled(merged).slice(0, Math.min(requested, merged.length));
       const qs: Server.RealExamQuestionDTO[] = picked.map((q) => ({
         id: q.id,
-        question: q.question,
-        options: q.options,
-        correctAnswer: q.correctAnswer,
-        explanation: q.explanation,
-        subject: q.subject,
-        topic: q.topic,
-        subtopic: q.subtopic,
-        difficulty: q.difficulty,
+        question: q.question ?? "",
+        options: Array.isArray(q.options)
+          ? q.options.filter((o): o is string => typeof o === "string" && o.trim() !== "")
+          : [],
+        correctAnswer: q.correctAnswer ?? "",
+        explanation: q.explanation ?? "",
+        subject: q.subject ?? "",
+        topic: q.topic ?? "",
+        subtopic: q.subtopic ?? "",
+        difficulty: q.difficulty ?? "MEDIUM",
         year: q.year,
         sourceExam: q.sourceExam || undefined,
         questionNumber: q.questionNumber ?? undefined,
@@ -314,11 +316,31 @@ export default function RealExamTab() {
     const durationMin = generatedMeta
       ? generatedMeta.durationMin
       : (selectedPaper?.durationMin ?? 120);
+    // Normalize defensively: DB-backed rows can carry null correctAnswer /
+    // explanation / option entries, and the PDF exporter must never receive
+    // them (a single null `.trim()` used to 500 the whole export).
+    const safeQuestions: Server.RealExamQuestionDTO[] = questions.map((q) => ({
+      ...q,
+      question: q.question ?? "",
+      options: Array.isArray(q.options)
+        ? q.options.filter((o): o is string => typeof o === "string" && o.trim() !== "")
+        : [],
+      correctAnswer: q.correctAnswer ?? "",
+      explanation: q.explanation ?? "",
+      subject: q.subject ?? "",
+      topic: q.topic ?? "",
+      subtopic: q.subtopic ?? "",
+      difficulty: q.difficulty ?? "MEDIUM",
+    }));
+    if (safeQuestions.length === 0) {
+      setExportError("PDF তৈরি করা যায়নি। আবার চেষ্টা করুন।");
+      return;
+    }
     setExporting(true);
     setExportError(null);
     try {
       const blob = await api.exportRealExam({
-        questions,
+        questions: safeQuestions,
         title,
         examName,
         exportOptions: { includeAnswers, includeExplanations, shuffleQuestions: shuffleSeed !== null },

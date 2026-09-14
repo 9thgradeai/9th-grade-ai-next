@@ -351,4 +351,66 @@ describe("POST /api/real-exam/export", () => {
     );
     expect(res.status).toBe(400);
   });
+
+  it("exports Bengali questions with null answer/explanation/option entries", async () => {
+    setupAuthedUser();
+    const res = await exportPOST(
+      postRequest(
+        "/api/real-exam/export",
+        exportBody({
+          questions: [
+            {
+              id: 7,
+              question: "বাংলাদেশের রাজধানী কোনটি? গীতাঞ্জলির রচয়িতা কে এবং শুদ্ধ বানান কোনটি — এই প্রশ্নটি অনেক লম্বা করে লেখা হলো যাতে লাইন ভাঙা পরীক্ষা করা যায়।",
+              options: ["ঢাকা", null, "", "চট্টগ্রাম", "খুলনা"],
+              correctAnswer: null,
+              explanation: null,
+              subject: "সাধারণ জ্ঞান",
+              topic: "বাংলাদেশ",
+              subtopic: "রাজধানী",
+              difficulty: "EASY",
+              year: null,
+              sourceExam: null,
+            },
+          ],
+          title: "কাস্টম রিয়েল এক্সাম প্রশ্নপত্র",
+          examName: "বাংলা ভাষা ও সাহিত্য",
+          exportOptions: { includeAnswers: true, includeExplanations: true, shuffleQuestions: false },
+        }),
+        { cookie: await sessionCookie() },
+      ),
+    );
+
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toContain("application/pdf");
+    const buf = await res.arrayBuffer();
+    expect(buf.byteLength).toBeGreaterThan(500);
+    const head = Buffer.from(buf).subarray(0, 5).toString("latin1");
+    expect(head).toBe("%PDF-");
+  });
+
+  it("tolerates missing exportOptions/title/durationMin", async () => {
+    setupAuthedUser();
+    const res = await exportPOST(
+      postRequest(
+        "/api/real-exam/export",
+        { questions: EXPORT_QUESTIONS },
+        { cookie: await sessionCookie() },
+      ),
+    );
+
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toContain("application/pdf");
+  });
+
+  it("returns 400 for a malformed JSON body", async () => {
+    setupAuthedUser();
+    const bad = new Request(`${BASE}/api/real-exam/export`, {
+      method: "POST",
+      headers: { "content-type": "application/json", cookie: await sessionCookie() },
+      body: "{not-json",
+    });
+    const res = await exportPOST(bad);
+    expect(res.status).toBe(400);
+  });
 });

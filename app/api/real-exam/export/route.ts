@@ -6,29 +6,67 @@ import { getRequestId, startTiming, applySecurityHeaders, assertSameOrigin } fro
 
 type RealExamExportRequest = {
   questions: Array<{
-    id: number;
-    question: string;
-    options: string[];
-    correctAnswer: string;
-    explanation: string;
-    subject: string;
-    topic: string;
-    subtopic: string;
-    difficulty: "EASY" | "MEDIUM" | "HARD";
+    id?: number | null;
+    question?: string | null;
+    options?: Array<string | null> | null;
+    correctAnswer?: string | null;
+    explanation?: string | null;
+    subject?: string | null;
+    topic?: string | null;
+    subtopic?: string | null;
+    difficulty?: "EASY" | "MEDIUM" | "HARD" | string | null;
     year?: number | null;
-    sourceExam?: string;
+    sourceExam?: string | null;
     questionNumber?: number | null;
   }>;
-  title: string;
-  examName: string;
-  exportOptions: {
-    includeAnswers: boolean;
-    includeExplanations: boolean;
-    shuffleQuestions: boolean;
+  title?: string | null;
+  examName?: string | null;
+  exportOptions?: {
+    includeAnswers?: boolean;
+    includeExplanations?: boolean;
+    shuffleQuestions?: boolean;
     questionsPerPage?: number;
-  };
-  durationMin: number;
+  } | null;
+  durationMin?: number | null;
 };
+
+const OPTION_LABELS = ["A", "B", "C", "D", "E", "F"];
+
+/** Coerce any value to a safe string for PDFKit (never throws on null/undefined). */
+function safeStr(value: unknown): string {
+  if (value === null || value === undefined) return "";
+  return String(value);
+}
+
+/** Normalize one incoming question so downstream `.trim()` calls can never throw. */
+function normalizeQuestion(q: NonNullable<RealExamExportRequest["questions"]>[number], index: number) {
+  const options = Array.isArray(q.options)
+    ? q.options.filter((o): o is string => typeof o === "string" && o.trim() !== "")
+    : [];
+  return {
+    id: typeof q.id === "number" ? q.id : index + 1,
+    question: safeStr(q.question).trim() || `Question ${index + 1}`,
+    options,
+    correctAnswer: safeStr(q.correctAnswer).trim(),
+    explanation: safeStr(q.explanation).trim(),
+    subject: safeStr(q.subject).trim(),
+    topic: safeStr(q.topic).trim(),
+    subtopic: safeStr(q.subtopic).trim(),
+    difficulty: safeStr(q.difficulty).trim(),
+    year: typeof q.year === "number" ? q.year : null,
+    sourceExam: safeStr(q.sourceExam).trim(),
+    questionNumber: typeof q.questionNumber === "number" ? q.questionNumber : null,
+  };
+}
+
+type NormalizedQuestion = ReturnType<typeof normalizeQuestion>;
+
+/** Resolve the printable answer label without ever throwing on missing data. */
+function answerLabelFor(q: NormalizedQuestion): string {
+  if (!q.correctAnswer) return "—";
+  const idx = q.options.findIndex((opt) => opt.trim() === q.correctAnswer);
+  return idx >= 0 ? OPTION_LABELS[idx] ?? q.correctAnswer : q.correctAnswer;
+}
 
 function shuffleArray<T>(array: T[], seed: number): T[] {
   const rng = mulberry32(seed);
@@ -58,10 +96,11 @@ function drawTextWithWrap(
   options: { font?: string; fontSize?: number; lineGap?: number } = {}
 ): number {
   const { font = "Helvetica", fontSize = 10, lineGap = 2 } = options;
+  const safe = safeStr(text);
   doc.font(font).fontSize(fontSize);
-  const lines = doc.widthOfString(text) > maxWidth
-    ? wrapText(doc, text, maxWidth)
-    : [text];
+  const lines = doc.widthOfString(safe) > maxWidth
+    ? wrapText(doc, safe, maxWidth)
+    : [safe];
 
   let currentY = y;
   for (const line of lines) {
@@ -72,12 +111,28 @@ function drawTextWithWrap(
 }
 
 function wrapText(doc: PDFKit.PDFDocument, text: string, maxWidth: number): string[] {
-  const words = text.split(" ");
+  const safe = safeStr(text);
+  if (!safe) return [""];
+  // Standard PDF fonts (Helvetica) carry no Bengali glyphs, so widthOfString
+  // returns 0 for Bengali runs. Fall back to a character-count wrap so long
+  // Bengali questions/options still break across lines instead of overflowing.
+  const probe = doc.widthOfString(safe);
+  if (probe === 0) {
+    const approxCharsPerLine = 85;
+    const out: string[] = [];
+    for (let i = 0; i < safe.length; i += approxCharsPerLine) {
+      out.push(safe.slice(i, i + approxCharsPerLine));
+    }
+    return out.length > 0 ? out : [""];
+  }
+  const words = safe.split(" ");
   const lines: string[] = [];
   let currentLine = "";
 
   for (const word of words) {
     const testLine = currentLine ? `${currentLine} ${word}` : word;
+    // A single word wider than the column (or unmeasurable) still gets its own
+    // line instead of looping forever.
     if (doc.widthOfString(testLine) > maxWidth) {
       if (currentLine) {
         lines.push(currentLine);
@@ -105,15 +160,34 @@ export async function POST(request: Request) {
       throw new AppError(401, "Unauthorized", "AUTH_UNAUTHORIZED");
     }
 
-    const body = await request.json() as RealExamExportRequest;
-    const { questions, title, examName, exportOptions, durationMin } = body;
+    let body: RealExamExportRequest;
+    try {
+      body = (await request.json()) as RealExamExportRequest;
+    } catch {
+      throw new AppError(400, "Invalid request body", "VALIDATION_ERROR");
+    }
+    const rawQuestions = body?.questions;
 
-    if (!questions || !Array.isArray(questions) || questions.length === 0) {
+    if (!rawQuestions || !Array.isArray(rawQuestions) || rawQuestions.length === 0) {
       throw new AppError(400, "No questions provided", "VALIDATION_ERROR");
     }
-    if (questions.length > 200) {
+    if (rawQuestions.length > 200) {
       throw new AppError(400, "Too many questions (max 200).", "VALIDATION_ERROR");
     }
+
+    const title = safeStr(body?.title).trim() || "Real Exam Question Paper";
+    const examName = safeStr(body?.examName).trim();
+    const exportOptions = {
+      includeAnswers: body?.exportOptions?.includeAnswers === true,
+      includeExplanations: body?.exportOptions?.includeExplanations === true,
+      shuffleQuestions: body?.exportOptions?.shuffleQuestions === true,
+    };
+    const durationMin =
+      typeof body?.durationMin === "number" && Number.isFinite(body.durationMin) && body.durationMin > 0
+        ? Math.round(body.durationMin)
+        : 60;
+
+    const questions = rawQuestions.map((q, i) => normalizeQuestion(q ?? {}, i));
 
     // Prepare questions based on export options
     let processedQuestions = [...questions];
@@ -186,7 +260,6 @@ export async function POST(request: Request) {
     doc.moveDown(1);
 
     // ============ QUESTIONS ============
-    const OPTION_LABELS = ["A", "B", "C", "D", "E", "F"];
     const pageWidth = doc.page.width - 100; // margins
     const contentWidth = pageWidth - 40; // indent
 
@@ -221,13 +294,12 @@ export async function POST(request: Request) {
 
       doc.moveDown(0.5);
 
-      // Options
+      // Options (already filtered to non-empty strings by normalizeQuestion)
       for (let j = 0; j < q.options.length; j++) {
         const option = q.options[j];
-        if (!option || option.trim() === "") continue;
 
         doc.font("Helvetica").fontSize(10).fillColor("#333333");
-        const optionText = `${OPTION_LABELS[j]}. ${option}`;
+        const optionText = `${OPTION_LABELS[j] ?? j + 1}. ${option}`;
         drawTextWithWrap(doc, optionText, 70, doc.y, contentWidth - 20, { fontSize: 10, lineGap: 1 });
         doc.moveDown(0.2);
       }
@@ -237,12 +309,10 @@ export async function POST(request: Request) {
         doc.moveDown(0.3);
         if (exportOptions.includeAnswers) {
           doc.font("Helvetica-Bold").fontSize(10).fillColor("#27ae60");
-          const answerIdx = q.options.findIndex((opt) => opt.trim() === q.correctAnswer.trim());
-          const answerLabel = answerIdx >= 0 ? OPTION_LABELS[answerIdx] : q.correctAnswer;
-          doc.text(`Answer: ${answerLabel}`, { indent: 20 });
+          doc.text(`Answer: ${answerLabelFor(q)}`, { indent: 20 });
         }
 
-        if (exportOptions.includeExplanations && q.explanation && q.explanation.trim() !== "") {
+        if (exportOptions.includeExplanations && q.explanation !== "") {
           doc.moveDown(0.2);
           doc.font("Helvetica-Oblique").fontSize(9).fillColor("#2c3e50");
           doc.text("Explanation:", { indent: 20, continued: true });
@@ -269,10 +339,7 @@ export async function POST(request: Request) {
 
       doc.font("Helvetica").fontSize(10).fillColor("#333333");
       for (let i = 0; i < processedQuestions.length; i++) {
-        const q = processedQuestions[i];
-        const answerIdx = q.options.findIndex((opt) => opt.trim() === q.correctAnswer.trim());
-        const answerLabel = answerIdx >= 0 ? OPTION_LABELS[answerIdx] : q.correctAnswer;
-        doc.text(`Q${i + 1}: ${answerLabel}`, { indent: 20 });
+        doc.text(`Q${i + 1}: ${answerLabelFor(processedQuestions[i])}`, { indent: 20 });
         if ((i + 1) % 3 === 0) doc.moveDown(0.5);
       }
     }
@@ -281,11 +348,13 @@ export async function POST(request: Request) {
     doc.end();
     const pdfBuffer = await pdfPromise;
 
-    // Return PDF as download
+    // Return PDF as download (filename is ASCII-safe: Bengali titles sanitize to
+    // underscores, so fall back to a stable name when nothing ASCII remains).
+    const safeFileBase = title.replace(/[^a-z0-9]/gi, "_").replace(/_+/g, "_").replace(/^_+|_+$/g, "") || "real-exam-paper";
     const res = new NextResponse(new Uint8Array(pdfBuffer), {
       headers: {
         "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="${title.replace(/[^a-z0-9]/gi, "_")}.pdf"`,
+        "Content-Disposition": `attachment; filename="${safeFileBase}.pdf"`,
         "Content-Length": pdfBuffer.length.toString(),
         "X-Request-Id": requestId,
         "X-Response-Time": getTime() + "ms",
