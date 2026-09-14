@@ -206,6 +206,50 @@ describe("RealExamTab", () => {
 
     expect(await screen.findByText(/স্কোর: 1\/2/)).toBeInTheDocument();
   });
+
+  it("exports an official paper via the slim paperId protocol", async () => {
+    stubFetch({ "/api/exam-papers": papersPayload, "/api/exam-papers/1": paperQuestionsPayload });
+    const seen: Array<{ url: string; body: string }> = [];
+    const origFetch = globalThis.fetch;
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+        const url = typeof input === "string" ? input : input.toString();
+        if (url.startsWith("/api/real-exam/export")) {
+          seen.push({ url, body: String(init?.body ?? "") });
+          return {
+            ok: true,
+            status: 200,
+            blob: async () => new Blob(["%PDF-1.4 fake"], { type: "application/pdf" }),
+          } as Response;
+        }
+        return origFetch(input, init);
+      }),
+    );
+    vi.stubGlobal(
+      "URL",
+      Object.assign(URL, {
+        createObjectURL: vi.fn(() => "blob:test"),
+        revokeObjectURL: vi.fn(),
+      }),
+    );
+
+    const { default: RealExamTab } = await import("@/components/dashboard/RealExamTab");
+    render(<RealExamTab />);
+
+    fireEvent.click(await screen.findByText("খুলুন ও PDF নিন"));
+    expect(await screen.findByText("PDF এক্সপোর্ট অপশন")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText("উত্তর ছাড়া PDF ডাউনলোড"));
+    await waitFor(() => {
+      expect(seen).toHaveLength(1);
+    });
+    const payload = JSON.parse(seen[0].body) as { paperId?: number; questions?: unknown[] };
+    // Slim protocol: only the paper id travels — no multi-KB question JSON.
+    expect(payload.paperId).toBe(1);
+    expect(payload.questions).toBeUndefined();
+    expect(screen.queryByText("PDF তৈরি করা যায়নি। আবার চেষ্টা করুন।")).not.toBeInTheDocument();
+  });
 });
 
 describe("RealExamTab custom paper builder", () => {

@@ -305,8 +305,11 @@ export default function RealExamTab() {
   }, [answers, questions]);
 
   const doExport = useCallback(async () => {
-    if (questions.length === 0) return;
     if (!generatedMeta && !selectedPaper) return;
+    // Official papers can use the slim protocol (server loads the questions),
+    // so an empty client preview doesn't block the export. Custom papers need
+    // their client-side rows.
+    if (generatedMeta && questions.length === 0) return;
     const title = generatedMeta
       ? generatedMeta.title
       : `${selectedPaper?.titleBn ?? "প্রশ্নপত্র"} — প্রশ্নপত্র`;
@@ -332,15 +335,19 @@ export default function RealExamTab() {
       subtopic: q.subtopic ?? "",
       difficulty: q.difficulty ?? "MEDIUM",
     }));
-    if (safeQuestions.length === 0) {
+    if (!generatedMeta && selectedPaper && safeQuestions.length === 0) {
       setExportError("PDF তৈরি করা যায়নি। আবার চেষ্টা করুন।");
       return;
     }
     setExporting(true);
     setExportError(null);
     try {
+      // Official papers use the slim protocol: the server loads the questions
+      // itself (tiny upload, no client/server DTO drift). Custom papers send
+      // the normalized rows — they only exist client-side.
+      const useSlimProtocol = !generatedMeta && selectedPaper;
       const blob = await api.exportRealExam({
-        questions: safeQuestions,
+        ...(useSlimProtocol ? { paperId: selectedPaper!.id } : { questions: safeQuestions }),
         title,
         examName,
         exportOptions: { includeAnswers, includeExplanations, shuffleQuestions: shuffleSeed !== null },

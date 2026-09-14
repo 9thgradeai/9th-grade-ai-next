@@ -439,9 +439,16 @@ export const api = {
   examPaperQuestions: (paperId: number): Promise<Server.RealExamQuestionDTO[]> =>
     cachedGet<{ questions: Server.RealExamQuestionDTO[] }>(`/api/exam-papers/${paperId}`).then((d) => d.questions),
 
-  /** Export real exam to PDF. */
+  /** Export real exam to PDF.
+   *
+   * Two protocols (server decides by payload):
+   * - `{ paperId }` for official papers — the server loads the questions
+   *   itself, so the client uploads ~200 bytes instead of the full JSON.
+   * - `{ questions }` for custom-built papers that only exist client-side.
+   */
   exportRealExam: async (params: {
-    questions: Server.RealExamQuestionDTO[];
+    questions?: Server.RealExamQuestionDTO[];
+    paperId?: number;
     title: string;
     examName: string;
     exportOptions: Server.RealExamExportOptions;

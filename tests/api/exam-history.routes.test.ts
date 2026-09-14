@@ -470,4 +470,83 @@ describe("POST /api/real-exam/export", () => {
     const buf = await res.arrayBuffer();
     expect(buf.byteLength).toBeGreaterThan(5000);
   });
+
+  it("loads official-paper questions server-side via paperId (slim protocol)", async () => {
+    setupAuthedUser();
+    vi.mocked(prisma.question.findMany).mockResolvedValue([
+      {
+        id: 11,
+        subjectId: 2,
+        subject: { nameBn: "বাংলা ভাষা ও সাহিত্য" },
+        topic: "ভাষা",
+        subtopic: "ধ্বনি",
+        question: "শুদ্ধ বানান কোনটি?",
+        options: ["মুমূর্ষু", "মুমুর্ষু", "মুমূর্ষূ", "মুমর্ষু"],
+        correctAnswer: "মুমূর্ষু",
+        explanation: "সঠিক বানান মুমূর্ষু।",
+        difficulty: "MEDIUM",
+        year: 2024,
+        sourceExam: "46th BCS",
+        questionNumber: 3,
+      },
+    ] as never);
+    const res = await exportPOST(
+      postRequest(
+        "/api/real-exam/export",
+        {
+          paperId: 5,
+          title: "৪৬তম বিসিএস — প্রশ্নপত্র",
+          examName: "বিসিএস (প্রিলিমিনারি)",
+          exportOptions: { includeAnswers: false, includeExplanations: false, shuffleQuestions: false },
+          durationMin: 120,
+        },
+        { cookie: await sessionCookie() },
+      ),
+    );
+
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toContain("application/pdf");
+    expect(vi.mocked(prisma.question.findMany)).toHaveBeenCalled();
+    const buf = await res.arrayBuffer();
+    const head = Buffer.from(buf).subarray(0, 5).toString("latin1");
+    expect(head).toBe("%PDF-");
+  });
+
+  it("returns 404 when paperId has no questions", async () => {
+    setupAuthedUser();
+    vi.mocked(prisma.question.findMany).mockResolvedValue([]);
+    const res = await exportPOST(
+      postRequest(
+        "/api/real-exam/export",
+        {
+          paperId: 999,
+          title: "Missing",
+          examName: "Missing",
+          exportOptions: { includeAnswers: false, includeExplanations: false, shuffleQuestions: false },
+          durationMin: 60,
+        },
+        { cookie: await sessionCookie() },
+      ),
+    );
+
+    expect(res.status).toBe(404);
+  });
+
+  it("returns 400 when neither questions nor paperId are provided", async () => {
+    setupAuthedUser();
+    const res = await exportPOST(
+      postRequest(
+        "/api/real-exam/export",
+        {
+          title: "Empty",
+          examName: "Empty",
+          exportOptions: { includeAnswers: false, includeExplanations: false, shuffleQuestions: false },
+          durationMin: 60,
+        },
+        { cookie: await sessionCookie() },
+      ),
+    );
+
+    expect(res.status).toBe(400);
+  });
 });
