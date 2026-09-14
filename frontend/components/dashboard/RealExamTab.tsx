@@ -357,7 +357,10 @@ export default function RealExamTab() {
       a.click();
       a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 5000);
-    } catch {
+    } catch (err) {
+      // Log the structured server error (status/code/message) to the browser
+      // console so a failed export is diagnosable from browser logs alone.
+      console.error("[real-exam-export] PDF export failed:", err);
       setExportError("PDF তৈরি করা যায়নি। আবার চেষ্টা করুন।");
     } finally {
       setExporting(false);

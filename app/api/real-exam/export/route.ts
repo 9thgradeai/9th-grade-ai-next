@@ -4,6 +4,11 @@ import { getUserIdFromRequest } from "~backend/services/user";
 import { AppError, toHttpResponse } from "~backend/errors";
 import { getRequestId, startTiming, applySecurityHeaders, assertSameOrigin } from "../../_middleware";
 
+// pdfkit relies on Node streams/Buffer — pin the Node.js runtime so the route
+// can never be scheduled on the Edge runtime (where the import would 500).
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 type RealExamExportRequest = {
   questions: Array<{
     id?: number | null;
@@ -35,27 +40,51 @@ const OPTION_LABELS = ["A", "B", "C", "D", "E", "F"];
 /** Coerce any value to a safe string for PDFKit (never throws on null/undefined). */
 function safeStr(value: unknown): string {
   if (value === null || value === undefined) return "";
-  return String(value);
+  if (typeof value === "string") return value;
+  try {
+    return String(value);
+  } catch {
+    return "";
+  }
+}
+
+/**
+ * Strip characters that can corrupt PDF string encoding or layout:
+ * C0 controls (except \t \n), DEL, and lone UTF-16 surrogates. Caps length
+ * so one pathological row can never blow up the document.
+ */
+function sanitizePdfText(value: unknown, maxLen = 2000): string {
+  const s = safeStr(value)
+    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '')
+    .replace(/[\uD800-\uDBFF](?![\uDC00-\uDFFF])/g, '')
+    .replace(/(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g, '');
+  return s.length > maxLen ? s.slice(0, maxLen) + "…" : s;
 }
 
 /** Normalize one incoming question so downstream `.trim()` calls can never throw. */
 function normalizeQuestion(q: NonNullable<RealExamExportRequest["questions"]>[number], index: number) {
-  const options = Array.isArray(q.options)
-    ? q.options.filter((o): o is string => typeof o === "string" && o.trim() !== "")
+  const raw = (q !== null && typeof q === "object" ? q : {}) as NonNullable<
+    RealExamExportRequest["questions"]
+  >[number];
+  const options = Array.isArray(raw.options)
+    ? raw.options
+        .filter((o): o is string => typeof o === "string" && o.trim() !== "")
+        .map((o) => sanitizePdfText(o))
+        .filter((o) => o !== "")
     : [];
   return {
-    id: typeof q.id === "number" ? q.id : index + 1,
-    question: safeStr(q.question).trim() || `Question ${index + 1}`,
+    id: typeof raw.id === "number" ? raw.id : index + 1,
+    question: sanitizePdfText(raw.question).trim() || `Question ${index + 1}`,
     options,
-    correctAnswer: safeStr(q.correctAnswer).trim(),
-    explanation: safeStr(q.explanation).trim(),
-    subject: safeStr(q.subject).trim(),
-    topic: safeStr(q.topic).trim(),
-    subtopic: safeStr(q.subtopic).trim(),
-    difficulty: safeStr(q.difficulty).trim(),
-    year: typeof q.year === "number" ? q.year : null,
-    sourceExam: safeStr(q.sourceExam).trim(),
-    questionNumber: typeof q.questionNumber === "number" ? q.questionNumber : null,
+    correctAnswer: sanitizePdfText(raw.correctAnswer).trim(),
+    explanation: sanitizePdfText(raw.explanation).trim(),
+    subject: sanitizePdfText(raw.subject, 200).trim(),
+    topic: sanitizePdfText(raw.topic, 200).trim(),
+    subtopic: sanitizePdfText(raw.subtopic, 200).trim(),
+    difficulty: sanitizePdfText(raw.difficulty, 20).trim(),
+    year: typeof raw.year === "number" ? raw.year : null,
+    sourceExam: sanitizePdfText(raw.sourceExam, 200).trim(),
+    questionNumber: typeof raw.questionNumber === "number" ? raw.questionNumber : null,
   };
 }
 
@@ -175,8 +204,8 @@ export async function POST(request: Request) {
       throw new AppError(400, "Too many questions (max 200).", "VALIDATION_ERROR");
     }
 
-    const title = safeStr(body?.title).trim() || "Real Exam Question Paper";
-    const examName = safeStr(body?.examName).trim();
+    const title = sanitizePdfText(body?.title, 200).trim() || "Real Exam Question Paper";
+    const examName = sanitizePdfText(body?.examName, 200).trim();
     const exportOptions = {
       includeAnswers: body?.exportOptions?.includeAnswers === true,
       includeExplanations: body?.exportOptions?.includeExplanations === true,
@@ -260,11 +289,15 @@ export async function POST(request: Request) {
     doc.moveDown(1);
 
     // ============ QUESTIONS ============
+    // Each question renders in isolation: one malformed row can never abort
+    // the whole export — it is skipped and counted instead.
     const pageWidth = doc.page.width - 100; // margins
     const contentWidth = pageWidth - 40; // indent
+    let renderedCount = 0;
+    const skipped: number[] = [];
+    const renderedQuestions: NormalizedQuestion[] = [];
 
-    for (let i = 0; i < processedQuestions.length; i++) {
-      const q = processedQuestions[i];
+    const renderQuestion = (q: NormalizedQuestion, i: number) => {
       const qNum = i + 1;
 
       // Check if we need a new page (keep at least 100px for question)
@@ -328,6 +361,24 @@ export async function POST(request: Request) {
         doc.strokeColor("#f0f0f0").lineWidth(0.5).moveTo(50, doc.y).lineTo(545, doc.y).stroke();
         doc.moveDown(0.5);
       }
+    };
+
+    for (let i = 0; i < processedQuestions.length; i++) {
+      try {
+        renderQuestion(processedQuestions[i], renderedQuestions.length);
+        renderedQuestions.push(processedQuestions[i]);
+        renderedCount += 1;
+      } catch (questionErr) {
+        skipped.push(i + 1);
+        console.error(
+          `[real-exam-export] [${requestId}] skipped unrenderable question #${i + 1}:`,
+          questionErr instanceof Error ? questionErr.message : questionErr,
+        );
+      }
+    }
+
+    if (renderedCount === 0) {
+      throw new AppError(400, "No renderable questions provided", "VALIDATION_ERROR");
     }
 
     // ============ ANSWER KEY (if not inline) ============
@@ -338,8 +389,8 @@ export async function POST(request: Request) {
       doc.moveDown(1);
 
       doc.font("Helvetica").fontSize(10).fillColor("#333333");
-      for (let i = 0; i < processedQuestions.length; i++) {
-        doc.text(`Q${i + 1}: ${answerLabelFor(processedQuestions[i])}`, { indent: 20 });
+      for (let i = 0; i < renderedQuestions.length; i++) {
+        doc.text(`Q${i + 1}: ${answerLabelFor(renderedQuestions[i])}`, { indent: 20 });
         if ((i + 1) % 3 === 0) doc.moveDown(0.5);
       }
     }
@@ -363,6 +414,12 @@ export async function POST(request: Request) {
     applySecurityHeaders(res);
     return res;
   } catch (err) {
+    // Always log server-side (Vercel/host logs) with the request id so a 500
+    // can be traced to its cause instead of surfacing as a mystery to users.
+    console.error(
+      `[real-exam-export] [${requestId}] failed after ${getTime()}ms:`,
+      err instanceof Error ? (err.stack ?? err.message) : err,
+    );
     const res = toHttpResponse(err);
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");

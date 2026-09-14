@@ -413,4 +413,61 @@ describe("POST /api/real-exam/export", () => {
     const res = await exportPOST(bad);
     expect(res.status).toBe(400);
   });
+
+  it("survives hostile rows: control chars, lone surrogates, non-objects", async () => {
+    setupAuthedUser();
+    const res = await exportPOST(
+      postRequest(
+        "/api/real-exam/export",
+        exportBody({
+          questions: [
+            {
+              id: 1,
+              question: "line1\x00line2\x01\x02 এবং lone surrogate � end",
+              options: ["\uD800 alone", "ok \u{1F600} emoji", 42 as unknown as string, ""],
+              correctAnswer: "ok \u{1F600} emoji",
+              explanation: "expl\x7F with \uDC00 stray",
+              subject: "বাংলা",
+              topic: "t",
+              subtopic: "t",
+              difficulty: "HARD",
+            },
+            "not-an-object" as unknown as Record<string, unknown>,
+            null as unknown as Record<string, unknown>,
+          ],
+          exportOptions: { includeAnswers: true, includeExplanations: true, shuffleQuestions: true },
+        }),
+        { cookie: await sessionCookie() },
+      ),
+    );
+
+    expect(res.status).toBe(200);
+    const buf = await res.arrayBuffer();
+    expect(buf.byteLength).toBeGreaterThan(500);
+    const head = Buffer.from(buf).subarray(0, 5).toString("latin1");
+    expect(head).toBe("%PDF-");
+  });
+
+  it("exports a full 200-question Bengali paper", async () => {
+    setupAuthedUser();
+    const many = Array.from({ length: 200 }, (_, i) => ({
+      ...EXPORT_QUESTIONS[0],
+      id: i + 1,
+      question: `প্রশ্ন ${i + 1}: বাংলাদেশের রাজধানী কোনটি? গীতাঞ্জলির রচয়িতা কে?`,
+      options: ["ঢাকা", "চট্টগ্রাম", "খুলনা", "রাজশাহী"],
+      correctAnswer: "ঢাকা",
+      explanation: "ব্যাখ্যা: ঢাকা ১৯৭১ সাল থেকে রাজধানী।",
+      subject: "সাধারণ জ্ঞান",
+    }));
+    const res = await exportPOST(
+      postRequest("/api/real-exam/export", exportBody({ questions: many }), {
+        cookie: await sessionCookie(),
+      }),
+    );
+
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toContain("application/pdf");
+    const buf = await res.arrayBuffer();
+    expect(buf.byteLength).toBeGreaterThan(5000);
+  });
 });
