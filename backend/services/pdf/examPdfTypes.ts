@@ -43,6 +43,8 @@ export type ExamPdfRenderOptions = {
   includeAnswers: boolean;
   includeExplanations: boolean;
   shuffleQuestions: boolean;
+  /** Request correlation id — used in PdfExportError when font loading fails. */
+  requestId?: string;
 };
 
 /** The raw output of the renderer — a complete PDF as a byte buffer. */

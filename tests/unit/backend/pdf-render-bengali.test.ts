@@ -15,9 +15,9 @@
 // mark strip → ASCII) before any doc.text()/widthOfString() call. These
 // tests pin the crash classes so they can never regress.
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 
-import { renderExamPdf } from "~backend/services/pdf";
+import { renderExamPdf, PdfExportError } from "~backend/services/pdf";
 import type { ExamPdfDocument, ExamPdfRenderOptions } from "~backend/services/pdf";
 
 // Minimal empirically-verified crashers (consonant + AA + candrabindu),
@@ -130,5 +130,38 @@ describe("exam PDF renderer — Bengali shaping safety", () => {
     const result = await renderExamPdf(doc, OPTIONS);
     expect(result.skippedCount).toBe(0);
     expect(result.questionCount).toBe(1);
+  });
+
+  it("hard-fails with PDF_EXPORT_FONT_ERROR when the Bengali font file is missing", async () => {
+    // Simulate a deployment where the font files were not traced into the
+    // serverless bundle. The renderer must fail LOUDLY with a distinct code
+    // instead of silently falling back to Helvetica (blank Bengali text).
+    vi.resetModules();
+    vi.doMock("fs", async (importOriginal) => {
+      const actual = await importOriginal<typeof import("fs")>();
+      // The renderer uses `import fs from "fs"` + fs.existsSync, so the
+      // DEFAULT export must carry the mocked existsSync too.
+      const mocked = {
+        ...actual,
+        existsSync: (p: import("fs").PathLike) =>
+          typeof p === "string" && p.includes("NotoSansBengali")
+            ? false
+            : actual.existsSync(p),
+      };
+      return { ...mocked, default: mocked };
+    });
+    try {
+      // Fresh module instance so the cached font state is re-evaluated.
+      const { renderExamPdf: freshRender } = await import("~backend/services/pdf/renderExamPdf");
+      await expect(
+        freshRender(buildDoc(["সাঁঝ প্যাঁচা"]), OPTIONS),
+      ).rejects.toMatchObject({
+        pdfCode: "PDF_EXPORT_FONT_ERROR",
+        stage: "render",
+      });
+    } finally {
+      vi.doUnmock("fs");
+      vi.resetModules();
+    }
   });
 });

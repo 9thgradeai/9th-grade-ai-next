@@ -392,8 +392,13 @@ async function runExport(
   mark("render");
   let renderResult;
   try {
-    renderResult = await renderExamPdf(pdfDocument, exportOptions);
+    renderResult = await renderExamPdf(pdfDocument, { ...exportOptions, requestId });
   } catch (renderErr) {
+    // PdfExportError (e.g. PDF_EXPORT_FONT_ERROR raised inside the renderer)
+    // is already classified with its own code/stage — re-throw as-is so the
+    // client sees the specific failure instead of a generic render error.
+    if (renderErr instanceof PdfExportError) throw renderErr;
+
     const fontStatus = getFontStatus();
     console.error(
       `[real-exam-export] [${requestId}] PDF render failed:`,

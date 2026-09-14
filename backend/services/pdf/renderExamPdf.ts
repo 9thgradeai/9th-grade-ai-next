@@ -31,6 +31,7 @@ import type {
   ExamPdfRenderResult,
   ExamPdfQuestion,
 } from "./examPdfTypes";
+import { PdfExportError } from "./examPdfErrors";
 
 const OPTION_LABELS = ["A", "B", "C", "D", "E", "F"];
 
@@ -332,6 +333,22 @@ export async function renderExamPdf(
   seed?: number,
 ): Promise<ExamPdfRenderResult> {
   ensureFonts();
+
+  // Hard-fail when the embedded Bengali font is unavailable. The previous
+  // behavior silently fell back to Helvetica, producing a PDF whose Bengali
+  // content rendered as blanks — an undiagnosable failure that looked
+  // identical to a shaping crash. A missing font is a deployment problem
+  // (font files not traced into the serverless bundle), so it gets its own
+  // error code (PDF_EXPORT_FONT_ERROR) instead of a generic render error.
+  if (!_fontRegular || _fontRegular.length === 0) {
+    throw new PdfExportError(
+      500,
+      "Bengali font is not available on the server",
+      "PDF_EXPORT_FONT_ERROR",
+      "render",
+      options.requestId ?? "unknown",
+    );
+  }
 
   const BENGALI = "Bengali";
   const BENGALI_BOLD = "Bengali-Bold";
