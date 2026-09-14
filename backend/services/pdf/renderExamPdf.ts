@@ -82,40 +82,31 @@ function buildQuestionHtml(
     .map((s) => sanitizeForPdf(s || "", 100))
     .join(" • ");
 
-  // Options
+  // Options — compact layout
   let optionsHtml = "";
   if (q.options && q.options.length > 0) {
     const items = q.options
       .map((o, j) => {
         const label = sanitizeForPdf(o.key || String(j + 1), 10);
         const oText = sanitizeForPdf(o.text, 3000);
-        return `<li style="padding-left:24px;margin-bottom:4px;position:relative;"><span style="position:absolute;left:0;font-weight:700;color:#111827;">${escapeHtml(label)}.</span><span>${escapeHtml(oText)}</span></li>`;
+        return `<li style="padding-left:18px;margin-bottom:1px;position:relative;"><span style="position:absolute;left:0;font-weight:700;color:#111827;">${escapeHtml(label)}.</span><span>${escapeHtml(oText)}</span></li>`;
       })
       .join("");
-    optionsHtml = `<ul style="list-style:none;margin:4px 0 8px 24px;padding:0;">${items}</ul>`;
+    optionsHtml = `<ul style="list-style:none;margin:2px 0 4px 18px;padding:0;">${items}</ul>`;
   }
 
-  // Answer section
+  // Answer section — compact
   let answersSection = "";
   if (opts.includeAnswers && q.correctAnswer) {
     const answerText = sanitizeForPdf(String(q.correctAnswer), 2000);
-    answersSection += `<div style="margin:12px 0;padding:10px 12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:4px;"><div style="font-weight:700;font-size:10pt;margin-bottom:4px;color:#166534;">Answer:</div><div style="font-size:9.5pt;color:#14532d;">${escapeHtml(answerText)}</div></div>`;
+    answersSection += `<div style="margin:6px 0;padding:4px 8px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:3px;"><span style="font-weight:700;font-size:8pt;color:#166534;">Answer: </span><span style="font-size:8pt;color:#14532d;">${escapeHtml(answerText)}</span></div>`;
   }
   if (opts.includeExplanations && q.explanation) {
     const explText = sanitizeForPdf(q.explanation, 4000);
-    answersSection += `<div style="margin:6px 0;padding:8px 12px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:4px;"><div style="font-weight:700;font-size:10pt;margin-bottom:4px;color:#1e40af;">Explanation:</div><div style="font-size:9pt;color:#1e3a5a;line-height:1.5;">${escapeHtml(explText)}</div></div>`;
+    answersSection += `<div style="margin:3px 0;padding:4px 8px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:3px;font-size:7.5pt;color:#1e3a5a;line-height:1.4;">${escapeHtml(explText)}</div>`;
   }
 
-  // Difficulty / year tags
-  const tags = [q.difficulty, q.year ? `Year: ${q.year}` : null, q.sourceExam]
-    .filter(Boolean)
-    .map((t) => sanitizeForPdf(t || "", 50))
-    .join(" | ");
-  const tagsHtml = tags
-    ? `<div style="font-size:8pt;color:#9ca3af;margin:4px 0 0 0;">${escapeHtml(tags)}</div>`
-    : "";
-
-  return `<section style="padding:12px 0;margin-top:8px;border-top:1px solid #e5e7eb;page-break-inside:avoid;"><div style="font-weight:700;color:#111827;margin-bottom:4px;font-size:11pt;">${escapeHtml(num)}. <span style="font-weight:400;">${escapeHtml(text)}</span></div>${meta ? `<div style="font-size:8pt;color:#6b7280;margin:2px 0 4px 0;">${escapeHtml(meta)}</div>` : ""}${optionsHtml}${tagsHtml}${answersSection}</section>`;
+  return `<section style="padding:4px 0;margin-top:4px;border-top:1px solid #e5e7eb;break-inside:avoid;column-break-inside:avoid;"><div style="font-weight:700;color:#111827;margin-bottom:2px;font-size:9pt;">${escapeHtml(num)}. <span style="font-weight:400;">${escapeHtml(text)}</span></div>${meta ? `<div style="font-size:7pt;color:#6b7280;margin:1px 0 2px 0;">${escapeHtml(meta)}</div>` : ""}${optionsHtml}${answersSection}</section>`;
 }
 
 // ── Build full HTML document ────────────────────────────────────
@@ -161,10 +152,10 @@ function buildHtml(
   const durationMin = Number(doc.durationMinutes) || 0;
   const qCount = questions.length;
 
-  // Instructions
+  // Instructions — compact
   const instructionsHtml =
     doc.instructions && doc.instructions.length > 0
-      ? `<div style="margin:0 0 14px 0;"><div style="font-weight:700;font-size:11pt;color:#111827;margin-bottom:6px;">Instructions</div><ol style="margin:0;padding-left:20px;font-size:9pt;color:#374151;line-height:1.7;">${doc.instructions.map((i) => `<li>${escapeHtml(sanitizeForPdf(i, 300))}</li>`).join("")}</ol></div>`
+      ? `<div style="margin:0 0 8px 0;"><div style="font-weight:700;font-size:9pt;color:#111827;margin-bottom:3px;">Instructions</div><ol style="margin:0;padding-left:16px;font-size:7.5pt;color:#374151;line-height:1.5;">${doc.instructions.map((i) => `<li>${escapeHtml(sanitizeForPdf(i, 300))}</li>`).join("")}</ol></div>`
       : "";
 
   // Questions
@@ -173,7 +164,7 @@ function buildHtml(
     .join("");
 
   // Footer with page numbers
-  const footerCss = `@bottom-center{content:"${brand} \\2014 ${seqLabel} \\2014 Page " counter(page) " of " counter(pages);font-family:${UNIVERSAL_FONT};font-size:8pt;color:#9ca3af;}`;
+  const footerCss = `@bottom-center{content:"${brand} \\2014 ${seqLabel} \\2014 Page " counter(page) " of " counter(pages);font-family:${UNIVERSAL_FONT};font-size:7pt;color:#9ca3af;}`;
 
   return `<!DOCTYPE html>
 <html lang="bn">
@@ -185,14 +176,14 @@ function buildHtml(
 ${fontFaceCss()}
 @page{
   size:A4;
-  margin:20mm 18mm 22mm 18mm;
+  margin:12mm 10mm 14mm 10mm;
   ${footerCss}
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 html{
   font-family:${UNIVERSAL_FONT};
-  font-size:10.5pt;
-  line-height:1.65;
+  font-size:9pt;
+  line-height:1.4;
   color:#111827;
   background:#fff;
   -webkit-font-smoothing:antialiased;
@@ -200,66 +191,68 @@ html{
 }
 body{
   font-family:${UNIVERSAL_FONT};
-  font-size:10.5pt;
-  line-height:1.65;
+  font-size:9pt;
+  line-height:1.4;
   color:#111827;
 }
 .header{
-  border-bottom:2.5px solid #111827;
-  padding-bottom:12px;
-  margin-bottom:16px;
+  border-bottom:2px solid #111827;
+  padding-bottom:6px;
+  margin-bottom:8px;
 }
 .header-brand{
-  font-size:14pt;
+  font-size:12pt;
   font-weight:700;
   letter-spacing:0.02em;
   color:#111827;
 }
 .header-seq{
-  font-size:12pt;
+  font-size:10pt;
   font-weight:700;
   color:#374151;
-  margin-top:2px;
+  margin-top:1px;
 }
 .meta-table{
-  font-size:9.5pt;
+  font-size:8pt;
   color:#374151;
-  margin-top:10px;
+  margin-top:4px;
   width:100%;
   border-collapse:collapse;
 }
 .meta-table td{
-  padding:2px 8px 2px 0;
+  padding:1px 6px 1px 0;
   vertical-align:top;
 }
 .meta-table .label{
   font-weight:600;
   color:#111827;
   white-space:nowrap;
-  min-width:80px;
-}
-.section-divider{
-  border:none;
-  border-top:1px solid #d1d5db;
-  margin:12px 0;
+  min-width:70px;
 }
 /* Ensure complex script rendering */
 [lang="bn"], [lang="bn"] *{
   font-family:'Noto Sans Bengali', 'Noto Sans', sans-serif;
 }
-/* Mixed-script support: force proper font resolution */
+/* Mixed-script support */
 span, strong, em, div, p, li, td, th{
   font-variant-ligatures:none;
 }
-/* Prevent page breaks inside questions */
+/* Two-column layout for questions */
+.columns{
+  column-count:2;
+  column-gap:16px;
+  column-rule:1px solid #e5e7eb;
+}
+/* Prevent breaks inside questions */
 section{
-  page-break-inside:avoid;
   break-inside:avoid;
+  column-break-inside:avoid;
+  page-break-inside:avoid;
 }
 /* Print optimizations */
 @media print{
   body{background:#fff;}
-  section{page-break-inside:avoid;}
+  section{break-inside:avoid;}
 }
 </style>
 </head>
@@ -270,13 +263,13 @@ section{
   <table class="meta-table">
     <tr><td class="label">Subjects</td><td>${subjectsStr}</td></tr>
     <tr><td class="label">Full Mark</td><td>${fullMark}</td></tr>
-    <tr><td class="label">Time</td><td>${durationMin} Minutes</td></tr>
+    <tr><td class="label">Time</td><td>${durationMin} min</td></tr>
     <tr><td class="label">Questions</td><td>${qCount}</td></tr>
     <tr><td class="label">Generated</td><td>${generatedAt}</td></tr>
   </table>
 </div>
 ${instructionsHtml}
-<main>${questionsHtml}</main>
+<div class="columns">${questionsHtml}</div>
 </body>
 </html>`;
 }
