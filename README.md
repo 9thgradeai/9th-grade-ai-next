@@ -753,7 +753,7 @@ npm install
 # 3. Configure environment
 cp .env.local.example .env.local
 #   AUTH_SECRET:  openssl rand -base64 32
-#   DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ninth_grade_ai
+#   DATABASE_URL: your Neon pooled connection string
 
 # 4. Create + seed the database
 npm run db:push
