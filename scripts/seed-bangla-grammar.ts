@@ -473,6 +473,10 @@ async function main() {
       }
     }
 
+    // Note: server-side QueryCache (5 min TTL) holds stale exam tree data.
+    // It auto-expires after 5 min or clears on dev server restart.
+    // Cannot import query-cache.ts from scripts due to server-only guard.
+
     console.log("\n✅ Bangla Grammar seed complete.");
   } finally {
     await prisma.$disconnect();
