@@ -256,8 +256,15 @@ async function main() {
       }
     };
 
+    // Look up the existing ভাষা topic id from the database
+    const bhashaTopic = await prisma.topic.findFirst({
+      where: { subjectId, path: contentPath(bhashaNode) },
+      select: { id: true },
+    });
+    const bhashaId = bhashaTopic?.id ?? null;
+
     for (const child of bhashaNode.children) {
-      await createTopicNode(child, null, 2);
+      await createTopicNode(child, bhashaId, 2);
     }
     console.log(`✓ Topic tree built (${idsByPath.size} nodes, ${leafIds.size} leaves)\n`);
 
