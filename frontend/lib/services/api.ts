@@ -399,7 +399,7 @@ export const api = {
     cachedGet<{ results: Server.MockTestResultDTO[] }>("/api/mock-test/results").then((d) => d.results),
 
   examConfig: (): Promise<Server.ExamSubjectDTO[]> =>
-    cachedGet<{ subjects: Server.ExamSubjectDTO[] }>("/api/exam/config").then((d) => d.subjects),
+    cachedGet<{ subjects: Server.ExamSubjectDTO[] }>("/api/exam/config?v=2").then((d) => d.subjects),
 
   // ── Exam History & Real Exam ────────────────────────────────
 
