@@ -97,9 +97,9 @@ export class BatchProcessor<T, R> {
     this.queue.push(item);
 
     if (this.queue.length >= this.batchSize) {
-      this.flush();
+      void this.flush();
     } else if (!this.flushTimer) {
-      this.flushTimer = setTimeout(() => this.flush(), this.flushIntervalMs);
+      this.flushTimer = setTimeout(() => void this.flush(), this.flushIntervalMs);
     }
   }
 
@@ -127,7 +127,7 @@ export class BatchProcessor<T, R> {
 
       // Process remaining items
       if (this.queue.length > 0) {
-        setTimeout(() => this.flush(), 0);
+        setTimeout(() => void this.flush(), 0);
       }
     }
   }

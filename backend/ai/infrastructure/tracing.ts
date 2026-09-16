@@ -103,7 +103,7 @@ export function createTraceContext(
   const traceId = generateId();
   const rootSpan = createSpan(traceId, name, undefined, metadata);
 
-  let activeSpan = rootSpan;
+  const activeSpan = rootSpan;
 
   const ctx: TraceContext = {
     traceId,
