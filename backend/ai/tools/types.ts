@@ -1,4 +1,18 @@
 // AI agent tool contract — identity, results, and action affordances.
+// Enhanced with permission classification, result validation, and provenance.
+
+// ── Permission classification ──────────────────────────────
+
+/** Whether a tool modifies user/system state. */
+export type ToolAccess = "read" | "write";
+
+/** Whether a tool requires human confirmation before execution. */
+export type ToolConfirmation = "none" | "required";
+
+/** Whether a tool is idempotent (safe to retry). */
+export type ToolIdempotency = "idempotent" | "non_idempotent";
+
+// ── Existing types ─────────────────────────────────────────
 
 export type AgentActionType =
   | "practice"
@@ -31,7 +45,23 @@ export type ToolResult = {
   action?: AgentAction;
   /** Set on failure — the loop presents it to the model as a tool error. */
   ok?: boolean;
+  /** Provenance: where the data came from (for citation/tracking). */
+  provenance?: ToolProvenance;
 };
+
+/** Provenance metadata for tool results — tracks where data came from. */
+export type ToolProvenance = {
+  /** Source type: database, computed, external API, etc. */
+  source: "database" | "computed" | "external" | "seed";
+  /** Specific table/query/API endpoint used. */
+  reference?: string;
+  /** Timestamp when data was fetched. */
+  fetchedAt?: number;
+  /** Number of records returned. */
+  recordCount?: number;
+};
+
+// ── Enhanced ToolDefinition ────────────────────────────────
 
 export type ToolDefinition = {
   name: string;
@@ -42,6 +72,14 @@ export type ToolDefinition = {
   validateInput(raw: unknown): Record<string, unknown>;
   execute(ctx: ToolContext, args: Record<string, unknown>): Promise<ToolResult>;
   timeoutMs?: number;
+  /** Permission classification — defaults to "read" if not specified. */
+  access?: ToolAccess;
+  /** Whether human confirmation is required — defaults to "none". */
+  confirmation?: ToolConfirmation;
+  /** Whether the tool is idempotent — defaults to "idempotent". */
+  idempotency?: ToolIdempotency;
+  /** Tags for grouping/categorization. */
+  tags?: string[];
 };
 
 // ── Tool activity labels ────────────────────────────────

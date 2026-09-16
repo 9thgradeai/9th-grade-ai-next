@@ -4,11 +4,17 @@
 // fallback (Anthropic), and a clearly-labelled mock when no key is set.
 // Provider/model selection honors the unified router config (AI_PROVIDER,
 // AI_MODEL_PRIMARY / AI_MODEL_FAST) — see ~backend/ai/router.
+//
+// Circuit breaker integration: each provider is checked against the circuit
+// breaker before being offered as a candidate. Providers in OPEN state are
+// skipped; HALF_OPEN providers are tried as a last resort before mock.
 
 import "server-only";
 
 import { candidateOrder, resolveModelName, tierForTask, type ModelTask } from "../router";
 import type { AITask } from "../types";
+import { isCircuitClosed, recordSuccess, recordFailure, type CircuitBreakerConfig } from "../infrastructure/circuit-breaker";
+import { recordProviderFailover } from "../infrastructure/metrics";
 import { GroqProvider, isGroqConfigured } from "./groq";
 import { AnthropicProvider, isAnthropicConfigured } from "./anthropic";
 import { MockProvider } from "./mock";
@@ -45,7 +51,8 @@ export type ModelSelection = {
 /**
  * Build the ordered candidate list for a provider order. Each real provider is
  * constructed with its own resolved model name (tier-aware). The last candidate
- * is always the clearly-labelled mock.
+ * is always the clearly-labelled mock. Providers whose circuit breaker is OPEN
+ * are skipped to avoid wasting time on a known-unhealthy provider.
  */
 function buildSelections(
   order: LLMProviderName[],
@@ -60,6 +67,8 @@ function buildSelections(
     }
     const configured = name === "groq" ? isGroqConfigured() : isAnthropicConfigured();
     if (!configured) continue;
+    // Circuit breaker: skip providers whose circuit is OPEN
+    if (!isCircuitClosed(name)) continue;
     out.push({ provider: getProvider(name, modelFor(name)), name });
   }
   // Guarantee a mock fallback even if no real provider was configured.
@@ -67,6 +76,22 @@ function buildSelections(
     out.push({ provider: getProvider("mock", task), name: "mock" });
   }
   return out;
+}
+
+/**
+ * Report provider success/failure to the circuit breaker.
+ * Called by application services after each LLM call.
+ */
+export function reportProviderOutcome(
+  providerName: LLMProviderName,
+  success: boolean,
+): void {
+  if (providerName === "mock") return;
+  if (success) {
+    recordSuccess(providerName);
+  } else {
+    recordFailure(providerName);
+  }
 }
 
 /**

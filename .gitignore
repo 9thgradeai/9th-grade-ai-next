@@ -44,3 +44,8 @@ coverage/
 # QB forensics generated artifacts (reproducible via the CLI)
 scripts/qb-forensics/artifacts/
 scripts/qb-audit/backups/
+
+# Agent configuration (local only)
+.agents/
+.claude/
+skills-lock.json

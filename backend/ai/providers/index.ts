@@ -5,6 +5,7 @@ export {
   resolveModel,
   resolveModelCandidates,
   resolvedProviderName,
+  reportProviderOutcome,
 } from "./registry";
 export type { ModelSelection } from "./registry";
 export {
