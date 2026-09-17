@@ -49,3 +49,4 @@ scripts/qb-audit/backups/
 .agents/
 .claude/
 skills-lock.json
+public/sw.js
