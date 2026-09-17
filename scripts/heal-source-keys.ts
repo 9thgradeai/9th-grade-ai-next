@@ -78,15 +78,15 @@ async function bootstrapEcosystems() {
 
   // Insert BCS ecosystem with id=1 if it doesn't exist.
   await p.$executeRawUnsafe(`
-    INSERT INTO "ExamEcosystem" ("id", "code", "slug", "name", "nameBn", "description", "descriptionBn", "isActive", "sortOrder")
-    VALUES (1, 'BCS', 'bcs', 'BCS', 'বিসিএস', 'Bangladesh Civil Service examination', 'বাংলাদেশ সিভিল সার্ভিস পরীক্ষা', true, 1)
+    INSERT INTO "ExamEcosystem" ("id", "code", "slug", "name", "nameBn", "description", "descriptionBn", "isActive", "sortOrder", "createdAt", "updatedAt")
+    VALUES (1, 'BCS', 'bcs', 'BCS', 'বিসিএস', 'Bangladesh Civil Service examination', 'বাংলাদেশ সিভিল সার্ভিস পরীক্ষা', true, 1, NOW(), NOW())
     ON CONFLICT ("code") DO NOTHING
   `);
 
   // Also insert Bangladesh Bank ecosystem.
   await p.$executeRawUnsafe(`
-    INSERT INTO "ExamEcosystem" ("code", "slug", "name", "nameBn", "description", "descriptionBn", "isActive", "sortOrder")
-    VALUES ('BANGLADESH_BANK', 'bangladesh-bank', 'Bangladesh Bank', 'বাংলাদেশ ব্যাংক', 'Bangladesh Bank recruitment examination', 'বাংলাদেশ ব্যাংক নিয়োগ পরীক্ষা', true, 2)
+    INSERT INTO "ExamEcosystem" ("code", "slug", "name", "nameBn", "description", "descriptionBn", "isActive", "sortOrder", "createdAt", "updatedAt")
+    VALUES ('BANGLADESH_BANK', 'bangladesh-bank', 'Bangladesh Bank', 'বাংলাদেশ ব্যাংক', 'Bangladesh Bank recruitment examination', 'বাংলাদেশ ব্যাংক নিয়োগ পরীক্ষা', true, 2, NOW(), NOW())
     ON CONFLICT ("code") DO NOTHING
   `);
 
