@@ -160,9 +160,11 @@ export async function analyzeMistakePatterns(
       questionId: true,
       subjectName: true,
       topic: true,
+      errorType: true,
+      durationSec: true,
       createdAt: true,
     },
   });
-  const patterns = buildMistakePatterns(rows.map((r) => ({ ...r, errorType: null, durationSec: 0 })));
+  const patterns = buildMistakePatterns(rows.map((r) => ({ ...r, errorType: r.errorType })));
   return { patterns, recentWrongCount: rows.length };
 }

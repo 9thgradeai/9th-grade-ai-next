@@ -235,15 +235,6 @@ configured, the app keeps the documented auto-verify fallback so accounts are ne
 locked out. Operators must set SMTP (or `RESEND_API_KEY`) env vars for real delivery
 — see `docs/EMAIL.md`.
 
-## ADR-0014: Multi-Exam Ecosystem Architecture
-
-**Date**: 2026-09
-**Status**: Accepted
-**Context**: The platform currently supports only BCS exam preparation. Users need to practice for Bangladesh Bank recruitment exams (AD, Senior Officer, Cash, Officer IT) with completely isolated subject/topic/question pools, while sharing all user infrastructure (attempts, bookmarks, flashcards, AI, progress). Hard-coding a second database or duplicating tables violates the single-platform principle.
-**Decision**: Introduce a first-class `ExamEcosystem` model as the root content boundary. `Subject`, `ExamCategory`, `Question`, `DailyQuiz`, and `QuestionAttempt` gain an `ecosystemId` FK pointing to `ExamEcosystem`. New enum `ExamEcosystemCode` (`BCS`, `BANGLADESH_BANK`) provides compile-time type safety. Shared infrastructure (User, Bookmark, Flashcard, MockTest, AI, Progress) remains untouched. The ecosystem propagates through the relationship chain: `ExamEcosystem → Subject → Topic → Question`. A denormalized `ecosystemId` on `QuestionAttempt` enables fast ecosystem-scoped analytics without JOINs.
-**Rationale**: Logical multi-tenancy inside one database is the simplest architecture that supports content isolation without operational overhead. The FK approach is Prisma-native, migration-safe, and query-plan-friendly. Denormalizing `ecosystemId` on high-growth tables (Question, QuestionAttempt) avoids repeated Subject JOINs on every practice query. The enum approach prevents arbitrary string values and enables exhaustive switch statements in TypeScript.
-**Consequences**: Five tables gain a required `ecosystemId` column (non-nullable after backfill). All content API routes gain an `ecosystem` parameter. The frontend gains an `EcosystemContext` provider. Existing BCS data is backfilled with `ecosystemId = BCS` in a safe migration phase. New ecosystems (Teacher Recruitment, etc.) are added by inserting an enum value + rows — no schema changes needed. The `sourceKey` strategy continues to work unchanged. Full details in `docs/MULTI-ECOSYSTEM-ARCHITECTURE.md`.
-
 ## ADR-0011 — Bundle analyzer for performance instrumentation
 
 **Date**: 2026-09
@@ -394,7 +385,7 @@ Grammar **সমাস** folder file (`database/data/ques/বাংলা ভা
 - **`FOREIGN_SCRIPT`** (fatal): rejects glyphs from sibling Indic scripts
   (Devanagari/Gurmukhi/Tamil/etc.) smuggled into Bangla text — the OCR
   glyph-substitution mode that passes `VISUAL_ORDER_BANGLA` (e.g. Devanagari
-  क ि inside "কোকিলকণ্ঠী" and Sinhala න substituting for Bangla ন). The shared
+  क ि inside "কোकिलकণ্ঠী" and Sinhala න substituting for Bangla ন). The shared
   daṇḍa "।" and script digits are excluded — they legitimately appear in Bangla.
 - **English `Ans.` answer marker** + **strict letter resolution**: the shared
   parser now accepts `Ans.` alongside `উত্তর:` (case-insensitive), and a

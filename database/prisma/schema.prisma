@@ -127,33 +127,6 @@ enum DailyQuizParticipationStatus {
   COMPLETED
 }
 
-// ── Exam Ecosystem ────────────────────────────────────────
-// Root boundary for exam-family content isolation. Each ecosystem (BCS,
-// Bangladesh Bank, etc.) owns its own Subject → Topic → Question tree and
-// ExamCategory → Exam → ExamPaper hierarchy. Shared infrastructure (User,
-// Bookmark, Flashcard, MockTest, AI, Progress) is NOT scoped by ecosystem.
-model ExamEcosystem {
-  id              Int                @id @default(autoincrement())
-  code            ExamEcosystemCode  @unique
-  slug            String             @unique
-  name            String             // English display name
-  nameBn          String             // Bengali display name
-  description     String             @default("")
-  descriptionBn   String             @default("")
-  isActive        Boolean            @default(true)
-  sortOrder       Int                @default(0)
-  createdAt       DateTime           @default(now())
-  updatedAt       DateTime           @updatedAt
-
-  subjects        Subject[]
-  examCategories  ExamCategory[]
-  dailyQuizzes    DailyQuiz[]
-  questions       Question[]
-  attempts        QuestionAttempt[]
-
-  @@index([sortOrder])
-}
-
 enum MasteryStatus {
   NEW
   STRUGGLING
@@ -318,7 +291,7 @@ model ExamCategory {
   id           Int             @id @default(autoincrement())
   ecosystemId  Int
   ecosystem    ExamEcosystem   @relation(fields: [ecosystemId], references: [id], onDelete: Cascade)
-  slug         String          @unique
+  slug         String
   nameBn       String
   nameEn       String
   icon         String          @default("📘")
@@ -386,9 +359,9 @@ model Question {
   subject        Subject         @relation(fields: [subjectId], references: [id], onDelete: Cascade)
   topicId        Int?
   leaf           Topic?          @relation(fields: [topicId], references: [id], onDelete: SetNull)
-  path           String          @default("") // full leaf content path, e.g. "04_আন্তর্জাতিক_বিষয়াবলি/০২_নিরাপ্তা_ও_ক্ষমতা/আন্তর্জাতিক_নিরাপ্তা"
-  topic          String          @default("") // topic group display name (depth-1 node)
-  subtopic       String          @default("") // leaf display name (Topic.name)
+  path           String          @default("")
+  topic          String          @default("")
+  subtopic       String          @default("")
   question       String
   options        Json // string[]
   correctAnswer  String
@@ -396,17 +369,12 @@ model Question {
   difficulty     Difficulty      @default(MEDIUM)
   year           Int?
   sourceExam     String          @default("")
-  bcsTerm        String?         // e.g., "50th", "49th", "48th" — BCS exam term
-  // Exam-library linkage: a question may belong to a specific paper (BCS exam
-  // session). Nullable so generic subject-wise questions remain valid.
+  bcsTerm        String?
   examId         Int?
   exam           Exam?           @relation(fields: [examId], references: [id], onDelete: SetNull)
   paperId        Int?
   paper          ExamPaper?      @relation(fields: [paperId], references: [id], onDelete: SetNull)
-  questionNumber Int?            // position of the question in the original paper, if known
-  // Deterministic seed identity (md5 of subjectId|path|question). Lets the
-  // seeder upsert instead of wipe-and-recreate, so Question ids — and every
-  // user row referencing them — stay stable across deploys.
+  questionNumber Int?
   sourceKey      String          @default("")
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
@@ -419,7 +387,6 @@ model Question {
   @@index([ecosystemId, subjectId, difficulty])
   @@index([ecosystemId, subjectId, path])
   @@index([ecosystemId, subjectId, topic, subtopic])
-  // FK-side index: Topic SetNull updates/deletes must not seq-scan Questions.
   @@index([topicId])
   @@index([examId])
   @@index([paperId, questionNumber])
@@ -562,7 +529,33 @@ model DailyQuiz {
   participations DailyQuizParticipation[]
 
   @@unique([ecosystemId, date])
-  @@index([ecosystemId, date])
+}
+
+// ── Exam Ecosystem ────────────────────────────────────────
+// Root boundary for exam-family content isolation. Each ecosystem (BCS,
+// Bangladesh Bank, etc.) owns its own Subject → Topic → Question tree and
+// ExamCategory → Exam → ExamPaper hierarchy. Shared infrastructure (User,
+// Bookmark, Flashcard, MockTest, AI, Progress) is NOT scoped by ecosystem.
+model ExamEcosystem {
+  id              Int                @id @default(autoincrement())
+  code            ExamEcosystemCode  @unique
+  slug            String             @unique
+  name            String             // English display name
+  nameBn          String             // Bengali display name
+  description     String             @default("")
+  descriptionBn   String             @default("")
+  isActive        Boolean            @default(true)
+  sortOrder       Int                @default(0)
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  subjects        Subject[]
+  examCategories  ExamCategory[]
+  dailyQuizzes    DailyQuiz[]
+  questions       Question[]
+  attempts        QuestionAttempt[]
+
+  @@index([sortOrder])
 }
 
 // Per-user daily-quiz participation — one row per (user, quiz).
@@ -785,32 +778,28 @@ model Bookmark {
 // Every answered question (practice, mock test, daily quiz). Powers
 // accuracy, streaks, and per-subject reports.
 model QuestionAttempt {
-model QuestionAttempt {
-  id           Int             @id @default(autoincrement())
-  ecosystemId  Int
-  ecosystem    ExamEcosystem   @relation(fields: [ecosystemId], references: [id], onDelete: Cascade)
-  userId       String
-  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  questionId   Int?
-  question     Question?       @relation(fields: [questionId], references: [id], onDelete: SetNull)
-  subjectId    Int?
-  subject      Subject?        @relation(fields: [subjectId], references: [id], onDelete: SetNull)
-  subjectName  String          @default("")
-  topic        String          @default("")
-  correct      Boolean
-  source       String          @default("practice") // practice | mock | daily
-  // ── Extended fields (Phase 1 — agent foundation) ──
+  id         Int       @id @default(autoincrement())
+  ecosystemId Int
+  ecosystem   ExamEcosystem @relation(fields: [ecosystemId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  questionId Int?
+  question   Question? @relation(fields: [questionId], references: [id], onDelete: SetNull)
+  subjectId  Int?
+  subject    Subject?  @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+  subjectName String   @default("")
+  topic      String    @default("")
+  correct    Boolean
+  source     String    @default("practice") // practice | mock | daily
   selectedAnswer String @default("")
   durationSec    Int    @default(0)
-  confidence     Int?             // 0–100, optional learner confidence
-  errorType      MistakeErrorType? // server-validated error classification
-  createdAt    DateTime        @default(now())
+  confidence     Int?
+  errorType      MistakeErrorType?
+  createdAt  DateTime  @default(now())
 
   @@index([ecosystemId, userId, createdAt])
   @@index([ecosystemId, userId, subjectId])
-  // FK-side index: Question SetNull on delete/update must not seq-scan attempts.
   @@index([questionId])
-  // Analytics group-bys filter by userId and aggregate per subject/topic.
   @@index([ecosystemId, userId, subjectName])
   @@index([ecosystemId, userId, topic])
 }

@@ -244,12 +244,12 @@ class DuplicateRegistry {
 }
 
 // Finds or updates the Subject row for a canonical Bengali name (upsert by
-// the unique ecosystemId+nameBn key).
+// the compound ecosystemId+nameBn key).
 async function ensureSubject(
   prisma: PrismaClient,
   nameBn: string,
   sortOrder: number,
-  ecosystemId: number,
+  ecosystemId: number = 1,
 ): Promise<{ id: number }> {
   const meta = subjectMetaByNameBn(nameBn) ?? SUBJECT_META[0];
   const data = {
@@ -349,7 +349,6 @@ async function syncSubjectQuestions(
   prisma: PrismaClient,
   subjectId: number,
   candidates: QuestionCandidate[],
-  ecosystemId: number,
   duplicateRegistry: DuplicateRegistry,
 ): Promise<{ inserted: number; updated: number }> {
   if (candidates.length === 0) return { inserted: 0, updated: 0 };
@@ -437,7 +436,6 @@ async function syncSubjectQuestions(
       }
       duplicateRegistry.claim(sig);
       creates.push({
-        ecosystemId,
         subjectId,
         sourceKey: key,
         ...contentData,
@@ -495,25 +493,17 @@ async function pruneStaleTopics(
 // upserted by (subjectId, sourceKey) so Question ids — and every user row
 // referencing them (bookmarks, attempts) — survive every reseed. Returns the
 // number of questions present after the sync.
-export async function seedQuestions(prisma: PrismaClient, ecosystemId?: number): Promise<number> {
+export async function seedQuestions(prisma: PrismaClient): Promise<number> {
   const dir = join(process.cwd(), "database", "data", "ques");
   const files = readdirSync(dir).filter((f) => /\.txt$/i.test(f));
   if (files.length === 0) throw new Error("No .txt question files found in database/data/ques");
 
   const taxonomy = loadTaxonomy();
 
-  // Resolve ecosystem ID — default to BCS if not provided
-  let resolvedEcosystemId = ecosystemId;
-  if (!resolvedEcosystemId) {
-    const bcs = await prisma.examEcosystem.findUnique({ where: { code: "BCS" } });
-    if (!bcs) throw new Error("BCS ecosystem not found — run seed.ts first");
-    resolvedEcosystemId = bcs.id;
-  }
-
   // Ensure all 10 canonical subjects exist in architecture order.
   const subjectIds: Record<string, number> = {};
   for (const [i, meta] of SUBJECT_META.entries()) {
-    const subject = await ensureSubject(prisma, meta.nameBn, i, resolvedEcosystemId);
+    const subject = await ensureSubject(prisma, meta.nameBn, i);
     subjectIds[meta.nameBn.normalize("NFC")] = subject.id;
   }
 
@@ -621,7 +611,7 @@ export async function seedQuestions(prisma: PrismaClient, ecosystemId?: number):
       };
     });
 
-    const { inserted } = await syncSubjectQuestions(prisma, subjectId, candidates, resolvedEcosystemId, duplicateRegistry);
+    const { inserted } = await syncSubjectQuestions(prisma, subjectId, candidates, duplicateRegistry);
     totalInserted += inserted;
     console.log(`✓ ${canonical}: ${parsed.length} synced (${inserted} new)`);
   }
@@ -677,7 +667,7 @@ export async function seedQuestions(prisma: PrismaClient, ecosystemId?: number):
           parsed: q,
         };
       });
-      const { inserted } = await syncSubjectQuestions(prisma, subjectId, candidates, resolvedEcosystemId, duplicateRegistry);
+      const { inserted } = await syncSubjectQuestions(prisma, subjectId, candidates, duplicateRegistry);
       totalInserted += inserted;
       console.log(`✓ ${meta.nameBn} (subject file): ${parsed.length} synced (${inserted} new)`);
       continue;
@@ -716,7 +706,7 @@ export async function seedQuestions(prisma: PrismaClient, ecosystemId?: number):
       parsed: q,
     }));
 
-    const { inserted } = await syncSubjectQuestions(prisma, subjectId, candidates, resolvedEcosystemId, duplicateRegistry);
+    const { inserted } = await syncSubjectQuestions(prisma, subjectId, candidates, duplicateRegistry);
     totalInserted += inserted;
     console.log(`✓ ${meta.nameBn} → ${path}: ${parsed.length} synced (${inserted} new)`);
   }

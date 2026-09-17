@@ -4,7 +4,6 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useState,
 } from "react";
 import type { ExamEcosystemCode } from "@/lib/types";
@@ -46,12 +45,7 @@ function writeEcosystem(eco: ExamEcosystemCode) {
  * dashboard. Persists to localStorage and syncs via storage events.
  */
 export function EcosystemProvider({ children }: { children: React.ReactNode }) {
-  const [ecosystem, setEcosystemState] = useState<ExamEcosystemCode>(DEFAULT_ECOSYSTEM);
-
-  // Hydrate from localStorage on mount
-  useEffect(() => {
-    setEcosystemState(readEcosystem());
-  }, []);
+  const [ecosystem, setEcosystemState] = useState<ExamEcosystemCode>(readEcosystem);
 
   const setEcosystem = useCallback((eco: ExamEcosystemCode) => {
     writeEcosystem(eco);

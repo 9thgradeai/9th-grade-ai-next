@@ -196,7 +196,7 @@ async function ensureExamTaxonomy(
   ecosystemId: number,
 ): Promise<Map<number, number>> {
   const category = await prisma.examCategory.upsert({
-    where: { slug: CATEGORY_SLUG },
+    where: { ecosystemId_slug: { ecosystemId, slug: CATEGORY_SLUG } },
     update: {},
     create: {
       ecosystemId,
@@ -258,6 +258,9 @@ export async function importBcsExams(
   const file = join(process.cwd(), "database", "data", "question_bank", "bcs", "bcs_questions.json");
   const raw: RawBcsRecord[] = JSON.parse(readFileSync(file, "utf8"));
 
+  const ecosystem = await prisma.examEcosystem.findUnique({ where: { code: "BCS" } });
+  const ecosystemId = ecosystem?.id ?? 1;
+
   const report: ImportReport = {
     totalFound: raw.length, valid: 0, imported: 0, updated: 0,
     duplicates: 0, invalid: 0, unclassified: 0, malformed: [], byExam: {},
@@ -286,11 +289,6 @@ export async function importBcsExams(
     candidates.forEach((c) => { report.byExam[String(c.examNum)].imported += 1; });
     return report;
   }
-
-  // Resolve BCS ecosystem ID
-  const bcsEcosystem = await prisma.examEcosystem.findUnique({ where: { code: "BCS" } });
-  if (!bcsEcosystem) throw new Error("BCS ecosystem not found — run seed.ts first");
-  const ecosystemId = bcsEcosystem.id;
 
   const paperIds = await ensureExamTaxonomy(prisma, terms, ecosystemId);
 

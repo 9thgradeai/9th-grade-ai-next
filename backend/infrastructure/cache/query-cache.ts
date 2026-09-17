@@ -90,14 +90,14 @@ export function clearQueryCache(): void {
 // Higher-level helpers for specific query types
 export const QueryCache = {
   // Exam selection tree - changes only when questions are added/removed
-  async getExamTree(cacheKey = "selection-tree"): Promise<unknown | null> {
-    return queryCacheGet('exam', cacheKey);
+  async getExamTree(): Promise<unknown | null> {
+    return queryCacheGet('exam', 'selection-tree');
   },
-  async setExamTree(data: unknown, cacheKey = "selection-tree"): Promise<void> {
-    return queryCacheSet('exam', cacheKey, data, 5 * 60_000); // 5 min TTL
+  async setExamTree(data: unknown): Promise<void> {
+    return queryCacheSet('exam', 'selection-tree', data, 5 * 60_000); // 5 min TTL
   },
   async invalidateExamTree(): Promise<void> {
-    return queryCacheInvalidate('exam', 'exam-tree');
+    return queryCacheInvalidate('exam', 'selection-tree');
   },
 
   // Question lists - per subject/filter combo

@@ -23,7 +23,6 @@ import {
   Loader2,
 } from "lucide-react";
 import { api } from "@/lib/services/api";
-import { useEcosystem } from "@/lib/ecosystem-ctx";
 import {
   submitExamAttempt as canonicalSubmitExamAttempt,
   registerExam,
@@ -127,7 +126,6 @@ function performanceLabel(percentage: number): { label: string; tone: string } {
 }
 
 export default function CustomExamTab() {
-  const { ecosystem } = useEcosystem();
   // ── Config state ──
   const [subjects, setSubjects] = useState<Server.ExamSubjectDTO[]>([]);
   const [configLoading, setConfigLoading] = useState(true);
@@ -205,19 +203,19 @@ export default function CustomExamTab() {
   // no render-phase impurity or effect-driven cascade is introduced.
   const fetchConfig = useCallback(async () => {
     try {
-      const list = await api.examConfig(ecosystem);
+      const list = await api.examConfig();
       setSubjects(list.filter((s) => s.questionCount > 0));
     } catch {
       setConfigError("কনফিগারেশন লোড করা যায়নি। আবার চেষ্টা করুন।");
     } finally {
       setConfigLoading(false);
     }
-  }, [ecosystem]);
+  }, []);
 
   useEffect(() => {
     void (async () => {
       try {
-        const list = await api.examConfig(ecosystem);
+        const list = await api.examConfig();
         setSubjects(list.filter((s) => s.questionCount > 0));
       } catch {
         setConfigError("কনফিগারেশন লোড করা যায়নি। আবার চেষ্টা করুন।");
@@ -225,7 +223,7 @@ export default function CustomExamTab() {
         setConfigLoading(false);
       }
     })();
-  }, [ecosystem]);
+  }, []);
 
   const handleRetryConfig = () => {
     setConfigLoading(true);

@@ -1,7 +1,6 @@
 "use client";
 
 import type { Server } from "@/lib/types";
-import type { ExamEcosystemCode } from "@/lib/types";
 
 // ── Constants ──────────────────────────────────────────────
 
@@ -283,7 +282,6 @@ export const api = {
     paperId?: number;
     limit?: number;
     page?: number;
-    ecosystem?: ExamEcosystemCode;
   }): Promise<Server.QuestionDTO[]> => {
     const qs = new URLSearchParams();
     if (params) {
@@ -343,16 +341,12 @@ export const api = {
     ).then((d) => d.history);
   },
 
-  questionBankCategories: (ecosystem?: ExamEcosystemCode): Promise<Server.QuestionBankCategoryDTO[]> => {
-    const qs = ecosystem ? `?ecosystem=${ecosystem}` : "";
-    return cachedGet<{ categories: Server.QuestionBankCategoryDTO[] }>(`/api/question-bank/categories${qs}`).then((d) => d.categories);
-  },
+  questionBankCategories: (): Promise<Server.QuestionBankCategoryDTO[]> =>
+    cachedGet<{ categories: Server.QuestionBankCategoryDTO[] }>("/api/question-bank/categories").then((d) => d.categories),
 
   /** Exam-library hierarchy: ExamCategory → Exam → ExamPaper (BCS → Preliminary → specific paper). */
-  examLibrary: (ecosystem?: ExamEcosystemCode): Promise<Server.ExamCategoryDTO[]> => {
-    const qs = ecosystem ? `?ecosystem=${ecosystem}` : "";
-    return cachedGet<{ exams: Server.ExamCategoryDTO[] }>(`/api/question-bank/exams${qs}`).then((d) => d.exams);
-  },
+  examLibrary: (): Promise<Server.ExamCategoryDTO[]> =>
+    cachedGet<{ exams: Server.ExamCategoryDTO[] }>("/api/question-bank/exams").then((d) => d.exams),
 
   flashcards: (subject?: string): Promise<Server.FlashcardDTO[]> => {
     const qs = subject ? `?subject=${encodeURIComponent(subject)}` : "";
@@ -370,10 +364,8 @@ export const api = {
   studyPlan: (): Promise<Server.StudyTaskDTO[]> =>
     cachedGet<{ tasks: Server.StudyTaskDTO[] }>("/api/study-plan").then((d) => d.tasks),
 
-  dailyQuiz: (ecosystem?: ExamEcosystemCode): Promise<Server.DailyQuizDTO | null> => {
-    const qs = ecosystem ? `?ecosystem=${ecosystem}` : "";
-    return cachedGet<{ quiz: Server.DailyQuizDTO | null }>(`/api/daily-quiz${qs}`).then((d) => d.quiz);
-  },
+  dailyQuiz: (): Promise<Server.DailyQuizDTO | null> =>
+    cachedGet<{ quiz: Server.DailyQuizDTO | null }>("/api/daily-quiz").then((d) => d.quiz),
 
   news: (): Promise<Server.FlashNewsDTO[]> =>
     cachedGet<{ news: Server.FlashNewsDTO[] }>("/api/flash-news").then((d) => d.news),
@@ -406,10 +398,8 @@ export const api = {
   mockTestResults: (): Promise<Server.MockTestResultDTO[]> =>
     cachedGet<{ results: Server.MockTestResultDTO[] }>("/api/mock-test/results").then((d) => d.results),
 
-  examConfig: (ecosystem?: ExamEcosystemCode): Promise<Server.ExamSubjectDTO[]> => {
-    const qs = ecosystem ? `?ecosystem=${ecosystem}` : "";
-    return cachedGet<{ subjects: Server.ExamSubjectDTO[] }>(`/api/exam/config${qs}`).then((d) => d.subjects);
-  },
+  examConfig: (): Promise<Server.ExamSubjectDTO[]> =>
+    cachedGet<{ subjects: Server.ExamSubjectDTO[] }>("/api/exam/config?v=2").then((d) => d.subjects),
 
   // ── Exam History & Real Exam ────────────────────────────────
 
@@ -591,9 +581,6 @@ export const api = {
 
   toggleStudyTask: (taskId: number): Promise<{ completed: boolean }> =>
     mutate(`/api/study-plan/tasks/${taskId}/toggle`, "POST"),
-
-  ecosystems: (): Promise<Server.ExamEcosystemDTO[]> =>
-    cachedGet<{ ecosystems: Server.ExamEcosystemDTO[] }>("/api/ecosystems").then((d) => d.ecosystems),
 
   createStudyTask: (task: { title: string; subject: string; day: string; duration?: number; priority?: string }): Promise<{ task: Server.StudyTaskDTO }> =>
     mutate<{ task: Server.StudyTaskDTO }>("/api/study-plan", "POST", task),

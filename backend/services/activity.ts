@@ -124,11 +124,11 @@ export async function submitPracticeAnswers(
       select: {
         id: true,
         subjectId: true,
+        ecosystemId: true,
         topicId: true,
         topic: true,
         correctAnswer: true,
         difficulty: true,
-        ecosystemId: true,
         subject: { select: { nameBn: true } },
       },
     });
@@ -158,7 +158,7 @@ export async function submitPracticeAnswers(
         previous: priorById.get(a.questionId),
       });
       return {
-        ecosystemId: q?.ecosystemId ?? 1, // default to BCS if question not found
+        ecosystemId: q?.ecosystemId ?? 1,
         userId,
         questionId: a.questionId,
         subjectId: q?.subjectId ?? null,

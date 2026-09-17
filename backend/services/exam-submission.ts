@@ -351,6 +351,7 @@ export async function submitExamAttempt(
       select: {
         id: true,
         subjectId: true,
+        ecosystemId: true,
         topicId: true,
         topic: true,
         subtopic: true,
@@ -411,6 +412,7 @@ export async function submitExamAttempt(
     };
 
     const attempts: Array<{
+      ecosystemId: number;
       userId: string;
       questionId: number | null;
       subjectId: number | null;
@@ -433,6 +435,7 @@ export async function submitExamAttempt(
         previous: priorById.get(a.questionId),
       });
       attempts.push({
+        ecosystemId: q?.ecosystemId ?? 1,
         userId,
         questionId: q?.id ?? null,
         subjectId: q?.subjectId ?? null,

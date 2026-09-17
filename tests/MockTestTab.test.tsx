@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, waitFor, within } from "@testing-library/react";
-import { EcosystemProvider } from "@/lib/ecosystem-ctx";
 import MockTestTab from "@/components/dashboard/MockTestTab";
 import type { Server } from "@/lib/types";
 
@@ -86,7 +85,7 @@ afterEach(() => {
 
 describe("MockTestTab (subtopic selection + build)", () => {
   it("drills into a subtopic and starts a timed mock", async () => {
-    render(<EcosystemProvider><MockTestTab /></EcosystemProvider>);
+    render(<MockTestTab />);
 
     // Subjects are shown inline — click one directly.
     const subjectElements = await screen.findAllByText("বাংলা ভাষা ও সাহিত্য");
@@ -111,7 +110,7 @@ describe("MockTestTab (subtopic selection + build)", () => {
   });
 
   it("shows the available count for a selected subtopic", async () => {
-    render(<EcosystemProvider><MockTestTab /></EcosystemProvider>);
+    render(<MockTestTab />);
     const subjectElements = await screen.findAllByText("বাংলা ভাষা ও সাহিত্য");
     fireEvent.click(subjectElements[0]);
     fireEvent.click(await screen.findByRole("checkbox", { name: /ভাষা/ }));
