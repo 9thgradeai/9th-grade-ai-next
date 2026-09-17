@@ -77,17 +77,19 @@ async function bootstrapEcosystems() {
   `);
 
   // Insert BCS ecosystem with id=1 if it doesn't exist.
+  // ON CONFLICT DO NOTHING (without target) catches PK, unique, and
+  // exclusion conflicts on ANY column — fully idempotent.
   await p.$executeRawUnsafe(`
     INSERT INTO "ExamEcosystem" ("id", "code", "slug", "name", "nameBn", "description", "descriptionBn", "isActive", "sortOrder", "createdAt", "updatedAt")
     VALUES (1, 'BCS', 'bcs', 'BCS', 'বিসিএস', 'Bangladesh Civil Service examination', 'বাংলাদেশ সিভিল সার্ভিস পরীক্ষা', true, 1, NOW(), NOW())
-    ON CONFLICT ("code") DO NOTHING
+    ON CONFLICT DO NOTHING
   `);
 
   // Also insert Bangladesh Bank ecosystem.
   await p.$executeRawUnsafe(`
     INSERT INTO "ExamEcosystem" ("code", "slug", "name", "nameBn", "description", "descriptionBn", "isActive", "sortOrder", "createdAt", "updatedAt")
     VALUES ('BANGLADESH_BANK', 'bangladesh-bank', 'Bangladesh Bank', 'বাংলাদেশ ব্যাংক', 'Bangladesh Bank recruitment examination', 'বাংলাদেশ ব্যাংক নিয়োগ পরীক্ষা', true, 2, NOW(), NOW())
-    ON CONFLICT ("code") DO NOTHING
+    ON CONFLICT DO NOTHING
   `);
 
   console.log("heal: ExamEcosystem table and BCS/BB rows bootstrapped");
