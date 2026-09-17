@@ -9,6 +9,7 @@ import { createAnthropic } from "@ai-sdk/anthropic";
 import { AppError } from "~backend/errors";
 import type { AIMessageInput } from "../types";
 import { estimateTokens } from "./groq";
+import { resolveTemperature } from "../router";
 import {
   type LLMProvider,
   type LLMRequest,
@@ -52,12 +53,13 @@ function toCoreMessages(
 
 export class AnthropicProvider implements LLMProvider {
   readonly name = "anthropic" as const;
-  readonly model = ANTHROPIC_MODEL;
+  readonly model: string;
   readonly supportsVision = true;
 
   private client;
 
-  constructor(apiKey: string) {
+  constructor(apiKey: string, model: string = ANTHROPIC_MODEL) {
+    this.model = model;
     this.client = createAnthropic({ apiKey });
   }
 
@@ -67,7 +69,7 @@ export class AnthropicProvider implements LLMProvider {
       system: req.system,
       messages: toCoreMessages(req.messages, req.images),
       maxTokens: req.maxTokens ?? 1024,
-      temperature: req.temperature,
+      temperature: req.temperature ?? resolveTemperature(),
     });
 
     if (!result.text.trim()) {
@@ -96,7 +98,7 @@ export class AnthropicProvider implements LLMProvider {
       system: req.system,
       messages: toCoreMessages(req.messages, req.images),
       maxTokens: req.maxTokens ?? 2048,
-      temperature: req.temperature,
+      temperature: req.temperature ?? resolveTemperature(),
     });
 
     const { stream, done, getFullText } =

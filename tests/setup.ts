@@ -260,6 +260,11 @@ vi.mock("~backend/db", () => ({
       findFirst: vi.fn(),
       count: vi.fn(),
     },
+    examSchedule: {
+      findMany: vi.fn(),
+      findFirst: vi.fn(),
+      count: vi.fn(),
+    },
     document: {
       findMany: vi.fn(),
       findFirst: vi.fn(),
@@ -307,6 +312,24 @@ vi.mock("~backend/db", () => ({
     aIFeedback: {
       create: vi.fn(),
       findMany: vi.fn(),
+      count: vi.fn(),
+    },
+    userQuestionProgress: {
+      findUnique: vi.fn(),
+      findMany: vi.fn(),
+      findFirst: vi.fn(),
+      upsert: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+      count: vi.fn(),
+    },
+    examAttempt: {
+      findUnique: vi.fn(),
+      findFirst: vi.fn(),
+      findMany: vi.fn(),
+      upsert: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
       count: vi.fn(),
     },
     $disconnect: vi.fn(),

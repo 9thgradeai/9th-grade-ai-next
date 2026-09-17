@@ -113,7 +113,7 @@ export default function NotificationCenter() {
       <button
         ref={bellRef}
         onClick={() => setIsOpen(true)}
-        className="relative w-11 h-11 flex items-center justify-center text-zinc-400 hover:text-emerald-400 transition-colors rounded-lg hover:bg-emerald-500/5"
+        className="relative w-11 h-11 flex items-center justify-center text-[var(--dashboard-text-muted)] hover:text-[var(--dashboard-primary)] transition-colors rounded-lg hover:bg-[var(--dashboard-primary-subtle)]"
         title="Notifications"
         aria-label={`Notifications${unreadCount ? ` (${unreadCount} unread)` : ""}`}
         aria-haspopup="dialog"
@@ -122,7 +122,7 @@ export default function NotificationCenter() {
         <Bell className="w-5 h-5" />
         {unreadCount > 0 && (
           <span
-            className="absolute -top-0.5 -right-0.5 min-w-4 min-h-4 px-1 bg-red-500 rounded-full text-[10px] font-mono text-white flex items-center justify-center tabular-nums"
+            className="absolute -top-0.5 -right-0.5 min-w-4 min-h-4 px-1 bg-[var(--danger)] rounded-full text-[10px] font-mono text-[var(--text-primary)] flex items-center justify-center tabular-nums"
             aria-hidden="true"
           >
             {unreadCount}
@@ -143,7 +143,7 @@ export default function NotificationCenter() {
             aria-label="Notifications and badges"
           >
             <div
-              className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+              className="absolute inset-0 bg-[var(--overlay)] backdrop-blur-sm"
               onClick={() => setIsOpen(false)}
             />
             <motion.div
@@ -156,10 +156,10 @@ export default function NotificationCenter() {
             >
               {/* Header */}
               <div className="p-4 border-b border-terminal-border flex items-center justify-between">
-                <h2 className="text-lg font-bold text-white">নোটিফিকেশন</h2>
+                <h2 className="text-lg font-bold text-[var(--text-primary)]">নোটিফিকেশন</h2>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="w-10 h-10 flex items-center justify-center text-zinc-400 hover:text-white transition-colors rounded-lg"
+                  className="w-10 h-10 flex items-center justify-center text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)] transition-colors rounded-lg"
                   aria-label="বন্ধ করুন"
                 >
                   <X className="w-5 h-5" />
@@ -177,8 +177,8 @@ export default function NotificationCenter() {
                     onClick={() => setActiveTab(tab.id)}
                     className={`flex-1 flex items-center justify-center gap-1.5 py-3.5 text-xs font-mono transition-colors ${
                       activeTab === tab.id
-                        ? "text-emerald-400 border-b-2 border-emerald-500"
-                        : "text-zinc-500 hover:text-zinc-300"
+                        ? "text-[var(--dashboard-primary)] border-b-2 border-[var(--accent)]"
+                        : "text-[var(--dashboard-text-muted)] hover:text-[var(--dashboard-text-secondary)]"
                     }`}
                   >
                     <tab.icon className="w-3.5 h-3.5" />
@@ -190,14 +190,14 @@ export default function NotificationCenter() {
               {/* Content */}
               <div className="flex-1 overflow-y-auto p-4">
                 {loading ? (
-                  <div className="text-center py-12 text-zinc-500 font-mono text-sm">
+                  <div className="text-center py-12 text-[var(--dashboard-text-muted)] font-mono text-sm">
                     লোড হচ্ছে...
                   </div>
                 ) : activeTab === "notifications" ? (
                   notifications.length === 0 ? (
                     <div className="text-center py-12">
-                      <Bell className="w-10 h-10 mx-auto mb-3 text-zinc-700" />
-                      <p className="text-sm text-zinc-500">কোনো নোটিফিকেশন নেই</p>
+                      <Bell className="w-10 h-10 mx-auto mb-3 text-[var(--text-muted)]" />
+                      <p className="text-sm text-[var(--dashboard-text-muted)]">কোনো নোটিফিকেশন নেই</p>
                     </div>
                   ) : (
                     <AnimatedList
@@ -220,7 +220,7 @@ export default function NotificationCenter() {
                               }
                             }}
                             className={`p-3 rounded-2xl border transition-all ${
-                              notif.read ? "border-zinc-800 bg-subtle" : "border-emerald-500/20 bg-emerald-500/5 cursor-pointer"
+                              notif.read ? "border-[var(--dashboard-border-muted)] bg-subtle" : "border-[var(--accent)]/20 bg-[var(--dashboard-primary-subtle)] cursor-pointer"
                             }`}
                             onClick={() => void markAsRead(notif.id)}
                           >
@@ -228,23 +228,23 @@ export default function NotificationCenter() {
                               <span
                                 className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
                                   notif.type === "WARNING"
-                                    ? "bg-amber-500/10 text-amber-400"
+                                    ? "bg-[var(--dashboard-warning-subtle)] text-[var(--dashboard-warning)]"
                                     : notif.type === "SUCCESS"
-                                      ? "bg-emerald-500/10 text-emerald-400"
-                                      : "bg-zinc-800 text-zinc-400"
+                                      ? "bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
+                                      : "bg-[var(--surface-overlay)] text-[var(--dashboard-text-muted)]"
                                 }`}
                               >
                                 <TypeIcon className="w-4 h-4" aria-hidden="true" />
                               </span>
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 mb-1">
-                                  <h4 className="text-sm font-medium text-white truncate">{notif.title}</h4>
+                                  <h4 className="text-sm font-medium text-[var(--text-primary)] truncate">{notif.title}</h4>
                                   {!notif.read && (
-                                    <span className="w-2 h-2 bg-emerald-500 rounded-full flex-shrink-0" aria-label="unread" />
+                                    <span className="w-2 h-2 bg-[var(--accent)] rounded-full flex-shrink-0" aria-label="unread" />
                                   )}
                                 </div>
-                                <p className="text-xs text-zinc-400 font-mono">{notif.message}</p>
-                                <span className="text-[10px] text-zinc-600 font-mono mt-1 block">
+                                <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">{notif.message}</p>
+                                <span className="text-[10px] text-[var(--dashboard-text-secondary)] font-mono mt-1 block">
                                   {relativeTime(notif.timestamp)}
                                 </span>
                               </div>
@@ -256,8 +256,8 @@ export default function NotificationCenter() {
                   )
                 ) : badges.length === 0 ? (
                   <div className="text-center py-12">
-                    <Medal className="w-10 h-10 mx-auto mb-3 text-zinc-700" />
-                    <p className="text-sm text-zinc-500">কোনো ব্যাজ নেই</p>
+                    <Medal className="w-10 h-10 mx-auto mb-3 text-[var(--text-muted)]" />
+                    <p className="text-sm text-[var(--dashboard-text-muted)]">কোনো ব্যাজ নেই</p>
                   </div>
                 ) : (
                   <div className="space-y-2">
@@ -268,8 +268,8 @@ export default function NotificationCenter() {
                         animate={{ opacity: 1, y: 0 }}
                         className={`p-3 rounded-2xl border ${
                           badge.unlocked
-                            ? "border-emerald-500/20 bg-emerald-500/5"
-                            : "border-zinc-800 bg-subtle opacity-60"
+                            ? "border-[var(--accent)]/20 bg-[var(--dashboard-primary-subtle)]"
+                            : "border-[var(--dashboard-border-muted)] bg-subtle opacity-60"
                         }`}
                       >
                         <div className="flex items-center gap-3">
@@ -277,10 +277,10 @@ export default function NotificationCenter() {
                             {badge.icon}
                           </span>
                           <div className="flex-1 min-w-0">
-                            <h4 className="text-sm font-medium text-white">{badge.name}</h4>
-                            <p className="text-xs text-zinc-500 font-mono">{badge.description}</p>
+                            <h4 className="text-sm font-medium text-[var(--text-primary)]">{badge.name}</h4>
+                            <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">{badge.description}</p>
                           </div>
-                          <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase bg-zinc-500/10 text-zinc-400">
+                          <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase bg-[var(--surface-muted)] text-[var(--dashboard-text-muted)]">
                             {badge.unlocked ? "অর্জিত" : "অর্জন করা হয়নি"}
                           </span>
                         </div>

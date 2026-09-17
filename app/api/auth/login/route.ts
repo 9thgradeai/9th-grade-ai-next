@@ -4,7 +4,7 @@ import { AppError, toHttpResponse } from "~backend/errors";
 import { findUserByEmail, verifyPassword, DUMMY_PASSWORD_HASH } from "~backend/services/user";
 import { signSession, setSessionCookie, addUserSession } from "~backend/auth";
 import { assertLoginAllowed } from "~backend/rate-limit";
-import { getRequestId, startTiming, applySecurityHeaders, assertSameOrigin } from "../../_middleware";
+import { getRequestId, startTiming, applySecurityHeaders, applyCorsHeaders, assertSameOrigin } from "../../_middleware";
 import { log } from "~backend/infrastructure/observability/logger";
 
 export async function POST(request: Request) {
@@ -14,10 +14,10 @@ export async function POST(request: Request) {
   try {
     assertSameOrigin(request);
 
-    const body = await request.json().catch(() => ({}));
-    // `remember` is an explicit, optional opt-in (default: session-length cookie).
-    const remember = body?.remember === true;
-    const { email, password } = validateLoginInput(body);
+    const body = await request.json().catch(() => {
+      throw new AppError(400, "Invalid request body.", "INVALID_BODY");
+    });
+    const { email, password, remember } = validateLoginInput(body);
 
     // Phase 8: per-IP minute bucket + per-account hourly bucket (hashed email),
     // so rotating IPs cannot brute-force one mailbox.
@@ -40,6 +40,7 @@ export async function POST(request: Request) {
     // response latency cannot reveal whether an address is registered.
     const match = await verifyPassword(user?.passwordHash ?? DUMMY_PASSWORD_HASH, password);
     if (!user || !match) {
+      log.warn("auth.login.failed", { requestId });
       throw new AppError(401, "Invalid email or password.", "AUTH_INVALID_CREDENTIALS");
     }
 
@@ -65,6 +66,7 @@ export async function POST(request: Request) {
 
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");
+    applyCorsHeaders(res);
     applySecurityHeaders(res);
 
     return res;
@@ -75,6 +77,7 @@ export async function POST(request: Request) {
     const res = toHttpResponse(err);
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");
+    applyCorsHeaders(res);
     applySecurityHeaders(res);
     return res;
   }

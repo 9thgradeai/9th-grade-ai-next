@@ -4,7 +4,7 @@ import { validateRegisterInput } from "~backend/validation";
 import { findUserByEmail, createUser } from "~backend/services/user";
 import { signSession, setSessionCookie } from "~backend/auth";
 import { checkRateLimit, getRateLimitKey, LIMITS } from "~backend/rate-limit";
-import { getRequestId, startTiming, applySecurityHeaders, assertSameOrigin } from "../../_middleware";
+import { getRequestId, startTiming, applySecurityHeaders, applyCorsHeaders, assertSameOrigin } from "../../_middleware";
 import { log } from "~backend/infrastructure/observability/logger";
 
 export async function POST(request: Request) {
@@ -18,7 +18,9 @@ export async function POST(request: Request) {
       throw new AppError(429, "Too many registration attempts. Please try again later.", "RATE_LIMIT_EXCEEDED");
     }
 
-    const body = await request.json().catch(() => ({}));
+    const body = await request.json().catch(() => {
+      throw new AppError(400, "Invalid request body.", "INVALID_BODY");
+    });
     // Phase 7: single source of truth — the shared validator enforces the same
     // rules here as everywhere else (name >=2, valid email, password >=8) and
     // rejects unknown fields. Now includes zxcvbn + HIBP password strength check.
@@ -46,6 +48,7 @@ export async function POST(request: Request) {
 
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");
+    applyCorsHeaders(res);
     applySecurityHeaders(res);
 
     return res;
@@ -53,6 +56,7 @@ export async function POST(request: Request) {
     const res = toHttpResponse(err);
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");
+    applyCorsHeaders(res);
     applySecurityHeaders(res);
     return res;
   }

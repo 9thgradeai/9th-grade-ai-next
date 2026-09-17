@@ -121,4 +121,15 @@ describe("conversation persistence", () => {
     await deleteConversation("u1", conv.id);
     await expect(getConversation("u1", conv.id)).rejects.toThrow();
   });
+
+  it("persists COACH (agent) conversations so coach threads stay distinguishable in the rail", async () => {
+    const coach = await createConversation("u1", {
+      kind: "COACH",
+      title: "দুর্বলতা বিশ্লেষণ",
+    });
+    expect(coach.kind).toBe("COACH");
+    const coachList = await listConversations("u1", "COACH");
+    expect(coachList.length).toBe(1);
+    expect(coachList[0].kind).toBe("COACH");
+  });
 });

@@ -37,7 +37,16 @@ describe("submitPracticeAnswers (atomic attempts + progress)", () => {
       { questionId: 2, selected: "ঘ" },
     ]);
 
-    expect(summary).toEqual({ correct: 1, total: 2, score: 50, pointsEarned: 10 });
+    expect(summary).toEqual({
+      correct: 1,
+      total: 2,
+      score: 50,
+      pointsEarned: 10,
+      feedback: {
+        1: { masteryStatus: "NEW", isMistake: false, justMastered: false },
+        2: { masteryStatus: "STRUGGLING", isMistake: true, justMastered: false },
+      },
+    });
     expect(prisma.$transaction).toHaveBeenCalledTimes(1);
 
     const attempts = vi.mocked(prisma.questionAttempt.createMany).mock.calls[0][0];

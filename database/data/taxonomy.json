@@ -97,6 +97,27 @@
               "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/সমাস",
               "depth": 3,
               "leaf": true
+            },
+            {
+              "name": "বাচ্য",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/বাচ্য",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "কারক",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/কারক",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "বাংলা_ছন্দ_ও_অলংকার",
+              "children": [],
+              "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/বাংলা_ছন্দ_ও_অলংকার",
+              "depth": 3,
+              "leaf": true
             }
           ],
           "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা",

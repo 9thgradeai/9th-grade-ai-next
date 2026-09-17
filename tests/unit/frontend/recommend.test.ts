@@ -48,7 +48,7 @@ describe("deriveNextAction", () => {
       pendingMistakes: 7,
     });
     expect(a.id).toBe("review-mistakes");
-    expect(a.tab).toBe("wrong-answers");
+    expect(a.tab).toBe("mistakes");
   });
 
   it("prompts a warm-up when nothing has been studied today", () => {

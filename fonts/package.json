@@ -1,0 +1,6 @@
+{
+  "name": "font-bundle-for-pdf",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Self-hosted production fonts for Bengali + Latin + Math + Symbols (OFL licensed)"
+}

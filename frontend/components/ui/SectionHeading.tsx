@@ -19,7 +19,7 @@ export default function SectionHeading({
   return (
     <Reveal className={`mb-14 md:mb-16 ${centered ? "text-center" : ""}`}>
       <p className={`section-eyebrow ${centered ? "justify-center" : ""}`}>
-        <span className="text-emerald-400" aria-hidden="true">{"//"}</span>
+        <span className="text-[var(--dashboard-primary)]" aria-hidden="true">{"//"}</span>
         {eyebrow}
       </p>
       <h2 className="font-display mt-3 text-3xl sm:text-4xl md:text-5xl font-semibold text-white leading-tight tracking-tight">

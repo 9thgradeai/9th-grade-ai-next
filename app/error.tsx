@@ -16,7 +16,7 @@ export default function Error({
 
   return (
     <div className="min-h-[60vh] flex items-center justify-center p-4">
-      <div className="max-w-md w-full glass rounded-terminal-rounded border border-red-500/30 p-6 md:p-8">
+      <div className="max-w-md w-full glass rounded-2xl border border-red-500/30 p-6 md:p-8">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-10 h-10 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 font-mono font-bold text-lg">
             ✕

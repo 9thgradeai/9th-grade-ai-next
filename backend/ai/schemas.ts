@@ -26,6 +26,11 @@ const VALID_INTENTS = new Set<AIIntent>([
   "question_generation",
   "current_affairs",
   "general",
+  "practice",
+  "mock_exam",
+  "exam_strategy",
+  "career",
+  "navigation",
 ]);
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -66,17 +71,23 @@ export function validateMessage(value: unknown): AIMessageInput {
   };
 }
 
-function normalizeMessages(messages: unknown, max: number): AIMessageInput[] {
+function normalizeMessages(
+  messages: unknown,
+  max: number,
+  hasImage = false,
+): AIMessageInput[] {
   if (!Array.isArray(messages) || messages.length === 0) {
     throw new ValidationError("messages is required and must be a non-empty array.");
   }
   if (messages.length > max) {
     throw new ValidationError(`Conversation exceeds ${max} messages.`);
   }
+  // A bare image (no accompanying text) is still a valid question, mirroring
+  // the solver's "text OR image" contract.
   const seenUser = messages.some(
     (m) => isRecord(m) && m.role === "user" && isFiniteString(m.content),
   );
-  if (!seenUser) {
+  if (!seenUser && !hasImage) {
     throw new ValidationError("At least one user message is required.");
   }
   return messages.map(validateMessage);
@@ -91,11 +102,26 @@ export function validateChatRequest(body: unknown): {
   topicPath?: string;
   questionId?: number;
   intent?: AIIntent;
+  imageBase64?: string;
 } {
   if (!isRecord(body)) {
     throw new ValidationError("Request body must be a JSON object.");
   }
-  const messages = normalizeMessages(body.messages, 100);
+  const imageBase64 =
+    typeof body.imageBase64 === "string" && body.imageBase64.length > 0
+      ? body.imageBase64
+      : undefined;
+  if (imageBase64) {
+    const bytes = Math.ceil((imageBase64.length * 3) / 4);
+    if (bytes > MAX_AI_IMAGE_BYTES) {
+      throw new AppError(
+        413,
+        "Image is too large. Maximum size is 5MB.",
+        "PAYLOAD_TOO_LARGE",
+      );
+    }
+  }
+  const messages = normalizeMessages(body.messages, 100, Boolean(imageBase64));
   const conversationId =
     typeof body.conversationId === "string" && body.conversationId
       ? body.conversationId
@@ -110,7 +136,7 @@ export function validateChatRequest(body: unknown): {
       ? (body.intent as AIIntent)
       : undefined;
 
-  return { messages, conversationId, subjectId, topicId, topicPath, questionId, intent };
+  return { messages, conversationId, subjectId, topicId, topicPath, questionId, intent, imageBase64 };
 }
 
 /** Validate the solver request body. */
@@ -165,4 +191,37 @@ export function validateFeedbackBody(body: unknown): {
   const comment =
     typeof body.comment === "string" ? body.comment.slice(0, 500) : undefined;
   return { messageId, rating, category, comment };
+}
+
+/** Validate the AI agent request body (Phase 1 — bounded tool loop). */
+export function validateAgentRequest(body: unknown): {
+  question: string;
+  context: { subjectId?: number; topicId?: number; topicPath?: string; questionId?: number };
+  intent?: AIIntent;
+  conversationId?: string;
+} {
+  if (!isRecord(body)) {
+    throw new ValidationError("Request body must be a JSON object.");
+  }
+  const question =
+    typeof body.question === "string" ? body.question.trim().slice(0, MAX_AI_INPUT_CHARS) : "";
+  if (!question) {
+    throw new ValidationError("A non-empty 'question' is required.");
+  }
+  const ctx = isRecord(body.context) ? body.context : {};
+  const context = {
+    subjectId: asOptionalInt(ctx.subjectId),
+    topicId: asOptionalInt(ctx.topicId),
+    topicPath: typeof ctx.topicPath === "string" ? ctx.topicPath.slice(0, 300) : undefined,
+    questionId: asOptionalInt(ctx.questionId),
+  };
+  const intent =
+    typeof body.intent === "string" && VALID_INTENTS.has(body.intent as AIIntent)
+      ? (body.intent as AIIntent)
+      : undefined;
+  const conversationId =
+    typeof body.conversationId === "string" && body.conversationId
+      ? body.conversationId
+      : undefined;
+  return { question, context, intent, conversationId };
 }

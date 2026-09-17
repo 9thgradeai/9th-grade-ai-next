@@ -1,10 +1,12 @@
 // AI usage/cost ledger. Records every AI call (no prompt content) and keeps
 // the UserProgress.aiQuestionsAsked counter meaningful again.
+// Now also records structured metrics for observability.
 
 import "server-only";
 
 import { prisma } from "~backend/db";
 import type { AITask, AIUsageRecord } from "../types";
+import { recordAiRequest } from "../infrastructure/metrics";
 
 export async function recordUsage(
   record: AIUsageRecord & { userId?: string | null },
@@ -25,6 +27,22 @@ export async function recordUsage(
       estimatedCostUsd: record.estimatedCostUsd ?? 0,
     },
   });
+
+  // Record structured metrics for observability (fire-and-forget)
+  try {
+    recordAiRequest(
+      record.task,
+      record.provider,
+      record.model,
+      record.latencyMs,
+      record.success,
+      record.inputTokens,
+      record.outputTokens,
+      record.estimatedCostUsd ?? 0,
+    );
+  } catch {
+    // Metrics are best-effort; never block usage recording
+  }
 }
 
 function taskToEnum(task: AITask): "TUTOR" | "SOLVER" | "ASSISTANT" {
@@ -32,6 +50,7 @@ function taskToEnum(task: AITask): "TUTOR" | "SOLVER" | "ASSISTANT" {
     case "solver":
       return "SOLVER";
     case "assistant":
+    case "agent":
       return "ASSISTANT";
     default:
       return "TUTOR";

@@ -9,6 +9,11 @@ export { solve } from "./solver";
 export type { SolverTurnOptions } from "./solver";
 export { askAssistant } from "./assistant";
 export type { AssistantTurnOptions } from "./assistant";
+export { runAgentTurn } from "./agent";
+export type { AgentTurnOptions, AgentToolEvent } from "./agent";
+export { getAIOpening } from "./opening";
+export { AIError, streamChat, aiJson } from "./client";
+export type { StreamChatMeta } from "./client";
 export {
   listConversations,
   createConversation,
@@ -18,6 +23,4 @@ export {
   deleteConversation,
   submitFeedback,
 } from "./conversations";
-export { AIError, streamChat, aiJson } from "./client";
-export type { StreamChatMeta } from "./client";
 export type * from "./types";

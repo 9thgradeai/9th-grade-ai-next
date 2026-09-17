@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+### Fixed
+- **Server-authoritative exam submission** — `ATTEMPT_HASH_MISMATCH` can no longer fire for legitimate submits. The question-set hash is now computed from the authoritative `questionIds` (never the client's answer-serialization shape), ranked/deduplicated canonically — the same form registered at `/api/exam/start` — so answer-reordering, -subsetting, or -deduping can never cause a false mismatch. Answers referencing questions outside the registered set are rejected with `400` instead of being silently graded.
+- **Server-clock deadline enforcement** — `/api/exam/start` now accepts an optional `durationSec` (the configured exam length), stored as `examDurationSec` on the attempt. `/api/exam/submit` verifies against the server clock (`startedAt + examDurationSec + 15s grace`) and rejects expired timed attempts with `409 ATTEMPT_DEADLINE_EXCEEDED` — a client can no longer extend a timed exam by delaying the submit call. Fresh residues of long-expired custom exams are dropped on resume instead of surfacing an unresolvable error.
+- **Concurrent-submit hardening** — serializable-transaction failures (`P2034`) are now recovered by re-reading the committed peer result instead of surfacing an opaque `500`, closing the last race window for duplicate resubmits.
+
 ## [0.5.0] - 2026-08-21
 
 ### Added

@@ -6,6 +6,8 @@ import type { AIIntent } from "./types";
 export type TutorTurnOptions = {
   conversationId?: string;
   content: string;
+  /** Base64-encoded image (no data: prefix) — tutor mode only, forces a vision-capable provider. */
+  imageBase64?: string;
   subjectId?: number;
   topicId?: number;
   topicPath?: string;
@@ -21,6 +23,7 @@ export async function tutorTurn(opts: TutorTurnOptions): Promise<StreamChatMeta>
     messages: [{ role: "user", content: opts.content }],
   };
   if (opts.conversationId) body.conversationId = opts.conversationId;
+  if (opts.imageBase64) body.imageBase64 = opts.imageBase64;
   if (opts.subjectId) body.subjectId = opts.subjectId;
   if (opts.topicId) body.topicId = opts.topicId;
   if (opts.topicPath) body.topicPath = opts.topicPath;

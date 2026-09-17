@@ -70,7 +70,7 @@ export function deriveNextAction(input: RecommendInput): NextAction {
       title: `${pendingMistakes}টি ভুল পর্যালোচনা করুন`,
       description: "ভুল করা প্রশ্ন বুঝে নিলে একই ভুল আর হবে না।",
       cta: "ভুলের নোট দেখুন",
-      tab: "wrong-answers",
+      tab: "mistakes",
       intensity: "medium",
     };
   }

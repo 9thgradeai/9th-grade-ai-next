@@ -11,7 +11,7 @@
 [![Prisma 6](https://img.shields.io/badge/Prisma-6-2D3748?logo=prisma)](https://www.prisma.io)
 [![Vercel](https://img.shields.io/badge/Deployed-on-Vercel-000000?logo=vercel)](https://9-delta-ten.vercel.app)
 
-**Live Demo:** [9-delta-ten.vercel.app](https://9-delta-ten.vercel.app)
+**Live Demo:** [https://9th-grade-ai.vercel.app/](https://9th-grade-ai.vercel.app/)
 
 </div>
 
@@ -207,14 +207,14 @@ The dashboard is a **real-data** surface. It loads from live endpoints on mount 
 
 ### Stage 4 — Exam Practice (Three Modes)
 
-The practice tab hosts three modes, all sharing one **recursive topic picker** (`TopicTreePicker`) and one path-based selection model:
+The practice tab hosts three modes, all sharing one **subject → topic → subtopic picker** (`SubjectTopicSelect`). Every subject is visible up-front as a clickable card; tapping one opens a responsive popup (bottom sheet on mobile, centered dialog on desktop) with a whole-subject toggle, a multi-select checkbox tree, and a per-subject count stepper — all driving one path-based selection model (a subject can combine whole topics and arbitrary subtopics at any depth):
 
 ```
                   ┌────────────────────────────────────────────────┐
-                  │   TopicTreePicker:  Subject → Topic → Subtopic │
-                  │   (multi-select, per-subject counts, paths)    │
+                  │    SubjectTopicSelect: Subject → Topic → Subtopic │
+                  │  (clickable subject cards → responsive popup)   │
                   └──────────────────────┬─────────────────────────┘
-                                         │
+                                          │
               ┌──────────────────────────┼──────────────────────────┐
               ▼                          ▼                          ▼
      ┌──────────────┐          ┌──────────────┐          ┌──────────────┐
@@ -753,7 +753,7 @@ npm install
 # 3. Configure environment
 cp .env.local.example .env.local
 #   AUTH_SECRET:  openssl rand -base64 32
-#   DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ninth_grade_ai
+#   DATABASE_URL: your Neon pooled connection string
 
 # 4. Create + seed the database
 npm run db:push
@@ -870,7 +870,7 @@ Open **http://localhost:3000**. Local dev seeding creates a demo account:
 ├── frontend/                   # Client-side code
 │   ├── components/
 │   │   ├── ui/                 # Shared primitives (ErrorBoundary, AnimatedList, Reveal, ...)
-│   │   └── dashboard/          # Dashboard tab components (+ TopicTreePicker)
+│   │   └── dashboard/          # Dashboard tab components (+ SubjectTopicSelect)
 │   └── lib/
 │       ├── services/           # api.ts (typed fetch wrappers)
 │       ├── data/               # Static/mock data + seed-derived constants
@@ -980,7 +980,7 @@ npm run start         # PORT env var (default 3000)
 
 ### Production Database
 
-1. Provision PostgreSQL (Neon, Supabase, AWS RDS, Railway).
+1. Provision PostgreSQL (Neon recommended; Supabase/AWS RDS also work). Use Neon's **pooled** connection string in serverless. See `docs/backend/neon-migration-runbook.md`.
 2. Set `DATABASE_URL` in your environment.
 3. Run `npm run db:push && npm run db:seed` (or rely on Vercel prebuild).
 
@@ -989,7 +989,7 @@ npm run start         # PORT env var (default 3000)
 | Platform | Status |
 |----------|--------|
 | **Vercel** | Recommended — zero-config Next.js |
-| **Railway** | Supported — PostgreSQL + Node.js |
+| **Neon** | Recommended database — PostgreSQL, pooled serverless host |
 | **Render** | Supported — Docker or Node.js |
 | **Docker** | Not currently configured |
 
@@ -1004,7 +1004,7 @@ npm run start         # PORT env var (default 3000)
 - [ ] **Structured logging** — Replace `console.error` with a logging library
 - [ ] **Monitoring** — Vercel Analytics or Sentry integration
 - [ ] **RBAC** — Admin role features beyond the current `STUDENT`/`ADMIN` enum
-- [ ] **AI knowledge base v2** — pgvector embeddings on Railway Postgres for precision retrieval
+- [ ] **AI knowledge base v2** — pgvector embeddings on Neon Postgres for precision retrieval
 - [ ] **Offline mode** — Service worker for fully offline exam practice
 - [ ] **Performance testing** — Lighthouse CI, bundle size tracking
 

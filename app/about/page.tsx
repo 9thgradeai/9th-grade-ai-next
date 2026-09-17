@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Target, Heart, Shield, Users, Sparkles, ArrowRight } from "lucide-react";
+import { Target, Heart, Shield, Users, ArrowRight } from "lucide-react";
 import PublicShell from "@/components/public/PublicShell";
 import PageHero from "@/components/public/PageHero";
 import SectionHeading from "@/components/ui/SectionHeading";
@@ -140,7 +140,6 @@ const values = [
             <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[28rem] h-[28rem] bg-emerald-500/10 rounded-full blur-[120px]" aria-hidden="true" />
             <div className="relative">
               <p className="section-eyebrow justify-center mb-4">
-                <Sparkles className="w-4 h-4" aria-hidden="true" />
                 OPEN SOURCE
               </p>
               <h2 className="font-display text-2xl sm:text-4xl font-semibold text-white leading-tight tracking-tight">

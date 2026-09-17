@@ -17,6 +17,10 @@ export async function GET(request: Request) {
     const res = NextResponse.json({ subjects });
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");
+    // no-store prevents the service worker from caching stale exam tree data
+    // after seed operations or deployments. Server-side QueryCache handles
+    // performance on warm serverless instances.
+    res.headers.set("Cache-Control", "private, no-cache, no-store, must-revalidate");
     applySecurityHeaders(res);
     return res;
   } catch (err) {

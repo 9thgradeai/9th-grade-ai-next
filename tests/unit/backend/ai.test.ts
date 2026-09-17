@@ -83,6 +83,19 @@ describe("AI input schemas", () => {
     expect(parsed.intent).toBeUndefined();
   });
 
+  it("accepts a tutor image question (imageBase64 passes through)", () => {
+    const parsed = validateChatRequest({
+      messages: [{ role: "user", content: "Solve" }],
+      imageBase64: "aGVsbG8=",
+    });
+    expect(parsed.imageBase64).toBe("aGVsbG8=");
+  });
+
+  it("rejects oversized tutor images", () => {
+    const huge = "a".repeat(10_000_000);
+    expect(() => validateChatRequest({ imageBase64: huge })).toThrow(AppError);
+  });
+
   it("validates a solver request with text", () => {
     const parsed = validateSolverRequest({ text: "What is 2+2?", subject: "Math" });
     expect(parsed.text).toBe("What is 2+2?");

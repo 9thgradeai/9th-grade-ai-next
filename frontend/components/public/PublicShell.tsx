@@ -1,17 +1,20 @@
-import TerminalHeader from "@/components/TerminalHeader";
+"use client";
+import AppNavbar from "@/components/navigation/AppNavbar";
 import Footer from "@/components/Footer";
+import { useT } from "@/lib/i18n";
 import BackToTop from "@/components/ui/BackToTop";
 
 export default function PublicShell({ children }: { children: React.ReactNode }) {
+  const t = useT();
   return (
     <div className="flex flex-col min-h-screen">
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[70] focus:rounded-full focus:bg-emerald-500 focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-zinc-950"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[70] focus:rounded-full focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-black"
       >
-        Skip to content
+        {t("common.skipToContent")}
       </a>
-      <TerminalHeader />
+      <AppNavbar />
       <main id="main-content" className="flex-1 pt-16">
         {children}
       </main>

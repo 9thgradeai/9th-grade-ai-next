@@ -14,7 +14,11 @@ export async function GET(request: Request) {
       throw new AppError(401, "Unauthorized", "AUTH_UNAUTHORIZED");
     }
 
-    const stats = await getDashboardStats(userId);
+    const url = new URL(request.url);
+    const rawDays = url.searchParams.get("days");
+    const activityDays = rawDays ? Math.min(365, Math.max(1, Number(rawDays) || 7)) : 7;
+
+    const stats = await getDashboardStats(userId, activityDays);
 
     const res = NextResponse.json({ stats });
     res.headers.set("X-Request-Id", requestId);

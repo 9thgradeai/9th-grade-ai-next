@@ -70,27 +70,28 @@ describe("buildActivityWindow (pure zero-fill)", () => {
   it("expands sparse aggregates into a continuous 7-day window", () => {
     const now = Date.UTC(2026, 7, 22, 12, 0, 0);
     const rows = [
-      { date: "2026-08-22", answered: 5, correct: 4 },
-      { date: "2026-08-18", answered: 2, correct: 1 },
+      { date: "2026-08-22", answered: 5, correct: 4, durationSec: 300 },
+      { date: "2026-08-18", answered: 2, correct: 1, durationSec: 120 },
     ];
     const window = buildActivityWindow(rows, 7, now);
     expect(window).toHaveLength(7);
     expect(window[0].answered).toBe(0);
+    expect(window[0].durationSec).toBe(0);
     const hit18 = window.find((d) => d.date === "2026-08-18");
-    expect(hit18).toEqual({ date: "2026-08-18", answered: 2, correct: 1 });
+    expect(hit18).toEqual({ date: "2026-08-18", answered: 2, correct: 1, durationSec: 120 });
     const today = window[window.length - 1];
-    expect(today).toEqual({ date: "2026-08-22", answered: 5, correct: 4 });
+    expect(today).toEqual({ date: "2026-08-22", answered: 5, correct: 4, durationSec: 300 });
   });
 });
 
 describe("aggregateDailyActivity (DB-side grouping)", () => {
   it("scopes the grouped query to exactly one user", async () => {
     vi.mocked(prisma.$queryRaw).mockResolvedValue([
-      { date: "2026-08-22", answered: 3, correct: 2 },
+      { date: "2026-08-22", answered: 3, correct: 2, durationSec: 90 },
     ] as never);
 
     const out = await aggregateDailyActivity("userA", 7);
-    expect(out).toEqual([{ date: "2026-08-22", answered: 3, correct: 2 }]);
+    expect(out).toEqual([{ date: "2026-08-22", answered: 3, correct: 2, durationSec: 90 }]);
     expect(vi.mocked(prisma.$queryRaw).mock.calls[0].slice(1)).toEqual(["userA", 7]);
   });
 });

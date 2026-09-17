@@ -14,7 +14,13 @@ export default function Card({
   interactive = false,
 }: CardProps) {
   return (
-    <Tag className={`card rounded-2xl ${interactive ? "card-interactive" : ""} ${className}`}>
+    <Tag
+      className={`rounded-[var(--radius-md)] border border-[var(--border-subtle)] bg-[var(--surface-raised)] shadow-sm ${
+        interactive
+          ? "transition-[transform,box-shadow,border-color] duration-180 hover:-translate-y-0.5 hover:shadow-md hover:border-[var(--border-default)]"
+          : ""
+      } ${className}`}
+    >
       {children}
     </Tag>
   );

@@ -16,6 +16,10 @@ export type LLMRequest = {
   images?: LLMImageInput[];
   maxTokens?: number;
   temperature?: number;
+  /** Optional abort signal for cancelling long-running LLM calls. */
+  signal?: AbortSignal;
+  /** Optional timeout in milliseconds — default 30s for non-streaming, 60s for streaming. */
+  timeoutMs?: number;
 };
 
 export type LLMResult = {

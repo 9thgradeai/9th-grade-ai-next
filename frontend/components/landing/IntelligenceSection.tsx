@@ -1,6 +1,8 @@
+"use client";
 import Reveal from "@/components/ui/Reveal";
 import SectionHeading from "@/components/ui/SectionHeading";
 import KnowledgeGraph from "@/components/landing/KnowledgeGraph";
+import { useT } from "@/lib/i18n";
 
 const flow = [
   {
@@ -36,6 +38,7 @@ const flow = [
 ];
 
 export default function IntelligenceSection() {
+  const t = useT();
   return (
     <section id="intelligence" className="relative px-4 py-24 sm:px-6 md:py-32" aria-labelledby="intelligence-heading">
       <div
@@ -48,10 +51,10 @@ export default function IntelligenceSection() {
       />
       <div className="relative mx-auto max-w-7xl">
         <SectionHeading
-          eyebrow="THE INTELLIGENCE LAYER"
-          title="One living graph of"
-          highlight="everything you know"
-          description="Your preparation is modeled as a connected system — subjects, topics, questions, and outcomes linked in a single graph that updates with every answer."
+          eyebrow={t("landing.intelligence.eyebrow")}
+          title={t("landing.intelligence.title")}
+          highlight={t("landing.intelligence.highlight")}
+          description={t("landing.intelligence.description")}
         />
 
         <Reveal>

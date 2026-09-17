@@ -41,7 +41,7 @@ export type UserRecord = {
 
 export type OnboardingInput = {
   examTarget?: string;
-  examDate?: string;
+  examDate?: Date;
   prepLevel?: "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
   studyHoursPerDay?: number;
   goal?: string;
@@ -135,24 +135,6 @@ export async function createUser({
   origin?: string;
 }): Promise<UserRecord> {
   try {
-    const existing = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
-    if (existing) {
-      throw new ConflictError("A user with that email already exists.");
-    }
-
-    const passwordHash = await hash(password, 10);
-    // Without an email transport a confirmation link can never be delivered, so
-    // verification is implicit — otherwise new accounts lock themselves out of
-    // the product behind a link that cannot arrive. Once a transport is
-    // configured, new accounts are unverified until they click the link.
-    const requiresVerification = hasEmailTransport();
-    const verify = requiresVerification ? makeToken() : null;
-
-    // User + initial progress row commit atomically — a failure creating the
-    // progress row rolls back the user instead of leaving an orphaned account
-    // without progress. A concurrent registration with the same email hits the
-    // unique constraint (inside or around the transaction) and surfaces as a
-    // 409 conflict rather than a 500.
     const isUniqueViolation = (err: unknown): boolean =>
       !!err &&
       typeof err === "object" &&
@@ -167,11 +149,11 @@ export async function createUser({
             name,
             email: email.toLowerCase(),
             handle,
-            passwordHash,
+            passwordHash: await hash(password, 10),
             role: "STUDENT",
-            emailVerified: !requiresVerification,
-            emailVerifyToken: verify?.hash ?? null,
-            emailVerifyExpires: requiresVerification
+            emailVerified: !hasEmailTransport(),
+            emailVerifyToken: hasEmailTransport() ? makeToken()?.hash ?? null : null,
+            emailVerifyExpires: hasEmailTransport()
               ? new Date(Date.now() + VERIFY_TTL_MS)
               : null,
           },
@@ -186,8 +168,7 @@ export async function createUser({
       throw err;
     }
 
-    // Best-effort verification email; never blocks registration. In dev with no
-    // transport the link is logged server-side so the flow stays testable.
+    const verify = hasEmailTransport() ? makeToken() : null;
     if (origin && verify) {
       const link = `${origin}/verify-email?token=${verify.raw}`;
       const { sent } = await sendEmail({
@@ -567,21 +548,20 @@ export async function resetPassword(token: string, newPassword: string): Promise
     if (!isString(token) || token.length < 32) {
       throw new ValidationError("Invalid or expired reset link.");
     }
+
+    await validateResetToken(token);
+
     if (!isString(newPassword) || newPassword.length < 8) {
       throw new ValidationError("Password must be at least 8 characters.");
     }
 
     const tokenHash = sha256(token);
-    const user = await prisma.user.findFirst({
-      where: { passwordResetToken: tokenHash, passwordResetExpires: { gt: new Date() } },
-    });
-    if (!user) {
-      throw new ValidationError("Invalid or expired reset link.");
-    }
-
     const passwordHash = await hash(newPassword, 10);
-    await prisma.user.update({
-      where: { id: user.id },
+    await prisma.user.updateMany({
+      where: {
+        passwordResetToken: tokenHash,
+        passwordResetExpires: { gt: new Date() },
+      },
       data: {
         passwordHash,
         tokenVersion: { increment: 1 },
@@ -744,4 +724,18 @@ export async function completeOnboarding(
 
 function isString(v: unknown): v is string {
   return typeof v === "string";
+}
+
+export async function validateResetToken(token: string): Promise<void> {
+  if (!isString(token) || token.length < 32) {
+    throw new ValidationError("Invalid or expired reset link.");
+  }
+
+  const tokenHash = sha256(token);
+  const user = await prisma.user.findFirst({
+    where: { passwordResetToken: tokenHash, passwordResetExpires: { gt: new Date() } },
+  });
+  if (!user) {
+    throw new ValidationError("Invalid or expired reset link.");
+  }
 }

@@ -31,4 +31,9 @@ export type AIIntent =
   | "recommend"
   | "question_generation"
   | "current_affairs"
-  | "general";
+  | "general"
+  | "practice"
+  | "mock_exam"
+  | "exam_strategy"
+  | "career"
+  | "navigation";

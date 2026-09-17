@@ -179,7 +179,7 @@ export namespace Client {
   };
 
   // ── AI domain (conversations, solver, assistant) ──────────
-  export type AIConversationKind = "TUTOR" | "ASSISTANT" | "SOLVER";
+  export type AIConversationKind = "TUTOR" | "ASSISTANT" | "SOLVER" | "COACH";
 
   export type AIConversationSummary = {
     id: string;
@@ -205,6 +205,7 @@ export namespace Client {
     model: string | null;
     errorCode: string | null;
     createdAt: string;
+    metadata: Record<string, unknown> | null;
   };
 
   export type SolverResultDto = {
@@ -285,10 +286,107 @@ export namespace Client {
     byProvider: { provider: string; calls: number; costUsd: number }[];
     byDay: { date: string; calls: number; costUsd: number }[];
   };
+  export type AIOpeningInsightDto = {
+    id: string;
+    type: string;
+    text: string;
+    priority: "high" | "medium" | "low";
+  };
+  export type AIOpeningPromptDto = {
+    id: string;
+    labelBn: string;
+    prompt: string;
+  };
+  export type AIOpeningDto = {
+    greeting: string;
+    hasHistory: boolean;
+    summary: string[];
+    insights: AIOpeningInsightDto[];
+    suggestedPrompts: AIOpeningPromptDto[];
+  };
 
   export type ChatTurn = {
     role: "user" | "assistant";
     content: string;
+  };
+
+  // ── AI study coach (tool-using agent) ─────────────
+  export type AgentActionType =
+    | "practice"
+    | "revision"
+    | "mock_exam"
+    | "open_tab"
+    | "open_question"
+    | "open_wrong_answers"
+    | "open_study_plan"
+    | "refresh";
+
+  export type AgentActionDto = {
+    type: AgentActionType;
+    label: string;
+    params?: Record<string, unknown>;
+  };
+
+  export type AgentBlockDto =
+    | { type: "text"; text: string }
+    | {
+        type: "study_recommendation";
+        title: string;
+        reason: string;
+        subject?: string;
+        topic?: string;
+        actions: AgentActionDto[];
+      }
+    | {
+        type: "weakness";
+        subject: string;
+        topic: string;
+        accuracy: number;
+        attempts: number;
+        wrongCount: number;
+        advice: string;
+        actions: AgentActionDto[];
+      }
+    | {
+        type: "practice_action";
+        label: string;
+        questionCount?: number;
+        actions?: AgentActionDto[];
+      }
+    | {
+        type: "revision_action";
+        label: string;
+        actions?: AgentActionDto[];
+      }
+    | {
+        type: "exam_action";
+        label: string;
+        actions?: AgentActionDto[];
+      }
+    | {
+        type: "progress";
+        accuracy: number;
+        streak: number;
+        questionsAnswered: number;
+        actions?: AgentActionDto[];
+      };
+
+  export type AgentActivityStepDto = {
+    name: string;
+    label: string;
+    ok?: boolean;
+  };
+
+  export type AgentTurnResultDto = {
+    conversationId: string;
+    runId: string;
+    provider: string;
+    model: string;
+    steps: number;
+    latencyMs?: number;
+    text: string;
+    blocks: AgentBlockDto[];
+    source: string;
   };
 
   export type Notification = {
@@ -578,6 +676,73 @@ export namespace Server {
     verified?: boolean;
   };
 
+  // ── Exam History (previous attempts + upcoming) ─────────────
+  export type ExamHistoryItemDTO = {
+    id: number;
+    attemptId: string;
+    title: string;
+    type: "mock" | "custom" | "daily" | "exam";
+    score: number;
+    correct: number;
+    total: number;
+    durationSec: number;
+    percentage: number;
+    createdAt: string;
+    subject?: string;
+    examId?: number;
+    paperId?: number;
+  };
+
+  export type UpcomingExamDTO = {
+    id: number;
+    titleBn: string;
+    titleEn: string;
+    type: string;
+    date: string;
+    year: string;
+    circularNo: string;
+    note: string;
+    sourceUrl?: string;
+    verified: boolean;
+    daysUntil: number;
+  };
+
+  export type ExamHistoryDTO = {
+    past: ExamHistoryItemDTO[];
+    upcoming: UpcomingExamDTO[];
+  };
+
+  // ── Real Exam (Offline PDF) ────────────────────────────────
+  export type RealExamExportOptions = {
+    includeAnswers: boolean;
+    includeExplanations: boolean;
+    shuffleQuestions: boolean;
+    questionsPerPage?: number;
+  };
+
+  export type RealExamQuestionDTO = {
+    id: number;
+    question: string;
+    options: string[];
+    correctAnswer: string;
+    explanation: string;
+    subject: string;
+    topic: string;
+    subtopic: string;
+    difficulty: "EASY" | "MEDIUM" | "HARD";
+    year?: number | null;
+    sourceExam?: string;
+    questionNumber?: number | null;
+  };
+
+  export type RealExamConfigDTO = {
+    subjectId: number;
+    paths: string[];
+    questionCount: number;
+    durationMin: number;
+    exportOptions: RealExamExportOptions;
+  };
+
   export type MockTestResultDTO = {
     id: number;
     mockTestId: number | null;
@@ -636,6 +801,13 @@ export namespace Server {
     difficulty: "EASY" | "MEDIUM" | "HARD";
     sourceExam: string;
     year: number | null;
+    /**
+     * Present only on practice-drill exam builders (e.g. the mistake exam),
+     * which are studied rather than graded — so the drill can grade and reveal
+     * the correct answer. Graded exam builds keep these absent by design.
+     */
+    correctAnswer?: string;
+    explanation?: string;
   };
 
   export type ExamBuildResultDTO = {
@@ -675,6 +847,9 @@ export namespace Server {
     userAnswer: string;
     status: "correct" | "wrong" | "unanswered";
     marks: number;
+    /** Mistake/mastery feedback for this attempt (present during mistake practice). */
+    masteryStatus?: MasteryStatus | null;
+    justMastered?: boolean;
   };
 
   export type ExamResultDTO = {
@@ -695,6 +870,93 @@ export namespace Server {
     activity: { date: string; answered: number; correct: number }[];
   };
 
+  // ── Mistake / Mastery system ─────────────────────────────
+  export type MasteryStatus = "NEW" | "STRUGGLING" | "REVIEWING" | "IMPROVING" | "MASTERED";
+
+  /** Server-validated error classification for a wrong answer (Phase 2). */
+  export type MistakeErrorType =
+    | "CONCEPTUAL_GAP"
+    | "CARELESS_MISTAKE"
+    | "MEMORY_FAILURE"
+    | "MISREADING"
+    | "CALCULATION_ERROR"
+    | "CONFUSION"
+    | "GUESSING"
+    | "TIME_PRESSURE"
+    | "UNKNOWN";
+
+  export type MistakeItemDTO = {
+    id: number;
+    questionId: number;
+    totalAttempts: number;
+    correctAttempts: number;
+    incorrectAttempts: number;
+    consecutiveCorrect: number;
+    mistakeCount: number;
+    masteryScore: number;
+    masteryStatus: MasteryStatus;
+    isMistake: boolean;
+    firstIncorrectAt: string | null;
+    lastIncorrectAt: string | null;
+    lastCorrectAt: string | null;
+    lastReviewedAt: string | null;
+    reviewCount: number;
+    lastSubject: string;
+    lastTopic: string;
+    latestErrorType: MistakeErrorType | null;
+    question: QuestionDTO;
+  };
+
+  export type MistakeStatsDTO = {
+    totalMistakes: number;
+    unmastered: number;
+    struggling: number;
+    reviewing: number;
+    improving: number;
+    mastered: number;
+    accuracy: number;
+    totalAttempts: number;
+    totalCorrect: number;
+  };
+
+  export type SubjectMistakeCountDTO = {
+    subject: string;
+    count: number;
+    unmastered: number;
+  };
+
+  export type MistakeExamConfigDTO = {
+    subject?: string;
+    topic?: string;
+    subtopic?: string;
+    count: number;
+    difficulty?: string;
+    focus?: string;
+    durationSec?: number;
+  };
+
+  /** Overall answer-history accuracy stats (ALL attempts, not just mistakes). */
+  export type OverallStatsDTO = {
+    totalAttempts: number;
+    totalCorrect: number;
+    totalWrong: number;
+    accuracy: number;
+    questionsAttempted: number;
+  };
+
+  /** Mistake-scoped subject → topic → subtopic selection tree with wrong-question counts. */
+  export type MistakeSelectionSubtopicDTO = { subtopic: string; count: number };
+  export type MistakeSelectionTopicDTO = {
+    topic: string;
+    count: number;
+    subtopics: MistakeSelectionSubtopicDTO[];
+  };
+  export type MistakeSelectionSubjectDTO = {
+    subject: string;
+    count: number;
+    topics: MistakeSelectionTopicDTO[];
+  };
+
   export type UserDTO = {
     id: string;
     name: string;
@@ -711,6 +973,123 @@ export namespace Server {
     prepLevel?: "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
     studyHoursPerDay?: number;
     goal?: string;
+  };
+
+  // ── Preparation Intelligence (unified dashboard analytics) ──
+
+  export type PrepIntelligenceOverall = {
+    totalAttempts: number;
+    totalCorrect: number;
+    totalWrong: number;
+    accuracy: number;
+    questionsAttempted: number;
+    points: number;
+    rank: number;
+    streak: number;
+    flashcardsReviewed: number;
+    aiQuestionsAsked: number;
+    examsAttempted: number;
+    /** Sum of QuestionAttempt + MockTestResult durationSec (whole history). */
+    studyTimeSec: number;
+  };
+
+  export type PrepIntelligencePeriodComparison = {
+    currentAccuracy: number;
+    previousAccuracy: number;
+    accuracyDelta: number;
+    currentAttempts: number;
+    previousAttempts: number;
+    attemptsDelta: number;
+    currentCorrect: number;
+    previousCorrect: number;
+    correctDelta: number;
+    currentStudyTimeSec: number;
+    previousStudyTimeSec: number;
+    studyTimeDeltaSec: number;
+  };
+
+  export type PrepIntelligenceTopicPerformance = {
+    subject: string;
+    topic: string;
+    attempted: number;
+    correct: number;
+    accuracy: number;
+  };
+
+  export type PrepIntelligenceSubjectPerformance = {
+    subject: string;
+    attempted: number;
+    correct: number;
+    accuracy: number;
+    topics: PrepIntelligenceTopicPerformance[];
+  };
+
+  export type PrepIntelligenceWeaknessItem = {
+    subject: string;
+    topic: string;
+    attempted: number;
+    correct: number;
+    accuracy: number;
+  };
+
+  export type PrepIntelligenceMasteryDistribution = {
+    status: MasteryStatus;
+    count: number;
+  };
+
+  export type PrepIntelligenceMistakes = {
+    totalMistakes: number;
+    unmastered: number;
+    struggling: number;
+    reviewing: number;
+    improving: number;
+    mastered: number;
+    bySubject: SubjectMistakeCountDTO[];
+  };
+
+  export type PrepIntelligenceUnfinishedActivity = {
+    type: "mock_test" | "daily_quiz";
+    id: string;
+    startedAt: string;
+  };
+
+  export type PrepIntelligenceRecommendation = {
+    /** Stable rule id — the client maps it to localized copy. */
+    id:
+      | "resume-exam"
+      | "practice-weak-subject"
+      | "practice-weak-topic"
+      | "review-mistakes"
+      | "review-flashcards"
+      | "daily-quiz"
+      | "daily-warmup"
+      | "exam-near"
+      | "keep-going";
+    /** Expected preparation value, not urgency. Decides tab priority ordering. */
+    priority: "high" | "medium" | "low";
+    target: "practice" | "mistakes" | "flashcards" | "study-planner" | "question-bank";
+    subject?: string;
+    topic?: string;
+    accuracy?: number;
+    count?: number;
+  };
+
+  export type PreparationIntelligenceDTO = {
+    overall: PrepIntelligenceOverall;
+    activity: { date: string; answered: number; correct: number; durationSec: number }[];
+    period: PrepIntelligencePeriodComparison;
+    subjectPerformance: PrepIntelligenceSubjectPerformance[];
+    weakTopics: WeakTopicDTO[];
+    flashcardsDue: number;
+    streak: number;
+    masteryDistribution: PrepIntelligenceMasteryDistribution[];
+    mistakes: PrepIntelligenceMistakes;
+    recentResults: MockTestResultDTO[];
+    nextExam: ExamScheduleDTO | null;
+    studyTasks: StudyTaskDTO[];
+    unfinishedActivities: PrepIntelligenceUnfinishedActivity[];
+    recommendations: PrepIntelligenceRecommendation[];
+    dailyQuizAvailable: boolean;
   };
 }
 
@@ -752,6 +1131,16 @@ export type ExamResultDTO = Server.ExamResultDTO;
 export type WeakTopicDTO = Server.WeakTopicDTO;
 export type LeaderboardEntryDTO = Server.LeaderboardEntryDTO;
 export type DailyQuizHistoryItemDTO = Server.DailyQuizHistoryItemDTO;
+export type MistakeItemDTO = Server.MistakeItemDTO;
+export type MistakeErrorType = Server.MistakeErrorType;
+export type MistakeStatsDTO = Server.MistakeStatsDTO;
+export type SubjectMistakeCountDTO = Server.SubjectMistakeCountDTO;
+export type MistakeExamConfigDTO = Server.MistakeExamConfigDTO;
+export type MasteryStatus = Server.MasteryStatus;
+export type OverallStatsDTO = Server.OverallStatsDTO;
+export type MistakeSelectionSubjectDTO = Server.MistakeSelectionSubjectDTO;
+export type MistakeSelectionTopicDTO = Server.MistakeSelectionTopicDTO;
+export type MistakeSelectionSubtopicDTO = Server.MistakeSelectionSubtopicDTO;
 export type TutorMessage = Client.TutorMessage;
 export type FlashNews = Client.FlashNews;
 export type SubjectCard = Client.SubjectCard;
@@ -778,4 +1167,28 @@ export type GeneratedMockQuestion = Client.GeneratedMockQuestion;
 export type AdvisorPlanDto = Client.AdvisorPlanDto;
 export type StudentModelDto = Client.StudentModelDto;
 export type UsageSummaryDto = Client.UsageSummaryDto;
+export type AIOpeningInsightDto = Client.AIOpeningInsightDto;
+export type AIOpeningPromptDto = Client.AIOpeningPromptDto;
+export type AIOpeningDto = Client.AIOpeningDto;
 export type ChatTurn = Client.ChatTurn;
+export type AgentActionType = Client.AgentActionType;
+export type AgentActionDto = Client.AgentActionDto;
+export type AgentBlockDto = Client.AgentBlockDto;
+export type AgentTurnResultDto = Client.AgentTurnResultDto;
+  export type AgentActivityStepDto = Client.AgentActivityStepDto;
+export type PreparationIntelligenceDTO = Server.PreparationIntelligenceDTO;
+export type PrepIntelligenceOverall = Server.PrepIntelligenceOverall;
+export type PrepIntelligencePeriodComparison = Server.PrepIntelligencePeriodComparison;
+export type PrepIntelligenceSubjectPerformance = Server.PrepIntelligenceSubjectPerformance;
+export type PrepIntelligenceTopicPerformance = Server.PrepIntelligenceTopicPerformance;
+export type PrepIntelligenceWeaknessItem = Server.PrepIntelligenceWeaknessItem;
+export type PrepIntelligenceMasteryDistribution = Server.PrepIntelligenceMasteryDistribution;
+export type PrepIntelligenceMistakes = Server.PrepIntelligenceMistakes;
+export type PrepIntelligenceRecommendation = Server.PrepIntelligenceRecommendation;
+export type PrepIntelligenceUnfinishedActivity = Server.PrepIntelligenceUnfinishedActivity;
+export type ExamHistoryItemDTO = Server.ExamHistoryItemDTO;
+export type UpcomingExamDTO = Server.UpcomingExamDTO;
+export type ExamHistoryDTO = Server.ExamHistoryDTO;
+export type RealExamExportOptions = Server.RealExamExportOptions;
+export type RealExamQuestionDTO = Server.RealExamQuestionDTO;
+export type RealExamConfigDTO = Server.RealExamConfigDTO;

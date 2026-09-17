@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState, type FormEvent } from "react"
 import { Eye, EyeOff, Rocket } from "lucide-react"
-import { UnderlineField } from "./UnderlineField"
+import { SurfaceField } from "./SurfaceField"
 import { AuthSubmitButton } from "./AuthSubmitButton"
 import { CapsLockWarning, readCapsLock } from "./CapsLockWarning"
 import type { FocusField } from "./auth-state"
@@ -112,7 +112,7 @@ export function SignupForm({
 
   return (
     <form onSubmit={handleSubmit} className="flex w-full flex-col gap-4 sm:gap-5" noValidate>
-      <UnderlineField
+      <SurfaceField
         id="signup-name"
         label="Name"
         name="name"
@@ -129,7 +129,7 @@ export function SignupForm({
         autoComplete="name"
         placeholder="Rahim Uddin"
       />
-      <UnderlineField
+      <SurfaceField
         id="signup-email"
         label="Email"
         type="email"
@@ -152,7 +152,7 @@ export function SignupForm({
         <p className="mb-2 text-center font-mono text-[10px] uppercase tracking-[0.24em] text-emerald-400/80">
           Form fill-up · Free forever · No card required
         </p>
-        <UnderlineField
+        <SurfaceField
           id="signup-password"
           label="Password"
           type={showPassword ? "text" : "password"}
@@ -209,7 +209,7 @@ export function SignupForm({
         )}
         <CapsLockWarning visible={capsLock} />
       </div>
-      <UnderlineField
+      <SurfaceField
         id="signup-confirm"
         label="Confirm password"
         type={showPassword ? "text" : "password"}

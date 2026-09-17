@@ -91,11 +91,29 @@
 ## ADR-0012: Hero black hole — raw WebGL, no 3D dependency
 
 - **Date**: 2026-08
-- **Status**: Accepted
+- **Status**: Superseded (see ADR-0014)
 - **Context**: The landing hero needed to read as a "next-level AI product": a realistic 3D black hole with a lensed accretion disk and a true event horizon. Initial request also named "UI/UX pro" (not a real npm package) and a UI component kit.
 - **Decision**: Render the black hole with **raw WebGL** (a hand-written vertex/fragment shader in `frontend/components/landing/BlackholeCanvas.tsx`) — no `three`, `@react-three/fiber`, or `@react-three/drei`. Photon paths are integrated with the standard bending acceleration `a = -1.5·h²·p/r⁵`; the event horizon swallows captured rays, disk crossings emit temperature-graded + Doppler-beamed light, and surviving rays sample a procedural starfield (producing the Einstein-ring arcs). Quality is governed by the existing `useVisualQuality` / `useMotionCapabilities` hooks: reduced/low tiers render a single static frame at low resolution and never loop. A WebGL-unavailable fallback paints a calm radial void.
 - **Rationale**: A realistic black hole is a shader problem, not a Framer Motion problem; `framer-motion` is already installed (v13) and still drives the copy entrance + Magnetic CTAs, but cannot bend light. Three.js would add ~150 kB+ for a single fullscreen shader we fully control by hand. This honors the repo's "no dependency without justification" rule (see ADR-0007/0009) and keeps the client bundle lean.
 - **Consequences**: Must be maintained as GLSL, not a scene-graph. If richer 3D surfaces (interactive 3D subjects, orbit controls) are needed later, revisit `three` + `react-three-fiber` behind a measured ADR. `KnowledgeField.tsx` is now unused by the hero but retained as a tested canvas utility.
+
+## ADR-0014: Living Milky Way galaxy — Canvas2D procedural barred spiral
+
+- **Date**: 2026-09
+- **Status**: Accepted
+- **Context**: The black hole hero (ADR-0012) was visually impressive but semantically disconnected from the product's "knowledge universe" metaphor. The brief called for a cinematic, physically convincing barred spiral galaxy (Milky Way-inspired) that communicates: real galaxy → alive motion → intelligent learning system, with the metaphor hidden beneath realism. The existing `KnowledgeField.tsx` (a neural-mesh particle field) was the starting point but suffered from visible network topology, synthetic particle feel, and rigid rotation.
+- **Decision**: Refactor the hero visual into a **living barred spiral galaxy** using **Canvas2D only** (no Three.js, no WebGL shaders beyond Canvas2D). Implementation:
+  - Procedural generation: bulge (boxy/peanut), central bar (ansae), 4 density-wave arms, exponential old disk, sparse halo, star-forming clusters.
+  - Stellar populations with astrophysically inspired colors (warm bulge/bar, blue-white arms, gray-blue halo), realistic brightness distribution (66% dim, 18% medium, 13% bright, <3% luminous).
+  - Dust lanes as dark alpha blobs on trailing edges; emission nebulae at star-forming clusters.
+  - True 3D depth via camera inclination (~22°), perspective projection, depth-based size/alpha shading.
+  - Differential rotation (inner fast, outer slow), local turbulence, slow density-wave phase evolution — no rigid rotation.
+  - Cinematic 6.5s intro revealing the galaxy from core → arms → dust → nebulae.
+  - Weak-spot events (dim → blue star-formation bloom → settle) and slow luminosity riders replace the old "progress dot."
+  - Adaptive quality tiers (ultra/high/medium/low/static) with FPS governor that demotes at runtime.
+  - Static SVG fallback for reduced motion / WebGL-unavailable.
+- **Rationale**: Canvas2D with precomputed typed arrays, instanced sprite draws (`drawImage`), and a single RAF loop delivers 60 FPS on desktop / 45+ on mid-range / 30+ on low-end with 1500 stars + dust + nebulae. Zero per-frame allocations, no React state in the render loop, clean React ↔ renderer seam. No new dependencies — honors the dependency-minimization rule. The galaxy reads as astronomical photography, not a particle system.
+- **Consequences**: `KnowledgeField.tsx` is now the React wrapper around `GalaxyRenderer` (new modules: `GalaxyGenerator`, `GalaxyMotion`, `GalaxyQuality`, `GalaxyFallback`, `StarField`, `DustField`, `GalaxyTypes`, `GalaxyRandom`). The old neural-mesh code is removed. `BlackholeCanvas.tsx` remains in the repo but is no longer used by the hero.
 
 ## ADR-0013: Hero UI — keep the bespoke component system (no shadcn/Radix migration)
 
@@ -225,3 +243,162 @@ locked out. Operators must set SMTP (or `RESEND_API_KEY`) env vars for real deli
 **Decision**: Introduce a first-class `ExamEcosystem` model as the root content boundary. `Subject`, `ExamCategory`, `Question`, `DailyQuiz`, and `QuestionAttempt` gain an `ecosystemId` FK pointing to `ExamEcosystem`. New enum `ExamEcosystemCode` (`BCS`, `BANGLADESH_BANK`) provides compile-time type safety. Shared infrastructure (User, Bookmark, Flashcard, MockTest, AI, Progress) remains untouched. The ecosystem propagates through the relationship chain: `ExamEcosystem → Subject → Topic → Question`. A denormalized `ecosystemId` on `QuestionAttempt` enables fast ecosystem-scoped analytics without JOINs.
 **Rationale**: Logical multi-tenancy inside one database is the simplest architecture that supports content isolation without operational overhead. The FK approach is Prisma-native, migration-safe, and query-plan-friendly. Denormalizing `ecosystemId` on high-growth tables (Question, QuestionAttempt) avoids repeated Subject JOINs on every practice query. The enum approach prevents arbitrary string values and enables exhaustive switch statements in TypeScript.
 **Consequences**: Five tables gain a required `ecosystemId` column (non-nullable after backfill). All content API routes gain an `ecosystem` parameter. The frontend gains an `EcosystemContext` provider. Existing BCS data is backfilled with `ecosystemId = BCS` in a safe migration phase. New ecosystems (Teacher Recruitment, etc.) are added by inserting an enum value + rows — no schema changes needed. The `sourceKey` strategy continues to work unchanged. Full details in `docs/MULTI-ECOSYSTEM-ARCHITECTURE.md`.
+
+## ADR-0011 — Bundle analyzer for performance instrumentation
+
+**Date**: 2026-09
+**Status**: Accepted
+**Context**: The audit (docs/PERFORMANCE-OPTIMIZATION.md) found several large
+unprofiled shared client chunks (196–245 KB) whose contents are unknown. Before any
+chunk trimming or dependency surgery we need a way to see *what* ships in each chunk.
+Webpack tooling is required only during analysis, not at runtime.
+**Decision**: Add `@next/bundle-analyzer` as a **devDependency** (16.3.4, matching
+Next 16.3.1) and wrap the existing `withPWA(...)` config so treemaps emit only when
+`ANALYZE=true` (the existing `npm run analyze` script). Opt-in only.
+**Rationale**: It is dev-only, zero runtime cost, and its output ("client.html" /
+"edge.html" / "nodejs.html") is the source of truth for the §3 Phase 0 chunk-profile
+and the §5 baseline table. It composes cleanly with next-pwa because it wraps the
+final config object. Tying it to the existing `ANALYZE=true` env flag means normal
+CI/prod builds are byte-identical to before.
+**Consequences**: One dev-only dependency added; `.next/analyze/*.html` artifacts
+are generated on analysis builds (gitignored, see §5 note). Reject the Perf-budget
+CI gate and all chunk trimming until the baseline treemaps are captured.
+
+## ADR-0012 — Committed client-JS perf-budget gate
+
+**Date**: 2026-09
+**Status**: Accepted
+**Context**: ADR-0011 gave us bundle treemaps, and the Phase 0 plan requires a CI
+gate so the initial-JS footprint can't silently regress. Sentry client (~285 KB
+parsed / 92 KB gzip) and Next runtime (~663 KB / 198 KB) dominate the base floor,
+but chunk content-hashes rotate every build, so gating on chunk *names* is fragile.
+**Decision**: Add `scripts/perf-budget.ts` + `npm run perf:baseline` /
+`npm run perf:check`. The gate parses `window.chartData` from the analyzer output
+and fails (exit 1) on: (a) any tracked namespace (Sentry, framer-motion,
+next-runtime, first-party) regressing >5% parsed vs the committed baseline,
+(b) any single asset exceeding the 90 KB gzip ceiling, or (c) aggregate Sentry
+gzip exceeding its 92 KB ceiling. The baseline lives in **committed**
+`docs/perf/client-baseline.json` (not `.next/`, which is gitignored) so CI can
+diff a fresh build against a reviewed reference rather than whatever it just made.
+**Rationale**: Bucketing by stable module namespace survives hash rotation, keeps
+the working data in the committed doc tree, and gives actionable gzip numbers.
+Absolute ceilings stop the baseline being silently re-baselined upward; the
+relative namespace check catches smaller, subtler regressions.
+**Consequences**: One dev-only script + two npm scripts + a committed JSON
+baseline. Operators must re-run `npm run perf:baseline` only on a deliberate,
+reviewed footprint change — never to hide a regression. CI should run
+`npm run perf:check` on the analyze build.
+
+## ADR-0013 — Sentry client: error-monitoring only (drop replay + browser tracing)
+
+**Date**: 2026-09
+**Status**: Accepted
+**Context**: The perf-budget baseline showed Sentry client at ~285 KB parsed /
+92 KB gzip across chunks `93` (SDK core) and `4a7b0c69` (`@sentry/replay`, 121 KB
+parsed / 38 KB gzip). The replay chunk was verified in the **eager preload set of
+every route** (served HTML test on a static page) because `SentryClientProvider`
+runs in the root layout — so 100% of users downloaded the session-replay runtime
+even though only 10% of sessions were recorded (`replaysSessionSampleRate: 0.1`).
+`browserTracingIntegration` additionally shipped browser-tracing/metrics
+instrumentation (`browserMetrics`, `webVitalSpans`).
+**Decision**: Trim `frontend/lib/sentry.tsx` to error-monitoring only:
+- Remove `replayIntegration` + `replaysSessionSampleRate` /
+  `replaysOnErrorSampleRate` (deletes the 121 KB replay runtime).
+- Remove `browserTracingIntegration` + `tracesSampleRate` (deletes the browser
+  tracing/metrics instrumentation).
+- Remove the unused `onRouterTransitionStart` export.
+- Keep `@sentry/nextjs` `Sentry.init` for error events + breadcrumbs + context;
+  keep the `beforeSend` dev-gating.
+Server-side HTTP tracing in `instrumentation.ts` is untouched (it adds zero
+client-bundle cost) and still provides backend latency visibility.
+**Rationale**: Session replay was the single largest removable blob on the initial
+payload of every page, and replay is masked (`maskAllText`, `blockAllMedia`) so its
+diagnostic value on this text-heavy dashboard is limited. Removing it cut the
+Sentry client to **~156 KB parsed / 50.3 KB gzip (~45%)**, and the replay code was
+verified absent from the built chunks afterward. Chosen as the **max trim** via
+review (option: drop replay + tracing).
+**Consequences**: No more session replay or per-route browser performance tracing /
+web-vitals spans. Error monitoring, breadcrumbs, and app context remain. Re-enable
+either feature deliberately if observability needs outweigh the ~121 KB replay /
+~25-35 KB tracing per-page cost. Re-captured `docs/perf/client-baseline.json` and
+wired `npm run perf:check` into CI (`.github/workflows/ci.yml` `perf` job) so the
+gate now guards Sentry regressions on every push/PR.
+
+## ADR-0014 — Wire perf-budget gate into CI
+
+**Date**: 2026-09
+**Status**: Accepted
+**Context**: ADR-0012 created the gate but it only ran manually; nothing stopped a
+Sentry/bundle regression landing on `main`.
+**Decision**: Add a `perf` job to `.github/workflows/ci.yml` that builds with
+`ANALYZE=true` (`npm run perf:check`) and fails on regression; it runs in parallel
+with the existing `test` job and uploads the analyzer treemaps as an artifact on
+failure for triage.
+**Rationale**: The gate is cheap (one build) and the whole point of a committed
+baseline is CI enforcement; a parallel job keeps it off the critical path of the
+slower integration suite.
+**Consequences**: Every push/PR to `main` now enforces the Sentry ceiling and
+namespace regression tolerances automatically.
+
+## ADR-0015 — Question-bank import gate + one-time cleanup sweep
+
+**Date**: 2026-09
+**Status**: Accepted
+**Context**: The application database held 2,700 MCQs, of which a material share
+were unusable: broken Unicode (visual-order / cluster-split Bengali from OCR,
+replacement chars, mojibake, control chars), structurally invalid rows (<4
+options, empty options, answers matching no option), and ~279 rows with no
+explanation. A forensic audit (`scripts/qb-forensics/index.ts`) finally
+quantified the damage, but there was no single, enforced rule for "may this MCQ
+enter the database?" — the seeder and the BCS importer both had weak ad-hoc
+checks, so a clean sweep would have been undone by the next reseed.
+**Decision**:
+- Introduce **`scripts/qb-forensics/import-gate.ts`** — one pure, side-effect free
+  gate (`scanMca`) that is the single source of truth for importability. FATAL
+  reasons reject a record outright (replacement char / mojibake / double-encoding
+  / control chars / visual-order Bengali / mangled header / option-markers in
+  options / <4 options / empty question-option-answer / answer matches no option /
+  empty explanation, an explicit question-bank policy). NON-FATAL issues (non-NFC
+  composition, non-standard spaces, BOM) are auto-normalized and the record is
+  imported using the normalized content. ZWJ/ZWNJ are preserved.
+- **Wire the gate into every import path so reseeds can never re-add removed
+  content**: `scripts/seed-questions.ts` (subject-wise corpus) and
+  `scripts/import-bcs-exams.ts` (BCS JSON, which carries explanations on all
+  120 records). Both also enforce a **GLOBAL duplicate identity** — normalized
+  (question | correctAnswer | explanation) — across the whole database, skipping
+  would-be INSERTs that collide while refreshing existing rows in place.
+- **`scripts/clean-broken-questions.ts`** sweeps the live database with the same
+  gate: dry-run by default (writes `scripts/qb-forensics/artifacts/cleanup-plan.*`),
+  `--yes` = pg_dump backup (reuses `backupDatabase`) + transactional deleteMany,
+  `--verify` = post-clean invariant check. Removal reasons: UNICODE_CORRUPTION,
+  STRUCTURAL_BROKEN, EMPTY_EXPLANATION, DUPLICATE (oldest row kept). Deletes
+  cascade to Bookmarks / UserQuestionProgress and SetNull on QuestionAttempt
+  (both verified against `schema.prisma`).
+- **Raw corpus stays untouched**: `database/data/ques/*.txt` and
+  `bcs_questions.json` are sources, not sinks — the DB + seed guard is the
+  authoritative, clean layer.
+**Rationale**: The gate is deliberately shared so "forensic classification",
+"cleanup decision", and "import policy" can never drift apart. Running the
+corruption checks against fully *normalized* field values (BOM / NBSP /
+composition applied first) means harmless file artifacts are salvaged while true
+corruption still fails.
+**Consequences**: Gate-on-reseed is idempotent with the cleanup: the sweep
+removes 293 rows (2,700 → 2,407); future reseeds hold the line, rejecting any
+returning broken MCQ and silently skipping global duplicates. `npm run db:seed`
+/ `db:seed-questions` now log rejected counts per source. Also fixed a latent
+bug: `hasNonStandardSpace` used a stateful `/g` regex, so boolean checks now use
+a non-global copy in `scripts/qb-forensics/unicode.ts`.
+
+Addendum (2026-09): two gate extensions made while importing the Bangla
+Grammar **সমাস** folder file (`database/data/ques/বাংলা ভাষা ও সাহিত্য/ভাষা/সমাস/`):
+- **`FOREIGN_SCRIPT`** (fatal): rejects glyphs from sibling Indic scripts
+  (Devanagari/Gurmukhi/Tamil/etc.) smuggled into Bangla text — the OCR
+  glyph-substitution mode that passes `VISUAL_ORDER_BANGLA` (e.g. Devanagari
+  क ि inside "কোকিলকণ্ঠী" and Sinhala න substituting for Bangla ন). The shared
+  daṇḍa "।" and script digits are excluded — they legitimately appear in Bangla.
+- **English `Ans.` answer marker** + **strict letter resolution**: the shared
+  parser now accepts `Ans.` alongside `উত্তর:` (case-insensitive), and a
+  letter-answer only resolves to its option when it unambiguously points at one
+  (bare letter, or a remainder that IS the option). Multi-answer / contradictory
+  answers ("ক,গ (উভয়ই)", "খ বা ঘ. …") are kept raw and rejected by
+  `ANSWER_MISMATCH` instead of silently forcing a wrong option.

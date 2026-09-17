@@ -1,14 +1,17 @@
+"use client";
 import { Landmark } from "lucide-react";
+import { useT } from "@/lib/i18n";
 
-const tracks = [
-  "BCS Preliminary",
-  "BCS Written",
-  "Bank Jobs",
-  "NTRCA",
-  "Teacher Recruitment",
-  "PSC & Govt. Jobs",
-  "Admission Tests",
-  "9th-Grade Pay Scale",
+// translated via t() in component
+const trackKeys = [
+  "trust.track.bcsPreliminary",
+  "trust.track.bcsWritten",
+  "trust.track.bankJobs",
+  "trust.track.ntrca",
+  "trust.track.teacherRecruitment",
+  "trust.track.pscGovt",
+  "trust.track.admissionTests",
+  "trust.track.payScale",
 ];
 
 /**
@@ -17,6 +20,8 @@ const tracks = [
  * Server-rendered; no client JS ships for this section.
  */
 export default function TrustStripSection() {
+  const t = useT();
+  const tracks = trackKeys.map(k => t(k));
   return (
     <section
       className="relative border-y border-white/5 bg-white/[0.015] px-4 py-12 sm:px-6"
@@ -25,7 +30,7 @@ export default function TrustStripSection() {
       <div className="mx-auto max-w-7xl">
         <p className="section-eyebrow justify-center mb-7">
           <span aria-hidden="true">{"//"}</span>
-          ONE PLATFORM · EVERY COMPETITIVE EXAM
+          {t("trust.eyebrow")}
         </p>
 
         <div className="marquee-paused overflow-hidden [mask-image:linear-gradient(90deg,transparent,black_10%,black_90%,transparent)]">

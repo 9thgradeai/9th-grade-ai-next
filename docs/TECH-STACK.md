@@ -17,7 +17,7 @@
 |-----------|-----------|-------|
 | ORM | Prisma | 6.5.0 |
 | Database (dev) | SQLite | File-based, zero-config |
-| Database (prod) | PostgreSQL | Drop-in swap via `DATABASE_URL` |
+| Database (prod) | PostgreSQL (Neon) | Pooled `-pooler.neon.tech` host via `DATABASE_URL` |
 | Auth | jose | 6.2.9 JWT signing/verification |
 | Password Hashing | bcryptjs | 3.0.3, cost 10 |
 

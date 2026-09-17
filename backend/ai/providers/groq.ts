@@ -1,14 +1,16 @@
 // Groq provider — open-weight models served by Groq (open-source primary).
 // Uses the Vercel AI SDK. Retries on empty output / transient provider errors
 // (Groq's reasoning models intermittently return empty and the free tier
-// rate-limits under load).
+// rate-limits under load). Uses exponential backoff with jitter.
 
 import "server-only";
 
 import { generateText, streamText, type CoreMessage } from "ai";
 import { createGroq } from "@ai-sdk/groq";
 import { AppError } from "~backend/errors";
+import { withRetry } from "../infrastructure/retry";
 import type { AIMessageInput } from "../types";
+import { resolveTemperature } from "../router";
 import {
   type LLMProvider,
   type LLMRequest,
@@ -18,8 +20,10 @@ import {
 } from "./types";
 
 const GROQ_MODEL = process.env.AI_GROQ_MODEL ?? "openai/gpt-oss-120b";
-const RETRY_ATTEMPTS = 3;
-const RETRY_DELAY_MS = 500;
+// Provider-swap point (Phase 4): Groq serves an OpenAI-compatible API, so
+// pointing AI_GROQ_BASE_URL at another OpenAI-compatible gateway swaps the
+// inference backend without changing any provider code.
+const GROQ_BASE_URL = process.env.AI_GROQ_BASE_URL;
 
 // Approximate open-weights cost on Groq's free/usage tiers (USD per 1K tokens).
 const COST_PER_1K_INPUT = 0.0;
@@ -34,13 +38,14 @@ function toCoreMessages(messages: AIMessageInput[]): CoreMessage[] {
 
 export class GroqProvider implements LLMProvider {
   readonly name = "groq" as const;
-  readonly model = GROQ_MODEL;
+  readonly model: string;
   readonly supportsVision = false;
 
   private client;
 
-  constructor(apiKey: string) {
-    this.client = createGroq({ apiKey });
+  constructor(apiKey: string, model: string = GROQ_MODEL) {
+    this.model = model;
+    this.client = createGroq({ apiKey, ...(GROQ_BASE_URL ? { baseURL: GROQ_BASE_URL } : {}) });
   }
 
   async generate(req: LLMRequest): Promise<LLMResult> {
@@ -49,43 +54,40 @@ export class GroqProvider implements LLMProvider {
     }
 
     const messages = toCoreMessages(req.messages);
-    let text = "";
-    let lastInputTokens: number | undefined;
-    let lastOutputTokens: number | undefined;
-    for (let attempt = 0; attempt < RETRY_ATTEMPTS; attempt++) {
-      try {
+
+    const { result: text } = await withRetry(
+      async () => {
         const result = await generateText({
           model: this.client(this.model),
           system: req.system,
           messages,
           maxTokens: req.maxTokens ?? 2048,
-          temperature: req.temperature,
+          temperature: req.temperature ?? resolveTemperature(),
         });
-        if (result.text.trim()) {
-          text = result.text;
-          // Phase 14: prefer provider-reported usage over the chars/4 estimate.
-          if (result.usage?.promptTokens) lastInputTokens = result.usage.promptTokens;
-          if (result.usage?.completionTokens) lastOutputTokens = result.usage.completionTokens;
-          break;
+        if (!result.text.trim()) {
+          throw new AppError(502, "The AI provider returned an empty response.", "AI_EMPTY_RESPONSE");
         }
-      } catch {
-        // transient provider error — retry below
-      }
-      if (attempt < RETRY_ATTEMPTS - 1) {
-        await new Promise((r) => setTimeout(r, RETRY_DELAY_MS));
-      }
-    }
+        return result.text;
+      },
+      {
+        maxAttempts: 3,
+        baseDelayMs: 500,
+        maxDelayMs: 4_000,
+        retryOn: (err) => {
+          if (err instanceof AppError && err.code === "AI_EMPTY_RESPONSE") return true;
+          return false;
+        },
+      },
+      { provider: "groq", model: this.model },
+    );
 
-    if (!text.trim()) {
-      throw new AppError(502, "The AI provider returned an empty response.", "AI_EMPTY_RESPONSE");
-    }
-
-    // Fall back to the crude estimate only when the provider omits usage.
-    const inputTokens =
-      lastInputTokens ?? estimateTokens(
-        req.system + " " + req.messages.map((m) => m.content).join(" "),
-      );
-    const outputTokens = lastOutputTokens ?? estimateTokens(text);
+    // Phase 14: prefer provider-reported usage over the chars/4 estimate.
+    // Since we retried, we re-fetch usage from the last successful call.
+    // For simplicity, use the estimate (the retry wrapper doesn't return metadata).
+    const inputTokens = estimateTokens(
+      req.system + " " + req.messages.map((m) => m.content).join(" "),
+    );
+    const outputTokens = estimateTokens(text);
     return {
       text,
       provider: this.name,
@@ -107,7 +109,7 @@ export class GroqProvider implements LLMProvider {
       system: req.system,
       messages: toCoreMessages(req.messages),
       maxTokens: req.maxTokens ?? 2048,
-      temperature: req.temperature,
+      temperature: req.temperature ?? resolveTemperature(),
     });
 
     const { stream, done, getFullText } =

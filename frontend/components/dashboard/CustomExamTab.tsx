@@ -24,8 +24,16 @@ import {
 } from "lucide-react";
 import { api } from "@/lib/services/api";
 import { useEcosystem } from "@/lib/ecosystem-ctx";
+import {
+  submitExamAttempt as canonicalSubmitExamAttempt,
+  registerExam,
+  ensureAttemptId,
+  clearAttemptId,
+  recoverPendingSubmission,
+} from "@/lib/services/exam-submission";
 import type { Server } from "@/lib/types";
-import TopicTreePicker, {
+import SubjectTopicSelect from "./SubjectTopicSelect";
+import {
   type Selection,
   flattenNodes,
   findNodeByPath,
@@ -47,6 +55,9 @@ const STORAGE_KEY = "ninth-grade-ai:exam:active";
 
 type PersistedExam = {
   examId: string;
+  /** Client-minted idempotency token. Persisted alongside the exam so the
+   * submit retry uses the same token and the server can dedupe. */
+  attemptId: string;
   questions: Server.ExamQuestionDTO[];
   answers: Record<number, string>;
   startsAt: number;
@@ -97,11 +108,11 @@ function ExamTimer({
   const timeLow = remaining > 0 && remaining <= 60;
   return (
     <>
-      <Timer className={`w-4 h-4 ${timeLow ? "text-red-400 animate-pulse motion-reduce:animate-none" : "text-emerald-400"}`} />
-      <span className={`font-mono text-lg font-bold ${timeLow ? "text-red-400" : "text-emerald-400"}`}>
+      <Timer className={`w-4 h-4 ${timeLow ? "text-[var(--dashboard-danger)] animate-pulse motion-reduce:animate-none" : "text-[var(--dashboard-primary)]"}`} />
+      <span className={`font-mono text-lg font-bold ${timeLow ? "text-[var(--dashboard-danger)]" : "text-[var(--dashboard-primary)]"}`}>
         {formatTime(remaining)}
       </span>
-      <span className="text-[10px] text-zinc-500 font-mono hidden sm:inline">
+      <span className="text-[10px] text-[var(--dashboard-text-muted)] font-mono hidden sm:inline">
         {durationSec > 0 ? "" : "সময় সীমাহীন"}
       </span>
     </>
@@ -109,10 +120,10 @@ function ExamTimer({
 }
 
 function performanceLabel(percentage: number): { label: string; tone: string } {
-  if (percentage >= 80) return { label: "চমৎকার", tone: "text-amber-400" };
-  if (percentage >= 60) return { label: "ভালো", tone: "text-emerald-400" };
-  if (percentage >= 40) return { label: "গড়", tone: "text-yellow-400" };
-  return { label: "উন্নতি প্রয়োজন", tone: "text-red-400" };
+  if (percentage >= 80) return { label: "চমৎকার", tone: "text-[var(--dashboard-warning)]" };
+  if (percentage >= 60) return { label: "ভালো", tone: "text-[var(--dashboard-primary)]" };
+  if (percentage >= 40) return { label: "গড়", tone: "text-[var(--warning)]" };
+  return { label: "উন্নতি প্রয়োজন", tone: "text-[var(--dashboard-danger)]" };
 }
 
 export default function CustomExamTab() {
@@ -134,12 +145,61 @@ export default function CustomExamTab() {
   const [phase, setPhase] = useState<ExamPhase>("config");
   const [showUnansweredConfirm, setShowUnansweredConfirm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [reconciling, setReconciling] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const questionRefs = useRef<Record<number, HTMLDivElement | null>>({});
   const submittingRef = useRef(false);
+  const [lockedQuestions, setLockedQuestions] = useState<Set<number>>(new Set());
 
   // ── Result state ──
   const [result, setResult] = useState<Server.ExamResultDTO | null>(null);
+  const [highlightedReview, setHighlightedReview] = useState<string | null>(null);
+  const highlightTimeoutRef = useRef<number | null>(null);
+
+  // Jump from the result summary tiles to the first review item in a state
+  // (correct/wrong/unanswered). Scrolls the row into view and flashes a ring.
+  const jumpToReview = useCallback((status: "correct" | "wrong" | "unanswered") => {
+    setHighlightedReview(status);
+    if (highlightTimeoutRef.current !== null) window.clearTimeout(highlightTimeoutRef.current);
+    highlightTimeoutRef.current = window.setTimeout(() => {
+      setHighlightedReview((h) => (h === status ? null : h));
+    }, 2000);
+    const el = document.getElementById(`exam-review-${status}`);
+    if (el && typeof el.scrollIntoView === "function") {
+      el.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
+    }
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (highlightTimeoutRef.current !== null) window.clearTimeout(highlightTimeoutRef.current);
+    };
+  }, []);
+
+  // Always start at the top when entering exam or showing results — otherwise
+  // the dashboard's scrollable container (#dashboard-content) keeps its previous
+  // offset and the user lands in the middle of the questions or review.
+  const scrollDashboardTop = useCallback(() => {
+    const prefersReduced = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const behavior: ScrollBehavior = prefersReduced ? "instant" as ScrollBehavior : "smooth";
+    const el = typeof document !== "undefined" ? document.getElementById("dashboard-content") : null;
+    if (el) {
+      if (typeof el.scrollTo === "function") { try { el.scrollTo({ top: 0, behavior }); return; } catch {} }
+      el.scrollTop = 0;
+      return;
+    }
+    if (typeof window !== "undefined" && typeof window.scrollTo === "function") {
+      try { window.scrollTo({ top: 0, behavior }); } catch { window.scrollTo(0, 0); }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (phase === "exam" || phase === "result") {
+      // Wait for the phase's DOM to mount before scrolling.
+      const id = requestAnimationFrame(() => scrollDashboardTop());
+      return () => cancelAnimationFrame(id);
+    }
+  }, [phase, scrollDashboardTop]);
 
   // Load the exam configuration tree. State changes happen after `await`, so
   // no render-phase impurity or effect-driven cascade is introduced.
@@ -175,22 +235,75 @@ export default function CustomExamTab() {
 
   // Resume an in-progress exam from localStorage so refresh/navigation does not
   // corrupt an active attempt. Runs after an async boundary; the countdown
-  // effect auto-submits if the timer already ran out while away.
+  // effect auto-submits if the timer already ran out while away. An interrupted
+  // submission is finalized FIRST via idempotent recovery.
   useEffect(() => {
     let cancelled = false;
     void (async () => {
       await Promise.resolve();
       if (cancelled) return;
       try {
+        const recovered = await recoverPendingSubmission(STORAGE_KEY);
+        if (cancelled) return;
+        if (recovered) {
+          clearAttemptId(STORAGE_KEY);
+          try {
+            localStorage.removeItem(STORAGE_KEY);
+          } catch {
+            /* ignore */
+          }
+          setResult(recovered.result);
+          setPhase("result");
+          return;
+        }
+      } catch {
+        /* network still unusable — fall through to resume; submit will retry */
+      }
+      if (cancelled) return;
+      try {
         const raw = localStorage.getItem(STORAGE_KEY);
         if (!raw) return;
         const saved = JSON.parse(raw) as PersistedExam;
         if (!saved?.questions?.length) return;
-        setExam(saved);
+        // If the exam had a fixed duration and the wall-clock time has since
+        // elapsed beyond the grace window, the server will reject the submit
+        // (ATTEMPT_DEADLINE_EXCEEDED). Drop the stale resume instead of
+        // surfacing an unresolvable error.
+        if (saved.durationSec > 0) {
+          const elapsedSec = Math.floor((Date.now() - saved.startsAt) / 1000);
+          if (elapsedSec >= saved.durationSec + 15) {
+            try {
+              localStorage.removeItem(STORAGE_KEY);
+            } catch {
+              /* ignore */
+            }
+            return;
+          }
+        }
+        // Resume uses the persisted attemptId if present, otherwise mints a
+        // new one — but in that case a server-side re-register is required.
+        // For simplicity we always mint on resume if missing, then fire-and-
+        // forget the register call below.
+        const attemptId = saved.attemptId ?? ensureAttemptId(STORAGE_KEY);
+        const withAttempt: PersistedExam = { ...saved, attemptId };
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(withAttempt));
+        } catch {
+          /* ignore */
+        }
+        setExam(withAttempt);
         setAnswers(saved.answers ?? {});
-        const elapsed = Math.floor((Date.now() - saved.startsAt) / 1000);
-        void elapsed;
         setPhase("exam");
+        // Always re-register on resume: idempotent, and with server-side
+        // IN_PROGRESS hash adoption it heals a token whose row still holds an
+        // older question-set hash (stale build reuse) so the submit can't 409.
+        void registerExam({
+          attemptId,
+          questionIds: saved.questions.map((q) => q.id),
+          durationSec: saved.durationSec,
+        }).catch(() => {
+          /* non-fatal */
+        });
       } catch {
         /* corrupt storage — ignore */
       }
@@ -268,8 +381,16 @@ export default function CustomExamTab() {
         setBuildError("এই কনফিগারেশনে কোনো প্রশ্ন পাওয়া যায়নি।");
         return;
       }
+      // A fresh exam build MUST bind to a brand-new attempt token. The token
+      // is only cleared on a confirmed successful submit, so without this a
+      // rebuild after an abandoned/failed attempt would REUSE the old UUID —
+      // the server keeps the old question-set hash for that token and every
+      // submit of the new exam 409s with ATTEMPT_HASH_MISMATCH.
+      clearAttemptId(STORAGE_KEY);
+      const attemptId = ensureAttemptId(STORAGE_KEY);
       const persisted: PersistedExam = {
         examId: built.examId,
+        attemptId,
         questions: built.questions,
         answers: {},
         startsAt: Date.now(),
@@ -285,8 +406,19 @@ export default function CustomExamTab() {
       }
       setExam(persisted);
       setAnswers({});
+      setLockedQuestions(new Set());
       setShowConfirm(false);
       setPhase("exam");
+      // Best-effort: register the attempt server-side so /api/exam/submit has
+      // a row to upsert. A failure here is non-fatal — submit will retry the
+      // upsert path itself.
+      void registerExam({
+        attemptId,
+        questionIds: built.questions.map((q) => q.id),
+        durationSec: built.durationSec,
+      }).catch(() => {
+        /* ignore — submit will surface a real error if it actually fails */
+      });
     } catch {
       setBuildError("পরীক্ষা তৈরি করা যায়নি। আবার চেষ্টা করুন।");
     } finally {
@@ -295,6 +427,7 @@ export default function CustomExamTab() {
   };
 
   const selectAnswer = (questionId: number, option: string) => {
+    if (lockedQuestions.has(questionId)) return;
     setAnswers((prev) => {
       const next = { ...prev, [questionId]: option };
       if (exam) {
@@ -309,6 +442,7 @@ export default function CustomExamTab() {
       }
       return next;
     });
+    setLockedQuestions((prev) => new Set(prev).add(questionId));
   };
 
   const answeredCount = Object.keys(answers).length;
@@ -319,49 +453,115 @@ export default function CustomExamTab() {
     questionRefs.current[questionId]?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  // Keep latest exam/answers in refs so timer expiry and rapid clicks never use a stale closure.
+  const examRef = useRef(exam);
+  const answersRef = useRef(answers);
+  useEffect(() => { examRef.current = exam; }, [exam]);
+  useEffect(() => { answersRef.current = answers; }, [answers]);
+
+  // Safe navigation: block route/tab change and tab close while submission is in flight.
+  useEffect(() => {
+    if (!submitting && !reconciling) return;
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [submitting, reconciling]);
+
   const submit = useCallback(
     async (qs: Server.ExamQuestionDTO[], ans: Record<number, string>) => {
-      if (qs.length === 0 || submittingRef.current) return;
+      // Deterministic snapshot — captured synchronously at call time, never read
+      // from async React state after the click.
+      const snapshotQs = [...qs];
+      const snapshotAns = { ...ans };
+      // Never a silent no-op: every click path ends in a visible outcome.
+      if (snapshotQs.length === 0) {
+        setSubmitError("পরীক্ষার প্রশ্ন পাওয়া যায়নি। আবার চেষ্টা করুন।");
+        return;
+      }
+      const examSnapshot = examRef.current;
+      if (!examSnapshot?.attemptId) {
+        setSubmitError("পরীক্ষার সেশন শনাক্ত করা যায়নি। পৃষ্ঠা রিফ্রেশ করে আবার চেষ্টা করুন।");
+        return;
+      }
+      // Immediate ref guard — React state `submitting` is async; the ref prevents wedging on rapid hits
+      // while the canonical `submitExamAttempt` rendezvous ensures duplicate hits JOIN instead of being dropped.
+      if (submittingRef.current) {
+        // A submission is already in flight — the canonical layer will join it; just surface busy state.
+        setSubmitting(true);
+        return;
+      }
       submittingRef.current = true;
       setSubmitting(true);
+      setReconciling(false);
       setSubmitError(null);
       try {
-        const payload = qs.map((q) => ({ questionId: q.id, selected: ans[q.id] ?? "" }));
-        const res = await api.submitExam(payload);
-        setResult(res);
+        const elapsedSec = Math.max(
+          0,
+          Math.floor((Date.now() - examSnapshot.startsAt) / 1000),
+        );
+        const { result } = await canonicalSubmitExamAttempt({
+          attemptId: examSnapshot.attemptId,
+          questionIds: snapshotQs.map((q) => q.id),
+          durationSec: elapsedSec,
+          answers: snapshotAns,
+          storageKey: STORAGE_KEY,
+        });
+        setResult(result);
         setPhase("result");
         try {
           localStorage.removeItem(STORAGE_KEY);
+          clearAttemptId(STORAGE_KEY);
         } catch {
           /* ignore */
         }
-      } catch {
-        setSubmitError("ফলাফল জমা দেওয়া যায়নি। আবার চেষ্টা করুন।");
+      } catch (err) {
+        const msg = err instanceof Error && err.message ? err.message : "ফলাফল জমা দেওয়া যায়নি। আবার চেষ্টা করুন।";
+        // If the error looks like a network/timeout, offer reconciliation state
+        if (msg.includes("TIMEOUT") || msg.includes("NETWORK_ERROR") || msg.includes("timed out")) {
+          setReconciling(true);
+          setSubmitError("সংযোগ বিচ্ছিন্ন হয়েছে — অবস্থা যাচাই করা হচ্ছে...");
+          // Auto-reconcile once: if server already committed, we will recover on next mount via pending
+        }
+        setSubmitError(msg);
       } finally {
         submittingRef.current = false;
         setSubmitting(false);
+        setReconciling(false);
       }
     },
     [],
   );
 
-  const handleSubmitRequest = () => {
-    if (unanswered > 0) {
-      setShowUnansweredConfirm(true);
-    } else if (exam) {
-      void submit(exam.questions, answers);
+  const handleSubmitRequest = useCallback(() => {
+    const snapExam = examRef.current;
+    const snapAnswers = answersRef.current;
+    if (!snapExam) {
+      setSubmitError("পরীক্ষা শনাক্ত করা যায়নি। আবার চেষ্টা করুন।");
+      return;
     }
-  };
+    const snapUnanswered = (snapExam.questions.length ?? 0) - Object.keys(snapAnswers).length;
+    if (snapUnanswered > 0) {
+      setShowUnansweredConfirm(true);
+    } else {
+      void submit(snapExam.questions, snapAnswers);
+    }
+  }, [submit]);
 
-  const finalizeSubmit = () => {
+  const finalizeSubmit = useCallback(() => {
     setShowUnansweredConfirm(false);
-    if (exam) void submit(exam.questions, answers);
-  };
+    const snapExam = examRef.current;
+    const snapAnswers = answersRef.current;
+    if (snapExam) void submit(snapExam.questions, snapAnswers);
+  }, [submit]);
 
   const resetAll = () => {
     setPhase("config");
     setExam(null);
     setAnswers({});
+    setLockedQuestions(new Set());
     setResult(null);
     setSubmitError(null);
     setShowUnansweredConfirm(false);
@@ -385,16 +585,16 @@ export default function CustomExamTab() {
         >
           <div className="terminal-window-bar border-b border-terminal-border">
             <div className="dot close" /><div className="dot minimize" /><div className="dot maximize" />
-            <div className="flex-1 text-center text-xs text-zinc-400 font-mono">
+            <div className="flex-1 text-center text-xs text-[var(--dashboard-text-muted)] font-mono">
               {"// CUSTOM_BCS_EXAM_BUILDER"}
             </div>
           </div>
           <div className="p-5 md:p-6">
             <div className="flex items-center gap-2 mb-1">
-              <Layers className="w-5 h-5 text-emerald-400" />
-              <h2 className="text-lg font-bold text-white">কাস্টম বিসিএস পরীক্ষা</h2>
+              <Layers className="w-5 h-5 text-[var(--dashboard-primary)]" />
+              <h2 className="text-lg font-bold text-[var(--text-primary)]">কাস্টম বিসিএস পরীক্ষা</h2>
             </div>
-            <p className="text-xs text-zinc-500 font-mono">
+            <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">
               বিষয়, টপিক ও সাবটপিক বেছে নিয়ে নিজের পছন্দের পরীক্ষা তৈরি করুন — নেগেটিভ মার্কিং সহ বাস্তব বিসিএস ধাঁচে।
             </p>
           </div>
@@ -402,18 +602,18 @@ export default function CustomExamTab() {
 
         {configLoading && (
           <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
-            <Loader2 className="w-10 h-10 mx-auto mb-3 text-emerald-500 animate-spin" aria-hidden="true" />
-            <p className="text-sm text-zinc-400 font-mono">বিষয় লোড হচ্ছে...</p>
+            <Loader2 className="w-10 h-10 mx-auto mb-3 text-[var(--accent)] animate-spin" aria-hidden="true" />
+            <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">বিষয় লোড হচ্ছে...</p>
           </div>
         )}
 
         {configError && (
           <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
-            <AlertTriangle className="w-10 h-10 mx-auto mb-3 text-amber-500" aria-hidden="true" />
-            <p className="text-sm text-zinc-400">{configError}</p>
+            <AlertTriangle className="w-10 h-10 mx-auto mb-3 text-[var(--warning)]" aria-hidden="true" />
+            <p className="text-sm text-[var(--dashboard-text-muted)]">{configError}</p>
             <button
               onClick={handleRetryConfig}
-              className="mt-4 px-4 py-2 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors"
+              className="mt-4 px-4 py-2 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors"
             >
               আবার চেষ্টা করুন
             </button>
@@ -422,8 +622,7 @@ export default function CustomExamTab() {
 
         {!configLoading && !configError && (
           <>
-            {/* Subject → topic → subtopic selection (shared picker) */}
-            <TopicTreePicker
+            <SubjectTopicSelect
               subjects={subjects}
               selection={selection}
               onSelectionChange={setSelection}
@@ -433,43 +632,43 @@ export default function CustomExamTab() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="glass-card rounded-xl border border-terminal-border p-4 flex items-center justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="text-sm text-zinc-300 font-mono">মোট প্রশ্ন</p>
-                  <p className="text-xs text-zinc-500 mt-0.5">
+                  <p className="text-sm text-[var(--dashboard-text-secondary)] font-mono">মোট প্রশ্ন</p>
+                  <p className="text-xs text-[var(--dashboard-text-muted)] mt-0.5">
                     উপলব্ধ:{" "}
-                    <span className={`font-mono ${insufficient ? "text-red-400" : "text-emerald-400"}`}>
+                    <span className={`font-mono ${insufficient ? "text-[var(--dashboard-danger)]" : "text-[var(--dashboard-primary)]"}`}>
                       {availableTotal}টি
                     </span>
                   </p>
                 </div>
                 <span
                   className={`text-2xl font-bold font-mono ${
-                    totalCount > 0 ? "text-emerald-400" : "text-zinc-600"
+                    totalCount > 0 ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-text-secondary)]"
                   }`}
                 >
                   {totalCount}
-                  <span className="text-xs text-zinc-500 ml-1">প্র.</span>
+                  <span className="text-xs text-[var(--dashboard-text-muted)] ml-1">প্র.</span>
                 </span>
               </div>
 
               <div className="glass-card rounded-xl border border-terminal-border p-4 flex items-center justify-between gap-3">
                 <div>
-                  <p className="text-sm text-zinc-300 font-mono">সময়সীমা</p>
-                  <p className="text-xs text-zinc-500 mt-0.5">
+                  <p className="text-sm text-[var(--dashboard-text-secondary)] font-mono">সময়সীমা</p>
+                  <p className="text-xs text-[var(--dashboard-text-muted)] mt-0.5">
                     {durationMin} মিনিট (প্রশ্নপ্রতি ~{Math.max(1, Math.round(durationMin / Math.max(1, totalCount)))} মি.)
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => adjustDuration(-1)}
-                    className="w-8 h-8 rounded-lg bg-zinc-900 border border-emerald-500/20 flex items-center justify-center text-emerald-400 hover:border-emerald-500/40"
+                    className="w-8 h-8 rounded-lg bg-[var(--surface-raised)] border border-[var(--primary)]/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-[var(--primary)]/40"
                     aria-label="সময় কমান"
                   >
                     <Minus className="w-4 h-4" />
                   </button>
-                  <span className="text-2xl font-bold text-emerald-400 font-mono w-8 text-center">{durationMin}</span>
+                  <span className="text-2xl font-bold text-[var(--dashboard-primary)] font-mono w-8 text-center">{durationMin}</span>
                   <button
                     onClick={() => adjustDuration(1)}
-                    className="w-8 h-8 rounded-lg bg-zinc-900 border border-emerald-500/20 flex items-center justify-center text-emerald-400 hover:border-emerald-500/40"
+                    className="w-8 h-8 rounded-lg bg-[var(--surface-raised)] border border-[var(--primary)]/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-[var(--primary)]/40"
                     aria-label="সময় বাড়ান"
                   >
                     <Plus className="w-4 h-4" />
@@ -479,7 +678,7 @@ export default function CustomExamTab() {
             </div>
 
             {insufficient && (
-              <div className="flex items-start gap-2 rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 text-xs text-amber-300">
+              <div className="flex items-start gap-2 rounded-xl border border-[var(--warning)]/30 bg-[var(--dashboard-warning-subtle)] p-3 text-xs text-[var(--dashboard-warning)]">
                 <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
                 <p>
                   নির্বাচিত টপিক থেকে শুধু <span className="font-mono">{availableTotal}টি</span> প্রশ্ন
@@ -489,7 +688,7 @@ export default function CustomExamTab() {
             )}
 
             {overageSubjects.length > 0 && (
-              <div className="flex items-start gap-2 rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 text-xs text-amber-300">
+              <div className="flex items-start gap-2 rounded-xl border border-[var(--warning)]/30 bg-[var(--dashboard-warning-subtle)] p-3 text-xs text-[var(--dashboard-warning)]">
                 <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
                 <p>
                   {overageSubjects.map((s) => s.nameBn).join(", ")} এ চাওয়া প্রশ্ন সংখ্যা উপলব্ধের বেশি —
@@ -499,7 +698,7 @@ export default function CustomExamTab() {
             )}
 
             {buildError && (
-              <div className="flex items-start gap-2 rounded-xl border border-red-500/30 bg-red-500/5 p-3 text-xs text-red-400">
+              <div className="flex items-start gap-2 rounded-xl border border-[var(--danger)]/30 bg-[var(--dashboard-danger-subtle)] p-3 text-xs text-[var(--dashboard-danger)]">
                 <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
                 <p>{buildError}</p>
               </div>
@@ -508,32 +707,32 @@ export default function CustomExamTab() {
             {/* Live config summary */}
             <motion.div
               layout
-              className="glass-card rounded-2xl border border-emerald-500/30 p-4"
+              className="glass-card rounded-2xl border border-[var(--primary)]/30 p-4"
             >
-              <p className="text-[10px] text-zinc-500 font-mono uppercase tracking-widest mb-2">লাইভ কনফিগারেশন সামারি</p>
+              <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-widest mb-2">লাইভ কনফিগারেশন সামারি</p>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
                 <div>
-                  <ListOrdered className="w-4 h-4 mx-auto text-emerald-400 mb-1" />
-                  <p className="text-lg font-bold text-white font-mono">{selectedSubjects.length}</p>
-                  <p className="text-[10px] text-zinc-500 font-mono">বিষয়</p>
+                  <ListOrdered className="w-4 h-4 mx-auto text-[var(--dashboard-primary)] mb-1" />
+                  <p className="text-lg font-bold text-[var(--text-primary)] font-mono">{selectedSubjects.length}</p>
+                  <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">বিষয়</p>
                 </div>
                 <div>
-                  <BookOpen className="w-4 h-4 mx-auto text-emerald-400 mb-1" />
-                  <p className="text-lg font-bold text-white font-mono">{selectedGroupCount}</p>
-                  <p className="text-[10px] text-zinc-500 font-mono">টপিক</p>
+                  <BookOpen className="w-4 h-4 mx-auto text-[var(--dashboard-primary)] mb-1" />
+                  <p className="text-lg font-bold text-[var(--text-primary)] font-mono">{selectedGroupCount}</p>
+                  <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">টপিক</p>
                 </div>
                 <div>
-                  <CircleDashed className="w-4 h-4 mx-auto text-emerald-400 mb-1" />
-                  <p className="text-lg font-bold text-white font-mono">{selectedSubTopicCount}</p>
-                  <p className="text-[10px] text-zinc-500 font-mono">সাবটপিক</p>
+                  <CircleDashed className="w-4 h-4 mx-auto text-[var(--dashboard-primary)] mb-1" />
+                  <p className="text-lg font-bold text-[var(--text-primary)] font-mono">{selectedSubTopicCount}</p>
+                  <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">সাবটপিক</p>
                 </div>
                 <div>
-                  <Clock className="w-4 h-4 mx-auto text-emerald-400 mb-1" />
-                  <p className="text-lg font-bold text-white font-mono">
+                  <Clock className="w-4 h-4 mx-auto text-[var(--dashboard-primary)] mb-1" />
+                  <p className="text-lg font-bold text-[var(--text-primary)] font-mono">
                     {totalCount}
-                    <span className="text-xs text-zinc-500 ml-1">প্র.</span>
+                    <span className="text-xs text-[var(--dashboard-text-muted)] ml-1">প্র.</span>
                   </p>
-                  <p className="text-[10px] text-zinc-500 font-mono">{durationMin} মিনিট</p>
+                  <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">{durationMin} মিনিট</p>
                 </div>
               </div>
             </motion.div>
@@ -541,7 +740,7 @@ export default function CustomExamTab() {
             <button
               onClick={() => setShowConfirm(true)}
               disabled={selectedSubjects.length === 0 || totalCount === 0 || buildLoading}
-              className="mt-4 w-full py-3 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-xl hover:bg-emerald-400 transition-colors flex items-center justify-center gap-2 shadow-neon-glow disabled:opacity-40 disabled:cursor-not-allowed"
+              className="mt-4 w-full py-3 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center justify-center gap-2 shadow-neon-glow disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <Play className="w-4 h-4" />
               কনফিগারেশন রিভিউ করে শুরু করুন
@@ -554,7 +753,7 @@ export default function CustomExamTab() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
+                  className="fixed inset-0 z-50 bg-[var(--overlay)] backdrop-blur-sm flex items-center justify-center p-4"
                   onClick={() => !buildLoading && setShowConfirm(false)}
                 >
                   <motion.div
@@ -562,14 +761,14 @@ export default function CustomExamTab() {
                     animate={{ scale: 1, y: 0 }}
                     exit={{ scale: 0.95, y: 10 }}
                     onClick={(e) => e.stopPropagation()}
-                    className="glass-card rounded-2xl border border-emerald-500/30 p-6 w-full max-w-md"
+                    className="glass-card rounded-2xl border border-[var(--primary)]/30 p-6 w-full max-w-md"
                   >
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-base font-bold text-white">পরীক্ষা নিশ্চিত করুন</h3>
+                      <h3 className="text-base font-bold text-[var(--text-primary)]">পরীক্ষা নিশ্চিত করুন</h3>
                       <button
                         onClick={() => setShowConfirm(false)}
                         disabled={buildLoading}
-                        className="text-zinc-500 hover:text-white transition-colors"
+                        className="text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)] transition-colors"
                         aria-label="বন্ধ করুন"
                       >
                         <X className="w-5 h-5" />
@@ -578,29 +777,29 @@ export default function CustomExamTab() {
 
                     <div className="space-y-2 mb-5">
                       <p className="flex justify-between text-xs">
-                        <span className="text-zinc-500 font-mono">বিষয়</span>
-                        <span className="text-white font-mono">{selectedSubjects.map((s) => s.nameBn).join(", ")}</span>
+                        <span className="text-[var(--dashboard-text-muted)] font-mono">বিষয়</span>
+                        <span className="text-[var(--text-primary)] font-mono">{selectedSubjects.map((s) => s.nameBn).join(", ")}</span>
                       </p>
                       <p className="flex justify-between text-xs">
-                        <span className="text-zinc-500 font-mono">টপিক / সাবটপিক</span>
-                        <span className="text-white font-mono">{selectedGroupCount} / {selectedSubTopicCount}</span>
+                        <span className="text-[var(--dashboard-text-muted)] font-mono">টপিক / সাবটপিক</span>
+                        <span className="text-[var(--text-primary)] font-mono">{selectedGroupCount} / {selectedSubTopicCount}</span>
                       </p>
                       <p className="flex justify-between text-xs">
-                        <span className="text-zinc-500 font-mono">প্রশ্ন</span>
-                        <span className="text-emerald-400 font-mono">{totalCount}টি</span>
+                        <span className="text-[var(--dashboard-text-muted)] font-mono">প্রশ্ন</span>
+                        <span className="text-[var(--dashboard-primary)] font-mono">{totalCount}টি</span>
                       </p>
                       <p className="flex justify-between text-xs">
-                        <span className="text-zinc-500 font-mono">সময়</span>
-                        <span className="text-emerald-400 font-mono">{durationMin} মিনিট</span>
+                        <span className="text-[var(--dashboard-text-muted)] font-mono">সময়</span>
+                        <span className="text-[var(--dashboard-primary)] font-mono">{durationMin} মিনিট</span>
                       </p>
                       <p className="flex justify-between text-xs">
-                        <span className="text-zinc-500 font-mono">স্কোরিং</span>
-                        <span className="text-white font-mono">সঠিক +১ • ভুল −০.৫ • না দেওয়া ০</span>
+                        <span className="text-[var(--dashboard-text-muted)] font-mono">স্কোরিং</span>
+                        <span className="text-[var(--text-primary)] font-mono">সঠিক +১ • ভুল −০.৫ • না দেওয়া ০</span>
                       </p>
                     </div>
 
                     {insufficient && (
-                      <p className="text-[11px] text-amber-300 mb-4 flex items-center gap-1.5">
+                      <p className="text-[11px] text-[var(--dashboard-warning)] mb-4 flex items-center gap-1.5">
                         <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true" />
                         শুধু {availableTotal}টি প্রশ্ন উপলব্ধ — {totalCount}টি চাওয়া হয়েছে।
                       </p>
@@ -609,7 +808,7 @@ export default function CustomExamTab() {
                     <button
                       onClick={() => void confirmAndStart()}
                       disabled={buildLoading}
-                      className="w-full py-3 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-xl hover:bg-emerald-400 transition-colors flex items-center justify-center gap-2 shadow-neon-glow disabled:opacity-40"
+                      className="w-full py-3 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center justify-center gap-2 shadow-neon-glow disabled:opacity-40"
                     >
                       {buildLoading ? "তৈরি হচ্ছে..." : (
                         <>
@@ -635,34 +834,44 @@ export default function CustomExamTab() {
       <div className="space-y-4">
         {/* Sticky header: timer + progress + submit */}
         <div className="sticky top-0 z-40 -mx-1 px-1">
-          <div className="glass-card rounded-2xl border border-emerald-500/30 px-4 py-3">
+          <div className="glass-card rounded-2xl border border-[var(--primary)]/30 px-4 py-3">
             <div className="flex items-center justify-between gap-3 flex-wrap">
               <div className="flex items-center gap-2">
                 <ExamTimer
                   startsAt={exam.startsAt}
                   durationSec={exam.durationSec}
                   onExpire={() => {
-                    void submit(exam.questions, answers);
+                    const snap = examRef.current;
+                    const snapAns = answersRef.current;
+                    if (snap) void submit(snap.questions, snapAns);
                   }}
                 />
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-zinc-400 font-mono">
-                  উত্তর: <span className="text-emerald-400">{answeredCount}</span> / {totalQuestions}
+                <span className="text-xs text-[var(--dashboard-text-muted)] font-mono">
+                  উত্তর: <span className="text-[var(--dashboard-primary)]">{answeredCount}</span> / {totalQuestions}
                 </span>
-                <button
-                  onClick={handleSubmitRequest}
-                  disabled={submitting || totalQuestions === 0}
-                  className="px-4 py-1.5 bg-emerald-500 text-zinc-950 font-mono text-xs rounded-lg hover:bg-emerald-400 transition-colors shadow-neon-glow flex items-center gap-1.5 disabled:opacity-40"
-                >
-                  <Flag className="w-3.5 h-3.5" />
-                  {submitting ? "জমা হচ্ছে..." : "জমা দিন"}
-                </button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleSubmitRequest();
+              }}
+              disabled={submitting || totalQuestions === 0}
+              aria-busy={submitting}
+              aria-label="পরীক্ষা জমা দিন"
+              className="px-4 py-2 min-h-11 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-xs rounded-lg hover:bg-[var(--accent-hover)] transition-colors shadow-neon-glow flex items-center gap-1.5 disabled:opacity-40 z-50 relative pointer-events-auto cursor-pointer"
+            >
+              <Flag className="w-3.5 h-3.5" />
+              {(submitting || reconciling) ? (reconciling ? "যাচাই করা হচ্ছে..." : "জমা হচ্ছে...") : "জমা দিন"}
+            </button>
+
               </div>
             </div>
-            <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden mt-2">
+            <div className="h-1.5 bg-[var(--surface-overlay)] rounded-full overflow-hidden mt-2">
               <div
-                className="h-full w-full origin-left bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-transform duration-300"
+                className="h-full w-full origin-left bg-gradient-to-r from-[var(--success)] to-[var(--success)] rounded-full transition-transform duration-300"
                 style={{ transform: `scaleX(${progressPct / 100})` }}
               />
             </div>
@@ -672,8 +881,8 @@ export default function CustomExamTab() {
         {/* Question palette (jump navigation) */}
         <div className="glass-card rounded-2xl border border-terminal-border p-3">
           <div className="flex items-center gap-2 mb-2">
-            <CircleDashed className="w-3.5 h-3.5 text-emerald-400" />
-            <p className="text-[10px] text-zinc-500 font-mono uppercase tracking-widest">প্রশ্ন তালিকা</p>
+            <CircleDashed className="w-3.5 h-3.5 text-[var(--dashboard-primary)]" />
+            <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-widest">প্রশ্ন তালিকা</p>
           </div>
           <div className="flex flex-wrap gap-1.5">
             {exam.questions.map((q, i) => {
@@ -682,10 +891,10 @@ export default function CustomExamTab() {
                 <button
                   key={q.id}
                   onClick={() => scrollToQuestion(q.id)}
-                  className={`w-8 h-8 rounded-lg border text-xs font-mono transition-all ${
+                  className={`min-w-11 min-h-11 rounded-lg border text-xs font-mono transition-all flex items-center justify-center ${
                     isAnswered
-                      ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-400"
-                      : "border-zinc-800 text-zinc-500 hover:border-zinc-700"
+                      ? "border-[var(--primary)]/40 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
+                      : "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] hover:border-[var(--border-strong)]"
                   }`}
                   aria-label={`প্রশ্ন ${i + 1}`}
                 >
@@ -708,56 +917,59 @@ export default function CustomExamTab() {
                 className="glass-card rounded-2xl border border-terminal-border p-4 md:p-5 scroll-mt-32"
               >
                 <div className="flex flex-wrap items-center gap-2 mb-3">
-                  <span className="px-2 py-0.5 rounded bg-zinc-800 text-[10px] font-mono text-zinc-300">
+                  <span className="px-2 py-0.5 rounded bg-[var(--surface-overlay)] text-[10px] font-mono text-[var(--dashboard-text-secondary)]">
                     প্রশ্ন {index + 1}
                   </span>
-                  <span className="px-2 py-0.5 rounded bg-zinc-800 text-[10px] font-mono text-zinc-400">
+                  <span className="px-2 py-0.5 rounded bg-[var(--surface-overlay)] text-[10px] font-mono text-[var(--dashboard-text-muted)]">
                     {q.subject}
                   </span>
                   <span className={`px-2 py-0.5 rounded text-[10px] font-mono ${
                     q.difficulty === "EASY"
-                      ? "bg-emerald-500/10 text-emerald-400"
+                      ? "bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
                       : q.difficulty === "MEDIUM"
-                        ? "bg-amber-500/10 text-amber-400"
-                        : "bg-red-500/10 text-red-400"
+                        ? "bg-[var(--dashboard-warning-subtle)] text-[var(--dashboard-warning)]"
+                        : "bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)]"
                   }`}>
                     {DIFFICULTY_LABEL[q.difficulty] ?? q.difficulty}
                   </span>
                   {q.topic && (
-                    <span className="px-2 py-0.5 rounded bg-zinc-800 text-[10px] font-mono text-zinc-500">
+                    <span className="px-2 py-0.5 rounded bg-[var(--surface-overlay)] text-[10px] font-mono text-[var(--dashboard-text-muted)]">
                       {q.topic}
                     </span>
                   )}
                   {userAnswer !== undefined && (
-                    <span className="ml-auto px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-mono text-emerald-400">
+                    <span className="ml-auto px-2 py-0.5 rounded bg-[var(--dashboard-primary-subtle)] border border-[var(--primary)]/20 text-[10px] font-mono text-[var(--dashboard-primary)]">
                       ✓ উত্তর দেওয়া হয়েছে
                     </span>
                   )}
                 </div>
 
-                <h3 className="text-sm md:text-base font-medium text-white mb-4">{q.question}</h3>
+                <div className="rounded-xl border p-4 mb-4" style={{ background: "var(--dashboard-surface-raised)", borderColor: "var(--dashboard-border-muted)", boxShadow: "var(--dashboard-shadow-sm)" }}>
+                  <h3 className="text-sm md:text-[15px] font-semibold leading-relaxed" style={{ color: "var(--dashboard-text-primary)", lineHeight: "1.6" }}>{q.question}</h3>
+                </div>
 
                 <div className="space-y-2.5">
                   {q.options.map((option, i) => {
                     const isSelected = userAnswer === option;
+                    const isLocked = lockedQuestions.has(q.id);
                     return (
                       <button
                         key={i}
                         onClick={() => selectAnswer(q.id, option)}
-                        className={`w-full text-left p-3 rounded-xl border transition-all ${
+                        disabled={isLocked}
+                        className="w-full text-left p-3 rounded-xl border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] disabled:cursor-not-allowed"
+                        style={
                           isSelected
-                            ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-300"
-                            : "bg-subtle border-zinc-800 text-zinc-300 hover:border-emerald-500/20"
-                        }`}
+                            ? { background: "var(--dashboard-primary-subtle)", borderColor: "var(--dashboard-primary)", color: "var(--dashboard-primary)" }
+                            : { background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-strong)", color: "var(--dashboard-text-primary)" }
+                        }
                       >
                         <div className="flex items-center gap-3">
-                          <span className={`w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-mono ${
-                            isSelected ? "bg-emerald-500 text-zinc-950" : "bg-zinc-800 border border-zinc-700 text-zinc-400"
-                          }`}>
+                          <span className="w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-mono border" style={isSelected ? { background: "var(--dashboard-primary)", color: "var(--dashboard-text-inverse)", borderColor: "var(--dashboard-primary)" } : { background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-strong)", color: "var(--dashboard-text-secondary)" }}>
                             {OPTION_LABELS[i] ?? i + 1}
                           </span>
-                          <span className="text-sm">{option}</span>
-                          {isSelected && <Check className="w-4 h-4 text-emerald-400 ml-auto" />}
+                          <span className="text-sm font-medium">{option}</span>
+                          {isSelected && <Check className="w-4 h-4 ml-auto" style={{ color: "var(--dashboard-primary)" }} />}
                         </div>
                       </button>
                     );
@@ -770,20 +982,27 @@ export default function CustomExamTab() {
 
         {/* Sticky submit bar */}
         <div className="sticky bottom-0 z-40 -mx-1 px-1 pb-1">
-          <div className="glass-card rounded-2xl border border-emerald-500/30 px-4 py-3 flex items-center justify-between gap-3 flex-wrap">
-            <div className="text-xs text-zinc-400 font-mono">
+          <div className="glass-card rounded-2xl border border-[var(--primary)]/30 px-4 py-3 flex items-center justify-between gap-3 flex-wrap">
+            <div className="text-xs text-[var(--dashboard-text-muted)] font-mono">
               {unanswered > 0 ? (
                 <>
-                  <span className="text-amber-400">{unanswered}টি</span> উত্তর দেওয়া বাকি
+                  <span className="text-[var(--dashboard-warning)]">{unanswered}টি</span> উত্তর দেওয়া বাকি
                 </>
               ) : (
-                <span className="text-emerald-400">সব প্রশ্নের উত্তর দেওয়া হয়েছে ✓</span>
+                <span className="text-[var(--dashboard-primary)]">সব প্রশ্নের উত্তর দেওয়া হয়েছে ✓</span>
               )}
             </div>
             <button
-              onClick={handleSubmitRequest}
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleSubmitRequest();
+              }}
               disabled={submitting}
-              className="px-6 py-2.5 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-xl hover:bg-emerald-400 transition-colors shadow-neon-glow flex items-center gap-2 disabled:opacity-40"
+              aria-busy={submitting}
+              aria-label="পরীক্ষা জমা দিন"
+              className="px-6 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors shadow-neon-glow flex items-center gap-2 disabled:opacity-40 z-50 relative pointer-events-auto cursor-pointer"
             >
               {submitting ? "জমা হচ্ছে..." : (
                 <>
@@ -795,7 +1014,7 @@ export default function CustomExamTab() {
         </div>
 
         {submitError && (
-          <p className="text-xs text-red-400 text-center">{submitError}</p>
+          <p className="text-xs text-[var(--dashboard-danger)] text-center">{submitError}</p>
         )}
 
         {/* Unanswered confirmation modal */}
@@ -805,7 +1024,7 @@ export default function CustomExamTab() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
+              className="fixed inset-0 z-50 bg-[var(--overlay)] backdrop-blur-sm flex items-center justify-center p-4"
               onClick={() => setShowUnansweredConfirm(false)}
             >
               <motion.div
@@ -813,28 +1032,34 @@ export default function CustomExamTab() {
                 animate={{ scale: 1, y: 0 }}
                 exit={{ scale: 0.95, y: 10 }}
                 onClick={(e) => e.stopPropagation()}
-                className="glass-card rounded-2xl border border-amber-500/30 p-6 w-full max-w-sm"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="custom-unanswered-confirm-title"
+                className="glass-card rounded-2xl border border-[var(--warning)]/30 p-6 w-full max-w-sm"
               >
                 <div className="flex items-center gap-2 mb-3">
-                  <AlertTriangle className="w-5 h-5 text-amber-400" />
-                  <h3 className="text-base font-bold text-white">উত্তর দেওয়া বাকি আছে</h3>
+                  <AlertTriangle className="w-5 h-5 text-[var(--dashboard-warning)]" />
+                  <h3 id="custom-unanswered-confirm-title" className="text-base font-bold text-[var(--text-primary)]">উত্তর দেওয়া বাকি আছে</h3>
                 </div>
-                <p className="text-sm text-zinc-400 mb-5">
-                  <span className="text-amber-400 font-mono">{unanswered}টি</span> প্রশ্নে উত্তর দেওয়া হয়নি।
+                <p className="text-sm text-[var(--dashboard-text-muted)] mb-5">
+                  <span className="text-[var(--dashboard-warning)] font-mono">{unanswered}টি</span> প্রশ্নে উত্তর দেওয়া হয়নি।
                   নিশ্চিতভাবে জমা দিতে চান? না দেওয়া প্রশ্নে ০ নম্বর পাবেন।
                 </p>
                 <div className="flex gap-3">
                   <button
                     onClick={() => setShowUnansweredConfirm(false)}
-                    className="flex-1 py-2.5 bg-zinc-900 border border-zinc-800 text-zinc-300 font-mono text-sm rounded-xl hover:bg-zinc-800 transition-colors"
+                    className="flex-1 py-2.5 bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-secondary)] font-mono text-sm rounded-xl hover:bg-[var(--surface-overlay)] transition-colors"
                   >
                     ফিরে যান
                   </button>
                   <button
-                    onClick={finalizeSubmit}
-                    className="flex-1 py-2.5 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-xl hover:bg-emerald-400 transition-colors shadow-neon-glow"
+                    type="button"
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); finalizeSubmit(); }}
+                    disabled={submitting}
+                    aria-busy={submitting}
+                    className="flex-1 py-2.5 min-h-11 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors shadow-neon-glow disabled:opacity-40"
                   >
-                    জমা দিন
+                    {(submitting || reconciling) ? (reconciling ? "যাচাই করা হচ্ছে..." : "জমা হচ্ছে...") : "জমা দিন"}
                   </button>
                 </div>
               </motion.div>
@@ -855,64 +1080,82 @@ export default function CustomExamTab() {
         <motion.div
           initial={{ opacity: 0, scale: 0.97 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="glass-card rounded-2xl border border-emerald-500/30 overflow-hidden"
+          className="glass-card rounded-2xl border border-[var(--primary)]/30 overflow-hidden"
         >
           <div className="p-6 text-center border-b border-terminal-border">
-            <Trophy className={`w-12 h-12 mx-auto mb-3 ${summary.percentage >= 80 ? "text-amber-400" : summary.percentage >= 50 ? "text-emerald-400" : "text-red-400"}`} />
-            <h3 className="text-xl font-bold text-white mb-1">পরীক্ষা সম্পন্ন!</h3>
+            <Trophy className={`w-12 h-12 mx-auto mb-3 ${summary.percentage >= 80 ? "text-[var(--dashboard-warning)]" : summary.percentage >= 50 ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-danger)]"}`} />
+            <h3 className="text-xl font-bold text-[var(--text-primary)] mb-1">পরীক্ষা সম্পন্ন!</h3>
             <p className={`text-sm font-mono mb-4 ${perf.tone}`}>{perf.label}</p>
 
             <div className="inline-flex flex-col items-center mb-4">
-              <div className="text-5xl font-bold font-mono text-emerald-400">{summary.finalScore}</div>
-              <div className="text-xs text-zinc-500 font-mono mt-1">মোট নম্বর: {summary.total}</div>
+              <div className="text-5xl font-bold font-mono text-[var(--dashboard-primary)]">{summary.finalScore}</div>
+              <div className="text-xs text-[var(--dashboard-text-muted)] font-mono mt-1">মোট নম্বর: {summary.total}</div>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-w-md mx-auto text-left">
-              <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/20 p-3">
-                <p className="text-[10px] text-zinc-500 font-mono">সঠিক</p>
-                <p className="text-lg font-bold text-emerald-400 font-mono">+{summary.correct}</p>
+              <button
+                type="button"
+                onClick={() => jumpToReview("correct")}
+                disabled={summary.correct === 0}
+                aria-label={`সঠিক ${summary.correct}টি প্রশ্ন`}
+                className="rounded-xl bg-[var(--dashboard-success-subtle)] border border-[var(--success)]/20 p-3 text-left transition-all hover:scale-[1.02] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-success)] disabled:opacity-50 disabled:hover:scale-100 disabled:hover:shadow-none disabled:cursor-default cursor-pointer"
+              >
+                <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">সঠিক</p>
+                <p className="text-lg font-bold text-[var(--dashboard-success)] font-mono">+{summary.correct}</p>
+              </button>
+              <button
+                type="button"
+                onClick={() => jumpToReview("wrong")}
+                disabled={summary.wrong === 0}
+                aria-label={`ভুল ${summary.wrong}টি প্রশ্ন`}
+                className="rounded-xl bg-[var(--dashboard-danger-subtle)] border border-[var(--danger)]/20 p-3 text-left transition-all hover:scale-[1.02] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-danger)] disabled:opacity-50 disabled:hover:scale-100 disabled:hover:shadow-none disabled:cursor-default cursor-pointer"
+              >
+                <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">ভুল</p>
+                <p className="text-lg font-bold text-[var(--dashboard-danger)] font-mono">−{summary.wrong}</p>
+              </button>
+              <button
+                type="button"
+                onClick={() => jumpToReview("unanswered")}
+                disabled={summary.unanswered === 0}
+                aria-label={`উত্তর দেওয়া হয়নি ${summary.unanswered}টি প্রশ্ন`}
+                className="rounded-xl bg-[var(--dashboard-teal-subtle)] border border-[var(--dashboard-teal)]/25 p-3 text-left transition-all hover:scale-[1.02] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-teal)] disabled:opacity-50 disabled:hover:scale-100 disabled:hover:shadow-none disabled:cursor-default cursor-pointer"
+              >
+                <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">উত্তর দেওয়া হয়নি</p>
+                <p className="text-lg font-bold text-[var(--dashboard-teal)] font-mono">{summary.unanswered}</p>
+              </button>
+              <div className="rounded-xl bg-[var(--dashboard-primary-subtle)] border border-[var(--dashboard-border-muted)] p-3">
+                <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">ইতিবাচক</p>
+                <p className="text-lg font-bold text-[var(--dashboard-primary)] font-mono">+{summary.positiveMarks}</p>
               </div>
-              <div className="rounded-xl bg-red-500/10 border border-red-500/20 p-3">
-                <p className="text-[10px] text-zinc-500 font-mono">ভুল</p>
-                <p className="text-lg font-bold text-red-400 font-mono">−{summary.wrong}</p>
+              <div className="rounded-xl bg-[var(--dashboard-danger-subtle)] border border-[var(--dashboard-border-muted)] p-3">
+                <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">নেতিবাচক</p>
+                <p className="text-lg font-bold text-[var(--dashboard-danger)] font-mono">−{summary.negativeMarks}</p>
               </div>
-              <div className="rounded-xl bg-subtle border border-zinc-700 p-3">
-                <p className="text-[10px] text-zinc-500 font-mono">উত্তর দেওয়া হয়নি</p>
-                <p className="text-lg font-bold text-zinc-400 font-mono">{summary.unanswered}</p>
-              </div>
-              <div className="rounded-xl bg-emerald-500/5 border border-zinc-800 p-3">
-                <p className="text-[10px] text-zinc-500 font-mono">ইতিবাচক</p>
-                <p className="text-lg font-bold text-emerald-400 font-mono">+{summary.positiveMarks}</p>
-              </div>
-              <div className="rounded-xl bg-red-500/5 border border-zinc-800 p-3">
-                <p className="text-[10px] text-zinc-500 font-mono">নেতিবাচক</p>
-                <p className="text-lg font-bold text-red-400 font-mono">−{summary.negativeMarks}</p>
-              </div>
-              <div className="rounded-xl bg-emerald-500/5 border border-zinc-800 p-3">
-                <p className="text-[10px] text-zinc-500 font-mono">অ্যাকুরেসি</p>
-                <p className="text-lg font-bold text-white font-mono">{summary.accuracy}%</p>
+              <div className="rounded-xl bg-[var(--dashboard-primary-subtle)] border border-[var(--dashboard-border-muted)] p-3">
+                <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">অ্যাকুরেসি</p>
+                <p className="text-lg font-bold text-[var(--text-primary)] font-mono">{summary.accuracy}%</p>
               </div>
             </div>
 
-            <div className="mt-4 h-2 bg-zinc-800 rounded-full overflow-hidden max-w-md mx-auto">
+            <div className="mt-4 h-2 bg-[var(--surface-overlay)] rounded-full overflow-hidden max-w-md mx-auto">
               <div
                 className={`h-full w-full origin-left rounded-full transition-transform duration-700 ${
-                  summary.percentage >= 80 ? "bg-gradient-to-r from-amber-500 to-amber-400" : summary.percentage >= 50 ? "bg-gradient-to-r from-emerald-500 to-emerald-400" : "bg-gradient-to-r from-red-500 to-red-400"
+                  summary.percentage >= 80 ? "bg-gradient-to-r from-[var(--warning)] to-[var(--warning)]" : summary.percentage >= 50 ? "bg-gradient-to-r from-[var(--success)] to-[var(--success)]" : "bg-gradient-to-r from-[var(--danger)] to-[var(--danger)]"
                 }`}
                 style={{ transform: `scaleX(${summary.percentage / 100})` }}
               />
             </div>
-            <p className="text-xs text-zinc-500 font-mono mt-2">
-              স্কোর: <span className="text-white">{summary.percentage}%</span> • সূত্র: সঠিক×১ − ভুল×০.৫
+            <p className="text-xs text-[var(--dashboard-text-muted)] font-mono mt-2">
+              স্কোর: <span className="text-[var(--text-primary)]">{summary.percentage}%</span> • সূত্র: সঠিক×১ − ভুল×০.৫
             </p>
             {summary.pointsEarned > 0 && (
-              <p className="text-xs text-emerald-400 font-mono mt-1">+{summary.pointsEarned} পয়েন্ট অর্জিত</p>
+              <p className="text-xs text-[var(--dashboard-primary)] font-mono mt-1">+{summary.pointsEarned} পয়েন্ট অর্জিত</p>
             )}
 
             <div className="flex items-center justify-center gap-3 mt-6">
               <button
                 onClick={resetAll}
-                className="px-5 py-2.5 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-xl hover:bg-emerald-400 transition-colors flex items-center gap-2 shadow-neon-glow"
+                className="px-5 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2 shadow-neon-glow"
               >
                 <RotateCcw className="w-4 h-4" /> নতুন পরীক্ষা
               </button>
@@ -922,25 +1165,31 @@ export default function CustomExamTab() {
 
         {/* Question-by-question review */}
         <div className="space-y-3">
-          <h4 className="text-sm font-medium text-zinc-400 font-mono uppercase tracking-wider">
+          <h4 className="text-sm font-medium text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider">
             প্রশ্ন-ভিত্তিক রিভিউ
           </h4>
           {result.review.map((item, i) => {
             const isCorrect = item.status === "correct";
             const isUnanswered = item.status === "unanswered";
+            const ringColor = isCorrect
+              ? "ring-[var(--dashboard-success)]"
+              : isUnanswered
+                ? "ring-[var(--dashboard-teal)]"
+                : "ring-[var(--dashboard-danger)]";
             return (
               <motion.div
                 key={item.questionId}
+                id={`exam-review-${item.status}`}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: Math.min(i * 0.03, 0.5) }}
-                className={`glass-card rounded-2xl border p-4 ${
-                  isCorrect ? "border-emerald-500/20" : isUnanswered ? "border-zinc-700" : "border-red-500/20"
-                }`}
+                className={`glass-card rounded-2xl border p-4 transition-shadow ${
+                  isCorrect ? "border-[var(--success)]/20" : isUnanswered ? "border-[var(--dashboard-teal)]/25" : "border-[var(--danger)]/20"
+                } ${highlightedReview === item.status ? `ring-2 ${ringColor}` : ""}`}
               >
                 <div className="flex items-start gap-3">
                   <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
-                    isCorrect ? "bg-emerald-500/10 text-emerald-400" : isUnanswered ? "bg-zinc-700/40 text-zinc-400" : "bg-red-500/10 text-red-400"
+                    isCorrect ? "bg-[var(--dashboard-success-subtle)] text-[var(--dashboard-success)]" : isUnanswered ? "bg-[var(--dashboard-teal-subtle)] text-[var(--dashboard-teal)]" : "bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)]"
                   }`}>
                     {isCorrect ? (
                       <CheckCircle2 className="w-3.5 h-3.5" />
@@ -952,54 +1201,54 @@ export default function CustomExamTab() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                      <span className="text-[10px] font-mono text-zinc-500">প্রশ্ন {i + 1}</span>
+                      <span className="text-[10px] font-mono text-[var(--dashboard-text-muted)]">প্রশ্ন {i + 1}</span>
                       <span className={`px-1.5 py-0.5 rounded text-[10px] font-mono ${
                         isCorrect
-                          ? "bg-emerald-500/10 text-emerald-400"
+                          ? "bg-[var(--dashboard-success-subtle)] text-[var(--dashboard-success)]"
                           : isUnanswered
-                            ? "bg-zinc-800 text-zinc-400"
-                            : "bg-red-500/10 text-red-400"
+                            ? "bg-[var(--dashboard-teal-subtle)] text-[var(--dashboard-teal)]"
+                            : "bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)]"
                       }`}>
                         {isCorrect ? "+১" : isUnanswered ? "০" : "−০.৫"}
                       </span>
-                      <span className="text-[10px] font-mono text-zinc-500">{item.subject}</span>
+                      <span className="text-[10px] font-mono text-[var(--dashboard-text-muted)]">{item.subject}</span>
                     </div>
 
-                    <p className="text-sm text-white mb-2">{item.question}</p>
+                    <p className="text-sm text-[var(--text-primary)] mb-2">{item.question}</p>
 
                     {/* Options with correct/user highlighting */}
                     <div className="space-y-1 mb-2">
                       {item.options.map((option, oi) => {
                         const isUser = option === item.userAnswer;
                         const isRight = option === item.correctAnswer;
-                        let cls = "border-zinc-800 text-zinc-500";
-                        if (isRight) cls = "border-emerald-500/40 bg-emerald-500/10 text-emerald-300";
-                        else if (isUser) cls = "border-red-500/40 bg-red-500/10 text-red-300";
+                        let cls = "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)]";
+                        if (isRight) cls = "border-[var(--success)]/40 bg-[var(--dashboard-success-subtle)] text-[var(--dashboard-success)]";
+                        else if (isUser) cls = "border-[var(--danger)]/40 bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)]";
                         return (
                           <div key={oi} className={`rounded-lg border px-3 py-1.5 text-xs flex items-center gap-2 ${cls}`}>
                             <span className="font-mono">{OPTION_LABELS[oi] ?? oi + 1}</span>
                             <span className="flex-1">{option}</span>
-                            {isRight && <Check className="w-3.5 h-3.5 text-emerald-400" />}
-                            {isUser && !isRight && <X className="w-3.5 h-3.5 text-red-400" />}
+                            {isRight && <Check className="w-3.5 h-3.5 text-[var(--dashboard-success)]" />}
+                            {isUser && !isRight && <X className="w-3.5 h-3.5 text-[var(--dashboard-danger)]" />}
                           </div>
                         );
                       })}
                     </div>
 
-                    <p className="text-xs text-zinc-500 font-mono">
+                    <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">
                       আপনার উত্তর:{" "}
-                      <span className={isCorrect ? "text-emerald-400" : isUnanswered ? "text-zinc-400" : "text-red-400"}>
+                      <span className={isCorrect ? "text-[var(--dashboard-success)]" : isUnanswered ? "text-[var(--dashboard-teal)]" : "text-[var(--dashboard-danger)]"}>
                         {item.userAnswer || "উত্তর দেওয়া হয়নি"}
                       </span>
                       {!isCorrect && !isUnanswered && (
                         <>
-                          {" "}• সঠিক উত্তর: <span className="text-emerald-400">{item.correctAnswer}</span>
+                          {" "}• সঠিক উত্তর: <span className="text-[var(--dashboard-success)]">{item.correctAnswer}</span>
                         </>
                       )}
                     </p>
 
                     {item.explanation && (
-                      <p className="text-xs text-zinc-400 mt-2 leading-relaxed">{item.explanation}</p>
+                      <p className="text-xs text-[var(--dashboard-text-muted)] mt-2 leading-relaxed">{item.explanation}</p>
                     )}
                   </div>
                 </div>
@@ -1011,7 +1260,7 @@ export default function CustomExamTab() {
         <div className="flex items-center justify-center gap-3">
           <button
             onClick={resetAll}
-            className="px-6 py-3 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-xl hover:bg-emerald-400 transition-colors flex items-center gap-2 shadow-neon-glow"
+            className="px-6 py-3 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2 shadow-neon-glow"
           >
             <RotateCcw className="w-4 h-4" /> নতুন পরীক্ষা শুরু করুন
           </button>

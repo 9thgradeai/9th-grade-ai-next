@@ -74,4 +74,14 @@ describe("ConversationList", () => {
     fireEvent.click(screen.getByText("Delete"))
     expect(defaultProps.onDelete).toHaveBeenCalledWith("c1")
   })
+
+  it("renders coach (COACH) conversations", () => {
+    render(
+      <ConversationList
+        {...defaultProps}
+        conversations={[makeConv({ id: "c3", kind: "COACH", title: "কোচ সেশন" })]}
+      />,
+    )
+    expect(screen.getByText("কোচ সেশন")).toBeInTheDocument()
+  })
 })

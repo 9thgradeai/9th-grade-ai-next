@@ -56,15 +56,18 @@ All mutating endpoints (auth and non-auth) reject cross-origin requests via an O
 | POST | `/api/study-plan/tasks/:id/toggle` | **Auth required** — Toggle task completion (per-user completion marker; template tasks toggleable) |
 | POST | `/api/flashcards/review` | **Auth required** — Grade a flashcard `{ flashcardId, rating: 0\|1\|2\|3 }` (0=again, 1=hard, 2=good, 3=easy) → per-user SM-2 state `{ state: { nextReview, interval, easeFactor, repetitions, lapses } }` |
 | GET | `/api/dashboard-stats` | **Auth required** — Caller's dashboard stats (per-user) |
-| POST | `/api/practice/submit` | **Auth required** — Grade practice answers `{ answers: [{ questionId, selected }] }` |
+| GET | `/api/preparation-intelligence` | **Auth required** — Unified preparation analytics powering the dashboard Home + Progress tabs (see `PreparationIntelligence` shape). Returns (per-user, never cached): overall accuracy/streak/study-time, 365-day activity window, 30-day period comparison with deltas, subject+topic performance, confidence-aware weak topics, mastery distribution, mistake-recovery stats, unfinished mock tests, flashcard due count, next exam, study tasks, and the deterministic recommendation list. |
+| POST | `/api/practice/submit` | **Auth required** — Grade practice answers `{ answers: [{ questionId, selected }] }` → `{ summary: { correct, total, score, pointsEarned, feedback? } }`. `feedback` is a per-question map `{ [questionId]: { masteryStatus, isMistake, justMastered } }` powering the mistake-drill's mastery labels (see `MistakeFeedback`). |
 | POST | `/api/daily-quiz/submit` | **Auth required** — Grade + persist daily quiz answers `{ quizId, answers }` |
 | POST | `/api/notifications/:id/read` | **Auth required** — Mark a notification read |
 | GET | `/api/exam/config` | List the custom-exam selection tree (subjects → topics → subtopics with question counts) |
 | POST | `/api/exam/build` | **Auth required** — Build a custom BCS-style exam `{ subjects: [{ subjectId, groups, count? }], questionCount, durationSec }` (401 without a session — construction is DB-heavy) |
-| POST | `/api/exam/submit` | **Auth required** — Grade + persist a custom exam `{ answers: [{ questionId, selected }] }` |
+| POST | `/api/exam/start` | **Auth required** — Register a freshly built exam as `IN_PROGRESS`. Body: `{ attemptId: UUID, questionIds: number[], durationSec?: number }`. `durationSec` (optional, `[0, 21600]`, 0 = unlimited) is the configured exam length — the server stores it as the authoritative deadline and rejects a submit arriving after deadline + 15s grace (`409 ATTEMPT_DEADLINE_EXCEEDED`). Idempotent — subsequent calls for the same `attemptId` are no-ops when the row is still `IN_PROGRESS`. |
+| POST | `/api/exam/submit` | **Auth required, idempotent** — Grade + persist a custom exam. Body: `{ attemptId: UUID, questionIds: number[], durationSec: number, answers: [{ questionId, selected }] }`. `questionIds` is the **authoritative** question set (never derived from the answers array). Answers referencing a question outside it are rejected (`400`); the SHA-256 `questionSetHash` is computed over the canonical sorted `questionIds` so client answer-subset drift can never cause a false `ATTEMPT_HASH_MISMATCH`. Re-submits for the same `(userId, attemptId)` return the original `SUBMITTED` result with `outcome: "resumed"` and never double-count points or duplicate attempts. |
 | POST | `/api/ai/solver` | **Auth required** — Solve a question `{ text?, imageBase64?, subject?, subjectId?, questionId? }` → `{ solution, steps, explanation, relatedConcept, source }` |
 | POST | `/api/ai/tutor` | **Auth required** — **Streaming** AI tutor turn `{ messages: [{ role, content }], conversationId?, subjectId?, topicId?, questionId?, topicPath?, intent? }` |
 | POST | `/api/ai/assistant` | **Auth required** — Study guidance `{ messages, conversationId?, questionId?, intent? }` → `{ reply, suggestedActions, source }` |
+| POST | `/api/ai/agent` | **Auth required** — **SSE** study-coach agent loop `{ question, conversationId?, context?: { subjectId?, topicId?, topicPath?, questionId? }, intent? }` → streamed events `agent.started`, `agent.status`, `tool.started`, `tool.completed`, `message.delta`, `block.created`, `agent.completed` (typed `AgentBlock[]`; never chain-of-thought). Headers `X-Run-Id`, `X-Conversation-Id`, `X-AI-Source`, `X-AI-Model`. Full protocol in `docs/AI_AGENT_API_CONTRACT.md`. |
 | POST | `/api/ai/evaluate` | **Auth required** — Grade a learner's written answer `{ question, learnerAnswer, questionId?, subjectId? }` → `{ score, verdict, strengths[], gaps[], modelAnswer, improvementTips[], source }` (grounded on the curated question bank when `questionId` is given) |
 | POST | `/api/ai/mock-test` | **Auth required** — Generate an AI mock test `{ subject?, subjectId?, exam?, count?, difficulty? }` → `{ title, questions: [{ id, question, options[], answer, explanation, topic, difficulty }], source }` |
 | POST | `/api/ai/advisor` | **Auth required** — Personalized exam-target + study plan `{ education?, interests?, targetExam?, weeklyHours?, examDate? }` → `{ summary, recommendedExam, focusAreas[], timelineWeeks, weeklyPlan[], tips[], source }` |
@@ -85,6 +88,16 @@ All mutating endpoints (auth and non-auth) reject cross-origin requests via an O
 | GET | `/api/weak-topics` | **Auth required** — Topics ranked weakest-first by accuracy from the caller's attempts. Query: `?minAttempts=` (default 3), `?limit=` (default 10). Response: `{ topics: [{ subject, topic, attempted, correct, score }] }` (ascending `score`) |
 | GET | `/api/leaderboard` | **Auth required** — Points-ranked leaderboard. Query: `?limit=` (default 20, max 50). Response: `{ entries: [{ rank, name, points, streak }], me: { rank, points } \| null }` |
 | GET | `/api/daily-quiz/history` | **Auth required** — The caller's completed daily quizzes (newest-first, default 14). Response: `{ history: [{ quizId, date, score, correct, total, completedAt }] }` (dates stringified) |
+| GET | `/api/mistakes` | **Auth required** — The caller's persistent mistake list (questions answered incorrectly, tracked until mastered). Query: `?page=` (default 1), `?limit=` (default 20, max 100), `?subject=`, `?status=`, `?sort=`. Response: `{ data: [MistakeItem], total, page, limit, totalPages }` |
+| GET | `/api/mistakes/stats` | **Auth required** — Mistake summary metrics. Response: `{ totalMistakes, unmastered, struggling, reviewing, improving, mastered, totalAttempts, totalCorrect, accuracy }` |
+| GET | `/api/mistakes/stats/overall` | **Auth required** — Overall answer-history accuracy across ALL attempts (not just mistakes). Response: `{ totalAttempts, totalCorrect, totalWrong, accuracy, questionsAttempted }` |
+| GET | `/api/mistakes/exam/config` | **Auth required** — Subject → topic → subtopic selection tree scoped ONLY to the caller's wrong questions, each with the number of wrong questions available under it. Response: `{ subjects: [{ subject, count, topics: [{ topic, count, subtopics: [{ subtopic, count }] }] }] }` |
+| GET | `/api/mistakes/subjects` | **Auth required** — Mistake count broken down by subject. Response: `{ subjects: [{ subject, count, unmastered }] }` |
+| POST | `/api/mistakes/exam` | **Auth required** — Build a mistake-focused practice drill from the caller's tracked mistakes. Body: `{ subject?, topic?, subtopic?, count, focus }`. `topic`/`subtopic` narrow selection strictly to the caller's wrong questions in that preference. Returns `ExamBuild`-shaped `{ questions: [MistakeExamQuestion] }` including `correctAnswer` + `explanation` so the practice drill can grade and reveal the answer (this is a study drill, not a graded exam). 404 if there are no mistakes to practice |
+| GET | `/api/exam-history` | **Auth required** — The caller's exam history: past attempts (custom exams, mock tests, daily quizzes, newest-first) plus upcoming verified exam dates with `daysUntil`. Response: `{ history: { past: [ExamHistoryItem], upcoming: [UpcomingExam] } }` |
+| GET | `/api/exam-papers` | **Auth required** — Verified exam papers with available questions for offline real-exam use. Response: `{ papers: [{ id, titleBn, titleEn, examId, examNameBn, examNameEn, examType, year, heldOn, durationMin, totalQuestions, availableQuestions, provenance, subjectId, subjectNameBn }] }`. Cached 5min (`stale-while-revalidate` 10min) |
+| GET | `/api/exam-papers/:paperId` | **Auth required** — Full questions for one paper (ordered by `questionNumber`), including `correctAnswer` + `explanation` so the client can build answer keys and self-grade. Response: `{ questions: [RealExamQuestion] }` |
+| POST | `/api/real-exam/export` | **Auth required** — Generate an offline exam PDF (A4, via `pdfkit`, Node.js runtime). Two protocols: (1) custom papers send `{ questions: [RealExamQuestion] (1–200), title, examName, exportOptions: { includeAnswers, includeExplanations, shuffleQuestions }, durationMin }`; (2) official papers send the slim `{ paperId, title, examName, exportOptions, durationMin }` and the server loads the questions itself (tiny upload, no client/server DTO drift). Returns `application/pdf` as an attachment. `includeAnswers: false` produces a clean question paper for real-exam simulation; `true` appends an inline answer key (+ explanations when `includeExplanations`). Nullable/malformed rows are normalized or skipped per-question (never abort the export); a 50s server deadline converts stalls into `503 { error, code: "EXPORT_TIMEOUT", stage }` instead of hanging. Errors: `400` (no questions / >200 / unrenderable), `404` (paperId has no questions), `401` (unauthenticated); render failures are classified as `PDF_EXPORT_RENDER_ERROR` (500) or `PDF_EXPORT_FONT_ERROR` (500 — Bengali font missing from the deployment bundle, e.g. `outputFileTracingIncludes` not applied). |
 
 ## Response Shapes
 
@@ -136,6 +149,29 @@ All mutating endpoints (auth and non-auth) reject cross-origin requests via an O
 { "stats": { "points": 120, "exams": 2, "rank": 1, "streak": 3, "questionsAnswered": 40, "accuracy": 75, "completion": 8, "flashcardsReviewed": 5, "aiQuestionsAsked": 2, "activity": [{ "date": "2026-08-18", "answered": 6, "correct": 5 }] } }
 ```
 
+### PreparationIntelligence
+`GET /api/preparation-intelligence` returns the object directly (no wrapper). Every number is server-derived from real attempt/mistake/exam/flashcard records — none are fabricated. When the user has no data, `overall.*` are zeros and `recommendations` is empty (clients render honest empty states).
+```json
+{
+  "overall": { "totalAttempts": 40, "totalCorrect": 32, "totalWrong": 8, "accuracy": 80, "questionsAttempted": 40, "points": 120, "rank": 1, "streak": 3, "flashcardsReviewed": 5, "aiQuestionsAsked": 2, "examsAttempted": 2, "studyTimeSec": 5400 },
+  "activity": [{ "date": "2026-08-18", "answered": 6, "correct": 5, "durationSec": 780 }],
+  "period": { "currentAccuracy": 80, "previousAccuracy": 70, "accuracyDelta": 10, "currentAttempts": 20, "previousAttempts": 12, "attemptsDelta": 8, "currentCorrect": 17, "previousCorrect": 8, "correctDelta": 9, "currentStudyTimeSec": 3000, "previousStudyTimeSec": 1800, "studyTimeDeltaSec": 1200 },
+  "subjectPerformance": [{ "subject": "বাংলা", "attempted": 12, "correct": 10, "accuracy": 83, "topics": [{ "subject": "বাংলা", "topic": "ব্যাকরণ", "attempted": 6, "correct": 5, "accuracy": 83 }] }],
+  "weakTopics": [{ "subject": "বাংলা", "topic": "নাতিহ", "attempted": 10, "correct": 3, "score": 30 }],
+  "flashcardsDue": 4,
+  "streak": 3,
+  "masteryDistribution": [{ "status": "NEW"|"STRUGGLING"|"REVIEWING"|"IMPROVING"|"MASTERED", "count": 12 }],
+  "mistakes": { "totalMistakes": 7, "unmastered": 4, "struggling": 2, "reviewing": 1, "improving": 0, "mastered": 0, "bySubject": [{ "subject": "বাংলা", "count": 3, "unmastered": 2 }] },
+  "recentResults": [{ "id": 1, "title": "মডেল টেস্ট ১", "score": 72, "correct": 36, "total": 50, "createdAt": "2026-08-18T00:00:00Z" }],
+  "nextExam": { "id": 1, "titleBn": "সরকারি নিয়োগ পরীক্ষা", "titleEn": "Govt. job exam", "type": "BCS", "date": "2026-11-01T00:00:00Z", "year": 2026 } | null,
+  "studyTasks": [{ "id": 1, "day": "Sunday", "subject": "বাংলা ভাষা ও সাহিত্য", "title": "চাকরির প্রস্তুতি - বাংলা ১ম পত্র", "completed": false, "priority": "high", "duration": 20 }],
+  "unfinishedActivities": [{ "type": "mock_test"|"daily_quiz", "id": "cuid", "startedAt": "2026-08-18T00:00:00Z" }],
+  "recommendations": [{ "id": "resume-exam"|"practice-weak-subject"|"practice-weak-topic"|"review-mistakes"|"review-flashcards"|"daily-quiz"|"daily-warmup"|"exam-near"|"keep-going", "priority": "high"|"medium"|"low", "target": "practice"|"mistakes"|"flashcards"|"study-planner"|"question-bank", "subject"?: string, "topic"?: string, "accuracy"?: number, "count"?: number }],
+  "dailyQuizAvailable": true
+}
+```
+`recommendations` are deterministic and ordered by expected preparation value (max 4). Accuracy deltas are in percentage points; `activity` is a 365-day zero-filled UTC window; `period` compares the trailing 30 days vs the preceding 30.
+
 ### AI Solver
 Now **streams** a `application/json` token stream (same shape as below). Headers:
 `X-Conversation-Id`, `X-AI-Source` (`groq` | `anthropic` | `mock` | `cache`), `X-AI-Model`.
@@ -182,6 +218,70 @@ Now **streams** a `application/json` token stream (same shape as below). Headers
 { "history": [{ "quizId": 1, "date": "2026-01-01", "score": 80, "correct": 4, "total": 5, "completedAt": "2026-01-01T10:00:00.000Z" }] }
 ```
 
+### MistakeItem
+One tracked mistake (`GET /api/mistakes` list item).
+```json
+{
+  "id": 1, "questionId": 101,
+  "totalAttempts": 3, "correctAttempts": 1, "incorrectAttempts": 2,
+  "consecutiveCorrect": 0, "consecutiveIncorrect": 2,
+  "mistakeCount": 2, "masteryScore": 30, "masteryStatus": "STRUGGLING",
+  "masteredAt": null, "isMistake": true,
+  "firstIncorrectAt": "2024-01-01T00:00:00Z", "lastIncorrectAt": "2024-01-02T00:00:00Z",
+  "lastCorrectAt": null, "reviewCount": 0, "lastReviewedAt": null, "nextReviewAt": null,
+  "lastSubject": "Math", "lastTopic": "Algebra", "lastExam": "",
+  "createdAt": "2024-01-01T00:00:00Z", "updatedAt": "2024-01-02T00:00:00Z",
+  "question": { "id": 101, "subjectId": 1, "subject": "Math", "topic": "Algebra", "subtopic": "Linear Equation", "question": "...", "options": ["a","b","c","d"], "correctAnswer": "a", "explanation": "...", "difficulty": "MEDIUM", "year": null, "sourceExam": "BCS", "bcsTerm": null }
+}
+```
+`masteryStatus` is one of `NEW | STRUGGLING | REVIEWING | IMPROVING | MASTERED`.
+
+### MistakeStats
+```json
+{ "totalMistakes": 5, "unmastered": 4, "struggling": 3, "reviewing": 1, "improving": 0, "mastered": 1, "totalAttempts": 12, "totalCorrect": 5, "accuracy": 42 }
+```
+
+### MistakeSubjects
+```json
+{ "subjects": [{ "subject": "Math", "count": 3, "unmastered": 2 }] }
+```
+
+### OverallStats
+`GET /api/mistakes/stats/overall` — overall answer-history accuracy across every
+question flow (practice, exams, daily quizzes). `accuracy = round(totalCorrect / totalAttempts * 100)`.
+```json
+{ "totalAttempts": 120, "totalCorrect": 84, "totalWrong": 36, "accuracy": 70, "questionsAttempted": 25 }
+```
+
+### MistakeSelection
+`GET /api/mistakes/exam/config` — a subject → topic → subtopic tree scoped
+strictly to the user's own wrong questions. Each node carries the count of wrong
+questions available under it, so the dashboard can offer subject/topic/subtopic
+preferences when building a mistake exam.
+```json
+{ "subjects": [{ "subject": "Math", "count": 8, "topics": [{ "topic": "Algebra", "count": 5, "subtopics": [{ "subtopic": "Quadratics", "count": 3 }] }] }] }
+```
+
+### MistakeExamBuild
+`POST /api/mistakes/exam` returns an `ExamBuild`-shaped payload. Because the
+mistake exam is a *practice drill* (studied, not graded), each question includes
+`correctAnswer` (the correct option string) and `explanation` so `QuestionDrill`
+can grade and reveal the answer. `focus` is one of `most_wrong | recently_wrong | weakest_topics | due_for_review | random`.
+Optional `topic`/`subtopic` narrow selection to the caller's wrong questions matching that preference.
+```json
+{ "questions": [{ "id": 101, "subjectId": 1, "subject": "Math", "topic": "Algebra", "subtopic": "", "question": "...", "options": ["a","b","c","d"], "correctAnswer": "c", "explanation": "...", "difficulty": "MEDIUM", "year": null, "sourceExam": "BCS" }] }
+```
+
+### MistakeFeedback
+Per-question mastery feedback returned on `POST /api/practice/submit` (and per
+review item on `POST /api/exam/submit`). The mistake drill uses it to show
+question-level labels: **Improved!** (correct, still a mistake), **Keep Working
+On It** (wrong), and **Mastered!** (`justMastered: true`).
+```json
+{ "feedback": { "101": { "masteryStatus": "MASTERED", "isMistake": false, "justMastered": true } } }
+```
+`masteryStatus` is one of `NEW | STRUGGLING | REVIEWING | IMPROVING | MASTERED`.
+
 ### ExamConfig (selection tree)
 The tree mirrors the recursive Topic taxonomy. Every node carries its aggregated
 subtree `questionCount`; nodes with zero questions are pruned. A node with
@@ -219,6 +319,16 @@ questions that could not be sourced from the selection.
 Scoring follows the BCS convention: **+1** per correct answer, **−0.5** per
 wrong answer, **0** for unanswered. `score` = correct − wrong×0.5; `accuracy`
 = correct/attempted; `percentage` = score/total (clamped 0–100).
+
+### ExamHistory
+```json
+{ "history": { "past": [{ "id": 7, "attemptId": "uuid", "title": "...", "type": "custom|mock|daily|exam", "score": 80, "correct": 8, "total": 10, "durationSec": 600, "percentage": 80, "createdAt": "2026-09-01T..." }], "upcoming": [{ "id": 3, "titleBn": "...", "titleEn": "...", "type": "BCS", "date": "2026-12-01T...", "year": "2026", "circularNo": "...", "note": "...", "verified": true, "daysUntil": 42 }] } }
+```
+
+### RealExamQuestion
+```json
+{ "questions": [{ "id": 1, "subjectId": 3, "subject": "বাংলা", "topic": "...", "subtopic": "...", "question": "...", "options": ["A","B","C","D"], "correctAnswer": "A", "explanation": "...", "difficulty": "EASY", "year": 2024, "sourceExam": "46th BCS", "questionNumber": 1 }] }
+```
 
 ## Error Shapes
 

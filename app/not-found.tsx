@@ -7,7 +7,7 @@ import { useState } from "react";
 export default function NotFound() {
   return (
     <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center p-4">
-      <div className="max-w-md w-full glass rounded-terminal-rounded border border-terminal-border p-8 text-center">
+      <div className="max-w-md w-full glass rounded-2xl border border-terminal-border p-8 text-center">
         <div className="text-6xl font-mono font-bold text-emerald-500/20 mb-4">404</div>
         <h2 className="text-xl font-semibold text-white mb-2">Sector Not Found</h2>
         <p className="text-sm text-zinc-400 mb-6 font-mono">

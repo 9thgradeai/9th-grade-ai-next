@@ -1,14 +1,16 @@
+"use client";
 import { ArrowRight, Compass } from "lucide-react";
 import Button from "@/components/ui/Button";
+import { useT } from "@/lib/i18n";
 import Reveal from "@/components/ui/Reveal";
 import AuroraOrb from "@/components/ui/AuroraOrb";
 import MotionText from "@/components/ui/MotionText";
 import Magnetic from "@/components/landing/Magnetic";
 
-const trustPoints = [
-  "Free forever — no credit card",
-  "Progress stays private & encrypted",
-  "AI-assisted, aligned to official syllabi",
+const trustPointKeys = [
+  "finalCta.trust1",
+  "finalCta.trust2",
+  "finalCta.trust3",
 ];
 
 /**
@@ -16,6 +18,8 @@ const trustPoints = [
  * echo are pure CSS/SVG — no canvas mounts this deep in the page.
  */
 export default function FinalCtaSection() {
+  const t = useT();
+  const trustPoints = trustPointKeys.map(k => t(k));
   return (
     <section className="relative px-4 py-24 sm:px-6 md:py-32" aria-labelledby="final-cta-heading">
       <div className="mx-auto max-w-5xl">
@@ -49,27 +53,27 @@ export default function FinalCtaSection() {
             <div className="relative">
               <p className="section-eyebrow justify-center mb-4">
                 <span aria-hidden="true">{"//"}</span>
-                BEGIN YOUR PREPARATION
+                {t("finalCta.eyebrow")}
               </p>
               <h2
                 id="final-cta-heading"
                 className="font-display text-[clamp(2rem,6vw,3.75rem)] font-semibold uppercase leading-tight tracking-tight text-white"
               >
-                <MotionText>Build your advantage.</MotionText>
+                <MotionText>{t("finalCta.title")}</MotionText>
               </h2>
               <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-[var(--text-muted)] sm:text-lg">
-                Turn preparation into an intelligent system.
+                {t("finalCta.subtitle")}
               </p>
 
               <div className="mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row">
                 <Magnetic>
                   <Button href="/login?register=true" size="lg" className="glow-border w-full font-semibold sm:w-auto">
-                    Start Preparing
+                    {t("finalCta.primary")}
                     <ArrowRight className="h-4 w-4" aria-hidden="true" />
                   </Button>
                 </Magnetic>
                 <Button href="/tracks" size="lg" variant="secondary" className="w-full sm:w-auto">
-                  Explore the Platform
+                  {t("finalCta.secondary")}
                   <Compass className="h-4 w-4" aria-hidden="true" />
                 </Button>
               </div>

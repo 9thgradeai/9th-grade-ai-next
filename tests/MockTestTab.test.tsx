@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor, within } from "@testing-library/react";
 import { EcosystemProvider } from "@/lib/ecosystem-ctx";
 import MockTestTab from "@/components/dashboard/MockTestTab";
 import type { Server } from "@/lib/types";
@@ -88,13 +88,12 @@ describe("MockTestTab (subtopic selection + build)", () => {
   it("drills into a subtopic and starts a timed mock", async () => {
     render(<EcosystemProvider><MockTestTab /></EcosystemProvider>);
 
-    // Select the subject → topic tree appears.
-    fireEvent.click(await screen.findByText("বাংলা ভাষা ও সাহিত্য"));
-    expect(await screen.findByText("ভাষা")).toBeInTheDocument();
-
-    // Expand the topic, then pick a specific subtopic under it.
-    fireEvent.click(screen.getByText("ভাষা"));
-    fireEvent.click(screen.getByText("বানান ও শুদ্ধি"));
+    // Subjects are shown inline — click one directly.
+    const subjectElements = await screen.findAllByText("বাংলা ভাষা ও সাহিত্য");
+    fireEvent.click(subjectElements[0]);
+    // Pick a topic and then a specific subtopic via the checkbox tree.
+    fireEvent.click(await screen.findByRole("checkbox", { name: /ভাষা/ }));
+    fireEvent.click(await screen.findByRole("checkbox", { name: /বানান ও শুদ্ধি/ }));
 
     // Start the mock.
     fireEvent.click(screen.getByText("মক টেস্ট শুরু করুন"));
@@ -113,11 +112,233 @@ describe("MockTestTab (subtopic selection + build)", () => {
 
   it("shows the available count for a selected subtopic", async () => {
     render(<EcosystemProvider><MockTestTab /></EcosystemProvider>);
-    fireEvent.click(await screen.findByText("বাংলা ভাষা ও সাহিত্য"));
-    fireEvent.click(screen.getByText("ভাষা"));
-    fireEvent.click(screen.getByText("বানান ও শুদ্ধি"));
+    const subjectElements = await screen.findAllByText("বাংলা ভাষা ও সাহিত্য");
+    fireEvent.click(subjectElements[0]);
+    fireEvent.click(await screen.findByRole("checkbox", { name: /ভাষা/ }));
+    fireEvent.click(await screen.findByRole("checkbox", { name: /বানান ও শুদ্ধি/ }));
 
     // Available for the subtopic is 4 (the leaf count).
     expect(screen.getAllByText("4টি").length).toBeGreaterThan(0);
+  });
+});
+
+describe("MockTestTab — submit flow (regression: canonical submission)", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    const submitResult = {
+      result: {
+        summary: {
+          total: 1,
+          attempted: 1,
+          correct: 1,
+          wrong: 0,
+          unanswered: 0,
+          positiveMarks: 1,
+          negativeMarks: 0,
+          finalScore: 1,
+          accuracy: 100,
+          percentage: 100,
+          pointsEarned: 10,
+        },
+        review: [],
+        attemptId: "x",
+        outcome: "submitted",
+        submittedAt: "2026-01-01T00:00:00.000Z",
+      },
+    };
+    stubFetch({
+      "/api/exam/config": { subjects: subjectFixture },
+      "/api/exam/build": { exam: builtExam },
+      "/api/exam/start": { attemptId: "x", status: "IN_PROGRESS" },
+      "/api/exam/submit": submitResult,
+      "/api/exams": submitResult,
+    });
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("clicking the submit button triggers /api/exam/submit with an attemptId", async () => {
+    render(<MockTestTab />);
+    // Subjects are shown inline — click one directly.
+    const subjectElements = await screen.findAllByText("বাংলা ভাষা ও সাহিত্য");
+    fireEvent.click(subjectElements[0]);
+    fireEvent.click(await screen.findByRole("checkbox", { name: /ভাষা/ }));
+    fireEvent.click(await screen.findByRole("checkbox", { name: /বানান ও শুদ্ধি/ }));
+    fireEvent.click(screen.getByText("মক টেস্ট শুরু করুন"));
+
+    // Pick an answer so the submit button becomes enabled.
+    const option = await screen.findByText("শুদ্ধ");
+    fireEvent.click(option);
+
+    // The submit button text is "জমা দিন" (Bangla for "submit"). It appears
+    // in both the sticky header and the sticky bottom bar of the active
+    // phase — pick the first one (header).
+    const submitBtnText = await screen.findAllByText("জমা দিন");
+    expect(submitBtnText.length).toBeGreaterThan(0);
+    // The button wraps the text node — find the enclosing <button> element.
+    let el: HTMLElement | null = submitBtnText[0] as HTMLElement;
+    while (el && el.tagName !== "BUTTON") {
+      el = el.parentElement;
+    }
+    expect(el).not.toBeNull();
+    fireEvent.click(el as HTMLElement);
+
+    await waitFor(() => {
+      const fetchMock = vi.mocked(fetch);
+      const submitCall = fetchMock.mock.calls.find((c) =>
+        String(c[0]).includes("/submit"),
+      );
+      expect(submitCall).toBeDefined();
+    });
+
+    const fetchMock = vi.mocked(fetch);
+    const submitCall = fetchMock.mock.calls.find((c) =>
+      String(c[0]).includes("/submit"),
+    );
+    const body = JSON.parse(String(submitCall?.[1]?.body)) as {
+      questionIds: number[];
+      durationSec: number;
+      answers: { questionId: number; selected: string }[];
+    };
+    // Canonical contract: Idempotency-Key header carries the UUID (attemptId moved to URL/header)
+    const headers = (submitCall?.[1]?.headers as Record<string, string> | Headers | undefined);
+    let idempotencyKey = "";
+    if (headers instanceof Headers) idempotencyKey = headers.get("Idempotency-Key") || "";
+    else if (headers && typeof headers === "object") idempotencyKey = (headers as Record<string,string>)["Idempotency-Key"] || (headers as Record<string,string>)["idempotency-key"] || "";
+    // Also check URL contains the UUID
+    const url = String(submitCall?.[0]);
+    const urlMatch = url.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i);
+    expect(idempotencyKey || urlMatch?.[0] || "").toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+    );
+    expect(body.questionIds).toEqual([10]);
+    expect(body.answers).toEqual([{ questionId: 10, selected: "শুদ্ধ" }]);
+    expect(typeof body.durationSec).toBe("number");
+  });
+});
+
+describe("MockTestTab — results review colors + jump tiles", () => {
+  const multiExam: Server.ExamBuildResultDTO = {
+    examId: "mock-result",
+    questions: [
+      { id: 10, subject: "বাংলা ভাষা ও সাহিত্য", subjectId: 1, topic: "ভাষা", subtopic: "বানান ও শুদ্ধি", question: "প্রশ্ন ১", options: ["ক", "খ", "গ", "ঘ"], difficulty: "MEDIUM", sourceExam: "BCS", year: null },
+      { id: 11, subject: "বাংলা ভাষা ও সাহিত্য", subjectId: 1, topic: "ভাষা", subtopic: "বানান ও শুদ্ধি", question: "প্রশ্ন ২", options: ["ক", "খ", "গ", "ঘ"], difficulty: "MEDIUM", sourceExam: "BCS", year: null },
+      { id: 12, subject: "বাংলা ভাষা ও সাহিত্য", subjectId: 1, topic: "ভাষা", subtopic: "বানান ও শুদ্ধি", question: "প্রশ্ন ৩", options: ["ক", "খ", "গ", "ঘ"], difficulty: "EASY", sourceExam: "BCS", year: null },
+    ],
+    totalQuestions: 3,
+    requested: 10,
+    available: 4,
+    shortfall: 6,
+    durationSec: 600,
+    config: {
+      subjects: [{ subjectId: 1, paths: ["ভাষা/বানান ও শুদ্ধি"], count: 10 }],
+      questionCount: 10,
+      durationSec: 600,
+    },
+  };
+
+  const submitResult = {
+    result: {
+      summary: {
+        total: 3,
+        attempted: 1,
+        correct: 1,
+        wrong: 1,
+        unanswered: 1,
+        positiveMarks: 1,
+        negativeMarks: 0.5,
+        finalScore: 1,
+        accuracy: 100,
+        percentage: 100,
+        pointsEarned: 10,
+      },
+      review: [
+        { questionId: 10, subject: "বাংলা ভাষা ও সাহিত্য", topic: "ভাষা", subtopic: "বানান ও শুদ্ধি", question: "প্রশ্ন ১", options: [], correctAnswer: "ক", explanation: "", userAnswer: "ক", status: "correct" as const, marks: 1 },
+        { questionId: 11, subject: "বাংলা ভাষা ও সাহিত্য", topic: "ভাষা", subtopic: "বানান ও শুদ্ধি", question: "প্রশ্ন ২", options: [], correctAnswer: "খ", explanation: "", userAnswer: "ক", status: "wrong" as const, marks: -0.5 },
+        { questionId: 12, subject: "বাংলা ভাষা ও সাহিত্য", topic: "ভাষা", subtopic: "বানান ও শুদ্ধি", question: "প্রশ্ন ৩", options: [], correctAnswer: "গ", explanation: "", userAnswer: "", status: "unanswered" as const, marks: 0 },
+      ],
+      attemptId: "y",
+      outcome: "submitted",
+      submittedAt: "2026-01-01T00:00:00.000Z",
+    },
+  };
+
+  beforeEach(() => {
+    localStorage.clear();
+    stubFetch({
+      "/api/exam/config": { subjects: subjectFixture },
+      "/api/exam/build": { exam: multiExam },
+      "/api/exam/start": { attemptId: "y", status: "IN_PROGRESS" },
+      "/api/exam/submit": submitResult,
+      "/api/exams": submitResult,
+    });
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  async function submitMockWithOneAnswer() {
+    render(<MockTestTab />);
+    const subjectElements = await screen.findAllByText("বাংলা ভাষা ও সাহিত্য");
+    fireEvent.click(subjectElements[0]);
+    fireEvent.click(await screen.findByRole("checkbox", { name: /ভাষা/ }));
+    fireEvent.click(await screen.findByRole("checkbox", { name: /বানান ও শুদ্ধি/ }));
+    fireEvent.click(screen.getByText("মক টেস্ট শুরু করুন"));
+
+    await screen.findByText("প্রশ্ন ১");
+    fireEvent.click(screen.getByText("ক"));
+
+    fireEvent.click(screen.getAllByText("জমা দিন")[0]);
+    const dialog = await screen.findByRole("dialog");
+    fireEvent.click(within(dialog).getByText("জমা দিন"));
+
+    expect(await screen.findByText("মক টেস্ট সম্পন্ন!")).toBeInTheDocument();
+  }
+
+  it("colors correct green, wrong red and unanswered teal on the result tiles", async () => {
+    await submitMockWithOneAnswer();
+
+    const correctTile = screen.getByRole("button", { name: /সঠিক 1টি/ });
+    expect(correctTile.className).toContain("dashboard-success");
+    const wrongTile = screen.getByRole("button", { name: /ভুল 1টি/ });
+    expect(wrongTile.className).toContain("dashboard-danger");
+    const unansweredTile = screen.getByRole("button", { name: /উত্তর দেওয়া হয়নি 1টি/ });
+    expect(unansweredTile.className).toContain("dashboard-teal");
+
+    const correctRow = document.getElementById("mock-review-correct");
+    const wrongRow = document.getElementById("mock-review-wrong");
+    const unansweredRow = document.getElementById("mock-review-unanswered");
+    expect(correctRow).not.toBeNull();
+    expect(wrongRow).not.toBeNull();
+    expect(unansweredRow).not.toBeNull();
+    expect(correctRow!.className).toContain("border-[var(--success)]/20");
+    expect(wrongRow!.className).toContain("border-[var(--danger)]/20");
+    expect(unansweredRow!.className).toContain("border-[var(--dashboard-teal)]/25");
+  });
+
+  it("clicking a result tile jumps to (scrolls + highlights) the matching review row", async () => {
+    await submitMockWithOneAnswer();
+
+    const origScrollIntoView = Element.prototype.scrollIntoView;
+    const scrollIntoView = vi.fn();
+    Element.prototype.scrollIntoView = scrollIntoView as never;
+    try {
+      fireEvent.click(screen.getByRole("button", { name: /ভুল 1টি/ }));
+      expect(scrollIntoView).toHaveBeenCalledTimes(1);
+      const wrongRow = document.getElementById("mock-review-wrong");
+      expect(wrongRow!.className).toContain("ring-2");
+      expect(wrongRow!.className).toContain("ring-[var(--dashboard-danger)]");
+
+      fireEvent.click(screen.getByRole("button", { name: /উত্তর দেওয়া হয়নি 1টি/ }));
+      expect(scrollIntoView).toHaveBeenCalledTimes(2);
+      const unansweredRow = document.getElementById("mock-review-unanswered");
+      expect(unansweredRow!.className).toContain("ring-2");
+      expect(unansweredRow!.className).toContain("ring-[var(--dashboard-teal)]");
+    } finally {
+      Element.prototype.scrollIntoView = origScrollIntoView;
+    }
   });
 });

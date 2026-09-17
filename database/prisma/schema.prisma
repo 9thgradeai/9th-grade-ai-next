@@ -1,6 +1,7 @@
 // Prisma schema for 9Th-Grade AI
-// PostgreSQL for all environments (local + Vercel/Railway). Local dev uses
-// a local Postgres instance; production uses Railway Postgres via DATABASE_URL.
+// PostgreSQL for all environments (local + Vercel/Neon). Local dev uses
+// a local Postgres instance; production uses Neon Postgres via DATABASE_URL
+// (pooled `-pooler.neon.tech` host for serverless function fan-out).
 
 generator client {
   provider = "prisma-client-js"
@@ -78,6 +79,7 @@ enum AIConversationKind {
   TUTOR
   ASSISTANT
   SOLVER
+  COACH
 }
 
 enum AIMessageRole {
@@ -152,6 +154,48 @@ model ExamEcosystem {
   @@index([sortOrder])
 }
 
+enum MasteryStatus {
+  NEW
+  STRUGGLING
+  REVIEWING
+  IMPROVING
+  MASTERED
+}
+
+enum AgentRunStatus {
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+}
+
+enum LearningEventType {
+  SESSION_STARTED
+  SESSION_COMPLETED
+  QUESTION_ATTEMPTED
+  QUESTION_CORRECT
+  QUESTION_WRONG
+  QUESTION_SKIPPED
+  TOPIC_REVIEWED
+  REVISION_COMPLETED
+  MOCK_EXAM_COMPLETED
+  AI_EXPLANATION_REQUESTED
+  AI_TUTOR_SESSION
+  STUDY_PLAN_CREATED
+  STUDY_PLAN_COMPLETED
+}
+
+enum MistakeErrorType {
+  CONCEPTUAL_GAP
+  CARELESS_MISTAKE
+  MEMORY_FAILURE
+  MISREADING
+  CALCULATION_ERROR
+  CONFUSION
+  GUESSING
+  TIME_PRESSURE
+  UNKNOWN
+}
+
 // ── Auth ──────────────────────────────────────────────────
 model User {
   id           String         @id @default(cuid())
@@ -203,6 +247,7 @@ model User {
   notifications AppNotification[]
   attempts     QuestionAttempt[]
   mockTestResults MockTestResult[]
+  examAttempts ExamAttempt[]
   flashcardReviews FlashcardReview[]
   notificationReads NotificationRead[]
   aiConversations AIConversation[]
@@ -213,6 +258,9 @@ model User {
   flashcardUserStates     FlashcardUserState[]
   studyTaskCompletions    StudyTaskCompletion[]
   userBadges              UserBadge[]
+  questionProgress        UserQuestionProgress[]
+  agentRuns               AgentRun[]
+  learningEvents          LearningEvent[]
 
   // NOTE: `email` and `handle` are @unique — their backing indexes already
   // serve lookups; explicit duplicates were removed (write amplification).
@@ -364,6 +412,7 @@ model Question {
   updatedAt      DateTime        @updatedAt
   bookmarks      Bookmark[]
   attempts       QuestionAttempt[]
+  userProgress   UserQuestionProgress[]
 
   @@index([ecosystemId])
   @@index([ecosystemId, subjectId])
@@ -736,6 +785,7 @@ model Bookmark {
 // Every answered question (practice, mock test, daily quiz). Powers
 // accuracy, streaks, and per-subject reports.
 model QuestionAttempt {
+model QuestionAttempt {
   id           Int             @id @default(autoincrement())
   ecosystemId  Int
   ecosystem    ExamEcosystem   @relation(fields: [ecosystemId], references: [id], onDelete: Cascade)
@@ -749,6 +799,11 @@ model QuestionAttempt {
   topic        String          @default("")
   correct      Boolean
   source       String          @default("practice") // practice | mock | daily
+  // ── Extended fields (Phase 1 — agent foundation) ──
+  selectedAnswer String @default("")
+  durationSec    Int    @default(0)
+  confidence     Int?             // 0–100, optional learner confidence
+  errorType      MistakeErrorType? // server-validated error classification
   createdAt    DateTime        @default(now())
 
   @@index([ecosystemId, userId, createdAt])
@@ -772,10 +827,65 @@ model MockTestResult {
   total       Int      @default(0)
   durationSec Int      @default(0)
   createdAt   DateTime @default(now())
+  // Back-reference from ExamAttempt (one-to-one). Populated when a custom exam
+  // submission creates this result row. Uniqueness ensures two attempts never
+  // share the same result row.
+  examAttempt ExamAttempt? @relation("ExamAttemptResult")
 
   @@index([userId, createdAt])
   // FK-side index for MockTest SetNull.
   @@index([mockTestId])
+}
+
+// Canonical exam attempt record — THE single source of truth for whether an
+// exam was submitted. Every custom-exam submission must create exactly one row
+// here; duplicate submissions for the same (userId, idempotencyKey) are
+// resolved by returning the existing SUBMITTED result, never by re-writing.
+//
+// Why this exists:
+//   • Exam submissions previously created MockTestResult rows with
+//     mockTestId=null and durationSec=0, indistinguishable from a real mock
+//     test result, with no attempt token to dedupe against.
+//   • Without this table, network retries and double-clicks double-counted
+//     points and produced duplicate result rows.
+model ExamAttempt {
+  id              Int      @id @default(autoincrement())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Client-minted UUID minted at exam start, persisted with the exam state
+  // and reused on every submission retry. Unique per (user, attempt) so a
+  // duplicate submit is detected server-side without trusting the payload.
+  idempotencyKey  String
+  // Stable fingerprint of the question set (sorted SHA-256 hex). Verifies the
+  // submission actually corresponds to the built exam — prevents a client
+  // from silently swapping question IDs under the same attempt token.
+  questionSetHash String
+  status          ExamAttemptStatus @default(IN_PROGRESS)
+  // Total wall-clock seconds the user spent on this attempt. Captured at
+  // submit-time so we never record 0 (the legacy MockTestResult default).
+  durationSec     Int      @default(0)
+  startedAt       DateTime @default(now())
+  submittedAt     DateTime?
+  // Authoritative exam length (seconds) registered at /exam/start. 0 = unlimited.
+  // The server enforces the timer deadline against this + grace, so the client
+  // can never extend a timed exam by delaying the submit call.
+  examDurationSec Int      @default(0)
+  // Snapshot of the graded summary (matches ExamResultDTO.summary).
+  summaryJson     Json?
+  // FK to the MockTestResult row that represents this attempt, set at submit
+  // time. Lets the existing history endpoint continue to work unchanged.
+  resultId        Int?     @unique
+  result          MockTestResult? @relation("ExamAttemptResult", fields: [resultId], references: [id], onDelete: SetNull)
+
+  @@unique([userId, idempotencyKey])
+  @@index([userId, status])
+  @@index([userId, submittedAt])
+}
+
+enum ExamAttemptStatus {
+  IN_PROGRESS
+  SUBMITTING
+  SUBMITTED
 }
 
 // Per-user flashcard SRS reviews (log). nextReview scheduling is derived
@@ -824,6 +934,7 @@ model AIConversation {
   createdAt  DateTime           @default(now())
   updatedAt  DateTime           @updatedAt
   messages   AIMessage[]
+  agentRuns  AgentRun[]
 
   @@index([userId, updatedAt])
   @@index([userId, kind, updatedAt])
@@ -905,4 +1016,122 @@ model AIFeedback {
 
   @@index([userId, createdAt])
   @@index([messageId])
+}
+
+// ── Per-user question mastery / mistake tracking ───────────
+// One persistent row per (user, question). Updated atomically on every answer
+// submission across all practice modes. Powers the Mistake Practice system.
+model UserQuestionProgress {
+  id                 Int           @id @default(autoincrement())
+  userId             String
+  user               User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  questionId         Int
+  question           Question      @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  // ── Performance counters ──
+  totalAttempts      Int           @default(0)
+  correctAttempts    Int           @default(0)
+  incorrectAttempts  Int           @default(0)
+  consecutiveCorrect Int           @default(0)
+  consecutiveIncorrect Int         @default(0)
+  mistakeCount       Int           @default(0) // times answered incorrectly (total history)
+
+  // ── Mastery scoring ──
+  masteryScore       Float         @default(0) // 0–100, computed from attempt history
+  masteryStatus      MasteryStatus @default(NEW)
+  masteredAt         DateTime?     // timestamp when status first reached MASTERED
+
+  // ── Mistake tracking ──
+  isMistake          Boolean       @default(false) // true while the question needs practice
+  firstIncorrectAt   DateTime?     // when the user first got this wrong
+  lastIncorrectAt    DateTime?     // most recent incorrect attempt
+  lastCorrectAt      DateTime?     // most recent correct attempt
+
+  // ── Review scheduling ──
+  reviewCount        Int           @default(0) // times reviewed after initial mistake
+  lastReviewedAt     DateTime?
+  nextReviewAt       DateTime?     // spaced-repetition next review target
+
+  // ── Context (last seen) ──
+  lastSubject        String        @default("")
+  lastTopic          String        @default("")
+  lastExam           String        @default("")
+
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  @@unique([userId, questionId])
+  // Mistake list: filter by (userId, isMistake) — the primary query pattern.
+  @@index([userId, isMistake])
+  // Subject breakdown: aggregate mistakes per subject.
+  @@index([userId, lastSubject])
+  // Status filtering: filter by (userId, masteryStatus).
+  @@index([userId, masteryStatus])
+  // Sort by recency: order by lastIncorrectAt for "recently wrong" sort.
+  @@index([userId, lastIncorrectAt])
+  // Review scheduling: find questions due for review.
+  @@index([userId, nextReviewAt])
+  // FK-side: Question cascade deletes must not seq-scan this table.
+  @@index([questionId])
+}
+
+// ══════════════════════════════════════════════════════════════════════
+//  AI Agent (Phase 1 — agent foundation)
+// ══════════════════════════════════════════════════════════════════════
+
+model AgentRun {
+  id             String          @id @default(cuid())
+  userId         String
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  conversationId String?
+  conversation   AIConversation? @relation(fields: [conversationId], references: [id], onDelete: SetNull)
+  intent         String          @default("")
+  status         AgentRunStatus  @default(IN_PROGRESS)
+  steps          Int             @default(0)
+  model          String?         @default("")
+  provider       String?         @default("")
+  inputTokens    Int             @default(0)
+  outputTokens   Int             @default(0)
+  latencyMs      Int             @default(0)
+  errorCode      String?         @default("")
+  responseJson   Json?           // validated final AgentResponse blocks (never chain-of-thought)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  toolCalls      AgentToolCall[]
+
+  @@index([userId, createdAt])
+  @@index([conversationId])
+}
+
+model AgentToolCall {
+  id            String   @id @default(cuid())
+  runId         String
+  run           AgentRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  name          String
+  argumentsJson Json
+  resultJson    Json?
+  durationMs    Int      @default(0)
+  success       Boolean  @default(true)
+  errorCode     String?  @default("")
+  createdAt     DateTime @default(now())
+
+  @@index([runId])
+}
+
+model LearningEvent {
+  id         String            @id @default(cuid())
+  userId     String
+  user       User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type       LearningEventType
+  subjectId  Int?
+  topicId    Int?
+  questionId Int?
+  metadata   Json?             // replay payload: attempt state, score, session id, …
+  occurredAt DateTime          @default(now())
+  createdAt  DateTime          @default(now())
+
+  @@index([userId, occurredAt])
+  @@index([userId, type])
+  @@index([userId, subjectId, occurredAt])
+  @@index([userId, topicId, occurredAt])
 }

@@ -51,9 +51,10 @@ describe("BCS record normalization", () => {
     const n = normalizeBcsRecord({
       examTerm: "৫০তম বিসিএস",
       subject: "বাংলা ভাষা ও সাহিত্য",
-      question: "'ন্বর্গ' শব্দের সঠিক সমার্থক শব্দজোড়া কোনটি?",
-      options: ["হরিদশ্ব", "দ্ষিতি", "দিনমণি", "ত্রিদিব"],
-      correctAnswer: "গ. দিনমণি",
+      question: "'স্বর্গ' শব্দের সঠিক সমার্থক শব্দজোড়া কোনটি?",
+      options: ["দিনমণি", "দক্ষিণা", "নদী", "ত্রিদিব"],
+      correctAnswer: "ক. দিনমণি",
+      explanation: "স্বর্গ, সুরলোক, দিব — দিনমণি এই অর্থে ব্যবহৃত হয়।",
       qnum: 42,
     });
     expect(n.ok).toBe(true);
@@ -114,18 +115,19 @@ describe("BCS record normalization", () => {
 });
 
 describe("BCS corpus honesty", () => {
-  it("imports only a minority of the degraded corpus (no over-claiming)", () => {
+  it("keeps only importable records after the corruption sweep (no over-claiming)", () => {
     const raw = JSON.parse(
       readFileSync(join(process.cwd(), "database", "data", "question_bank", "bcs", "bcs_questions.json"), "utf8"),
     ) as Array<Record<string, unknown>>;
-    expect(raw.length).toBeGreaterThan(400);
+    // The concatenated/scaffold-shifted majority was purged from the source.
+    expect(raw.length).toBeLessThanOrEqual(60);
     let valid = 0;
     for (const r of raw) {
       if (normalizeBcsRecord(r as Parameters<typeof normalizeBcsRecord>[0]).ok) valid++;
     }
-    // With ~294 malformed records, fewer than half the corpus is importable.
-    expect(valid).toBeLessThan(raw.length / 2);
-    expect(valid).toBeGreaterThan(100);
+    // Every record that survived the sweep must be importable — nothing broken
+    // may remain in the corpus file.
+    expect(valid).toBe(raw.length);
   });
 });
 

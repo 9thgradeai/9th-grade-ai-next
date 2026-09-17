@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-const SKELETON = "animate-pulse rounded-lg bg-white/[0.06]";
+const SKELETON = "skeleton-shimmer rounded-lg";
 
 /** Base skeleton block. Decorative — hidden from assistive tech. */
 export function Skeleton({ className = "" }: { className?: string }) {
@@ -36,7 +36,7 @@ export function SkeletonCard({
     <div
       role="status"
       aria-label="Loading"
-      className={`glass-card rounded-2xl border border-white/10 p-6 ${className}`}
+      className={`glass-card rounded-2xl border border-[var(--border-subtle)] p-6 ${className}`}
     >
       <span className="sr-only">Loading…</span>
       {children ?? (

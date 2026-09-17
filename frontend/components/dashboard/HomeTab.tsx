@@ -2,235 +2,84 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import {
-  CalendarClock,
-  Flame,
-  Target,
-  ArrowRight,
-  Sparkles,
-  Trophy,
-  ClipboardList,
-  Flag,
-} from "lucide-react";
+import { Clock, ArrowRight, Flame, Trophy, ChevronRight, RefreshCw } from "lucide-react";
 import { useAuth } from "@/lib/auth-ctx";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 import { useLanguage, t } from "@/lib/lang-ctx";
+import { useT } from "@/lib/i18n";
 import { useToastSafe } from "@/lib/toast-ctx";
 import { api } from "@/lib/services/api";
-import type {
-  Server,
-} from "@/lib/types";
-import DailyQuizWidget from "./DailyQuizWidget";
-import KpiTile, { type KpiAccent } from "@/components/ui/KpiTile";
-import EmptyState from "@/components/ui/EmptyState";
-import Sparkline from "@/components/ui/Sparkline";
+import type { Server, PrepIntelligenceRecommendation } from "@/lib/types";
 import StreakHeatmap from "./StreakHeatmap";
-import NextBestAction from "./NextBestAction";
-import { deriveNextAction } from "@/lib/dashboard/recommend";
+import HomeCoach from "./ai/HomeCoach";
+import { useExamDaysLeft } from "./HomeTabHelpers";
+import TodayMission from "./command-center/TodayMission";
+import PreparationPulse from "./command-center/PreparationPulse";
+import ContinueLearning from "./command-center/ContinueLearning";
+import RecommendedActions from "./command-center/RecommendedActions";
+import PerformanceCard from "./command-center/PerformanceCard";
+import type { PerfRange } from "./command-center/PerformanceCard";
+import TodayPlanCard from "./command-center/TodayPlanCard";
+import { launchAI } from "@/lib/ai-launcher";
 
 const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const WEEKDAY_SHORT_BN = ["শনি", "রবি", "সোম", "মঙ্গল", "বুধ", "বৃহ", "শুক্র"];
 
-const PREP_LABEL: Record<string, string> = {
-  BEGINNER: "নবীন",
-  INTERMEDIATE: "মধ্যম",
-  ADVANCED: "উন্নত",
-};
-
-const STAGGER = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.06, delayChildren: 0.04 } },
-};
-const STAGGER_ITEM = {
-  hidden: { opacity: 0, y: 10 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: { type: "spring" as const, stiffness: 260, damping: 26 },
-  },
-};
-
 function lastSevenDayLabels(): string[] {
   const today = new Date().getDay();
   const out: string[] = [];
-  for (let i = 6; i >= 0; i--) {
-    out.push(WEEKDAY_SHORT_BN[(today - i + 7) % 7]);
-  }
+  for (let i = 6; i >= 0; i--) out.push(WEEKDAY_SHORT_BN[(today - i + 7) % 7]);
   return out;
 }
-
 const WEEKDAY_LABELS_7 = lastSevenDayLabels();
 
-function CountdownRing({ daysLeft }: { daysLeft: number }) {
-  const fraction = Math.max(0, Math.min(1, daysLeft / 90));
-  const r = 26;
-  const circ = 2 * Math.PI * r;
-  const offset = circ * (1 - fraction);
-  return (
-    <svg viewBox="0 0 64 64" className="w-16 h-16 -rotate-90" aria-hidden="true">
-      <circle cx="32" cy="32" r={r} fill="none" stroke="rgb(148 155 195 / 0.18)" strokeWidth="5" />
-      <circle
-        cx="32"
-        cy="32"
-        r={r}
-        fill="none"
-        stroke="#2dd4bf"
-        strokeWidth="5"
-        strokeLinecap="round"
-        strokeDasharray={circ}
-        strokeDashoffset={offset}
-      />
-    </svg>
-  );
-}
+const STAGGER = { hidden: {}, show: { transition: { staggerChildren: 0.05, delayChildren: 0.03 } } };
+const STAGGER_ITEM = {
+  hidden: { opacity: 0, y: 12 },
+  show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 280, damping: 28 } },
+};
 
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("bn-BD", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
+function timeGreeting(key: (k: string) => string) {
+  const h = new Date().getHours();
+  if (h < 12) return key("home.greeting.morning");
+  if (h < 17) return key("home.greeting.afternoon");
+  return key("home.greeting.evening");
 }
-
-function useCountdown(target: string) {
-  const [remaining, setRemaining] = useState({ d: "00", h: "00", m: "00", s: "00" });
-  useEffect(() => {
-    const tick = () => {
-      const diff = new Date(target).getTime() - Date.now();
-      if (diff <= 0) {
-        setRemaining({ d: "00", h: "00", m: "00", s: "00" });
-        return;
-      }
-      const pad = (n: number) => String(n).padStart(2, "0");
-      setRemaining({
-        d: pad(Math.floor(diff / 86400000)),
-        h: pad(Math.floor((diff % 86400000) / 3600000)),
-        m: pad(Math.floor((diff % 3600000) / 60000)),
-        s: pad(Math.floor((diff % 60000) / 1000)),
-      });
-    };
-    tick();
-    const id = setInterval(tick, 1000);
-    return () => clearInterval(id);
-  }, [target]);
-  return remaining;
-}
-
-// Isolated leaf: the 1-second tick only re-renders this tiny node, not the
-// whole HomeTab.
-function CountdownClock({ target }: { target: string }) {
-  const remaining = useCountdown(target);
-  return (
-    <span className="text-emerald-400 font-bold text-lg tracking-widest tabular-nums">
-      {remaining.d}:{remaining.h}:{remaining.m}:{remaining.s}
-    </span>
-  );
-}
-
-// Ring driven by the same isolated countdown (no Date.now() during render).
-function CountdownRingLive({ target }: { target: string }) {
-  const remaining = useCountdown(target);
-  return <CountdownRing daysLeft={Number(remaining.d) || 0} />;
-}
-
-// Days until an exam. Mirrors useCountdown's effect-based pattern so it is not
-// evaluated during render (Date.now() is impure).
-function useExamDaysLeft(target: string | null): number | null {
-  const [days, setDays] = useState<number | null>(null);
-  useEffect(() => {
-    if (!target) {
-      queueMicrotask(() => setDays(null));
-      return;
-    }
-    const tick = () => {
-      const diff = new Date(target).getTime() - Date.now();
-      setDays(Math.max(0, Math.ceil(diff / 86400000)));
-    };
-    queueMicrotask(tick);
-    const id = setInterval(tick, 60000);
-    return () => clearInterval(id);
-  }, [target]);
-  return days;
-}
-
-const KPI_KEYS: {
-  key: keyof Server.DashboardStatsDTO;
-  label: string;
-  labelEn: string;
-  suffix?: string;
-  accent?: KpiAccent;
-}[] = [
-  { key: "points", label: "পয়েন্ট", labelEn: "Points", accent: "emerald" },
-  { key: "accuracy", label: "সঠিকতার হার", labelEn: "Accuracy", suffix: "%", accent: "cyan" },
-  { key: "questionsAnswered", label: "প্রশ্ন সমাধান", labelEn: "Solved", accent: "indigo" },
-  { key: "streak", label: "স্ট্রিক", labelEn: "Streak", suffix: " দিন", accent: "amber" },
-  { key: "rank", label: "র‍্যাংক", labelEn: "Rank", accent: "zinc" },
-  { key: "exams", label: "মক পরীক্ষা", labelEn: "Mock exams", accent: "zinc" },
-];
 
 export default function HomeTab() {
   const { user } = useAuth();
-  const { setActiveTab } = useDashboardStore();
+  const { setActiveTab, setPracticeIntent, setMistakeIntent, setQuestionBankFilters } = useDashboardStore();
   const { lang } = useLanguage();
+  const tUI = useT();
   const toast = useToastSafe();
 
-  const [stats, setStats] = useState<Server.DashboardStatsDTO | null>(null);
-  const [reports, setReports] = useState<Array<{ name: string; score: number; attempted: number; correct: number }>>([]);
-  const [nextExam, setNextExam] = useState<Server.ExamScheduleDTO | null>(null);
-  const [tasks, setTasks] = useState<Server.StudyTaskDTO[]>([]);
-  const [results, setResults] = useState<Server.MockTestResultDTO[]>([]);
-  const [news, setNews] = useState<Server.FlashNewsDTO[]>([]);
-  const [pendingMistakes, setPendingMistakes] = useState(0);
+  const [intelligence, setIntelligence] = useState<Server.PreparationIntelligenceDTO | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadFailed, setLoadFailed] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
+  const [perfRange, setPerfRange] = useState<PerfRange>("30D");
 
   useEffect(() => {
     let cancelled = false;
-    void (async () => {
-      try {
-        const [s, r, e, t, m, n, w] = await Promise.allSettled([
-          api.dashboardStats(),
-          api.subjectReports(),
-          api.examSchedule(),
-          api.studyPlan(),
-          api.mockTestResults(),
-          api.news(),
-          api.wrongAnswers({ limit: 1 }),
-        ]);
-        if (cancelled) return;
-        if (s.status === "fulfilled") setStats(s.value);
-        if (r.status === "fulfilled") setReports(r.value);
-        if (e.status === "fulfilled") {
-          const upcoming = e.value
-            .filter((ex) => new Date(ex.date).getTime() > Date.now())
-            .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0] ?? null;
-          setNextExam(upcoming);
-        }
-        if (t.status === "fulfilled") setTasks(t.value);
-        if (m.status === "fulfilled") setResults(m.value);
-        if (n.status === "fulfilled") setNews(n.value);
-        if (w.status === "fulfilled") setPendingMistakes(w.value.total);
-        // Surface a total outage instead of silently rendering zeros.
-        if ([s, r, e, t, m, n, w].every((p) => p.status === "rejected")) {
-          setLoadFailed(true);
-        }
-        setLoading(false);
-      } catch {
-        if (!cancelled) {
-          setLoadFailed(true);
-          setLoading(false);
-        }
-      }
-    })();
+    void api
+      .preparationIntelligence()
+      .then((v) => {
+        if (!cancelled) setIntelligence(v);
+      })
+      .catch(() => {
+        if (!cancelled) setLoadFailed(true);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
     return () => {
       cancelled = true;
     };
   }, [reloadKey]);
 
+  // Streak milestone celebration (real streak only).
   useEffect(() => {
-    if (!stats) return;
-    const s = stats.streak;
+    const s = intelligence?.streak ?? 0;
     const isMilestone = s === 7 || s === 30 || s === 100 || (s > 0 && s % 50 === 0);
     if (!isMilestone) return;
     const key = `streak-celebrated-${s}`;
@@ -240,510 +89,330 @@ export default function HomeTab() {
     } catch {
       return;
     }
-    toast.success(`অভিনন্দন! আপনি ${s} দিনের স্ট্রিক অর্জন করেছেন।`);
-  }, [stats, toast]);
+    toast.success(t(lang, `অভিনন্দন! আপনি ${s} দিনের স্ট্রিক অর্জন করেছেন।`, `Congratulations! You've hit a ${s}-day streak.`));
+  }, [intelligence?.streak, lang, toast]);
 
-  const retryLoad = () => {
-    setLoading(true);
-    setLoadFailed(false);
-    setReloadKey((k) => k + 1);
-  };
+  useEffect(() => {
+    const onRefresh = () => {
+      setLoading(true);
+      setLoadFailed(false);
+      setReloadKey((k) => k + 1);
+    };
+    window.addEventListener("ai:refresh-home", onRefresh);
+    return () => window.removeEventListener("ai:refresh-home", onRefresh);
+  }, []);
 
-  const weakest = useMemo(
-    () =>
-      [...reports]
-        .filter((r) => r.attempted > 0)
-        .sort((a, b) => a.score - b.score)
-        .slice(0, 5),
-    [reports],
-  );
-
+  const nextExam = intelligence?.nextExam ?? null;
+  const examDaysLeft = useExamDaysLeft(nextExam?.date ?? null);
   const todaysTasks = useMemo(() => {
     const today = WEEKDAYS[new Date().getDay()];
-    return tasks.filter((t) => t.day === today);
-  }, [tasks]);
-
-  const studiedToday = (stats?.activity?.[stats.activity.length - 1]?.answered ?? 0) > 0;
-  const examDaysLeft = useExamDaysLeft(nextExam?.date ?? null);
-
-  const nextAction = useMemo(
-    () =>
-      deriveNextAction({
-        weakest: weakest[0] ?? null,
-        examTitle: nextExam ? t(lang, nextExam.titleBn, nextExam.titleEn) : null,
-        examDaysLeft,
-        streak: stats?.streak ?? 0,
-        studiedToday,
-        pendingMistakes,
-      }),
-    [weakest, nextExam, examDaysLeft, stats?.streak, studiedToday, pendingMistakes, lang],
-  );
-
-  // 7-day activity reflects ALL attempts (matches the server-authoritative
-  // streak), not just mock tests — so the heatmap and streak number agree.
+    return (intelligence?.studyTasks ?? []).filter((task) => task.day === today);
+  }, [intelligence]);
   const activityDays = useMemo(
-    () =>
-      (stats?.activity ?? Array.from({ length: 7 }, () => ({ answered: 0 }))).map(
-        (a) => (a?.answered ?? 0) > 0,
-      ),
-    [stats],
+    () => (intelligence?.activity ?? []).slice(-7).map((a) => a.answered > 0),
+    [intelligence],
   );
-
-  const mockTrend = useMemo(
-    () =>
-      results
-        .slice()
-        .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
-        .slice(-8)
-        .map((r) => r.score),
-    [results],
-  );
+  const results = useMemo(() => intelligence?.recentResults ?? [], [intelligence]);
 
   const toggleTask = async (taskId: number) => {
-    // Optimistic flip with rollback on failure — the toggle is a single
-    // checkbox, so local state leads and the server confirms behind it.
-    setTasks((prev) =>
-      prev.map((t) => (t.id === taskId ? { ...t, completed: !t.completed } : t)),
+    setIntelligence((prev) =>
+      prev
+        ? {
+            ...prev,
+            studyTasks: prev.studyTasks.map((task) =>
+              task.id === taskId ? { ...task, completed: !task.completed } : task,
+            ),
+          }
+        : prev,
     );
     try {
       await api.toggleStudyTask(taskId);
     } catch {
-      setTasks((prev) =>
-        prev.map((t) => (t.id === taskId ? { ...t, completed: !t.completed } : t)),
+      setIntelligence((prev) =>
+        prev
+          ? {
+              ...prev,
+              studyTasks: prev.studyTasks.map((task) =>
+                task.id === taskId ? { ...task, completed: !task.completed } : task,
+              ),
+            }
+          : prev,
       );
-      toast.error("কাজ আপডেট করা যায়নি — আবার চেষ্টা করুন");
+      toast.error(t(lang, "কাজ আপডেট করা যায়নি — আবার চেষ্টা করুন", "Could not update task — please try again"));
     }
   };
 
-  const skeleton = loading && !stats;
+  const practiceSubject = (subject?: string) => {
+    setPracticeIntent(subject ? { subject, mode: "quick" } : { mode: "quick" });
+    if (subject) setQuestionBankFilters({ category: subject });
+    setActiveTab("practice");
+  };
 
-  return (
-    <motion.div
-      variants={STAGGER}
-      initial="hidden"
-      animate="show"
-      className="space-y-6 pb-24 sm:pb-6"
-    >
-      {/* Header */}
-      <motion.div
-        variants={STAGGER_ITEM}
-        className="glass-card rounded-2xl border border-default p-5 relative overflow-hidden"
+  const mistakeSubject = (subject?: string) => {
+    if (subject) setMistakeIntent({ subject });
+    else setMistakeIntent(null);
+    setActiveTab("mistakes");
+  };
+
+  const handleRecommendation = (rec: PrepIntelligenceRecommendation) => {
+    switch (rec.id) {
+      case "resume-exam": /* practice tab resumes the persisted mock test */
+      case "exam-near":
+      case "daily-quiz":
+      case "daily-warmup":
+      case "keep-going":
+        setActiveTab("practice");
+        break;
+      case "practice-weak-topic":
+      case "practice-weak-subject":
+        practiceSubject(rec.subject);
+        break;
+      case "review-mistakes":
+        mistakeSubject();
+        break;
+      case "review-flashcards":
+        setActiveTab("flashcards");
+        break;
+      default:
+        setActiveTab(rec.target);
+    }
+  };
+
+  // Keyboard Shortcuts Listener [P, M, W, A, F, Q, L, R]
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement ||
+        (e.target instanceof HTMLElement && e.target.isContentEditable)
+      ) {
+        return;
+      }
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+
+      const key = e.key.toUpperCase();
+      if (key === "P") {
+        setPracticeIntent({ mode: "quick" });
+        setActiveTab("practice");
+      } else if (key === "M") {
+        setPracticeIntent({ mode: "mock" });
+        setActiveTab("practice");
+      } else if (key === "W") {
+        setActiveTab("mistakes");
+      } else if (key === "A") {
+        launchAI({ mode: "tutor" });
+      } else if (key === "F") {
+        setActiveTab("flashcards");
+      } else if (key === "Q") {
+        setActiveTab("question-bank");
+      } else if (key === "L") {
+        setActiveTab("study-planner");
+      } else if (key === "R") {
+        setLoading(true);
+        setLoadFailed(false);
+        setReloadKey((k) => k + 1);
+        toast.success(t(lang, "হোম ডেটা রিফ্রেশ হয়েছে", "Home data refreshed"));
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [setActiveTab, setPracticeIntent, toast, lang]);
+
+  const skeleton = loading && !intelligence;
+
+  if (loadFailed && !skeleton) {
+    return (
+      <div
+        role="alert"
+        className="rounded-2xl border p-8 text-center command-card"
+        style={{ borderColor: "var(--dashboard-danger)" }}
       >
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(16,185,129,0.08),transparent_60%)] pointer-events-none" aria-hidden="true" />
-        <div className="relative flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <p className="text-xs text-zinc-500 font-mono uppercase tracking-widest flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.8)]" aria-hidden="true" />
-              Mission Control
-            </p>
-              <h1 className="font-display text-xl font-semibold text-white mt-1 text-balance">
-                {user?.name ?? "Student"}
-                <span className="text-emerald-400">
-                  {" "}
-                  — {user?.examTarget ? user.examTarget : "চাকরির প্রস্তুতি"}
-                </span>
-              </h1>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-xs font-mono text-emerald-400 flex items-center gap-1">
-              <Target className="w-3.5 h-3.5" />
-              {nextExam ? t(lang, nextExam.titleBn, nextExam.titleEn) : "কোনো আসন্ন পরীক্ষা নেই"}
-            </span>
-            <span className="px-3 py-1.5 bg-orange-500/10 border border-orange-500/20 rounded-lg text-xs font-mono text-orange-400 flex items-center gap-2">
-              <Flame className="w-3.5 h-3.5" />
-              <span>{stats?.streak ?? 0} দিন স্ট্রিক</span>
-              <StreakHeatmap activeDays={activityDays} labels={WEEKDAY_LABELS_7} />
-            </span>
-            {user?.goal && (
-              <span className="px-3 py-1.5 bg-indigo-500/10 border border-indigo-500/20 rounded-lg text-xs font-mono text-indigo-300 flex items-center gap-1 max-w-[14rem]">
-                <Target className="w-3.5 h-3.5 flex-shrink-0" />
-                <span className="truncate">{user.goal}</span>
-              </span>
-            )}
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Next best action — the single most useful thing to do right now */}
-      <NextBestAction action={nextAction} />
-
-      {/* Sticky mobile primary CTA — one tap to the next best action on small
-          screens, where the in-flow hero is far down the scroll. */}
-      <div className="fixed inset-x-0 bottom-[72px] z-30 sm:hidden bg-gradient-to-t from-zinc-950 via-zinc-950/95 to-transparent p-3">
+        <p className="text-sm font-bold" style={{ color: "var(--dashboard-text-primary)" }}>
+          {t(lang, "ড্যাশবোর্ড ডেটা লোড করা যায়নি", "Dashboard data could not be loaded")}
+        </p>
+        <p className="mt-1 text-xs" style={{ color: "var(--dashboard-text-muted)" }}>
+          {t(lang, "ইন্টারনেট সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।", "Check your connection and try again.")}
+        </p>
         <button
-          type="button"
-          onClick={() => setActiveTab(nextAction.tab)}
-          className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-zinc-950 shadow-lg shadow-emerald-500/20"
+          onClick={() => {
+            setLoading(true);
+            setLoadFailed(false);
+            setReloadKey((k) => k + 1);
+          }}
+          className="command-primary-btn mt-4"
         >
-          {nextAction.cta}
-          <ArrowRight className="h-4 w-4" />
+          <RefreshCw className="w-4 h-4" /> {t(lang, "আবার চেষ্টা করুন", "Try again")}
         </button>
       </div>
+    );
+  }
 
-      {/* Countdown hero — real exam */}
-      <motion.div
-        variants={STAGGER_ITEM}
-        className="glass-card rounded-2xl border border-emerald-500/30 p-6 md:p-8 relative overflow-hidden"
-      >
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(16,185,129,0.1),transparent_60%)] pointer-events-none" aria-hidden="true" />
-        <div
-          className="absolute -top-16 -right-16 w-64 h-64 bg-emerald-500/10 rounded-full blur-2xl"
-          aria-hidden="true"
-        />
-        {nextExam ? (
-          <div className="relative flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                <CalendarClock className="w-6 h-6 text-emerald-400" />
-              </div>
-              <div>
-                <p className="text-sm text-zinc-400 font-mono mb-1">পরবর্তী পরীক্ষা</p>
-                <h3 className="text-xl md:text-2xl font-bold text-white">{t(lang, nextExam.titleBn, nextExam.titleEn)}</h3>
-                <p className="text-sm text-zinc-400 mt-1">{formatDate(nextExam.date)}</p>
-                {nextExam.note ? (
-                  <p className="text-xs text-zinc-500 mt-1 max-w-md">{nextExam.note}</p>
-                ) : null}
-                {nextExam.sourceUrl ? (
-                  <a
-                    href={nextExam.sourceUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs text-emerald-400 hover:underline mt-1 inline-flex items-center gap-1"
-                  >
-                    সূত্র ↗
-                  </a>
-                ) : null}
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <CountdownRingLive target={nextExam.date} />
-              <div className="flex flex-col font-mono">
-                <span className="text-xs text-zinc-400 uppercase tracking-wider">Countdown</span>
-                <CountdownClock target={nextExam.date} />
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="relative flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-            <div>
-              <p className="text-sm text-zinc-400">কোনো আসন্ন পরীক্ষার সময়সূচি নেই</p>
-              <h3 className="text-lg font-semibold text-white mt-1">সিলেবাস থেকে প্রস্তুতি শুরু করুন</h3>
-            </div>
-            <button
-              onClick={() => setActiveTab("question-bank")}
-              className="px-4 py-2 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors flex items-center gap-2"
+  return (
+    <motion.div variants={STAGGER} initial="hidden" animate="show" className="space-y-5 pb-24 sm:pb-6">
+      {/* ── Greeting Header ── */}
+      <motion.div variants={STAGGER_ITEM} className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-2">
+            <span
+              className="text-[10px] font-mono font-bold tracking-widest uppercase px-2.5 py-0.5 rounded-full border flex items-center gap-1.5"
+              style={{ background: "var(--dashboard-primary-subtle)", borderColor: "color-mix(in srgb, var(--dashboard-primary) 24%, transparent)", color: "var(--dashboard-primary)" }}
             >
-              প্রশ্নব্যাংক দেখুন <ArrowRight className="w-4 h-4" />
-            </button>
+              <span className="w-1.5 h-1.5 rounded-full status-dot-pulse" style={{ background: "var(--dashboard-success)" }} />
+              {t(lang, "আপনার প্রস্তুতি সেন্টার", "Your Preparation Command Center")}
+            </span>
           </div>
-        )}
-      </motion.div>
 
-      {/* KPI strip — real stats (swipeable on mobile, grid on larger screens) */}
-      <div className="-mx-4 px-4 pb-1 flex gap-3 overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3 sm:overflow-visible lg:grid-cols-6">
-        {KPI_KEYS.map((k) => (
-          <div key={k.key} className="snap-start min-w-[44%] sm:min-w-0">
-            <KpiTile
-              label={lang === "bn" ? k.label : k.labelEn}
-              value={`${(stats?.[k.key] as number ?? 0).toLocaleString("bn-BD")}${k.suffix ?? ""}`}
-              accent={k.accent}
-              loading={skeleton}
-            />
-          </div>
-        ))}
-      </div>
+          <h1 className="font-display font-black text-[26px] sm:text-[32px] leading-none tracking-tight mt-2" style={{ color: "var(--dashboard-text-primary)" }}>
+            {timeGreeting(tUI)}, <span style={{ color: "var(--dashboard-primary)" }}>{user?.name ?? "Scholar"}</span> —
+          </h1>
 
-      {/* Total load failure — never render a silent zeroed dashboard */}
-      {loadFailed && !skeleton && (
-        <div
-          role="alert"
-          className="glass-card rounded-2xl border border-red-500/30 p-8 text-center"
-        >
-          <p className="text-sm font-medium text-zinc-200">ড্যাশবোর্ড ডেটা লোড করা যায়নি</p>
-          <p className="mt-1 text-xs text-zinc-500">
-            ইন্টারনেট সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।
+          <p className="text-sm mt-2 flex flex-wrap items-center gap-2" style={{ color: "var(--dashboard-text-secondary)" }}>
+            <span className="inline-flex items-center gap-1.5">
+              <Clock className="w-3.5 h-3.5 text-[var(--dashboard-primary)]" /> {user?.examTarget ?? "Target not set"}
+              {nextExam ? ` · ${t(lang, nextExam.titleBn, nextExam.titleEn)}` : ""}
+            </span>
+            <span
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-bold"
+              style={{
+                background: "var(--dashboard-warning-subtle)",
+                borderColor: "color-mix(in srgb, var(--dashboard-warning) 20%, transparent)",
+                color: "var(--dashboard-warning)",
+              }}
+            >
+              <Flame className="w-3.5 h-3.5 fill-current" />
+              {intelligence?.streak ?? 0} Day Streak
+              <span className="hidden sm:inline-flex ml-1">
+                <StreakHeatmap activeDays={activityDays} labels={WEEKDAY_LABELS_7} />
+              </span>
+            </span>
           </p>
-          <button
-            onClick={retryLoad}
-            className="mt-4 px-4 py-2 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors"
-          >
-            আবার চেষ্টা করুন
-          </button>
-        </div>
-      )}
-
-      {/* Weak areas — real subject reports */}
-      <motion.div
-        variants={STAGGER_ITEM}
-        className="glass-card rounded-2xl border border-terminal-border p-5"
-      >
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h3 className="text-sm font-semibold text-white uppercase tracking-wider">
-              দুর্বল বিষয়সমূহ
-            </h3>
-            <p className="text-xs text-zinc-500 mt-0.5">বাস্তব পারফরম্যান্স অনুযায়ী — দুর্বল থেকে শক্তিশালী</p>
-          </div>
-          <button
-            onClick={() => setActiveTab("practice")}
-            className="text-xs text-emerald-400 font-mono hover:text-emerald-300 transition-colors flex items-center gap-1"
-          >
-            প্র্যাকটিস <ArrowRight className="w-3.5 h-3.5" />
-          </button>
         </div>
 
-        {weakest.length === 0 ? (
-          <EmptyState
-            icon={Target}
-            title="এখনো কোনো প্রশ্ন সমাধান করেননি।"
-            hint="প্র্যাকটিস শুরু করলে বিষয়ভিত্তিক দুর্বলতা এখানে দেখা যাবে।"
-            action={
-              <button
-                onClick={() => setActiveTab("practice")}
-                className="px-4 py-2 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors"
-              >
-                প্র্যাকটিস শুরু করুন
-              </button>
-            }
-          />
-        ) : (
-          <div className="space-y-3">
-            {weakest.map((r) => (
-              <div key={r.name} className="flex items-center gap-4">
-                <div className="w-32 flex-shrink-0 sm:w-44">
-                  <p className="text-sm text-zinc-300 truncate">{r.name}</p>
-                  <p className="text-[10px] text-zinc-500 font-mono">{r.attempted}টি সমাধান</p>
-                </div>
-                <div className="flex-1 h-2 bg-zinc-800 rounded-full overflow-hidden flex">
-                  <div
-                    className="h-full bg-emerald-500 transition-[width] duration-700"
-                    style={{ width: `${(r.correct / r.attempted) * 100}%` }}
-                  />
-                  <div
-                    className="h-full bg-red-500/80 transition-[width] duration-700"
-                    style={{ width: `${((r.attempted - r.correct) / r.attempted) * 100}%` }}
-                  />
-                </div>
-                <span className="w-12 text-right text-sm font-mono text-emerald-400">
-                  {r.score}%
-                </span>
-              </div>
-            ))}
+        {nextExam && examDaysLeft != null && (
+          <div
+            className="shrink-0 rounded-2xl border px-4 py-3 flex items-center gap-4 shadow-sm"
+            style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}
+          >
+            <div className="text-center">
+              <p className="font-display font-black text-2xl leading-none text-[var(--dashboard-primary)]">{examDaysLeft}</p>
+              <p className="text-[10px] font-bold uppercase tracking-widest mt-0.5 text-[var(--dashboard-text-muted)]">Days left</p>
+            </div>
+            <div className="w-px h-10 bg-[var(--dashboard-border-muted)]" />
+            <div>
+              <p className="text-xs font-extrabold leading-tight text-[var(--dashboard-text-primary)]">
+                {t(lang, nextExam.titleBn, nextExam.titleEn)}
+              </p>
+              <p className="text-[11px] text-[var(--dashboard-text-muted)] mt-0.5">
+                {examDaysLeft <= 7
+                  ? t(lang, "⚡ চূড়ান্ত নিবিড় পর্ব", "⚡ Final Sprint Phase")
+                  : examDaysLeft <= 30
+                    ? t(lang, "🎯 নিবিড় পুনর্বিবেচনা", "🎯 Focused Revision Window")
+                    : t(lang, "📚 নিয়মিত প্রস্তুতি", "📚 Steady Preparation Window")}
+              </p>
+            </div>
           </div>
         )}
       </motion.div>
 
-      {/* Today's plan + recent mock results */}
-      <div className="grid md:grid-cols-2 gap-6">
-      <motion.div
-        variants={STAGGER_ITEM}
-        className="glass-card rounded-2xl border border-terminal-border p-5"
-        >
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold text-white uppercase tracking-wider">
-              আজকের রুটিন
-              {user?.prepLevel && (
-                <span className="ml-2 align-middle text-[10px] normal-case font-mono text-zinc-400 border border-zinc-700 rounded px-1.5 py-0.5">
-                  {PREP_LABEL[user.prepLevel]}
-                </span>
-              )}
-            </h3>
-            <button
-              onClick={() => setActiveTab("study-planner")}
-              className="text-xs text-emerald-400 font-mono hover:text-emerald-300 transition-colors flex items-center gap-1"
-            >
-              প্ল্যানার <ArrowRight className="w-3.5 h-3.5" />
+      {/* ── Today's Mission (hero) ── */}
+      <motion.div variants={STAGGER_ITEM}>
+        <TodayMission
+          intelligence={intelligence}
+          onStartPractice={practiceSubject}
+          onStartMistakes={() => mistakeSubject()}
+          onReviewFlashcards={() => setActiveTab("flashcards")}
+          onStartDailyQuiz={() => setActiveTab("practice")}
+        />
+      </motion.div>
+
+      {/* ── Preparation Pulse (real KPIs) ── */}
+      <motion.div variants={STAGGER_ITEM} className={skeleton ? "opacity-60 pointer-events-none" : ""}>
+        <PreparationPulse intelligence={intelligence} />
+      </motion.div>
+
+      {/* ── Continue Learning + Recommended Actions ── */}
+      <div className="grid lg:grid-cols-2 gap-5">
+        <motion.div variants={STAGGER_ITEM}>
+          <ContinueLearning
+            intelligence={intelligence}
+            onResumeExam={() => setActiveTab("practice")}
+            onStartDailyQuiz={() => setActiveTab("practice")}
+          />
+        </motion.div>
+        <motion.div variants={STAGGER_ITEM}>
+          <RecommendedActions intelligence={intelligence} onAction={handleRecommendation} />
+        </motion.div>
+      </div>
+
+      {/* ── Performance Velocity + Today's Plan ── */}
+      <div className="grid lg:grid-cols-[1.4fr_0.85fr] gap-5">
+        <motion.div variants={STAGGER_ITEM}>
+          <PerformanceCard
+            activity={intelligence?.activity ?? []}
+            results={results}
+            range={perfRange}
+            onRangeChange={setPerfRange}
+            loading={loading}
+          />
+        </motion.div>
+        <motion.div variants={STAGGER_ITEM}>
+          <TodayPlanCard
+            tasks={todaysTasks}
+            onToggle={toggleTask}
+            onTaskAdded={() => setReloadKey((k) => k + 1)}
+          />
+        </motion.div>
+      </div>
+
+      {/* ── Interactive AI Study Coach ── */}
+      <motion.div variants={STAGGER_ITEM} id="dashboard-ai-coach">
+        <HomeCoach />
+      </motion.div>
+
+      {/* ── Recent Mock Exam Results (real history) ── */}
+      {results.length > 0 && (
+        <motion.div variants={STAGGER_ITEM} className="command-card p-5">
+          <div className="flex items-center justify-between">
+            <p className="command-eyebrow !text-[10px]">{t(lang, "সাম্প্রতিক মক টেস্ট", "Recent mock tests")}</p>
+            <button onClick={() => setActiveTab("progress")} className="text-xs font-bold inline-flex items-center gap-1" style={{ color: "var(--dashboard-primary)" }}>
+              {t(lang, "পুরো টাইমলাইন", "Full timeline")} <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
-
-          {todaysTasks.length === 0 ? (
-            <EmptyState
-              icon={ClipboardList}
-              title="আজকের জন্য কোনো টাস্ক নেই।"
-              hint="প্ল্যানারে গিয়ে আজকের রুটিন তৈরি করুন।"
-              action={
-                <button
-                  onClick={() => setActiveTab("study-planner")}
-                  className="px-4 py-2 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors"
-                >
-                  রুটিন দেখুন
-                </button>
-              }
-            />
-          ) : (
-            <div className="space-y-2">
-              {todaysTasks.map((t) => (
-                <div
-                  key={t.id}
-                  className={`flex items-center gap-3 p-3 rounded-xl border transition-colors ${
-                    t.completed
-                      ? "border-emerald-500/20 bg-emerald-500/5"
-                      : "border-default bg-subtle"
-                  }`}
-                >
-                  <button
-                    onClick={() => void toggleTask(t.id)}
-                    aria-pressed={t.completed}
-                    aria-label={t.completed ? "চিহ্নিত করা হয়েছে" : "সম্পন্ন হিসেবে চিহ্নিত করুন"}
-                    className={`w-5 h-5 rounded-md border flex items-center justify-center flex-shrink-0 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400 ${
-                      t.completed
-                        ? "bg-emerald-500 border-emerald-500 text-zinc-950"
-                        : "border-zinc-600 hover:border-emerald-500"
-                    }`}
-                  >
-                    {t.completed ? <span aria-hidden="true">✓</span> : ""}
-                  </button>
-                  <div className="flex-1 min-w-0">
-                    <p className={`text-sm ${t.completed ? "text-zinc-500 line-through" : "text-zinc-200"}`}>
-                      {t.title}
-                    </p>
-                    <p className="text-[10px] text-zinc-500 font-mono mt-0.5">
-                      {t.subject} • {t.duration} মিনিট
-                    </p>
-                  </div>
-                  <span
-                    className={`text-[10px] font-mono px-2 py-0.5 rounded ${
-                      t.priority === "high"
-                        ? "bg-red-500/10 text-red-400"
-                        : t.priority === "medium"
-                          ? "bg-amber-500/10 text-amber-400"
-                          : "bg-zinc-700/40 text-zinc-400"
-                    }`}
-                  >
-                    {t.priority === "high" ? "উচ্চ" : t.priority === "medium" ? "মাঝারি" : "কম"}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-        </motion.div>
-
-      <motion.div
-        variants={STAGGER_ITEM}
-        className="glass-card rounded-2xl border border-terminal-border p-5"
-        >
-            <div className="flex items-center justify-between mb-4 gap-3">
-              <div>
-                <h3 className="text-sm font-semibold text-white uppercase tracking-wider">
-                  সাম্প্রতিক মক পরীক্ষা
-                </h3>
-                {mockTrend.length > 1 && (
-                  <div className="mt-1 w-28 text-emerald-400">
-                    <Sparkline
-                      values={mockTrend}
-                      fillId="mock-trend"
-                      ariaLabel="সাম্প্রতিক মক পরীক্ষার স্কোর ট্রেন্ড"
-                    />
-                  </div>
-                )}
-              </div>
+          <div className="mt-4 space-y-2">
+            {results.slice(0, 4).map((r) => (
               <button
-              onClick={() => setActiveTab("practice")}
-              className="text-xs text-emerald-400 font-mono hover:text-emerald-300 transition-colors flex items-center gap-1"
-            >
-              মক টেস্ট <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          </div>
-
-          {results.length === 0 ? (
-            <EmptyState
-              icon={Flag}
-              title="এখনো কোনো মক পরীক্ষা দেওয়া হয়নি।"
-              hint="প্রথম মক টেস্ট দিলে ফলাফলের প্রবণতা এখানে জমা হবে।"
-              action={
-                <button
-                  onClick={() => setActiveTab("practice")}
-                  className="px-4 py-2 bg-emerald-500 text-zinc-950 font-mono text-sm rounded-lg hover:bg-emerald-400 transition-colors"
+                key={r.id}
+                onClick={() => setActiveTab("progress")}
+                className="w-full flex items-center gap-3 rounded-xl border px-3 py-2.5 text-left hover:border-[var(--dashboard-primary)]/40 transition-colors"
+                style={{ background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-muted)" }}
+              >
+                <span
+                  className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 border"
+                  style={{
+                    background:
+                      r.score >= 80 ? "var(--dashboard-success-subtle)" : r.score >= 50 ? "var(--dashboard-warning-subtle)" : "var(--dashboard-danger-subtle)",
+                    color: r.score >= 80 ? "var(--dashboard-success)" : r.score >= 50 ? "var(--dashboard-warning)" : "var(--dashboard-danger)",
+                    borderColor: "color-mix(in srgb, currentColor 20%, transparent)",
+                  }}
                 >
-                  মক টেস্ট শুরু করুন
-                </button>
-              }
-            />
-          ) : (
-            <div className="space-y-2">
-              {results.slice(0, 4).map((r) => (
-                <div
-                  key={r.id}
-                  className="flex items-center gap-3 p-3 rounded-xl border border-default bg-subtle"
-                >
-                  <div
-                    className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                      r.score >= 80
-                        ? "bg-emerald-500/10 text-emerald-400"
-                        : r.score >= 50
-                          ? "bg-amber-500/10 text-amber-400"
-                          : "bg-red-500/10 text-red-400"
-                    }`}
-                  >
-                    <Trophy className="w-5 h-5" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm text-zinc-200 truncate">{r.title}</p>
-                    <p className="text-[10px] text-zinc-500 font-mono mt-0.5">
-                      {r.correct}/{r.total} সঠিক •{" "}
-                      {new Date(r.createdAt).toLocaleDateString("bn-BD", {
-                        day: "numeric",
-                        month: "short",
-                      })}
-                    </p>
-                  </div>
-                  <span className="text-sm font-mono text-emerald-400">{r.score}%</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </motion.div>
-      </div>
-
-      {/* Daily quiz */}
-      <div className="[content-visibility:auto] [contain-intrinsic-size:auto_360px]">
-        <DailyQuizWidget />
-      </div>
-
-      {/* Flash news */}
-      {news.length > 0 && (
-        <div className="[content-visibility:auto] [contain-intrinsic-size:auto_300px]">
-      <motion.div
-        variants={STAGGER_ITEM}
-        className="glass-card rounded-2xl border border-terminal-border overflow-hidden"
-        >
-          <div className="px-5 py-4 border-b border-terminal-border flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-emerald-400" />
-            <h3 className="text-sm font-semibold text-white uppercase tracking-wider">
-              ফ্ল্যাশ নিউজ
-            </h3>
-          </div>
-          <div className="divide-y divide-terminal-border">
-            {news.slice(0, 5).map((item) => (
-              <div key={item.id} className="flex items-start gap-3 p-4 hover:bg-emerald-500/5 transition-colors">
-                <span className="px-1.5 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded text-[10px] font-mono text-emerald-400 flex-shrink-0 mt-0.5">
-                  {item.tag}
+                  <Trophy className="w-4 h-4" />
                 </span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm text-zinc-300">{item.text}</p>
-                  {item.sourceUrl ? (
-                    <a
-                      href={item.sourceUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[11px] text-emerald-400 hover:underline mt-0.5 inline-flex items-center gap-1"
-                    >
-                      সূত্র ↗
-                    </a>
-                  ) : null}
+                  <p className="text-xs font-bold truncate" style={{ color: "var(--dashboard-text-primary)" }}>
+                    {r.title}
+                  </p>
+                  <p className="text-[11px]" style={{ color: "var(--dashboard-text-muted)" }}>
+                    {r.correct}/{r.total} correct · {new Date(r.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short" })}
+                  </p>
                 </div>
-                <span className="text-xs text-zinc-500 font-mono flex-shrink-0">
-                  {item.date}
+                <span className="text-xs font-mono font-extrabold flex items-center gap-1" style={{ color: "var(--dashboard-text-primary)" }}>
+                  {r.score}% <ChevronRight className="w-3.5 h-3.5 opacity-50" />
                 </span>
-              </div>
+              </button>
             ))}
           </div>
         </motion.div>
-        </div>
       )}
-
-      {/* AI suggestion strip removed — superseded by the NextBestAction hero,
-          which is also driven by the real weakest subject but is actionable. */}
     </motion.div>
   );
 }

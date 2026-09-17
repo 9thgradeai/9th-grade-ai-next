@@ -9,7 +9,7 @@ type SparklineProps = {
 export default function Sparkline({
   values,
   className = "",
-  strokeClassName = "text-emerald-400",
+  strokeClassName = "text-[var(--dashboard-primary)]",
   fillId,
   ariaLabel,
 }: SparklineProps) {

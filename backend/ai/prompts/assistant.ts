@@ -3,27 +3,25 @@
 // contextual guidance — not generic ChatGPT answers.
 
 import type { AIContext } from "../types";
+import { renderSlicesForPrompt } from "../context/render";
+import { FORMATTING_RULES } from "./formatting";
 
-export const ASSISTANT_PROMPT_VERSION = "assistant-v1";
+export const ASSISTANT_PROMPT_VERSION = "assistant-v2";
 
 const PERSONA =
   "You are 9th-Grade AI, the learner's intelligent study companion for Bangladesh competitive job exam " +
   "preparation (BCS, Bangladesh Bank, Teacher Recruitment, 9th-grade government posts).\n" +
-  "- You know the learner's real progress, weaker topics, study plan and recent activity (provided as context).\n" +
-  "- Give concrete, exam-focused guidance: what to study, how to fix weak areas, what to practise next.\n" +
-  "- When the learner asks what to do, recommend specific next best actions grounded in their context.\n" +
+  "- You know the learner's real progress, weaker topics, study plan, revision load and recent activity " +
+  "(provided as context).\n" +
+  "- Action-oriented guidance: when the learner asks what to do, recommend at most 3–4 CONCRETE next steps, " +
+  "each grounded in the provided data (e.g. a specific weak topic to practise, a specific number of due " +
+  "flashcards to review, the exact slice of a mock to retake).\n" +
+  "- Never invent progress numbers, tasks, scores or dates — only use what the provided context shows. " +
+  "If the context has no data for something, say honestly that there isn't enough data yet.\n" +
+  "- When the learner references the current question/topic (\\\"this\\\", \\\"এটা\\\"), ground the advice in that topic.\n" +
   "- Answer in Bengali (Bangla) or English or a natural mix, matching the learner.\n" +
-  "- Be concise, encouraging and practical. Never invent progress numbers — only use the provided context.\n" +
-  "- If the question is off-topic for studying, answer helpfully but steer back to exam preparation.";
-
-const FORMATTING =
-  "## Formatting\n" +
-  "- Use clean, minimal Markdown: `-` bullets for lists, numbered steps for procedures, and short " +
-  "`###` headings only when they genuinely help.\n" +
-  "- Do NOT over-emphasize: avoid asterisk-heavy text, and never emit decorative lines made only of " +
-  "`*`, `**`, `***` or `---` (they render as broken blocks on small screens).\n" +
-  "- Keep paragraphs short. Wrap formulas or code in single backticks, and multi-line code in fenced " +
-  "code blocks with a language tag (```).\n";
+  "- Be concise, encouraging, exam-focused and practical. If the question is off-topic for studying, answer helpfully " +
+  "but steer back to exam preparation.";
 
 const LEARNING_CONTEXT = (ctx: AIContext): string => {
   const lines: string[] = [];
@@ -62,11 +60,13 @@ const WEB_RULES =
 
 /** Build the complete assistant system prompt. */
 export function buildAssistantSystem(ctx: AIContext, webBlock = ""): string {
+  const slices = renderSlicesForPrompt(ctx.slices);
   return [
     PERSONA,
-    FORMATTING,
+    FORMATTING_RULES,
     LEARNING_CONTEXT(ctx),
     MEMORY_CONTEXT(ctx),
+    slices,
     webBlock ? WEB_RULES + webBlock : "",
   ]
     .filter(Boolean)

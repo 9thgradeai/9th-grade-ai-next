@@ -38,6 +38,7 @@ ever rebuilt outside migrations:
 | AIMemory | confidence range | `confidence` 0–100 |
 | AIUsage | nonnegative | tokens, latencyMs, estimatedCostUsd ≥ 0 |
 | QuestionAttempt | source enum | `source` ∈ practice/daily/exam/mock |
+| ExamAttempt | uniqueness / idempotency | `(userId, idempotencyKey)` unique; `status` ∈ IN_PROGRESS/SUBMITTING/SUBMITTED; `durationSec ≥ 0` |
 
 **Documented decisions (Phase 3):**
 - *Date-label columns stay String* (`DailyQuiz.date`, `FlashNews.date`, `StudyPlanDay.date`,
@@ -86,6 +87,8 @@ ever rebuilt outside migrations:
 - `TUTOR` — teaching conversations
 - `ASSISTANT` — study-guidance conversations
 - `SOLVER` — one-shot solve-and-explain conversations
+- `COACH` — tool-using study-coach (agent) conversations; distinct kind so coach
+  threads stay distinguishable from assistant threads in the workspace rail
 
 #### AIMessageRole
 - `USER`
@@ -112,6 +115,27 @@ ever rebuilt outside migrations:
 - `USER`
 - `SYSTEM`
 
+#### AgentRunStatus
+- `IN_PROGRESS` — run started but not finalized
+- `COMPLETED` — loop produced a validated typed response
+- `FAILED` — provider/validation failure (errorCode set)
+
+#### LearningEventType
+- `attempt` — a question attempt recorded
+- `practice` — a practice session started/completed
+- `mock_exam` — a mock exam event
+- `review` — a revision/spaced-repetition review event
+- `milestone` — a derived milestone (streak, level-up)
+
+#### MistakeErrorType
+- `CONCEPTUAL` — misunderstanding of a concept
+- `CARELESS` — slip/reading error
+- `FORMULA` — formula misuse
+- `UNIT` — units/conversion errors
+- `TIMING` — time management on timed practice
+- `RECALL` — forgetfulness / inability to recall
+- `OTHER` — the classifier could not determine a category
+
 #### AIUsageTask
 - `TUTOR`
 - `SOLVER`
@@ -133,6 +157,14 @@ source; default to `UNKNOWN` and only promote on verified evidence.
 - `OFFICIAL`
 - `CURATED`
 - `UNKNOWN`
+
+#### MasteryStatus
+Per-question mastery stage in the mistake-practice model (see `UserQuestionProgress`).
+- `NEW` — never attempted
+- `STRUGGLING` — recently answered incorrectly
+- `REVIEWING` — 1 correct after a mistake
+- `IMPROVING` — 2 consecutive correct
+- `MASTERED` — 3 consecutive correct
 
 ### Models
 
@@ -161,7 +193,7 @@ source; default to `UNKNOWN` and only promote on verified evidence.
  - `emailVerifyExpires` DateTime? — expiry for `emailVerifyToken`
  - `passwordResetToken` String? — SHA-256 hash of the password-reset token (raw token is emailed)
  - `passwordResetExpires` DateTime? — expiry for `passwordResetToken` (1 hour)
- - Relations: `progress`, `bookmarks`, `studyTasks`, `notifications`, `sessions`, `aiConversations`, `aiMemories`, `aiUsage`, `aiFeedback`
+ - Relations: `progress`, `bookmarks`, `studyTasks`, `notifications`, `sessions`, `aiConversations`, `aiMemories`, `aiUsage`, `aiFeedback`, `agentRuns`, `learningEvents`
 
 #### Subject
 - `id` Int — PK, auto-increment
@@ -216,6 +248,17 @@ source; default to `UNKNOWN` and only promote on verified evidence.
 - `sourceKey` String — default `""`; deterministic seed identity (md5 of `subjectId|…|question`). Lets the seeder upsert instead of wipe-and-recreate so Question ids — and every user row referencing them — stay stable across deploys. Unique with `subjectId`.
 - Relations: `bookmarks`, `attempts`
 - Indexes: `[subjectId, difficulty]`, `[subjectId, topic]`, `[subjectId, topic, subtopic]`, `[subjectId, path]`, `[topicId]`, `[examId]`, `[paperId, questionNumber]`; Unique: `[subjectId, sourceKey]`
+
+> **Content-quality gate**: every Question row is importable per
+> `scripts/qb-forensics/import-gate.ts` — Unicode-healthy (NFC, no replacement
+> chars / mojibake / control chars / visual-order Bengali), structurally valid
+> (4 non-empty options, answer matches an option), with a **mandatory
+> explanation**, and globally unique by normalized
+> (question | correctAnswer | explanation). The seeder and BCS importer enforce
+> this on reseed; the one-time sweep `npm run qb:clean-broken` (ADR-0015) removed
+> 293 rows (2,700 → 2,407). Deleting a Question cascades to `Bookmark` and
+> `UserQuestionProgress`; `QuestionAttempt.questionId` is set NULL (analytics
+> survive).
 
 #### ExamCategory
 - `id` Int — PK, auto-increment
@@ -523,8 +566,47 @@ Per-user record of every answered question (practice, mock test, daily quiz). Po
 - `topic` String
 - `correct` Boolean
 - `source` String — `practice` | `mock` | `daily`
+- `selectedAnswer` String — default `""` (the learner's chosen option, for wrong-answer analysis)
+- `durationSec` Int — default `0` (time spent on the question)
+- `confidence` Int? — optional learner-reported confidence 0–100
+- `errorType` MistakeErrorType? — server-classified mistake category (Phase 2 wrong-answer analytics; written by the AI classifier, never trust client-submitted values)
 - `createdAt` DateTime — default `now()`
 - Indexes: `[userId, createdAt]`, `[userId, subjectId]`, `[userId, subjectName]`, `[userId, topic]` (the last two back the raw-SQL analytics group-bys)
+
+#### UserQuestionProgress
+One persistent row per `(userId, questionId)` recording mastery and mistake
+history. Written atomically inside the existing attempt-submission transaction
+via `backend/services/question-progress.ts::recordQuestionAttempt`. Never delete
+mastery history when a question becomes mastered — repeated mistakes increase
+`mistakeCount` and boost priority.
+- `id` Int — PK, auto-increment
+- `userId` String — FK to User (cascade)
+- `user` User — relation
+- `questionId` Int — FK to Question (cascade)
+- `question` Question — relation
+- `totalAttempts` Int — default `0`
+- `correctAttempts` Int — default `0`
+- `incorrectAttempts` Int — default `0`
+- `consecutiveCorrect` Int — default `0` (resets to 0 on a wrong answer)
+- `consecutiveIncorrect` Int — default `0` (resets to 0 on a correct answer)
+- `mistakeCount` Int — default `0` (total times answered incorrectly; never reset)
+- `masteryScore` Float — default `0` (0-100, driven by score deltas on correct/incorrect)
+- `masteryStatus` MasteryStatus — default `NEW`
+- `masteredAt` DateTime? — when status first reached `MASTERED`
+- `isMistake` Boolean — default `false` (true while the question needs practice; cleared at `MASTERED`)
+- `firstIncorrectAt` DateTime?
+- `lastIncorrectAt` DateTime?
+- `lastCorrectAt` DateTime?
+- `reviewCount` Int — default `0` (times reviewed after the initial mistake)
+- `lastReviewedAt` DateTime?
+- `nextReviewAt` DateTime? — spaced-repetition next review target
+- `lastSubject` String — default `""` (context of the last attempt)
+- `lastTopic` String — default `""`
+- `lastExam` String — default `""`
+- `createdAt` DateTime — default `now()`
+- `updatedAt` DateTime — updatedAt
+- Unique constraint: `[userId, questionId]`
+- Indexes: `[userId, isMistake]`, `[userId, lastSubject]`, `[userId, masteryStatus]`, `[userId, lastIncorrectAt]`, `[userId, nextReviewAt]`, `[questionId]`
 
 #### MockTestResult
 A graded mock-test attempt (history + exam KPIs).
@@ -538,7 +620,31 @@ A graded mock-test attempt (history + exam KPIs).
 - `total` Int
 - `durationSec` Int
 - `createdAt` DateTime — default `now()`
+- `examAttempt` ExamAttempt? — back-relation (one-to-one) created when this row represents a custom exam submission
 - Index: `[userId, createdAt]`
+
+#### ExamAttempt
+The canonical per-user exam attempt record — single source of truth for whether a custom exam was submitted. Backed by a unique `(userId, idempotencyKey)` constraint so duplicate submit requests resolve to the existing result instead of double-writing.
+- `id` Int — PK, auto-increment
+- `userId` String — FK to User (cascade)
+- `user` User — relation
+- `idempotencyKey` String — client-minted UUID minted at exam start; reused on every retry
+- `questionSetHash` String — SHA-256 hex of the sorted question IDs (server-asserted against the submission payload)
+- `status` `ExamAttemptStatus` (`IN_PROGRESS` / `SUBMITTING` / `SUBMITTED`) — lifecycle enforced in a transaction
+- `durationSec` Int — actual seconds the user spent on the attempt (client-reported elapsed, clamped to a sane ceiling)
+- `examDurationSec` Int — configured exam length registered at `/api/exam/start` (0 = unlimited). The server enforces the timer deadline as `startedAt + examDurationSec + 15s grace` — a client can never extend a timed exam by delaying the submit call.
+- `startedAt` DateTime — default `now()`
+- `submittedAt` DateTime? — set when status flips to `SUBMITTED`
+- `summaryJson` Json? — snapshot of the graded `ExamResultDTO.summary`
+- `resultId` Int? — unique FK to the `MockTestResult` row that represents this attempt
+- `result` MockTestResult? — relation (`@relation("ExamAttemptResult")`)
+- Unique: `[userId, idempotencyKey]`
+- Indexes: `[userId, status]`, `[userId, submittedAt]`
+
+#### ExamAttemptStatus (enum)
+- `IN_PROGRESS` — attempt created via `/api/exam/start`
+- `SUBMITTING` — submit request received, transaction in flight
+- `SUBMITTED` — terminal; further submits for the same `idempotencyKey` resolve to the existing result
 
 #### FlashcardReview
 Per-user SRS review log for flashcards (nextReview scheduling is derived from these).
@@ -576,7 +682,7 @@ A persisted AI chat thread (Tutor, Assistant, or Solver), always owned by one us
 - `topicPath` String — default `""` (Topic path when the conversation is topic-scoped)
 - `createdAt` DateTime — default `now()`
 - `updatedAt` DateTime — updatedAt
-- Relations: `messages`
+- Relations: `messages`, `agentRuns`
 - Indexes: `[userId, updatedAt]`, `[userId, kind, updatedAt]` (list queries order by `pinned` desc first)
 
 #### AIMessage
@@ -611,6 +717,49 @@ Persistent learning memory about the learner. Written deliberately by the AI app
 - `updatedAt` DateTime — updatedAt
 - Unique constraint: `[userId, type, key]`
 - Index: `[userId, type]`
+
+#### AgentRun
+One bounded study-coach run. Written by `backend/ai/agent/persistence.ts`; keys the typed-block audit trail. Never stores chain-of-thought.
+- `id` String (cuid) — PK
+- `userId` String — FK to User (cascade)
+- `user` User — relation
+- `conversationId` String? — FK to AIConversation (set-null; the run's chat thread)
+- `conversation` AIConversation? — relation
+- `intent` String — default `""` (e.g. `agent:recommend`)
+- `status` AgentRunStatus — default `IN_PROGRESS` (`IN_PROGRESS | COMPLETED | FAILED`)
+- `steps` Int — default `0` (tool/model turns used, ≤ MAX_AGENT_STEPS)
+- `model` String? — default `""`; `provider` String? — default `""`
+- `inputTokens` Int / `outputTokens` Int — default `0`
+- `latencyMs` Int — default `0`
+- `errorCode` String? — default `""`
+- `responseJson` Json? — validated final AgentResponse blocks (typed, chain-of-thought excluded)
+- `createdAt` / `updatedAt`
+- Relations: `toolCalls`
+- Indexes: `[userId, createdAt]`, `[conversationId]`
+
+#### AgentToolCall
+A single tool invocation inside an AgentRun loop.
+- `id` String (cuid) — PK
+- `runId` String — FK to AgentRun (cascade)
+- `run` AgentRun — relation
+- `name` String — allowlisted tool name
+- `argumentsJson` Json — validated tool arguments
+- `resultJson` Json? — tool result summary
+- `durationMs` Int — default `0`; `success` Boolean — default `true`; `errorCode` String? — default `""`
+- `createdAt`
+- Index: `[runId]`
+
+#### LearningEvent
+Append-only learning+review activity feed (Phase 2 learning-events pipeline: attempt, practice, mock, review, milestone).
+- `id` String (cuid) — PK
+- `userId` String — FK to User (cascade)
+- `user` User — relation
+- `type` LearningEventType — `attempt | practice | mock_exam | review | milestone`
+- `subjectId` Int? / `topicId` Int? / `questionId` Int? — optional FK context
+- `metadata` Json? — replay payload: attempt state, score, session id, …
+- `occurredAt` DateTime — default `now()` (event time)
+- `createdAt`
+- Indexes: `[userId, occurredAt]`, `[userId, type]`, `[userId, subjectId, occurredAt]`, `[userId, topicId, occurredAt]`
 
 #### AIUsage
 Usage/cost/observability ledger for every AI call. No prompt content stored.

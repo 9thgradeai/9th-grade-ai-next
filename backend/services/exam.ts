@@ -12,6 +12,7 @@ import { recomputeAndAward } from "~backend/repositories/progress.repository";
 import { emit } from "~backend/events/bus";
 import { QueryCache } from "~backend/infrastructure/cache/query-cache";
 import type { SubmittedAnswer } from "./activity";
+import { recordQuestionAttempt } from "./question-progress";
 import type {
   ExamSubjectDTO,
   ExamSelectionRequest,
@@ -563,13 +564,57 @@ export async function submitCustomExam(
         data: { userId, score: percentage, correct, total, durationSec: 0 },
       });
       await recomputeAndAward(tx, userId, pointsEarned, 1);
+      // Record per-question mastery progress for mistake tracking.
+      const feedbackByQid = new Map<number, { masteryStatus: string | null; justMastered: boolean }>();
+      for (const a of validAnswers) {
+        const q = byId.get(a.questionId);
+        if (!q) continue;
+        const userAnswer = a.selected.trim();
+        const isCorrect = userAnswer.length > 0 && userAnswer === (q.correctAnswer ?? "").trim();
+        const fb = await recordQuestionAttempt(tx, {
+          userId,
+          questionId: a.questionId,
+          isCorrect,
+          subject: q.subject?.nameBn,
+          topic: q.topic,
+        });
+        if (fb && fb.masteryStatus) {
+          feedbackByQid.set(a.questionId, {
+            masteryStatus: fb.masteryStatus,
+            justMastered: fb.justMastered,
+          });
+        }
+      }
+      // Merge mastery feedback into the review items.
+      for (const item of review) {
+        const fb = feedbackByQid.get(item.questionId);
+        if (fb) {
+          item.masteryStatus = fb.masteryStatus as ExamReviewDTO["masteryStatus"];
+          item.justMastered = fb.justMastered;
+        }
+      }
     });
+    // Persistent attempt facts (answered questions) for the LearningEvent
+    // timeline — the transaction above already committed before we emit.
+    const attemptFacts = (attempts as Array<{
+      userId: string;
+      questionId: number | null;
+      subjectId: number | null;
+      correct: boolean;
+    }>).map((a) => ({
+      questionId: a.questionId,
+      correct: a.correct,
+      answered: true,
+      subjectId: a.subjectId,
+    }));
+
     emit({
       name: "EXAM_COMPLETED",
       userId,
       correct,
       wrong,
       finalScore,
+      attempts: attemptFacts,
     });
 
     return {

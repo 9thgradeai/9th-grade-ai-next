@@ -7,6 +7,8 @@ import { LanguageProvider } from "@/lib/lang-ctx";
 import { LANGUAGE_KEY } from "@/lib/lang-key";
 import ScrollProgress from "@/components/ui/ScrollProgress";
 import Toaster from "@/components/ui/ToasterLazy";
+import CommandPalette from "@/components/navigation/CommandPalette";
+import GlobalBootLoader from "@/components/ui/GlobalBootLoader";
 import { SentryClientProvider } from "@/lib/sentry";
 import "./globals.css";
 
@@ -79,9 +81,13 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-const THEME_INIT_SCRIPT = `(function(){try{var t=localStorage.getItem("9th-grade-ai-theme");if(t==="light"){document.documentElement.classList.add("light")}else{document.documentElement.classList.remove("light")}}catch(e){}})()`;
+// Public pages (landing, marketing, auth, navbar) ship a single unified dark
+// design — light/dark switching is restricted to the user dashboard. We still
+// migrate any legacy "light" preference out of localStorage so prior users
+// land on the dark public design on next visit.
+const THEME_INIT_SCRIPT = `(function(){try{document.documentElement.classList.remove("light");localStorage.removeItem("9th-grade-ai-theme");}catch(e){}})()`;
 
-const LANG_INIT_SCRIPT = `(function(){try{var l=localStorage.getItem("${LANGUAGE_KEY}");document.documentElement.lang=(l==="en")?"en":"bn";}catch(e){}})()`;
+const LANG_INIT_SCRIPT = `(function(){try{var l=localStorage.getItem("${LANGUAGE_KEY}");document.documentElement.lang=(l==="bn")?"bn":"en";}catch(e){}})()`;
 
 // Failsafe: landing sections are server-rendered with `opacity:0` and only
 // revealed by framer-motion JS animations. If hydration stalls (e.g. a chunk
@@ -97,7 +103,7 @@ export default function RootLayout({
 }) {
   return (
     <html
-      lang="bn"
+      lang="en"
       className={`${inter.variable} ${spaceGrotesk.variable} ${hindSiliguri.variable} h-full antialiased`}
       suppressHydrationWarning
     >
@@ -112,6 +118,7 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: ANIMATION_FAILSAFE_SCRIPT }} />
       </head>
       <body className="min-h-full flex flex-col font-sans noise">
+        <GlobalBootLoader />
         <div className="cosmic-bg" aria-hidden="true" />
         <ScrollProgress />
         <ToastProvider>
@@ -119,6 +126,7 @@ export default function RootLayout({
             <AuthProvider>
               <ThemeProvider>
                 <SentryClientProvider>{children}</SentryClientProvider>
+                <CommandPalette />
               </ThemeProvider>
             </AuthProvider>
           </LanguageProvider>

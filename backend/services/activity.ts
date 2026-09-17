@@ -4,15 +4,22 @@
 
 import "server-only";
 
-import type { Prisma } from "@prisma/client";
+import type { MistakeErrorType, Prisma } from "@prisma/client";
 import { prisma } from "~backend/db";
 import { AppError, InternalServerError } from "~backend/errors";
 import { recomputeAndAward } from "~backend/repositories/progress.repository";
 import { emit } from "~backend/events/bus";
+import type { AttemptFact } from "~backend/events/types";
+import { classifyErrorType } from "./error-classifier";
+import { recordQuestionAttempt } from "./question-progress";
 
 export type SubmittedAnswer = {
   questionId: number;
   selected: string;
+  /** Optional per-answer time (s) — drives error classification. */
+  durationSec?: number;
+  /** Optional learner self-confidence 0–100. */
+  confidence?: number;
 };
 
 export type SubmissionSummary = {
@@ -20,9 +27,27 @@ export type SubmissionSummary = {
   total: number;
   score: number; // percentage 0-100
   pointsEarned: number;
+  /** Per-question mastery feedback, keyed by questionId (mistake practice). */
+  feedback?: Record<number, { masteryStatus: string; isMistake: boolean; justMastered: boolean }>;
 };
 
 const POINTS_PER_CORRECT = 10;
+
+/** Clamp a client-reported duration into 0..6h (0 = not provided). */
+function toDurationSec(value: unknown): number {
+  if (typeof value === "number" && Number.isFinite(value) && value > 0) {
+    return Math.min(Math.floor(value), 6 * 60 * 60);
+  }
+  return 0;
+}
+
+/** Clamp a client-reported confidence into 0..100 (null = not provided). */
+function toConfidence(value: unknown): number | null {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return Math.max(0, Math.min(100, Math.round(value)));
+  }
+  return null;
+}
 
 type TxClient = Prisma.TransactionClient;
 type AttemptRow = {
@@ -34,6 +59,10 @@ type AttemptRow = {
   topic: string;
   correct: boolean;
   source: string;
+  selectedAnswer?: string;
+  durationSec?: number;
+  confidence?: number | null;
+  errorType?: MistakeErrorType;
 };
 
 /**
@@ -92,13 +121,42 @@ export async function submitPracticeAnswers(
     const ids = answered.map((a) => a.questionId);
     const questions = await prisma.question.findMany({
       where: { id: { in: ids } },
-      select: { id: true, correctAnswer: true, subjectId: true, topic: true, ecosystemId: true, subject: { select: { nameBn: true } } },
+      select: {
+        id: true,
+        subjectId: true,
+        topicId: true,
+        topic: true,
+        correctAnswer: true,
+        difficulty: true,
+        ecosystemId: true,
+        subject: { select: { nameBn: true } },
+      },
     });
+    // Previous per-question progress (READ BEFORE the transaction writes) — the
+    // classifier must see the state prior to this submission, not after.
+    const priorProgress = (await prisma.userQuestionProgress.findMany({
+      where: { userId, questionId: { in: ids } },
+      select: {
+        questionId: true,
+        masteryStatus: true,
+        consecutiveIncorrect: true,
+        mistakeCount: true,
+        totalAttempts: true,
+      },
+    })) ?? [];
+    const priorById = new Map(priorProgress.map((p) => [p.questionId, p]));
     const { correct, total } = gradeAnswers(answered, questions);
     const byId = new Map(questions.map((q) => [q.id, q]));
 
-    const attempts = answered.map((a) => {
+    const attempts: AttemptRow[] = answered.map((a) => {
       const q = byId.get(a.questionId);
+      const isCorrect = a.selected.trim() === q?.correctAnswer.trim();
+      const errorType = classifyErrorType({
+        isCorrect,
+        difficulty: q?.difficulty ?? null,
+        durationSec: a.durationSec,
+        previous: priorById.get(a.questionId),
+      });
       return {
         ecosystemId: q?.ecosystemId ?? 1, // default to BCS if question not found
         userId,
@@ -106,18 +164,59 @@ export async function submitPracticeAnswers(
         subjectId: q?.subjectId ?? null,
         subjectName: q?.subject ? q.subject.nameBn : "",
         topic: q?.topic ?? "",
-        correct: a.selected.trim() === q?.correctAnswer.trim(),
+        correct: isCorrect,
         source: "practice",
+        selectedAnswer: a.selected,
+        durationSec: toDurationSec(a.durationSec),
+        confidence: toConfidence(a.confidence),
+        errorType: errorType ?? undefined,
+      };
+    });
+    const attemptFacts: AttemptFact[] = answered.map((a) => {
+      const q = byId.get(a.questionId);
+      return {
+        questionId: a.questionId,
+        correct: a.selected.trim() === q?.correctAnswer.trim(),
+        answered: true,
+        subjectId: q?.subjectId ?? null,
+        topicId: q?.topicId ?? null,
       };
     });
 
     const pointsEarned = correct * POINTS_PER_CORRECT;
+    const feedback: NonNullable<SubmissionSummary["feedback"]> = {};
     await prisma.$transaction(async (tx) => {
       await recordAttemptsAtomically(tx, userId, attempts, pointsEarned);
+      // Record per-question mastery progress for mistake tracking.
+      for (const a of answered) {
+        const q = byId.get(a.questionId);
+        const isCorrect = a.selected.trim() === q?.correctAnswer.trim();
+        const fb = await recordQuestionAttempt(tx, {
+          userId,
+          questionId: a.questionId,
+          isCorrect,
+          subject: q?.subject?.nameBn,
+          topic: q?.topic,
+        });
+        if (fb && fb.masteryStatus) {
+          feedback[a.questionId] = {
+            masteryStatus: fb.masteryStatus,
+            isMistake: fb.isMistake,
+            justMastered: fb.justMastered,
+          };
+        }
+      }
     });
     // Domain event (Phase 11) — emitted only after the transaction committed.
-    emit({ name: "PRACTICE_SUBMITTED", userId, correct, total, score: total > 0 ? Math.round((correct / total) * 100) : 0 });
-    return { correct, total, score: total > 0 ? Math.round((correct / total) * 100) : 0, pointsEarned };
+    emit({
+      name: "PRACTICE_SUBMITTED",
+      userId,
+      correct,
+      total,
+      score: total > 0 ? Math.round((correct / total) * 100) : 0,
+      attempts: attemptFacts,
+    });
+    return { correct, total, score: total > 0 ? Math.round((correct / total) * 100) : 0, pointsEarned, feedback };
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new InternalServerError("Failed to record practice answers");
@@ -149,8 +248,29 @@ export async function submitDailyQuiz(
     const score = total > 0 ? Math.round((correct / total) * 100) : 0;
     const pointsEarned = correct * POINTS_PER_CORRECT;
 
-    const attempts = answered.map((a) => {
+    // Previous per-question progress (QuizQuestion ids are the progress key) —
+    // read before the transaction so classification sees prior state.
+    const priorProgress = (await prisma.userQuestionProgress.findMany({
+      where: { userId, questionId: { in: answered.map((a) => a.questionId) } },
+      select: {
+        questionId: true,
+        masteryStatus: true,
+        consecutiveIncorrect: true,
+        mistakeCount: true,
+        totalAttempts: true,
+      },
+    })) ?? [];
+    const priorById = new Map(priorProgress.map((p) => [p.questionId, p]));
+
+    const attempts: AttemptRow[] = answered.map((a) => {
       const q = byId.get(a.questionId);
+      const isCorrect = a.selected.trim() === q?.correctAnswer.trim();
+      const errorType = classifyErrorType({
+        isCorrect,
+        difficulty: null,
+        durationSec: a.durationSec,
+        previous: priorById.get(a.questionId),
+      });
       return {
         ecosystemId: quiz.ecosystemId,
         userId,
@@ -158,8 +278,12 @@ export async function submitDailyQuiz(
         subjectId: null,
         subjectName: q?.subject ?? "",
         topic: q?.topic ?? "",
-        correct: a.selected.trim() === q?.correctAnswer.trim(),
+        correct: isCorrect,
         source: "daily",
+        selectedAnswer: a.selected,
+        durationSec: toDurationSec(a.durationSec),
+        confidence: toConfidence(a.confidence),
+        errorType: errorType ?? undefined,
       };
     });
 
@@ -186,9 +310,34 @@ export async function submitDailyQuiz(
           completedAt: new Date(),
         },
       });
+      // Record per-question mastery progress for mistake tracking.
+      for (const a of answered) {
+        const q = byId.get(a.questionId);
+        const isCorrect = a.selected.trim() === q?.correctAnswer.trim();
+        await recordQuestionAttempt(tx, {
+          userId,
+          questionId: a.questionId,
+          isCorrect,
+          subject: q?.subject,
+          topic: q?.topic,
+        });
+      }
     });
 
-    emit({ name: "DAILY_QUIZ_COMPLETED", userId, quizId, score });
+    emit({
+      name: "DAILY_QUIZ_COMPLETED",
+      userId,
+      quizId,
+      score,
+      attempts: answered.map((a) => {
+        const q = byId.get(a.questionId);
+        return {
+          questionId: a.questionId,
+          correct: a.selected.trim() === q?.correctAnswer.trim(),
+          answered: true,
+        };
+      }),
+    });
     return { correct, total, score, pointsEarned };
   } catch (error) {
     if (error instanceof AppError) throw error;

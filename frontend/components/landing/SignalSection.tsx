@@ -1,7 +1,10 @@
+"use client";
 import SectionHeading from "@/components/ui/SectionHeading";
+import { useT } from "@/lib/i18n";
 import SignalFlow from "@/components/landing/SignalFlow";
 
 export default function SignalSection() {
+  const t = useT();
   return (
     <section id="signal" className="relative scroll-mt-16 px-4 py-24 sm:px-6 md:py-32" aria-labelledby="signal-heading">
       <div
@@ -14,10 +17,10 @@ export default function SignalSection() {
       />
       <div className="relative mx-auto max-w-7xl">
         <SectionHeading
-          eyebrow="LIVE SIGNAL"
-          title="Every answer sends"
-          highlight="a signal"
-          description="This is the loop that replaces guesswork: each response is analyzed the moment it happens, and the insight routes itself — reinforcement for what's working, triage for what isn't."
+          eyebrow={t("landing.signal.eyebrow")}
+          title={t("landing.signal.title")}
+          highlight={t("landing.signal.highlight")}
+          description={t("landing.signal.description")}
         />
         <SignalFlow />
       </div>

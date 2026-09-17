@@ -1,0 +1,346 @@
+[
+  {
+    "type": "BROKEN_BANGLA",
+    "field": "explanation",
+    "recordId": 2808,
+    "snippet": "বর্ণের মাত্রার উপরের আহশকে চৈতন বা উষ্ভীষ বলা হয়। . বাংলা প...",
+    "confidence": "MEDIUM",
+    "reason": "Option markers found in non-question field (possible parsing error)"
+  },
+  {
+    "type": "BROKEN_BANGLA",
+    "field": "explanation",
+    "recordId": 2809,
+    "snippet": "৬.'ন্বর্গ' শব্দের সঠিক সমার্থক শব্দজোড়া কোনটি? (ক) হরিদশ্ব,...",
+    "confidence": "MEDIUM",
+    "reason": "Option markers found in non-question field (possible parsing error)"
+  },
+  {
+    "type": "BROKEN_BANGLA",
+    "field": "explanation",
+    "recordId": 2811,
+    "snippet": "জসীমউদ্দীনের বিখ্যাত 'কবর' কবিতাটি কল্লোল পত্রিকায় প্রথম প্...",
+    "confidence": "MEDIUM",
+    "reason": "Option markers found in non-question field (possible parsing error)"
+  },
+  {
+    "type": "BROKEN_BANGLA",
+    "field": "explanation",
+    "recordId": 2814,
+    "snippet": "'রাজপথ'-এর ব্যাসবাক্য'পথের রাজা', অর্থাৎ প্রধান বা বড পথ। ২১...",
+    "confidence": "MEDIUM",
+    "reason": "Option markers found in non-question field (possible parsing error)"
+  },
+  {
+    "type": "BROKEN_BANGLA",
+    "field": "explanation",
+    "recordId": 2824,
+    "snippet": "'হরফের ছড়া' (১৯৭০) ফররুখ আহমদের লেখা একটি শিশুতোষ গ্রন্থ। ত...",
+    "confidence": "MEDIUM",
+    "reason": "Option markers found in non-question field (possible parsing error)"
+  },
+  {
+    "type": "BROKEN_BANGLA",
+    "field": "explanation",
+    "recordId": 2825,
+    "snippet": "'সাত সাগরের মাঝি' (১৯৪৪) কবি ফররুখ আহমদের একটি বিখ্যাত কাব্য...",
+    "confidence": "MEDIUM",
+    "reason": "Option markers found in non-question field (possible parsing error)"
+  },
+  {
+    "type": "BROKEN_BANGLA",
+    "field": "explanation",
+    "recordId": 2827,
+    "snippet": "'ডাক্তারখানা' শব্দটি গঠিত হয়েছে, যা স্থান বা আঘার বোঝায়। '...",
+    "confidence": "MEDIUM",
+    "reason": "Option markers found in non-question field (possible parsing error)"
+  },
+  {
+    "type": "BROKEN_BANGLA",
+    "field": "explanation",
+    "recordId": 2828,
+    "snippet": "'সারা' এবং 'ব্যাপী' দুটি শব্দই সমগ্র বা পুরো আর্থ প্রকাশ করে...",
+    "confidence": "MEDIUM",
+    "reason": "Option markers found in non-question field (possible parsing error)"
+  },
+  {
+    "type": "BROKEN_BANGLA",
+    "field": "explanation",
+    "recordId": 2829,
+    "snippet": "বাংলা সাহিত্যের মধ্যযুগের মুসলমান কবি শাহ মুহম্মদ সগীর পঞ্চদ...",
+    "confidence": "MEDIUM",
+    "reason": "Option markers found in non-question field (possible parsing error)"
+  },
+  {
+    "type": "BROKEN_BANGLA",
+    "field": "explanation",
+    "recordId": 2830,
+    "snippet": "ক্রিয়াপদের যে অংশকে আর কোনো ক্ষুদ্রতর আশে ভাগ করা যায় না এ...",
+    "confidence": "MEDIUM",
+    "reason": "Option markers found in non-question field (possible parsing error)"
+  },
+  {
+    "type": "BROKEN_BANGLA",
+    "field": "explanation",
+    "recordId": 2832,
+    "snippet": "যে পদ অন্য পদের দোষ, গুণ, আবস্থা, সংখ্যা, পরিমাণ ইত্যাদি প্র...",
+    "confidence": "MEDIUM",
+    "reason": "Option markers found in non-question field (possible parsing error)"
+  },
+  {
+    "type": "BROKEN_BANGLA",
+    "field": "explanation",
+    "recordId": 2834,
+    "snippet": "বসন্তরঞ্জন রায় বিদ্দ্বল্পভ কতৃক আবিষ্কৃত এবং বু চণ্তীদাস রচ...",
+    "confidence": "MEDIUM",
+    "reason": "Option markers found in non-question field (possible parsing error)"
+  },
+  {
+    "type": "BROKEN_BANGLA",
+    "field": "explanation",
+    "recordId": 2836,
+    "snippet": "মনোএল ভাওয়ালের একটি গির্জায় ধর্মযাজকের দায়িত্ব পালনকালে ১...",
+    "confidence": "MEDIUM",
+    "reason": "Option markers found in non-question field (possible parsing error)"
+  },
+  {
+    "type": "BROKEN_BANGLA",
+    "field": "explanation",
+    "recordId": 2842,
+    "snippet": "এখানে \"বিরাট' বিশেষণটি 'হাট' বিশেষ্যকে বিশেষিত করছে। আর্থাথ ...",
+    "confidence": "MEDIUM",
+    "reason": "Option markers found in non-question field (possible parsing error)"
+  },
+  {
+    "type": "BROKEN_BANGLA",
+    "field": "explanation",
+    "recordId": 2851,
+    "snippet": "প্রাচীন পুর্ববঙ্গের জনপদ হরিকেল আধুনিক সিলেট, চট্টগ্রাম ও পা...",
+    "confidence": "MEDIUM",
+    "reason": "Option markers found in non-question field (possible parsing error)"
+  },
+  {
+    "type": "BROKEN_BANGLA",
+    "field": "explanation",
+    "recordId": 2853,
+    "snippet": "২০২৩ সালের আইসিসি ক্রিকেট বিশ্বকাপে বাংলাদেশ দলের হয়ে সর্বো...",
+    "confidence": "MEDIUM",
+    "reason": "Option markers found in non-question field (possible parsing error)"
+  },
+  {
+    "type": "BROKEN_BANGLA",
+    "field": "explanation",
+    "recordId": 2856,
+    "snippet": "আধুনিক চিকিৎসা ক্ষেত্রে কম্পিউটার রোগীর তথ্য সংরক্ষণ (617), ...",
+    "confidence": "MEDIUM",
+    "reason": "Option markers found in non-question field (possible parsing error)"
+  },
+  {
+    "type": "BROKEN_BANGLA",
+    "field": "explanation",
+    "recordId": 2857,
+    "snippet": "এটি একটি গুণোন্তর ধারা, যেখানে প্রতিটি পদ তার পুর্ববর্তী পদে...",
+    "confidence": "MEDIUM",
+    "reason": "Option markers found in non-question field (possible parsing error)"
+  },
+  {
+    "type": "BROKEN_BANGLA",
+    "field": "explanation",
+    "recordId": 2862,
+    "snippet": "বাংলা বর্ণমালায় চ-এর ত্যবস্থান ৬ষ্ঠ এবং ইহরেজি বর্ণনালায় 5...",
+    "confidence": "MEDIUM",
+    "reason": "Option markers found in non-question field (possible parsing error)"
+  },
+  {
+    "type": "BROKEN_BANGLA",
+    "field": "explanation",
+    "recordId": 2871,
+    "snippet": "ধারাটির পদগুলোর মধ্যে পার্থক্য ক্রমান্বয়ে বাড়ছে: +২, +৩, +...",
+    "confidence": "MEDIUM",
+    "reason": "Option markers found in non-question field (possible parsing error)"
+  },
+  {
+    "type": "BROKEN_BANGLA",
+    "field": "explanation",
+    "recordId": 2872,
+    "snippet": "আয়নার প্রতিবিষ্বে বন্ুর পার্খ্ীয় পরিবর্তন ঘটে (ডান-বাম উল্...",
+    "confidence": "MEDIUM",
+    "reason": "Option markers found in non-question field (possible parsing error)"
+  },
+  {
+    "type": "BROKEN_BANGLA",
+    "field": "explanation",
+    "recordId": 2873,
+    "snippet": "'আধিত্যকা' শব্দের আর্থ পর্বতের উপরের সমতল ভুমি। এর বিপরীতার্...",
+    "confidence": "MEDIUM",
+    "reason": "Option markers found in non-question field (possible parsing error)"
+  },
+  {
+    "type": "BROKEN_BANGLA",
+    "field": "explanation",
+    "recordId": 2875,
+    "snippet": "২.'অআভিরান' শব্দের আর্থ কী? (ক)বরামহান (খ) বাশিশ (গ) চলন (ঘ)...",
+    "confidence": "MEDIUM",
+    "reason": "Option markers found in non-question field (possible parsing error)"
+  },
+  {
+    "type": "BROKEN_BANGLA",
+    "field": "explanation",
+    "recordId": 2877,
+    "snippet": "বাংলা ধাতু'খেল্‌'এর সাথে \"না\" প্রত্যয় যোগে 'খেলনা' শব্দটি গ...",
+    "confidence": "MEDIUM",
+    "reason": "Option markers found in non-question field (possible parsing error)"
+  },
+  {
+    "type": "BROKEN_BANGLA",
+    "field": "explanation",
+    "recordId": 2878,
+    "snippet": "'বেঁচে থাকার ইচ্ছা'র এককথায় প্রকাশ হলো \"জিজীবিষা'। চ.সর্বাঙ...",
+    "confidence": "MEDIUM",
+    "reason": "Option markers found in non-question field (possible parsing error)"
+  },
+  {
+    "type": "BROKEN_BANGLA",
+    "field": "explanation",
+    "recordId": 2882,
+    "snippet": "\"ডাকা প্রকাশ\" (১৮৬১) ছিল ঢাকার প্রথম বাংলা পত্রিকা। এর সম্পা...",
+    "confidence": "MEDIUM",
+    "reason": "Option markers found in non-question field (possible parsing error)"
+  },
+  {
+    "type": "BROKEN_BANGLA",
+    "field": "explanation",
+    "recordId": 2884,
+    "snippet": "বৃন্দাবন দাস রচিত'শ্রীচৈতন্যভাগবত\"হলো শ্রীচৈতন্যদেবের জীবনকে...",
+    "confidence": "MEDIUM",
+    "reason": "Option markers found in non-question field (possible parsing error)"
+  },
+  {
+    "type": "BROKEN_BANGLA",
+    "field": "explanation",
+    "recordId": 2886,
+    "snippet": "\"যাদের দেখেছি\" (১৯৫২) পল্লীকবি জসীমউদ্দীনের লেখা একটি স্মৃতি...",
+    "confidence": "MEDIUM",
+    "reason": "Option markers found in non-question field (possible parsing error)"
+  },
+  {
+    "type": "BROKEN_BANGLA",
+    "field": "explanation",
+    "recordId": 2889,
+    "snippet": "বঙ্গবন্ধু শেখ ঘুজিবুর রহমান ১৯৬৬ সালের এ-৬ ফেব্রুয়ারি পাকিন...",
+    "confidence": "MEDIUM",
+    "reason": "Option markers found in non-question field (possible parsing error)"
+  },
+  {
+    "type": "BROKEN_BANGLA",
+    "field": "explanation",
+    "recordId": 2890,
+    "snippet": "বাংলাদেশের ক্ষুদ্র নৃ-গোম্তীগুলোর মধ্যে চাকমারা বৃহত্তন। তাদ...",
+    "confidence": "MEDIUM",
+    "reason": "Option markers found in non-question field (possible parsing error)"
+  },
+  {
+    "type": "BROKEN_BANGLA",
+    "field": "explanation",
+    "recordId": 2893,
+    "snippet": "২০১৩ সালে শ্রীলঙ্কার বিপক্ষে গল টেস্টে মুশফিকুর রহিম বাংলাদে...",
+    "confidence": "MEDIUM",
+    "reason": "Option markers found in non-question field (possible parsing error)"
+  },
+  {
+    "type": "BROKEN_BANGLA",
+    "field": "explanation",
+    "recordId": 2898,
+    "snippet": "ধারাটির নিয়ন হলো: প্রথম সংখ্যার সাথে ১ যোগ, তারপর ২ দিয়ে গ...",
+    "confidence": "MEDIUM",
+    "reason": "Option markers found in non-question field (possible parsing error)"
+  },
+  {
+    "type": "BROKEN_BANGLA",
+    "field": "explanation",
+    "recordId": 2899,
+    "snippet": "এটি একটি সমকোণী ত্রিভুজ গঠন করে যার লম্ব ১২ কি.মি. এবং ভুমি ...",
+    "confidence": "MEDIUM",
+    "reason": "Option markers found in non-question field (possible parsing error)"
+  },
+  {
+    "type": "BROKEN_BANGLA",
+    "field": "explanation",
+    "recordId": 2903,
+    "snippet": "; চত্র টতে ছোট ত্াকারের ৬টি এবং দুটি বড আকারের ত্রিভুজ রয়েছ...",
+    "confidence": "MEDIUM",
+    "reason": "Option markers found in non-question field (possible parsing error)"
+  },
+  {
+    "type": "BROKEN_BANGLA",
+    "field": "explanation",
+    "recordId": 2905,
+    "snippet": "পেনিসিলিন হলো একটি ত্যান্টিবায়োটিক যা পেনিসিলিয়াম নামক ছত্...",
+    "confidence": "MEDIUM",
+    "reason": "Option markers found in non-question field (possible parsing error)"
+  },
+  {
+    "type": "BROKEN_BANGLA",
+    "field": "explanation",
+    "recordId": 2908,
+    "snippet": "নবায়নযোগ্য শাক্তি হলো সেহ শক্তি যা পুনরায় ব্যবহার করা যায়...",
+    "confidence": "MEDIUM",
+    "reason": "Option markers found in non-question field (possible parsing error)"
+  },
+  {
+    "type": "BROKEN_BANGLA",
+    "field": "explanation",
+    "recordId": 2913,
+    "snippet": "ড. মুহাম্মদ শহীদুল্লাহ রচিত বালা সাহিত্যের ইতিহাস বিষয়ক গ্র...",
+    "confidence": "MEDIUM",
+    "reason": "Option markers found in non-question field (possible parsing error)"
+  },
+  {
+    "type": "BROKEN_BANGLA",
+    "field": "explanation",
+    "recordId": 2916,
+    "snippet": "'প্রভাবতী সন্তাষণ' বাৎলা সাহিত্যের প্রথম মৌলিক গদ্য রচনা হিস...",
+    "confidence": "MEDIUM",
+    "reason": "Option markers found in non-question field (possible parsing error)"
+  },
+  {
+    "type": "BROKEN_BANGLA",
+    "field": "explanation",
+    "recordId": 2917,
+    "snippet": "শুদ্ধ বানানটি হলো'শুচিস্মিতা'। এরসন্ধি বিচ্ছেদ: শুচি + স্মিত...",
+    "confidence": "MEDIUM",
+    "reason": "Option markers found in non-question field (possible parsing error)"
+  },
+  {
+    "type": "BROKEN_BANGLA",
+    "field": "explanation",
+    "recordId": 2920,
+    "snippet": "; ১৬১০ সালে মুঘল সুবাদার হসলাম খান চিশতি বাহলার রাভাধানা রাজ...",
+    "confidence": "MEDIUM",
+    "reason": "Option markers found in non-question field (possible parsing error)"
+  },
+  {
+    "type": "BROKEN_BANGLA",
+    "field": "explanation",
+    "recordId": 2921,
+    "snippet": "\" শব্দের যথার্থ বাঙলা পরিভাষা হলো 'বুদ্ধিজীবী'| যদিও বুদ্ধিন...",
+    "confidence": "MEDIUM",
+    "reason": "Option markers found in non-question field (possible parsing error)"
+  },
+  {
+    "type": "BROKEN_BANGLA",
+    "field": "explanation",
+    "recordId": 2922,
+    "snippet": "3365 যাধ্বৎসশীল বাযারবিনাশ আছে। 'অস্থায়ী' ক্ষণিক' বা'ক্ষণস্...",
+    "confidence": "MEDIUM",
+    "reason": "Option markers found in non-question field (possible parsing error)"
+  },
+  {
+    "type": "BROKEN_BANGLA",
+    "field": "explanation",
+    "recordId": 2926,
+    "snippet": "রবীন্দ্রনাথ ঠাকুর জন্মগ্রহণ করেন ১৮৬১ সালে (বালা ২৫শে বৈশাখ,...",
+    "confidence": "MEDIUM",
+    "reason": "Option markers found in non-question field (possible parsing error)"
+  }
+]

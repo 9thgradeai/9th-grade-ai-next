@@ -40,7 +40,7 @@ export default function ScrollProgress() {
     <div
       ref={ref}
       aria-hidden="true"
-      className="fixed top-0 left-0 right-0 h-[2px] z-[80] origin-left bg-gradient-to-r from-emerald-500 via-cyan-400 to-indigo-500"
+      className="fixed top-0 left-0 right-0 h-[2px] z-[80] origin-left bg-gradient-to-r from-[var(--success)] via-[var(--info)] to-[var(--primary)]"
       style={{ transform: "scaleX(0)" }}
     />
   );

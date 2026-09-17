@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useSyncExternalStore, useEffect } from "react";
+import { createContext, useContext, useEffect } from "react";
 
 type Theme = "dark" | "light";
 
@@ -13,67 +13,39 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 const THEME_KEY = "9th-grade-ai-theme";
 
-function readTheme(): Theme {
-  if (typeof window === "undefined") return "dark";
-  const stored = localStorage.getItem(THEME_KEY);
-  return stored === "light" || stored === "dark" ? stored : "dark";
-}
-
-function getSnapshot(): Theme {
-  return readTheme();
-}
-
-function getServerSnapshot(): Theme {
-  return "dark";
-}
-
-function subscribe(cb: () => void) {
-  if (typeof window === "undefined") return () => {};
-  window.addEventListener("storage", cb);
-  return () => window.removeEventListener("storage", cb);
-}
-
+// Public pages (landing, marketing, auth, navbar) ship a single unified dark
+// design. Light/dark switching lives only inside the user dashboard (see
+// `frontend/lib/dashboard-theme-ctx`). To preserve backwards compatibility with
+// existing imports we keep `ThemeProvider` + `useTheme` exported, but they
+// always resolve to "dark" and any persisted "light" preference is wiped so
+// legacy users see the dark public design on next visit.
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  // The provider ALWAYS wraps its children so hooks like useTheme() never
-  // throw (ThemeToggle is rendered unconditionally in the dashboard layout).
-  // State is sourced from localStorage via useSyncExternalStore — this avoids
-  // both the hydration mismatch and the "setState in effect" anti-pattern.
-  const theme = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
-
-  // Apply the <html> class to match the current theme. This effect only
-  // touches the DOM; it never calls setState, so it's lint-clean.
   useEffect(() => {
     const root = document.documentElement;
-    root.classList.toggle("light", theme === "light");
-    root.classList.toggle("dark", theme === "dark");
-  }, [theme]);
-
-  const toggleTheme = () => {
-    const next: Theme = theme === "dark" ? "light" : "dark";
+    root.classList.remove("light");
     try {
-      localStorage.setItem(THEME_KEY, next);
+      localStorage.removeItem(THEME_KEY);
     } catch {
       /* storage unavailable — ignore */
     }
-    // Reflect immediately + notify other tabs.
-    document.documentElement.classList.toggle("light", next === "light");
-    document.documentElement.classList.toggle("dark", next === "dark");
-    if (typeof window !== "undefined") {
-      window.dispatchEvent(new Event("storage"));
-    }
+  }, []);
+
+  const value: ThemeContextType = {
+    theme: "dark",
+    toggleTheme: () => {},
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
-      {children}
-    </ThemeContext.Provider>
+    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
   );
 }
 
 export function useTheme() {
   const context = useContext(ThemeContext);
   if (context === undefined) {
-    throw new Error("useTheme must be used within a ThemeProvider");
+    // Outside a provider (e.g. prerender/build) — return a stable dark default
+    // so the dashboard-only theme remains the single source of truth.
+    return { theme: "dark" as Theme, toggleTheme: () => {} };
   }
   return context;
 }

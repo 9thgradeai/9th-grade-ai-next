@@ -4,8 +4,10 @@ import "server-only";
 // (the same BCS/ব্যাংক question is asked by many aspirants). In-memory by
 // default; uses Redis when REDIS_URL is configured. All failures are
 // fail-open: a cache miss or error simply falls through to the LLM.
+// Now records cache hit/miss metrics for observability.
 
 import Redis from "ioredis";
+import { recordCacheHit } from "./metrics";
 
 const TTL_MS = 1000 * 60 * 60 * 24; // 24h
 
@@ -26,13 +28,20 @@ export async function aiCacheGet(key: string): Promise<string | null> {
   try {
     if (redis) {
       const v = await redis.get(`ai:${key}`);
+      const hit = v !== null;
+      recordCacheHit("response", hit);
       return v ?? null;
     }
     const hit = mem.get(key);
-    if (hit && hit.exp > Date.now()) return hit.value;
+    if (hit && hit.exp > Date.now()) {
+      recordCacheHit("response", true);
+      return hit.value;
+    }
     if (hit) mem.delete(key);
+    recordCacheHit("response", false);
   } catch {
     // fail open
+    recordCacheHit("response", false);
   }
   return null;
 }

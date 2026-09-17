@@ -4,26 +4,29 @@ import { Shuffle, MapPinned, RadioTower } from "lucide-react";
 import MotionText from "@/components/ui/MotionText";
 import Reveal from "@/components/ui/Reveal";
 import Interactive3DCard from "@/components/landing/Interactive3DCard";
+import { useT } from "@/lib/i18n";
 
-const frictions = [
+const frictionKeys = [
   {
     icon: Shuffle,
-    title: "Resources are scattered",
-    body: "PDFs in one drive, questions in another, current affairs on social media — preparation becomes an archaeology project before it becomes studying.",
+    titleKey: "problem.card1.title",
+    bodyKey: "problem.card1.body",
   },
   {
     icon: MapPinned,
-    title: "Plans are generic",
-    body: "The same 90-day schedule is handed to every aspirant, regardless of strengths, weaknesses, or how far away the exam actually is.",
+    titleKey: "problem.card2.title",
+    bodyKey: "problem.card2.body",
   },
   {
     icon: RadioTower,
-    title: "Feedback comes too late",
-    body: "You discover your weak subjects on exam day — months after it would have mattered. Practice without diagnosis is just motion.",
+    titleKey: "problem.card3.title",
+    bodyKey: "problem.card3.body",
   },
 ];
 
 export default function ProblemSection() {
+  const t = useT();
+  const frictions = frictionKeys.map(k => ({ icon: k.icon, title: t(k.titleKey), body: t(k.bodyKey) }));
   return (
     <section className="relative px-4 py-24 sm:px-6 md:py-32" aria-labelledby="problem-heading">
       <div className="mx-auto max-w-7xl">
@@ -31,24 +34,22 @@ export default function ProblemSection() {
           <Reveal>
             <p className="section-eyebrow mb-5">
               <span aria-hidden="true">{"//"}</span>
-              THE REALITY
+              {t("problem.eyebrow")}
             </p>
           </Reveal>
           <h2
             id="problem-heading"
             className="font-display text-3xl font-semibold leading-[1.12] tracking-tight text-white sm:text-4xl md:text-[2.9rem]"
           >
-            <MotionText>Lakh-strong applicant pools.</MotionText>
+            <MotionText>{t("problem.heading1")}</MotionText>
             <br />
             <MotionText delay={0.25} wordClassName="text-gradient">
-              Single-digit selection.
+              {t("problem.heading2")}
             </MotionText>
           </h2>
           <Reveal delay={0.15}>
             <p className="mt-6 max-w-2xl text-base leading-relaxed text-[var(--text-muted)] sm:text-lg">
-              For BCS, bank, and teacher-recruitment exams, the competition is
-              not the hardest part — preparing alone, without signal, is. Most
-              aspirants lose ground to three structural problems.
+              {t("problem.desc")}
             </p>
           </Reveal>
         </div>
