@@ -31,7 +31,7 @@ type ConversationListProps = {
   onOpen: (id: string) => void
   onDelete: (id: string) => void
   onRename: (id: string, title: string) => void
-  onPin: (id: string, pinned: boolean) => void
+  onPushPin: (id: string, pinned: boolean) => void
   onNew: () => void
   /** Group history by day (workspace mode). Defaults to a flat pinned-first list. */
   grouped?: boolean
@@ -71,7 +71,7 @@ export default function ConversationList({
   onOpen,
   onDelete,
   onRename,
-  onPin,
+  onPushPin,
   onNew,
   grouped = false,
 }: ConversationListProps) {
@@ -254,7 +254,7 @@ export default function ConversationList({
                   onClick={(e) => {
                     e.stopPropagation()
                     setMenuOpenId(null)
-                    onPin(conv.id, !conv.pinned)
+                    onPushPin(conv.id, !conv.pinned)
                   }}
                   className="flex w-full items-center gap-2 px-3 py-1.5 text-left text-xs text-[var(--dashboard-text-secondary)] transition-colors hover:bg-[var(--dashboard-primary-subtle)] hover:text-[var(--dashboard-primary)]"
                 >

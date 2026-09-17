@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertCircle, ArrowRight, Zap, Target } from "lucide-react";
+import { WarningCircle, ArrowRight, Sun } from "@phosphor-icons/react";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 
 type Report = { name: string; score: number; attempted: number; correct: number };
@@ -14,7 +14,7 @@ export default function FocusAreasCard({
   onPractice: (subject: string) => void;
   onOpenMistakes: (subject?: string) => void;
 }) {
-  const { setActiveTab } = useDashboardStore();
+  useDashboardStore();
   const weakest = [...reports].filter((r) => r.attempted > 0).sort((a, b) => a.score - b.score).slice(0, 3);
 
   return (
@@ -30,7 +30,7 @@ export default function FocusAreasCard({
                 borderColor: "color-mix(in srgb, var(--dashboard-danger) 20%, transparent)",
               }}
             >
-              <AlertCircle className="w-4 h-4" />
+              <WarningCircle className="w-4 h-4" />
             </span>
             <p className="command-eyebrow !text-[10px]">Priority Focus Areas</p>
           </div>
@@ -69,7 +69,7 @@ export default function FocusAreasCard({
                   onClick={() => onPractice(r.name)}
                   className="command-secondary-btn !px-3 !py-1.5 !text-xs shrink-0 hover:border-[var(--dashboard-primary)]"
                 >
-                  Drill <Zap className="w-3 h-3 text-[var(--dashboard-primary)]" />
+                  Drill <Sun className="w-3 h-3 text-[var(--dashboard-primary)]" />
                 </button>
               </div>
             ))}

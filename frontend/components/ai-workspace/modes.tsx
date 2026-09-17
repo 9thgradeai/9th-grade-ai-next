@@ -4,7 +4,7 @@
 // backend surface (tutor / assistant / agent) — descriptions stay honest about
 // what the model can actually do for the learner.
 
-import { GraduationCap, BrainCircuit, Target, type LucideIcon } from "lucide-react";
+import { GraduationCap, Brain, Target } from "@phosphor-icons/react";
 
 export type Mode = "tutor" | "assistant" | "agent";
 
@@ -14,7 +14,7 @@ export type ModeMeta = {
   labelEn: string;
   /** Short, honest capability line shown during discovery. */
   descBn: string;
-  icon: LucideIcon;
+  icon: React.ComponentType<{ className?: string }>;
 };
 
 export const MODES: ModeMeta[] = [
@@ -30,7 +30,7 @@ export const MODES: ModeMeta[] = [
     labelBn: "সহায়ক",
     labelEn: "Assistant",
     descBn: "আপনার অগ্রগতি, দুর্বলতা ও পড়ার পরিকল্পনা বিশ্লেষণ করে পরামর্শ দেয়।",
-    icon: BrainCircuit,
+    icon: Brain,
   },
   {
     id: "agent",

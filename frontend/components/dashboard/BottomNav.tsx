@@ -6,7 +6,7 @@ import type { ComponentType } from "react";
 import { TABS, type TabId } from "@/lib/data";
 import { TAB_ICONS, type IconProps } from "@/lib/exam-ui";
 import { useDialogA11y } from "@/lib/use-dialog-a11y";
-import { MoreHorizontal, X } from "lucide-react";
+import { DotsThreeVertical, X } from "@phosphor-icons/react";
 import LogoutButton from "./LogoutButton";
 
 // Primary 5 — Home, Practice, Question Bank, Mistakes, Progress per new IA
@@ -75,7 +75,7 @@ export default function BottomNav({ activeTab, onChange }: BottomNavProps) {
             style={{ color: isMoreActive ? "var(--dashboard-primary)" : "var(--dashboard-text-secondary)" }}
           >
             {isMoreActive && <span className="absolute top-0 w-8 h-0.5 rounded-full" style={{ background: "var(--dashboard-primary)" }} aria-hidden="true" />}
-            <MoreHorizontal className="w-5 h-5" strokeWidth={isMoreActive ? 2.2 : 1.9} />
+            <DotsThreeVertical className="w-5 h-5" strokeWidth={isMoreActive ? 2.2 : 1.9} />
             <span className="text-[10px] font-semibold leading-none">আরও</span>
           </button>
         </div>

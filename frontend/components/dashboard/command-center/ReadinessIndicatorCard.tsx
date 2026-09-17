@@ -1,6 +1,6 @@
 "use client";
 
-import { Gauge, Info } from "lucide-react";
+import { Gauge, Info } from "@phosphor-icons/react";
 import { useLanguage, t, type Language } from "@/lib/lang-ctx";
 import type { PreparationIntelligenceDTO } from "@/lib/types";
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
-import { Activity, TrendingUp, BarChart2, Timer } from "lucide-react";
+import { Pulse, TrendUp, ChartBar, Timer } from "@phosphor-icons/react";
 
 type ActivityPoint = { date: string; answered: number; correct: number; durationSec?: number };
 export type PerfRange = "7D" | "30D" | "90D" | "ALL";
@@ -111,7 +111,7 @@ export default function PerformanceCard({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <p className="command-eyebrow flex items-center gap-1.5">
-            <BarChart2 className="w-3.5 h-3.5" /> Performance Velocity
+            <ChartBar className="w-3.5 h-3.5" /> Performance Velocity
           </p>
           <h3 className="font-display font-extrabold text-[16px] mt-0.5" style={{ color: "var(--dashboard-text-primary)" }}>
             Preparation Overview
@@ -264,7 +264,7 @@ export default function PerformanceCard({
         </div>
         <div className="rounded-xl border px-3 py-2 text-center" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}>
           <p className="text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-1" style={{ color: "var(--dashboard-text-muted)" }}>
-            <TrendingUp className="w-3 h-3 text-[var(--dashboard-success)]" /> Accuracy Rate
+            <TrendUp className="w-3 h-3 text-[var(--dashboard-success)]" /> Accuracy Rate
           </p>
           <p className="text-sm font-extrabold mt-0.5" style={{ color: "var(--dashboard-success)" }}>
             {overallAccuracy}%
@@ -272,7 +272,7 @@ export default function PerformanceCard({
         </div>
         <div className="rounded-xl border px-3 py-2 text-center" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}>
           <p className="text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-1" style={{ color: "var(--dashboard-text-muted)" }}>
-            {metric === "time" ? <Timer className="w-3 h-3 text-[var(--dashboard-info)]" /> : <Activity className="w-3 h-3 text-[var(--dashboard-info)]" />}
+            {metric === "time" ? <Timer className="w-3 h-3 text-[var(--dashboard-info)]" /> : <Pulse className="w-3 h-3 text-[var(--dashboard-info)]" />}
             {metric === "accuracy" ? "Best Day" : "Last Score"}
           </p>
           <p className="text-sm font-extrabold mt-0.5" style={{ color: "var(--dashboard-text-primary)" }}>

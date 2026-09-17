@@ -2,22 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Trophy,
-  Clock,
-  Calendar,
-  Target,
-  ArrowUpRight,
-  ArrowDownRight,
-  Filter,
-  ChevronDown,
-  Download,
-  Eye,
-  Loader2,
-  AlertTriangle,
-  BarChart2,
-  FileText,
-} from "lucide-react";
+import { Trophy, Clock, Calendar, Target, ArrowUpRight, ArrowDownRight, Funnel, CaretDown, Download, Eye, Spinner, Warning, ChartBar, FileText } from "@phosphor-icons/react";
 import { api } from "@/lib/services/api";
 import type { Server } from "@/lib/types";
 
@@ -146,7 +131,7 @@ export default function ExamHistoryTab() {
     return (
       <div className="space-y-6">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
-          <Loader2 className="w-10 h-10 mx-auto mb-3 text-[var(--accent)] animate-spin" aria-hidden="true" />
+          <Spinner className="w-10 h-10 mx-auto mb-3 text-[var(--accent)] animate-spin" aria-hidden="true" />
           <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">পরীক্ষা ইতিহাস লোড হচ্ছে...</p>
         </motion.div>
       </div>
@@ -157,7 +142,7 @@ export default function ExamHistoryTab() {
     return (
       <div className="space-y-6">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
-          <AlertTriangle className="w-10 h-10 mx-auto mb-3 text-[var(--warning)]" aria-hidden="true" />
+          <Warning className="w-10 h-10 mx-auto mb-3 text-[var(--warning)]" aria-hidden="true" />
           <p className="text-sm text-[var(--dashboard-text-muted)]">{error}</p>
           <button onClick={handleRetry} className="mt-4 px-4 py-2 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors">
             আবার চেষ্টা করুন
@@ -181,7 +166,7 @@ export default function ExamHistoryTab() {
         </div>
         <div className="p-5 md:p-6">
           <div className="flex items-center gap-2 mb-1">
-            <BarChart2 className="w-5 h-5 text-[var(--dashboard-primary)]" />
+            <ChartBar className="w-5 h-5 text-[var(--dashboard-primary)]" />
             <h2 className="text-lg font-bold text-[var(--text-primary)]">পরীক্ষা ইতিহাস ও আপকামিং</h2>
           </div>
           <p className="text-xs text-[var(--dashboard-text-muted)] font-mono mb-4">
@@ -232,7 +217,7 @@ export default function ExamHistoryTab() {
                 onClick={() => setShowFilters(!showFilters)}
                 className="px-3 py-1.5 text-xs font-mono rounded-lg border border-[var(--dashboard-border-muted)] bg-[var(--surface-raised)] text-[var(--dashboard-text-secondary)] hover:text-[var(--text-primary)] transition-colors flex items-center gap-1"
               >
-                <Filter className="w-3.5 h-3.5" />
+                <Funnel className="w-3.5 h-3.5" />
                 <span>সাজান</span>
                 <span className="font-mono">{sortOrder === "newest" ? "↓" : sortOrder === "oldest" ? "↑" : sortOrder === "score-high" ? "★" : "☆"}</span>
               </button>
@@ -396,7 +381,7 @@ export default function ExamHistoryTab() {
 
                     {/* Expand indicator */}
                     <div className="flex items-center gap-2 text-[var(--dashboard-text-muted)]">
-                      <ChevronDown className={`w-4 h-4 transition-transform ${expandedId === `${item.id}-${item.type}` ? "rotate-180" : ""}`} />
+                      <CaretDown className={`w-4 h-4 transition-transform ${expandedId === `${item.id}-${item.type}` ? "rotate-180" : ""}`} />
                     </div>
                   </div>
                 </button>
@@ -454,7 +439,7 @@ export default function ExamHistoryTab() {
         {!history?.past.length && history?.upcoming.length ? null : (
           history?.past.length && filteredPast.length === 0 && (
             <div className="glass-card rounded-2xl border border-terminal-border p-6 text-center">
-              <Filter className="w-10 h-10 mx-auto mb-3 text-[var(--dashboard-text-muted)]/50" aria-hidden="true" />
+              <Funnel className="w-10 h-10 mx-auto mb-3 text-[var(--dashboard-text-muted)]/50" aria-hidden="true" />
               <p className="text-sm text-[var(--dashboard-text-muted)]">এই ফিল্টারে কোনো ফলাফল পাওয়া যায়নি।</p>
               <button
                 onClick={() => setFilter("all")}

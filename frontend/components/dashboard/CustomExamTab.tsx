@@ -2,26 +2,7 @@
 
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  X,
-  Check,
-  Play,
-  Timer,
-  BookOpen,
-  Trophy,
-  RotateCcw,
-  AlertTriangle,
-  CheckCircle2,
-  XCircle,
-  Minus,
-  Plus,
-  Layers,
-  ListOrdered,
-  Clock,
-  Flag,
-  CircleDashed,
-  Loader2,
-} from "lucide-react";
+import { X, Check, Play, Timer, BookOpen, Trophy, ArrowCounterClockwise, Warning, CheckCircle, XCircle, Minus, Plus, GridFour, List, Clock, Flag, CircleDashed, Spinner,  } from "@phosphor-icons/react";
 import { api } from "@/lib/services/api";
 import { useEcosystem } from "@/lib/ecosystem-ctx";
 import {
@@ -598,7 +579,7 @@ export default function CustomExamTab() {
           </div>
           <div className="p-5 md:p-6">
             <div className="flex items-center gap-2 mb-1">
-              <Layers className="w-5 h-5 text-[var(--dashboard-primary)]" />
+              <GridFour className="w-5 h-5 text-[var(--dashboard-primary)]" />
               <h2 className="text-lg font-bold text-[var(--text-primary)]">কাস্টম বিসিএস পরীক্ষা</h2>
             </div>
             <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">
@@ -609,14 +590,14 @@ export default function CustomExamTab() {
 
         {configLoading && (
           <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
-            <Loader2 className="w-10 h-10 mx-auto mb-3 text-[var(--accent)] animate-spin" aria-hidden="true" />
+            <Spinner className="w-10 h-10 mx-auto mb-3 text-[var(--accent)] animate-spin" aria-hidden="true" />
             <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">বিষয় লোড হচ্ছে...</p>
           </div>
         )}
 
         {configError && (
           <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
-            <AlertTriangle className="w-10 h-10 mx-auto mb-3 text-[var(--warning)]" aria-hidden="true" />
+            <Warning className="w-10 h-10 mx-auto mb-3 text-[var(--warning)]" aria-hidden="true" />
             <p className="text-sm text-[var(--dashboard-text-muted)]">{configError}</p>
             <button
               onClick={handleRetryConfig}
@@ -686,7 +667,7 @@ export default function CustomExamTab() {
 
             {insufficient && (
               <div className="flex items-start gap-2 rounded-xl border border-[var(--warning)]/30 bg-[var(--dashboard-warning-subtle)] p-3 text-xs text-[var(--dashboard-warning)]">
-                <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <Warning className="w-4 h-4 flex-shrink-0 mt-0.5" />
                 <p>
                   নির্বাচিত টপিক থেকে শুধু <span className="font-mono">{availableTotal}টি</span> প্রশ্ন
                   পাওয়া যায় — মোট <span className="font-mono">{totalCount}টি</span> চাওয়া হয়েছে।
@@ -696,7 +677,7 @@ export default function CustomExamTab() {
 
             {overageSubjects.length > 0 && (
               <div className="flex items-start gap-2 rounded-xl border border-[var(--warning)]/30 bg-[var(--dashboard-warning-subtle)] p-3 text-xs text-[var(--dashboard-warning)]">
-                <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <Warning className="w-4 h-4 flex-shrink-0 mt-0.5" />
                 <p>
                   {overageSubjects.map((s) => s.nameBn).join(", ")} এ চাওয়া প্রশ্ন সংখ্যা উপলব্ধের বেশি —
                   সর্বোচ্চ <span className="font-mono">{availableForSubject(overageSubjects[0], selection)}টি</span> হবে।
@@ -706,7 +687,7 @@ export default function CustomExamTab() {
 
             {buildError && (
               <div className="flex items-start gap-2 rounded-xl border border-[var(--danger)]/30 bg-[var(--dashboard-danger-subtle)] p-3 text-xs text-[var(--dashboard-danger)]">
-                <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <Warning className="w-4 h-4 flex-shrink-0 mt-0.5" />
                 <p>{buildError}</p>
               </div>
             )}
@@ -719,7 +700,7 @@ export default function CustomExamTab() {
               <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-widest mb-2">লাইভ কনফিগারেশন সামারি</p>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
                 <div>
-                  <ListOrdered className="w-4 h-4 mx-auto text-[var(--dashboard-primary)] mb-1" />
+                  <List className="w-4 h-4 mx-auto text-[var(--dashboard-primary)] mb-1" />
                   <p className="text-lg font-bold text-[var(--text-primary)] font-mono">{selectedSubjects.length}</p>
                   <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">বিষয়</p>
                 </div>
@@ -807,7 +788,7 @@ export default function CustomExamTab() {
 
                     {insufficient && (
                       <p className="text-[11px] text-[var(--dashboard-warning)] mb-4 flex items-center gap-1.5">
-                        <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true" />
+                        <Warning className="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true" />
                         শুধু {availableTotal}টি প্রশ্ন উপলব্ধ — {totalCount}টি চাওয়া হয়েছে।
                       </p>
                     )}
@@ -1045,7 +1026,7 @@ export default function CustomExamTab() {
                 className="glass-card rounded-2xl border border-[var(--warning)]/30 p-6 w-full max-w-sm"
               >
                 <div className="flex items-center gap-2 mb-3">
-                  <AlertTriangle className="w-5 h-5 text-[var(--dashboard-warning)]" />
+                  <Warning className="w-5 h-5 text-[var(--dashboard-warning)]" />
                   <h3 id="custom-unanswered-confirm-title" className="text-base font-bold text-[var(--text-primary)]">উত্তর দেওয়া বাকি আছে</h3>
                 </div>
                 <p className="text-sm text-[var(--dashboard-text-muted)] mb-5">
@@ -1164,7 +1145,7 @@ export default function CustomExamTab() {
                 onClick={resetAll}
                 className="px-5 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2 shadow-neon-glow"
               >
-                <RotateCcw className="w-4 h-4" /> নতুন পরীক্ষা
+                <ArrowCounterClockwise className="w-4 h-4" /> নতুন পরীক্ষা
               </button>
             </div>
           </div>
@@ -1199,7 +1180,7 @@ export default function CustomExamTab() {
                     isCorrect ? "bg-[var(--dashboard-success-subtle)] text-[var(--dashboard-success)]" : isUnanswered ? "bg-[var(--dashboard-teal-subtle)] text-[var(--dashboard-teal)]" : "bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)]"
                   }`}>
                     {isCorrect ? (
-                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      <CheckCircle className="w-3.5 h-3.5" />
                     ) : isUnanswered ? (
                       <CircleDashed className="w-3.5 h-3.5" />
                     ) : (
@@ -1269,7 +1250,7 @@ export default function CustomExamTab() {
             onClick={resetAll}
             className="px-6 py-3 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2 shadow-neon-glow"
           >
-            <RotateCcw className="w-4 h-4" /> নতুন পরীক্ষা শুরু করুন
+            <ArrowCounterClockwise className="w-4 h-4" /> নতুন পরীক্ষা শুরু করুন
           </button>
         </div>
       </div>

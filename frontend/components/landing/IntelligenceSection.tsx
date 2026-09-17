@@ -3,6 +3,8 @@ import Reveal from "@/components/ui/Reveal";
 import SectionHeading from "@/components/ui/SectionHeading";
 import KnowledgeGraph from "@/components/landing/KnowledgeGraph";
 import { useT } from "@/lib/i18n";
+import { useRef } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
 
 const flow = [
   {
@@ -39,8 +41,15 @@ const flow = [
 
 export default function IntelligenceSection() {
   const t = useT();
+  const ref = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"],
+  });
+  const graphOpacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0.3, 1, 1, 0.3]);
+  const graphScale = useTransform(scrollYProgress, [0, 0.25, 0.75, 1], [0.94, 1, 1, 0.96]);
   return (
-    <section id="intelligence" className="relative px-4 py-24 sm:px-6 md:py-32" aria-labelledby="intelligence-heading">
+    <section id="intelligence" ref={ref} className="relative px-4 py-24 sm:px-6 md:py-32" aria-labelledby="intelligence-heading">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0"
@@ -58,7 +67,9 @@ export default function IntelligenceSection() {
         />
 
         <Reveal>
-          <KnowledgeGraph />
+          <motion.div style={{ opacity: graphOpacity, scale: graphScale }} className="will-change-transform">
+            <KnowledgeGraph />
+          </motion.div>
         </Reveal>
 
         {/* Desktop screen readers get the same narrative without the canvas */}

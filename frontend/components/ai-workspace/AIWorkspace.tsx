@@ -17,7 +17,7 @@ import {
   type KeyboardEvent as ReactKeyboardEvent,
 } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Plus, PanelLeft } from "lucide-react";
+import { X, Plus, Layout } from "@phosphor-icons/react";
 import AiLogo from "@/components/ui/AiLogo";
 import {
   listConversations,
@@ -326,7 +326,7 @@ export default function AIWorkspace() {
     [applyConversationUpdate],
   );
 
-  const togglePinConversation = useCallback(
+  const togglePushPinConversation = useCallback(
     async (id: string, pinned: boolean) => {
       try {
         const updated = await pinConversation(id, pinned);
@@ -747,7 +747,7 @@ export default function AIWorkspace() {
       onOpen={(id) => void openConversation(id)}
       onDelete={(id) => void removeConversation(id)}
       onRename={(id, title) => void renameConversationHandler(id, title)}
-      onPin={(id, pinned) => void togglePinConversation(id, pinned)}
+      onPushPin={(id, pinned) => void togglePushPinConversation(id, pinned)}
       onNew={startNewConversation}
     />
   );
@@ -840,7 +840,7 @@ export default function AIWorkspace() {
                       className="ai-icon-btn h-9 w-9 flex-shrink-0 lg:hidden"
                       aria-label="Toggle conversation list"
                     >
-                      <PanelLeft className="h-5 w-5" />
+                      <Layout className="h-5 w-5" />
                     </button>
                     <AiLogo className="h-7 w-7 flex-shrink-0" />
                     <span

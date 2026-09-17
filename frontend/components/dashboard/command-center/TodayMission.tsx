@@ -1,9 +1,11 @@
 "use client";
 
 import { useMemo } from "react";
-import { Crosshair, Target, ArrowRight, Clock, ShieldCheck } from "lucide-react";
+import { Crosshair, Target, ArrowRight, Clock, ShieldCheck } from "@phosphor-icons/react";
 import { useLanguage, t, type Language } from "@/lib/lang-ctx";
 import type { PreparationIntelligenceDTO, PrepIntelligenceRecommendation } from "@/lib/types";
+
+const WEEKDAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 type TodayMissionProps = {
   intelligence: PreparationIntelligenceDTO | null;
@@ -174,8 +176,26 @@ export default function TodayMission({
   const { lang } = useLanguage();
   const mission = useMemo(() => selectMission(intelligence, lang), [intelligence, lang]);
 
+  const overall = intelligence?.overall;
+  const studyTasksToday = useMemo(
+    () => (intelligence?.studyTasks ?? []).filter((task) => task.day === WEEKDAY_NAMES[new Date().getDay()]),
+    [intelligence?.studyTasks],
+  );
+  const planTotal = studyTasksToday.length;
+  const planDone = studyTasksToday.filter((task) => task.completed).length;
+  const planPct = planTotal > 0 ? Math.round((planDone / planTotal) * 100) : 0;
+  const accuracy = overall?.accuracy ?? 0;
+  const hasPlan = planTotal > 0;
+  const hasOverall = (overall?.totalAttempts ?? 0) > 0;
+  const orbitPct = hasPlan ? planPct : hasOverall ? Math.round(accuracy) : 0;
+  const orbitLabel = hasPlan
+    ? t(lang, "আজকের প্ল্যান অগ্রগতি", "Today's plan progress")
+    : hasOverall
+      ? t(lang, "সার্বিক নির্ভুলতা", "Overall accuracy")
+      : t(lang, "প্রস্তুতি শুরু হোক", "Begin preparation");
+  const orbitValue = hasPlan ? `${planDone}/${planTotal}` : hasOverall ? `${accuracy}%` : "—";
   const hasData =
-    (intelligence?.overall.totalAttempts ?? 0) > 0 ||
+    (overall?.totalAttempts ?? 0) > 0 ||
     (intelligence?.recommendations.length ?? 0) > 0;
 
   const runAction = (m: MissionDescriptor) => {
@@ -204,20 +224,62 @@ export default function TodayMission({
         ? "var(--dashboard-info)"
         : "var(--dashboard-text-secondary)";
 
+  const progressSentence = hasPlan
+    ? t(lang, `${planDone} / ${planTotal} টি কাজ সম্পন্ন`, `${planDone} of ${planTotal} tasks done`)
+    : hasOverall
+      ? t(lang, `${accuracy}% নির্ভুলতা — সব সময়ের গড়`, `${accuracy}% accuracy — all-time average`)
+      : t(lang, "প্রথম প্রশ্ন সমাধান করলে এখানে অগ্রগতি দেখা যাবে", "Solve your first question and progress appears here");
+
+  const ORBIT_CIRCUMFERENCE = 2 * Math.PI * 44;
+  const clampedPct = Math.max(0, Math.min(100, orbitPct));
+  const orbitDash = `${(ORBIT_CIRCUMFERENCE * clampedPct) / 100} ${ORBIT_CIRCUMFERENCE}`;
+  const hasMission = Boolean(mission) && hasData;
+
   return (
     <section
-      className="command-card command-card--hero relative overflow-hidden"
+      className="command-card command-card--hero study-mission relative overflow-hidden"
       aria-labelledby="today-mission-title"
     >
       <div className="command-aurora opacity-60" aria-hidden="true" />
-      <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center">
+        <div className="study-orbit relative shrink-0 self-start lg:self-center" aria-hidden="true">
+          <svg viewBox="0 0 120 120" className="h-32 w-32 lg:h-40 lg:w-40">
+            <circle cx="60" cy="60" r="54" fill="none" stroke="var(--dashboard-border-muted)" strokeWidth="1" />
+            <circle cx="60" cy="60" r="35" fill="none" stroke="var(--dashboard-border-muted)" strokeWidth="1" strokeDasharray="2 4" />
+            <circle
+              cx="60"
+              cy="60"
+              r="44"
+              fill="none"
+              stroke={hasPlan || hasOverall ? "var(--dashboard-primary)" : "var(--dashboard-border-strong)"}
+              strokeWidth="5"
+              strokeLinecap="round"
+              strokeDasharray={orbitDash}
+              transform="rotate(-90 60 60)"
+              className="transition-[stroke-dasharray] duration-700 ease-out"
+            />
+            {hasPlan || hasOverall ? (
+              <circle
+                cx={60 + 54 * Math.cos((2 * Math.PI * Math.max(0, Math.min(100, orbitPct))) / 100 - Math.PI / 2)}
+                cy={60 + 54 * Math.sin((2 * Math.PI * Math.max(0, Math.min(100, orbitPct))) / 100 - Math.PI / 2)}
+                r="4"
+                fill="var(--dashboard-primary)"
+              />
+            ) : null}
+          </svg>
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+            <p className="font-mono text-lg font-bold leading-none text-[var(--dashboard-text-primary)]">{orbitValue}</p>
+            <p className="mt-1 text-[9px] font-bold uppercase tracking-[0.14em] text-[var(--dashboard-text-muted)]">{orbitLabel}</p>
+          </div>
+        </div>
+
         <div className="min-w-0 flex-1">
           <p className="command-eyebrow flex items-center gap-1.5">
             <Crosshair className="w-3.5 h-3.5" style={{ color: "var(--dashboard-primary)" }} />
             {t(lang, "আজকের মিশন", "Today's Mission")}
           </p>
 
-          {!hasData || !mission ? (
+          {!hasMission ? (
             <div className="mt-3">
               <h2
                 id="today-mission-title"
@@ -241,46 +303,54 @@ export default function TodayMission({
                 className="font-display font-black text-xl sm:text-2xl tracking-tight"
                 style={{ color: "var(--dashboard-text-primary)" }}
               >
-                {mission.title}
+                {mission!.title}
               </h2>
-              {mission.sub && (
+              {mission!.sub && (
                 <p className="text-xs font-mono font-bold mt-1" style={{ color: accentColor }}>
-                  {mission.sub}
+                  {mission!.sub}
                 </p>
               )}
-              {mission.detail && (
+              {mission!.detail && (
                 <p className="text-sm mt-1.5" style={{ color: "var(--dashboard-text-secondary)" }}>
-                  {mission.detail}
+                  {mission!.detail}
                 </p>
               )}
-              {mission.estimateMin != null && (
-                <p className="text-xs mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border" style={{ color: "var(--dashboard-text-muted)", borderColor: "var(--dashboard-border-muted)", background: "var(--dashboard-surface-muted)" }}>
+              {mission!.estimateMin != null && (
+                <p
+                  className="text-xs mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border"
+                  style={{ color: "var(--dashboard-text-muted)", borderColor: "var(--dashboard-border-muted)", background: "var(--dashboard-surface-muted)" }}
+                >
                   <Clock className="w-3 h-3" aria-hidden="true" />
-                  {t(lang, `আনুমানিক ${mission.estimateMin} মিনিট`, `Est. ${mission.estimateMin} minutes`)}
+                  {t(lang, `আনুমানিক ${mission!.estimateMin} মিনিট`, `Est. ${mission!.estimateMin} minutes`)}
                 </p>
               )}
             </div>
           )}
+
+          <p className="mt-4 text-xs" role="status" aria-live="polite" style={{ color: "var(--dashboard-text-muted)" }}>
+            {progressSentence}
+          </p>
         </div>
 
-        <button
-          onClick={() => mission && runAction(mission)}
-          disabled={!mission}
-          className="command-primary-btn shrink-0 self-start sm:self-center inline-flex items-center gap-2"
-        >
-          <Target className="w-4 h-4" />
-          {mission?.cta ?? t(lang, "শুরু করুন", "Start")}
-          <ArrowRight className="w-4 h-4" />
-        </button>
-      </div>
-
-      <div className="relative mt-4 flex items-center gap-2 text-[11px]" style={{ color: "var(--dashboard-text-muted)" }}>
-        <ShieldCheck className="w-3 h-3" aria-hidden="true" />
-        {t(
-          lang,
-          "মিশনটি আপনার সর্বশেষ ডেটা থেকে তৈরি — প্রতিটি সংখ্যা বাস্তব।",
-          "This mission is derived from your latest data — every figure is real.",
-        )}
+        <div className="flex shrink-0 flex-col items-stretch gap-3 lg:items-end">
+          <button
+            onClick={() => mission && runAction(mission)}
+            disabled={!mission}
+            className="command-primary-btn inline-flex items-center justify-center gap-2"
+          >
+            <Target className="w-4 h-4" aria-hidden="true" />
+            {mission?.cta ?? t(lang, "শুরু করুন", "Start")}
+            <ArrowRight className="w-4 h-4" aria-hidden="true" />
+          </button>
+          <p className="flex items-center gap-1.5 text-[11px] lg:justify-end" style={{ color: "var(--dashboard-text-muted)" }}>
+            <ShieldCheck className="w-3 h-3 shrink-0" aria-hidden="true" />
+            {t(
+              lang,
+              "মিশনটি আপনার সর্বশেষ ডেটা থেকে তৈরি — প্রতিটি সংখ্যা বাস্তব।",
+              "This mission is derived from your latest data — every figure is real.",
+            )}
+          </p>
+        </div>
       </div>
     </section>
   );

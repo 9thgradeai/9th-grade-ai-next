@@ -1,7 +1,7 @@
 "use client";
 
 import { useLanguage, t, type Language } from "@/lib/lang-ctx";
-import { ChevronRight, Zap, BookOpen, AlertCircle, Layers, CalendarCheck2, Target } from "lucide-react";
+import { CaretRight, LightningA, BookOpen, WarningCircle, GridFour, CalendarCheck, Target, Sun } from "@phosphor-icons/react";
 import type { PreparationIntelligenceDTO, PrepIntelligenceRecommendation } from "@/lib/types";
 
 type RecommendedActionsProps = {
@@ -9,16 +9,16 @@ type RecommendedActionsProps = {
   onAction: (rec: PrepIntelligenceRecommendation) => void;
 };
 
-const REC_ICON: Record<string, typeof Zap> = {
-  "resume-exam": CalendarCheck2,
+const REC_ICON: Record<string, typeof LightningA> = {
+  "resume-exam": CalendarCheck,
   "practice-weak-topic": Target,
   "practice-weak-subject": Target,
-  "review-mistakes": AlertCircle,
-  "review-flashcards": Layers,
+  "review-mistakes": WarningCircle,
+  "review-flashcards": GridFour,
   "daily-quiz": BookOpen,
-  "daily-warmup": Zap,
-  "exam-near": CalendarCheck2,
-  "keep-going": Zap,
+  "daily-warmup": LightningA,
+  "exam-near": CalendarCheck,
+  "keep-going": LightningA,
 };
 
 function recTitle(rec: PrepIntelligenceRecommendation, lang: Language): string {
@@ -90,13 +90,13 @@ export default function RecommendedActions({ intelligence, onAction }: Recommend
       aria-labelledby="recommended-actions-title"
     >
       <h3 id="recommended-actions-title" className="command-eyebrow flex items-center gap-1.5">
-        <Zap className="w-3.5 h-3.5" />
+        <Sun className="w-3.5 h-3.5" />
         {t(lang, "আপনার জন্য প্রস্তাবিত", "Recommended for you")}
       </h3>
 
       <ol className="mt-3 space-y-2">
         {recs.map((rec, i) => {
-          const Icon = REC_ICON[rec.id] ?? Zap;
+          const Icon = REC_ICON[rec.id] ?? LightningA;
           const tone =
             rec.priority === "high"
               ? "var(--dashboard-primary)"
@@ -123,7 +123,7 @@ export default function RecommendedActions({ intelligence, onAction }: Recommend
                     {recDescription(rec, lang)}
                   </span>
                 </span>
-                <ChevronRight className="w-4 h-4 shrink-0" style={{ color: "var(--dashboard-text-muted)" }} aria-hidden="true" />
+                <CaretRight className="w-4 h-4 shrink-0" style={{ color: "var(--dashboard-text-muted)" }} aria-hidden="true" />
               </button>
             </li>
           );

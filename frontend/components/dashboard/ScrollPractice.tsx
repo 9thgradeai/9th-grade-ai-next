@@ -2,7 +2,7 @@
 
 import { useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { CheckCircle2, XCircle, Send, ChevronDown, RotateCcw } from "lucide-react";
+import { CheckCircle, XCircle, ArrowUp, CaretDown, ArrowCounterClockwise } from "@phosphor-icons/react";
 import { api } from "@/lib/services/api";
 import type { QuestionDTO } from "@/lib/types";
 
@@ -219,7 +219,7 @@ export default function ScrollPractice({
                     >
                       <span className="font-bold">{optLetter}.</span>
                       <span className="font-medium">{opt}</span>
-                      {submitted && isAnswer && <CheckCircle2 className="w-4 h-4 ml-auto" style={{ color: "var(--dashboard-success)" }} />}
+                      {submitted && isAnswer && <CheckCircle className="w-4 h-4 ml-auto" style={{ color: "var(--dashboard-success)" }} />}
                       {submitted && isSelected && !isAnswer && <XCircle className="w-4 h-4 ml-auto" style={{ color: "var(--dashboard-danger)" }} />}
                     </button>
                   );
@@ -248,7 +248,7 @@ export default function ScrollPractice({
                       onClick={() => toggleExpand(q.id)}
                       className="ml-auto flex items-center gap-1 text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)] transition-colors"
                     >
-                      <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+                      <CaretDown className={`w-3.5 h-3.5 transition-transform ${isOpen ? "rotate-180" : ""}`} />
                       ব্যাখ্যা
                     </button>
                   )}
@@ -280,7 +280,7 @@ export default function ScrollPractice({
               disabled={!enoughAnswered || submitting}
               className="px-6 py-2.5 min-h-11 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors disabled:opacity-40 flex items-center gap-2"
             >
-              <Send className="w-4 h-4" /> {submitting ? "সংরক্ষণ হচ্ছে…" : "সব উত্তর জমা দিন"}
+              <ArrowUp className="w-4 h-4" /> {submitting ? "সংরক্ষণ হচ্ছে…" : "সব উত্তর জমা দিন"}
             </button>
           </>
         ) : (
@@ -289,7 +289,7 @@ export default function ScrollPractice({
               onClick={reset}
               className="px-4 py-2 bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] rounded-lg text-[var(--dashboard-text-secondary)] font-mono text-sm hover:text-[var(--text-primary)] transition-colors flex items-center gap-2"
             >
-              <RotateCcw className="w-4 h-4" /> আবার
+              <ArrowCounterClockwise className="w-4 h-4" /> আবার
             </button>
             {(onComplete || onExit) && (
               <button

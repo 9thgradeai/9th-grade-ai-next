@@ -2,14 +2,12 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Check, Trophy, Zap, ArrowRight, Inbox } from "lucide-react";
+import { X, Check, Trophy, ArrowRight, Package, Sun } from "@phosphor-icons/react";
 import { api } from "@/lib/services/api";
-import { useEcosystem } from "@/lib/ecosystem-ctx";
 import { useDialogA11y } from "@/lib/use-dialog-a11y";
 import type { Server } from "@/lib/types";
 
 export default function DailyQuizWidget() {
-  const { ecosystem } = useEcosystem();
   const [isOpen, setIsOpen] = useState(false);
   const [quiz, setQuiz] = useState<Server.DailyQuizDTO | null>(null);
   const [history, setHistory] = useState<Server.DailyQuizHistoryItemDTO[]>([]);
@@ -32,7 +30,7 @@ export default function DailyQuizWidget() {
     let cancelled = false;
     void (async () => {
       try {
-        const [dq, hist] = await Promise.allSettled([api.dailyQuiz(ecosystem), api.dailyQuizHistory(14)]);
+        const [dq, hist] = await Promise.allSettled([api.dailyQuiz(), api.dailyQuizHistory(14)]);
         if (!cancelled) {
           if (dq.status === "fulfilled") setQuiz(dq.value);
           if (hist.status === "fulfilled") setHistory(hist.value);
@@ -44,7 +42,7 @@ export default function DailyQuizWidget() {
     return () => {
       cancelled = true;
     };
-  }, [ecosystem]);
+  }, []);
 
   const currentQuestion = quiz?.questions[currentIndex];
   const totalQuestions = quiz?.questions.length ?? 0;
@@ -118,40 +116,38 @@ export default function DailyQuizWidget() {
 
   if (!isOpen) {
     return (
-      <div className="space-y-6">
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.26 }}
-          role="button"
-          tabIndex={0}
-          className="glass-card rounded-2xl border border-[var(--warning)]/20 p-4 flex items-center gap-3 hover:border-[var(--warning)]/40 transition-all cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
-          onClick={() => setIsOpen(true)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault();
-              setIsOpen(true);
-            }
-          }}
-        >
-          <div className="w-10 h-10 rounded-xl bg-[var(--dashboard-warning-subtle)] border border-[var(--warning)]/20 flex items-center justify-center flex-shrink-0">
-            <Zap className="w-5 h-5 text-[var(--dashboard-warning)]" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <h3 className="text-sm font-medium text-[var(--text-primary)]">দৈনিক কুইজ</h3>
-            <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">
-              {loading
-                ? "লোড হচ্ছে..."
-                : quiz?.completed
-                  ? `সম্পন্ন ✓ • ${quiz.score}%`
-                  : quiz
-                    ? `${quiz.questions.length}টি প্রশ্ন`
-                    : "আজকের কুইজ শীঘ্রই আসছে"}
-            </p>
-          </div>
-          <ArrowRight className="w-4 h-4 text-[var(--dashboard-warning)]" />
-        </motion.div>
-      </div>
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.26 }}
+        role="button"
+        tabIndex={0}
+        className="glass-card rounded-2xl border border-[var(--warning)]/20 p-4 flex items-center gap-3 hover:border-[var(--warning)]/40 transition-all cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
+        onClick={() => setIsOpen(true)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            setIsOpen(true);
+          }
+        }}
+      >
+        <div className="w-10 h-10 rounded-xl bg-[var(--dashboard-warning-subtle)] border border-[var(--warning)]/20 flex items-center justify-center flex-shrink-0">
+          <Sun className="w-5 h-5 text-[var(--dashboard-warning)]" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <h3 className="text-sm font-medium text-[var(--text-primary)]">দৈনিক কুইজ</h3>
+          <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">
+            {loading
+              ? "লোড হচ্ছে..."
+              : quiz?.completed
+                ? `সম্পন্ন ✓ • ${quiz.score}%`
+                : quiz
+                  ? `${quiz.questions.length}টি প্রশ্ন`
+                  : "আজকের কুইজ শীঘ্রই আসছে"}
+          </p>
+        </div>
+        <ArrowRight className="w-4 h-4 text-[var(--dashboard-warning)]" />
+      </motion.div>
     );
   }
 
@@ -162,7 +158,7 @@ export default function DailyQuizWidget() {
         animate={{ opacity: 1 }}
         className="glass-card rounded-2xl border border-[var(--warning)]/20 p-6 flex flex-col items-center text-center"
       >
-        <Inbox className="w-10 h-10 mb-3 text-[var(--dashboard-text-secondary)]" aria-hidden="true" />
+        <Package className="w-10 h-10 mb-3 text-[var(--dashboard-text-secondary)]" aria-hidden="true" />
         <h3 className="text-sm font-semibold text-[var(--text-primary)]">আজকের জন্য কোনো কুইজ নেই</h3>
         <p className="text-xs text-[var(--dashboard-text-muted)] mt-1">নতুন কুইজ প্রকাশিত হলে এখানে দেখা যাবে।</p>
         <button

@@ -9,7 +9,7 @@
 // so the coach reads as distinct from the tutor/assistant modes — but the rows
 // themselves never fake motion: a step spins only while it is actually running.
 
-import { CheckCircle2, CircleX, Loader2, Sparkles } from "lucide-react";
+import { CheckCircle, XCircle, Spinner } from "@phosphor-icons/react";
 import type { AgentActivityStepDto } from "./types";
 
 type AgentActivityTimelineProps = {
@@ -25,7 +25,7 @@ export default function AgentActivityTimeline({ tools, className }: AgentActivit
       className={`mt-2.5 overflow-hidden rounded-xl border border-[var(--dashboard-border-muted)] ${className ?? ""}`}
     >
       <div className="flex items-center gap-1.5 border-b border-[var(--dashboard-border-muted)] bg-[var(--dashboard-surface-muted)]/60 px-3 py-1.5">
-        <Sparkles className="h-3 w-3 flex-shrink-0" aria-hidden="true" />
+                      <XCircle className="h-3 w-3 flex-shrink-0" aria-hidden="true" />
         <span className="text-aurora-iris font-mono text-[10px] font-bold tracking-[0.18em] uppercase">
           Coach tool steps
         </span>
@@ -52,14 +52,14 @@ export default function AgentActivityTimeline({ tools, className }: AgentActivit
                   />
                 )}
                 {running ? (
-                  <Loader2
+                  <Spinner
                     className="h-3.5 w-3.5 animate-spin text-[var(--dashboard-primary)]"
                     aria-hidden="true"
                   />
                 ) : failed ? (
-                  <CircleX className="h-3.5 w-3.5 text-[var(--dashboard-danger)]" aria-hidden="true" />
+                  <XCircle className="h-3.5 w-3.5 text-[var(--dashboard-danger)]" aria-hidden="true" />
                 ) : (
-                  <CheckCircle2
+                  <CheckCircle
                     className="h-3.5 w-3.5 text-[var(--dashboard-success)]"
                     aria-hidden="true"
                   />

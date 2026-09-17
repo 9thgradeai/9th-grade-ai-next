@@ -2,16 +2,16 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bell, X, Trophy, CheckCircle2, AlertTriangle, Info, Megaphone, Medal } from "lucide-react";
+import { Bell, X, Trophy, CheckCircle, Info, Megaphone, Medal, Triangle } from "@phosphor-icons/react";
 import { api } from "@/lib/services/api";
 import type { Server } from "@/lib/types";
 import { AnimatedList } from "@/components/ui/AnimatedList";
 
 type Tab = "notifications" | "badges";
 
-const TYPE_ICONS: Record<string, typeof CheckCircle2> = {
-  SUCCESS: CheckCircle2,
-  WARNING: AlertTriangle,
+const TYPE_ICONS: Record<string, typeof CheckCircle> = {
+  SUCCESS: CheckCircle,
+  WARNING: Triangle,
   INFO: Info,
   REMINDER: Bell,
 };

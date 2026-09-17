@@ -1,7 +1,7 @@
 "use client";
 
 import { useLanguage, t, type Language } from "@/lib/lang-ctx";
-import { Play, CalendarClock, ClipboardList } from "lucide-react";
+import { Play, Clock, ClipboardText } from "@phosphor-icons/react";
 import type { PreparationIntelligenceDTO } from "@/lib/types";
 
 type ContinueLearningProps = {
@@ -40,7 +40,7 @@ export default function ContinueLearning({ intelligence, onResumeExam, onStartDa
           id="continue-learning-title"
           className="command-eyebrow flex items-center gap-1.5"
         >
-          <CalendarClock className="w-3.5 h-3.5" />
+          <Clock className="w-3.5 h-3.5" />
           {t(lang, "চালিয়ে যান", "Continue learning")}
         </h3>
         {unfinished.length + (dailyQuizPending ? 1 : 0) > 1 && (
@@ -65,7 +65,7 @@ export default function ContinueLearning({ intelligence, onResumeExam, onStartDa
               className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 border"
               style={{ background: "var(--dashboard-primary-subtle)", color: "var(--dashboard-primary)", borderColor: "color-mix(in srgb, var(--dashboard-primary) 20%, transparent)" }}
             >
-              <ClipboardList className="w-4 h-4" aria-hidden="true" />
+              <ClipboardText className="w-4 h-4" aria-hidden="true" />
             </span>
             <span className="flex-1 min-w-0">
               <span className="block text-sm font-bold truncate" style={{ color: "var(--dashboard-text-primary)" }}>
@@ -92,7 +92,7 @@ export default function ContinueLearning({ intelligence, onResumeExam, onStartDa
               className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 border"
               style={{ background: "var(--dashboard-warning-subtle)", color: "var(--dashboard-warning)", borderColor: "color-mix(in srgb, var(--dashboard-warning) 20%, transparent)" }}
             >
-              <CalendarClock className="w-4 h-4" aria-hidden="true" />
+              <Clock className="w-4 h-4" aria-hidden="true" />
             </span>
             <span className="flex-1 min-w-0">
               <span className="block text-sm font-bold truncate" style={{ color: "var(--dashboard-text-primary)" }}>

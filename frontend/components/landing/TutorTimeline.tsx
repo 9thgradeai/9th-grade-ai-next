@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useInView, useReducedMotion, useScroll, useSpring } from "framer-motion";
-import { BookOpenCheck, BrainCircuit, FileText, Lightbulb, Network } from "lucide-react";
+import { BookOpenCheck, Brain, FileText, Lightbulb, Network } from "lucide-react";
 import { EASE_OUT_EXPO } from "@/lib/motion/variants";
 
 /**
@@ -19,7 +19,7 @@ const STAGES = [
     accent: false,
   },
   {
-    icon: BrainCircuit,
+    icon: Brain,
     title: "AI Identifies Concepts",
     body: "Before answering anything, the tutor classifies which concepts the question actually tests.",
     concepts: ["সমাস (compounds)", "number agreement", "orthography"],

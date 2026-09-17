@@ -1,21 +1,23 @@
-import { Home, Calendar, Zap, Brain, BookOpen, TrendingUp, Settings, Target, History, FileDown } from "lucide-react";
+"use client";
+
+import { House, Calendar, LightningA, Brain, BookOpen, TrendUp, Gear, Target, ClockCounterClockwise, Download } from "@phosphor-icons/react";
 import type { ComponentType } from "react";
 import type { TabId } from "@/lib/data";
 
 export type IconProps = { className?: string; strokeWidth?: number; style?: React.CSSProperties };
 
-/** Single source of truth for tab icons (SideNav + BottomNav). */
+/** Single source of truth for tab icons (SideNav + BottomNav). Phosphor icons per ui-ux-pro-max. */
 export const TAB_ICONS: Record<TabId, ComponentType<IconProps>> = {
-  home: Home,
+  home: House,
   "study-planner": Calendar,
-  practice: Zap,
+  practice: LightningA,
   flashcards: Brain,
   "question-bank": BookOpen,
-  progress: TrendingUp,
+  progress: TrendUp,
   mistakes: Target,
-  settings: Settings,
-  "exam-history": History,
-  "real-exam": FileDown,
+  settings: Gear,
+  "exam-history": ClockCounterClockwise,
+  "real-exam": Download,
 };
 
 /** Bangla labels for question difficulty tiers. */

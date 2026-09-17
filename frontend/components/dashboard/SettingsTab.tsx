@@ -3,28 +3,7 @@
 import { useMemo, useState, useSyncExternalStore } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import {
-  User,
-  Mail,
-  AtSign,
-  Calendar,
-  KeyRound,
-  ShieldCheck,
-  Bell,
-  Sun,
-  Moon,
-  Download,
-  Trash2,
-  Database,
-  Info,
-  CheckCircle2,
-  AlertTriangle,
-  X,
-  Pencil,
-  Loader2,
-  MonitorSmartphone,
-  RefreshCw,
-} from "lucide-react";
+import { User, Envelope, At, Calendar, Key, ShieldCheck, Bell, Sun, Moon, Download, Trash, Database, Info, CheckCircle, Warning, X, Pencil, Spinner, DeviceMobile, ArrowCounterClockwise,  } from "@phosphor-icons/react";
 import { useAuth } from "@/lib/auth-ctx";
 import { useDashboardTheme } from "@/lib/dashboard-theme-ctx";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
@@ -274,7 +253,7 @@ export default function SettingsTab() {
         className="flex items-center gap-3"
       >
         <div className="w-11 h-11 rounded-2xl bg-[var(--dashboard-primary-subtle)] border border-[var(--accent)]/25 flex items-center justify-center">
-          <MonitorSmartphone className="w-5.5 h-5.5 text-[var(--dashboard-primary)]" aria-hidden="true" />
+          <DeviceMobile className="w-5.5 h-5.5 text-[var(--dashboard-primary)]" aria-hidden="true" />
         </div>
         <div>
           <h1 className="font-display text-xl font-semibold text-[var(--text-primary)]">Settings</h1>
@@ -348,20 +327,20 @@ export default function SettingsTab() {
         </div>
         {nameMsg ? (
           <p className={`text-xs font-mono mb-4 flex items-center gap-1.5 ${nameMsg.ok ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-danger)]"}`}>
-            <CheckCircle2 className="w-3.5 h-3.5" aria-hidden="true" />
+            <CheckCircle className="w-3.5 h-3.5" aria-hidden="true" />
             {nameMsg.text}
           </p>
         ) : null}
         <dl className="grid sm:grid-cols-2 gap-3">
           <div className="flex items-center gap-2.5 p-3 rounded-xl bg-subtle border border-[var(--dashboard-border-muted)]">
-            <Mail className="w-4 h-4 text-[var(--dashboard-primary)] flex-shrink-0" aria-hidden="true" />
+            <Envelope className="w-4 h-4 text-[var(--dashboard-primary)] flex-shrink-0" aria-hidden="true" />
             <div className="min-w-0">
               <dt className="text-[10px] font-mono uppercase tracking-wider text-[var(--dashboard-text-muted)]">Email</dt>
               <dd className="text-sm text-[var(--dashboard-text-primary)] truncate">{user?.email ?? "—"}</dd>
             </div>
           </div>
           <div className="flex items-center gap-2.5 p-3 rounded-xl bg-subtle border border-[var(--dashboard-border-muted)]">
-            <AtSign className="w-4 h-4 text-[var(--dashboard-primary)] flex-shrink-0" aria-hidden="true" />
+            <At className="w-4 h-4 text-[var(--dashboard-primary)] flex-shrink-0" aria-hidden="true" />
             <div className="min-w-0">
               <dt className="text-[10px] font-mono uppercase tracking-wider text-[var(--dashboard-text-muted)]">Handle</dt>
               <dd className="text-sm text-[var(--dashboard-text-primary)] truncate">@{user?.handle ?? "student"}</dd>
@@ -379,7 +358,7 @@ export default function SettingsTab() {
 
       {/* Security */}
       <SectionCard
-        icon={<KeyRound className="w-5 h-5 text-[var(--dashboard-primary)]" aria-hidden="true" />}
+        icon={<Key className="w-5 h-5 text-[var(--dashboard-primary)]" aria-hidden="true" />}
         title="Security"
         description="Keep your account safe"
       >
@@ -411,7 +390,7 @@ export default function SettingsTab() {
         </div>
         {pwMsg ? (
           <p className={`text-xs font-mono mt-3 flex items-center gap-1.5 ${pwMsg.ok ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-danger)]"}`}>
-            <CheckCircle2 className="w-3.5 h-3.5" aria-hidden="true" />
+            <CheckCircle className="w-3.5 h-3.5" aria-hidden="true" />
             {pwMsg.text}
           </p>
         ) : null}
@@ -420,7 +399,7 @@ export default function SettingsTab() {
           disabled={changingPw}
           className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--accent)] text-[var(--dashboard-text-inverse)] text-sm font-mono font-semibold hover:bg-[var(--accent-hover)] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          {changingPw ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" /> : <KeyRound className="w-4 h-4" aria-hidden="true" />}
+          {changingPw ? <Spinner className="w-4 h-4 animate-spin" aria-hidden="true" /> : <Key className="w-4 h-4" aria-hidden="true" />}
           {changingPw ? "Updating..." : "Change password"}
         </button>
         <p className="mt-3 text-[11px] text-[var(--dashboard-text-muted)] font-mono flex items-center gap-1.5">
@@ -431,7 +410,7 @@ export default function SettingsTab() {
         {/* Revoke every active session across devices */}
         <div className="mt-5 pt-5 border-t border-default flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
-            <MonitorSmartphone className="w-4 h-4 text-[var(--dashboard-primary)] flex-shrink-0" aria-hidden="true" />
+            <DeviceMobile className="w-4 h-4 text-[var(--dashboard-primary)] flex-shrink-0" aria-hidden="true" />
             <div className="min-w-0">
               <p className="text-sm text-[var(--dashboard-text-primary)] font-medium">Sign out of all devices</p>
               <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">
@@ -444,13 +423,13 @@ export default function SettingsTab() {
             disabled={revokingAll}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-[var(--danger)]/40 bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)] text-sm font-mono font-semibold hover:bg-[var(--dashboard-danger-subtle)] transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex-shrink-0"
           >
-            {revokingAll ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" /> : <RefreshCw className="w-4 h-4" aria-hidden="true" />}
+            {revokingAll ? <Spinner className="w-4 h-4 animate-spin" aria-hidden="true" /> : <ArrowCounterClockwise className="w-4 h-4" aria-hidden="true" />}
             {revokingAll ? "Signing out..." : "Revoke all"}
           </button>
         </div>
         {revokeMsg && !revokeMsg.ok ? (
           <p className="mt-2 text-xs font-mono text-[var(--dashboard-danger)] flex items-center gap-1.5">
-            <AlertTriangle className="w-3.5 h-3.5" aria-hidden="true" />
+            <Warning className="w-3.5 h-3.5" aria-hidden="true" />
             {revokeMsg.text}
           </p>
         ) : null}
@@ -519,14 +498,14 @@ export default function SettingsTab() {
       >
         <dl className="grid sm:grid-cols-2 gap-3 mb-5">
           <div className="flex items-center gap-2.5 p-3 rounded-xl bg-subtle border border-[var(--dashboard-border-muted)]">
-            <MonitorSmartphone className="w-4 h-4 text-[var(--dashboard-primary)] flex-shrink-0" aria-hidden="true" />
+            <DeviceMobile className="w-4 h-4 text-[var(--dashboard-primary)] flex-shrink-0" aria-hidden="true" />
             <div className="min-w-0">
               <dt className="text-[10px] font-mono uppercase tracking-wider text-[var(--dashboard-text-muted)]">Signed in as</dt>
               <dd className="text-sm text-[var(--dashboard-text-primary)] truncate">{user?.email ?? "—"}</dd>
             </div>
           </div>
           <div className="flex items-center gap-2.5 p-3 rounded-xl bg-subtle border border-[var(--dashboard-border-muted)]">
-            <RefreshCw className="w-4 h-4 text-[var(--dashboard-primary)] flex-shrink-0" aria-hidden="true" />
+            <ArrowCounterClockwise className="w-4 h-4 text-[var(--dashboard-primary)] flex-shrink-0" aria-hidden="true" />
             <div className="min-w-0">
               <dt className="text-[10px] font-mono uppercase tracking-wider text-[var(--dashboard-text-muted)]">Session expiry</dt>
               <dd className="text-sm text-[var(--dashboard-text-primary)] truncate">{sessionInfo?.expires ?? "—"}</dd>
@@ -562,7 +541,7 @@ export default function SettingsTab() {
       >
         <header className="flex items-start gap-3 mb-4">
           <div className="w-10 h-10 rounded-xl bg-[var(--dashboard-danger-subtle)] border border-[var(--danger)]/25 flex items-center justify-center flex-shrink-0">
-            <AlertTriangle className="w-5 h-5 text-[var(--dashboard-danger)]" aria-hidden="true" />
+            <Warning className="w-5 h-5 text-[var(--dashboard-danger)]" aria-hidden="true" />
           </div>
           <div>
             <h3 className="text-sm font-semibold text-[var(--dashboard-danger)] uppercase tracking-wider">Danger zone</h3>
@@ -575,7 +554,7 @@ export default function SettingsTab() {
             onClick={() => setConfirmDelete(true)}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--dashboard-danger-subtle)] border border-[var(--danger)]/30 text-[var(--dashboard-danger)] text-sm font-mono hover:bg-[var(--dashboard-danger-subtle)] transition-colors"
           >
-            <Trash2 className="w-4 h-4" aria-hidden="true" />
+            <Trash className="w-4 h-4" aria-hidden="true" />
             Delete account
           </button>
         </div>
@@ -642,7 +621,7 @@ export default function SettingsTab() {
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-[var(--dashboard-danger-subtle)] border border-[var(--danger)]/25 flex items-center justify-center">
-                    <Trash2 className="w-5 h-5 text-[var(--dashboard-danger)]" aria-hidden="true" />
+                    <Trash className="w-5 h-5 text-[var(--dashboard-danger)]" aria-hidden="true" />
                   </div>
                   <h2 className="text-lg font-semibold text-[var(--text-primary)]">Delete account?</h2>
                 </div>
@@ -674,7 +653,7 @@ export default function SettingsTab() {
                   disabled={deleting}
                   className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--danger)] text-[var(--dashboard-text-inverse)] text-sm font-mono font-semibold hover:bg-[var(--danger)] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  {deleting ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" /> : <Trash2 className="w-4 h-4" aria-hidden="true" />}
+                  {deleting ? <Spinner className="w-4 h-4 animate-spin" aria-hidden="true" /> : <Trash className="w-4 h-4" aria-hidden="true" />}
                   {deleting ? "Deleting..." : "Delete forever"}
                 </button>
               </div>

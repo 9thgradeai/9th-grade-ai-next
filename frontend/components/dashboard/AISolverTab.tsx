@@ -1,11 +1,8 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { motion, AnimatePresence, spring } from "framer-motion";
-import {
-  Upload, Camera, X, Copy, Check, Loader2,
-  Lightbulb, MessageSquare, Target, Zap,
-} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowUp, Camera, X, Copy, Check, Spinner, Lightbulb, Chat } from "@phosphor-icons/react";
 import { SOLVER_EXAMPLES } from "@/lib/data/study";
 import { solve } from "@/lib/services/ai";
 import { launchAI } from "@/lib/ai-launcher";
@@ -55,7 +52,7 @@ export default function AISolverTab() {
       setSteps(result.steps ?? []);
       setExplanation(result.explanation ?? "");
       setRelatedConcept(result.relatedConcept ?? "");
-    } catch (e) {
+    } catch {
       setSolution("Sorry, the AI solver is temporarily unavailable. Please try again.");
       setSteps([]);
       setExplanation("");
@@ -204,7 +201,7 @@ export default function AISolverTab() {
                   onClick={() => fileInputRef.current?.click()}
                   className="w-full h-32 border-2 border-dashed border-primary/20 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-primary/40 transition-colors"
                 >
-                  <Upload className="w-8 h-8 text-primary" />
+                  <ArrowUp className="w-8 h-8 text-primary" />
                   <span className="text-sm text-text-muted font-mono">Click to upload question image</span>
                 </button>
               )}
@@ -236,7 +233,7 @@ export default function AISolverTab() {
           >
             {isSolving ? (
               <>
-                <Loader2 className="w-5 h-5 animate-spin" />
+                <Spinner className="w-5 h-5 animate-spin" />
                 Solving...
               </>
             ) : (
@@ -322,7 +319,7 @@ export default function AISolverTab() {
               onClick={askTutorToExplain}
               className="mt-4 w-full flex items-center justify-center gap-2 py-2.5 bg-surface-raised border border-primary/20 text-primary rounded-lg text-sm font-mono hover:bg-primary-subtle transition-colors"
             >
-              <MessageSquare className="w-4 h-4" />
+              <Chat className="w-4 h-4" />
               Ask the AI Tutor to explain this step by step
             </button>
           </motion.div>

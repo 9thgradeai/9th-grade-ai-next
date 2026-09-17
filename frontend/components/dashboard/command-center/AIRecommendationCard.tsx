@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, AlertTriangle, MessageSquare, CheckCircle2 } from "lucide-react";
+import { ArrowRight, Warning, Chat, CheckCircle } from "@phosphor-icons/react";
 import AiLogo from "@/components/ui/AiLogo";
 
 type Props = {
@@ -47,7 +47,7 @@ export default function AIRecommendationCard({
             </h3>
             <div className="mt-3 flex flex-wrap items-center gap-2 text-xs" style={{ color: "var(--dashboard-text-muted)" }}>
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-semibold" style={{ background: "var(--dashboard-danger-subtle)", color: "var(--dashboard-danger)", borderColor: "color-mix(in srgb, var(--dashboard-danger) 20%, transparent)" }}>
-                <AlertTriangle className="w-3.5 h-3.5" /> {weakestScore}% accuracy
+                <Warning className="w-3.5 h-3.5" /> {weakestScore}% accuracy
               </span>
               <span>· {weakestAttempts} attempted</span>
               <span className="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full border" style={{ background: "var(--dashboard-success-subtle)", color: "var(--dashboard-success)", borderColor: "color-mix(in srgb, var(--dashboard-success) 20%, transparent)" }}>
@@ -70,7 +70,7 @@ export default function AIRecommendationCard({
         ) : (
           <>
             <h3 className="mt-4 font-display font-extrabold text-[18px] leading-tight flex items-center gap-2" style={{ color: "var(--dashboard-text-primary)" }}>
-              <CheckCircle2 className="w-5 h-5 text-[var(--dashboard-success)]" /> Mastered primary syllabus areas
+              <CheckCircle className="w-5 h-5 text-[var(--dashboard-success)]" /> Mastered primary syllabus areas
             </h3>
             <p className="mt-3 text-[13px] leading-relaxed" style={{ color: "var(--dashboard-text-secondary)" }}>
               No critical weak points found. Maintain peak momentum with mixed mock exams and timed speed drills.
@@ -95,7 +95,7 @@ export default function AIRecommendationCard({
             className="w-full inline-flex items-center justify-center gap-2 text-xs font-semibold py-2 rounded-xl border transition-colors hover:border-[var(--dashboard-primary)]"
             style={{ background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-primary)" }}
           >
-            <MessageSquare className="w-3.5 h-3.5" /> Ask AI Tutor to Explain Weak Spots
+            <Chat className="w-3.5 h-3.5" /> Ask AI Tutor to Explain Weak Spots
           </button>
         )}
       </div>

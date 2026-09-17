@@ -2,16 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  ChevronRight,
-  Layers,
-  BookOpen,
-  Clock,
-  ListChecks,
-  Play,
-  Calendar,
-  Shuffle,
-} from "lucide-react";
+import { CaretRight, GridFour, BookOpen, Clock, ListChecks, Play, Calendar, Shuffle,  } from "@phosphor-icons/react";
 import { api } from "@/lib/services/api";
 import { useEcosystem } from "@/lib/ecosystem-ctx";
 import type { ExamCategoryDTO, ExamDTO, ExamPaperDTO, QuestionDTO } from "@/lib/types";
@@ -109,7 +100,7 @@ export default function ExamLibraryView() {
         </button>
         {crumbs.map((c, i) => (
           <span key={i} className="flex items-center gap-1">
-            <ChevronRight className="w-3 h-3 text-[var(--dashboard-text-secondary)]" />
+            <CaretRight className="w-3 h-3 text-[var(--dashboard-text-secondary)]" />
             <button
               onClick={c.onClick}
               className={`${i === crumbs.length - 1 ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-text-muted)]"} hover:text-[var(--text-primary)] transition-colors`}
@@ -349,7 +340,7 @@ export default function ExamLibraryView() {
                           <BookOpen className="w-4 h-4 text-[var(--dashboard-primary)]" />
                           <span className="font-semibold text-[var(--text-primary)] font-mono text-sm">{paper.titleBn}</span>
                         </div>
-                        <ChevronRight className="w-4 h-4 text-[var(--dashboard-text-secondary)] group-hover:text-[var(--dashboard-primary)] transition-colors" />
+                        <CaretRight className="w-4 h-4 text-[var(--dashboard-text-secondary)] group-hover:text-[var(--dashboard-primary)] transition-colors" />
                       </div>
                       <div className="flex items-center gap-3 text-[11px] text-[var(--dashboard-text-muted)] font-mono">
                         <span className="flex items-center gap-1">
@@ -370,7 +361,7 @@ export default function ExamLibraryView() {
 
           {!activeExam && (
             <div className="flex items-center gap-2 text-[11px] text-[var(--dashboard-text-muted)] font-mono">
-              <Layers className="w-4 h-4" />
+              <GridFour className="w-4 h-4" />
               একটি পরীক্ষা বেছে নিয়ে সুনির্দিষ্ট পেপারের প্রশ্ন দেখুন।
             </div>
           )}

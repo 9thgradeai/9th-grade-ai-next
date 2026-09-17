@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Zap, BookOpen, Target, Brain, Calendar, BarChart3, ClipboardCheck, Command } from "lucide-react";
+import { LightningA, BookOpen, Target, Brain, Calendar, ChartBar, CheckSquare, Command } from "@phosphor-icons/react";
 import AiLogo from "@/components/ui/AiLogo";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 import { launchAI } from "@/lib/ai-launcher";
@@ -48,14 +48,14 @@ export default function QuickActions({ pendingMistakes = 0, flashcardsDue = null
   }, []);
 
   const ACTIONS: Action[] = useMemo(() => [
-    { keyLabel: "P", label: t("dock.practice"),   icon: Zap,           tab: "practice",      primary: true, mode: "quick" },
-    { keyLabel: "M", label: t("dock.mockExam"),  icon: ClipboardCheck, tab: "practice",     mode: "mock" },
+    { keyLabel: "P", label: t("dock.practice"),   icon: LightningA,           tab: "practice",      primary: true, mode: "quick" },
+    { keyLabel: "M", label: t("dock.mockExam"),  icon: CheckSquare, tab: "practice",     mode: "mock" },
     { keyLabel: "W", label: t("dock.wrongAns"),  icon: Target,         tab: "mistakes",     badge: pendingMistakes > 0 ? pendingMistakes : undefined },
     { keyLabel: "A", label: t("dock.aiTutor"),   icon: AiGlyph,       tab: null,           special: "ai-tutor" },
     { keyLabel: "L", label: t("dock.planner"),    icon: Calendar,       tab: "study-planner" },
     { keyLabel: "Q", label: t("dock.qbank"),     icon: BookOpen,       tab: "question-bank", badge: qbankCount && qbankCount>0 ? (qbankCount>999?"999+":String(qbankCount)) : undefined },
     { keyLabel: "F", label: t("dock.flashcards"), icon: Brain,          tab: "flashcards",   badge: flashcardsDue && flashcardsDue > 0 ? flashcardsDue : undefined },
-    { keyLabel: "K", label: t("dock.analytics"),  icon: BarChart3,      tab: "progress" },
+    { keyLabel: "K", label: t("dock.analytics"),  icon: ChartBar,      tab: "progress" },
   ], [t, pendingMistakes, flashcardsDue, qbankCount]);
 
   const navigate = useCallback((tab: TabId) => {

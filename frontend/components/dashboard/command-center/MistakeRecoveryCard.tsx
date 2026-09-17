@@ -1,6 +1,6 @@
 "use client";
 
-import { BookX, ArrowRight } from "lucide-react";
+import { Book, ArrowRight } from "@phosphor-icons/react";
 import { useLanguage, t } from "@/lib/lang-ctx";
 import type { PreparationIntelligenceDTO } from "@/lib/types";
 
@@ -66,7 +66,7 @@ export default function MistakeRecoveryCard({ intelligence, onOpenMistakes }: Mi
     >
       <div className="flex items-center justify-between">
         <h3 id="mistake-recovery-title" className="command-eyebrow flex items-center gap-1.5">
-          <BookX className="w-3.5 h-3.5" style={{ color: "var(--dashboard-danger)" }} />
+          <Book className="w-3.5 h-3.5" style={{ color: "var(--dashboard-danger)" }} />
           {t(lang, "ভুল পুনরুদ্ধার", "Mistake recovery")}
         </h3>
         <button

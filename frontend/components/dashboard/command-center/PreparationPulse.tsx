@@ -1,7 +1,7 @@
 "use client";
 
 import { useLanguage, t } from "@/lib/lang-ctx";
-import { Target, BookOpenCheck, Timer, Flame, TrendingUp, TrendingDown } from "lucide-react";
+import { Target, BookOpen, Timer, Flame, TrendUp, TrendDown } from "@phosphor-icons/react";
 import type { PreparationIntelligenceDTO } from "@/lib/types";
 
 type PreparationPulseProps = {
@@ -16,7 +16,9 @@ export function formatStudyTime(sec: number): string {
   return m > 0 ? `${h}h ${m}m` : `${h}h`;
 }
 
-function TrendBadge({ delta, suffix = "" }: { delta: number; suffix?: string }) {
+function TrendBadge({ delta, suffix = "", duration = false }: { delta: number; suffix?: string; duration?: boolean }) {
+  const { lang } = useLanguage();
+  const display = duration ? `${delta < 0 ? "−" : ""}${formatStudyTime(Math.abs(delta))}` : `${delta}${suffix}`;
   const dir = delta > 0 ? "up" : delta < 0 ? "down" : "flat";
   const color =
     dir === "up"
@@ -24,17 +26,16 @@ function TrendBadge({ delta, suffix = "" }: { delta: number; suffix?: string }) 
       : dir === "down"
         ? "var(--dashboard-danger)"
         : "var(--dashboard-text-muted)";
-  const Icon = dir === "up" ? TrendingUp : dir === "down" ? TrendingDown : null;
+  const Icon = dir === "up" ? TrendUp : dir === "down" ? TrendDown : null;
   return (
     <span
       className="inline-flex items-center gap-1 text-[11px] font-bold font-mono"
       style={{ color }}
-      aria-label={`${delta > 0 ? "+" : ""}${delta}${suffix} vs previous period`}
+      aria-label={`${delta > 0 ? "+" : ""}${display} ${t(lang, "আগের সময়ের তুলনায়", "vs previous period")}`}
     >
       {Icon && <Icon className="w-3 h-3" aria-hidden="true" />}
       {delta > 0 ? "+" : ""}
-      {delta}
-      {suffix}
+      {display}
     </span>
   );
 }
@@ -46,35 +47,41 @@ function PulseItem({
   delta,
   suffix,
   hint,
-  tint,
+  duration,
+  samples = [],
 }: {
   icon: typeof Target;
   label: string;
   value: string;
-  delta: number;
+  delta?: number;
   suffix?: string;
   hint: string;
-  tint: string;
+  duration?: boolean;
+  samples?: { date: string; value: number }[];
 }) {
+  const max = Math.max(1, ...samples.map((sample) => sample.value));
   return (
-    <div className="rounded-2xl border p-3.5 sm:p-4 min-w-0" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}>
-      <div className="flex items-center gap-2">
-        <span className="w-6 h-6 rounded-lg flex items-center justify-center shrink-0" style={{ background: "var(--dashboard-surface-muted)", color: tint }}>
-          <Icon className="w-3.5 h-3.5" aria-hidden="true" />
-        </span>
-        <span className="text-[10px] font-bold uppercase tracking-wider truncate" style={{ color: "var(--dashboard-text-muted)" }}>
-          {label}
-        </span>
+    <div className="preparation-metric min-w-0 rounded-xl border p-4" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}>
+      <div className="flex items-center justify-between gap-2 text-[var(--dashboard-text-secondary)]">
+        <span className="text-xs font-medium">{label}</span>
+        <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
       </div>
-      <div className="mt-2 flex items-baseline gap-2 flex-wrap">
-        <span className="font-mono font-bold text-lg sm:text-xl tracking-tight" style={{ color: "var(--dashboard-text-primary)" }}>
+      <div className="mt-4 flex items-end justify-between gap-3">
+        <span className="font-display text-2xl font-semibold tabular-nums tracking-tight text-[var(--dashboard-text-primary)]">
           {value}
         </span>
-        <TrendBadge delta={delta} suffix={suffix} />
+        {samples.length > 0 && (
+          <div role="img" aria-label={`${label}: ${samples.map((sample) => `${sample.date}: ${sample.value}`).join(", ")}`} className="flex h-7 w-20 shrink-0 items-end gap-1">
+            {samples.map((sample) => (
+              <span key={sample.date} className="flex-1 rounded-t-sm bg-[var(--dashboard-primary)]" style={{ height: `${(sample.value / max) * 100}%` }} />
+            ))}
+          </div>
+        )}
       </div>
-      <p className="text-[11px] mt-0.5 truncate" style={{ color: "var(--dashboard-text-muted)" }}>
-        {hint}
-      </p>
+      <div className="mt-3 flex flex-wrap items-baseline gap-x-2 gap-y-1">
+        {delta != null && <TrendBadge delta={delta} suffix={suffix} duration={duration} />}
+        <p className="text-xs text-[var(--dashboard-text-muted)]">{hint}</p>
+      </div>
     </div>
   );
 }
@@ -109,17 +116,16 @@ export default function PreparationPulse({ intelligence }: PreparationPulseProps
         label={t(lang, "নির্ভুলতা", "Accuracy")}
         value={`${overall.accuracy}%`}
         delta={period.accuracyDelta}
-        suffix="%"
+        suffix=" pp"
         hint={t(lang, "সব সময়ের গড়", "All-time average")}
-        tint="var(--dashboard-primary)"
       />
       <PulseItem
-        icon={BookOpenCheck}
+        icon={BookOpen}
         label={t(lang, "প্রশ্ন সমাধান", "Questions")}
         value={overall.totalAttempts.toLocaleString()}
         delta={period.attemptsDelta}
         hint={t(lang, "মোট উত্তর দেওয়া হয়েছে", "Total answered")}
-        tint="var(--dashboard-info)"
+        samples={intelligence.activity.slice(-7).map((day) => ({ date: day.date, value: day.answered }))}
       />
       <PulseItem
         icon={Timer}
@@ -127,15 +133,13 @@ export default function PreparationPulse({ intelligence }: PreparationPulseProps
         value={formatStudyTime(overall.studyTimeSec)}
         delta={period.studyTimeDeltaSec}
         hint={`${formatStudyTime(period.currentStudyTimeSec)} ${t(lang, "গত ৩০ দিনে", "last 30 days")}`}
-        tint="var(--dashboard-warning)"
+        duration
       />
       <PulseItem
         icon={Flame}
         label={t(lang, "স্ট্রিক", "Streak")}
         value={`${overall.streak}`}
-        delta={overall.streak > 0 ? 0 : 0}
         hint={t(lang, "টানা অধ্যয়নের দিন", "Consecutive study days")}
-        tint="var(--dashboard-danger)"
       />
     </section>
   );

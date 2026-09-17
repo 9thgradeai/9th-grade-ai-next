@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { LogOut, Loader2 } from "lucide-react";
+import { SignOut, Spinner } from "@phosphor-icons/react";
 import { useAuth } from "@/lib/auth-ctx";
 
 interface LogoutButtonProps {
@@ -34,12 +34,12 @@ export default function LogoutButton({
 
   const content = pending ? (
     <>
-      <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
+      <Spinner className="w-4 h-4 animate-spin" aria-hidden="true" />
       <span>Signing out...</span>
     </>
   ) : (
     <>
-      <LogOut className="w-5 h-5" aria-hidden="true" />
+      <SignOut className="w-5 h-5" aria-hidden="true" />
       <span>Log out</span>
     </>
   );
@@ -56,9 +56,9 @@ export default function LogoutButton({
         }
       >
         {pending ? (
-          <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
+          <Spinner className="w-4 h-4 animate-spin" aria-hidden="true" />
         ) : (
-          <LogOut className="w-4 h-4" aria-hidden="true" />
+          <SignOut className="w-4 h-4" aria-hidden="true" />
         )}
         {pending ? "Signing out..." : "Log out"}
       </button>

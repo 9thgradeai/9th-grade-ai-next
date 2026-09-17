@@ -12,6 +12,9 @@ type DashboardState = {
   activeTab: TabId;
   // Tab-scoped UI state that must survive tab switches/remounts.
   questionBankFilters: { query: string; category: string };
+  // Current exam-ecosystem context (category slug, e.g. "bcs"). Null = all.
+  // Client-side preparation context only — never overrides server data.
+  examContext: string | null;
   // Cross-tab intents — consumed once by target tab then cleared.
   practiceIntent?: { subject?: string; mode?: "quick" | "mock" | "custom" } | null;
   mistakeIntent?: { subject?: string; status?: string } | null;
@@ -22,6 +25,7 @@ const STORAGE_KEY = "9th_grade_ai_store_v2";
 const defaultState: DashboardState = {
   activeTab: "home",
   questionBankFilters: { query: "", category: "" },
+  examContext: null,
   practiceIntent: null,
   mistakeIntent: null,
 };
@@ -37,9 +41,13 @@ function loadState(): DashboardState {
         ? (parsed.activeTab as TabId)
         : "home";
     const questionBankFilters = parsed.questionBankFilters ?? defaultState.questionBankFilters;
+    const examContext =
+      typeof parsed.examContext === "string" && parsed.examContext.length > 0
+        ? parsed.examContext
+        : null;
     const practiceIntent = (parsed as DashboardState).practiceIntent ?? null;
     const mistakeIntent = (parsed as DashboardState).mistakeIntent ?? null;
-    return { activeTab, questionBankFilters, practiceIntent, mistakeIntent };
+    return { activeTab, questionBankFilters, examContext, practiceIntent, mistakeIntent };
   } catch {
     return defaultState;
   }
@@ -95,6 +103,20 @@ function setQuestionBankFilters(filters: Partial<{ query: string; category: stri
 function setPracticeIntent(intent: DashboardState["practiceIntent"]) {
   setStore((prev) => ({ ...prev, practiceIntent: intent ?? null }));
 }
+function setExamContext(examContext: string | null) {
+  setStore((prev) =>
+    prev.examContext === examContext
+      ? prev
+      : {
+          ...prev,
+          examContext,
+          // Exam context change invalidates cross-tab intents scoped to the
+          // previous ecosystem — clear them so stale subjects never leak.
+          practiceIntent: null,
+          mistakeIntent: null,
+        },
+  );
+}
 function setMistakeIntent(intent: DashboardState["mistakeIntent"]) {
   setStore((prev) => ({ ...prev, mistakeIntent: intent ?? null }));
 }
@@ -107,7 +129,7 @@ function resetStore() {
   listeners.forEach((l) => l());
 }
 
-const actions = { setActiveTab, setQuestionBankFilters, setPracticeIntent, setMistakeIntent, clearIntents, resetStore };
+const actions = { setActiveTab, setQuestionBankFilters, setPracticeIntent, setMistakeIntent, setExamContext, clearIntents, resetStore };
 export type DashboardActions = typeof actions;
 
 // ── Hook ───────────────────────────────────────────────────

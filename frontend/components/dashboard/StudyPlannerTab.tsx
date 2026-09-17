@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, Clock, Target, Calendar, ChevronRight, Lightbulb, Trophy } from "lucide-react";
+import { Check, Clock, Target, Calendar, CaretRight, Lightbulb, Trophy } from "@phosphor-icons/react";
 import AiLogo from "@/components/ui/AiLogo";
 import { STUDY_PLAN } from "@/lib/data/study";
 import { api } from "@/lib/services/api";
@@ -39,7 +39,7 @@ function staticPlan(): TaskDTO[] {
 export default function StudyPlannerTab() {
   const [selectedDay, setSelectedDay] = useState(0);
   const [tasks, setTasks] = useState<TaskDTO[]>(staticPlan());
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
 
   // Load the study plan from the database (fallback to static data).
   useEffect(() => {
@@ -261,7 +261,7 @@ export default function StudyPlannerTab() {
                       }}
                       className="px-3 py-1.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-xs rounded hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-1 shadow-neon-glow"
                     >
-                      Start <ChevronRight className="w-3 h-3" />
+                      Start <CaretRight className="w-3 h-3" />
                     </motion.button>
                   )}
                 </div>

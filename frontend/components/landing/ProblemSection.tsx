@@ -5,6 +5,8 @@ import MotionText from "@/components/ui/MotionText";
 import Reveal from "@/components/ui/Reveal";
 import Interactive3DCard from "@/components/landing/Interactive3DCard";
 import { useT } from "@/lib/i18n";
+import { useRef } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
 
 const frictionKeys = [
   {
@@ -26,9 +28,16 @@ const frictionKeys = [
 
 export default function ProblemSection() {
   const t = useT();
+  const sectionRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+  const gridOpacity = useTransform(scrollYProgress, [0, 0.15, 0.85, 1], [0.3, 1, 1, 0.3]);
+  const gridScale = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0.97, 1, 1, 0.98]);
   const frictions = frictionKeys.map(k => ({ icon: k.icon, title: t(k.titleKey), body: t(k.bodyKey) }));
   return (
-    <section className="relative px-4 py-24 sm:px-6 md:py-32" aria-labelledby="problem-heading">
+    <section ref={sectionRef} className="relative px-4 py-24 sm:px-6 md:py-32" aria-labelledby="problem-heading">
       <div className="mx-auto max-w-7xl">
         <div className="max-w-3xl">
           <Reveal>
@@ -54,7 +63,10 @@ export default function ProblemSection() {
           </Reveal>
         </div>
 
-        <div className="mt-14 grid gap-5 md:mt-16 md:grid-cols-3 md:gap-6">
+        <motion.div
+          className="mt-14 grid gap-5 md:mt-16 md:grid-cols-3 md:gap-6 will-change-transform"
+          style={{ opacity: gridOpacity, scale: gridScale }}
+        >
           {frictions.map((friction, i) => (
             <Reveal key={friction.title} delay={i * 0.09} className="h-full">
               <Interactive3DCard maxRotation={3} glow className="h-full rounded-2xl">
@@ -78,7 +90,7 @@ export default function ProblemSection() {
               </Interactive3DCard>
             </Reveal>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

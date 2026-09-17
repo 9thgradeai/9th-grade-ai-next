@@ -2,14 +2,13 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { AlertTriangle, Swords, Medal, RefreshCw } from "lucide-react";
+import { Warning, Sword, Medal, ArrowCounterClockwise, House } from "@phosphor-icons/react";
 import { useAuth } from "@/lib/auth-ctx";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 import { useLanguage, t } from "@/lib/lang-ctx";
 import { api } from "@/lib/services/api";
 import type { Server } from "@/lib/types";
 import QuestionDrill from "./QuestionDrill";
-import HomeCoach from "./ai/HomeCoach";
 import ProgressOverview from "./command-center/ProgressOverview";
 import PerformanceCard from "./command-center/PerformanceCard";
 import type { PerfRange } from "./command-center/PerformanceCard";
@@ -82,7 +81,7 @@ export default function ProgressTab() {
           }}
           className="command-primary-btn mt-4"
         >
-          <RefreshCw className="w-4 h-4" /> {t(lang, "আবার চেষ্টা করুন", "Try again")}
+          <ArrowCounterClockwise className="w-4 h-4" /> {t(lang, "আবার চেষ্টা করুন", "Try again")}
         </button>
       </div>
     );
@@ -101,7 +100,7 @@ export default function ProgressTab() {
           className="flex items-start gap-3 rounded-2xl border p-4 text-sm"
           style={{ background: "var(--dashboard-danger-subtle)", borderColor: "color-mix(in srgb, var(--dashboard-danger) 30%, transparent)", color: "var(--dashboard-danger)" }}
         >
-          <AlertTriangle className="h-5 w-5 flex-shrink-0 mt-0.5" aria-hidden="true" />
+          <Warning className="h-5 w-5 flex-shrink-0 mt-0.5" aria-hidden="true" />
           <div className="flex-1">
             {t(
               lang,
@@ -177,7 +176,7 @@ export default function ProgressTab() {
         <section aria-label={t(lang, "দুর্বলতা বিশ্লেষণ", "Weakness analysis")}>
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-base font-bold font-display flex items-center gap-2" style={{ color: "var(--dashboard-text-primary)" }}>
-              <Swords className="w-5 h-5" style={{ color: "var(--dashboard-danger)" }} /> {t(lang, "দুর্বল টপিক", "Weak topics")}
+              <Sword className="w-5 h-5" style={{ color: "var(--dashboard-danger)" }} /> {t(lang, "দুর্বল টপিক", "Weak topics")}
             </h3>
             <span className="text-xs font-mono" style={{ color: "var(--dashboard-text-muted)" }}>
               {t(lang, "ন্যূনতম ৩টি প্রচেষ্টার ভিত্তিতে", "based on ≥3 attempts")}
@@ -242,7 +241,7 @@ export default function ProgressTab() {
         aria-label={t(lang, "AI প্রস্তুতি বিশ্লেষণ", "AI preparation analysis")}
         id="dashboard-ai-coach-progress"
       >
-        <HomeCoach />
+        <House />
       </section>
 
       {/* ── Leaderboard (real ranks) ── */}

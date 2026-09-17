@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { BarChart3, ChevronDown, Play } from "lucide-react";
+import { ChartBar, CaretDown, Play } from "@phosphor-icons/react";
 import { useLanguage, t, type Language } from "@/lib/lang-ctx";
 import type { PreparationIntelligenceDTO, PrepIntelligenceSubjectPerformance } from "@/lib/types";
 
@@ -47,7 +47,7 @@ function SubjectRow({
             className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
             style={{ background: "var(--dashboard-primary-subtle)", border: "1px solid color-mix(in srgb, var(--dashboard-primary) 20%, transparent)", color: "var(--dashboard-primary)" }}
           >
-            <BarChart3 className="w-5 h-5" aria-hidden="true" />
+            <ChartBar className="w-5 h-5" aria-hidden="true" />
           </span>
           <div className="flex-1 min-w-0">
             <h4 className="text-sm font-medium truncate" style={{ color: "var(--dashboard-text-primary)" }}>{subject.subject}</h4>
@@ -66,7 +66,7 @@ function SubjectRow({
           </div>
           {hasTopics && (
             <motion.span animate={{ rotate: expanded ? 180 : 0 }} className="text-[var(--dashboard-primary)]">
-              <ChevronDown className="w-4 h-4" aria-hidden="true" />
+              <CaretDown className="w-4 h-4" aria-hidden="true" />
             </motion.span>
           )}
         </div>

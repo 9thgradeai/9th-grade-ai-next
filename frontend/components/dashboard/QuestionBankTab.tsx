@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Terminal, Clock, CheckCircle, XCircle, Bookmark, BookmarkCheck, BookMarked, Play } from "lucide-react";
+import { Terminal, Clock, CheckCircle, XCircle, Bookmark, Play } from "@phosphor-icons/react";
 import { QUESTION_BANK_CATEGORIES } from "@/lib/data";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 import { useToastSafe } from "@/lib/toast-ctx";
@@ -325,7 +325,7 @@ export default function QuestionBankTab() {
               : "bg-subtle border-[var(--accent)]/20 text-[var(--dashboard-text-muted)] hover:border-[var(--accent)]/40 hover:text-[var(--text-primary)]"
           }`}
         >
-          <BookMarked className="w-3.5 h-3.5" /> সংরক্ষিত ({bookmarks.length})
+          <Bookmark className="w-3.5 h-3.5" /> সংরক্ষিত ({bookmarks.length})
         </button>
         {view === "saved" && savedQuestions.length > 0 && (
           <button
@@ -485,7 +485,7 @@ export default function QuestionBankTab() {
                       className="text-[var(--dashboard-text-muted)] hover:text-[var(--dashboard-primary)] transition-colors"
                       aria-label={isSaved ? "Remove from saved" : "Save question"}
                     >
-                      {isSaved ? <BookmarkCheck className="w-4 h-4 text-[var(--dashboard-primary)]" /> : <Bookmark className="w-4 h-4" />}
+                      {isSaved ? <Bookmark className="w-4 h-4 text-[var(--dashboard-primary)]" /> : <Bookmark className="w-4 h-4" />}
                     </button>
                   </div>
                   <p className="text-sm text-[var(--text-primary)] mb-3">

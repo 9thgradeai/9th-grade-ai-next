@@ -51,10 +51,10 @@ export default function StudentModelTab() {
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <Card title="লক্ষ্য (Exam Goal)">
-          {model.examGoal ?? <Muted>নির্ধারিত নয়</Muted>}
+          {model.examGoal ?? <span className="text-[var(--dashboard-text-muted)] text-xs">নির্ধারিত নয়</span>}
         </Card>
         <Card title="পছন্দের ভাষা">
-          {model.preferredLanguage ?? <Muted>স্বয়ংক্রিয় শনাক্ত</Muted>}
+          {model.preferredLanguage ?? <span className="text-[var(--dashboard-text-muted)] text-xs">স্বয়ংক্রিয় শনাক্ত</span>}
         </Card>
         <Card title="মূল্যায়ন করা উত্তর">
           {model.evaluatedCount} টি
@@ -119,8 +119,4 @@ function Card({ title, children }: { title: string; children: React.ReactNode })
       <div className="mt-1 text-sm text-[var(--dashboard-text-primary)]">{children}</div>
     </div>
   );
-}
-
-function Muted({ children }: { children: React.ReactNode }) {
-  return <span className="text-[var(--dashboard-text-muted)]">{children}</span>;
 }

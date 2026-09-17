@@ -29,7 +29,7 @@ const defaultProps = {
   onOpen: vi.fn(),
   onDelete: vi.fn(),
   onRename: vi.fn(),
-  onPin: vi.fn(),
+  onPushPin: vi.fn(),
   onNew: vi.fn(),
 }
 
@@ -61,11 +61,11 @@ describe("ConversationList", () => {
     // First row is the pinned c2 → shows Unpin.
     fireEvent.click(screen.getAllByLabelText("Conversation actions")[0])
     fireEvent.click(screen.getByText("Unpin"))
-    expect(defaultProps.onPin).toHaveBeenCalledWith("c2", false)
+    expect(defaultProps.onPushPin).toHaveBeenCalledWith("c2", false)
     // Second row is the unpinned c1 → shows Pin.
     fireEvent.click(screen.getAllByLabelText("Conversation actions")[1])
     fireEvent.click(screen.getByText("Pin"))
-    expect(defaultProps.onPin).toHaveBeenCalledWith("c1", true)
+    expect(defaultProps.onPushPin).toHaveBeenCalledWith("c1", true)
   })
 
   it("deletes a conversation", () => {

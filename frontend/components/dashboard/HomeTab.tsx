@@ -1,12 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { motion } from "framer-motion";
-import { Clock, ArrowRight, Flame, Trophy, ChevronRight, RefreshCw } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
+import { Clock, ArrowRight, Flame, Trophy, CaretRight, ArrowCounterClockwise } from "@phosphor-icons/react";
 import { useAuth } from "@/lib/auth-ctx";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 import { useLanguage, t } from "@/lib/lang-ctx";
-import { useT } from "@/lib/i18n";
 import { useToastSafe } from "@/lib/toast-ctx";
 import { api } from "@/lib/services/api";
 import type { Server, PrepIntelligenceRecommendation } from "@/lib/types";
@@ -39,19 +38,12 @@ const STAGGER_ITEM = {
   show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 280, damping: 28 } },
 };
 
-function timeGreeting(key: (k: string) => string) {
-  const h = new Date().getHours();
-  if (h < 12) return key("home.greeting.morning");
-  if (h < 17) return key("home.greeting.afternoon");
-  return key("home.greeting.evening");
-}
-
 export default function HomeTab() {
   const { user } = useAuth();
   const { setActiveTab, setPracticeIntent, setMistakeIntent, setQuestionBankFilters } = useDashboardStore();
   const { lang } = useLanguage();
-  const tUI = useT();
   const toast = useToastSafe();
+  const reduceMotion = useReducedMotion();
 
   const [intelligence, setIntelligence] = useState<Server.PreparationIntelligenceDTO | null>(null);
   const [loading, setLoading] = useState(true);
@@ -241,34 +233,22 @@ export default function HomeTab() {
           }}
           className="command-primary-btn mt-4"
         >
-          <RefreshCw className="w-4 h-4" /> {t(lang, "আবার চেষ্টা করুন", "Try again")}
+          <ArrowCounterClockwise className="w-4 h-4" /> {t(lang, "আবার চেষ্টা করুন", "Try again")}
         </button>
       </div>
     );
   }
 
   return (
-    <motion.div variants={STAGGER} initial="hidden" animate="show" className="space-y-5 pb-24 sm:pb-6">
-      {/* ── Greeting Header ── */}
-      <motion.div variants={STAGGER_ITEM} className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <span
-              className="text-[10px] font-mono font-bold tracking-widest uppercase px-2.5 py-0.5 rounded-full border flex items-center gap-1.5"
-              style={{ background: "var(--dashboard-primary-subtle)", borderColor: "color-mix(in srgb, var(--dashboard-primary) 24%, transparent)", color: "var(--dashboard-primary)" }}
-            >
-              <span className="w-1.5 h-1.5 rounded-full status-dot-pulse" style={{ background: "var(--dashboard-success)" }} />
-              {t(lang, "আপনার প্রস্তুতি সেন্টার", "Your Preparation Command Center")}
-            </span>
-          </div>
-
-          <h1 className="font-display font-black text-[26px] sm:text-[32px] leading-none tracking-tight mt-2" style={{ color: "var(--dashboard-text-primary)" }}>
-            {timeGreeting(tUI)}, <span style={{ color: "var(--dashboard-primary)" }}>{user?.name ?? "Scholar"}</span> —
+    <motion.div variants={STAGGER} initial={reduceMotion ? false : "hidden"} animate="show" className="study-home space-y-5 pb-24 sm:pb-6">
+      <motion.header variants={STAGGER_ITEM} className="study-home-header flex flex-wrap items-center justify-between gap-3">
+        <div className="min-w-0">
+          <h1 className="font-display text-xl font-semibold tracking-tight text-[var(--dashboard-text-primary)]">
+            {t(lang, "প্রস্তুতির সারাংশ", "Preparation overview")}
           </h1>
-
-          <p className="text-sm mt-2 flex flex-wrap items-center gap-2" style={{ color: "var(--dashboard-text-secondary)" }}>
+          <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-[var(--dashboard-text-secondary)]">
             <span className="inline-flex items-center gap-1.5">
-              <Clock className="w-3.5 h-3.5 text-[var(--dashboard-primary)]" /> {user?.examTarget ?? "Target not set"}
+              <Clock className="w-3.5 h-3.5 text-[var(--dashboard-primary)]" aria-hidden="true" /> {user?.examTarget ?? t(lang, "লক্ষ্য নির্ধারিত হয়নি", "Target not set")}
               {nextExam ? ` · ${t(lang, nextExam.titleBn, nextExam.titleEn)}` : ""}
             </span>
             <span
@@ -279,19 +259,19 @@ export default function HomeTab() {
                 color: "var(--dashboard-warning)",
               }}
             >
-              <Flame className="w-3.5 h-3.5 fill-current" />
-              {intelligence?.streak ?? 0} Day Streak
+              <Flame className="w-3.5 h-3.5 fill-current" aria-hidden="true" />
+              {intelligence?.streak ?? 0} {t(lang, "দিনের স্ট্রিক", "day streak")}
               <span className="hidden sm:inline-flex ml-1">
                 <StreakHeatmap activeDays={activityDays} labels={WEEKDAY_LABELS_7} />
               </span>
             </span>
-          </p>
+          </div>
         </div>
 
         {nextExam && examDaysLeft != null && (
           <div
-            className="shrink-0 rounded-2xl border px-4 py-3 flex items-center gap-4 shadow-sm"
-            style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}
+            className="w-fit max-w-full border-l-2 border-[var(--dashboard-primary)] py-1 pl-5 flex items-center gap-4"
+            style={{ background: "var(--dashboard-surface)", borderLeftColor: "var(--dashboard-primary)" }}
           >
             <div className="text-center">
               <p className="font-display font-black text-2xl leading-none text-[var(--dashboard-primary)]">{examDaysLeft}</p>
@@ -312,41 +292,15 @@ export default function HomeTab() {
             </div>
           </div>
         )}
-      </motion.div>
-
-      {/* ── Today's Mission (hero) ── */}
-      <motion.div variants={STAGGER_ITEM}>
-        <TodayMission
-          intelligence={intelligence}
-          onStartPractice={practiceSubject}
-          onStartMistakes={() => mistakeSubject()}
-          onReviewFlashcards={() => setActiveTab("flashcards")}
-          onStartDailyQuiz={() => setActiveTab("practice")}
-        />
-      </motion.div>
+      </motion.header>
 
       {/* ── Preparation Pulse (real KPIs) ── */}
       <motion.div variants={STAGGER_ITEM} className={skeleton ? "opacity-60 pointer-events-none" : ""}>
         <PreparationPulse intelligence={intelligence} />
       </motion.div>
 
-      {/* ── Continue Learning + Recommended Actions ── */}
-      <div className="grid lg:grid-cols-2 gap-5">
-        <motion.div variants={STAGGER_ITEM}>
-          <ContinueLearning
-            intelligence={intelligence}
-            onResumeExam={() => setActiveTab("practice")}
-            onStartDailyQuiz={() => setActiveTab("practice")}
-          />
-        </motion.div>
-        <motion.div variants={STAGGER_ITEM}>
-          <RecommendedActions intelligence={intelligence} onAction={handleRecommendation} />
-        </motion.div>
-      </div>
-
-      {/* ── Performance Velocity + Today's Plan ── */}
-      <div className="grid lg:grid-cols-[1.4fr_0.85fr] gap-5">
-        <motion.div variants={STAGGER_ITEM}>
+      <div className="study-home-analytics grid gap-5 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+        <motion.div variants={STAGGER_ITEM} className="min-w-0">
           <PerformanceCard
             activity={intelligence?.activity ?? []}
             results={results}
@@ -355,7 +309,7 @@ export default function HomeTab() {
             loading={loading}
           />
         </motion.div>
-        <motion.div variants={STAGGER_ITEM}>
+        <motion.div variants={STAGGER_ITEM} className="min-w-0">
           <TodayPlanCard
             tasks={todaysTasks}
             onToggle={toggleTask}
@@ -363,6 +317,29 @@ export default function HomeTab() {
           />
         </motion.div>
       </div>
+
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+        <motion.div variants={STAGGER_ITEM} className="min-w-0">
+          <TodayMission
+            intelligence={intelligence}
+            onStartPractice={practiceSubject}
+            onStartMistakes={() => mistakeSubject()}
+            onReviewFlashcards={() => setActiveTab("flashcards")}
+            onStartDailyQuiz={() => setActiveTab("practice")}
+          />
+        </motion.div>
+        <motion.div variants={STAGGER_ITEM} className="min-w-0">
+          <RecommendedActions intelligence={intelligence} onAction={handleRecommendation} />
+        </motion.div>
+      </div>
+
+      <motion.div variants={STAGGER_ITEM}>
+        <ContinueLearning
+          intelligence={intelligence}
+          onResumeExam={() => setActiveTab("practice")}
+          onStartDailyQuiz={() => setActiveTab("practice")}
+        />
+      </motion.div>
 
       {/* ── Interactive AI Study Coach ── */}
       <motion.div variants={STAGGER_ITEM} id="dashboard-ai-coach">
@@ -406,7 +383,7 @@ export default function HomeTab() {
                   </p>
                 </div>
                 <span className="text-xs font-mono font-extrabold flex items-center gap-1" style={{ color: "var(--dashboard-text-primary)" }}>
-                  {r.score}% <ChevronRight className="w-3.5 h-3.5 opacity-50" />
+                  {r.score}%                   <CaretRight className="w-3.5 h-3.5 opacity-50" />
                 </span>
               </button>
             ))}

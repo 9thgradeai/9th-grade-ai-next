@@ -14,8 +14,8 @@
 
 @theme {
   /* ── Typography ─────────────────────────────────────────────────────────────── */
-  --font-sans: var(--font-inter), var(--font-hind-siliguri), "Hind Siliguri", system-ui, sans-serif;
-  --font-display: var(--font-space-grotesk), var(--font-inter), var(--font-hind-siliguri), system-ui, sans-serif;
+  --font-sans: var(--font-geist), var(--font-hind-siliguri), "Hind Siliguri", system-ui, sans-serif;
+  --font-display: var(--font-space-grotesk), var(--font-geist), var(--font-hind-siliguri), system-ui, sans-serif;
   --font-mono: "Fira Code", Menlo, Consolas, var(--font-hind-siliguri), monospace;
 
   /* ── Spacing Scale (4px base grid) ─────────────────────────────────────────── */
@@ -550,10 +550,17 @@ label {
 }
 
 /* ══════════════════════════════════════════════════════════════════════════════
-   DASHBOARD CANVAS
+   Z-INDEX SCALE — centralized per taste-skill §6.F
    ══════════════════════════════════════════════════════════════════════════════ */
+:root {
+  --z-dropdown: 40;
+  --z-sticky: 50;
+  --z-overlay: 60;
+  --z-modal: 70;
+  --z-toast: 80;
+  --z-tooltip: 90;
+}
 
-.dashboard-theme-scope[data-dashboard-theme="light"] .dashboard-shell,
 .dashboard-theme-scope[data-dashboard-theme="light"] #dashboard-content {
   background: var(--surface-base) !important;
 }
@@ -2707,7 +2714,8 @@ html.light .skeleton-shimmer {
    ══════════════════════════════════════════════════════════════════════════════ */
 
 .dashboard-theme-scope[data-dashboard-theme="light"] {
-  --background: oklch(0.985 0.006 260);
+  color-scheme: light;
+  --background: #edf2ef;
   --surface: oklch(1 0 0);
   --surface-soft: oklch(0.977 0.007 255);
   --surface-elevated: oklch(1 0 0);
@@ -2718,28 +2726,53 @@ html.light .skeleton-shimmer {
   --text-disabled: oklch(0.62 0.01 260);
   --border: oklch(0.88 0.012 260);
   --border-strong: oklch(0.84 0.015 260);
-  --primary: oklch(0.545 0.22 278);
-  --primary-hover: oklch(0.50 0.24 278);
-  --primary-soft: oklch(0.945 0.03 278);
+  --primary: #236342;
+  --primary-hover: #194e33;
+  --primary-active: #153f2a;
+  --primary-soft: #e2efe6;
+  --primary-muted: #edf5ef;
+  --sidebar-bg: #f7f9f7;
+  --sidebar-bg-active: #2c6041;
+  --sidebar-text-active: #f4faf6;
+  --sidebar-text: #526058;
+  --sidebar-border: #dce3de;
+  --input-focus: var(--primary);
+  --chart-1: #35754e;
+  --focus-ring: #35754e;
+  --border-focus: #35754e;
   --shadow-sm: 0 1px 2px oklch(0.2 0.02 260 / 0.06), 0 2px 8px oklch(0.2 0.02 260 / 0.05), inset 0 1px 0 oklch(1 0 0 / 0.9);
   --shadow-md: 0 4px 16px oklch(0.2 0.02 260 / 0.08), 0 1px 3px oklch(0.2 0.02 260 / 0.06);
   --shadow-lg: 0 12px 32px oklch(0.2 0.02 260 / 0.11), 0 4px 12px oklch(0.2 0.02 260 / 0.07);
 }
 
 .dashboard-theme-scope[data-dashboard-theme="dark"] {
-  --background: #000000;
-  --surface: #0A0A0F;
-  --surface-soft: #0D0D14;
-  --surface-elevated: #12121A;
-  --surface-highest: #1A1A24;
+  color-scheme: dark;
+  --background: #101211;
+  --surface: #161917;
+  --surface-soft: #131614;
+  --surface-elevated: #191d1a;
+  --surface-highest: #222824;
+  --surface-hover: #242c26;
+  --surface-active: #2b352e;
+  --input-bg: #161917;
+  --sidebar-bg: #111412;
+  --sidebar-bg-active: #2c6041;
+  --sidebar-text-active: #f4faf6;
+  --sidebar-text: #a7b0aa;
+  --sidebar-border: #2a302c;
+  --chart-1: #4a9663;
+  --focus-ring: #7dbf92;
+  --border-focus: #7dbf92;
   --text-primary: oklch(0.97 0.005 260);
   --text-secondary: oklch(0.78 0.01 260);
   --text-muted: oklch(0.62 0.01 260);
   --border: oklch(0.22 0.015 260);
   --border-strong: oklch(0.28 0.015 260);
-  --primary: oklch(0.70 0.18 278);
-  --primary-hover: oklch(0.75 0.16 278);
-  --primary-soft: oklch(0.22 0.07 278 / 0.22);
+  --primary: #7dbf92;
+  --primary-hover: #9aceab;
+  --primary-active: #b8dec3;
+  --primary-soft: #20392a;
+  --primary-muted: #192c21;
   --shadow-sm: 0 1px 2px oklch(0 0 0 / 0.5), 0 2px 8px oklch(0 0 0 / 0.4), inset 0 1px 0 oklch(1 0 0 / 0.06);
   --shadow-md: 0 8px 24px oklch(0 0 0 / 0.5), 0 2px 6px oklch(0 0 0 / 0.4);
   --shadow-lg: 0 16px 40px oklch(0 0 0 / 0.6), 0 4px 12px oklch(0 0 0 / 0.45);
@@ -2749,17 +2782,20 @@ html.light .skeleton-shimmer {
 .dashboard-theme-scope .command-card,
 .dashboard-theme-scope .glass-card,
 .dashboard-theme-scope .card {
-  backdrop-filter: blur(12px) saturate(1.15);
-  -webkit-backdrop-filter: blur(12px) saturate(1.15);
-  border: 1px solid color-mix(in oklch, var(--border) 88%, transparent);
-  box-shadow: var(--shadow-sm), inset 0 1px 0 color-mix(in oklch, white 6%, transparent);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: none;
+  animation: none;
   transition: transform 220ms cubic-bezier(0.22,1,0.36,1), box-shadow 220ms ease, border-color 220ms ease, background 220ms ease;
 }
 .dashboard-theme-scope .command-card:hover,
 .dashboard-theme-scope .glass-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md), inset 0 1px 0 color-mix(in oklch, white 8%, transparent);
-  border-color: color-mix(in oklch, var(--primary) 22%, var(--border));
+  transform: none;
+  box-shadow: none;
+  border-color: var(--border-strong);
 }
 
 /* Aurora mesh behind dashboard content — premium depth */
@@ -2785,10 +2821,10 @@ html.light .skeleton-shimmer {
 /* Premium primary button — 100% visible gradient + inner highlight */
 .dashboard-theme-scope .command-primary-btn,
 .dashboard-theme-scope .bg-\[var\(--accent\)\] {
-  background: linear-gradient(135deg, var(--primary) 0%, color-mix(in oklch, var(--primary) 82%, var(--info)) 100%) !important;
-  color: white !important;
-  border: 1px solid color-mix(in oklch, var(--primary) 80%, white 12%) !important;
-  box-shadow: 0 2px 8px color-mix(in oklch, var(--primary) 28%, transparent), inset 0 1px 0 oklch(1 0 0 / 0.22) !important;
+  background: var(--primary) !important;
+  color: var(--text-inverse) !important;
+  border: 1px solid transparent !important;
+  box-shadow: none !important;
 }
 .dashboard-theme-scope .command-primary-btn:hover {
   filter: brightness(1.06) saturate(1.08);
@@ -2805,7 +2841,56 @@ html.light .skeleton-shimmer {
 
 /* Focus ring — premium, highly visible */
 .dashboard-theme-scope *:focus-visible {
-  outline: 2px solid color-mix(in oklch, var(--primary) 85%, white 12%);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
-  box-shadow: 0 0 0 4px color-mix(in oklch, var(--primary) 16%, transparent);
+}
+
+.dashboard-theme-scope .font-display {
+  font-weight: 600;
+  line-height: 1.25;
+  animation: none;
+}
+
+.dashboard-theme-scope .command-eyebrow {
+  background: none;
+  -webkit-text-fill-color: currentColor;
+  color: var(--text-secondary);
+  letter-spacing: 0.06em;
+}
+
+.dashboard-theme-scope::before,
+.dashboard-theme-scope .dashboard-shell::before,
+.dashboard-theme-scope .command-aurora,
+.dashboard-theme-scope .command-card::after,
+.dashboard-theme-scope .command-primary-btn::before {
+  display: none;
+}
+
+.dashboard-theme-scope .study-home :is(h1, h2, h3, p) {
+  margin-bottom: 0;
+}
+
+.dashboard-theme-scope .preparation-metric {
+  padding: 1.5rem;
+  border-radius: 14px;
+}
+
+.dashboard-theme-scope .study-home-analytics > div > .command-card {
+  height: 100%;
+}
+
+.dashboard-theme-scope .command-primary-btn:hover {
+  background: var(--primary-hover) !important;
+  box-shadow: none !important;
+  filter: none;
+}
+
+.dashboard-theme-scope nav[aria-label="Desktop navigation"] [aria-current="page"] span {
+  color: var(--sidebar-text-active) !important;
+}
+
+@media (max-width: 639px) {
+  .dashboard-theme-scope .preparation-metric {
+    padding: 1rem;
+  }
 }

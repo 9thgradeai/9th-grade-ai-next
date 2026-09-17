@@ -9,7 +9,7 @@
 
 import { useMemo } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, TrendingUp, Target, FileQuestion, BookOpen, ListChecks, AlertTriangle } from "lucide-react";
+import { ArrowRight, TrendUp, Target, Question, BookOpen, ListChecks, Warning } from "@phosphor-icons/react";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 import type { TabId } from "@/lib/data";
 import type { AgentActionDto, AgentBlockDto } from "@/lib/types";
@@ -121,7 +121,7 @@ function BlockCard({ block, onDispatch }: { block: AgentBlockDto; onDispatch: (a
       return (
         <div className={CARD}>
           <div className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-[var(--dashboard-text-muted)]">
-            <TrendingUp className="h-3.5 w-3.5 text-[var(--dashboard-primary)]" aria-hidden="true" />
+            <TrendUp className="h-3.5 w-3.5 text-[var(--dashboard-primary)]" aria-hidden="true" />
             Progress
           </div>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 text-sm">
@@ -138,7 +138,7 @@ function BlockCard({ block, onDispatch }: { block: AgentBlockDto; onDispatch: (a
       return (
         <div className={CARD}>
           <div className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-[var(--dashboard-danger)]">
-            <AlertTriangle className="h-3.5 w-3.5" aria-hidden="true" />
+            <Warning className="h-3.5 w-3.5" aria-hidden="true" />
             Weakness
           </div>
           <p className="text-sm font-semibold text-[var(--text-primary)]">
@@ -167,7 +167,7 @@ function BlockCard({ block, onDispatch }: { block: AgentBlockDto; onDispatch: (a
       return (
         <div className={CARD}>
           <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-[var(--dashboard-primary)]">
-            <FileQuestion className="h-3.5 w-3.5" aria-hidden="true" />
+            <Question className="h-3.5 w-3.5" aria-hidden="true" />
             Practice
             {block.questionCount ? (
               <span className="ml-auto font-mono font-normal text-[var(--dashboard-text-muted)]">{block.questionCount} q</span>

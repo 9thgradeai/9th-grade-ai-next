@@ -8,6 +8,7 @@ import dynamic from "next/dynamic";
 import { MotionConfig, AnimatePresence, motion } from "framer-motion";
 import SideNav from "@/components/dashboard/SideNav";
 import BottomNav from "@/components/dashboard/BottomNav";
+import ExamSwitcher from "@/components/dashboard/ExamSwitcher";
 import NotificationCenter from "@/components/dashboard/NotificationCenter";
 import CommandBar from "@/components/dashboard/CommandBar";
 import { ThemeToggle, DashboardThemeProvider } from "@/lib/dashboard-theme-ctx";
@@ -21,7 +22,7 @@ import LanguageToggle from "@/components/ui/LanguageToggle";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 
 import { useDialogA11y } from "@/lib/use-dialog-a11y";
-import { Menu, X } from "lucide-react";
+import { Menu, Search, X } from "lucide-react";
 import { TAB_ICONS } from "@/lib/exam-ui";
 import { useAuth as useAuthForDrawer } from "@/lib/auth-ctx";
 import LogoutButton from "@/components/dashboard/LogoutButton";
@@ -51,6 +52,9 @@ function SideNavDrawerContent({ activeTab, onChange }: { activeTab: TabId; onCha
   const initial = user?.name?.charAt(0) ?? "G";
   return (
     <div className="flex flex-col h-full">
+      <div className="px-3 pt-3">
+        <ExamSwitcher />
+      </div>
       <div className="flex-1 min-h-0 overflow-y-auto px-3 py-3">
         {DRAWER_GROUPS.map((group) => {
           const tabs = group.ids.map((id) => TABS.find((t) => t.id === id)!).filter(Boolean);
@@ -179,6 +183,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const onKey = (e: KeyboardEvent) => {
       // Don't trigger shortcuts when typing in inputs
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      // Don't hijack keys while a dialog (command palette, sheets) is open
+      if (e.target instanceof HTMLElement && e.target.closest('[role="dialog"]')) return;
 
       // Number keys 1-9 for the first nine tabs, 0 for the tenth
       const num = parseInt(e.key);
@@ -283,10 +289,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   </Link>
 
                   {/* Desktop page title — clean, no terminal $ */}
-                  <div className="hidden lg:flex flex-col">
-                    <span className="text-[13px] font-semibold tracking-tight" style={{ color: "var(--dashboard-text-primary)" }}>{activeLabel}</span>
-                    <span className="text-[11px]" style={{ color: "var(--dashboard-text-muted)" }}>{t("dashboard.controlCenter")}</span>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => window.dispatchEvent(new Event("app:open-command"))}
+                    aria-label="Search dashboard"
+                    className="hidden sm:flex h-10 w-64 items-center gap-3 rounded-lg border px-3 text-sm text-[var(--dashboard-text-secondary)] bg-[var(--dashboard-surface-muted)] border-[var(--dashboard-border-muted)] hover:border-[var(--dashboard-primary)] transition-colors"
+                  >
+                    <Search className="h-4 w-4" aria-hidden="true" />
+                    <span>{t("dashboard.controlCenter")}</span>
+                    <kbd className="ml-auto text-xs">⌘K</kbd>
+                  </button>
+                  <span className="hidden xl:block text-xs text-[var(--dashboard-text-muted)]">{activeLabel}</span>
 
                   <div className="ml-auto flex items-center gap-1.5 sm:gap-2 min-w-0 shrink-0">
                     <GlobalEcosystemToggle />

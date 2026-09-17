@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Zap } from "lucide-react";
+import { ArrowRight, Sun } from "@phosphor-icons/react";
 import type { NextAction } from "@/lib/dashboard/recommend";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 
@@ -30,7 +30,7 @@ export default function NextBestAction({ action }: { action: NextAction }) {
                 : { background: "var(--dashboard-primary-subtle)", borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-primary)" }
             }
           >
-            <Zap className="h-5 w-5" aria-hidden="true" />
+            <Sun className="h-5 w-5" aria-hidden="true" />
           </div>
           <div>
             <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.12em]" style={{ color: isHigh ? "var(--dashboard-text-inverse)" : "var(--dashboard-primary)" }}>

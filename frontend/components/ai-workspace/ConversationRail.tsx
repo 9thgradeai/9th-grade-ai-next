@@ -5,7 +5,7 @@
 // sidebar and inside the mobile slide-over drawer.
 
 import { useMemo, useState } from "react";
-import { Search } from "lucide-react";
+import { MagnifyingGlass } from "@phosphor-icons/react";
 import AiLogo from "@/components/ui/AiLogo";
 import ConversationList from "@/components/chat/ConversationList";
 import type { AIConversationSummary } from "@/lib/services/ai/types";
@@ -16,7 +16,7 @@ type ConversationRailProps = {
   onOpen: (id: string) => void;
   onDelete: (id: string) => void;
   onRename: (id: string, title: string) => void;
-  onPin: (id: string, pinned: boolean) => void;
+  onPushPin: (id: string, pinned: boolean) => void;
   onNew: () => void;
 };
 
@@ -26,7 +26,7 @@ export default function ConversationRail({
   onOpen,
   onDelete,
   onRename,
-  onPin,
+  onPushPin,
   onNew,
 }: ConversationRailProps) {
   const [query, setQuery] = useState("");
@@ -53,7 +53,7 @@ export default function ConversationRail({
 
       <div className="px-3 pb-1 pt-3">
         <label className="flex h-9 items-center gap-2 rounded-xl border border-[var(--dashboard-border-muted)] bg-[var(--dashboard-surface-solid)] px-2.5 transition-colors focus-within:border-[var(--dashboard-primary)]/60">
-          <Search className="h-3.5 w-3.5 flex-shrink-0 text-[var(--dashboard-text-muted)]" aria-hidden="true" />
+          <MagnifyingGlass className="h-3.5 w-3.5 flex-shrink-0 text-[var(--dashboard-text-muted)]" aria-hidden="true" />
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -77,7 +77,7 @@ export default function ConversationRail({
           onOpen={onOpen}
           onDelete={onDelete}
           onRename={onRename}
-          onPin={onPin}
+          onPushPin={onPushPin}
           onNew={onNew}
         />
       </div>

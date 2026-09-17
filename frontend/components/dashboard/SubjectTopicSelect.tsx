@@ -25,7 +25,7 @@
  */
 
 import { useState, useCallback } from "react";
-import { Check, Minus, Plus, X } from "lucide-react";
+import { Check, Minus, Plus, X } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 import type { Server } from "@/lib/types";
 import { useDialogA11y } from "@/lib/use-dialog-a11y";

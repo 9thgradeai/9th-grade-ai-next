@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Search, ArrowRight, Command as CmdIcon } from "lucide-react";
+import { MagnifyingGlass, ArrowRight, Command as CmdIcon } from "@phosphor-icons/react";
 import { getCommands } from "@/lib/navigation";
 
 export default function CommandPalette() {
@@ -62,7 +62,7 @@ export default function CommandPalette() {
       <button aria-label="Close command palette" className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={close} />
       <div className="relative w-full max-w-[560px] overflow-hidden rounded-2xl border border-white/10 bg-[#0D0D0D] shadow-2xl">
         <div className="flex items-center gap-3 border-b border-white/10 px-4">
-          <Search className="h-4 w-4 shrink-0 text-zinc-500" aria-hidden="true" />
+          <MagnifyingGlass className="h-4 w-4 shrink-0 text-zinc-500" aria-hidden="true" />
           <input
             ref={inputRef}
             value={q}

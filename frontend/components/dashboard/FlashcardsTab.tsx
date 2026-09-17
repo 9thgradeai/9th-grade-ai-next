@@ -2,7 +2,7 @@
 
 import { useState, useSyncExternalStore, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, RotateCcw, Lightbulb, BarChart3 } from "lucide-react";
+import { CaretLeft, CaretRight, ArrowCounterClockwise, Lightbulb, ChartBar } from "@phosphor-icons/react";
 import { FLASHCARD_DECKS } from "@/lib/data/study";
 import { useToastSafe } from "@/lib/toast-ctx";
 import { api } from "@/lib/services/api";
@@ -232,7 +232,7 @@ export default function FlashcardsTab() {
             </div>
 
             <div className="flex items-center gap-2 mb-4">
-              <BarChart3 className="w-5 h-5 text-[var(--dashboard-primary)]" />
+              <ChartBar className="w-5 h-5 text-[var(--dashboard-primary)]" />
               <h2 className="text-lg font-bold text-[var(--text-primary)]">Flashcards</h2>
               <span className="text-xs text-[var(--dashboard-text-muted)] font-mono">Spaced Repetition System</span>
             </div>
@@ -245,7 +245,7 @@ export default function FlashcardsTab() {
               onClick={startMixedSession}
               className="w-full mb-4 px-4 py-3 bg-[var(--dashboard-primary-subtle)] border border-[var(--primary)]/30 rounded-lg text-[var(--dashboard-primary)] font-mono text-sm hover:bg-[var(--dashboard-primary-subtle)] transition-colors flex items-center justify-center gap-2"
             >
-              <BarChart3 className="w-4 h-4" />
+              <ChartBar className="w-4 h-4" />
               সব ডিউ কার্ড একসাথে রিভিউ করুন
             </button>
 
@@ -415,7 +415,7 @@ export default function FlashcardsTab() {
                 aria-label="Reset session"
                 className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] rounded-lg text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)] transition-colors"
               >
-                <RotateCcw className="w-5 h-5" />
+                <ArrowCounterClockwise className="w-5 h-5" />
               </button>
             </div>
 
@@ -426,7 +426,7 @@ export default function FlashcardsTab() {
                   aria-label="Previous card"
                   className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] rounded-lg text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)] transition-colors"
                 >
-                  <ChevronLeft className="w-5 h-5" />
+                  <CaretLeft className="w-5 h-5" />
                 </button>
               )}
               {isFlipped ? (
@@ -446,7 +446,7 @@ export default function FlashcardsTab() {
                   onClick={handleFlip}
                   className="px-4 py-2 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-1"
                 >
-                  Show Answer <ChevronRight className="w-4 h-4" />
+                  Show Answer <CaretRight className="w-4 h-4" />
                 </button>
               )}
               {currentIndex < reviewQueue.length - 1 && !isFlipped && (
@@ -455,7 +455,7 @@ export default function FlashcardsTab() {
                   aria-label="Next card"
                   className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] rounded-lg text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)] transition-colors"
                 >
-                  <ChevronRight className="w-5 h-5" />
+                  <CaretRight className="w-5 h-5" />
                 </button>
               )}
             </div>

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
-import { BrainCircuit, Loader2, RefreshCw, Target, Zap, Activity, BookOpen } from "lucide-react";
+import { Brain, Spinner, ArrowCounterClockwise, Target, LightningA, Pulse } from "@phosphor-icons/react";
 import AiLogo from "@/components/ui/AiLogo";
 import { runAgentTurn, AIError } from "@/lib/services/ai";
 import type { AgentBlockDto } from "@/lib/types";
@@ -15,17 +15,17 @@ const STRATEGY_PROMPTS = [
     prompt: "আমার অগ্রগতি, দুর্বল বিষয় এবং ভুল প্রশ্নগুলো বিশ্লেষণ করে আজকের জন্য একটি সুনির্দিষ্ট স্টাডি প্ল্যান তৈরি করো।",
   },
   {
-    icon: Zap,
+    icon: LightningA,
     label: "দুর্বল বিষয় মেরামত",
     prompt: "আমার সবচেয়ে কম নম্বর পাওয়া ৩টি বিষয় চিহ্নিত করো এবং সেগুলো থেকে কীভাবে দ্রুত স্কোর বাড়ানো যায় তা বলো।",
   },
   {
-    icon: BrainCircuit,
+    icon: Brain,
     label: "১৫-মিনিট ড্রিল",
     prompt: "বিসিএস প্রিলির জন্য একটি ১৫-মিনিটের হাই-ইন্টেনসিটি কুইজ সেশন সুপারিশ করো এবং ৩টি গুরুত্বপূর্ণ কৌশল দাও।",
   },
   {
-    icon: Activity,
+    icon: Pulse,
     label: "পারফরম্যান্স অডিট",
     prompt: "আমার নির্ভুলতার হার (accuracy rate) এবং টাইম ম্যানেজমেন্ট বিশ্লেষণ করে একটি রিয়েল-টাইম ফিডব্যাক দাও।",
   },
@@ -140,7 +140,7 @@ export default function HomeCoach() {
               color: "var(--dashboard-primary)",
             }}
           >
-            <BrainCircuit className="w-5 h-5 animate-pulse" />
+            <Brain className="w-5 h-5 animate-pulse" />
           </div>
           <div>
             <div className="flex items-center gap-2">
@@ -166,12 +166,12 @@ export default function HomeCoach() {
         >
           {running ? (
             <>
-              <Loader2 className="w-4 h-4 animate-spin" />
+              <Spinner className="w-4 h-4 animate-spin" />
               শুনছি…
             </>
           ) : result ? (
             <>
-              <RefreshCw className="w-4 h-4" />
+              <ArrowCounterClockwise className="w-4 h-4" />
               আবার বিশ্লেষণ
             </>
           ) : (
@@ -221,7 +221,7 @@ export default function HomeCoach() {
                 onClick={runDefault}
                 className="inline-flex items-center gap-1.5 text-xs font-mono text-[var(--dashboard-primary)] hover:underline"
               >
-                <RefreshCw className="w-3 h-3" /> আবার চেষ্টা করুন
+                <ArrowCounterClockwise className="w-3 h-3" /> আবার চেষ্টা করুন
               </button>
             </div>
           )}

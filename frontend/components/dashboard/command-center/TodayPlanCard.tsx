@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Calendar, ArrowRight, Check, Plus, Loader2 } from "lucide-react";
+import { Calendar, ArrowRight, Check, Plus, Spinner } from "@phosphor-icons/react";
 import type { Server } from "@/lib/types";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 import { api } from "@/lib/services/api";
@@ -126,7 +126,7 @@ export default function TodayPlanCard({ tasks, onToggle, onTaskAdded }: Props) {
                 disabled={adding || !newTitle.trim()}
                 className="command-primary-btn !px-3 !py-1 !text-xs"
               >
-                {adding ? <Loader2 className="w-3 h-3 animate-spin" /> : "Save"}
+                {adding ? <Spinner className="w-3 h-3 animate-spin" /> : "Save"}
               </button>
             </div>
           </div>

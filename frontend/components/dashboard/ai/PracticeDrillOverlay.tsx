@@ -10,7 +10,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Loader2 } from "lucide-react";
+import { X, Spinner } from "@phosphor-icons/react";
 import { api } from "@/lib/services/api";
 import type { QuestionDTO } from "@/lib/types";
 import QuestionDrill from "../QuestionDrill";
@@ -143,7 +143,7 @@ export default function PracticeDrillOverlay() {
               <QuestionDrill questions={questions} title={detail.title} onExit={close} />
             ) : (
               <div className="py-14 flex flex-col items-center justify-center gap-3">
-                <Loader2 className="w-5 h-5 animate-spin text-[var(--dashboard-primary)]" />
+                <Spinner className="w-5 h-5 animate-spin text-[var(--dashboard-primary)]" />
                 <p className="text-xs font-mono text-[var(--dashboard-text-muted)]">
                   {loadingText || "প্রশ্ন লোড হচ্ছে…"}
                 </p>

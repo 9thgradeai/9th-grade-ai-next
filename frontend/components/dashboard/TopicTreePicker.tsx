@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Minus, Plus } from "lucide-react";
+import { Check, Minus, Plus } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 import type { Server } from "@/lib/types";
 

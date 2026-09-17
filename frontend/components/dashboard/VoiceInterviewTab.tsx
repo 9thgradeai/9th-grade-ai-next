@@ -6,7 +6,7 @@
 
 import { useCallback, useRef, useState } from "react";
 import Markdown from "@/components/chat/Markdown";
-import { Volume2, Mic, Square } from "lucide-react";
+import { SpeakerHigh, SpeakerX, Square } from "@phosphor-icons/react";
 import { tutorTurn } from "@/lib/services/ai/tutor";
 
 type Msg = { id: string; role: "user" | "ai"; text: string };
@@ -158,7 +158,7 @@ export default function VoiceInterviewTab() {
                   aria-label="শোনো"
                   className="mt-1 rounded-lg border border-[var(--border-subtle)] p-1.5 text-[var(--dashboard-text-muted)] hover:text-[var(--dashboard-primary)]"
                 >
-                  <Volume2 className="h-4 w-4" />
+                  <SpeakerHigh className="h-4 w-4" />
                 </button>
               )}
             </div>
@@ -178,7 +178,7 @@ export default function VoiceInterviewTab() {
           } disabled:opacity-60`}
           aria-label={listening ? "শোনা বন্ধ করো" : "কথা বলো"}
         >
-          {listening ? <Square className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+          {listening ? <Square className="h-4 w-4" /> : <SpeakerX className="h-4 w-4" />}
         </button>
         <textarea
           value={input}

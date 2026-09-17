@@ -12,17 +12,7 @@
 // hairline divider). No fake "thinking" indicators.
 
 import { useRef, type ChangeEvent, type KeyboardEvent, type RefObject } from "react";
-import {
-  ImagePlus,
-  Mic,
-  MicOff,
-  Send,
-  Square,
-  Loader2,
-  Volume2,
-  VolumeX,
-  X,
-} from "lucide-react";
+import { Image, Microphone, MicrophoneSlash, ArrowUp, Square, Spinner, X, SpeakerHigh, SpeakerX } from "@phosphor-icons/react";
 import type { Mode, Status } from "./types";
 import type { AgentActivityStepDto } from "./types";
 
@@ -184,7 +174,7 @@ export default function ComposerBar({
               }
               aria-label="Attach a question image"
             >
-              <ImagePlus className="h-4 w-4" />
+              <Image className="h-4 w-4" />
             </button>
             <input ref={attachRef} type="file" accept="image/*" hidden onChange={handleAttach} />
 
@@ -201,7 +191,7 @@ export default function ComposerBar({
               aria-label={isListening ? "Stop listening" : "Start voice input"}
               aria-pressed={isListening}
             >
-              {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+              {isListening ? <MicrophoneSlash className="h-4 w-4" /> : <Microphone className="h-4 w-4" />}
             </button>
 
             <span
@@ -228,9 +218,9 @@ export default function ComposerBar({
                 title="Send"
               >
                 {status === "listening" ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <Spinner className="h-4 w-4 animate-spin" />
                 ) : (
-                  <Send className="h-4 w-4" />
+                  <ArrowUp className="h-4 w-4" />
                 )}
               </button>
             )}
@@ -255,9 +245,9 @@ export default function ComposerBar({
                 <span className="h-2 w-0.5 animate-pulse rounded-full bg-current" style={{ animationDelay: "240ms" }} />
               </span>
             ) : speakOnReply ? (
-              <Volume2 className="h-3.5 w-3.5" />
+              <SpeakerHigh className="h-3.5 w-3.5" />
             ) : (
-              <VolumeX className="h-3.5 w-3.5" />
+              <SpeakerX className="h-3.5 w-3.5" />
             )}
             Auto-read {speakOnReply ? "on" : "off"}
           </button>

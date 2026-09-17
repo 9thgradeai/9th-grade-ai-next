@@ -2,11 +2,20 @@
 import SectionHeading from "@/components/ui/SectionHeading";
 import { useT } from "@/lib/i18n";
 import SignalFlow from "@/components/landing/SignalFlow";
+import { useRef } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
 
 export default function SignalSection() {
   const t = useT();
+  const ref = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"],
+  });
+  const flowOpacity = useTransform(scrollYProgress, [0, 0.15, 0.85, 1], [0.25, 1, 1, 0.25]);
+  const flowScale = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0.96, 1, 1, 0.96]);
   return (
-    <section id="signal" className="relative scroll-mt-16 px-4 py-24 sm:px-6 md:py-32" aria-labelledby="signal-heading">
+    <section id="signal" ref={ref} className="relative scroll-mt-16 px-4 py-24 sm:px-6 md:py-32" aria-labelledby="signal-heading">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0"
@@ -22,7 +31,9 @@ export default function SignalSection() {
           highlight={t("landing.signal.highlight")}
           description={t("landing.signal.description")}
         />
-        <SignalFlow />
+        <motion.div style={{ opacity: flowOpacity, scale: flowScale }} className="will-change-transform">
+          <SignalFlow />
+        </motion.div>
       </div>
     </section>
   );

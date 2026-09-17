@@ -2,24 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
-import {
-  Check,
-  Play,
-  BookOpen,
-  Timer,
-  Zap,
-  ChevronLeft,
-  ChevronRight,
-  CircleDashed,
-  Trophy,
-  RotateCcw,
-  Target,
-  CheckCircle2,
-  XCircle,
-  Loader2,
-  AlertTriangle,
-  Inbox,
-} from "lucide-react";
+import { Check, Play, BookOpen, Timer, CaretLeft, CaretRight, CircleDashed, Trophy, ArrowCounterClockwise, Target, CheckCircle, XCircle, Spinner, Warning, Package, Sun } from "@phosphor-icons/react";
 import { api } from "@/lib/services/api";
 import { useEcosystem } from "@/lib/ecosystem-ctx";
 import { DIFFICULTY_LABEL } from "@/lib/exam-ui";
@@ -434,7 +417,7 @@ export default function PracticeTab() {
                   : "text-[var(--dashboard-text-secondary)] hover:text-[var(--dashboard-text-primary)] hover:bg-[var(--surface-hover)]"
               }`}
             >
-              {m.id === "mock" ? <Timer className="w-4 h-4" /> : m.id === "custom" ? <BookOpen className="w-4 h-4" /> : <Zap className="w-4 h-4" />}
+              {m.id === "mock" ? <Timer className="w-4 h-4" /> : m.id === "custom" ? <BookOpen className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
               [ {m.label} ]
             </button>
           ))}
@@ -470,7 +453,7 @@ export default function PracticeTab() {
                 </div>
                 <div className="p-5 md:p-6">
                   <div className="flex items-center gap-2 mb-1">
-                    <Zap className="w-5 h-5 text-[var(--dashboard-primary)]" />
+                    <Sun className="w-5 h-5 text-[var(--dashboard-primary)]" />
                     <h2 className="text-lg font-bold" style={{ color: "var(--dashboard-text-primary)" }}>কুইক প্র্যাকটিস</h2>
                     <span className={`ml-2 text-[10px] font-mono px-2 py-0.5 rounded-full border ${ecosystem === "BCS" ? "bg-[var(--dashboard-primary-subtle)] border-[var(--dashboard-primary)]/20 text-[var(--dashboard-primary)]" : "bg-amber-500/10 border-amber-500/20 text-amber-600"}`}>{ecosystem === "BCS" ? "BCS" : "ব্যাংক"}</span>
                   </div>
@@ -482,14 +465,14 @@ export default function PracticeTab() {
 
               {configLoading && (
                 <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
-                  <Loader2 className="w-10 h-10 mx-auto mb-3 text-[var(--accent)] animate-spin" aria-hidden="true" />
+                  <Spinner className="w-10 h-10 mx-auto mb-3 text-[var(--accent)] animate-spin" aria-hidden="true" />
                   <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">বিষয় লোড হচ্ছে...</p>
                 </div>
               )}
 
               {configError && (
                 <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
-                  <AlertTriangle className="w-10 h-10 mx-auto mb-3 text-[var(--warning)]" aria-hidden="true" />
+                  <Warning className="w-10 h-10 mx-auto mb-3 text-[var(--warning)]" aria-hidden="true" />
                   <p className="text-sm text-[var(--dashboard-text-muted)]">{configError}</p>
                   <button
                     onClick={() => {
@@ -544,7 +527,7 @@ export default function PracticeTab() {
 
                   {insufficient && (
                     <div className="flex items-start gap-2 rounded-xl border border-[var(--warning)]/30 bg-[var(--dashboard-warning-subtle)] p-3 text-xs text-[var(--dashboard-warning)]">
-                      <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                      <Warning className="w-4 h-4 flex-shrink-0 mt-0.5" />
                       <p>
                         নির্বাচিত টপিক থেকে শুধু <span className="font-mono">{availableTotal}টি</span> প্রশ্ন
                         পাওয়া যায় — মোট <span className="font-mono">{totalCount}টি</span> চাওয়া হয়েছে।
@@ -568,7 +551,7 @@ export default function PracticeTab() {
           {/* Loading state */}
           {sessionActive && loading && (
             <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
-              <Loader2 className="w-10 h-10 mx-auto mb-3 text-[var(--accent)] animate-spin" aria-hidden="true" />
+              <Spinner className="w-10 h-10 mx-auto mb-3 text-[var(--accent)] animate-spin" aria-hidden="true" />
               <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">প্রশ্ন লোড হচ্ছে...</p>
             </div>
           )}
@@ -576,7 +559,7 @@ export default function PracticeTab() {
           {/* Error state */}
           {sessionActive && !loading && loadError && (
             <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
-              <AlertTriangle className="w-10 h-10 mx-auto mb-3 text-[var(--warning)]" aria-hidden="true" />
+              <Warning className="w-10 h-10 mx-auto mb-3 text-[var(--warning)]" aria-hidden="true" />
               <p className="text-sm text-[var(--dashboard-text-muted)]">{loadError}</p>
               <button
                 onClick={() => void startSession()}
@@ -596,7 +579,7 @@ export default function PracticeTab() {
           {/* Empty state */}
           {sessionActive && !loading && !loadError && questions.length === 0 && !result && (
             <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
-              <Inbox className="w-10 h-10 mx-auto mb-3 text-[var(--dashboard-text-secondary)]" aria-hidden="true" />
+              <Package className="w-10 h-10 mx-auto mb-3 text-[var(--dashboard-text-secondary)]" aria-hidden="true" />
               <p className="text-sm text-[var(--dashboard-text-muted)]">কোনো প্রশ্ন পাওয়া যায়নি।</p>
               <button
                 onClick={resetSession}
@@ -713,7 +696,7 @@ export default function PracticeTab() {
                         className="px-4 py-2 border font-mono text-sm rounded-lg transition-colors disabled:opacity-40 flex items-center gap-1"
                         style={{ background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-strong)", color: "var(--dashboard-text-secondary)" }}
                       >
-                        <ChevronLeft className="w-4 h-4" /> আগের
+                        <CaretLeft className="w-4 h-4" /> আগের
                       </button>
                       <span className="text-xs font-mono" style={{ color: "var(--dashboard-text-muted)" }}>
                         {currentIndex + 1} / {totalQuestions}
@@ -724,7 +707,7 @@ export default function PracticeTab() {
                           className="px-4 py-2 border font-mono text-sm rounded-lg transition-colors flex items-center gap-1"
                           style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-strong)", color: "var(--dashboard-text-primary)" }}
                         >
-                          পরের <ChevronRight className="w-4 h-4" />
+                          পরের <CaretRight className="w-4 h-4" />
                         </button>
                       ) : (
                         <button
@@ -750,7 +733,7 @@ export default function PracticeTab() {
             <div className="fixed inset-0 z-50 bg-[var(--overlay)] backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setShowUnansweredConfirm(false)}>
               <div onClick={(e) => e.stopPropagation()} className="rounded-2xl border p-6 w-full max-w-sm" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)", boxShadow: "var(--dashboard-shadow-lg)" }}>
                 <div className="flex items-center gap-2 mb-3">
-                  <AlertTriangle className="w-5 h-5" style={{ color: "var(--dashboard-warning)" }} />
+                  <Warning className="w-5 h-5" style={{ color: "var(--dashboard-warning)" }} />
                   <h3 className="text-base font-bold" style={{ color: "var(--dashboard-text-primary)" }}>উত্তর দেওয়া বাকি আছে</h3>
                 </div>
                 <p className="text-sm mb-5" style={{ color: "var(--dashboard-text-secondary)" }}>
@@ -803,7 +786,7 @@ export default function PracticeTab() {
                     }}
                     className="px-5 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2 shadow-neon-glow"
                   >
-                    <RotateCcw className="w-4 h-4" /> আবার প্র্যাকটিস
+                    <ArrowCounterClockwise className="w-4 h-4" /> আবার প্র্যাকটিস
                   </button>
                   <button
                     onClick={resetSession}
@@ -830,7 +813,7 @@ export default function PracticeTab() {
                     }`}>
                       <div className="flex items-start gap-3">
                         {isCorrect ? (
-                          <CheckCircle2 className="w-4 h-4 text-[var(--dashboard-success)] flex-shrink-0 mt-0.5" />
+                          <CheckCircle className="w-4 h-4 text-[var(--dashboard-success)] flex-shrink-0 mt-0.5" />
                         ) : isUnanswered ? (
                           <CircleDashed className="w-4 h-4 text-[var(--dashboard-teal)] flex-shrink-0 mt-0.5" />
                         ) : (

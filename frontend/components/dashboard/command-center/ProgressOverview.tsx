@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { Star, Trophy, Flame, BookOpenCheck, Target, ClipboardList, BrainCircuit, Layers, Timer, TrendingUp, TrendingDown } from "lucide-react";
+import { Star, Trophy, Flame, Target, CheckCircle, ClipboardText, Brain, GridFour, Timer, TrendUp, TrendDown } from "@phosphor-icons/react";
 import { useLanguage, t } from "@/lib/lang-ctx";
 import type { PreparationIntelligenceDTO, MasteryStatus } from "@/lib/types";
 import { formatStudyTime } from "./PreparationPulse";
@@ -29,7 +29,7 @@ const MASTERY_LABEL: Record<MasteryStatus, [string, string]> = {
 function TrendDelta({ delta, suffix = "" }: { delta: number; suffix?: string }) {
   if (delta === 0) return null;
   const up = delta > 0;
-  const Icon = up ? TrendingUp : TrendingDown;
+  const Icon = up ? TrendUp : TrendDown;
   return (
     <span
       className="inline-flex items-center gap-0.5 text-[10px] font-bold font-mono"
@@ -59,14 +59,14 @@ export default function ProgressOverview({ intelligence }: ProgressOverviewProps
   const kpis = useMemo(() => {
     return [
       { icon: Target, label: t(lang, "নির্ভুলতা", "Accuracy"), value: `${overall?.accuracy ?? 0}%`, tint: "var(--dashboard-info)", delta: period?.accuracyDelta, suffix: "%" },
-      { icon: BookOpenCheck, label: t(lang, "প্রশ্ন", "Questions"), value: (overall?.questionsAttempted ?? 0).toLocaleString(), tint: "var(--dashboard-primary)", delta: period?.attemptsDelta },
+      { icon: CheckCircle, label: t(lang, "প্রশ্ন", "Questions"), value: (overall?.questionsAttempted ?? 0).toLocaleString(), tint: "var(--dashboard-primary)", delta: period?.attemptsDelta },
       { icon: Timer, label: t(lang, "অধ্যয়ন সময়", "Study time"), value: formatStudyTime(overall?.studyTimeSec ?? 0), tint: "var(--dashboard-warning)" },
       { icon: Flame, label: t(lang, "স্ট্রিক", "Streak"), value: `${overall?.streak ?? 0}`, tint: "var(--dashboard-danger)" },
       { icon: Star, label: t(lang, "পয়েন্ট", "Points"), value: (overall?.points ?? 0).toLocaleString(), tint: "var(--dashboard-warning)" },
       { icon: Trophy, label: t(lang, "র‍্যাংক", "Rank"), value: (overall?.rank ?? 0) > 0 ? `#${overall?.rank}` : "—", tint: "var(--dashboard-primary)" },
-      { icon: ClipboardList, label: t(lang, "মক টেস্ট", "Mock tests"), value: `${overall?.examsAttempted ?? 0}`, tint: "var(--dashboard-primary)" },
-      { icon: Layers, label: t(lang, "ফ্ল্যাশকার্ড", "Flashcards"), value: `${overall?.flashcardsReviewed ?? 0}`, tint: "var(--dashboard-success)" },
-      { icon: BrainCircuit, label: t(lang, "AI প্রশ্ন", "AI questions"), value: `${overall?.aiQuestionsAsked ?? 0}`, tint: "var(--dashboard-info)" },
+      { icon: ClipboardText, label: t(lang, "মক টেস্ট", "Mock tests"), value: `${overall?.examsAttempted ?? 0}`, tint: "var(--dashboard-primary)" },
+      { icon: GridFour, label: t(lang, "ফ্ল্যাশকার্ড", "Flashcards"), value: `${overall?.flashcardsReviewed ?? 0}`, tint: "var(--dashboard-success)" },
+      { icon: Brain, label: t(lang, "AI প্রশ্ন", "AI questions"), value: `${overall?.aiQuestionsAsked ?? 0}`, tint: "var(--dashboard-info)" },
     ];
   }, [overall, period, lang]);
 

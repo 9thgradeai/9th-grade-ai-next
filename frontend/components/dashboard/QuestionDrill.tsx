@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
-import { CheckCircle2, XCircle, ArrowRight, RotateCcw, TrendingUp, Timer } from "lucide-react";
+import { CheckCircle, XCircle, ArrowRight, ArrowCounterClockwise, TrendUp, Timer } from "@phosphor-icons/react";
 import { api } from "@/lib/services/api";
 import type { QuestionDTO } from "@/lib/types";
 
@@ -212,7 +212,7 @@ export default function QuestionDrill({
             onClick={resetDrill}
             className="px-4 py-2 min-h-11 bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] rounded-lg text-[var(--dashboard-text-secondary)] font-mono text-sm hover:text-[var(--text-primary)] transition-colors flex items-center gap-2"
           >
-            <RotateCcw className="w-4 h-4" /> আবার
+            <ArrowCounterClockwise className="w-4 h-4" /> আবার
           </button>
           {onExit && (
             <button
@@ -290,7 +290,7 @@ export default function QuestionDrill({
               >
                 <span className="font-bold">{optLetter}.</span>
                 <span className="font-medium">{opt}</span>
-                {revealed && isAnswer && <CheckCircle2 className="w-4 h-4 ml-auto" style={{ color: "var(--dashboard-success)" }} />}
+                {revealed && isAnswer && <CheckCircle className="w-4 h-4 ml-auto" style={{ color: "var(--dashboard-success)" }} />}
                 {revealed && isSelected && !isAnswer && <XCircle className="w-4 h-4 ml-auto" style={{ color: "var(--dashboard-danger)" }} />}
               </button>
             );
@@ -318,7 +318,7 @@ export default function QuestionDrill({
         >
           {lastFeedback.justMastered ? (
             <>
-              <TrendingUp className="w-5 h-5 text-[var(--dashboard-primary)]" />
+              <TrendUp className="w-5 h-5 text-[var(--dashboard-primary)]" />
               <div>
                 <p className="text-sm font-mono font-bold text-[var(--dashboard-primary)]">Mastered!</p>
                 <p className="text-xs font-mono text-[var(--accent)]/80">এই প্রশ্নটি এখন আয়ত্ত — চমৎকার!</p>
@@ -326,7 +326,7 @@ export default function QuestionDrill({
             </>
           ) : isCorrect ? (
             <>
-              <TrendingUp className="w-5 h-5 text-[var(--dashboard-primary)]" />
+              <TrendUp className="w-5 h-5 text-[var(--dashboard-primary)]" />
               <div>
                 <p className="text-sm font-mono font-bold text-[var(--dashboard-primary)]">Improved!</p>
                 <p className="text-xs font-mono text-[var(--accent)]/80">সঠিক উত্তর — অগ্রগতি হয়েছে।</p>

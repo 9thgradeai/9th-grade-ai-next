@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { ArrowRight, Search, Layers, CheckCircle2, AlertTriangle, ShieldCheck } from "lucide-react";
+import { ArrowRight, MagnifyingGlass, GridFour, CheckCircle, Warning } from "@phosphor-icons/react";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 
 type Report = { name: string; score: number; attempted: number; correct: number };
@@ -34,7 +34,7 @@ export default function SubjectMastery({ reports, onPractice }: { reports: Repor
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <p className="command-eyebrow flex items-center gap-1.5">
-            <Layers className="w-3.5 h-3.5" /> Subject Knowledge Matrix
+            <GridFour className="w-3.5 h-3.5" /> Subject Knowledge Matrix
           </p>
           <h3 className="font-display font-extrabold text-[16px] mt-0.5" style={{ color: "var(--dashboard-text-primary)" }}>
             Performance & Mastery by Topic
@@ -48,7 +48,7 @@ export default function SubjectMastery({ reports, onPractice }: { reports: Repor
         <div className="flex flex-wrap items-center gap-2">
           {/* Search Input */}
           <div className="relative">
-            <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--dashboard-text-muted)]" />
+            <MagnifyingGlass className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--dashboard-text-muted)]" />
             <input
               type="text"
               placeholder="Search topic..."
@@ -162,8 +162,8 @@ export default function SubjectMastery({ reports, onPractice }: { reports: Repor
                     <span className="text-[11px] font-semibold inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform" style={{ color: "var(--dashboard-primary)" }}>
                       Practice Drill →
                     </span>
-                    {isMastered && <CheckCircle2 className="w-3.5 h-3.5 text-[var(--dashboard-success)]" />}
-                    {isWeak && <AlertTriangle className="w-3.5 h-3.5 text-[var(--dashboard-danger)]" />}
+                    {isMastered && <CheckCircle className="w-3.5 h-3.5 text-[var(--dashboard-success)]" />}
+                    {isWeak && <Warning className="w-3.5 h-3.5 text-[var(--dashboard-danger)]" />}
                   </div>
                 </div>
               </button>

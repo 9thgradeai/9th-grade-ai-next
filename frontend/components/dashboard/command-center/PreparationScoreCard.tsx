@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { TrendingUp, Flame, Target, Trophy, Info, X, ShieldCheck } from "lucide-react";
+import { TrendUp, Flame, Target, Trophy, Info, X, ShieldCheck } from "@phosphor-icons/react";
 
 type Props = {
   score: number;
@@ -103,7 +103,7 @@ export default function PreparationScoreCard({ score, accuracy, streak, solved, 
                 borderColor: "color-mix(in srgb, var(--dashboard-success) 18%, transparent)",
               }}
             >
-              <TrendingUp className="w-3 h-3" /> +{delta.toFixed(1)}% wk
+              <TrendUp className="w-3 h-3" /> +{delta.toFixed(1)}% wk
             </span>
           </div>
         </div>

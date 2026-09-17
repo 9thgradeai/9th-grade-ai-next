@@ -1,6 +1,6 @@
 "use client";
 
-import { Clock, CalendarClock, Flame } from "lucide-react";
+import { Clock, Flame } from "@phosphor-icons/react";
 import { useCountdown, formatDate } from "../HomeTabHelpers";
 import { useLanguage, t } from "@/lib/lang-ctx";
 import type { Server } from "@/lib/types";
@@ -25,7 +25,7 @@ export default function ExamCountdownCard({ exam }: { exam: Server.ExamScheduleD
         <div>
           <div className="flex items-center gap-2">
             <p className="command-eyebrow flex items-center gap-1.5">
-              <CalendarClock className="w-3.5 h-3.5" /> Target Exam Countdown
+              <Clock className="w-3.5 h-3.5" /> Target Exam Countdown
             </p>
             <span
               className="text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full border flex items-center gap-1"

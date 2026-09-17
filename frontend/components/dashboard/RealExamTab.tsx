@@ -2,25 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  FileDown,
-  FileText,
-  FilePlus2,
-  Layers,
-  Minus,
-  Plus,
-  Play,
-  Check,
-  Clock,
-  Loader2,
-  AlertTriangle,
-  Download,
-  Eye,
-  EyeOff,
-  Shuffle,
-  CheckCircle2,
-  XCircle,
-} from "lucide-react";
+import { FileArrowDown, FileText, FilePlus, GridFour, Minus, Plus, Play, Check, Clock, Spinner, Warning, Download, Eye, EyeSlash, Shuffle, CheckCircle, XCircle,  } from "@phosphor-icons/react";
 import { api } from "@/lib/services/api";
 import { useEcosystem } from "@/lib/ecosystem-ctx";
 import type { Server } from "@/lib/types";
@@ -425,7 +407,7 @@ export default function RealExamTab() {
           </div>
           <div className="p-5 md:p-6">
             <div className="flex items-center gap-2 mb-1">
-              <FileDown className="w-5 h-5 text-[var(--dashboard-primary)]" />
+              <FileArrowDown className="w-5 h-5 text-[var(--dashboard-primary)]" />
               <h2 className="text-lg font-bold text-[var(--text-primary)]">রিয়েল এক্সাম (অফলাইন)</h2>
             </div>
             <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">
@@ -443,7 +425,7 @@ export default function RealExamTab() {
         >
           <div className="flex flex-col sm:flex-row sm:items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-[var(--accent)]/15 flex items-center justify-center flex-shrink-0">
-              <FilePlus2 className="w-5 h-5 text-[var(--accent)]" />
+              <FilePlus className="w-5 h-5 text-[var(--accent)]" />
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="text-sm font-bold text-[var(--text-primary)]">নিজের রিয়েল এক্সাম প্রশ্নপত্র বানান</h3>
@@ -455,21 +437,21 @@ export default function RealExamTab() {
               onClick={() => void enterBuild()}
               className="px-4 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center justify-center gap-2 shadow-neon-glow flex-shrink-0"
             >
-              <Layers className="w-4 h-4" /> নতুন প্রশ্নপত্র তৈরি করুন
+              <GridFour className="w-4 h-4" /> নতুন প্রশ্নপত্র তৈরি করুন
             </button>
           </div>
         </motion.div>
 
         {papersLoading && (
           <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
-            <Loader2 className="w-10 h-10 mx-auto mb-3 text-[var(--accent)] animate-spin" aria-hidden="true" />
+            <Spinner className="w-10 h-10 mx-auto mb-3 text-[var(--accent)] animate-spin" aria-hidden="true" />
             <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">পরীক্ষার তালিকা লোড হচ্ছে...</p>
           </div>
         )}
 
         {papersError && (
           <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
-            <AlertTriangle className="w-10 h-10 mx-auto mb-3 text-[var(--warning)]" aria-hidden="true" />
+            <Warning className="w-10 h-10 mx-auto mb-3 text-[var(--warning)]" aria-hidden="true" />
             <p className="text-sm text-[var(--dashboard-text-muted)]">{papersError}</p>
             <button onClick={() => void fetchPapers()} className="mt-4 px-4 py-2 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors">
               আবার চেষ্টা করুন
@@ -537,7 +519,7 @@ export default function RealExamTab() {
           <div className="p-5 md:p-6">
             <button onClick={backToPapers} className="text-xs font-mono text-[var(--dashboard-primary)] hover:underline mb-3">← সব প্রশ্নপত্রে ফিরুন</button>
             <div className="flex items-center gap-2 mb-1">
-              <Layers className="w-5 h-5 text-[var(--dashboard-primary)]" />
+              <GridFour className="w-5 h-5 text-[var(--dashboard-primary)]" />
               <h2 className="text-lg font-bold text-[var(--text-primary)]">নতুন প্রশ্নপত্র তৈরি করুন</h2>
             </div>
             <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">
@@ -548,14 +530,14 @@ export default function RealExamTab() {
 
         {configLoading && (
           <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
-            <Loader2 className="w-10 h-10 mx-auto mb-3 text-[var(--accent)] animate-spin" aria-hidden="true" />
+            <Spinner className="w-10 h-10 mx-auto mb-3 text-[var(--accent)] animate-spin" aria-hidden="true" />
             <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">বিষয় লোড হচ্ছে...</p>
           </div>
         )}
 
         {configError && (
           <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
-            <AlertTriangle className="w-10 h-10 mx-auto mb-3 text-[var(--warning)]" aria-hidden="true" />
+            <Warning className="w-10 h-10 mx-auto mb-3 text-[var(--warning)]" aria-hidden="true" />
             <p className="text-sm text-[var(--dashboard-text-muted)]">{configError}</p>
             <button onClick={() => void enterBuild()} className="mt-4 px-4 py-2 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors">
               আবার চেষ্টা করুন
@@ -618,7 +600,7 @@ export default function RealExamTab() {
 
             {insufficient && (
               <div className="flex items-start gap-2 rounded-xl border border-[var(--warning)]/30 bg-[var(--dashboard-warning-subtle)] p-3 text-xs text-[var(--dashboard-warning)]">
-                <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <Warning className="w-4 h-4 flex-shrink-0 mt-0.5" />
                 <p>
                   নির্বাচিত টপিক থেকে শুধু <span className="font-mono">{availableTotal}টি</span> প্রশ্ন
                   পাওয়া যায় — মোট <span className="font-mono">{totalCount}টি</span> চাওয়া হয়েছে।
@@ -628,7 +610,7 @@ export default function RealExamTab() {
 
             {totalCount > MAX_PDF_QUESTIONS && (
               <div className="flex items-start gap-2 rounded-xl border border-[var(--warning)]/30 bg-[var(--dashboard-warning-subtle)] p-3 text-xs text-[var(--dashboard-warning)]">
-                <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <Warning className="w-4 h-4 flex-shrink-0 mt-0.5" />
                 <p>
                   PDF-এ সর্বোচ্চ <span className="font-mono">200টি</span> প্রশ্ন যায় — সবার আগের ২০০টি অন্তর্ভুক্ত হবে।
                 </p>
@@ -637,7 +619,7 @@ export default function RealExamTab() {
 
             {buildError && (
               <div className="flex items-start gap-2 rounded-xl border border-[var(--danger)]/30 bg-[var(--dashboard-danger-subtle)] p-3 text-xs text-[var(--dashboard-danger)]">
-                <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <Warning className="w-4 h-4 flex-shrink-0 mt-0.5" />
                 <p>{buildError}</p>
               </div>
             )}
@@ -673,7 +655,7 @@ export default function RealExamTab() {
               disabled={selectedSubjects.length === 0 || totalCount === 0 || buildLoading}
               className="mt-4 w-full py-3 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center justify-center gap-2 shadow-neon-glow disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              {buildLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />}
+              {buildLoading ? <Spinner className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />}
               {buildLoading ? "প্রশ্নপত্র তৈরি হচ্ছে..." : "প্রশ্নপত্র তৈরি করুন ও PDF নিন"}
             </button>
           </>
@@ -701,7 +683,7 @@ export default function RealExamTab() {
 
         {questionsLoading && (
           <div className="mt-4 text-center py-8">
-            <Loader2 className="w-8 h-8 mx-auto mb-2 text-[var(--accent)] animate-spin" aria-hidden="true" />
+            <Spinner className="w-8 h-8 mx-auto mb-2 text-[var(--accent)] animate-spin" aria-hidden="true" />
             <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">প্রশ্ন লোড হচ্ছে...</p>
           </div>
         )}
@@ -730,14 +712,14 @@ export default function RealExamTab() {
               </div>
               <div className="flex flex-col sm:flex-row gap-2 mt-3">
                 <button onClick={() => void doExport()} disabled={exporting} className="flex-1 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center justify-center gap-2 disabled:opacity-40">
-                  {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                  {exporting ? <Spinner className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
                   {exporting ? "PDF তৈরি হচ্ছে..." : includeAnswers ? "উত্তরসহ PDF ডাউনলোড" : "উত্তর ছাড়া PDF ডাউনলোড"}
                 </button>
                 <button
                   onClick={() => { setPhase(phase === "offline" ? "preview" : "offline"); setChecked(false); }}
                   className="flex-1 py-2.5 bg-[var(--surface-raised)] border border-[var(--primary)]/30 text-[var(--dashboard-primary)] font-mono text-sm rounded-xl hover:bg-[var(--dashboard-primary-subtle)] transition-colors flex items-center justify-center gap-2"
                 >
-                  {phase === "offline" ? <EyeOff className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                  {phase === "offline" ? <EyeSlash className="w-4 h-4" /> : <Play className="w-4 h-4" />}
                   {phase === "offline" ? "প্রিভিউতে ফিরুন" : "অফলাইনে পরীক্ষা দিন"}
                 </button>
               </div>
@@ -782,7 +764,7 @@ export default function RealExamTab() {
                       <span className="px-2 py-0.5 rounded bg-[var(--surface-overlay)] text-[10px] font-mono text-[var(--dashboard-text-muted)]">{q.subject}</span>
                       {checked && userAnswer && (
                         isCorrect
-                          ? <span className="ml-auto flex items-center gap-1 px-2 py-0.5 rounded bg-[var(--dashboard-primary-subtle)] text-[10px] font-mono text-[var(--dashboard-primary)]"><CheckCircle2 className="w-3 h-3" /> সঠিক</span>
+                          ? <span className="ml-auto flex items-center gap-1 px-2 py-0.5 rounded bg-[var(--dashboard-primary-subtle)] text-[10px] font-mono text-[var(--dashboard-primary)]"><CheckCircle className="w-3 h-3" /> সঠিক</span>
                           : <span className="ml-auto flex items-center gap-1 px-2 py-0.5 rounded bg-[var(--dashboard-danger-subtle)] text-[10px] font-mono text-[var(--dashboard-danger)]"><XCircle className="w-3 h-3" /> ভুল</span>
                       )}
                     </div>
@@ -834,7 +816,7 @@ export default function RealExamTab() {
       <AnimatePresence>
         {exporting && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed bottom-6 right-6 z-50 glass-card rounded-xl border border-[var(--primary)]/30 px-4 py-3 flex items-center gap-2 shadow-2xl">
-            <Loader2 className="w-4 h-4 animate-spin text-[var(--dashboard-primary)]" />
+            <Spinner className="w-4 h-4 animate-spin text-[var(--dashboard-primary)]" />
             <span className="text-xs font-mono text-[var(--text-primary)]">PDF তৈরি হচ্ছে...</span>
           </motion.div>
         )}

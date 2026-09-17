@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Space_Grotesk, Hind_Siliguri } from "next/font/google";
+import { Geist, Space_Grotesk, Hind_Siliguri } from "next/font/google";
 import { AuthProvider } from "@/lib/auth-ctx";
 import { ThemeProvider } from "@/lib/theme-ctx";
 import { ToastProvider } from "@/lib/toast-ctx";
@@ -12,15 +12,17 @@ import GlobalBootLoader from "@/components/ui/GlobalBootLoader";
 import { SentryClientProvider } from "@/lib/sentry";
 import "./globals.css";
 
-// Fonts use `swap` so the real web face shows on first paint. LCP is no longer
-// tied to font loading because the hero text paints at FCP (its entrance
-// animation no longer starts from opacity:0 / a fully-clipped mask), so the
-// late swap re-paint cannot overtake LCP.
-const inter = Inter({
+// Geist replaces Inter as the primary sans — Inter is an AI-default font
+// banned by taste-skill, gpt-taste, high-end-visual-design, minimalist-ui,
+// and stitch-design-taste. Space Grotesk stays as the display face.
+// Bangla text is first-class across the product. Fonts use `swap` so the
+// real web face shows on first paint. LCP is no longer tied to font loading
+// because the hero text paints at FCP — the late swap re-paint cannot overtake LCP.
+const geist = Geist({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-geist",
   display: "swap",
-  preload: false,
+  preload: true,
 });
 
 const spaceGrotesk = Space_Grotesk({
@@ -30,9 +32,8 @@ const spaceGrotesk = Space_Grotesk({
   preload: false,
 });
 
-// Bangla text is first-class across the product (KPIs, questions, AI tutor).
 // Hind Siliguri ships the bengali subset so UI copy renders in a proper
-// Bengali face. Latin is intentionally omitted (Inter covers Latin). We keep
+// Bengali face. Latin is intentionally omitted (Geist covers Latin). We keep
 // only the two weights used for hierarchy (400 + 700; 600 is synthesized) and
 // disable font preloading so the render-blocking CSS — not the font files —
 // wins the throttled connection first. Total font payload is ~150KB.
@@ -104,7 +105,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${spaceGrotesk.variable} ${hindSiliguri.variable} h-full antialiased`}
+      className={`${geist.variable} ${spaceGrotesk.variable} ${hindSiliguri.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <head>

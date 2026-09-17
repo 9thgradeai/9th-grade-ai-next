@@ -1,6 +1,6 @@
 "use client";
 
-import { MessageCircle, ArrowRight } from "lucide-react";
+import { ChatTeardrop, ArrowRight } from "@phosphor-icons/react";
 import AiLogo from "@/components/ui/AiLogo";
 
 type Props = { weakestName: string | null; onAsk: () => void; onGuided: () => void };
@@ -43,7 +43,7 @@ export default function AITutorCard({ weakestName, onAsk, onGuided }: Props) {
       <div className="mt-5 space-y-2">
         <div className="flex gap-2">
           <button onClick={onAsk} className="command-primary-btn flex-1">
-            <MessageCircle className="w-4 h-4" /> Ask AI Tutor
+            <ChatTeardrop className="w-4 h-4" /> Ask AI Tutor
           </button>
           <button onClick={onGuided} className="command-secondary-btn">
             Guided Lesson <ArrowRight className="w-4 h-4" />

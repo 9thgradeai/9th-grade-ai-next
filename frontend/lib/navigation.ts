@@ -1,16 +1,17 @@
 "use client";
+
 import {
-  BookOpen, Zap, Target, TrendingUp, Brain, Calendar, Home,
-  GraduationCap, FileText, BarChart3, Clock, Bookmark,
-  HelpCircle, Info, Shield, FileCheck, Users, Library, PenTool, Trophy, Layers, Newspaper, Compass,
-} from "lucide-react";
+  BookOpen, LightningA, Target, TrendUp, Brain, Calendar, House,
+  GraduationCap, FileText, ChartBar, Clock, Bookmark,
+  Question, Info, Shield, FileText as FileCheck, Users, Books, Pen, Trophy, GridFour, Newspaper, Compass,
+} from "@phosphor-icons/react";
 import { createElement, type ComponentType } from "react";
 import AiLogo from "@/components/ui/AiLogo";
 
 export type NavIcon = ComponentType<{ className?: string }>;
 
 // Bespoke 9Th-Grade AI emblem as a menu glyph — inherits the tile colour via
-// currentColor so it renders like the other lucide nav icons.
+// currentColor so it renders like the other Phosphor nav icons.
 const AiGlyph = ({ className }: { className?: string }) =>
   createElement(AiLogo, { solid: false, className });
 export type NavItem = { label: string; href: string; icon?: NavIcon; desc?: string; external?: boolean; auth?: "in" | "out" | "any" };
@@ -27,15 +28,15 @@ export const NAVIGATION: MegaMenu[] = [
     id: "learn", label: "Learn", labelBn: "শিখুন", show: "always",
     groups: [
       { label: "Library", items: [
-        { label: "Question Bank", href: "/dashboard?tab=question-bank", icon: Library, desc: "10k+ syllabus-aligned questions", auth: "any" },
+        { label: "Question Bank", href: "/dashboard?tab=question-bank", icon: Books, desc: "10k+ syllabus-aligned questions", auth: "any" },
         { label: "Flashcards", href: "/dashboard?tab=flashcards", icon: Brain, desc: "Spaced repetition", auth: "any" },
-        { label: "Subjects", href: "/#syllabus", icon: Layers, desc: "BCS syllabus map" },
+        { label: "Subjects", href: "/#syllabus", icon: GridFour, desc: "BCS syllabus map" },
         { label: "Archive", href: "/archive", icon: FileText, desc: "Previous year papers (1982–2026)" },
       ]},
       { label: "Resources", items: [
         { label: "Current Affairs", href: "/current-affairs", icon: Clock, desc: "Daily updates & quiz" },
         { label: "Vocabulary Builder", href: "/vocab", icon: BookOpen, desc: "Word power drills" },
-        { label: "Study Guides", href: "/guides", icon: PenTool, desc: "Expert-written guides" },
+        { label: "Study Guides", href: "/guides", icon: Pen, desc: "Expert-written guides" },
         { label: "Blog & Tips", href: "/blog", icon: Newspaper, desc: "Strategy & motivation" },
       ]},
     ],
@@ -45,13 +46,13 @@ export const NAVIGATION: MegaMenu[] = [
     id: "practice", label: "Practice", labelBn: "প্র্যাকটিস", show: "always",
     groups: [
       { label: "Practice", items: [
-        { label: "Quick Practice", href: "/dashboard?tab=practice", icon: Zap, desc: "Start instantly" },
+        { label: "Quick Practice", href: "/dashboard?tab=practice", icon: LightningA, desc: "Start instantly" },
         { label: "Question Drill", href: "/dashboard?tab=question-bank", icon: BookOpen, desc: "Topic-wise drill" },
         { label: "Study Planner", href: "/dashboard?tab=study-planner", icon: Calendar, desc: "Personalized schedule" },
       ]},
       { label: "Review", items: [
         { label: "Mistakes", href: "/dashboard?tab=mistakes", icon: Target, desc: "Wrong-answer notebook" },
-        { label: "Progress", href: "/dashboard?tab=progress", icon: BarChart3, desc: "Accuracy & weak areas" },
+        { label: "Progress", href: "/dashboard?tab=progress", icon: ChartBar, desc: "Accuracy & weak areas" },
       ]},
     ],
     highlight: { title: "Adaptive practice", desc: "AI prioritizes your weak topics so every minute counts.", href: "/dashboard?tab=practice", cta: "Start Practice" },
@@ -65,7 +66,7 @@ export const NAVIGATION: MegaMenu[] = [
         { label: "Archive Papers", href: "/archive", icon: FileText, desc: "1982 – 2026 collection" },
       ]},
       { label: "Results", items: [
-        { label: "Analytics", href: "/dashboard?tab=progress", icon: TrendingUp, desc: "Scores & analytics" },
+        { label: "Analytics", href: "/dashboard?tab=progress", icon: TrendUp, desc: "Scores & analytics" },
       ]},
     ],
     highlight: { title: "Exam command center", desc: "Real pressure — timer, negative marking, instant review.", href: "/tracks", cta: "Browse Tracks" },
@@ -75,11 +76,11 @@ export const NAVIGATION: MegaMenu[] = [
     groups: [
       { label: "AI Tools", items: [
         { label: "AI Tutor", href: "/dashboard?tab=practice", icon: AiGlyph, desc: "Bilingual doubt solving" },
-        { label: "AI Solver", href: "/dashboard?tab=practice", icon: PenTool, desc: "Explain any question" },
-        { label: "Voice Tutor", href: "/dashboard?tab=practice", icon: HelpCircle, desc: "Speak & learn" },
+        { label: "AI Solver", href: "/dashboard?tab=practice", icon: Pen, desc: "Explain any question" },
+        { label: "Voice Tutor", href: "/dashboard?tab=practice", icon: Question, desc: "Speak & learn" },
       ]},
       { label: "Workspace", items: [
-        { label: "Dashboard Home", href: "/dashboard?tab=home", icon: Home, desc: "AI coaching & insights" },
+        { label: "Dashboard Home", href: "/dashboard?tab=home", icon: House, desc: "AI coaching & insights" },
         { label: "Planner", href: "/dashboard?tab=study-planner", icon: Calendar, desc: "AI study plan" },
       ]},
     ],
@@ -89,9 +90,9 @@ export const NAVIGATION: MegaMenu[] = [
     id: "progress", label: "Progress", labelBn: "অগ্রগতি", show: "auth",
     groups: [
       { label: "Analytics", items: [
-        { label: "Overview", href: "/dashboard?tab=progress", icon: BarChart3, desc: "Performance overview" },
+        { label: "Overview", href: "/dashboard?tab=progress", icon: ChartBar, desc: "Performance overview" },
         { label: "Planner", href: "/dashboard?tab=study-planner", icon: Calendar, desc: "Streaks & schedule" },
-        { label: "Mistakes", href: "/dashboard?tab=mistakes", icon: TrendingUp, desc: "Weak-area analysis" },
+        { label: "Mistakes", href: "/dashboard?tab=mistakes", icon: TrendUp, desc: "Weak-area analysis" },
         { label: "Bookmarks", href: "/dashboard?tab=question-bank", icon: Bookmark, desc: "Saved questions" },
       ]},
     ],
@@ -102,7 +103,7 @@ export const NAVIGATION: MegaMenu[] = [
     groups: [
       { label: "Product", items: [
         { label: "How it works", href: "/#features", icon: Compass, desc: "Features overview" },
-        { label: "Syllabus", href: "/#syllabus", icon: Library, desc: "Coverage map" },
+        { label: "Syllabus", href: "/#syllabus", icon: Books, desc: "Coverage map" },
         { label: "Exam Engine", href: "/tracks", icon: Trophy, desc: "Tracks & archives" },
       ]},
       { label: "Company", items: [
@@ -113,7 +114,7 @@ export const NAVIGATION: MegaMenu[] = [
       ]},
       { label: "Resources", items: [
         { label: "Docs / API", href: "/docs", icon: FileText, desc: "Developer docs" },
-        { label: "Onboarding", href: "/onboarding", icon: HelpCircle, desc: "Get started" },
+        { label: "Onboarding", href: "/onboarding", icon: Question, desc: "Get started" },
       ]},
       { label: "Legal", items: [
         { label: "Privacy", href: "/privacy", icon: Shield, desc: "Privacy policy" },

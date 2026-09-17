@@ -6,6 +6,8 @@ import Reveal from "@/components/ui/Reveal";
 import AuroraOrb from "@/components/ui/AuroraOrb";
 import MotionText from "@/components/ui/MotionText";
 import Magnetic from "@/components/landing/Magnetic";
+import { useRef } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
 
 const trustPointKeys = [
   "finalCta.trust1",
@@ -20,9 +22,16 @@ const trustPointKeys = [
 export default function FinalCtaSection() {
   const t = useT();
   const trustPoints = trustPointKeys.map(k => t(k));
+  const ref = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"],
+  });
+  const ctaOpacity = useTransform(scrollYProgress, [0, 0.1, 0.9, 1], [0.2, 1, 1, 0.2]);
+  const ctaScale = useTransform(scrollYProgress, [0, 0.15, 0.85, 1], [0.96, 1, 1, 0.97]);
   return (
-    <section className="relative px-4 py-24 sm:px-6 md:py-32" aria-labelledby="final-cta-heading">
-      <div className="mx-auto max-w-5xl">
+    <section ref={ref} className="relative px-4 py-24 sm:px-6 md:py-32" aria-labelledby="final-cta-heading">
+      <motion.div className="mx-auto max-w-5xl will-change-transform" style={{ opacity: ctaOpacity, scale: ctaScale }}>
         <Reveal>
           <div className="relative overflow-hidden rounded-3xl border border-emerald-500/20 bg-gradient-to-b from-emerald-500/[0.06] via-indigo-500/[0.03] to-transparent p-8 text-center shadow-panel md:p-16">
             {/* Ambient radial light */}
@@ -89,7 +98,7 @@ export default function FinalCtaSection() {
             </div>
           </div>
         </Reveal>
-      </div>
+      </motion.div>
     </section>
   );
 }

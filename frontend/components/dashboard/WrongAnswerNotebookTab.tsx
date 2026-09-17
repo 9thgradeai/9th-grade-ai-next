@@ -2,28 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  BookX,
-  Play,
-  RefreshCw,
-  Filter,
-  Target,
-  TrendingUp,
-  Award,
-  AlertTriangle,
-  ChevronDown,
-  ChevronRight,
-  Search,
-  X,
-  Zap,
-  Brain,
-  Clock,
-  BarChart3,
-  CheckCircle2,
-  XCircle,
-  Trophy,
-  RotateCcw,
-} from "lucide-react";
+import { Book, Play, ArrowCounterClockwise, Funnel, Target, TrendUp, Medal, Warning, CaretDown, CaretRight, MagnifyingGlass, X, Brain, Clock, ChartBar, CheckCircle, XCircle, Trophy, Sun } from "@phosphor-icons/react";
 import { api } from "@/lib/services/api";
 import type { MistakeItemDTO, MistakeStatsDTO, SubjectMistakeCountDTO, ExamBuildResultDTO } from "@/lib/types";
 import QuestionDrill, { type DrillAnswered } from "./QuestionDrill";
@@ -202,7 +181,7 @@ export default function WrongAnswerNotebookTab() {
           className="glass-card rounded-2xl border border-terminal-border p-8 text-center"
         >
           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[var(--dashboard-primary-subtle)] flex items-center justify-center">
-            <Award className="w-8 h-8 text-[var(--dashboard-primary)]" />
+            <Medal className="w-8 h-8 text-[var(--dashboard-primary)]" />
           </div>
           <h2 className="text-xl font-bold text-[var(--text-primary)] font-mono mb-2">You&apos;re doing great!</h2>
           <p className="text-sm text-[var(--dashboard-text-muted)] font-mono mb-6 max-w-md mx-auto">
@@ -423,7 +402,7 @@ export default function WrongAnswerNotebookTab() {
                 onClick={() => { setView("dashboard"); setExamResult(null); setDrillResults(null); void loadStats().then(() => loadMistakes()); }}
                 className="px-5 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2 shadow-neon-glow"
               >
-                <RotateCcw className="w-4 h-4" /> ড্যাশবোর্ডে ফিরুন
+                <ArrowCounterClockwise className="w-4 h-4" /> ড্যাশবোর্ডে ফিরুন
               </button>
               <button
                 onClick={() => { setView("exam-config"); setTimeout(() => setDrillResults(null), 0); }}
@@ -456,9 +435,9 @@ export default function WrongAnswerNotebookTab() {
                     isMastered ? "bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]" : isCorrect ? "bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]" : "bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)]"
                   }`}>
                     {isMastered ? (
-                      <Award className="w-3.5 h-3.5" />
+                      <Medal className="w-3.5 h-3.5" />
                     ) : isCorrect ? (
-                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      <CheckCircle className="w-3.5 h-3.5" />
                     ) : (
                       <XCircle className="w-3.5 h-3.5" />
                     )}
@@ -503,7 +482,7 @@ export default function WrongAnswerNotebookTab() {
       >
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
-            <BookX className="w-5 h-5 text-[var(--dashboard-danger)]" />
+            <Book className="w-5 h-5 text-[var(--dashboard-danger)]" />
             <h2 className="text-lg font-bold text-[var(--text-primary)] font-mono">Your Mistakes</h2>
           </div>
           <button
@@ -511,7 +490,7 @@ export default function WrongAnswerNotebookTab() {
             aria-label="Refresh"
             className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] rounded-lg text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)] transition-colors"
           >
-            <RefreshCw className="w-4 h-4" />
+            <ArrowCounterClockwise className="w-4 h-4" />
           </button>
         </div>
         <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">
@@ -529,28 +508,28 @@ export default function WrongAnswerNotebookTab() {
         >
           <motion.div variants={STAGGER_ITEM} className="glass-card rounded-2xl border border-terminal-border p-4">
             <div className="flex items-center gap-2 mb-1">
-              <AlertTriangle className="w-4 h-4 text-[var(--dashboard-danger)]" />
+              <Warning className="w-4 h-4 text-[var(--dashboard-danger)]" />
               <span className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase">Total Mistakes</span>
             </div>
             <p className="text-2xl font-bold text-[var(--text-primary)] font-mono">{stats.totalMistakes}</p>
           </motion.div>
           <motion.div variants={STAGGER_ITEM} className="glass-card rounded-2xl border border-terminal-border p-4">
             <div className="flex items-center gap-2 mb-1">
-              <Zap className="w-4 h-4 text-[var(--dashboard-warning)]" />
+              <Sun className="w-4 h-4 text-[var(--dashboard-warning)]" />
               <span className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase">Unmastered</span>
             </div>
             <p className="text-2xl font-bold text-[var(--text-primary)] font-mono">{unmastered}</p>
           </motion.div>
           <motion.div variants={STAGGER_ITEM} className="glass-card rounded-2xl border border-terminal-border p-4">
             <div className="flex items-center gap-2 mb-1">
-              <TrendingUp className="w-4 h-4 text-[var(--info)]" />
+              <TrendUp className="w-4 h-4 text-[var(--info)]" />
               <span className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase">Improving</span>
             </div>
             <p className="text-2xl font-bold text-[var(--text-primary)] font-mono">{stats.improving}</p>
           </motion.div>
           <motion.div variants={STAGGER_ITEM} className="glass-card rounded-2xl border border-terminal-border p-4">
             <div className="flex items-center gap-2 mb-1">
-              <Award className="w-4 h-4 text-[var(--dashboard-primary)]" />
+              <Medal className="w-4 h-4 text-[var(--dashboard-primary)]" />
               <span className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase">Mastered</span>
             </div>
             <p className="text-2xl font-bold text-[var(--text-primary)] font-mono">{mastered}</p>
@@ -595,7 +574,7 @@ export default function WrongAnswerNotebookTab() {
           className="glass-card rounded-2xl border border-terminal-border p-5"
         >
           <div className="flex items-center gap-2 mb-3">
-            <BarChart3 className="w-4 h-4 text-[var(--dashboard-text-muted)]" />
+            <ChartBar className="w-4 h-4 text-[var(--dashboard-text-muted)]" />
             <h3 className="text-sm font-bold text-[var(--text-primary)] font-mono">Mistakes by Subject</h3>
           </div>
           <div className="space-y-2">
@@ -652,14 +631,14 @@ export default function WrongAnswerNotebookTab() {
           onClick={() => setShowFilters(!showFilters)}
           className="flex items-center gap-2 text-sm text-[var(--dashboard-text-muted)] font-mono hover:text-[var(--text-primary)] transition-colors mb-3"
         >
-          <Filter className="w-4 h-4" />
+          <Funnel className="w-4 h-4" />
           Filters
           {(filterSubject || filterStatus || filterErrorType) && (
             <span className="px-1.5 py-0.5 text-[10px] bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] rounded font-mono">
               Active
             </span>
           )}
-          {showFilters ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
+          {showFilters ? <CaretDown className="w-3 h-3" /> : <CaretRight className="w-3 h-3" />}
         </button>
 
         <AnimatePresence>
@@ -819,7 +798,7 @@ export default function WrongAnswerNotebookTab() {
                     </div>
                     <p className="text-sm text-[var(--dashboard-text-primary)] leading-relaxed line-clamp-2">{q.question}</p>
                   </div>
-                  <ChevronDown
+                  <CaretDown
                     className={`w-4 h-4 text-[var(--dashboard-text-muted)] shrink-0 transition-transform ${isExpanded ? "rotate-180" : ""}`}
                   />
                 </div>
@@ -888,7 +867,7 @@ export default function WrongAnswerNotebookTab() {
                           )}
                           {m.lastReviewedAt && (
                             <span className="flex items-center gap-1">
-                              <Search className="w-3 h-3" />
+                              <MagnifyingGlass className="w-3 h-3" />
                               Last reviewed: {new Date(m.lastReviewedAt).toLocaleDateString()}
                             </span>
                           )}

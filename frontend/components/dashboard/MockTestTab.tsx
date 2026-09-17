@@ -2,22 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Trophy,
-  Play,
-  Flag,
-  Timer,
-  Check,
-  ChevronLeft,
-  ChevronRight,
-  Minus,
-  Plus,
-  Loader2,
-  AlertTriangle,
-  CircleDashed,
-  CheckCircle2,
-  XCircle,
-} from "lucide-react";
+import { Trophy, Play, Flag, Timer, Check, CaretLeft, CaretRight, Minus, Plus, Spinner, Warning, CircleDashed, CheckCircle, XCircle,  } from "@phosphor-icons/react";
 import { api } from "@/lib/services/api";
 import { useEcosystem } from "@/lib/ecosystem-ctx";
 import {
@@ -494,14 +479,14 @@ export default function MockTestTab() {
 
         {configLoading && (
           <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
-            <Loader2 className="w-10 h-10 mx-auto mb-3 text-[var(--accent)] animate-spin" aria-hidden="true" />
+            <Spinner className="w-10 h-10 mx-auto mb-3 text-[var(--accent)] animate-spin" aria-hidden="true" />
             <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">বিষয় লোড হচ্ছে...</p>
           </div>
         )}
 
         {configError && (
           <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
-            <AlertTriangle className="w-10 h-10 mx-auto mb-3 text-[var(--warning)]" aria-hidden="true" />
+            <Warning className="w-10 h-10 mx-auto mb-3 text-[var(--warning)]" aria-hidden="true" />
             <p className="text-sm text-[var(--dashboard-text-muted)]">{configError}</p>
             <button
               onClick={() => {
@@ -573,7 +558,7 @@ export default function MockTestTab() {
 
             {insufficient && (
               <div className="flex items-start gap-2 rounded-xl border border-[var(--warning)]/30 bg-[var(--dashboard-warning-subtle)] p-3 text-xs text-[var(--dashboard-warning)]">
-                <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <Warning className="w-4 h-4 flex-shrink-0 mt-0.5" />
                 <p>
                   নির্বাচিত টপিক থেকে শুধু <span className="font-mono">{availableTotal}টি</span> প্রশ্ন
                   পাওয়া যায় — মোট <span className="font-mono">{totalCount}টি</span> চাওয়া হয়েছে।
@@ -583,7 +568,7 @@ export default function MockTestTab() {
 
             {buildError && (
               <div className="flex items-start gap-2 rounded-xl border border-[var(--danger)]/30 bg-[var(--dashboard-danger-subtle)] p-3 text-xs text-[var(--dashboard-danger)]">
-                <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <Warning className="w-4 h-4 flex-shrink-0 mt-0.5" />
                 <p>{buildError}</p>
               </div>
             )}
@@ -725,7 +710,7 @@ export default function MockTestTab() {
             disabled={currentQuestion === 0}
             className="px-4 py-2 bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] font-mono text-sm rounded-lg hover:bg-[var(--surface-overlay)] transition-colors disabled:opacity-40 flex items-center gap-1"
           >
-            <ChevronLeft className="w-4 h-4" /> আগের
+            <CaretLeft className="w-4 h-4" /> আগের
           </button>
           <span className="text-xs text-[var(--dashboard-text-muted)] font-mono">
             {answeredCount}/{totalQuestions} উত্তর
@@ -735,7 +720,7 @@ export default function MockTestTab() {
               onClick={() => setCurrentQuestion((i) => Math.min(totalQuestions - 1, i + 1))}
               className="px-4 py-2 bg-[var(--surface-overlay)] text-[var(--dashboard-text-secondary)] font-mono text-sm rounded-lg hover:bg-[var(--surface-muted)] transition-colors flex items-center gap-1"
             >
-              পরের <ChevronRight className="w-4 h-4" />
+              পরের <CaretRight className="w-4 h-4" />
             </button>
           ) : (
             <button
@@ -809,7 +794,7 @@ export default function MockTestTab() {
                 className="glass-card rounded-2xl border border-[var(--warning)]/30 p-6 w-full max-w-sm"
               >
                 <div className="flex items-center gap-2 mb-3">
-                  <AlertTriangle className="w-5 h-5 text-[var(--dashboard-warning)]" />
+                  <Warning className="w-5 h-5 text-[var(--dashboard-warning)]" />
                   <h3 id="unanswered-confirm-title" className="text-base font-bold text-[var(--text-primary)]">উত্তর দেওয়া বাকি আছে</h3>
                 </div>
                 <p className="text-sm text-[var(--dashboard-text-muted)] mb-5">
@@ -933,7 +918,7 @@ export default function MockTestTab() {
               >
                 <div className="flex items-start gap-3">
                   {isCorrect ? (
-                    <CheckCircle2 className="w-4 h-4 text-[var(--dashboard-success)] flex-shrink-0 mt-0.5" />
+                    <CheckCircle className="w-4 h-4 text-[var(--dashboard-success)] flex-shrink-0 mt-0.5" />
                   ) : r.status === "wrong" ? (
                     <XCircle className="w-4 h-4 text-[var(--dashboard-danger)] flex-shrink-0 mt-0.5" />
                   ) : (

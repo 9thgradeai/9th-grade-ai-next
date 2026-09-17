@@ -10,7 +10,7 @@
 // data-backed starter prompts. Everything here is deterministic app data —
 // no LLM is involved.
 
-import { FileText, Pin } from "lucide-react";
+import { FileText, PushPin } from "@phosphor-icons/react";
 import AiLogo from "@/components/ui/AiLogo";
 import { PRESET_PROMPTS } from "@/lib/data/ai";
 import { modeMeta } from "./modes";
@@ -98,7 +98,7 @@ export default function EmptyState({ mode, contextChip, opening, onPrompt }: Emp
 
         {contextChip && (
           <div className="mt-4 flex max-w-full items-center gap-1.5 rounded-full border border-[var(--dashboard-border-muted)] bg-[var(--dashboard-surface-muted)] px-3 py-1 text-xs text-[var(--dashboard-text-secondary)]">
-            <Pin className="h-3 w-3 flex-shrink-0 text-[var(--dashboard-primary)]" aria-hidden="true" />
+            <PushPin className="h-3 w-3 flex-shrink-0 text-[var(--dashboard-primary)]" aria-hidden="true" />
             <span className="font-mono text-[var(--dashboard-primary)]">context</span>
             <span className="max-w-[220px] truncate">{contextChip}</span>
           </div>

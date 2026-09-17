@@ -2,7 +2,8 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
-import { Search, Menu, X, ChevronDown, LogOut, Settings, User as UserIcon, LayoutDashboard, Bell } from "lucide-react";
+import { MagnifyingGlass, List, X, CaretDown, SignOut, Gear, User as UserIcon, Layout, Bell } from "@phosphor-icons/react";
+import { motion } from "framer-motion";
 import BrandMark from "@/components/ui/BrandMark";
 import AiLogo from "@/components/ui/AiLogo";
 import LanguageToggle from "@/components/ui/LanguageToggle";
@@ -101,23 +102,33 @@ export default function AppNavbar() {
             </Link>
 
             {/* Desktop nav — keyboard: roving with Tab, open on click, Escape closes */}
-            <div ref={desktopNavRef} className="hidden lg:flex items-center gap-1 ml-5" role="menubar" aria-label="Sections">
+            <motion.div ref={desktopNavRef} className="hidden lg:flex items-center gap-1 ml-5" role="menubar" aria-label="Sections"
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], staggerChildren: 0.04 }}
+            >
               {isAuthed && (
-                <Link
-                  href="/dashboard"
+                <motion.span
                   role="menuitem"
-                  aria-current={pathname === "/dashboard" ? "page" : undefined}
-                  className={`rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 ${pathname.startsWith("/dashboard") ? "bg-white text-black" : "text-zinc-300 hover:bg-white/10 hover:text-white"}`}
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
                 >
-                  {t("nav.dashboard")}
-                </Link>
+                  <Link
+                    href="/dashboard"
+                    aria-current={pathname === "/dashboard" ? "page" : undefined}
+                    className={`rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 ${pathname.startsWith("/dashboard") ? "bg-white text-black" : "text-zinc-300 hover:bg-white/10 hover:text-white"}`}
+                  >
+                    {t("nav.dashboard")}
+                  </Link>
+                </motion.span>
               )}
               {menus.map(m => {
                 const expanded = openId === m.id;
                 const triggerId = `nav-trigger-${m.id}`;
                 const panelId = `nav-panel-${m.id}`;
                 return (
-                  <button
+                  <motion.button
                     key={m.id}
                     id={triggerId}
                     data-nav-trigger
@@ -125,14 +136,17 @@ export default function AppNavbar() {
                     aria-haspopup="menu"
                     aria-expanded={expanded}
                     aria-controls={panelId}
+                    initial={{ opacity: 0, y: -6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
                     onClick={() => setOpenId(expanded ? null : m.id)}
                     className={`inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 ${expanded ? "bg-white text-black" : "text-zinc-300 hover:bg-white/10 hover:text-white"}`}
                   >
-                    {(m.labelBn && lang==="bn" ? m.labelBn : m.label)} {m.id === "ai" && <AiLogo className="h-3.5 w-3.5" />} <ChevronDown className={`h-3.5 w-3.5 transition-transform ${expanded ? "rotate-180" : ""}`} aria-hidden="true" />
-                  </button>
+                    {(m.labelBn && lang==="bn" ? m.labelBn : m.label)} {m.id === "ai" && <AiLogo className="h-3.5 w-3.5" />} <CaretDown className={`h-3.5 w-3.5 transition-transform ${expanded ? "rotate-180" : ""}`} aria-hidden="true" />
+                  </motion.button>
                 );
               })}
-            </div>
+            </motion.div>
 
             <div className="flex-1" />
 
@@ -143,7 +157,7 @@ export default function AppNavbar() {
                 aria-label={t("nav.search")}
                 className="hidden sm:inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-3 py-1.5 text-xs font-medium text-zinc-300 hover:border-white/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
               >
-                <Search className="h-3.5 w-3.5" aria-hidden="true" /> <span className="hidden xl:inline">Search</span> <span className="hidden lg:inline-flex items-center gap-1 rounded bg-white/10 px-1.5 py-0.5 font-mono text-[10px]">⌘K</span>
+                <MagnifyingGlass className="h-3.5 w-3.5" aria-hidden="true" /> <span className="hidden xl:inline">Search</span> <span className="hidden lg:inline-flex items-center gap-1 rounded bg-white/10 px-1.5 py-0.5 font-mono text-[10px]">⌘K</span>
               </button>
               <button
                 type="button"
@@ -151,7 +165,7 @@ export default function AppNavbar() {
                 aria-label={t("nav.search")}
                 className="inline-flex sm:hidden p-2 rounded-full border border-white/10 text-zinc-300 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
               >
-                <Search className="h-4 w-4" aria-hidden="true" />
+                <MagnifyingGlass className="h-4 w-4" aria-hidden="true" />
               </button>
 
               <span className="hidden sm:inline-flex">
@@ -184,7 +198,7 @@ export default function AppNavbar() {
                     >
                       <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-500 text-xs font-bold text-white" aria-hidden="true">{user?.name?.trim()?.charAt(0)?.toUpperCase() ?? "U"}</span>
                       <span className="hidden sm:inline max-w-[108px] truncate">{user?.name ?? "Account"}</span>
-                      <ChevronDown className={`hidden sm:block h-3.5 w-3.5 text-zinc-400 transition-transform ${profileOpen ? "rotate-180" : ""}`} aria-hidden="true" />
+                      <CaretDown className={`hidden sm:block h-3.5 w-3.5 text-zinc-400 transition-transform ${profileOpen ? "rotate-180" : ""}`} aria-hidden="true" />
                     </button>
                     {profileOpen && (
                       <div id="profile-menu" role="menu" aria-label={t("nav.account")} className="absolute right-0 mt-2 w-64 overflow-hidden rounded-2xl border border-white/10 bg-transparent backdrop-blur-2xl p-1.5 shadow-xl">
@@ -196,11 +210,11 @@ export default function AppNavbar() {
                           </div>
                         </div>
                         <div className="my-1 h-px bg-white/10" />
-                        <Link href="/dashboard" role="menuitem" onClick={closeAll} className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-zinc-300 hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"><LayoutDashboard className="h-4 w-4" aria-hidden="true" /> {t("nav.dashboard")}</Link>
-                        <Link href="/dashboard?tab=settings" role="menuitem" onClick={closeAll} className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-zinc-300 hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"><Settings className="h-4 w-4" aria-hidden="true" /> {t("auth.settings")}</Link>
+                        <Link href="/dashboard" role="menuitem" onClick={closeAll} className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-zinc-300 hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"><Layout className="h-4 w-4" aria-hidden="true" /> {t("nav.dashboard")}</Link>
+                        <Link href="/dashboard?tab=settings" role="menuitem" onClick={closeAll} className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-zinc-300 hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"><Gear className="h-4 w-4" aria-hidden="true" /> {t("auth.settings")}</Link>
                         <Link href="/about" role="menuitem" onClick={closeAll} className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-zinc-300 hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"><UserIcon className="h-4 w-4" aria-hidden="true" /> {t("nav.about")}</Link>
                         <div className="my-1 h-px bg-white/10" />
-                        <button role="menuitem" onClick={() => { closeAll(); void logout(); }} className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm text-red-400 hover:bg-red-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"><LogOut className="h-4 w-4" aria-hidden="true" /> {t("auth.logout")}</button>
+                        <button role="menuitem" onClick={() => { closeAll(); void logout(); }} className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm text-red-400 hover:bg-red-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"><SignOut className="h-4 w-4" aria-hidden="true" /> {t("auth.logout")}</button>
                       </div>
                     )}
                   </div>
@@ -215,7 +229,7 @@ export default function AppNavbar() {
                 aria-controls="mobile-drawer"
                 className="inline-flex lg:hidden p-2 rounded-xl border border-white/10 text-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
               >
-                {mobileOpen ? <X className="h-5 w-5" aria-hidden="true" /> : <Menu className="h-5 w-5" aria-hidden="true" />}
+                {mobileOpen ? <X className="h-5 w-5" aria-hidden="true" /> : <List className="h-5 w-5" aria-hidden="true" />}
               </button>
             </div>
           </div>
@@ -294,7 +308,7 @@ export default function AppNavbar() {
             </div>
             <div className="flex-1 overflow-y-auto overscroll-contain px-3 py-3 space-y-1 pb-safe">
               {isAuthed && (
-                <Link href="/dashboard" onClick={() => setMobileOpen(false)} aria-current={pathname.startsWith("/dashboard") ? "page" : undefined} className={`flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold ${pathname.startsWith("/dashboard") ? "bg-white text-black" : "bg-white/5 text-white"}`}><LayoutDashboard className="h-4 w-4" aria-hidden="true" /> {t("nav.dashboard")}</Link>
+                <Link href="/dashboard" onClick={() => setMobileOpen(false)} aria-current={pathname.startsWith("/dashboard") ? "page" : undefined} className={`flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold ${pathname.startsWith("/dashboard") ? "bg-white text-black" : "bg-white/5 text-white"}`}><Layout className="h-4 w-4" aria-hidden="true" /> {t("nav.dashboard")}</Link>
               )}
               {menus.map(m => {
                 const expanded = mobileExpanded === m.id;
@@ -308,7 +322,7 @@ export default function AppNavbar() {
                       className="flex w-full items-center justify-between px-3 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 rounded-xl"
                     >
                       <span className="flex items-center gap-2 text-sm font-semibold text-white">{(m.labelBn && lang==="bn" ? m.labelBn : m.label)}{m.id === "ai" && <AiLogo className="h-4 w-4" />}</span>
-                      <ChevronDown className={`h-4 w-4 text-zinc-500 transition-transform ${expanded ? "rotate-180" : ""}`} aria-hidden="true" />
+                      <CaretDown className={`h-4 w-4 text-zinc-500 transition-transform ${expanded ? "rotate-180" : ""}`} aria-hidden="true" />
                     </button>
                     {expanded && (
                       <div id={`mob-${m.id}`} className="px-2 pb-3 space-y-3">

@@ -2,7 +2,7 @@
 
 import { useRef, useState, type ReactNode } from "react";
 import { motion, useInView, useReducedMotion } from "framer-motion";
-import { CheckCircle2, CircleHelp, FileQuestion, Gauge, Lightbulb } from "lucide-react";
+import { CheckCircle, CircleHelp, FileQuestion, Gauge, Lightbulb } from "lucide-react";
 import { EASE_OUT_EXPO } from "@/lib/motion/variants";
 import { useMotionCapabilities } from "@/lib/motion/device";
 
@@ -40,7 +40,7 @@ export default function SignalFlow() {
     <div ref={ref} className="relative">
       <div className="mb-10 flex flex-wrap items-center justify-center gap-3" role="group" aria-label="Simulate an answer">
         <ModeButton active={mode === "correct"} onClick={() => activate("correct")} tone="emerald">
-          <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
+          <CheckCircle className="h-4 w-4" aria-hidden="true" />
           Correct answer
         </ModeButton>
         <ModeButton active={mode === "wrong"} onClick={() => activate("wrong")} tone="amber">
