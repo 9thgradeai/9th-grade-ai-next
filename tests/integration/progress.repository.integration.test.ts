@@ -68,9 +68,9 @@ describe("recomputeAndAward (real PostgreSQL)", () => {
 
     await prisma.questionAttempt.createMany({
       data: [
-        { userId, questionId: null, subjectName: "s", topic: "t", correct: true, source: "practice" },
-        { userId, questionId: null, subjectName: "s", topic: "t", correct: true, source: "practice" },
-        { userId, questionId: null, subjectName: "s", topic: "t", correct: false, source: "practice" },
+        { ecosystemId: 1, userId, questionId: null, subjectName: "s", topic: "t", correct: true, source: "practice" },
+        { ecosystemId: 1, userId, questionId: null, subjectName: "s", topic: "t", correct: true, source: "practice" },
+        { ecosystemId: 1, userId, questionId: null, subjectName: "s", topic: "t", correct: false, source: "practice" },
       ],
     });
 
@@ -81,7 +81,7 @@ describe("recomputeAndAward (real PostgreSQL)", () => {
 
     // Second call exercises the ON CONFLICT DO UPDATE path.
     await prisma.questionAttempt.createMany({
-      data: [{ userId, questionId: null, subjectName: "s", topic: "t", correct: true, source: "exam" }],
+      data: [{ ecosystemId: 1, userId, questionId: null, subjectName: "s", topic: "t", correct: true, source: "exam" }],
     });
     await recomputeAndAward(prisma, userId, 5, 1);
 
