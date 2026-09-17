@@ -55,6 +55,13 @@ describe("recomputeAndAward (real PostgreSQL)", () => {
       return;
     }
 
+    const ecosystem = await prisma.examEcosystem.upsert({
+      where: { code: "BCS" },
+      create: { code: "BCS", nameBn: "বিসিএস", nameEn: "BCS" },
+      update: {},
+      select: { id: true },
+    });
+
     const user = await prisma.user.create({
       data: {
         name: "Progress Integration",
@@ -68,9 +75,9 @@ describe("recomputeAndAward (real PostgreSQL)", () => {
 
     await prisma.questionAttempt.createMany({
       data: [
-        { ecosystemId: 1, userId, questionId: null, subjectName: "s", topic: "t", correct: true, source: "practice" },
-        { ecosystemId: 1, userId, questionId: null, subjectName: "s", topic: "t", correct: true, source: "practice" },
-        { ecosystemId: 1, userId, questionId: null, subjectName: "s", topic: "t", correct: false, source: "practice" },
+        { ecosystemId: ecosystem.id, userId, questionId: null, subjectName: "s", topic: "t", correct: true, source: "practice" },
+        { ecosystemId: ecosystem.id, userId, questionId: null, subjectName: "s", topic: "t", correct: true, source: "practice" },
+        { ecosystemId: ecosystem.id, userId, questionId: null, subjectName: "s", topic: "t", correct: false, source: "practice" },
       ],
     });
 
@@ -81,7 +88,7 @@ describe("recomputeAndAward (real PostgreSQL)", () => {
 
     // Second call exercises the ON CONFLICT DO UPDATE path.
     await prisma.questionAttempt.createMany({
-      data: [{ ecosystemId: 1, userId, questionId: null, subjectName: "s", topic: "t", correct: true, source: "exam" }],
+      data: [{ ecosystemId: ecosystem.id, userId, questionId: null, subjectName: "s", topic: "t", correct: true, source: "exam" }],
     });
     await recomputeAndAward(prisma, userId, 5, 1);
 
