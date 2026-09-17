@@ -179,7 +179,7 @@ export default function RealExamTab() {
     setConfigError(null);
     try {
       const list = await api.examConfig();
-      setSubjects(list.filter((s) => s.questionCount > 0));
+      setSubjects(list);
     } catch {
       setConfigError("কনফিগারেশন লোড করা যায়নি। আবার চেষ্টা করুন।");
     } finally {

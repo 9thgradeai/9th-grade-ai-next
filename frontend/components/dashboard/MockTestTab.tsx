@@ -20,7 +20,6 @@ import {
 } from "lucide-react";
 import { api } from "@/lib/services/api";
 import { useEcosystem } from "@/lib/ecosystem-ctx";
-import EcosystemToggle from "./EcosystemToggle";
 import {
   submitExamAttempt as canonicalSubmitExamAttempt,
   registerExam,
@@ -141,7 +140,7 @@ export default function MockTestTab() {
     void (async () => {
       try {
         const list = await api.examConfig(ecosystem);
-        if (!cancelled) setSubjects(list.filter((s) => s.questionCount > 0));
+        if (!cancelled) setSubjects(list);
       } catch {
         if (!cancelled) setConfigError("কনফিগারেশন লোড করা যায়নি। আবার চেষ্টা করুন।");
       } finally {
@@ -469,8 +468,6 @@ export default function MockTestTab() {
   if (testState === "setup") {
     return (
       <div className="space-y-6">
-        <EcosystemToggle />
-
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}

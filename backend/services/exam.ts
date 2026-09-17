@@ -117,9 +117,9 @@ export async function getExamSelectionTree(ecosystemId?: number): Promise<ExamSu
       childrenByParent: Map<string, (typeof topicRows)[number][]>,
       counts: Map<string, number>,
     ): ExamSubjectDTO["nodes"][number] => {
-      const children = (childrenByParent.get(String(topic.id)) ?? [])
-        .map((child) => buildNode(child, childrenByParent, counts))
-        .filter((child) => child.questionCount > 0);
+      const children = (childrenByParent.get(String(topic.id)) ?? []).map(
+        (child) => buildNode(child, childrenByParent, counts),
+      );
       const direct = counts.get(topic.path) ?? 0;
       const questionCount = direct + children.reduce((acc, c) => acc + c.questionCount, 0);
       return {
@@ -147,9 +147,7 @@ export async function getExamSelectionTree(ecosystemId?: number): Promise<ExamSu
       }
 
       const counts = countMap.get(s.id) ?? new Map<string, number>();
-      const nodes = roots
-        .map((root) => buildNode(root, childrenByParent, counts))
-        .filter((node) => node.questionCount > 0);
+      const nodes = roots.map((root) => buildNode(root, childrenByParent, counts));
       const questionCount = nodes.reduce((acc, n) => acc + n.questionCount, 0);
       return {
         id: s.id,

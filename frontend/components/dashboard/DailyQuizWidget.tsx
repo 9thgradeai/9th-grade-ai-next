@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Check, Trophy, Zap, ArrowRight, Inbox } from "lucide-react";
 import { api } from "@/lib/services/api";
 import { useEcosystem } from "@/lib/ecosystem-ctx";
-import EcosystemToggle from "./EcosystemToggle";
 import { useDialogA11y } from "@/lib/use-dialog-a11y";
 import type { Server } from "@/lib/types";
 
@@ -120,7 +119,6 @@ export default function DailyQuizWidget() {
   if (!isOpen) {
     return (
       <div className="space-y-6">
-        <EcosystemToggle />
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}

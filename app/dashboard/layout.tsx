@@ -11,7 +11,7 @@ import BottomNav from "@/components/dashboard/BottomNav";
 import NotificationCenter from "@/components/dashboard/NotificationCenter";
 import CommandBar from "@/components/dashboard/CommandBar";
 import { ThemeToggle, DashboardThemeProvider } from "@/lib/dashboard-theme-ctx";
-import { EcosystemProvider } from "@/lib/ecosystem-ctx";
+import { EcosystemProvider, useEcosystem } from "@/lib/ecosystem-ctx";
 import { useAuth } from "@/lib/auth-ctx";
 import { LoadingShell } from "@/components/ui/LoadingShell";
 
@@ -133,6 +133,23 @@ function EmailVerificationGate({ children }: { children: React.ReactNode }) {
   }
 
   return <>{children}</>;
+}
+
+function GlobalEcosystemToggle() {
+  const { ecosystem, setEcosystem } = useEcosystem();
+  return (
+    <div className="hidden sm:flex items-center gap-1.5 bg-[var(--dashboard-surface-muted)] border border-[var(--dashboard-border-muted)] rounded-lg p-0.5">
+      {(["BCS", "BANGLADESH_BANK"] as const).map((code) => (
+        <button
+          key={code}
+          onClick={() => setEcosystem(code)}
+          className={`px-2.5 py-1 text-[11px] font-bold rounded-md transition-all ${ecosystem === code ? "bg-[var(--dashboard-primary)] text-white shadow-sm" : "text-[var(--dashboard-text-secondary)] hover:text-[var(--dashboard-text-primary)]"}`}
+        >
+          {code === "BCS" ? "BCS" : "ব্যাংক"}
+        </button>
+      ))}
+    </div>
+  );
 }
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -266,6 +283,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   </div>
 
                   <div className="ml-auto flex items-center gap-2">
+                    <GlobalEcosystemToggle />
                     <button
                       type="button"
                       onClick={() => window.dispatchEvent(new Event("app:open-command"))}

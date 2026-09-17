@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 import { api } from "@/lib/services/api";
 import { useEcosystem } from "@/lib/ecosystem-ctx";
-import EcosystemToggle from "./EcosystemToggle";
 import type { ExamCategoryDTO, ExamDTO, ExamPaperDTO, QuestionDTO } from "@/lib/types";
 import QuestionDrill from "./QuestionDrill";
 
@@ -265,7 +264,6 @@ export default function ExamLibraryView() {
   const papersToShow = activeExam?.papers ?? [];
   return (
     <div className="space-y-5">
-      <EcosystemToggle />
       {renderBreadcrumb()}
 
       {loadingTree ? (

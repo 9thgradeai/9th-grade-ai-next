@@ -11,7 +11,6 @@ import { useEcosystem } from "@/lib/ecosystem-ctx";
 import type { QuestionDTO } from "@/lib/types";
 import QuestionDrill from "./QuestionDrill";
 import ExamLibraryView from "./ExamLibraryView";
-import EcosystemToggle from "./EcosystemToggle";
 
 // Static fallback sample questions (used if the DB/API is unavailable).
 const SAMPLE_QUESTIONS: Record<string, { q: string; a: string; difficulty: string }[]> = {
@@ -255,7 +254,6 @@ export default function QuestionBankTab() {
   }
 
   return (    <div className="space-y-6">
-      <EcosystemToggle />
       {/* Live query terminal */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
