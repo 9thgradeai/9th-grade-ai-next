@@ -32,6 +32,11 @@ export function loadTaxonomy(): TaxonomyNode {
   return JSON.parse(readFileSync(file, "utf8")) as TaxonomyNode;
 }
 
+export function loadBbTaxonomy(): TaxonomyNode {
+  const file = join(process.cwd(), "database", "data", "bb-taxonomy.json");
+  return JSON.parse(readFileSync(file, "utf8")) as TaxonomyNode;
+}
+
 export function flattenTaxonomy(root: TaxonomyNode): TaxonomyNode[] {
   const out: TaxonomyNode[] = [];
   const walk = (n: TaxonomyNode) => {
@@ -69,6 +74,22 @@ export const SUBJECT_META: SubjectMeta[] = [
 
 export function subjectMetaByNameBn(nameBn: string): SubjectMeta | undefined {
   return SUBJECT_META.find((m) => m.nameBn.normalize("NFC") === nameBn.normalize("NFC"));
+}
+
+// ── Bangladesh Bank ecosystem subjects ──────────────────────────
+export const BB_SUBJECT_META: SubjectMeta[] = [
+  { nameBn: "বাংলা ব্যাকরণ", nameEn: "Bangla Grammar", architectureName: "BB_01_বাংলা_ব্যাকরণ", icon: "📖", color: "text-emerald-400", bg: "bg-emerald-500/10" },
+  { nameBn: "বাংলা সাহিত্য", nameEn: "Bangla Literature", architectureName: "BB_02_বাংলা_সাহিত্য", icon: "📚", color: "text-sky-400", bg: "bg-sky-500/10" },
+  { nameBn: "ইংরেজি ব্যাকরণ", nameEn: "English Grammar", architectureName: "BB_03_ইংরেজি_ব্যাকরণ", icon: "🔤", color: "text-cyan-400", bg: "bg-cyan-500/10" },
+  { nameBn: "ইংরেজি সাহিত্য", nameEn: "English Literature", architectureName: "BB_04_ইংরেজি_সাহিত্য", icon: "📝", color: "text-indigo-400", bg: "bg-indigo-500/10" },
+  { nameBn: "সাধারণ গণিত", nameEn: "General Mathematics", architectureName: "BB_05_সাধারণ_গণিত", icon: "🧮", color: "text-amber-400", bg: "bg-amber-500/10" },
+  { nameBn: "আর্থিক ও ব্যাংকিং জ্ঞান", nameEn: "Financial and Banking Knowledge", architectureName: "BB_06_আর্থিক_ও_ব্যাংকিং_জ্ঞান", icon: "🏦", color: "text-green-400", bg: "bg-green-500/10" },
+  { nameBn: "বিশ্লেষণাত্মক দক্ষতা", nameEn: "Analytical Skills", architectureName: "BB_07_বিশ্লেষণাত্মক_দক্ষতা", icon: "🧠", color: "text-rose-400", bg: "bg-rose-500/10" },
+  { nameBn: "তথ্য ও যোগাযোগ প্রযুক্তি", nameEn: "Basic Knowledge on ICT", architectureName: "BB_08_তথ্য_ও_যোগাযোগ_প্রযুক্তি", icon: "💻", color: "text-purple-400", bg: "bg-purple-500/10" },
+];
+
+export function bbSubjectMetaByNameBn(nameBn: string): SubjectMeta | undefined {
+  return BB_SUBJECT_META.find((m) => m.nameBn.normalize("NFC") === nameBn.normalize("NFC"));
 }
 // Legacy folder names (pre-architecture) mapped to the current architecture
 // subject segment so existing files keep importing without a rename.

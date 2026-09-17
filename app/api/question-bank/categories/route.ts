@@ -8,7 +8,11 @@ export async function GET(request: Request) {
   const getTime = startTiming();
 
   try {
-    const categories = await getQuestionBankCategories();
+    const { searchParams } = new URL(request.url);
+    const ecosystem = searchParams.get("ecosystem");
+    const ecosystemId = ecosystem === "BANGLADESH_BANK" ? 2 : ecosystem === "BCS" ? 1 : undefined;
+
+    const categories = await getQuestionBankCategories(ecosystemId);
 
     const res = NextResponse.json({ categories });
     res.headers.set("X-Request-Id", requestId);

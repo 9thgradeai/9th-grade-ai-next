@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import ExamLibraryView from "@/components/dashboard/ExamLibraryView";
+import { EcosystemProvider } from "@/lib/ecosystem-ctx";
 
 vi.mock("@/lib/services/api", () => ({
   api: {
@@ -85,7 +86,7 @@ beforeEach(() => {
 
 describe("ExamLibraryView", () => {
   it("renders the exam category hierarchy and a paper after choosing an exam", async () => {
-    render(<ExamLibraryView />);
+    render(<EcosystemProvider><ExamLibraryView /></EcosystemProvider>);
     // Category card is present (breadcrumb also shows BCS — use the exam chip
     // which is unique to the hierarchy body).
     const examChip = await screen.findByText("BCS প্রিলিমিনারি (1)");
@@ -98,7 +99,7 @@ describe("ExamLibraryView", () => {
 
   it("loads and shows paper questions", async () => {
     vi.mocked(api.questions).mockResolvedValue(QUESTIONS as never);
-    render(<ExamLibraryView />);
+    render(<EcosystemProvider><ExamLibraryView /></EcosystemProvider>);
 
     // Select the exam chip to reveal papers, then select the paper.
     const examChip = await screen.findByText("BCS প্রিলিমিনারি (1)");
@@ -114,7 +115,7 @@ describe("ExamLibraryView", () => {
 
   it("shows an empty state when no exam library exists", async () => {
     vi.mocked(api.examLibrary).mockResolvedValue([] as never);
-    render(<ExamLibraryView />);
+    render(<EcosystemProvider><ExamLibraryView /></EcosystemProvider>);
     expect(await screen.findByText(/কোনো পরীক্ষার লাইব্রেরি নেই/)).toBeInTheDocument();
   });
 });

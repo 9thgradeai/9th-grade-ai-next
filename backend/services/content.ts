@@ -40,12 +40,14 @@ type QuestionFilters = {
   sourceExam?: string;
   bcsTerm?: string;
   paperId?: number;
+  ecosystemId?: number;
 };
 
 async function buildQuestionWhere(opts?: QuestionFilters): Promise<Record<string, unknown>> {
-  // All filters are AND-ed; `paths` matches a question whose leaf path is a
-  // selected node or lives anywhere under one of its subtrees.
   const conditions: Record<string, unknown>[] = [];
+  if (opts?.ecosystemId) {
+    conditions.push({ ecosystemId: opts.ecosystemId });
+  }
   if (opts?.subject) {
     const subject = await prisma.subject.findFirst({ where: { nameBn: opts.subject } });
     if (subject) conditions.push({ subjectId: subject.id });
@@ -195,11 +197,12 @@ export async function getQuestionById(id: number): Promise<QuestionDTO | null> {
 // rather than the seeded `QuestionBankCategory.count`, which was a fabricated
 // static number. The `label` returned is the canonical `Subject.nameBn` so the
 // client can keep using it as the subject filter in buildQuestionWhere.
-export async function getQuestionBankCategories(): Promise<QuestionBankCategoryDTO[]> {
+export async function getQuestionBankCategories(ecosystemId?: number): Promise<QuestionBankCategoryDTO[]> {
   try {
+    const subjectWhere = ecosystemId ? { ecosystemId } : {};
     const [subjects, counts] = await Promise.all([
-      prisma.subject.findMany({ select: { id: true, nameBn: true } }),
-      prisma.question.groupBy({ by: ["subjectId"], _count: { _all: true } }),
+      prisma.subject.findMany({ where: subjectWhere, select: { id: true, nameBn: true } }),
+      prisma.question.groupBy({ by: ["subjectId"], _count: { _all: true }, where: ecosystemId ? { ecosystemId } : {} }),
     ]);
     const countBySubject = new Map(counts.map((c) => [c.subjectId, c._count._all]));
     return subjects
@@ -214,9 +217,11 @@ export async function getQuestionBankCategories(): Promise<QuestionBankCategoryD
 // Returns the available exam taxonomy hierarchy for browsing: ExamCategory
 // ("BCS") → Exam ("BCS Preliminary") → ExamPaper ("50th BCS"). Only papers
 // actually present in the data are returned; no paper metadata is fabricated.
-export async function getQuestionBankExams(): Promise<ExamCategoryDTO[]> {
+export async function getQuestionBankExams(ecosystemId?: number): Promise<ExamCategoryDTO[]> {
   try {
+    const where = ecosystemId ? { ecosystemId } : {};
     const categories = await prisma.examCategory.findMany({
+      where,
       orderBy: { sortOrder: "asc" },
       include: {
         exams: {
@@ -463,9 +468,11 @@ export async function getStudyPlan(userId: string): Promise<StudyTaskDTO[]> {
 // ── Daily quiz ───────────────────────────────────────────
 // `completed` / `score` reflect the REQUESTING user's DailyQuizParticipation
 // (Phase 2). Anonymous callers get neutral flags — never another user's state.
-export async function getDailyQuiz(userId?: string | null): Promise<DailyQuizDTO | null> {
+export async function getDailyQuiz(userId?: string | null, ecosystemId?: number): Promise<DailyQuizDTO | null> {
   try {
+    const where = ecosystemId ? { ecosystemId } : {};
     const quiz = await prisma.dailyQuiz.findFirst({
+      where,
       include: { questions: true },
       orderBy: { id: "desc" },
     });

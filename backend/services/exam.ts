@@ -81,22 +81,24 @@ function allocateLargestRemainder(total: number, weights: number[]): number[] {
 // The tree mirrors the recursive Topic taxonomy. Leaf question counts are
 // aggregated up the path chain so every node reports how many questions exist
 // under its whole subtree.
-export async function getExamSelectionTree(): Promise<ExamSubjectDTO[]> {
+export async function getExamSelectionTree(ecosystemId?: number): Promise<ExamSubjectDTO[]> {
   // Try cache first
-  const cached = await QueryCache.getExamTree();
+  const cached = await QueryCache.getExamTree(ecosystemId);
   if (cached) {
     return cached as ExamSubjectDTO[];
   }
 
   try {
+    const subjectWhere = ecosystemId ? { ecosystemId } : {};
     const [subjects, topicRows, countRows] = await Promise.all([
-      prisma.subject.findMany({ orderBy: { sortOrder: "asc" } }),
+      prisma.subject.findMany({ where: subjectWhere, orderBy: { sortOrder: "asc" } }),
       prisma.topic.findMany({
         orderBy: [{ subjectId: "asc" }, { sortOrder: "asc" }, { id: "asc" }],
       }),
       prisma.question.groupBy({
         by: ["subjectId", "path"],
         _count: { _all: true },
+        where: ecosystemId ? { ecosystemId } : {},
       }),
     ]);
 
@@ -162,7 +164,7 @@ export async function getExamSelectionTree(): Promise<ExamSubjectDTO[]> {
     });
 
     // Cache the result
-    await QueryCache.setExamTree(result);
+    await QueryCache.setExamTree(result, ecosystemId);
 
     return result;
   } catch {

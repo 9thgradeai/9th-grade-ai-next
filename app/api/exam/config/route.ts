@@ -8,7 +8,11 @@ export async function GET(request: Request) {
   const getTime = startTiming();
 
   try {
-    const subjects = await getExamSelectionTree();
+    const { searchParams } = new URL(request.url);
+    const ecosystem = searchParams.get("ecosystem");
+    const ecosystemId = ecosystem === "BANGLADESH_BANK" ? 2 : ecosystem === "BCS" ? 1 : undefined;
+
+    const subjects = await getExamSelectionTree(ecosystemId);
     const res = NextResponse.json({ subjects });
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");

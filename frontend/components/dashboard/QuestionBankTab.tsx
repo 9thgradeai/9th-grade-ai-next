@@ -7,9 +7,11 @@ import { QUESTION_BANK_CATEGORIES } from "@/lib/data";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 import { useToastSafe } from "@/lib/toast-ctx";
 import { api } from "@/lib/services/api";
+import { useEcosystem } from "@/lib/ecosystem-ctx";
 import type { QuestionDTO } from "@/lib/types";
 import QuestionDrill from "./QuestionDrill";
 import ExamLibraryView from "./ExamLibraryView";
+import EcosystemToggle from "./EcosystemToggle";
 
 // Static fallback sample questions (used if the DB/API is unavailable).
 const SAMPLE_QUESTIONS: Record<string, { q: string; a: string; difficulty: string }[]> = {
@@ -67,6 +69,7 @@ function Highlight({ text, query }: { text: string; query: string }) {
 
 export default function QuestionBankTab() {
   const toast = useToastSafe();
+  const { ecosystem } = useEcosystem();
   const questionBankFilters = useDashboardStore((s) => s.questionBankFilters);
   const setQuestionBankFilters = useDashboardStore((s) => s.setQuestionBankFilters);
   const query = questionBankFilters.query;
@@ -100,7 +103,7 @@ export default function QuestionBankTab() {
     void (async () => {
       try {
         const [cats, bk] = await Promise.all([
-          api.questionBankCategories().catch(() => categories),
+          api.questionBankCategories(ecosystem).catch(() => categories),
           api.bookmarks().catch(() => []),
         ]);
         if (!cancelled) {
@@ -114,7 +117,7 @@ export default function QuestionBankTab() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [ecosystem]);
 
   // Load questions for the active category from the DB (with PYQ filters).
   useEffect(() => {
@@ -131,6 +134,7 @@ export default function QuestionBankTab() {
           year: year ?? undefined,
           sourceExam: sourceExam ?? undefined,
           bcsTerm: bcsTerm ?? undefined,
+          ecosystem,
         });
         if (!cancelled) setQuestions(qs);
       } catch {
@@ -160,7 +164,7 @@ export default function QuestionBankTab() {
     return () => {
       cancelled = true;
     };
-  }, [activeCategory, year, sourceExam, view]);
+  }, [activeCategory, year, sourceExam, view, ecosystem]);
 
   // Load saved (bookmarked) questions when that view is active.
   useEffect(() => {
@@ -251,6 +255,7 @@ export default function QuestionBankTab() {
   }
 
   return (    <div className="space-y-6">
+      <EcosystemToggle />
       {/* Live query terminal */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}

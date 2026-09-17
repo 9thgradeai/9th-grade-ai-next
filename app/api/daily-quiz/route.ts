@@ -9,10 +9,12 @@ export async function GET(request: Request) {
   const getTime = startTiming();
 
   try {
-    // Optional auth: anonymous callers receive neutral flags; authenticated
-    // callers receive their own participation state (Phase 2).
+    const { searchParams } = new URL(request.url);
+    const ecosystem = searchParams.get("ecosystem");
+    const ecosystemId = ecosystem === "BANGLADESH_BANK" ? 2 : ecosystem === "BCS" ? 1 : undefined;
+
     const userId = await getUserIdFromRequest(request);
-    const quiz = await getDailyQuiz(userId);
+    const quiz = await getDailyQuiz(userId, ecosystemId);
 
     const res = NextResponse.json({ quiz });
     res.headers.set("X-Request-Id", requestId);

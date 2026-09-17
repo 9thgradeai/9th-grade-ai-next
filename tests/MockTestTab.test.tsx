@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, waitFor, within } from "@testing-library/react";
 import MockTestTab from "@/components/dashboard/MockTestTab";
+import { EcosystemProvider } from "@/lib/ecosystem-ctx";
 import type { Server } from "@/lib/types";
 
 function stubFetch(routes: Record<string, unknown>) {
@@ -85,7 +86,7 @@ afterEach(() => {
 
 describe("MockTestTab (subtopic selection + build)", () => {
   it("drills into a subtopic and starts a timed mock", async () => {
-    render(<MockTestTab />);
+    render(<EcosystemProvider><MockTestTab /></EcosystemProvider>);
 
     // Subjects are shown inline — click one directly.
     const subjectElements = await screen.findAllByText("বাংলা ভাষা ও সাহিত্য");
@@ -110,7 +111,7 @@ describe("MockTestTab (subtopic selection + build)", () => {
   });
 
   it("shows the available count for a selected subtopic", async () => {
-    render(<MockTestTab />);
+    render(<EcosystemProvider><MockTestTab /></EcosystemProvider>);
     const subjectElements = await screen.findAllByText("বাংলা ভাষা ও সাহিত্য");
     fireEvent.click(subjectElements[0]);
     fireEvent.click(await screen.findByRole("checkbox", { name: /ভাষা/ }));
@@ -159,7 +160,7 @@ describe("MockTestTab — submit flow (regression: canonical submission)", () =>
   });
 
   it("clicking the submit button triggers /api/exam/submit with an attemptId", async () => {
-    render(<MockTestTab />);
+    render(<EcosystemProvider><MockTestTab /></EcosystemProvider>);
     // Subjects are shown inline — click one directly.
     const subjectElements = await screen.findAllByText("বাংলা ভাষা ও সাহিত্য");
     fireEvent.click(subjectElements[0]);
@@ -280,7 +281,7 @@ describe("MockTestTab — results review colors + jump tiles", () => {
   });
 
   async function submitMockWithOneAnswer() {
-    render(<MockTestTab />);
+    render(<EcosystemProvider><MockTestTab /></EcosystemProvider>);
     const subjectElements = await screen.findAllByText("বাংলা ভাষা ও সাহিত্য");
     fireEvent.click(subjectElements[0]);
     fireEvent.click(await screen.findByRole("checkbox", { name: /ভাষা/ }));

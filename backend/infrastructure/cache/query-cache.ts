@@ -90,11 +90,13 @@ export function clearQueryCache(): void {
 // Higher-level helpers for specific query types
 export const QueryCache = {
   // Exam selection tree - changes only when questions are added/removed
-  async getExamTree(): Promise<unknown | null> {
-    return queryCacheGet('exam', 'selection-tree');
+  async getExamTree(ecosystemId?: number): Promise<unknown | null> {
+    const key = ecosystemId ? `selection-tree-${ecosystemId}` : 'selection-tree';
+    return queryCacheGet('exam', key);
   },
-  async setExamTree(data: unknown): Promise<void> {
-    return queryCacheSet('exam', 'selection-tree', data, 5 * 60_000); // 5 min TTL
+  async setExamTree(data: unknown, ecosystemId?: number): Promise<void> {
+    const key = ecosystemId ? `selection-tree-${ecosystemId}` : 'selection-tree';
+    return queryCacheSet('exam', key, data, 5 * 60_000);
   },
   async invalidateExamTree(): Promise<void> {
     return queryCacheInvalidate('exam', 'selection-tree');

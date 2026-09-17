@@ -23,6 +23,9 @@ export async function GET(request: Request) {
       return res;
     }
 
+    const ecosystem = searchParams.get("ecosystem");
+    const ecosystemId = ecosystem === "BANGLADESH_BANK" ? 2 : ecosystem === "BCS" ? 1 : undefined;
+
     const { questions, total, page, limit } = await getQuestionsPage({
       subject: params.subject,
       topic: params.topic,
@@ -35,6 +38,7 @@ export async function GET(request: Request) {
       paperId: params.paperId,
       page: params.page,
       limit: params.limit,
+      ecosystemId,
     });
 
     const res = NextResponse.json({ questions, page, pageSize: limit, total });

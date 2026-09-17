@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, waitFor, within } from "@testing-library/react";
 import CustomExamTab from "@/components/dashboard/CustomExamTab";
+import { EcosystemProvider } from "@/lib/ecosystem-ctx";
 import type { Server } from "@/lib/types";
 
 function stubFetch(routes: Record<string, unknown>) {
@@ -73,19 +74,19 @@ afterEach(() => {
 
 describe("CustomExamTab (config phase)", () => {
   it("renders the exam builder header", async () => {
-    render(<CustomExamTab />);
+    render(<EcosystemProvider><CustomExamTab /></EcosystemProvider>);
     expect(await screen.findByText("কাস্টম বিসিএস পরীক্ষা")).toBeInTheDocument();
   });
 
   it("loads and displays subjects with question counts", async () => {
-    render(<CustomExamTab />);
+    render(<EcosystemProvider><CustomExamTab /></EcosystemProvider>);
     // Subjects are shown inline without needing to open any modal.
     expect(await screen.findAllByText("বাংলা ভাষা ও সাহিত্য")).toBeDefined();
     expect(screen.getAllByText("English Language and Literature").length).toBeGreaterThan(0);
   });
 
   it("selecting a subject updates the live summary", async () => {
-    render(<CustomExamTab />);
+    render(<EcosystemProvider><CustomExamTab /></EcosystemProvider>);
     // Click a subject card directly to select it.
     const subjectElements = await screen.findAllByText("বাংলা ভাষা ও সাহিত্য");
     fireEvent.click(subjectElements[0]);
@@ -99,7 +100,7 @@ describe("CustomExamTab (config phase)", () => {
   });
 
   it("opens the confirmation modal with a full config summary", async () => {
-    render(<CustomExamTab />);
+    render(<EcosystemProvider><CustomExamTab /></EcosystemProvider>);
     // Select a subject directly from the inline picker.
     const subjectElements = await screen.findAllByText("বাংলা ভাষা ও সাহিত্য");
     fireEvent.click(subjectElements[0]);
@@ -113,7 +114,7 @@ describe("CustomExamTab (config phase)", () => {
   });
 
   it("per-subject count defaults and feeds the total", async () => {
-    render(<CustomExamTab />);
+    render(<EcosystemProvider><CustomExamTab /></EcosystemProvider>);
     const subjectElements = await screen.findAllByText("বাংলা ভাষা ও সাহিত্য");
     fireEvent.click(subjectElements[0]);
 
@@ -130,7 +131,7 @@ describe("CustomExamTab (config phase)", () => {
   });
 
   it("clamps a subject's count to its available questions", async () => {
-    render(<CustomExamTab />);
+    render(<EcosystemProvider><CustomExamTab /></EcosystemProvider>);
     const subjectElements = await screen.findAllByText("বাংলা ভাষা ও সাহিত্য");
     fireEvent.click(subjectElements[0]);
 
@@ -211,7 +212,7 @@ describe("CustomExamTab — results review colors + jump tiles", () => {
   });
 
   async function submitExamWithOneAnswer() {
-    render(<CustomExamTab />);
+    render(<EcosystemProvider><CustomExamTab /></EcosystemProvider>);
     const subjectElements = await screen.findAllByText("বাংলা ভাষা ও সাহিত্য");
     fireEvent.click(subjectElements[0]);
     fireEvent.click(await screen.findByText("কনফিগারেশন রিভিউ করে শুরু করুন"));

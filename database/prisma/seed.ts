@@ -141,6 +141,33 @@ async function main() {
   });
   console.log(`  ✓ ${2} exam ecosystems`);
 
+  // --- BB Subjects + Topics (Bangladesh Bank ecosystem) ---
+  const bbSubjectMeta = [
+    { nameBn: "বাংলা ব্যাকরণ", nameEn: "Bangla Grammar" },
+    { nameBn: "বাংলা সাহিত্য", nameEn: "Bangla Literature" },
+    { nameBn: "ইংরেজি ব্যাকরণ", nameEn: "English Grammar" },
+    { nameBn: "ইংরেজি সাহিত্য", nameEn: "English Literature" },
+    { nameBn: "সাধারণ গণিত", nameEn: "General Mathematics" },
+    { nameBn: "আর্থিক ও ব্যাংকিং জ্ঞান", nameEn: "Financial and Banking Knowledge" },
+    { nameBn: "বিশ্লেষণাত্মক দক্ষতা", nameEn: "Analytical Skills" },
+    { nameBn: "তথ্য ও যোগাযোগ প্রযুক্তি", nameEn: "Basic Knowledge on ICT" },
+  ];
+  let bbSortOrder = 1;
+  for (const meta of bbSubjectMeta) {
+    const subject = await prisma.subject.upsert({
+      where: { ecosystemId_nameBn: { ecosystemId: bbEcosystem.id, nameBn: meta.nameBn } },
+      update: { nameEn: meta.nameEn, sortOrder: bbSortOrder },
+      create: {
+        ecosystemId: bbEcosystem.id,
+        nameBn: meta.nameBn,
+        nameEn: meta.nameEn,
+        sortOrder: bbSortOrder,
+      },
+    });
+    bbSortOrder++;
+  }
+  console.log(`  ✓ ${bbSubjectMeta.length} BB subjects`);
+
   // --- Subjects + recursive topics + questions (content taxonomy) ---
   // seedQuestions owns the content taxonomy: it creates the 10 subjects, builds
   // the recursive Topic tree from database/data/taxonomy.json and inserts all

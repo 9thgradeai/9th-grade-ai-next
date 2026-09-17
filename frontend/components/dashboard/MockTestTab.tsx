@@ -19,6 +19,8 @@ import {
   XCircle,
 } from "lucide-react";
 import { api } from "@/lib/services/api";
+import { useEcosystem } from "@/lib/ecosystem-ctx";
+import EcosystemToggle from "./EcosystemToggle";
 import {
   submitExamAttempt as canonicalSubmitExamAttempt,
   registerExam,
@@ -62,6 +64,8 @@ function formatTime(seconds: number): string {
 }
 
 export default function MockTestTab() {
+  const { ecosystem } = useEcosystem();
+
   // ── Config state ──
   const [subjects, setSubjects] = useState<Server.ExamSubjectDTO[]>([]);
   const [configLoading, setConfigLoading] = useState(true);
@@ -136,7 +140,7 @@ export default function MockTestTab() {
     let cancelled = false;
     void (async () => {
       try {
-        const list = await api.examConfig();
+        const list = await api.examConfig(ecosystem);
         if (!cancelled) setSubjects(list.filter((s) => s.questionCount > 0));
       } catch {
         if (!cancelled) setConfigError("কনফিগারেশন লোড করা যায়নি। আবার চেষ্টা করুন।");
@@ -147,7 +151,7 @@ export default function MockTestTab() {
     return () => {
       cancelled = true;
     };
-  }, [configReloadKey]);
+  }, [configReloadKey, ecosystem]);
 
   const fetchConfig = useCallback(() => {
     // Retry path — reset UI state, then re-run the config effect.
@@ -465,6 +469,8 @@ export default function MockTestTab() {
   if (testState === "setup") {
     return (
       <div className="space-y-6">
+        <EcosystemToggle />
+
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
