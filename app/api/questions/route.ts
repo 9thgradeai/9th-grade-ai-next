@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { validateQuestionSearchParams } from "~backend/validation";
 import { getQuestionById, getQuestionsPage } from "~backend/services/content";
 import { toHttpResponse } from "~backend/errors";
+import { resolveEcosystemId } from "~backend/services/ecosystem";
 import { getRequestId, startTiming, applyCorsHeaders, applySecurityHeaders, applyCacheHeaders } from "../_middleware";
 
 export async function GET(request: Request) {
@@ -23,8 +24,8 @@ export async function GET(request: Request) {
       return res;
     }
 
-    const ecosystem = searchParams.get("ecosystem");
-    const ecosystemId = ecosystem === "BANGLADESH_BANK" ? 2 : ecosystem === "BCS" ? 1 : undefined;
+    const ecosystemCode = searchParams.get("ecosystem");
+    const ecosystemId = ecosystemCode ? await resolveEcosystemId(ecosystemCode) : undefined;
 
     const { questions, total, page, limit } = await getQuestionsPage({
       subject: params.subject,

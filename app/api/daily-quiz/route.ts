@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getDailyQuiz } from "~backend/services/content";
 import { getUserIdFromRequest } from "~backend/services/user";
 import { toHttpResponse } from "~backend/errors";
+import { resolveEcosystemId } from "~backend/services/ecosystem";
 import { getRequestId, startTiming, applySecurityHeaders } from "../_middleware";
 
 export async function GET(request: Request) {
@@ -10,8 +11,8 @@ export async function GET(request: Request) {
 
   try {
     const { searchParams } = new URL(request.url);
-    const ecosystem = searchParams.get("ecosystem");
-    const ecosystemId = ecosystem === "BANGLADESH_BANK" ? 2 : ecosystem === "BCS" ? 1 : undefined;
+    const ecosystemCode = searchParams.get("ecosystem");
+    const ecosystemId = ecosystemCode ? await resolveEcosystemId(ecosystemCode) : undefined;
 
     const userId = await getUserIdFromRequest(request);
     const quiz = await getDailyQuiz(userId, ecosystemId);

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getExamSelectionTree } from "~backend/services/exam";
 import { toHttpResponse } from "~backend/errors";
+import { resolveEcosystemId } from "~backend/services/ecosystem";
 import { getRequestId, startTiming, applySecurityHeaders } from "../../_middleware";
 
 export async function GET(request: Request) {
@@ -9,8 +10,8 @@ export async function GET(request: Request) {
 
   try {
     const { searchParams } = new URL(request.url);
-    const ecosystem = searchParams.get("ecosystem");
-    const ecosystemId = ecosystem === "BANGLADESH_BANK" ? 2 : ecosystem === "BCS" ? 1 : undefined;
+    const ecosystemCode = searchParams.get("ecosystem");
+    const ecosystemId = ecosystemCode ? await resolveEcosystemId(ecosystemCode) : undefined;
 
     const subjects = await getExamSelectionTree(ecosystemId);
     const res = NextResponse.json({ subjects });
