@@ -6,6 +6,8 @@
  *
  * Runs as part of `db:deploy-sync` (prebuild) BEFORE `prisma db push`:
  *
+ *   0. Bootstrap — ensures ExamEcosystem table and BCS row exist so that
+ *      prisma db push can add FK columns referencing it without errors.
  *   1. Backfill — rows seeded before sourceKeys existed carry '' keys.
  *      Each is stamped with its model's canonical md5(business key), matching
  *      scripts/seed-keys.ts parity contract (md5(a || '|' || b |...)).
@@ -52,6 +54,44 @@ const CHILDREN: Array<[parent: string, child: string, fk: string, guards: string
   ["StudyPlanDay", "StudyTask", "dayId", ['"userId"', '"title"']],
   ["AppNotification", "NotificationRead", "notificationId", ['"userId"']],
 ];
+
+async function bootstrapEcosystems() {
+  // Create the ExamEcosystem table if it doesn't exist, and ensure BCS (id=1)
+  // exists so that prisma db push can add FK columns referencing it.
+  await p.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS "ExamEcosystem" (
+      "id" SERIAL PRIMARY KEY,
+      "code" TEXT NOT NULL,
+      "slug" TEXT NOT NULL,
+      "name" TEXT NOT NULL,
+      "nameBn" TEXT NOT NULL,
+      "description" TEXT NOT NULL DEFAULT '',
+      "descriptionBn" TEXT NOT NULL DEFAULT '',
+      "isActive" BOOLEAN NOT NULL DEFAULT true,
+      "sortOrder" INTEGER NOT NULL DEFAULT 0,
+      "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      CONSTRAINT "ExamEcosystem_code_key" UNIQUE ("code"),
+      CONSTRAINT "ExamEcosystem_slug_key" UNIQUE ("slug")
+    )
+  `);
+
+  // Insert BCS ecosystem with id=1 if it doesn't exist.
+  await p.$executeRawUnsafe(`
+    INSERT INTO "ExamEcosystem" ("id", "code", "slug", "name", "nameBn", "description", "descriptionBn", "isActive", "sortOrder")
+    VALUES (1, 'BCS', 'bcs', 'BCS', 'বিসিএস', 'Bangladesh Civil Service examination', 'বাংলাদেশ সিভিল সার্ভিস পরীক্ষা', true, 1)
+    ON CONFLICT ("code") DO NOTHING
+  `);
+
+  // Also insert Bangladesh Bank ecosystem.
+  await p.$executeRawUnsafe(`
+    INSERT INTO "ExamEcosystem" ("code", "slug", "name", "nameBn", "description", "descriptionBn", "isActive", "sortOrder")
+    VALUES ('BANGLADESH_BANK', 'bangladesh-bank', 'Bangladesh Bank', 'বাংলাদেশ ব্যাংক', 'Bangladesh Bank recruitment examination', 'বাংলাদেশ ব্যাংক নিয়োগ পরীক্ষা', true, 2)
+    ON CONFLICT ("code") DO NOTHING
+  `);
+
+  console.log("heal: ExamEcosystem table and BCS/BB rows bootstrapped");
+}
 
 async function backfill() {
   for (const [table, expr] of BACKFILL) {
@@ -163,6 +203,7 @@ async function report() {
 }
 
 async function main() {
+  await bootstrapEcosystems();
   await backfill();
   await repointChildren();
   await dedupeParents();
