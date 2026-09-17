@@ -137,6 +137,10 @@ export default function MockTestTab() {
 
   useEffect(() => {
     let cancelled = false;
+    setConfigLoading(true);
+    setConfigError(null);
+    setSelection({});
+    setSubjects([]);
     void (async () => {
       try {
         const list = await api.examConfig(ecosystem);

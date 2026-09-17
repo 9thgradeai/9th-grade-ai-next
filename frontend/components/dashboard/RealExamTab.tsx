@@ -22,6 +22,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { api } from "@/lib/services/api";
+import { useEcosystem } from "@/lib/ecosystem-ctx";
 import type { Server } from "@/lib/types";
 import SubjectTopicSelect from "./SubjectTopicSelect";
 import {
@@ -97,6 +98,7 @@ export default function RealExamTab() {
   const [checked, setChecked] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
 
+  const { ecosystem } = useEcosystem();
   // ── Custom paper builder state (subject → topic → subtopic picker) ──
   const [subjects, setSubjects] = useState<Server.ExamSubjectDTO[]>([]);
   const [configLoading, setConfigLoading] = useState(false);
@@ -178,14 +180,14 @@ export default function RealExamTab() {
     setConfigLoading(true);
     setConfigError(null);
     try {
-      const list = await api.examConfig();
+      const list = await api.examConfig(ecosystem);
       setSubjects(list);
     } catch {
       setConfigError("কনফিগারেশন লোড করা যায়নি। আবার চেষ্টা করুন।");
     } finally {
       setConfigLoading(false);
     }
-  }, []);
+  }, [ecosystem]);
 
   const buildCustomPaper = useCallback(async () => {
     if (selectedSubjects.length === 0 || totalCount === 0) return;

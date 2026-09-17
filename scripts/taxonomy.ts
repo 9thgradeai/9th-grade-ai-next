@@ -76,13 +76,15 @@ export function subjectMetaByNameBn(nameBn: string): SubjectMeta | undefined {
   return SUBJECT_META.find((m) => m.nameBn.normalize("NFC") === nameBn.normalize("NFC"));
 }
 
-// ── Bangladesh Bank ecosystem subjects ──────────────────────────
+// ── Bangladesh Bank ecosystem subjects (7) ──────────────────
 export const BB_SUBJECT_META: SubjectMeta[] = [
-  { nameBn: "বাংলা", nameEn: "Bangla", architectureName: "BB_01_বাংলা", icon: "📖", color: "text-emerald-400", bg: "bg-emerald-500/10" },
-  { nameBn: "English", nameEn: "English", architectureName: "BB_02_English", icon: "📚", color: "text-sky-400", bg: "bg-sky-500/10" },
-  { nameBn: "গণিত", nameEn: "Mathematics", architectureName: "BB_03_গণিত", icon: "🧮", color: "text-amber-400", bg: "bg-amber-500/10" },
-  { nameBn: "সাধারণ জ্ঞান", nameEn: "General Knowledge", architectureName: "BB_04_সাধারণ_জ্ঞান", icon: "🌍", color: "text-green-400", bg: "bg-green-500/10" },
-  { nameBn: "তথ্য ও যোগাযোগ প্রযুক্তি", nameEn: "ICT", architectureName: "BB_05_তথ্য_ও_যোগাযোগ_প্রযুক্তি", icon: "💻", color: "text-purple-400", bg: "bg-purple-500/10" },
+  { nameBn: "বাংলা ব্যাকরণ ও সাহিত্য", nameEn: "Bangla Grammar & Literature", architectureName: "BB_01_বাংলা_ব্যাকরণ_ও_সাহিত্য", icon: "📖", color: "text-emerald-400", bg: "bg-emerald-500/10" },
+  { nameBn: "English Grammar & Literature", nameEn: "English Grammar & Literature", architectureName: "BB_02_English_Grammar_Literature", icon: "📚", color: "text-sky-400", bg: "bg-sky-500/10" },
+  { nameBn: "সাধারণ গণিত", nameEn: "General Mathematics", architectureName: "BB_03_সাধারণ_গণিত", icon: "🧮", color: "text-amber-400", bg: "bg-amber-500/10" },
+  { nameBn: "বিশ্লেষণী দক্ষতা", nameEn: "Analytical Skills", architectureName: "BB_04_বিশ্লেষণী_দক্ষতা", icon: "🧠", color: "text-rose-400", bg: "bg-rose-500/10" },
+  { nameBn: "আর্থিক ও ব্যাংকিং জ্ঞান", nameEn: "Financial and Banking Knowledge", architectureName: "BB_05_আর্থিক_ও_ব্যাংকিং_জ্ঞান", icon: "🏦", color: "text-green-400", bg: "bg-green-500/10" },
+  { nameBn: "সাধারণ জ্ঞান", nameEn: "General Knowledge", architectureName: "BB_06_সাধারণ_জ্ঞান", icon: "🌍", color: "text-cyan-400", bg: "bg-cyan-500/10" },
+  { nameBn: "তথ্য ও যোগাযোগ প্রযুক্তি", nameEn: "ICT / Computer", architectureName: "BB_07_তথ্য_ও_যোগাযোগ_প্রযুক্তি", icon: "💻", color: "text-purple-400", bg: "bg-purple-500/10" },
 ];
 
 export function bbSubjectMetaByNameBn(nameBn: string): SubjectMeta | undefined {

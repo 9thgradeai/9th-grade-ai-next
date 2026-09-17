@@ -141,13 +141,15 @@ async function main() {
   });
   console.log(`  ✓ ${2} exam ecosystems`);
 
-  // --- BB Subjects + Topics (Bangladesh Bank ecosystem) ---
+  // --- BB Subjects + Topics (Bangladesh Bank ecosystem — 7 subjects) ---
   const bbSubjectMeta = [
-    { nameBn: "বাংলা", nameEn: "Bangla" },
-    { nameBn: "English", nameEn: "English" },
-    { nameBn: "গণিত", nameEn: "Mathematics" },
+    { nameBn: "বাংলা ব্যাকরণ ও সাহিত্য", nameEn: "Bangla Grammar & Literature" },
+    { nameBn: "English Grammar & Literature", nameEn: "English Grammar & Literature" },
+    { nameBn: "সাধারণ গণিত", nameEn: "General Mathematics" },
+    { nameBn: "বিশ্লেষণী দক্ষতা", nameEn: "Analytical Skills" },
+    { nameBn: "আর্থিক ও ব্যাংকিং জ্ঞান", nameEn: "Financial and Banking Knowledge" },
     { nameBn: "সাধারণ জ্ঞান", nameEn: "General Knowledge" },
-    { nameBn: "তথ্য ও যোগাযোগ প্রযুক্তি", nameEn: "ICT" },
+    { nameBn: "তথ্য ও যোগাযোগ প্রযুক্তি", nameEn: "ICT / Computer" },
   ];
   let bbSortOrder = 1;
   for (const meta of bbSubjectMeta) {

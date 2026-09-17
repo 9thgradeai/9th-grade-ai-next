@@ -216,16 +216,22 @@ export default function CustomExamTab() {
   }, [ecosystem]);
 
   useEffect(() => {
+    let cancelled = false;
+    setConfigLoading(true);
+    setConfigError(null);
+    setSelection({});
+    setSubjects([]);
     void (async () => {
       try {
         const list = await api.examConfig(ecosystem);
-        setSubjects(list);
+        if (!cancelled) setSubjects(list);
       } catch {
-        setConfigError("কনফিগারেশন লোড করা যায়নি। আবার চেষ্টা করুন।");
+        if (!cancelled) setConfigError("কনফিগারেশন লোড করা যায়নি। আবার চেষ্টা করুন।");
       } finally {
-        setConfigLoading(false);
+        if (!cancelled) setConfigLoading(false);
       }
     })();
+    return () => { cancelled = true; };
   }, [ecosystem]);
 
   const handleRetryConfig = () => {

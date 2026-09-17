@@ -1,7 +1,7 @@
 /**
  * scripts/seed-bb-subjects.ts
  * ─────────────────────────────────────────────────────────────────────
- * Idempotent script to create Bangladesh Bank ecosystem: 5 subjects
+ * Idempotent script to create Bangladesh Bank ecosystem: 7 subjects
  * with their full recursive topic trees.
  *
  * Can be run standalone: `npx tsx scripts/seed-bb-subjects.ts`
@@ -18,15 +18,13 @@ if (!DATABASE_URL) {
 
 const prisma = new PrismaClient({ datasources: { db: { url: DATABASE_URL } } });
 
-// ── BB Subject + Topic taxonomy ──────────────────────────────────
-// 5 subjects, each with nested topics matching the user-provided taxonomy.
 type TopicDef = { name: string; slug: string; children?: TopicDef[] };
 type SubjectDef = { nameBn: string; nameEn: string; sortOrder: number; topics: TopicDef[] };
 
 const BB_SUBJECTS: SubjectDef[] = [
   {
-    nameBn: "বাংলা",
-    nameEn: "Bangla",
+    nameBn: "বাংলা ব্যাকরণ ও সাহিত্য",
+    nameEn: "Bangla Grammar & Literature",
     sortOrder: 1,
     topics: [
       {
@@ -51,8 +49,8 @@ const BB_SUBJECTS: SubjectDef[] = [
     ],
   },
   {
-    nameBn: "English",
-    nameEn: "English",
+    nameBn: "English Grammar & Literature",
+    nameEn: "English Grammar & Literature",
     sortOrder: 2,
     topics: [
       {
@@ -77,8 +75,8 @@ const BB_SUBJECTS: SubjectDef[] = [
     ],
   },
   {
-    nameBn: "গণিত",
-    nameEn: "Mathematics",
+    nameBn: "সাধারণ গণিত",
+    nameEn: "General Mathematics",
     sortOrder: 3,
     topics: [
       {
@@ -90,61 +88,46 @@ const BB_SUBJECTS: SubjectDef[] = [
           { name: "Interest (Simple/Compound)", slug: "interest" },
         ],
       },
-      {
-        name: "Algebra",
-        slug: "algebra",
-        children: [
-          { name: "Equations & Fractions", slug: "equations-fractions" },
-        ],
-      },
-      {
-        name: "Geometry",
-        slug: "geometry",
-        children: [
-          { name: "Mensuration (Area/Perimeter)", slug: "mensuration" },
-        ],
-      },
-      {
-        name: "Logical Reasoning",
-        slug: "logical-reasoning",
-        children: [
-          { name: "Puzzles & Sets", slug: "puzzles-sets" },
-        ],
-      },
+      { name: "Algebra", slug: "algebra", children: [{ name: "Equations & Fractions", slug: "equations-fractions" }] },
+      { name: "Geometry", slug: "geometry", children: [{ name: "Mensuration (Area/Perimeter)", slug: "mensuration" }] },
+      { name: "Logical Reasoning", slug: "logical-reasoning", children: [{ name: "Puzzles & Sets", slug: "puzzles-sets" }] },
+    ],
+  },
+  {
+    nameBn: "বিশ্লেষণী দক্ষতা",
+    nameEn: "Analytical Skills",
+    sortOrder: 4,
+    topics: [
+      { name: "Analytical Reasoning", slug: "analytical-reasoning" },
+      { name: "Critical Reasoning", slug: "critical-reasoning" },
+      { name: "Data Interpretation", slug: "data-interpretation" },
+      { name: "Puzzles & Logical Sets", slug: "puzzles-logical-sets" },
+    ],
+  },
+  {
+    nameBn: "আর্থিক ও ব্যাংকিং জ্ঞান",
+    nameEn: "Financial and Banking Knowledge",
+    sortOrder: 5,
+    topics: [
+      { name: "Banking & Finance", slug: "banking-finance" },
+      { name: "Economy & Budget", slug: "economy-budget" },
+      { name: "Monetary Policy & Central Banking", slug: "monetary-policy" },
     ],
   },
   {
     nameBn: "সাধারণ জ্ঞান",
     nameEn: "General Knowledge",
-    sortOrder: 4,
+    sortOrder: 6,
     topics: [
-      {
-        name: "Current Affairs",
-        slug: "current-affairs",
-        children: [
-          { name: "Sports, Awards, Geopolitics", slug: "sports-awards-geopolitics" },
-        ],
-      },
-      {
-        name: "Bangladesh Affairs",
-        slug: "bangladesh-affairs",
-        children: [
-          { name: "Economy, Mega Projects, History", slug: "economy-mega-projects-history" },
-        ],
-      },
-      {
-        name: "International Affairs",
-        slug: "international-affairs",
-        children: [
-          { name: "Geography, Organizations", slug: "geography-organizations" },
-        ],
-      },
+      { name: "Current Affairs", slug: "current-affairs", children: [{ name: "Sports, Awards, Geopolitics", slug: "sports-awards-geopolitics" }] },
+      { name: "Bangladesh Affairs", slug: "bangladesh-affairs", children: [{ name: "Economy, Mega Projects, History", slug: "economy-mega-projects-history" }] },
+      { name: "International Affairs", slug: "international-affairs", children: [{ name: "Geography, Organizations", slug: "geography-organizations" }] },
     ],
   },
   {
     nameBn: "তথ্য ও যোগাযোগ প্রযুক্তি",
-    nameEn: "ICT",
-    sortOrder: 5,
+    nameEn: "ICT / Computer",
+    sortOrder: 7,
     topics: [
       { name: "Fundamentals & Hardware", slug: "fundamentals-hardware" },
       { name: "Software & Programming", slug: "software-programming" },
@@ -153,7 +136,6 @@ const BB_SUBJECTS: SubjectDef[] = [
   },
 ];
 
-/** Recursively create a topic and its children under a subject. */
 async function createTopicTree(
   subjectId: number,
   topics: TopicDef[],
@@ -179,7 +161,6 @@ async function createTopicTree(
 }
 
 async function main() {
-  // 1. Ensure the BANGLADESH_BANK ecosystem exists
   const bb = await prisma.examEcosystem.upsert({
     where: { code: "BANGLADESH_BANK" },
     update: {},
@@ -195,39 +176,28 @@ async function main() {
   });
   console.log(`✓ BANGLADESH_BANK ecosystem: id=${bb.id}`);
 
-  // 2. Delete old BB subjects (8-subject layout) and create new 5-subject layout
   const oldSubjects = await prisma.subject.findMany({ where: { ecosystemId: bb.id } });
   const oldIds = oldSubjects.map((s) => s.id);
   if (oldIds.length > 0) {
-    // Delete topics for old subjects first
     await prisma.topic.deleteMany({ where: { subjectId: { in: oldIds } } });
     await prisma.subject.deleteMany({ where: { id: { in: oldIds } } });
     console.log(`  ✓ Removed ${oldIds.length} old BB subjects + topics`);
   }
 
-  // 3. Create 5 BB subjects with topic trees
   let totalTopics = 0;
   for (const meta of BB_SUBJECTS) {
     const subject = await prisma.subject.upsert({
       where: { ecosystemId_nameBn: { ecosystemId: bb.id, nameBn: meta.nameBn } },
       update: { nameEn: meta.nameEn, sortOrder: meta.sortOrder },
-      create: {
-        ecosystemId: bb.id,
-        nameBn: meta.nameBn,
-        nameEn: meta.nameEn,
-        sortOrder: meta.sortOrder,
-      },
+      create: { ecosystemId: bb.id, nameBn: meta.nameBn, nameEn: meta.nameEn, sortOrder: meta.sortOrder },
     });
-    const topicCount = await createTopicTree(subject.id, meta.topics, null, 1, "", 1);
-    totalTopics += topicCount - 1;
-    console.log(`  ✓ ${meta.nameBn} (${meta.nameEn}): id=${subject.id}, ${meta.topics.length} topics`);
+    const nextSort = await createTopicTree(subject.id, meta.topics, null, 1, "", 1);
+    totalTopics += nextSort - 1;
+    console.log(`  ✓ ${meta.nameBn} (${meta.nameEn}): id=${subject.id}`);
   }
 
-  // 4. Verify
   const subjectCount = await prisma.subject.count({ where: { ecosystemId: bb.id } });
-  const topicCount = await prisma.topic.count({
-    where: { subject: { ecosystemId: bb.id } },
-  });
+  const topicCount = await prisma.topic.count({ where: { subject: { ecosystemId: bb.id } } });
   console.log(`\n✓ Done. ${subjectCount} subjects, ${topicCount} topics in DB for BB ecosystem`);
 }
 

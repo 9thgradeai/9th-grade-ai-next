@@ -130,15 +130,17 @@ export default function PracticeTab() {
     }
   };
 
-  // Load the selection tree once (drives quick practice).
+  // Load the selection tree — re-fetches on ecosystem toggle.
   useEffect(() => {
     let cancelled = false;
+    setConfigLoading(true);
+    setConfigError(null);
+    setSelection({});
+    setSubjects([]);
     void (async () => {
       try {
         const list = await api.examConfig(ecosystem);
-        if (!cancelled) {
-          setSubjects(list);
-        }
+        if (!cancelled) setSubjects(list);
       } catch {
         if (!cancelled) setConfigError("কনফিগারেশন লোড করা যায়নি। আবার চেষ্টা করুন।");
       } finally {
