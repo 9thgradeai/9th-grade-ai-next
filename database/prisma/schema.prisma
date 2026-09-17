@@ -242,7 +242,7 @@ model User {
 // ── Content taxonomy ──────────────────────────────────────
 model Subject {
   id           Int           @id @default(autoincrement())
-  ecosystemId  Int
+  ecosystemId  Int           @default(1)
   ecosystem    ExamEcosystem @relation(fields: [ecosystemId], references: [id], onDelete: Cascade)
   nameBn       String
   nameEn       String
@@ -289,7 +289,7 @@ model Topic {
 
 model ExamCategory {
   id           Int             @id @default(autoincrement())
-  ecosystemId  Int
+  ecosystemId  Int             @default(1)
   ecosystem    ExamEcosystem   @relation(fields: [ecosystemId], references: [id], onDelete: Cascade)
   slug         String
   nameBn       String
@@ -353,7 +353,7 @@ model ExamPaper {
 // ── Questions ─────────────────────────────────────────────
 model Question {
   id             Int             @id @default(autoincrement())
-  ecosystemId    Int
+  ecosystemId    Int             @default(1)
   ecosystem      ExamEcosystem   @relation(fields: [ecosystemId], references: [id], onDelete: Cascade)
   subjectId      Int
   subject        Subject         @relation(fields: [subjectId], references: [id], onDelete: Cascade)
@@ -518,7 +518,7 @@ model StudyTaskCompletion {
 // DailyQuizParticipation. Do not read these columns from new code.
 model DailyQuiz {
   id           Int           @id @default(autoincrement())
-  ecosystemId  Int
+  ecosystemId  Int           @default(1)
   ecosystem    ExamEcosystem @relation(fields: [ecosystemId], references: [id], onDelete: Cascade)
   date         String
   completed    Boolean       @default(false)
@@ -779,7 +779,7 @@ model Bookmark {
 // accuracy, streaks, and per-subject reports.
 model QuestionAttempt {
   id         Int       @id @default(autoincrement())
-  ecosystemId Int
+  ecosystemId Int      @default(1)
   ecosystem   ExamEcosystem @relation(fields: [ecosystemId], references: [id], onDelete: Cascade)
   userId     String
   user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)

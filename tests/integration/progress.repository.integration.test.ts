@@ -57,7 +57,7 @@ describe("recomputeAndAward (real PostgreSQL)", () => {
 
     const ecosystem = await prisma.examEcosystem.upsert({
       where: { code: "BCS" },
-      create: { code: "BCS", nameBn: "বিসিএস", nameEn: "BCS" },
+      create: { code: "BCS", slug: "bcs", name: "BCS", nameBn: "বিসিএস" },
       update: {},
       select: { id: true },
     });
