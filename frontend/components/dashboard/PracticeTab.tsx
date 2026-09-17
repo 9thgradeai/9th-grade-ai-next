@@ -21,6 +21,7 @@ import {
   Inbox,
 } from "lucide-react";
 import { api } from "@/lib/services/api";
+import { useEcosystem } from "@/lib/ecosystem-ctx";
 import { DIFFICULTY_LABEL } from "@/lib/exam-ui";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 import type { Server } from "@/lib/types";
@@ -92,6 +93,7 @@ function PracticeTimer({
 
 export default function PracticeTab() {
   const { practiceIntent, setPracticeIntent } = useDashboardStore(s => ({ practiceIntent: s.practiceIntent, setPracticeIntent: s.setPracticeIntent }));
+  const { ecosystem, setEcosystem } = useEcosystem();
   const [mode, setMode] = useState<PracticeMode>("custom");
 
   // ── Config state (quick practice selection tree) ──
@@ -133,7 +135,7 @@ export default function PracticeTab() {
     let cancelled = false;
     void (async () => {
       try {
-        const list = await api.examConfig();
+        const list = await api.examConfig(ecosystem);
         if (!cancelled) {
           setSubjects(list.filter((s) => s.questionCount > 0));
         }
@@ -146,7 +148,7 @@ export default function PracticeTab() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [ecosystem]);
 
   // Consume cross-tab practice intent (from Command Center) — pre-select subject and open quick practice.
   useEffect(() => {
@@ -306,6 +308,7 @@ export default function PracticeTab() {
             subject: s.nameBn,
             paths: sel.paths.length > 0 ? sel.paths : undefined,
             limit: 200,
+            ecosystem,
           });
         }),
       );
@@ -412,6 +415,35 @@ export default function PracticeTab() {
 
   return (
     <div className="space-y-6">
+      {/* Ecosystem switcher */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex items-center gap-3"
+      >
+        <span className="text-xs font-mono uppercase tracking-wider" style={{ color: "var(--dashboard-text-muted)" }}>
+          Exam:
+        </span>
+        <div className="flex gap-1 bg-[var(--surface-muted)] border border-[var(--border-subtle)] rounded-lg p-0.5">
+          {([
+            { code: "BCS" as const, label: "BCS", bn: "বিসিএস" },
+            { code: "BANGLADESH_BANK" as const, label: "ব্যাংক", bn: "Bangladesh Bank" },
+          ]).map((eco) => (
+            <button
+              key={eco.code}
+              onClick={() => setEcosystem(eco.code)}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${
+                ecosystem === eco.code
+                  ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] shadow-sm"
+                  : "text-[var(--dashboard-text-secondary)] hover:text-[var(--dashboard-text-primary)] hover:bg-[var(--surface-hover)]"
+              }`}
+            >
+              {eco.label}
+            </button>
+          ))}
+        </div>
+      </motion.div>
+
       {/* Mode toggle */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
@@ -490,7 +522,7 @@ export default function PracticeTab() {
                       setConfigError(null);
                       void (async () => {
                         try {
-                          const list = await api.examConfig();
+        const list = await api.examConfig(ecosystem);
                           setSubjects(list.filter((s) => s.questionCount > 0));
                         } catch {
                           setConfigError("কনফিগারেশন লোড করা যায়নি। আবার চেষ্টা করুন।");

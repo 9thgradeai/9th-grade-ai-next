@@ -11,6 +11,7 @@ import BottomNav from "@/components/dashboard/BottomNav";
 import NotificationCenter from "@/components/dashboard/NotificationCenter";
 import CommandBar from "@/components/dashboard/CommandBar";
 import { ThemeToggle, DashboardThemeProvider } from "@/lib/dashboard-theme-ctx";
+import { EcosystemProvider } from "@/lib/ecosystem-ctx";
 import { useAuth } from "@/lib/auth-ctx";
 import { LoadingShell } from "@/components/ui/LoadingShell";
 
@@ -174,6 +175,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <DashboardThemeProvider>
+      <EcosystemProvider>
       <EmailVerificationGate>
           <MotionConfig reducedMotion="user">
             <div className="dashboard-shell h-dvh overflow-hidden flex" style={{ background: "var(--dashboard-background)" }}>
@@ -298,6 +300,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </div>
           </MotionConfig>
         </EmailVerificationGate>
+      </EcosystemProvider>
     </DashboardThemeProvider>
   );
 }

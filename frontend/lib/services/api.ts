@@ -282,6 +282,7 @@ export const api = {
     paperId?: number;
     limit?: number;
     page?: number;
+    ecosystem?: string;
   }): Promise<Server.QuestionDTO[]> => {
     const qs = new URLSearchParams();
     if (params) {
@@ -341,12 +342,16 @@ export const api = {
     ).then((d) => d.history);
   },
 
-  questionBankCategories: (): Promise<Server.QuestionBankCategoryDTO[]> =>
-    cachedGet<{ categories: Server.QuestionBankCategoryDTO[] }>("/api/question-bank/categories").then((d) => d.categories),
+  questionBankCategories: (ecosystem?: string): Promise<Server.QuestionBankCategoryDTO[]> => {
+    const qs = ecosystem ? `?ecosystem=${encodeURIComponent(ecosystem)}` : "";
+    return cachedGet<{ categories: Server.QuestionBankCategoryDTO[] }>(`/api/question-bank/categories${qs}`).then((d) => d.categories);
+  },
 
   /** Exam-library hierarchy: ExamCategory → Exam → ExamPaper (BCS → Preliminary → specific paper). */
-  examLibrary: (): Promise<Server.ExamCategoryDTO[]> =>
-    cachedGet<{ exams: Server.ExamCategoryDTO[] }>("/api/question-bank/exams").then((d) => d.exams),
+  examLibrary: (ecosystem?: string): Promise<Server.ExamCategoryDTO[]> => {
+    const qs = ecosystem ? `?ecosystem=${encodeURIComponent(ecosystem)}` : "";
+    return cachedGet<{ exams: Server.ExamCategoryDTO[] }>(`/api/question-bank/exams${qs}`).then((d) => d.exams);
+  },
 
   flashcards: (subject?: string): Promise<Server.FlashcardDTO[]> => {
     const qs = subject ? `?subject=${encodeURIComponent(subject)}` : "";
@@ -364,8 +369,10 @@ export const api = {
   studyPlan: (): Promise<Server.StudyTaskDTO[]> =>
     cachedGet<{ tasks: Server.StudyTaskDTO[] }>("/api/study-plan").then((d) => d.tasks),
 
-  dailyQuiz: (): Promise<Server.DailyQuizDTO | null> =>
-    cachedGet<{ quiz: Server.DailyQuizDTO | null }>("/api/daily-quiz").then((d) => d.quiz),
+  dailyQuiz: (ecosystem?: string): Promise<Server.DailyQuizDTO | null> => {
+    const qs = ecosystem ? `?ecosystem=${encodeURIComponent(ecosystem)}` : "";
+    return cachedGet<{ quiz: Server.DailyQuizDTO | null }>(`/api/daily-quiz${qs}`).then((d) => d.quiz);
+  },
 
   news: (): Promise<Server.FlashNewsDTO[]> =>
     cachedGet<{ news: Server.FlashNewsDTO[] }>("/api/flash-news").then((d) => d.news),
@@ -398,8 +405,10 @@ export const api = {
   mockTestResults: (): Promise<Server.MockTestResultDTO[]> =>
     cachedGet<{ results: Server.MockTestResultDTO[] }>("/api/mock-test/results").then((d) => d.results),
 
-  examConfig: (): Promise<Server.ExamSubjectDTO[]> =>
-    cachedGet<{ subjects: Server.ExamSubjectDTO[] }>("/api/exam/config?v=2").then((d) => d.subjects),
+  examConfig: (ecosystem?: string): Promise<Server.ExamSubjectDTO[]> => {
+    const qs = ecosystem ? `?v=2&ecosystem=${encodeURIComponent(ecosystem)}` : "?v=2";
+    return cachedGet<{ subjects: Server.ExamSubjectDTO[] }>(`/api/exam/config${qs}`).then((d) => d.subjects);
+  },
 
   // ── Exam History & Real Exam ────────────────────────────────
 
