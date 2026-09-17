@@ -466,11 +466,13 @@ export default function PracticeTab() {
                 <div className="terminal-window-bar border-b border-[var(--border-subtle)]">
                   <div className="dot close" /><div className="dot minimize" /><div className="dot maximize" />
                   <div className="flex-1 text-center text-xs text-[var(--dashboard-text-muted)] font-mono">{"// QUICK_PRACTICE"}</div>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded border" style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-muted)" }}>{ecosystem === "BCS" ? "BCS" : "ব্যাংক"} · {subjects.length} বিষয়</span>
                 </div>
                 <div className="p-5 md:p-6">
                   <div className="flex items-center gap-2 mb-1">
                     <Zap className="w-5 h-5 text-[var(--dashboard-primary)]" />
                     <h2 className="text-lg font-bold" style={{ color: "var(--dashboard-text-primary)" }}>কুইক প্র্যাকটিস</h2>
+                    <span className={`ml-2 text-[10px] font-mono px-2 py-0.5 rounded-full border ${ecosystem === "BCS" ? "bg-[var(--dashboard-primary-subtle)] border-[var(--dashboard-primary)]/20 text-[var(--dashboard-primary)]" : "bg-amber-500/10 border-amber-500/20 text-amber-600"}`}>{ecosystem === "BCS" ? "BCS" : "ব্যাংক"}</span>
                   </div>
                   <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">
                     যেকোনো বিষয়ের নির্দিষ্ট টপিক ও সাবটপিক বেছে নিয়ে তৎক্ষণাৎ প্রশ্ন অনুশীলন করুন।
