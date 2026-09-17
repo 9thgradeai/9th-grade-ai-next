@@ -4,236 +4,141 @@
   "depth": 0,
   "children": [
     {
-      "name": "BB_01_বাংলা_ব্যাকরণ",
-      "path": "/BB_01_বাংলা_ব্যাকরণ",
+      "name": "BB_01_বাংলা",
+      "path": "/BB_01_বাংলা",
       "depth": 1,
       "children": [
         {
-          "name": "শব্দতত্ত্ব (Word Origin)",
-          "path": "/BB_01_বাংলা_ব্যাকরণ/শব্দতত্ত্ব_(Word_Origin)",
+          "name": "Grammar (Byakoron)",
+          "path": "/BB_01_বাংলা/grammar-byakoron",
           "depth": 2,
-          "children": []
+          "children": [
+            { "name": "Word Origin (Shobdo)", "path": "/BB_01_বাংলা/grammar-byakoron/word-origin-shobdo", "depth": 3, "children": [] },
+            { "name": "Sandhi", "path": "/BB_01_বাংলা/grammar-byakoron/sandhi", "depth": 3, "children": [] },
+            { "name": "Prefix/Suffix (Upashorgo/Protoy)", "path": "/BB_01_বাংলা/grammar-byakoron/prefix-suffix", "depth": 3, "children": [] },
+            { "name": "Voice/Narration (Ukti)", "path": "/BB_01_বাংলা/grammar-byakoron/voice-narration-ukti", "depth": 3, "children": [] },
+            { "name": "Spelling (Banan/Nottwo Bidhi)", "path": "/BB_01_বাংলা/grammar-byakoron/spelling-banan", "depth": 3, "children": [] }
+          ]
         },
         {
-          "name": "সন্ধি (Sandhi)",
-          "path": "/BB_01_বাংলা_ব্যাকরণ/সন্ধি_(Sandhi)",
+          "name": "Literature (Shahitto)",
+          "path": "/BB_01_বাংলা/literature-shahitto",
           "depth": 2,
-          "children": []
-        },
-        {
-          "name": "উপসর্গ/প্রত্যয় (Prefix/Suffix)",
-          "path": "/BB_01_বাংলা_ব্যাকরণ/উপসর্গ_প্রত্যয়",
-          "depth": 2,
-          "children": []
-        },
-        {
-          "name": "বাচ্য/উক্তি (Voice/Narration)",
-          "path": "/BB_01_বাংলা_ব্যাকরণ/বাচ্য_উক্তি",
-          "depth": 2,
-          "children": []
-        },
-        {
-          "name": "বানান/নত্ববিধি (Spelling)",
-          "path": "/BB_01_বাংলা_ব্যাকরণ/বানান_নত্ববিধি",
-          "depth": 2,
-          "children": []
+          "children": [
+            { "name": "Authors & Works", "path": "/BB_01_বাংলা/literature-shahitto/authors-works", "depth": 3, "children": [] },
+            { "name": "Literary History", "path": "/BB_01_বাংলা/literature-shahitto/literary-history", "depth": 3, "children": [] }
+          ]
         }
       ]
     },
     {
-      "name": "BB_02_বাংলা_সাহিত্য",
-      "path": "/BB_02_বাংলা_সাহিত্য",
-      "depth": 1,
-      "children": [
-        {
-          "name": "লেখক ও রচনা (Authors & Works)",
-          "path": "/BB_02_বাংলা_সাহিত্য/লেখক_ও_রচনা",
-          "depth": 2,
-          "children": []
-        },
-        {
-          "name": "সাহিত্য ইতিহাস (Literary History)",
-          "path": "/BB_02_বাংলা_সাহিত্য/সাহিত্য_ইতিহাস",
-          "depth": 2,
-          "children": []
-        }
-      ]
-    },
-    {
-      "name": "BB_03_ইংরেজি_ব্যাকরণ",
-      "path": "/BB_03_ইংরেজি_ব্যাকরণ",
+      "name": "BB_02_English",
+      "path": "/BB_02_English",
       "depth": 1,
       "children": [
         {
           "name": "Vocabulary",
-          "path": "/BB_03_ইংরেজি_ব্যাকরণ/Vocabulary",
+          "path": "/BB_02_English/vocabulary",
           "depth": 2,
           "children": [
-            {
-              "name": "Idioms & Phrases",
-              "path": "/BB_03_ইংরেজি_ব্যাকরণ/Vocabulary/Idioms_and_Phrases",
-              "depth": 3,
-              "children": []
-            },
-            {
-              "name": "One-word Substitution",
-              "path": "/BB_03_ইংরেজি_ব্যাকরণ/Vocabulary/One_word_Substitution",
-              "depth": 3,
-              "children": []
-            },
-            {
-              "name": "Synonyms/Antonyms",
-              "path": "/BB_03_ইংরেজি_ব্যাকরণ/Vocabulary/Synonyms_Antonyms",
-              "depth": 3,
-              "children": []
-            },
-            {
-              "name": "Spelling",
-              "path": "/BB_03_ইংরেজি_ব্যাকরণ/Vocabulary/Spelling",
-              "depth": 3,
-              "children": []
-            }
+            { "name": "Idioms & Phrases", "path": "/BB_02_English/vocabulary/idioms-phrases", "depth": 3, "children": [] },
+            { "name": "One-word Substitution", "path": "/BB_02_English/vocabulary/one-word-substitution", "depth": 3, "children": [] },
+            { "name": "Synonyms/Antonyms", "path": "/BB_02_English/vocabulary/synonyms-antonyms", "depth": 3, "children": [] },
+            { "name": "Spelling", "path": "/BB_02_English/vocabulary/spelling", "depth": 3, "children": [] }
           ]
         },
         {
           "name": "Grammar",
-          "path": "/BB_03_ইংরেজি_ব্যাকরণ/Grammar",
+          "path": "/BB_02_English/grammar",
           "depth": 2,
           "children": [
-            {
-              "name": "Voice",
-              "path": "/BB_03_ইংরেজি_ব্যাকরণ/Grammar/Voice",
-              "depth": 3,
-              "children": []
-            },
-            {
-              "name": "Prepositions",
-              "path": "/BB_03_ইংরেজি_ব্যাকরণ/Grammar/Prepositions",
-              "depth": 3,
-              "children": []
-            },
-            {
-              "name": "Sentence Correction",
-              "path": "/BB_03_ইংরেজি_ব্যাকরণ/Grammar/Sentence_Correction",
-              "depth": 3,
-              "children": []
-            }
+            { "name": "Voice", "path": "/BB_02_English/grammar/voice", "depth": 3, "children": [] },
+            { "name": "Prepositions", "path": "/BB_02_English/grammar/prepositions", "depth": 3, "children": [] },
+            { "name": "Sentence Correction", "path": "/BB_02_English/grammar/sentence-correction", "depth": 3, "children": [] }
           ]
         }
       ]
     },
     {
-      "name": "BB_04_ইংরেজি_সাহিত্য",
-      "path": "/BB_04_ইংরেজি_সাহিত্য",
-      "depth": 1,
-      "children": []
-    },
-    {
-      "name": "BB_05_সাধারণ_গণিত",
-      "path": "/BB_05_সাধারণ_গণিত",
+      "name": "BB_03_গণিত",
+      "path": "/BB_03_গণিত",
       "depth": 1,
       "children": [
         {
           "name": "Arithmetic",
-          "path": "/BB_05_সাধারণ_গণিত/Arithmetic",
+          "path": "/BB_03_গণিত/arithmetic",
           "depth": 2,
           "children": [
-            {
-              "name": "Profit, Loss & Percentage",
-              "path": "/BB_05_সাধারণ_গণিত/Arithmetic/Profit_Loss_Percentage",
-              "depth": 3,
-              "children": []
-            },
-            {
-              "name": "Time, Speed & Distance",
-              "path": "/BB_05_সাধারণ_গণিত/Arithmetic/Time_Speed_Distance",
-              "depth": 3,
-              "children": []
-            },
-            {
-              "name": "Interest (Simple/Compound)",
-              "path": "/BB_05_সাধারণ_গণিত/Arithmetic/Interest",
-              "depth": 3,
-              "children": []
-            }
+            { "name": "Profit, Loss & Percentage", "path": "/BB_03_গণিত/arithmetic/profit-loss-percentage", "depth": 3, "children": [] },
+            { "name": "Time, Speed & Distance", "path": "/BB_03_গণিত/arithmetic/time-speed-distance", "depth": 3, "children": [] },
+            { "name": "Interest (Simple/Compound)", "path": "/BB_03_গণিত/arithmetic/interest", "depth": 3, "children": [] }
           ]
         },
         {
           "name": "Algebra",
-          "path": "/BB_05_সাধারণ_গণিত/Algebra",
+          "path": "/BB_03_গণিত/algebra",
           "depth": 2,
           "children": [
-            {
-              "name": "Equations & Fractions",
-              "path": "/BB_05_সাধারণ_গণিত/Algebra/Equations_Fractions",
-              "depth": 3,
-              "children": []
-            }
+            { "name": "Equations & Fractions", "path": "/BB_03_গণিত/algebra/equations-fractions", "depth": 3, "children": [] }
           ]
         },
         {
           "name": "Geometry",
-          "path": "/BB_05_সাধারণ_গণিত/Geometry",
+          "path": "/BB_03_গণিত/geometry",
           "depth": 2,
           "children": [
-            {
-              "name": "Mensuration (Area/Perimeter)",
-              "path": "/BB_05_সাধারণ_গণিত/Geometry/Mensuration",
-              "depth": 3,
-              "children": []
-            }
+            { "name": "Mensuration (Area/Perimeter)", "path": "/BB_03_গণিত/geometry/mensuration", "depth": 3, "children": [] }
           ]
         },
         {
           "name": "Logical Reasoning",
-          "path": "/BB_05_সাধারণ_গণিত/Logical_Reasoning",
+          "path": "/BB_03_গণিত/logical-reasoning",
           "depth": 2,
           "children": [
-            {
-              "name": "Puzzles & Sets",
-              "path": "/BB_05_সাধারণ_গণিত/Logical_Reasoning/Puzzles_Sets",
-              "depth": 3,
-              "children": []
-            }
+            { "name": "Puzzles & Sets", "path": "/BB_03_গণিত/logical-reasoning/puzzles-sets", "depth": 3, "children": [] }
           ]
         }
       ]
     },
     {
-      "name": "BB_06_আর্থিক_ও_ব্যাংকিং_জ্ঞান",
-      "path": "/BB_06_আর্থিক_ও_ব্যাংকিং_জ্ঞান",
-      "depth": 1,
-      "children": []
-    },
-    {
-      "name": "BB_07_বিশ্লেষণাত্মক_দক্ষতা",
-      "path": "/BB_07_বিশ্লেষণাত্মক_দক্ষতা",
-      "depth": 1,
-      "children": []
-    },
-    {
-      "name": "BB_08_তথ্য_ও_যোগাযোগ_প্রযুক্তি",
-      "path": "/BB_08_তথ্য_ও_যোগাযোগ_প্রযুক্তি",
+      "name": "BB_04_সাধারণ_জ্ঞান",
+      "path": "/BB_04_সাধারণ_জ্ঞান",
       "depth": 1,
       "children": [
         {
-          "name": "Fundamentals & Hardware",
-          "path": "/BB_08_তথ্য_ও_যোগাযোগ_প্রযুক্তি/Fundamentals_Hardware",
+          "name": "Current Affairs",
+          "path": "/BB_04_সাধারণ_জ্ঞান/current-affairs",
           "depth": 2,
-          "children": []
+          "children": [
+            { "name": "Sports, Awards, Geopolitics", "path": "/BB_04_সাধারণ_জ্ঞান/current-affairs/sports-awards-geopolitics", "depth": 3, "children": [] }
+          ]
         },
         {
-          "name": "Software & Programming",
-          "path": "/BB_08_তথ্য_ও_যোগাযোগ_প্রযুক্তি/Software_Programming",
+          "name": "Bangladesh Affairs",
+          "path": "/BB_04_সাধারণ_জ্ঞান/bangladesh-affairs",
           "depth": 2,
-          "children": []
+          "children": [
+            { "name": "Economy, Mega Projects, History", "path": "/BB_04_সাধারণ_জ্ঞান/bangladesh-affairs/economy-mega-projects-history", "depth": 3, "children": [] }
+          ]
         },
         {
-          "name": "Networking & Cybersecurity",
-          "path": "/BB_08_তথ্য_ও_যোগাযোগ_প্রযুক্তি/Networking_Cybersecurity",
+          "name": "International Affairs",
+          "path": "/BB_04_সাধারণ_জ্ঞান/international-affairs",
           "depth": 2,
-          "children": []
+          "children": [
+            { "name": "Geography, Organizations", "path": "/BB_04_সাধারণ_জ্ঞান/international-affairs/geography-organizations", "depth": 3, "children": [] }
+          ]
         }
+      ]
+    },
+    {
+      "name": "BB_05_তথ্য_ও_যোগাযোগ_প্রযুক্তি",
+      "path": "/BB_05_তথ্য_ও_যোগাযোগ_প্রযুক্তি",
+      "depth": 1,
+      "children": [
+        { "name": "Fundamentals & Hardware", "path": "/BB_05_তথ্য_ও_যোগাযোগ_প্রযুক্তি/fundamentals-hardware", "depth": 2, "children": [] },
+        { "name": "Software & Programming", "path": "/BB_05_তথ্য_ও_যোগাযোগ_প্রযুক্তি/software-programming", "depth": 2, "children": [] },
+        { "name": "Networking & Cybersecurity", "path": "/BB_05_তথ্য_ও_যোগাযোগ_প্রযুক্তি/networking-cybersecurity", "depth": 2, "children": [] }
       ]
     }
   ]

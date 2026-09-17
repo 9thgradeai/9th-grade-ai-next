@@ -143,18 +143,15 @@ async function main() {
 
   // --- BB Subjects + Topics (Bangladesh Bank ecosystem) ---
   const bbSubjectMeta = [
-    { nameBn: "বাংলা ব্যাকরণ", nameEn: "Bangla Grammar" },
-    { nameBn: "বাংলা সাহিত্য", nameEn: "Bangla Literature" },
-    { nameBn: "ইংরেজি ব্যাকরণ", nameEn: "English Grammar" },
-    { nameBn: "ইংরেজি সাহিত্য", nameEn: "English Literature" },
-    { nameBn: "সাধারণ গণিত", nameEn: "General Mathematics" },
-    { nameBn: "আর্থিক ও ব্যাংকিং জ্ঞান", nameEn: "Financial and Banking Knowledge" },
-    { nameBn: "বিশ্লেষণাত্মক দক্ষতা", nameEn: "Analytical Skills" },
-    { nameBn: "তথ্য ও যোগাযোগ প্রযুক্তি", nameEn: "Basic Knowledge on ICT" },
+    { nameBn: "বাংলা", nameEn: "Bangla" },
+    { nameBn: "English", nameEn: "English" },
+    { nameBn: "গণিত", nameEn: "Mathematics" },
+    { nameBn: "সাধারণ জ্ঞান", nameEn: "General Knowledge" },
+    { nameBn: "তথ্য ও যোগাযোগ প্রযুক্তি", nameEn: "ICT" },
   ];
   let bbSortOrder = 1;
   for (const meta of bbSubjectMeta) {
-    const subject = await prisma.subject.upsert({
+    await prisma.subject.upsert({
       where: { ecosystemId_nameBn: { ecosystemId: bbEcosystem.id, nameBn: meta.nameBn } },
       update: { nameEn: meta.nameEn, sortOrder: bbSortOrder },
       create: {
@@ -166,7 +163,7 @@ async function main() {
     });
     bbSortOrder++;
   }
-  console.log(`  ✓ ${bbSubjectMeta.length} BB subjects`);
+  console.log(`  ✓ ${bbSubjectMeta.length} BB subjects (topics created by seed-bb-subjects.ts)`);
 
   // --- Subjects + recursive topics + questions (content taxonomy) ---
   // seedQuestions owns the content taxonomy: it creates the 10 subjects, builds
