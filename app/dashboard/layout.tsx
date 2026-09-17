@@ -138,12 +138,18 @@ function EmailVerificationGate({ children }: { children: React.ReactNode }) {
 function GlobalEcosystemToggle() {
   const { ecosystem, setEcosystem } = useEcosystem();
   return (
-    <div className="hidden sm:flex items-center gap-1.5 bg-[var(--dashboard-surface-muted)] border border-[var(--dashboard-border-muted)] rounded-lg p-0.5">
+    <div
+      className="flex items-center gap-1 sm:gap-1.5 bg-[var(--dashboard-surface-muted)] border border-[var(--dashboard-border-muted)] rounded-lg p-0.5 shrink-0"
+      role="group"
+      aria-label="Exam ecosystem"
+    >
       {(["BCS", "BANGLADESH_BANK"] as const).map((code) => (
         <button
           key={code}
           onClick={() => setEcosystem(code)}
-          className={`px-2.5 py-1 text-[11px] font-bold rounded-md transition-all ${ecosystem === code ? "bg-[var(--dashboard-primary)] text-white shadow-sm" : "text-[var(--dashboard-text-secondary)] hover:text-[var(--dashboard-text-primary)]"}`}
+          aria-pressed={ecosystem === code}
+          aria-label={code === "BCS" ? "BCS" : "বাংলাদেশ ব্যাংক"}
+          className={`min-h-[28px] sm:min-h-[30px] px-2 sm:px-2.5 py-1 text-[10px] sm:text-[11px] font-bold rounded-md transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] focus-visible:ring-offset-1 ${ecosystem === code ? "bg-[var(--dashboard-primary)] text-white shadow-sm" : "text-[var(--dashboard-text-secondary)] hover:text-[var(--dashboard-text-primary)] hover:bg-[var(--surface-hover)]"}`}
         >
           {code === "BCS" ? "BCS" : "ব্যাংক"}
         </button>
@@ -253,7 +259,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <div className="flex-1 min-w-0 flex flex-col h-full">
               {/* Fixed Top Header — academic premium */}
               <header className="shrink-0 z-30 border-b pt-safe backdrop-blur-md" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}>
-                <div className="flex items-center gap-3 px-4 sm:px-6 h-14 lg:h-16">
+                <div className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 lg:px-6 h-14 lg:h-16 min-w-0">
                   {/* Hamburger — visible on tablet + mobile (<lg) to expose left tabs */}
                   <button
                     onClick={() => setNavDrawerOpen(true)}
@@ -265,15 +271,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   >
                     <Menu className="w-5 h-5" />
                   </button>
-                  {/* Mobile logo */}
+                  {/* Mobile logo — text hides on very narrow screens to keep toggle + actions visible */}
                   <Link
                     href="/"
-                    className="lg:hidden flex items-center gap-2.5 font-display font-bold text-[15px]"
+                    className="lg:hidden flex items-center gap-2 font-display font-bold text-[15px] min-w-0 shrink-0"
                     style={{ color: "var(--dashboard-text-primary)" }}
                     aria-label="9Th-Grade AI home"
                   >
-                    <BrandMark className="h-8 w-8 rounded-lg ring-1 ring-black/5" />
-                    <span>9Th-Grade AI</span>
+                    <BrandMark className="h-8 w-8 rounded-lg ring-1 ring-black/5 shrink-0" />
+                    <span className="hidden min-[360px]:inline truncate">9Th-Grade AI</span>
                   </Link>
 
                   {/* Desktop page title — clean, no terminal $ */}
@@ -282,7 +288,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     <span className="text-[11px]" style={{ color: "var(--dashboard-text-muted)" }}>{t("dashboard.controlCenter")}</span>
                   </div>
 
-                  <div className="ml-auto flex items-center gap-2">
+                  <div className="ml-auto flex items-center gap-1.5 sm:gap-2 min-w-0 shrink-0">
                     <GlobalEcosystemToggle />
                     <button
                       type="button"
