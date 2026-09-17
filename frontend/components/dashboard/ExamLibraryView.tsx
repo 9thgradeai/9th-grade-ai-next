@@ -13,6 +13,7 @@ import {
   Shuffle,
 } from "lucide-react";
 import { api } from "@/lib/services/api";
+import { useEcosystem } from "@/lib/ecosystem-ctx";
 import type { ExamCategoryDTO, ExamDTO, ExamPaperDTO, QuestionDTO } from "@/lib/types";
 import QuestionDrill from "./QuestionDrill";
 
@@ -31,6 +32,7 @@ type PaperSelection = {
  * loads its validated questions via paperId and offers an inline practice run.
  */
 export default function ExamLibraryView() {
+  const { ecosystem } = useEcosystem();
   const [categories, setCategories] = useState<ExamCategoryDTO[]>([]);
   const [loadingTree, setLoadingTree] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<ExamCategoryDTO | null>(null);
@@ -45,7 +47,7 @@ export default function ExamLibraryView() {
   useEffect(() => {
     let cancelled = false;
     api
-      .examLibrary()
+      .examLibrary(ecosystem)
       .then((cats) => {
         if (cancelled) return;
         setCategories(cats);
@@ -60,7 +62,7 @@ export default function ExamLibraryView() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [ecosystem]);
 
   const activeCategory = selectedCategory;
   const activeExam = selectedExam;
@@ -77,7 +79,7 @@ export default function ExamLibraryView() {
     setDrilling(false);
     setLoadingQuestions(true);
     try {
-      const qs = await api.questions({ paperId: paper.id, limit: 200 });
+      const qs = await api.questions({ paperId: paper.id, limit: 200, ecosystem });
       setQuestions(qs);
     } catch {
       setQuestions([]);

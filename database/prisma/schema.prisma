@@ -67,6 +67,12 @@ enum BadgeRarity {
   LEGENDARY
 }
 
+// Top-level exam ecosystem boundary (BCS, Bangladesh Bank, etc.).
+enum ExamEcosystemCode {
+  BCS
+  BANGLADESH_BANK
+}
+
 // ── AI ────────────────────────────────────────────────────
 enum AIConversationKind {
   TUTOR
@@ -117,6 +123,33 @@ enum AIFeedbackRating {
 enum DailyQuizParticipationStatus {
   IN_PROGRESS
   COMPLETED
+}
+
+// ── Exam Ecosystem ────────────────────────────────────────
+// Root boundary for exam-family content isolation. Each ecosystem (BCS,
+// Bangladesh Bank, etc.) owns its own Subject → Topic → Question tree and
+// ExamCategory → Exam → ExamPaper hierarchy. Shared infrastructure (User,
+// Bookmark, Flashcard, MockTest, AI, Progress) is NOT scoped by ecosystem.
+model ExamEcosystem {
+  id              Int                @id @default(autoincrement())
+  code            ExamEcosystemCode  @unique
+  slug            String             @unique
+  name            String             // English display name
+  nameBn          String             // Bengali display name
+  description     String             @default("")
+  descriptionBn   String             @default("")
+  isActive        Boolean            @default(true)
+  sortOrder       Int                @default(0)
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  subjects        Subject[]
+  examCategories  ExamCategory[]
+  dailyQuizzes    DailyQuiz[]
+  questions       Question[]
+  attempts        QuestionAttempt[]
+
+  @@index([sortOrder])
 }
 
 // ── Auth ──────────────────────────────────────────────────
@@ -187,13 +220,15 @@ model User {
 
 // ── Content taxonomy ──────────────────────────────────────
 model Subject {
-  id           Int      @id @default(autoincrement())
-  nameBn       String   @unique
+  id           Int           @id @default(autoincrement())
+  ecosystemId  Int
+  ecosystem    ExamEcosystem @relation(fields: [ecosystemId], references: [id], onDelete: Cascade)
+  nameBn       String
   nameEn       String
-  icon         String   @default("📘")
-  color        String?  @default("text-emerald-400")
-  bg           String?  @default("bg-emerald-500/10")
-  sortOrder    Int      @default(0)
+  icon         String        @default("📘")
+  color        String?       @default("text-emerald-400")
+  bg           String?       @default("bg-emerald-500/10")
+  sortOrder    Int           @default(0)
   topics       Topic[]
   questions    Question[]
   flashcards   Flashcard[]
@@ -201,7 +236,9 @@ model Subject {
   attempts     QuestionAttempt[]
   aiConversations AIConversation[]
 
+  @@unique([ecosystemId, nameBn])
   @@index([sortOrder])
+  @@index([ecosystemId])
 }
 
 model Topic {
@@ -230,17 +267,21 @@ model Topic {
 // Metadata that is genuinely unknown is left NULL — never fabricated.
 
 model ExamCategory {
-  id        Int     @id @default(autoincrement())
-  slug      String  @unique
-  nameBn    String
-  nameEn    String
-  icon      String  @default("📘")
-  color     String  @default("text-emerald-400")
-  bg        String  @default("bg-emerald-500/10")
-  sortOrder Int     @default(0)
-  exams     Exam[]
+  id           Int             @id @default(autoincrement())
+  ecosystemId  Int
+  ecosystem    ExamEcosystem   @relation(fields: [ecosystemId], references: [id], onDelete: Cascade)
+  slug         String          @unique
+  nameBn       String
+  nameEn       String
+  icon         String          @default("📘")
+  color        String          @default("text-emerald-400")
+  bg           String          @default("bg-emerald-500/10")
+  sortOrder    Int             @default(0)
+  exams        Exam[]
 
+  @@unique([ecosystemId, slug])
   @@index([sortOrder])
+  @@index([ecosystemId])
 }
 
 model Exam {
@@ -290,43 +331,47 @@ model ExamPaper {
 
 // ── Questions ─────────────────────────────────────────────
 model Question {
-  id             Int      @id @default(autoincrement())
+  id             Int             @id @default(autoincrement())
+  ecosystemId    Int
+  ecosystem      ExamEcosystem   @relation(fields: [ecosystemId], references: [id], onDelete: Cascade)
   subjectId      Int
-  subject        Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  subject        Subject         @relation(fields: [subjectId], references: [id], onDelete: Cascade)
   topicId        Int?
-  leaf           Topic?   @relation(fields: [topicId], references: [id], onDelete: SetNull)
-  path           String   @default("") // full leaf content path, e.g. "04_আন্তর্জাতিক_বিষয়াবলি/০২_নিরাপ্তা_ও_ক্ষমতা/আন্তর্জাতিক_নিরাপ্তা"
-  topic          String   @default("") // topic group display name (depth-1 node)
-  subtopic       String   @default("") // leaf display name (Topic.name)
+  leaf           Topic?          @relation(fields: [topicId], references: [id], onDelete: SetNull)
+  path           String          @default("") // full leaf content path, e.g. "04_আন্তর্জাতিক_বিষয়াবলি/০২_নিরাপ্তা_ও_ক্ষমতা/আন্তর্জাতিক_নিরাপ্তা"
+  topic          String          @default("") // topic group display name (depth-1 node)
+  subtopic       String          @default("") // leaf display name (Topic.name)
   question       String
   options        Json // string[]
   correctAnswer  String
-  explanation    String   @default("")
-  difficulty     Difficulty @default(MEDIUM)
+  explanation    String          @default("")
+  difficulty     Difficulty      @default(MEDIUM)
   year           Int?
-  sourceExam     String   @default("")
-  bcsTerm        String?  // e.g., "50th", "49th", "48th" — BCS exam term
+  sourceExam     String          @default("")
+  bcsTerm        String?         // e.g., "50th", "49th", "48th" — BCS exam term
   // Exam-library linkage: a question may belong to a specific paper (BCS exam
   // session). Nullable so generic subject-wise questions remain valid.
   examId         Int?
-  exam           Exam?      @relation(fields: [examId], references: [id], onDelete: SetNull)
+  exam           Exam?           @relation(fields: [examId], references: [id], onDelete: SetNull)
   paperId        Int?
-  paper          ExamPaper? @relation(fields: [paperId], references: [id], onDelete: SetNull)
-  questionNumber Int?       // position of the question in the original paper, if known
+  paper          ExamPaper?      @relation(fields: [paperId], references: [id], onDelete: SetNull)
+  questionNumber Int?            // position of the question in the original paper, if known
   // Deterministic seed identity (md5 of subjectId|path|question). Lets the
   // seeder upsert instead of wipe-and-recreate, so Question ids — and every
   // user row referencing them — stay stable across deploys.
-  sourceKey      String   @default("")
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  sourceKey      String          @default("")
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
   bookmarks      Bookmark[]
   attempts       QuestionAttempt[]
 
-  @@index([subjectId, difficulty])
-  @@index([subjectId, path])
+  @@index([ecosystemId])
+  @@index([ecosystemId, subjectId])
+  @@index([ecosystemId, subjectId, difficulty])
+  @@index([ecosystemId, subjectId, path])
+  @@index([ecosystemId, subjectId, topic, subtopic])
   // FK-side index: Topic SetNull updates/deletes must not seq-scan Questions.
   @@index([topicId])
-  @@index([subjectId, topic, subtopic])
   @@index([examId])
   @@index([paperId, questionNumber])
   @@unique([subjectId, sourceKey])
@@ -456,16 +501,19 @@ model StudyTaskCompletion {
 // dual-read transition; the authoritative per-user state now lives in
 // DailyQuizParticipation. Do not read these columns from new code.
 model DailyQuiz {
-  id        Int           @id @default(autoincrement())
-  date      String        @unique
-  completed Boolean       @default(false)
-  score     Int           @default(0)
-  claimed   Boolean       @default(false)
-  createdAt DateTime      @default(now())
-  questions QuizQuestion[]
+  id           Int           @id @default(autoincrement())
+  ecosystemId  Int
+  ecosystem    ExamEcosystem @relation(fields: [ecosystemId], references: [id], onDelete: Cascade)
+  date         String
+  completed    Boolean       @default(false)
+  score        Int           @default(0)
+  claimed      Boolean       @default(false)
+  createdAt    DateTime      @default(now())
+  questions    QuizQuestion[]
   participations DailyQuizParticipation[]
 
-  // `date` is @unique — its unique index serves lookups; duplicate removed.
+  @@unique([ecosystemId, date])
+  @@index([ecosystemId, date])
 }
 
 // Per-user daily-quiz participation — one row per (user, quiz).
@@ -688,26 +736,28 @@ model Bookmark {
 // Every answered question (practice, mock test, daily quiz). Powers
 // accuracy, streaks, and per-subject reports.
 model QuestionAttempt {
-  id         Int       @id @default(autoincrement())
-  userId     String
-  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  questionId Int?
-  question   Question? @relation(fields: [questionId], references: [id], onDelete: SetNull)
-  subjectId  Int?
-  subject    Subject?  @relation(fields: [subjectId], references: [id], onDelete: SetNull)
-  subjectName String   @default("")
-  topic      String    @default("")
-  correct    Boolean
-  source     String    @default("practice") // practice | mock | daily
-  createdAt  DateTime  @default(now())
+  id           Int             @id @default(autoincrement())
+  ecosystemId  Int
+  ecosystem    ExamEcosystem   @relation(fields: [ecosystemId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  questionId   Int?
+  question     Question?       @relation(fields: [questionId], references: [id], onDelete: SetNull)
+  subjectId    Int?
+  subject      Subject?        @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+  subjectName  String          @default("")
+  topic        String          @default("")
+  correct      Boolean
+  source       String          @default("practice") // practice | mock | daily
+  createdAt    DateTime        @default(now())
 
-  @@index([userId, createdAt])
-  @@index([userId, subjectId])
+  @@index([ecosystemId, userId, createdAt])
+  @@index([ecosystemId, userId, subjectId])
   // FK-side index: Question SetNull on delete/update must not seq-scan attempts.
   @@index([questionId])
   // Analytics group-bys filter by userId and aggregate per subject/topic.
-  @@index([userId, subjectName])
-  @@index([userId, topic])
+  @@index([ecosystemId, userId, subjectName])
+  @@index([ecosystemId, userId, topic])
 }
 
 // Mock-test attempts (graded results) for history + exam KPIs.

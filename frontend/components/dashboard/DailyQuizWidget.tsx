@@ -4,10 +4,12 @@ import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Check, Trophy, Zap, ArrowRight, Inbox } from "lucide-react";
 import { api } from "@/lib/services/api";
+import { useEcosystem } from "@/lib/ecosystem-ctx";
 import { useDialogA11y } from "@/lib/use-dialog-a11y";
 import type { Server } from "@/lib/types";
 
 export default function DailyQuizWidget() {
+  const { ecosystem } = useEcosystem();
   const [isOpen, setIsOpen] = useState(false);
   const [quiz, setQuiz] = useState<Server.DailyQuizDTO | null>(null);
   const [history, setHistory] = useState<Server.DailyQuizHistoryItemDTO[]>([]);
@@ -29,7 +31,7 @@ export default function DailyQuizWidget() {
     let cancelled = false;
     void (async () => {
       try {
-        const [dq, hist] = await Promise.allSettled([api.dailyQuiz(), api.dailyQuizHistory(14)]);
+        const [dq, hist] = await Promise.allSettled([api.dailyQuiz(ecosystem), api.dailyQuizHistory(14)]);
         if (!cancelled) {
           if (dq.status === "fulfilled") setQuiz(dq.value);
           if (hist.status === "fulfilled") setHistory(hist.value);
@@ -41,7 +43,7 @@ export default function DailyQuizWidget() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [ecosystem]);
 
   const currentQuestion = quiz?.questions[currentIndex];
   const totalQuestions = quiz?.questions.length ?? 0;

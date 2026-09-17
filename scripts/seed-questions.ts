@@ -178,11 +178,12 @@ function parseQuestionLine(line: string): ParsedQuestion | null {
 }
 
 // Finds or updates the Subject row for a canonical Bengali name (upsert by
-// the unique nameBn key).
+// the unique ecosystemId+nameBn key).
 async function ensureSubject(
   prisma: PrismaClient,
   nameBn: string,
   sortOrder: number,
+  ecosystemId: number,
 ): Promise<{ id: number }> {
   const meta = subjectMetaByNameBn(nameBn) ?? SUBJECT_META[0];
   const data = {
@@ -193,9 +194,9 @@ async function ensureSubject(
     sortOrder,
   };
   const subject = await prisma.subject.upsert({
-    where: { nameBn },
+    where: { ecosystemId_nameBn: { ecosystemId, nameBn } },
     update: data,
-    create: { nameBn, ...data },
+    create: { ecosystemId, nameBn, ...data },
   });
   return { id: subject.id };
 }
@@ -282,6 +283,7 @@ async function syncSubjectQuestions(
   prisma: PrismaClient,
   subjectId: number,
   candidates: QuestionCandidate[],
+  ecosystemId: number,
 ): Promise<{ inserted: number; updated: number }> {
   if (candidates.length === 0) return { inserted: 0, updated: 0 };
 
@@ -352,6 +354,7 @@ async function syncSubjectQuestions(
       if (byText !== undefined) migrated += 1;
     } else {
       creates.push({
+        ecosystemId,
         subjectId,
         sourceKey: key,
         ...contentData,
@@ -405,17 +408,25 @@ async function pruneStaleTopics(
 // upserted by (subjectId, sourceKey) so Question ids — and every user row
 // referencing them (bookmarks, attempts) — survive every reseed. Returns the
 // number of questions present after the sync.
-export async function seedQuestions(prisma: PrismaClient): Promise<number> {
+export async function seedQuestions(prisma: PrismaClient, ecosystemId?: number): Promise<number> {
   const dir = join(process.cwd(), "database", "data", "ques");
   const files = readdirSync(dir).filter((f) => /\.txt$/i.test(f));
   if (files.length === 0) throw new Error("No .txt question files found in database/data/ques");
 
   const taxonomy = loadTaxonomy();
 
+  // Resolve ecosystem ID — default to BCS if not provided
+  let resolvedEcosystemId = ecosystemId;
+  if (!resolvedEcosystemId) {
+    const bcs = await prisma.examEcosystem.findUnique({ where: { code: "BCS" } });
+    if (!bcs) throw new Error("BCS ecosystem not found — run seed.ts first");
+    resolvedEcosystemId = bcs.id;
+  }
+
   // Ensure all 10 canonical subjects exist in architecture order.
   const subjectIds: Record<string, number> = {};
   for (const [i, meta] of SUBJECT_META.entries()) {
-    const subject = await ensureSubject(prisma, meta.nameBn, i);
+    const subject = await ensureSubject(prisma, meta.nameBn, i, resolvedEcosystemId);
     subjectIds[meta.nameBn.normalize("NFC")] = subject.id;
   }
 
@@ -509,7 +520,7 @@ export async function seedQuestions(prisma: PrismaClient): Promise<number> {
       };
     });
 
-    const { inserted } = await syncSubjectQuestions(prisma, subjectId, candidates);
+    const { inserted } = await syncSubjectQuestions(prisma, subjectId, candidates, resolvedEcosystemId);
     totalInserted += inserted;
     console.log(`✓ ${canonical}: ${parsed.length} synced (${inserted} new)`);
   }
@@ -563,7 +574,7 @@ export async function seedQuestions(prisma: PrismaClient): Promise<number> {
           parsed: q,
         };
       });
-      const { inserted } = await syncSubjectQuestions(prisma, subjectId, candidates);
+      const { inserted } = await syncSubjectQuestions(prisma, subjectId, candidates, resolvedEcosystemId);
       totalInserted += inserted;
       console.log(`✓ ${meta.nameBn} (subject file): ${parsed.length} synced (${inserted} new)`);
       continue;
@@ -598,7 +609,7 @@ export async function seedQuestions(prisma: PrismaClient): Promise<number> {
       parsed: q,
     }));
 
-    const { inserted } = await syncSubjectQuestions(prisma, subjectId, candidates);
+    const { inserted } = await syncSubjectQuestions(prisma, subjectId, candidates, resolvedEcosystemId);
     totalInserted += inserted;
     console.log(`✓ ${meta.nameBn} → ${path}: ${parsed.length} synced (${inserted} new)`);
   }

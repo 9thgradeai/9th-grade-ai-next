@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
+import { EcosystemProvider } from "@/lib/ecosystem-ctx";
 import StudyPlannerTab from "@/components/dashboard/StudyPlannerTab";
 import FlashcardsTab from "@/components/dashboard/FlashcardsTab";
 import MockTestTab from "@/components/dashboard/MockTestTab";
@@ -106,19 +107,19 @@ describe("MockTestTab", () => {
   });
 
   it("renders setup screen initially", async () => {
-    render(<MockTestTab />);
+    render(<EcosystemProvider><MockTestTab /></EcosystemProvider>);
     expect(await screen.findByText("মক টেস্ট")).toBeInTheDocument();
   });
 
   it("displays available subjects with question counts", async () => {
-    render(<MockTestTab />);
+    render(<EcosystemProvider><MockTestTab /></EcosystemProvider>);
     expect(await screen.findByText("বাংলা ভাষা ও সাহিত্য")).toBeInTheDocument();
     expect(screen.getByText("English Language and Literature")).toBeInTheDocument();
     expect(screen.getAllByText("10টি প্রশ্ন").length).toBeGreaterThan(0);
   });
 
   it("shows start button", async () => {
-    render(<MockTestTab />);
+    render(<EcosystemProvider><MockTestTab /></EcosystemProvider>);
     expect(await screen.findByText("মক টেস্ট শুরু করুন")).toBeInTheDocument();
   });
 });
@@ -162,12 +163,12 @@ describe("DailyQuizWidget", () => {
   });
 
   it("renders the closed widget", () => {
-    render(<DailyQuizWidget />);
+    render(<EcosystemProvider><DailyQuizWidget /></EcosystemProvider>);
     expect(screen.getByText("দৈনিক কুইজ")).toBeInTheDocument();
   });
 
   it("shows an empty state when no quiz is available", async () => {
-    render(<DailyQuizWidget />);
+    render(<EcosystemProvider><DailyQuizWidget /></EcosystemProvider>);
     fireEvent.click(screen.getByText("দৈনিক কুইজ"));
     expect(await screen.findByText("আজকের জন্য কোনো কুইজ নেই")).toBeInTheDocument();
   });

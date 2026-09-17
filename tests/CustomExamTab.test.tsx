@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { EcosystemProvider } from "@/lib/ecosystem-ctx";
 import CustomExamTab from "@/components/dashboard/CustomExamTab";
 import type { Server } from "@/lib/types";
 
@@ -73,19 +74,19 @@ afterEach(() => {
 
 describe("CustomExamTab (config phase)", () => {
   it("renders the exam builder header", async () => {
-    render(<CustomExamTab />);
+    render(<EcosystemProvider><CustomExamTab /></EcosystemProvider>);
     expect(await screen.findByText("কাস্টম বিসিএস পরীক্ষা")).toBeInTheDocument();
   });
 
   it("loads and displays subjects with question counts", async () => {
-    render(<CustomExamTab />);
+    render(<EcosystemProvider><CustomExamTab /></EcosystemProvider>);
     expect(await screen.findByText("বাংলা ভাষা ও সাহিত্য")).toBeInTheDocument();
     expect(screen.getByText("English Language and Literature")).toBeInTheDocument();
     expect(screen.getAllByText("20টি প্রশ্ন").length).toBeGreaterThan(0);
   });
 
   it("selecting a subject updates the live summary", async () => {
-    render(<CustomExamTab />);
+    render(<EcosystemProvider><CustomExamTab /></EcosystemProvider>);
     await screen.findByText("বাংলা ভাষা ও সাহিত্য");
     fireEvent.click(screen.getByText("বাংলা ভাষা ও সাহিত্য"));
 
@@ -98,7 +99,7 @@ describe("CustomExamTab (config phase)", () => {
   });
 
   it("opens the confirmation modal with a full config summary", async () => {
-    render(<CustomExamTab />);
+    render(<EcosystemProvider><CustomExamTab /></EcosystemProvider>);
     await screen.findByText("বাংলা ভাষা ও সাহিত্য");
     fireEvent.click(screen.getByText("বাংলা ভাষা ও সাহিত্য"));
 
@@ -111,7 +112,7 @@ describe("CustomExamTab (config phase)", () => {
   });
 
   it("per-subject count defaults and feeds the total", async () => {
-    render(<CustomExamTab />);
+    render(<EcosystemProvider><CustomExamTab /></EcosystemProvider>);
     await screen.findByText("বাংলা ভাষা ও সাহিত্য");
     fireEvent.click(screen.getByText("বাংলা ভাষা ও সাহিত্য"));
 
@@ -128,7 +129,7 @@ describe("CustomExamTab (config phase)", () => {
   });
 
   it("clamps a subject's count to its available questions", async () => {
-    render(<CustomExamTab />);
+    render(<EcosystemProvider><CustomExamTab /></EcosystemProvider>);
     await screen.findByText("বাংলা ভাষা ও সাহিত্য");
     fireEvent.click(screen.getByText("বাংলা ভাষা ও সাহিত্য"));
 

@@ -115,6 +115,8 @@ export interface ChangePasswordInput {
 }
 
 export interface QuestionSearchFilters {
+  /** Ecosystem code (BCS, BANGLADESH_BANK) — filters by ecosystem boundary. */
+  ecosystem?: string;
   subject?: string;
   topic?: string;
   difficulty?: string;
@@ -348,11 +350,13 @@ export async function validateChangePasswordInput(body: unknown): Promise<Change
 }
 
 const DIFFICULTIES = ["EASY", "MEDIUM", "HARD"] as const;
+const VALID_ECOSYSTEMS = ["BCS", "BANGLADESH_BANK"] as const;
 
 export function validateQuestionSearchParams(params: URLSearchParams): QuestionSearchFilters {
   const filters: QuestionSearchFilters = {};
 
   const allowedParams = [
+    "ecosystem",
     "subject",
     "topic",
     "difficulty",
@@ -372,6 +376,7 @@ export function validateQuestionSearchParams(params: URLSearchParams): QuestionS
     throw new ValidationError(`Unexpected query parameter(s): ${unexpected.join(", ")}.`);
   }
 
+  const ecosystem = params.get("ecosystem");
   const subject = params.get("subject");
   const topic = params.get("topic");
   const difficulty = params.get("difficulty");
@@ -386,6 +391,15 @@ export function validateQuestionSearchParams(params: URLSearchParams): QuestionS
   const bcsTerm = params.get("bcsTerm");
   const paperId = params.get("paperId");
 
+  if (ecosystem && ecosystem.length > 0) {
+    const upper = ecosystem.toUpperCase();
+    if (!(VALID_ECOSYSTEMS as readonly string[]).includes(upper)) {
+      throw new ValidationError(
+        `ecosystem must be one of: ${VALID_ECOSYSTEMS.join(", ")}.`,
+      );
+    }
+    filters.ecosystem = upper;
+  }
   if (subject && subject.length > 0) filters.subject = subject;
   if (topic && topic.length > 0) filters.topic = topic;
   if (difficulty && difficulty.length > 0) {

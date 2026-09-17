@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { validateQuestionSearchParams } from "~backend/validation";
 import { getQuestionById, getQuestionsPage } from "~backend/services/content";
+import { resolveEcosystemId } from "~backend/services/ecosystem";
 import { toHttpResponse } from "~backend/errors";
 import { getRequestId, startTiming, applyCorsHeaders, applySecurityHeaders, applyCacheHeaders } from "../_middleware";
 
@@ -23,7 +24,10 @@ export async function GET(request: Request) {
       return res;
     }
 
+    const ecosystemId = await resolveEcosystemId(params.ecosystem);
+
     const { questions, total, page, limit } = await getQuestionsPage({
+      ecosystemId,
       subject: params.subject,
       topic: params.topic,
       difficulty: params.difficulty,

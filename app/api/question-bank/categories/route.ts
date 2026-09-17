@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getQuestionBankCategories } from "~backend/services/content";
+import { resolveEcosystemId } from "~backend/services/ecosystem";
 import { toHttpResponse } from "~backend/errors";
 import { getRequestId, startTiming, applySecurityHeaders, applyCacheHeaders } from "../../_middleware";
 
@@ -8,7 +9,11 @@ export async function GET(request: Request) {
   const getTime = startTiming();
 
   try {
-    const categories = await getQuestionBankCategories();
+    const url = new URL(request.url);
+    const ecosystemCode = url.searchParams.get("ecosystem") ?? undefined;
+    const ecosystemId = await resolveEcosystemId(ecosystemCode);
+
+    const categories = await getQuestionBankCategories(ecosystemId);
 
     const res = NextResponse.json({ categories });
     res.headers.set("X-Request-Id", requestId);

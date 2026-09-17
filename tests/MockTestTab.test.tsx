@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
+import { EcosystemProvider } from "@/lib/ecosystem-ctx";
 import MockTestTab from "@/components/dashboard/MockTestTab";
 import type { Server } from "@/lib/types";
 
@@ -85,7 +86,7 @@ afterEach(() => {
 
 describe("MockTestTab (subtopic selection + build)", () => {
   it("drills into a subtopic and starts a timed mock", async () => {
-    render(<MockTestTab />);
+    render(<EcosystemProvider><MockTestTab /></EcosystemProvider>);
 
     // Select the subject → topic tree appears.
     fireEvent.click(await screen.findByText("বাংলা ভাষা ও সাহিত্য"));
@@ -111,7 +112,7 @@ describe("MockTestTab (subtopic selection + build)", () => {
   });
 
   it("shows the available count for a selected subtopic", async () => {
-    render(<MockTestTab />);
+    render(<EcosystemProvider><MockTestTab /></EcosystemProvider>);
     fireEvent.click(await screen.findByText("বাংলা ভাষা ও সাহিত্য"));
     fireEvent.click(screen.getByText("ভাষা"));
     fireEvent.click(screen.getByText("বানান ও শুদ্ধি"));

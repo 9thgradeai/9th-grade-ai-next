@@ -70,6 +70,22 @@ export const SUBJECT_META: SubjectMeta[] = [
 export function subjectMetaByNameBn(nameBn: string): SubjectMeta | undefined {
   return SUBJECT_META.find((m) => m.nameBn.normalize("NFC") === nameBn.normalize("NFC"));
 }
+
+// ── Bangladesh Bank subject metadata ──
+export const BB_SUBJECT_META: SubjectMeta[] = [
+  { nameBn: "বাংলা ব্যাকরণ", nameEn: "Bangla Grammar", architectureName: "বাংলা_ব্যাকরণ", icon: "📝", color: "text-emerald-400", bg: "bg-emerald-500/10" },
+  { nameBn: "বাংলা সাহিত্য", nameEn: "Bangla Literature", architectureName: "বাংলা_সাহিত্য", icon: "📖", color: "text-sky-400", bg: "bg-sky-500/10" },
+  { nameBn: "ইংরেজি ব্যাকরণ", nameEn: "English Grammar", architectureName: "ইংরেজি_ব্যাকরণ", icon: "🔤", color: "text-green-400", bg: "bg-green-500/10" },
+  { nameBn: "ইংরেজি সাহিত্য", nameEn: "English Literature", architectureName: "ইংরেজি_সাহিত্য", icon: "📚", color: "text-cyan-400", bg: "bg-cyan-500/10" },
+  { nameBn: "সাধারণ গণিত", nameEn: "General Mathematics", architectureName: "সাধারণ_গণিত", icon: "🧮", color: "text-teal-400", bg: "bg-teal-500/10" },
+  { nameBn: "আর্থিক ও ব্যাংকিং জ্ঞান", nameEn: "Financial and Banking Knowledge", architectureName: "আর্থিক_ও_ব্যাংকিং_জ্ঞান", icon: "🏦", color: "text-purple-400", bg: "bg-purple-500/10" },
+  { nameBn: "বিশ্লেষণাত্মক দক্ষতা", nameEn: "Analytical Skills", architectureName: "বিশ্লেষণাত্মক_দক্ষতা", icon: "🧩", color: "text-indigo-400", bg: "bg-indigo-500/10" },
+  { nameBn: "আইসিটির মৌলিক জ্ঞান", nameEn: "Basic Knowledge on ICT", architectureName: "আইসিটির_মৌলিক_জ্ঞান", icon: "💻", color: "text-amber-400", bg: "bg-amber-500/10" },
+];
+
+export function bbSubjectMetaByNameBn(nameBn: string): SubjectMeta | undefined {
+  return BB_SUBJECT_META.find((m) => m.nameBn.normalize("NFC") === nameBn.normalize("NFC"));
+}
 // Legacy folder names (pre-architecture) mapped to the current architecture
 // subject segment so existing files keep importing without a rename.
 const SUBJECT_FOLDER_ALIASES: Record<string, string> = {

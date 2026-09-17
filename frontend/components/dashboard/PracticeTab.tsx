@@ -20,14 +20,20 @@ import {
   Inbox,
 } from "lucide-react";
 import { api } from "@/lib/services/api";
+import { useEcosystem } from "@/lib/ecosystem-ctx";
 import { DIFFICULTY_LABEL } from "@/lib/exam-ui";
-import type { Server } from "@/lib/types";
+import type { Server, ExamEcosystemCode } from "@/lib/types";
 import MockTestTab from "./MockTestTab";
 import CustomExamTab from "./CustomExamTab";
 import TopicTreePicker, {
   type Selection,
   availableForSubject,
 } from "./TopicTreePicker";
+
+const ECOSYSTEM_OPTIONS: { value: ExamEcosystemCode; label: string; desc: string }[] = [
+  { value: "BCS", label: "BCS", desc: "বিসিএস প্রস্তুতি" },
+  { value: "BANGLADESH_BANK", label: "বাংলাদেশ ব্যাংক", desc: "ব্যাংক পরীক্ষা" },
+];
 
 type PracticeMode = "custom" | "mock" | "quick";
 
@@ -58,6 +64,7 @@ const MODES: { id: PracticeMode; label: string; hint: string }[] = [
 
 export default function PracticeTab() {
   const [mode, setMode] = useState<PracticeMode>("custom");
+  const { ecosystem, setEcosystem } = useEcosystem();
 
   // ── Config state (quick practice selection tree) ──
   const [subjects, setSubjects] = useState<Server.ExamSubjectDTO[]>([]);
@@ -76,12 +83,13 @@ export default function PracticeTab() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  // Load the selection tree once (drives quick practice).
+  // Load the selection tree once (drives quick practice) — re-fetch on ecosystem change.
   useEffect(() => {
     let cancelled = false;
+    setConfigLoading(true);
     void (async () => {
       try {
-        const list = await api.examConfig();
+        const list = await api.examConfig(ecosystem);
         if (!cancelled) {
           setSubjects(list.filter((s) => s.questionCount > 0));
         }
@@ -94,7 +102,7 @@ export default function PracticeTab() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [ecosystem]);
 
   const selectedSubjects = useMemo(
     () => subjects.filter((s) => selection[s.id] !== undefined),
@@ -188,6 +196,7 @@ export default function PracticeTab() {
             subject: s.nameBn,
             paths: sel.paths.length > 0 ? sel.paths : undefined,
             limit: 200,
+            ecosystem,
           });
         }),
       );
@@ -234,6 +243,31 @@ export default function PracticeTab() {
 
   return (
     <div className="space-y-6">
+      {/* Ecosystem switcher */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex items-center gap-2 bg-subtle border border-emerald-500/20 rounded-xl p-1 w-fit"
+      >
+        {ECOSYSTEM_OPTIONS.map((opt) => (
+          <button
+            key={opt.value}
+            onClick={() => {
+              setEcosystem(opt.value);
+              resetSession();
+            }}
+            className={`px-4 py-2 text-sm font-mono rounded-lg transition-all ${
+              ecosystem === opt.value
+                ? "bg-emerald-500 text-zinc-950 shadow-neon-glow"
+                : "text-zinc-400 hover:text-white"
+            }`}
+          >
+            <span className="font-semibold">{opt.label}</span>
+            <span className="ml-1.5 text-xs opacity-70">{opt.desc}</span>
+          </button>
+        ))}
+      </motion.div>
+
       {/* Mode toggle */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}

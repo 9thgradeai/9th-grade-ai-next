@@ -26,6 +26,7 @@ const POINTS_PER_CORRECT = 10;
 
 type TxClient = Prisma.TransactionClient;
 type AttemptRow = {
+  ecosystemId: number;
   userId: string;
   questionId: number | null;
   subjectId: number | null;
@@ -91,7 +92,7 @@ export async function submitPracticeAnswers(
     const ids = answered.map((a) => a.questionId);
     const questions = await prisma.question.findMany({
       where: { id: { in: ids } },
-      select: { id: true, correctAnswer: true, subjectId: true, topic: true, subject: { select: { nameBn: true } } },
+      select: { id: true, correctAnswer: true, subjectId: true, topic: true, ecosystemId: true, subject: { select: { nameBn: true } } },
     });
     const { correct, total } = gradeAnswers(answered, questions);
     const byId = new Map(questions.map((q) => [q.id, q]));
@@ -99,6 +100,7 @@ export async function submitPracticeAnswers(
     const attempts = answered.map((a) => {
       const q = byId.get(a.questionId);
       return {
+        ecosystemId: q?.ecosystemId ?? 1, // default to BCS if question not found
         userId,
         questionId: a.questionId,
         subjectId: q?.subjectId ?? null,
@@ -150,6 +152,7 @@ export async function submitDailyQuiz(
     const attempts = answered.map((a) => {
       const q = byId.get(a.questionId);
       return {
+        ecosystemId: quiz.ecosystemId,
         userId,
         questionId: null,
         subjectId: null,

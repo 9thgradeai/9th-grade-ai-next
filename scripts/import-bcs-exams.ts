@@ -178,11 +178,13 @@ const EXAM_SLUG = "bcs-preliminary";
 async function ensureExamTaxonomy(
   prisma: PrismaClient,
   terms: Map<number, { year: number | null; count: number }>,
+  ecosystemId: number,
 ): Promise<Map<number, number>> {
   const category = await prisma.examCategory.upsert({
     where: { slug: CATEGORY_SLUG },
     update: {},
     create: {
+      ecosystemId,
       slug: CATEGORY_SLUG, nameBn: "BCS", nameEn: "BCS",
       icon: "📘", color: "text-sky-400", bg: "bg-sky-500/10", sortOrder: 1,
     },
@@ -270,14 +272,19 @@ export async function importBcsExams(
     return report;
   }
 
-  const paperIds = await ensureExamTaxonomy(prisma, terms);
+  // Resolve BCS ecosystem ID
+  const bcsEcosystem = await prisma.examEcosystem.findUnique({ where: { code: "BCS" } });
+  if (!bcsEcosystem) throw new Error("BCS ecosystem not found — run seed.ts first");
+  const ecosystemId = bcsEcosystem.id;
+
+  const paperIds = await ensureExamTaxonomy(prisma, terms, ecosystemId);
 
   const subjectIdByNameBn = new Map<string, number>();
   for (const [i, meta] of SUBJECT_META.entries()) {
     const s = await prisma.subject.upsert({
-      where: { nameBn: meta.nameBn },
+      where: { ecosystemId_nameBn: { ecosystemId, nameBn: meta.nameBn } },
       update: {},
-      create: { nameBn: meta.nameBn, nameEn: meta.nameEn, icon: meta.icon, color: meta.color, bg: meta.bg, sortOrder: i },
+      create: { ecosystemId, nameBn: meta.nameBn, nameEn: meta.nameEn, icon: meta.icon, color: meta.color, bg: meta.bg, sortOrder: i },
     });
     subjectIdByNameBn.set(meta.nameBn.normalize("NFC"), s.id);
   }
@@ -299,6 +306,7 @@ export async function importBcsExams(
     seen.add(key);
 
     const content = {
+      ecosystemId,
       subjectId,
       topic: "", subtopic: "", path: "", topicId: null,
       question: c.question,

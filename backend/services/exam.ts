@@ -80,21 +80,28 @@ function allocateLargestRemainder(total: number, weights: number[]): number[] {
 // The tree mirrors the recursive Topic taxonomy. Leaf question counts are
 // aggregated up the path chain so every node reports how many questions exist
 // under its whole subtree.
-export async function getExamSelectionTree(): Promise<ExamSubjectDTO[]> {
-  // Try cache first
-  const cached = await QueryCache.getExamTree();
+export async function getExamSelectionTree(ecosystemId?: number): Promise<ExamSubjectDTO[]> {
+  // Try cache first (keyed by ecosystem)
+  const cacheKey = ecosystemId !== undefined ? `exam-tree:${ecosystemId}` : "exam-tree:all";
+  const cached = await QueryCache.getExamTree(cacheKey);
   if (cached) {
     return cached as ExamSubjectDTO[];
   }
 
   try {
+    const subjectWhere = ecosystemId !== undefined ? { ecosystemId } : {};
+    const questionWhere = ecosystemId !== undefined ? { ecosystemId } : {};
     const [subjects, topicRows, countRows] = await Promise.all([
-      prisma.subject.findMany({ orderBy: { sortOrder: "asc" } }),
+      prisma.subject.findMany({ where: subjectWhere, orderBy: { sortOrder: "asc" } }),
       prisma.topic.findMany({
+        where: ecosystemId !== undefined
+          ? { subject: { ecosystemId } }
+          : {},
         orderBy: [{ subjectId: "asc" }, { sortOrder: "asc" }, { id: "asc" }],
       }),
       prisma.question.groupBy({
         by: ["subjectId", "path"],
+        where: questionWhere,
         _count: { _all: true },
       }),
     ]);
@@ -161,7 +168,7 @@ export async function getExamSelectionTree(): Promise<ExamSubjectDTO[]> {
     });
 
     // Cache the result
-    await QueryCache.setExamTree(result);
+    await QueryCache.setExamTree(result, cacheKey);
 
     return result;
   } catch {
@@ -460,6 +467,7 @@ export async function submitCustomExam(
       select: {
         id: true,
         subjectId: true,
+        ecosystemId: true,
         topic: true,
         subtopic: true,
         question: true,
@@ -535,6 +543,7 @@ export async function submitCustomExam(
       .map((a) => {
         const q = byId.get(a.questionId);
         return {
+          ecosystemId: q?.ecosystemId ?? 1, // default to BCS if question not found
           userId,
           questionId: q?.id ?? null,
           subjectId: q?.subjectId ?? null,

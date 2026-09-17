@@ -92,6 +92,64 @@ async function main() {
   }
 
   // Ensure a reproducible demo account exists for local development. Never
+
+  // --- Exam Ecosystems (upsert by unique code) ---
+  const bcsEcosystem = await prisma.examEcosystem.upsert({
+    where: { code: "BCS" },
+    update: {},
+    create: {
+      code: "BCS",
+      slug: "bcs",
+      name: "BCS",
+      nameBn: "বিসিএস",
+      description: "Bangladesh Civil Service examination",
+      descriptionBn: "বাংলাদেশ সিভিল সার্ভিস পরীক্ষা",
+      sortOrder: 1,
+    },
+  });
+  const bbEcosystem = await prisma.examEcosystem.upsert({
+    where: { code: "BANGLADESH_BANK" },
+    update: {},
+    create: {
+      code: "BANGLADESH_BANK",
+      slug: "bangladesh-bank",
+      name: "Bangladesh Bank",
+      nameBn: "বাংলাদেশ ব্যাংক",
+      description: "Bangladesh Bank recruitment examinations",
+      descriptionBn: "বাংলাদেশ ব্যাংক নিয়োগ পরীক্ষা",
+      sortOrder: 2,
+    },
+  });
+  console.log(`  ✓ 2 exam ecosystems (BCS, Bangladesh Bank)`);
+
+  // Create the 8 Bangladesh Bank subjects (idempotent upsert by ecosystem+nameBn)
+  const BB_SUBJECTS = [
+    { nameBn: "বাংলা ব্যাকরণ", nameEn: "Bangla Grammar", icon: "📝", color: "text-emerald-400", bg: "bg-emerald-500/10" },
+    { nameBn: "বাংলা সাহিত্য", nameEn: "Bangla Literature", icon: "📖", color: "text-sky-400", bg: "bg-sky-500/10" },
+    { nameBn: "ইংরেজি ব্যাকরণ", nameEn: "English Grammar", icon: "🔤", color: "text-green-400", bg: "bg-green-500/10" },
+    { nameBn: "ইংরেজি সাহিত্য", nameEn: "English Literature", icon: "📚", color: "text-cyan-400", bg: "bg-cyan-500/10" },
+    { nameBn: "সাধারণ গণিত", nameEn: "General Mathematics", icon: "🧮", color: "text-teal-400", bg: "bg-teal-500/10" },
+    { nameBn: "আর্থিক ও ব্যাংকিং জ্ঞান", nameEn: "Financial and Banking Knowledge", icon: "🏦", color: "text-purple-400", bg: "bg-purple-500/10" },
+    { nameBn: "বিশ্লেষণাত্মক দক্ষতা", nameEn: "Analytical Skills", icon: "🧩", color: "text-indigo-400", bg: "bg-indigo-500/10" },
+    { nameBn: "আইসিটির মৌলিক জ্ঞান", nameEn: "Basic Knowledge on ICT", icon: "💻", color: "text-amber-400", bg: "bg-amber-500/10" },
+  ];
+  for (let i = 0; i < BB_SUBJECTS.length; i++) {
+    const s = BB_SUBJECTS[i];
+    await prisma.subject.upsert({
+      where: { ecosystemId_nameBn: { ecosystemId: bbEcosystem.id, nameBn: s.nameBn } },
+      update: { nameEn: s.nameEn, icon: s.icon, color: s.color, bg: s.bg, sortOrder: i + 1 },
+      create: {
+        ecosystemId: bbEcosystem.id,
+        nameBn: s.nameBn,
+        nameEn: s.nameEn,
+        icon: s.icon,
+        color: s.color,
+        bg: s.bg,
+        sortOrder: i + 1,
+      },
+    });
+  }
+  console.log(`  ✓ ${BB_SUBJECTS.length} Bangladesh Bank subjects`);
   // created in production builds — a publicly-known login must not exist on
   // a live database. Force locally via SEED_RESET_USERS=1.
   // Check multiple production indicators: VERCEL_ENV, NODE_ENV, and explicit flag.
@@ -264,13 +322,14 @@ async function main() {
   }
   console.log(`  ✓ ${examSchedule.length} exam schedule entries`);
 
-  // --- Daily quizzes (upsert by unique date; question children refreshed —
+  // --- Daily quizzes (upsert by unique ecosystemId+date; question children refreshed —
   //     participations reference the quiz row, not its questions) ---
   for (const quiz of DAILY_QUIZZES) {
     const dq = await prisma.dailyQuiz.upsert({
-      where: { date: quiz.date },
+      where: { ecosystemId_date: { ecosystemId: bcsEcosystem.id, date: quiz.date } },
       update: {},
       create: {
+        ecosystemId: bcsEcosystem.id,
         date: quiz.date,
         completed: quiz.completed ?? false,
         score: quiz.score ?? 0,

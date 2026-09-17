@@ -19,6 +19,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { api } from "@/lib/services/api";
+import { useEcosystem } from "@/lib/ecosystem-ctx";
 import { useDialogA11y } from "@/lib/use-dialog-a11y";
 import { DIFFICULTY_LABEL } from "@/lib/exam-ui";
 import type { Server } from "@/lib/types";
@@ -51,6 +52,7 @@ function formatTime(seconds: number): string {
 }
 
 export default function MockTestTab() {
+  const { ecosystem } = useEcosystem();
   // ── Config state ──
   const [subjects, setSubjects] = useState<Server.ExamSubjectDTO[]>([]);
   const [configLoading, setConfigLoading] = useState(true);
@@ -87,7 +89,7 @@ export default function MockTestTab() {
     let cancelled = false;
     void (async () => {
       try {
-        const list = await api.examConfig();
+        const list = await api.examConfig(ecosystem);
         if (!cancelled) setSubjects(list.filter((s) => s.questionCount > 0));
       } catch {
         if (!cancelled) setConfigError("কনফিগারেশন লোড করা যায়নি। আবার চেষ্টা করুন।");
@@ -98,7 +100,7 @@ export default function MockTestTab() {
     return () => {
       cancelled = true;
     };
-  }, [configReloadKey]);
+  }, [configReloadKey, ecosystem]);
 
   const fetchConfig = useCallback(() => {
     // Retry path — reset UI state, then re-run the config effect.

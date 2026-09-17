@@ -21,6 +21,8 @@ export type QueryParams = Record<string, string | number | boolean | undefined>;
 
 // ── Client types (Client.Auth, Client.Content, etc.) ────────
 
+export type ExamEcosystemCode = "BCS" | "BANGLADESH_BANK";
+
 export namespace Client {
   export type User = {
     id: string;
@@ -342,6 +344,21 @@ export namespace Server {
     paperId?: number | null;
     examId?: number | null;
     questionNumber?: number | null;
+  };
+
+  /** Top-level exam ecosystem boundary (BCS, Bangladesh Bank, etc.). */
+  export type ExamEcosystemDTO = {
+    id: number;
+    code: ExamEcosystemCode;
+    slug: string;
+    name: string;
+    nameBn: string;
+    description: string;
+    descriptionBn: string;
+    isActive: boolean;
+    sortOrder: number;
+    subjectCount: number;
+    questionCount: number;
   };
 
   /** Exam-library hierarchy: ExamCategory "BCS" → Exam "BCS Preliminary" → papers. */

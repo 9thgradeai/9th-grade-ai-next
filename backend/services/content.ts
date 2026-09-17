@@ -30,6 +30,7 @@ import type {
 
 // ── Questions (powers Question Bank + Practice + Mock) ──
 type QuestionFilters = {
+  ecosystemId?: number;
   subject?: string;
   topic?: string;
   difficulty?: string;
@@ -46,8 +47,15 @@ async function buildQuestionWhere(opts?: QuestionFilters): Promise<Record<string
   // All filters are AND-ed; `paths` matches a question whose leaf path is a
   // selected node or lives anywhere under one of its subtrees.
   const conditions: Record<string, unknown>[] = [];
+  if (opts?.ecosystemId !== undefined) {
+    conditions.push({ ecosystemId: opts.ecosystemId });
+  }
   if (opts?.subject) {
-    const subject = await prisma.subject.findFirst({ where: { nameBn: opts.subject } });
+    const subject = await prisma.subject.findFirst({
+      where: opts?.ecosystemId !== undefined
+        ? { nameBn: opts.subject, ecosystemId: opts.ecosystemId }
+        : { nameBn: opts.subject },
+    });
     if (subject) conditions.push({ subjectId: subject.id });
   }
   if (opts?.paths && opts.paths.length > 0) {
@@ -195,11 +203,15 @@ export async function getQuestionById(id: number): Promise<QuestionDTO | null> {
 // rather than the seeded `QuestionBankCategory.count`, which was a fabricated
 // static number. The `label` returned is the canonical `Subject.nameBn` so the
 // client can keep using it as the subject filter in buildQuestionWhere.
-export async function getQuestionBankCategories(): Promise<QuestionBankCategoryDTO[]> {
+export async function getQuestionBankCategories(
+  ecosystemId?: number,
+): Promise<QuestionBankCategoryDTO[]> {
   try {
+    const subjectWhere = ecosystemId !== undefined ? { ecosystemId } : {};
+    const questionWhere = ecosystemId !== undefined ? { ecosystemId } : {};
     const [subjects, counts] = await Promise.all([
-      prisma.subject.findMany({ select: { id: true, nameBn: true } }),
-      prisma.question.groupBy({ by: ["subjectId"], _count: { _all: true } }),
+      prisma.subject.findMany({ where: subjectWhere, select: { id: true, nameBn: true } }),
+      prisma.question.groupBy({ by: ["subjectId"], where: questionWhere, _count: { _all: true } }),
     ]);
     const countBySubject = new Map(counts.map((c) => [c.subjectId, c._count._all]));
     return subjects
@@ -214,9 +226,13 @@ export async function getQuestionBankCategories(): Promise<QuestionBankCategoryD
 // Returns the available exam taxonomy hierarchy for browsing: ExamCategory
 // ("BCS") → Exam ("BCS Preliminary") → ExamPaper ("50th BCS"). Only papers
 // actually present in the data are returned; no paper metadata is fabricated.
-export async function getQuestionBankExams(): Promise<ExamCategoryDTO[]> {
+export async function getQuestionBankExams(
+  ecosystemId?: number,
+): Promise<ExamCategoryDTO[]> {
   try {
+    const where = ecosystemId !== undefined ? { ecosystemId } : {};
     const categories = await prisma.examCategory.findMany({
+      where,
       orderBy: { sortOrder: "asc" },
       include: {
         exams: {
