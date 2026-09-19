@@ -16,22 +16,24 @@ export default function AIExplanationButton(props: AIExplanationButtonProps) {
   const [result, setResult] = useState<AIExplanationDto | null>(null);
   const [expanded, setExpanded] = useState(false);
 
-  const handleExplain = useCallback(async () => {
+  const handleExplain = useCallback(() => {
     if (result) {
       setExpanded((e) => !e);
       return;
     }
     setLoading(true);
     setError(null);
-    try {
-      const data = await getExplanation(props);
-      setResult(data);
-      setExpanded(true);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "AI ব্যাখ্যা লোড করা যায়নি।");
-    } finally {
-      setLoading(false);
-    }
+    getExplanation(props)
+      .then((data) => {
+        setResult(data);
+        setExpanded(true);
+      })
+      .catch((err) => {
+        setError(err instanceof Error ? err.message : "AI ব্যাখ্যা লোড করা যায়নি।");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, [props, result]);
 
   return (
