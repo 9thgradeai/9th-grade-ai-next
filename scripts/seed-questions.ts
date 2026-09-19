@@ -137,16 +137,20 @@ function collectFolderFiles(dir: string): { file: string; parts: string[] }[] {
 
 function parseQuestionLine(line: string): ParsedQuestion | null {
   const explanationIdx = line.indexOf("ব্যাখ্যা:");
+  const engExplIdx = line.indexOf("Explanation:");
   let explanation = "";
   let body = line;
   if (explanationIdx >= 0) {
     explanation = line.slice(explanationIdx + "ব্যাখ্যা:".length).trim();
     body = line.slice(0, explanationIdx);
+  } else if (engExplIdx >= 0) {
+    explanation = line.slice(engExplIdx + "Explanation:".length).trim();
+    body = line.slice(0, engExplIdx);
   }
 
   // Answer marker: "উত্তর:" (canonical bank format) or "Ans." (English-keyed
   // folder files). Case-insensitive so "ans." works too.
-  const answerMarker = /(উত্তর\s*:)|(ans\.)/i;
+  const answerMarker = /(উত্তর\s*:)|(ans\.\s)|(Answer\s*:)/i;
   const m = answerMarker.exec(body);
   let answerRaw = "";
   let qAndOpts = body;
