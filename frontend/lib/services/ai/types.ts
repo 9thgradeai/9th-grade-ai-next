@@ -7,6 +7,7 @@ export type {
   AIConversationSummary,
   AIMessageDto,
   SolverResultDto,
+  AIExplanationDto,
   SuggestedActionDto,
   AssistantResultDto,
   EvaluationResultDto,

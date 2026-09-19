@@ -28,5 +28,10 @@ export {
   ADVISOR_PROMPT_VERSION,
   ADVISOR_OUTPUT_SCHEMA,
 } from "./advisor";
+export {
+  buildExplainSystem,
+  EXPLAIN_PROMPT_VERSION,
+  EXPLAIN_OUTPUT_SCHEMA,
+} from "./explain";
 export { buildUnifiedPrompt } from "./unified";
 export type { PromptTask, PromptRole, PromptRequirements } from "./unified";

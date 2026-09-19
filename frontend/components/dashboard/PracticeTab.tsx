@@ -11,6 +11,7 @@ import type { Server } from "@/lib/types";
 import MockTestTab from "./MockTestTab";
 import CustomExamTab from "./CustomExamTab";
 import SubjectTopicSelect from "./SubjectTopicSelect";
+import AIExplanationButton from "./AIExplanationButton";
 import {
   type Selection,
   availableForSubject,
@@ -835,6 +836,16 @@ export default function PracticeTab() {
                           {q.explanation && (
                             <p className="text-xs text-[var(--dashboard-text-muted)] mt-1.5">{q.explanation}</p>
                           )}
+
+                          <AIExplanationButton
+                            questionId={q.id}
+                            question={q.question}
+                            options={q.options}
+                            correctAnswer={q.correctAnswer}
+                            userAnswer={answers[q.id]}
+                            subject={q.subject}
+                            topic={q.topic}
+                          />
                         </div>
                       </div>
                     </div>

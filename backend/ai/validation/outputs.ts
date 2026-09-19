@@ -3,6 +3,15 @@
 
 import type { SolverResult } from "../types";
 
+export type AIExplanationResult = {
+  correctAnswerExplanation: string;
+  whyOthersWrong: { option: string; reason: string }[];
+  keyDefinitions: string[];
+  relatedConcepts: string;
+  examTip: string;
+  source: string;
+};
+
 export const MAX_RESPONSE_CHARS = 8_000;
 
 export function parseJsonObject(raw: string): Record<string, unknown> | null {
@@ -203,6 +212,40 @@ export function validateAdvisorOutput(raw: string, fallback: string): AdvisorPla
     timelineWeeks: parsed && typeof parsed.timelineWeeks === "number" ? parsed.timelineWeeks : 12,
     weeklyPlan: plan.slice(0, 12),
     tips: parsed ? asStringArray(parsed.tips) : [],
+    source: "ai",
+  };
+}
+
+/** Normalize a raw model response into a valid AIExplanationResult. */
+export function validateExplainOutput(raw: string, fallback: string): AIExplanationResult {
+  const parsed = parseJsonObject(raw);
+  const correctAnswerExplanation = parsed
+    ? asString(parsed.correctAnswerExplanation, fallback)
+    : fallback;
+
+  let whyOthersWrong: { option: string; reason: string }[] = [];
+  if (parsed && Array.isArray(parsed.whyOthersWrong)) {
+    whyOthersWrong = parsed.whyOthersWrong
+      .filter(
+        (item: unknown): item is { option: string; reason: string } =>
+          typeof item === "object" &&
+          item !== null &&
+          typeof (item as Record<string, unknown>).option === "string" &&
+          typeof (item as Record<string, unknown>).reason === "string",
+      )
+      .map((item) => ({
+        option: asString(item.option, ""),
+        reason: asString(item.reason, ""),
+      }))
+      .filter((item) => item.option && item.reason);
+  }
+
+  return {
+    correctAnswerExplanation: correctAnswerExplanation.slice(0, MAX_RESPONSE_CHARS),
+    whyOthersWrong: whyOthersWrong.slice(0, 10),
+    keyDefinitions: parsed ? asStringArray(parsed.keyDefinitions).slice(0, 6) : [],
+    relatedConcepts: parsed ? asString(parsed.relatedConcepts, "") : "",
+    examTip: parsed ? asString(parsed.examTip, "") : "",
     source: "ai",
   };
 }

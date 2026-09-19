@@ -16,6 +16,7 @@ import { useDialogA11y } from "@/lib/use-dialog-a11y";
 import { DIFFICULTY_LABEL } from "@/lib/exam-ui";
 import type { Server } from "@/lib/types";
 import SubjectTopicSelect from "./SubjectTopicSelect";
+import AIExplanationButton from "./AIExplanationButton";
 import {
   type Selection,
   buildExamSelectionRequest,
@@ -946,6 +947,16 @@ export default function MockTestTab() {
                     {r.explanation && (
                       <p className="text-xs text-[var(--dashboard-text-muted)] mt-1.5">{r.explanation}</p>
                     )}
+
+                    <AIExplanationButton
+                      questionId={r.questionId}
+                      question={r.question}
+                      options={r.options}
+                      correctAnswer={r.correctAnswer}
+                      userAnswer={r.userAnswer}
+                      subject={r.subject}
+                      topic={r.topic}
+                    />
                   </div>
                 </div>
               </div>

@@ -5,6 +5,7 @@
 export {
   createTutorTurn,
   solveQuestion,
+  explainQuestion,
   assistantTurn,
   evaluateAnswer,
   generateMockTest,

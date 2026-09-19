@@ -131,6 +131,16 @@ export type SolverRequest = {
   questionId?: number;
 };
 
+export type ExplainRequest = {
+  questionId?: number;
+  question: string;
+  options: string[];
+  correctAnswer: string;
+  userAnswer?: string;
+  subject?: string;
+  topic?: string;
+};
+
 export type SolverResult = {
   solution: string;
   steps: string[];

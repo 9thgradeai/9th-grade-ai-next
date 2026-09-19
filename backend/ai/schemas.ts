@@ -9,6 +9,7 @@ import {
   type AIIntent,
   type TutorRequest,
   type SolverRequest,
+  type ExplainRequest,
 } from "./types";
 
 const VALID_ROLES = new Set(["user", "assistant", "system"]);
@@ -224,4 +225,42 @@ export function validateAgentRequest(body: unknown): {
       ? body.conversationId
       : undefined;
   return { question, context, intent, conversationId };
+}
+
+/** Validate the explain request body. */
+export function validateExplainRequest(body: unknown): ExplainRequest {
+  if (!isRecord(body)) {
+    throw new ValidationError("Request body must be a JSON object.");
+  }
+  const question = typeof body.question === "string" ? body.question.trim() : "";
+  if (!question) {
+    throw new ValidationError("A non-empty 'question' is required.");
+  }
+  if (question.length > MAX_AI_INPUT_CHARS) {
+    throw new ValidationError(`Question text exceeds ${MAX_AI_INPUT_CHARS} characters.`);
+  }
+  if (!Array.isArray(body.options) || body.options.length < 2) {
+    throw new ValidationError("'options' must be an array with at least 2 items.");
+  }
+  const options = body.options
+    .filter((o: unknown): o is string => typeof o === "string" && o.trim().length > 0)
+    .map((o: string) => o.trim());
+  if (options.length < 2) {
+    throw new ValidationError("'options' must contain at least 2 non-empty strings.");
+  }
+  const correctAnswer = typeof body.correctAnswer === "string" ? body.correctAnswer.trim() : "";
+  if (!correctAnswer) {
+    throw new ValidationError("A non-empty 'correctAnswer' is required.");
+  }
+  const userAnswer =
+    typeof body.userAnswer === "string" && body.userAnswer.trim()
+      ? body.userAnswer.trim()
+      : undefined;
+  const subject =
+    typeof body.subject === "string" ? body.subject.trim().slice(0, 200) : undefined;
+  const topic =
+    typeof body.topic === "string" ? body.topic.trim().slice(0, 200) : undefined;
+  const questionId = asOptionalInt(body.questionId);
+
+  return { questionId, question, options, correctAnswer, userAnswer, subject, topic };
 }

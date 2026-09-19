@@ -8,7 +8,7 @@ import { prisma } from "~backend/db";
 import { buildContext, questionContextIds } from "../context/context-engine";
 import { loadContextSlices } from "../context/slices";
 import { resolveContextPlan } from "../context/resolver";
-import { buildTutorSystem, buildSolverSystem, buildAssistantSystem, buildEvaluatorSystem, buildMockTestSystem, buildAdvisorSystem } from "../prompts";
+import { buildTutorSystem, buildSolverSystem, buildAssistantSystem, buildEvaluatorSystem, buildMockTestSystem, buildAdvisorSystem, buildExplainSystem } from "../prompts";
 import { resolveModel, resolveModelCandidates, type LLMProvider, type LLMProviderName } from "../providers";
 import { notePreferredLanguage, noteTopicSignal, upsertMemory } from "../memory/memory-store";
 import {
@@ -24,8 +24,8 @@ import { searchForIntent } from "../tools/search";
 import { retrieveQuestionBank } from "../retrieval";
 import { runAgentTurn, agentResponseText, type AgentStatus } from "../agent";
 import { validateAgentRequest } from "../schemas";
-import { validateSolverOutput, validateEvaluationOutput, validateMockTestOutput, validateAdvisorOutput, type EvaluationResult, type GeneratedMockTest, type AdvisorPlan, sanitizeReply, parseJsonObject } from "../validation/outputs";
-import { validateChatRequest, validateSolverRequest } from "../schemas";
+import { validateSolverOutput, validateEvaluationOutput, validateMockTestOutput, validateAdvisorOutput, validateExplainOutput, type EvaluationResult, type GeneratedMockTest, type AdvisorPlan, type AIExplanationResult, sanitizeReply, parseJsonObject } from "../validation/outputs";
+import { validateChatRequest, validateSolverRequest, validateExplainRequest } from "../schemas";
 import { DEFAULT_TITLE, summarizeConversationTitle } from "./title";
 import { aiCacheGet, aiCacheSet, aiCacheKey } from "../infrastructure/ai-cache";
 import { normalizeBanglish } from "../infrastructure/banglish";
@@ -39,6 +39,7 @@ import type {
   TutorRequest,
   SolverRequest,
   AssistantRequest,
+  ExplainRequest,
 } from "../types";
 
 const MAX_CONTEXT_MESSAGES = 30;
@@ -623,6 +624,181 @@ export async function solveQuestion(opts: {
       await aiCacheSet(cacheKey, rawText);
     }
     await finalizeUsage({ userId, task: "solver", provider: name, model: modelName, started, inputText: system + userText, outputText: rawText, success: rawText.length > 0, errorCode: rawText.length > 0 ? undefined : "AI_EMPTY_RESPONSE", intent: "solve" });
+  });
+
+  return { stream: wrapped, conversationId: conversation.id, provider: name, model: modelName };
+}
+
+// ── Explain service (streaming MCQ explanation) ───────────
+
+/** Persist an explain turn for history. */
+async function persistExplainResult(
+  userId: string,
+  conversationId: string,
+  questionText: string,
+  assistantContent: string,
+  provider: string,
+  model: string,
+  subjectId: number | undefined,
+) {
+  await addMessage(userId, conversationId, {
+    role: "USER",
+    status: "COMPLETE",
+    content: `[Explain] ${questionText}`,
+    intent: "explain",
+    metadata: { subjectId },
+  });
+  await addMessage(userId, conversationId, {
+    role: "ASSISTANT",
+    status: "COMPLETE",
+    content: assistantContent,
+    intent: "explain",
+    provider,
+    model,
+    metadata: { subjectId },
+  });
+}
+
+/**
+ * Streaming MCQ explanation. Takes a question with its options and correct
+ * answer, streams a detailed explanation of why each option is right/wrong.
+ */
+export async function explainQuestion(opts: {
+  userId: string;
+  request: unknown;
+}): Promise<{ stream: ReadableStream<Uint8Array>; conversationId: string; provider: string; model: string }> {
+  const { userId, request: raw } = opts;
+  const request = validateExplainRequest(raw) as ExplainRequest;
+
+  let subjectId: number | undefined;
+  let topicId: number | undefined;
+  let topicPath = "";
+  if (request.questionId) {
+    const ids = await questionContextIds(request.questionId);
+    subjectId = ids.subjectId ?? subjectId;
+    topicId = ids.topicId ?? undefined;
+    topicPath = ids.topicPath;
+  }
+
+  const context = await buildContext({ userId, task: "solver", subjectId, topicId, questionId: request.questionId });
+  const domain = await retrieveQuestionBank({
+    subjectId: context.subject?.id,
+    topicId: context.topic?.id,
+    query: request.question,
+  });
+  const system = buildExplainSystem(context, domain.block);
+
+  // Build the user message with question context
+  const optionsBlock = request.options
+    .map((opt, i) => `${String.fromCharCode(65 + i)}. ${opt}`)
+    .join("\n");
+  const userText = [
+    `Question: ${request.question}`,
+    `Options:\n${optionsBlock}`,
+    `Correct Answer: ${request.correctAnswer}`,
+    request.userAnswer ? `Student's Answer: ${request.userAnswer}` : "",
+    request.subject ? `Subject: ${request.subject}` : "",
+    request.topic ? `Topic: ${request.topic}` : "",
+  ]
+    .filter(Boolean)
+    .join("\n\n");
+
+  // Create conversation
+  const conversation = await ensureConversation(
+    userId,
+    "SOLVER",
+    { title: `Explain: ${request.question.slice(0, TITLE_SNIPPET)}`, subjectId: context.subject?.id, topicId: context.topic?.id, topicPath },
+    context,
+  );
+
+  const started = Date.now();
+  let name: LLMProviderName = "mock";
+  let modelName = "";
+
+  // Cache-first
+  const cacheKey = aiCacheKey(["explain", userId, request.question, request.correctAnswer, context.subject?.id ?? ""]);
+  const cached = await aiCacheGet(cacheKey);
+  if (cached) {
+    const enc = new TextEncoder();
+    const stream = new ReadableStream<Uint8Array>({
+      start(controller) {
+        controller.enqueue(enc.encode(cached));
+        controller.close();
+      },
+    });
+    runAfterResponse(async () => {
+      const fallback = "ব্যাখ্যা তৈরি করা যাচ্ছে না। অনুগ্রহ করে আবার চেষ্টা করুন।";
+      const result = validateExplainOutput(cached, fallback);
+      result.source = "cache";
+      await persistExplainResult(userId, conversation.id, request.question, JSON.stringify(result), "cache", "cached", subjectId);
+      await finalizeUsage({ userId, task: "solver", provider: "cache", model: "cached", started, inputText: system + userText, outputText: cached, success: true, estimatedCostUsd: 0, intent: "explain" });
+    });
+    return { stream, conversationId: conversation.id, provider: "cache", model: "cached" };
+  }
+
+  let streamResult;
+  try {
+    const fo = await withFailover("solver", { image: false }, (p) =>
+      p.stream({
+        system,
+        messages: [{ role: "user", content: userText }],
+        maxTokens: 1024,
+      }),
+    );
+    streamResult = fo.value;
+    name = fo.provider;
+    modelName = fo.model;
+  } catch (err) {
+    const formatted = JSON.stringify({
+      correctAnswerExplanation: "দুঃখিত, ব্যাখ্যা তৈরি করা যাচ্ছে না। অনুগ্রহ করে কিছুক্ষণ পরে আবার চেষ্টা করুন।",
+      whyOthersWrong: [],
+      source: name,
+    });
+    const enc = new TextEncoder();
+    const fbStream = new ReadableStream<Uint8Array>({
+      start(controller) {
+        controller.enqueue(enc.encode(formatted));
+        controller.close();
+      },
+    });
+    runAfterResponse(async () => {
+      await finalizeUsage({ userId, task: "solver", provider: name, model: modelName, started: Date.now(), inputText: system + userText, outputText: "", success: false, errorCode: err instanceof AppError ? err.code : "AI_PROVIDER_ERROR", intent: "explain" });
+    });
+    return { stream: fbStream, conversationId: conversation.id, provider: name, model: modelName };
+  }
+
+  const { stream, done, getFullText } = streamResult;
+  const timedStream = withStreamTimeout(stream, STREAM_TIMEOUT_MS);
+
+  const wrapped = new ReadableStream<Uint8Array>({
+    async pull(controller) {
+      const reader = timedStream.getReader();
+      try {
+        while (true) {
+          const { value, done: streamDone } = await reader.read();
+          if (streamDone) break;
+          controller.enqueue(value);
+        }
+        controller.close();
+      } catch (err) {
+        controller.error(err);
+      }
+    },
+    cancel() {
+      timedStream.cancel().catch(() => {});
+    },
+  });
+
+  runAfterResponse(async () => {
+    await done;
+    const rawText = sanitizeReply(getFullText());
+    const fallback = "ব্যাখ্যা তৈরি করা যাচ্ছে না। অনুগ্রহ করে আবার চেষ্টা করুন।";
+    const result = validateExplainOutput(rawText, fallback);
+    result.source = name;
+    await persistExplainResult(userId, conversation.id, request.question, JSON.stringify(result), name, modelName, subjectId);
+    const cacheKey2 = aiCacheKey(["explain", userId, request.question, request.correctAnswer, context.subject?.id ?? ""]);
+    await aiCacheSet(cacheKey2, rawText);
+    await finalizeUsage({ userId, task: "solver", provider: name, model: modelName, started, inputText: system + userText, outputText: rawText, success: rawText.length > 0, errorCode: rawText.length > 0 ? undefined : "AI_EMPTY_RESPONSE", intent: "explain" });
   });
 
   return { stream: wrapped, conversationId: conversation.id, provider: name, model: modelName };

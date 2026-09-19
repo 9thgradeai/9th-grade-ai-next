@@ -14,6 +14,7 @@ import {
 } from "@/lib/services/exam-submission";
 import type { Server } from "@/lib/types";
 import SubjectTopicSelect from "./SubjectTopicSelect";
+import AIExplanationButton from "./AIExplanationButton";
 import {
   type Selection,
   flattenNodes,
@@ -1238,6 +1239,16 @@ export default function CustomExamTab() {
                     {item.explanation && (
                       <p className="text-xs text-[var(--dashboard-text-muted)] mt-2 leading-relaxed">{item.explanation}</p>
                     )}
+
+                    <AIExplanationButton
+                      questionId={item.questionId}
+                      question={item.question}
+                      options={item.options}
+                      correctAnswer={item.correctAnswer}
+                      userAnswer={item.userAnswer}
+                      subject={item.subject}
+                      topic={item.topic}
+                    />
                   </div>
                 </div>
               </motion.div>

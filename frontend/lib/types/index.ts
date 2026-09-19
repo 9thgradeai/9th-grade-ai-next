@@ -218,6 +218,15 @@ export namespace Client {
     conversationId?: string;
   };
 
+  export type AIExplanationDto = {
+    correctAnswerExplanation: string;
+    whyOthersWrong: { option: string; reason: string }[];
+    keyDefinitions?: string[];
+    relatedConcepts?: string;
+    examTip?: string;
+    source: string;
+  };
+
   export type SuggestedActionDto = {
     id: string;
     labelBn: string;
@@ -1157,6 +1166,7 @@ export type AIConversationKind = Client.AIConversationKind;
 export type AIConversationSummary = Client.AIConversationSummary;
 export type AIMessageDto = Client.AIMessageDto;
 export type SolverResultDto = Client.SolverResultDto;
+export type AIExplanationDto = Client.AIExplanationDto;
 export type SuggestedActionDto = Client.SuggestedActionDto;
 export type AssistantResultDto = Client.AssistantResultDto;
 export type EvaluationResultDto = Client.EvaluationResultDto;
