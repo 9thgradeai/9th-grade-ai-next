@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CalendarDays, Clock, ArrowLeft } from "lucide-react";
+import { CalendarDots, Clock, ArrowLeft } from "@phosphor-icons/react";
 import PublicShell from "@/components/public/PublicShell";
 import StatusPill from "@/components/ui/StatusPill";
 import { BLOG_POSTS } from "@/lib/data/blog";
@@ -29,6 +29,7 @@ export async function generateMetadata({
       description: post.excerpt,
       type: "article",
       publishedTime: post.date,
+      images: [{ url: `/blog/${slug}/opengraph-image`, width: 1200, height: 630 }],
     },
   };
 }
@@ -59,7 +60,7 @@ export default async function BlogArticlePage({
               {post.readTime}
             </span>
             <span className="text-xs text-zinc-500 font-mono inline-flex items-center gap-1.5">
-              <CalendarDays className="w-3.5 h-3.5" aria-hidden="true" />
+              <CalendarDots className="w-3.5 h-3.5" aria-hidden="true" />
               {post.date}
             </span>
           </div>

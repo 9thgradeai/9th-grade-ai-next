@@ -11,18 +11,7 @@
 // standalone consumers.
 
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react"
-import {
-  BrainCircuit,
-  GraduationCap,
-  MessageSquare,
-  MoreVertical,
-  Pencil,
-  Pin,
-  PinOff,
-  Plus,
-  Target,
-  Trash2,
-} from "lucide-react"
+import { ChatsCircle, DotsThreeVertical, GraduationCap, PencilSimple, PushPin, PushPinSlash, Plus, Target, Trash, Brain } from "@phosphor-icons/react"
 import type { AIConversationSummary } from "@/lib/services/ai/types"
 
 type ConversationListProps = {
@@ -59,10 +48,10 @@ function dayGroup(date: string): string {
 }
 
 function kindIcon(kind: AIConversationSummary["kind"]) {
-  if (kind === "ASSISTANT") return BrainCircuit
+  if (kind === "ASSISTANT") return Brain
   if (kind === "TUTOR") return GraduationCap
   if (kind === "COACH") return Target
-  return MessageSquare
+  return ChatsCircle
 }
 
 export default function ConversationList({
@@ -197,7 +186,7 @@ export default function ConversationList({
         ) : (
           <>
             {conv.pinned && (
-              <Pin
+              <PushPin
                 className="h-3.5 w-3.5 flex-shrink-0 text-[var(--dashboard-primary)]"
                 aria-label="Pinned"
                 aria-hidden="true"
@@ -228,7 +217,7 @@ export default function ConversationList({
               aria-expanded={isMenuOpen}
               aria-haspopup="menu"
             >
-              <MoreVertical className="h-4 w-4" />
+              <DotsThreeVertical className="h-4 w-4" />
             </button>
 
             {isMenuOpen && (
@@ -245,7 +234,7 @@ export default function ConversationList({
                   }}
                   className="flex w-full items-center gap-2 px-3 py-1.5 text-left text-xs text-[var(--dashboard-text-secondary)] transition-colors hover:bg-[var(--dashboard-primary-subtle)] hover:text-[var(--dashboard-primary)]"
                 >
-                  <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
+                  <PencilSimple className="h-3.5 w-3.5" aria-hidden="true" />
                   Rename
                 </button>
                 <button
@@ -259,9 +248,9 @@ export default function ConversationList({
                   className="flex w-full items-center gap-2 px-3 py-1.5 text-left text-xs text-[var(--dashboard-text-secondary)] transition-colors hover:bg-[var(--dashboard-primary-subtle)] hover:text-[var(--dashboard-primary)]"
                 >
                   {conv.pinned ? (
-                    <PinOff className="h-3.5 w-3.5" aria-hidden="true" />
+                    <PushPinSlash className="h-3.5 w-3.5" aria-hidden="true" />
                   ) : (
-                    <Pin className="h-3.5 w-3.5" aria-hidden="true" />
+                    <PushPin className="h-3.5 w-3.5" aria-hidden="true" />
                   )}
                   {conv.pinned ? "Unpin" : "Pin"}
                 </button>
@@ -275,7 +264,7 @@ export default function ConversationList({
                   }}
                   className="flex w-full items-center gap-2 px-3 py-1.5 text-left text-xs text-[var(--dashboard-danger)] transition-colors hover:bg-[var(--dashboard-danger-soft)]"
                 >
-                  <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
+                  <Trash className="h-3.5 w-3.5" aria-hidden="true" />
                   Delete
                 </button>
               </div>

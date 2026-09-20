@@ -2,15 +2,15 @@
 
 import { useRef, useState, type ReactNode } from "react";
 import { motion, useInView, useReducedMotion } from "framer-motion";
-import { CheckCircle, CircleHelp, FileQuestion, Gauge, Lightbulb } from "lucide-react";
+import { CheckCircle, Question, Gauge, Lightbulb } from "@phosphor-icons/react";
 import { EASE_OUT_EXPO } from "@/lib/motion/variants";
 import { useMotionCapabilities } from "@/lib/motion/device";
 
 type SignalMode = "idle" | "correct" | "wrong";
 
 const STAGES = [
-  { id: "question", label: "Question", icon: FileQuestion },
-  { id: "response", label: "Response", icon: CircleHelp },
+  { id: "question", label: "Question", icon: Question },
+  { id: "response", label: "Response", icon: Question },
   { id: "analysis", label: "Analysis", icon: Gauge },
   { id: "insight", label: "Insight", icon: Lightbulb },
 ] as const;
@@ -44,7 +44,7 @@ export default function SignalFlow() {
           Correct answer
         </ModeButton>
         <ModeButton active={mode === "wrong"} onClick={() => activate("wrong")} tone="amber">
-          <CircleHelp className="h-4 w-4" aria-hidden="true" />
+          <Question className="h-4 w-4" aria-hidden="true" />
           Incorrect answer
         </ModeButton>
       </div>

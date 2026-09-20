@@ -4,30 +4,19 @@
 // estimates for planning purposes. No personal progress data lives here —
 // authenticated progress comes from /api/progress.
 
-import {
-  BookOpen,
-  Globe,
-  Brain,
-  TrendingUp,
-  Map,
-  FlaskConical,
-  Cpu,
-  Calculator,
-  Zap,
-  Scale,
-} from "lucide-react";
+import { BookOpen, Brain, Calculator, Cpu, Flask, Globe, Lightning, MapTrifold, Scales, TrendUp } from "@phosphor-icons/react";
 
 export const SYLLABUS_ICONS = {
   book: BookOpen,
   globe: Globe,
   brain: Brain,
-  trend: TrendingUp,
+  trend: TrendUp,
   map: Map,
-  flask: FlaskConical,
+  flask: Flask,
   cpu: Cpu,
   calculator: Calculator,
-  zap: Zap,
-  scale: Scale,
+  zap: Lightning,
+  scale: Scales,
 } as const;
 
 export type SyllabusTopic = {

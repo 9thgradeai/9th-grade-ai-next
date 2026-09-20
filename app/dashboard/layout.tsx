@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { MotionConfig, AnimatePresence, motion } from "framer-motion";
+/* framer-motion deferred — drawer uses CSS transitions */
 import SideNav from "@/components/dashboard/SideNav";
 import BottomNav from "@/components/dashboard/BottomNav";
 import ExamSwitcher from "@/components/dashboard/ExamSwitcher";
@@ -22,7 +22,7 @@ import LanguageToggle from "@/components/ui/LanguageToggle";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 
 import { useDialogA11y } from "@/lib/use-dialog-a11y";
-import { Menu, Search, X } from "lucide-react";
+import { List, MagnifyingGlass, X } from "@phosphor-icons/react";
 import { TAB_ICONS } from "@/lib/exam-ui";
 import { useAuth as useAuthForDrawer } from "@/lib/auth-ctx";
 import LogoutButton from "@/components/dashboard/LogoutButton";
@@ -206,8 +206,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <DashboardThemeProvider>
       <EcosystemProvider>
       <EmailVerificationGate>
-          <MotionConfig reducedMotion="user">
-            <div className="dashboard-shell h-dvh overflow-hidden flex" style={{ background: "var(--dashboard-background)" }}>
+          <div className="dashboard-shell h-dvh overflow-hidden flex" style={{ background: "var(--dashboard-background)" }}>
             {/* Skip link — first focusable element for keyboard users */}
             <a
               href="#dashboard-content"
@@ -220,46 +219,37 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <SideNav activeTab={activeTab} onChange={handleTabChange} />
 
             {/* Tablet/Mobile Drawer — makes left tab sections fully visible on <lg */}
-            <AnimatePresence>
-              {navDrawerOpen && (
-                <motion.div
-                  className="fixed inset-0 z-50 lg:hidden"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  role="dialog"
-                  aria-modal="true"
-                  aria-label="Navigation menu"
+            {navDrawerOpen && (
+              <div
+                className="fixed inset-0 z-50 lg:hidden"
+                role="dialog"
+                aria-modal="true"
+                aria-label="Navigation menu"
+              >
+                <div className="absolute inset-0 backdrop-blur-sm animate-fade-in" style={{ background: "var(--dashboard-overlay)" }} onClick={closeNavDrawer} />
+                <div
+                  ref={drawerRef}
+                  tabIndex={-1}
+                  role="document"
+                  className="absolute left-0 top-0 bottom-0 w-[300px] max-w-[86vw] border-r shadow-2xl flex flex-col overflow-hidden animate-slide-in-left"
+                  style={{ background: "var(--dashboard-sidebar-bg)", borderColor: "var(--dashboard-sidebar-border)" }}
                 >
-                  <div className="absolute inset-0 backdrop-blur-sm" style={{ background: "var(--dashboard-overlay)" }} onClick={closeNavDrawer} />
-                  <motion.div
-                    ref={drawerRef}
-                    tabIndex={-1}
-                    role="document"
-                    initial={{ x: "-100%" }}
-                    animate={{ x: 0 }}
-                    exit={{ x: "-100%" }}
-                    transition={{ type: "spring", stiffness: 340, damping: 32 }}
-                    className="absolute left-0 top-0 bottom-0 w-[300px] max-w-[86vw] border-r shadow-2xl flex flex-col overflow-hidden"
-                    style={{ background: "var(--dashboard-sidebar-bg)", borderColor: "var(--dashboard-sidebar-border)" }}
-                  >
-                    <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: "var(--dashboard-sidebar-border)" }}>
-                      <div className="flex items-center gap-3">
-                        <BrandMark className="h-8 w-8 rounded-lg ring-1 ring-black/5" />
-                        <span className="font-display font-bold text-[15px]" style={{ color: "var(--dashboard-text-primary)" }}>9Th-Grade AI</span>
-                      </div>
-                      <button onClick={closeNavDrawer} className="p-2 rounded-xl border" style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-secondary)", background: "var(--dashboard-surface-muted)" }} aria-label="Close navigation">
-                        <X className="w-4 h-4" />
-                      </button>
+                  <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: "var(--dashboard-sidebar-border)" }}>
+                    <div className="flex items-center gap-3">
+                      <BrandMark className="h-8 w-8 rounded-lg ring-1 ring-black/5" />
+                      <span className="font-display font-bold text-[15px]" style={{ color: "var(--dashboard-text-primary)" }}>9Th-Grade AI</span>
                     </div>
-                    <div className="flex-1 min-h-0 overflow-y-auto">
-                      {/* Reuse same grouped nav inline for drawer — avoids duplicating SideNav hidden logic */}
-                      <SideNavDrawerContent activeTab={activeTab} onChange={handleTabChange} />
-                    </div>
-                  </motion.div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                    <button onClick={closeNavDrawer} className="p-2 rounded-xl border" style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-secondary)", background: "var(--dashboard-surface-muted)" }} aria-label="Close navigation">
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <div className="flex-1 min-h-0 overflow-y-auto">
+                    {/* Reuse same grouped nav inline for drawer — avoids duplicating SideNav hidden logic */}
+                    <SideNavDrawerContent activeTab={activeTab} onChange={handleTabChange} />
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Main Column */}
             <div className="flex-1 min-w-0 flex flex-col h-full">
@@ -275,7 +265,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     aria-expanded={navDrawerOpen}
                     aria-controls="dashboard-nav-drawer"
                   >
-                    <Menu className="w-5 h-5" />
+                    <List className="w-5 h-5" />
                   </button>
                   {/* Mobile logo — text hides on very narrow screens to keep toggle + actions visible */}
                   <Link
@@ -295,7 +285,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     aria-label="Search dashboard"
                     className="hidden sm:flex h-10 w-64 items-center gap-3 rounded-lg border px-3 text-sm text-[var(--dashboard-text-secondary)] bg-[var(--dashboard-surface-muted)] border-[var(--dashboard-border-muted)] hover:border-[var(--dashboard-primary)] transition-colors"
                   >
-                    <Search className="h-4 w-4" aria-hidden="true" />
+                    <MagnifyingGlass className="h-4 w-4" aria-hidden="true" />
                     <span>{t("dashboard.controlCenter")}</span>
                     <kbd className="ml-auto text-xs">⌘K</kbd>
                   </button>
@@ -335,7 +325,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <PracticeDrillOverlay />
             <CommandBar />
             </div>
-          </MotionConfig>
         </EmailVerificationGate>
       </EcosystemProvider>
     </DashboardThemeProvider>

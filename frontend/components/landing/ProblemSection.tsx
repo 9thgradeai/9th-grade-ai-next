@@ -1,6 +1,6 @@
 "use client";
 
-import { Shuffle, MapPinned, RadioTower } from "lucide-react";
+import { Shuffle, MapPin, Broadcast } from "@phosphor-icons/react";
 import MotionText from "@/components/ui/MotionText";
 import Reveal from "@/components/ui/Reveal";
 import Interactive3DCard from "@/components/landing/Interactive3DCard";
@@ -15,12 +15,12 @@ const frictionKeys = [
     bodyKey: "problem.card1.body",
   },
   {
-    icon: MapPinned,
+    icon: MapPin,
     titleKey: "problem.card2.title",
     bodyKey: "problem.card2.body",
   },
   {
-    icon: RadioTower,
+    icon: Broadcast,
     titleKey: "problem.card3.title",
     bodyKey: "problem.card3.body",
   },

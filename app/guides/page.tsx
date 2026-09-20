@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { BookMarked, ArrowUpRight, Layers, FileText, GraduationCap, Calculator, Globe } from "lucide-react";
+import { BookmarkSimple, ArrowUpRight, StackSimple, FileText, GraduationCap, Calculator, Globe } from "@phosphor-icons/react";
 import PublicShell from "@/components/public/PublicShell";
 import PageHero from "@/components/public/PageHero";
 import SectionHeading from "@/components/ui/SectionHeading";
@@ -31,7 +31,7 @@ const guides = [
     sections: ["Paper pattern breakdown", "Speed-math drills", "Time management tactics"],
   },
   {
-    icon: BookMarked,
+    icon: BookmarkSimple,
     title: "Teacher Recruitment Syllabus Guide",
     level: "ALL LEVELS",
     description:
@@ -55,7 +55,7 @@ const guides = [
     sections: ["Topic-wise formulas", "Worked examples", "Shortcut techniques"],
   },
   {
-    icon: Layers,
+    icon: StackSimple,
     title: "Mock Test Strategy Playbook",
     level: "ADVANCED",
     description:

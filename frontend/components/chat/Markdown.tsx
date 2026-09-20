@@ -14,7 +14,7 @@
 // the application shell.
 
 import { Fragment, useMemo, useState, type ReactNode } from "react";
-import { Check, Copy } from "lucide-react";
+import { Check, Copy } from "@phosphor-icons/react";
 
 type Block =
   | { type: "paragraph"; content: string }

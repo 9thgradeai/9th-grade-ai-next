@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { FolderArchive, CalendarRange, ChevronRight } from "lucide-react";
+import { Archive, CalendarDots, CaretRight } from "@phosphor-icons/react";
 import PublicShell from "@/components/public/PublicShell";
 import PageHero from "@/components/public/PageHero";
 import SectionHeading from "@/components/ui/SectionHeading";
@@ -80,10 +80,10 @@ export default async function ArchivePage() {
 
                   <div className="mt-5 pt-4 border-t border-white/10 flex items-center justify-between text-xs text-zinc-400">
                     <span className="inline-flex items-center gap-1.5 font-mono">
-                      <CalendarRange className="w-3.5 h-3.5" aria-hidden="true" />
+                      <CalendarDots className="w-3.5 h-3.5" aria-hidden="true" />
                       Syllabus-aligned
                     </span>
-                    <ChevronRight className="w-4 h-4 text-emerald-400 group-hover:translate-x-0.5 transition-transform" aria-hidden="true" />
+                    <CaretRight className="w-4 h-4 text-emerald-400 group-hover:translate-x-0.5 transition-transform" aria-hidden="true" />
                   </div>
                 </Link>
               );
@@ -93,7 +93,7 @@ export default async function ArchivePage() {
           <div className="mt-12 glass-card rounded-2xl border border-white/10 p-6 md:p-8 flex flex-col sm:flex-row items-center justify-between gap-5">
             <div className="flex items-center gap-3">
               <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-emerald-500/20 to-cyan-500/10 border border-emerald-500/25 flex items-center justify-center flex-shrink-0">
-                <FolderArchive className="w-5 h-5 text-emerald-400" aria-hidden="true" />
+                <Archive className="w-5 h-5 text-emerald-400" aria-hidden="true" />
               </div>
               <div>
                 <p className="text-sm font-medium text-white">Practice a set in exam mode</p>

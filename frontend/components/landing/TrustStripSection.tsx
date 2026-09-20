@@ -1,5 +1,5 @@
 "use client";
-import { Landmark } from "lucide-react";
+import { Bank } from "@phosphor-icons/react";
 import { useT } from "@/lib/i18n";
 
 // translated via t() in component
@@ -54,7 +54,7 @@ export default function TrustStripSection() {
 function TrackChip({ label }: { label: string }) {
   return (
     <div className="flex items-center gap-2.5 whitespace-nowrap rounded-full border border-white/10 bg-white/[0.03] px-5 py-2.5 font-mono text-sm text-zinc-300">
-      <Landmark className="h-4 w-4 text-emerald-400" aria-hidden="true" />
+      <Bank className="h-4 w-4 text-emerald-400" aria-hidden="true" />
       {label}
     </div>
   );

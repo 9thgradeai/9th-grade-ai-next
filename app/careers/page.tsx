@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Briefcase, MapPin, ArrowUpRight, Coffee, Users, Zap } from "lucide-react";
+import { Briefcase, MapPin, ArrowUpRight, Coffee, Users, Lightning } from "@phosphor-icons/react";
 import PublicShell from "@/components/public/PublicShell";
 import PageHero from "@/components/public/PageHero";
 import SectionHeading from "@/components/ui/SectionHeading";
@@ -58,7 +58,7 @@ const roles = [
 const perks = [
   { icon: Coffee, label: "Remote-first, async-friendly culture" },
   { icon: Users, label: "Work with a passionate open-source community" },
-  { icon: Zap, label: "Ship to 50K+ active students" },
+  { icon: Lightning, label: "Ship to 50K+ active students" },
 ];
 
 export default function CareersPage() {

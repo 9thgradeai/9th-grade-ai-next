@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Handshake, School, Globe, Mail, ArrowUpRight } from "lucide-react";
+import { Handshake, GraduationCap, Globe, EnvelopeSimple, ArrowUpRight } from "@phosphor-icons/react";
 import PublicShell from "@/components/public/PublicShell";
 import PageHero from "@/components/public/PageHero";
 import SectionHeading from "@/components/ui/SectionHeading";
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 const partners = [
   {
-    icon: School,
+    icon: GraduationCap,
     title: "Universities & Colleges",
     text: "Campus chapters, career centers, and student clubs can run free mock-test bootcamps and preparation drives on the platform.",
   },
@@ -97,7 +97,7 @@ export default function PartnersPage() {
               href="mailto:hello@9thgrade.ai?subject=Partnership"
               className="glow-border inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-emerald-500 text-zinc-950 font-mono font-semibold text-sm tracking-wide hover:bg-emerald-400 transition-colors"
             >
-              <Mail className="w-4 h-4" aria-hidden="true" />
+              <EnvelopeSimple className="w-4 h-4" aria-hidden="true" />
               hello@9thgrade.ai
               <ArrowUpRight className="w-4 h-4" aria-hidden="true" />
             </a>

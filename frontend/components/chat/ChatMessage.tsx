@@ -9,7 +9,7 @@
 // so both dashboard themes keep full contrast.
 
 import { memo, useState } from "react";
-import { ArrowRight, Check, Copy, ThumbsDown, ThumbsUp, Volume2, VolumeX } from "lucide-react";
+import { ArrowRight, Check, Copy, ThumbsDown, ThumbsUp, SpeakerHigh, SpeakerX } from "@phosphor-icons/react";
 import Markdown from "./Markdown";
 import AiLogo from "@/components/ui/AiLogo";
 
@@ -167,7 +167,7 @@ function ChatMessageInner({
               aria-label={speaking ? "Stop reading aloud" : "Read aloud"}
               title={speaking ? "Stop" : "Read aloud"}
             >
-              {speaking ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+              {speaking ? <SpeakerX className="h-4 w-4" /> : <SpeakerHigh className="h-4 w-4" />}
             </button>
             <button
               type="button"

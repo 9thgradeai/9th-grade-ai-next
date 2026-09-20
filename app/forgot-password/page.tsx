@@ -1,8 +1,11 @@
 "use client"
 
+import type { Metadata } from "next"
 import { useState, type FormEvent } from "react"
+
+export const metadata: Metadata = { robots: { index: false, follow: true } }
 import Link from "next/link"
-import { Mail } from "lucide-react"
+import { EnvelopeSimple } from "@phosphor-icons/react"
 import { account } from "@/lib/services/api"
 import { AuthShell } from "@/components/auth/AuthShell"
 import { AuthField } from "@/components/auth/AuthField"
@@ -84,7 +87,7 @@ export default function ForgotPasswordPage() {
             autoComplete="email"
             placeholder="you@example.com"
             inputMode="email"
-            leftIcon={<Mail className="h-4.5 w-4.5" aria-hidden="true" />}
+            leftIcon={<EnvelopeSimple className="h-4.5 w-4.5" aria-hidden="true" />}
           />
           <AuthSubmitButton busy={status === "sending"} busyLabel="Sending…">
             Send reset link

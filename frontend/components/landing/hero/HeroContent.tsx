@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { ArrowRight, ChevronDown } from "lucide-react";
+import { ArrowRight, CaretDown } from "@phosphor-icons/react";
 import Button from "@/components/ui/Button";
 import { trackCtaClick, trackHeroView } from "@/lib/analytics";
 import { useMotionCapabilities } from "@/lib/motion/device";
@@ -187,7 +187,7 @@ export default function HeroContent({ subjectCount }: { subjectCount: number }) 
           </span>
           <Button href="#signal" size="lg" variant="hero" className="w-full sm:w-auto" onClick={() => trackCtaClick("secondary")}>
             {t("hero.cta.secondary")}
-            <ChevronDown className="h-4 w-4" aria-hidden="true" />
+            <CaretDown className="h-4 w-4" aria-hidden="true" />
           </Button>
         </div>
 

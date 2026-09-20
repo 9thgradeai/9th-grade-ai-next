@@ -1,8 +1,11 @@
 "use client"
 
+import type { Metadata } from "next"
 import { Suspense, useState, type FormEvent } from "react"
+
+export const metadata: Metadata = { robots: { index: false, follow: true } }
 import { useSearchParams, useRouter } from "next/navigation"
-import { Eye, EyeOff, KeyRound } from "lucide-react"
+import { Eye, EyeSlash, Key } from "@phosphor-icons/react"
 import { account } from "@/lib/services/api"
 import { AuthShell } from "@/components/auth/AuthShell"
 import { AuthField } from "@/components/auth/AuthField"
@@ -60,7 +63,7 @@ function ResetPasswordInner() {
       aria-label={show ? "Hide password" : "Show password"}
       className="rounded-lg p-1.5 text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)] focus-visible:ring-2 focus-visible:ring-emerald-400/80"
     >
-      {show ? <EyeOff className="h-4 w-4" aria-hidden="true" /> : <Eye className="h-4 w-4" aria-hidden="true" />}
+      {show ? <EyeSlash className="h-4 w-4" aria-hidden="true" /> : <Eye className="h-4 w-4" aria-hidden="true" />}
     </button>
   )
 
@@ -83,7 +86,7 @@ function ResetPasswordInner() {
         onChange={setPassword}
         autoComplete="new-password"
         placeholder="At least 8 characters"
-        leftIcon={<KeyRound className="h-4.5 w-4.5" aria-hidden="true" />}
+        leftIcon={<Key className="h-4.5 w-4.5" aria-hidden="true" />}
         rightSlot={eyeToggle}
       />
       <AuthField
@@ -95,7 +98,7 @@ function ResetPasswordInner() {
         onChange={setConfirm}
         autoComplete="new-password"
         placeholder="Repeat your password"
-        leftIcon={<KeyRound className="h-4.5 w-4.5" aria-hidden="true" />}
+        leftIcon={<Key className="h-4.5 w-4.5" aria-hidden="true" />}
       />
       {status === "done" ? (
         <button

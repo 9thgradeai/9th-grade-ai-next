@@ -2,7 +2,7 @@
 
 import { useEffect, useState, type FormEvent } from "react"
 import Link from "next/link"
-import { Eye, EyeOff, ShieldCheck } from "lucide-react"
+import { Eye, EyeSlash, ShieldCheck } from "@phosphor-icons/react"
 import { useT } from "@/lib/i18n";
 import { SurfaceField } from "./SurfaceField"
 import { AuthSubmitButton } from "./AuthSubmitButton"
@@ -126,7 +126,7 @@ export function LoginForm({
               className="rounded-lg p-1.5 text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)] focus-visible:ring-2 focus-visible:ring-emerald-400/80"
             >
               {showPassword ? (
-                <EyeOff className="h-4 w-4" aria-hidden="true" />
+                <EyeSlash className="h-4 w-4" aria-hidden="true" />
               ) : (
                 <Eye className="h-4 w-4" aria-hidden="true" />
               )}

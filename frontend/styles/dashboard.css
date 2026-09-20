@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import "./ai-workspace.css";
 
 /* ══════════════════════════════════════════════════════════════════════════════
    PREMIUM SOFT DESIGN TOKEN SYSTEM
@@ -2190,3 +2189,6 @@ html.light .skeleton-shimmer {
     animation-play-state: paused !important;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   AI WORKSPACE DESIGN SYSTEM (v2)

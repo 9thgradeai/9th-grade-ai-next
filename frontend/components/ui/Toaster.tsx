@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { CheckCircle2, AlertCircle, Info, X } from "lucide-react";
+import { CheckCircle, WarningCircle, Info, X } from "@phosphor-icons/react";
 import { useToast, type ToastVariant } from "@/lib/toast-ctx";
 
 const VARIANT_STYLES: Record<ToastVariant, string> = {
@@ -10,9 +10,9 @@ const VARIANT_STYLES: Record<ToastVariant, string> = {
   info: "border-[var(--info)]/30 bg-[var(--info-soft)] text-[var(--text-primary)]",
 };
 
-const VARIANT_ICONS: Record<ToastVariant, typeof CheckCircle2> = {
-  success: CheckCircle2,
-  error: AlertCircle,
+const VARIANT_ICONS: Record<ToastVariant, typeof CheckCircle> = {
+  success: CheckCircle,
+  error: WarningCircle,
   info: Info,
 };
 

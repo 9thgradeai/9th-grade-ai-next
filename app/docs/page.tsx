@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { TerminalSquare, ShieldCheck, KeyRound, GitBranch, Lock, BookOpen } from "lucide-react";
+import { Terminal, ShieldCheck, Key, GitBranch, Lock, BookOpen } from "@phosphor-icons/react";
 import PublicShell from "@/components/public/PublicShell";
 import PageHero from "@/components/public/PageHero";
 import SectionHeading from "@/components/ui/SectionHeading";
@@ -21,7 +21,7 @@ type Endpoint = {
 const groups: { title: string; icon: typeof BookOpen; endpoints: Endpoint[] }[] = [
   {
     title: "Authentication",
-    icon: KeyRound,
+    icon: Key,
     endpoints: [
       { method: "POST", path: "/api/auth/register", description: "Create an account and start a session." },
       { method: "POST", path: "/api/auth/login", description: "Sign in and receive an HttpOnly session cookie." },
@@ -36,7 +36,7 @@ const groups: { title: string; icon: typeof BookOpen; endpoints: Endpoint[] }[] 
   },
   {
     title: "Questions & Practice",
-    icon: TerminalSquare,
+    icon: Terminal,
     endpoints: [
       { method: "GET", path: "/api/questions", description: "Query tagged questions with filters." },
       { method: "GET", path: "/api/question-bank/categories", description: "List question-bank categories & counts." },
@@ -46,7 +46,7 @@ const groups: { title: string; icon: typeof BookOpen; endpoints: Endpoint[] }[] 
   },
   {
     title: "Exams",
-    icon: TerminalSquare,
+    icon: Terminal,
     endpoints: [
       { method: "GET", path: "/api/exam/config", description: "Exam configuration, subjects, and topics." },
       { method: "POST", path: "/api/exam/build", description: "Build a custom exam from selected topics." },
@@ -83,7 +83,7 @@ const groups: { title: string; icon: typeof BookOpen; endpoints: Endpoint[] }[] 
   },
   {
     title: "AI",
-    icon: TerminalSquare,
+    icon: Terminal,
     endpoints: [
       { method: "POST", path: "/api/ai/solver", description: "AI step-by-step question solving." },
       { method: "POST", path: "/api/ai/tutor", description: "Conversational AI study tutor." },

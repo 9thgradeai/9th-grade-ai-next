@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { BookOpen, ArrowUpRight, CalendarDays, Clock } from "lucide-react";
+import { BookOpen, ArrowUpRight, CalendarDots, Clock } from "@phosphor-icons/react";
 import PublicShell from "@/components/public/PublicShell";
 import PageHero from "@/components/public/PageHero";
 import SectionHeading from "@/components/ui/SectionHeading";
@@ -65,7 +65,7 @@ export default function BlogPage() {
 
                 <div className="mt-5 pt-4 border-t border-white/10 flex items-center justify-between text-xs text-zinc-500">
                   <span className="inline-flex items-center gap-1.5 font-mono">
-                    <CalendarDays className="w-3.5 h-3.5" aria-hidden="true" />
+                    <CalendarDots className="w-3.5 h-3.5" aria-hidden="true" />
                     {post.date}
                   </span>
                   <Link

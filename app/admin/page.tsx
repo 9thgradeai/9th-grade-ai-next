@@ -3,7 +3,8 @@
 
 "use client";
 
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer, useState, useDeferredValue } from "react";
+
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -63,6 +64,7 @@ export default function AdminPage() {
   });
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const deferredSearch = useDeferredValue(search);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
   useEffect(() => {
@@ -73,7 +75,7 @@ export default function AdminPage() {
       dispatch({ type: "FETCH_START" });
       try {
         const params = new URLSearchParams({ page: String(page), limit: "20" });
-        if (search) params.set("search", search);
+        if (deferredSearch) params.set("search", deferredSearch);
         const res = await fetch(`/api/admin/users?${params}`, {
           credentials: "include",
           signal: controller.signal,
@@ -98,13 +100,13 @@ export default function AdminPage() {
       cancelled = true;
       controller.abort();
     };
-  }, [page, search, router]);
+  }, [page, deferredSearch, router]);
 
   const refetch = async () => {
     dispatch({ type: "FETCH_START" });
     try {
       const params = new URLSearchParams({ page: String(page), limit: "20" });
-      if (search) params.set("search", search);
+      if (deferredSearch) params.set("search", deferredSearch);
       const res = await fetch(`/api/admin/users?${params}`, { credentials: "include" });
       if (res.status === 401 || res.status === 403) {
         router.push("/login");
@@ -170,9 +172,10 @@ export default function AdminPage() {
           />
         </div>
 
-        {/* Users Table */}
+        {/* Users — Desktop Table / Mobile Cards */}
         <div className="overflow-x-auto rounded-xl border border-white/10">
-          <table className="w-full text-sm">
+          {/* Desktop Table (hidden on mobile) */}
+          <table className="w-full text-sm hidden md:table">
             <thead className="bg-zinc-900/50">
               <tr className="text-left text-zinc-400 font-mono text-xs uppercase tracking-wider">
                 <th className="px-4 py-3">User</th>
@@ -220,6 +223,7 @@ export default function AdminPage() {
                       <Link
                         href={`/admin/users/${user.id}`}
                         className="px-3 py-1.5 text-xs font-medium text-emerald-400 hover:text-emerald-300 border border-emerald-500/30 rounded-lg transition-colors"
+                        aria-label={`View ${user.name}'s profile`}
                       >
                         View
                       </Link>
@@ -228,6 +232,7 @@ export default function AdminPage() {
                           onClick={() => { void handleAction(user.id, "ban"); }}
                           disabled={actionLoading === user.id}
                           className="px-3 py-1.5 text-xs font-medium text-red-400 hover:text-red-300 border border-red-500/30 rounded-lg transition-colors disabled:opacity-50"
+                          aria-label={`Ban ${user.name}`}
                         >
                           Ban
                         </button>
@@ -236,6 +241,7 @@ export default function AdminPage() {
                           onClick={() => { void handleAction(user.id, "unban"); }}
                           disabled={actionLoading === user.id}
                           className="px-3 py-1.5 text-xs font-medium text-emerald-400 hover:text-emerald-300 border border-emerald-500/30 rounded-lg transition-colors disabled:opacity-50"
+                          aria-label={`Unban ${user.name}`}
                         >
                           Unban
                         </button>
@@ -244,6 +250,7 @@ export default function AdminPage() {
                         onClick={() => { void handleAction(user.id, "revoke_sessions"); }}
                         disabled={actionLoading === user.id}
                         className="px-3 py-1.5 text-xs font-medium text-yellow-400 hover:text-yellow-300 border border-yellow-500/30 rounded-lg transition-colors disabled:opacity-50"
+                        aria-label={`Revoke all sessions for ${user.name}`}
                       >
                         Revoke Sessions
                       </button>
@@ -253,6 +260,67 @@ export default function AdminPage() {
               ))}
             </tbody>
           </table>
+
+          {/* Mobile Cards (visible only on mobile) */}
+          <div className="md:hidden divide-y divide-white/5">
+            {list.users.map((user) => (
+              <div key={user.id} className="p-4 space-y-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="font-medium truncate">{user.name}</div>
+                    <div className="text-zinc-500 text-xs truncate">{user.email}</div>
+                    <div className="text-zinc-500 text-xs">@{user.handle}</div>
+                  </div>
+                  <span className={`shrink-0 inline-flex items-center px-2 py-1 rounded-full text-xs font-mono ${
+                    user.role === "ADMIN" ? "bg-emerald-500/20 text-emerald-400" :
+                    user.role === "BANNED" ? "bg-red-500/20 text-red-400" :
+                    "bg-zinc-500/20 text-zinc-400"
+                  }`}>
+                    {user.role}
+                  </span>
+                </div>
+                <div className="flex flex-wrap gap-3 text-xs text-zinc-400">
+                  <span className={user.emailVerified ? "text-emerald-400" : "text-yellow-400"}>
+                    {user.emailVerified ? "✓ Verified" : "✗ Unverified"}
+                  </span>
+                  <span>Q: {user._count.attempts} · M: {user._count.mockTestResults} · AI: {user._count.aiConversations}</span>
+                  <span>{formatDate(user.createdAt)}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Link
+                    href={`/admin/users/${user.id}`}
+                    className="px-3 py-1.5 text-xs font-medium text-emerald-400 hover:text-emerald-300 border border-emerald-500/30 rounded-lg transition-colors"
+                  >
+                    View
+                  </Link>
+                  {user.role !== "BANNED" ? (
+                    <button
+                      onClick={() => { void handleAction(user.id, "ban"); }}
+                      disabled={actionLoading === user.id}
+                      className="px-3 py-1.5 text-xs font-medium text-red-400 hover:text-red-300 border border-red-500/30 rounded-lg transition-colors disabled:opacity-50"
+                    >
+                      Ban
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => { void handleAction(user.id, "unban"); }}
+                      disabled={actionLoading === user.id}
+                      className="px-3 py-1.5 text-xs font-medium text-emerald-400 hover:text-emerald-300 border border-emerald-500/30 rounded-lg transition-colors disabled:opacity-50"
+                    >
+                      Unban
+                    </button>
+                  )}
+                  <button
+                    onClick={() => { void handleAction(user.id, "revoke_sessions"); }}
+                    disabled={actionLoading === user.id}
+                    className="px-3 py-1.5 text-xs font-medium text-yellow-400 hover:text-yellow-300 border border-yellow-500/30 rounded-lg transition-colors disabled:opacity-50"
+                  >
+                    Revoke
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Pagination */}

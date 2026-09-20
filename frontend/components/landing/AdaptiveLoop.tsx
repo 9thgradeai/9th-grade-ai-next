@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
-import { Activity, Compass, SlidersHorizontal, ListChecks, ArrowRightCircle } from "lucide-react";
+import { Pulse, Compass, SlidersHorizontal, ListChecks, ArrowRight } from "@phosphor-icons/react";
 import { EASE_OUT_EXPO } from "@/lib/motion/variants";
 import { useMotionCapabilities } from "@/lib/motion/device";
 
@@ -14,11 +14,11 @@ import { useMotionCapabilities } from "@/lib/motion/device";
  */
 
 const LOOP_STEPS = [
-  { id: "practice", label: "Practice", icon: Activity },
+  { id: "practice", label: "Practice", icon: Pulse },
   { id: "track", label: "Track Accuracy", icon: Compass },
   { id: "review", label: "Review Flashcards", icon: SlidersHorizontal },
   { id: "focus", label: "Focus Weak Topics", icon: ListChecks },
-  { id: "repeat", label: "Next Session", icon: ArrowRightCircle },
+  { id: "repeat", label: "Next Session", icon: ArrowRight },
 ] as const;
 
 // Polar placement on a 38%-radius orbit (percent coordinates).

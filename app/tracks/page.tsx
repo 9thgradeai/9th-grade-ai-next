@@ -1,15 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import {
-  Landmark,
-  FileText,
-  GraduationCap,
-  Building2,
-  Scale,
-  CheckCircle,
-  ArrowUpRight,
-  Target,
-} from "lucide-react";
+import { Bank, FileText, GraduationCap, Buildings, Scales, CheckCircle, ArrowUpRight, Target } from "@phosphor-icons/react";
 import PublicShell from "@/components/public/PublicShell";
 import PageHero from "@/components/public/PageHero";
 import SectionHeading from "@/components/ui/SectionHeading";
@@ -35,7 +26,7 @@ const trackNav = [
 const tracks = (questionCount: number) => [
   {
     id: "bcs-preliminary",
-    icon: Landmark,
+    icon: Bank,
     title: "BCS Preliminary",
     badge: "200 MARKS · 100 MCQ · 2 HRS",
     description:
@@ -77,7 +68,7 @@ const tracks = (questionCount: number) => [
   },
   {
     id: "bank-jobs",
-    icon: Building2,
+    icon: Buildings,
     title: "Bank Jobs",
     badge: "AD · PO · CASH · GENERAL",
     description:
@@ -91,7 +82,7 @@ const tracks = (questionCount: number) => [
   },
   {
     id: "psc-and-other",
-    icon: Scale,
+    icon: Scales,
     title: "PSC & Other Exams",
     badge: "GOVT. JOBS · 9TH-GRADE PAY SCALE",
     description:

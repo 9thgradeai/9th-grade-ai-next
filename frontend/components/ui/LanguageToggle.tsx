@@ -2,7 +2,7 @@
 
 import { useContext } from "react";
 import { motion } from "framer-motion";
-import { Languages } from "lucide-react";
+import { Translate } from "@phosphor-icons/react";
 import { LanguageContext, type Language } from "@/lib/lang-ctx";
 import { LANGUAGE_KEY } from "@/lib/lang-key";
 
@@ -34,7 +34,7 @@ export default function LanguageToggle({ className }: { className?: string }) {
       aria-pressed={lang === "bn"}
       type="button"
     >
-      <Languages className="w-4 h-4" aria-hidden="true" />
+      <Translate className="w-4 h-4" aria-hidden="true" />
       <span aria-hidden="true">{lang === "bn" ? "বাং" : "EN"}</span>
     </motion.button>
   );

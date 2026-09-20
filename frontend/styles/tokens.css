@@ -1,0 +1,843 @@
+@import "tailwindcss";
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   PREMIUM SOFT DESIGN TOKEN SYSTEM
+   ─────────────────────────────────────────────────────────────────────────────
+   80 / 12 / 5 / 3 Rule:
+   • 80% neutral — backgrounds, surfaces
+   • 12% typography and borders — hierarchy and structure
+   • 5% primary interaction — indigo accent
+   • 3% semantic — success/warning/danger/info
+   
+   Visual language: Soft, Minimal, Calm, Premium, Academic, Intelligent
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+@theme {
+  /* ── Typography ─────────────────────────────────────────────────────────────── */
+  --font-sans: var(--font-geist), var(--font-hind-siliguri), "Hind Siliguri", system-ui, sans-serif;
+  --font-display: var(--font-space-grotesk), var(--font-geist), var(--font-hind-siliguri), system-ui, sans-serif;
+  --font-mono: "Fira Code", Menlo, Consolas, var(--font-hind-siliguri), monospace;
+
+  /* ── Spacing Scale (4px base grid) ─────────────────────────────────────────── */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* ── Type Scale ─────────────────────────────────────────────────────────────── */
+  --text-xs: 0.6875rem;
+  --text-sm: 0.8125rem;
+  --text-base: 0.9375rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+
+  /* ── Border Radius Scale ────────────────────────────────────────────────────── */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+
+  /* ── Touch Targets ──────────────────────────────────────────────────────────── */
+  --touch-target-min: 44px;
+
+  /* ── Z-Index Scale ──────────────────────────────────────────────────────────── */
+  --z-header: 50;
+  --z-bottom-nav: 40;
+  --z-overlay: 50;
+  --z-modal: 50;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   DARK MODE (Default) — Pure Black
+   ─────────────────────────────────────────────────────────────────────────────
+   Black-first foundation with precise hierarchy and a restrained indigo accent.
+   Premium feel via subtle surface levels, crisp borders, not heavy glow.
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ══════════════════════════════════════════════════════════════════════════
+     PURE BLACK DARK MODE (Default)
+     Black-first foundation, precise hierarchy, controlled indigo accent.
+     Surface levels: #000 → #080808 → #0D0D0D → #111111 → #161616
+     ══════════════════════════════════════════════════════════════════════════ */
+
+  /* ── Canonical Surfaces (80%) ──────────────────────────────────────────────── */
+  --background: #000000;
+  --surface: #0D0D0D;
+  --surface-soft: #0D0D0D;
+  --surface-elevated: #111111;
+  --surface-highest: #161616;
+
+  /* ── Legacy Surface Aliases ────────────────────────────────────────────────── */
+  --surface-base: var(--background);
+  --surface-raised: var(--surface-elevated);
+  --surface-overlay: var(--surface-highest);
+  --surface-muted: var(--surface-soft);
+  --surface-hover: #1A1D24;
+  --surface-active: #22262E;
+
+  /* ── Text (12%) ────────────────────────────────────────────────────────────── */
+  --text-primary: #F5F7FA;
+  --text-secondary: #B7BFCC;
+  --text-muted: #7F8998;
+  --text-disabled: #626B78;
+  --text-inverse: #0A0B10;
+
+  /* ── Borders (12%) ─────────────────────────────────────────────────────────── */
+  --border: #20242B;
+  --border-strong: #303640;
+  --border-subtle: var(--border);
+  --border-default: var(--border-strong);
+  --border-focus: rgb(129 140 248 / 0.6);
+
+  /* ── Primary (5%) — Indigo ─────────────────────────────────────────────────── */
+  --primary: #818CF8;
+  --primary-hover: #A5B4FC;
+  --primary-active: #C7D2FE;
+  --primary-soft: #171A35;
+  --primary-muted: #191D33;
+
+  /* ── Accent (legacy alias) ─────────────────────────────────────────────────── */
+  --accent: var(--primary);
+  --accent-hover: var(--primary-hover);
+  --accent-active: var(--primary-active);
+  --accent-subtle: var(--primary-soft);
+  --accent-muted: var(--primary-muted);
+
+  /* ── Semantic (3%) ─────────────────────────────────────────────────────────── */
+  --success: #4ADE80;
+  --success-soft: #10251A;
+  --warning: #FBBF24;
+  --warning-soft: #29210D;
+  --danger: #F87171;
+  --danger-soft: #291316;
+  --info: #38BDF8;
+  --info-soft: #0C202A;
+  --teal: #2DD4BF;
+  --teal-soft: #0E2422;
+
+  /* ── Decorative ────────────────────────────────────────────────────────────── */
+  --overlay: rgb(0 0 0 / 0.72);
+
+  /* ── Shadows ───────────────────────────────────────────────────────────────── */
+  --shadow-xs: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-sm: 0 1px 3px rgb(0 0 0 / 0.4), 0 1px 2px rgb(0 0 0 / 0.25);
+  --shadow-md: 0 4px 6px rgb(0 0 0 / 0.45), 0 2px 4px rgb(0 0 0 / 0.25);
+  --shadow-lg: 0 10px 15px rgb(0 0 0 / 0.5), 0 4px 6px rgb(0 0 0 / 0.3);
+  --shadow-xl: 0 20px 25px rgb(0 0 0 / 0.55), 0 8px 10px rgb(0 0 0 / 0.3);
+
+  /* ── Input ─────────────────────────────────────────────────────────────────── */
+  --input-bg: #0D0D0D;
+  --input-border: var(--border-strong);
+  --input-focus: var(--primary);
+  --input-placeholder: var(--text-disabled);
+
+  /* ── Disabled ──────────────────────────────────────────────────────────────── */
+  --disabled-bg: #0A0A0A;
+  --disabled-text: #464D58;
+
+  /* ── Chart ─────────────────────────────────────────────────────────────────── */
+  --chart-1: #818CF8;
+  --chart-2: #38BDF8;
+  --chart-3: #4ADE80;
+  --chart-4: #FBBF24;
+  --chart-grid: #20242B;
+  --chart-axis: #7F8998;
+
+  /* ── Focus Ring ────────────────────────────────────────────────────────────── */
+  --focus-ring: rgb(129 140 248 / 0.6);
+  --focus-ring-offset: 2px;
+
+  /* ── Sidebar ───────────────────────────────────────────────────────────────── */
+  --sidebar-bg: var(--surface-soft);
+  --sidebar-border: var(--border);
+  --sidebar-text: var(--text-secondary);
+  --sidebar-text-active: var(--primary);
+  --sidebar-bg-active: var(--primary-soft);
+
+  /* ── Card ──────────────────────────────────────────────────────────────────── */
+  --card-bg: var(--surface-elevated);
+  --card-border: var(--border);
+  --card-radius: 16px;
+
+  /* ── Legacy (terminal) ─────────────────────────────────────────────────────── */
+  --color-terminal-bg: var(--surface-base);
+  --color-terminal-text: var(--text-primary);
+  --color-terminal-border: var(--border-subtle);
+  --color-glass-bg: var(--surface);
+  --color-glass-border: var(--border-subtle);
+
+  /* ── Global App Tokens (non-dashboard) ─────────────────────────────────────── */
+  --foreground: var(--text-primary);
+  --surface-solid: var(--surface-elevated);
+  --border-muted: var(--border);
+  --border-strong-global: var(--border-strong);
+  --text-muted-global: var(--text-muted);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   LIGHT MODE — Premium Soft
+   ─────────────────────────────────────────────────────────────────────────────
+   Same product language as the dark theme, translated into a soft, premium,
+   highly readable light environment. Priority: hierarchy + visibility, calm.
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+.dashboard-theme-scope[data-dashboard-theme="light"] {
+  /* ══════════════════════════════════════════════════════════════════════════
+     NEUTRAL GRAY LIGHT MODE
+     Clean white/gray surfaces with dark text — standard professional dashboard.
+     Surface hierarchy: #F8F9FC → #FFFFFF → #FFFFFF → #F1F3F6
+     ══════════════════════════════════════════════════════════════════════════ */
+
+  /* ── Canonical Surfaces ────────────────────────────────────────────────────── */
+  --background: #F3F4F8;
+  --surface: #FFFFFF;
+  --surface-soft: #F8F9FC;
+  --surface-elevated: #FFFFFF;
+  --surface-highest: #FFFFFF;
+
+  /* ── Legacy Surface Aliases ────────────────────────────────────────────────── */
+  --surface-base: var(--background);
+  --surface-raised: var(--surface-elevated);
+  --surface-overlay: var(--surface-highest);
+  --surface-muted: var(--surface-soft);
+  --surface-hover: #F1F3F6;
+  --surface-active: #E8EAF0;
+
+  /* ── Text (dark-on-white — WCAG AA compliant) ─────────────────────────────── */
+  --text-primary: #111827;
+  --text-secondary: #4B5563;
+  --text-muted: #6B7280;
+  --text-disabled: #9CA3AF;
+  --text-inverse: #FFFFFF;
+
+  /* ── Borders ───────────────────────────────────────────────────────────────── */
+  --border: #E5E7EB;
+  --border-strong: #D1D5DB;
+  --border-subtle: var(--border);
+  --border-default: var(--border-strong);
+  --border-focus: rgb(99 102 241 / 0.5);
+
+  /* ── Primary — Indigo ──────────────────────────────────────────────────────── */
+  --primary: #6366F1;
+  --primary-hover: #4F46E5;
+  --primary-active: #4338CA;
+  --primary-soft: rgb(99 102 241 / 0.08);
+  --primary-muted: rgb(99 102 241 / 0.05);
+
+  /* ── Accent (legacy alias) ─────────────────────────────────────────────────── */
+  --accent: var(--primary);
+  --accent-hover: var(--primary-hover);
+  --accent-active: var(--primary-active);
+  --accent-subtle: var(--primary-soft);
+  --accent-muted: var(--primary-muted);
+
+  /* ── Semantic — vivid on white ─────────────────────────────────────────────── */
+  --success: #059669;
+  --success-soft: rgb(5 150 105 / 0.08);
+  --warning: #D97706;
+  --warning-soft: rgb(217 119 6 / 0.08);
+  --danger: #DC2626;
+  --danger-soft: rgb(220 38 38 / 0.08);
+  --info: #2563EB;
+  --info-soft: rgb(37 99 235 / 0.08);
+  --teal: #0D9488;
+  --teal-soft: rgb(13 148 136 / 0.08);
+
+  /* ── Decorative ────────────────────────────────────────────────────────────── */
+  --overlay: rgb(0 0 0 / 0.4);
+
+  /* ── Shadows (soft gray on white) ──────────────────────────────────────────── */
+  --shadow-xs: 0 1px 2px rgb(0 0 0 / 0.05);
+  --shadow-sm: 0 1px 3px rgb(0 0 0 / 0.08), 0 1px 2px rgb(0 0 0 / 0.04);
+  --shadow-md: 0 4px 6px rgb(0 0 0 / 0.07), 0 2px 4px rgb(0 0 0 / 0.04);
+  --shadow-lg: 0 10px 15px rgb(0 0 0 / 0.08), 0 4px 6px rgb(0 0 0 / 0.04);
+  --shadow-xl: 0 20px 25px rgb(0 0 0 / 0.1), 0 8px 10px rgb(0 0 0 / 0.04);
+
+  /* ── Input ─────────────────────────────────────────────────────────────────── */
+  --input-bg: #FFFFFF;
+  --input-border: #D1D5DB;
+  --input-focus: #6366F1;
+  --input-placeholder: #9CA3AF;
+
+  /* ── Disabled ──────────────────────────────────────────────────────────────── */
+  --disabled-bg: #F3F4F6;
+  --disabled-text: #9CA3AF;
+
+  /* ── Chart ─────────────────────────────────────────────────────────────────── */
+  --chart-1: #6366F1;
+  --chart-2: #2563EB;
+  --chart-3: #059669;
+  --chart-4: #D97706;
+  --chart-grid: #E5E7EB;
+  --chart-axis: #6B7280;
+
+  /* ── Focus Ring ────────────────────────────────────────────────────────────── */
+  --focus-ring: rgb(99 102 241 / 0.4);
+  --focus-ring-offset: 2px;
+
+  /* ── Sidebar ───────────────────────────────────────────────────────────────── */
+  --sidebar-bg: #FFFFFF;
+  --sidebar-border: #E5E7EB;
+  --sidebar-text: #4B5563;
+  --sidebar-text-active: #6366F1;
+  --sidebar-bg-active: rgb(99 102 241 / 0.08);
+
+  /* ── Card ──────────────────────────────────────────────────────────────────── */
+  --card-bg: #FFFFFF;
+  --card-border: #E5E7EB;
+  --card-radius: 16px;
+
+  /* ── Global App Tokens (non-dashboard) ─────────────────────────────────────── */
+  --foreground: var(--text-primary);
+  --surface-solid: var(--surface-elevated);
+  --border-muted: var(--border);
+  --border-strong-global: var(--border-strong);
+  --text-muted-global: var(--text-muted);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   DASHBOARD DARK MODE — PURE BLACK
+   ─────────────────────────────────────────────────────────────────────────────
+   Explicit scoped block so the dashboard dark surfaces always resolve against
+   the pure-black foundation even if a non-dashboard :root changes.
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+.dashboard-theme-scope[data-dashboard-theme="dark"] {
+  --background: #000000;
+  --surface: #0D0D0D;
+  --surface-soft: #0D0D0D;
+  --surface-elevated: #111111;
+  --surface-highest: #161616;
+  --surface-base: var(--background);
+  --surface-raised: var(--surface-elevated);
+  --surface-overlay: var(--surface-highest);
+  --surface-muted: var(--surface-soft);
+  --foreground: var(--text-primary);
+  --surface-solid: var(--surface-elevated);
+  --border-muted: var(--border);
+  --border-strong-global: var(--border-strong);
+  --text-muted-global: var(--text-muted);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   LEGACY TOKEN MAPPING
+   ─────────────────────────────────────────────────────────────────────────────
+   Maps old --dashboard-* tokens to new semantic tokens for backward compat.
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+.dashboard-theme-scope[data-dashboard-theme="dark"],
+.dashboard-theme-scope[data-dashboard-theme="light"] {
+  --dashboard-background: var(--surface-base);
+  --dashboard-surface: var(--surface-raised);
+  --dashboard-surface-solid: var(--surface-raised);
+  --dashboard-surface-raised: var(--surface-overlay);
+  --dashboard-surface-muted: var(--surface-muted);
+  --dashboard-surface-hover: var(--surface-hover);
+  --dashboard-sidebar-bg: var(--sidebar-bg);
+  --dashboard-sidebar-border: var(--border-subtle);
+  --dashboard-border-muted: var(--border-subtle);
+  --dashboard-border-subtle: var(--border-subtle);
+  --dashboard-border-strong: var(--border-default);
+  --dashboard-text-primary: var(--text-primary);
+  --dashboard-text-secondary: var(--text-secondary);
+  --dashboard-text-muted: var(--text-muted);
+  --dashboard-text-inverse: var(--text-inverse);
+  --dashboard-primary: var(--primary);
+  --dashboard-primary-hover: var(--primary-hover);
+  --dashboard-primary-active: var(--primary-active);
+  --dashboard-primary-subtle: var(--primary-soft);
+  --dashboard-success: var(--success);
+  --dashboard-success-subtle: var(--success-soft);
+  --dashboard-warning: var(--warning);
+  --dashboard-warning-subtle: var(--warning-soft);
+  --dashboard-danger: var(--danger);
+  --dashboard-danger-subtle: var(--danger-soft);
+  --dashboard-info: var(--info);
+  --dashboard-info-subtle: var(--info-soft);
+  --dashboard-teal: var(--teal);
+  --dashboard-teal-subtle: var(--teal-soft);
+  --dashboard-focus-ring: var(--focus-ring);
+  --dashboard-border-focus: var(--border-focus);
+  --dashboard-overlay: var(--overlay);
+  --dashboard-chart-1: var(--chart-1);
+  --dashboard-chart-2: var(--chart-2);
+  --dashboard-chart-3: var(--chart-3);
+  --dashboard-chart-4: var(--chart-4);
+  --dashboard-chart-grid: var(--chart-grid);
+  --dashboard-chart-axis: var(--chart-axis);
+  --dashboard-input-bg: var(--input-bg);
+  --dashboard-input-border: var(--input-border);
+  --dashboard-input-focus: var(--input-focus);
+  --dashboard-disabled-bg: var(--disabled-bg);
+  --dashboard-disabled-text: var(--disabled-text);
+  --dashboard-shadow-sm: var(--shadow-sm);
+  --dashboard-shadow-md: var(--shadow-md);
+  --dashboard-shadow-lg: var(--shadow-lg);
+  --dashboard-radius-sm: var(--radius-sm);
+  --dashboard-radius-md: var(--radius-md);
+  --dashboard-radius-lg: var(--radius-lg);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   GLOBAL APP TOKENS (non-dashboard pages)
+   ─────────────────────────────────────────────────────────────────────────────
+   The canonical tokens live in :root (dark) / .dashboard-theme-scope[data-dashboard-theme="light"]
+   (dashboard) / html.light (global light). This block forwards the legacy
+   app-surface token names without conflicting with the canonical values.
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  --foreground: var(--text-primary);
+  --surface-solid: var(--surface-raised);
+  --border-muted: var(--border-subtle);
+}
+
+html.light {
+  --background: #F4F6F9;
+  --foreground: #172033;
+  --surface: #FFFFFF;
+  --surface-solid: #FFFFFF;
+  --surface-raised: #FFFFFF;
+  --surface-muted: #F9FAFC;
+  --border-muted: #E1E6EE;
+  --border-strong: #D2D9E3;
+  --text-muted: #8994A5;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   TAILWIND COLOR OVERRIDES
+   ─────────────────────────────────────────────────────────────────────────────
+   Maps Tailwind utility colors to our design tokens.
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+.dashboard-theme-scope[data-dashboard-theme="dark"] {
+  --color-emerald-500: var(--primary);
+  --color-emerald-400: var(--primary);
+  --color-emerald-50: var(--surface-raised);
+  --color-emerald-100: var(--surface-raised);
+  --color-cyan-400: var(--info);
+  --color-indigo-400: #818CF8;
+  --color-zinc-50: #0D0D0D;
+  --color-zinc-100: #161616;
+  --color-zinc-200: #20242B;
+  --color-zinc-300: #303640;
+  --color-zinc-400: #7F8998;
+  --color-zinc-500: #9AA3B0;
+  --color-zinc-600: #B7BFCC;
+  --color-zinc-700: #D3D9E2;
+  --color-zinc-800: #EAEDF2;
+  --color-zinc-900: #F5F7FA;
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-amber-400: #FBBF24;
+  --color-amber-500: #FBBF24;
+  --color-red-400: #F87171;
+  --color-red-500: #F87171;
+  --color-orange-400: #FBBF24;
+  --color-yellow-400: #FBBF24;
+  --color-violet-400: #818CF8;
+  --color-purple-400: #A78BFA;
+  --color-rose-400: #F87171;
+  --color-blue-400: #38BDF8;
+}
+
+.dashboard-theme-scope[data-dashboard-theme="light"] {
+  --color-emerald-500: #059669;
+  --color-emerald-400: #059669;
+  --color-emerald-50: #ECFDF5;
+  --color-emerald-100: #D1FAE5;
+  --color-cyan-400: #2563EB;
+  --color-indigo-400: #6366F1;
+  --color-zinc-50: #F9FAFB;
+  --color-zinc-100: #F3F4F6;
+  --color-zinc-200: #E5E7EB;
+  --color-zinc-300: #D1D5DB;
+  --color-zinc-400: #9CA3AF;
+  --color-zinc-500: #6B7280;
+  --color-zinc-600: #4B5563;
+  --color-zinc-700: #374151;
+  --color-zinc-800: #1F2937;
+  --color-zinc-900: #111827;
+  --color-white: #FFFFFF;
+  --color-black: #111827;
+  --color-amber-400: #D97706;
+  --color-amber-500: #D97706;
+  --color-red-400: #DC2626;
+  --color-red-500: #DC2626;
+  --color-orange-400: #D97706;
+  --color-yellow-400: #D97706;
+  --color-violet-400: #6366F1;
+  --color-purple-400: #7C3AED;
+  --color-rose-400: #DC2626;
+  --color-blue-400: #2563EB;
+}
+
+html.light {
+  --color-white: #FFFFFF;
+  --color-zinc-50: #FFFFFF;
+  --color-zinc-100: #F9FAFC;
+  --color-zinc-200: #E1E6EE;
+  --color-zinc-300: #D2D9E3;
+  --color-zinc-400: #8994A5;
+  --color-zinc-500: #8994A5;
+  --color-zinc-600: #596579;
+  --color-zinc-700: #172033;
+  --color-zinc-800: #172033;
+  --color-zinc-900: #172033;
+  --color-black: #172033;
+  --color-emerald-400: #16803C;
+  --color-emerald-500: #16803C;
+  --color-cyan-400: #087EA4;
+  --color-indigo-400: #4F46E5;
+  --color-amber-400: #A86200;
+  --color-amber-500: #A86200;
+  --color-red-400: #C62828;
+  --color-red-500: #C62828;
+  --color-orange-400: #A86200;
+  --color-yellow-400: #A86200;
+  --color-violet-400: #4F46E5;
+  --color-purple-400: #4F46E5;
+  --color-rose-400: #C62828;
+  --color-blue-400: #087EA4;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   BASE STYLES
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Kill tap highlight for instant feel */
+a,
+button,
+[role="button"],
+input,
+select,
+textarea,
+label {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Tactile tap feedback (compositor-only, perf-neutral) */
+@media (prefers-reduced-motion: no-preference) {
+  button:active:not(:disabled),
+  [role="button"]:active:not([aria-disabled="true"]) {
+    transform: scale(0.97);
+    transition: transform 80ms ease;
+  }
+}
+
+/* Display type for headlines */
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   Z-INDEX SCALE — centralized per taste-skill §6.F
+   ══════════════════════════════════════════════════════════════════════════════ */
+:root {
+  --z-dropdown: 40;
+  --z-sticky: 50;
+  --z-overlay: 60;
+  --z-modal: 70;
+  --z-toast: 80;
+  --z-tooltip: 90;
+}
+
+.dashboard-theme-scope[data-dashboard-theme="light"] #dashboard-content {
+  background: var(--surface-base) !important;
+}
+
+.dashboard-theme-scope[data-dashboard-theme="dark"] .dashboard-shell,
+.dashboard-theme-scope[data-dashboard-theme="dark"] #dashboard-content {
+  background: var(--surface-base) !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   CARD SYSTEM
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+.card {
+  background: var(--card-bg, var(--surface-raised));
+  border: 1px solid var(--card-border, var(--border-subtle));
+  border-radius: var(--card-radius, 16px);
+  box-shadow: var(--shadow-sm);
+}
+
+.card-interactive {
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.card-interactive:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-strong);
+}
+
+.glass {
+  background: var(--surface);
+  border: 1px solid var(--border-muted);
+  box-shadow: var(--shadow-sm);
+}
+
+.glass-card {
+  background: var(--surface-raised);
+  border: 1px solid var(--border-muted);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   SCROLLBAR
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--surface-base);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(148 163 184 / 0.25);
+  border-radius: 5px;
+  border: 2px solid var(--surface-base);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   FOCUS STYLES
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+*:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+  border-radius: 3px;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   SELECTION
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+::selection {
+  background: rgb(79 70 229 / 0.32);
+  color: var(--text-primary);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   SAFE AREA (iOS)
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+@utility pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+@utility pl-safe {
+  padding-left: env(safe-area-inset-left);
+}
+
+@utility pr-safe {
+  padding-right: env(safe-area-inset-right);
+}
+
+@utility pt-safe {
+  padding-top: env(safe-area-inset-top);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   TAILWIND UTILITY OVERRIDES
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+@utility bg-subtle {
+  background-color: var(--surface-muted);
+}
+
+@utility border-default {
+  border-color: var(--border-subtle);
+}
+
+@utility bg-dashboard-surface {
+  background-color: var(--surface-raised);
+}
+
+@utility bg-dashboard-surface-raised {
+  background-color: var(--surface-overlay);
+}
+
+@utility bg-dashboard-surface-muted {
+  background-color: var(--surface-muted);
+}
+
+@utility bg-dashboard-background {
+  background-color: var(--surface-base);
+}
+
+@utility bg-dashboard-input-bg {
+  background-color: var(--input-bg);
+}
+
+@utility bg-dashboard-disabled-bg {
+  background-color: var(--disabled-bg);
+}
+
+@utility text-dashboard-text-primary {
+  color: var(--text-primary);
+}
+
+@utility text-dashboard-text-secondary {
+  color: var(--text-secondary);
+}
+
+@utility text-dashboard-text-muted {
+  color: var(--text-muted);
+}
+
+@utility text-dashboard-disabled-text {
+  color: var(--disabled-text);
+}
+
+@utility border-dashboard-border-muted {
+  border-color: var(--border-subtle);
+}
+
+@utility border-dashboard-border-strong {
+  border-color: var(--border-default);
+}
+
+@utility border-dashboard-border-subtle {
+  border-color: var(--border-subtle);
+}
+
+@utility border-dashboard-border-focus {
+  border-color: var(--border-focus);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   TYPOGRAPHY
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+pre {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+blockquote {
+  font-size: 1rem;
+  line-height: 1.6;
+  border-left: 4px solid var(--primary);
+  padding-left: 1rem;
+  color: var(--text-secondary);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.25;
+  margin-top: 0;
+  margin-bottom: 0.75em;
+}
+
+h1, h2, h3 {
+  letter-spacing: -0.02em;
+}
+
+p {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+ul, ol {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+}
+
+dt {
+  font-weight: 600;
+  margin-top: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+dd {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--border-subtle);
+  margin: 2rem 0;
+}
+
+/* Bangla text rendering */
+.bengali,
+[lang="bn"] {
+  font-family: "Hind Siliguri", "Noto Sans Bangla", "SolaimanLipi", system-ui, sans-serif;
+  line-height: 1.5;
+}
+
+*:lang(bn) {
+  font-family: "Hind Siliguri", "Noto Sans Bangla", "SolaimanLipi", system-ui, sans-serif;
+}
+
+.mixed-text {
+  font-feature-settings: "rlig" 1, "calt" 1;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   REDUCED MOTION
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   EXAM COMMAND CENTER — DESIGN SYSTEM
+   ─────────────────────────────────────────────────────────────────────────────
+   Reusable surfaces + controls for the command-center home tab. Everything
+   inherits the semantic --dashboard-* tokens, so it renders correctly in both
+   the pure-black dark mode and the soft light mode. Co-authoring the premium
+   "command center" language without scattering arbitrary values in components.
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+.dashboard-theme-scope {
+  /* Layered card surface — elevated above the page background with a crisp
+     border + a whisper of depth. */
+  --command-card-bg: var(--surface-raised);
+  --command-card-border: var(--border-subtle);
+  --command-card-shadow: var(--shadow-sm);
+  --command-card-shadow-hover: var(--shadow-md);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}

@@ -1,5 +1,5 @@
 "use client";
-import { ArrowRight, Compass } from "lucide-react";
+import { ArrowRight, Compass } from "@phosphor-icons/react";
 import Button from "@/components/ui/Button";
 import { useT } from "@/lib/i18n";
 import Reveal from "@/components/ui/Reveal";

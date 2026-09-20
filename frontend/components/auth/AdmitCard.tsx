@@ -2,7 +2,7 @@
 
 import { useMemo } from "react"
 import { motion, useReducedMotion } from "framer-motion"
-import { ScanLine } from "lucide-react"
+import { Scan } from "@phosphor-icons/react"
 import BrandMark from "@/components/ui/BrandMark"
 import Interactive3DCard from "@/components/landing/Interactive3DCard"
 
@@ -112,7 +112,7 @@ export function AdmitCard({
             <p className="font-mono text-[10px] text-zinc-500">Serial {serial}</p>
           </div>
         </div>
-        <ScanLine className="h-4 w-4 text-emerald-400/70" aria-hidden="true" />
+        <Scan className="h-4 w-4 text-emerald-400/70" aria-hidden="true" />
       </div>
 
       {/* Body */}

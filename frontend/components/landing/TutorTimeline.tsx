@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useInView, useReducedMotion, useScroll, useSpring } from "framer-motion";
-import { BookOpenCheck, Brain, FileText, Lightbulb, Network } from "lucide-react";
+import { BookmarkSimple, Brain, FileText, Lightbulb, Network } from "@phosphor-icons/react";
 import { EASE_OUT_EXPO } from "@/lib/motion/variants";
 
 /**
@@ -39,7 +39,7 @@ const STAGES = [
     accent: false,
   },
   {
-    icon: BookOpenCheck,
+    icon: BookmarkSimple,
     title: "Understanding Expands",
     body: "The session closes the loop: similar questions queue up, a spaced-repetition card is drafted, and the graph updates.",
     accent: false,

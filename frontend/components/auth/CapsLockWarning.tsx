@@ -1,6 +1,6 @@
 "use client"
 
-import { Keyboard } from "lucide-react"
+import { Keyboard } from "@phosphor-icons/react"
 
 /**
  * Inline "Caps Lock is on" hint for password fields. Rendered with

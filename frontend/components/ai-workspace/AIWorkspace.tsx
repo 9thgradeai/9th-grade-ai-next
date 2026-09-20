@@ -52,48 +52,7 @@ import {
   type SpeechRecognitionLike,
   type SpeechRecognitionCtor,
 } from "./types";
-
-function messageToUI(m: AIMessageDto): UIMessage {
-  // Agent turns persist their structured payload (blocks, tool log) in the
-  // message metadata — surface it here so reloads re-render the full coach
-  // experience (cards + activity timeline + meta-action chips).
-  const meta = m.metadata;
-  const isAgent = meta?.kind === "agent";
-  const blocks =
-    isAgent && Array.isArray(meta.blocks) ? (meta.blocks as AgentBlockDto[]) : undefined;
-  const tools =
-    isAgent && Array.isArray(meta.tools) ? (meta.tools as AgentActivityStepDto[]) : undefined;
-  return {
-    id: m.id,
-    role: m.role === "USER" ? "user" : "ai",
-    text:
-      m.role === "ASSISTANT" && (m.status === "FAILED" || !m.content)
-        ? "দুঃখিত, এখন উত্তর তৈরি করা যাচ্ছে না।"
-        : m.content,
-    messageId: m.role === "ASSISTANT" ? m.id : undefined,
-    blocks,
-    tools,
-    actions: isAgent ? [...AGENT_FOLLOWUPS] : undefined,
-    error: m.status === "FAILED",
-  };
-}
-
-function detectSpeechLang(text: string): string {
-  return /[ঀ-৿]/.test(text) ? "bn-BD" : "en-US";
-}
-
-function statusVariant(status: Status): string {
-  switch (status) {
-    case "listening":
-      return "is-listening";
-    case "generating":
-      return "is-working";
-    case "error":
-      return "is-error";
-    default:
-      return "is-ready";
-  }
-}
+import { messageToUI, detectSpeechLang, statusVariant } from "./utils";
 
 export default function AIWorkspace() {
   const { user } = useAuth();

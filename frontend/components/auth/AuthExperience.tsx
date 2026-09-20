@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { AnimatePresence, motion, useAnimationControls, useReducedMotion } from "framer-motion"
-import { ArrowRight, MoonStar, ShieldCheck, Sun } from "lucide-react"
+import { ArrowRight, Moon, ShieldCheck, Sun } from "@phosphor-icons/react"
 import { useAuth } from "@/lib/auth-ctx"
 import { account as accountApi } from "@/lib/services/api"
 import { AuthEnvironment } from "./AuthEnvironment"
@@ -354,7 +354,7 @@ export default function AuthExperience({
                 transition={{ duration: 0.45 }}
               >
                 <p className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.26em] text-emerald-400/70">
-                  <MoonStar className="h-3.5 w-3.5" aria-hidden="true" />
+                  <Moon className="h-3.5 w-3.5" aria-hidden="true" />
                   Study hour · <LocalTime />
                 </p>
                 <p className="max-w-xs text-center font-display text-xl leading-snug text-zinc-300 sm:max-w-sm sm:text-2xl">

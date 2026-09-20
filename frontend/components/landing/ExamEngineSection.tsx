@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useT } from "@/lib/i18n";
-import { ArrowUpRight, Building2, GraduationCap, Landmark, Scale } from "lucide-react";
+import { ArrowUpRight, Buildings, GraduationCap, Bank, Scales } from "@phosphor-icons/react";
 import SectionHeading from "@/components/ui/SectionHeading";
 import Reveal from "@/components/ui/Reveal";
 
@@ -14,13 +14,13 @@ export default function ExamEngineSection() {
   const t = useT();
   const tracks = [
   {
-    icon: Landmark,
+    icon: Bank,
     name: t("landing.examEngine.track.bcs"),
     blurb: t("landing.examEngine.track.bcs.blurb"),
     href: "/tracks#bcs-preliminary",
   },
   {
-    icon: Building2,
+    icon: Buildings,
     name: t("landing.examEngine.track.bank"),
     blurb: t("landing.examEngine.track.bank.blurb"),
     href: "/tracks#bank-jobs",
@@ -32,7 +32,7 @@ export default function ExamEngineSection() {
     href: "/tracks#teacher-recruitment",
   },
   {
-    icon: Scale,
+    icon: Scales,
     name: t("landing.examEngine.track.other"),
     blurb: t("landing.examEngine.track.other.blurb"),
     href: "/tracks#psc-and-other",

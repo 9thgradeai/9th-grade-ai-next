@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react"
 import Link from "next/link"
-import { ShieldCheck } from "lucide-react"
+import { ShieldCheck } from "@phosphor-icons/react"
 import { AuthEnvironment } from "./AuthEnvironment"
 import BrandMark from "@/components/ui/BrandMark"
 

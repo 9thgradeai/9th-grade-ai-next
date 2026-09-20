@@ -2,7 +2,7 @@
 
 import HeroBackground from "@/components/landing/hero/HeroBackground";
 import HeroContent from "@/components/landing/hero/HeroContent";
-import { ChevronDown } from "lucide-react";
+import { CaretDown } from "@phosphor-icons/react";
 import { useT } from "@/lib/i18n";
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
@@ -41,7 +41,7 @@ export default function HeroSection({ subjectCount }: { subjectCount: number }) 
         style={{ opacity: contentOpacity }}
       >
         <span className="font-mono text-[0.65rem] uppercase tracking-[0.22em]">{t("common.scroll")}</span>
-        <ChevronDown className="h-4 w-4" />
+        <CaretDown className="h-4 w-4" />
       </motion.div>
     </section>
   );

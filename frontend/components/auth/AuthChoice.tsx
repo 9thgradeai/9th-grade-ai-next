@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { motion } from "framer-motion"
-import { ArrowRight } from "lucide-react"
+import { ArrowRight } from "@phosphor-icons/react"
 
 /** Google "G" mark — inline so we don't add an icon dependency. */
 function GoogleIcon({ className }: { className?: string }) {

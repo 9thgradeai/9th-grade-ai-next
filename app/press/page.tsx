@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Megaphone, Image, FileText, Mail, ArrowUpRight } from "lucide-react";
+import { Megaphone, Image, FileText, EnvelopeSimple, ArrowUpRight } from "@phosphor-icons/react";
 import { prisma } from "~backend/db";
 import PublicShell from "@/components/public/PublicShell";
 import PageHero from "@/components/public/PageHero";
@@ -87,7 +87,7 @@ export default async function PressPage() {
           <div className="mt-14 glass-card rounded-2xl border border-white/10 p-6 md:p-8 flex flex-col sm:flex-row items-center justify-between gap-5">
             <div className="flex items-center gap-3">
               <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-emerald-500/20 to-cyan-500/10 border border-emerald-500/25 flex items-center justify-center flex-shrink-0">
-                <Mail className="w-5 h-5 text-emerald-400" aria-hidden="true" />
+                <EnvelopeSimple className="w-5 h-5 text-emerald-400" aria-hidden="true" />
               </div>
               <div>
                 <p className="text-sm font-medium text-white">Media inquiries</p>

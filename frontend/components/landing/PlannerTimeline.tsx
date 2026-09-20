@@ -10,7 +10,7 @@ import {
   useTransform,
   type MotionValue,
 } from "framer-motion";
-import { BookOpen, CircleAlert, GraduationCap, Repeat2, Target } from "lucide-react";
+import { BookOpen, WarningCircle, GraduationCap, Repeat, Target } from "@phosphor-icons/react";
 
 /**
  * Study-planner path: Weak Topic → Concept Review → Practice → Revision →
@@ -20,7 +20,7 @@ import { BookOpen, CircleAlert, GraduationCap, Repeat2, Target } from "lucide-re
 
 const STEPS = [
   {
-    icon: CircleAlert,
+    icon: WarningCircle,
     title: "Weak Topic",
     body: "Diagnosed by the engine, not guessed by you.",
     x: 0.03, y: 0.68, labelSide: "below" as const,
@@ -38,7 +38,7 @@ const STEPS = [
     x: 0.49, y: 0.62, labelSide: "below" as const,
   },
   {
-    icon: Repeat2,
+    icon: Repeat,
     title: "Revision",
     body: "Spaced returns before forgetting begins.",
     x: 0.72, y: 0.3, labelSide: "above" as const,

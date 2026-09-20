@@ -7,8 +7,10 @@ import "server-only";
 import Redis from "ioredis";
 
 const DEFAULT_TTL_MS = 60_000; // 1 minute default
+const MAX_MEM_ENTRIES = 500;
 
-const mem = new Map<string, { value: unknown; exp: number }>();
+const mem = new Map<string, { value: unknown; evictOrder: number }>();
+let evictCounter = 0;
 
 let redis: Redis | null = null;
 if (process.env.REDIS_URL) {
@@ -34,8 +36,11 @@ export async function queryCacheGet<T>(prefix: string, key: string): Promise<T |
       return v ? JSON.parse(v) : null;
     }
     const hit = mem.get(fullKey);
-    if (hit && hit.exp > Date.now()) return hit.value as T;
-    if (hit) mem.delete(fullKey);
+    if (hit) {
+      // Touch to update eviction order
+      hit.evictOrder = ++evictCounter;
+      return hit.value as T;
+    }
   } catch {
     // fail open
   }
@@ -50,7 +55,19 @@ export async function queryCacheSet<T>(prefix: string, key: string, value: T, tt
       await redis.set(fullKey, serialized, "PX", ttlMs);
       return;
     }
-    mem.set(fullKey, { value, exp: Date.now() + ttlMs });
+    // Evict oldest entry if at capacity
+    if (mem.size >= MAX_MEM_ENTRIES) {
+      let oldestKey = "";
+      let oldestOrder = Infinity;
+      for (const [k, v] of mem) {
+        if (v.evictOrder < oldestOrder) {
+          oldestOrder = v.evictOrder;
+          oldestKey = k;
+        }
+      }
+      if (oldestKey) mem.delete(oldestKey);
+    }
+    mem.set(fullKey, { value, evictOrder: ++evictCounter });
   } catch {
     // fail open
   }

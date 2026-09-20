@@ -3,7 +3,7 @@
 import { useMemo, useState, useSyncExternalStore } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { User, Envelope, At, Calendar, Key, ShieldCheck, Bell, Sun, Moon, Download, Trash, Database, Info, CheckCircle, Warning, X, Pencil, Spinner, DeviceMobile, ArrowCounterClockwise,  } from "@phosphor-icons/react";
+import { User, Envelope, At, Calendar, Key, ShieldCheck, Bell, Sun, Moon, Download, Trash, Database, Info, CheckCircle, Warning, X, Pencil, Spinner, DeviceMobile, ArrowCounterClockwise, PencilSimple } from "@phosphor-icons/react";
 import { useAuth } from "@/lib/auth-ctx";
 import { useDashboardTheme } from "@/lib/dashboard-theme-ctx";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
@@ -318,7 +318,7 @@ export default function SettingsTab() {
                   className="p-1.5 rounded-lg text-[var(--dashboard-text-muted)] hover:text-[var(--dashboard-primary)] hover:bg-[var(--dashboard-primary-subtle)] transition-colors"
                   aria-label="Edit name"
                 >
-                  <Pencil className="w-4 h-4" />
+                  <PencilSimple className="w-4 h-4" />
                 </button>
               </div>
             )}

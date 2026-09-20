@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { motion, useReducedMotion } from "framer-motion"
-import { Check } from "lucide-react"
+import { Check } from "@phosphor-icons/react"
 
 /**
  * Post-authentication verification ceremony.
