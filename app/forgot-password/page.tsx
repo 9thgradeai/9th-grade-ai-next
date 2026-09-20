@@ -1,9 +1,6 @@
 "use client"
 
-import type { Metadata } from "next"
 import { useState, type FormEvent } from "react"
-
-export const metadata: Metadata = { robots: { index: false, follow: true } }
 import Link from "next/link"
 import { EnvelopeSimple } from "@phosphor-icons/react"
 import { account } from "@/lib/services/api"

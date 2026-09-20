@@ -1,9 +1,6 @@
 "use client"
 
-import type { Metadata } from "next"
 import { Suspense, useState, type FormEvent } from "react"
-
-export const metadata: Metadata = { robots: { index: false, follow: true } }
 import { useSearchParams, useRouter } from "next/navigation"
 import { Eye, EyeSlash, Key } from "@phosphor-icons/react"
 import { account } from "@/lib/services/api"

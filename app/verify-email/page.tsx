@@ -1,9 +1,6 @@
 "use client"
 
-import type { Metadata } from "next"
 import { Suspense, useEffect, useState } from "react"
-
-export const metadata: Metadata = { robots: { index: false, follow: true } }
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { account } from "@/lib/services/api"
