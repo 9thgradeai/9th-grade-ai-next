@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { EcosystemProvider } from "@/lib/ecosystem-ctx";
 
 function stubFetch(routes: Record<string, unknown>) {
   vi.stubGlobal(
@@ -171,6 +170,7 @@ describe("ExamHistoryTab", () => {
 describe("RealExamTab", () => {
   it("lists available papers", async () => {
     stubFetch({ "/api/exam-papers": papersPayload });
+    const { EcosystemProvider } = await import("@/lib/ecosystem-ctx");
     const { default: RealExamTab } = await import("@/components/dashboard/RealExamTab");
     render(<EcosystemProvider><RealExamTab /></EcosystemProvider>);
 
@@ -180,6 +180,7 @@ describe("RealExamTab", () => {
 
   it("opens a paper and shows PDF export options", async () => {
     stubFetch({ "/api/exam-papers": papersPayload, "/api/exam-papers/1": paperQuestionsPayload });
+    const { EcosystemProvider } = await import("@/lib/ecosystem-ctx");
     const { default: RealExamTab } = await import("@/components/dashboard/RealExamTab");
     render(<EcosystemProvider><RealExamTab /></EcosystemProvider>);
 
@@ -193,6 +194,7 @@ describe("RealExamTab", () => {
 
   it("runs an offline self-graded exam", async () => {
     stubFetch({ "/api/exam-papers": papersPayload, "/api/exam-papers/1": paperQuestionsPayload });
+    const { EcosystemProvider } = await import("@/lib/ecosystem-ctx");
     const { default: RealExamTab } = await import("@/components/dashboard/RealExamTab");
     render(<EcosystemProvider><RealExamTab /></EcosystemProvider>);
 
@@ -235,6 +237,7 @@ describe("RealExamTab", () => {
       }),
     );
 
+    const { EcosystemProvider } = await import("@/lib/ecosystem-ctx");
     const { default: RealExamTab } = await import("@/components/dashboard/RealExamTab");
     render(<EcosystemProvider><RealExamTab /></EcosystemProvider>);
 
@@ -347,6 +350,7 @@ describe("RealExamTab custom paper builder", () => {
       }),
     );
 
+    const { EcosystemProvider } = await import("@/lib/ecosystem-ctx");
     const { default: RealExamTab } = await import("@/components/dashboard/RealExamTab");
     render(<EcosystemProvider><RealExamTab /></EcosystemProvider>);
 
@@ -384,6 +388,7 @@ describe("RealExamTab custom paper builder", () => {
       "/api/questions": { questions: [builderQuestionsPayload.questions[0]] },
     });
 
+    const { EcosystemProvider } = await import("@/lib/ecosystem-ctx");
     const { default: RealExamTab } = await import("@/components/dashboard/RealExamTab");
     render(<EcosystemProvider><RealExamTab /></EcosystemProvider>);
 

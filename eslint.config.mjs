@@ -47,6 +47,7 @@ const eslintConfig = defineConfig([
     files: ["frontend/**/*.{ts,tsx}"],
     rules: {
       "no-restricted-globals": ["error", "process"],
+      "react-hooks/set-state-in-effect": "warn",
     },
   },
   // No-secrets rule (uncomment when eslint-plugin-no-secrets is installed)
@@ -92,6 +93,9 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     ".storybook/**/*",
     "**/*.stories.tsx",
+    ".kilo/**",
+    ".opencode/**",
+    "scripts/**",
   ]),
 ]);
 

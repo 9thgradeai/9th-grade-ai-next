@@ -28,9 +28,10 @@ export default async function AboutPage() {
 
   // Note: using static placeholders; real counts are fetched client‑side in the component if needed.
 
-  {
-    icon: Target,
-    title: "Precision Over Volume",
+  const values = [
+    {
+      icon: Target,
+      title: "Precision Over Volume",
     text: "We believe focused, syllabus-aligned practice beats endless random questions. Every feature is designed around what the exam actually tests.",
   },
   {

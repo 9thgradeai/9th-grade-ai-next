@@ -52,6 +52,8 @@ vi.mock("@/lib/store-ctx/dashboard", () => ({
   }),
 }));
 
+const TODAY = new Date().toLocaleDateString("en-US", { weekday: "long" });
+
 const intelligenceBase = {
   overall: {
     totalAttempts: 120,
@@ -108,8 +110,8 @@ const intelligenceBase = {
     posts: [],
   } as never,
   studyTasks: [
-    { id: 1, title: "Solve 20 MCQs", subject: "বাংলাদেশ বিষয়াবলি", day: "Friday", duration: 20, priority: "high", completed: false },
-    { id: 2, title: "Revise flashcards", subject: "English", day: "Friday", duration: 15, priority: "medium", completed: true },
+    { id: 1, title: "Solve 20 MCQs", subject: "বাংলাদেশ বিষয়াবলি", day: TODAY, duration: 20, priority: "high", completed: false },
+    { id: 2, title: "Revise flashcards", subject: "English", day: TODAY, duration: 15, priority: "medium", completed: true },
   ],
   unfinishedActivities: [],
   recommendations: [
