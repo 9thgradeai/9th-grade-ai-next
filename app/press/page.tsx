@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Megaphone, Image, FileText, EnvelopeSimple, ArrowUpRight } from "@phosphor-icons/react";
+import { Megaphone, Image, FileText, EnvelopeSimple, ArrowUpRight } from "@phosphor-icons/react/dist/ssr";
 import { prisma } from "~backend/db";
 import PublicShell from "@/components/public/PublicShell";
 import PageHero from "@/components/public/PageHero";

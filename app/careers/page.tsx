@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Briefcase, MapPin, ArrowUpRight, Coffee, Users, Lightning } from "@phosphor-icons/react";
+import { Briefcase, MapPin, ArrowUpRight, Coffee, Users, Lightning } from "@phosphor-icons/react/dist/ssr";
 import PublicShell from "@/components/public/PublicShell";
 import PageHero from "@/components/public/PageHero";
 import SectionHeading from "@/components/ui/SectionHeading";

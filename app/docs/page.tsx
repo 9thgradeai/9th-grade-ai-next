@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Terminal, ShieldCheck, Key, GitBranch, Lock, BookOpen } from "@phosphor-icons/react";
+import { Terminal, ShieldCheck, Key, GitBranch, Lock, BookOpen } from "@phosphor-icons/react/dist/ssr";
 import PublicShell from "@/components/public/PublicShell";
 import PageHero from "@/components/public/PageHero";
 import SectionHeading from "@/components/ui/SectionHeading";

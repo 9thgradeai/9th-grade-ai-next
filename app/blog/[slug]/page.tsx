@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CalendarDots, Clock, ArrowLeft } from "@phosphor-icons/react";
+import { CalendarDots, Clock, ArrowLeft } from "@phosphor-icons/react/dist/ssr";
 import PublicShell from "@/components/public/PublicShell";
 import StatusPill from "@/components/ui/StatusPill";
 import { BLOG_POSTS } from "@/lib/data/blog";

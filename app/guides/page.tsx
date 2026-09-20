@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { BookmarkSimple, ArrowUpRight, StackSimple, FileText, GraduationCap, Calculator, Globe } from "@phosphor-icons/react";
+import { BookmarkSimple, ArrowUpRight, StackSimple, FileText, GraduationCap, Calculator, Globe } from "@phosphor-icons/react/dist/ssr";
 import PublicShell from "@/components/public/PublicShell";
 import PageHero from "@/components/public/PageHero";
 import SectionHeading from "@/components/ui/SectionHeading";
