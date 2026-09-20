@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/vocab" },
   title: "Vocabulary Builder — 9Th-Grade AI",
   description:
-    "Exam-focused English vocabulary decks with Bengali meanings, synonyms, and spaced-repetition flashcards for BCS, Bank, and Teacher recruitment exams.",
+    "AI-powered English vocabulary mastery — Bengali meaning, part of speech, verb forms, synonyms/antonyms, example sentence, context and mnemonic — prioritized for BCS, Bank and 9th Grade exams with spaced repetition.",
 };
 
 const decks = [
@@ -58,8 +58,8 @@ export default function VocabPage() {
         eyebrow="VOCABULARY BUILDER"
         title="Words That Win"
         highlight="Exam Marks"
-        description="English vocabulary decks engineered for competitive exams — Bengali meanings, synonyms, antonyms, and spaced-repetition reviews that make words stick."
-        actions={[{ href: "/dashboard?tab=flashcards", label: "Start a Deck" }]}
+        description="AI-powered vocabulary — each lesson shows word, Bengali meaning, part of speech, verb forms, synonyms/antonyms, exam-relevant example, context and mnemonic — intelligently prioritized for BCS, Bank & 9th Grade and reinforced via spaced repetition."
+        actions={[{ href: "/dashboard?tab=vocab", label: "Start Vocab Mastery" }]}
       />
 
       <section className="py-16 md:py-24 px-4 sm:px-6">
@@ -98,7 +98,7 @@ export default function VocabPage() {
                     {deck.words} words
                   </span>
                   <Link
-                    href="/dashboard?tab=flashcards"
+                    href="/dashboard?tab=vocab"
                     className="inline-flex items-center gap-1 text-sm font-medium text-emerald-400 hover:text-emerald-300 transition-colors"
                   >
                     Study

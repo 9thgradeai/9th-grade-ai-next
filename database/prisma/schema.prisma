@@ -234,6 +234,7 @@ model User {
   questionProgress        UserQuestionProgress[]
   agentRuns               AgentRun[]
   learningEvents          LearningEvent[]
+  vocabProgress           VocabProgress[]
 
   // NOTE: `email` and `handle` are @unique — their backing indexes already
   // serve lookups; explicit duplicates were removed (write amplification).
@@ -1123,4 +1124,49 @@ model LearningEvent {
   @@index([userId, type])
   @@index([userId, subjectId, occurredAt])
   @@index([userId, topicId, occurredAt])
+}
+
+// ── Vocab — AI-Powered Vocabulary Mastery ───────────────
+model VocabWord {
+  id                Int      @id @default(autoincrement())
+  word              String   @unique
+  bengaliMeaning    String
+  partOfSpeech      String
+  verbForms         Json?
+  synonyms          Json?
+  antonyms          Json?
+  exampleSentence   String
+  exampleSentenceBn String?
+  context           String   @db.Text
+  mnemonic          String   @db.Text
+  examRelevance     Json? // ["BCS","Bank","9th Grade"]
+  frequency         Int      @default(0)
+  difficulty        String   @default("MEDIUM")
+  createdAt         DateTime @default(now())
+  progress          VocabProgress[]
+
+  @@index([difficulty])
+  @@index([frequency])
+}
+
+model VocabProgress {
+  id             Int       @id @default(autoincrement())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  wordId         Int
+  word           VocabWord @relation(fields: [wordId], references: [id], onDelete: Cascade)
+  status         String    @default("NEW") // NEW | LEARNING | REVIEW | MASTERED
+  ease           Float     @default(2.5)
+  interval       Int       @default(0)
+  repetitions    Int       @default(0)
+  nextReview     DateTime?
+  lastReviewedAt DateTime?
+  totalReviews   Int       @default(0)
+  correctCount   Int       @default(0)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@unique([userId, wordId])
+  @@index([userId, status])
+  @@index([userId, nextReview])
 }

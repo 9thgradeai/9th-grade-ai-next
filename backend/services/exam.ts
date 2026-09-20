@@ -77,6 +77,32 @@ function allocateLargestRemainder(total: number, weights: number[]): number[] {
   return base;
 }
 
+// Even distribution across leaves: as balanced as possible, capped by leaf capacities.
+function allocateEvenly(total: number, capacities: number[]): number[] {
+  const n = capacities.length;
+  if (n === 0 || total <= 0) return capacities.map(() => 0);
+  const alloc = new Array(n).fill(0);
+  let remaining = total;
+  let eligible = capacities.map((c, i) => (c > 0 ? i : -1)).filter((i) => i >= 0);
+  while (remaining > 0 && eligible.length > 0) {
+    const perLeaf = Math.floor(remaining / eligible.length);
+    const extra = remaining % eligible.length;
+    let distributed = 0;
+    for (let idx = 0; idx < eligible.length; idx++) {
+      const i = eligible[idx];
+      const need = perLeaf + (idx < extra ? 1 : 0);
+      if (need <= 0) continue;
+      const canGive = Math.min(need, capacities[i] - alloc[i]);
+      alloc[i] += canGive;
+      distributed += canGive;
+    }
+    if (distributed === 0) break;
+    remaining -= distributed;
+    eligible = eligible.filter((i) => alloc[i] < capacities[i]);
+  }
+  return alloc;
+}
+
 // ── Selection tree (real counts, data-driven, recursive) ──
 // The tree mirrors the recursive Topic taxonomy. Leaf question counts are
 // aggregated up the path chain so every node reports how many questions exist
@@ -342,12 +368,20 @@ export async function buildCustomExam(config: ExamSelectionRequest): Promise<Exa
         const eligible = eligibleLeafPaths(leafCounts, subject.subjectId, subject.paths);
         if (eligible.length === 0) return;
 
-        const ids = await pickQuestionIds(
-          groupWhere(subject.subjectId, eligible),
-          allocation,
-          seed + si * 131_071,
+        // Evenly balanced across eligible leaves/topics
+        const counts = leafCounts.get(subject.subjectId) ?? new Map<string, number>();
+        const leafCaps = eligible.map((p) => counts.get(p) ?? 0);
+        const perLeafAlloc = allocateEvenly(allocation, leafCaps);
+        const leafIds: number[] = [];
+        await Promise.all(
+          eligible.map(async (leafPath, li) => {
+            const need = perLeafAlloc[li];
+            if (need <= 0) return;
+            const ids = await pickQuestionIds({ subjectId: subject.subjectId, path: { in: [leafPath] } } as unknown as Record<string, unknown>, need, seed + si * 131_071 + li * 7919);
+            leafIds.push(...ids);
+          }),
         );
-        selected.push(...(await fetchQuestionsByIds(ids, nameBySubject)));
+        selected.push(...(await fetchQuestionsByIds(leafIds, nameBySubject)));
       }),
     );
 

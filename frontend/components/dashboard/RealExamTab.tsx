@@ -13,6 +13,7 @@ import {
   findNodeByPath,
   availableForSubject,
 } from "./TopicTreePicker";
+import { allocateEvenly, shuffle as balancedShuffle } from "@/lib/balanced";
 
 type PaperMeta = {
   id: number;
@@ -176,25 +177,41 @@ export default function RealExamTab() {
     setBuildLoading(true);
     setBuildError(null);
     try {
-      // Same data flow as the Practice tab: fetch the full question DTOs for
-      // every selected subject/topic/subtopic, merge, then sample the count.
       const pools = await Promise.all(
         selectedSubjects.map(async (s) => {
           const sel = selection[s.id];
-          return api.questions({
-            subject: s.nameBn,
-            paths: sel.paths.length > 0 ? sel.paths : undefined,
-            limit: 200,
-          });
+          const requested = sel.count ?? 0;
+          if (requested <= 0) return [] as Server.QuestionDTO[];
+          const allLeaves = flattenNodes(s.nodes).filter((n) => n.children.length === 0);
+          const eligible = sel.paths.length === 0 ? allLeaves : allLeaves.filter((leaf) => sel.paths.some((p) => leaf.path === p || leaf.path.startsWith(p + "/")));
+          if (eligible.length === 0) {
+            return api.questions({ subject: s.nameBn, paths: sel.paths.length > 0 ? sel.paths : undefined, limit: Math.min(requested, 200) });
+          }
+          const caps = eligible.map((l) => l.questionCount);
+          const alloc = allocateEvenly(requested, caps);
+          const perLeafPools = await Promise.all(
+            eligible.map((leaf, idx) => {
+              const need = alloc[idx];
+              if (need <= 0) return [] as Server.QuestionDTO[];
+              return api.questions({ subject: s.nameBn, paths: [leaf.path], limit: need });
+            }),
+          );
+          const mergedLeaf = perLeafPools.flat().filter(Boolean);
+          if (mergedLeaf.length < requested) {
+            const fallback = await api.questions({ subject: s.nameBn, paths: sel.paths.length > 0 ? sel.paths : undefined, limit: requested });
+            const seen = new Set(mergedLeaf.map((q) => q.id));
+            for (const q of fallback) if (!seen.has(q.id)) mergedLeaf.push(q);
+          }
+          return balancedShuffle(mergedLeaf).slice(0, Math.min(requested, mergedLeaf.length));
         }),
       );
-      const merged = pools.flat().filter(Boolean);
+      const merged = pools.flat().filter(Boolean) as Server.QuestionDTO[];
       if (merged.length === 0) {
         setBuildError("নির্বাচিত টপিক থেকে কোনো প্রশ্ন পাওয়া যায়নি।");
         return;
       }
       const requested = Math.min(totalCount > 0 ? totalCount : merged.length, MAX_PDF_QUESTIONS);
-      const picked = shuffled(merged).slice(0, Math.min(requested, merged.length));
+      const picked = balancedShuffle(merged).slice(0, Math.min(requested, merged.length));
       const qs: Server.RealExamQuestionDTO[] = picked.map((q) => ({
         id: q.id,
         question: q.question ?? "",

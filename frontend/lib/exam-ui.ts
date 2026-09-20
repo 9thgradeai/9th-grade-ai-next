@@ -18,6 +18,7 @@ export const TAB_ICONS: Record<TabId, ComponentType<IconProps>> = {
   settings: Gear,
   "exam-history": ClockCounterClockwise,
   "real-exam": Download,
+  vocab: BookOpen,
 };
 
 /** Bangla labels for question difficulty tiers. */

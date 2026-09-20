@@ -11,7 +11,7 @@ import ExamSwitcher from "./ExamSwitcher";
 
 const NAV_GROUPS: { label: string; labelBn: string; ids: TabId[] }[] = [
   { label: "Primary", labelBn: "প্রধান", ids: ["home", "practice", "question-bank", "mistakes", "progress"] },
-  { label: "Study", labelBn: "পড়াশোনা", ids: ["study-planner", "flashcards", "exam-history", "real-exam"] },
+  { label: "Study", labelBn: "পড়াশোনা", ids: ["study-planner", "flashcards", "vocab", "exam-history", "real-exam"] },
   { label: "Account", labelBn: "অ্যাকাউন্ট", ids: ["settings"] },
 ];
 

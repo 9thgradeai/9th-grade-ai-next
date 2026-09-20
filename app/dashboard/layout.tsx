@@ -43,7 +43,7 @@ const PracticeDrillOverlay = dynamic(
 
 const DRAWER_GROUPS: { label: string; ids: TabId[] }[] = [
   { label: "Primary", ids: ["home", "practice", "question-bank", "mistakes", "progress"] },
-  { label: "Study", ids: ["study-planner", "flashcards", "exam-history", "real-exam"] },
+  { label: "Study", ids: ["study-planner", "flashcards", "vocab", "exam-history", "real-exam"] },
   { label: "Account", ids: ["settings"] },
 ];
 

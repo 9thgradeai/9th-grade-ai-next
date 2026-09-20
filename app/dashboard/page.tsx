@@ -53,6 +53,7 @@ const TAB_COMPONENTS: Record<TabId, React.ComponentType> = {
   settings: dynamic(() => import("@/components/dashboard/SettingsTab"), { loading: TabChunkLoading }),
   "exam-history": dynamic(() => import("@/components/dashboard/ExamHistoryTab"), { loading: TabChunkLoading }),
   "real-exam": dynamic(() => import("@/components/dashboard/RealExamTab"), { loading: TabChunkLoading }),
+  vocab: dynamic(() => import("@/components/dashboard/VocabTab"), { loading: TabChunkLoading }),
 };
 
 function TabSwitcher() {

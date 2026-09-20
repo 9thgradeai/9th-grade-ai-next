@@ -655,6 +655,20 @@ export const api = {
     });
     return data.result;
   },
+
+  // ── Vocab — AI-Powered Vocabulary Mastery ──────────
+  vocabWords: (params?: { limit?: number; exam?: string; difficulty?: string }): Promise<Server.VocabWordDTO[]> => {
+    const qs = new URLSearchParams();
+    if (params?.limit) qs.set("limit", String(params.limit));
+    if (params?.exam) qs.set("exam", params.exam);
+    if (params?.difficulty) qs.set("difficulty", params.difficulty);
+    const suffix = qs.toString() ? `?${qs.toString()}` : "";
+    return cachedGet<{ words: Server.VocabWordDTO[] }>(`/api/vocab/words${suffix}`).then((d) => d.words);
+  },
+  vocabStats: (): Promise<{ total: number; mastered: number; learning: number; due: number; reviewed: number }> =>
+    cachedGet<{ total: number; mastered: number; learning: number; due: number; reviewed: number }>("/api/vocab/stats").then((d) => d),
+  reviewVocab: (wordId: number, correct: boolean): Promise<unknown> =>
+    request("/api/vocab/review", { method: "POST", ...AUTH_FETCH_INIT, body: JSON.stringify({ wordId, correct }), headers: { "Content-Type": "application/json" } }),
 };
 
 // ── Account / settings methods (auth endpoints) ─────────────

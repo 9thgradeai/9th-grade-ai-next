@@ -15,7 +15,9 @@ import AIExplanationButton from "./AIExplanationButton";
 import {
   type Selection,
   availableForSubject,
+  flattenNodes,
 } from "./TopicTreePicker";
+import { allocateEvenly, shuffle } from "@/lib/balanced";
 
 type PracticeMode = "custom" | "mock" | "quick";
 
@@ -275,8 +277,7 @@ export default function PracticeTab() {
     }
   }, [result]);
 
-  // Fetch full question DTOs (with correct answers for the review panel) for
-  // every selected subject/topic/subtopic, then serve the requested count.
+  // Fetch questions with whole-subject even distribution across topics.
   const startSession = async () => {
     setLoading(true);
     setLoadError(null);
@@ -290,12 +291,35 @@ export default function PracticeTab() {
       const pools = await Promise.all(
         selectedSubjects.map(async (s) => {
           const sel = selection[s.id];
-          return api.questions({
-            subject: s.nameBn,
-            paths: sel.paths.length > 0 ? sel.paths : undefined,
-            limit: 200,
-            ecosystem,
-          });
+          const requested = sel.count ?? 0;
+          if (requested <= 0) return [] as Server.QuestionDTO[];
+          // Determine eligible leaves
+          const allLeaves = flattenNodes(s.nodes).filter((n) => n.children.length === 0);
+          const eligible = sel.paths.length === 0
+            ? allLeaves
+            : allLeaves.filter((leaf) => sel.paths.some((p) => leaf.path === p || leaf.path.startsWith(p + "/")));
+          if (eligible.length === 0) {
+            const res = await api.questions({ subject: s.nameBn, paths: sel.paths.length > 0 ? sel.paths : undefined, limit: Math.min(requested, 200), ecosystem });
+            return res;
+          }
+          const caps = eligible.map((l) => l.questionCount);
+          const alloc = allocateEvenly(requested, caps);
+          const perLeafPools = await Promise.all(
+            eligible.map((leaf, idx) => {
+              const need = alloc[idx];
+              if (need <= 0) return [] as Server.QuestionDTO[];
+              return api.questions({ subject: s.nameBn, paths: [leaf.path], limit: need, ecosystem });
+            }),
+          );
+          const mergedLeaf = perLeafPools.flat().filter(Boolean);
+          // If leaf counts were stale and we got fewer than requested, fallback to whole-subject fetch
+          if (mergedLeaf.length < requested) {
+            const fallback = await api.questions({ subject: s.nameBn, paths: sel.paths.length > 0 ? sel.paths : undefined, limit: requested, ecosystem });
+            // Merge and deduplicate, then balanced-sample the fallback pool
+            const seen = new Set(mergedLeaf.map((q) => q.id));
+            for (const q of fallback) if (!seen.has(q.id)) mergedLeaf.push(q);
+          }
+          return shuffle(mergedLeaf).slice(0, Math.min(requested, mergedLeaf.length));
         }),
       );
       const merged = pools.flat().filter(Boolean);
@@ -303,11 +327,9 @@ export default function PracticeTab() {
         setLoadError("নির্বাচিত টপিক থেকে কোনো প্রশ্ন পাওয়া যায়নি।");
         setQuestions([]);
       } else {
-        const requested = totalCount > 0 ? totalCount : merged.length;
-        const picked = shuffled(merged).slice(0, Math.min(requested, merged.length));
-        setQuestions(picked);
+        const finalQuestions = shuffle(merged);
+        setQuestions(finalQuestions);
         setSessionActive(true);
-        // Ensure the new session renders from question 1 at the top.
         requestAnimationFrame(() => scrollDashboardTop());
       }
     } catch {

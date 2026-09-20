@@ -35,6 +35,7 @@ import {
 } from "../../frontend/lib/data/study";
 import { seedQuestions } from "../../scripts/seed-questions";
 import { seedBcsQuestions } from "../../scripts/seed-bcs";
+import { seedVocabWords } from "../../backend/services/vocab";
 import { sourceKey } from "../../scripts/seed-keys";
 
 const prisma = new PrismaClient();
@@ -177,6 +178,10 @@ async function main() {
   // BCS exam-wise questions (tagged by specific BCS term via sourceExam).
   const bcsCount = await seedBcsQuestions(prisma);
   console.log(`  ✓ ${bcsCount} BCS exam-wise questions (from database/data/question_bank/bcs)`);
+
+  // Vocab words (AI-powered mastery)
+  const vocabCount = await seedVocabWords();
+  console.log(`  ✓ ${vocabCount} vocab words`);
 
   // Question-bank categories map to subjects by label (upsert by unique label).
   const subjectByBn = await prisma.subject.findMany();

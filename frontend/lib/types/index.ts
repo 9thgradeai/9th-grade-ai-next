@@ -1098,6 +1098,31 @@ export namespace Server {
     recommendations: PrepIntelligenceRecommendation[];
     dailyQuizAvailable: boolean;
   };
+
+  export type VocabWordDTO = {
+    id: number;
+    word: string;
+    bengaliMeaning: string;
+    partOfSpeech: string;
+    verbForms: string[] | null;
+    synonyms: string[] | null;
+    antonyms: string[] | null;
+    exampleSentence: string;
+    exampleSentenceBn?: string | null;
+    context: string;
+    mnemonic: string;
+    examRelevance: string[] | null;
+    frequency: number;
+    difficulty: string;
+    progress?: {
+      status: string;
+      nextReview: string | null;
+      interval: number;
+      repetitions: number;
+      totalReviews: number;
+      correctCount: number;
+    } | null;
+  };
 }
 
 // ── Re-exports for convenience ──────────────────────────────
@@ -1108,6 +1133,7 @@ export type { Client as Types, Server as DTOs };
 export type SubjectDTO = Server.SubjectDTO;
 export type TopicDTO = Server.TopicDTO;
 export type QuestionDTO = Server.QuestionDTO;
+export type VocabWordDTO = Server.VocabWordDTO;
 export type QuestionBankCategoryDTO = Server.QuestionBankCategoryDTO;
 export type ExamPaperDTO = Server.ExamPaperDTO;
 export type ExamDTO = Server.ExamDTO;
