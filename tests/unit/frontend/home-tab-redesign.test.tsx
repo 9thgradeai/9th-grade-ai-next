@@ -138,7 +138,7 @@ describe("TodayMission orbital gauge", () => {
     expect(mission?.id).toBe("daily-warmup");
   });
 
-  it("renders orbit from real plan progress (1 of 2 done = 50%)", () => {
+  it("renders orbit from real plan progress (1 of 2 done = 50%)", async () => {
     render(<TodayMissionHarness intelligence={intelligenceBase as never} />);
     await screen.findByText(/Today's plan progress/i);
     await screen.findByText(/1\/2/);
@@ -185,7 +185,17 @@ describe("PreparationPulse metrics", () => {
 
 describe("HomeTab rearrangement", () => {
   beforeEach(() => {
-    components.preparationIntelligence.mockResolvedValue(intelligenceBase);
+    components.preparationIntelligence.mockResolvedValue({
+      ...intelligenceBase,
+      // Ensure at least one task is for today so the toggle button renders
+      studyTasks: [
+        {
+          ...intelligenceBase.studyTasks[0],
+          // Use the current weekday name (matching HomeTab's WEEKDAYS array)
+          day: new Date().toLocaleDateString('en-US', { weekday: 'long' }) as any,
+        },
+      ],
+    });
   });
 
   it("places compact heading and KPIs before analytics, then mission and recommendations", async () => {

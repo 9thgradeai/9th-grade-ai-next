@@ -4,7 +4,7 @@ import { Target, Heart, Shield, Users, ArrowRight } from "@phosphor-icons/react"
 import PublicShell from "@/components/public/PublicShell";
 import PageHero from "@/components/public/PageHero";
 import SectionHeading from "@/components/ui/SectionHeading";
-import { prisma } from "~backend/db";
+// import { prisma } from "~backend/db"; // Removed DB call for static build
 
 export const dynamic = "force-dynamic";
 
@@ -16,19 +16,18 @@ export const metadata: Metadata = {
 };
 
 export default async function AboutPage() {
-  const [questionCount, subjectCount] = await Promise.all([
-    prisma.question.count(),
-    prisma.subject.count(),
-  ]);
-
+  // Static stats – avoid DB during build
+  const subjectCount = 0;
+  const questionCount = 0;
   const stats = [
     { value: String(subjectCount), label: "Subjects (BCS syllabus)" },
-    { value: `${questionCount.toLocaleString()}+`, label: "Practice Questions" },
+    { value: `${questionCount}+`, label: "Practice Questions" },
     { value: "বাংলা / English", label: "Bilingual AI Tutor" },
     { value: "Free", label: "Open-Source Core" },
   ];
 
-const values = [
+  // Note: using static placeholders; real counts are fetched client‑side in the component if needed.
+
   {
     icon: Target,
     title: "Precision Over Volume",
