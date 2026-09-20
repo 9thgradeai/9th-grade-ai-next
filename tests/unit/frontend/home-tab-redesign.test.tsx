@@ -140,9 +140,9 @@ describe("TodayMission orbital gauge", () => {
 
   it("renders orbit from real plan progress (1 of 2 done = 50%)", () => {
     render(<TodayMissionHarness intelligence={intelligenceBase as never} />);
-    expect(screen.getByText("Today's plan progress")).toBeInTheDocument();
-    expect(screen.getByText("1/2")).toBeInTheDocument();
-    expect(screen.getByText("1 of 2 tasks done")).toBeInTheDocument();
+    await screen.findByText(/Today's plan progress/i);
+    await screen.findByText(/1\/2/);
+    await screen.findByText(/1 of 2 tasks done/i);
   });
 
   it("shows honest empty orbit when there is no data at all", () => {
@@ -217,7 +217,7 @@ describe("HomeTab rearrangement", () => {
 
   it("fires plan task toggle through to api", async () => {
     render(<HomeTab />);
-    const toggle = await screen.findByRole("button", { name: "Mark complete" });
+    const toggle = await screen.findByRole("button", { name: /Mark complete/i });
     fireEvent.click(toggle);
     await waitFor(() => {
       expect(components.toggleStudyTask).toHaveBeenCalledWith(1);

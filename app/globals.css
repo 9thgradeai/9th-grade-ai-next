@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import "./ai-workspace.css";
+@import "../frontend/styles/ai-workspace.css";
 
 /* ══════════════════════════════════════════════════════════════════════════════
    PREMIUM SOFT DESIGN TOKEN SYSTEM

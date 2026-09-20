@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+vi.mock("~backend/db", () => ({ prisma: { userQuestionProgress: { findUnique: vi.fn(), upsert: vi.fn() } } }));
 import { prisma } from "~backend/db";
 import { recordQuestionAttempt } from "~backend/services/question-progress";
 

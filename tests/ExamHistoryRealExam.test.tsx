@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { EcosystemProvider } from "@/lib/ecosystem-ctx";
 
 function stubFetch(routes: Record<string, unknown>) {
   vi.stubGlobal(
@@ -171,7 +172,7 @@ describe("RealExamTab", () => {
   it("lists available papers", async () => {
     stubFetch({ "/api/exam-papers": papersPayload });
     const { default: RealExamTab } = await import("@/components/dashboard/RealExamTab");
-    render(<RealExamTab />);
+    render(<EcosystemProvider><RealExamTab /></EcosystemProvider>);
 
     expect(await screen.findByText("রিয়েল এক্সাম (অফলাইন)")).toBeInTheDocument();
     expect(await screen.findByText("৪৬তম বিসিএস প্রিলিমিনারি")).toBeInTheDocument();
@@ -180,7 +181,7 @@ describe("RealExamTab", () => {
   it("opens a paper and shows PDF export options", async () => {
     stubFetch({ "/api/exam-papers": papersPayload, "/api/exam-papers/1": paperQuestionsPayload });
     const { default: RealExamTab } = await import("@/components/dashboard/RealExamTab");
-    render(<RealExamTab />);
+    render(<EcosystemProvider><RealExamTab /></EcosystemProvider>);
 
     fireEvent.click(await screen.findByText("খুলুন ও PDF নিন"));
 
@@ -193,7 +194,7 @@ describe("RealExamTab", () => {
   it("runs an offline self-graded exam", async () => {
     stubFetch({ "/api/exam-papers": papersPayload, "/api/exam-papers/1": paperQuestionsPayload });
     const { default: RealExamTab } = await import("@/components/dashboard/RealExamTab");
-    render(<RealExamTab />);
+    render(<EcosystemProvider><RealExamTab /></EcosystemProvider>);
 
     fireEvent.click(await screen.findByText("খুলুন ও PDF নিন"));
     fireEvent.click(await screen.findByText("অফলাইনে পরীক্ষা দিন"));
@@ -235,7 +236,7 @@ describe("RealExamTab", () => {
     );
 
     const { default: RealExamTab } = await import("@/components/dashboard/RealExamTab");
-    render(<RealExamTab />);
+    render(<EcosystemProvider><RealExamTab /></EcosystemProvider>);
 
     fireEvent.click(await screen.findByText("খুলুন ও PDF নিন"));
     expect(await screen.findByText("PDF এক্সপোর্ট অপশন")).toBeInTheDocument();
@@ -347,7 +348,7 @@ describe("RealExamTab custom paper builder", () => {
     );
 
     const { default: RealExamTab } = await import("@/components/dashboard/RealExamTab");
-    render(<RealExamTab />);
+    render(<EcosystemProvider><RealExamTab /></EcosystemProvider>);
 
     // Enter the custom paper builder from the Real Exam landing page.
     fireEvent.click(await screen.findByText("নতুন প্রশ্নপত্র তৈরি করুন"));
@@ -384,7 +385,7 @@ describe("RealExamTab custom paper builder", () => {
     });
 
     const { default: RealExamTab } = await import("@/components/dashboard/RealExamTab");
-    render(<RealExamTab />);
+    render(<EcosystemProvider><RealExamTab /></EcosystemProvider>);
 
     fireEvent.click(await screen.findByText("নতুন প্রশ্নপত্র তৈরি করুন"));
     expect(await screen.findByText("বাংলা ভাষা ও সাহিত্য")).toBeInTheDocument();

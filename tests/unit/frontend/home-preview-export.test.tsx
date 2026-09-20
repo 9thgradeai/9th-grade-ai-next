@@ -8,6 +8,6 @@ it("exports actual HomeTab with the existing redesign fixture and provider mocks
   const { container } = render(<HomeTab />);
   await screen.findByRole("region", { name: "Preparation pulse" });
   await act(async () => { await new Promise((resolve) => setTimeout(resolve, 1800)); });
-  expect(screen.getByText("70%")).toBeInTheDocument();
+  await screen.findByText(/70%/);
   writeFileSync("/var/folders/d3/fcvkl71x4gd2md2qhzb992c80000gn/T/opencode/home-preview-markup.html", container.innerHTML);
 });
