@@ -249,12 +249,42 @@ export default function RealExamTab() {
     }
   }, []);
 
-  // Offline countdown — client-local only, no server calls.
+  // Offline countdown — wall-clock based so background throttling / tab hidden doesn't slip,
+  // and auto-submits (locks answers + shows score) when time runs out.
   useEffect(() => {
-    if (phase !== "offline" || timeLeft <= 0) return;
-    const id = setInterval(() => setTimeLeft((t) => Math.max(0, t - 1)), 1000);
-    return () => clearInterval(id);
-  }, [phase, timeLeft]);
+    if (phase !== "offline" || checked) return;
+    if (timeLeft <= 0) return;
+    const endsAt = Date.now() + timeLeft * 1000;
+    let autoSubmitted = false;
+    const tick = () => {
+      const remaining = Math.max(0, Math.ceil((endsAt - Date.now()) / 1000));
+      setTimeLeft(remaining);
+      if (remaining <= 0 && !autoSubmitted) {
+        autoSubmitted = true;
+        setChecked(true);
+      }
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    const onVisible = () => {
+      if (document.visibilityState === "visible") tick();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      clearInterval(id);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+    // timeLeft is intentionally not a dep — we snapshot the duration when entering offline
+    // so the countdown doesn't extend on each tick.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase, checked]);
+
+  // Fallback: if timeLeft is externally set to 0 (e.g. immediate expiry), lock the exam.
+  useEffect(() => {
+    if (phase === "offline" && timeLeft === 0 && !checked && questions.length > 0) {
+      setChecked(true);
+    }
+  }, [phase, timeLeft, checked, questions.length]);
 
   const visibleQuestions = useMemo(() => {
     if (shuffleSeed === null) return questions;
@@ -748,6 +778,12 @@ export default function RealExamTab() {
                     </span>
                   )}
                 </div>
+              </div>
+            )}
+            {phase === "offline" && checked && timeLeft === 0 && (
+              <div className="mt-3 flex items-center gap-2 rounded-xl border border-[var(--dashboard-warning)]/30 bg-[var(--dashboard-warning-subtle)] px-3 py-2 text-xs text-[var(--dashboard-warning)]" role="status" aria-live="polite">
+                <Clock className="w-3.5 h-3.5 shrink-0" />
+                সময় শেষ — উত্তর স্বয়ংক্রিয়ভাবে জমা হয়েছে।
               </div>
             )}
 
