@@ -94,7 +94,7 @@ jobs:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/app_test
       - name: Upload analyzer report (on failure, for triage)
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: analyze-treemaps
           path: .next/analyze/
