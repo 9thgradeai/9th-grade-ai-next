@@ -235,6 +235,8 @@ model User {
   agentRuns               AgentRun[]
   learningEvents          LearningEvent[]
   vocabProgress           VocabProgress[]
+  vocabDecks              UserVocabDeck[]
+  createdDecks            VocabDeck[]
 
   // NOTE: `email` and `handle` are @unique — their backing indexes already
   // serve lookups; explicit duplicates were removed (write amplification).
@@ -1144,6 +1146,7 @@ model VocabWord {
   difficulty        String   @default("MEDIUM")
   createdAt         DateTime @default(now())
   progress          VocabProgress[]
+  vocabDeckWords    VocabDeckWord[]
 
   @@index([difficulty])
   @@index([frequency])
@@ -1169,4 +1172,53 @@ model VocabProgress {
   @@unique([userId, wordId])
   @@index([userId, status])
   @@index([userId, nextReview])
+}
+
+// ── Vocab Decks ───────────────────────────────────────
+model VocabDeck {
+  id          Int      @id @default(autoincrement())
+  name        String
+  nameBn      String?
+  description String?
+  icon        String?  // emoji or icon name
+  color       String?  // hex color
+  isDefault   Boolean  @default(false)
+  isPublic    Boolean  @default(false)
+  creatorId   String?
+  creator     User?    @relation(fields: [creatorId], references: [id], onDelete: SetNull)
+  words       VocabDeckWord[]
+  userDecks   UserVocabDeck[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isDefault])
+  @@index([isPublic])
+}
+
+model VocabDeckWord {
+  id       Int       @id @default(autoincrement())
+  deckId   Int
+  deck     VocabDeck @relation(fields: [deckId], references: [id], onDelete: Cascade)
+  wordId   Int
+  word     VocabWord @relation(fields: [wordId], references: [id], onDelete: Cascade)
+  sortOrder Int      @default(0)
+  addedAt  DateTime  @default(now())
+
+  @@unique([deckId, wordId])
+  @@index([deckId])
+  @@index([wordId])
+}
+
+model UserVocabDeck {
+  id         Int       @id @default(autoincrement())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deckId     Int
+  deck       VocabDeck @relation(fields: [deckId], references: [id], onDelete: Cascade)
+  isFavorite Boolean   @default(false)
+  lastStudied DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@unique([userId, deckId])
+  @@index([userId])
 }

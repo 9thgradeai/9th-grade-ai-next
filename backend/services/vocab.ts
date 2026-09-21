@@ -1,4 +1,10 @@
+// backend/services/vocab.ts — Vocabulary learning with SM-2 spaced repetition.
+// Server-only; called from API route handlers with an authenticated userId.
+
+import "server-only";
+
 import { prisma } from "~backend/db";
+import { VOCAB_SEED_DATA } from "~backend/../database/data/vocab-seed";
 
 export type VocabWordDTO = {
   id: number;
@@ -25,8 +31,8 @@ export type VocabWordDTO = {
   } | null;
 };
 
-// Seed words (exam-focused: BCS, Bank, 9th Grade)
-export const SEED_VOCAB_WORDS: Omit<VocabWordDTO, "id">[] = [
+// Original 10 seed words (kept for backward compatibility)
+const ORIGINAL_SEED_WORDS: Omit<VocabWordDTO, "id">[] = [
   {
     word: "Abandon",
     bengaliMeaning: "পরিত্যাগ করা",
@@ -160,7 +166,7 @@ export const SEED_VOCAB_WORDS: Omit<VocabWordDTO, "id">[] = [
     partOfSpeech: "Adjective",
     verbForms: null,
     synonyms: ["tough", "adaptable", "hardy"],
-    antonyms: ["fragile", "脆弱", "vulnerable"],
+    antonyms: ["fragile", "vulnerable", "weak"],
     exampleSentence: "Bangladeshi farmers are resilient despite recurring floods.",
     context: "Disaster management — BCS geography/environment.",
     mnemonic: "Resilient = re + salient — bounce back saliently after pressure.",
@@ -171,7 +177,9 @@ export const SEED_VOCAB_WORDS: Omit<VocabWordDTO, "id">[] = [
 ];
 
 export async function seedVocabWords() {
-  for (const w of SEED_VOCAB_WORDS) {
+  let count = 0;
+  // Seed original 10 words
+  for (const w of ORIGINAL_SEED_WORDS) {
     await prisma.vocabWord.upsert({
       where: { word: w.word },
       update: {
@@ -204,33 +212,115 @@ export async function seedVocabWords() {
         difficulty: w.difficulty,
       },
     });
+    count++;
   }
-  return SEED_VOCAB_WORDS.length;
+  // Seed expanded vocabulary (135 words)
+  for (const w of VOCAB_SEED_DATA) {
+    await prisma.vocabWord.upsert({
+      where: { word: w.word },
+      update: {
+        bengaliMeaning: w.bengaliMeaning,
+        partOfSpeech: w.partOfSpeech,
+        verbForms: w.verbForms ?? undefined,
+        synonyms: w.synonyms ?? undefined,
+        antonyms: w.antonyms ?? undefined,
+        exampleSentence: w.exampleSentence,
+        exampleSentenceBn: w.exampleSentenceBn,
+        context: w.context,
+        mnemonic: w.mnemonic,
+        examRelevance: w.examRelevance ?? undefined,
+        frequency: w.frequency,
+        difficulty: w.difficulty,
+      },
+      create: {
+        word: w.word,
+        bengaliMeaning: w.bengaliMeaning,
+        partOfSpeech: w.partOfSpeech,
+        verbForms: w.verbForms ?? undefined,
+        synonyms: w.synonyms ?? undefined,
+        antonyms: w.antonyms ?? undefined,
+        exampleSentence: w.exampleSentence,
+        exampleSentenceBn: w.exampleSentenceBn,
+        context: w.context,
+        mnemonic: w.mnemonic,
+        examRelevance: w.examRelevance ?? undefined,
+        frequency: w.frequency,
+        difficulty: w.difficulty,
+      },
+    });
+    count++;
+  }
+  return count;
 }
 
-export async function getVocabWords(userId?: string, opts?: { limit?: number; exam?: string; difficulty?: string }) {
-  const limit = Math.min(opts?.limit ?? 20, 50);
+export async function getVocabWords(
+  userId?: string,
+  opts?: { limit?: number; exam?: string; difficulty?: string; search?: string; due?: string; status?: string },
+) {
+  const limit = Math.min(opts?.limit ?? 20, 100);
+
+  // DB-level difficulty filter
   const where: Record<string, unknown> = {};
-  if (opts?.difficulty) where.difficulty = opts.difficulty.toUpperCase();
-  // Exam filter via JSON contains — simple in-memory filter for MVP
-  const words = await prisma.vocabWord.findMany({ orderBy: [{ frequency: "desc" }, { word: "asc" }], take: 100 });
+  if (opts?.difficulty && opts.difficulty.toUpperCase() !== "ALL") {
+    where.difficulty = opts.difficulty.toUpperCase();
+  }
+
+  const words = await prisma.vocabWord.findMany({
+    orderBy: [{ frequency: "desc" }, { word: "asc" }],
+    take: 200,
+    where,
+  });
+
   let filtered = words;
-  if (opts?.exam) {
+
+  // In-memory exam filter (JSON column)
+  if (opts?.exam && opts.exam.toUpperCase() !== "ALL") {
     filtered = filtered.filter((w) => {
       const rel = w.examRelevance as string[] | null;
       return !rel || rel.includes(opts.exam!);
     });
   }
+
+  // Text search filter (client-side via API param)
+  if (opts?.search && opts.search.trim()) {
+    const q = opts.search.trim().toLowerCase();
+    filtered = filtered.filter((w) =>
+      w.word.toLowerCase().includes(q) ||
+      w.bengaliMeaning.toLowerCase().includes(q) ||
+      w.partOfSpeech.toLowerCase().includes(q)
+    );
+  }
+
   // Personalize: prioritize due reviews and weaknesses
   if (userId) {
     const progresses = await prisma.vocabProgress.findMany({ where: { userId } });
     const progMap = new Map(progresses.map((p) => [p.wordId, p]));
     const now = Date.now();
+
+    // Apply status filter (post-personalization)
+    if (opts?.status && opts.status.toUpperCase() !== "ALL") {
+      const statusFilter = opts.status.toUpperCase();
+      filtered = filtered.filter((w) => {
+        const p = progMap.get(w.id);
+        if (statusFilter === "NEW") return !p || p.status === "NEW";
+        if (statusFilter === "DUE") return p?.nextReview && new Date(p.nextReview).getTime() <= now;
+        return p?.status === statusFilter;
+      });
+    }
+
+    // Apply due-only filter
+    if (opts?.due === "true") {
+      filtered = filtered.filter((w) => {
+        const p = progMap.get(w.id);
+        return p?.nextReview && new Date(p.nextReview).getTime() <= now;
+      });
+    }
+
     filtered = filtered.sort((a, b) => {
       const pa = progMap.get(a.id);
       const pb = progMap.get(b.id);
       const score = (w: typeof a, p?: typeof pa) => {
-        if (!p) return w.frequency + 50; // new high-frequency first
+        if (!p) return w.frequency + 50;
         if (p.status === "LEARNING") return 1000;
         if (p.nextReview && new Date(p.nextReview).getTime() <= now) return 900;
         if (p.status === "NEW") return 500;
@@ -239,9 +329,14 @@ export async function getVocabWords(userId?: string, opts?: { limit?: number; ex
       return score(b, pb) - score(a, pa);
     });
   }
+
   const sliced = filtered.slice(0, limit);
   if (!userId) return sliced.map((w) => toDTO(w));
-  const progMap = new Map((await prisma.vocabProgress.findMany({ where: { userId, wordId: { in: sliced.map((w) => w.id) } } })).map((p) => [p.wordId, p]));
+
+  const userProgresses = await prisma.vocabProgress.findMany({
+    where: { userId, wordId: { in: sliced.map((w) => w.id) } },
+  });
+  const progMap = new Map(userProgresses.map((p) => [p.wordId, p]));
   return sliced.map((w) => toDTO(w, progMap.get(w.id)));
 }
 
@@ -275,7 +370,14 @@ function toDTO(w: {
   };
 }
 
-export async function reviewVocabWord(userId: string, wordId: number, correct: boolean) {
+/**
+ * Record a vocabulary review with SM-2 spaced repetition.
+ * @param rating 1=Again, 2=Hard, 3=Good, 4=Easy
+ */
+export async function reviewVocabWord(userId: string, wordId: number, rating: number) {
+  const clampedRating = Math.max(1, Math.min(4, Math.round(rating)));
+  const correct = clampedRating >= 3;
+
   const word = await prisma.vocabWord.findUnique({ where: { id: wordId } });
   if (!word) throw new Error("Word not found");
   let progress = await prisma.vocabProgress.findUnique({ where: { userId_wordId: { userId, wordId } } });
@@ -283,26 +385,52 @@ export async function reviewVocabWord(userId: string, wordId: number, correct: b
   if (!progress) {
     progress = await prisma.vocabProgress.create({ data: { userId, wordId, status: "NEW", nextReview: now } });
   }
-  // SM-2 simplified
+
+  // SM-2 with 4-grade rating
   let { ease, interval, repetitions, totalReviews, correctCount } = progress;
   totalReviews += 1;
+
   if (correct) {
     correctCount += 1;
+    // Quality factor: Again=0, Hard=2, Good=3, Easy=4 (standard SM-2 scale mapped)
+    const q = clampedRating === 3 ? 3 : clampedRating === 4 ? 4 : 2;
+
     if (progress.status === "NEW" || progress.status === "LEARNING") {
       repetitions += 1;
-      interval = repetitions === 1 ? 1 : repetitions === 2 ? 6 : Math.round(interval * ease);
-      ease = Math.min(2.5, ease + 0.1);
+      if (repetitions === 1) {
+        interval = 1;
+      } else if (repetitions === 2) {
+        interval = q >= 4 ? 10 : 6;
+      } else {
+        interval = Math.round(interval * ease);
+      }
     } else {
       repetitions += 1;
       interval = Math.round(interval * ease);
     }
+
+    // Ease adjustment based on rating
+    if (q >= 4) ease = Math.min(2.5, ease + 0.15);
+    else if (q === 3) ease = Math.min(2.5, ease + 0.1);
+    else ease = Math.max(1.3, ease - 0.05);
   } else {
-    repetitions = 0;
-    interval = 1;
-    ease = Math.max(1.3, ease - 0.2);
+    // Again (rating=1) or Hard (rating=2) when below threshold
+    if (clampedRating === 1) {
+      // Full reset for "Again"
+      repetitions = 0;
+      interval = 1;
+      ease = Math.max(1.3, ease - 0.2);
+    } else {
+      // Hard: partial penalty
+      repetitions = Math.max(0, repetitions - 1);
+      interval = Math.max(1, Math.round(interval * 0.5));
+      ease = Math.max(1.3, ease - 0.1);
+    }
   }
+
   const status = interval >= 21 ? "MASTERED" : interval >= 7 ? "REVIEW" : repetitions >= 1 ? "LEARNING" : "NEW";
   const nextReview = new Date(now.getTime() + interval * 24 * 60 * 60 * 1000);
+
   const updated = await prisma.vocabProgress.update({
     where: { userId_wordId: { userId, wordId } },
     data: { status, ease, interval, repetitions, nextReview, lastReviewedAt: now, totalReviews, correctCount },
@@ -317,4 +445,94 @@ export async function getVocabStats(userId: string) {
   const learning = progresses.filter((p) => p.status === "LEARNING").length;
   const due = progresses.filter((p) => p.nextReview && new Date(p.nextReview) <= new Date()).length;
   return { total, mastered, learning, due, reviewed: progresses.length };
+}
+
+export async function getVocabDailyProgress(userId: string) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const todayReviews = await prisma.vocabProgress.findMany({
+    where: { userId, lastReviewedAt: { gte: today } },
+    select: { wordId: true, correctCount: true, totalReviews: true },
+  });
+  const wordsReviewed = todayReviews.length;
+  const totalReviewsToday = todayReviews.reduce((sum, p) => sum + p.totalReviews, 0);
+  const correctToday = todayReviews.reduce((sum, p) => sum + p.correctCount, 0);
+  const streak = await computeStreak(userId);
+  return { wordsReviewed, totalReviewsToday, correctToday, streak };
+}
+
+async function computeStreak(userId: string) {
+  let streak = 0;
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  for (let i = 0; i < 365; i++) {
+    const dayStart = new Date(d);
+    dayStart.setDate(dayStart.getDate() - i);
+    const dayEnd = new Date(dayStart);
+    dayEnd.setDate(dayEnd.getDate() + 1);
+    const count = await prisma.vocabProgress.count({
+      where: { userId, lastReviewedAt: { gte: dayStart, lt: dayEnd } },
+    });
+    if (count === 0) break;
+    streak++;
+  }
+  return streak;
+}
+
+export async function getVocabQuizWords(userId: string, opts?: { count?: number; difficulty?: string }) {
+  const count = Math.min(opts?.count ?? 10, 50);
+  const where: Record<string, unknown> = {};
+  if (opts?.difficulty && opts.difficulty.toUpperCase() !== "ALL") {
+    where.difficulty = opts.difficulty.toUpperCase();
+  }
+  const words = await prisma.vocabWord.findMany({
+    orderBy: { frequency: "desc" },
+    take: 200,
+    where,
+  });
+  if (words.length < 4) return [];
+  // Pick random words for quiz, prioritize weak/never-seen words
+  let pool = words;
+  if (userId) {
+    const progresses = await prisma.vocabProgress.findMany({ where: { userId } });
+    const progMap = new Map(progresses.map((p) => [p.wordId, p]));
+    pool = [...words].sort((a, b) => {
+      const pa = progMap.get(a.id);
+      const pb = progMap.get(b.id);
+      const score = (w: typeof a, p?: typeof pa) => {
+        if (!p) return 3;
+        if (p.status === "LEARNING") return 0;
+        if (p.totalReviews > 0 && p.correctCount / p.totalReviews < 0.6) return 1;
+        return 2;
+      };
+      return score(a, pa) - score(b, pb);
+    });
+  }
+  // Shuffle and pick
+  const shuffled = pool.sort(() => Math.random() - 0.5).slice(0, count);
+  // For each word, pick 3 distractors from the pool
+  return shuffled.map((w) => {
+    const distractors = pool
+      .filter((x) => x.id !== w.id && x.partOfSpeech === w.partOfSpeech)
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 3)
+      .map((x) => ({ id: x.id, word: x.word, bengaliMeaning: x.bengaliMeaning }));
+    // If not enough same-POS distractors, fill with any
+    if (distractors.length < 3) {
+      const extra = pool
+        .filter((x) => x.id !== w.id && !distractors.some((d) => d.id === x.id))
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 3 - distractors.length)
+        .map((x) => ({ id: x.id, word: x.word, bengaliMeaning: x.bengaliMeaning }));
+      distractors.push(...extra);
+    }
+    return {
+      id: w.id,
+      word: w.word,
+      bengaliMeaning: w.bengaliMeaning,
+      partOfSpeech: w.partOfSpeech,
+      exampleSentence: w.exampleSentence,
+      distractors,
+    };
+  });
 }

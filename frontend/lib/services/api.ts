@@ -657,18 +657,42 @@ export const api = {
   },
 
   // ── Vocab — AI-Powered Vocabulary Mastery ──────────
-  vocabWords: (params?: { limit?: number; exam?: string; difficulty?: string }): Promise<Server.VocabWordDTO[]> => {
+  vocabWords: (params?: { limit?: number; exam?: string; difficulty?: string; search?: string; due?: string; status?: string }): Promise<Server.VocabWordDTO[]> => {
     const qs = new URLSearchParams();
     if (params?.limit) qs.set("limit", String(params.limit));
     if (params?.exam) qs.set("exam", params.exam);
     if (params?.difficulty) qs.set("difficulty", params.difficulty);
+    if (params?.search) qs.set("search", params.search);
+    if (params?.due) qs.set("due", params.due);
+    if (params?.status) qs.set("status", params.status);
     const suffix = qs.toString() ? `?${qs.toString()}` : "";
     return cachedGet<{ words: Server.VocabWordDTO[] }>(`/api/vocab/words${suffix}`).then((d) => d.words);
   },
   vocabStats: (): Promise<{ total: number; mastered: number; learning: number; due: number; reviewed: number }> =>
     cachedGet<{ total: number; mastered: number; learning: number; due: number; reviewed: number }>("/api/vocab/stats").then((d) => d),
-  reviewVocab: (wordId: number, correct: boolean): Promise<unknown> =>
-    request("/api/vocab/review", { method: "POST", ...AUTH_FETCH_INIT, body: JSON.stringify({ wordId, correct }), headers: { "Content-Type": "application/json" } }),
+  reviewVocab: (wordId: number, rating: number): Promise<unknown> =>
+    request("/api/vocab/review", { method: "POST", ...AUTH_FETCH_INIT, body: JSON.stringify({ wordId, rating }), headers: { "Content-Type": "application/json" } }),
+  vocabDaily: (): Promise<{ wordsReviewed: number; totalReviewsToday: number; correctToday: number; streak: number }> =>
+    cachedGet<{ wordsReviewed: number; totalReviewsToday: number; correctToday: number; streak: number }>("/api/vocab/daily").then((d) => d),
+  vocabQuiz: (params?: { count?: number; difficulty?: string }): Promise<Server.VocabQuizWordDTO[]> => {
+    const qs = new URLSearchParams();
+    if (params?.count) qs.set("count", String(params.count));
+    if (params?.difficulty) qs.set("difficulty", params.difficulty);
+    const suffix = qs.toString() ? `?${qs.toString()}` : "";
+    return cachedGet<{ words: Server.VocabQuizWordDTO[] }>(`/api/vocab/quiz${suffix}`).then((d) => d.words);
+  },
+  vocabWordOfDay: (): Promise<Server.WordOfDayDTO> =>
+    cachedGet<{ word: Server.WordOfDayDTO }>("/api/vocab/word-of-the-day").then((d) => d.word),
+  vocabWeeklyWords: (): Promise<Server.WordOfDayDTO[]> =>
+    cachedGet<{ words: Server.WordOfDayDTO[] }>("/api/vocab/word-of-the-day?weekly=true").then((d) => d.words),
+  vocabAiMnemonic: (word: string, bengaliMeaning: string, context?: string): Promise<{ mnemonic: string; source: string }> =>
+    request("/api/ai/vocab", { method: "POST", ...AUTH_FETCH_INIT, body: JSON.stringify({ action: "mnemonic", word, bengaliMeaning, context }), headers: { "Content-Type": "application/json" } }),
+  vocabAiExamples: (word: string, partOfSpeech: string, difficulty?: string): Promise<{ examples: string[]; source: string }> =>
+    request("/api/ai/vocab", { method: "POST", ...AUTH_FETCH_INIT, body: JSON.stringify({ action: "examples", word, partOfSpeech, difficulty }), headers: { "Content-Type": "application/json" } }),
+  vocabAnalytics: (): Promise<Server.VocabAnalyticsDTO> =>
+    cachedGet<{ analytics: Server.VocabAnalyticsDTO }>("/api/vocab/analytics").then((d) => d.analytics),
+  vocabDecks: (): Promise<Server.VocabDeckDTO[]> =>
+    cachedGet<{ decks: Server.VocabDeckDTO[] }>("/api/vocab/decks").then((d) => d.decks),
 };
 
 // ── Account / settings methods (auth endpoints) ─────────────

@@ -1,25 +1,30 @@
 import { NextResponse } from "next/server";
-import { getVocabWords } from "~backend/services/vocab";
+import { getWordOfDay, getWeeklyWords } from "~backend/services/word-of-the-day";
 import { getUserIdFromRequest } from "~backend/services/user";
 import { toHttpResponse } from "~backend/errors";
-import { getRequestId, startTiming, applySecurityHeaders } from "../../_middleware";
+import { getRequestId, startTiming, applySecurityHeaders, applyCacheHeaders } from "../../_middleware";
 
 export async function GET(request: Request) {
   const requestId = getRequestId(request);
   const getTime = startTiming();
   try {
     const { searchParams } = new URL(request.url);
-    const limit = searchParams.get("limit") ? Math.min(100, Math.max(1, parseInt(searchParams.get("limit")!, 10))) : undefined;
-    const exam = searchParams.get("exam") ?? undefined;
-    const difficulty = searchParams.get("difficulty") ?? undefined;
-    const search = searchParams.get("search") ?? undefined;
-    const due = searchParams.get("due") ?? undefined;
-    const status = searchParams.get("status") ?? undefined;
+    const weekly = searchParams.get("weekly") === "true";
     const userId = await getUserIdFromRequest(request);
-    const words = await getVocabWords(userId ?? undefined, { limit, exam, difficulty, search, due, status });
-    const res = NextResponse.json({ words });
+    if (weekly) {
+      const words = await getWeeklyWords(userId ?? undefined);
+      const res = NextResponse.json({ words });
+      res.headers.set("X-Request-Id", requestId);
+      res.headers.set("X-Response-Time", getTime() + "ms");
+      applyCacheHeaders(res, { public: false, maxAge: 0 });
+      applySecurityHeaders(res);
+      return res;
+    }
+    const word = await getWordOfDay(userId ?? undefined);
+    const res = NextResponse.json({ word });
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");
+    applyCacheHeaders(res, { public: false, maxAge: 0 });
     applySecurityHeaders(res);
     return res;
   } catch (err) {

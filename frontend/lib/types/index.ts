@@ -1123,6 +1123,60 @@ export namespace Server {
       correctCount: number;
     } | null;
   };
+
+  export type VocabQuizWordDTO = {
+    id: number;
+    word: string;
+    bengaliMeaning: string;
+    partOfSpeech: string;
+    exampleSentence: string;
+    distractors: { id: number; word: string; bengaliMeaning: string }[];
+  };
+
+  export type WordOfDayDTO = {
+    word: string;
+    bengaliMeaning: string;
+    partOfSpeech: string;
+    exampleSentence: string;
+    exampleSentenceBn: string | null;
+    mnemonic: string;
+    synonyms: string[];
+    antonyms: string[];
+    difficulty: string;
+    examRelevance: string[];
+    isCustom: boolean;
+  };
+
+  export type VocabAnalyticsDTO = {
+    overview: {
+      totalWords: number;
+      wordsLearned: number;
+      wordsMastered: number;
+      masteryRate: number;
+      averageAccuracy: number;
+      totalReviews: number;
+      studyStreak: number;
+    };
+    difficultyBreakdown: { difficulty: string; count: number; mastered: number }[];
+    posBreakdown: { partOfSpeech: string; count: number; learned: number }[];
+    recentActivity: { date: string; wordsReviewed: number; accuracy: number }[];
+    topWeakWords: { word: string; accuracy: number; reviews: number }[];
+    weeklyGoalProgress: { day: string; reviewed: number; goal: number }[];
+  };
+
+  export type VocabDeckDTO = {
+    id: number;
+    name: string;
+    nameBn: string | null;
+    description: string | null;
+    icon: string | null;
+    color: string | null;
+    isDefault: boolean;
+    isPublic: boolean;
+    wordCount: number;
+    masteredCount: number;
+    isFavorited?: boolean;
+  };
 }
 
 // ── Re-exports for convenience ──────────────────────────────
