@@ -35,7 +35,7 @@ import {
 } from "../../frontend/lib/data/study";
 import { seedQuestions } from "../../scripts/seed-questions";
 import { seedBcsQuestions } from "../../scripts/seed-bcs";
-import { seedVocabWords } from "../../backend/services/vocab";
+import { seedVocabWords } from "../../backend/services/vocab-seed-run";
 import { sourceKey } from "../../scripts/seed-keys";
 
 const prisma = new PrismaClient();
@@ -180,7 +180,7 @@ async function main() {
   console.log(`  ✓ ${bcsCount} BCS exam-wise questions (from database/data/question_bank/bcs)`);
 
   // Vocab words (AI-powered mastery)
-  const vocabCount = await seedVocabWords();
+  const vocabCount = await seedVocabWords(prisma);
   console.log(`  ✓ ${vocabCount} vocab words`);
 
   // Question-bank categories map to subjects by label (upsert by unique label).
