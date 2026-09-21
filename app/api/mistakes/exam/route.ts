@@ -17,11 +17,15 @@ export async function POST(request: Request) {
     }
 
     const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
+    const rawCount = typeof body.count === "number" ? body.count : 20;
+    if (typeof body.count === "number" && (body.count < 1 || body.count > 200 || !Number.isInteger(body.count))) {
+      throw new AppError(400, "count must be an integer between 1 and 200", "VALIDATION_ERROR");
+    }
     const config = {
       subject: typeof body.subject === "string" ? body.subject : undefined,
       topic: typeof body.topic === "string" ? body.topic : undefined,
       subtopic: typeof body.subtopic === "string" ? body.subtopic : undefined,
-      count: typeof body.count === "number" ? Math.min(200, Math.max(1, body.count)) : 20,
+      count: Math.min(200, Math.max(1, rawCount)),
       difficulty: typeof body.difficulty === "string" ? body.difficulty : undefined,
       focus: typeof body.focus === "string" ? body.focus : undefined,
       durationSec: typeof body.durationSec === "number" ? body.durationSec : 0,
