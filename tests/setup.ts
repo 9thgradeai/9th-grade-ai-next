@@ -253,7 +253,19 @@ vi.mock("~backend/db", () => ({
     appNotification: {
       findMany: vi.fn(),
       findFirst: vi.fn(),
+      findUnique: vi.fn(),
       count: vi.fn(),
+      create: vi.fn(),
+      delete: vi.fn(),
+      upsert: vi.fn(),
+    },
+    notificationRead: {
+      findMany: vi.fn(),
+      findFirst: vi.fn(),
+      count: vi.fn(),
+      create: vi.fn(),
+      createMany: vi.fn(),
+      upsert: vi.fn(),
     },
     offlinePack: {
       findMany: vi.fn(),

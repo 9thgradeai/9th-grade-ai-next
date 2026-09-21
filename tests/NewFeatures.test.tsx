@@ -177,7 +177,7 @@ describe("DailyQuizWidget", () => {
 describe("NotificationCenter", () => {
   beforeEach(() => {
     stubFetch({
-      "/api/notifications": { notifications: [], page: 1, pageSize: 20, total: 0 },
+      "/api/notifications": { notifications: [], total: 0, nextCursor: null, unreadCount: 0 },
       "/api/badges": { badges: [] },
     });
   });

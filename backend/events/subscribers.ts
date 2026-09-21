@@ -7,6 +7,7 @@ import "server-only";
 import { subscribe } from "./bus";
 import { evaluateBadgesForEvent } from "~backend/services/badges";
 import { recordLearningEventsForEvent } from "./learning-events";
+import { createNotificationsForEvent } from "./notification-subscriber";
 
 const GLOBAL_KEY = "__9th_grade_ai_subscribers_registered__";
 
@@ -24,5 +25,6 @@ export function registerSubscribers(): void {
   ] as const) {
     subscribe(name, (event) => evaluateBadgesForEvent(event));
     subscribe(name, recordLearningEventsForEvent);
+    subscribe(name, (event) => createNotificationsForEvent(event));
   }
 }

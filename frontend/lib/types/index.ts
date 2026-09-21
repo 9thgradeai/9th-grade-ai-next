@@ -639,6 +639,7 @@ export namespace Server {
     type: string;
     timestamp: string;
     read: boolean;
+    sourceKey?: string;
   };
 
   export type OfflinePackDTO = {

@@ -1,19 +1,47 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bell, X, Trophy, CheckCircle, Info, Megaphone, Medal, Triangle } from "@phosphor-icons/react";
+import {
+  Bell,
+  X,
+  Trophy,
+  CheckCircle,
+  Info,
+  Megaphone,
+  Medal,
+  Triangle,
+  Trash,
+  Checks,
+  Funnel,
+} from "@phosphor-icons/react";
 import { api } from "@/lib/services/api";
 import type { Server } from "@/lib/types";
 import { AnimatedList } from "@/components/ui/AnimatedList";
 
 type Tab = "notifications" | "badges";
+type FilterType = "ALL" | "INFO" | "SUCCESS" | "WARNING" | "REMINDER";
 
 const TYPE_ICONS: Record<string, typeof CheckCircle> = {
   SUCCESS: CheckCircle,
   WARNING: Triangle,
   INFO: Info,
   REMINDER: Bell,
+};
+
+const TYPE_COLORS: Record<string, { bg: string; text: string; border: string }> = {
+  SUCCESS: { bg: "bg-emerald-500/10", text: "text-emerald-600 dark:text-emerald-400", border: "border-l-emerald-500" },
+  WARNING: { bg: "bg-amber-500/10", text: "text-amber-600 dark:text-amber-400", border: "border-l-amber-500" },
+  INFO: { bg: "bg-sky-500/10", text: "text-sky-600 dark:text-sky-400", border: "border-l-sky-500" },
+  REMINDER: { bg: "bg-violet-500/10", text: "text-violet-600 dark:text-violet-400", border: "border-l-violet-500" },
+};
+
+const TYPE_LABELS: Record<string, string> = {
+  ALL: "সব",
+  INFO: "তথ্য",
+  SUCCESS: "সফল",
+  WARNING: "সতর্ক",
+  REMINDER: "রিমাইন্ডার",
 };
 
 function relativeTime(iso: string) {
@@ -34,27 +62,75 @@ export default function NotificationCenter() {
   const [notifications, setNotifications] = useState<Server.NotificationDTO[]>([]);
   const [badges, setBadges] = useState<Server.BadgeDTO[]>([]);
   const [loading, setLoading] = useState(true);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [total, setTotal] = useState(0);
+  const [nextCursor, setNextCursor] = useState<number | null>(null);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [filterType, setFilterType] = useState<FilterType>("ALL");
+  const [showFilters, setShowFilters] = useState(false);
+  const [showPrefs, setShowPrefs] = useState(false);
+  const [prefs, setPrefs] = useState({ info: true, success: true, warning: true, reminder: true });
   const panelRef = useRef<HTMLDivElement>(null);
   const bellRef = useRef<HTMLButtonElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
-    void (async () => {
-      try {
-        const [n, b] = await Promise.allSettled([api.notifications(), api.badges()]);
-        if (cancelled) return;
-        if (n.status === "fulfilled") setNotifications(n.value);
-        if (b.status === "fulfilled") setBadges(b.value);
-      } finally {
-        if (!cancelled) setLoading(false);
+  const fetchNotifications = useCallback(async (opts?: { limit?: number; cursor?: number; type?: string }) => {
+    try {
+      const result = await api.notifications(opts);
+      if (!opts?.cursor) {
+        setNotifications(result.notifications);
+      } else {
+        setNotifications((prev) => [...prev, ...result.notifications]);
       }
-    })();
-    return () => {
-      cancelled = true;
-    };
+      setTotal(result.total);
+      setNextCursor(result.nextCursor);
+      setUnreadCount(result.unreadCount);
+    } catch {
+      // keep existing state
+    }
   }, []);
 
-  // Escape to close + focus trap + restore focus while the panel is open.
+  const fetchBadges = useCallback(async () => {
+    try {
+      const b = await api.badges();
+      setBadges(b);
+    } catch {
+      // keep existing state
+    }
+  }, []);
+
+  const fetchAll = useCallback(async () => {
+    setLoading(true);
+    try {
+      await Promise.allSettled([fetchNotifications(), fetchBadges()]);
+    } finally {
+      setLoading(false);
+    }
+  }, [fetchNotifications, fetchBadges]);
+
+  // Fetch on mount and when opened
+  useEffect(() => {
+    if (isOpen) {
+      void fetchAll();
+    }
+  }, [isOpen, fetchAll]);
+
+  // Poll for new notifications every 30s while open
+  useEffect(() => {
+    if (!isOpen) {
+      if (pollingRef.current) clearInterval(pollingRef.current);
+      return;
+    }
+    pollingRef.current = setInterval(() => {
+      void fetchNotifications({ type: filterType === "ALL" ? undefined : filterType });
+    }, 30000);
+    return () => {
+      if (pollingRef.current) clearInterval(pollingRef.current);
+    };
+  }, [isOpen, filterType, fetchNotifications]);
+
+  // Focus trap + escape to close
   useEffect(() => {
     if (!isOpen) return;
     const panel = panelRef.current;
@@ -94,17 +170,89 @@ export default function NotificationCenter() {
     };
   }, [isOpen]);
 
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  const filteredNotifications = filterType === "ALL"
+    ? notifications
+    : notifications.filter((n) => n.type === filterType);
 
   const markAsRead = async (id: number) => {
+    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
+    setUnreadCount((prev) => Math.max(0, prev - 1));
     try {
       await api.markNotificationRead(id);
     } catch {
-      // keep local state even if server read fails
+      setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: false } : n)));
+      setUnreadCount((prev) => prev + 1);
     }
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
-    );
+  };
+
+  const markAllAsRead = async () => {
+    const prev = notifications;
+    const prevUnread = unreadCount;
+    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    setUnreadCount(0);
+    try {
+      await api.markAllNotificationsRead();
+    } catch {
+      setNotifications(prev);
+      setUnreadCount(prevUnread);
+    }
+  };
+
+  const deleteNotification = async (id: number) => {
+    const prev = notifications;
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
+    setTotal((prev) => prev - 1);
+    try {
+      await api.deleteNotification(id);
+    } catch {
+      setNotifications(prev);
+      setTotal((p) => p + 1);
+    }
+  };
+
+  const loadMore = async () => {
+    if (!nextCursor || loadingMore) return;
+    setLoadingMore(true);
+    try {
+      await fetchNotifications({
+        cursor: nextCursor,
+        limit: 20,
+        type: filterType === "ALL" ? undefined : filterType,
+      });
+    } finally {
+      setLoadingMore(false);
+    }
+  };
+
+  const handleFilterChange = (type: FilterType) => {
+    setFilterType(type);
+    setShowFilters(false);
+    // Refetch with new filter
+    void fetchNotifications({ type: type === "ALL" ? undefined : type });
+  };
+
+  const loadPrefs = async () => {
+    try {
+      const result = await api.notificationPreferences();
+      setPrefs(result.preferences);
+    } catch {
+      // keep defaults
+    }
+  };
+
+  const togglePrefs = () => {
+    setShowPrefs(!showPrefs);
+    if (!showPrefs) void loadPrefs();
+  };
+
+  const updatePref = async (key: keyof typeof prefs, value: boolean) => {
+    const prev = prefs;
+    setPrefs((p) => ({ ...p, [key]: value }));
+    try {
+      await api.updateNotificationPreferences({ [key]: value });
+    } catch {
+      setPrefs(prev);
+    }
   };
 
   return (
@@ -125,7 +273,7 @@ export default function NotificationCenter() {
             className="absolute -top-0.5 -right-0.5 min-w-4 min-h-4 px-1 bg-[var(--danger)] rounded-full text-[10px] font-mono text-[var(--text-primary)] flex items-center justify-center tabular-nums"
             aria-hidden="true"
           >
-            {unreadCount}
+            {unreadCount > 99 ? "99+" : unreadCount}
           </span>
         )}
       </button>
@@ -143,7 +291,7 @@ export default function NotificationCenter() {
             aria-label="Notifications and badges"
           >
             <div
-              className="absolute inset-0 bg-[var(--overlay)] backdrop-blur-sm"
+              className="absolute inset-0 bg-black/40 backdrop-blur-sm"
               onClick={() => setIsOpen(false)}
             />
             <motion.div
@@ -152,124 +300,271 @@ export default function NotificationCenter() {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="relative w-full max-w-md h-full bg-[var(--surface-solid)] border-l border-terminal-border shadow-2xl overflow-hidden flex flex-col"
+              className="relative w-full max-w-md h-full bg-[var(--surface-solid)] border-l border-[var(--dashboard-border)] shadow-2xl overflow-hidden flex flex-col"
             >
               {/* Header */}
-              <div className="p-4 border-b border-terminal-border flex items-center justify-between">
-                <h2 className="text-lg font-bold text-[var(--text-primary)]">নোটিফিকেশন</h2>
-                <button
-                  onClick={() => setIsOpen(false)}
-                  className="w-10 h-10 flex items-center justify-center text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)] transition-colors rounded-lg"
-                  aria-label="বন্ধ করুন"
-                >
-                  <X className="w-5 h-5" />
-                </button>
+              <div className="p-4 border-b border-[var(--dashboard-border)]">
+                <div className="flex items-center justify-between mb-3">
+                  <h2 className="text-lg font-bold text-[var(--text-primary)]">নোটিফিকেশন</h2>
+                  <div className="flex items-center gap-1">
+                    {unreadCount > 0 && (
+                      <button
+                        onClick={() => void markAllAsRead()}
+                        className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-[var(--dashboard-primary)] hover:bg-[var(--dashboard-primary-subtle)] rounded-lg transition-colors"
+                        title="সব পড়া হিসেবে চিহ্নিত করুন"
+                      >
+                        <Checks className="w-3.5 h-3.5" />
+                        <span className="hidden sm:inline">সব পড়া হয়েছে</span>
+                      </button>
+                    )}
+                    <button
+                      onClick={togglePrefs}
+                      className={`w-9 h-9 flex items-center justify-center rounded-lg transition-colors ${
+                        showPrefs
+                          ? "bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
+                          : "text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-overlay)]"
+                      }`}
+                      title="পছন্দসমূহ"
+                    >
+                      <Funnel className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => setIsOpen(false)}
+                      className="w-9 h-9 flex items-center justify-center text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)] transition-colors rounded-lg hover:bg-[var(--surface-overlay)]"
+                      aria-label="বন্ধ করুন"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Tabs */}
+                <div className="flex gap-1 bg-[var(--surface-overlay)] rounded-lg p-0.5">
+                  {[
+                    { id: "notifications" as Tab, label: "আলার্ট", icon: Bell },
+                    { id: "badges" as Tab, label: "ব্যাজ", icon: Trophy },
+                  ].map((tab) => (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-medium rounded-md transition-all ${
+                        activeTab === tab.id
+                          ? "bg-[var(--surface-solid)] text-[var(--text-primary)] shadow-sm"
+                          : "text-[var(--dashboard-text-muted)] hover:text-[var(--dashboard-text-secondary)]"
+                      }`}
+                    >
+                      <tab.icon className="w-3.5 h-3.5" />
+                      {tab.label}
+                      {tab.id === "notifications" && unreadCount > 0 && (
+                        <span className="ml-1 min-w-4 h-4 px-1 bg-[var(--accent)] rounded-full text-[9px] font-bold text-[var(--text-primary)] flex items-center justify-center">
+                          {unreadCount > 99 ? "99+" : unreadCount}
+                        </span>
+                      )}
+                    </button>
+                  ))}
+                </div>
               </div>
 
-              {/* Tabs */}
-              <div className="flex border-b border-terminal-border">
-                {[
-                  { id: "notifications" as Tab, label: "আলার্ট", icon: Bell },
-                  { id: "badges" as Tab, label: "ব্যাজ", icon: Trophy },
-                ].map((tab) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`flex-1 flex items-center justify-center gap-1.5 py-3.5 text-xs font-mono transition-colors ${
-                      activeTab === tab.id
-                        ? "text-[var(--dashboard-primary)] border-b-2 border-[var(--accent)]"
-                        : "text-[var(--dashboard-text-muted)] hover:text-[var(--dashboard-text-secondary)]"
-                    }`}
+              {/* Preferences Panel */}
+              <AnimatePresence>
+                {showPrefs && activeTab === "notifications" && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    className="border-b border-[var(--dashboard-border)] overflow-hidden"
                   >
-                    <tab.icon className="w-3.5 h-3.5" />
-                    {tab.label}
-                  </button>
-                ))}
-              </div>
+                    <div className="p-3 bg-[var(--surface-overlay)]">
+                      <p className="text-[10px] font-mono text-[var(--dashboard-text-muted)] mb-2 uppercase tracking-wider">
+                        নোটিফিকেশন ধরন
+                      </p>
+                      <div className="space-y-1.5">
+                        {(["info", "success", "warning", "reminder"] as const).map((key) => (
+                          <label
+                            key={key}
+                            className="flex items-center justify-between cursor-pointer group"
+                          >
+                            <span className="text-xs text-[var(--dashboard-text-secondary)] capitalize">
+                              {TYPE_LABELS[key.toUpperCase()] ?? key}
+                            </span>
+                            <button
+                              role="switch"
+                              aria-checked={prefs[key]}
+                              onClick={() => void updatePref(key, !prefs[key])}
+                              className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                                prefs[key] ? "bg-[var(--accent)]" : "bg-[var(--surface-muted)]"
+                              }`}
+                            >
+                              <span
+                                className={`inline-block h-3.5 w-3.5 rounded-full bg-white transition-transform ${
+                                  prefs[key] ? "translate-x-4.5" : "translate-x-0.5"
+                                }`}
+                              />
+                            </button>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Filter Bar (notifications tab only) */}
+              {activeTab === "notifications" && !showPrefs && (
+                <div className="px-3 py-2 border-b border-[var(--dashboard-border)] bg-[var(--surface-overlay)]/50">
+                  <div className="flex gap-1 overflow-x-auto">
+                    {(["ALL", "SUCCESS", "WARNING", "INFO", "REMINDER"] as FilterType[]).map((type) => (
+                      <button
+                        key={type}
+                        onClick={() => void handleFilterChange(type)}
+                        className={`px-2.5 py-1 text-[10px] font-medium rounded-full whitespace-nowrap transition-colors ${
+                          filterType === type
+                            ? "bg-[var(--accent)] text-[var(--text-primary)]"
+                            : "bg-[var(--surface-solid)] text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)] border border-[var(--dashboard-border)]"
+                        }`}
+                      >
+                        {TYPE_LABELS[type]}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Content */}
-              <div className="flex-1 overflow-y-auto p-4">
+              <div ref={scrollRef} className="flex-1 overflow-y-auto p-3">
                 {loading ? (
-                  <div className="text-center py-12 text-[var(--dashboard-text-muted)] font-mono text-sm">
-                    লোড হচ্ছে...
+                  <div className="space-y-3">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="animate-pulse rounded-xl border border-[var(--dashboard-border)] p-3">
+                        <div className="flex gap-3">
+                          <div className="w-8 h-8 rounded-lg bg-[var(--surface-overlay)]" />
+                          <div className="flex-1 space-y-2">
+                            <div className="h-3 bg-[var(--surface-overlay)] rounded w-3/4" />
+                            <div className="h-2 bg-[var(--surface-overlay)] rounded w-full" />
+                            <div className="h-2 bg-[var(--surface-overlay)] rounded w-1/3" />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 ) : activeTab === "notifications" ? (
-                  notifications.length === 0 ? (
-                    <div className="text-center py-12">
-                      <Bell className="w-10 h-10 mx-auto mb-3 text-[var(--text-muted)]" />
-                      <p className="text-sm text-[var(--dashboard-text-muted)]">কোনো নোটিফিকেশন নেই</p>
+                  filteredNotifications.length === 0 ? (
+                    <div className="text-center py-16">
+                      <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[var(--surface-overlay)] flex items-center justify-center">
+                        <Bell className="w-8 h-8 text-[var(--text-muted)]" />
+                      </div>
+                      <p className="text-sm font-medium text-[var(--text-primary)] mb-1">কোনো নোটিফিকেশন নেই</p>
+                      <p className="text-xs text-[var(--dashboard-text-muted)]">
+                        {filterType !== "ALL" ? "এই ধরনের কোনো নোটিফিকেশন নেই" : "নতুন নোটিফিকেশন এখানে দেখা যাবে"}
+                      </p>
                     </div>
                   ) : (
-                    <AnimatedList
-                      items={notifications}
-                      keyExtractor={(n) => String(n.id)}
-                      className="space-y-2"
-                      renderItem={(notif) => {
-                        const TypeIcon = TYPE_ICONS[notif.type] ?? Megaphone;
-                        return (
-                          <div
-                            role={notif.read ? undefined : "button"}
-                            tabIndex={notif.read ? undefined : 0}
-                            aria-label={
-                              notif.read ? notif.title : `${notif.title} — পড়া হিসেবে চিহ্নিত করুন`
-                            }
-                            onKeyDown={(e) => {
-                              if (!notif.read && (e.key === "Enter" || e.key === " ")) {
-                                e.preventDefault();
-                                void markAsRead(notif.id);
-                              }
-                            }}
-                            className={`p-3 rounded-2xl border transition-all ${
-                              notif.read ? "border-[var(--dashboard-border-muted)] bg-subtle" : "border-[var(--accent)]/20 bg-[var(--dashboard-primary-subtle)] cursor-pointer"
-                            }`}
-                            onClick={() => void markAsRead(notif.id)}
-                          >
-                            <div className="flex items-start gap-3">
-                              <span
-                                className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                                  notif.type === "WARNING"
-                                    ? "bg-[var(--dashboard-warning-subtle)] text-[var(--dashboard-warning)]"
-                                    : notif.type === "SUCCESS"
-                                      ? "bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
-                                      : "bg-[var(--surface-overlay)] text-[var(--dashboard-text-muted)]"
-                                }`}
-                              >
-                                <TypeIcon className="w-4 h-4" aria-hidden="true" />
-                              </span>
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2 mb-1">
-                                  <h4 className="text-sm font-medium text-[var(--text-primary)] truncate">{notif.title}</h4>
-                                  {!notif.read && (
-                                    <span className="w-2 h-2 bg-[var(--accent)] rounded-full flex-shrink-0" aria-label="unread" />
-                                  )}
-                                </div>
-                                <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">{notif.message}</p>
-                                <span className="text-[10px] text-[var(--dashboard-text-secondary)] font-mono mt-1 block">
-                                  {relativeTime(notif.timestamp)}
+                    <>
+                      <AnimatedList
+                        items={filteredNotifications}
+                        keyExtractor={(n) => String(n.id)}
+                        className="space-y-2"
+                        renderItem={(notif) => {
+                          const TypeIcon = TYPE_ICONS[notif.type] ?? Megaphone;
+                          const colors = TYPE_COLORS[notif.type] ?? { bg: "bg-[var(--surface-overlay)]", text: "text-[var(--dashboard-text-muted)]", border: "border-l-[var(--surface-muted)]" };
+                          return (
+                            <motion.div
+                              layout
+                              initial={{ opacity: 0, y: 8 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, x: 20 }}
+                              className={`group relative rounded-xl border-l-4 border border-[var(--dashboard-border)] p-3 transition-all ${
+                                notif.read
+                                  ? "bg-[var(--surface-solid)] opacity-75 hover:opacity-100"
+                                  : "bg-[var(--dashboard-primary-subtle)]/50 hover:bg-[var(--dashboard-primary-subtle)]"
+                              } ${colors.border}`}
+                            >
+                              <div className="flex items-start gap-3">
+                                <span
+                                  className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${colors.bg} ${colors.text}`}
+                                >
+                                  <TypeIcon className="w-4 h-4" aria-hidden="true" />
                                 </span>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-start justify-between gap-2">
+                                    <h4 className="text-sm font-medium text-[var(--text-primary)] leading-tight">
+                                      {notif.title}
+                                    </h4>
+                                    <div className="flex items-center gap-1 flex-shrink-0">
+                                      {!notif.read && (
+                                        <button
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            void markAsRead(notif.id);
+                                          }}
+                                          className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-[var(--surface-overlay)] transition-all"
+                                          title="পড়া হিসেবে চিহ্নিত করুন"
+                                        >
+                                          <CheckCircle className="w-3.5 h-3.5 text-[var(--accent)]" />
+                                        </button>
+                                      )}
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          void deleteNotification(notif.id);
+                                        }}
+                                        className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-red-500/10 transition-all"
+                                        title="মুছুন"
+                                      >
+                                        <Trash className="w-3.5 h-3.5 text-red-500" />
+                                      </button>
+                                    </div>
+                                  </div>
+                                  <p className="text-xs text-[var(--dashboard-text-muted)] mt-0.5 leading-relaxed">
+                                    {notif.message}
+                                  </p>
+                                  <span className="text-[10px] text-[var(--dashboard-text-secondary)] font-mono mt-1.5 block">
+                                    {relativeTime(notif.timestamp)}
+                                  </span>
+                                </div>
                               </div>
-                            </div>
-                          </div>
-                        );
-                      }}
-                    />
+                            </motion.div>
+                          );
+                        }}
+                      />
+                      {/* Load More */}
+                      {nextCursor && (
+                        <div className="mt-3 text-center">
+                          <button
+                            onClick={() => void loadMore()}
+                            disabled={loadingMore}
+                            className="px-4 py-2 text-xs font-medium text-[var(--dashboard-primary)] hover:bg-[var(--dashboard-primary-subtle)] rounded-lg transition-colors disabled:opacity-50"
+                          >
+                            {loadingMore ? "লোড হচ্ছে..." : "আরো দেখুন"}
+                          </button>
+                        </div>
+                      )}
+                      <div className="mt-3 text-center">
+                        <span className="text-[10px] text-[var(--dashboard-text-secondary)] font-mono">
+                          {total} টি নোটিফিকেশন
+                        </span>
+                      </div>
+                    </>
                   )
                 ) : badges.length === 0 ? (
-                  <div className="text-center py-12">
-                    <Medal className="w-10 h-10 mx-auto mb-3 text-[var(--text-muted)]" />
-                    <p className="text-sm text-[var(--dashboard-text-muted)]">কোনো ব্যাজ নেই</p>
+                  <div className="text-center py-16">
+                    <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[var(--surface-overlay)] flex items-center justify-center">
+                      <Medal className="w-8 h-8 text-[var(--text-muted)]" />
+                    </div>
+                    <p className="text-sm font-medium text-[var(--text-primary)] mb-1">কোনো ব্যাজ নেই</p>
+                    <p className="text-xs text-[var(--dashboard-text-muted)]">ব্যাজ অর্জন করলে এখানে দেখা যাবে</p>
                   </div>
                 ) : (
                   <div className="space-y-2">
                     {badges.map((badge) => (
                       <motion.div
                         key={badge.id}
-                        initial={{ opacity: 0, y: 10 }}
+                        initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className={`p-3 rounded-2xl border ${
+                        className={`p-3 rounded-xl border transition-all ${
                           badge.unlocked
-                            ? "border-[var(--accent)]/20 bg-[var(--dashboard-primary-subtle)]"
-                            : "border-[var(--dashboard-border-muted)] bg-subtle opacity-60"
+                            ? "border-[var(--accent)]/20 bg-[var(--dashboard-primary-subtle)]/50"
+                            : "border-[var(--dashboard-border)] bg-[var(--surface-solid)] opacity-50"
                         }`}
                       >
                         <div className="flex items-center gap-3">
@@ -278,9 +573,15 @@ export default function NotificationCenter() {
                           </span>
                           <div className="flex-1 min-w-0">
                             <h4 className="text-sm font-medium text-[var(--text-primary)]">{badge.name}</h4>
-                            <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">{badge.description}</p>
+                            <p className="text-xs text-[var(--dashboard-text-muted)]">{badge.description}</p>
                           </div>
-                          <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase bg-[var(--surface-muted)] text-[var(--dashboard-text-muted)]">
+                          <span
+                            className={`px-2 py-0.5 rounded text-[10px] font-medium ${
+                              badge.unlocked
+                                ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                                : "bg-[var(--surface-muted)] text-[var(--dashboard-text-muted)]"
+                            }`}
+                          >
                             {badge.unlocked ? "অর্জিত" : "অর্জন করা হয়নি"}
                           </span>
                         </div>

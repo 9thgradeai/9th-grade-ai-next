@@ -377,11 +377,29 @@ export const api = {
   news: (): Promise<Server.FlashNewsDTO[]> =>
     cachedGet<{ news: Server.FlashNewsDTO[] }>("/api/flash-news").then((d) => d.news),
 
-  notifications: (): Promise<Server.NotificationDTO[]> =>
-    cachedGet<{ notifications: Server.NotificationDTO[] }>("/api/notifications").then((d) => d.notifications),
+  notifications: (opts?: { limit?: number; cursor?: number; type?: string }): Promise<{ notifications: Server.NotificationDTO[]; total: number; nextCursor: number | null; unreadCount: number }> => {
+    const params = new URLSearchParams();
+    if (opts?.limit) params.set("limit", String(opts.limit));
+    if (opts?.cursor) params.set("cursor", String(opts.cursor));
+    if (opts?.type) params.set("type", opts.type);
+    const qs = params.toString();
+    return request(`/api/notifications${qs ? `?${qs}` : ""}`);
+  },
 
   markNotificationRead: (id: number): Promise<{ read: boolean }> =>
     mutate(`/api/notifications/${id}/read`, "POST"),
+
+  markAllNotificationsRead: (): Promise<{ count: number }> =>
+    mutate("/api/notifications/read-all", "POST"),
+
+  deleteNotification: (id: number): Promise<{ deleted: boolean }> =>
+    mutate(`/api/notifications/${id}`, "DELETE"),
+
+  notificationPreferences: (): Promise<{ preferences: { info: boolean; success: boolean; warning: boolean; reminder: boolean } }> =>
+    request("/api/notifications/preferences"),
+
+  updateNotificationPreferences: (prefs: { info?: boolean; success?: boolean; warning?: boolean; reminder?: boolean }): Promise<{ preferences: { info: boolean; success: boolean; warning: boolean; reminder: boolean } }> =>
+    mutate("/api/notifications/preferences", "PATCH", prefs),
 
   badges: (): Promise<Server.BadgeDTO[]> =>
     cachedGet<{ badges: Server.BadgeDTO[] }>("/api/badges").then((d) => d.badges),

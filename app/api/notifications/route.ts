@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
-import { getNotifications } from "~backend/services/content";
+import { getNotifications, getUnreadCount } from "~backend/services/notification";
 import { getUserIdFromRequest } from "~backend/services/user";
 import { AppError, toHttpResponse } from "~backend/errors";
-import { validateBoundedInt } from "~backend/validation";
 import { getRequestId, startTiming, applySecurityHeaders, applyCacheHeaders } from "../_middleware";
 
 export async function GET(request: Request) {
@@ -16,23 +15,23 @@ export async function GET(request: Request) {
     }
 
     const { searchParams } = new URL(request.url);
-    // Keyset pagination (Phase 6) with shared validation (Phase 7): `limit`
-    // bounds each page (1–50); `cursor` is the previous page's nextCursor.
-    const limit = validateBoundedInt(
-      searchParams.has("limit") ? Number(searchParams.get("limit")) : undefined,
-      "limit",
-      { min: 1, max: 50, default: 20 },
-    ) as number;
-    const rawCursor = searchParams.has("cursor") ? Number(searchParams.get("cursor")) : undefined;
-    const cursorId = validateBoundedInt(rawCursor, "cursor", { min: 1 });
+    const limit = searchParams.has("limit")
+      ? Math.min(50, Math.max(1, parseInt(searchParams.get("limit")!, 10)))
+      : 20;
+    const cursor = searchParams.has("cursor")
+      ? parseInt(searchParams.get("cursor")!, 10)
+      : undefined;
+    const type = searchParams.get("type") ?? undefined;
 
-    const { items, nextCursor, total } = await getNotifications(userId, { limit, cursorId });
+    const { items, nextCursor, total } = await getNotifications(userId, { limit, cursorId: cursor });
+    const filtered = type ? items.filter((n) => n.type === type) : items;
+    const unreadCount = await getUnreadCount(userId);
 
     const res = NextResponse.json({
-      notifications: items,
-      pageSize: limit,
+      notifications: filtered,
       total,
       nextCursor,
+      unreadCount,
     });
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");
