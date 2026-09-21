@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Calendar, ArrowRight, Check, Plus, Spinner } from "@phosphor-icons/react";
 import type { Server } from "@/lib/types";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
+import { useToastSafe } from "@/lib/toast-ctx";
+import { useLanguage, t } from "@/lib/lang-ctx";
 import { api } from "@/lib/services/api";
 
 type Props = {
@@ -14,6 +16,8 @@ type Props = {
 
 export default function TodayPlanCard({ tasks, onToggle, onTaskAdded }: Props) {
   const { setActiveTab } = useDashboardStore();
+  const toast = useToastSafe();
+  const { lang } = useLanguage();
   const [showAddForm, setShowAddForm] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [newSubject, setNewSubject] = useState("বাংলাদেশ বিষয়াবলি");
@@ -39,7 +43,7 @@ export default function TodayPlanCard({ tasks, onToggle, onTaskAdded }: Props) {
       if (onTaskAdded) onTaskAdded();
       else window.dispatchEvent(new CustomEvent("ai:refresh-home"));
     } catch {
-      /* ignore error fallback */
+      toast.error(t(lang, "কাজ যোগ করা যায়নি — আবার চেষ্টা করুন", "Could not add task — please try again"));
     } finally {
       setAdding(false);
     }

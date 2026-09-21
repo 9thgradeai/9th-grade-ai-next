@@ -36,6 +36,7 @@ export default function PerformanceCard({
 }) {
   const [metric, setMetric] = useState<MetricMode>("solved");
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+  const [pinnedIdx, setPinnedIdx] = useState<number | null>(null);
   const dotRefs = useRef<(SVGGElement | null)[]>([]);
 
   const points = useMemo(() => {
@@ -89,7 +90,8 @@ export default function PerformanceCard({
     return `${pathD} L ${lastX} ${H - pad} L ${pad} ${H - pad} Z`;
   }, [coords, pathD]);
 
-  const hoveredPoint = hoveredIdx !== null ? coords[hoveredIdx] : null;
+  const activeIdx = pinnedIdx ?? hoveredIdx;
+  const hoveredPoint = activeIdx !== null ? coords[activeIdx] : null;
 
   const tooltipText = (p: (typeof coords)[number]) => {
     if (metric === "solved") return `${p.answered} ${p.answered === 1 ? "question" : "questions"}`;
@@ -98,9 +100,13 @@ export default function PerformanceCard({
   };
 
   const moveFocus = (dir: 1 | -1) => {
-    if (hoveredIdx === null) return setHoveredIdx(0);
-    const next = Math.max(0, Math.min(coords.length - 1, hoveredIdx + dir));
-    setHoveredIdx(next);
+    if (activeIdx === null) {
+      setPinnedIdx(0);
+      dotRefs.current[0]?.focus();
+      return;
+    }
+    const next = Math.max(0, Math.min(coords.length - 1, activeIdx + dir));
+    setPinnedIdx(next);
     dotRefs.current[next]?.focus();
   };
 
@@ -187,7 +193,8 @@ export default function PerformanceCard({
               className="w-full h-[100px] overflow-visible"
               role="img"
               aria-label={`${metricLabel} trend over the last ${range}`}
-              onMouseLeave={() => setHoveredIdx(null)}
+              onMouseLeave={() => { if (pinnedIdx === null) setHoveredIdx(null); }}
+              onClick={(e) => { if (e.target === e.currentTarget) setPinnedIdx(null); }}
             >
               <defs>
                 <linearGradient id="chartAreaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -216,11 +223,16 @@ export default function PerformanceCard({
                   className="cursor-pointer focus:outline-none"
                   role="button"
                   tabIndex={0}
-                  aria-label={`${new Date(c.date).toLocaleDateString("en-GB", { day: "2-digit", month: "short" })}: ${tooltipText(c)}`}
+                  aria-label={`${new Date(c.date).toLocaleDateString("en-GB", { day: "2-digit", month: "short" })}: ${tooltipText(c)}${pinnedIdx === i ? " (pinned)" : ""}`}
                   onMouseEnter={() => setHoveredIdx(i)}
-                  onFocus={() => setHoveredIdx(i)}
+                  onFocus={() => { setHoveredIdx(i); setPinnedIdx(i); }}
+                  onClick={() => setPinnedIdx(pinnedIdx === i ? null : i)}
                   onKeyDown={(e) => {
-                    if (e.key === "ArrowRight") {
+                    if (e.key === "Escape") {
+                      e.preventDefault();
+                      setPinnedIdx(null);
+                      setHoveredIdx(null);
+                    } else if (e.key === "ArrowRight") {
                       e.preventDefault();
                       moveFocus(1);
                     } else if (e.key === "ArrowLeft") {
@@ -232,11 +244,11 @@ export default function PerformanceCard({
                   <circle
                     cx={c.x}
                     cy={c.y}
-                    r={hoveredIdx === i ? 6 : 3.5}
-                    fill={hoveredIdx === i ? "var(--dashboard-text-inverse)" : "var(--dashboard-primary)"}
+                    r={activeIdx === i ? 6 : 3.5}
+                    fill={activeIdx === i ? "var(--dashboard-text-inverse)" : "var(--dashboard-primary)"}
                     stroke="var(--dashboard-primary)"
-                    strokeWidth={hoveredIdx === i ? 3 : 1.5}
-                    style={{ outline: hoveredIdx === i ? `2px solid var(--dashboard-focus-ring)` : undefined }}
+                    strokeWidth={activeIdx === i ? 3 : 1.5}
+                    style={{ outline: activeIdx === i ? `2px solid var(--dashboard-focus-ring)` : undefined }}
                   />
                 </g>
               ))}
