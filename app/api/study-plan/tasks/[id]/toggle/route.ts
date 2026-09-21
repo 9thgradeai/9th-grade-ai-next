@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { toggleStudyTask, getUserIdFromRequest } from "~backend/services/user";
-import { toHttpResponse } from "~backend/errors";
-import { ValidationError } from "~backend/errors";
+import { AppError, toHttpResponse, ValidationError } from "~backend/errors";
 import {
   getRequestId,
   startTiming,
@@ -21,7 +20,7 @@ export async function POST(
 
     const userId = await getUserIdFromRequest(request);
     if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      throw new AppError(401, "Unauthorized", "AUTH_UNAUTHORIZED");
     }
 
     const { id } = await params;

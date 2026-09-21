@@ -3,7 +3,7 @@ import PublicShell from "@/components/public/PublicShell";
 import HeroSection from "@/components/landing/HeroSection";
 import LazySection from "@/components/landing/LazySection";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 const jsonLd = {
   "@context": "https://schema.org",

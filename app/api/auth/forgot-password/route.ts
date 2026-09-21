@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { AppError, toHttpResponse } from "~backend/errors";
 import { requestPasswordReset } from "~backend/services/user";
 import { checkRateLimit, getRateLimitKey } from "~backend/rate-limit";
-import { getRequestId, startTiming, applySecurityHeaders } from "../../_middleware";
+import { getRequestId, startTiming, applySecurityHeaders, assertSameOrigin } from "../../_middleware";
 
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
@@ -11,6 +11,7 @@ export async function POST(request: Request) {
   const getTime = startTiming();
 
   try {
+    assertSameOrigin(request);
     if (!(await checkRateLimit(getRateLimitKey(request, "auth:forgot"), 10, 60_000))) {
       throw new AppError(429, "Too many requests. Please try again later.", "RATE_LIMIT_EXCEEDED");
     }

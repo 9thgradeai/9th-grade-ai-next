@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getSubmissionStatus } from "~backend/services/exam-submission";
 import { getUserIdFromRequest } from "~backend/services/user";
 import { AppError, toHttpResponse } from "~backend/errors";
-import { getRequestId, startTiming, applySecurityHeaders, assertSameOrigin } from "../../../_middleware";
+import { getRequestId, startTiming, applySecurityHeaders } from "../../../_middleware";
 
 /**
  * GET /api/exams/:attemptId/submission-status
@@ -15,7 +15,6 @@ export async function GET(request: Request, { params }: { params: Promise<{ atte
   const requestId = getRequestId(request);
   const getTime = startTiming();
   try {
-    assertSameOrigin(request);
     const userId = await getUserIdFromRequest(request);
     if (!userId) throw new AppError(401, "Unauthorized", "AUTH_UNAUTHORIZED");
     const { attemptId } = await params;

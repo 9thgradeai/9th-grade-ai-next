@@ -739,3 +739,135 @@ export async function validateResetToken(token: string): Promise<void> {
     throw new ValidationError("Invalid or expired reset link.");
   }
 }
+
+/** GDPR Article 15/20: Collect all user data for export / portability. */
+export async function exportUserData(userId: string) {
+  const [
+    profile,
+    progress,
+    attempts,
+    mockResults,
+    bookmarks,
+    flashcardReviews,
+    studyCompletions,
+    aiConversations,
+    aiMessages,
+    aiMemories,
+    aiUsage,
+    aiFeedback,
+    dailyQuizParticipations,
+    notifications,
+    notificationReads,
+    userBadges,
+    sessions,
+  ] = await Promise.all([
+    prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        handle: true,
+        role: true,
+        emailVerified: true,
+        onboarded: true,
+        authProvider: true,
+        imageUrl: true,
+        examTarget: true,
+        examDate: true,
+        prepLevel: true,
+        studyHoursPerDay: true,
+        goal: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    }),
+    prisma.userProgress.findUnique({ where: { userId } }),
+    prisma.questionAttempt.findMany({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.mockTestResult.findMany({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.bookmark.findMany({
+      where: { userId },
+      include: { question: true },
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.flashcardReview.findMany({
+      where: { userId },
+      include: { flashcard: true },
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.studyTaskCompletion.findMany({
+      where: { userId },
+      include: { task: true },
+      orderBy: { completedAt: "desc" },
+    }),
+    prisma.aIConversation.findMany({
+      where: { userId },
+      orderBy: { updatedAt: "desc" },
+    }),
+    prisma.aIMessage.findMany({
+      where: { conversation: { userId } },
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.aIMemory.findMany({
+      where: { userId },
+      orderBy: { updatedAt: "desc" },
+    }),
+    prisma.aIUsage.findMany({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.aIFeedback.findMany({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.dailyQuizParticipation.findMany({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.appNotification.findMany({
+      where: { userId },
+      orderBy: { timestamp: "desc" },
+    }),
+    prisma.notificationRead.findMany({
+      where: { userId },
+      orderBy: { readAt: "desc" },
+    }),
+    prisma.userBadge.findMany({
+      where: { userId },
+      include: { badge: true },
+      orderBy: { unlockedAt: "desc" },
+    }),
+    prisma.user.findUnique({
+      where: { id: userId },
+      select: { sessions: true },
+    }),
+  ]);
+
+  return {
+    exportedAt: new Date().toISOString(),
+    userId,
+    profile,
+    progress,
+    attempts,
+    mockResults,
+    bookmarks,
+    flashcardReviews,
+    studyCompletions,
+    aiConversations,
+    aiMessages,
+    aiMemories,
+    aiUsage,
+    aiFeedback,
+    dailyQuizParticipations,
+    notifications,
+    notificationReads,
+    userBadges,
+    sessions: sessions?.sessions ?? [],
+  };
+}

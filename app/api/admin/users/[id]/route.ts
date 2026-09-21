@@ -2,11 +2,10 @@
 // Admin: Get user details, ban, impersonate (admin only)
 
 import { NextResponse } from "next/server";
-import { prisma } from "~backend/db";
 import { requireRole } from "~backend/services/user";
+import { getUserDetail, adminAction } from "~backend/services/admin";
 import { AppError, toHttpResponse } from "~backend/errors";
 import { getRequestId, startTiming, applySecurityHeaders, assertSameOrigin } from "../../../_middleware";
-import { revokeAllSessions } from "~backend/services/user";
 
 export async function GET(
   request: Request,
@@ -19,37 +18,20 @@ export async function GET(
     await requireRole(request, ["admin"]);
     const { id } = await params;
 
-    const user = await prisma.user.findUnique({
-      where: { id },
-      include: {
-        progress: true,
-        _count: {
-          select: {
-            attempts: true,
-            mockTestResults: true,
-            aiConversations: true,
-            bookmarks: true,
-            flashcardReviews: true,
-            studyTaskCompletions: true,
-            notifications: true,
-            dailyQuizParticipations: true,
-          },
-        },
-      },
-    });
-
-    if (!user) {
-      throw new AppError(404, "User not found", "NOT_FOUND");
-    }
-
+    const user = await getUserDetail(id);
     const { passwordHash: _, emailVerifyToken: __, passwordResetToken: ___, ...safeUser } = user;
 
-    return NextResponse.json(
-      { user: safeUser },
-      { headers: { "X-Request-Id": requestId, "X-Response-Time": getTime() + "ms" } },
-    );
+    const res = NextResponse.json({ user: safeUser });
+    res.headers.set("X-Request-Id", requestId);
+    res.headers.set("X-Response-Time", getTime() + "ms");
+    applySecurityHeaders(res);
+    return res;
   } catch (err) {
-    return toHttpResponse(err);
+    const res = toHttpResponse(err);
+    res.headers.set("X-Request-Id", requestId);
+    res.headers.set("X-Response-Time", getTime() + "ms");
+    applySecurityHeaders(res);
+    return res;
   }
 }
 
@@ -72,34 +54,18 @@ export async function PATCH(
       throw new AppError(400, "Action required", "VALIDATION_ERROR");
     }
 
-    const user = await prisma.user.findUnique({ where: { id } });
-    if (!user) {
-      throw new AppError(404, "User not found", "NOT_FOUND");
-    }
+    const result = await adminAction(id, action);
 
-    if (action === "ban") {
-      // Ban by setting a flag and revoking all sessions
-      await prisma.user.update({
-        where: { id },
-        data: { role: "BANNED" as "STUDENT" | "ADMIN" | "BANNED" },
-      });
-      await revokeAllSessions(id);
-    } else if (action === "unban") {
-      await prisma.user.update({
-        where: { id },
-        data: { role: "STUDENT" },
-      });
-    } else if (action === "revoke_sessions") {
-      await revokeAllSessions(id);
-    } else {
-      throw new AppError(400, "Invalid action", "VALIDATION_ERROR");
-    }
-
-    return NextResponse.json(
-      { success: true, action },
-      { headers: { "X-Request-Id": requestId, "X-Response-Time": getTime() + "ms" } },
-    );
+    const res = NextResponse.json(result);
+    res.headers.set("X-Request-Id", requestId);
+    res.headers.set("X-Response-Time", getTime() + "ms");
+    applySecurityHeaders(res);
+    return res;
   } catch (err) {
-    return toHttpResponse(err);
+    const res = toHttpResponse(err);
+    res.headers.set("X-Request-Id", requestId);
+    res.headers.set("X-Response-Time", getTime() + "ms");
+    applySecurityHeaders(res);
+    return res;
   }
 }

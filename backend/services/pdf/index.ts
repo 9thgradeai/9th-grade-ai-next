@@ -19,3 +19,5 @@ export { PdfExportError, clientFacingMessage } from "./examPdfErrors";
 
 export { renderExamPdf, BengaliFontsAvailable, getFontStatus } from "./renderExamPdf";
 export { normalizeText, sanitizeForPdf } from "./unicode";
+export { normalizeIncomingQuestion, buildExamPdfDocument } from "./examExport";
+export type { RealExamExportRequest, NormalizedQuestion, BuildDocumentInput } from "./examExport";

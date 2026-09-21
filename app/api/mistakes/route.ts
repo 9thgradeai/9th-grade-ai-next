@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { getMistakesForUser } from "~backend/services/question-progress";
+import { getMistakesForUser, flattenMistakesForClient } from "~backend/services/question-progress";
 import { parseErrorType } from "~backend/services/error-classifier";
 import { getUserIdFromRequest } from "~backend/services/user";
 import { AppError, toHttpResponse } from "~backend/errors";
-import { getRequestId, startTiming, applySecurityHeaders } from "../_middleware";
+import { getRequestId, startTiming, applySecurityHeaders, applyCacheHeaders } from "../_middleware";
 
 export async function GET(request: Request) {
   const requestId = getRequestId(request);
@@ -32,47 +32,7 @@ export async function GET(request: Request) {
       limit,
     );
 
-    // Flatten question data into the response for the client
-    const data = result.data.map((row) => ({
-      id: row.id,
-      questionId: row.questionId,
-      totalAttempts: row.totalAttempts,
-      correctAttempts: row.correctAttempts,
-      incorrectAttempts: row.incorrectAttempts,
-      consecutiveCorrect: row.consecutiveCorrect,
-      mistakeCount: row.mistakeCount,
-      masteryScore: row.masteryScore,
-      masteryStatus: row.masteryStatus,
-      isMistake: row.isMistake,
-      firstIncorrectAt: row.firstIncorrectAt?.toISOString() ?? null,
-      lastIncorrectAt: row.lastIncorrectAt?.toISOString() ?? null,
-      lastCorrectAt: row.lastCorrectAt?.toISOString() ?? null,
-      lastReviewedAt: row.lastReviewedAt?.toISOString() ?? null,
-      reviewCount: row.reviewCount,
-      lastSubject: row.lastSubject,
-      lastTopic: row.lastTopic,
-      // Question metadata
-      question: {
-        id: (row.question as Record<string, unknown>).id,
-        subjectId: (row.question as Record<string, unknown>).subjectId,
-        subject: ((row.question as Record<string, unknown>).subject as Record<string, unknown>)?.nameBn ?? "",
-        topic: (row.question as Record<string, unknown>).topic,
-        subtopic: (row.question as Record<string, unknown>).subtopic,
-        question: (row.question as Record<string, unknown>).question,
-        options: (row.question as Record<string, unknown>).options,
-        correctAnswer: (row.question as Record<string, unknown>).correctAnswer,
-        explanation: (row.question as Record<string, unknown>).explanation,
-        difficulty: (row.question as Record<string, unknown>).difficulty,
-        year: (row.question as Record<string, unknown>).year,
-        sourceExam: (row.question as Record<string, unknown>).sourceExam,
-        bcsTerm: null,
-        // Latest error classification (Phase 2) — from the question's newest attempt.
-        latestErrorType:
-          (((row.question as Record<string, unknown>).attempts as
-            | Array<{ errorType?: string | null }>
-            | undefined)?.[0]?.errorType) ?? null,
-      },
-    }));
+    const data = flattenMistakesForClient(result.data);
 
     const res = NextResponse.json({
       data,
@@ -83,6 +43,7 @@ export async function GET(request: Request) {
     });
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");
+    applyCacheHeaders(res, { public: false, maxAge: 0 });
     applySecurityHeaders(res);
     return res;
   } catch (err) {

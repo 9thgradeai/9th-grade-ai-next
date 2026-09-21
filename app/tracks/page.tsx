@@ -6,7 +6,7 @@ import PageHero from "@/components/public/PageHero";
 import SectionHeading from "@/components/ui/SectionHeading";
 import { prisma } from "~backend/db";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   alternates: { canonical: "/tracks" },

@@ -3,7 +3,7 @@ import { getStudyPlan } from "~backend/services/content";
 import { createStudyTask } from "~backend/services/study-plan";
 import { getUserIdFromRequest } from "~backend/services/user";
 import { AppError, toHttpResponse } from "~backend/errors";
-import { getRequestId, startTiming, applySecurityHeaders, assertSameOrigin } from "../_middleware";
+import { getRequestId, startTiming, applySecurityHeaders, assertSameOrigin, applyCacheHeaders } from "../_middleware";
 
 export async function GET(request: Request) {
   const requestId = getRequestId(request);
@@ -19,6 +19,7 @@ export async function GET(request: Request) {
     const res = NextResponse.json({ tasks, page: 1, pageSize: tasks.length });
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");
+    applyCacheHeaders(res, { public: false, maxAge: 0 });
     applySecurityHeaders(res);
     return res;
   } catch (err) {

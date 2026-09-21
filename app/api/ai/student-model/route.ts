@@ -3,7 +3,7 @@
 import { UnauthorizedError, toHttpResponse } from "~backend/errors";
 import { getUserIdFromRequest } from "~backend/services/user";
 import { getStudentModel } from "~backend/ai";
-import { getRequestId, startTiming, applySecurityHeaders, assertSameOrigin } from "../../_middleware";
+import { getRequestId, startTiming, applySecurityHeaders } from "../../_middleware";
 
 export const maxDuration = 30;
 
@@ -12,8 +12,6 @@ export async function GET(request: Request) {
   const getTime = startTiming();
 
   try {
-    assertSameOrigin(request);
-
     const userId = await getUserIdFromRequest(request);
     if (!userId) {
       throw new UnauthorizedError("Sign in to view your profile.");

@@ -1,13 +1,15 @@
 import { NextResponse } from "next/server";
 import { toHttpResponse } from "~backend/errors";
 import { verifyEmail } from "~backend/services/user";
-import { getRequestId, startTiming, applySecurityHeaders } from "../../_middleware";
+import { getRequestId, startTiming, applySecurityHeaders, assertSameOrigin } from "../../_middleware";
 
 export async function POST(request: Request) {
   const requestId = getRequestId(request);
   const getTime = startTiming();
 
   try {
+    assertSameOrigin(request);
+
     const body = await request.json().catch(() => ({}));
     const token = typeof body?.token === "string" ? body.token : "";
 

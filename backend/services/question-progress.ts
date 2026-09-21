@@ -250,3 +250,162 @@ export function scoreMistakeQuestions(
     }))
     .sort((a, b) => b.score - a.score);
 }
+
+// ── Selection tree builder ──────────────────────────────────────
+
+type FlatTreeRow = { subject: string; topic: string; subtopic: string | null; count: number };
+
+export type MistakeSelectionTree = {
+  subject: string;
+  count: number;
+  topics: {
+    topic: string;
+    count: number;
+    subtopics: { subtopic: string; count: number }[];
+  }[];
+}[];
+
+/** Build a subject → topic → subtopic tree from flat rows, sorted by count descending. */
+export function buildMistakeSelectionTree(flat: FlatTreeRow[]): MistakeSelectionTree {
+  const subjectMap = new Map<
+    string,
+    { subject: string; count: number; topics: Map<string, { topic: string; count: number; subtopics: Map<string, number> }> }
+  >();
+  for (const row of flat) {
+    let subj = subjectMap.get(row.subject);
+    if (!subj) {
+      subj = { subject: row.subject, count: 0, topics: new Map() };
+      subjectMap.set(row.subject, subj);
+    }
+    subj.count += row.count;
+
+    let topic = subj.topics.get(row.topic);
+    if (!topic) {
+      topic = { topic: row.topic, count: 0, subtopics: new Map() };
+      subj.topics.set(row.topic, topic);
+    }
+    topic.count += row.count;
+    if (row.subtopic) {
+      topic.subtopics.set(row.subtopic, (topic.subtopics.get(row.subtopic) ?? 0) + row.count);
+    }
+  }
+
+  return [...subjectMap.values()]
+    .sort((a, b) => b.count - a.count)
+    .map((s) => ({
+      subject: s.subject,
+      count: s.count,
+      topics: [...s.topics.values()]
+        .sort((a, b) => b.count - a.count)
+        .map((t) => ({
+          topic: t.topic,
+          count: t.count,
+          subtopics: [...t.subtopics.entries()]
+            .sort((a, b) => b[1] - a[1])
+            .map(([subtopic, count]) => ({ subtopic, count })),
+        })),
+    }));
+}
+
+// ── Mistake list DTO mapper ─────────────────────────────────────
+
+type MistakeRowInput = {
+  id: string | number;
+  questionId: number;
+  totalAttempts: number;
+  correctAttempts: number;
+  incorrectAttempts: number;
+  consecutiveCorrect: number;
+  mistakeCount: number;
+  masteryScore: number;
+  masteryStatus: string;
+  isMistake: boolean;
+  firstIncorrectAt: Date | null;
+  lastIncorrectAt: Date | null;
+  lastCorrectAt: Date | null;
+  lastReviewedAt: Date | null;
+  reviewCount: number;
+  lastSubject: string | null;
+  lastTopic: string | null;
+  question: unknown;
+};
+
+export type MistakeListItem = {
+  id: string;
+  questionId: number;
+  totalAttempts: number;
+  correctAttempts: number;
+  incorrectAttempts: number;
+  consecutiveCorrect: number;
+  mistakeCount: number;
+  masteryScore: number;
+  masteryStatus: string;
+  isMistake: boolean;
+  firstIncorrectAt: string | null;
+  lastIncorrectAt: string | null;
+  lastCorrectAt: string | null;
+  lastReviewedAt: string | null;
+  reviewCount: number;
+  lastSubject: string | null;
+  lastTopic: string | null;
+  question: {
+    id: number;
+    subjectId: number;
+    subject: string;
+    topic: string | null;
+    subtopic: string | null;
+    question: string;
+    options: unknown;
+    correctAnswer: string;
+    explanation: string | null;
+    difficulty: string;
+    year: number | null;
+    sourceExam: string | null;
+    bcsTerm: null;
+    latestErrorType: string | null;
+  };
+};
+
+/** Transform raw mistake rows into the flat DTO expected by the client. */
+export function flattenMistakesForClient(rows: MistakeRowInput[]): MistakeListItem[] {
+  return rows.map((row) => {
+    const q = row.question as Record<string, unknown>;
+    const subjectObj = q.subject as Record<string, unknown> | undefined;
+    const attempts = q.attempts as Array<{ errorType?: string | null }> | undefined;
+    return {
+      id: String(row.id),
+      questionId: row.questionId,
+      totalAttempts: row.totalAttempts,
+      correctAttempts: row.correctAttempts,
+      incorrectAttempts: row.incorrectAttempts,
+      consecutiveCorrect: row.consecutiveCorrect,
+      mistakeCount: row.mistakeCount,
+      masteryScore: row.masteryScore,
+      masteryStatus: row.masteryStatus,
+      isMistake: row.isMistake,
+      firstIncorrectAt: row.firstIncorrectAt?.toISOString() ?? null,
+      lastIncorrectAt: row.lastIncorrectAt?.toISOString() ?? null,
+      lastCorrectAt: row.lastCorrectAt?.toISOString() ?? null,
+      lastReviewedAt: row.lastReviewedAt?.toISOString() ?? null,
+      reviewCount: row.reviewCount,
+      lastSubject: row.lastSubject,
+      lastTopic: row.lastTopic,
+      question: {
+        id: q.id as number,
+        subjectId: q.subjectId as number,
+        subject: (subjectObj?.nameBn as string) ?? "",
+        topic: q.topic as string | null,
+        subtopic: q.subtopic as string | null,
+        question: q.question as string,
+        options: q.options,
+        correctAnswer: (q.correctAnswer as string) ?? "",
+        explanation: (q.explanation as string | null) ?? null,
+        difficulty: (q.difficulty as string) ?? "",
+        year: (q.year as number | null) ?? null,
+        sourceExam: (q.sourceExam as string | null) ?? null,
+        bcsTerm: null,
+        latestErrorType: attempts?.[0]?.errorType ?? null,
+      },
+    };
+  });
+}

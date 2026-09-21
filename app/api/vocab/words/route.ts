@@ -9,7 +9,7 @@ export async function GET(request: Request) {
   const getTime = startTiming();
   try {
     const { searchParams } = new URL(request.url);
-    const limit = searchParams.get("limit") ? parseInt(searchParams.get("limit")!, 10) : undefined;
+    const limit = searchParams.get("limit") ? Math.min(100, Math.max(1, parseInt(searchParams.get("limit")!, 10))) : undefined;
     const exam = searchParams.get("exam") ?? undefined;
     const difficulty = searchParams.get("difficulty") ?? undefined;
     const userId = await getUserIdFromRequest(request);

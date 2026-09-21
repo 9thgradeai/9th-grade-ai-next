@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getFlashNews } from "~backend/services/content";
+import { toHttpResponse } from "~backend/errors";
 import { getRequestId, startTiming, applyCacheHeaders, applySecurityHeaders } from "../_middleware";
 
 export async function GET(request: Request) {
@@ -14,11 +15,8 @@ export async function GET(request: Request) {
     applyCacheHeaders(res, { maxAge: 300, public: true });
     applySecurityHeaders(res);
     return res;
-  } catch {
-    const res = NextResponse.json(
-      { error: { message: "Failed to fetch flash news.", code: "INTERNAL_ERROR" } },
-      { status: 500 },
-    );
+  } catch (err) {
+    const res = toHttpResponse(err);
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");
     applySecurityHeaders(res);

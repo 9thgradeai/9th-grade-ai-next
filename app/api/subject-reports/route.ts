@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 import { getSubjectReports } from "~backend/services/analytics";
 import { getUserIdFromRequest } from "~backend/services/user";
 import { AppError, toHttpResponse } from "~backend/errors";
-import { getRequestId, startTiming, applySecurityHeaders } from "../_middleware";
+import { getRequestId, startTiming, applySecurityHeaders, applyCacheHeaders } from "../_middleware";
 
 export async function GET(request: Request) {
   const requestId = getRequestId(request);
@@ -22,6 +22,7 @@ export async function GET(request: Request) {
     const res = NextResponse.json({ reports });
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");
+    applyCacheHeaders(res, { public: false, maxAge: 0 });
     applySecurityHeaders(res);
     return res;
   } catch (err) {

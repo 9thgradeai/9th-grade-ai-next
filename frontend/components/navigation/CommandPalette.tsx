@@ -1,11 +1,16 @@
 "use client";
 import { useEffect, useMemo, useState, useRef, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { MagnifyingGlass, ArrowRight, Command as CmdIcon } from "@phosphor-icons/react";
 import { getCommands } from "@/lib/navigation";
+import { useDashboardStore } from "@/lib/store-ctx/dashboard";
+import type { TabId } from "@/lib/data";
 
 export default function CommandPalette() {
   const router = useRouter();
+  const pathname = usePathname();
+  const isDashboard = pathname.startsWith("/dashboard");
+  const { setActiveTab } = useDashboardStore();
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
   const [active, setActive] = useState(0);
@@ -21,6 +26,7 @@ export default function CommandPalette() {
   const close = useCallback(() => setOpen(false), []);
 
   useEffect(() => {
+    if (isDashboard) return;
     const onKey = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement | null;
       const isTyping = target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target?.isContentEditable;
@@ -32,7 +38,7 @@ export default function CommandPalette() {
     window.addEventListener("keydown", onKey);
     window.addEventListener("app:open-command", onOpen);
     return () => { window.removeEventListener("keydown", onKey); window.removeEventListener("app:open-command", onOpen); };
-  }, []);
+  }, [isDashboard]);
   useEffect(() => {
     if (!open) return;
     queueMicrotask(() => {
@@ -50,11 +56,16 @@ export default function CommandPalette() {
     el?.scrollIntoView({ block: "nearest" });
   }, [active]);
 
-  if (!open) return null;
+  if (!open || isDashboard) return null;
   const go = (href: string, external?: boolean) => {
     close();
     if (external) window.open(href, "_blank", "noopener,noreferrer");
-    else router.push(href);
+    else {
+      // Sync store when navigating to a dashboard tab via command palette
+      const tabMatch = href.match(/\?tab=([a-z-]+)/);
+      if (tabMatch) setActiveTab(tabMatch[1] as TabId);
+      router.push(href);
+    }
   };
 
   return (

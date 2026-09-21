@@ -46,7 +46,7 @@ const withPWA = require("next-pwa")({
     { urlPattern: /^https:\/\/api\.(groq|anthropic)\.com\/.*/i, handler: "NetworkOnly", options: { cacheName: "ai-api" } },
     { urlPattern: /\/api\/questions/, handler: "StaleWhileRevalidate", options: { cacheName: "questions-api", expiration: { maxEntries: 64, maxAgeSeconds: 5 * 60 } } },
     { urlPattern: /\/api\/flashcards/, handler: "StaleWhileRevalidate", options: { cacheName: "flashcards-api", expiration: { maxEntries: 32, maxAgeSeconds: 15 * 60 } } },
-    { urlPattern: /\/api\/exam\/config/, handler: "StaleWhileRevalidate", options: { cacheName: "exam-config-api", expiration: { maxEntries: 16, maxAgeSeconds: 5 * 60 } } },
+    { urlPattern: /\/api\/exam\/config/, handler: "NetworkOnly", options: { cacheName: "exam-config-api" } },
     { urlPattern: /\/api\/flash-news/, handler: "StaleWhileRevalidate", options: { cacheName: "flash-news-api", expiration: { maxEntries: 16, maxAgeSeconds: 10 * 60 } } },
     { urlPattern: /\/api\/dashboard-stats/, handler: "NetworkFirst", options: { cacheName: "dashboard-stats-api", expiration: { maxEntries: 32, maxAgeSeconds: 60 }, networkTimeoutSeconds: 5 } },
     { urlPattern: /\/api\/study-plan/, handler: "StaleWhileRevalidate", options: { cacheName: "study-plan-api", expiration: { maxEntries: 16, maxAgeSeconds: 5 * 60 } } },

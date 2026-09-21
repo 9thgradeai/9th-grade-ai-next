@@ -1,18 +1,19 @@
 import { NextResponse } from "next/server";
 import { reviewVocabWord } from "~backend/services/vocab";
 import { getUserIdFromRequest } from "~backend/services/user";
-import { toHttpResponse } from "~backend/errors";
-import { getRequestId, startTiming, applySecurityHeaders } from "../../_middleware";
+import { AppError, toHttpResponse } from "~backend/errors";
+import { getRequestId, startTiming, applySecurityHeaders, assertSameOrigin } from "../../_middleware";
 
 export async function POST(request: Request) {
   const requestId = getRequestId(request);
   const getTime = startTiming();
   try {
+    assertSameOrigin(request);
     const userId = await getUserIdFromRequest(request);
-    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!userId) throw new AppError(401, "Unauthorized", "AUTH_UNAUTHORIZED");
     const body = await request.json();
     const { wordId, correct } = body;
-    if (!wordId || typeof correct !== "boolean") return NextResponse.json({ error: "wordId and correct required" }, { status: 400 });
+    if (!wordId || typeof correct !== "boolean") throw new AppError(400, "wordId and correct required", "VALIDATION_ERROR");
     const result = await reviewVocabWord(userId, Number(wordId), Boolean(correct));
     const res = NextResponse.json(result);
     res.headers.set("X-Request-Id", requestId);

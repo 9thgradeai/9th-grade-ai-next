@@ -6,8 +6,6 @@ import PageHero from "@/components/public/PageHero";
 import SectionHeading from "@/components/ui/SectionHeading";
 // import { prisma } from "~backend/db"; // Removed DB call for static build
 
-export const dynamic = "force-dynamic";
-
 export const metadata: Metadata = {
   alternates: { canonical: "/about" },
   title: "About Us — 9Th-Grade AI",
