@@ -2,7 +2,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useRef } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import dynamic from "next/dynamic";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
@@ -64,9 +64,13 @@ function TabSwitcher() {
   const ActiveComponent = TAB_COMPONENTS[activeTab];
 
   const tab = searchParams.get("tab") as TabId | null;
+  const prevTabRef = useRef(tab);
   useEffect(() => {
-    if (tab && TABS.some((t) => t.id === tab) && tab !== activeTab) {
-      setActiveTab(tab);
+    if (tab !== prevTabRef.current) {
+      prevTabRef.current = tab;
+      if (tab && TABS.some((t) => t.id === tab) && tab !== activeTab) {
+        setActiveTab(tab);
+      }
     }
   }, [tab, activeTab, setActiveTab]);
 
