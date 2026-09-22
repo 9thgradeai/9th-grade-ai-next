@@ -32,10 +32,10 @@ function lastSevenDayLabels(): string[] {
 }
 const WEEKDAY_LABELS_7 = lastSevenDayLabels();
 
-const STAGGER = { hidden: {}, show: { transition: { staggerChildren: 0.05, delayChildren: 0.03 } } };
+const STAGGER = { hidden: {}, show: { transition: { staggerChildren: 0.03, delayChildren: 0.01 } } };
 const STAGGER_ITEM = {
-  hidden: { opacity: 0, y: 12 },
-  show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 280, damping: 28 } },
+  hidden: { opacity: 0, y: 8 },
+  show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 320, damping: 30 } },
 };
 
 export default function HomeTab() {
@@ -90,9 +90,17 @@ export default function HomeTab() {
       setLoadFailed(false);
       setReloadKey((k) => k + 1);
     };
+    const onStartPractice = () => {
+      setPracticeIntent({ mode: "quick" });
+      setActiveTab("practice");
+    };
     window.addEventListener("ai:refresh-home", onRefresh);
-    return () => window.removeEventListener("ai:refresh-home", onRefresh);
-  }, []);
+    window.addEventListener("dashboard:start-practice", onStartPractice);
+    return () => {
+      window.removeEventListener("ai:refresh-home", onRefresh);
+      window.removeEventListener("dashboard:start-practice", onStartPractice);
+    };
+  }, [setActiveTab, setPracticeIntent]);
 
   const nextExam = intelligence?.nextExam ?? null;
   const examDaysLeft = useExamDaysLeft(nextExam?.date ?? null);
@@ -294,13 +302,13 @@ export default function HomeTab() {
         )}
       </motion.header>
 
-      {/* ── Preparation Pulse (real KPIs) ── */}
+      {/* ── Secondary: Pulse — compact, muted ── */}
       <motion.div variants={STAGGER_ITEM} className={skeleton ? "opacity-60 pointer-events-none" : ""}>
         <PreparationPulse intelligence={intelligence} />
       </motion.div>
 
       <div className="study-home-analytics grid gap-5 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-        <motion.div variants={STAGGER_ITEM} className="min-w-0">
+        <motion.div variants={STAGGER_ITEM} className="min-w-0 opacity-[0.98]">
           <PerformanceCard
             activity={intelligence?.activity ?? []}
             results={results}
@@ -318,6 +326,7 @@ export default function HomeTab() {
         </motion.div>
       </div>
 
+      {/* ── Hero Mission — primary CTA with command-card--hero treatment ── */}
       <div className="grid gap-5 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
         <motion.div variants={STAGGER_ITEM} className="min-w-0">
           <TodayMission
@@ -341,9 +350,27 @@ export default function HomeTab() {
         />
       </motion.div>
 
-      {/* ── Interactive AI Study Coach ── */}
-      <motion.div variants={STAGGER_ITEM} id="dashboard-ai-coach">
-        <HomeCoach />
+      {/* ── Deferred: AI Study Coach — collapsed by default to reduce initial cognitive load ── */}
+      <motion.div variants={STAGGER_ITEM} id="dashboard-ai-coach" className="scroll-mt-6">
+        <details className="group rounded-2xl border" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}>
+          <summary className="flex items-center justify-between gap-3 px-5 py-4 cursor-pointer list-none">
+            <div className="flex items-center gap-3 min-w-0">
+              <span className="w-9 h-9 rounded-xl flex items-center justify-center border shrink-0" style={{ background: "var(--dashboard-primary-subtle)", borderColor: "color-mix(in srgb, var(--dashboard-primary) 18%, transparent)", color: "var(--dashboard-primary)" }}>
+                <span className="text-sm">✦</span>
+              </span>
+              <div className="min-w-0">
+                <p className="text-sm font-bold" style={{ color: "var(--dashboard-text-primary)" }}>{t(lang, "AI স্টাডি কোচ", "AI Study Coach")}</p>
+                <p className="text-xs truncate" style={{ color: "var(--dashboard-text-muted)" }}>{t(lang, "প্রয়োজনে খুলে দ্রুত কৌশল নিন", "Open when you need a quick strategy")}</p>
+              </div>
+            </div>
+            <span className="shrink-0 inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1.5 rounded-lg border group-open:rotate-180 transition-transform" style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-secondary)", background: "var(--dashboard-surface-muted)" }}>
+              <CaretRight className="w-3.5 h-3.5 rotate-90" /> {t(lang, "খুলুন", "Open")}
+            </span>
+          </summary>
+          <div className="px-5 pb-5 pt-1 border-t" style={{ borderColor: "var(--dashboard-border-muted)" }}>
+            <HomeCoach />
+          </div>
+        </details>
       </motion.div>
 
       {/* ── Recent Mock Exam Results (real history) ── */}

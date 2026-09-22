@@ -113,7 +113,7 @@ export default function BottomNav({ activeTab, onChange }: BottomNavProps) {
                   <X className="w-5 h-5" />
                 </button>
               </div>
-              <div className="grid grid-cols-3 gap-2 p-4 pt-0">
+              <div className="grid grid-cols-2 gap-2.5 p-4 pt-0">
                 {extraTabs.map((tab) => {
                   const Icon = TAB_ICONS[tab.id];
                   const active = isActive(tab.id);
@@ -121,16 +121,22 @@ export default function BottomNav({ activeTab, onChange }: BottomNavProps) {
                     <button
                       key={tab.id}
                       onClick={() => selectTab(tab.id)}
-                      className="flex flex-col items-center justify-center gap-2 rounded-2xl border p-4 min-h-[88px] transition-colors text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                      className="flex items-center gap-3 rounded-2xl border p-3.5 min-h-[72px] transition-colors text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
                       style={
                         active
                           ? { background: "var(--dashboard-primary-subtle)", borderColor: "var(--dashboard-primary)", color: "var(--dashboard-primary)" }
                           : { background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-secondary)" }
                       }
                       aria-current={active ? "page" : undefined}
+                      aria-label={`${tab.label} — ${tab.bengali}`}
                     >
-                      <Icon className="w-5 h-5" />
-                      <span className="text-[11px] font-medium leading-tight">{tab.bengali}</span>
+                      <span className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border" style={{ background: active ? "var(--dashboard-primary-subtle)" : "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}>
+                        <Icon className="w-5 h-5" />
+                      </span>
+                      <span className="flex flex-col min-w-0">
+                        <span className="text-[13px] font-semibold leading-none truncate">{tab.bengali}</span>
+                        <span className="text-[11px] leading-none mt-1 truncate" style={{ color: "var(--dashboard-text-muted)" }}>{tab.label}</span>
+                      </span>
                     </button>
                   );
                 })}

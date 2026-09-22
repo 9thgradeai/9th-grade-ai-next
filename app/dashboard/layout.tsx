@@ -12,7 +12,7 @@ import ExamSwitcher from "@/components/dashboard/ExamSwitcher";
 import NotificationCenter from "@/components/dashboard/NotificationCenter";
 import CommandBar from "@/components/dashboard/CommandBar";
 import { ThemeToggle, DashboardThemeProvider } from "@/lib/dashboard-theme-ctx";
-import { EcosystemProvider, useEcosystem } from "@/lib/ecosystem-ctx";
+import { EcosystemProvider } from "@/lib/ecosystem-ctx";
 import { useAuth } from "@/lib/auth-ctx";
 import { LoadingShell } from "@/components/ui/LoadingShell";
 
@@ -22,7 +22,7 @@ import LanguageToggle from "@/components/ui/LanguageToggle";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 
 import { useDialogA11y } from "@/lib/use-dialog-a11y";
-import { List, MagnifyingGlass, X } from "@phosphor-icons/react";
+import { List, MagnifyingGlass, X, Question } from "@phosphor-icons/react";
 import { TAB_ICONS } from "@/lib/exam-ui";
 import { useAuth as useAuthForDrawer } from "@/lib/auth-ctx";
 import LogoutButton from "@/components/dashboard/LogoutButton";
@@ -139,25 +139,24 @@ function EmailVerificationGate({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
-function GlobalEcosystemToggle() {
-  const { ecosystem, setEcosystem } = useEcosystem();
+function ShortcutsSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const ref = useDialogA11y<HTMLDivElement>(open, onClose);
+  if (!open) return null;
   return (
-    <div
-      className="flex items-center gap-1 sm:gap-1.5 bg-[var(--dashboard-surface-muted)] border border-[var(--dashboard-border-muted)] rounded-lg p-0.5 shrink-0"
-      role="group"
-      aria-label="Exam ecosystem"
-    >
-      {(["BCS", "BANGLADESH_BANK"] as const).map((code) => (
-        <button
-          key={code}
-          onClick={() => setEcosystem(code)}
-          aria-pressed={ecosystem === code}
-          aria-label={code === "BCS" ? "BCS" : "বাংলাদেশ ব্যাংক"}
-          className={`min-h-[28px] sm:min-h-[30px] px-2 sm:px-2.5 py-1 text-[10px] sm:text-[11px] font-bold rounded-md transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] focus-visible:ring-offset-1 ${ecosystem === code ? "bg-[var(--dashboard-primary)] text-white shadow-sm" : "text-[var(--dashboard-text-secondary)] hover:text-[var(--dashboard-text-primary)] hover:bg-[var(--surface-hover)]"}`}
-        >
-          {code === "BCS" ? "BCS" : "ব্যাংক"}
-        </button>
-      ))}
+    <div className="fixed inset-0 z-[85] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Keyboard shortcuts">
+      <div className="absolute inset-0 backdrop-blur-sm" style={{ background: "var(--dashboard-overlay)" }} onClick={onClose} />
+      <div ref={ref} tabIndex={-1} className="relative w-full max-w-md rounded-2xl border shadow-xl p-5" style={{ background: "var(--dashboard-surface-solid)", borderColor: "var(--dashboard-border-muted)" }}>
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-bold" style={{ color: "var(--dashboard-text-primary)" }}>Keyboard shortcuts</h2>
+          <button onClick={onClose} className="p-1.5 rounded-lg" style={{ color: "var(--dashboard-text-muted)" }} aria-label="Close"><X className="w-4 h-4" /></button>
+        </div>
+        <div className="mt-4 space-y-2 text-sm">
+          <div className="flex justify-between"><span style={{ color: "var(--dashboard-text-secondary)" }}>Command palette</span><kbd className="px-1.5 py-0.5 rounded border text-xs font-mono" style={{ borderColor: "var(--dashboard-border-muted)" }}>⌘K</kbd></div>
+          <div className="flex justify-between"><span style={{ color: "var(--dashboard-text-secondary)" }}>Jump to tab 1–9, 10=0</span><kbd className="px-1.5 py-0.5 rounded border text-xs font-mono" style={{ borderColor: "var(--dashboard-border-muted)" }}>1 – 0</kbd></div>
+          <div className="flex justify-between"><span style={{ color: "var(--dashboard-text-secondary)" }}>Search in question bank</span><kbd className="px-1.5 py-0.5 rounded border text-xs font-mono" style={{ borderColor: "var(--dashboard-border-muted)" }}>/</kbd></div>
+          <p className="text-xs pt-2" style={{ color: "var(--dashboard-text-muted)" }}>Press <kbd className="font-mono">?</kbd> again or <kbd className="font-mono">Esc</kbd> to close.</p>
+        </div>
+      </div>
     </div>
   );
 }
@@ -167,6 +166,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const router = useRouter();
   const { activeTab, setActiveTab } = useDashboardStore();
   const [navDrawerOpen, setNavDrawerOpen] = useState(false);
+  const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const closeNavDrawer = useCallback(() => setNavDrawerOpen(false), []);
   const drawerRef = useDialogA11y<HTMLDivElement>(navDrawerOpen, closeNavDrawer);
 
@@ -178,9 +178,19 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     closeNavDrawer();
   };
 
-  // Keyboard shortcuts: 1-9/0 to switch tabs, Cmd+K for command bar
+  // Keyboard shortcuts: 1-9/0 to switch tabs, Cmd+K for command bar, ? for help
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      if (e.key === "?" && !e.metaKey && !e.ctrlKey && !e.altKey) {
+        if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+        e.preventDefault();
+        setShortcutsOpen((o) => !o);
+        return;
+      }
+      if (e.key === "Escape" && shortcutsOpen) {
+        setShortcutsOpen(false);
+        return;
+      }
       // Don't trigger shortcuts when typing in inputs
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
       // Don't hijack keys while a dialog (command palette, sheets) is open
@@ -200,7 +210,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, []);
+  }, [shortcutsOpen]);
 
   return (
     <DashboardThemeProvider>
@@ -285,23 +295,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     aria-label="Search dashboard"
                     className="hidden sm:flex h-10 w-64 items-center gap-3 rounded-lg border px-3 text-sm text-[var(--dashboard-text-secondary)] bg-[var(--dashboard-surface-muted)] border-[var(--dashboard-border-muted)] hover:border-[var(--dashboard-primary)] transition-colors"
                   >
-                    <MagnifyingGlass className="h-4 w-4" aria-hidden="true" />
-                    <span>{t("dashboard.controlCenter")}</span>
-                    <kbd className="ml-auto text-xs">⌘K</kbd>
+                    <MagnifyingGlass className="h-4 w-4 shrink-0" aria-hidden="true" />
+                    <span className="truncate">{t("dashboard.controlCenter")}</span>
+                    <kbd className="ml-auto hidden lg:inline-flex items-center gap-1 rounded bg-[var(--dashboard-surface)] border border-[var(--dashboard-border-muted)] px-1.5 py-0.5 text-[10px] font-mono">⌘K</kbd>
                   </button>
-                  <span className="hidden xl:block text-xs text-[var(--dashboard-text-muted)]">{activeLabel}</span>
+                  <span className="hidden xl:block text-xs text-[var(--dashboard-text-muted)] truncate max-w-[160px]">{activeLabel}</span>
 
-                  <div className="ml-auto flex items-center gap-1.5 sm:gap-2 min-w-0 shrink-0">
-                    <GlobalEcosystemToggle />
-                    <button
-                      type="button"
-                      onClick={() => window.dispatchEvent(new Event("app:open-command"))}
-                      aria-label="কমান্ড প্যানেল খুলুন"
-                      className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-[11px] font-medium transition-colors"
-                      style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-muted)", background: "var(--dashboard-surface-muted)" }}
-                    >
-                      <span>⌘K</span>
-                    </button>
+                  <div className="ml-auto flex items-center gap-1 sm:gap-1.5 min-w-0 shrink-0">
+                    <button onClick={() => setShortcutsOpen(true)} aria-label="Keyboard shortcuts" className="hidden sm:inline-flex items-center justify-center w-8 h-8 rounded-lg border" style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-muted)", background: "var(--dashboard-surface-muted)" }}><Question className="w-4 h-4" /></button>
                     <NotificationCenter />
                     <ThemeToggle />
                     <LanguageToggle />
@@ -310,7 +311,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </header>
 
               {/* Scrollable Content — isolated dashboard canvas */}
-              <main id="dashboard-content" className="flex-1 min-h-0 overflow-y-auto overscroll-contain pb-40 lg:pb-8" style={{ background: "var(--dashboard-background)" }}>
+              <main id="dashboard-content" className="flex-1 min-h-0 overflow-y-auto overscroll-contain pb-[72px] lg:pb-8" style={{ background: "var(--dashboard-background)" }}>
                 <div className="max-w-[1360px] mx-auto p-4 sm:p-6 lg:p-8 min-w-0">
                   {children}
                 </div>
@@ -324,6 +325,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <VoiceAITutor />
             <PracticeDrillOverlay />
             <CommandBar />
+            <ShortcutsSheet open={shortcutsOpen} onClose={() => setShortcutsOpen(false)} />
             </div>
         </EmailVerificationGate>
       </EcosystemProvider>

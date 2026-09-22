@@ -70,13 +70,19 @@ function PulseItem({
         <span className="font-display text-2xl font-semibold tabular-nums tracking-tight text-[var(--dashboard-text-primary)]">
           {value}
         </span>
-        {samples.length > 0 && (
-          <div role="img" aria-label={`${label}: ${samples.map((sample) => `${sample.date}: ${sample.value}`).join(", ")}`} className="flex h-7 w-20 shrink-0 items-end gap-1">
-            {samples.map((sample) => (
-              <span key={sample.date} className="flex-1 rounded-t-sm bg-[var(--dashboard-primary)]" style={{ height: `${(sample.value / max) * 100}%` }} />
-            ))}
-          </div>
-        )}
+          {samples.length > 0 && (
+            <div role="img" aria-label={`${label}: ${samples.map((sample) => `${sample.date}: ${sample.value}`).join(", ")}`} className="flex h-8 w-24 shrink-0 items-end gap-1">
+              {samples.map((sample) => (
+                <span
+                  key={sample.date}
+                  className="flex-1 rounded-t-sm bg-[var(--dashboard-primary)] hover:opacity-80 transition-opacity cursor-default"
+                  style={{ height: `${(sample.value / max) * 100}%` }}
+                  title={`${sample.date}: ${sample.value}`}
+                  aria-label={`${sample.date}: ${sample.value}`}
+                />
+              ))}
+            </div>
+          )}
       </div>
       <div className="mt-3 flex flex-wrap items-baseline gap-x-2 gap-y-1">
         {delta != null && <TrendBadge delta={delta} suffix={suffix} duration={duration} />}
@@ -94,17 +100,24 @@ export default function PreparationPulse({ intelligence }: PreparationPulseProps
 
   if (!hasData || !overall || !period) {
     return (
-      <section className="rounded-2xl border p-5 text-center" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}>
+      <section className="rounded-2xl border p-6 text-center" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}>
         <p className="text-sm font-bold" style={{ color: "var(--dashboard-text-primary)" }}>
           {t(lang, "এখনো পর্যাপ্ত ডেটা নেই", "Not enough data yet")}
         </p>
-        <p className="text-xs mt-1" style={{ color: "var(--dashboard-text-muted)" }}>
+        <p className="text-xs mt-1 max-w-md mx-auto" style={{ color: "var(--dashboard-text-muted)" }}>
           {t(
             lang,
-            "কিছু প্রশ্ন সমাধান করলে এখানে আপনার প্রস্তুতির সারাংশ দেখা যাবে।",
-            "Solve some questions and your preparation summary will appear here.",
+            "১০টি প্রশ্ন দিয়ে শুরু করুন — প্রথম ওয়ার্ম-আপেই আপনার পালস তৈরি হবে।",
+            "Start with 10 questions — your pulse appears after the first warm-up.",
           )}
         </p>
+        <button
+          type="button"
+          onClick={() => window.dispatchEvent(new CustomEvent("dashboard:start-practice"))}
+          className="command-primary-btn mt-4"
+        >
+          {t(lang, "১০-প্রশ্ন ওয়ার্ম-আপ শুরু করুন", "Start 10-question warm-up")}
+        </button>
       </section>
     );
   }

@@ -94,8 +94,8 @@
   --text-inverse: #0A0B10;
 
   /* ── Borders (12%) ─────────────────────────────────────────────────────────── */
-  --border: #20242B;
-  --border-strong: #303640;
+  --border: #252A33;
+  --border-strong: #323A48;
   --border-subtle: var(--border);
   --border-default: var(--border-strong);
   --border-focus: rgb(129 140 248 / 0.6);
@@ -887,13 +887,20 @@ hr {
 
 /* ── Card Variants ────────────────────────────────────────────────────────────── */
 .command-card--hero {
-  /* Dominant hero card — larger padding, stronger visual weight */
+  /* Dominant hero card — larger padding, stronger visual weight + subtle inset highlight in dark mode */
   padding: 1.5rem;
+  box-shadow: var(--shadow-sm), inset 0 1px 0 color-mix(in srgb, var(--border) 60%, transparent);
+  border-color: color-mix(in srgb, var(--dashboard-primary) 14%, var(--border));
 }
 @media (min-width: 640px) {
   .command-card--hero {
     padding: 2rem 2.5rem;
   }
+}
+.command-card--muted {
+  background: color-mix(in srgb, var(--surface-raised) 88%, var(--surface-muted));
+  border-color: color-mix(in srgb, var(--border) 80%, transparent);
+  box-shadow: none;
 }
 
 .command-card--feature {
