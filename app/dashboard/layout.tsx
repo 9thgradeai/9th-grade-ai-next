@@ -12,7 +12,7 @@ import ExamSwitcher from "@/components/dashboard/ExamSwitcher";
 import NotificationCenter from "@/components/dashboard/NotificationCenter";
 import CommandBar from "@/components/dashboard/CommandBar";
 import { ThemeToggle, DashboardThemeProvider } from "@/lib/dashboard-theme-ctx";
-import { EcosystemProvider } from "@/lib/ecosystem-ctx";
+import { EcosystemProvider, useEcosystem } from "@/lib/ecosystem-ctx";
 import { useAuth } from "@/lib/auth-ctx";
 import { LoadingShell } from "@/components/ui/LoadingShell";
 
@@ -137,6 +137,29 @@ function EmailVerificationGate({ children }: { children: React.ReactNode }) {
   }
 
   return <>{children}</>;
+}
+
+function GlobalEcosystemToggle() {
+  const { ecosystem, setEcosystem } = useEcosystem();
+  return (
+    <div
+      className="flex items-center gap-1 sm:gap-1.5 bg-[var(--dashboard-surface-muted)] border border-[var(--dashboard-border-muted)] rounded-lg p-0.5 shrink-0"
+      role="group"
+      aria-label="Exam ecosystem"
+    >
+      {(["BCS", "BANGLADESH_BANK"] as const).map((code) => (
+        <button
+          key={code}
+          onClick={() => setEcosystem(code)}
+          aria-pressed={ecosystem === code}
+          aria-label={code === "BCS" ? "BCS" : "বাংলাদেশ ব্যাংক"}
+          className={`min-h-[28px] sm:min-h-[30px] px-2 sm:px-2.5 py-1 text-[10px] sm:text-[11px] font-bold rounded-md transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] focus-visible:ring-offset-1 ${ecosystem === code ? "bg-[var(--dashboard-primary)] text-white shadow-sm" : "text-[var(--dashboard-text-secondary)] hover:text-[var(--dashboard-text-primary)] hover:bg-[var(--surface-hover)]"}`}
+        >
+          {code === "BCS" ? "BCS" : "ব্যাংক"}
+        </button>
+      ))}
+    </div>
+  );
 }
 
 function ShortcutsSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
@@ -302,6 +325,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   <span className="hidden xl:block text-xs text-[var(--dashboard-text-muted)] truncate max-w-[160px]">{activeLabel}</span>
 
                   <div className="ml-auto flex items-center gap-1 sm:gap-1.5 min-w-0 shrink-0">
+                    <GlobalEcosystemToggle />
                     <button onClick={() => setShortcutsOpen(true)} aria-label="Keyboard shortcuts" className="hidden sm:inline-flex items-center justify-center w-8 h-8 rounded-lg border" style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-muted)", background: "var(--dashboard-surface-muted)" }}><Question className="w-4 h-4" /></button>
                     <NotificationCenter />
                     <ThemeToggle />
