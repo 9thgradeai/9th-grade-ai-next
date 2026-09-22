@@ -1,0 +1,446 @@
+﻿Senior Officer (General) 2023 [MCQ]
+Question Bank and Solution Format for Competitive Exam Preparation:
+০১. ব্যাকরণের আলোচ্য বিষয়-
+ক. ধ্বনি  |  খ. শব্দ  |  গ. বাক্য  |  ঘ. সবগুলোই
+Ans. ঘ. সবগুলোই
+ব্যাখ্যা: ধ্বনি, শব্দ, বাক্য প্রত্যেকটি অংশই ব্যাকরণের আলোচ্য বিষয়। ভাষা হলো বাক্যের সমষ্টি। বাক্য গঠিত হয় শব্দ দিয়ে। আবার শব্দ তৈরি হয় ধ্বনি দিয়ে। এই ধ্বনিই ভাষার ক্ষুদ্রতম উপাদান। এছাড়া শব্দের ও বাক্যের বহু ধরনের অর্থ হয়। সেসব অর্থ নিয়েও ব্যাকরণে আলোচনা করা হয়। ব্যাকরণের এসব আলোচ্য বিষয় বিভক্ত হয় অন্তত চারটি ভাগে। যথা- ধ্বনিতত্ত্ব, রূপতত্ত্ব বা শব্দতত্ত্ব, বাক্যতত্ত্ব ও অর্থতত্ত্ব।
+০২. 'চির' ও 'চীর' শব্দজোড়ের অর্থ যথাক্রমে-
+ক. চূর্ণ ও নেশাগ্রস্ত  |  খ. ছুরি ও স্বাভাবিক  |  গ. দীর্ঘ ও ছিন্নবস্ত্র  |  ঘ. ছিন্নবস্ত্র ও দীর্ঘ
+Ans. গ. দীর্ঘ ও ছিন্নবস্ত্র
+ব্যাখ্যা: 'চির' ও 'চীর' শব্দজোড়ের অর্থ যথাক্রমে 'দীর্ঘ' ও 'ছিন্নবস্ত্র'। বাংলা ভাষায় এমন কিছু শব্দ আছে, যেগুলোর উচ্চারণ এক অথবা প্রায় এক, কিন্তু অর্থ ভিন্ন; এমন যুগল শব্দকে শব্দজোড় বলে। অধিকাংশ ক্ষেত্রে এদের বানান ভিন্ন হয়, তবে উচ্চারণ এক হওয়ায় কানে শুনে এদের পার্থক্য করা যায় না। বাক্যে ব্যবহৃত হলে প্রসঙ্গ বিবেচনায় এসব শব্দের পার্থক্য বোঝা যায়। আরও কয়েকটি উদাহরণ: অকুল- নীচ বংশ, অকূল- তীরহীন; অণু- ক্ষুদ্রতম অংশ, অনু-পশ্চাৎ; অনু-ভাত, অন্য-অপর; কমল-পদ্ম, কোমল- নরম: কুল- বংশ, কূল- তীর; খরা- রৌদ্র, ক্ষরা ক্ষরণ ইত্যাদি।
+০৩. কোন দুটি শব্দ কেবল জন্তুর বহুবচনে ব্যবহৃত হয়?
+ক. পাল ও কুঞ্জ  |  খ. যূথ ও মালা  |  গ. নিকর ও রাজি  |  ঘ. পাল ও যূথ
+Ans. ঘ. পাল ও যূথ
+ব্যাখ্যা: পাল ও যূথ শব্দ দুটি কেবল জন্তুর বহুবচনে ব্যবহৃত হয়। যেমন- রাখাল গরুর পাল লয়ে যায় মাঠে। হস্তিযূথ মাঠের ফসল নষ্ট করছে। অন্যদিকে, কুঞ্জ, মালা, নিকর ও রাজি শব্দগুলো অপ্রাণিবাচক শব্দের বহুবচনবোধক হিসেবে ব্যবহৃত হয়। যেমন: মেঘকুঞ্জ, পর্বতমালা, কমলনিকর ও তারকারাজি।
+০৪. নিচের কোনটি দেশি শব্দ?
+ক. চন্দ্র  |  খ. ডাব  |  গ. হরতাল  |  ঘ. চিনি
+Ans. খ. ডাব
+ব্যাখ্যা: বাংলা অঞ্চলের আদিবাসী জনগোষ্ঠীর ভাষা থেকে কিছু শব্দ বাংলা ভাষায় স্থান পেয়েছে, এগুলোকে দেশি শব্দ বলে। উদাহরণ: ডাব, কুড়ি, পেট, চুলা, কুলা, টোপর, ঢেঁকি ইত্যাদি। অন্যদিকে, চন্দ্র তৎসম বা সংস্কৃত, হরতাল- গুজরাটি এবং চিনি- চীনা শব্দ।
+০৫. লোকটি আমাকে সামনের আসনে বসতে অনুরোধ করলেন। বাক্যটির প্রত্যক্ষ উক্তি হলো-
+ক. লোকটি আমাকে বললেন, "আগে আসুন সামনে বসুন।"
+খ. লোকটি আমাকে বললেন, "আপনি সামনের আসনে বসুন।"
+গ. লোকটি আমাকে বললেন, "অনুগ্রহ করে আপনি সামনের আসনে বসুন।"
+ঘ. লোকটি আমাকে বললেন, "অনুগ্রহ করুন এবং সামনের আসনে বসুন।"
+Ans. গ. লোকটি আমাকে বললেন, "অনুগ্রহ করে আপনি সামনের আসনে বসুন।"
+ব্যাখ্যা: বক্তার কথা উপস্থাপনের ধরনকে উক্তি বলে। উক্তি দুই প্রকার: প্রত্যক্ষ উক্তি ও পরোক্ষ উক্তি। অনুজ্ঞা ও আবেগসূচক প্রত্যক্ষ উক্তিকে পরোক্ষ উক্তিতে পরিবর্তন করতে ভাব অনুযায়ী ক্রিয়ার পরিবর্তন করা হয়। পরোক্ষ উক্তিতে ক্রিয়াপদটি উক্তির অর্থ অনুযায়ী অনুরোধ করল, উপদেশ দিল, আদেশ করল, হুকুম শুর প্রভৃতি হয়। যেমন: প্রত্যক্ষ উক্তি- লোকটি আমাকে বললেন, অনুগ্রহ করে আপনি সামনের আসনে বসুন। পরোক্ষ উক্তি- লোকটি আমাকে সামনের আসনে বসতে অনুরোধ করলেন।
+০৬. 'সারারাত বৃষ্টি হয়েছে'। এখানে 'সারারাত' কোন কারকে কোন বিভক্তি?
+ক. অপাদানে শূন্য  |  খ. অধিকরণে শূন্য  |  গ. কর্তায় শূন্য  |  ঘ. কর্মে শূন্য
+Ans. খ. অধিকরণে শূন্য
+ব্যাখ্যা: যে কারকে স্থান, কাল, বিষয় ও ভাব নির্দেশিত হয়, তাকে অধিকরণ কারক বলে। সারারাত বৃষ্টি হয়েছে। এখানে 'সারারাত' কাল (সময়) অর্থে অধিকরণ কারক এবং শূন্য বিভক্তি। অধিকরণ কারকের উদাহরণ: প্রভাতে সূর্য ওঠে। এ বাড়িতে কেউ নেই। রাজীব ব্যাকরণে ভালো।
+০৭. 'ধৃষ্ট' শব্দের বিপরীত শব্দ কোনটি?
+ক. নম্র  |  খ. মৌন  |  গ. সদয়  |  ঘ. সজীব
+Ans. ক. নম্র
+ব্যাখ্যা: 'ধৃষ্ট' শব্দের অর্থ উদ্ধত, স্পর্ধিত, নির্লজ্জ; যার বিপরীত শব্দ হলো- নম্র। অন্যদিকে, মৌন- মুখর, সদয়- নির্দয়, সজীব- নির্জীব।
+০৮. বাক্যে প্রয়োজনের অতিরিক্ত শব্দ ব্যবহারে কোন দোষ ঘটে?
+ক. গুরুচণ্ডালী দোষ  |  খ. দুর্বোধ্যতা  |  গ. উপমার ভুল প্রয়োগ  |  ঘ. বাহুল্য দোষ
+Ans. ঘ. বাহুল্য দোষ
+ব্যাখ্যা: প্রয়োজনের অতিরিক্ত শব্দ ব্যবহারে বাহুল্যদোষ ঘটে এবং এর ফলে শব্দ তার যোগ্যতাগুণ হারিয়ে থাকে। যেমন- দেশের সব আলেমগণই এ ব্যাপারে আমাদের সমর্থন দান করেন। 'আলেমগণ' বহু বচনবাচক শব্দ। এর সঙ্গে 'সব' শব্দটির অতিরিক্ত ব্যবহার বাহুল্যদোষ সৃষ্টি করে।
+০৯. কোনটি শুদ্ধ বানান?
+ক. অনাবাদী  |  খ. অপদস্ত  |  গ. অব্যার্থ  |  ঘ. অভাগিনি
+Ans. Note (সঠিক উত্তর নেই)
+ব্যাখ্যা: অপশনে সঠিক উত্তর নেই। বাংলা একাডেমির আধুনিক বাংলা অভিধান অনুযায়ী সকল অতৎসম অর্থাৎ তদ্ভব, দেশি, বিদেশি, মিশ্র শব্দে কেবল ই এবং উ এবং এদের কারচিহ্ন ব্যবহৃত হবে। তাই সঠিক বানান হবে- অনাবাদি (ফারসি শব্দ)। অন্যদিকে, 'অপদস্ত', 'অব্যার্থ' ও অভাগিনি ভুল শব্দয়ের সঠিক বানান হবে 'অপদস্থ', 'অব্যর্থ' ও 'অভাগিনী' (সংস্কৃত শব্দ)।
+১০. 'কি হেতু এসেছ তুমি, কহ বিস্তারিয়া'। এখানে 'হেতু' অনুসর্গটি কী অর্থ প্রকাশ করেছে?
+ক. নিমিত্ত  |  খ. প্রার্থনা  |  গ. প্রসঙ্গ  |  ঘ. ব্যাপার
+Ans. ক. নিমিত্ত
+ব্যাখ্যা: বাংলা ভাষায় যেসব অব্যয় শব্দ কখনো স্বাধীন পদ রূপে, আবার কখনো শব্দ বিভক্তির ন্যায় বাক্যে ব্যবহৃত হয়ে বাক্যের অর্থ প্রকাশে সাহায্য করে, সেগুলোকে অনুসর্গ বা কর্মপ্রবচনীয় বলে। যেমন: হেতু, বিনা, সহ, অবধি, পরে ইত্যাদি। 'কী হেতু এসেছ তুমি, কহ বিস্তারিয়া' এখানে 'হেতু' অনুসর্গটি নিমিত্ত অর্থ প্রকাশ করেছে। নিমিত্ত অর্থের আরেকটি উদাহরণ: এ ধন-সম্পদ তোমার জন্যে।
+১১. 'মহাজ্ঞান' এর সঠিক ব্যাসবাক্য কোনটি?
+ক. মহৎ যে জ্ঞান  |  খ. মহতী যে জ্ঞান  |  গ. মহান যে জ্ঞান  |  ঘ. মহা যে জ্ঞান
+Ans. গ. মহান যে জ্ঞান
+ব্যাখ্যা: যেখানে বিশেষণ বা বিশেষণভাবাপন্ন পদের সাথে বিশেষ্য বা বিশেষ্যভাবাপন্ন পদের সমাস হয় এবং পরপদের অর্থই প্রধান রূপে প্রতীয়মান হয়, তাকে কর্মধারয় সমাস বলে। আর বিশেষণবাচক মহান বা মহৎ শব্দ পূর্বপদ হলে, 'মহৎ' ও 'মহান' স্থানে 'মহা' হয়। যেমন- মহৎ যে জ্ঞান = মহাজ্ঞান, মহান যে নবি = মহানবি।
+১২. 'সপ্তাহ' কোন ধরনের শব্দ?
+ক. অঙ্কবাচক  |  খ. তারিখবাচক  |  গ. পরিমাণবাচক  |  ঘ. পূরণবাচক
+Ans. গ. পরিমাণবাচক
+ব্যাখ্যা: একাধিকবার একই একক গণনা করলে যে সমষ্টি পাওয়া যায়, তাই পরিমাণ বা গণনাবাচক সংখ্যা। যেমন- সপ্তাহ বলতে আমরা সাত দিনের সমষ্টি বুঝিয়ে থাকি। সপ্ত (সাত) অহ (দিনক্ষণ) = সপ্তাহ। এখানে দিন একটি একক। এরূপ- সাতটি দিন বা সাতটি একক মিলে হয়েছে সপ্তাহ।
+১৩. 'ইতর বিশেষ' বাগ্ধারাটির অর্থ কী?
+ক. পার্থক্য  |  খ. ভালো-মন্দ  |  গ. পক্ষপাতিত্ব  |  ঘ. গুরুত্বহীন
+Ans. ক. পার্থক্য
+ব্যাখ্যা: ইতর বিশেষ বাগধারার অর্থ প্রভেদ বা পার্থক্য। অন্যদিকে, একচোখা- পক্ষপাতিত্ব।
+১৪. কোন বান্ধারাটি ভিন্নার্থক?
+ক. দুধের মাছি  |  খ. শরতের শিশির  |  গ. সুখের পায়রা  |  ঘ. লক্ষ্মীর বরযাত্রী
+Ans. Note
+ব্যাখ্যা: দুধের মাছি, শরতের শিশির, সুখের পায়রা ও লক্ষ্মীর বরযাত্রী বান্ধারা চারটির একই অর্থ সুসময়ের বন্ধু। তবে সুভাষ ভট্টাচার্যের 'সংবাদ বাগ্ধারা অভিধান' অনুযায়ী 'সুখের পায়রা'। আরামপ্রিয় ও সুখী লোক, ii. সুসময়ের বন্ধু, দুর্দিনে যাদের দেখা পাওয়া যায় না (এই সুখের পায়রারা কতদিন তোমার পাশে পাশে থাকবে)।
+১৫. 'সূর্য' শব্দটির সমার্থক শব্দ কোনটি?
+ক. ফণী  |  খ. শৈল  |  গ. ভুজ  |  ঘ. সবিতা
+Ans. ঘ. সবিতা
+ব্যাখ্যা: সূর্য' শব্দটির সমার্থক শব্দ- সবিতা, অর্ক, ভাস্কর, আফতাব, অংশুমালী, মার্তণ্ড, মিহির, বিভাবসু, বালার্ক, প্রভাকর, দিনেশ ইত্যাদি। অন্যদিকে, ফণী- সাপ, শৈল- পর্বত, ভুজ-হাত।
+১৬. 'পথের শেষ কোথায়' গ্রন্থটি কার লেখা?
+ক. বুদ্ধদেব বসু  |  খ. আবদুল্লাহ আবু সায়ীদ  |  গ. আবু সায়ীদ আইয়ুব  |  ঘ. প্রমথ চৌধুরী
+Ans. গ. আবু সায়ীদ আইয়ুব
+ব্যাখ্যা: রবীন্দ্র আলোচক, নন্দনতাত্ত্বিক, দার্শনিক এবং বিশিষ্ট বাংলা গদ্যশৈলীর স্রষ্টা আবু সায়ীদ আইয়ুব (১৯০৬-১৯৮২) এর একটি জ্ঞানগর্ভ প্রবন্ধ সংকলন হলো 'পথের শেষ কোথায়' (১৯৭৭)। ভাষা শেখার তিন পর্ব এবং প্রসঙ্গত, বুদ্ধিবিভ্রাট ও অপরোক্ষানুভূতি, সুন্দর ও বাস্তব, ভূমিকা: আধুনিক বাঙলা কবিতা, আধুনিক কাব্যের সমস্যা: বিশ্বাস, কাব্যের বিপ্লব ও বিপ্লবের কাব্য ইত্যাদি এ প্রবন্ধ সংকলনের অন্তর্গত প্রবন্ধ। এছাড়া আধুনিকতা ও রবীন্দ্রনাথ (১৯৬৮), পান্থজনের সখা (১৯৭৩), আধুনিক বাংলা কবিতা (১৯৪০) (সম্পাদনা) ইত্যাদি তার উল্লেখযোগ্য রচনা।
+১৭. বিপরীত শব্দ গঠনে কোন উপসর্গগুলো ব্যবহৃত হয়?
+ক. অপ, অনা  |  খ. উপ, বর  |  গ. নিম, ভর  |  ঘ. দর, উৎ
+Ans. খ. উপ, বর
+ব্যাখ্যা: তৎসম উপসর্গ 'অপ' বিপরীত শব্দগঠনে ব্যবহৃত হয়। যেমন: অপমান, অপকার, অপচয়, অপবাদ। আবার বাংলা উপসর্গ 'অনা' অভাব অর্থে শব্দগঠনে ব্যবহৃত হলেও বিপরীত শব্দ বুঝায়। যেমন- অনাদর (অসম্মান), অনাদায় (অপ্রাপ্তি)। অন্যদিকে তৎসম উপসর্গ 'উৎ' উর্ধ্বমুখিতা, আতিশয্য, প্রস্তুতি, অপকর্ষ অর্থে, 'উপ' উপসর্গ সামীপ্য, সাদৃশ্য, ক্ষুদ্র অর্থে ব্যবহৃত হয়। ফারসি উপসর্গ 'দর্' মধ্যস্থ, অধীন অর্থে এবং নিম' আধা অর্থে ব্যবহৃত হয়।
+১৮. 'অনু' এবং 'অণু'-এই শব্দ দুটির মধ্যে তফাত কোন ক্ষেত্রে?
+ক. বানানে  |  খ. উচ্চারণে  |  গ. অর্থে  |  ঘ. বানানে ও অর্থে
+Ans. ঘ. বানানে ও অর্থে
+ব্যাখ্যা: 'অনু' এবং 'অণু' এই শব্দ দুটির মধ্যে বানান ও অর্থে তফাত আছে। এগুলোকে শব্দজোড় বলে। বাংলা ভাষায় এমন কিছু শব্দ আছে, যেগুলোর উচ্চারণ এক অথবা প্রায় এক, কিন্তু অর্থ ভিন্ন; এমন যুগল শব্দকে শব্দজোড় বলে। আরও কয়েকটি উদাহরণ: অকুল- নীচ বংশ, অকূল- তীরহীন; অনিষ্ট- ক্ষতি, অনিষ্ঠ- নিষ্ঠাহীন; অর্ধ- দাম, অর্ঘ্য- পূজার উপকরণ; অশ্ব- ঘোড়া, অশ্ব- পাথর ইত্যাদি।
+১৯. ভাষার আঞ্চলিক বৈচিত্র্যকে বলা হয়-
+ক. বিবর্তিত ভাষা  |  খ. উপভাষা  |  গ. ভাষা লিপি  |  ঘ. শাখা ভাষা
+Ans. খ. উপভাষা
+ব্যাখ্যা: একই ভাষা যারা ব্যবহার করে তাদেরকে বলে একই ভাষাভাষী বা ভাষিক সম্প্রদায় (Language Community)। আমরা যারা বাংলা ভাষায় কথা বলি তারা সকলে বাংলাভাষী সম্প্রদায়ের অন্তর্গত। সকলের বাংলা আবার এক নয়। ভৌগোলিক ব্যবধান, যোগাযোগ ব্যবস্থা, সমাজগঠন, ধর্ম, পেশা ইত্যাদি কারণে এক এলাকার ভাষা থেকে অন্য এলাকার ভাষার পার্থক্যের সৃষ্টি হয়। ভৌগোলিক ব্যবধান বা অঞ্চলভেদে ভাষার যে বৈচিত্র্য তা-ই হলো উপভাষা। এ ভাষাকে আঞ্চলিক ভাষাও বলা হয়।
+২০. 'রতন' রবীন্দ্রনাথ ঠাকুরের কোন গল্পের একটি কেন্দ্রীয় চরিত্র?
+ক. অতিথি  |  খ. রবিবার  |  গ. ছুটি  |  ঘ. পোস্টমাস্টার
+Ans. ঘ. পোস্টমাস্টার
+ব্যাখ্যা: বাংলা ছোটগল্পের জনক রবীন্দ্রনাথ ঠাকুরের একটি বিখ্যাত সামাজিক ছোটগল্প 'পোস্টমাস্টার'। কেন্দ্রীয় চরিত্র হলো- রতন। কলকাতা থেকে অজপাড়াগায়ের পোস্ট অফিসে কাজ করতে আসা পোস্টমাস্টার বাবুর প্রতি এক অসহায় অনাথ গ্রাম্য-বালিকার সহজ সরল অথচ গভীর প্রাণের টান এবং পোস্টমাস্টার কাজ ছেড়ে চলে যাওয়ার সময় বালিকার মনের অব্যক্ত আর্তি এ গল্পকে মর্মস্পর্শী ও সকরুণ কাব্যধর্মিতায় মণ্ডিত করেছে। অন্যদিকে, রবীন্দ্রনাথের তারাপদ- অতিথি, ফটিক- ছুটি এবং অভীক- রবিবার গল্পের কেন্দ্রীয় চরিত্র।
+২১. কোনটি ঈশ্বরচন্দ্র বিদ্যাসাগরের আত্মজীবনীমূলক লেখা?
+ক. আত্মচরিত  |  খ. আত্মকথা  |  গ. আত্মজিজ্ঞাসা  |  ঘ. আমার কথা
+Ans. ক. আত্মচরিত
+ব্যাখ্যা: বাংলা গদ্যের জনক ও বাংলা গদ্যে প্রথম যতি চিহ্নের প্রবর্তক ঈশ্বরচন্দ্র বিদ্যাসাগরের আত্মজীবনীমূলক বর্ণনাধর্মী অসমাপ্ত রচনার নাম 'আত্মচরিত' (১৮৯১)। এ গ্রন্থে তার শৈশব জীবনের কথা, পিতা, পিতামহ ও জননীর কথা বর্ণনা করেছেন। তার আরও কয়েকটি উল্লেখযোগ্য গ্রন্থ- বেতাল পঞ্চবিংশতি, ভ্রান্তিবিলাস, প্রভাবতী সম্ভাষণ, বর্ণপরিচয়, বোধোদয়, সীতার বনবাস, ব্রজবিলাস, জীবনচরিত।
+২২. 'অয়ন' শব্দের অর্থ কী?
+ক. সাপ  |  খ. চাঁদ  |  গ. পথ  |  ঘ. তরঙ্গ
+Ans. গ. পথ
+ব্যাখ্যা: 'অয়ন' শব্দের সমার্থক শব্দ: পথ, রাস্তা, মার্গ ইত্যাদি। অন্যদিকে, সাপ-সর্প, অহি, উরগ, পন্নগ, বায়ুভুক; চাঁদ- শশধর, নিশাধর, শীতাংশু, কলাভূৎ, মৃগাঙ্ক, সুধানিধি, সুধাংশু, হিমাংশু; তরঙ্গ- ঢেউ, ঊর্মি, বীচি, কল্লোল, হিল্লোল, মহোর্মি।
+২৩. 'সদ্যোজাত' শব্দের সন্ধি বিচ্ছেদ কোনটি?
+ক. সৎ + জাত  |  খ. সদ্যো + জাত  |  গ. সদ্যঃ + জাত  |  ঘ. সদ্য + জাত
+Ans. গ. সদ্যঃ + জাত
+ব্যাখ্যা: 'সদ্যোজাত' শব্দের সন্ধি বিচ্ছেদ হলো- সদ্যঃ জাত। পূর্বপদের শেষে যদি অঃ (= অস্) থাকে এবং পরপদের প্রথমে যদি বর্গের ৩য়, ৪র্থ বা ৫ম বর্ণের ধ্বনি (গ/ঘ, জ/ঝ, ড/ঢ়, দ/ধ/ন, ব/ভ/ম) থাকে, কিংবা অন্তঃস্থ বর্ণ (য/র/ল/ব) অথবা হ থাকে তবে সন্ধির ফলে অঃ রূপান্তরিত হয়ে ও-ধ্বনি হয় এবং পূর্ববর্ণে যুক্ত হয়। পূর্বপদের শেষে যদি অঃ থাকে এবং পরপদের প্রথমে যদি অ থাকে তবে অঃ রূপান্তরিত হয়ে ও-কার হয়ে পূর্ববর্ণে যুক্ত হয় এবং পরের অ-ধ্বনি লোপ পায়।
+২৪. কোন শব্দটি উপসর্গ দিয়ে গঠিত হয়েছে?
+ক. আষাঢ়  |  খ. আঘাটা  |  গ. আয়না  |  ঘ. আনন
+Ans. Note
+ব্যাখ্যা: আঘাটা ও আনন দুটি শব্দই উপসর্গ দিয়ে গঠিত। সু, বি, নি, আ এই চারটি উপসর্গ বাংলা ও তৎসম উপসর্গ হিসেবে ব্যবহৃত হয়। বাংলা উপসর্গ 'আ' যোগে গঠিত শব্দ হলো 'আঘাটা' যার অর্থ হলো ব্যবহারের অযোগ্য ঘাট। আবার তৎসম উপসর্গ হিসেবে 'আ' দিয়ে গঠিত শব্দ 'আনন'; যার অর্থ মুখমণ্ডল/মুখ।
+২৫. কে বাংলা ভাষার কবি নন?
+ক. জ্ঞানদাস  |  খ. জয়দেব  |  গ. মুকুন্দরাম  |  ঘ. চণ্ডীদাস
+Ans. খ. জয়দেব
+ব্যাখ্যা: বাংলা ভাষার কবি নন জয়দেব। সংস্কৃত ভাষার কবি জয়দেব বারো'শ শতকে পশ্চিমবঙ্গের বীরভূম জেলার অজয়নদের তীরবর্তী কেন্দুবিল্ব বা কেঁদুলি গ্রামে জন্মগ্রহণ করেন। কেউ কেউ তাকে মিথিলা বা উড়িষ্যার অধিবাসী বলে মনে করেন এবং বৈষ্ণব সহজিয়াগণ তাকে আদিগুরু, নবরসিকের অন্যতম বলে মর্যাদা দিয়ে থাকেন। সংস্কৃত গীতিকাব্য 'গীতগোবিন্দম' তার বিখ্যাত রচনা। অন্যদিকে, বাংলা ভাষার প্রথম মানবতাবাদী বৈষ্ণব কবি চন্ডীদাস। জ্ঞানদাস ঘোলো শতকে চৈতন্যোত্তর বৈষ্ণব পদাবলির অন্যতম শ্রেষ্ঠ কবি। চণ্ডীমঙ্গলের কবি হিসেবে আখ্যায়িত কবিকঙ্কণ মুকুন্দরাম চক্রবর্তী 'চণ্ডীমঙ্গল' কাব্যের প্রধান কবি।
+২৬. Hush Money
+ক. Money overdue
+খ. Money earned by wrong means
+গ. Easy money
+ঘ. Bribe paid to secure silence
+Ans. ঘ. Bribe paid to secure silence
+ব্যাখ্যা: Hush Money হচ্ছে মুখ বন্ধ রাখার জন্য ঘুষ হিসেবে প্রদত্ত টাকা। এ অর্থে অপশন (d) Bribe paid to secure silence সঠিক উত্তর।
+২৭. To show the white feather
+ক. To show sings of cowardice  |  খ. To show arrogance
+গ. To seek peace  |  ঘ. To become polite
+Ans. ক. To show sings of cowardice
+ব্যাখ্যা: To show the white feather অর্থ হচ্ছে- ভীরুতা বা কাপুরুষতা প্রদর্শন করা। এ হিসেবে To show signs of cowardice অর্থাৎ অপশন (a) সঠিক উত্তর।
+২৮. Swan-song
+ক. Music as sweet as a song of birds
+খ. A melodious song in praise of someone
+গ. Praise of a woman by her lover
+ঘ. Last work of a poet or musician before death
+Ans. ঘ. Last work of a poet or musician before death
+ব্যাখ্যা: Swan-song অর্থ হচ্ছে শেষ কর্ম বা শেষ রচনা। এর সাথে অর্থের মিল রয়েছে অপশন (d) Last work of a poet or musician before death. সুতরাং সঠিক উত্তর অপশন (d)।
+২৯. Don't stick your neck out
+ক. Interfere  |  খ. Invite trouble unnecessary  |  গ. Look outside  |  ঘ. Move
+Ans. খ. Invite trouble unnecessary
+ব্যাখ্যা: বিনাপ্রয়োজনে নাকগলানো বা ঝামেলা বাধানো অর্থে Invite trouble unnecessary বা Don't stick your neck out ব্যবহার করা হয়। সুতরাং সঠিক উত্তর অপশন (b)।
+৩০. To look down one's nose at
+ক. To baekbite
+খ. To show anger
+গ. To regard with half-hidden displeasure of contempt
+ঘ. To insult in the presence of others
+Ans. গ. To regard with half-hidden displeasure of contempt
+ব্যাখ্যা: To look down one's nose at অর্থ অপমান করা, অবহেলা করা। এ হিসেবে অপশন (c) সঠিক উত্তর।
+৩১. One should keep one's promise.
+ক. One's promise should be kept by us.
+খ. One's promise has to be kept.
+গ. A promise should be keeping.
+ঘ. A promise should be kept.
+Ans. ঘ. A promise should be kept.
+ব্যাখ্যা: প্রশ্নোক্ত sentence-এর সাথে অর্থের সংগতি রয়েছে অপশন (d) এর। যার অর্থ এমন প্রতিজ্ঞা যা রাখতে হবে। সুতরাং সঠিক উত্তর (d)।
+৩২. You will have finished this work by tomorrow.
+ক. This work will have been finished tomorrow.
+খ. This work will be finished by tomorrow.
+গ. This work will finished tomorrow.
+ঘ. This work will have been finished by tomorrow.
+Ans. ঘ. This work will have been finished by tomorrow.
+ব্যাখ্যা: Will have থাকায় প্রশ্নোক্ত sentence-টি একটি future perfect tense-এর sentence। একে active থেকে passive করার সময় object-এর subject form + shall have/will have been + verb3 + by + subject-এর object form নিয়মটি অনুসরণ করতে হয়। উক্ত নিয়মে অপশন (d) সঠিক উত্তর।
+৩৩. Please help me.
+ক. You were requested to help me.
+খ. You are being requested to help me
+গ. You are requested to help me.
+ঘ. You have been requested to help me
+Ans. গ. You are requested to help me.
+ব্যাখ্যা: Imperative sentence-এর 'please' যুক্ত sentence-কে active থেকে passive করার সময় 'You are requested' দিয়ে শুরু করতে হয়। সে হিসেবে present tense এর বাক্য হওয়ায় অপশন (c) সঠিক উত্তর।
+৩৪. My uncle promised me a present.
+ক. A present was promised by my uncle to me.
+খ. I was promised a present by my uncle...
+গ. I had been promised a present by my uncle.
+ঘ. I was promised by my uncle a present.
+Ans. খ. I was promised a present by my uncle...
+ব্যাখ্যা: Past Indefinte tense-এর বাক্যকে active থেকে passive করার ক্ষেত্রে object-এর subject form + auxiliary verb + verb3 + by + subject-এর object form বসে। এ নিয়মে অপশন (b) সঠিক উত্তর।
+৩৫. Why do you waste time?
+ক. Why is time wasted by you?
+খ. Why has time been wasted by you?
+গ. Why is time been wasted by you?
+ঘ. Why is time being wasted by you?
+Ans. ক. Why is time wasted by you?
+ব্যাখ্যা: Why যুক্ত Interrogative sentence-কে passive voice-এ রূপান্তর করতে why + auxiliary verb + object-এর subject + verb3 + by + subject-এর object + ? উক্ত নিয়মের অনুসারে সঠিক উত্তর অপশন (a)।
+৩৬. One who has suddenly gained new wealth, power or prestige.
+ক. Aristocrat  |  খ. Affluent  |  গ. Maverick  |  ঘ. Parvenu
+Ans. ঘ. Parvenu
+ব্যাখ্যা: হঠাৎ করেই বড়লোক, কিংবা ক্ষমতা পেয়ে যাওয়া লোককে বলা হয় parvenu বা ভুইফোড়। সুতরাং সঠিক উত্তর অপশন (d)।
+৩৭. One who plays a game for pleasure and not professionally.
+ক. Veteran  |  খ. Player  |  গ. Connoisseur  |  ঘ. Amateur
+Ans. ঘ. Amateur
+ব্যাখ্যা: অপেশাদার অর্থে অপশন (d) Amateur সঠিক উত্তর।
+৩৮. The conclusions derived from experiments showed deviation from the common ne...
+ক. Strange  |  খ. Heterogeneity  |  গ. Anomaly  |  ঘ. Anonymity
+Ans. খ. Anomaly
+ব্যাখ্যা: Anomaly অর্থ ব্যতিক্রম, ব্যত্যয়। তাই এটিই সঠিক উত্তর।
+৩৯. A person who pretends to have more knowledge or skill than he really has.
+ক. Renegade  |  খ. Apostle  |  গ. Charlatan  |  ঘ. Apotheosis
+Ans. গ. Charlatan
+ব্যাখ্যা: যা জানে তার চেয়ে বেশি জানার ভান করা লোককে Charlatan বলে। সুতরাং সঠিক উত্তর (c)।
+৪০. A person's first speech.
+ক. Preface  |  খ. Maiden  |  গ. Opener  |  ঘ. Extempore
+Ans. খ. Maiden
+ব্যাখ্যা: Maiden speech অর্থ হলো First speech বা প্রথম বক্তৃতা। সুতরাং সঠিক উত্তর অপশন (b)।
+৪১. Tariff
+ক. Tariff  |  খ. Tarriff  |  গ. Tarif  |  ঘ. Tarrif
+Ans. ক. Tariff
+ব্যাখ্যা: শুল্ক তালিকা/মূল্য তালিকা অর্থে সঠিক বানান Tariff, অর্থাৎ অপশন (a)।
+৪২. Satellite
+ক. Sattellite  |  খ. Satellite  |  গ. Sattelite  |  ঘ. Satelite
+Ans. খ. Satellite
+ব্যাখ্যা: প্রদত্ত অপশনগুলোর মধ্যে সঠিক বানান Satellite যার অর্থ কৃত্রিম উপগ্রহ। সুতরাং সঠিক উত্তর অপশন (b)।
+৪৩. Sovereignty
+ক. Sovereignty  |  খ. Soveriegnty  |  গ. Sovereignity  |  ঘ. Soveriegnity
+Ans. ক. Sovereignty
+ব্যাখ্যা: প্রদত্ত অপশনগুলোর মধ্যে অপশন (a) Sovereignty ছাড়া অন্য তিনটিই ভুল। Sovereignty সঠিক বানান যার অর্থ সার্বভৌমত্ব। সুতরাং সঠিক উত্তর অপশন (a)।
+৪৪. Commission
+ক. Commission  |  খ. Commisson  |  গ. Commision  |  ঘ. Comission
+Ans. ক. Commission
+ব্যাখ্যা: সংস্থা, মধ্যস্থতা প্রভৃতি অর্থে সঠিক বানান অপশন (a) commission। সুতরাং সঠিক উত্তর অপশন (a)।
+৪৫. Incumbent
+ক. Incumbent  |  খ. Incambent  |  গ. Incumbant  |  ঘ. Incambant
+Ans. ক. Incumbent
+ব্যাখ্যা: 'আরোপিত' অর্থে প্রদত্ত অপশনগুলোর মধ্যে সঠিক বানান (a) incumbent।
+৪৬. Sooner than he had arrived his friends arranged a reception in his honor in the best hotel in town.
+ক. (a)  |  খ. (b)  |  গ. (c)  |  ঘ. (d)
+Ans. ক. (a)
+ব্যাখ্যা: Sooner than he had arrived-এর স্থানে As soon as he arrived দিলে বাক্যটি সঠিক হতো। সুতরাং (a) নং ভুল।
+৪৭. The price of crude oil used to be a great deal lower than now, wasn't it?
+ক. (a)  |  খ. (b)  |  গ. (c)  |  ঘ. (d)
+Ans. ঘ. (d)
+ব্যাখ্যা: Wasn't it-এর স্থানে didn't it দিলে বাক্যটি সঠিক হতো। সুতরাং সঠিক অপশন (d)।
+৪৮. If the streets would have been clearly marked it would not have taken us so long to find his house.
+ক. (a)  |  খ. (b)  |  গ. (c)  |  ঘ. (d)
+Ans. ক. (a)
+ব্যাখ্যা: Would have been-এর জায়গায় had দিলে বাক্যটি সঠিক হতো।
+৪৯. The manager asked the worker why was he again disturbing the schedule of production.
+ক. (a)  |  খ. (b)  |  গ. (c)  |  ঘ. (d)
+Ans. খ. (b)
+ব্যাখ্যা: Why was he-এর স্থানে why he was দিলে বাক্যটি সুন্দর ও সঠিক হতো।
+৫০. Unless two or more members object to him joining the club, we shall have to accept his application for membership.
+ক. (a)  |  খ. (b)  |  গ. (c)  |  ঘ. (d)
+Ans. খ. (b)
+ব্যাখ্যা: him joining-এর স্থানে his joining দিলে সঠিক বাক্য হতো। him joining দেওয়ায় এটি ভুল হয়েছে।
+৫১. A, B, C, D and E are five consecutive numbers in increasing order of size. Deleting one of the five numbers from the set decreased the sum of the remaining numbers in the set by 20%. Which one of the following numbers was deleted?
+ক. B  |  খ. A  |  গ. D  |  ঘ. C
+Ans. ঘ. C
+ব্যাখ্যা: মনে করি, ক্রমিক সংখ্যা 5টি যথাক্রমে A=1, B=2, C=3, D=4 এবং E=5। ক্রমিক সংখ্যা 5টির যোগফল = 1+2+3+4+5 = 15। যেহেতু ক্রমিক সংখ্যা 5টির মধ্যে একটি সংখ্যা বাদ দেওয়ায় যোগফল 20% কমে যায়। সুতরাং সংখ্যাগুলোর যোগফল = 15 x 80% = 15 x 80/100 = 12। বাদ দেওয়া সংখ্যাটি = 15 - 12 = 3 = C।
+৫২. Bowl S contains only marbles. If 1/4 of the marbles were removed, the bowl would be filled to 1/2 of its capacity. If 100 marbles were added, the bowl would be full. How many marbles are in bowl S?
+ক. 100  |  খ. 200  |  গ. 250  |  ঘ. 300
+Ans. খ. 200
+ব্যাখ্যা: মনে করি, পাত্র S এর মার্বেলের সংখ্যা x। শর্তমতে, x = x/2 + 100 বা, x - x/2 = 100 বা, (2x-x)/2 = 100 ∴ x = 200।
+৫৩. Square ABCD is inscribed in a circle whose radius is 4 cm. Calculate the area of the square.
+ক. 16  |  খ. 32  |  গ. 48  |  ঘ. None
+Ans. খ. 32
+ব্যাখ্যা: দেওয়া আছে, বৃত্তের ব্যাসার্ধ = 4 cm। ব্যাস = (4×2) cm = 8 cm। এখানে, বৃত্তের ব্যাস = বর্গের কর্ণ। বর্গের কর্ণ = 8 cm। বর্গের ক্ষেত্রফল = 1/2 × (কর্ণ)² = 1/2 × 8² = 32 cm²।
+৫৪. What is the difference between the amount of interest earned on a principal of Tk 100 for 2 years at 10% simple interest rate and 10% compounding interest rate?
+ক. Tk 1  |  খ. Tk 121  |  গ. Tk 120  |  ঘ. Tk 2
+Ans. ক. Tk 1
+ব্যাখ্যা: আমরা জানি, সরল মুনাফা, I = Pnr = 100 x 2 x 1/10 = 20 টাকা। চক্রবৃদ্ধি মূলধন, C = P(1+r)^n = 100(1+1/10)^2 = 121 টাকা। চক্রবৃদ্ধি মুনাফা = 121 - 100 = 21 টাকা। সরল মুনাফা ও চক্রবৃদ্ধি মুনাফার পার্থক্য = 21 - 20 = 1 টাকা।
+৫৫. If 0 < x ≤ 1, then which one of following is the maximum value of (x-1)²+x?
+ক. 1  |  খ. -2  |  গ. 0  |  ঘ. -1
+Ans. ক. 1
+ব্যাখ্যা: x = 1/2 হলে, (x-1)²+x = (1/2-1)² + 1/2 = 1/4 + 1/2 = 3/4 = 0.75। x = 1 হলে, (x-1)²+x = (1-1)² + 1 = 1। x=1 এর জন্য (x-1)²+x-এর সর্বোচ্চ মান পাওয়া যাবে।
+৫৬. Point A is 10 km west of point B. Point B is 30 km north of point C. Point C is 20 km east of point D. What is the distance between point A and D?
+ক. 10√20 km  |  খ. 10√10 km  |  গ. 20√10 km  |  ঘ. 30√10 km
+Ans. খ. 10√10 km
+ব্যাখ্যা: এখানে, AE=BC=30 km এবং DE=EC=10 km। A বিন্দু থেকে D বিন্দুর দূরত্ব, AD = √(AE² + DE²) = √(30² + 10²) = √1000 = 10√10 km।
+৫৭. There are 3 doors to a lecture room. In how many ways can a lecturer enter the room from one door and leave from another door?
+ক. 1  |  খ. 3  |  গ. 6  |  ঘ. 9
+Ans. গ. 6
+ব্যাখ্যা: একটি Lecture কক্ষে 3টি দরজা আছে। একজন Lecturer 1টি দরজা দিয়ে কক্ষে প্রবেশ এবং ভিন্নভিন্ন দরজা দিয়ে বের হওয়ার উপায় = 3 × 2 = 6।
+৫৮. A rhombus is a quadrilateral
+ক. Whose all sides are equal
+খ. Whose any two opposite sides are parallel
+গ. Whose all sides are equal and four angels are equal to 90°
+ঘ. Both (a) and (b)
+Ans. ঘ. Both (a) and (b)
+ব্যাখ্যা: রম্বসের বৈশিষ্ট্য হলো: i. রম্বসের প্রত্যেকটি বাহু সমান। ii. রম্বসের বিপরীত বাহুগুলো পরস্পর সমান্তরাল। iii. রম্বসের কোনো কোণই 90° নয়। সুতরাং উপর্যুক্ত অপশন অনুযায়ী (a) ও (b) উভয়ই সঠিক অর্থাৎ সঠিক উত্তর (d)।
+৫৯. For a research purpose 2500 individuals were interviewed. Among them 750 persons have bank accounts in State Owned Commercial Banks (SOCBs) and 2250 persons have bank accounts in Private Commerical Banks (PCBs). How many of them have bank accounts in both SOCBs and PCBs?
+ক. 250  |  খ. 300  |  গ. 500  |  ঘ. 600
+Ans. গ. 500
+ব্যাখ্যা: আমরা জানি, n(A ∪ B) = n(A) + n(B) - n(A ∩ B)। বা, 2500 = 750 + 2250 - n(A ∩ B)। বা, n(A ∩ B) = 3000 - 2500 = 500।
+৬০. What would be the value of 20% of m as a percentage of p, if 8% of m = 4% of p?
+ক. 80%  |  খ. 16%  |  গ. 10%  |  ঘ. None
+Ans. গ. 10%
+ব্যাখ্যা: দেওয়া আছে, m এর 8% = p এর 4%। বা, m এর 1% = p এর 4/8 %। বা, m এর 20% = p এর (4×20)/8 % = 10%। m এর 20% = p এর 10%।
+৬১. Which is the larger between two numbers if they are in the ratio of 6 : 13 and their least common multiple is 312?
+ক. 52  |  খ. 26  |  গ. 24  |  ঘ. 12
+Ans. ক. 52
+ব্যাখ্যা: মনে করি, একটি সংখ্যা 6x এবং অপর সংখ্যা = 13x। সংখ্যা দুটির ল.সা.গু. = 6 × 13 × x = 78x। শর্তমতে, 78x = 312 বা x = 4। একটি সংখ্যা = 6 × 4 = 24 এবং অপর সংখ্যা = 13 × 4 = 52। বৃহত্তম সংখ্যাটি = 52।
+৬২. Three coins are tossed. Find the probability of exactly 2 heads
+ক. 3/8  |  খ. 1/2  |  গ. 1/8  |  ঘ. None
+Ans. ক. 3/8
+ব্যাখ্যা: তিনটি মুদ্রা নিক্ষেপের ঘটনায় মোট নমুনাক্ষেত্র = (HHH, HHT, HTH, HTT, THH, THT, TTH, TTT) অর্থাৎ ৮টি। এর মধ্যে ২ টি Head আছে এমন ঘটনার সংখ্যা = (HHT, HTH, THH) অর্থাৎ ৩টি। নির্ণেয় সম্ভাব্যতা = 3/8।
+৬৩. A rectangular sheet of paper, 10 cm long and 8 cm wide has squares of side 2 cm cut from each of its corner. The sheet is then folded to form a tray of depth 2 cm. What is the volume of this tray?
+ক. 32 cm³  |  খ. 48 cm³  |  গ. 49 cm³  |  ঘ. 54 cm³
+Ans. খ. 48 cm^3
+ব্যাখ্যা: 2 cm কাটার পর দৈর্ঘ্য = (10 - 2×2) cm = 6 cm। 2 cm কাটার পর প্রস্থ = (8 - 2×2) cm = 4 cm। Tray-এর আয়তন = (দৈর্ঘ্য × প্রস্থ × গভীরতা) ঘন একক = (6 × 4 × 2) cm³ = 48 cm³।
+৬৪. A group of 20 friends formed an investment club, with each member contributing an equal amount to the general fund. The club then invested the entire fund, which amounted to t taka, in stock X. The value of the stock subsequently increased 40 percent, at that point the stock was sold and the proceeds divided evenly among the members. In terms of t, how much money did each member of the club receive from the sale?
+ক. 800t  |  খ. t/2  |  গ. 7t/5  |  ঘ. 7t/100
+Ans. ঘ. 7t/100
+ব্যাখ্যা: 40% বৃদ্ধিতে t-এর নতুন পরিমাণ = t + 40% × t = t + 40t/100 = t + 0.4t = 1.4t। মনে করি, প্রত্যেক সদস্য পায় x টাকা। শর্তমতে, 20x = 1.4t বা, x = 1.4t/20 বা, x = 14t/(20×10) = 7t/100।
+৬৫. A machine is sold at a profit of 10%. Had it been sold for Tk. 40 less, there would have been a loss of 10%. What was the cost price?
+ক. Tk. 175  |  খ. Tk. 200  |  গ. Tk. 225  |  ঘ. Tk. 250
+Ans. খ. Tk. 200
+ব্যাখ্যা: মনে করি, ক্রয়মূল্য 100 টাকা। 10% লাভে বিক্রয়মূল্য = 110 টাকা। 10% ক্ষতিতে বিক্রয়মূল্য = 90 টাকা। বিক্রয়মূল্য কম = 110 - 90 = 20 টাকা। বিক্রয়মূল্য 20 টাকা কম হলে ক্রয়মূল্য 100 টাকা। 40 টাকা কম হলে = (100x40)/20 = 200 টাকা।
+৬৬. A train crossed a platform in 45 seconds travelling with a speed of 36 km/h. If the length of train is 200 meters, then what will be the length (in meters) of the platform?
+ক. 250  |  খ. 200  |  গ. 300  |  ঘ. 350
+Ans. ক. 250
+ব্যাখ্যা: মনে করি, প্লাটফর্মের দৈর্ঘ্য = x মিটার। ট্রেনের গতিবেগ = 36 কিমি/ঘণ্টা = 36 × 5/18 মিটার/সেকেন্ড = 10 মিটার/সেকেন্ড। শর্তমতে, (x+200)/45 = 10 বা, x+200 = 450 বা x=250। প্লাটফর্মের দৈর্ঘ্য 250 মিটার।
+৬৭. The perimeters of two squares are 40 cm and 30 cm. Find the perimeter of a thin square whose area is equal to the difference of the areas of the two squares.
+ক. 18 cm  |  খ. 24 cm  |  গ. 32 cm  |  ঘ. 36 cm
+Ans. Note
+ব্যাখ্যা: সঠিক উত্তর হবে 26.46 সেমি (প্রায়)। ১ম বর্গের এক বাহুর দৈর্ঘ্য = 40/4 সেমি = 10 সেমি এবং ২য় = 30/4 = 7.5 সেমি। ১ম বর্গের ক্ষেত্রফল = 100 বর্গ সেমি এবং ২য় = 56.25 বর্গ সেমি। ৩য় বর্গের ক্ষেত্রফল = 100 - 56.25 = 43.75 বর্গ সেমি। ৩য় বর্গের এক বাহুর দৈর্ঘ্য = √43.75 সেমি = 6.614 সেমি। ৩য় বর্গের পরিসীমা = 4 × 6.614 = 26.46 সেমি।
+৬৮. If a+b+c=0, the value of (a²/bc) + (b²/ca) + (c²/ab) is-
+ক. 3abc  |  খ. 1  |  গ. 3  |  ঘ. 1/3
+Ans. গ. 3
+ব্যাখ্যা: দেওয়া আছে, a+b+c=0। (a²/bc) + (b²/ca) + (c²/ab) = (a³+b³+c³)/abc = (a³+b³+c³-3abc+3abc)/abc = ((a+b+c)(a²+b²+c²-ab-bc-ca)+3abc)/abc = (0+3abc)/abc = 3।
+৬৯. In a set of 3 numbers, the average of first two members is 2, the average of the last two numbers is 3, and the average of the first and the last numbers is 4. What is the average of three numbers?
+ক. 3  |  খ. 2  |  গ. 2.5  |  ঘ. 3.5
+Ans. ক. 3
+ব্যাখ্যা: মনে করি, সংখ্যা তিনটি a, b, c। শর্তমতে, (a+b)/2 = 2 বা a+b=4। (b+c)/2 = 3 বা b+c=6। (a+c)/2 = 4 বা a+c=8। যোগ করে 2(a+b+c) = 18 বা a+b+c = 9। গড় = (a+b+c)/3 = 3।
+৭০. What is the value of √(10+√(25+√(108+√(154+√225))))
+ক. 6  |  খ. 4  |  গ. 2  |  ঘ. 1
+Ans. খ. 4
+ব্যাখ্যা: √(10+√(25+√(108+√(154+15)))) = √(10+√(25+√(108+√169))) = √(10+√(25+√(108+13))) = √(10+√(25+√121)) = √(10+√(25+11)) = √(10+√36) = √(10+6) = √16 = 4।
+৭১. Russia launched a special military operation in Ukraine on
+ক. March 21, 2001  |  খ. February 24, 2022
+গ. January 24, 2021  |  ঘ. March 23, 2022
+Ans. খ. February 24, 2022
+ব্যাখ্যা: ২৪ ফেব্রুয়ারি ২০২২ রাশিয়ান সেনাবাহিনী ইউক্রেনে 'Special Military Operation' নামে সামরিক অভিযান শুরু করে। ফলে রাশিয়া-ইউক্রেন যুদ্ধের সূত্রপাত ঘটে।
+৭২. Which one of the following is correct?
+ক. Queen Elizabeth II died of old age on September 18, 2022 in Scotland.
+খ. King Charles III succeeded Queen Elizabeth.
+গ. King Charles II succeeded Queen Elizabeth.
+ঘ. None of these
+Ans. খ. King Charles III succeeded Queen Elizabeth.
+ব্যাখ্যা: ৮ সেপ্টেম্বর ২০২২ ব্রিটেনের রানি দ্বিতীয় এলিজাবেথ মারা যান। তার মৃত্যুর পর উত্তরাধিকারী হিসেবে যুক্তরাজ্যের রাজা তৃতীয় চার্লসের ৪০তম রাজা হিসেবে আনুষ্ঠানিক রাজ্যাভিষেক হয় ৬ মে ২০২৩।
+৭৩. Elon Musk has bought Twitter in 2022 with-
+ক. USD 44 billion  |  খ. USD 42 billion  |  গ. USD 34 billion  |  ঘ. None of these
+Ans. ক. USD 44 billion
+ব্যাখ্যা: ২৩ অক্টোবর ২০২২ টেসলা মোটর'স ও স্পেস এক্স কোম্পানির প্রতিষ্ঠাতা ইলন মাস্ক ৪৪ বিলিয়ন ডলারের বিনিময়ে সামাজিক যোগাযোগ মাধ্যম টুইটার' ক্রয় করেন।
+৭৪. In 2024, the total number of days is -
+ক. 365 days  |  খ. 366 days  |  গ. 364 days  |  ঘ. None of these
+Ans. খ. 366 days
+ব্যাখ্যা: আমরা সাধারণত বছর গণনা করি ৩৬৫ দিনে। কিন্তু পৃথিবীর সূর্যকে একবার প্রদক্ষিণ করতে ৩৬৫ দিন ৫ ঘণ্টা ৪৮ মিনিট ৪৭ সেকেন্ড সময় লাগে। সেজন্য চার বছর পর পর এক বছরে একটা দিন বাড়তি হিসাব করা হয়। সেই বছর ৩৬৬ দিনে হয়, বছর লিপ ইয়ার। যেমন: ২০২০, ২০২৪।
+৭৫. Katalin Kariko and Drew Weissman got the Nobel Prize in 2023 in
+ক. Medicine  |  খ. Economics  |  গ. Literature  |  ঘ. None of these
+Ans. ক. Medicine
+ব্যাখ্যা: ক্যাথালিন ক্যারিকো (হাঙ্গেরি) ও ড্রিউ ওয়াইজম্যান (যুক্তরাষ্ট্র) যৌথভাবে ২০২৩ সালে চিকিৎসাবিজ্ঞানে নোবেল পুরস্কার লাভ করেন।
+৭৬. Name of the National Professor of Bangladesh is
+ক. Prof. A K Azad Khan  |  খ. Professor Mahmud Hassan
+গ. Prof. Alamgir Mohammad Sirajuddin  |  ঘ. All of them
+Ans. ঘ. All of them
+ব্যাখ্যা: ৬ মে ২০২১ তিনজন বিশিষ্ট ব্যক্তিকে জাতীয় অধ্যাপক হিসেবে ঘোষণা দিয়ে প্রজ্ঞাপন জারি করে সরকার। তারা হলেন ইমেরিটাস অধ্যাপক আলমগীর মোহাম্মদ সিরাজুদ্দীন, এ কে আজাদ খান ও অধ্যাপক মাহমুদ হাসান।
+৭৭. The famous book titled 'Jaddapi Amar Guru' was written by -
+ক. Rangalal Sen  |  খ. Humayun Ahmed  |  গ. Abdur Razzaq  |  ঘ. Ahmed Sofa
+Ans. ঘ. Ahmed Sofa
+ব্যাখ্যা: বাঙালি মুসলিম লেখকদের মধ্যে অন্যতম কীর্তিমান কথাসাহিত্যিক আহমদ ছফা (১৯৪৩-২০০১) রচিত কয়েকটি উল্লেখযোগ্য গ্রন্থ হলো- যদ্যপি আমার গুরু, গাভী বিত্তান্ত, বাঙালি মুসলমানের মন, ওঙ্কার, অলাতচক্র ও ফাউস্ট।
+৭৮. The 2023 FIFA Women's World Cup took place from 20 July to 20 August 2023, was jointly hosted by-.
+ক. Australia and New Zealand  |  খ. France and Germany
+গ. Australia and France  |  ঘ. France and New Zealand
+Ans. ক. Australia and New Zealand
+ব্যাখ্যা: ২০ জুলাই-২০ আগস্ট ২০২৩ ফিফা নারী বিশ্বকাপ ফুটবলের ৯ম আসর যৌথভাবে আয়োজন করে অস্ট্রেলিয়া ও নিউজিল্যান্ড।
+৭৯. The 2023 ICC Cricket World Cup is an international cricket tournament which is hosted by India. This is -.
+ক. 11th edition of World Cup Cricket  |  খ. 13th edition of World Cup Cricket
+গ. 12th edition of World Cup Cricket  |  ঘ. 14th edition of World Cup Cricket
+Ans. খ. 13th edition of World Cup Cricket
+ব্যাখ্যা: ৫ অক্টোবর-১৯ নভেম্বর ২০২৩ আইসিসি ১৩তম বিশ্বকাপ ক্রিকেটের আয়োজন করে ভারত। এ আসরে ১০টি দল অংশগ্রহণ করে এবং ম্যাচ অনুষ্ঠিত হয় ৪৮টি।
+৮০. The name of Asia's fastest male and female athlete as per Asian Games 2023 is -
+ক. China's Xie Zhenye and GE Manqi
+খ. China's Xie Zhenye and Sri Lankan Devindya Oshini Gunawardene
+গ. China's Xie Zhenye and Indian Dhanalakshmi
+ঘ. None of them
+Ans. ক. China's Xie Zhenye and GE Manqi
+ব্যাখ্যা: ১৯ সেপ্টেম্বর – ৮ অক্টোবর ২০২৩ এশিয়ান গেমসের ১৯তম আসর চীনের হাংজু শহরে অনুষ্ঠিত হয়। এই আসরে দ্রুততম মানব ও মানবী হন যথাক্রমে চীনের Xie Zhenye ও GE Mangi।
+৮১. One horse power is equal to -.
+ক. 748 watts  |  খ. 756 watts  |  গ. 736 watts  |  ঘ. 746 watts
+Ans. ঘ. 746 watts
+ব্যাখ্যা: Horse Power (HP) বা অশ্বশক্তি হলো ক্ষমতা পরিমাপের একক। 1 Horse Power প্রায় 746 watts-এর সমান।
+৮২. Bangladesh became a member of the United Nations in
+ক. 1972  |  খ. 1973  |  গ. 1974  |  ঘ. 1976
+Ans. গ. 1974
+ব্যাখ্যা: ১৭ সেপ্টেম্বর ১৯৭৪ জাতিসংঘের ২৯তম অধিবেশনে বাংলাদেশসহ ৩টি দেশ সদস্যপদ লাভ করে।
+৮৩. The world's largest international organization and a successor to the League of Nations is-
+ক. UNO  |  খ. UNICEF  |  গ. UNESCO  |  ঘ. None of these
+Ans. ক. UNO
+ব্যাখ্যা: পরবর্তীতে, ২৪ অক্টোবর ১৯৪৫ বিশ্বশান্তি এবং অর্থনৈতিক ও সামাজিক অগ্রগতি সাধনের লক্ষ্যে ৫১টি রাষ্ট্র নিয়ে জাতিসংঘ প্রতিষ্ঠিত হয়।
+৮৪. The headquarter of the UNESCO is at-
+ক. Geneva  |  খ. Rome  |  গ. New York  |  ঘ. Paris
+Ans. ঘ. Paris
+ব্যাখ্যা: UNESCO এর সদর দপ্তর ফ্রান্সের রাজধানী প্যারিসে অবস্থিত।
+৮৫. The Matarbari Island' is in -
+ক. Maheshkhali  |  খ. Sandwip  |  গ. Khulna  |  ঘ. Barishal
+Ans. ক. Maheshkhali
+ব্যাখ্যা: কক্সবাজার জেলার দ্বীপ উপজেলা মহেশখালীর একটি ইউনিয়ন হলো মাতারবাড়ী।
+৮৬. The instrument used to measure electric current is -
+ক. Electrometer  |  খ. Galvanometer  |  গ. Ammeter  |  ঘ. Spectrometer
+Ans. গ. Ammeter
+ব্যাখ্যা: Electric Current বা বিদ্যুৎ প্রবাহ মাপক যন্ত্রের নাম Ammeter।
+৮৭. The name of a submersible belonging to U.S. company Ocean Gate has recently missed in the Atlantic Ocean during an expedition to view the shipwreck of the Titanic is-
+ক. Diane  |  খ. Berenice  |  গ. Titanic  |  ঘ. The Titan
+Ans. ঘ. The Titan
+ব্যাখ্যা: ১৮ জুন ২০২৩ আটলান্টিক মহাসাগরের তলদেশে টাইটানিক জাহাজের ধ্বংসাবশেষ দেখার অভিযাত্রায় গিয়ে 'টাইটান' নামের সাবমেরিনের সলিল সমাধি ঘটে।
+৮৮. Bangladesh Bank has approved the Digital Bank guideline keeping provision for paid-up capital at -
+ক. Tk. 500 crore  |  খ. Tk. 125 crore  |  গ. None  |  ঘ. Tk. 100 crore
+Ans. খ. Tk. 125 crore
+ব্যাখ্যা: বাংলাদেশ ব্যাংকের নীতিমালা অনুযায়ী, ডিজিটাল ব্যাংকের লাইসেন্স পেতে হলে ১২৫ কোটি টাকা পরিশোধিত মূলধন থাকতে হবে।
+৮৯. The 8th five year plan of Bangladesh has been formulated for the period of
+ক. 2019-2024  |  খ. 2020-2024  |  গ. 2021-2026  |  ঘ. 2020-2025
+Ans. ঘ. 2020-2025
+ব্যাখ্যা: বাংলাদেশের অষ্টম পঞ্চবার্ষিক পরিকল্পনার মেয়াদকাল জুলাই ২০২০ জুন ২০২৫ পর্যন্ত বা ২০২১-২০২৫।
+৯০. Secured Overnight Financing Rate (SOFR) is a benchmark interest rate for-
+ক. Dollar-denominated derivatives
+খ. Dollar-denominated investments
+গ. Dollar-denominated loans
+ঘ. Both (a) and (b)
+Ans. ঘ. Both (a) and (b)
+ব্যাখ্যা: ১ জুলাই ২০২৩ বৈশ্বিক সুদহার নির্ধারণে নতুন মানদণ্ড Secured Overnight Financing Rate (SOFR) বৃহৎ পরিসরে চালু হয়।
+৯১. Which of the following computer language is written in Binary Codes only?
+ক. C+  |  খ. Machine language  |  গ. Pascal  |  ঘ. C
+Ans. খ. Machine language
+ব্যাখ্যা: ০ ও ১ এই দুই বাইনারি অঙ্ক ব্যবহার করে যে প্রোগ্রামিং করা হয় তাকে বলে Machine Language বা নিম্ন স্তরের ভাষা।
+৯২. Which of the following is the device used for converting maps, pictures and drawing into digital form for storage in computers?
+ক. Image scanner  |  খ. Digitizer  |  গ. MICR  |  ঘ. Scanner
+Ans. খ. Digitizer
+ব্যাখ্যা: Digitizer হলো এক ধরনের ইনপুট ডিভাইস যা গ্রাফ, ম্যাপ, বাড়ির নকশা, লেখা ইত্যাদি ইনপুট হিসেবে নেয় এবং তা ডিজিটাল ডেটায় পরিবর্তন করে।
+৯৩. What is the decimal equivalent of the binary number of 10111?
+ক. 21  |  খ. 42  |  গ. 39  |  ঘ. 23
+Ans. ঘ. 23
+ব্যাখ্যা: (10111)₂ = 1×2⁴ + 0×2³ + 1×2² + 1×2¹ + 1×2⁰ = 16+0+4+2+1 = 23।
+৯৪. The computer command of 'Ctrl + Alt + Delete' is applied to
+ক. Copy text  |  খ. Copy and paste text  |  গ. Change a password-...  |  ঘ. Shut down the computer
+Ans. খ. Copy and paste text
+ব্যাখ্যা: Windows 10 এবং 11 তে Ctrl + Alt + Delete বাটন চাপলে Lock, Switch user, Sign out, Change Password, task manager অপশনগুলো আসে।
+৯৫. -is not a form of data storage media.
+ক. Magnetic tape  |  খ. Optical disc  |  গ. Magnetic disc  |  ঘ. A database
+Ans. ঘ. A database
+ব্যাখ্যা: ডেটাবেজে ডেটা সংরক্ষণ ও পরিচালনার জন্য সফটওয়্যার প্রয়োজন হয়। অন্যদিকে Magnetic tape, Magnetic disc, Optical disk হার্ডওয়্যার স্টোরেজ মিডিয়া।
+৯৬. A harddisk drive can be directly connected to a PC via a -
+ক. SCSI interface  |  খ. WAN interface  |  গ. Parallel interface  |  ঘ. USB interface
+Ans. ক. SCSI interface
+ব্যাখ্যা: SCSI (Small Computer System Interface) এবং USB (Universal Serial Bus) interface দুটিই কম্পিউটারের সাথে পেরিফেরাল ডিভাইসের সংযোগস্থল। কিন্তু SCSI এর মাধ্যমে খুবই দ্রুত ডিভাইসগুলো যুক্ত হয়।
+৯৭. RAM is also called as
+ক. Virtual memory  |  খ. Non-volatile memory  |  গ. Volatile Memory  |  ঘ. Cache memory
+Ans. খ. Non-volatile memory
+ব্যাখ্যা: RAM-এর পূর্ণরূপ Random Access Memory। এটি কম্পিউটারের অস্থায়ী বা volatile বা উদ্বায়ী মেমোরি।
+৯৮. Which is a type of computing that performs computation, storage and even applications as a service across a network?
+ক. Parallel computing  |  খ. Distributed computing  |  গ. Cloud computing  |  ঘ. Virtual computing
+Ans. খ. Distributed computing
+ব্যাখ্যা: কম্পিউটার নেটওয়ার্ক সিস্টেমের মাধ্যমে বিভিন্ন কম্পিউটিং রিসোর্স যেমন- হার্ডওয়‍্যার এবং সফটওয়্যার ব্যবহার করার সার্ভিস বা সেবা প্রদান করাকে বলা হয় ক্লাউড কম্পিউটিং।
+৯৯. How many types of recipients are there in an e-mail system?
+ক. One  |  খ. Two  |  গ. Three  |  ঘ. Four
+Ans. গ. Three
+ব্যাখ্যা: e-mail system এ তিন ধরনের প্রাপক থাকে। যথা: i. target recipient, ii. Carbon recipients (CC) iii. Blind Carbon Copy (Bcc) recipients।
+১০০. Find the odd one among the following-
+ক. C++  |  খ. Linux  |  গ. Windows 10  |  ঘ. MacOS
+Ans. ক. C++
+ব্যাখ্যা: C++ একটি উচ্চ স্তরের প্রোগ্রামিং ভাষা। Windows 10, Linux, MacOS এগুলো হলো অপারেটিং সিস্টেম।
