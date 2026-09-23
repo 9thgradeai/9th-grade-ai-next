@@ -176,13 +176,7 @@ async function main() {
   });
   console.log(`✓ BANGLADESH_BANK ecosystem: id=${bb.id}`);
 
-  const oldSubjects = await prisma.subject.findMany({ where: { ecosystemId: bb.id } });
-  const oldIds = oldSubjects.map((s) => s.id);
-  if (oldIds.length > 0) {
-    await prisma.topic.deleteMany({ where: { subjectId: { in: oldIds } } });
-    await prisma.subject.deleteMany({ where: { id: { in: oldIds } } });
-    console.log(`  ✓ Removed ${oldIds.length} old BB subjects + topics`);
-  }
+  // Non-destructive: subjects are upserted below; never delete — deletes cascade to Question (Bank PYQs) via FK Cascade.
 
   let totalTopics = 0;
   for (const meta of BB_SUBJECTS) {
