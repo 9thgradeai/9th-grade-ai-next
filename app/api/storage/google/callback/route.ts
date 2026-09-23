@@ -15,10 +15,12 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Missing code/state", code: "VALIDATION_ERROR" }, { status: 400 });
   }
 
-  // Verify state from cookie
+  // Verify state + PKCE verifier from cookies
   const cookieHeader = request.headers.get("cookie") || "";
   const stateCookie = cookieHeader.split(";").find((c) => c.trim().startsWith("storage_oauth_state="))?.split("=")[1];
   const userCookie = cookieHeader.split(";").find((c) => c.trim().startsWith("storage_oauth_user="))?.split("=")[1];
+  const verifierCookie = cookieHeader.split(";").find((c) => c.trim().startsWith("storage_oauth_verifier="))?.split("=")[1];
+  const codeVerifier = verifierCookie ? decodeURIComponent(verifierCookie) : undefined;
 
   if (!stateCookie || decodeURIComponent(stateCookie) !== state) {
     return NextResponse.json({ error: "Invalid state (CSRF)", code: "CSRF_ERROR" }, { status: 403 });
@@ -31,7 +33,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const tokens = await exchangeCode(code);
+    const tokens = await exchangeCode(code, codeVerifier);
     const profile = await fetchGoogleProfile(tokens.access_token);
     await saveConnection(userId!, tokens as never, profile);
     // Enqueue initial migration for all user-owned entities (resumable, idempotent, verified before marking complete)
@@ -44,6 +46,7 @@ export async function GET(request: Request) {
     const res = NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL || ""}/dashboard?tab=settings&storage=connected`, 302);
     res.cookies.set("storage_oauth_state", "", { maxAge: 0, path: "/" });
     res.cookies.set("storage_oauth_user", "", { maxAge: 0, path: "/" });
+    res.cookies.set("storage_oauth_verifier", "", { maxAge: 0, path: "/" });
     return res;
   } catch (e) {
     const msg = (e as Error).message.slice(0, 200);

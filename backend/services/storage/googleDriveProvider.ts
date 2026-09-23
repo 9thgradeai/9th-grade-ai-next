@@ -6,27 +6,66 @@ const DRIVE_API = "https://www.googleapis.com/drive/v3";
 const UPLOAD_API = "https://www.googleapis.com/upload/drive/v3";
 
 async function driveFetch(url: string, token: string, init: RequestInit = {}): Promise<Response> {
-  const res = await fetch(url, {
-    ...init,
-    headers: { Authorization: `Bearer ${token}`, ...(init.headers as Record<string, string> || {}) },
-  });
-  if (res.status === 401) {
-    const e = new Error("Google token expired/revoked") as Error & { code: string };
-    e.code = "TOKEN_EXPIRED";
-    throw e;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 30_000);
+  try {
+    const res = await fetch(url, {
+      ...init,
+      signal: controller.signal,
+      headers: { Authorization: `Bearer ${token}`, ...(init.headers as Record<string, string> || {}) },
+    });
+    if (res.status === 401) {
+      const e = new Error("Google token expired/revoked") as Error & { code: string };
+      e.code = "TOKEN_EXPIRED";
+      throw e;
+    }
+    if (res.status === 403) {
+      const body = await res.text().catch(() => "");
+      const e = new Error(`Drive forbidden (revoked?): ${body.slice(0, 200)}`) as Error & { code: string };
+      e.code = "DRIVE_403";
+      throw e;
+    }
+    if (res.status === 404) {
+      const e = new Error("Drive file not found (deleted/moved)") as Error & { code: string };
+      e.code = "DRIVE_404";
+      throw e;
+    }
+    if (res.status === 409) {
+      const e = new Error("Drive conflict (concurrent modification)") as Error & { code: string };
+      e.code = "DRIVE_409";
+      throw e;
+    }
+    if (res.status === 429) {
+      const e = new Error("Drive quota exceeded") as Error & { code: string };
+      e.code = "QUOTA_EXCEEDED";
+      throw e;
+    }
+    if (res.status >= 500) {
+      const body = await res.text().catch(() => "");
+      const e = new Error(`Drive server error ${res.status}: ${body.slice(0, 200)}`) as Error & { code: string };
+      e.code = `DRIVE_${res.status}`;
+      throw e;
+    }
+    if (!res.ok) {
+      const body = await res.text().catch(() => "");
+      const e = new Error(`Drive API ${res.status}: ${body.slice(0, 300)}`) as Error & { code: string };
+      e.code = `DRIVE_${res.status}`;
+      throw e;
+    }
+    return res;
+  } catch (e) {
+    if ((e as Error).name === "AbortError") {
+      const err = new Error("Drive timeout (30s)") as Error & { code: string };
+      err.code = "TIMEOUT";
+      throw err;
+    }
+    if ((e as Error & { code?: string }).code) throw e;
+    const err = new Error(`Network failure: ${(e as Error).message}`) as Error & { code: string };
+    err.code = "NETWORK_ERROR";
+    throw err;
+  } finally {
+    clearTimeout(timeout);
   }
-  if (res.status === 429) {
-    const e = new Error("Drive quota exceeded") as Error & { code: string };
-    e.code = "QUOTA_EXCEEDED";
-    throw e;
-  }
-  if (!res.ok) {
-    const body = await res.text().catch(() => "");
-    const e = new Error(`Drive API ${res.status}: ${body.slice(0, 300)}`) as Error & { code: string };
-    e.code = `DRIVE_${res.status}`;
-    throw e;
-  }
-  return res;
 }
 
 export class GoogleDriveProvider implements StorageProvider {

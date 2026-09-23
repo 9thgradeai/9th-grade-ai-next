@@ -13,6 +13,20 @@ export const DRIVE_SCOPES = [
   "https://www.googleapis.com/auth/userinfo.profile",
 ].join(" ");
 
+export function validateOAuthConfig(): void {
+  const isProd = process.env.NODE_ENV === "production" || process.env.VERCEL_ENV === "production";
+  const required = ["GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "GOOGLE_OAUTH_ENCRYPTION_KEY", "NEXT_PUBLIC_APP_URL"] as const;
+  const missing = required.filter((k) => !process.env[k]);
+  if (isProd && missing.length > 0) {
+    throw new Error(`Missing required BYOS env vars in production: ${missing.join(", ")}`);
+  }
+  // Validate encryption key on startup (fail fast)
+  if (isProd) {
+    const { validateEncryptionConfig } = require("./encryption");
+    validateEncryptionConfig();
+  }
+}
+
 export function getOAuthConfig() {
   const clientId = process.env.GOOGLE_CLIENT_ID;
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
@@ -21,7 +35,14 @@ export function getOAuthConfig() {
   return { clientId, clientSecret, redirectUri };
 }
 
-export function buildAuthUrl(state: string): string {
+export function generatePKCE(): { verifier: string; challenge: string } {
+  const { randomBytes, createHash } = require("crypto");
+  const verifier = randomBytes(32).toString("base64url");
+  const challenge = createHash("sha256").update(verifier).digest("base64url");
+  return { verifier, challenge };
+}
+
+export function buildAuthUrl(state: string, codeChallenge?: string): string {
   const { clientId, redirectUri } = getOAuthConfig();
   const p = new URLSearchParams({
     client_id: clientId,
@@ -33,15 +54,21 @@ export function buildAuthUrl(state: string): string {
     state,
     include_granted_scopes: "false",
   });
+  if (codeChallenge) {
+    p.set("code_challenge", codeChallenge);
+    p.set("code_challenge_method", "S256");
+  }
   return `${GOOGLE_AUTH}?${p.toString()}`;
 }
 
-export async function exchangeCode(code: string): Promise<{ access_token: string; refresh_token?: string; expires_in: number; scope: string }> {
+export async function exchangeCode(code: string, codeVerifier?: string): Promise<{ access_token: string; refresh_token?: string; expires_in: number; scope: string }> {
   const { clientId, clientSecret, redirectUri } = getOAuthConfig();
+  const params: Record<string, string> = { code, client_id: clientId, client_secret: clientSecret, redirect_uri: redirectUri, grant_type: "authorization_code" };
+  if (codeVerifier) params.code_verifier = codeVerifier;
   const res = await fetch(GOOGLE_TOKEN, {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({ code, client_id: clientId, client_secret: clientSecret, redirect_uri: redirectUri, grant_type: "authorization_code" }),
+    body: new URLSearchParams(params),
   });
   if (!res.ok) throw new Error(`Token exchange failed ${res.status}: ${await res.text().then((t) => t.slice(0, 300))}`);
   return res.json();

@@ -132,12 +132,46 @@ export async function processOneJob(jobId: string): Promise<void> {
     const code = (err as Error & { code?: string }).code ?? "UNKNOWN";
     const msg = (err as Error).message.slice(0, 500);
     const attempts = (job.attempts ?? 0) + 1;
-    const isDead = attempts >= MAX_ATTEMPTS || ["NOT_CONNECTED", "TOKEN_EXPIRED", "REVOKED"].includes(code);
-    // Handle revoked/expired without retry storm
-    if (["TOKEN_EXPIRED", "REVOKED", "NOT_CONNECTED"].includes(code)) {
+    // Classify error for retry policy
+    const isAuth = ["NOT_CONNECTED", "TOKEN_EXPIRED", "REVOKED", "DRIVE_401", "DRIVE_403"].includes(code);
+    const isQuota = code === "QUOTA_EXCEEDED" || code === "DRIVE_429";
+    const isNotFound = code === "DRIVE_404";
+    const isConflict = code === "DRIVE_409";
+    const isServer = code.startsWith("DRIVE_5") || code === "NETWORK_ERROR" || code === "TIMEOUT";
+    const isIntegrity = ["CHECKSUM_MISMATCH", "VERIFY_FAILED", "CORRUPTED"].includes(code);
+    const isDead = attempts >= MAX_ATTEMPTS || isAuth || isIntegrity;
+
+    // Observability (never log tokens)
+    try {
+      const { logSyncFailure } = await import("./observability");
+      logSyncFailure(job.userId, job.entityType, code, attempts);
+    } catch {}
+
+    if (isAuth) {
       await prisma.syncJob.update({ where: { id: jobId }, data: { status: "FAILED", lastError: msg, lastErrorCode: code, nextRetryAt: new Date(Date.now() + 60_000), processingLock: null } });
-      if (code === "TOKEN_EXPIRED") {
+      if (code === "TOKEN_EXPIRED" || code === "DRIVE_401") {
         await prisma.storageConnection.updateMany({ where: { userId: job.userId }, data: { status: "EXPIRED", lastError: msg } });
+      } else if (code === "REVOKED" || code === "DRIVE_403") {
+        await prisma.storageConnection.updateMany({ where: { userId: job.userId }, data: { status: "REVOKED", lastError: msg } });
+      }
+      return;
+    }
+    if (isQuota) {
+      // Quota: longer backoff (60s * attempt), don't dead-letter quickly
+      const quotaBackoff = Math.min(300_000, 60_000 * attempts + Math.random() * 10_000);
+      await prisma.syncJob.update({ where: { id: jobId }, data: { status: "FAILED", lastError: msg, lastErrorCode: code, nextRetryAt: new Date(Date.now() + quotaBackoff), processingLock: null } });
+      return;
+    }
+    if (isNotFound) {
+      // File deleted/moved — next sync will recreate (upload as new), so retry soon
+      await prisma.syncJob.update({ where: { id: jobId }, data: { status: "FAILED", lastError: msg, lastErrorCode: code, nextRetryAt: new Date(Date.now() + 5_000), processingLock: null } });
+      return;
+    }
+    if (isConflict || isServer) {
+      if (isDead) {
+        await prisma.syncJob.update({ where: { id: jobId }, data: { status: "DEAD_LETTER", lastError: msg, lastErrorCode: code, processingLock: null } });
+      } else {
+        await prisma.syncJob.update({ where: { id: jobId }, data: { status: "FAILED", lastError: msg, lastErrorCode: code, nextRetryAt: new Date(Date.now() + backoffMs(attempts)), processingLock: null } });
       }
       return;
     }

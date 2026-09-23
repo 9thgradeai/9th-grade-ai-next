@@ -54,24 +54,28 @@ Rule: Do not migrate merely because user-related. Operational history stays in P
 
 ## 4. Services / Workers
 
-- `backend/services/storage/encryption.ts` — AES-256-GCM `encryptToken/decryptToken` with key `GOOGLE_OAUTH_ENCRYPTION_KEY || AUTH_SECRET` (SHA-256 derived), `hashForLog` (no token logging)
-- `backend/services/storage/connection.ts` — `DRIVE_SCOPES = drive.file + userinfo.email/profile` (least-privilege, app folder `/9Th-Grade AI/` via `drive.file`), `buildAuthUrl(state)`, `exchangeCode`, `refreshAccessToken`, `fetchGoogleProfile`, `getValidAccessToken` (decrypt, refresh if <60s, mark EXPIRED on failure), `saveConnection` (upsert, encrypt)
+- `backend/services/storage/encryption.ts` — AES-256-GCM `encryptToken/decryptToken` versioned `v1:iv:tag:ciphertext`, key `GOOGLE_OAUTH_ENCRYPTION_KEY` (prod requires dedicated, no fallback to `AUTH_SECRET`), `CURRENT_KEY_VERSION=1`, `validateEncryptionConfig()` fail-fast, `reencryptIfNeeded` for rotation, `hashForLog` (no token logging)
+- `backend/services/storage/connection.ts` — `DRIVE_SCOPES = drive.file + userinfo.email/profile` (least-privilege, app folder `/9Th-Grade AI/` via `drive.file`), `generatePKCE()` (S256), `buildAuthUrl(state, codeChallenge)`, `exchangeCode(code, codeVerifier)` with PKCE, `refreshAccessToken`, `fetchGoogleProfile`, `getValidAccessToken` (decrypt, refresh if <60s, mark EXPIRED/REVOKED), `saveConnection` (upsert, encrypt), `validateOAuthConfig()` (prod requires `GOOGLE_CLIENT_ID/SECRET/ENCRYPTION_KEY/NEXT_PUBLIC_APP_URL`)
 - `backend/services/storage/googleDriveProvider.ts` — `GoogleDriveProvider` implements `StorageProvider`: `ensureRootFolder`, `findFile`, `uploadJson` (multipart, 10MB limit, checksum), `downloadJson` (JSON validate), `verifyFile`, handles `401 TOKEN_EXPIRED`, `429 QUOTA_EXCEEDED`, `drive_*` errors
 - `backend/services/storage/dataFormat.ts` — `CURRENT_SCHEMA_VERSION=1`, `canonicalStringify`, `computeChecksum (sha256)`, `createEnvelope<T>`, `verifyEnvelope`, `migrateEnvelope`, normalizers (`normalizeBookmarks` etc.) — never raw Prisma
-- `backend/services/storage/syncService.ts` — `enqueueSync` (idempotencyKey = sha256(user|entity|payload|time|rand)), `buildEntityPayload` (normalized), `processOneJob` (claim with `processingLock`, backoff `2^attempt + jitter max 60s`, bounded concurrency, timeout via `lockedAt 60s`, checksum verify, transaction, dead-letter after 5), `processPendingJobs(limit=5)` (polling)
+- `backend/services/storage/syncService.ts` — `enqueueSync` (idempotencyKey = sha256(user|entity|payload|time|rand)), `buildEntityPayload` (normalized, deterministic, 10MB limit, Bangla/English/math symbols safe), `processOneJob` (atomic `UPDATE ... WHERE (processingLock IS NULL OR lockedAt < now-60s)` claim, idempotent, `payloadHash` vs `checksum` separation, bounded `limit 5`, `lockedAt` reclaim, no unbounded loop, `createEnvelope` + `verifyEnvelope` + `upload` + `verifyFile`, transaction, dead-letter after 5, handles 401/403/404/409/429/5xx/timeout with backoff `2^attempt+jitter` + quota 60s*attempt, `isAuth` → `EXPIRED/REVOKED` no storm), `processPendingJobs(limit=5)` (finite batch, persist, exit)
+- `backend/services/storage/restoreService.ts` — Drive→PG pipeline: `download` → ownership `userId/path` validate → JSON parse → `envelope` field check → `checksum` `computeChecksum` → `migrateEnvelope` (future v1→v2) → `verifyEnvelope` → version compare (`driveVersion < pgVersion` → `conflict` 409, no silent overwrite) → transactional `bookmark`/`prefs` update + `StorageFile` + `StorageRevision` audit → `success`/`conflict`/`no_file`/`error` (malformed, unsupported schema, corrupted, deleted/moved, stale, duplicate, partial → rollback)
+- `backend/services/storage/googleDriveProvider.ts` — 30s timeout `AbortController`, maps `401 TOKEN_EXPIRED`, `403 DRIVE_403`, `404 DRIVE_404`, `409 DRIVE_409`, `429 QUOTA_EXCEEDED`, `5xx DRIVE_5xx`, `TIMEOUT`, `NETWORK_ERROR`, validates JSON, 10MB limit, checksum
 - `backend/services/storage/observability.ts` — `logEvent` JSON, `logOAuthSuccess/Failure`, `logSyncSuccess/Failure` (existing pino if present, never tokens)
 
 ## 5. APIs
 
 All under `/api/storage/*`, `getUserIdFromRequest` + `assertSameOrigin` + `assertSubmitAllowed` + `validate*` + `toHttpResponse` + `X-Request-Id`:
 
-- `GET /api/storage/google/connect` — 302 to Google, state 24B base64url, `storage_oauth_state` + `storage_oauth_user` HttpOnly SameSite Lax 600s
-- `GET /api/storage/google/callback` — verify state/CSRF + user binding, exchange, profile, `saveConnection`, enqueue initial migration (`BOOKMARKS,FLASHCARD_STATE,VOCAB_PROGRESS,USER_PREFERENCES`), redirect `?storage=connected`
-- `GET /api/storage/status` — `connected, status, googleEmail/name, rootFolder, lastSync*, pending/failed count, files[]` (metadata only)
-- `POST /api/storage/disconnect` — delete connection, mark pending jobs `DEAD_LETTER`
+- `GET /api/storage/google/connect` — 302 to Google, state 24B base64url + PKCE `code_challenge S256`, `storage_oauth_state` + `storage_oauth_user` + `storage_oauth_verifier` HttpOnly SameSite Lax 600s (secure in prod)
+- `GET /api/storage/google/callback` — verify state/CSRF + user binding + PKCE verifier, handle `error=access_denied` (OAuth denial), exchange with `code_verifier`, profile, `saveConnection`, enqueue initial migration (`BOOKMARKS,FLASHCARD_STATE,VOCAB_PROGRESS,USER_PREFERENCES`), clear cookies, redirect `?storage=connected` or `?storage_error`
+- `GET /api/storage/status` — `connected, status, googleEmail/name, rootFolder, lastSync*, pending/failed count, files[]` (metadata only, never tokens)
+- `POST /api/storage/disconnect` — delete `StorageConnection` (PG preserved, Drive files NOT deleted), mark pending `DEAD_LETTER`, UI explains semantics
 - `GET /api/storage/sync` — list last 10 jobs
-- `POST /api/storage/sync` — `enqueueSync` for `entityType` or `all`, then fire-and-forget `processPendingJobs(3)` (never blocks), rate-limited
-- `POST /api/storage/worker` — cron (Bearer `CRON_SECRET` or `x-vercel-cron:1`), `processPendingJobs(10)`
+- `POST /api/storage/sync` — `enqueueSync` for `entityType` or `all`, then fire-and-forget `processPendingJobs(3)` (never blocks), rate-limited, idempotent
+- `POST /api/storage/worker` — cron `*/5 * * * *` via `vercel.json`, Bearer `CRON_SECRET` or `x-vercel-cron:1`, `processPendingJobs(10)`, bounded, `vercel.json` cron
+- `POST /api/storage/restore` — Drive→PG: `entityType` or `all`, ownership/file identity, JSON/schema, checksum, migration, version compare → `success`/`conflict` (409) / `no_file` (404) / `error` (400), transactional, audit `StorageRevision`, never blind import
+- `GET /api/storage/export` / `POST /api/storage/import` — manual envelope export (attachment) / import validation (checksum, schema, user isolation, no auto-apply)
 
 Never expose secrets/tokens to browser, never log credentials.
 
