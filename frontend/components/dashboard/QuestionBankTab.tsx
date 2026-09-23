@@ -101,6 +101,8 @@ export default function QuestionBankTab() {
   // Load categories + bookmarks from the DB (fallback to static data).
   useEffect(() => {
     let cancelled = false;
+    // Reset stale category/practice state when ecosystem toggles (BCS <-> Bank)
+    setPracticeMode("none");
     void (async () => {
       try {
         const [cats, bk] = await Promise.all([
@@ -108,7 +110,12 @@ export default function QuestionBankTab() {
           api.bookmarks().catch(() => []),
         ]);
         if (!cancelled) {
-          if (cats && cats.length) setCategories(cats);
+          if (cats && cats.length) {
+            setCategories(cats);
+            // If current category doesn't exist in new ecosystem, switch to first available
+            const exists = cats.some((c) => c.label === activeCategory);
+            if (!exists) setActiveCategory(cats[0].label);
+          }
           setBookmarks(bk ?? []);
         }
       } catch {

@@ -456,6 +456,7 @@ export function validateQuestionSearchParams(params: URLSearchParams): QuestionS
     "sourceExam",
     "bcsTerm",
     "paperId",
+    "ecosystem",
   ];
   const unexpected = [...params.keys()].filter((k) => !allowedParams.includes(k));
   if (unexpected.length > 0) {

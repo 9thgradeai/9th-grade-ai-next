@@ -70,7 +70,7 @@ export default function ExamLibraryView() {
     setDrilling(false);
     setLoadingQuestions(true);
     try {
-      const qs = await api.questions({ paperId: paper.id, limit: 200 });
+      const qs = await api.questions({ paperId: paper.id, limit: 200, ecosystem });
       setQuestions(qs);
     } catch {
       setQuestions([]);
