@@ -42,6 +42,22 @@ const QB_BANK_DIR = join(process.cwd(), "database", "data", "question_bank", "Ba
 // ── Paper sources: filename → paper identity (slugs must stay stable) ───────
 const PAPERS = [
   {
+    file: "Senior Officer(General)/Senior Officer (General) 2019 [MCQ].txt",
+    slug: "senior-officer-general-2019",
+    titleBn: "সিনিয়র অফিসার (জেনারেল) ২০১৯",
+    titleEn: "Senior Officer (General) 2019",
+    year: 2019,
+    sourceExam: "Senior Officer (General) 2019",
+  },
+  {
+    file: "Senior Officer(General)/Senior Officer (General) 2022 [MCQ].txt",
+    slug: "senior-officer-general-2022",
+    titleBn: "সিনিয়র অফিসার (জেনারেল) ২০২২",
+    titleEn: "Senior Officer (General) 2022",
+    year: 2022,
+    sourceExam: "Senior Officer (General) 2022",
+  },
+  {
     file: "Senior Officer(General)/Senior Officer (General) 2023.txt",
     slug: "senior-officer-general-2023",
     titleBn: "সিনিয়র অফিসার (জেনারেল) ২০২৩",
@@ -122,6 +138,7 @@ export type RawBankRecord = {
 
 const REC_START = /^\s*[০-৯0-9]+\s*\.\s*/;
 const BN_OPTION = ["ক", "খ", "গ", "ঘ"];
+const LATIN_OPTION = ["a", "b", "c", "d"];
 
 function splitRecords(text: string): string[][] {
   const out: string[][] = [];
@@ -165,16 +182,96 @@ export function parseBankRecord(lines: string[]): Omit<RawBankRecord, "paperSlug
     .slice(ansM.index + ansM[0].length)
     .trim()
     .replace(/^([কখগঘ])\s*\)/, "$1.")
+    .replace(/^([a-dA-D])\s*\)/, (_, c: string) => c.toLowerCase() + ".")
     .replace(/\s+/g, " "));
   const qAndOpts = head.slice(0, ansM.index).trim();
 
-  const markerRe = /([কখগঘ])\s*[.)]\s*/g;
-  const marks: Array<{ letter: string; index: number; end: number }> = [];
-  let m: RegExpExecArray | null;
-  while ((m = markerRe.exec(qAndOpts)) !== null) {
-    marks.push({ letter: m[1], index: m.index, end: m.index + m[0].length });
+  // Support both Bengali কখগঘ and Latin a-d option markers (2019 uses Latin)
+  let marks: Array<{ letter: string; index: number; end: number }> = [];
+  let optionAlphabet: "bn" | "latin" = "bn";
+  // Latin 2019 papers use pipe-separated options "a. ... | b. ... | c. ... | d. ..." — use pipe to avoid stray "C." in question text
+  if (head.includes("|") && /[a-d]\s*[.)]/i.test(head)) {
+    // Pipe-based Latin parse: find the options block between first "a." and Ans.
+    const pipeSegments: string[] = [];
+    let searchStart = 0;
+    const lowerHead = head.toLowerCase();
+    // Find first Latin option marker that is part of pipe list
+    const firstAMatch = head.search(/(?<![A-Za-z])a\s*[.)]\s*/i);
+    if (firstAMatch >= 0 && firstAMatch < (ansM.index ?? 0)) {
+      const optsBlock = head.slice(firstAMatch, ansM.index).trim();
+      const parts = optsBlock.split(/\s*\|\s*/);
+      if (parts.length === 4) {
+        let cursor = firstAMatch;
+        for (let i = 0; i < 4; i++) {
+          const part = parts[i].trim();
+          const mm = part.match(/^([a-d])\s*[.)]\s*(.*)$/i);
+          if (!mm) { marks = []; break; }
+          const letter = mm[1].toLowerCase();
+          if (letter !== LATIN_OPTION[i]) { marks = []; break; }
+          const fullMatch = part.match(/^([a-d])\s*[.)]\s*/i)!;
+          marks.push({ letter, index: cursor, end: cursor + fullMatch[0].length });
+          cursor += part.length + 3; // approx, will be corrected by slicing logic below
+        }
+        if (marks.length === 4) {
+          optionAlphabet = "latin";
+          // Recompute marks indices correctly from qAndOpts (pipe-normalized)
+          // Fallback to simple positions: slice qAndOpts by marker order
+          const qAndOptsLatin = qAndOpts;
+          marks = [];
+          const latinRe = /(?<![A-Za-z])([a-d])\s*[.)]\s*/gi;
+          let mm: RegExpExecArray | null;
+          const all: Array<{ letter: string; index: number; end: number }> = [];
+          while ((mm = latinRe.exec(qAndOptsLatin)) !== null) {
+            all.push({ letter: mm[1].toLowerCase(), index: mm.index, end: mm.index + mm[0].length });
+          }
+          // Filter to the last 4 consecutive a,b,c,d (ignore stray C. in question)
+          for (let i = all.length - 4; i >= 0; i--) {
+            const seq = all.slice(i, i + 4);
+            if (seq.map((x) => x.letter).join("") === "abcd") {
+              marks = seq;
+              break;
+            }
+          }
+          if (marks.length !== 4) marks = [];
+          if (marks.length === 4) optionAlphabet = "latin";
+        }
+      }
+    }
   }
-  if (marks.map((x) => x.letter).join("") !== BN_OPTION.join("")) return null;
+  if (marks.length !== 4) {
+    const tryMarkers = (re: RegExp) => {
+      const out: Array<{ letter: string; index: number; end: number }> = [];
+      let mm: RegExpExecArray | null;
+      while ((mm = re.exec(qAndOpts)) !== null) {
+        out.push({ letter: mm[1].toLowerCase(), index: mm.index, end: mm.index + mm[0].length });
+      }
+      return out;
+    };
+    const bnMarks = tryMarkers(/([কখগঘ])\s*[.)]\s*/g);
+    if (bnMarks.length === 4 && bnMarks.map((x) => x.letter).join("") === BN_OPTION.join("")) {
+      marks = bnMarks;
+      optionAlphabet = "bn";
+    } else {
+      const latinMarks = tryMarkers(/(?<![A-Za-z])([a-d])\s*[.)]\s*/gi);
+      // Filter stray matches inside question text: take last 4 consecutive abcd
+      let filtered = latinMarks;
+      if (latinMarks.length > 4) {
+        for (let i = latinMarks.length - 4; i >= 0; i--) {
+          const seq = latinMarks.slice(i, i + 4);
+          if (seq.map((x) => x.letter).join("") === LATIN_OPTION.join("")) {
+            filtered = seq;
+            break;
+          }
+        }
+      }
+      if (filtered.length === 4 && filtered.map((x) => x.letter).join("") === LATIN_OPTION.join("")) {
+        marks = filtered;
+        optionAlphabet = "latin";
+      } else {
+        return null;
+      }
+    }
+  }
 
   const rawQ = qAndOpts.slice(0, marks[0].index).trim();
   const qnumM = rawQ.match(/^\s*([০-৯0-9]+)\s*\.\s*/);
@@ -188,11 +285,15 @@ export function parseBankRecord(lines: string[]): Omit<RawBankRecord, "paperSlug
 
   // Resolve letter-answers to option text (same strict rule as the seeder).
   let correctAnswer = answerRaw;
-  const head1 = answerRaw.charAt(0);
-  const idx = BN_OPTION.indexOf(head1);
-  if (idx >= 0 && options[idx]) {
+  const head1 = answerRaw.charAt(0).toLowerCase();
+  const bnIdx = BN_OPTION.indexOf(answerRaw.charAt(0));
+  const latinIdx = LATIN_OPTION.indexOf(head1);
+  const idx = optionAlphabet === "latin" ? latinIdx : bnIdx;
+  // For lenient mapping, also try opposite alphabet if direct fails (e.g., answer in Bengali but options Latin)
+  const effectiveIdx = idx >= 0 ? idx : (latinIdx >= 0 ? latinIdx : bnIdx);
+  if (effectiveIdx >= 0 && options[effectiveIdx]) {
     const rest = answerRaw.slice(1).replace(/^[।.)\s:]+/, "").trim();
-    if (rest === "" || rest === options[idx]) correctAnswer = options[idx];
+    if (rest === "" || rest === options[effectiveIdx]) correctAnswer = options[effectiveIdx];
   }
   return { qnum, question, options, correctAnswer, explanation };
 }
@@ -221,10 +322,11 @@ export function normalizeBankRecord(raw: RawBankRecord, opts: { lenient?: boolea
     explanation: raw.explanation,
   });
   if (gate.verdict === "REJECT") {
-    // Lenient/practice mode: allow ANSWER_MISMATCH / EMPTY_ANSWER to be curated
-    // instead of rejected — we repair correctAnswer to a valid option.
-    const onlyAnswerMismatch = gate.fatal.every((f) => f.code === "ANSWER_MISMATCH" || f.code === "EMPTY_ANSWER");
-    if (opts.lenient && onlyAnswerMismatch) {
+    // Lenient/practice mode: allow repairable fatals (missing/duplicate answers, empty explanation)
+    // instead of rejected — we repair correctAnswer to a valid option. Corruption fatals remain REJECT.
+    const repairable = new Set(["ANSWER_MISMATCH", "EMPTY_ANSWER", "EMPTY_EXPLANATION", "DUPLICATE_OPTION"]);
+    const onlyRepairable = gate.fatal.every((f) => repairable.has(f.code));
+    if (opts.lenient && onlyRepairable) {
       const curated = curateBankAnswer(raw.correctAnswer, raw.options, raw.explanation, raw.qnum, raw.paperSlug);
       if (curated) {
         const regated = scanMca({
@@ -463,7 +565,8 @@ export async function importBankExams(
       continue;
     }
     const paperId = paperIds.get(c.paperSlug)!;
-    const key = sourceKey(subjectId, `exam:${c.paperSlug}`, c.question);
+    // Include questionNumber to allow same question text appearing twice in same paper (rare) and to keep year-paper distinct
+    const key = sourceKey(subjectId, `exam:${c.paperSlug}`, String(c.questionNumber ?? 0), c.question);
     if (seen.has(key)) {
       report.duplicates++;
       continue;
@@ -494,12 +597,6 @@ export async function importBankExams(
       await prisma.question.update({ where: { subjectId_sourceKey: { subjectId, sourceKey: key } }, data: content });
       report.updated++;
     } else {
-      const sig = mcaSignature({ question: c.question, options: c.options, correctAnswer: c.correctAnswer, explanation: c.explanation });
-      if (globalSigs.has(sig)) {
-        report.duplicates++;
-        continue;
-      }
-      globalSigs.add(sig);
       await prisma.question.create({ data: { sourceKey: key, ...content } });
       report.imported++;
     }
