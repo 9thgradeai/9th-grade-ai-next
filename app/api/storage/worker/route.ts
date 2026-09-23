@@ -15,6 +15,12 @@ export async function POST(request: Request) {
   return NextResponse.json({ processed: count });
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+  // Vercel Cron does GET with x-vercel-cron:1 — process jobs in that case
+  const isVercelCron = request.headers.get("x-vercel-cron") === "1";
+  if (isVercelCron) {
+    const count = await processPendingJobs(10);
+    return NextResponse.json({ processed: count, via: "cron" });
+  }
   return NextResponse.json({ ok: true, message: "Worker endpoint — POST to process" });
 }
