@@ -9,7 +9,6 @@ import { useToastSafe } from "@/lib/toast-ctx";
 import { api } from "@/lib/services/api";
 import { useEcosystem } from "@/lib/ecosystem-ctx";
 import type { QuestionDTO } from "@/lib/types";
-import QuestionDrill from "./QuestionDrill";
 import ScrollPractice from "./ScrollPractice";
 import ExamLibraryView from "./ExamLibraryView";
 
@@ -249,9 +248,9 @@ export default function QuestionBankTab() {
 
   if (drilling && savedQuestions.length > 0) {
     return (
-      <QuestionDrill
+      <ScrollPractice
         questions={savedQuestions}
-        title="সংরক্ষিত প্রশ্ন"
+        title="সংরক্ষিত প্রশ্ন — স্ক্রল প্র্যাকটিস"
         onExit={() => setDrilling(false)}
       />
     );

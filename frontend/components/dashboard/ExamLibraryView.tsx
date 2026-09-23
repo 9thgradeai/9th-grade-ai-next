@@ -6,7 +6,7 @@ import { CaretRight, GridFour, BookOpen, Clock, ListChecks, Play, Calendar, Shuf
 import { api } from "@/lib/services/api";
 import { useEcosystem } from "@/lib/ecosystem-ctx";
 import type { ExamCategoryDTO, ExamDTO, ExamPaperDTO, QuestionDTO } from "@/lib/types";
-import QuestionDrill from "./QuestionDrill";
+import ScrollPractice from "./ScrollPractice";
 
 type PaperSelection = {
   paper: ExamPaperDTO;
@@ -127,12 +127,20 @@ export default function ExamLibraryView() {
     const { paper, exam, category } = selection;
     if (drilling) {
       return (
-        <QuestionDrill
-          key={`paper-${paper.id}`}
-          questions={questions}
-          title={paper.titleBn}
-          onExit={() => setDrilling(false)}
-        />
+        <div className="space-y-4">
+          <button
+            onClick={() => setDrilling(false)}
+            className="text-xs font-mono text-[var(--dashboard-text-muted)] hover:text-[var(--dashboard-text-secondary)] transition-colors"
+          >
+            ← পেপারে ফিরে যান
+          </button>
+          <ScrollPractice
+            key={`paper-${paper.id}`}
+            questions={questions}
+            title={`${paper.titleBn} — স্ক্রল প্র্যাকটিস (${questions.length} প্রশ্ন)`}
+            onExit={() => setDrilling(false)}
+          />
+        </div>
       );
     }
     return (
