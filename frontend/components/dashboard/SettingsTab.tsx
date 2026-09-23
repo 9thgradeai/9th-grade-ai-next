@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { User, Envelope, At, Calendar, Key, ShieldCheck, Bell, Sun, Moon, Download, Trash, Database, Info, CheckCircle, Warning, X, Pencil, Spinner, DeviceMobile, ArrowCounterClockwise, PencilSimple } from "@phosphor-icons/react";
+import DataStorageCard from "./DataStorageCard";
 import { useAuth } from "@/lib/auth-ctx";
 import { useDashboardTheme } from "@/lib/dashboard-theme-ctx";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
@@ -489,6 +490,9 @@ export default function SettingsTab() {
           </div>
         </div>
       </SectionCard>
+
+      {/* BYOS: Data & Storage — User-Owned Google Drive */}
+      <DataStorageCard />
 
       {/* Session & data */}
       <SectionCard

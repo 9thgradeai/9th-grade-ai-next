@@ -45,6 +45,8 @@ export async function POST(request: Request) {
     const questionId = validatePositiveInteger(rawQuestionId, "questionId");
 
     const result = await toggleBookmark(userId, questionId);
+    // BYOS: durable outbox — never block critical request, never expose Drive
+    void import("~backend/services/storage/syncService").then((m) => m.enqueueSync({ userId, entityType: "BOOKMARKS" }).catch(() => {})).catch(() => {});
     const res = NextResponse.json(result);
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");

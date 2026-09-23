@@ -238,6 +238,11 @@ model User {
   vocabDecks              UserVocabDeck[]
   createdDecks            VocabDeck[]
 
+  storageConnection       StorageConnection?
+  storageFiles            StorageFile[]
+  syncJobs                SyncJob[]
+  storageRevisions        StorageRevision[]
+
   // NOTE: `email` and `handle` are @unique — their backing indexes already
   // serve lookups; explicit duplicates were removed (write amplification).
 }
@@ -1221,4 +1226,128 @@ model UserVocabDeck {
 
   @@unique([userId, deckId])
   @@index([userId])
+}
+
+// ── BYOS: User-Owned Storage (Google Drive) ───────────────────────────────
+enum StorageProviderType {
+  GOOGLE_DRIVE
+}
+
+enum StorageConnectionStatus {
+  CONNECTED
+  EXPIRED
+  REVOKED
+  ERROR
+}
+
+enum SyncJobStatus {
+  PENDING
+  PROCESSING
+  SUCCEEDED
+  FAILED
+  DEAD_LETTER
+}
+
+enum SyncEntityType {
+  BOOKMARKS
+  FLASHCARD_STATE
+  VOCAB_PROGRESS
+  MISTAKE_NOTES
+  USER_PREFERENCES
+  EXAM_ARCHIVE
+}
+
+model StorageConnection {
+  id                    String                   @id @default(cuid())
+  userId                String                   @unique
+  user                  User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider              StorageProviderType      @default(GOOGLE_DRIVE)
+  status                StorageConnectionStatus  @default(CONNECTED)
+  googleAccountId       String?
+  googleEmail           String?
+  googleName            String?
+  accessTokenEnc        String?                  @db.Text
+  refreshTokenEnc       String?                  @db.Text
+  tokenExpiresAt        DateTime?
+  scope                 String?
+  rootFolderId          String?
+  rootFolderName        String                   @default("9Th-Grade AI")
+  lastSyncAt            DateTime?
+  lastSyncSuccessAt     DateTime?
+  lastError             String?                  @db.Text
+  createdAt             DateTime                 @default(now())
+  updatedAt             DateTime                 @updatedAt
+
+  files                 StorageFile[]
+  jobs                  SyncJob[]
+
+  @@index([provider, status])
+}
+
+model StorageFile {
+  id              String         @id @default(cuid())
+  userId          String
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  connectionId    String
+  connection      StorageConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  entityType      SyncEntityType
+  driveFileId     String?
+  path            String         // e.g. /9Th-Grade AI/bookmarks/v1.json
+  schemaVersion   Int            @default(1)
+  version         Int            @default(1)
+  checksum        String?
+  mimeType        String         @default("application/json")
+  sizeBytes       Int?
+  lastSyncedAt    DateTime?
+  lastVerifiedAt  DateTime?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@unique([userId, path])
+  @@index([connectionId, entityType])
+  @@index([driveFileId])
+}
+
+model SyncJob {
+  id              String          @id @default(cuid())
+  userId          String
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  connectionId    String?
+  connection      StorageConnection? @relation(fields: [connectionId], references: [id], onDelete: SetNull)
+  entityType      SyncEntityType
+  operation       String          @default("UPSERT") // UPSERT, DELETE, MIGRATE, RESTORE
+  idempotencyKey  String          @unique
+  payloadHash     String?
+  status          SyncJobStatus   @default(PENDING)
+  attempts        Int             @default(0)
+  maxAttempts     Int             @default(5)
+  nextRetryAt     DateTime?       @default(now())
+  lastError       String?         @db.Text
+  lastErrorCode   String?
+  driveFileId     String?
+  resultChecksum  String?
+  processingLock  String?         // worker lock token
+  lockedAt        DateTime?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  completedAt     DateTime?
+
+  @@index([userId, status, nextRetryAt])
+  @@index([connectionId, status])
+  @@index([entityType, status])
+}
+
+model StorageRevision {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entityType    SyncEntityType
+  version       Int
+  checksum      String
+  driveFileId   String?
+  path          String
+  createdAt     DateTime @default(now())
+
+  @@unique([userId, entityType, version])
+  @@index([userId, entityType, createdAt])
 }

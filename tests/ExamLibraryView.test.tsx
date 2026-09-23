@@ -110,7 +110,7 @@ describe("ExamLibraryView", () => {
     await waitFor(() => {
       expect(screen.getByText("প্রশ্ন এক?")).toBeInTheDocument();
     });
-    expect(api.questions).toHaveBeenCalledWith({ paperId: 50, limit: 200 });
+    expect(api.questions).toHaveBeenCalledWith({ paperId: 50, limit: 200, ecosystem: "BCS" });
   });
 
   it("shows an empty state when no exam library exists", async () => {

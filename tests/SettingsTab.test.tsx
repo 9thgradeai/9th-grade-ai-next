@@ -50,6 +50,10 @@ vi.mock("@/lib/services/api", () => ({
   },
 }));
 
+vi.mock("@/components/dashboard/DataStorageCard", () => ({
+  default: () => <div data-testid="data-storage-mock">Data & Storage</div>,
+}));
+
 describe("SettingsTab", () => {
   beforeEach(() => {
     vi.clearAllMocks();
