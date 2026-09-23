@@ -10,6 +10,7 @@ import { api } from "@/lib/services/api";
 import { useEcosystem } from "@/lib/ecosystem-ctx";
 import type { QuestionDTO } from "@/lib/types";
 import QuestionDrill from "./QuestionDrill";
+import ScrollPractice from "./ScrollPractice";
 import ExamLibraryView from "./ExamLibraryView";
 
 // Static fallback sample questions (used if the DB/API is unavailable).
@@ -84,6 +85,7 @@ export default function QuestionBankTab() {
   const [drilling, setDrilling] = useState(false);
   const [savedQuestions, setSavedQuestions] = useState<QuestionDTO[]>([]);
   const [browseMode, setBrowseMode] = useState<"subject" | "exam">("subject");
+  const [practiceMode, setPracticeMode] = useState<"none" | "scroll">("none");
   // Widened to `string` so comparisons in the toggle survive TS control-flow
   // narrowing after the exam-mode early return above.
   const mode: string = browseMode;
@@ -248,6 +250,25 @@ export default function QuestionBankTab() {
     );
   }
 
+  // Scroll-based practice for the current filtered set (BCS/Bank aware via ecosystem)
+  if (practiceMode === "scroll" && visibleQuestions.length > 0) {
+    return (
+      <div className="space-y-4">
+        <button
+          onClick={() => setPracticeMode("none")}
+          className="text-xs font-mono text-[var(--dashboard-text-muted)] hover:text-[var(--dashboard-text-secondary)] transition-colors"
+        >
+          ← প্রশ্ন তালিকায় ফিরে যান
+        </button>
+        <ScrollPractice
+          questions={visibleQuestions}
+          title={`${activeCategory} — স্ক্রল প্র্যাকটিস (${ecosystem === "BANGLADESH_BANK" ? "ব্যাংক" : "BCS"})`}
+          onExit={() => setPracticeMode("none")}
+        />
+      </div>
+    );
+  }
+
   const isExamBrowse = browseMode === "exam";
   if (isExamBrowse) {
     return <ExamLibraryView />;
@@ -333,6 +354,14 @@ export default function QuestionBankTab() {
             className="px-3 py-1.5 rounded-full text-xs font-mono border border-[var(--accent)]/30 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] hover:bg-[var(--dashboard-primary-subtle)] transition-all flex items-center gap-1.5"
           >
             <Play className="w-3.5 h-3.5" /> প্র্যাকটিস
+          </button>
+        )}
+        {view === "all" && visibleQuestions.length > 0 && (
+          <button
+            onClick={() => setPracticeMode("scroll")}
+            className="px-3 py-1.5 rounded-full text-xs font-mono border border-[var(--accent)]/30 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] hover:bg-[var(--accent-hover)] transition-all flex items-center gap-1.5 shadow-neon-glow"
+          >
+            <Play className="w-3.5 h-3.5" /> স্ক্রল প্র্যাকটিস — {visibleQuestions.length} প্রশ্ন
           </button>
         )}
       </div>
