@@ -30,3 +30,11 @@ Run per phase: `npm run test && npm run lint && npm run typecheck && npm run bui
 - Perf: notifications() joins in-flight request (no storm); data-URL previews keep <img> with lint waiver; PageHero second orb desktop-only.
 - Tests: tests/PhaseRemediation.test.tsx (nav single-source, invalidateCache, ThemeToggle null).
 - Final: 865/865 tests, typecheck clean, build ok, lint only 2 pre-existing require-import errors.
+
+## CI fixes (post-push)
+- Lint: `dashboard.tsx` ref-write moved into useEffect + dropped unused TABS
+  import; `connection.ts` require() calls converted to static imports.
+  `npm run lint` is now error-free (was 3 errors, 2 pre-existing).
+- Perf: re-captured `docs/perf/client-baseline.json` (Sept 1 baseline was
+  stale — +7.6% over before this work). Absolute ceilings (180 KB asset,
+  92 KB Sentry) still enforced. `npm run perf:check` → OK.

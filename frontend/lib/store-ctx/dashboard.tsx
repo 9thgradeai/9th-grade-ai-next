@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useRef, useSyncExternalStore } from "react";
-import { TABS, type TabId } from "@/lib/data";
+import { useCallback, useEffect, useRef, useSyncExternalStore } from "react";
+import type { TabId } from "@/lib/data";
 
 // ── State ──────────────────────────────────────────────────
 // Only durable, cross-tab UI state lives here. All attempt-derived
@@ -147,7 +147,9 @@ function useDashboardStoreWithSelector<T>(
   // builds a fresh object per call). Compute once per mount.
   const serverCache = useRef<{ value: T } | null>(null);
   const selRef = useRef(selector);
-  selRef.current = selector;
+  useEffect(() => {
+    selRef.current = selector;
+  }, [selector]);
   const getServerSelection = useCallback(() => {
     if (serverCache.current) return serverCache.current.value;
     const value = selRef.current({ ...getServerSnapshot(), ...actions });

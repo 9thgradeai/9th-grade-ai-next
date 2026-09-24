@@ -1,6 +1,7 @@
 import "server-only";
+import { randomBytes, createHash } from "crypto";
 import { prisma } from "~backend/db";
-import { encryptToken, decryptToken } from "./encryption";
+import { encryptToken, decryptToken, validateEncryptionConfig } from "./encryption";
 
 const GOOGLE_AUTH = "https://accounts.google.com/o/oauth2/v2/auth";
 const GOOGLE_TOKEN = "https://oauth2.googleapis.com/token";
@@ -22,7 +23,6 @@ export function validateOAuthConfig(): void {
   }
   // Validate encryption key on startup (fail fast)
   if (isProd) {
-    const { validateEncryptionConfig } = require("./encryption");
     validateEncryptionConfig();
   }
 }
@@ -36,7 +36,6 @@ export function getOAuthConfig() {
 }
 
 export function generatePKCE(): { verifier: string; challenge: string } {
-  const { randomBytes, createHash } = require("crypto");
   const verifier = randomBytes(32).toString("base64url");
   const challenge = createHash("sha256").update(verifier).digest("base64url");
   return { verifier, challenge };
