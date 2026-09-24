@@ -1,0 +1,1204 @@
+﻿Part 1: Operating System Types & Architectures (1 - 50)
+1. Bangladesh Bank's RTGS (Real-Time Gross Settlement) system requires instant transaction finality without delay. Which OS type is strictly required for this server?
+A) Time-Sharing OS
+B) Batch Processing OS
+C) Real-Time Operating System (RTOS)
+D) Distributed OS
+Ans: C | Speed Solution: "Instant/No delay" = Real-Time. RTOS guarantees strict time constraints.
+2. The Bangladesh Electronic Funds Transfer Network (BEFTN) processes millions of salaries overnight without human intervention. This mimics which OS architecture?
+A) Real-Time OS
+B) Batch Processing OS
+C) Network OS
+D) Multiprocessing OS
+Ans: B | Speed Solution: "Overnight without human intervention" = Batching jobs together to process sequentially.
+3. If a banking server divides CPU time equally among 100 logged-in tellers, allowing them to work concurrently, the OS is using:
+A) Time-Sharing (Multitasking)
+B) Batch Processing
+C) Spooling
+D) Real-Time Processing
+Ans: A | Speed Solution: Dividing CPU time into "slices" for multiple users = Time-Sharing.
+4. A CBS (Core Banking System) server utilizes 4 physical CPUs to handle massive query loads simultaneously. This is called:
+A) Multithreading
+B) Multiprocessing
+C) Multiprogramming
+D) Multitasking
+Ans: B | Speed Solution: Multiple physical CPUs = Multi-PROCESSING.
+5. Within a single instance of a bank's mobile app, one background task downloads exchange rates while another allows the user to type. This is an example of:
+A) Multiprocessing
+B) Multithreading
+C) Batch Processing
+D) Spooling
+Ans: B | Speed Solution: Multiple tasks inside ONE program/process = Threads. Multithreading.
+6. Which OS feature allows a slow banking printer to receive print jobs from 50 different branch computers simultaneously without freezing their screens?
+A) Paging
+B) Spooling
+C) Thrashing
+D) Booting
+Ans: B | Speed Solution: SPOOL = Simultaneous Peripheral Operations On-Line. It buffers jobs in memory.
+7. In an OS, the capability to load multiple programs into RAM simultaneously so the CPU always has a task to execute is known as:
+A) Multiprogramming
+B) Multiprocessing
+C) Threading
+D) Context Switching
+Ans: A | Speed Solution: Multiple programs residing in RAM = Multiprogramming (maximizes CPU utilization).
+8. Which type of OS architecture links multiple independent banking servers across Dhaka and Chittagong so they appear to the user as a single powerful system?
+A) Real-Time OS
+B) Distributed OS
+C) Batch OS
+D) Standalone OS
+Ans: B | Speed Solution: Many independent nodes acting as one = Distributed.
+9. Hard Real-Time Systems (like an ATM cash dispenser controller) differ from Soft Real-Time Systems because:
+A) Hard RTOS missing a deadline causes total system failure; Soft RTOS degrades performance but doesn't fail.
+B) Hard RTOS uses SSDs; Soft uses HDDs.
+C) Hard RTOS is open-source.
+D) Soft RTOS has no kernel.
+Ans: A | Speed Solution: Hard = Absolute deadline (e.g., Pacemaker, ATM). Soft = Preferred deadline (e.g., Video streaming).
+10. What was the primary disadvantage of early Batch Processing Operating Systems?
+A) High cost of CPUs
+B) Lack of interaction between the user and the job while it was executing
+C) It required internet access
+D) It was open-source
+Ans: B | Speed Solution: In Batch OS, you hand over the punch cards and wait. No live interaction.
+11. Which scheduling algorithm is typically used by a Time-Sharing OS to ensure fairness among branch users?
+A) First Come First Serve (FCFS)
+B) Shortest Job Next (SJN)
+C) Round Robin
+D) Priority Scheduling
+Ans: C | Speed Solution: Round Robin gives everyone a fixed "time slice" (quantum) in a circular queue. Fairness = Round Robin.
+12. In OS terminology, what is "Context Switching" during a teller's multitasking session?
+A) Switching the monitor on and off
+B) Saving the state of an old process and loading the saved state of a new process into the CPU
+C) Converting code to binary
+D) Formatting the hard drive
+Ans: B | Speed Solution: CPU switches "context" (environment variables) from App A to App B.
+13. A "Network Operating System" (NOS) is primarily designed to:
+A) Edit videos
+B) Manage data, users, security, and applications across a local area network (e.g., Windows Server)
+C) Compile code
+D) Act as a firewall
+Ans: B | Speed Solution: NOS manages network resources (servers, users).
+14. Mobile operating systems like iOS and Android execute apps in isolated environments to prevent a malicious app from accessing banking data. This is called:
+A) Compiling
+B) Sandboxing
+C) Spooling
+D) Paging
+Ans: B | Speed Solution: Sandbox = isolated safe play area. App cannot touch the OS or other apps.
+15. Which OS architecture embeds the operating system directly into the ROM of a specific hardware device, like a microwave or a banking POS terminal?
+A) Distributed OS
+B) Embedded OS
+C) Time-sharing OS
+D) Batch OS
+Ans: B | Speed Solution: Embedded = built deeply into the specific hardware.
+16. The "Bootloader" of an OS is responsible for:
+A) Terminating viruses
+B) Loading the kernel from secondary storage into main memory (RAM) during startup
+C) Formatting the disk
+D) Managing printers
+Ans: B | Speed Solution: It "loads" the core OS into RAM to "boot" the system.
+17. "Multiprogramming" was invented to solve which specific hardware problem in early mainframes?
+A) Small hard drives
+B) CPU sitting idle while waiting for slow I/O operations (like reading a tape)
+C) Overheating CPUs
+D) Monitor glare
+Ans: B | Speed Solution: If Program A waits for the printer, the CPU jumps to Program B. Eliminates idle time.
+18. Which OS component manages the allocation and deallocation of physical memory to banking applications?
+A) Shell
+B) Device Driver
+C) Memory Manager
+D) Compiler
+Ans: C | Speed Solution: Direct name match. Memory Manager manages memory.
+19. What is a "Process" in the context of an Operating System?
+A) A physical hardware component
+B) A program currently in execution
+C) A text file
+D) A compiler
+Ans: B | Speed Solution: Program = passive file on disk. Process = active program executing in RAM.
+20. When an OS uses "Virtual Memory", what happens when the physical RAM becomes 100% full during a massive database query?
+A) The computer shuts down
+B) The OS uses a designated portion of the hard drive (Pagefile) as temporary RAM
+C) The CPU overheats
+D) Files are permanently deleted
+Ans: B | Speed Solution: Virtual RAM is just borrowed hard drive space.
+21. A condition where the OS spends more time swapping pages between RAM and the Hard Drive than executing actual processes is called:
+A) Spooling
+B) Context Switching
+C) Thrashing
+D) Booting
+Ans: C | Speed Solution: The system "thrashes" around doing zero productive work.
+22. In OS memory management, "Paging" eliminates which specific type of memory fragmentation?
+A) Internal Fragmentation
+B) External Fragmentation
+C) Data Fragmentation
+D) Disk Fragmentation
+Ans: B | Speed Solution: Paging divides memory into equal frames, completely eliminating External Fragmentation.
+23. "Internal Fragmentation" occurs when:
+A) The hard drive fails
+B) The memory allocated to a process is slightly larger than the requested memory, leaving wasted space inside the block
+C) The CPU pipeline breaks
+D) The network disconnects
+Ans: B | Speed Solution: Space wasted inside the allocated block = Internal.
+24. Which OS component creates a "Process Control Block" (PCB) for every active banking application?
+A) Process Manager
+B) Assembler
+C) Hardware controller
+D) Shell
+Ans: A | Speed Solution: The OS Process Manager tracks process state, ID, and priority using the PCB.
+25. A bank's database server enters a state where Process A holds Resource 1 and waits for Resource 2, while Process B holds Resource 2 and waits for Resource 1. This is the definition of:
+A) Thrashing
+B) Deadlock
+C) Spooling
+D) Interrupt
+Ans: B | Speed Solution: Circular waiting = Deadlock (Mexican Standoff).
+26. Which of the following is NOT one of the 4 necessary conditions for a Deadlock to occur?
+A) Mutual Exclusion
+B) Hold and Wait
+C) No Preemption
+D) Context Switching
+Ans: D | Speed Solution: The 4th condition is Circular Wait. Context switching is a normal CPU function.
+27. An Operating System handles "Interrupts". An interrupt generated by a hardware device (like a mouse click) is called a hardware interrupt. An interrupt generated by software (like a division by zero) is called a:
+A) Trap / Exception
+B) Spool
+C) Page Fault
+D) Thread
+Ans: A | Speed Solution: Software interrupt = Trap or Exception.
+28. Which of the following best defines "Throughput" in a batch processing OS?
+A) Time taken to write a program
+B) Number of jobs completed per unit of time
+C) The speed of the hard drive
+D) The amount of RAM used
+Ans: B | Speed Solution: Throughput = Volume of output over time.
+29. What is "Turnaround Time" for a process in an OS?
+A) Time spent in the ready queue
+B) Total time taken from submission of a process to its completion
+C) Time taken to print a file
+D) Time spent waiting for CPU
+Ans: B | Speed Solution: Turnaround = Exit time minus Arrival time.
+30. "Starvation" in an OS scheduling algorithm occurs when:
+A) A low-priority process is repeatedly denied CPU time because higher-priority processes keep arriving
+B) The PC loses power
+C) RAM is empty
+D) The hard drive is full
+Ans: A | Speed Solution: The process "starves" because it never gets fed CPU time.
+31. To prevent Starvation, operating systems use a technique that gradually increases the priority of a waiting process. This is called:
+A) Thrashing
+B) Aging
+C) Paging
+D) Spooling
+Ans: B | Speed Solution: As the process gets "older" in the queue, its priority rises.
+32. Which memory management scheme allows the physical address space of a process to be non-contiguous?
+A) Fixed Partitioning
+B) Paging
+C) Dynamic Partitioning
+D) Base Register allocation
+Ans: B | Speed Solution: Paging chops the process into pages and scatters them into any available RAM frames.
+33. The "Translation Lookaside Buffer" (TLB) is an OS hardware cache used specifically to speed up:
+A) Internet browsing
+B) Logical (Virtual) to Physical memory address translation
+C) Booting
+D) CPU arithmetic
+Ans: B | Speed Solution: TLB caches recent page table translations to save time.
+34. In a Windows server, the "NTFS" file system is used. What does the file system primarily do?
+A) Edits text documents
+B) Determines how data is stored, organized, and retrieved on the storage disk
+C) Connects to Wi-Fi
+D) Scans for viruses
+Ans: B | Speed Solution: File System = The index and storage logic of the disk.
+35. A "Device Driver" operates in which mode to interact directly with hardware?
+A) User Mode
+B) Kernel Mode
+C) Safe Mode
+D) Boot Mode
+Ans: B | Speed Solution: Hardware access requires extreme privilege = Kernel Mode.
+36. Dual-Mode operation in an OS protects the system from crashing by dividing execution into:
+A) Day Mode and Night Mode
+B) User Mode (Restricted) and Kernel Mode (Privileged)
+C) Fast Mode and Slow Mode
+D) Read Mode and Write Mode
+Ans: B | Speed Solution: User Mode keeps rogue apps from touching core hardware. If they need hardware, they must ask the Kernel.
+37. How does a user application request a service (like reading a file) from the operating system's kernel?
+A) By sending an email
+B) Via a System Call
+C) Via a Compiler
+D) Via a Shell command
+Ans: B | Speed Solution: System Call (Syscall) is the API bridge between User space and Kernel space.
+38. Which system call is used in Unix/Linux to create a new process by duplicating an existing one?
+A) create()
+B) fork()
+C) exec()
+D) spawn()
+Ans: B | Speed Solution: fork() splits/clones a process into a parent and child.
+39. When an OS boots, the first process created in Unix/Linux systems (PID 1) is typically:
+A) bash
+B) init / systemd
+C) kernel
+D) root
+Ans: B | Speed Solution: init or systemd is the ancestor of all other processes.
+40. A banking OS is experiencing "Memory Leak". What causes this?
+A) Physical damage to the RAM chip
+B) A program allocating memory but failing to release/deallocate it after use, eventually exhausting RAM
+C) A virus deleting files
+D) The CPU overheating
+Ans: B | Speed Solution: Memory leaks occur from bad coding, causing RAM to fill up over time.
+Part 2: Kernel vs. Shell & Core Architecture (41 - 80)
+41. An IT officer explains OS architecture. The component that acts as the core heart of the OS, managing hardware directly, is the:
+A) Shell
+B) Compiler
+C) Kernel
+D) GUI
+Ans: C | Speed Solution: Kernel = the nut/core of the system.
+42. The component that provides the user interface (CLI or GUI) to interact with the OS is called the:
+A) Kernel
+B) Shell
+C) Driver
+D) Compiler
+Ans: B | Speed Solution: Shell = the outer layer covering the kernel.
+43. MS-DOS, Bash, and Windows Command Prompt are all examples of a:
+A) Kernel
+B) Shell (Command Line Interpreter)
+C) Compiler
+D) Hardware Driver
+Ans: B | Speed Solution: They take user text commands and pass them to the kernel.
+44. In a "Monolithic Kernel" architecture (like Linux), all core OS services (memory, CPU, drivers) run in:
+A) User space
+B) A single large block of code in Kernel space
+C) The Cloud
+D) The ROM
+Ans: B | Speed Solution: Mono (one) lithic (stone). Everything is packed into one big, fast kernel block.
+45. What is the main advantage of a Monolithic Kernel for high-speed bank servers?
+A) It is easy to debug
+B) High performance, because there is less overhead/communication between components
+C) If a driver crashes, the system survives
+D) It uses no RAM
+Ans: B | Speed Solution: Direct interaction inside one block = peak speed.
+46. What is the main disadvantage of a Monolithic Kernel?
+A) It is very slow
+B) If one component (like a video driver) crashes, the entire operating system crashes (Kernel Panic)
+C) It cannot multitask
+D) It cannot access the internet
+Ans: B | Speed Solution: Since everything shares the same memory space, one bad driver kills the whole system.
+47. In a "Microkernel" architecture (like macOS/QNX), how are services structured?
+A) Everything is in the kernel
+B) Only the absolute bare minimum (CPU scheduling, basic memory) is in the kernel; drivers and file systems run in User space
+C) There is no kernel
+D) It only uses a Shell
+Ans: B | Speed Solution: Micro (tiny) kernel. Keeps the core small and stable.
+48. What is the primary advantage of a Microkernel architecture in secure environments?
+A) Extreme speed
+B) High stability and security; if a device driver crashes, it doesn't crash the whole OS
+C) Requires no RAM
+D) Open-source by default
+Ans: B | Speed Solution: Isolation. Drivers run in user space, so their crash is contained.
+49. Which mechanism is heavily used in a Microkernel to allow the user-space services to communicate with the kernel?
+A) Direct Memory Access
+B) Inter-Process Communication (IPC) / Message Passing
+C) Spooling
+D) Compiling
+Ans: B | Speed Solution: Because services are separated, they must pass messages (IPC) to talk, which adds slight delay but massive stability.
+50. Microsoft Windows NT (the core of modern Windows) uses a hybrid approach called a:
+A) Monolithic Kernel
+B) Microkernel
+C) Hybrid Kernel
+D) Nano-kernel
+Ans: C | Speed Solution: It mixes monolithic speed with microkernel modularity.
+51. When a bank teller types dir in the Windows command prompt, which component interprets this command?
+A) The Kernel
+B) The Shell (cmd.exe)
+C) The Hardware
+D) The BIOS
+Ans: B | Speed Solution: The Shell translates human text commands for the Kernel.
+52. "BASH" is a very popular Unix/Linux shell. What does it stand for?
+A) Basic Advanced Shell
+B) Bourne Again Shell
+C) Binary Applied Shell
+D) Basic Artificial Shell
+Ans: B | Speed Solution: Written as a replacement for the original Bourne shell (sh).
+53. The OS Kernel is loaded into memory during the boot process. Where does it reside during the entire time the computer is powered on?
+A) Virtual Memory
+B) Protected Main Memory (RAM)
+C) Hard Drive
+D) ROM
+Ans: B | Speed Solution: The kernel is memory-resident in a protected RAM sector.
+54. Which of the following is NOT a function of the OS Kernel?
+A) Process Management
+B) Memory Management
+C) Compiling Java Code
+D) I/O Device Management
+Ans: C | Speed Solution: Compiling code is done by application software (Translators), not the OS core.
+55. A "System Call" involves a transition from User Mode to Kernel Mode. This transition is facilitated by changing a hardware bit called the:
+A) Mode Bit
+B) Carry Bit
+C) Sign Bit
+D) Parity Bit
+Ans: A | Speed Solution: Mode Bit 1 = User. Mode Bit 0 = Kernel.
+56. "GUI" stands for Graphical User Interface. It is a type of:
+A) Kernel
+B) Shell
+C) Compiler
+D) Driver
+Ans: B | Speed Solution: GUI is just a visual shell that lets you click icons instead of typing commands.
+57. What is "GUI Shell" called in the Windows operating system?
+A) Command Prompt
+B) Windows Explorer (explorer.exe)
+C) Task Manager
+D) Cortana
+Ans: B | Speed Solution: Explorer.exe controls the desktop, taskbar, and file navigation windows.
+58. Which OS component is directly responsible for translating logical file requests into specific cylinder, track, and sector physical read commands for the HDD?
+A) File System Manager (in the Kernel)
+B) The Shell
+C) The Compiler
+D) The CPU
+Ans: A | Speed Solution: The Kernel translates generic file paths into physical disk sectors.
+59. If a kernel uses "Preemptive Scheduling", it means:
+A) The CPU waits for a process to voluntarily yield
+B) The OS can forcefully interrupt and pause a running process to give CPU time to a higher-priority process
+C) Processes are never interrupted
+D) The hard drive schedules data
+Ans: B | Speed Solution: Preempt = to interrupt/take over by force. Crucial for multitasking.
+60. "Non-preemptive" (Cooperative) scheduling was used in older OS (like Windows 3.1). Its major flaw was:
+A) It used too much RAM
+B) If one application froze or refused to yield the CPU, the entire system would freeze
+C) It was too fast
+D) It required a Microkernel
+Ans: B | Speed Solution: Cooperative means apps must voluntarily share. A greedy app crashes the PC.
+61. A user double-clicks an icon to open MS Word. The OS creates a new process. What data structure does the kernel use to store the state of this process?
+A) Master Boot Record (MBR)
+B) Process Control Block (PCB)
+C) Page Table
+D) File Allocation Table (FAT)
+Ans: B | Speed Solution: PCB holds process ID, state, CPU registers, and memory limits.
+62. In Linux, what command is used in the Shell to list all currently running processes?
+A) dir
+B) ps / top
+C) ls
+D) grep
+Ans: B | Speed Solution: ps (Process Status) or top (Table of Processes).
+63. What happens if the OS Kernel experiences an unrecoverable error in Windows?
+A) It restarts silently
+B) Blue Screen of Death (BSOD)
+C) It opens a web browser
+D) It formats the drive
+Ans: B | Speed Solution: BSOD is Windows' Kernel Panic screen indicating catastrophic failure.
+64. What is the equivalent of a BSOD in a Unix/Linux operating system?
+A) Red Screen
+B) Kernel Panic
+C) Segmentation Fault
+D) Core Dump
+Ans: B | Speed Solution: A Kernel Panic halts the entire Linux system to prevent data corruption.
+65. Which of the following is considered a "Bare-Metal" component that interacts strictly with the Kernel?
+A) Web Browser
+B) Hardware Device Driver
+C) Antivirus GUI
+D) MS Excel
+Ans: B | Speed Solution: Drivers sit at the lowest level, bridging hardware hardware to the kernel.
+66. What is "API" in the context of the OS?
+A) Application Programming Interface; a set of routines/protocols allowing applications to communicate with the OS Kernel
+B) Advanced Processor Interface
+C) An antivirus standard
+D) A hardware port
+Ans: A | Speed Solution: The API provides user-friendly functions (like ReadFile()) that trigger complex System Calls.
+67. A bank's database program tries to access a memory address belonging to the OS kernel. What happens?
+A) The kernel allows it
+B) The hardware generates a "Segmentation Fault / Access Violation" trap, and the OS kills the program
+C) The CPU speeds up
+D) The data is encrypted
+Ans: B | Speed Solution: Memory protection stops rogue apps from breaching kernel security.
+68. The core philosophy of the "Unix" OS architecture relies heavily on:
+A) Huge monolithic graphical interfaces
+B) Small, modular, single-purpose command-line utilities connected via "Pipes"
+C) Complex proprietary code
+D) Cloud computing
+Ans: B | Speed Solution: The Unix philosophy: "Write programs that do one thing and do it well."
+69. What is a "Pipe" (|) in a shell environment?
+A) A physical cable
+B) A method to pass the output of one program directly as the input to another program
+C) A virus
+D) A memory address
+Ans: B | Speed Solution: ls | grep "bank" takes the list output and pipes it into the search tool.
+70. In an operating system, what is an "Orphan Process"?
+A) A process with no memory
+B) A child process whose parent process has terminated or crashed before the child finished
+C) A process with no ID
+D) A virus process
+Ans: B | Speed Solution: Orphan = Lost its parent. (The init process usually adopts them).
+71. What is a "Zombie Process" in Unix/Linux?
+A) A process that infects others
+B) A process that has completed execution but still has an entry in the process table because its parent hasn't read its exit status
+C) A completely deleted process
+D) An idle process
+Ans: B | Speed Solution: It is "dead" (finished) but its body (PCB entry) is still lingering.
+72. Operating systems use a "Page Table" to keep track of:
+A) Web pages visited
+B) The mapping between Virtual memory pages and Physical RAM frames
+C) Printed documents
+D) Hard drive partitions
+Ans: B | Speed Solution: Paging requires an index map (Page Table) to find where virtual data is actually stored in physical RAM.
+73. The component of the OS that decides WHICH process in the ready queue gets the CPU next is the:
+A) Long-term scheduler
+B) Short-term scheduler (CPU Scheduler)
+C) Medium-term scheduler
+D) Shell
+Ans: B | Speed Solution: Short-term scheduler acts every few milliseconds to swap processes.
+74. The "Dispatcher" in an OS is responsible for:
+A) Deleting files
+B) Actually giving control of the CPU to the process selected by the short-term scheduler
+C) Connecting to the internet
+D) Booting the PC
+Ans: B | Speed Solution: Scheduler chooses who is next. Dispatcher physically does the Context Switch to make it happen.
+75. What does the "fork()" system call return to the parent process upon successfully creating a child?
+A) 0
+B) -1
+C) The Process ID (PID) of the newly created child
+D) Null
+Ans: C | Speed Solution: Fork returns 0 to the child, but returns the child's PID to the parent.
+76. Which of the following commands is used to forcefully terminate a process via the Linux shell?
+A) stop
+B) end
+C) kill
+D) terminate
+Ans: C | Speed Solution: kill -9 [PID] is the universal command to force-kill a process.
+77. An operating system's "Root Directory" is represented by which symbol in Linux/Unix?
+A) C:
+B) /
+C) ~
+D)
+Ans: B | Speed Solution: Forward slash (/) is the absolute top of the Linux file hierarchy.
+78. The "Home Directory" for a specific user in a Linux shell is represented by:
+A) /
+B) ~ (Tilde)
+C)
+D) @
+Ans: B | Speed Solution: Tilde (~) is the shortcut for /home/username.
+79. In Windows, which OS utility lets an administrator view hardware driver conflicts (indicated by a yellow exclamation mark)?
+A) Task Manager
+B) Device Manager
+C) Registry Editor
+D) Disk Management
+Ans: B | Speed Solution: Device Manager handles physical hardware and driver states.
+80. What is a "Daemon" in a Unix/Linux operating system?
+A) A malicious virus
+B) A background process that runs without interactive user input (similar to a Windows Service)
+C) The core kernel
+D) A visual theme
+Ans: B | Speed Solution: Daemons run silently in the background (e.g., httpd for web servers).
+Part 3: Translators (Compiler, Interpreter, Assembler) (81 - 140)
+81. Humans write programs in High-Level Languages (e.g., Java, C++), which are called:
+A) Object Code
+B) Source Code
+C) Machine Code
+D) Assembly Code
+Ans: B | Speed Solution: The raw human-typed code is the "Source".
+82. The CPU can only execute binary 0s and 1s. This format is called:
+A) Source Code
+B) Machine Code (Object Code)
+C) High-Level Code
+D) Pseudocode
+Ans: B | Speed Solution: Machine Code is the binary language of the processor.
+83. A translator program converts Source Code into Machine Code. Which translator processes the ENTIRE source code at once?
+A) Interpreter
+B) Assembler
+C) Compiler
+D) Linker
+Ans: C | Speed Solution: Compile = to gather everything together at once.
+84. Which translator reads the source code line-by-line, translating and executing each line immediately?
+A) Compiler
+B) Interpreter
+C) Assembler
+D) Loader
+Ans: B | Speed Solution: Interpret = translating live, one sentence (line) at a time.
+85. What is the primary advantage of a Compiler over an Interpreter for a deployed banking application?
+A) Compilers use less memory
+B) Compiled programs execute much faster because they are already translated into machine code
+C) Compilers are easier to debug
+D) Compilers do not require an OS
+Ans: B | Speed Solution: The heavy lifting is done beforehand. The final .exe runs instantly.
+86. What is the primary advantage of an Interpreter over a Compiler during the software development phase?
+A) It creates faster programs
+B) It stops execution at the exact line of a syntax error, making debugging and testing much easier
+C) It secures the code from hackers
+D) It creates standalone .exe files
+Ans: B | Speed Solution: Line-by-line translation catches errors immediately without needing to recompile the whole file.
+87. Which of the following programming languages is strictly compiled?
+A) Python
+B) JavaScript
+C) C
+D) Ruby
+Ans: C | Speed Solution: C and C++ are classic compiled languages (resulting in .exe or binary files).
+88. Which of the following programming languages is primarily interpreted?
+A) C
+B) C++
+C) Python
+D) Rust
+Ans: C | Speed Solution: Python, Ruby, and JavaScript use interpreters.
+89. When a C program is compiled, the compiler produces an intermediate file before linking. What is this file called?
+A) Executable file (.exe)
+B) Object file (.o or .obj)
+C) Text file (.txt)
+D) Batch file (.bat)
+Ans: B | Speed Solution: Source  Compiler  Object Code  Linker  Executable.
+90. What is the function of the "Linker" in the translation process?
+A) Converts code to binary
+B) Combines multiple object files and standard library files into a single executable program
+C) Loads the program into RAM
+D) Checks for syntax errors
+Ans: B | Speed Solution: "Links" the pieces together into the final .exe.
+91. What is the function of the "Loader" in the execution process?
+A) Translates source code
+B) Places the linked executable program from the hard drive into main memory (RAM) for execution
+C) Scans for viruses
+D) Links object files
+Ans: B | Speed Solution: "Loads" the program into RAM so the CPU can run it.
+92. Java is famous for its "Write Once, Run Anywhere" capability. How does it achieve this?
+A) It uses a single global Compiler
+B) It compiles source code into an intermediate "Bytecode", which is then interpreted by a JVM on any OS
+C) It is written in binary
+D) It uses no translator
+Ans: B | Speed Solution: Java is a hybrid. Compiler  Bytecode  JVM Interpreter.
+93. In the Java ecosystem, what does "JVM" stand for?
+A) Java Visual Machine
+B) Java Virtual Machine
+C) Java Variable Method
+D) Java Vector Memory
+Ans: B | Speed Solution: JVM is the virtual engine that interprets Java Bytecode for the specific host OS.
+94. Modern interpreters (like JVM or Google's V8 JavaScript engine) use a "JIT" compiler to massively increase speed. JIT stands for:
+A) Just In Time
+B) Jump Into Translation
+C) Java Internal Thread
+D) Joint Interpreter Tool
+Ans: A | Speed Solution: JIT compiles heavily used chunks of code "Just In Time" during execution so they don't have to be re-interpreted.
+95. Assembly Language uses short English-like abbreviations (e.g., ADD, MOV, SUB). These abbreviations are called:
+A) Opcodes
+B) Mnemonics (নেমোনিক্স)
+C) Hexadecimals
+D) Syntax
+Ans: B | Speed Solution: Mnemonics are memory aids replacing binary instructions.
+96. Which translator program is specifically designed to convert Assembly Language (Mnemonics) into Machine Code?
+A) Compiler
+B) Interpreter
+C) Assembler
+D) Linker
+Ans: C | Speed Solution: Direct match: Assembly requires an Assembler.
+97. Assembly language is classified as a:
+A) High-Level Language (HLL)
+B) Low-Level Language (LLL)
+C) Scripting Language
+D) Markup Language
+Ans: B | Speed Solution: It is just one step above raw machine code. Very close to the hardware.
+98. A "Syntax Error" during compilation means:
+A) The program divided by zero
+B) The hardware crashed
+C) The programmer violated the grammatical rules of the programming language (e.g., missing a semicolon)
+D) The program has a memory leak
+Ans: C | Speed Solution: Syntax = Grammar. Compilers refuse to generate code if grammar is wrong.
+99. A "Logical Error" in a banking program means:
+A) The compiler fails to run
+B) The program runs perfectly but produces the wrong output (e.g., subtracting interest instead of adding it)
+C) The RAM is full
+D) A missing bracket
+Ans: B | Speed Solution: The grammar is correct, but the logic/math is flawed. Translators cannot catch logical errors.
+100. A "Runtime Error" occurs when:
+A) The code has a syntax mistake
+B) The program performs an illegal operation while running (e.g., dividing by zero or accessing protected memory) and crashes
+C) The assembler fails
+D) The file is missing
+Ans: B | Speed Solution: The code compiles fine, but crashes during "runtime".
+101. Which translator program provides a list of ALL syntax errors present in the source code at once?
+A) Interpreter
+B) Assembler
+C) Compiler
+D) Loader
+Ans: C | Speed Solution: Compilers scan the entire file, returning a full error log.
+102. Which translator program halts at the very FIRST syntax error it encounters and requires it to be fixed before continuing?
+A) Compiler
+B) Interpreter
+C) Assembler
+D) Linker
+Ans: B | Speed Solution: Interpreters go line-by-line. Error on line 5? It stops at line 5.
+103. The output of an Assembler or Compiler before linking is generally known as:
+A) Source Code
+B) Object Code
+C) Executable Code
+D) Script Code
+Ans: B | Speed Solution: Source Code  Object Code.
+104. HTML and XML are NOT translated by compilers or standard interpreters because they are:
+A) Low-level languages
+B) Markup Languages used for structuring data, parsed directly by web browsers
+C) Operating Systems
+D) Machine code
+Ans: B | Speed Solution: Markup languages describe formatting; they don't execute logic.
+105. "Scripting Languages" (like Bash, PowerShell, or JavaScript) are almost exclusively processed by:
+A) Compilers
+B) Interpreters
+C) Assemblers
+D) Linkers
+Ans: B | Speed Solution: Scripts are run on the fly by an interpreter environment.
+106. In translation, "Lexical Analysis" is the phase where the compiler:
+A) Generates machine code
+B) Scans the source code and groups characters into meaningful tokens (keywords, identifiers)
+C) Links files
+D) Optimizes the code
+Ans: B | Speed Solution: Lexicon = Vocabulary. The compiler identifies the words/tokens first.
+107. After Lexical Analysis, the compiler performs "Syntax Analysis". This phase creates a:
+A) Parse Tree (Syntax Tree)
+B) .exe file
+C) DLL file
+D) Object file
+Ans: A | Speed Solution: Validates if the tokens follow the grammar rules, structuring them into a tree.
+108. The phase of compilation where the compiler tries to make the code run faster and use less memory without changing its output is called:
+A) Code Optimization
+B) Semantic Analysis
+C) Lexical Analysis
+D) Linking
+Ans: A | Speed Solution: Optimization = making it highly efficient.
+109. If a software company wants to protect its proprietary source code from competitors, it should distribute the software as:
+A) Python script files (Interpreted)
+B) Compiled binary Executable files (.exe)
+C) Assembly language
+D) High-level code
+Ans: B | Speed Solution: Compiled machine code is nearly impossible to reverse-engineer back into readable human code.
+110. A "Decompiler" is a tool used by reverse-engineers to:
+A) Make code run faster
+B) Attempt to translate compiled Machine Code back into High-Level Source Code
+C) Compile code twice
+D) Assemble code
+Ans: B | Speed Solution: De-compile = reversing the compilation process.
+111. "Cross-Compilation" is heavily used in mobile app development. What does it mean?
+A) Compiling code twice on the same machine
+B) Compiling code on one OS/Architecture (e.g., Windows x86) to generate an executable for a DIFFERENT OS/Architecture (e.g., Android ARM)
+C) Using two compilers simultaneously
+D) Interpreting instead of compiling
+Ans: B | Speed Solution: Crossing platforms. Building phone apps on a desktop PC.
+112. A C++ banking program requires a standard math library to calculate compound interest. The inclusion of this pre-compiled library into the final .exe is done by the:
+A) Assembler
+B) Compiler
+C) Linker
+D) Loader
+Ans: C | Speed Solution: The Linker "links" the main code with external libraries.
+113. "DLL" stands for Dynamic-Link Library. What is the benefit of dynamic linking over static linking?
+A) It makes the file larger
+B) Multiple programs can share a single copy of a DLL file in memory, saving RAM and disk space
+C) It requires no OS
+D) It is open-source
+Ans: B | Speed Solution: Dynamic = loaded on the fly, shared by many apps. Static = baked directly into the .exe.
+114. The Python interpreter reads a script and converts it into a lower-level, platform-independent representation before executing it. This intermediate code is called:
+A) Machine Code
+B) Bytecode (.pyc)
+C) Assembly Code
+D) Object Code
+Ans: B | Speed Solution: Similar to Java, Python creates cached Bytecode to speed up repeated executions.
+115. C# and .NET programs are compiled into CIL (Common Intermediate Language) and executed by the:
+A) JVM
+B) CLR (Common Language Runtime)
+C) Python Interpreter
+D) Assembler
+Ans: B | Speed Solution: Microsoft's equivalent to the JVM is the CLR.
+116. Which of the following requires the source code to be present on the user's computer to run?
+A) A compiled C++ program
+B) A compiled Go program
+C) A Python script
+D) A Windows .exe file
+Ans: C | Speed Solution: Interpreters need the raw script (source code) to read line-by-line.
+117. An application programmed in Machine Language (1st Generation) is heavily dependent on:
+A) The internet
+B) The Operating System
+C) The specific CPU hardware architecture (e.g., x86 vs ARM)
+D) A compiler
+Ans: C | Speed Solution: Machine code is specific to the processor's hardwired logic gates. It is not portable.
+118. High-Level Languages (3rd Generation) were created primarily to provide:
+A) Faster execution speed
+B) Machine Independence / Portability (the same code can compile on different CPUs)
+C) Direct hardware manipulation
+D) Smaller file sizes
+Ans: B | Speed Solution: Portability. You write code once, compile it for Windows, Mac, or Linux.
+119. A "Debugger" is a software tool used in conjunction with compilers/interpreters to:
+A) Remove viruses
+B) Pause execution, inspect memory, and step through code line-by-line to find logical errors
+C) Delete code
+D) Translate code
+Ans: B | Speed Solution: It allows developers to "look inside" the running program to squash bugs.
+120. In the sequence of program execution, which comes last?
+A) Compiler
+B) Linker
+C) Assembler
+D) Loader
+Ans: D | Speed Solution: Loader is the final step, pulling the finished .exe into RAM to run.
+121. "IDE" stands for Integrated Development Environment (like Visual Studio). An IDE typically bundles which tools together?
+A) Browser, Email, Word Processor
+B) Code Editor, Compiler/Interpreter, and Debugger
+C) Antivirus, Firewall, VPN
+D) OS, Shell, Kernel
+Ans: B | Speed Solution: IDE provides everything a programmer needs in one window.
+122. Which of the following translation processes consumes the least amount of RAM during execution?
+A) Compiling
+B) Interpreting
+C) Executing a previously compiled Machine Code program
+D) JIT Compiling
+Ans: C | Speed Solution: An already compiled .exe doesn't need a heavy translator sitting in RAM.
+123. The execution speed of an Interpreted program is generally _____ than a Compiled program.
+A) Faster
+B) Slower
+C) Equal
+D) Unpredictable
+Ans: B | Speed Solution: Translating on the fly adds massive overhead, making it slower.
+124. Which generation of languages is designed to mimic human database queries closely?
+A) 1st Gen
+B) 2nd Gen
+C) 3rd Gen
+D) 4th Gen (e.g., SQL)
+Ans: D | Speed Solution: 4GL languages are domain-specific and highly abstract (like SQL).
+125. The process of translating a high-level language into assembly language before machine code is sometimes handled by a:
+A) Preprocessor
+B) Compiler
+C) Linker
+D) Interpreter
+Ans: B | Speed Solution: Many C compilers translate to Assembly first, then pass it to the Assembler.
+126. "Macro Preprocessors" (like #define in C) modify the source code by:
+A) Compiling it
+B) Performing text substitution before the actual compilation begins
+C) Linking files
+D) Executing it
+Ans: B | Speed Solution: Preprocessors alter the text before the compiler even sees it.
+127. Which translator translates Source Code into Object Code but leaves external library references unresolved?
+A) Linker
+B) Loader
+C) Compiler
+D) Assembler
+Ans: C | Speed Solution: The compiler translates, but the Linker resolves the external addresses.
+128. If a bank's custom software displays a "Missing .DLL" error, which component failed to find the required library?
+A) The Compiler
+B) The Static Linker
+C) The Dynamic Linker / OS Loader
+D) The Assembler
+Ans: C | Speed Solution: At runtime, the OS Loader attempts to dynamically link the .dll. If it's missing, it crashes.
+129. What is "Obfuscation" in compiled software?
+A) Speeding up the code
+B) Deliberately making the machine code/bytecode confusing and difficult to reverse-engineer or decompile
+C) Deleting code
+D) Commenting the code
+Ans: B | Speed Solution: Obfuscate = to make obscure/unclear. Used heavily in banking apps to deter hackers.
+130. A software patch applied to a compiled banking system usually updates the:
+A) Source Code on the user's PC
+B) Executable (.exe) or Library (.dll) binary files
+C) Assembler
+D) Interpreter
+Ans: B | Speed Solution: Users don't have source code. Patches replace compiled binaries.
+131. "Platform Independent" refers to code that:
+A) Requires no OS
+B) Can be executed on multiple different operating systems without modification (e.g., Java)
+C) Only runs on Windows
+D) Runs directly on the CPU
+Ans: B | Speed Solution: Independent of the underlying hardware/OS platform.
+132. What is a "Static Variable" in high-level programming translation?
+A) A variable that changes constantly
+B) A variable allocated in memory for the entire lifetime of the program execution
+C) A deleted variable
+D) A syntax error
+Ans: B | Speed Solution: Static = unmoving/permanent in memory.
+133. Which error type is the most dangerous in financial software because it is not caught by the Compiler or the OS?
+A) Syntax Error
+B) Runtime Error
+C) Logical Error
+D) Linker Error
+Ans: C | Speed Solution: The program runs fine but calculates interest at 10% instead of 5%. Only human testing catches it.
+134. Which tool is used to convert an Assembly Language program written for an ARM processor into Machine Code?
+A) C Compiler
+B) ARM Assembler
+C) x86 Assembler
+D) Java Interpreter
+Ans: B | Speed Solution: Assemblers are specific to the CPU architecture.
+135. What is the fundamental disadvantage of using Assembly Language for a complex Core Banking System?
+A) It is too slow
+B) It is highly complex, tedious to write, and tied to one specific CPU architecture (not portable)
+C) It uses too much RAM
+D) It cannot access hardware
+Ans: B | Speed Solution: Assembly takes 10 lines of code to do what C does in 1 line, and cannot be moved to a different CPU brand.
+136. An OS must provide an environment for programs to run. This environment is called:
+A) The Compiler
+B) The Execution Context
+C) The Shell
+D) The Linker
+Ans: B | Speed Solution: Context provides memory limits, CPU registers, and open files.
+137. Which memory area is used by compiled programs to allocate memory dynamically at runtime (e.g., using malloc in C)?
+A) The Stack
+B) The Heap
+C) The Code Segment
+D) The ROM
+Ans: B | Speed Solution: Heap = Dynamic memory. Stack = Local variables/function calls.
+138. If a compiled program infinitely calls a function within itself without a stop condition, it exhausts memory and causes a:
+A) Heap Overflow
+B) Stack Overflow
+C) Syntax Error
+D) Buffer Underrun
+Ans: B | Speed Solution: Infinite recursion blows up the Stack memory limit.
+139. When an Interpreter encounters an infinite loop in a script, what happens?
+A) It refuses to run the script
+B) It translates it and gets stuck in the loop during execution
+C) It fixes the loop
+D) It deletes the file
+Ans: B | Speed Solution: Interpreters blindly follow logic line-by-line. It will run the loop forever.
+140. Modern web browsers process JavaScript using engines like Google's V8. How does V8 achieve near-compiled speeds?
+A) By sending it to the cloud
+B) Using Just-In-Time (JIT) compilation to convert JS into native machine code on the fly
+C) By ignoring syntax
+D) Using an Assembler
+Ans: B | Speed Solution: JIT is the secret to fast modern web apps.
+Part 4: Open-Source vs. Proprietary & Licensing (141 - 200)
+141. A Bangladesh Bank IT policy mandates the use of FOSS for servers to avoid vendor lock-in. FOSS stands for:
+A) Free Operating System Software
+B) Free and Open-Source Software
+C) Financial Open Security System
+D) Fast Object Source Software
+Ans: B | Speed Solution: FOSS = Code is free to see, modify, and distribute.
+142. The defining characteristic of "Proprietary Software" (like Microsoft Office) is:
+A) It is always free
+B) The source code is legally restricted, hidden, and cannot be modified by the user
+C) It contains viruses
+D) It only runs on servers
+Ans: B | Speed Solution: Proprietary = Property of the company (Closed-source).
+143. "Freeware" and "Open-Source" are often confused. What is the key difference?
+A) There is no difference
+B) Freeware is free of cost, but the source code remains hidden and proprietary (e.g., Adobe Reader). Open-source provides the source code.
+C) Open-source costs money
+D) Freeware is illegal
+Ans: B | Speed Solution: Freeware = Free beer (you can drink it, but you don't get the recipe). Open-source = Free speech (you get the recipe).
+144. Which of the following operating systems is entirely Open-Source?
+A) Windows 11
+B) macOS
+C) Ubuntu Linux
+D) iOS
+Ans: C | Speed Solution: Ubuntu is a Linux distribution. Linux is the most famous open-source project.
+145. A user downloads software that works fully for 30 days, after which it locks and demands a license purchase. This distribution model is:
+A) Freeware
+B) Shareware / Trialware
+C) Open-source
+D) Adware
+Ans: B | Speed Solution: Shareware lets you try it before you buy it.
+146. "GNU GPL" is one of the most widely used software licenses. GPL stands for:
+A) Global Programming License
+B) General Public License
+C) General Private License
+D) GNU Protected License
+Ans: B | Speed Solution: The GPL guarantees users the freedom to share and modify the software.
+147. A key stipulation of the GNU GPL (Copyleft) is that if you modify and distribute the open-source software, you must:
+A) Pay a fee
+B) Release your modified version under the same open-source GPL license
+C) Hide the source code
+D) Get permission from the government
+Ans: B | Speed Solution: "Copyleft" ensures open-source code stays open-source forever, even when modified.
+148. Which of the following is a Proprietary operating system heavily utilized in mobile banking devices?
+A) Ubuntu Touch
+B) iOS (Apple)
+C) LineageOS
+D) Firefox OS
+Ans: B | Speed Solution: Apple's iOS is highly restricted and proprietary.
+149. The core of the Android operating system is based on:
+A) Windows NT Kernel
+B) Open-source Linux Kernel
+C) Proprietary Apple Kernel
+D) Unix System V
+Ans: B | Speed Solution: Android is technically a Linux distribution for mobile devices.
+150. "Public Domain" software means:
+A) It is owned by the government
+B) The creator has relinquished all copyright, and anyone can do anything with it without restriction
+C) It is open-source but restricted
+D) It is illegal to use
+Ans: B | Speed Solution: Public domain = No copyright.
+151. Which popular web browser is Open-Source?
+A) Safari
+B) Internet Explorer
+C) Mozilla Firefox
+D) Microsoft Edge (legacy)
+Ans: C | Speed Solution: Firefox is developed by the non-profit Mozilla Foundation as FOSS.
+152. Google Chrome is based on an open-source project, but Chrome itself includes proprietary tracking features. What is the pure open-source project it is based on?
+A) Chromium
+B) WebKit
+C) Gecko
+D) Blink
+Ans: A | Speed Solution: Chromium is the open-source base for Chrome, Edge, and Brave.
+153. A bank wants to deploy a highly secure, enterprise-grade Linux distribution with paid commercial support. Which is the industry standard?
+A) Linux Mint
+B) Red Hat Enterprise Linux (RHEL)
+C) Puppy Linux
+D) Kali Linux
+Ans: B | Speed Solution: Red Hat provides open-source Linux with enterprise-level paid tech support.
+154. "Kali Linux" is an open-source OS specifically pre-configured for which banking IT task?
+A) Word processing
+B) Database management
+C) Penetration Testing / Ethical Hacking
+D) Video editing
+Ans: C | Speed Solution: Kali is the standard toolkit OS for cybersecurity professionals.
+155. Which of the following server software is Proprietary?
+A) Apache HTTP Server
+B) Nginx
+C) Microsoft Internet Information Services (IIS)
+D) MySQL
+Ans: C | Speed Solution: IIS is Microsoft's proprietary web server for Windows.
+156. In the context of software licensing, what does "EULA" stand for?
+A) Electronic User License Agreement
+B) End-User License Agreement
+C) Enterprise Utility License Agreement
+D) Encrypted User Legal Agreement
+Ans: B | Speed Solution: The EULA is the long legal contract you click "I Agree" to when installing software.
+157. Which database management system (DBMS) is heavily used in core banking and is purely Proprietary?
+A) MySQL
+B) PostgreSQL
+C) Oracle Database
+D) MariaDB
+Ans: C | Speed Solution: Oracle is a massive, extremely expensive proprietary database.
+158. Which open-source relational database is considered the most advanced equivalent to Oracle?
+A) SQLite
+B) Microsoft Access
+C) PostgreSQL
+D) MongoDB
+Ans: C | Speed Solution: PostgreSQL is an enterprise-class open-source relational database.
+159. "Vendor Lock-in" is a major risk for banks. What does it mean?
+A) The server room is physically locked
+B) A bank becomes highly dependent on a proprietary vendor's software/hardware, making it prohibitively expensive to switch to a competitor
+C) Passwords are lost
+D) The OS blocks internet access
+Ans: B | Speed Solution: Stuck with Microsoft or Oracle because switching costs millions. Open-source prevents this.
+160. Which office productivity suite is a free, Open-Source alternative to Microsoft Office?
+A) Corel WordPerfect
+B) LibreOffice / Apache OpenOffice
+C) Google Workspace
+D) Apple iWork
+Ans: B | Speed Solution: LibreOffice is the standard FOSS office suite.
+161. A "Permissive" open-source license (like MIT or Apache) differs from a "Copyleft" license (like GPL) because:
+A) It requires payment
+B) It allows developers to modify the code and release the result as closed-source proprietary software
+C) It bans commercial use
+D) It restricts modifications
+Ans: B | Speed Solution: Permissive means "do whatever you want, even sell it." Copyleft means "if you use this, your project must also be open-source."
+162. macOS is a proprietary operating system. However, its core kernel (Darwin) and userland are heavily based on which open-source project?
+A) Linux
+B) FreeBSD (Unix)
+C) Windows NT
+D) Solaris
+Ans: B | Speed Solution: macOS is built on a Unix foundation (BSD).
+163. What is the name of the open-source mobile OS originally developed by Mozilla that failed to gain market share?
+A) Symbian
+B) Firefox OS
+C) Tizen
+D) WebOS
+Ans: B | Speed Solution: Firefox OS attempted to make everything web-based but failed against Android.
+164. Which tech giant is currently one of the largest contributors to open-source projects (like VS Code, TypeScript, and Linux integration) after historically fighting it?
+A) Apple
+B) Microsoft
+C) Oracle
+D) IBM
+Ans: B | Speed Solution: Microsoft shifted strategy under Satya Nadella, embracing open-source heavily (acquiring GitHub).
+165. "Adware" is typically distributed using which software model?
+A) Open-source
+B) Freeware (bundled with hidden ads)
+C) Paid commercial
+D) Public Domain
+Ans: B | Speed Solution: The software is free, but the creator makes money by injecting advertisements.
+166. Which operating system was specifically designed for mainframe computers processing bulk banking transactions, and is heavily proprietary to IBM?
+A) z/OS
+B) Windows Server
+C) Ubuntu
+D) Android
+Ans: A | Speed Solution: IBM z/OS is the gold standard for high-security mainframe banking.
+167. An IT auditor checks software compliance. If a bank uses pirated proprietary software, what law is primarily violated?
+A) Privacy laws
+B) Copyright / Intellectual Property (IP) laws
+C) Defamation laws
+D) Hardware regulations
+Ans: B | Speed Solution: Software is protected as intellectual property under copyright law.
+168. "SaaS" (Software as a Service) like Microsoft 365 or Salesforce is replacing traditional software licensing. How does SaaS billing usually work?
+A) One-time lifetime purchase
+B) Recurring subscription model (monthly/yearly)
+C) Free forever
+D) Pay per click
+Ans: B | Speed Solution: SaaS relies on continuous subscription revenue.
+169. What does the term "Forking" mean in open-source software development?
+A) Deleting the code
+B) Taking a copy of the source code and starting independent development on it, creating a distinct and separate piece of software
+C) Selling the code
+D) Translating the code
+Ans: B | Speed Solution: A fork in the road. E.g., MariaDB was "forked" from MySQL.
+170. Which open-source software component handles the visual display manager (windows, mouse pointer) on Linux systems?
+A) The Kernel
+B) The Shell
+C) X11 (X Window System) / Wayland
+D) BASH
+Ans: C | Speed Solution: X11/Wayland provides the core GUI foundation in Linux.
+171. Why might a central bank prefer Proprietary Software for its core security modules over Open-Source?
+A) Proprietary software is always bug-free
+B) They may want a legally binding Service Level Agreement (SLA) with guaranteed corporate accountability and immediate tech support
+C) Open-source software cannot be encrypted
+D) Proprietary software is free
+Ans: B | Speed Solution: Enterprises pay for accountability. If open-source breaks, nobody is legally obligated to fix it instantly.
+172. Why might a central bank prefer Open-Source software for its core infrastructure?
+A) It looks better
+B) The code can be independently audited for hidden backdoors by the bank's own security team
+C) It doesn't use the internet
+D) It requires no RAM
+Ans: B | Speed Solution: Open code = Transparent security. No hidden spy functions.
+173. What is "Abandonware"?
+A) Software that has a virus
+B) Proprietary software that is no longer updated or supported by its creator, but still under copyright
+C) Open-source software
+D) Antivirus software
+Ans: B | Speed Solution: Abandoned by the creator (e.g., old 1990s games or old banking tools).
+174. A software license that charges a fee based on the number of simultaneous users accessing the server is called a:
+A) Per-Seat License
+B) Concurrent Use License
+C) Site License
+D) Freeware License
+Ans: B | Speed Solution: Concurrent = at the exact same time.
+175. A "Site License" for a bank means:
+A) The software can be used on one PC only
+B) The software can be installed on an unlimited number of computers at a specific physical location/company
+C) The software is for websites
+D) The software is free
+Ans: B | Speed Solution: Flat fee for the whole "site" (office).
+176. The Linux operating system relies on various "Distributions" (Distros). What is a Distro?
+A) A virus package
+B) A complete OS made by combining the Linux kernel with GNU utilities, a shell, a desktop environment, and applications
+C) A hardware component
+D) A compiler
+Ans: B | Speed Solution: Linux is just the kernel. A Distro (like Ubuntu) adds the shell, GUI, and apps to make it usable.
+177. Which of the following Linux distributions is maintained entirely by a community and serves as the testing ground for Red Hat?
+A) Fedora
+B) Ubuntu
+C) Debian
+D) Arch
+Ans: A | Speed Solution: Fedora is the upstream, cutting-edge community version of Red Hat.
+178. What is the fundamental difference between an Operating System and an Application Program?
+A) OS is hardware; Application is software
+B) OS manages system resources and hardware; Application performs specific tasks for the user
+C) OS is open-source; Application is proprietary
+D) No difference
+Ans: B | Speed Solution: OS is the manager. App is the worker doing the specific job.
+179. In Windows, which OS component ensures that if a legacy application crashes, it does not bring down the modern OS?
+A) BASH
+B) Protected Memory Space / Preemptive Multitasking
+C) Spooler
+D) Bootloader
+Ans: B | Speed Solution: Protected memory isolates the crash.
+180. "Wine" is a popular compatibility layer for Linux. What does it allow users to do?
+A) Drink alcohol
+B) Run proprietary Windows executable (.exe) applications natively on Linux
+C) Compile C code
+D) Format hard drives
+Ans: B | Speed Solution: Wine Is Not an Emulator. It translates Windows API calls to Linux on the fly.
+181. A smartphone's "Firmware Over-The-Air" (FOTA) update primarily modifies which architectural component?
+A) The RAM
+B) The OS Kernel and Core System Files stored in ROM/Flash
+C) User photos
+D) The SIM card
+Ans: B | Speed Solution: Firmware updates flash the deep OS levels.
+182. Which of the following file systems is open-source and standard for Linux partitions?
+A) FAT32
+B) NTFS
+C) APFS
+D) ext4
+Ans: D | Speed Solution: ext4 (Fourth Extended Filesystem).
+183. Which proprietary file system is optimized for Apple's solid-state drives (SSDs)?
+A) NTFS
+B) HFS+
+C) APFS (Apple File System)
+D) ext4
+Ans: C | Speed Solution: APFS replaced HFS+ specifically to handle flash storage better.
+184. In terms of licensing, "Creative Commons" (CC) is primarily used for:
+A) Operating Systems
+B) Compilers
+C) Creative works like images, text, and music (Content), rather than software code
+D) Proprietary databases
+Ans: C | Speed Solution: CC licenses dictate how media/art can be shared.
+185. A banking web server utilizes a LAMP stack. LAMP stands for Linux, Apache, MySQL, and:
+A) Python/PHP/Perl
+B) PowerPoint
+C) Proprietary
+D) Ping
+Ans: A | Speed Solution: LAMP is the classic open-source web architecture stack.
+186. Which type of software execution allows Java to be slightly slower than C++, but highly portable across Windows, Mac, and Linux?
+A) Direct Machine Code Execution
+B) Interpreting Bytecode via a Virtual Machine (JVM)
+C) Hardware Execution
+D) Assembly Execution
+Ans: B | Speed Solution: The extra step of passing through the Virtual Machine interpreter adds a slight delay but allows portability.
+187. What does the term "Bloatware" refer to?
+A) Software that reduces file size
+B) Pre-installed proprietary software on a new PC or phone that uses up RAM/Storage and is largely useless to the user
+C) A virus that expands the hard drive
+D) An open-source compiler
+Ans: B | Speed Solution: Useless apps that "bloat" the system.
+188. In Android OS, what handles the execution of apps (historically Dalvik, now ART)?
+A) The Linux Kernel
+B) A specialized Runtime Environment (Android Runtime)
+C) A C++ Compiler
+D) The Shell
+Ans: B | Speed Solution: ART translates the app bytecode so the phone's processor can run it.
+189. A "Hypervisor" allows multiple Operating Systems to run on one physical server. This technology is known as:
+A) Compiling
+B) Virtualization
+C) Formatting
+D) Booting
+Ans: B | Speed Solution: Virtualization creates Virtual Machines (VMs).
+190. An enterprise server running "VMware ESXi" operates without a traditional underlying OS like Windows. This makes ESXi a:
+A) Type 2 Hypervisor
+B) Type 1 (Bare-Metal) Hypervisor
+C) Compiler
+D) Shell
+Ans: B | Speed Solution: Bare-metal means the hypervisor IS the operating system.
+191. "VirtualBox" is installed on top of a normal Windows 10 OS to run Linux in a window. VirtualBox is a:
+A) Type 1 Hypervisor
+B) Type 2 (Hosted) Hypervisor
+C) Bootloader
+D) Kernel
+Ans: B | Speed Solution: Hosted = Runs on top of a normal host OS.
+192. Which open-source containerization technology revolutionized software deployment by packaging an application and its dependencies, without needing a full Virtual Machine OS?
+A) VMware
+B) Docker
+C) VirtualBox
+D) BIOS
+Ans: B | Speed Solution: Containers (Docker) share the host kernel, making them incredibly lightweight compared to VMs.
+193. The "Swap Space" in a Linux OS is functionally identical to what in a Windows OS?
+A) The Registry
+B) The Pagefile (Virtual Memory)
+C) The Command Prompt
+D) The Bootloader
+Ans: B | Speed Solution: Swap = Pagefile = Hard drive space used as emergency RAM.
+194. When a bank teller saves an Excel file, the OS sends the write command to the Storage Controller via the:
+A) Memory Bus
+B) I/O Bus (e.g., PCIe/SATA)
+C) Video Bus
+D) USB
+Ans: B | Speed Solution: Hard drives are Input/Output devices attached to the I/O bus.
+195. Which translator converts instructions like ADD R1, R2 into 01000001 01000010?
+A) Compiler
+B) Interpreter
+C) Assembler
+D) Linker
+Ans: C | Speed Solution: Translating Mnemonics (ADD) to binary is Assembly.
+196. An OS must prevent a process from getting stuck in an infinite loop and freezing the CPU. It uses a hardware timer to forcefully interrupt the CPU. This is an example of:
+A) Preemptive Multitasking
+B) Cooperative Multitasking
+C) Batch Processing
+D) Compiling
+Ans: A | Speed Solution: Hardware timers allow the OS to "preempt" or forcefully take back control.
+197. Which of the following is NOT an advantage of Open-Source Software for a commercial bank?
+A) Lower licensing costs
+B) Customizability of the source code
+C) Lack of a central entity holding legal liability for software failure
+D) Rapid security patching by the global community
+Ans: C | Speed Solution: FOSS has no single corporate owner to sue if something goes disastrously wrong.
+198. The mechanism that allows a user to type commands like mkdir (make directory) and have the OS execute them is the:
+A) Command Line Interpreter / Shell
+B) Compiler
+C) Assembler
+D) GUI
+Ans: A | Speed Solution: The CLI shell interprets text commands into system actions.
+199. A "Zero-Day Exploit" targets a vulnerability in proprietary software that:
+A) Has been patched 10 years ago
+B) Is known to the vendor but not yet patched, or entirely unknown to the vendor
+C) Only affects open-source software
+D) Requires zero RAM
+Ans: B | Speed Solution: Zero days since the developer knew about it = no patch exists.
+200. Ultimately, whether an OS is Monolithic, Microkernel, Open-Source, or Proprietary, its foundational role is that of a:
+A) Resource Allocator and Control Program
+B) Database Manager
+C) Word Processor
+D) Web Browser
+Ans: A | Speed Solution: Textbook definition. The OS allocates resources (RAM/CPU) and controls execution to prevent errors.

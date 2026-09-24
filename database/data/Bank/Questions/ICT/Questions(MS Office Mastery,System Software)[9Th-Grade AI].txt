@@ -1,0 +1,2411 @@
+﻿Topic 1: MS Word Mastery (Shortcuts, Ribbon, Mail Merge)
+1. A Bangladesh Bank auditor needs to double-underline a suspected fraudulent transaction in an MS Word audit report. Which shortcut should be used?
+A) Ctrl + U
+B) Ctrl + Shift + D
+C) Ctrl + Shift + U
+D) Alt + U + D
+Ans: B | Speed Solution: "D" stands for Double. Ctrl+U is single underline. Shift modifies it to Double.
+2. To rapidly align a paragraph containing commercial bank reserve ratios to the right, which keystroke is required?
+A) Ctrl + J
+B) Ctrl + E
+C) Ctrl + R
+D) Ctrl + L
+Ans: C | Speed Solution: R = Right, E = cEnter, J = Justify, L = Left. Don't confuse E with Right.
+3. In MS Word, which Ribbon Tab contains the "Mail Merge" feature used by the HR department to send interview call letters to 500 AD candidates?
+A) Insert
+B) References
+C) Mailings
+D) Review
+Ans: C | Speed Solution: Name matching trick. Mail Merge is strictly under "Mailings". It is not an "Insert" object.
+4. What is the core difference between a Footnote and an Endnote in a central bank policy document?
+A) Footnotes appear at the bottom of each page; Endnotes appear at the end of the document.
+B) Footnotes are under the 'Insert' tab; Endnotes are under 'References'.
+C) Footnotes are used for citations; Endnotes for web links.
+D) There is no functional difference.
+Ans: A | Speed Solution: "Foot" = bottom of the current step (page). "End" = end of the journey (document). Both are in the 'References' tab.
+5. A banking officer wants to change the line spacing of a memo to 1.5. What is the fastest keyboard shortcut?
+A) Ctrl + 1
+B) Ctrl + 2
+C) Ctrl + 5
+D) Ctrl + 1.5
+Ans: C | Speed Solution: Ctrl+1 = Single, Ctrl+2 = Double. 1.5 spacing is mapped to Ctrl+5 (think 5 as the .5 in 1.5).
+6. To find a specific banking act in a 200-page PDF converted to Word, the officer presses Ctrl+F. Which pane opens?
+A) Find and Replace
+B) Navigation Pane
+C) Search formatting
+D) Document Map
+Ans: B | Speed Solution: In modern MS Word (2013+), Ctrl+F opens the "Navigation Pane" on the left, NOT the traditional dialog box (which is Ctrl+H).
+7. Which feature is used to create a large capital letter at the beginning of a paragraph in a BB annual report?
+A) WordArt
+B) Drop Cap
+C) Text Box
+D) SmartArt
+Ans: B | Speed Solution: "Drop Cap" drops the capital letter down across multiple lines. Found in the 'Insert' tab.
+8. To quickly insert a hyperlink to a Bangladesh Bank circular, a BSC candidate should press:
+A) Ctrl + H
+B) Ctrl + L
+C) Ctrl + K
+D) Alt + H
+Ans: C | Speed Solution: Ctrl+H is Replace. Link ends with 'K' -> Ctrl+K.
+9. While drafting a monetary policy, what does the shortcut Shift + F3 do?
+A) Opens the thesaurus
+B) Changes text case (Uppercase, Lowercase, Title Case)
+C) Inserts a footnote
+D) Opens print preview
+Ans: B | Speed Solution: F3 = Case 3. Cycles through 3 cases: lowercase, UPPERCASE, Title Case.
+10. In the Mail Merge process, which of the following is NOT a valid document type?
+A) Letters
+B) Envelopes
+C) Directory
+D) Spreadsheets
+Ans: D | Speed Solution: Spreadsheets are the Data Source for Mail Merge, not the output document type.
+11. Which shortcut creates a hanging indent for a bibliography of economic resources?
+A) Ctrl + M
+B) Ctrl + T
+C) Ctrl + H
+D) Ctrl + I
+Ans: B | Speed Solution: Ctrl+M = Margin indent (whole paragraph). Ctrl+T = hanging indenT (first line stays, rest indents).
+12. To revert the last undone action (Redo) while formatting a balance sheet, use:
+A) Ctrl + Z
+B) Ctrl + Y
+C) Ctrl + X
+D) Ctrl + R
+Ans: B | Speed Solution: Z is Undo (end of alphabet = reverse). Y is right before Z = Redo.
+13. Which Ribbon tab houses the 'Track Changes' feature used by senior officers to review draft circulars?
+A) View
+B) References
+C) Review
+D) Page Layout
+Ans: C | Speed Solution: Tracking changes is a "Reviewing" action. It sits in the Review tab.
+14. What does Ctrl + = do in MS Word (useful for writing H₂O in science/banking tech reports)?
+A) Superscript
+B) Subscript
+C) Strikethrough
+D) Small Caps
+Ans: B | Speed Solution: Base level = Subscript (Ctrl + =). Above base = Superscript (Ctrl + Shift + +).
+15. To print a document, you press Ctrl+P. Which tab in the Ribbon does this take you to in modern MS Office?
+A) Home
+B) Insert
+C) File (Backstage View)
+D) Page Layout
+Ans: C | Speed Solution: Print, Save, Open are all foundational file management tools located in the File tab (Backstage View).
+16. A cash officer wants to select an entire document. What is the shortcut?
+A) Ctrl + S
+B) Ctrl + A
+C) Alt + A
+D) Ctrl + Shift + A
+Ans: B | Speed Solution: A = All. Ctrl+A selects everything.
+17. What is the function of the F7 key in MS Word?
+A) Save As
+B) Spelling and Grammar check
+C) Thesaurus
+D) Refresh
+Ans: B | Speed Solution: F7 is the universal Office shortcut for Spelling/Grammar. (Shift+F7 is Thesaurus).
+18. Which MS Word feature allows you to copy formatting from a heading and apply it elsewhere?
+A) Format Copier
+B) Format Painter
+C) Style Cloner
+D) Font Copier
+Ans: B | Speed Solution: "Painter" paints the copied format. Shortcut: Ctrl+Shift+C to copy format, Ctrl+Shift+V to paste.
+19. Under which tab is the 'Watermark' option located to mark a document "CONFIDENTIAL"?
+A) Page Layout / Design
+B) Insert
+C) View
+D) Review
+Ans: A | Speed Solution: Watermarks alter the Design of the page. Found in Design tab (or Page Layout in older versions).
+20. To close the active MS Word document without closing the application, use:
+A) Alt + F4
+B) Ctrl + W
+C) Esc
+D) Ctrl + Q
+Ans: B | Speed Solution: Alt+F4 closes the program. Ctrl+W closes the Window/Document inside the program.
+21. What is the default font size and font face in MS Word 2016+?
+A) Times New Roman, 12
+B) Calibri, 11
+C) Arial, 10
+D) Calibri, 12
+Ans: B | Speed Solution: Legacy was Times 12. Modern default is strictly Calibri 11.
+22. Which key combination inserts a Page Break?
+A) Shift + Enter
+B) Ctrl + Enter
+C) Alt + Enter
+D) Tab + Enter
+Ans: B | Speed Solution: Shift+Enter = Line break (soft). Ctrl+Enter = Page break (hard).
+23. The 'Table of Contents' is generated automatically using which feature?
+A) Bookmarks
+B) Hyperlinks
+C) Heading Styles
+D) Footnotes
+Ans: C | Speed Solution: TOC scans the document for text formatted with Heading 1, Heading 2, etc., to build the index.
+24. What does Ctrl + Shift + > do?
+A) Indents text
+B) Increases font size
+C) Changes font color
+D) Moves to end of document
+Ans: B | Speed Solution: ">" means bigger. Ctrl+Shift+> increases font size incrementally.
+25. A macro in MS Word is used to:
+A) Scan for viruses
+B) Automate repetitive tasks by recording keystrokes
+C) Compress file size
+D) Merge mail documents
+Ans: B | Speed Solution: Macros = Automation. Written in VBA (Visual Basic for Applications).
+Topic 2: MS Excel Mastery (Shortcuts, Functions, Financial Contexts)
+26. A loan officer is calculating the monthly EMI. Which Excel function must be used?
+A) VLOOKUP
+B) PMT
+C) NPV
+D) IRR
+Ans: B | Speed Solution: PMT = Payment. Calculates periodic payment for a loan based on constant payments and a constant interest rate.
+27. To lock a cell reference (make it absolute) in a formula (e.g., locking the tax rate cell), which key is used?
+A) F2
+B) F3
+C) F4
+D) F5
+Ans: C | Speed Solution: F4 toggles absolute/relative references by adding '$' signs (e.g., 1).
+28. Which shortcut selects an entire column in an Excel worksheet?
+A) Ctrl + Space
+B) Shift + Space
+C) Ctrl + Shift + C
+D) Alt + Space
+Ans: A | Speed Solution: C = Column = Ctrl. (Ctrl+Space = Column, Shift+Space = Row).
+29. To find a customer’s account balance based on their Account Number from a vertically arranged database, use:
+A) HLOOKUP
+B) VLOOKUP
+C) MATCH
+D) INDEX
+Ans: B | Speed Solution: V = Vertical. The database is arranged vertically (columns), so VLOOKUP is required.
+30. Which Ribbon tab contains the "PivotTable" tool used to summarize massive daily transaction logs?
+A) Data
+B) Insert
+C) Formulas
+D) Review
+Ans: B | Speed Solution: You insert a new object (PivotTable, Chart, Shape) into the sheet. It's under Insert, not Data.
+31. What does the shortcut Ctrl + 1 do in Excel?
+A) Opens Print Preview
+B) Selects row 1
+C) Opens Format Cells dialog box
+D) Bolds text
+Ans: C | Speed Solution: Formatting is the #1 most used Excel feature. Ctrl+1 opens the master Format Cells box.
+32. To quickly auto-sum a column of daily cash deposits, a teller can press:
+A) Ctrl + S
+B) Alt + =
+C) Shift + +
+D) Ctrl + =
+Ans: B | Speed Solution: Alt + = instantly inserts the SUM formula for adjacent cells.
+33. If an Excel cell displays "#####", what does it indicate to the banker?
+A) Formula error
+B) Division by zero
+C) The column is too narrow to display the number
+D) Circular reference
+Ans: C | Speed Solution: Hashtags mean the number exists but physically cannot fit in the column width. Double-click the column header to expand.
+34. Which function counts the number of cells containing numbers (excluding text) in a range?
+A) COUNTA
+B) COUNTIF
+C) COUNT
+D) SUM
+Ans: C | Speed Solution: COUNT = numbers only. COUNTA = All (numbers + text).
+35. To start a new line inside the SAME Excel cell (e.g., writing a multi-line address), press:
+A) Enter
+B) Shift + Enter
+C) Alt + Enter
+D) Ctrl + Enter
+Ans: C | Speed Solution: Alt+Enter forces an in-cell line break (wrap text manual override).
+36. A Data Validation rule in Excel is primarily used to:
+A) Protect the sheet with a password
+B) Restrict the type of data or values users can enter into a cell
+C) Encrypt the file
+D) Track changes made by other users
+Ans: B | Speed Solution: "Validation" = checking if data is valid. It restricts entry (e.g., allowing only dates or numbers > 0).
+37. Which error appears if a formula divides a bank's total assets by zero?
+A) #NAME?
+B) #VALUE!
+C) #DIV/0!
+D) #REF!
+Ans: C | Speed Solution: DIV = Divide. 0 = Zero. Literal translation of the math error.
+38. The shortcut to insert the current date in an Excel cell is:
+A) Ctrl + D
+B) Ctrl + ;
+C) Ctrl + Shift + :
+D) Alt + D
+Ans: B | Speed Solution: Semicolon (;) = Date. Colon (:) = Time (Ctrl+Shift+:).
+39. What is the intersection of a row and a column called?
+A) Workbook
+B) Range
+C) Cell
+D) Matrix
+Ans: C | Speed Solution: The fundamental unit of Excel is the Cell (e.g., A1).
+40. To freeze the top row containing column headers so they don't disappear when scrolling down, go to:
+A) Page Layout tab
+B) Review tab
+C) View tab
+D) Data tab
+Ans: C | Speed Solution: Freezing panes changes how you View the sheet. It doesn't alter data or layout printing.
+41. Which feature automatically fills data down a column based on a recognized pattern (e.g., Jan, Feb, Mar...)?
+A) AutoSum
+B) Flash Fill / AutoFill
+C) Format Painter
+D) Data Consolidation
+Ans: B | Speed Solution: AutoFill recognizes sequential patterns and populates cells by dragging the bottom-right corner.
+42. Which shortcut is used to edit the contents of the active cell?
+A) F2
+B) F4
+C) F9
+D) F12
+Ans: A | Speed Solution: F2 = Edit mode. (F4 = absolute ref, F12 = Save As).
+43. To hide an entire row in Excel, use the shortcut:
+A) Ctrl + 9
+B) Ctrl + 0
+C) Ctrl + H
+D) Alt + H
+Ans: A | Speed Solution: Ctrl+9 hides Rows. Ctrl+0 hides c0lumns (think 0 looks like a vertical column).
+44. What does the "IF" function do in a loan approval worksheet?
+A) Calculates total interest
+B) Returns one value if a condition is true and another if false
+C) Finds the highest loan amount
+D) Merges text strings
+Ans: B | Speed Solution: IF = logical test. IF(credit_score>700, "Approve", "Reject").
+45. Which of the following is NOT an aggregate mathematical function in Excel?
+A) SUM
+B) AVERAGE
+C) MAX
+D) CONCATENATE
+Ans: D | Speed Solution: CONCATENATE merges text strings together, it does not perform mathematical aggregation.
+46. In an Excel formula, what is the order of operations (precedence)?
+A) Addition, Subtraction, Multiplication, Division
+B) Parentheses, Exponents, Multiplication/Division, Addition/Subtraction
+C) Left to Right strictly
+D) Multiplication first always
+Ans: B | Speed Solution: Follows standard PEMDAS/BODMAS math rules. Parentheses always win.
+47. To select non-adjacent cells (e.g., A1, C5, and D10) simultaneously, hold down the:
+A) Shift key
+B) Alt key
+C) Ctrl key
+D) Tab key
+Ans: C | Speed Solution: Shift selects a continuous range. Ctrl selects individual, broken (non-adjacent) cells.
+48. By default, numeric data in an Excel cell is aligned to the:
+A) Left
+B) Center
+C) Right
+D) Justified
+Ans: C | Speed Solution: Numbers align Right (to line up decimals). Text aligns Left.
+49. What is the maximum number of rows in a modern Excel worksheet (2007 onwards)?
+A) 65,536
+B) 1,048,576
+C) 256
+D) 16,384
+Ans: B | Speed Solution: Modern Excel = ~1 million rows (1,048,576) and 16,384 columns. Old Excel (2003) had 65,536.
+50. Which shortcut opens the "Save As" dialog box directly?
+A) Ctrl + S
+B) F12
+C) F5
+D) Alt + S
+Ans: B | Speed Solution: Ctrl+S is Save (overwrites). F12 forces a new "Save As" window.
+Topic 3: MS PowerPoint Mastery (Animations vs Transitions, Design)
+51. A BB Deputy Governor is presenting. What is the fundamental difference between a 'Slide Transition' and a 'Custom Animation'?
+A) Transitions apply to text; Animations apply to images.
+B) Transitions move from one slide to the next; Animations move objects within a single slide.
+C) Transitions are manual; Animations are automatic.
+D) There is no difference.
+Ans: B | Speed Solution: Transition = Slide-level change (Fade, Wipe). Animation = Object-level change inside a slide (Bounce, Fly-in).
+52. To start a slide show from the current slide (not the beginning), use:
+A) F5
+B) Shift + F5
+C) Ctrl + F5
+D) Alt + F5
+Ans: B | Speed Solution: F5 = From beginning. Shift+F5 = From current slide.
+53. Which view is used to rearrange the order of slides easily using thumbnails?
+A) Normal View
+B) Slide Sorter View
+C) Notes Page View
+D) Reading View
+Ans: B | Speed Solution: "Sorter" implies organizing. It displays all slides as a grid of thumbnails.
+54. In PPT, the "Master Slide" is used to:
+A) Create complex animations
+B) Apply a consistent layout, logo, and font across all slides simultaneously
+C) Run the presentation automatically
+D) Compress the file size
+Ans: B | Speed Solution: The Master controls the universal template. Edit the Master, and all slides update instantly.
+55. To add a corporate Bangladesh Bank logo to the bottom right of every slide automatically, where should you place it?
+A) On the first slide
+B) In the Slide Master
+C) In the Handout Master
+D) On a transition
+Ans: B | Speed Solution: Master Slide edits cascade to all dependent slides.
+56. During a live presentation, pressing the 'B' key on the keyboard will:
+A) Go Back one slide
+B) Turn the screen Black
+C) Bold the selected text
+D) End the show
+Ans: B | Speed Solution: B = Black screen (draws audience focus to speaker). W = White screen.
+57. Which shortcut duplicates the current slide?
+A) Ctrl + C
+B) Ctrl + N
+C) Ctrl + D
+D) Ctrl + M
+Ans: C | Speed Solution: D = Duplicate. (Ctrl+M creates a new, blank slide).
+58. What does Ctrl + M do in PowerPoint?
+A) Mutes audio
+B) Merges shapes
+C) Inserts a new slide
+D) Opens the macro menu
+Ans: C | Speed Solution: N is for New Presentation file. M is for new slide inside the current file.
+59. Which tab contains the option to record narration for a presentation?
+A) Slide Show
+B) Design
+C) Transitions
+D) Home
+Ans: A | Speed Solution: Narration is part of delivering/running the show. Found under 'Slide Show' tab.
+60. The effect 'Wipe', 'Fade', and 'Push' are examples of:
+A) Font styles
+B) Animations
+C) Slide Transitions
+D) SmartArt
+Ans: C | Speed Solution: These affect how the entire slide appears, hence they are Transitions.
+61. What is the maximum zoom percentage in MS PowerPoint?
+A) 100%
+B) 200%
+C) 400%
+D) 500%
+Ans: C | Speed Solution: PPT zooms to 400%. (Word zooms to 500%).
+62. To exit a running slide show immediately, press:
+A) End
+B) Esc
+C) Alt + F4
+D) Ctrl + Q
+Ans: B | Speed Solution: Escape (Esc) cancels the current full-screen execution.
+63. Which format is best for saving a presentation so it automatically opens in Slide Show view (bypassing editing mode)?
+A) .pptx
+B) .potx
+C) .ppsx
+D) .pdf
+Ans: C | Speed Solution: "PPSX" stands for PowerPoint Show. It opens straight into presentation mode.
+64. How do you select multiple objects on a single slide to group them?
+A) Hold Alt and click
+B) Hold Shift or Ctrl and click each object
+C) Press F4
+D) Double-click the slide background
+Ans: B | Speed Solution: Standard Windows shortcut for multi-selection is holding Shift or Ctrl.
+65. Which feature allows you to practice your presentation and records how long you spend on each slide?
+A) Rehearse Timings
+B) Record Slide Show
+C) Presenter Coach
+D) Custom Show
+Ans: A | Speed Solution: "Rehearse" implies practicing time management.
+66. What is a "Trigger" in PowerPoint animations?
+A) A sound effect played at the end
+B) An action that causes an animation to play only when a specific object is clicked
+C) A virus alert
+D) A slide transition method
+Ans: B | Speed Solution: A trigger initiates an event. E.g., clicking a button to make a chart appear.
+67. To group selected shapes into a single object, press:
+A) Ctrl + G
+B) Ctrl + Shift + G
+C) Alt + G
+D) Ctrl + M
+Ans: A | Speed Solution: G = Group. (Ctrl+Shift+G = Ungroup).
+68. The "Presenter View" in PowerPoint requires:
+A) Two monitors (one for audience, one for speaker notes)
+B) A fast internet connection
+C) A laser pointer
+D) MS Excel integration
+Ans: A | Speed Solution: Presenter view secretly shows the speaker their notes and upcoming slides on monitor 1, while monitor 2 shows just the slides.
+69. Which file extension represents a PowerPoint Template?
+A) .pptx
+B) .potx
+C) .ppsx
+D) .ptmx
+Ans: B | Speed Solution: 'T' stands for Template (.potx).
+70. In the Home tab, the 'Reset' button does what to a slide?
+A) Deletes the slide
+B) Resets the position, size, and formatting of slide placeholders to default settings
+C) Restarts the slide show
+D) Undoes the last typing
+Ans: B | Speed Solution: Fixes a messy slide by snapping elements back to the Master template layout.
+Topic 4: System Software vs. Utility Programs (OS, Antivirus, Backup)
+71. A Bangladesh Bank IT officer is explaining system architecture. Which of the following is strictly a 'System Software' and NOT an 'Application Software'?
+A) MS Excel
+B) Core Banking Software (CBS)
+C) Linux
+D) Adobe Acrobat
+Ans: C | Speed Solution: Operating Systems (Linux, Windows, macOS) are the base System Software. Everything else runs on top of them.
+72. What is the primary function of an Operating System (OS)?
+A) To scan for malware
+B) To manage computer hardware and software resources
+C) To compress large files
+D) To browse the internet
+Ans: B | Speed Solution: The OS is the "Manager" of CPU, memory, and devices.
+73. Which of the following is a Utility Program, not an Operating System?
+A) macOS
+B) Windows 11
+C) Disk Defragmenter
+D) Android
+Ans: C | Speed Solution: Utilities perform specific maintenance tasks (cleaning, defragging, antivirus). They are part of system software but aren't the OS itself.
+74. WinZip and WinRAR are examples of:
+A) Database Managers
+B) Word Processors
+C) File Compression Utilities
+D) Operating Systems
+Ans: C | Speed Solution: "Zip" and "RAR" are archive formats used to compress file sizes.
+75. What does 'Disk Defragmentation' actually do to speed up a hard drive?
+A) Deletes old files
+B) Scans for viruses
+C) Rearranges fragmented data files so they occupy contiguous storage locations
+D) Increases the physical disk capacity
+Ans: C | Speed Solution: De-fragment = putting broken fragments back together (contiguous blocks) so the disk reads them faster.
+76. Which of the following OS is Open Source?
+A) Windows 10
+B) macOS
+C) Linux
+D) iOS
+Ans: C | Speed Solution: Linux source code is free and modifiable by anyone (e.g., Ubuntu, Red Hat). Windows/macOS are proprietary.
+77. An Antivirus software is categorized as:
+A) Application Software
+B) Utility Software
+C) Firmware
+D) Middleware
+Ans: B | Speed Solution: It maintains the health and security of the system, the textbook definition of a Utility.
+78. What is the core part of a Linux operating system called that manages memory and CPU time?
+A) Shell
+B) Kernel
+C) GUI
+D) Terminal
+Ans: B | Speed Solution: Kernel is the "heart/core" of the OS. The Shell is the outer interface the user types into.
+79. Which interface relies entirely on typing commands rather than clicking icons?
+A) GUI
+B) CLI (Command Line Interface)
+C) API
+D) BIOS
+Ans: B | Speed Solution: Command Line (e.g., MS-DOS, Linux Terminal). GUI = Graphical (Windows).
+80. What is 'Firmware'?
+A) A temporary software in RAM
+B) Software permanently programmed into a hardware device's ROM
+C) A type of computer virus
+D) Open-source application
+Ans: B | Speed Solution: "Firm" means it sits between soft(ware) and hard(ware). Found in BIOS, washing machines, routers.
+81. When you turn on a PC, the first software to run is:
+A) Windows OS
+B) Antivirus
+C) BIOS / UEFI
+D) MS Word
+Ans: C | Speed Solution: Basic Input/Output System (BIOS) wakes up the hardware and finds the OS to boot.
+82. A 'Device Driver' acts as a translator between:
+A) The CPU and RAM
+B) The Operating System and a Hardware Device (e.g., a printer)
+C) Two different networks
+D) The user and the monitor
+Ans: B | Speed Solution: The OS doesn't know how every printer works. The driver "translates" OS commands to hardware language.
+83. Which utility is used to copy data to a secondary location to prevent loss in case of hardware failure?
+A) Data Compression
+B) Disk Cleanup
+C) Backup Utility
+D) Task Manager
+Ans: C | Speed Solution: Backup = creating a redundant copy.
+84. Multitasking in an Operating System means:
+A) Connecting multiple monitors
+B) Running multiple applications apparently at the same time
+C) Having multiple users log in
+D) Installing multiple OS on one disk
+Ans: B | Speed Solution: Multi-tasking = CPU rapidly switching between tasks (Word, Spotify, Chrome) so they seem simultaneous.
+85. What is 'Virtual Memory'?
+A) Memory stored in the cloud
+B) A technique where the OS uses a portion of the Hard Disk as an extension of RAM
+C) Cache memory inside the CPU
+D) ROM memory
+Ans: B | Speed Solution: When RAM is full, the OS borrows space from the hard drive (Pagefile/Swap space) = Virtual Memory.
+86. Which of the following is NOT an Operating System?
+A) Unix
+B) MS-DOS
+C) Oracle
+D) Solaris
+Ans: C | Speed Solution: Oracle is an Enterprise Database Management System (DBMS/Application), not an OS.
+87. The process of the OS moving data between RAM and the Hard Disk to free up space is called:
+A) Paging / Swapping
+B) Defragmenting
+C) Compiling
+D) Booting
+Ans: A | Speed Solution: Swapping pages of memory in and out of the physical RAM.
+88. Which software translates high-level programming language code into machine language ALL AT ONCE?
+A) Interpreter
+B) Compiler
+C) Assembler
+D) Linker
+Ans: B | Speed Solution: Compiler = all at once (creates a .exe file). Interpreter = line-by-line.
+89. Which translates Assembly Language into machine code?
+A) Compiler
+B) Interpreter
+C) Assembler
+D) Shell
+Ans: C | Speed Solution: Name match: Assembly -> Assembler.
+90. 'Task Manager' in Windows is a utility used primarily to:
+A) Clean the registry
+B) Monitor system performance and force-close unresponsive programs
+C) Defragment the hard drive
+D) Install new hardware
+Ans: B | Speed Solution: Shows CPU/RAM usage and lets you "End Task" on frozen apps (Ctrl+Shift+Esc).
+91. What is the extension of an executable system file in Windows?
+A) .docx
+B) .exe
+C) .pdf
+D) .txt
+Ans: B | Speed Solution: .exe stands for Executable.
+92. Android is a mobile OS based on which kernel?
+A) Windows NT
+B) Unix
+C) Linux
+D) Symbian
+Ans: C | Speed Solution: Android is heavily modified Linux.
+93. Which Windows utility safely removes temporary files, web cache, and empty recycle bin data?
+A) Disk Defragmenter
+B) Disk Cleanup
+C) System Restore
+D) Registry Editor
+Ans: B | Speed Solution: "Cleanup" = removing junk files.
+94. What is a 'Bootloader'?
+A) A virus that attacks boot sectors
+B) A utility that speeds up internet
+C) A small program that loads the Operating System into RAM
+D) A compression tool
+Ans: C | Speed Solution: It "loads" the OS during the "boot" process (e.g., GRUB for Linux).
+95. Which type of software is legally distributed for free but requires payment for advanced features or after a trial period?
+A) Freeware
+B) Shareware
+C) Open Source
+D) Public Domain
+Ans: B | Speed Solution: You "share" it to hook users, then charge them later. (Freeware is totally free forever but closed-source).
+Mixed High-Yield Trick Questions (Across all topics)
+96. A BB researcher copies data from a webpage. To paste it into Word WITHOUT the webpage's formatting (fonts, colors), the shortcut is:
+A) Ctrl + V
+B) Ctrl + Shift + V
+C) Alt + V
+D) Ctrl + Alt + V
+Ans: B | Speed Solution: Shift modifies standard paste to "Paste as Plain Text" in most modern applications. (Ctrl+Alt+V opens Paste Special).
+97. In Excel, what does the formula =SUM(A1:A5, C1) calculate?
+A) The sum of cells A1 through A5, plus cell C1
+B) The sum of A1, A5, and C1 only
+C) An error
+D) The sum of all cells from A1 to C1
+Ans: A | Speed Solution: Colon (:) means range (A1 to A5). Comma (,) means 'and' (plus individual cell C1).
+98. In PowerPoint, pressing the 'F5' key begins the presentation. What does pressing 'Esc' do?
+A) Pauses the show
+B) Opens the notes pane
+C) Ends the slide show
+D) Skips to the next slide
+Ans: C | Speed Solution: Escape always exits fullscreen mode.
+99. Which of the following is considered 'Middleware'?
+A) Windows 10
+B) Software that connects two otherwise separate applications/databases
+C) A mouse driver
+D) Microsoft Word
+Ans: B | Speed Solution: "Middle" = it sits in the middle of two apps (like a web server talking to a backend database).
+100. In Word, double-clicking a word selects the word. What does triple-clicking do?
+A) Selects the sentence
+B) Selects the entire paragraph
+C) Selects the whole document
+D) Deletes the word
+Ans: B | Speed Solution: Double = Word. Triple = Paragraph. (Ctrl+Click = Sentence).
+101. What does the Excel error #NAME? signify?
+A) The column is too small
+B) Division by zero
+C) Excel does not recognize text in the formula (e.g., a misspelled function name like =SUMM)
+D) A circular reference exists
+Ans: C | Speed Solution: Excel is saying "I don't know this NAME". Typo in function name.
+102. To apply the exact same animation from one chart to another in PowerPoint, use:
+A) Format Painter
+B) Animation Painter
+C) Slide Master
+D) Effect Options
+Ans: B | Speed Solution: Format Painter copies visual style (color/font). Animation Painter copies movement (bounce/fade).
+103. Which is a characteristic of 'Batch Processing' OS?
+A) Immediate user interaction
+B) Groups similar jobs and executes them automatically without user intervention
+C) Used for live video streaming
+D) Found in smartphones
+Ans: B | Speed Solution: "Batch" = processing a pile of bank cheques overnight without human input.
+104. What is 'GUI' primarily composed of?
+A) Text commands
+B) WIMP (Windows, Icons, Menus, Pointers)
+C) Binary code
+D) Assembly mnemonics
+Ans: B | Speed Solution: WIMP is the acronym defining Graphical User Interfaces.
+105. In Excel, the formula =IF(5>10, "Yes", "No") will result in:
+A) Yes
+B) No
+C) #VALUE!
+D) 0
+Ans: B | Speed Solution: 5 is NOT greater than 10 (False). The IF structure is (Test, True_Result, False_Result). It returns "No".
+106. Which shortcut centers text in MS Word?
+A) Ctrl + C
+B) Ctrl + E
+C) Ctrl + M
+D) Alt + C
+Ans: B | Speed Solution: Ctrl+C is Copy. Center takes the second letter, E.
+107. A file with a .tmp extension is usually a:
+A) Video file
+B) Temporary file created by the OS or an application
+C) Font file
+D) Database template
+Ans: B | Speed Solution: TMP = Temporary. Safely deleted by Disk Cleanup.
+108. In Word, what is the shortcut to insert a Hyperlink?
+A) Ctrl + H
+B) Ctrl + K
+C) Alt + K
+D) Ctrl + L
+Ans: B | Speed Solution: LinK = Ctrl+K.
+109. Which utility protects a network by blocking unauthorized incoming and outgoing data?
+A) Disk Cleanup
+B) Firewall
+C) Compiler
+D) Backup
+Ans: B | Speed Solution: Firewalls act as a security barrier (wall) filtering network traffic.
+110. To create a chart instantly in Excel using the selected data, press:
+A) F1
+B) F11
+C) F12
+D) F7
+Ans: B | Speed Solution: F11 generates a chart on a new sheet instantly. (Alt+F1 generates it on the current sheet).
+111. What is the shortcut for 'Undo'?
+A) Ctrl + Y
+B) Ctrl + Z
+C) Ctrl + X
+D) Ctrl + U
+Ans: B | Speed Solution: Z is the universal undo command.
+112. In an OS, what is a 'Deadlock'?
+A) Hard drive failure
+B) Two or more processes waiting indefinitely for resources held by each other
+C) A virus that locks the screen
+D) CPU overheating
+Ans: B | Speed Solution: Deadlock = Mexican Standoff. Neither process can move forward.
+113. Which Excel function links multiple text strings together?
+A) =MERGE()
+B) =CONCATENATE() or TEXTJOIN()
+C) =LINK()
+D) =COMBINE()
+Ans: B | Speed Solution: Concatenate literally means to link things in a chain.
+114. In PowerPoint, how do you insert a new, blank slide?
+A) Ctrl + N
+B) Ctrl + M
+C) Shift + N
+D) Alt + S
+Ans: B | Speed Solution: Ctrl+M = New Slide. Ctrl+N = New Presentation File.
+115. What does GUI stand for?
+A) General User Interaction
+B) Graphical User Interface
+C) Guided User Interface
+D) Graphical Unified Interface
+Ans: B | Speed Solution: Graphical interface (mouse/icons) vs Command Line (typing).
+116. Which of these is an example of an RDBMS (Database Application)?
+A) MS Excel
+B) Oracle / MS SQL Server
+C) MS Word
+D) Linux
+Ans: B | Speed Solution: Relational Database Management System. Oracle is the enterprise standard.
+117. In Word, what does Ctrl + ] do?
+A) Increases font size by 1 point
+B) Decreases font size by 1 point
+C) Adds a bullet point
+D) Indents right
+Ans: A | Speed Solution: Bracket right ] = bigger. Bracket left [ = smaller.
+118. Which function calculates the arithmetic mean in Excel?
+A) =MEAN()
+B) =AVERAGE()
+C) =MEDIAN()
+D) =SUM() / TOTAL()
+Ans: B | Speed Solution: Excel does not use MEAN, it strictly uses AVERAGE.
+119. What is 'Malware'?
+A) A hardware defect
+B) Malicious software designed to cause harm (Viruses, Trojans, Worms)
+C) A utility for disk repair
+D) An operating system kernel
+Ans: B | Speed Solution: Mal(icious) + (Soft)ware.
+120. In MS Word, 'Gutter' margin is used for:
+A) Space for headers
+B) Space for page numbers
+C) Extra space added to the binding edge of the page
+D) Footnote space
+Ans: C | Speed Solution: The gutter prevents the binding (staples/glue) from hiding the text.
+121. Which tab in Excel contains the 'Filter' and 'Sort' commands?
+A) Insert
+B) Formulas
+C) Data
+D) View
+Ans: C | Speed Solution: Sorting and filtering are Data manipulation actions. Found in Data tab (also Home tab).
+122. In PowerPoint, what is the default slide orientation?
+A) Portrait
+B) Landscape
+C) Square
+D) Vertical
+Ans: B | Speed Solution: Screens are wide, so presentations default to Landscape (16:9 or 4:3). Word defaults to Portrait.
+123. A 'Trojan Horse' is different from a 'Virus' because:
+A) It spreads through physical touch
+B) It masquerades as a legitimate, useful program to trick the user into installing it
+C) It only infects Apple computers
+D) It is a hardware issue
+Ans: B | Speed Solution: Like the Greek myth, it hides inside a "gift" (a free game or fake app).
+124. Which Excel feature allows you to format cells automatically based on their value (e.g., highlighting negative bank balances in red)?
+A) Format Painter
+B) Conditional Formatting
+C) Cell Styles
+D) Data Validation
+Ans: B | Speed Solution: "Conditional" = If X is true, apply format Y.
+125. In Word, what is the shortcut for finding and replacing text?
+A) Ctrl + F
+B) Ctrl + R
+C) Ctrl + H
+D) Alt + F
+Ans: C | Speed Solution: F is Find. H is Replace.
+126. Which type of OS is used in ATM machines or pacemakers, requiring zero delays?
+A) Batch Processing OS
+B) Real-Time Operating System (RTOS)
+C) Time-Sharing OS
+D) Open Source OS
+Ans: B | Speed Solution: Real-Time means strict time constraints. A delay in a pacemaker = death.
+127. What does the Excel function =NOW() display?
+A) Only the current date
+B) The current date and time
+C) The time spent on the sheet
+D) Only the current time
+Ans: B | Speed Solution: NOW = Date + Time. TODAY = Date only.
+128. In PowerPoint, the 'Notes Pane' is primarily visible to:
+A) The audience on the main screen
+B) The presenter on their private screen
+C) Nobody, it prints only
+D) The web audience
+Ans: B | Speed Solution: Speaker notes guide the presenter without cluttering the slide.
+129. Which shortcut aligns text to the Left in Word?
+A) Ctrl + R
+B) Ctrl + E
+C) Ctrl + L
+D) Ctrl + J
+Ans: C | Speed Solution: L = Left.
+130. A 'Worm' differs from a 'Virus' primarily because:
+A) A worm requires a host file; a virus does not
+B) A worm self-replicates across networks without needing a host file or human action
+C) A worm only attacks email
+D) A virus is legal
+Ans: B | Speed Solution: Worms crawl across networks autonomously. Viruses must infect a host file (like an .exe) and wait for a human to click it.
+131. In Excel, fixing a cell reference like 5 is called:
+A) Relative Reference
+B) Mixed Reference
+C) Absolute Reference
+D) Locked Reference
+Ans: C | Speed Solution: Absolutely locked in place. Does not shift when formula is dragged down.
+132. What is the shortcut to open the 'Font' dialog box in Word?
+A) Ctrl + F
+B) Ctrl + D
+C) Ctrl + P
+D) Alt + F
+Ans: B | Speed Solution: F is Find. D opens Font formatting Dialog.
+133. Which OS utility restores the computer to a previous stable state after a bad software installation?
+A) Disk Cleanup
+B) System Restore
+C) Task Manager
+D) Defragmenter
+Ans: B | Speed Solution: Restores the system registry and settings to an earlier "restore point".
+134. What is the result of =3^2 in Excel?
+A) 6
+B) 9
+C) 5
+D) Error
+Ans: B | Speed Solution: The caret (^) symbol denotes an exponent. 3 squared = 9.
+135. To add a new worksheet in Excel, the shortcut is:
+A) Shift + F11
+B) Ctrl + N
+C) Alt + W
+D) F11
+Ans: A | Speed Solution: Shift+F11 inserts a new tab/sheet. F11 creates a chart. Ctrl+N creates a whole new Workbook.
+136. What is the extension of an MS Excel Macro-Enabled Workbook?
+A) .xlsx
+B) .xls
+C) .xlsm
+D) .xlsb
+Ans: C | Speed Solution: 'm' stands for Macro-enabled. Essential for security reasons to separate them from safe .xlsx files.
+137. Which Word feature is used to send customized letters to a large database of banking customers?
+A) Macros
+B) Mail Merge
+C) Format Painter
+D) SmartArt
+Ans: B | Speed Solution: Mail Merge connects a Word template to an Excel database list.
+138. Which is NOT a valid View in PowerPoint?
+A) Slide Sorter
+B) Normal
+C) Outline View
+D) Presentation View
+Ans: D | Speed Solution: The view is called "Slide Show" view, not Presentation View.
+139. In an OS, what does 'GUI' replace?
+A) RAM
+B) The mouse
+C) The Command Line Interface (CLI)
+D) The CPU
+Ans: C | Speed Solution: Before Windows/Mac (GUI), everyone typed text commands into MS-DOS/Unix (CLI).
+140. Which Excel function is used to calculate the total number of days between two dates?
+A) =DATE()
+B) =DAYS() or simple subtraction (Date2 - Date1)
+C) =COUNT()
+D) =TIME()
+Ans: B | Speed Solution: Excel stores dates as serial numbers. You can simply subtract the older date from the newer date.
+141. What does Ctrl + K do across Word, Excel, and PowerPoint?
+A) Keeps the document open
+B) Inserts a Hyperlink
+C) Changes text to italics
+D) Saves the file
+Ans: B | Speed Solution: Universal Office shortcut for HyperlinK.
+142. A 'Compiler' differs from an 'Interpreter' because:
+A) A compiler is hardware
+B) An interpreter scans the entire program first
+C) A compiler translates the entire source code into an executable file all at once; an interpreter translates line-by-line.
+D) A compiler only works on Mac
+Ans: C | Speed Solution: Compile = build the whole thing (.exe). Interpret = translate on the fly.
+143. Which Excel feature locks rows/columns so they remain visible while scrolling?
+A) Split
+B) Hide
+C) Freeze Panes
+D) Lock Cells
+Ans: C | Speed Solution: Freeze Panes "freezes" the headers to the screen glass.
+144. In Word, the 'Thesaurus' tool is used to find:
+A) Spelling errors
+B) Synonyms and Antonyms
+C) Grammatical mistakes
+D) Word count
+Ans: B | Speed Solution: Thesaurus provides alternative vocabulary. Shortcut: Shift+F7.
+145. What is 'Phishing'?
+A) A utility software
+B) A cyber attack involving fraudulent emails/websites to steal credentials (like banking passwords)
+C) Defragmenting a hard drive
+D) A new OS
+Ans: B | Speed Solution: "Fishing" for passwords by using fake "bait" (like a fake Bangladesh Bank login page).
+146. Which tab holds the 'Spelling & Grammar' check in Word?
+A) Home
+B) View
+C) Review
+D) References
+Ans: C | Speed Solution: Checking spelling is part of the "Reviewing" process.
+147. What does the Excel error #REF! mean?
+A) Reference is invalid (e.g., a cell used in the formula was deleted)
+B) Refresh the page
+C) Division by zero
+D) Text in a number formula
+Ans: A | Speed Solution: REF = Reference. The formula is looking for a cell that no longer exists.
+148. In PowerPoint, what is a 'SmartArt' graphic?
+A) A video file
+B) Pre-designed visual representations of information (like flowcharts and lists)
+C) A macro
+D) An animation
+Ans: B | Speed Solution: SmartArt converts boring bullet points into dynamic diagrams instantly.
+149. Which system software resides permanently in the computer's memory to handle basic operations?
+A) MS Word
+B) The Operating System Kernel
+C) Antivirus
+D) Application Software
+Ans: B | Speed Solution: The Kernel is memory-resident. It never sleeps while the PC is on.
+150. To change the page from Portrait to Landscape in Word, go to:
+A) Home -> Layout
+B) Layout (or Page Layout) -> Orientation
+C) View -> Zoom
+D) Insert -> Pages
+Ans: B | Speed Solution: Orientation (Portrait/Landscape) defines the physical Layout of the page.
+151. What is the shortcut to print a document?
+A) Ctrl + PrtScn
+B) Ctrl + P
+C) Alt + P
+D) Shift + P
+Ans: B | Speed Solution: P = Print.
+152. In Excel, the 'VLOOKUP' function searches for a value in the _____ column of a table array.
+A) Last
+B) Middle
+C) First (Leftmost)
+D) Highest
+Ans: C | Speed Solution: VLOOKUP always searches down the first column of the selected range, then moves right.
+153. What does Ctrl + B do?
+A) Adds a Bookmark
+B) Bolds selected text
+C) Breaks the page
+D) Adds a border
+Ans: B | Speed Solution: B = Bold.
+154. In an OS, what is a 'GUI' icon?
+A) A command line code
+B) A small graphical image representing a file, folder, or program
+C) A virus
+D) The CPU cache
+Ans: B | Speed Solution: Icons are the clickable pictures in a Graphical User Interface.
+155. Which Excel function returns the highest value in a selected range?
+A) =HIGH()
+B) =MAX()
+C) =TOP()
+D) =PEAK()
+Ans: B | Speed Solution: MAX = Maximum value.
+156. To insert a blank page in Word, the shortcut is:
+A) Ctrl + Enter
+B) Shift + Enter
+C) Ctrl + Space
+D) Alt + Enter
+Ans: A | Speed Solution: Ctrl+Enter is the hard Page Break.
+157. What is 'Ransomware'?
+A) A backup utility
+B) Malware that encrypts the user's files and demands payment to unlock them
+C) An operating system
+D) A hardware defect
+Ans: B | Speed Solution: Ransom = kidnapping files for money (usually Bitcoin).
+158. In PowerPoint, 'Slide Sorter' view is best for:
+A) Editing text on a slide
+B) Rearranging the sequence of slides and deleting slides easily
+C) Adding animations
+D) Presenting to an audience
+Ans: B | Speed Solution: "Sorter" = organizing the big picture flow.
+159. Which is the default file extension for MS Word 2016+?
+A) .doc
+B) .docx
+C) .txt
+D) .rtf
+Ans: B | Speed Solution: 'x' stands for XML, introduced in Office 2007 for better compression/security.
+160. What does the Excel function =COUNTIF() do?
+A) Counts all cells
+B) Counts cells that meet a specific condition or criteria
+C) Adds values together
+D) Finds the average
+Ans: B | Speed Solution: COUNT (count them) IF (they meet this rule).
+161. An 'Endnote' in Word is placed at the:
+A) Bottom of the current page
+B) Very end of the document
+C) Top of the document
+D) Inside the header
+Ans: B | Speed Solution: End of the document. (Footnote = bottom of the page).
+162. Which system software acts as an interface between the user and the computer hardware?
+A) MS Excel
+B) Operating System
+C) Antivirus
+D) Compiler
+Ans: B | Speed Solution: The standard definition of an OS.
+163. In PowerPoint, how do you apply a design theme to only one slide instead of all slides?
+A) It's impossible
+B) Right-click the theme and select "Apply to Selected Slides"
+C) Delete the master slide
+D) Use a transition
+Ans: B | Speed Solution: Right-clicking themes gives you targeting options. Left-clicking applies it to all.
+164. What is a 'Macro' in Excel?
+A) A large chart
+B) A recorded sequence of actions/commands automated via VBA code
+C) A formula error
+D) A zoomed-in view
+Ans: B | Speed Solution: Macro = Automation.
+165. The shortcut for 'Italics' is:
+A) Ctrl + T
+B) Ctrl + I
+C) Alt + I
+D) Shift + I
+Ans: B | Speed Solution: I = Italics.
+166. Which Excel tool is used to quickly summarize, analyze, explore, and present summary data?
+A) VLOOKUP
+B) PivotTable
+C) Macro
+D) Data Validation
+Ans: B | Speed Solution: PivotTables let you "pivot" or rotate massive datasets to view summaries instantly without formulas.
+167. In Word, what does the 'Format Painter' icon look like?
+A) A paintbrush
+B) A bucket of paint
+C) A pencil
+D) A camera
+Ans: A | Speed Solution: Visual memory: It literally paints formats.
+168. Which utility software reduces the size of files to save disk space and network bandwidth?
+A) Antivirus
+B) File Compression (e.g., WinZip)
+C) Disk Defragmenter
+D) Backup
+Ans: B | Speed Solution: Compression = making smaller.
+169. What is 'Spyware'?
+A) A backup tool
+B) Malware that secretly monitors user activity and steals data
+C) An operating system
+D) A web browser
+Ans: B | Speed Solution: Spy = secret observation.
+170. In Excel, what symbol must begin every formula?
+A) +
+B) @
+C) =
+D) #
+Ans: C | Speed Solution: An equals sign (=) tells Excel "This cell is going to calculate something."
+171. Which PowerPoint feature allows you to display a hidden slide during a presentation without breaking the flow?
+A) Custom Slide Show
+B) Slide Master
+C) Transition
+D) Animation Painter
+Ans: A | Speed Solution: Custom Shows let you create mini-presentations inside the main file (e.g., an "Executive Summary" track).
+172. What is the shortcut for 'Paste'?
+A) Ctrl + P
+B) Ctrl + V
+C) Ctrl + S
+D) Alt + P
+Ans: B | Speed Solution: P is taken by Print. V is the paste shortcut (next to C/Copy on the keyboard).
+173. Which of the following is an example of 'Open Source' software?
+A) MS Office
+B) Adobe Photoshop
+C) Ubuntu Linux
+D) macOS
+Ans: C | Speed Solution: Linux distributions (Ubuntu, Mint) are open source.
+174. In Word, to change the margin sizes, you go to which tab?
+A) Home
+B) Insert
+C) Layout (Page Layout)
+D) View
+Ans: C | Speed Solution: Margins affect the physical Layout of the printed page.
+175. What does the Excel error #VALUE! indicate?
+A) Division by zero
+B) A mathematical formula contains a text string instead of a number
+C) Invalid cell reference
+D) Column too narrow
+Ans: B | Speed Solution: Value error means "I cannot do math on a word." E.g., =5+"Apple".
+176. Which shortcut aligns text to the Right?
+A) Ctrl + L
+B) Ctrl + E
+C) Ctrl + R
+D) Ctrl + J
+Ans: C | Speed Solution: R = Right.
+177. In an OS, what is a 'Directory'?
+A) A file containing text
+B) A folder used to organize files
+C) A hardware driver
+D) A virus
+Ans: B | Speed Solution: Directory is the technical system name for a Folder.
+178. What does 'Undo' do?
+A) Reverses the last action performed
+B) Deletes the file
+C) Saves the file
+D) Repeats the last action
+Ans: A | Speed Solution: Undo = step back. Redo = step forward.
+179. In PowerPoint, what is a 'Placeholder'?
+A) A virus
+B) A dotted box on a slide layout that holds text, images, or charts
+C) A slide transition
+D) A macro
+Ans: B | Speed Solution: "Click to add title" is a placeholder box.
+180. Which Excel function rounds a number to a specified number of digits?
+A) =ROUND()
+B) =TRUNC()
+C) =INT()
+D) =CEILING()
+Ans: A | Speed Solution: ROUND handles standard math rounding. (TRUNC just chops off decimals without rounding).
+181. What is the shortcut to 'Select All' text in a Word document?
+A) Ctrl + A
+B) Alt + A
+C) Shift + A
+D) Ctrl + S
+Ans: A | Speed Solution: A = All.
+182. Which of the following protects against hackers intercepting data over public Wi-Fi?
+A) Disk Cleanup
+B) VPN (Virtual Private Network)
+C) Defragmenter
+D) Compiler
+Ans: B | Speed Solution: VPN creates an encrypted "tunnel" for your data.
+183. In Excel, what does the '&' (ampersand) symbol do in a formula?
+A) Adds numbers
+B) Concatenates (joins) two text strings
+C) Divides numbers
+D) Multiplies numbers
+Ans: B | Speed Solution: =A1 & B1 joins the text of A1 and B1 together.
+184. To apply a password to an MS Word document, go to:
+A) Home -> Font
+B) Insert -> Lock
+C) File -> Info -> Protect Document
+D) View -> Macros
+Ans: C | Speed Solution: Security/Protection is a foundational file property, found in the File (Backstage) menu.
+185. What is the shortcut to cut selected text?
+A) Ctrl + C
+B) Ctrl + X
+C) Ctrl + V
+D) Ctrl + Z
+Ans: B | Speed Solution: X looks like scissors. Scissors Cut.
+186. Which system utility checks the hard drive for physical errors and bad sectors?
+A) CHKDSK (Check Disk)
+B) Defragmenter
+C) Task Manager
+D) Antivirus
+Ans: A | Speed Solution: CHKDSK is the legacy Windows utility for disk integrity.
+187. In PowerPoint, 'F5' starts the slide show. What does 'Shift + F5' do?
+A) Ends the show
+B) Starts the show from the CURRENT slide
+C) Opens presenter view
+D) Mutes audio
+Ans: B | Speed Solution: Essential for resuming a presentation after a break without starting from slide 1.
+188. Which Excel shortcut inserts a new row/column depending on the selection?
+A) Ctrl + + (Plus)
+B) Ctrl + - (Minus)
+C) Alt + +
+D) Shift + +
+Ans: A | Speed Solution: Plus adds. Minus deletes.
+189. What is 'Adware'?
+A) Software that protects against viruses
+B) Software that automatically displays or downloads unwanted advertisements
+C) A backup tool
+D) An operating system
+Ans: B | Speed Solution: Ad(vertisement) + ware.
+190. In Word, the 'Subscript' format makes text:
+A) Larger and above the baseline
+B) Smaller and below the baseline
+C) Bold and italic
+D) Strikethrough
+Ans: B | Speed Solution: Sub = Below (like submarine). Superscript = Above (like Superman).
+191. Which Excel function is used to find the lowest value in a range?
+A) =MIN()
+B) =MAX()
+C) =LOW()
+D) =BOTTOM()
+Ans: A | Speed Solution: MIN = Minimum.
+192. What does a 'Compiler' output?
+A) Source code
+B) Machine code / Executable object code
+C) HTML
+D) A flowchart
+Ans: B | Speed Solution: It translates human-readable code into 1s and 0s (machine code) that the CPU understands.
+193. In PowerPoint, what is the default aspect ratio for slides in newer versions (2013+)?
+A) 4:3
+B) 16:9
+C) 1:1
+D) 16:10
+Ans: B | Speed Solution: 16:9 matches modern widescreen monitors and TVs. Older versions used 4:3.
+194. Which shortcut opens the 'Find' dialog box?
+A) Ctrl + F
+B) Ctrl + H
+C) Alt + F
+D) Shift + F
+Ans: A | Speed Solution: F = Find.
+195. What does the Excel error #NUM! mean?
+A) Invalid cell reference
+B) An invalid numeric value in a formula (e.g., square root of a negative number)
+C) Division by zero
+D) Typo in function name
+Ans: B | Speed Solution: NUM = Math Number constraint violation.
+196. Which is an example of an Operating System primarily used for Apple Macintosh computers?
+A) Windows
+B) Linux
+C) macOS
+D) Android
+Ans: C | Speed Solution: macOS (formerly OS X) is Apple's proprietary desktop system.
+197. In Word, to force text to the next column, use a:
+A) Page Break
+B) Column Break (Ctrl+Shift+Enter)
+C) Section Break
+D) Text Wrapping Break
+Ans: B | Speed Solution: Column breaks push text to the top of the adjacent column.
+198. Which Excel feature allows a user to select an option from a drop-down list inside a cell?
+A) Conditional Formatting
+B) Data Validation (List)
+C) PivotTable
+D) Goal Seek
+Ans: B | Speed Solution: Data Validation restricts entry. Providing a "List" creates a drop-down menu.
+199. What is a 'Botnet'?
+A) A network of robots in a factory
+B) A network of infected computers controlled remotely by a hacker to launch attacks (like DDoS)
+C) A utility software
+D) An antivirus database
+Ans: B | Speed Solution: Bot(robot) + Net(work). Zombie computers acting together.
+200. The ultimate shortcut to 'Save' a document across all MS Office applications is:
+A) Ctrl + S
+B) Alt + S
+C) Shift + S
+D) F5
+Ans: A | Speed Solution: S = Save. The most critical shortcut to remember in any computer exam.
+
+
+
+
+Topic 1: Advanced MS Word Mastery (Auditing, Formatting, Navigation)
+201. A Bangladesh Bank auditor wants to underline the words in a suspicious financial report, but NOT the spaces between them. Which shortcut should be used?
+A) Ctrl + U
+B) Ctrl + Shift + U
+C) Ctrl + Shift + W
+D) Alt + U + W
+Ans: C | Speed Solution: "W" stands for Words. Ctrl+Shift+W underlines words only, ignoring spaces.
+202. While reviewing a 500-page monetary policy, a Deputy Director closes the document. The next day, what shortcut instantly jumps to the exact location of the last edit?
+A) Shift + F5
+B) Ctrl + End
+C) Alt + Page Down
+D) Ctrl + G
+Ans: A | Speed Solution: Shift+F5 triggers the "Go Back" feature, cycling through the last 3 edit locations even after reopening.
+203. To quickly apply the 'Heading 1' style to a new chapter in the BB Annual Report, press:
+A) Ctrl + H
+B) Alt + 1
+C) Ctrl + Alt + 1
+D) Shift + 1
+Ans: C | Speed Solution: Ctrl+Alt+[1, 2, or 3] instantly applies Heading 1, 2, or 3.
+204. A BB officer needs to insert a trademark symbol (™) next to a proprietary banking software name. The shortcut is:
+A) Ctrl + T
+B) Alt + Ctrl + T
+C) Shift + T
+D) Alt + Shift + T
+Ans: B | Speed Solution: T = Trademark. Ctrl+Alt is the standard modifier for special typography (Ctrl+Alt+C = ©).
+205. What is the fastest way to open the 'Page Setup' dialog box to adjust the margins for an official Bangladesh Bank letterhead?
+A) Press Ctrl + P
+B) Double-click the shaded part of the Ruler
+C) Press Alt + M
+D) Press Ctrl + Shift + P
+Ans: B | Speed Solution: Double-clicking the ruler margin is the fastest UI shortcut bypassing the Ribbon entirely.
+206. To repeat the last formatting action (e.g., applying red highlight to multiple non-adjacent default accounts), an officer should press:
+A) F4
+B) F2
+C) Ctrl + R
+D) Shift + R
+Ans: A | Speed Solution: F4 repeats the last action performed in Word and Excel.
+207. Which shortcut removes all manual character formatting from a selected text, reverting it to the default Normal style?
+A) Ctrl + Z
+B) Ctrl + Spacebar
+C) Ctrl + Shift + N
+D) Alt + Backspace
+Ans: B | Speed Solution: Spacebar "clears the space." It strips bold, italics, colors, etc., instantly.
+208. To remove all manual paragraph formatting (like custom indents or line spacing) and revert to default, press:
+A) Ctrl + P
+B) Ctrl + Q
+C) Ctrl + Shift + P
+D) Alt + Q
+Ans: B | Speed Solution: Q = Quit paragraph formatting. (Ctrl+Spacebar is for characters).
+209. A researcher wants to view two different pages of the same long economic report simultaneously. Which shortcut splits the document window?
+A) Ctrl + Alt + S
+B) Alt + W + S
+C) Ctrl + Shift + S
+D) Alt + S
+Ans: A | Speed Solution: S = Split. Ctrl+Alt+S splits the Word window into two independent scrolling panes.
+210. In Word, the 'F8' key is used for extended selection. If a banker presses F8 three (3) times, what is selected?
+A) A word
+B) A sentence
+C) A paragraph
+D) The entire document
+Ans: B | Speed Solution: 2 clicks = Word, 3 = Sentence, 4 = Paragraph, 5 = Document.
+211. Which shortcut inserts the current Date into a bank memo automatically?
+A) Alt + D
+B) Shift + Alt + D
+C) Ctrl + D
+D) Ctrl + Shift + D
+Ans: B | Speed Solution: D = Date. Shift+Alt+D for Date, Shift+Alt+T for Time.
+212. To prevent a critical hyphenated word (like "co-borrower") from breaking across two lines, which should be inserted?
+A) Soft Hyphen
+B) Non-breaking Hyphen (Ctrl + Shift + Hyphen)
+C) Em Dash
+D) En Dash
+Ans: B | Speed Solution: Non-breaking keeps the phrase glued together on one line.
+213. What does the "Keep with next" paragraph formatting option ensure in a formal banking contract?
+A) The paragraph won't be split across two pages.
+B) A heading and the paragraph immediately following it stay on the same page.
+C) The font size remains consistent.
+D) The text is always bolded.
+Ans: B | Speed Solution: "Keep with next" glues a heading to its body text so you don't get a heading stranded at the bottom of a page.
+214. To count the exact number of words, characters, and paragraphs in an essay for the BB AD written exam, the shortcut is:
+A) Ctrl + W
+B) Ctrl + Shift + W
+C) Ctrl + Shift + G
+D) Alt + W
+Ans: C | Speed Solution: G = Grammar/Word Count box. (Ctrl+W closes the document).
+215. Which shortcut is used to move an entire selected paragraph UP one line at a time without cutting and pasting?
+A) Ctrl + Up Arrow
+B) Alt + Shift + Up Arrow
+C) Shift + Up Arrow
+D) Ctrl + Shift + Up Arrow
+Ans: B | Speed Solution: Alt+Shift+Arrows physically moves blocks of text (paragraphs or list items) up and down the page.
+216. In the Mail Merge process, after preparing the main document, what is the next immediate logical step?
+A) Finish & Merge
+B) Insert Merge Field
+C) Select Recipients
+D) Preview Results
+Ans: C | Speed Solution: You cannot insert merge fields or preview until you "Select Recipients" (link the data source).
+217. What is the keyboard shortcut to invoke the 'Save As' dialog box directly in Word?
+A) F12
+B) F5
+C) Shift + F12
+D) Alt + S
+Ans: A | Speed Solution: F12 = Save As. (Shift+F12 = standard Save, same as Ctrl+S).
+218. A banker presses Ctrl + 0 (Zero) while formatting a document. What happens?
+A) It hides the selected text.
+B) It adds or removes 12 points of space before the current paragraph.
+C) It resets the zoom to 100%.
+D) It deletes the paragraph.
+Ans: B | Speed Solution: Ctrl+0 toggles paragraph spacing before a line (crucial for quick visual spacing without hitting Enter).
+219. Which keystroke combination opens the document from the file directory (equivalent to File -> Open)?
+A) Ctrl + O
+B) Ctrl + F12
+C) Both A and B
+D) Alt + O
+Ans: C | Speed Solution: Both Ctrl+O and Ctrl+F12 invoke the Open dialog box.
+220. To quickly convert a numbered list into a bulleted list in a circular, press:
+A) Ctrl + Shift + L
+B) Ctrl + B
+C) Alt + B
+D) Ctrl + Shift + B
+Ans: A | Speed Solution: L = List. Ctrl+Shift+L instantly applies default bullets.
+221. When a user presses the 'Delete' key, it erases text to the _____, whereas 'Backspace' erases text to the _____.
+A) Left, Right
+B) Right, Left
+C) Top, Bottom
+D) Bottom, Top
+Ans: B | Speed Solution: Backspace deletes backwards (Left). Delete key eats text forward (Right).
+222. Which feature is used to print addresses directly onto mailing labels for a Bangladesh Bank corporate event?
+A) Envelopes & Labels (under Mailings tab)
+B) Page Setup
+C) Format Painter
+D) Watermark
+Ans: A | Speed Solution: Found strictly under the Mailings tab for physical mail preparation.
+223. What does 'Widow/Orphan control' do in MS Word?
+A) Protects the document with a password
+B) Prevents a single line of a paragraph from being left alone at the top or bottom of a page
+C) Deletes unlinked references
+D) Hides blank pages
+Ans: B | Speed Solution: Widows/Orphans are lonely single lines of text. This setting forces at least two lines together.
+224. To navigate to the very beginning of a 1,000-page bank database document instantly, press:
+A) Home
+B) Ctrl + Home
+C) Page Up
+D) Alt + Home
+Ans: B | Speed Solution: Home = beginning of line. Ctrl+Home = beginning of document.
+225. Which function key opens the 'Help' pane in MS Word?
+A) F1
+B) F2
+C) F3
+D) F4
+Ans: A | Speed Solution: F1 is the universal Help key across almost all Windows applications.
+Topic 2: Advanced MS Excel Mastery (Financial Models, Data Tools, Error Checking)
+226. A treasury officer needs to calculate the Future Value of a government bond. Which Excel function is used?
+A) =PV()
+B) =NPV()
+C) =FV()
+D) =IRR()
+Ans: C | Speed Solution: FV = Future Value. (PV is Present Value, NPV is Net Present Value).
+227. To format a cell as Currency with two decimal places rapidly, use the shortcut:
+A) Ctrl + Shift + $
+B) Ctrl + Shift + %
+C) Ctrl + Shift + #
+D) Ctrl + $
+Ans: A | Speed Solution: The '$' symbol directly corresponds to currency format.
+228. To format a selected cell as a Percentage, the fastest keystroke is:
+A) Alt + %
+B) Ctrl + Shift + %
+C) Shift + %
+D) Ctrl + P
+Ans: B | Speed Solution: The '%' symbol key applies percentage format.
+229. A central bank analyst wants to toggle the display of all formulas on the sheet instead of their calculated results. The shortcut is:
+A) Ctrl + F
+B) Ctrl + (Tilde/Grave Accent) C) Ctrl + Shift + F D) Alt + = **Ans: B | Speed Solution:** The grave accent () key (usually below Escape) toggles formula view on/off.
+230. Which Excel function determines the number of periods (months/years) required to pay off a loan?
+A) =PMT()
+B) =NPER()
+C) =RATE()
+D) =TIME()
+Ans: B | Speed Solution: NPER stands for Number of Periods.
+231. To extract the interest rate required to reach a specific financial goal, which function is appropriate?
+A) =RATE()
+B) =YIELD()
+C) =INT()
+D) =PMT()
+Ans: A | Speed Solution: RATE returns the interest rate per period of an annuity.
+232. An officer wants a safer, more flexible alternative to VLOOKUP that can search leftward in a dataset. Which modern function is best?
+A) HLOOKUP
+B) XLOOKUP
+C) MATCH
+D) INDEX
+Ans: B | Speed Solution: XLOOKUP (introduced in newer Excel versions) replaces VLOOKUP/HLOOKUP and can search in any direction.
+233. What is the classic two-function combination used by financial modelers to overcome VLOOKUP's limitations in older Excel versions?
+A) IF and AND
+B) INDEX and MATCH
+C) SUM and OFFSET
+D) ROW and COLUMN
+Ans: B | Speed Solution: MATCH finds the row number, INDEX retrieves the value. It works left-to-right or right-to-left.
+234. To apply or remove Data Filters quickly on a dataset containing clearing checks, press:
+A) Ctrl + F
+B) Ctrl + Shift + L
+C) Alt + F
+D) Shift + F
+Ans: B | Speed Solution: L = List filter. Ctrl+Shift+L toggles the filter dropdowns on the headers.
+235. To open the drop-down list of a filtered column using the keyboard, navigate to the header and press:
+A) Enter
+B) Alt + Down Arrow
+C) Ctrl + Down Arrow
+D) Shift + Down Arrow
+Ans: B | Speed Solution: Alt+DownArrow opens any drop-down menu or data validation list in Excel.
+236. A dataset contains "John Doe" in cell A1. Which feature separates "John" and "Doe" into two different columns?
+A) Flash Fill
+B) Text to Columns
+C) Consolidate
+D) Group
+Ans: B | Speed Solution: "Text to Columns" (under Data tab) splits text based on delimiters like spaces or commas.
+237. Which 'What-If Analysis' tool finds the exact input value needed to achieve a specific target result (e.g., finding the sales required to hit 10% profit)?
+A) Scenario Manager
+B) Goal Seek
+C) Data Table
+D) Solver
+Ans: B | Speed Solution: You have a "Goal" and you are "Seeking" the input.
+238. To select an entire Row in Excel using the keyboard, press:
+A) Ctrl + Space
+B) Shift + Space
+C) Alt + Space
+D) Ctrl + R
+Ans: B | Speed Solution: Shift+Space = Row. (Ctrl+Space = Column).
+239. How do you quickly switch between different Worksheet tabs (e.g., from Sheet1 to Sheet2) via keyboard?
+A) Alt + Tab
+B) Ctrl + Page Down / Page Up
+C) Shift + Page Down
+D) Ctrl + Tab
+Ans: B | Speed Solution: Page Down moves to the right sheet tab. Page Up moves to the left sheet tab.
+240. To invoke the 'Delete' dialog box to remove specific cells, rows, or columns, use:
+A) Delete key
+B) Backspace
+C) Ctrl + - (Minus)
+D) Alt + Delete
+Ans: C | Speed Solution: Ctrl + Minus (-) deletes the structural cell/row. The 'Delete' key only clears the contents.
+241. What does pressing F9 do in an Excel workbook containing complex financial models?
+A) Saves the file
+B) Calculates all formulas in all open workbooks
+C) Opens the print menu
+D) Inserts a chart
+Ans: B | Speed Solution: F9 forces a manual recalculation of the entire workbook (crucial when auto-calc is turned off to save memory).
+242. What does the Excel error #NULL! indicate?
+A) A value is not available
+B) The intersection of two areas that do not actually intersect
+C) Division by zero
+D) Text in a math formula
+Ans: B | Speed Solution: If you write =SUM(A1:A5 C1:C5) without a comma, Excel looks for an intersection. If they don't overlap, it returns #NULL!.
+243. What does the error #N/A specifically mean?
+A) Not Applicable / Value Not Available
+B) Number Error
+C) Name Error
+D) Null Area
+Ans: A | Speed Solution: Most commonly seen in VLOOKUP when the search value doesn't exist in the database.
+244. Which function returns the total number of characters in a cell, including spaces?
+A) =COUNT()
+B) =CHAR()
+C) =LEN()
+D) =SIZE()
+Ans: C | Speed Solution: LEN stands for Length of the text string.
+245. A bank database has extra accidental spaces before and after customer names. Which function removes them?
+A) =CLEAN()
+B) =TRIM()
+C) =CUT()
+D) =REPLACE()
+Ans: B | Speed Solution: TRIM "trims" leading, trailing, and double spaces from text.
+246. Which function converts text like "bangladesh bank" to "Bangladesh Bank"?
+A) =UPPER()
+B) =LOWER()
+C) =PROPER()
+D) =TITLE()
+Ans: C | Speed Solution: PROPER capitalizes the first letter of each word (proper nouns).
+247. To copy the formula from the cell directly ABOVE into the active cell, use:
+A) Ctrl + C
+B) Ctrl + D
+C) Ctrl + R
+D) Ctrl + V
+Ans: B | Speed Solution: D = Fill Down. (Ctrl+R = Fill Right).
+248. To instantly jump to the edge of a contiguous data region (e.g., to the very bottom of a 50,000-row table), press:
+A) End
+B) Page Down
+C) Ctrl + Arrow Keys
+D) Shift + Arrow Keys
+Ans: C | Speed Solution: Ctrl + Arrow acts as a teleport to the last populated cell in that direction.
+249. To create a chart embedded on the current worksheet (rather than a new sheet), press:
+A) F11
+B) Alt + F1
+C) Ctrl + F11
+D) Shift + F1
+Ans: B | Speed Solution: F11 creates a new chart sheet. Alt+F1 inserts it as an object on the current sheet.
+250. Which function calculates the last day of the month for a given date, useful for banking maturity dates?
+A) =LASTDAY()
+B) =MONTHEND()
+C) =EOMONTH()
+D) =DATEVALUE()
+Ans: C | Speed Solution: EOMONTH = End Of Month.
+Topic 3: Advanced MS PowerPoint (Delivery, Formats, Animations)
+251. A BB Governor is presenting and wants a seamless, cinematic transition where an object on Slide 1 smoothly transforms into its new position on Slide 2. Which modern transition is used?
+A) Fade
+B) Morph
+C) Wipe
+D) Push
+Ans: B | Speed Solution: Morph (available in newer PPTs) mathematically interpolates objects between two slides to create a fluid animation.
+252. What is the fastest way to access the 'Slide Master' view without navigating the Ribbon?
+A) Press Alt + M
+B) Hold Shift and click the 'Normal View' icon at the bottom right
+C) Press F4
+D) Hold Ctrl and scroll
+Ans: B | Speed Solution: Shift + Normal View icon is the pro-shortcut to toggle Master View.
+253. When printing handouts for a board meeting, which layout option automatically provides blank lines next to each slide for the audience to take notes?
+A) 2 Slides per page
+B) 3 Slides per page
+C) 4 Slides per page
+D) 6 Slides per page
+Ans: B | Speed Solution: "3 Slides" is the only default handout layout that aligns slides on the left and prints ruled lines on the right.
+254. To set up a presentation to loop continuously without human intervention in the bank's lobby, which setting is used?
+A) Rehearse Timings
+B) Browsed at a kiosk (full screen)
+C) Presenter View
+D) Custom Show
+Ans: B | Speed Solution: "Kiosk" mode prevents the presentation from ending and ignores normal mouse clicks.
+255. Which feature allows you to keep a slide in your file but prevents it from displaying during the live slide show?
+A) Delete Slide
+B) Hide Slide
+C) Skip Slide
+D) Mask Slide
+Ans: B | Speed Solution: Hide Slide keeps the data for your reference but skips it in fullscreen.
+256. Where can a user adjust the sequence, timing, and overlapping of multiple animations on a single slide?
+A) Transition Ribbon
+B) Animation Pane
+C) Format Background
+D) Slide Sorter
+Ans: B | Speed Solution: The Animation Pane is the control center for layer timing and sequencing.
+257. During a presentation, if the speaker presses 'Ctrl + P', what happens?
+A) The presentation prints
+B) The presentation pauses
+C) The mouse pointer turns into a Pen tool for drawing on the slide
+D) Previous slide
+Ans: C | Speed Solution: P = Pen. (Ctrl + I = Highlighter, Ctrl + E = Eraser).
+258. To jump directly to Slide 15 during a live presentation, the presenter should:
+A) Press Esc, scroll to 15, press F5
+B) Type '15' and press Enter
+C) Right-click and choose "Go to 15"
+D) Press Page Down 15 times
+Ans: B | Speed Solution: Typing the number + Enter teleports you instantly in presentation mode.
+259. During a live show, pressing the 'W' key does what?
+A) Closes the Window
+B) Turns the screen White
+C) Widens the screen
+D) Skips to the end
+Ans: B | Speed Solution: W = White screen. B = Black screen. Used to pause audience attention.
+260. To turn the mouse pointer into a virtual Laser Pointer during a slide show, hold down:
+A) Shift + Left Click
+B) Ctrl + Left Click
+C) Alt + Left Click
+D) Spacebar
+Ans: B | Speed Solution: Ctrl + Click turns the cursor into a red laser dot on screen.
+261. Which option saves the presentation as a standard video file (e.g., for YouTube or a lobby TV)?
+A) File -> Export -> Create a Video (.mp4)
+B) File -> Save As -> .ppsx
+C) File -> Share -> Video
+D) Animations -> Record
+Ans: A | Speed Solution: Exporting to .mp4 renders all timings and transitions into a flat video.
+262. To toggle 'Presenter View' on laptops with a single screen (for rehearsal), press:
+A) F5
+B) Alt + F5
+C) Shift + F5
+D) Ctrl + F5
+Ans: B | Speed Solution: Alt+F5 forces Presenter View even if a second monitor isn't connected.
+263. What is the file extension for a PowerPoint presentation that contains embedded VBA Macros?
+A) .pptx
+B) .pptm
+C) .ppsx
+D) .potm
+Ans: B | Speed Solution: 'm' stands for Macro.
+264. To break apart a grouped set of shapes back into individual objects, the shortcut is:
+A) Ctrl + G
+B) Ctrl + Shift + G
+C) Alt + G
+D) Ctrl + U
+Ans: B | Speed Solution: Ctrl+G groups. Adding Shift reverses the action (Ungroup).
+265. To copy the formatting of a shape (like blue fill, red outline) and apply it to another shape via keyboard, use:
+A) Ctrl + C, then Ctrl + V
+B) Ctrl + Shift + C, then Ctrl + Shift + V
+C) Alt + C, then Alt + V
+D) F4
+Ans: B | Speed Solution: Adding Shift to copy/paste copies the Format instead of the object.
+266. What feature is used to organize a large 100-slide presentation into logical, collapsible folders (e.g., "Intro", "Q1 Financials")?
+A) Custom Shows
+B) Sections
+C) Slide Masters
+D) Grouping
+Ans: B | Speed Solution: "Sections" act like folders inside the thumbnail pane to organize slides.
+267. Which view is designed strictly to edit the printed pages containing the speaker's notes?
+A) Slide Sorter
+B) Notes Master
+C) Handout Master
+D) Reading View
+Ans: B | Speed Solution: Notes Master controls the layout of the page when you print slides with their notes below them.
+268. To make a bulleted point a sub-bullet (demote it) via keyboard, press:
+A) Tab (or Alt+Shift+Right Arrow)
+B) Enter
+C) Spacebar
+D) Shift + Tab
+Ans: A | Speed Solution: Tab demotes (moves right). Shift+Tab promotes (moves left).
+269. Which type of animation dictates how an object leaves the slide?
+A) Entrance
+B) Emphasis
+C) Exit
+D) Motion Path
+Ans: C | Speed Solution: Exit animations (colored red in the menu) remove the object.
+270. 'Motion Paths' in PowerPoint are used to:
+A) Transition between slides
+B) Move an object along a custom drawn line or curve on the slide
+C) Export to video
+D) Hyperlink to another document
+Ans: B | Speed Solution: It defines the literal "path" of motion for an object.
+Topic 4: System Software Architecture (OS, Kernels, File Systems)
+271. An IT officer notes a CPU is executing multiple programs by rapidly switching context between them. This OS feature is called:
+A) Multiprocessing
+B) Multiprogramming / Multitasking
+C) Spooling
+D) Bootstrapping
+Ans: B | Speed Solution: One CPU switching rapidly = Multitasking. Multiple physical CPUs = Multiprocessing.
+272. What is a 'Thread' in OS terminology?
+A) A virus
+B) A physical cable
+C) A lightweight sub-process within a program
+D) A backup file
+Ans: C | Speed Solution: Threads are smaller tasks inside a process (e.g., one thread spell-checks while another thread saves the document in MS Word).
+273. What does 'Spooling' (Simultaneous Peripheral Operations On-Line) primarily manage?
+A) CPU speed
+B) RAM allocation
+C) Print jobs sent to a slower printer
+D) Internet caching
+Ans: C | Speed Solution: The Print Spooler holds documents in memory queue so the CPU doesn't have to wait for the slow printer.
+274. If the OS repeatedly moves pages of memory back and forth between RAM and the hard disk causing the system to freeze, it is called:
+A) Deadlock
+B) Thrashing
+C) Context Switching
+D) Booting
+Ans: B | Speed Solution: Thrashing means the disk is working furiously (thrashing around) but doing zero actual computing.
+275. What occurs when a program requests data that is not currently in the physical RAM?
+A) Page Fault
+B) Syntax Error
+C) Runtime Error
+D) Segment Fault
+Ans: A | Speed Solution: A "Page Fault" forces the OS to fetch the missing memory page from the hard drive (Virtual Memory).
+276. Which of the following file systems limits a single file to a maximum size of 4GB?
+A) NTFS
+B) FAT32
+C) exFAT
+D) APFS
+Ans: B | Speed Solution: FAT32 is older and cannot hold individual files larger than 4GB (common issue with large video files on USBs).
+277. Which file system is the modern standard for Linux operating systems?
+A) NTFS
+B) FAT32
+C) ext4
+D) HFS+
+Ans: C | Speed Solution: "ext" stands for Extended File System, the default for Linux.
+278. A 'Hypervisor' is system software responsible for:
+A) Compressing files
+B) Running and managing Virtual Machines (VMs)
+C) Scanning for viruses
+D) Editing the registry
+Ans: B | Speed Solution: The Hypervisor (or Virtual Machine Monitor) allows multiple OS to run on one physical server.
+279. 'Type 1' (Bare-Metal) Hypervisors run directly on:
+A) The host Operating System
+B) The hardware hardware without a host OS
+C) The web browser
+D) The cloud
+Ans: B | Speed Solution: Bare-metal means it sits directly on the silicon hardware, bypassing a traditional OS.
+280. In Windows, which utility provides a hierarchical view of all connected hardware and allows driver updates?
+A) Task Manager
+B) Device Manager
+C) Registry Editor
+D) System Configuration
+Ans: B | Speed Solution: "Device" Manager manages physical devices and their drivers.
+281. The central hierarchical database in Windows that stores low-level settings for the OS and applications is the:
+A) Kernel
+B) Windows Registry
+C) BIOS
+D) System32
+Ans: B | Speed Solution: The Registry (regedit) is the master configuration database of Windows.
+282. The core of Apple's macOS is built upon which open-source, Unix-like operating system?
+A) Linux
+B) Darwin
+C) Solaris
+D) DOS
+Ans: B | Speed Solution: Darwin forms the core Unix layer beneath macOS and iOS.
+283. To boot Windows using the last functional configuration (after a bad driver update), a user should select:
+A) Safe Mode
+B) Last Known Good Configuration
+C) Command Prompt
+D) BIOS setup
+Ans: B | Speed Solution: This specifically loads the registry state from the last successful boot.
+284. What is the 'POST' phase of booting?
+A) Power On Self Test
+B) Program Operation Start Time
+C) Peripheral Output System Test
+D) Primary OS Transfer
+Ans: A | Speed Solution: POST is the BIOS checking if RAM and CPU are physically working before loading the OS.
+285. Modern computers use which firmware interface to replace the legacy BIOS?
+A) CMOS
+B) UEFI (Unified Extensible Firmware Interface)
+C) GUI
+D) MBR
+Ans: B | Speed Solution: UEFI is the modern, faster, mouse-enabled replacement for older blue-screen BIOS.
+286. In Windows, which master boot file configures which operating systems are available in a dual-boot setup?
+A) boot.ini / BCD (Boot Configuration Data)
+B) system.ini
+C) config.sys
+D) ntldr
+Ans: A | Speed Solution: BCD manages the boot menu options.
+287. Which system utility is used to forcefully terminate a frozen program from the Command Prompt?
+A) ping
+B) taskkill
+C) ipconfig
+D) exit
+Ans: B | Speed Solution: "Taskkill" is the CLI equivalent of End Task in Task Manager.
+288. VLC Media Player is entirely free and its code can be modified by anyone. It is:
+A) Shareware
+B) Freeware
+C) Open Source
+D) Proprietary
+Ans: C | Speed Solution: Modifiable code = Open Source. (Freeware is free, but you can't see the code).
+289. WinRAR requires you to buy a license after 40 days, though it continues to work with a pop-up warning. It is an example of:
+A) Open Source
+B) Shareware
+C) Freeware
+D) Firmware
+Ans: B | Speed Solution: Trial software distributed to "share" and induce buying is Shareware.
+290. Adobe Photoshop costs money to buy and its source code is hidden. It is:
+A) Open Source
+B) Freeware
+C) Proprietary / Commercial Software
+D) Middleware
+Ans: C | Speed Solution: Owned strictly by a corporation.
+291. Which Windows utility encrypts an entire hard drive to protect data if the laptop is stolen?
+A) Windows Defender
+B) BitLocker
+C) Disk Defragmenter
+D) Task Manager
+Ans: B | Speed Solution: BitLocker is Microsoft's full-disk encryption utility.
+292. The 'dxdiag' command in Windows opens a utility that primarily displays information about:
+A) Network connections
+B) DirectX, Graphics, and Audio hardware
+C) Virus definitions
+D) Hard drive partitions
+Ans: B | Speed Solution: dx = DirectX, diag = Diagnostics (graphics/gaming hardware).
+293. Which utility allows you to configure which programs automatically launch when Windows starts up?
+A) msconfig (System Configuration) / Task Manager (Startup tab)
+B) regedit
+C) cmd
+D) diskpart
+Ans: A | Speed Solution: Used to disable annoying startup apps to speed up boot time.
+294. What is a 'Logic Bomb' in cybersecurity?
+A) A virus that attacks the motherboard
+B) Malicious code inserted into software that executes only when specific conditions are met (e.g., a specific date or employee termination)
+C) A DDoS attack
+D) A spam email
+Ans: B | Speed Solution: It "explodes" (executes) only when the logical trigger is pulled.
+295. A malware specifically designed to log every keystroke you type (including passwords) and send it to a hacker is a:
+A) Rootkit
+B) Form Grabber / Keylogger
+C) Ransomware
+D) Adware
+Ans: B | Speed Solution: Keylogger logs keys.
+296. What is the difference between IP Spoofing and MAC Spoofing?
+A) There is no difference
+B) IP Spoofing fakes the logical address; MAC Spoofing fakes the physical hardware address
+C) IP Spoofing is legal; MAC is illegal
+D) MAC Spoofing is a virus
+Ans: B | Speed Solution: IP = Logical (Layer 3). MAC = Physical (Layer 2). Spoofing = Faking.
+297. Hackers using software like Wireshark to silently monitor and capture network traffic are engaging in:
+A) Packet Sniffing / Eavesdropping
+B) Phishing
+C) DDoS
+D) Spoofing
+Ans: A | Speed Solution: "Sniffing" packets as they travel through the air/wires.
+298. In cybersecurity, 'Sandboxing' refers to:
+A) Deleting old files
+B) Running suspicious or untested software in an isolated, secure environment to observe it safely
+C) Encrypting a hard drive
+D) Banning an IP address
+Ans: B | Speed Solution: Like a sandbox, you play inside it, and the mess cannot escape to the real system.
+299. A 'Stateful' firewall is superior to a 'Stateless' firewall because:
+A) It is cheaper
+B) It remembers the state of active connections and makes decisions based on context, not just rules
+C) It does not require electricity
+D) It runs on Mac only
+Ans: B | Speed Solution: Stateful remembers the "state" of the conversation.
+300. The Windows utility 'Disk Cleanup' differs from 'Disk Defragmenter' because:
+A) Cleanup compresses files; Defragmenter encrypts them
+B) Cleanup removes useless temporary files to free up space; Defragmenter reorganizes file pieces to increase read speed
+C) There is no difference
+D) Cleanup kills viruses
+Ans: B | Speed Solution: Cleanup = Space. Defragmenter = Speed.
+Mixed High-Yield Logic Traps (All Topics)
+301. A file named 'script.bat' contains a sequence of commands executed by MS-DOS. This is a:
+A) Batch File
+B) Bash Script
+C) PowerShell Script
+D) Text document
+Ans: A | Speed Solution: .bat = Batch. Used to automate CLI tasks in Windows.
+302. What is the extension for a PowerShell script in Windows?
+A) .bat
+B) .ps1
+C) .sh
+D) .exe
+Ans: B | Speed Solution: ps1 = PowerShell version 1 script.
+303. The extension '.sh' represents a script executed in which OS environment?
+A) Windows
+B) Linux / Unix (Shell Script)
+C) macOS
+D) Android
+Ans: B | Speed Solution: .sh = Shell script (Bash/Linux).
+304. What is 'WinPE' (Windows Preinstallation Environment)?
+A) A virus
+B) A lightweight version of Windows used for deployment, troubleshooting, and recovery
+C) A word processor
+D) A web browser
+Ans: B | Speed Solution: PE = Preinstallation. The mini-OS you see when installing Windows from a USB.
+305. In Excel, the formula =RANDBETWEEN(1, 10) does what?
+A) Averages numbers from 1 to 10
+B) Generates a random integer between 1 and 10
+C) Rounds numbers
+D) Creates an error
+Ans: B | Speed Solution: RANDom BETWEEN parameters.
+306. Which shortcut groups selected worksheets in Excel so you can type on all of them simultaneously?
+A) Alt + Click tabs
+B) Ctrl + Click or Shift + Click the sheet tabs
+C) Ctrl + G
+D) F4
+Ans: B | Speed Solution: Ctrl/Shift are universal Windows multi-selection keys.
+307. In Word, to delete one full word to the RIGHT of the cursor at a time, press:
+A) Backspace
+B) Ctrl + Backspace
+C) Delete
+D) Ctrl + Delete
+Ans: D | Speed Solution: Delete eats right. Adding Ctrl makes it eat whole words instead of single letters.
+308. In Word, to delete one full word to the LEFT of the cursor, press:
+A) Ctrl + Backspace
+B) Backspace
+C) Ctrl + Delete
+D) Alt + Backspace
+Ans: A | Speed Solution: Backspace eats left. Ctrl makes it eat whole words.
+309. Which is the highest level (Root) folder in a Linux file system?
+A) C:
+B) / (Forward Slash)
+C) \ (Backslash)
+D) /root
+Ans: B | Speed Solution: Linux root is /. Windows uses drive letters like C:\.
+310. In a URL like [https://www.bb.org.bd/en/index.php](https://www.bb.org.bd/en/index.php), what does .php signify?
+A) A picture file
+B) The server-side scripting language used to generate the dynamic web page
+C) A virus
+D) An operating system
+Ans: B | Speed Solution: PHP (Hypertext Preprocessor) creates dynamic web pages.
+311. What is the fundamental difference between RAM and ROM?
+A) RAM is slow; ROM is fast
+B) RAM is volatile (forgets without power); ROM is non-volatile (permanent)
+C) RAM holds the OS; ROM holds applications
+D) There is no difference
+Ans: B | Speed Solution: Volatility is the defining hardware difference.
+312. In Excel, if you type '01' in a general cell, it changes to '1'. To force Excel to keep the leading zero (as text), you must type:
+A) "01"
+B) '01 (Single quote first)
+C) =01
+D) *01
+Ans: B | Speed Solution: A leading single quote (') tells Excel "treat this exactly as text, do not calculate it."
+313. Which shortcut opens the 'Find and Replace' dialog box with the 'Replace' tab active?
+A) Ctrl + F
+B) Ctrl + H
+C) Ctrl + R
+D) Alt + R
+Ans: B | Speed Solution: H = Replace.
+314. In PowerPoint, what does a 'Theme' contain that a 'Template' does not necessarily enforce?
+A) Only background colors
+B) A coordinated set of colors, fonts, and effects
+C) Macros
+D) Video files
+Ans: B | Speed Solution: Themes are strict design pallets (colors/fonts/effects). Templates contain actual content placeholders and sample slides.
+315. A 'MAC Address' is hardcoded into the network card. MAC stands for:
+A) Machine Access Code
+B) Media Access Control
+C) Main Area Connection
+D) Memory Allocation Center
+Ans: B | Speed Solution: Media Access Control is the Layer 2 physical address.
+316. In Excel, what does the formula =COUNTBLANK(A1:A10) do?
+A) Counts cells with text
+B) Counts empty cells in the range
+C) Deletes empty cells
+D) Creates an error
+Ans: B | Speed Solution: Literally counts the blanks.
+317. What is 'Firmware' updating commonly referred to as?
+A) Flashing
+B) Compiling
+C) Defragmenting
+D) Booting
+Ans: A | Speed Solution: "Flashing the BIOS" overwrites the ROM chip with new firmware.
+318. Which Windows command-line utility tests reachability of a host on an IP network?
+A) ipconfig
+B) ping
+C) chkdsk
+D) format
+Ans: B | Speed Solution: Ping bounces a signal off a server to see if it responds.
+319. Which command-line utility shows the exact route (and all routers/hops) a packet takes to reach its destination?
+A) ping
+B) tracert (Traceroute)
+C) netstat
+D) taskkill
+Ans: B | Speed Solution: Tracert "traces the route" step-by-step.
+320. In MS Word, what does Ctrl + Shift + C do?
+A) Copies text
+B) Copies Formatting only
+C) Centers text
+D) Counts words
+Ans: B | Speed Solution: Adding Shift to Ctrl+C turns it into the Format Painter shortcut.
+321. What is the shortcut to Paste Formatting only?
+A) Ctrl + V
+B) Ctrl + Shift + V
+C) Alt + V
+D) Shift + V
+Ans: B | Speed Solution: Corresponding paste shortcut to Ctrl+Shift+C.
+322. In Excel, the intersection of row 5 and column C is cell:
+A) 5C
+B) C5
+C) C-5
+D) 5-C
+Ans: B | Speed Solution: Columns (Letters) always precede Rows (Numbers) in cell referencing.
+323. What does 'SQL' stand for, commonly used in database applications?
+A) Standard Query Logic
+B) Structured Query Language
+C) System Query Language
+D) Sequential Query Language
+Ans: B | Speed Solution: Structured Query Language is the global standard for RDBMS.
+324. In PowerPoint, what is a 'Layout'?
+A) The animation style
+B) The arrangement of placeholders on a slide
+C) The print settings
+D) The font color
+Ans: B | Speed Solution: Layout defines where the title box, text box, and image boxes physically sit on the slide.
+325. Which software acts as a "digital ledger" that cannot be altered retroactively?
+A) MS Excel
+B) Blockchain
+C) MS Access
+D) Linux
+Ans: B | Speed Solution: Blockchain is an immutable, decentralized digital ledger.
+326. In Word, to change text from 'apple' to 'APPLE' to 'Apple', highlight it and press:
+A) F3
+B) Shift + F3
+C) Ctrl + F3
+D) Alt + F3
+Ans: B | Speed Solution: Shift+F3 cycles cases.
+327. Which function in Excel is used to remove all non-printable characters from text?
+A) TRIM()
+B) CLEAN()
+C) CLEAR()
+D) PROPER()
+Ans: B | Speed Solution: CLEAN removes weird hidden system characters (unlike TRIM which only fixes spaces).
+328. What is a 'Drop Cap' in Word?
+A) A lowered capital letter
+B) A large initial letter that drops down two or more lines
+C) A text box
+D) A footnote
+Ans: B | Speed Solution: Used in newspapers/magazines for styling the first letter of a chapter.
+329. Which OS was developed by Linus Torvalds?
+A) Windows
+B) macOS
+C) Linux
+D) Unix
+Ans: C | Speed Solution: Linux is named after Linus.
+330. What is the primary purpose of 'Cache' memory?
+A) To store long-term data
+B) To act as a high-speed buffer between the CPU and RAM
+C) To run the OS
+D) To cool the CPU
+Ans: B | Speed Solution: Cache holds frequently used data so the CPU doesn't have to wait for slower RAM.
+331. In Excel, what does the VLOOKUP parameter 'FALSE' mean at the end of the formula?
+A) Approximate match
+B) Exact match
+C) Error
+D) Ignore blanks
+Ans: B | Speed Solution: FALSE (or 0) forces Excel to find an Exact match. TRUE finds an approximate match.
+332. What is the keyboard shortcut to Insert a Table in MS Word?
+A) Alt, N, T
+B) Ctrl + T
+C) Shift + T
+D) There is no shortcut
+Ans: A | Speed Solution: Alt activates ribbon keys. N = Insert, T = Table.
+333. In an email application, what does 'BCC' stand for?
+A) Blind Carbon Copy
+B) Blank Carbon Copy
+C) Basic Carbon Copy
+D) Backup Carbon Copy
+Ans: A | Speed Solution: Blind means other recipients cannot see the email addresses in this field.
+334. Which of the following limits the CPU's processing speed if it is too small?
+A) Hard Drive capacity
+B) RAM capacity (causing bottlenecks)
+C) Monitor size
+D) Keyboard speed
+Ans: B | Speed Solution: Low RAM forces the CPU to use virtual memory (hard drive), slowing the whole system down.
+335. In PowerPoint, which key runs the presentation from the Beginning?
+A) F1
+B) F5
+C) F11
+D) F12
+Ans: B | Speed Solution: F5 = Fullscreen from slide 1.
+336. Which network utility command displays your computer's IP address in Windows?
+A) ping
+B) ipconfig
+C) ifconfig
+D) netstat
+Ans: B | Speed Solution: IP Configuration (Windows). ifconfig is for Linux.
+337. What is 'Metadata'?
+A) Large data
+B) Data about data (e.g., author name, date created, file size)
+C) Corrupted data
+D) Cloud data
+Ans: B | Speed Solution: The hidden properties of a file.
+338. In Excel, the 'Wrap Text' feature is used to:
+A) Compress the file
+B) Make text appear on multiple lines within a single cell
+C) Hide the text
+D) Encrypt the cell
+Ans: B | Speed Solution: Wraps the text so it fits the column width by increasing row height.
+339. Which is the default web browser integrated into Windows 11?
+A) Internet Explorer
+B) Microsoft Edge
+C) Chrome
+D) Safari
+Ans: B | Speed Solution: Edge replaced IE.
+340. What is 'Phreaking'?
+A) Hacking into telecommunications systems (phone lines)
+B) Sending spam emails
+C) Creating viruses
+D) Defacing websites
+Ans: A | Speed Solution: Ph(one) + f(reaking).
+341. In Word, what does Ctrl + Enter do?
+A) Soft line break
+B) Page Break
+C) Column Break
+D) Section Break
+Ans: B | Speed Solution: Hard page break.
+342. Which Excel formula calculates the exact current date WITHOUT the time?
+A) =NOW()
+B) =TODAY()
+C) =DATE()
+D) =CURRENT()
+Ans: B | Speed Solution: TODAY = Date only. NOW = Date + Time.
+343. In an Operating System, the 'Recycle Bin' or 'Trash' is actually:
+A) A separate hard drive
+B) A hidden folder on the hard drive
+C) RAM memory
+D) A utility software
+Ans: B | Speed Solution: It's just a folder where file pointers are moved until permanently deleted.
+344. What does the 'Format Painter' do if you double-click it?
+A) Copies twice
+B) Keeps the tool active so you can apply the formatting to multiple separate areas
+C) Deletes formatting
+D) Opens font settings
+Ans: B | Speed Solution: Single click = use once. Double click = use infinitely until you press Esc.
+345. Which of these is a popular Open Source relational database system?
+A) Oracle
+B) MS SQL Server
+C) MySQL
+D) MS Access
+Ans: C | Speed Solution: MySQL and PostgreSQL are open-source.
+346. In PowerPoint, what is a 'Handout'?
+A) A physical printout containing multiple slides per page for the audience
+B) A digital file sent via email
+C) A transition effect
+D) A macro
+Ans: A | Speed Solution: Handed out to the audience.
+347. What does the 'Print Screen' (PrtScn) key do?
+A) Prints the document to a physical printer
+B) Copies an image of the current screen to the clipboard
+C) Turns the monitor off
+D) Refreshes the screen
+Ans: B | Speed Solution: Takes a screenshot.
+348. In Excel, what is a 'Relative Reference'?
+A) 1
+B) A1 (which changes when copied to other cells)
+C) 'A1
+D) =A1
+Ans: B | Speed Solution: Relative means it shifts relative to where you copy it. (Absolute has $).
+349. Which malware type demands a financial payment in exchange for a decryption key?
+A) Adware
+B) Ransomware
+C) Spyware
+D) Rootkit
+Ans: B | Speed Solution: Ransom = money demanded for a hostage (files).
+350. In Word, what is a 'Section Break' used for?
+A) To start a new page
+B) To apply different page layouts (like margins or headers) within the same document
+C) To split a table
+D) To hide text
+Ans: B | Speed Solution: Sections isolate formatting. E.g., making page 1 Portrait and page 2 Landscape requires a Section Break.
+351. What is the shortcut to Open an existing document?
+A) Ctrl + O
+B) Ctrl + N
+C) Ctrl + P
+D) Alt + O
+Ans: A | Speed Solution: O = Open.
+352. In Excel, the 'Transpose' paste option does what?
+A) Deletes data
+B) Flips rows into columns and columns into rows
+C) Converts formulas to values
+D) Translates text to another language
+Ans: B | Speed Solution: Transpose rotates the data 90 degrees.
+353. Which of the following is a Command Line operating system?
+A) Windows 10
+B) Ubuntu
+C) MS-DOS
+D) macOS
+Ans: C | Speed Solution: Disk Operating System relies entirely on typed commands.
+354. What is 'Bandwidth'?
+A) The physical width of a cable
+B) The maximum rate of data transfer across a given path
+C) The speed of the CPU
+D) The capacity of a hard drive
+Ans: B | Speed Solution: How much data can flow through the "pipe" per second.
+355. In PowerPoint, which shortcut duplicates a selected object?
+A) Ctrl + C
+B) Ctrl + D
+C) Ctrl + X
+D) Alt + D
+Ans: B | Speed Solution: D = Duplicate.
+356. What does an 'ISP' do?
+A) Scans for viruses
+B) Provides access to the Internet (Internet Service Provider)
+C) Manufactures hardware
+D) Compresses files
+Ans: B | Speed Solution: Companies like Grameenphone or local broadband providers.
+357. In Excel, what symbol is used to lock a row or column in an absolute reference?
+A) #
+B) $
+C) &
+D) @
+Ans: B | Speed Solution: The Dollar sign ($) anchors the reference.
+358. Which Word feature automatically corrects common spelling mistakes as you type?
+A) AutoFormat
+B) AutoCorrect
+C) Spell Check
+D) Grammar Check
+359. What is a 'Patch' in software terminology?
+159. What is a 'Patch' in software terminology?
+A) A new version of the OS
+B) A piece of software designed to update a computer program or fix a vulnerability
+C) A hardware component
+D) A virus
+Ans: B | Speed Solution: You patch a hole (bug) to fix it.
+360. In PowerPoint, what is the 'Reading View'?
+A) Shows the presentation in full screen but within a resizable window with simple controls
+B) Prints the slides
+C) Opens the notes pane
+D) Translates the text
+Ans: A | Speed Solution: Good for rehearsing on a single monitor while keeping access to the taskbar.
+361. Which Excel function extracts a specific number of characters from the LEFT side of a text string?
+A) =START()
+B) =LEFT()
+C) =BEGIN()
+D) =EXTRACT()
+Ans: B | Speed Solution: Literally =LEFT(text, number_of_chars).
+362. What is a 'URL'?
+A) A virus
+B) The web address of a specific resource on the internet (Uniform Resource Locator)
+C) A utility program
+D) A network protocol
+Ans: B | Speed Solution: URL is the web address (e.g., https://www.bb.org.bd).
+363. In Word, what does 'Justify' alignment do?
+A) Centers text
+B) Aligns text flush with both the left and right margins
+C) Aligns text to the right
+D) Indents the first line
+Ans: B | Speed Solution: Justify stretches spacing so both edges are perfectly straight (like a newspaper). Shortcut: Ctrl+J.
+364. Which of these is a Web Server software?
+A) Apache
+B) MS Word
+C) Linux
+D) Mozilla Firefox
+365. In Excel, the 'COUNT' function counts:
+165. In Excel, the 'COUNT' function counts:
+A) All cells
+B) Only cells containing numbers
+C) Only cells containing text
+D) Only empty cells
+Ans: B | Speed Solution: COUNT = Numbers. COUNTA = Anything (Alpha/numeric).
+366. What is 'Data Encryption'?
+A) Deleting data permanently
+B) Converting readable data into an unreadable format for security
+C) Compressing data size
+D) Backing up data
+Ans: B | Speed Solution: Scrambling data so only authorized users with a key can read it.
+367. In PowerPoint, how do you insert a hyperlink to a web page on a shape?
+A) Ctrl + K
+B) Right-click shape -> Link
+C) Insert -> Link
+D) All of the above
+Ans: D | Speed Solution: All are valid ways to trigger the hyperlink menu.
+368. Which shortcut creates a 'New' document, workbook, or presentation?
+A) Ctrl + O
+B) Ctrl + N
+C) Ctrl + S
+D) Alt + N
+Ans: B | Speed Solution: N = New.
+369. What is the primary function of the 'Motherboard'?
+A) To supply power
+B) To act as the central hub connecting all computer components together
+C) To cool the system
+D) To display graphics
+Ans: B | Speed Solution: It is the "mother" board where the CPU, RAM, and GPU all plug in.
+370. In Excel, what does the 'IFERROR' function do?
+A) Creates an error
+B) Returns a custom value you specify if a formula evaluates to an error (otherwise returns the formula result)
+C) Deletes errors
+D) Counts errors
+Ans: B | Speed Solution: Very useful to hide #N/A or #DIV/0! errors with blank text ("").
+371. Which Word shortcut highlights text from the cursor to the end of the line?
+A) Shift + End
+B) Ctrl + End
+C) Alt + End
+D) Shift + Right Arrow
+Ans: A | Speed Solution: Shift selects. End jumps to the end of the line.
+372. What is 'Phishing'?
+A) Stealing physical hard drives
+B) Deceiving individuals into revealing sensitive information via fake emails/websites
+C) A type of firewall
+D) A database query
+Ans: B | Speed Solution: A social engineering attack.
+373. In PowerPoint, the 'Eyedropper' tool is used to:
+374. Which of the following is NOT an internet protocol?
+B) Extract and match an exact color from any object on the screen
+C) Zoom in
+D) Delete animations
+Ans: B | Speed Solution: Just like Photoshop, it copies color codes.
+375. In Excel, what is a 'Sparkline'?
+A) HTTP
+B) FTP
+C) SMTP
+D) HTML
+Ans: D | Speed Solution: HTML is a Markup Language for web design, not a transmission Protocol.
+376. What does 'BCC' do in an email?
+A) A formula error
+B) A tiny chart placed inside a single cell to show a data trend
+C) A macro
+D) A conditional format
+Ans: B | Speed Solution: Sparklines are micro-charts embedded in cells.
+377. In Word, 'Header and Footer' are primarily used to:
+A) Bolds the text
+B) Sends a copy to someone without the other recipients knowing
+C) Blocks spam
+D) Backs up the email
+Ans: B | Speed Solution: Blind Carbon Copy hides the recipient's address.
+378. What is the main difference between 'Save' and 'Save As'?
+A) Insert page numbers, dates, and document titles that repeat on every page
+B) Create tables
+C) Add animations
+D) Spell check
+Ans: A | Speed Solution: Margins at the top/bottom containing repeating metadata.
+379. Which PowerPoint feature removes the background from an inserted image?
+A) 'Save' works only once
+B) 'Save As' allows you to create a new file, change the name, or change the location/format
+C) 'Save' compresses the file
+D) No difference
+Ans: B | Speed Solution: Save overwrites. Save As creates a distinct new version.
+380. In Excel, what does the 'CONCATENATE' (or '&') function do?
+A) Crop
+B) Remove Background (under Picture Format tab)
+C) Eraser
+D) Mask
+Ans: B | Speed Solution: PowerPoint has a built-in AI tool to remove backgrounds instantly.
+381. What is an 'IP Address'?
+A) Adds numbers
+B) Joins several text strings into one text string
+C) Averages cells
+D) Splits text
+Ans: B | Speed Solution: Links data together (e.g., First Name + Last Name).
+382. In Word, the shortcut to open the 'Print' dialog is:
+A) A physical hardware code
+B) A unique logical numerical label assigned to each device connected to a computer network
+C) A virus
+D) A web browser
+Ans: B | Speed Solution: Internet Protocol address acts like a digital postal address.
+383. Which malware tracks your internet browsing habits to serve targeted ads?
+A) Ctrl + P
+B) Alt + P
+C) Shift + P
+D) Ctrl + Shift + P
+Ans: A | Speed Solution: P = Print.
+384. In Excel, what is the default alignment for TEXT?
+A) Ransomware
+B) Adware / Spyware
+C) Trojan
+D) Worm
+Ans: B | Speed Solution: Ad(vertisement) ware.
+385. In PowerPoint, what is a 'SmartArt' graphic?
+A) Right
+B) Left
+C) Center
+D) Justify
+Ans: B | Speed Solution: Text = Left. Numbers = Right.
+386. Which system utility rearranges fragmented data to speed up the hard drive?
+A) A video
+B) A visual representation of information (e.g., flowcharts, lists, cycles)
+C) A macro
+D) An audio clip
+Ans: B | Speed Solution: Converts text to professional diagrams.
+387. In Word, what does 'Subscript' formatting do (e.g., H₂O)?
+A) Disk Cleanup
+B) Disk Defragmenter
+C) Backup
+D) Task Manager
+Ans: B | Speed Solution: De-fragments the data.
+388. What does 'HTML' stand for?
+A) Places text above the baseline
+B) Places text below the baseline and makes it smaller
+C) Bolds the text
+D) Highlights the text
+Ans: B | Speed Solution: Sub = Below.
+389. In Excel, which function counts the number of cells containing ANY data (text or numbers)?
+A) Hyper Text Markup Language
+B) High Tech Machine Language
+C) Hyper Transfer Main Logic
+D) Home Tool Markup Language
+Ans: A | Speed Solution: The standard language for creating web pages.
+390. What is 'Phreaking'?
+A) COUNT()
+B) COUNTA()
+C) COUNTBLANK()
+D) COUNTIF()
+Ans: B | Speed Solution: COUNTA counts All non-empty cells.
+391. In PowerPoint, which view displays all slides as thumbnails for easy rearranging?
+A) Hacking telecommunication systems
+B) Stealing bank data
+C) Sending spam
+D) Creating viruses
+Ans: A | Speed Solution: Ph(one) + f(reaking).
+392. Which protocol is used to send secure, encrypted web traffic?
+A) Normal
+B) Slide Sorter
+C) Reading
+D) Slide Show
+Ans: B | Speed Solution: Sorter = Organizing view.
+393. In Word, what is the shortcut to 'Find' text?
+A) HTTP
+B) HTTPS
+C) FTP
+D) SMTP
+Ans: B | Speed Solution: S = Secure (uses SSL/TLS).
+394. What is an 'Operating System'?
+A) Ctrl + F
+B) Ctrl + S
+C) Ctrl + R
+D) Alt + F
+Ans: A | Speed Solution: F = Find.
+395. In Excel, fixing a cell reference like 1 so it doesn't change when copied is called:
+A) An application for typing
+B) System software that manages computer hardware and provides common services for programs
+C) A virus
+D) A hardware device
+Ans: B | Speed Solution: The master controller of the PC.
+396. Which is a characteristic of 'Open Source' software?
+A) Relative Reference
+B) Absolute Reference
+C) Mixed Reference
+D) Locked Cell
+Ans: B | Speed Solution: Absolute means it never moves.
+397. In PowerPoint, 'Transitions' are applied to:
+A) It is very expensive
+B) The source code is freely available for anyone to inspect, modify, and enhance
+C) It contains viruses
+D) It only runs on Windows
+Ans: B | Speed Solution: "Open" code. E.g., Linux.
+398. What is the shortcut to 'Select All' in a document?
+A) Individual text boxes
+B) The entire slide as it moves from one to the next
+C) Videos only
+D) The background only
+Ans: B | Speed Solution: Transitions happen between slides.
+399. Which cybersecurity term describes software that encrypts user files and demands payment?
+A) Ctrl + A
+B) Alt + A
+C) Shift + A
+D) Ctrl + S
+Ans: A | Speed Solution: A = All.
+400. In Excel, the 'VLOOKUP' function searches for a value in which column of the selected table array?
+A) Adware
+B) Ransomware
+C) Rootkit
+D) Trojan
+Ans: B | Speed Solution: Ransom = money demanded.
+200. In Excel, the 'VLOOKUP' function searches for a value in which column of the selected table array?
+A) Last column
+B) Any column
+C) First (leftmost) column
+D) Middle column
+Ans: C | Speed Solution: VLOOKUP is strictly bound to searching the first column of the selected array.

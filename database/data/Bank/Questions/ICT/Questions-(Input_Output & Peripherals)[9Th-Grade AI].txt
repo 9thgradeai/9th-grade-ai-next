@@ -1,0 +1,1200 @@
+﻿1. A Bangladesh Bank clearinghouse processes automated cheque routing. Which specific technology enables the reading of routing numbers even if optical ink stamps overlap them?
+A) OCR
+B) MICR
+C) OMR
+D) RFID
+Ans: B | Speed Solution: MICR (Magnetic Ink Character Recognition) reads magnetic properties of iron oxide ink, ignoring standard optical ink overlaps.
+2. Which standardized MICR font is primarily used by central banks across the globe, including Bangladesh, for cheque encoding?
+A) E-13B
+B) Arial-14
+C) CMC-7
+D) ISO-Magnetic
+Ans: A | Speed Solution: E-13B and CMC-7 are the two MICR standards. E-13B is the dominant global standard for bank cheques.
+3. How many unique characters (numbers and symbols) make up the standard MICR E-13B font set used in commercial banking?
+A) 10
+B) 14
+C) 26
+D) 128
+Ans: B | Speed Solution: 14 total characters = 10 digits (0-9) + 4 special transit symbols.
+4. A BB HR officer scans 5,000 AD preliminary exam answer sheets. Which technology relies on the reflection of light to grade bubbled answers?
+A) OCR
+B) OMR
+C) MICR
+D) Barcode Reader
+Ans: B | Speed Solution: OMR (Optical Mark Recognition) detects the presence/absence of pencil marks via light reflection.
+5. To digitize a 1980s printed Bangladesh Bank monetary policy document into editable MS Word text, the IT team must use:
+A) OMR
+B) MICR
+C) OCR
+D) Plotter
+Ans: C | Speed Solution: OCR (Optical Character Recognition) converts images of typed/printed text into machine-encoded text.
+6. At a POS terminal, a cashier scans a product. A standard 1D Barcode represents data by varying the:
+A) Color of the lines
+B) Widths and spacings of parallel lines
+C) Magnetic polarity of the ink
+D) Pixel density
+Ans: B | Speed Solution: 1D Barcodes = varying widths of black lines and white spaces.
+7. Bangladesh Bank issues an updated EMV chip card for security. "EMV" stands for:
+A) Electronic Money Validator
+B) Europay, Mastercard, and Visa
+C) Encrypted Magnetic Variable
+D) Electronic Monetary Vault
+Ans: B | Speed Solution: EMV is the global standard for chip cards, created by Europay, Mastercard, and Visa.
+8. Contactless debit cards use which specific short-range wireless technology derived from RFID?
+A) Wi-Fi
+B) Bluetooth
+C) NFC
+D) Infrared
+Ans: C | Speed Solution: NFC (Near Field Communication) works within a strict ~4 cm range for secure banking.
+9. An active RFID tag used to track Bangladesh Bank cash-transit vehicles differs from a passive RFID tag primarily because:
+A) It uses a laser
+B) It has its own internal battery/power source
+C) It relies on the reader's magnetic field
+D) It only stores 1 bit of data
+Ans: B | Speed Solution: Active = Internal battery (long range). Passive = Powered by the reader's signal (short range).
+10. A QR code displayed on a merchant's counter for bKash payments is a type of:
+A) 1D Barcode
+B) 2D Barcode
+C) RFID Tag
+D) MICR format
+Ans: B | Speed Solution: QR (Quick Response) is a 2-Dimensional matrix barcode.
+11. Which input device is considered standard "QWERTY" based on the arrangement of its top letter row?
+A) Mouse
+B) Scanner
+C) Keyboard
+D) Joystick
+Ans: C | Speed Solution: Q-W-E-R-T-Y are the first six letters on a standard English keyboard.
+12. On a bank teller's keyboard, keys like 'Caps Lock' and 'Num Lock' are categorized as:
+A) Modifier Keys
+B) Toggle Keys
+C) Function Keys
+D) Navigation Keys
+Ans: B | Speed Solution: Toggle = On/Off switch (like a light switch).
+13. Keys like 'Ctrl', 'Shift', and 'Alt' are known as:
+A) Modifier Keys
+B) Toggle Keys
+C) Execution Keys
+D) Alphanumeric Keys
+Ans: A | Speed Solution: They "modify" the input of other keys (e.g., Shift + a = A).
+14. An ergonomic keyboard layout scientifically designed to increase typing speed by placing common vowels on the home row is:
+A) QWERTY
+B) DVORAK
+C) AZERTY
+D) COLEMAK
+Ans: B | Speed Solution: DVORAK groups common letters on the home row to minimize finger movement.
+15. A banker navigates a massive Excel sheet. Which pointing device relies on a stationary ball rolled by the thumb to move the cursor?
+A) Optical Mouse
+B) Trackball
+C) Touchpad
+D) Stylus
+Ans: B | Speed Solution: Trackball = upside-down mouse. The device stays still; you roll the ball.
+16. Modern optical mice replace the older mechanical rubber ball with what component to track movement?
+A) Magnetic sensors
+B) LED/Laser and a photodiode
+C) Ultrasonic waves
+D) Gyroscopes
+Ans: B | Speed Solution: Optical = Light. An LED illuminates the surface, and a camera (photodiode) tracks the reflection.
+17. Mouse sensitivity is measured in:
+A) PPM
+B) DPI
+C) Hz
+D) Bps
+Ans: B | Speed Solution: Dots Per Inch (DPI). Higher DPI = faster/more sensitive cursor movement.
+18. A Bangladesh Bank ATM touchscreen typically utilizes which technology that registers input via the electrical properties of the human body?
+A) Resistive
+B) Capacitive
+C) Surface Acoustic Wave
+D) Optical
+Ans: B | Speed Solution: Capacitive screens need human electrical capacitance (won't work with normal gloves).
+19. Older POS touchscreens required physical pressure to push two metallic layers together. This technology is:
+A) Capacitive
+B) Resistive
+C) Infrared
+D) Laser
+Ans: B | Speed Solution: Resistive = Resists until physical pressure pushes the layers together.
+20. Which biometric device is least affected by cuts or dirt on a bank employee's hands during vault access?
+A) Fingerprint Scanner
+B) Palm Print Reader
+C) Iris/Retina Scanner
+D) Hand Geometry Scanner
+Ans: C | Speed Solution: Iris/Retina scans the eye internally/optically; dirt on hands is irrelevant.
+21. In biometric security (e.g., BB Vault), "FAR" is a critical metric. It stands for:
+A) False Acceptance Rate
+B) Fast Access Recognition
+C) Frequency Authorization Ratio
+D) Fingerprint Assessment Record
+Ans: A | Speed Solution: FAR = Allowing an unauthorized person in (the most dangerous biometric error).
+22. "FRR" in banking biometrics means a legitimate manager is denied access. FRR stands for:
+A) Failed Retinal Read
+B) False Rejection Rate
+C) Frequency Rejection Ratio
+D) Fast Rejection Record
+Ans: B | Speed Solution: FRR = Rejecting a valid, authorized user.
+23. Which output device produces hard copies by physically striking an ink ribbon against paper (vital for multipart carbon-copy bank ledgers)?
+A) Laser Printer
+B) Inkjet Printer
+C) Impact Printer
+D) Thermal Printer
+Ans: C | Speed Solution: "Impact" = physical strike. Necessary to transfer pressure through carbon copies.
+24. A Dot Matrix printer's speed is typically measured in:
+A) PPM (Pages Per Minute)
+B) CPS (Characters Per Second)
+C) DPI (Dots Per Inch)
+D) LPM (Lines Per Minute)
+Ans: B | Speed Solution: Dot matrix prints letter-by-letter, hence Characters Per Second.
+25. A Daisy Wheel printer is classified as a:
+A) Non-impact printer
+B) Impact character printer
+C) Impact line printer
+D) Laser printer
+Ans: B | Speed Solution: Daisy wheels have petals with letters that physically strike the ribbon (Impact).
+26. To print 1,000 pages of customer statements silently and rapidly, a bank branch uses a:
+A) Dot Matrix Printer
+B) Laser Printer
+C) Daisy Wheel Printer
+D) Plotter
+Ans: B | Speed Solution: Laser printers use a laser beam and toner powder for rapid, silent, high-volume page printing.
+27. Laser printers use a powdered ink fused onto the paper by heat. This powder is called:
+A) Ink
+B) Toner
+C) Graphite
+D) Resin
+Ans: B | Speed Solution: Toner = Dry plastic/iron powder. Ink = Liquid.
+28. An ATM receipt fades after a few months. This occurs because it was printed using a:
+A) Laser Printer
+B) Thermal Printer
+C) Inkjet Printer
+D) Dot Matrix Printer
+Ans: B | Speed Solution: Thermal printers use heat-sensitive paper that chemically darkens. Heat/sunlight causes it to fade.
+29. Which printer creates images by spraying microscopic droplets of liquid ink onto paper?
+A) Laser
+B) Thermal
+C) Inkjet
+D) Plotter
+Ans: C | Speed Solution: Spraying liquid ink = Inkjet.
+30. Printer resolution (sharpness of the printed text) is measured in:
+A) Hz
+B) DPI (Dots Per Inch)
+C) PPM
+D) Aspect Ratio
+Ans: B | Speed Solution: More dots packed into an inch = higher resolution/sharpness.
+31. The Bangladesh Bank engineering department needs to print a massive 5-foot-wide architectural blueprint. Which device is required?
+A) Laser Printer
+B) Plotter
+C) Dot Matrix Printer
+D) Thermal Printer
+Ans: B | Speed Solution: Plotters use automated pens to draw large, continuous high-resolution vector graphics.
+32. A 3D printer creates physical objects by adding material layer by layer. This manufacturing process is called:
+A) Subtractive Manufacturing
+B) Additive Manufacturing
+C) Impact Printing
+D) Machining
+Ans: B | Speed Solution: Adding layers = Additive. (Carving out = Subtractive).
+33. The smallest unit of a digital image displayed on a banking terminal's screen is a:
+A) Dot
+B) Pixel
+C) Byte
+D) Matrix
+Ans: B | Speed Solution: Pixel = Picture Element.
+34. The number of times a monitor's screen redraws the image per second is called the:
+A) Resolution
+B) Refresh Rate
+C) Aspect Ratio
+D) Color Depth
+Ans: B | Speed Solution: Measured in Hertz (Hz). 60Hz = redraws 60 times per second.
+35. A CRT (Cathode Ray Tube) monitor creates images by firing electrons at a screen coated with:
+A) Liquid Crystals
+B) Phosphor
+C) LED
+D) Mercury
+Ans: B | Speed Solution: Electrons hit phosphor dots, making them glow red, green, or blue.
+36. LCD stands for:
+A) Light Cathode Display
+B) Liquid Crystal Display
+C) Laser Color Display
+D) Liquid Carbon Display
+Ans: B | Speed Solution: Liquid crystals manipulate the backlight to create images.
+37. What is the fundamental difference between an LCD monitor and an LED monitor?
+A) LCD uses liquid, LED uses gas
+B) LED monitors use Light Emitting Diodes for the backlight instead of fluorescent tubes
+C) LED monitors have no backlight
+D) There is no difference
+Ans: B | Speed Solution: An LED monitor is just an LCD panel that uses LEDs for illumination instead of older CCFL tubes.
+38. Which modern display technology requires NO backlight because each individual pixel emits its own light (allowing for perfect blacks)?
+A) LCD
+B) CRT
+C) OLED
+D) Plasma
+Ans: C | Speed Solution: Organic Light Emitting Diode (OLED) pixels can turn completely off, creating true black.
+39. The ratio of a monitor's width to its height (e.g., 16:9 or 4:3) is called the:
+A) Resolution
+B) Refresh Rate
+C) Aspect Ratio
+D) Contrast Ratio
+Ans: C | Speed Solution: Aspect Ratio = Width : Height proportions.
+40. A monitor with a resolution of 1920x1080 is commonly referred to as:
+A) 4K
+B) Full HD (1080p)
+C) 720p
+D) Standard Definition
+Ans: B | Speed Solution: 1920x1080 = Full HD. (3840x2160 = 4K).
+41. In audio terminology, a microphone acts as an _____ device, while a speaker is an _____ device.
+A) Input, Input
+B) Output, Input
+C) Input, Output
+D) Output, Output
+Ans: C | Speed Solution: Mic takes sound IN. Speaker pushes sound OUT.
+42. Which hardware card is required on a motherboard to process analog audio input into digital data?
+A) NIC
+B) Sound Card (Audio Interface)
+C) GPU
+D) RAID Controller
+Ans: B | Speed Solution: The Sound Card contains the DAC and ADC for audio processing.
+43. A bank's server connects to an external backup drive. Which legacy port transfers data 1 bit at a time over a single wire?
+A) Parallel Port
+B) Serial Port
+C) HDMI
+D) VGA
+Ans: B | Speed Solution: Serial = One by one (in a series). Parallel = multiple bits simultaneously.
+44. Which legacy port (IEEE 1284), primarily used for older printers, transfers 8 bits of data simultaneously?
+A) Serial Port
+B) Parallel Port
+C) PS/2 Port
+D) USB
+Ans: B | Speed Solution: Parallel = moving side-by-side (multiple bits at once). 25-pin connector.
+45. USB is the universal standard for peripherals. USB stands for:
+A) Universal Serial Bus
+B) Universal System Bus
+C) Unified Serial Bus
+D) Universal Standard Bus
+Ans: A | Speed Solution: Universal Serial Bus replaced nearly all legacy serial/parallel ports.
+46. A single USB controller can theoretically support up to how many daisy-chained devices?
+A) 64
+B) 127
+C) 255
+D) 512
+Ans: B | Speed Solution: The 7-bit addressing of standard USB limits it to 127 connected devices ().
+47. The ability to plug in a USB flash drive and use it immediately without restarting the computer is called:
+A) Plug and Play (PnP) / Hot Swapping
+B) Bootstrapping
+C) Cold Booting
+D) Formatting
+Ans: A | Speed Solution: "Hot swapping" means changing devices while the system is hot (powered on).
+48. Which high-speed interface technology was originally developed by Apple (as FireWire) and is codified as IEEE 1394?
+A) USB
+B) Thunderbolt
+C) FireWire (IEEE 1394)
+D) SATA
+Ans: C | Speed Solution: IEEE 1394 = FireWire.
+49. Which modern, reversible connector supports USB 3.1, DisplayPort, and power delivery up to 100W+?
+A) Micro-USB
+B) USB Type-A
+C) USB Type-C
+D) Mini-USB
+Ans: C | Speed Solution: Type-C is the oval, reversible standard dominating modern laptops/phones.
+50. To connect a bank manager's PC to a high-definition monitor transmitting BOTH digital video and audio, use:
+A) VGA
+B) DVI
+C) HDMI
+D) PS/2
+Ans: C | Speed Solution: High-Definition Multimedia Interface (HDMI) carries audio + video. VGA/DVI are video only.
+51. Which legacy blue-colored, 15-pin connector transmits only analog video signals?
+A) HDMI
+B) VGA
+C) DVI
+D) DisplayPort
+Ans: B | Speed Solution: Video Graphics Array (VGA) is the classic blue analog video port.
+52. The purple and green round legacy ports used for connecting older keyboards and mice are known as:
+A) USB ports
+B) Serial ports
+C) PS/2 ports
+D) Parallel ports
+Ans: C | Speed Solution: PS/2 ports (Purple = Keyboard, Green = Mouse).
+53. To connect a desktop PC to a wired Local Area Network (LAN), which port is used?
+A) RJ-11
+B) RJ-45 (Ethernet Port)
+C) RS-232
+D) FireWire
+Ans: B | Speed Solution: RJ-45 is the 8-pin Ethernet standard. (RJ-11 is the 4-pin telephone standard).
+54. A "System Bus" on a motherboard is best described as:
+A) A storage device
+B) A communication pathway connecting two or more internal components
+C) A power supply unit
+D) A cooling mechanism
+Ans: B | Speed Solution: A Bus is a physical highway (wires/traces) for data travel.
+55. The System Bus is logically subdivided into three buses. Which is NOT one of them?
+A) Data Bus
+B) Address Bus
+C) Network Bus
+D) Control Bus
+Ans: C | Speed Solution: The trio is Data, Address, and Control.
+56. Which bus is UNIDIRECTIONAL (travels only from the CPU to memory/peripherals)?
+A) Data Bus
+B) Address Bus
+C) Control Bus
+D) USB
+Ans: B | Speed Solution: The CPU dictates where to look (Address). Memory never addresses the CPU. Hence, unidirectional.
+57. Which bus carries the actual instructions and financial data being processed, flowing in both directions?
+A) Address Bus
+B) Data Bus
+C) Control Bus
+D) Clock Bus
+Ans: B | Speed Solution: Data travels back and forth (Bidirectional).
+58. Which bus carries "Read" or "Write" command signals from the CPU to the RAM?
+A) Address Bus
+B) Data Bus
+C) Control Bus
+D) PCI Bus
+Ans: C | Speed Solution: Read/Write are "Control" commands.
+59. If a 32-bit processor has a 32-bit address bus, what is the maximum physical memory (RAM) it can address?
+A) 2 GB
+B) 4 GB
+C) 8 GB
+D) 16 GB
+Ans: B | Speed Solution:  bytes = 4,294,967,296 bytes = 4 GB.
+60. The expansion bus standard used for connecting high-speed GPUs and NVMe SSDs directly to the CPU is:
+A) PCI
+B) AGP
+C) PCIe (PCI Express)
+D) ISA
+Ans: C | Speed Solution: PCIe (Express) uses dedicated high-speed serial lanes, replacing older parallel PCI.
+61. What does the motherboard's "Northbridge" chipset traditionally manage?
+A) Slow peripherals like USB and Hard Drives
+B) High-speed communication between the CPU, RAM, and GPU
+C) Audio processing
+D) Power distribution
+Ans: B | Speed Solution: North = Fast (CPU/RAM). South = Slow (USB/Disk).
+62. What does the "Southbridge" chipset traditionally manage?
+A) High-speed graphics
+B) CPU cache
+C) Slower I/O peripherals like USB, SATA drives, and audio
+D) System clock
+Ans: C | Speed Solution: Southbridge handles the slower peripheral I/O.
+63. Modern processors (like Intel Core i-series) have mostly eliminated the physical Northbridge chip. Why?
+A) To cut manufacturing costs
+B) Because it was integrated directly into the CPU die to reduce latency
+C) Because RAM is no longer used
+D) To use less power
+Ans: B | Speed Solution: Putting the memory controller directly on the CPU drastically speeds up RAM access.
+64. When a bank employee clicks a mouse, the hardware sends a signal to pause the CPU's current task. This signal is an:
+A) Instruction
+B) Interrupt
+C) Override
+D) Exception
+Ans: B | Speed Solution: An "Interrupt" demands the CPU's immediate attention.
+65. Direct Memory Access (DMA) increases system performance by allowing hardware devices (like a disk drive) to:
+A) Run their own operating system
+B) Transfer data directly to/from RAM without constantly involving the CPU
+C) Bypass the motherboard
+D) Overclock the RAM
+Ans: B | Speed Solution: DMA saves CPU cycles by moving bulk data directly to memory.
+66. What does "BIOS" stand for?
+A) Binary Input Output System
+B) Basic Input Output System
+C) Basic Internal Operating System
+D) Base Integration Output System
+Ans: B | Speed Solution: Basic Input/Output System handles hardware wake-up.
+67. The BIOS program is stored in non-volatile memory located on the:
+A) Hard Drive
+B) RAM
+C) Motherboard (ROM/Flash chip)
+D) CPU Cache
+Ans: C | Speed Solution: BIOS must exist before the hard drive is even accessed, so it lives on a motherboard chip.
+68. When a server is powered on, the BIOS first runs a diagnostic test to check if RAM and CPU are functioning. This test is called:
+A) Boot
+B) MBR
+C) POST
+D) UEFI
+Ans: C | Speed Solution: POST = Power-On Self Test.
+69. During POST, if the BIOS detects a critical hardware failure (like missing RAM), how does it communicate this since the monitor isn't on yet?
+A) It prints a receipt
+B) Through a series of Beep Codes from the motherboard speaker
+C) Sending an email
+D) Flashing the keyboard lights
+Ans: B | Speed Solution: Beep codes (e.g., 1 long, 2 short) map to specific hardware errors.
+70. What is the modern, GUI-based replacement for the legacy BIOS that supports larger hard drives and secure boot?
+A) CMOS
+B) UEFI (Unified Extensible Firmware Interface)
+C) MBR
+D) GRUB
+Ans: B | Speed Solution: UEFI supports mouse input, >2TB boot drives, and faster booting.
+71. BIOS legacy systems use MBR for partitioning. UEFI systems use which partition table standard?
+A) FAT32
+B) NTFS
+C) GPT (GUID Partition Table)
+D) ext4
+Ans: C | Speed Solution: MBR = Legacy. GPT = UEFI standard (allows unlimited partitions and massive drive sizes).
+72. In a banking PC, what keeps the real-time system clock running and preserves BIOS settings when the PC is unplugged?
+A) The power supply
+B) A small CMOS battery (usually CR2032) on the motherboard
+C) The hard drive
+D) Flash memory
+Ans: B | Speed Solution: The coin-cell CMOS battery provides a tiny trickle of power to keep the clock alive.
+73. What is a "Bootloader"?
+A) A virus that attacks the MBR
+B) A small program that locates and loads the Operating System into RAM
+C) The hardware power button
+D) A disk cleanup utility
+Ans: B | Speed Solution: E.g., GRUB (Linux) or Windows Boot Manager. It "loads" the OS.
+74. The "Master Boot Record" (MBR) is traditionally located in the:
+A) First sector of the bootable hard drive
+B) Motherboard ROM
+C) Windows Registry
+D) RAM
+Ans: A | Speed Solution: The BIOS looks at Sector 0 (the very beginning) of the disk to find the MBR.
+75. "Flashing the BIOS" refers to:
+A) Cleaning the motherboard
+B) Overwriting the existing BIOS firmware on the ROM chip with an updated version
+C) Resetting the CMOS battery
+D) Installing Windows
+Ans: B | Speed Solution: Updating the firmware EEPROM chip is called "flashing".
+76. Which peripheral device converts physical documents into a digital image format (like PDF or JPEG) for archiving?
+A) Printer
+B) Scanner
+C) Plotter
+D) Digitizer
+Ans: B | Speed Solution: Scanners optically read physical media into digital data.
+77. An architect uses a stylus on a flat electronic pad to draw blueprints directly into the PC. This input device is a:
+A) Touchscreen
+B) Digitizer / Graphics Tablet
+C) Light Pen
+D) Trackpad
+Ans: B | Speed Solution: Digitizers convert hand-drawn physical motion into digital coordinates.
+78. A "Light Pen" requires which specific type of older monitor to function properly?
+A) LCD
+B) CRT
+C) OLED
+D) LED
+Ans: B | Speed Solution: Light pens detect the scanning electron beam of a Cathode Ray Tube.
+79. A Web Camera (Webcam) is considered an:
+A) Output device
+B) Input device
+C) Processing device
+D) Storage device
+Ans: B | Speed Solution: It takes visual data IN to the computer.
+80. What is "TWAIN" in the context of computer peripherals?
+A) A dual-core processor
+B) An industry-standard software interface/protocol for Scanners and digital cameras
+C) A type of printer cable
+D) A monitor resolution
+Ans: B | Speed Solution: TWAIN allows scanning software to communicate with scanner hardware.
+81. Which input device utilizes a joystick-like control often integrated into the center of older laptop keyboards (e.g., IBM ThinkPad)?
+A) Trackball
+B) Pointing Stick (TrackPoint)
+C) Touchpad
+D) Stylus
+Ans: B | Speed Solution: The little red dot in the middle of a ThinkPad keyboard is a Pointing Stick.
+82. A bank's POS system uses a device that reads the magnetic stripe on the back of an older debit card. This device is a:
+A) MICR reader
+B) Magnetic Stripe Reader (MSR)
+C) OMR reader
+D) RFID scanner
+Ans: B | Speed Solution: "Magstripe" cards are swiped through an MSR.
+83. In display technology, what does "VRAM" stand for?
+A) Virtual Random Access Memory
+B) Video Random Access Memory
+C) Variable Read Access Memory
+D) Visual RAM
+Ans: B | Speed Solution: VRAM is dedicated memory on the Graphics Card (GPU) to store image data.
+84. A monitor's "Response Time" (e.g., 1ms or 5ms) measures:
+A) How fast it turns on
+B) How quickly a pixel can change from one color (usually grey-to-grey) to another
+C) The refresh rate
+D) The internet speed
+Ans: B | Speed Solution: Lower response time = less motion blur/ghosting.
+85. "Ghosting" on a monitor is usually caused by:
+A) High refresh rate
+B) Slow pixel response time
+C) A virus
+D) Bad HDMI cable
+Ans: B | Speed Solution: If pixels are too slow to change colors, a moving object leaves a blurry trail (ghost).
+86. What does "Interlaced" video (e.g., 1080i) mean compared to "Progressive" video (1080p)?
+A) Interlaced displays all lines simultaneously
+B) Interlaced displays odd and even lines in alternating passes
+C) Interlaced uses higher resolution
+D) Interlaced is digital, progressive is analog
+Ans: B | Speed Solution: "i" = Interlaced (draws every other line). "p" = Progressive (draws lines sequentially).
+87. Which feature reduces eye strain by adjusting a monitor's color temperature to be warmer (less blue light) at night?
+A) Vsync
+B) Anti-aliasing
+C) Night Light / Blue Light Filter
+D) HDR
+Ans: C | Speed Solution: Blue light suppresses melatonin; filters make the screen yellowish.
+88. "HDR" in modern monitors stands for:
+A) High Data Rate
+B) High Dynamic Range
+C) Hardware Display Rendering
+D) Heavy Duty Resolution
+Ans: B | Speed Solution: HDR allows for brighter whites, darker blacks, and more vivid colors simultaneously.
+89. In a 3D printer, the plastic material fed into the heating nozzle is called:
+A) Toner
+B) Ink
+C) Filament
+D) Resin
+Ans: C | Speed Solution: FDM 3D printers melt rolls of plastic wire called Filament.
+90. Which port is the standard interface for connecting external synthesizers and digital musical instruments to a PC?
+A) HDMI
+B) MIDI (Musical Instrument Digital Interface)
+C) VGA
+D) RJ-45
+Ans: B | Speed Solution: MIDI sends musical instruction data, not actual audio waves.
+91. An Uninterruptible Power Supply (UPS) uses what component to convert its internal DC battery power back into AC power for the computer?
+A) Rectifier
+B) Transformer
+C) Inverter
+D) Capacitor
+Ans: C | Speed Solution: Inverter = DC to AC. (Rectifier = AC to DC).
+92. If a bank server's power supply is rated "80 Plus Gold", what does this indicate?
+A) It uses 80 watts
+B) It operates at high energy efficiency (wasting less power as heat)
+C) It has 80 cables
+D) It costs $80
+Ans: B | Speed Solution: 80 Plus is an energy efficiency certification program.
+93. A "Peripheral" is best defined as:
+A) The CPU
+B) The Motherboard
+C) Any external hardware device attached to the computer to expand its functionality
+D) The Operating System
+Ans: C | Speed Solution: Peripherals sit on the "periphery" (edge) of the core system (e.g., mouse, printer).
+94. Which of the following is considered an internal peripheral?
+A) USB mouse
+B) PCIe Graphics Card (GPU)
+C) External hard drive
+D) Monitor
+Ans: B | Speed Solution: Internal peripherals plug into expansion slots inside the case.
+95. A "Virtual Keyboard" (On-screen keyboard) is typically utilized as a security measure against:
+A) Ransomware
+B) Keyloggers
+C) DDoS attacks
+D) Viruses
+Ans: B | Speed Solution: Keyloggers record physical key presses. Clicking keys on-screen circumvents them.
+96. A bank's biometric security system requires both a fingerprint and a smart card swipe. This is an example of:
+A) Two-Factor Authentication (2FA)
+B) Single Sign-On (SSO)
+C) Biometric Spoofing
+D) Encryption
+Ans: A | Speed Solution: 2FA = Something you HAVE (card) + Something you ARE (fingerprint).
+97. In Smart Cards, what role does the integrated chip play compared to a magnetic stripe?
+A) It holds less data
+B) It actively processes data and uses dynamic cryptography for each transaction, making it nearly impossible to clone
+C) It relies on visual recognition
+D) It acts as a battery
+Ans: B | Speed Solution: Magstripes are static (easily copied). Chips are dynamic minicomputers.
+98. The specific slot on a laptop used to attach an external cable lock (anti-theft device) is called a:
+A) USB port
+B) Kensington Security Slot
+C) SD card reader
+D) PCMCIA slot
+Ans: B | Speed Solution: Kensington locks are the standard physical security tether for laptops.
+99. What does the "Print Screen" (PrtScn) key do when pressed?
+A) Sends the document to the default printer
+B) Captures an image of the current screen layout to the clipboard
+C) Turns off the monitor
+D) Opens the print dialog box
+Ans: B | Speed Solution: Takes a digital screenshot, ready to be pasted.
+100. Which key on a standard Windows keyboard opens the context menu (equivalent to right-clicking the mouse)?
+A) Menu key (Application key)
+B) Windows key
+C) Alt
+D) Ctrl
+Ans: A | Speed Solution: The Menu key is usually located between the right Alt and Ctrl keys.
+101. A banking application requires the user to input data using voice commands. The software technology used is:
+A) Speech-to-Text / Speech Recognition
+B) Text-to-Speech
+C) OCR
+D) OMR
+Ans: A | Speed Solution: Translates spoken voice (Input) into digital text.
+102. Which accessibility output feature translates digital text on the screen into spoken words for visually impaired bank customers?
+A) OCR
+B) Text-to-Speech (Screen Reader)
+C) Voice Recognition
+D) TWAIN
+Ans: B | Speed Solution: e.g., Windows Narrator. It reads text OUT loud.
+103. Which is the fastest port standard currently available for connecting external storage to a laptop?
+A) USB 2.0
+B) USB 3.0
+C) Thunderbolt 4
+D) eSATA
+Ans: C | Speed Solution: Thunderbolt 4 (using Type-C connector) runs at a massive 40 Gbps.
+104. A "Docking Station" in a bank office is used to:
+A) Charge the employee's phone
+B) Provide a laptop with immediate connection to multiple desktop peripherals (monitor, keyboard, LAN) via a single port
+C) Cool the laptop
+D) Store backup data
+Ans: B | Speed Solution: Docks transform a portable laptop into a full desktop workstation instantly.
+105. "Bluetooth" is a wireless standard used to create Personal Area Networks (PANs). What is its typical maximum effective range?
+A) 1 meter
+B) 10 meters (33 feet)
+C) 100 meters
+D) 1 kilometer
+Ans: B | Speed Solution: Bluetooth (Class 2, most common) is designed for short-range cable replacement (~10m).
+106. Which class of Bluetooth device has the longest range (up to 100 meters)?
+A) Class 1
+B) Class 2
+C) Class 3
+D) Class 4
+Ans: A | Speed Solution: Lower class number = higher power/range.
+107. A Wireless Mouse typically connects to a PC using Bluetooth or a dedicated 2.4 GHz USB receiver. This receiver is called a:
+A) Dongle
+B) Router
+C) Switch
+D) Repeater
+Ans: A | Speed Solution: A small plug-in hardware adapter is universally called a dongle.
+108. An IT officer observes that an impact printer's output is faint. The most likely solution is to:
+A) Refill the liquid ink tank
+B) Replace the ink ribbon
+C) Add more toner
+D) Clean the laser lens
+Ans: B | Speed Solution: Impact printers (Dot Matrix) strike a cloth ribbon soaked in ink. Faint text = dry ribbon.
+109. Which printer maintenance process aligns the print heads of an inkjet printer to prevent blurry or jagged text?
+A) Defragmentation
+B) Printhead Alignment / Calibration
+C) Degaussing
+D) Formatting
+Ans: B | Speed Solution: Re-syncs the software timing with the physical ink nozzles.
+110. A "Spooler" is software that manages what specific I/O process?
+A) Burning CDs
+B) Queuing documents sent to a printer so the CPU can move on to other tasks
+C) Formatting hard drives
+D) Scanning for viruses
+Ans: B | Speed Solution: Simultaneous Peripheral Operations On-line (SPOOL) buffers print jobs in memory.
+111. If a printer prints a continuous stream of random, meaningless characters (garbage text), what is the most likely cause?
+A) Out of paper
+B) Incorrect or corrupted Printer Driver
+C) Low toner
+D) Overheating
+Ans: B | Speed Solution: The driver is the translator. A bad translator makes the printer print garbage code.
+112. The specialized processor on a Graphics Card (GPU) relies on its own dedicated RAM, known as:
+A) SRAM
+B) VRAM (Video RAM)
+C) ROM
+D) Cache
+Ans: B | Speed Solution: VRAM holds the framebuffers and textures for the display.
+113. An external hard drive connects to a PC, but the OS doesn't recognize it. In Windows, which utility should be checked to see if the drive needs partitioning/formatting?
+A) Task Manager
+B) Disk Management
+C) Device Manager
+D) Command Prompt
+Ans: B | Speed Solution: Disk Management initializes, partitions, and formats storage drives.
+114. "Hot-pluggable" means a peripheral can be connected or disconnected while the computer is running. Which of these is NOT traditionally hot-pluggable?
+A) USB Drive
+B) HDMI cable
+C) Internal SATA Hard Drive
+D) RAM module
+Ans: D | Speed Solution: Changing RAM while power is on will short-circuit and destroy the motherboard.
+115. A bank's UPS rating is given in "VA". What does VA stand for?
+A) Voltage Amperage
+B) Volt-Ampere
+C) Variable AC
+D) Volt-Active
+Ans: B | Speed Solution: Volt-Ampere defines the apparent power capacity of the UPS.
+116. When purchasing a monitor, "Color Depth" refers to:
+A) The brightness of the screen
+B) The number of bits used to represent the color of a single pixel (e.g., 8-bit, 10-bit)
+C) The refresh rate
+D) The physical thickness of the screen
+Ans: B | Speed Solution: 8-bit color gives 16.7 million colors. 10-bit gives 1.07 billion colors.
+117. An "Active Matrix" LCD is vastly superior to a "Passive Matrix" LCD because it uses:
+A) A CRT tube
+B) TFT (Thin Film Transistor) technology to control each pixel individually
+C) Plasma gas
+D) Mechanical shutters
+Ans: B | Speed Solution: TFT allows for fast refresh rates and sharp contrast.
+118. Which legacy storage medium was purely sequential access (could not jump directly to a file)?
+A) CD-ROM
+B) Hard Disk Drive
+C) Magnetic Tape
+D) Floppy Disk
+Ans: C | Speed Solution: Tape must be wound/rewound physically to reach data (like an audio cassette).
+119. A DVD Dual-Layer (DVD-DL) disc has a standard capacity of:
+A) 4.7 GB
+B) 8.5 GB
+C) 25 GB
+D) 50 GB
+Ans: B | Speed Solution: Single layer = 4.7 GB. Dual layer almost doubles it to 8.5 GB.
+120. Which technology allows a monitor's refresh rate to sync dynamically with the GPU's frame rate to prevent screen tearing?
+A) HDR
+B) G-Sync / FreeSync (Variable Refresh Rate)
+C) VRAM
+D) Anti-aliasing
+Ans: B | Speed Solution: VRR forces the monitor to wait for the GPU to finish drawing the frame.
+121. The small, blinking vertical line or box on the screen indicating where typed text will appear is called the:
+A) Pointer
+B) Cursor
+C) Icon
+D) Prompt
+Ans: B | Speed Solution: Mouse = Pointer. Text entry = Cursor.
+122. Which key deletes characters to the RIGHT of the cursor?
+A) Backspace
+B) Delete
+C) Shift
+D) Insert
+Ans: B | Speed Solution: Backspace deletes backwards (Left). Delete eats forward (Right).
+123. The "Insert" key on a keyboard toggles between "Insert Mode" and what other mode?
+A) Edit Mode
+B) Overtype Mode (Overwrite)
+C) Delete Mode
+D) Safe Mode
+Ans: B | Speed Solution: Overtype replaces existing text as you type over it.
+124. To type uppercase letters continuously without holding down the Shift key, a user presses:
+A) Enter
+B) Caps Lock
+C) Num Lock
+D) Scroll Lock
+Ans: B | Speed Solution: Caps Lock toggles capital letters.
+125. The numeric keypad on a keyboard has two functions: typing numbers and functioning as arrow keys. Which key toggles between these functions?
+A) Shift
+B) Alt
+C) Num Lock
+D) Caps Lock
+Ans: C | Speed Solution: Num Lock toggles the numpad state.
+126. An external Sound Card connected via USB is commonly called a:
+A) DAC (Digital-to-Analog Converter) / Audio Interface
+B) Router
+C) Switch
+D) Amplifier
+Ans: A | Speed Solution: A DAC converts the PC's digital 0s/1s into analog sound waves for headphones.
+127. Which device is used by gamers and drone pilots to provide multi-axis control input?
+A) Scanner
+B) Joystick / Gamepad
+C) Digitizer
+D) Trackpad
+Ans: B | Speed Solution: Joysticks provide continuous X/Y/Z axis input.
+128. An "Interactive Whiteboard" (like a SMART Board) used in a BB boardroom training session functions as:
+A) An output device only
+B) An input device only
+C) Both an input and output device
+D) A storage device
+Ans: C | Speed Solution: It displays the PC screen (Output) and accepts touch/pen inputs (Input).
+129. "PPM" is the standard measurement for printer speed. What does it stand for?
+A) Pages Per Minute
+B) Pixels Per Minute
+C) Prints Per Megabyte
+D) Paper Per Minute
+Ans: A | Speed Solution: Measures how many full pages a laser/inkjet printer outputs in 60 seconds.
+130. A printer rated at 1200 DPI will produce a sharper image than a 600 DPI printer. DPI stands for:
+A) Data Per Inch
+B) Dots Per Inch
+C) Digits Per Inch
+D) Display Per Inch
+Ans: B | Speed Solution: More ink dots squeezed into an inch = higher resolution.
+131. "Duplex Printing" is a feature that allows a printer to:
+A) Print twice as fast
+B) Print in two colors
+C) Automatically print on both sides of the paper
+D) Connect to two computers
+Ans: C | Speed Solution: Duplex = two-sided. Saves paper.
+132. What consumable does a Laser Printer use instead of liquid ink cartridges?
+A) Ribbon
+B) Thermal paper
+C) Toner Cartridge
+D) Filament
+Ans: C | Speed Solution: Toner is the dry plastic powder melted onto the page.
+133. The heated rollers inside a Laser Printer that permanently melt the toner onto the paper are called the:
+A) Drum
+B) Fuser Assembly
+C) Laser unit
+D) Transfer belt
+Ans: B | Speed Solution: Fuser = fuses (melts) the toner to the page. (The paper comes out warm).
+134. If a Laser Printer produces pages with a repeating black line down the side, what is likely scratched or damaged?
+A) Fuser
+B) Toner
+C) Imaging Drum (Photoreceptor)
+D) Paper tray
+Ans: C | Speed Solution: The photosensitive Drum holds the image charge; a scratch on it repeats every rotation.
+135. Inkjet printers are generally cheaper to buy than Laser printers, but have a much higher:
+A) Printing speed
+B) Cost per page (Consumable cost)
+C) Power consumption
+D) Noise level
+Ans: B | Speed Solution: Inkjet printers are cheap, but replacement liquid ink is notoriously expensive.
+136. Which legacy port type was traditionally known as "COM1" or "COM2" in Windows?
+A) Parallel Port
+B) USB Port
+C) Serial Port (RS-232)
+D) PS/2 Port
+Ans: C | Speed Solution: COM = Communication (Serial) port.
+137. Which legacy port type was traditionally known as "LPT1"?
+A) Parallel Port (Line Printer Terminal)
+B) Serial Port
+C) USB
+D) VGA
+Ans: A | Speed Solution: LPT = Line Printer. Used for older 25-pin parallel printers.
+138. "Daisy Chaining" multiple monitors refers to:
+A) Connecting them all to a USB hub
+B) Connecting Monitor A to the PC, and Monitor B into Monitor A (e.g., via DisplayPort)
+C) Using a VGA splitter
+D) Connecting them wirelessly
+Ans: B | Speed Solution: Linking devices in a sequence (A -> B -> C).
+139. Which video connector standard was developed by VESA as a royalty-free alternative to HDMI and supports massive bandwidth for 4K/8K gaming?
+A) VGA
+B) DisplayPort (DP)
+C) DVI
+D) Thunderbolt
+Ans: B | Speed Solution: DisplayPort is the PC standard for ultra-high refresh rates.
+140. A "KVM Switch" allows a server administrator to control multiple servers using a single:
+A) Monitor
+B) Keyboard, Video (Monitor), and Mouse
+C) Network connection
+D) Power supply
+Ans: B | Speed Solution: KVM = Keyboard, Video, Mouse. Switch between servers with one desk setup.
+141. The expansion bus standard "PCIe" stands for:
+A) Peripheral Component Interconnect Express
+B) Personal Computer Interface Express
+C) Primary Communication Interconnect Express
+D) Peripheral Controller Interface Express
+Ans: A | Speed Solution: PCIe is the main high-speed motherboard slot.
+142. A PCIe x16 slot has how many physical data lanes communicating directly with the CPU?
+A) 1
+B) 8
+C) 16
+D) 32
+Ans: C | Speed Solution: The "x" denotes the number of parallel data lanes. x16 = 16 lanes (used for GPUs).
+143. Which motherboard component provides the physical connection interface for a standard internal SATA Hard Drive?
+A) CPU Socket
+B) SATA Port
+C) DIMM Slot
+D) PCIe Slot
+Ans: B | Speed Solution: Serial Advanced Technology Attachment (SATA) connects storage drives.
+144. "M.2" is a form factor for modern:
+A) CPUs
+B) RAM sticks
+C) High-speed SSDs and Wi-Fi cards
+D) Power supplies
+Ans: C | Speed Solution: M.2 drives look like small sticks of gum and plug directly into the motherboard, utilizing NVMe PCIe speeds.
+145. What is the fundamental role of an ADC (Analog-to-Digital Converter) in a microphone setup?
+A) Amplifies sound
+B) Converts continuous sound waves into discrete binary numbers (0s and 1s) for the PC
+C) Converts binary into sound waves
+D) Filters background noise
+Ans: B | Speed Solution: Analog (Real world) -> Digital (Computer).
+146. A Digital-to-Analog Converter (DAC) is required to:
+A) Record video
+B) Play digital MP3 audio out through physical analog speakers/headphones
+C) Type on a keyboard
+D) Scan a document
+Ans: B | Speed Solution: Digital (Computer 0s/1s) -> Analog (Speaker vibrations).
+147. What does the "S" in S/PDIF (a digital audio port) stand for?
+A) Sony (/Philips Digital Interface)
+B) Serial
+C) Sound
+D) System
+Ans: A | Speed Solution: S/PDIF was co-developed by Sony and Philips for optical/coaxial digital audio.
+148. A "Capture Card" is an input device primarily used to:
+A) Print photos
+B) Record real-time video output from another device (like a camera or gaming console) into the PC
+C) Scan fingerprints
+D) Read smart cards
+Ans: B | Speed Solution: It "captures" video streams for live broadcasting or recording.
+149. "Haptic technology" relies on what kind of output?
+A) Visual
+B) Auditory
+C) Tactile (Force, vibration, or motion feedback)
+D) Olfactory (Smell)
+Ans: C | Speed Solution: Haptic = Touch/Feel (like a vibrating phone or game controller).
+150. A "Virtual Reality (VR) Headset" tracks the user's head movements using built-in:
+A) Gyroscopes and Accelerometers
+B) Microphones
+C) Thermometers
+D) Barometers
+Ans: A | Speed Solution: Gyroscopes measure rotation; Accelerometers measure linear acceleration.
+151. In a bank's server room, "RAID Controller" cards act as an I/O interface between the CPU and the:
+A) Monitors
+B) Network
+C) Array of multiple Hard Drives / SSDs
+D) Power supply
+Ans: C | Speed Solution: RAID manages multiple disks as a single logical unit for speed or redundancy.
+152. "Polled I/O" is an inefficient CPU communication method where:
+A) The hardware interrupts the CPU
+B) The CPU constantly asks the I/O device if it is ready, wasting processing cycles
+C) Data transfers directly to RAM
+D) The OS ignores the device
+Ans: B | Speed Solution: Polling = "Are we there yet?" repeatedly checking status. (Interrupts are much better).
+153. What does "IRQ" stand for in hardware interrupts?
+A) Interrupt Request
+B) Internal Routine Queue
+C) Interface Resolution Query
+D) Input Range Quota
+Ans: A | Speed Solution: A hardware signal to the CPU requesting immediate attention.
+154. An IRQ Conflict occurs when:
+A) The CPU overheats
+B) Two hardware devices attempt to use the same Interrupt Request line simultaneously
+C) RAM is full
+D) A virus attacks
+Ans: B | Speed Solution: Plug and Play (PnP) largely solved IRQ conflicts by auto-assigning them.
+155. Which I/O technique allows the hard drive to transfer data directly to RAM, bypassing the CPU to free up processing power?
+A) Polling
+B) Programmed I/O
+C) DMA (Direct Memory Access)
+D) Spooling
+Ans: C | Speed Solution: Direct Memory Access does exactly what the name implies.
+156. The system bus that carries the location of where data should be read from or written to is the:
+A) Data Bus
+B) Address Bus
+C) Control Bus
+D) PCI Bus
+Ans: B | Speed Solution: Address bus carries the "Where". Data bus carries the "What".
+157. A 64-bit CPU implies that its internal registers and its _____ Bus are 64 bits wide.
+A) Address
+B) Control
+C) Data
+D) Video
+Ans: C | Speed Solution: A 64-bit processor processes and moves 64 bits of data simultaneously.
+158. Which of the following is NOT an optical storage device?
+A) CD-R
+B) DVD-RW
+C) Blu-ray
+D) Flash Drive
+Ans: D | Speed Solution: Flash drives use solid-state transistors (EEPROM), not lasers (optical).
+159. A standard CD-ROM reads data using a laser beam that detects microscopic bumps and flat areas called:
+A) Sectors and Tracks
+B) Pits and Lands
+C) Zeros and Ones
+D) Ridges and Valleys
+Ans: B | Speed Solution: Pit = Bump. Land = Flat area. The transition between them creates the binary signal.
+160. Which laser color is used in Blu-ray drives, allowing them to read much smaller pits and store more data than DVDs?
+A) Red
+B) Infrared
+C) Blue-Violet
+D) Green
+Ans: C | Speed Solution: Blue-violet light has a shorter wavelength, allowing it to focus on a smaller, denser area.
+161. An external hard drive is formatted in "exFAT". Why is this preferred over FAT32 for large USB drives?
+A) It is more secure
+B) It supports individual file sizes larger than 4GB, which FAT32 does not
+C) It works only on Mac
+D) It compresses files
+Ans: B | Speed Solution: Extended FAT removes the 4GB file size limit, crucial for large HD video files.
+162. "Hot Plugging" is supported by USB and SATA. It means:
+A) The device runs very hot
+B) The device can be safely connected or disconnected while the PC is powered on
+C) It requires a restart
+D) It uses firewire
+Ans: B | Speed Solution: Hot = Powered on. You don't have to shut down the PC to swap a USB.
+163. The BIOS setting that dictates which drive the computer will attempt to load the Operating System from first is called the:
+A) POST order
+B) Boot Sequence / Boot Priority
+C) CMOS layout
+D) Overclock setting
+Ans: B | Speed Solution: Boot priority (e.g., 1st: USB, 2nd: SSD) tells BIOS where to look for an OS.
+164. UEFI (Unified Extensible Firmware Interface) introduced "Secure Boot". What is its primary function?
+A) It encrypts the hard drive
+B) It prevents unauthorized or malicious operating systems (like bootkits/rootkits) from loading during startup
+C) It requires a fingerprint
+D) It turns off the internet
+Ans: B | Speed Solution: Secure Boot checks the digital signature of the OS before allowing it to load.
+165. To enter the BIOS/UEFI setup utility during startup, a user typically presses which key(s)?
+A) Spacebar
+B) Del, F2, or F10 (depending on manufacturer)
+C) Windows Key
+D) Alt + F4
+Ans: B | Speed Solution: Hammering F2 or Delete during the manufacturer logo screen enters BIOS.
+166. A "Dead Pixel" on an LCD monitor appears as:
+A) A constantly flashing light
+B) A permanently black dot that does not light up
+C) A permanently red, green, or blue dot (Stuck pixel)
+D) A crack in the screen
+Ans: B | Speed Solution: Dead = Black (no power). Stuck = stuck on one color.
+167. Which term describes a monitor's ability to display dark blacks and bright whites simultaneously?
+A) Resolution
+B) Refresh Rate
+C) Contrast Ratio
+D) Response Time
+Ans: C | Speed Solution: Higher contrast ratio (e.g., 1000:1) = deeper blacks and more vibrant colors.
+168. "Ergonomic" keyboards and mice are designed specifically to prevent:
+A) Hackers
+B) Repetitive Strain Injuries (RSI) like Carpal Tunnel Syndrome
+C) Keyloggers
+D) Viruses
+Ans: B | Speed Solution: Ergonomics = designing hardware to fit the human body safely.
+169. What is a "Membrane" keyboard?
+A) A keyboard with individual mechanical switches under each key
+B) A keyboard that uses a single flexible rubber/silicone layer with conductive traces under the keys
+C) A virtual keyboard on a screen
+D) A laser-projected keyboard
+Ans: B | Speed Solution: Membrane = mushy rubber dome. Mechanical = distinct clicky switches.
+170. Which switch type is prized by typists and gamers for providing distinct tactile and audible feedback (a "click") when actuated?
+A) Membrane switch
+B) Mechanical switch (e.g., Cherry MX Blue)
+C) Scissor switch
+D) Capacitive switch
+Ans: B | Speed Solution: Mechanical keyboards use physical spring-driven switches.
+171. A laptop's "Scissor-Switch" keyboard is a variation of a membrane keyboard designed to:
+A) Be waterproof
+B) Provide a very low-profile (thin) key travel
+C) Connect wirelessly
+D) Produce loud clicking sounds
+Ans: B | Speed Solution: The scissor mechanism stabilizes the keycap while keeping the laptop thin.
+172. The "Windows Key" on a keyboard is an example of a/an:
+A) Alphanumeric key
+B) Toggle key
+C) System / GUI key
+D) Function key
+Ans: C | Speed Solution: It opens the Start Menu or executes OS-level shortcuts (Win+D).
+173. What is the standard number of keys on a full-size ANSI layout keyboard (including numpad)?
+A) 84
+B) 104
+C) 120
+D) 60
+Ans: B | Speed Solution: Standard modern full-size = 104 keys.
+174. A "Webcam" requires which software to compress the raw video feed so it can be transmitted smoothly over the internet (e.g., in Zoom)?
+A) Driver
+B) Codec (Coder-Decoder)
+C) BIOS
+D) Antivirus
+Ans: B | Speed Solution: Codecs compress video/audio for transmission and decompress for playback.
+175. Which feature of a digital camera determines the total number of pixels in the resulting photograph?
+A) Optical Zoom
+B) Megapixels (MP)
+C) Aperture
+D) ISO
+Ans: B | Speed Solution: 1 Megapixel = 1 million pixels. 12MP = 12 million pixels.
+176. "Optical Zoom" differs from "Digital Zoom" because:
+A) Optical zoom is done in software by cropping the image
+B) Optical zoom uses physical glass lenses to magnify the image without losing resolution/quality
+C) Digital zoom is higher quality
+D) There is no difference
+Ans: B | Speed Solution: Optical = Physical lens movement (real zoom). Digital = Software crop/stretch (fake zoom).
+177. A bank branch's ID card printer uses colored ribbons (Cyan, Magenta, Yellow, Black) heated onto plastic cards. This printer type is:
+A) Dye-Sublimation Printer
+B) Dot Matrix
+C) Inkjet
+D) Plotter
+Ans: A | Speed Solution: Dye-sublimation uses heat to vaporize solid dye onto plastic/photo paper for continuous-tone quality.
+178. What does "CMYK" stand for in the context of color printing?
+A) Color, Matrix, Yellow, Key
+B) Cyan, Magenta, Yellow, Key (Black)
+C) Crimson, Maroon, Yellow, Kilo
+D) Contrast, Magenta, Yellow, Kraft
+Ans: B | Speed Solution: CMYK is the subtractive color model used in color printers. (Monitors use RGB).
+179. In an RGB display, combining Red, Green, and Blue light at 100% intensity produces which color?
+A) Black
+B) White
+C) Brown
+D) Yellow
+Ans: B | Speed Solution: Additive color model: Add all light colors together = White. (Subtract all = Black).
+180. A multi-function printer (MFP) combines which devices into one machine?
+A) CPU, RAM, Hard Drive
+B) Printer, Scanner, Copier, and Fax
+C) Router, Switch, Modem
+D) Monitor, Keyboard, Mouse
+Ans: B | Speed Solution: MFP = All-in-One office machine.
+181. "AirPrint" and "Google Cloud Print" are technologies that allow users to:
+A) Print documents wirelessly directly from a mobile device without installing drivers
+B) Print 3D objects
+C) Print money
+D) Scan documents to the cloud
+Ans: A | Speed Solution: Wi-Fi driverless printing standards for smartphones.
+182. A hardware "Firewall" is an I/O appliance placed between the bank's internal network and the public internet to:
+A) Boost internet speed
+B) Block unauthorized incoming/outgoing network traffic based on security rules
+C) Compress files
+D) Route emails
+Ans: B | Speed Solution: Firewalls act as the border security gate.
+183. Which device modulates a digital signal into an analog carrier signal for transmission over telephone/cable lines, and vice versa?
+A) Router
+B) Switch
+C) Modem
+D) Repeater
+Ans: C | Speed Solution: Mo-Dem = Modulate/Demodulate.
+184. A "Repeater" in a network is used to:
+A) Block viruses
+B) Regenerate and amplify weak signals to extend the transmission distance
+C) Convert digital to analog
+D) Store data
+Ans: B | Speed Solution: Signal degrades over distance (attenuation). Repeaters boost it back up.
+185. A "Network Switch" is considered an intelligent Layer 2 device because it forwards data packets based on:
+A) IP Addresses
+B) MAC Addresses
+C) URL domains
+D) Email addresses
+Ans: B | Speed Solution: Switches memorize the physical MAC addresses of connected devices to send data directly to the right port.
+186. Which biometric system is considered the most highly accurate and secure for top-tier vault access?
+A) Voice recognition
+B) Facial recognition
+C) Iris Scanning / Retina Scanning
+D) Signature recognition
+Ans: C | Speed Solution: Iris patterns are more unique than fingerprints and don't change with age.
+187. What is a "Token" in banking security?
+A) A coin
+B) A physical hardware device or software app that generates a time-based One Time Password (OTP) for 2FA
+C) A type of firewall
+D) A biometric scan
+Ans: B | Speed Solution: RSA SecurID hardware tokens generate a new 6-digit code every 30 seconds.
+188. Which connector is currently standard for high-end audio setups providing a purely digital optical signal?
+A) 3.5mm Jack
+B) RCA cables
+C) TOSLINK (Optical Audio)
+D) VGA
+Ans: C | Speed Solution: TOSLINK uses fiber optics to transmit pristine digital audio via red light pulses.
+189. A "Microphone" converts physical sound wave vibrations into an electrical signal using a component called a:
+A) DAC
+B) Diaphragm
+C) Laser
+D) Capacitor
+Ans: B | Speed Solution: Sound waves vibrate the physical diaphragm, creating an electrical current.
+190. What does the term "Latency" refer to in I/O operations?
+A) Total storage capacity
+B) The delay or wait time before a data transfer actually begins
+C) The maximum bandwidth
+D) The rotational speed of a disk
+Ans: B | Speed Solution: Latency = Ping/Delay time.
+191. The "Southbridge" chipset is largely responsible for connecting the CPU to:
+A) The RAM
+B) The PCIe Graphics Card
+C) Slower I/O devices (USB, SATA, Audio)
+D) The L1 Cache
+Ans: C | Speed Solution: Northbridge = High speed. Southbridge = Peripheral I/O.
+192. Which of the following limits the overall speed of the computer, known as the "Bottleneck"?
+A) The fastest component (e.g., L1 Cache)
+B) The slowest component in the data path (usually the mechanical Hard Drive)
+C) The monitor resolution
+D) The power supply wattage
+Ans: B | Speed Solution: The CPU is always waiting on the slowest I/O device.
+193. The "Print Spooler" is an OS service. What happens if it crashes?
+A) The monitor turns off
+B) The computer cannot send jobs to the printer, resulting in a print queue error
+C) The hard drive is formatted
+D) The keyboard stops working
+Ans: B | Speed Solution: Without the spooler, the OS cannot hand off the print job to the hardware.
+194. "Resolution" of a scanner is measured in:
+A) PPM
+B) DPI / PPI
+C) Hertz
+D) Watts
+Ans: B | Speed Solution: Dots Per Inch / Pixels Per Inch defines scanning detail.
+195. A "Flatbed" scanner differs from a "Sheet-fed" scanner because:
+A) Flatbed can scan multiple pages automatically
+B) Flatbed requires placing a single document face-down on a glass platen
+C) Sheet-fed can scan books
+D) Flatbed is faster
+Ans: B | Speed Solution: Flatbed = glass bed (good for books/fragile items). Sheet-fed pulls paper through rollers (good for bulk).
+196. The Automatic Document Feeder (ADF) on a banking photocopier/scanner is used to:
+A) Scan books
+B) Automatically feed a stack of loose paper pages through the scanner one by one
+C) Print in color
+D) Shred documents
+Ans: B | Speed Solution: ADF = put 50 pages in, it scans them all automatically.
+197. Which interface provides a massive bandwidth of up to 40 Gbps and allows "daisy-chaining" of multiple 4K monitors and external hard drives through one port?
+A) USB 2.0
+B) Thunderbolt 3/4
+C) VGA
+D) Serial
+Ans: B | Speed Solution: Thunderbolt (Intel/Apple) is the ultimate high-bandwidth I/O port.
+198. The system clock coordinates I/O bus transfers. Clock speed is measured in:
+A) Bytes
+B) Hertz (MHz/GHz)
+C) DPI
+D) Watts
+Ans: B | Speed Solution: Hertz = cycles per second.
+199. What does "UEFI" stand for?
+A) Unified Extensible Firmware Interface
+B) Universal External File Interface
+C) Unified Electronic Flash Interface
+D) Universal Encryption Format Interface
+Ans: A | Speed Solution: The modern, secure replacement for the Basic Input/Output System (BIOS).
+200. When a peripheral device sends an "Interrupt Request" (IRQ), what is the immediate action of the CPU?
+A) It crashes
+B) It finishes its current instruction, saves its state, and jumps to an Interrupt Service Routine (ISR) to handle the device
+C) It ignores the device
+D) It reboots the PC
+Ans: B | Speed Solution: CPU pauses, handles the I/O request (e.g., mouse click), then resumes its previous work.

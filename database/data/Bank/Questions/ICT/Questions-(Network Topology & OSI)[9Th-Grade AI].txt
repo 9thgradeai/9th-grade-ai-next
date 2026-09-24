@@ -1,0 +1,1200 @@
+﻿1. A BB branch connects 6 ATMs in a full mesh topology for redundancy. How many dedicated cables are required?
+A) 12
+B) 15
+C) 30
+D) 36
+Ans: B | Speed Solution: Full Mesh formula is N(N-1)/2. For N=6: (6×5)/2 = 15.
+2. A clearinghouse connects 10 servers. If 45 cables are used, what topology is deployed?
+A) Star
+B) Ring
+C) Full Mesh
+D) Bus
+Ans: C | Speed Solution: Reverse engineer N(N-1)/2 = 45. 10(9)/2 = 45. It's a Full Mesh.
+3. If the central switch fails in a Bangladesh Bank regional office, all 50 PCs lose connectivity. Which topology is in use?
+A) Ring
+B) Bus
+C) Star
+D) Mesh
+Ans: C | Speed Solution: "Central device failure = total network failure" is the classic definition of Star topology.
+4. A legacy ATM network uses a single coaxial cable where a cut anywhere brings down all machines. This describes a:
+A) Star
+B) Bus
+C) Ring
+D) Mesh
+Ans: B | Speed Solution: A single backbone cable without central hubs defines a Bus. A single cut breaks the terminator logic.
+5. In a Token Ring network used for high-security bank transfers, what prevents data collisions?
+A) CSMA/CD
+B) Central Switch
+C) Token Passing
+D) Subnetting
+Ans: C | Speed Solution: "Token" Ring literally uses a digital token. Only the node holding the token can transmit.
+6. A CBS (Core Banking System) utilizes a hierarchical structure with a central mainframe connected to regional routers, then to branch switches. This is a:
+A) Star
+B) Tree
+C) Mesh
+D) Ring
+Ans: B | Speed Solution: Hierarchical = Tree. It's a Star of Stars connected in a top-down approach.
+7. Adding a new node to which topology requires shutting down the entire network temporarily?
+A) Star
+B) Mesh
+C) Ring
+D) Bus
+Ans: C | Speed Solution: Breaking a physical Ring to insert a node disrupts the closed loop.
+8. Which topology is the Internet (and BB's connection to global SWIFT) based upon?
+A) Full Mesh
+B) Star
+C) Hybrid (Partial Mesh)
+D) Ring
+Ans: C | Speed Solution: The Internet is a mix of multiple topologies (Star, Mesh, etc.), making it Hybrid.
+9. In a Bus topology, what component is required at both ends of the main cable to prevent signal bouncing?
+A) Repeater
+B) Terminator
+C) Hub
+D) Node
+Ans: B | Speed Solution: Terminators "terminate" or absorb the electrical signal so it doesn't bounce back.
+10. To upgrade a Star topology to a Full Mesh topology for 5 bank servers, how many additional cables are needed?
+A) 4
+B) 6
+C) 10
+D) 15
+Ans: B | Speed Solution: Star with 5 servers uses 4 cables (to central hub). Mesh needs 5(4)/2 = 10 cables. Difference: 10 - 4 = 6.
+11. Which OSI layer is responsible for converting 1s and 0s into voltage pulses on a CAT6 cable?
+A) Data Link
+B) Network
+C) Physical
+D) Transport
+Ans: C | Speed Solution: Physical Layer (L1) handles raw bits and electrical/optical signals.
+12. MAC addresses are used to route checks securely within the local branch switch. MAC addressing occurs at:
+A) Layer 1
+B) Layer 2
+C) Layer 3
+D) Layer 4
+Ans: B | Speed Solution: Media Access Control (MAC) is the lower sublayer of the Data Link Layer (L2).
+13. A BB routing policy sends SWIFT messages using IP addresses. IP addresses operate at:
+A) Data Link
+B) Network
+C) Transport
+D) Session
+Ans: B | Speed Solution: Logical addressing (IP) and routing occur exactly at Layer 3 (Network).
+14. A firewall blocks a specific TCP port (e.g., Port 23 for Telnet). Port filtering operates primarily at:
+A) Network
+B) Transport
+C) Session
+D) Application
+Ans: B | Speed Solution: Ports (TCP/UDP) = Transport Layer (L4).
+15. A banking app creates, maintains, and terminates a secure connection dialog with the CBS. This is handled by:
+A) Transport Layer
+B) Session Layer
+C) Presentation Layer
+D) Application Layer
+Ans: B | Speed Solution: "Dialog control" and "Connection maintenance" = Session Layer (L5).
+16. Which OSI layer ensures that data sent from a Linux bank server can be correctly read by a Windows client via data formatting?
+A) Application
+B) Presentation
+C) Session
+D) Transport
+Ans: B | Speed Solution: Formatting, translation (e.g., ASCII/EBCDIC), and syntax = Presentation Layer (L6).
+17. HTTP and SMTP are used by bank employees to browse and send emails. These protocols live at:
+A) Layer 5
+B) Layer 6
+C) Layer 7
+D) Layer 4
+Ans: C | Speed Solution: End-user network services and protocols (HTTP, FTP, SMTP) reside at the Application Layer (L7).
+18. What is the Protocol Data Unit (PDU) at the Transport Layer?
+A) Bit
+B) Frame
+C) Packet
+D) Segment
+Ans: D | Speed Solution: L1=Bits, L2=Frames, L3=Packets, L4=Segments. (Mnemonic: Big Friendly Pandas Sleep).
+19. What is the Protocol Data Unit (PDU) at the Network Layer?
+A) Frame
+B) Segment
+C) Packet
+D) Data
+Ans: C | Speed Solution: L3 routes Packets.
+20. What is the Protocol Data Unit (PDU) at the Data Link Layer?
+A) Bit
+B) Frame
+C) Packet
+D) Segment
+Ans: B | Speed Solution: L2 switches forward Frames.
+21. A bank's network switch learns where to forward financial data by looking at the:
+A) Source IP Address
+B) Destination IP Address
+C) Source MAC Address
+D) Destination MAC Address
+Ans: D | Speed Solution: Switches forward frames based on the Destination MAC Address table.
+22. A Router connects BB's network to Sonali Bank's network. It makes forwarding decisions based on the:
+A) Destination MAC
+B) Destination IP
+C) Source Port
+D) Subnet Mask alone
+Ans: B | Speed Solution: Routers look at the Destination IP (Layer 3) to choose the best path.
+23. Hubs are obsolete in modern banking networks because they operate at Layer 1 and:
+A) Block IP addresses
+B) Broadcast all incoming data to all ports, causing collisions
+C) Drop packets randomly
+D) Require BGP routing
+Ans: B | Speed Solution: Hubs = Layer 1 = Multiport repeaters. They just blast bits everywhere.
+24. Which device operates at Layer 2 and separates collision domains, but keeps one broadcast domain?
+A) Hub
+B) Switch
+C) Router
+D) Repeater
+Ans: B | Speed Solution: Switches (L2) separate collisions per port, but forward broadcasts (like ARP) to all ports.
+25. Which device operates at Layer 3 and separates BOTH collision and broadcast domains?
+A) Bridge
+B) Switch
+C) Router
+D) Gateway
+Ans: C | Speed Solution: Routers block broadcasts by default, defining network boundaries.
+26. A Repeater is placed midway on a 200-meter CAT6 cable to boost the signal. It operates at:
+A) Layer 1
+B) Layer 2
+C) Layer 3
+D) Layer 4
+Ans: A | Speed Solution: Repeaters only boost electrical signals (bits); they do no logic or addressing. Layer 1.
+27. To encrypt customer PINs, the POS terminal uses SSL/TLS. Encryption is formally mapped to the:
+A) Application Layer
+B) Presentation Layer
+C) Session Layer
+D) Transport Layer
+Ans: B | Speed Solution: Encryption/Decryption and Compression are classic Layer 6 (Presentation) duties.
+28. TCP provides reliable financial data transfer by using acknowledgments. UDP does not. Both operate at:
+A) Layer 2
+B) Layer 3
+C) Layer 4
+D) Layer 5
+Ans: C | Speed Solution: TCP and UDP are Transport Layer (L4) protocols.
+29. What port is heavily monitored in banks for secure web traffic (HTTPS)?
+A) 80
+B) 21
+C) 443
+D) 25
+Ans: C | Speed Solution: HTTP = 80. HTTPS (Secure) = 443.
+30. An AD uses FTP to download bulk clearing data. Which OSI layer does FTP operate on?
+A) Layer 4
+B) Layer 5
+C) Layer 6
+D) Layer 7
+Ans: D | Speed Solution: File Transfer Protocol directly serves the application = Layer 7.
+31. In the OSI model, as data moves from the Application layer down to the Physical layer, headers are added. This is called:
+A) Decapsulation
+B) Encapsulation
+C) Segmentation
+D) Multiplexing
+Ans: B | Speed Solution: Wrapping data in layers of headers (like an envelope) is Encapsulation.
+32. When a bank server receives data, it strips the headers off from Layer 1 up to Layer 7. This is called:
+A) Decapsulation
+B) Encapsulation
+C) Demultiplexing
+D) Framing
+Ans: A | Speed Solution: Removing headers = Decapsulation.
+33. The Frame Check Sequence (FCS) trailer is added to detect errors. At which layer is this trailer added?
+A) Physical
+B) Data Link
+C) Network
+D) Transport
+Ans: B | Speed Solution: L2 (Data Link) is the only layer that adds a Trailer (FCS/CRC) alongside a header.
+34. ICMP is the protocol behind the "Ping" command used to test branch connectivity. It operates at:
+A) Layer 2
+B) Layer 3
+C) Layer 4
+D) Layer 7
+Ans: B | Speed Solution: ICMP works alongside IP for network diagnostics = Network Layer (L3).
+35. ARP resolves an IP address into a MAC address. ARP bridges which two layers?
+A) L1 and L2
+B) L2 and L3
+C) L3 and L4
+D) L4 and L5
+Ans: B | Speed Solution: ARP translates L3 (IP) to L2 (MAC).
+36. A 48-bit address usually represented in hexadecimal format (e.g., 00:1A:2B:3C:4D:5E) is a:
+A) IPv4 Address
+B) IPv6 Address
+C) MAC Address
+D) Port Number
+Ans: C | Speed Solution: 48 bits, 6 hex pairs = MAC address.
+37. An IPv4 address is how many bits long?
+A) 16
+B) 32
+C) 48
+D) 128
+Ans: B | Speed Solution: IPv4 is 32 bits (4 octets of 8 bits).
+38. An IPv6 address, designed to solve the IP exhaustion problem for IoT banking devices, is how many bits?
+A) 32
+B) 64
+C) 128
+D) 256
+Ans: C | Speed Solution: IPv6 = 128 bits.
+39. Port numbers are used to distinguish different applications on a bank server. How many bits make up a Port number?
+A) 8
+B) 16
+C) 32
+D) 64
+Ans: B | Speed Solution: Port numbers range from 0 to 65535, which is exactly  (16 bits).
+40. A banking switch isolates traffic into VLANs (Virtual LANs) to separate HR from Finance. VLANs operate at:
+A) Layer 1
+B) Layer 2
+C) Layer 3
+D) Layer 4
+Ans: B | Speed Solution: VLAN tags (802.1Q) are added to Ethernet frames = Layer 2.
+41. Which Layer 2 device uses a CAM (Content Addressable Memory) table to store MAC addresses?
+A) Router
+B) Switch
+C) Hub
+D) Firewall
+Ans: B | Speed Solution: Switches build CAM tables to map MAC addresses to physical ports.
+42. Which Layer 3 device uses a Routing Table to forward packets?
+A) Switch
+B) Bridge
+C) Router
+D) Repeater
+Ans: C | Speed Solution: Routers maintain Routing Tables to map IP networks to specific interfaces.
+43. If a packet sent from Bangladesh Bank HQ to a rural branch exceeds the MTU (Maximum Transmission Unit), the router will fragment it. Fragmentation occurs at:
+A) Layer 2
+B) Layer 3
+C) Layer 4
+D) Layer 1
+Ans: B | Speed Layer: IP fragmentation is handled by the Network Layer (L3) router.
+44. "Flow Control" and "Windowing" prevent a fast sender from overwhelming a slow receiver. This is handled by:
+A) TCP at Layer 4
+B) IP at Layer 3
+C) HTTP at Layer 7
+D) MAC at Layer 2
+Ans: A | Speed Solution: Windowing = TCP mechanism = Transport Layer (L4).
+45. Which of the following topologies is highly scalable but has a single point of failure at the central node?
+A) Mesh
+B) Star
+C) Ring
+D) Bus
+Ans: B | Speed Solution: Star scales easily by adding to the switch, but if the switch dies, it's over.
+46. 10 computers are connected in a Ring. If data must pass sequentially, what is the maximum number of hops a packet takes to reach its destination?
+A) 5
+B) 9
+C) 10
+D) 45
+Ans: B | Speed Solution: In a uni-directional ring of N nodes, the worst-case path to the last node is N-1 hops (10-1=9).
+47. BGP (Border Gateway Protocol) routes data between different ISPs. Which layer does BGP operate at?
+A) Data Link
+B) Network
+C) Session
+D) Application
+Ans: B | Speed Solution: BGP is an exterior routing protocol. Routing = Layer 3 (Network).
+48. OSPF (Open Shortest Path First) is used inside BB’s corporate network. OSPF operates at:
+A) Layer 2
+B) Layer 3
+C) Layer 4
+D) Layer 7
+Ans: B | Speed Solution: OSPF is an interior routing protocol = Layer 3.
+49. An employee uses a VPN to securely access the bank's CBS. IPsec, commonly used for VPNs, secures data at which layer?
+A) Layer 2
+B) Layer 3
+C) Layer 4
+D) Layer 7
+Ans: B | Speed Solution: IPsec (Internet Protocol Security) encrypts IP packets = Layer 3.
+50. "Three-way handshake" (SYN, SYN-ACK, ACK) establishes a connection for banking transactions. This is a feature of:
+A) UDP
+B) IP
+C) TCP
+D) HTTP
+Ans: C | Speed Solution: Connection-oriented reliability = TCP (Layer 4).
+51. Live video feeds from BB's vault security cameras use a protocol that drops packets rather than delaying the feed. This protocol is:
+A) TCP
+B) UDP
+C) FTP
+D) SMTP
+Ans: B | Speed Solution: UDP is connectionless and fast (no acknowledgments), perfect for real-time video.
+52. The domain name 'www.bb.org.bd' is translated to an IP address by DNS. DNS primarily uses which Transport Layer protocol?
+A) TCP
+B) UDP
+C) ICMP
+D) ARP
+Ans: B | Speed Solution: DNS queries are small and fast, primarily utilizing UDP Port 53.
+53. SMTP sends email, POP3 receives email. Which layer do they belong to?
+A) Transport
+B) Session
+C) Presentation
+D) Application
+Ans: D | Speed Solution: Email protocols interface with user software = Layer 7.
+54. A network engineer utilizes a Subnet Mask to divide a large BB network into smaller ones. Subnetting manipulates:
+A) MAC Addresses
+B) Port Numbers
+C) IP Addresses
+D) Frame Headers
+Ans: C | Speed Solution: Subnetting borrows host bits from an IP address to create network bits (Layer 3).
+55. Which address format is burned into a device's Network Interface Card (NIC) at the factory?
+A) IPv4
+B) IPv6
+C) MAC
+D) URL
+Ans: C | Speed Solution: MAC is the physical, permanent hardware address (Layer 2).
+56. CSMA/CD is a protocol used to handle collisions in older Ethernet networks. What topology heavily relied on CSMA/CD?
+A) Ring
+B) Mesh
+C) Bus
+D) Star
+Ans: C | Speed Solution: Bus topologies share a single wire; collisions were frequent and handled by CSMA/CD.
+57. If two computers in a bank transmit simultaneously on a shared cable, the signals scramble. This is called a:
+A) Broadcast
+B) Collision
+C) Loop
+D) Handshake
+Ans: B | Speed Solution: Simultaneous electrical signals crashing = Collision.
+58. A Gateway connects two fundamentally different networks (e.g., a Windows LAN to an IBM Mainframe). A Gateway operates at:
+A) Layer 1
+B) Layer 2
+C) Layer 3
+D) All 7 Layers (Protocol Translation)
+Ans: D | Speed Solution: True gateways translate complete protocol stacks, touching all 7 OSI layers.
+59. In the OSI model, what is the sequence of layers from bottom to top (L1 to L7)?
+A) Physical, Data Link, Network, Transport, Session, Presentation, Application
+B) Physical, Network, Data Link, Session, Transport, Presentation, Application
+C) Application, Presentation, Session, Transport, Network, Data Link, Physical
+D) Physical, Data Link, Transport, Network, Presentation, Session, Application
+Ans: A | Speed Solution: Bottom-up acronym: "Please Do Not Throw Sausage Pizza Away".
+60. Which layer provides the physical addressing that switches use to deliver data on a Local Area Network (LAN)?
+A) Network Layer
+B) Data Link Layer
+C) Session Layer
+D) Transport Layer
+Ans: B | Speed Solution: Physical addressing = MAC addressing = Data Link Layer (L2).
+61. A Load Balancer distributes banking web traffic evenly. If it reads HTTP headers to make routing decisions, it operates at:
+A) Layer 3
+B) Layer 4
+C) Layer 7
+D) Layer 2
+Ans: C | Speed Solution: Reading HTTP (Application data) makes it a Layer 7 (Application) Load Balancer.
+62. A standard Switch operates at Layer 2. A "Multilayer Switch" (or Layer 3 Switch) can also perform the functions of a:
+A) Hub
+B) Router
+C) Modem
+D) Firewall
+Ans: B | Speed Solution: Layer 3 = IP Routing. A Layer 3 Switch routes packets like a Router but at hardware speeds.
+63. When Bangladesh Bank encrypts its database backup in ZIP format before sending, the compression occurs at the:
+A) Application Layer
+B) Presentation Layer
+C) Session Layer
+D) Transport Layer
+Ans: B | Speed Solution: Formatting/Compression (like ZIP, JPEG) = Presentation Layer (L6).
+64. The "Ping" command reports "Destination net unreachable." Which OSI layer generated this error message?
+A) Layer 1
+B) Layer 2
+C) Layer 3
+D) Layer 4
+Ans: C | Speed Solution: Ping uses ICMP, which is a Network Layer (L3) protocol.
+65. A bank's network uses 8-port switches. If all ports are in use, how many Collision Domains are there?
+A) 1
+B) 4
+C) 8
+D) 16
+Ans: C | Speed Solution: Every port on a Switch is its own separate collision domain (1 port = 1 domain).
+66. In an 8-port Hub, how many Collision Domains are there?
+A) 1
+B) 8
+C) 16
+D) 0
+Ans: A | Speed Solution: A Hub is just a multi-port repeater. All ports share 1 single collision domain.
+67. A Router with 4 interfaces (ports) connects 4 different branches. How many Broadcast Domains are there?
+A) 1
+B) 2
+C) 4
+D) 8
+Ans: C | Speed Solution: Routers block broadcasts. Every port on a router is a separate Broadcast Domain.
+68. Switches break up _____ domains, while Routers break up _____ domains.
+A) Broadcast, Collision
+B) Collision, Broadcast
+C) Network, MAC
+D) Session, Presentation
+Ans: B | Speed Solution: Switch = isolates collisions. Router = isolates broadcasts.
+69. Which transmission mode allows data flow in both directions, but only one direction at a time (like a Walkie-Talkie)?
+A) Simplex
+B) Half-Duplex
+C) Full-Duplex
+D) Auto-Duplex
+Ans: B | Speed Solution: Half-Duplex = Both ways, but take turns. (Full-Duplex = simultaneously).
+70. A standard computer keyboard acts in which transmission mode?
+A) Simplex
+B) Half-Duplex
+C) Full-Duplex
+D) Multiplex
+Ans: A | Speed Solution: Simplex = One direction only (Keyboard to PC).
+71. A fiber-optic connection between BB HQ and Motijheel branch transmits data simultaneously in both directions. This is:
+A) Simplex
+B) Half-Duplex
+C) Full-Duplex
+D) Multicast
+Ans: C | Speed Solution: Full-Duplex = Simultaneous bidirectional communication.
+72. The 802.11 standard defines which popular networking technology?
+A) Ethernet
+B) Wi-Fi
+C) Token Ring
+D) Bluetooth
+Ans: B | Speed Solution: IEEE 802.11 is the universal standard for Wireless LAN (Wi-Fi).
+73. The 802.3 standard defines which networking technology?
+A) Wi-Fi
+B) Ethernet
+C) Bluetooth
+D) WiMAX
+Ans: B | Speed Solution: IEEE 802.3 is the standard for wired Ethernet (LAN).
+74. What topology connects all devices to a central backbone cable?
+A) Star
+B) Bus
+C) Ring
+D) Mesh
+Ans: B | Speed Solution: "Backbone" line = Bus topology.
+75. What topology features devices connected in a closed loop where data travels in one direction?
+A) Star
+B) Bus
+C) Ring
+D) Tree
+Ans: C | Speed Solution: Closed loop = Ring topology.
+76. "FDDI" networks use dual-rings to provide fault tolerance. Which OSI layer does FDDI operate at?
+A) Physical and Data Link
+B) Network
+C) Transport
+D) Application
+Ans: A | Speed Solution: Fiber Distributed Data Interface (FDDI) defines LAN hardware/MAC standards = L1 and L2.
+77. In the TCP/IP model, which layer combines the OSI's Session, Presentation, and Application layers?
+A) Transport Layer
+B) Internet Layer
+C) Application Layer
+D) Network Access Layer
+Ans: C | Speed Solution: TCP/IP model compresses L5, L6, and L7 into a single "Application Layer".
+78. The Network Layer of the OSI model maps to which layer in the TCP/IP model?
+A) Internet Layer
+B) Transport Layer
+C) Link Layer
+D) Application Layer
+Ans: A | Speed Solution: OSI L3 (Network) = TCP/IP "Internet" layer.
+79. The OSI Physical and Data Link layers map to which layer in the 4-layer TCP/IP model?
+A) Internet Layer
+B) Network Access (Link) Layer
+C) Transport Layer
+D) Application Layer
+Ans: B | Speed Solution: OSI L1 & L2 are merged into the Network Access (or Link) layer in TCP/IP.
+80. DHCP dynamically assigns IP addresses to bank tellers' PCs. DHCP operates on which UDP ports?
+A) 20 and 21
+B) 67 and 68
+C) 80 and 443
+D) 110 and 143
+Ans: B | Speed Solution: DHCP servers use UDP 67; clients use UDP 68.
+81. A Network Administrator uses SSH to securely log into a core switch. What port does SSH use?
+A) 21
+B) 22
+C) 23
+D) 25
+Ans: B | Speed Solution: SSH = Port 22. (Telnet = 23, FTP = 21, SMTP = 25).
+82. Telnet transmits data in plain text, making it insecure for banks. It operates on port:
+A) 21
+B) 22
+C) 23
+D) 25
+Ans: C | Speed Solution: Telnet = Port 23. It should be replaced by SSH (22).
+83. FTP (File Transfer Protocol) uses two ports. Port 21 is for control. Which port is used for FTP Data?
+A) 20
+B) 22
+C) 23
+D) 25
+Ans: A | Speed Solution: FTP Data = 20. FTP Control = 21.
+84. Which topology provides the highest redundancy and fault tolerance for critical banking databases?
+A) Star
+B) Bus
+C) Ring
+D) Full Mesh
+Ans: D | Speed Solution: Full Mesh has multiple redundant paths. If one link fails, traffic routes through another immediately.
+85. What is the major disadvantage of a Full Mesh topology?
+A) High latency
+B) Central point of failure
+C) High cost and complex cabling
+D) Vulnerable to collisions
+Ans: C | Speed Solution: Formula N(N-1)/2 means cabling grows exponentially, becoming insanely expensive to wire.
+86. In Data Encapsulation, when data moves from Transport Layer to Network Layer, the Segment becomes a Packet by adding an:
+A) IP Header
+B) TCP Header
+C) MAC Header
+D) FCS Trailer
+Ans: A | Speed Solution: L4 (Segment) + IP Header = L3 (Packet).
+87. When a Packet moves from the Network Layer to the Data Link Layer, it becomes a Frame by adding:
+A) IP Header
+B) TCP Header
+C) MAC Header and FCS Trailer
+D) HTTP Header
+Ans: C | Speed Solution: L3 (Packet) + MAC Header + Trailer = L2 (Frame).
+88. At which OSI layer does Data Compression occur?
+A) Application
+B) Presentation
+C) Session
+D) Transport
+Ans: B | Speed Solution: Compression changes data format = Presentation Layer (L6).
+89. To connect a PC directly to another PC without a switch, which type of UTP cable is traditionally used?
+A) Straight-through
+B) Crossover
+C) Rollover
+D) Fiber
+Ans: B | Speed Solution: Connecting LIKE devices (PC to PC, Switch to Switch) requires a Crossover cable.
+90. To connect a PC to a Switch, which type of cable is used?
+A) Crossover
+B) Straight-through
+C) Rollover
+D) Serial
+Ans: B | Speed Solution: Connecting UNLIKE devices (PC to Switch) requires a Straight-through cable.
+91. To configure a Cisco router initially, an engineer connects a laptop to the router's Console port using a:
+A) Straight-through cable
+B) Crossover cable
+C) Rollover cable
+D) Fiber optic cable
+Ans: C | Speed Solution: Console port connections require a Rollover (console) cable.
+92. MAC addresses are physical addresses. How are they formatted?
+A) 32-bit decimal
+B) 48-bit hexadecimal
+C) 128-bit hexadecimal
+D) 64-bit binary
+Ans: B | Speed Solution: 48 bits, written as 6 pairs of hex digits (e.g., A1:B2:C3:D4:E5:F6).
+93. The first 24 bits of a MAC address are known as the OUI. What does the OUI identify?
+A) The device IP
+B) The manufacturer/vendor of the NIC
+C) The network subnet
+D) The security protocol
+Ans: B | Speed Solution: OUI (Organizationally Unique Identifier) tells you if the card is made by Cisco, Intel, Apple, etc.
+94. The IP address 127.0.0.1 is reserved for:
+A) Default Gateway
+B) Loopback Testing (Localhost)
+C) Broadcast
+D) Multicast
+Ans: B | Speed Solution: Pinging 127.0.0.1 tests if your own computer's TCP/IP stack is working.
+95. A subnet mask of 255.255.255.0 belongs to which default class of IP addresses?
+A) Class A
+B) Class B
+C) Class C
+D) Class D
+Ans: C | Speed Solution: Class A = 255.0.0.0. Class B = 255.255.0.0. Class C = 255.255.255.0.
+96. Which IP class is reserved for Multicast groups (e.g., streaming video to multiple bank branches simultaneously)?
+A) Class B
+B) Class C
+C) Class D
+D) Class E
+Ans: C | Speed Solution: Class D (224.0.0.0 to 239.255.255.255) is exclusively for Multicasting.
+97. Which of the following is a Private IP address range that cannot be routed on the public internet?
+A) 8.8.8.8
+B) 192.168.x.x
+C) 200.1.1.1
+D) 1.1.1.1
+Ans: B | Speed Solution: The 192.168.0.0/16 block is designated for private LANs.
+98. NAT (Network Address Translation) is used on bank routers to:
+A) Translate MAC addresses to IP addresses
+B) Translate internal Private IPs to a single Public IP for internet access
+C) Encrypt data
+D) Compress data
+Ans: B | Speed Solution: NAT hides the private LAN IPs behind one routable public IP.
+99. Which transport layer protocol does not guarantee delivery and does not perform a handshake?
+A) TCP
+B) ICMP
+C) UDP
+D) ARP
+Ans: C | Speed Solution: UDP (User Datagram Protocol) "fires and forgets". It is fast but unreliable.
+100. A TCP segment contains a 'Sequence Number'. What is its purpose?
+A) To encrypt the data
+B) To reassemble segments in the correct order at the destination
+C) To identify the MAC address
+D) To route the packet
+Ans: B | Speed Solution: TCP breaks data into segments. Sequence numbers help put the pieces back together correctly.
+101. Which OSI layer contains the Logical Link Control (LLC) and Media Access Control (MAC) sublayers?
+A) Network
+B) Transport
+C) Data Link
+D) Physical
+Ans: C | Speed Solution: Data Link (L2) is uniquely split into LLC (talks to L3) and MAC (talks to L1).
+102. NetBIOS and RPC (Remote Procedure Call) are protocols operating at which OSI layer?
+A) Layer 3
+B) Layer 4
+C) Layer 5
+D) Layer 7
+Ans: C | Speed Solution: Session Layer (L5) sets up remote dialogs/sessions using NetBIOS or RPC.
+103. Which is the highest layer in the OSI model that routers examine to forward traffic?
+A) Data Link
+B) Network
+C) Transport
+D) Session
+Ans: B | Speed Solution: Standard routers look at IP addresses, terminating at Layer 3 (Network).
+104. Which of the following topologies is functionally used by a standard Wi-Fi network (Infrastructure mode)?
+A) Star
+B) Bus
+C) Ring
+D) Mesh
+Ans: A | Speed Solution: All devices connect to a central Access Point (AP), making it a logical Star topology.
+105. "Attenuation" in a network cable refers to:
+A) Data encryption
+B) Loss of signal strength over distance
+C) Data collision
+D) Interference from power lines
+Ans: B | Speed Solution: Attenuation is the weakening of the electrical/optical signal as distance increases.
+106. "Crosstalk" in twisted pair cables (like CAT6) is minimized by:
+A) Making the cable thicker
+B) Twisting the wire pairs together
+C) Using fiber optics
+D) Adding terminators
+Ans: B | Speed Solution: Twisting pairs creates electromagnetic interference cancellation (stopping crosstalk between wires).
+107. Which cable type is completely immune to Electromagnetic Interference (EMI) from heavy bank vault machinery?
+A) UTP
+B) STP
+C) Coaxial
+D) Fiber Optic
+Ans: D | Speed Solution: Fiber uses light, not electricity, so magnets/EMI cannot affect it.
+108. A bank's 10Gbps backbone uses Singlemode Fiber. How does it differ from Multimode Fiber?
+A) It uses a thicker core and LEDs
+B) It uses a much thinner core and a Laser, allowing vastly longer distances
+C) It is cheaper
+D) It transmits data slower
+Ans: B | Speed Solution: Singlemode = 1 thin laser beam = extremely long distance.
+109. What is the maximum distance for standard Gigabit Ethernet over CAT6 UTP copper cable?
+A) 10 meters
+B) 100 meters
+C) 500 meters
+D) 10 kilometers
+Ans: B | Speed Solution: UTP (CAT5e/6) always maxes out at exactly 100 meters before needing a repeater.
+110. Which protocol retrieves banking emails from a server and leaves a copy on the server to sync across multiple devices?
+A) SMTP
+B) POP3
+C) IMAP
+D) SNMP
+Ans: C | Speed Solution: IMAP syncs mail. (POP3 downloads and deletes from the server).
+111. SMTP operates on Port 25. What is SMTP used for?
+A) Downloading email
+B) Sending/Routing email
+C) File transfer
+D) Website hosting
+Ans: B | Speed Solution: Simple Mail Transfer Protocol pushes/sends email.
+112. Which protocol securely transfers files between bank branches using SSH encryption?
+A) FTP
+B) TFTP
+C) SFTP
+D) HTTP
+Ans: C | Speed Solution: Secure FTP (SFTP) runs over SSH on port 22.
+113. SNMP is used to monitor network devices like switches and routers. SNMP operates at which layer?
+A) Layer 3
+B) Layer 4
+C) Layer 7
+D) Layer 2
+Ans: C | Speed Solution: Simple Network Management Protocol is a user/admin application = Layer 7.
+114. The "Ping of Death" is an attack that sends an oversized packet to crash a system. It manipulates the protocol at which layer?
+A) Layer 1
+B) Layer 3
+C) Layer 6
+D) Layer 7
+Ans: B | Speed Solution: Ping uses ICMP, which manipulates the Network Layer (L3).
+115. A "MAC Flood" attack overwhelms a Switch's CAM table. If the table is full, how does the Switch react?
+A) It shuts down
+B) It acts like a Hub and broadcasts all frames out of all ports
+C) It deletes all data
+D) It blocks all ports
+Ans: B | Speed Solution: A flooded switch fails open, acting like a Hub. Hackers use this to sniff traffic.
+116. In topology diagrams, a straight line connecting a PC to a Switch represents a:
+A) Logical link
+B) Physical link
+C) Virtual link
+D) Subnet
+Ans: B | Speed Solution: Straight lines denote physical cables in topology maps.
+117. What is the broadcast MAC address used in Layer 2 (ARP requests)?
+A) 00:00:00:00:00:00
+B) FF:FF:FF:FF:FF:FF
+C) 255.255.255.255
+D) 11:11:11:11:11:11
+Ans: B | Speed Solution: All F's in hex = all 1's in binary = Broadcast MAC.
+118. What is the broadcast IP address used in Layer 3?
+A) 127.0.0.1
+B) 255.255.255.255
+C) 0.0.0.0
+D) FF:FF:FF:FF:FF:FF
+Ans: B | Speed Solution: All 255s = global IPv4 broadcast.
+119. A banking API communicates using JSON data formatting. This data structure conversion happens at which OSI layer?
+A) Session
+B) Presentation
+C) Application
+D) Transport
+Ans: B | Speed Solution: Formatting data (JSON, XML) for the application to read is Presentation Layer (L6).
+120. Which topology is formed by connecting multiple Star topologies into a central bus backbone?
+A) Ring
+B) Tree
+C) Mesh
+D) Peer-to-Peer
+Ans: B | Speed Solution: Tree topology = Stars on a Bus.
+121. In a Star topology, the central device is usually a Switch. What is a major disadvantage of this?
+A) Hard to add new nodes
+B) Single point of failure (SPOF)
+C) High collision rate
+D) Requires token passing
+Ans: B | Speed Solution: Switch dies = Network dies. SPOF.
+122. If a bank uses an unmanaged Hub for a 10-PC Star topology, and PC-A sends data to PC-B, who receives the data?
+A) Only PC-B
+B) All 10 PCs
+C) Only the Hub
+D) The Router
+Ans: B | Speed Solution: Hubs do not have MAC tables. They copy electrical signals to ALL ports.
+123. If the bank replaces the Hub with a Layer 2 Switch, and PC-A sends data to PC-B, who receives the data?
+A) All 10 PCs
+B) Only PC-B
+C) The Router
+D) The Switch drops it
+Ans: B | Speed Solution: Switch uses MAC table to Unicast directly to PC-B.
+124. "CSMA/CD" stands for Carrier Sense Multiple Access with Collision Detection. Which network standard heavily relied on this?
+A) Token Ring
+B) FDDI
+C) Half-Duplex Ethernet
+D) Full-Duplex Ethernet
+Ans: C | Speed Solution: Half-duplex shares a single collision domain, requiring Collision Detection.
+125. Wi-Fi networks cannot detect collisions in the air. Instead, they use Collision AVOIDANCE. What is the acronym?
+A) CSMA/CD
+B) CSMA/CA
+C) OSPF
+D) BGP
+Ans: B | Speed Solution: CA = Collision Avoidance (used in 802.11 Wi-Fi).
+126. "Multiplexing" combines multiple signals over a single shared medium. At which OSI layer does port multiplexing occur?
+A) Layer 2
+B) Layer 3
+C) Layer 4
+D) Layer 1
+Ans: C | Speed Solution: TCP/UDP uses Ports to multiplex multiple apps over one IP address = Transport Layer (L4).
+127. A proxy server fetches web pages on behalf of bank employees to hide their internal IPs. Proxies operate at:
+A) Layer 2
+B) Layer 3
+C) Layer 7
+D) Layer 1
+Ans: C | Speed Solution: Proxies inspect web URLs and HTTP content = Application Layer (L7).
+128. What is the size of an IPv6 address?
+A) 32 bits
+B) 64 bits
+C) 128 bits
+D) 256 bits
+Ans: C | Speed Solution: IPv6 was created at 128 bits to fix IPv4 (32-bit) exhaustion.
+129. How many unique addresses does IPv4 provide?
+A) ~4 Million
+B) ~4 Billion ()
+C) ~340 Undecillion
+D) ~65 Thousand
+Ans: B | Speed Solution:  is roughly 4.3 billion.
+130. An Ethernet Frame has a maximum payload size (MTU) of:
+A) 64 bytes
+B) 1500 bytes
+C) 9000 bytes
+D) 65535 bytes
+Ans: B | Speed Solution: Standard Ethernet MTU is exactly 1500 bytes.
+131. If data exceeds the MTU of 1500 bytes, the Router must cut it into smaller pieces. This is called:
+A) Segmentation
+B) Fragmentation
+C) Encapsulation
+D) Decapsulation
+Ans: B | Speed Solution: Layer 3 (IP) cuts packets = Fragmentation. Layer 4 (TCP) cuts data = Segmentation.
+132. What determines the Network ID and Host ID portion of an IP address?
+A) Default Gateway
+B) Subnet Mask
+C) MAC Address
+D) DNS
+Ans: B | Speed Solution: Subnet Mask (e.g., 255.255.255.0) masks the network bits with 1s.
+133. The default subnet mask for a Class A IP address (e.g., 10.0.0.1) is:
+A) 255.0.0.0
+B) 255.255.0.0
+C) 255.255.255.0
+D) 255.255.255.255
+Ans: A | Speed Solution: Class A uses 8 network bits (255) and 24 host bits (0.0.0).
+134. Which OSI layer establishes error recovery via retransmissions if a packet is lost?
+A) Network
+B) Transport (specifically TCP)
+C) Data Link
+D) Physical
+Ans: B | Speed Solution: Transport Layer (TCP) asks for retransmission if no ACK is received.
+135. UDP does not establish error recovery. Why is it used for Voice over IP (VoIP) phone calls in banks?
+A) It is more secure
+B) It has much lower latency/delay because it doesn't wait for acknowledgments
+C) It compresses voice better
+D) It routes better
+Ans: B | Speed Solution: Voice needs real-time speed. Waiting to resend a lost 0.1-second audio frame causes lag.
+136. Port 443 is associated with which protocol?
+A) HTTP
+B) HTTPS
+C) FTP
+D) Telnet
+Ans: B | Speed Solution: HTTPS = Secure Web = 443.
+137. Which protocol dynamically translates an IP address into a physical MAC address?
+A) DNS
+B) DHCP
+C) ARP
+D) RARP
+Ans: C | Speed Solution: Address Resolution Protocol resolves L3 to L2.
+138. If a PC knows the MAC address but needs to find out its own IP address from a server, it uses:
+A) ARP
+B) RARP / DHCP
+C) DNS
+D) ICMP
+Ans: B | Speed Solution: Reverse ARP (or modern DHCP) provides an IP to a requesting MAC.
+139. Which topology represents the logical operation of an Ethernet Hub?
+A) Physical Star, Logical Bus
+B) Physical Star, Logical Ring
+C) Physical Bus, Logical Star
+D) Physical Ring, Logical Mesh
+Ans: A | Speed Solution: A Hub is wired like a Star, but internally shares a single electrical wire like a Bus.
+140. Which topology represents a Token Ring network wired to a Multistation Access Unit (MAU)?
+A) Physical Star, Logical Ring
+B) Physical Bus, Logical Star
+C) Physical Ring, Logical Star
+D) Physical Mesh, Logical Ring
+Ans: A | Speed Solution: Wired to a central box (Star), but the token passes internally in a circle (Ring).
+141. "Point-to-Point" topology is basically a Mesh topology with exactly how many nodes?
+A) 1
+B) 2
+C) 3
+D) 4
+Ans: B | Speed Solution: Two nodes directly connected.
+142. A WAN link between Dhaka and Chittagong BB offices uses a leased line. This is an example of a:
+A) Star topology
+B) Point-to-Point topology
+C) Bus topology
+D) Ring topology
+Ans: B | Speed Solution: A dedicated leased line connects Node A directly to Node B.
+143. Which layer in the OSI model defines the voltage levels, timing, and pin-out specifications of cables?
+A) Data Link
+B) Network
+C) Physical
+D) Session
+Ans: C | Speed Solution: Physical specs = Physical Layer (L1).
+144. "MAC" stands for:
+A) Media Access Control
+B) Memory Allocation Center
+C) Machine Address Code
+D) Multiplexed Access Carrier
+Ans: A | Speed Solution: Media Access Control.
+145. An IP address is Logical, meaning it can change depending on the network. A MAC address is:
+A) Also logical
+B) Physical and permanently burned into the NIC
+C) Used for internet routing
+D) 128 bits long
+Ans: B | Speed Solution: MAC is physical and static. IP is logical and dynamic.
+146. Which protocol is used by the router to inform a sender that a packet's "Time to Live" (TTL) expired and was dropped?
+A) TCP
+B) UDP
+C) ICMP
+D) ARP
+Ans: C | Speed Solution: Internet Control Message Protocol sends error messages (like TTL expired in Tracert).
+147. Tracert (Traceroute) identifies the path to a destination by incrementally increasing the:
+A) MAC Address
+B) TTL (Time To Live) field
+C) Port number
+D) Sequence number
+Ans: B | Speed Solution: Tracert sets TTL=1 (dies at Router 1), TTL=2 (dies at Router 2), gathering ICMP replies from each hop.
+148. Which layer adds the Source and Destination Port numbers?
+A) Network
+B) Data Link
+C) Application
+D) Transport
+Ans: D | Speed Solution: Ports multiplex apps. Layer 4 handles Port assignments.
+149. If a firewall filters traffic based on MAC addresses, what layer is it inspecting?
+A) Layer 1
+B) Layer 2
+C) Layer 3
+D) Layer 4
+Ans: B | Speed Solution: MAC = Layer 2.
+150. If a firewall filters traffic based on IP addresses, what layer is it inspecting?
+A) Layer 2
+B) Layer 3
+C) Layer 4
+D) Layer 7
+Ans: B | Speed Solution: IP = Layer 3.
+151. Which of the following defines a "Collision Domain"?
+A) The area where packets can be routed
+B) A network segment where data packets can collide with one another when sent simultaneously
+C) A secure encrypted tunnel
+D) The internet
+Ans: B | Speed Solution: Shared media (Hubs/Buses) cause collisions.
+152. Which of the following defines a "Broadcast Domain"?
+A) The physical cable length
+B) A logical division of a network where all nodes can reach each other via broadcast at Layer 2
+C) The routing table
+D) A VLAN trunk
+Ans: B | Speed Solution: An ARP request (Broadcast) reaches every PC in the same Broadcast Domain.
+153. A Router has 5 ports. How many broadcast domains are created?
+A) 1
+B) 5
+C) 10
+D) 0
+Ans: B | Speed Solution: Routers block broadcasts. 1 port = 1 broadcast domain.
+154. A 24-port Layer 2 Switch has all ports connected to PCs. How many broadcast domains are there? (Assuming default VLAN 1).
+A) 1
+B) 24
+C) 0
+D) 48
+Ans: A | Speed Solution: L2 Switches forward broadcasts to all ports. They are all in 1 big broadcast domain.
+155. A 24-port Layer 2 Switch has all ports connected to PCs. How many collision domains are there?
+A) 1
+B) 24
+C) 0
+D) 48
+Ans: B | Speed Solution: Switches isolate collisions per port. 24 ports = 24 collision domains.
+156. In the Application Layer, what does DNS stand for?
+A) Data Network System
+B) Domain Name System
+C) Digital Node Server
+D) Dynamic Naming Service
+Ans: B | Speed Solution: Translates human names (bb.org.bd) to IP addresses.
+157. Which protocol translates private branch IPs into a single public IP to access the SWIFT network?
+A) DNS
+B) DHCP
+C) NAT (Network Address Translation)
+D) ARP
+Ans: C | Speed Solution: NAT masks internal IPs behind a public routable IP.
+158. SSL/TLS operates primarily at which OSI layer to establish encrypted sessions?
+A) Layer 4
+B) Layer 5 and 6 (Session and Presentation)
+C) Layer 2
+D) Layer 1
+Ans: B | Speed Solution: Handshake = L5. Encryption algorithm = L6. Often just bundled as L6 Presentation.
+159. Which OSI layer establishes full, half, or simplex communication dialogs between two banking apps?
+A) Physical
+B) Data Link
+C) Session
+D) Transport
+Ans: C | Speed Solution: "Dialog control" is the defining feature of the Session Layer (L5).
+160. JPEG, ASCII, MP3, and GIF are standards functioning at which OSI layer?
+A) Application
+B) Presentation
+C) Session
+D) Transport
+Ans: B | Speed Solution: These are data formats. Formatting = Presentation Layer (L6).
+161. A "VLAN" (Virtual LAN) divides one physical switch into multiple logical switches. This division occurs at which layer?
+A) Layer 1
+B) Layer 2
+C) Layer 3
+D) Layer 4
+Ans: B | Speed Solution: VLANs manipulate MAC forwarding tables and frame tags = L2.
+162. Two PCs in DIFFERENT VLANs (e.g., VLAN 10 and VLAN 20) need to communicate. What device is required?
+A) Hub
+B) Layer 2 Switch
+C) Router (or Layer 3 Switch)
+D) Repeater
+Ans: C | Speed Solution: Different VLANs = Different Networks. Routing (L3) is required to cross networks.
+163. Port 80 is associated with:
+A) Secure Web (HTTPS)
+B) Unsecure Web (HTTP)
+C) Email (SMTP)
+D) File Transfer (FTP)
+Ans: B | Speed Solution: HTTP = 80.
+164. To securely copy a large database file, Port 22 is used. What protocol is this?
+A) FTP
+B) TFTP
+C) SFTP / SSH
+D) SMTP
+Ans: C | Speed Solution: Secure FTP runs over SSH, which uses Port 22.
+165. The Subnet Mask 255.255.255.255 (/32) designates what?
+A) A broadcast address
+B) A single specific host IP (Host route)
+C) A full Class C network
+D) A multicast address
+Ans: B | Speed Solution: 32 bits masked means exactly one single machine.
+166. In a Mesh topology of 4 routers, if one link breaks, how many alternate links are still connected to the affected router?
+A) 0
+B) 1
+C) 2
+D) 3
+Ans: C | Speed Solution: In a 4-node mesh, each router has 3 links. If 1 breaks, 2 remain.
+167. Which device acts as the "Default Gateway" for a PC?
+A) The Switch
+B) The Router
+C) The DNS Server
+D) The Hub
+Ans: B | Speed Solution: A gateway is the door out of your local network, which is the Router interface.
+168. "Bit synchronization" and "Clocking" are functions of which layer?
+A) Application
+B) Network
+C) Physical
+D) Transport
+Ans: C | Speed Solution: Dealing with raw electrical timing = Physical Layer (L1).
+169. IPsec is mandatory in which version of IP?
+A) IPv4
+B) IPv6
+C) Both
+D) Neither
+Ans: B | Speed Solution: IPsec was bolted onto IPv4, but it is a built-in, mandatory standard for IPv6.
+170. Which IEEE standard defines the Spanning Tree Protocol (STP) used to prevent Layer 2 loops in switches?
+A) 802.1D
+B) 802.3
+C) 802.11
+D) 802.1Q
+Ans: A | Speed Solution: STP prevents switches from circling broadcast frames infinitely. Defined by 802.1D.
+171. A loop at Layer 3 is prevented by the TTL field. A loop at Layer 2 is prevented by:
+A) STP (Spanning Tree Protocol)
+B) BGP
+C) DNS
+D) NAT
+Ans: A | Speed Solution: L2 frames have no TTL. STP blocks redundant ports to stop loops.
+172. A banking web server uses load balancers to map one domain to multiple IP addresses. This is an application of:
+A) DNS Round Robin
+B) DHCP Reservation
+C) ARP Poisoning
+D) VLAN Tagging
+Ans: A | Speed Solution: DNS Round Robin hands out different IPs for the same URL to spread traffic.
+173. What port does POP3 (Post Office Protocol) use to retrieve emails?
+A) 25
+B) 110
+C) 143
+D) 443
+Ans: B | Speed Solution: POP3 = 110. IMAP = 143.
+174. A Frame contains a preamble, source MAC, destination MAC, data, and an FCS. Where does the IP address live?
+A) Inside the MAC header
+B) Inside the Data payload (as the Packet header)
+C) Inside the FCS
+D) It doesn't exist here
+Ans: B | Speed Solution: Encapsulation: The L3 Packet (with IP) is shoved inside the Data payload section of the L2 Frame.
+175. Multiprotocol Label Switching (MPLS) is used by ISPs to speed up connections between bank branches. MPLS operates between which layers?
+A) Layer 1 and 2
+B) Layer 2 and 3 (Layer 2.5)
+C) Layer 3 and 4
+D) Layer 7
+Ans: B | Speed Solution: MPLS inserts a "Label" between the MAC header (L2) and IP header (L3), called Layer 2.5.
+176. Which network topology is the cheapest and easiest to install for 3 computers but fails completely if the backbone cable is cut?
+A) Star
+B) Bus
+C) Ring
+D) Mesh
+Ans: B | Speed Solution: Bus is a single wire. Cheap, but risky.
+177. Which transport protocol sends a "Window Size" parameter to control how much data can be in-flight before an ACK is required?
+A) UDP
+B) IP
+C) TCP
+D) ICMP
+Ans: C | Speed Solution: Flow Control via Windowing is a core TCP feature.
+178. What does a "Proxy Server" do at Layer 7?
+A) Amplifies electrical signals
+B) Acts as an intermediary, making internet requests on behalf of internal clients to hide their IP and cache responses
+C) Converts MAC to IP
+D) Connects a Star to a Ring
+Ans: B | Speed Solution: A proxy is a middleman for web traffic.
+179. A "Brouter" acts as a Bridge for non-routable protocols and a _____ for routable protocols.
+A) Hub
+B) Switch
+C) Router
+D) Gateway
+Ans: C | Speed Solution: Bridge + Router = Brouter.
+180. A server responds with HTTP Status Code 404. Which OSI layer generated this response?
+A) Network
+B) Transport
+C) Application
+D) Data Link
+Ans: C | Speed Solution: HTTP is a Layer 7 (Application) protocol.
+181. A client initiates an FTP transfer. At Layer 4, the data is chopped into:
+A) Packets
+B) Segments
+C) Frames
+D) Bits
+Ans: B | Speed Solution: Layer 4 chops data into Segments.
+182. A client initiates an FTP transfer. At Layer 3, the Segments are encapsulated into:
+A) Packets
+B) Frames
+C) Bits
+D) Dialogs
+Ans: A | Speed Solution: Layer 3 creates Packets.
+183. Which protocol automatically assigns an IP address, Subnet Mask, Default Gateway, and DNS server to a PC?
+A) ARP
+B) DHCP
+C) ICMP
+D) SNMP
+Ans: B | Speed Solution: Dynamic Host Configuration Protocol automates IP provisioning.
+184. In IPv4, 10.x.x.x, 172.16.x.x, and 192.168.x.x are known as:
+A) Public IPs
+B) Private IPs (RFC 1918)
+C) Multicast IPs
+D) Loopback IPs
+Ans: B | Speed Solution: These are non-routable on the public internet, used inside LANs.
+185. A Bank's disaster recovery site uses a SAN (Storage Area Network) via Fibre Channel. SANs typically operate independent of the LAN. This avoids:
+A) Hackers
+B) Congesting the main LAN with massive storage backup traffic
+C) Encryption limits
+D) Routing protocols
+Ans: B | Speed Solution: SANs separate heavy hard-drive traffic from user internet/app traffic.
+186. Which topology connects every node to exactly two other nodes, forming a continuous pathway?
+A) Star
+B) Bus
+C) Ring
+D) Tree
+Ans: C | Speed Solution: Node A connects to B and C. B connects to A and D. It's a Ring.
+187. "Fiber Optic" cables transmit data using:
+A) Radio waves
+B) Electrical voltage
+C) Light pulses (LED or Laser)
+D) Microwaves
+Ans: C | Speed Solution: Optics = Light.
+188. In the OSI model, data is generated by the user at Layer 7. It travels down to Layer 1, goes across the wire, and travels up to Layer 7 at the destination. This is called:
+A) Peer-to-Peer logic
+B) Encapsulation and Decapsulation
+C) Bus routing
+D) Spanning Tree
+Ans: B | Speed Solution: Down the stack = Encapsulate. Up the stack = Decapsulate.
+189. A "Collision Domain" is defined by Layer 1 devices. A "Broadcast Domain" is defined by Layer _____ devices.
+A) 1
+B) 2
+C) 3
+D) 4
+Ans: C | Speed Solution: Routers (Layer 3) block broadcasts, creating the domain boundary.
+190. An IPv4 address is divided into 4 Octets. How many bits are in one Octet?
+A) 4
+B) 8
+C) 16
+D) 32
+Ans: B | Speed Solution: Octa = 8. 4 octets × 8 bits = 32 bits total.
+191. If a bank uses an IP range of 192.168.1.0/24, how many usable host IPs are available for computers?
+A) 256
+B) 255
+C) 254
+D) 128
+Ans: C | Speed Solution: /24 leaves 8 bits for hosts. . Minus 2 (Network ID and Broadcast ID) = 254 usable.
+192. Which protocol translates the name 'localhost' to 127.0.0.1 without querying a DNS server?
+A) ARP
+B) DHCP
+C) The local 'hosts' file
+D) SNMP
+Ans: C | Speed Solution: The OS checks its own local text file called hosts before querying DNS.
+193. TCP is connection-oriented. UDP is:
+A) Connection-oriented
+B) Connectionless
+C) Encrypted
+D) Formatted
+Ans: B | Speed Solution: UDP just blasts data without establishing a session connection.
+194. Which topology is most robust against a single cable failure?
+A) Bus
+B) Star
+C) Full Mesh
+D) Token Ring
+Ans: C | Speed Solution: Mesh has redundant cables for every single node.
+195. What layer of the OSI model determines if the data transmission will be half-duplex or full-duplex?
+A) Session
+B) Transport
+C) Physical / Data Link
+D) Application
+Ans: A | Speed Solution: The Session layer (L5) technically manages the dialog type (simplex/half/full), though L1/L2 hardware dictates capability.
+196. An API gateway translating an XML payload to a JSON payload for a mobile banking app acts at which layer?
+A) Network
+B) Transport
+C) Presentation
+D) Data Link
+Ans: C | Speed Solution: XML/JSON data conversion = Syntax/Formatting = Presentation (L6).
+197. Which of the following is a physical layer device?
+A) Router
+B) Switch
+C) Modem
+D) Proxy
+Ans: C | Speed Solution: A Modem modulates physical analog/digital signals (Layer 1).
+198. The "Three-tier architecture" common in modern bank web-apps consists of:
+A) Presentation, Application, Data
+B) Ring, Star, Bus
+C) Core, Distribution, Access
+D) TCP, UDP, IP
+Ans: A | Speed Solution: Software architecture: UI (Presentation), Logic (Application), Database (Data).
+199. In Cisco's hierarchical network design, which layer connects directly to end-user PCs and printers?
+A) Core Layer
+B) Distribution Layer
+C) Access Layer
+D) Network Layer
+Ans: C | Speed Solution: Users "Access" the network here.
+200. "IPsec" provides two main modes: Transport mode (encrypts payload only) and Tunnel mode. Tunnel mode encrypts:
+A) Only the MAC address
+B) Only the payload
+C) The entire original IP packet (header + payload) and adds a new IP header
+D) Only the port numbers
+Ans: C | Speed Solution: Tunnel mode wraps the whole original packet inside a new packet for VPN transit.
