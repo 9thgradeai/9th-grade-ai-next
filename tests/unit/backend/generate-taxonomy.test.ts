@@ -64,6 +64,27 @@ describe("buildTaxonomyFromLines", () => {
     expect(() => buildTaxonomyFromLines(["Something_Else/", "└── x/"])).toThrow(/Expected root/);
   });
 
+  it("parses a Bank tree when given the Bank root name", () => {
+    const root = buildTaxonomyFromLines(
+      [
+        "Bank_Grade9_Question_Bank_Detailed/",
+        "│",
+        "├── 03_Mathematics/",
+        "│   ├── Part_01_Arithmetic/",
+        "│   │   └── Real_Numbers/",
+        "│   └── Part_02_Algebra/",
+        "└── 04_Analytical_Skills/",
+      ],
+      "Bank_Grade9_Question_Bank_Detailed",
+    );
+    expect(root.name).toBe("Bank_Grade9_Question_Bank_Detailed");
+    expect(root.children.map((c) => c.name)).toEqual(["03_Mathematics", "04_Analytical_Skills"]);
+    expect(root.children[0].children[0].path).toBe(
+      "/Bank_Grade9_Question_Bank_Detailed/03_Mathematics/Part_01_Arithmetic",
+    );
+    expect(root.children[0].children[0].children[0]).toMatchObject({ name: "Real_Numbers", leaf: true });
+  });
+
   it("round-trips: re-parsing the emitted tree text yields the same paths", () => {
     const root = buildTaxonomyFromLines(MINI_TREE.split("\n"));
     const collect = (n: { name: string; path: string; children: unknown[] }): string[] =>

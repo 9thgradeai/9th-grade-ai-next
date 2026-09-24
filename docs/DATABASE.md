@@ -819,6 +819,23 @@ Seed sources:
 - `database/data/ques/<Subject>/<Node>/…/<file>.txt` — folder-structured questions; the folder path IS the taxonomy (each segment matched by NFC-normalised name).
 - `database/data/bcs_syllabus/BCS_Question_Bank_Detailed_*.txt` — **canonical architecture tree** (the source of truth for the topic hierarchy). Regenerate the taxonomy with `npx tsx scripts/generate-taxonomy.ts` after editing it, then rename any `data/ques/` folders that moved.
 - `database/data/taxonomy.json` — parsed taxonomy tree driving subject/topic creation, round-robin flat-question distribution, and folder imports via `scripts/taxonomy.ts`.
+- `database/data/Bank/Taxonomy/Subjects_Taxonomy(Bank).txt` — **canonical Bank architecture tree** (6 subjects, root `Bank_Grade9_Question_Bank_Detailed`). Regenerate with `npx tsx scripts/generate-taxonomy.ts --ecosystem=bank` into `database/data/bb-taxonomy.json`. Subject display names live in `BB_SUBJECT_META` (`scripts/taxonomy.ts`); topic trees are built by `scripts/seed-bb-subjects.ts` straight from the JSON.
+
+### Bank taxonomy (6 + 1 subjects)
+
+The BANGLADESH_BANK ecosystem has 6 syllabus subjects from the Bank architecture tree plus 1 archive-only subject:
+
+| # | nameBn | nameEn | Architecture node |
+|---|---|---|---|
+| 1 | বাংলা ভাষা ও সাহিত্য | Bangla Language & Literature | `01_Bangla_Language_and_Literature` |
+| 2 | English Language and Literature | English Language and Literature | `02_English_Language_and_Literature` |
+| 3 | গণিত | Mathematics | `03_Mathematics` |
+| 4 | বিশ্লেষণী দক্ষতা | Analytical Skills | `04_Analytical_Skills` |
+| 5 | তথ্য ও যোগাযোগ প্রযুক্তি | ICT | `05_ICT` |
+| 6 | আর্থিক জ্ঞান | Financial Knowledge | `06_Financial_Knowledge` |
+| — | সাধারণ জ্ঞান | General Knowledge | *(archive-only: Subject row, no topic tree — import target for out-of-syllabus PYQs)* |
+
+**Superseded Bank subjects.** The pre-2026-09 7-subject Bank taxonomy (e.g. `BB_01_বাংলা_ব্যাকরণ_ও_সাহিত্য…`, `সাধারণ গণিত`, `আর্থিক ও ব্যাংকিং জ্ঞান`) is superseded, not migrated: seeding upserts by `(ecosystemId, nameBn)`, so old subject rows stay untouched in existing databases (new rows are created alongside). To clean an existing DB, delete the old BANGLADESH_BANK Subject rows only after repointing or exporting their questions — deletes cascade to Question via FK. Never delete subjects that still own questions you want to keep.
 
 The recursive Topic tree, leaf `topicId`/`path` tagging on questions, and per-topic aggregated `questionCount` are (re)built by `scripts/seed-questions.ts`, invoked by `npm run db:seed-questions` and as part of `npm run db:seed`.
 

@@ -76,20 +76,28 @@ export function subjectMetaByNameBn(nameBn: string): SubjectMeta | undefined {
   return SUBJECT_META.find((m) => m.nameBn.normalize("NFC") === nameBn.normalize("NFC"));
 }
 
-// ── Bangladesh Bank ecosystem subjects (7) ──────────────────
+// ── Bangladesh Bank ecosystem subjects (6) ──────────────────
+// architectureName segments must match database/data/bb-taxonomy.json
+// (generated from database/data/Bank/Taxonomy/Subjects_Taxonomy(Bank).txt).
 export const BB_SUBJECT_META: SubjectMeta[] = [
-  { nameBn: "বাংলা ব্যাকরণ ও সাহিত্য", nameEn: "Bangla Grammar & Literature", architectureName: "BB_01_বাংলা_ব্যাকরণ_ও_সাহিত্য", icon: "📖", color: "text-emerald-400", bg: "bg-emerald-500/10" },
-  { nameBn: "English Grammar & Literature", nameEn: "English Grammar & Literature", architectureName: "BB_02_English_Grammar_Literature", icon: "📚", color: "text-sky-400", bg: "bg-sky-500/10" },
-  { nameBn: "সাধারণ গণিত", nameEn: "General Mathematics", architectureName: "BB_03_সাধারণ_গণিত", icon: "🧮", color: "text-amber-400", bg: "bg-amber-500/10" },
-  { nameBn: "বিশ্লেষণী দক্ষতা", nameEn: "Analytical Skills", architectureName: "BB_04_বিশ্লেষণী_দক্ষতা", icon: "🧠", color: "text-rose-400", bg: "bg-rose-500/10" },
-  { nameBn: "আর্থিক ও ব্যাংকিং জ্ঞান", nameEn: "Financial and Banking Knowledge", architectureName: "BB_05_আর্থিক_ও_ব্যাংকিং_জ্ঞান", icon: "🏦", color: "text-green-400", bg: "bg-green-500/10" },
-  { nameBn: "সাধারণ জ্ঞান", nameEn: "General Knowledge", architectureName: "BB_06_সাধারণ_জ্ঞান", icon: "🌍", color: "text-cyan-400", bg: "bg-cyan-500/10" },
-  { nameBn: "তথ্য ও যোগাযোগ প্রযুক্তি", nameEn: "ICT / Computer", architectureName: "BB_07_তথ্য_ও_যোগাযোগ_প্রযুক্তি", icon: "💻", color: "text-purple-400", bg: "bg-purple-500/10" },
+  { nameBn: "বাংলা ভাষা ও সাহিত্য", nameEn: "Bangla Language & Literature", architectureName: "01_Bangla_Language_and_Literature", icon: "📖", color: "text-emerald-400", bg: "bg-emerald-500/10" },
+  { nameBn: "English Language and Literature", nameEn: "English Language and Literature", architectureName: "02_English_Language_and_Literature", icon: "📚", color: "text-sky-400", bg: "bg-sky-500/10" },
+  { nameBn: "গণিত", nameEn: "Mathematics", architectureName: "03_Mathematics", icon: "🧮", color: "text-amber-400", bg: "bg-amber-500/10" },
+  { nameBn: "বিশ্লেষণী দক্ষতা", nameEn: "Analytical Skills", architectureName: "04_Analytical_Skills", icon: "🧠", color: "text-rose-400", bg: "bg-rose-500/10" },
+  { nameBn: "তথ্য ও যোগাযোগ প্রযুক্তি", nameEn: "ICT", architectureName: "05_ICT", icon: "💻", color: "text-purple-400", bg: "bg-purple-500/10" },
+  { nameBn: "আর্থিক জ্ঞান", nameEn: "Financial Knowledge", architectureName: "06_Financial_Knowledge", icon: "🏦", color: "text-green-400", bg: "bg-green-500/10" },
 ];
 
 export function bbSubjectMetaByNameBn(nameBn: string): SubjectMeta | undefined {
   return BB_SUBJECT_META.find((m) => m.nameBn.normalize("NFC") === nameBn.normalize("NFC"));
 }
+
+// Archive-only Bank subjects: created as Subject rows (import targets for
+// out-of-syllabus PYQs such as General Knowledge) but intentionally absent
+// from bb-taxonomy.json, so they carry no topic tree.
+export const BB_ARCHIVE_SUBJECT_META: { nameBn: string; nameEn: string }[] = [
+  { nameBn: "সাধারণ জ্ঞান", nameEn: "General Knowledge" },
+];
 // Legacy folder names (pre-architecture) mapped to the current architecture
 // subject segment so existing files keep importing without a rename.
 const SUBJECT_FOLDER_ALIASES: Record<string, string> = {

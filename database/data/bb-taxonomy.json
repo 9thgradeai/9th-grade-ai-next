@@ -1,154 +1,987 @@
 {
-  "name": "Bangladesh_Bank_Question_Bank",
-  "path": "/",
-  "depth": 0,
+  "name": "Bank_Grade9_Question_Bank_Detailed",
   "children": [
     {
-      "name": "BB_01_বাংলা_ব্যাকরণ_ও_সাহিত্য",
-      "path": "/BB_01_বাংলা_ব্যাকরণ_ও_সাহিত্য",
-      "depth": 1,
+      "name": "01_Bangla_Language_and_Literature",
       "children": [
         {
-          "name": "Grammar (Byakoron)",
-          "path": "/BB_01_বাংলা_ব্যাকরণ_ও_সাহিত্য/grammar-byakoron",
-          "depth": 2,
+          "name": "ভাষা",
           "children": [
-            { "name": "Word Origin (Shobdo)", "path": "/BB_01_বাংলা_ব্যাকরণ_ও_সাহিত্য/grammar-byakoron/word-origin-shobdo", "depth": 3, "children": [] },
-            { "name": "Sandhi", "path": "/BB_01_বাংলা_ব্যাকরণ_ও_সাহিত্য/grammar-byakoron/sandhi", "depth": 3, "children": [] },
-            { "name": "Prefix/Suffix (Upashorgo/Protoy)", "path": "/BB_01_বাংলা_ব্যাকরণ_ও_সাহিত্য/grammar-byakoron/prefix-suffix", "depth": 3, "children": [] },
-            { "name": "Voice/Narration (Ukti)", "path": "/BB_01_বাংলা_ব্যাকরণ_ও_সাহিত্য/grammar-byakoron/voice-narration-ukti", "depth": 3, "children": [] },
-            { "name": "Spelling (Banan/Nottwo Bidhi)", "path": "/BB_01_বাংলা_ব্যাকরণ_ও_সাহিত্য/grammar-byakoron/spelling-banan", "depth": 3, "children": [] }
-          ]
+            {
+              "name": "প্রয়োগ-অপপ্রয়োগ",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/01_Bangla_Language_and_Literature/ভাষা/প্রয়োগ-অপপ্রয়োগ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "বানান_ও_বাক্য_শুদ্ধি",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/01_Bangla_Language_and_Literature/ভাষা/বানান_ও_বাক্য_শুদ্ধি",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "পরিভাষা",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/01_Bangla_Language_and_Literature/ভাষা/পরিভাষা",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "সমার্থক_শব্দ",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/01_Bangla_Language_and_Literature/ভাষা/সমার্থক_শব্দ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "বিপরীতার্থক_শব্দ",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/01_Bangla_Language_and_Literature/ভাষা/বিপরীতার্থক_শব্দ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "শব্দের_উৎস_ও_শ্রেণিবিভাগ",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/01_Bangla_Language_and_Literature/ভাষা/শব্দের_উৎস_ও_শ্রেণিবিভাগ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "পদ",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/01_Bangla_Language_and_Literature/ভাষা/পদ",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "বাক্য",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/01_Bangla_Language_and_Literature/ভাষা/বাক্য",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "প্রত্যয়",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/01_Bangla_Language_and_Literature/ভাষা/প্রত্যয়",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "সন্ধি",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/01_Bangla_Language_and_Literature/ভাষা/সন্ধি",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "সমাস",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/01_Bangla_Language_and_Literature/ভাষা/সমাস",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/Bank_Grade9_Question_Bank_Detailed/01_Bangla_Language_and_Literature/ভাষা",
+          "depth": 2
         },
         {
-          "name": "Literature (Shahitto)",
-          "path": "/BB_01_বাংলা_ব্যাকরণ_ও_সাহিত্য/literature-shahitto",
-          "depth": 2,
+          "name": "সাহিত্য",
           "children": [
-            { "name": "Authors & Works", "path": "/BB_01_বাংলা_ব্যাকরণ_ও_সাহিত্য/literature-shahitto/authors-works", "depth": 3, "children": [] },
-            { "name": "Literary History", "path": "/BB_01_বাংলা_ব্যাকরণ_ও_সাহিত্য/literature-shahitto/literary-history", "depth": 3, "children": [] }
-          ]
+            {
+              "name": "আধুনিক_যুগ_১৮০০_হতে_বর্তমান",
+              "children": [
+                {
+                  "name": "Tier_01_মাস্টার_হট_স্পট",
+                  "children": [
+                    {
+                      "name": "01_রবীন্দ্রনাথ_ঠাকুর",
+                      "children": [],
+                      "path": "/Bank_Grade9_Question_Bank_Detailed/01_Bangla_Language_and_Literature/সাহিত্য/আধুনিক_যুগ_১৮০০_হতে_বর্তমান/Tier_01_মাস্টার_হট_স্পট/01_রবীন্দ্রনাথ_ঠাকুর",
+                      "depth": 5,
+                      "leaf": true
+                    },
+                    {
+                      "name": "02_কাজী_নজরুল_ইসলাম",
+                      "children": [],
+                      "path": "/Bank_Grade9_Question_Bank_Detailed/01_Bangla_Language_and_Literature/সাহিত্য/আধুনিক_যুগ_১৮০০_হতে_বর্তমান/Tier_01_মাস্টার_হট_স্পট/02_কাজী_নজরুল_ইসলাম",
+                      "depth": 5,
+                      "leaf": true
+                    }
+                  ],
+                  "path": "/Bank_Grade9_Question_Bank_Detailed/01_Bangla_Language_and_Literature/সাহিত্য/আধুনিক_যুগ_১৮০০_হতে_বর্তমান/Tier_01_মাস্টার_হট_স্পট",
+                  "depth": 4
+                },
+                {
+                  "name": "Tier_02_ভেরি_হাই_ইল্ড",
+                  "children": [
+                    {
+                      "name": "03_জসীমউদ্দীন",
+                      "children": [],
+                      "path": "/Bank_Grade9_Question_Bank_Detailed/01_Bangla_Language_and_Literature/সাহিত্য/আধুনিক_যুগ_১৮০০_হতে_বর্তমান/Tier_02_ভেরি_হাই_ইল্ড/03_জসীমউদ্দীন",
+                      "depth": 5,
+                      "leaf": true
+                    },
+                    {
+                      "name": "04_বঙ্কিমচন্দ্র_চট্টোপাধ্যায়",
+                      "children": [],
+                      "path": "/Bank_Grade9_Question_Bank_Detailed/01_Bangla_Language_and_Literature/সাহিত্য/আধুনিক_যুগ_১৮০০_হতে_বর্তমান/Tier_02_ভেরি_হাই_ইল্ড/04_বঙ্কিমচন্দ্র_চট্টোপাধ্যায়",
+                      "depth": 5,
+                      "leaf": true
+                    },
+                    {
+                      "name": "05_মাইকেল_মধুসূদন_দত্ত",
+                      "children": [],
+                      "path": "/Bank_Grade9_Question_Bank_Detailed/01_Bangla_Language_and_Literature/সাহিত্য/আধুনিক_যুগ_১৮০০_হতে_বর্তমান/Tier_02_ভেরি_হাই_ইল্ড/05_মাইকেল_মধুসূদন_দত্ত",
+                      "depth": 5,
+                      "leaf": true
+                    },
+                    {
+                      "name": "06_শরৎচন্দ্র_চট্টোপাধ্যায়",
+                      "children": [],
+                      "path": "/Bank_Grade9_Question_Bank_Detailed/01_Bangla_Language_and_Literature/সাহিত্য/আধুনিক_যুগ_১৮০০_হতে_বর্তমান/Tier_02_ভেরি_হাই_ইল্ড/06_শরৎচন্দ্র_চট্টোপাধ্যায়",
+                      "depth": 5,
+                      "leaf": true
+                    },
+                    {
+                      "name": "07_মীর_মশাররফ_হোসেন",
+                      "children": [],
+                      "path": "/Bank_Grade9_Question_Bank_Detailed/01_Bangla_Language_and_Literature/সাহিত্য/আধুনিক_যুগ_১৮০০_হতে_বর্তমান/Tier_02_ভেরি_হাই_ইল্ড/07_মীর_মশাররফ_হোসেন",
+                      "depth": 5,
+                      "leaf": true
+                    },
+                    {
+                      "name": "08_জীবনানন্দ_দাস",
+                      "children": [],
+                      "path": "/Bank_Grade9_Question_Bank_Detailed/01_Bangla_Language_and_Literature/সাহিত্য/আধুনিক_যুগ_১৮০০_হতে_বর্তমান/Tier_02_ভেরি_হাই_ইল্ড/08_জীবনানন্দ_দাস",
+                      "depth": 5,
+                      "leaf": true
+                    }
+                  ],
+                  "path": "/Bank_Grade9_Question_Bank_Detailed/01_Bangla_Language_and_Literature/সাহিত্য/আধুনিক_যুগ_১৮০০_হতে_বর্তমান/Tier_02_ভেরি_হাই_ইল্ড",
+                  "depth": 4
+                },
+                {
+                  "name": "Tier_03_ফোকাসড_লেখক",
+                  "children": [
+                    {
+                      "name": "09_মুনীর_চৌধুরী",
+                      "children": [],
+                      "path": "/Bank_Grade9_Question_Bank_Detailed/01_Bangla_Language_and_Literature/সাহিত্য/আধুনিক_যুগ_১৮০০_হতে_বর্তমান/Tier_03_ফোকাসড_লেখক/09_মুনীর_চৌধুরী",
+                      "depth": 5,
+                      "leaf": true
+                    },
+                    {
+                      "name": "10_জহির_রায়হান",
+                      "children": [],
+                      "path": "/Bank_Grade9_Question_Bank_Detailed/01_Bangla_Language_and_Literature/সাহিত্য/আধুনিক_যুগ_১৮০০_হতে_বর্তমান/Tier_03_ফোকাসড_লেখক/10_জহির_রায়হান",
+                      "depth": 5,
+                      "leaf": true
+                    },
+                    {
+                      "name": "11_সৈয়দ_শামসুল_হক",
+                      "children": [],
+                      "path": "/Bank_Grade9_Question_Bank_Detailed/01_Bangla_Language_and_Literature/সাহিত্য/আধুনিক_যুগ_১৮০০_হতে_বর্তমান/Tier_03_ফোকাসড_লেখক/11_সৈয়দ_শামসুল_হক",
+                      "depth": 5,
+                      "leaf": true
+                    },
+                    {
+                      "name": "12_বেগম_রোকেয়া_সাখাওয়াত_হোসেন",
+                      "children": [],
+                      "path": "/Bank_Grade9_Question_Bank_Detailed/01_Bangla_Language_and_Literature/সাহিত্য/আধুনিক_যুগ_১৮০০_হতে_বর্তমান/Tier_03_ফোকাসড_লেখক/12_বেগম_রোকেয়া_সাখাওয়াত_হোসেন",
+                      "depth": 5,
+                      "leaf": true
+                    },
+                    {
+                      "name": "13_ঈশ্বরচন্দ্র_বিদ্যাসাগর",
+                      "children": [],
+                      "path": "/Bank_Grade9_Question_Bank_Detailed/01_Bangla_Language_and_Literature/সাহিত্য/আধুনিক_যুগ_১৮০০_হতে_বর্তমান/Tier_03_ফোকাসড_লেখক/13_ঈশ্বরচন্দ্র_বিদ্যাসাগর",
+                      "depth": 5,
+                      "leaf": true
+                    },
+                    {
+                      "name": "14_হুমায়ূন_আহমেদ",
+                      "children": [],
+                      "path": "/Bank_Grade9_Question_Bank_Detailed/01_Bangla_Language_and_Literature/সাহিত্য/আধুনিক_যুগ_১৮০০_হতে_বর্তমান/Tier_03_ফোকাসড_লেখক/14_হুমায়ূন_আহমেদ",
+                      "depth": 5,
+                      "leaf": true
+                    },
+                    {
+                      "name": "15_শামসুর_রাহমান",
+                      "children": [],
+                      "path": "/Bank_Grade9_Question_Bank_Detailed/01_Bangla_Language_and_Literature/সাহিত্য/আধুনিক_যুগ_১৮০০_হতে_বর্তমান/Tier_03_ফোকাসড_লেখক/15_শামসুর_রাহমান",
+                      "depth": 5,
+                      "leaf": true
+                    }
+                  ],
+                  "path": "/Bank_Grade9_Question_Bank_Detailed/01_Bangla_Language_and_Literature/সাহিত্য/আধুনিক_যুগ_১৮০০_হতে_বর্তমান/Tier_03_ফোকাসড_লেখক",
+                  "depth": 4
+                },
+                {
+                  "name": "মুক্তিযুদ্ধ_ভিত্তিক_সাহিত্য_ও_চলচ্চিত্র",
+                  "children": [],
+                  "path": "/Bank_Grade9_Question_Bank_Detailed/01_Bangla_Language_and_Literature/সাহিত্য/আধুনিক_যুগ_১৮০০_হতে_বর্তমান/মুক্তিযুদ্ধ_ভিত্তিক_সাহিত্য_ও_চলচ্চিত্র",
+                  "depth": 4,
+                  "leaf": true
+                }
+              ],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/01_Bangla_Language_and_Literature/সাহিত্য/আধুনিক_যুগ_১৮০০_হতে_বর্তমান",
+              "depth": 3
+            },
+            {
+              "name": "প্রাচীন_ও_মধ্যযুগ_সংক্ষিপ্ত",
+              "children": [
+                {
+                  "name": "চর্যাপদ",
+                  "children": [],
+                  "path": "/Bank_Grade9_Question_Bank_Detailed/01_Bangla_Language_and_Literature/সাহিত্য/প্রাচীন_ও_মধ্যযুগ_সংক্ষিপ্ত/চর্যাপদ",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "শ্রীকৃষ্ণকীর্তন_ও_মধ্যযুগের_কাব্য",
+                  "children": [],
+                  "path": "/Bank_Grade9_Question_Bank_Detailed/01_Bangla_Language_and_Literature/সাহিত্য/প্রাচীন_ও_মধ্যযুগ_সংক্ষিপ্ত/শ্রীকৃষ্ণকীর্তন_ও_মধ্যযুগের_কাব্য",
+                  "depth": 4,
+                  "leaf": true
+                }
+              ],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/01_Bangla_Language_and_Literature/সাহিত্য/প্রাচীন_ও_মধ্যযুগ_সংক্ষিপ্ত",
+              "depth": 3
+            }
+          ],
+          "path": "/Bank_Grade9_Question_Bank_Detailed/01_Bangla_Language_and_Literature/সাহিত্য",
+          "depth": 2
         }
-      ]
+      ],
+      "path": "/Bank_Grade9_Question_Bank_Detailed/01_Bangla_Language_and_Literature",
+      "depth": 1
     },
     {
-      "name": "BB_02_English_Grammar_Literature",
-      "path": "/BB_02_English_Grammar_Literature",
-      "depth": 1,
+      "name": "02_English_Language_and_Literature",
       "children": [
         {
-          "name": "Vocabulary",
-          "path": "/BB_02_English_Grammar_Literature/vocabulary",
-          "depth": 2,
+          "name": "PART-I_Language",
           "children": [
-            { "name": "Idioms & Phrases", "path": "/BB_02_English_Grammar_Literature/vocabulary/idioms-phrases", "depth": 3, "children": [] },
-            { "name": "One-word Substitution", "path": "/BB_02_English_Grammar_Literature/vocabulary/one-word-substitution", "depth": 3, "children": [] },
-            { "name": "Synonyms/Antonyms", "path": "/BB_02_English_Grammar_Literature/vocabulary/synonyms-antonyms", "depth": 3, "children": [] },
-            { "name": "Spelling", "path": "/BB_02_English_Grammar_Literature/vocabulary/spelling", "depth": 3, "children": [] }
-          ]
+            {
+              "name": "Parts_of_Speech",
+              "children": [
+                {
+                  "name": "Noun_Pronoun_Determiner_Gender_Number",
+                  "children": [],
+                  "path": "/Bank_Grade9_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Parts_of_Speech/Noun_Pronoun_Determiner_Gender_Number",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "Verb_Transitive_Intransitive_Non-finite_Gerund_Participle",
+                  "children": [],
+                  "path": "/Bank_Grade9_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Parts_of_Speech/Verb_Transitive_Intransitive_Non-finite_Gerund_Participle",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "Phrasal_Verb",
+                  "children": [],
+                  "path": "/Bank_Grade9_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Parts_of_Speech/Phrasal_Verb",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "Adjective_and_Adverb",
+                  "children": [],
+                  "path": "/Bank_Grade9_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Parts_of_Speech/Adjective_and_Adverb",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "Preposition",
+                  "children": [],
+                  "path": "/Bank_Grade9_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Parts_of_Speech/Preposition",
+                  "depth": 4,
+                  "leaf": true
+                }
+              ],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Parts_of_Speech",
+              "depth": 3
+            },
+            {
+              "name": "Idioms_and_Phrases",
+              "children": [
+                {
+                  "name": "Meanings_of_Idioms",
+                  "children": [],
+                  "path": "/Bank_Grade9_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Idioms_and_Phrases/Meanings_of_Idioms",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "Identifying_Phrases",
+                  "children": [],
+                  "path": "/Bank_Grade9_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Idioms_and_Phrases/Identifying_Phrases",
+                  "depth": 4,
+                  "leaf": true
+                }
+              ],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Idioms_and_Phrases",
+              "depth": 3
+            },
+            {
+              "name": "Corrections_and_Agreement",
+              "children": [
+                {
+                  "name": "Subject-Verb_Agreement",
+                  "children": [],
+                  "path": "/Bank_Grade9_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Corrections_and_Agreement/Subject-Verb_Agreement",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "Tense_and_Structure_Errors",
+                  "children": [],
+                  "path": "/Bank_Grade9_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Corrections_and_Agreement/Tense_and_Structure_Errors",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "Parallelism_and_Modifiers",
+                  "children": [],
+                  "path": "/Bank_Grade9_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Corrections_and_Agreement/Parallelism_and_Modifiers",
+                  "depth": 4,
+                  "leaf": true
+                }
+              ],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Corrections_and_Agreement",
+              "depth": 3
+            },
+            {
+              "name": "Sentences_and_Transformations",
+              "children": [
+                {
+                  "name": "Active_and_Passive_Voice",
+                  "children": [],
+                  "path": "/Bank_Grade9_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Sentences_and_Transformations/Active_and_Passive_Voice",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "Direct_and_Indirect_Narration",
+                  "children": [],
+                  "path": "/Bank_Grade9_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Sentences_and_Transformations/Direct_and_Indirect_Narration",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "Degrees_of_Comparison",
+                  "children": [],
+                  "path": "/Bank_Grade9_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Sentences_and_Transformations/Degrees_of_Comparison",
+                  "depth": 4,
+                  "leaf": true
+                }
+              ],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Sentences_and_Transformations",
+              "depth": 3
+            },
+            {
+              "name": "Words_Vocabulary",
+              "children": [
+                {
+                  "name": "Synonyms_and_Antonyms",
+                  "children": [],
+                  "path": "/Bank_Grade9_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Words_Vocabulary/Synonyms_and_Antonyms",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "Spellings",
+                  "children": [],
+                  "path": "/Bank_Grade9_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Words_Vocabulary/Spellings",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "One-Word_Substitutions",
+                  "children": [],
+                  "path": "/Bank_Grade9_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Words_Vocabulary/One-Word_Substitutions",
+                  "depth": 4,
+                  "leaf": true
+                }
+              ],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language/Words_Vocabulary",
+              "depth": 3
+            }
+          ],
+          "path": "/Bank_Grade9_Question_Bank_Detailed/02_English_Language_and_Literature/PART-I_Language",
+          "depth": 2
         },
         {
-          "name": "Grammar",
-          "path": "/BB_02_English_Grammar_Literature/grammar",
-          "depth": 2,
+          "name": "PART-II_Literature",
           "children": [
-            { "name": "Voice", "path": "/BB_02_English_Grammar_Literature/grammar/voice", "depth": 3, "children": [] },
-            { "name": "Prepositions", "path": "/BB_02_English_Grammar_Literature/grammar/prepositions", "depth": 3, "children": [] },
-            { "name": "Sentence Correction", "path": "/BB_02_English_Grammar_Literature/grammar/sentence-correction", "depth": 3, "children": [] }
-          ]
+            {
+              "name": "Major_Shakespearean_and_Romantic_Quotes",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/02_English_Language_and_Literature/PART-II_Literature/Major_Shakespearean_and_Romantic_Quotes",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "Literary_Terms_and_Movements",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/02_English_Language_and_Literature/PART-II_Literature/Literary_Terms_and_Movements",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/Bank_Grade9_Question_Bank_Detailed/02_English_Language_and_Literature/PART-II_Literature",
+          "depth": 2
         }
-      ]
+      ],
+      "path": "/Bank_Grade9_Question_Bank_Detailed/02_English_Language_and_Literature",
+      "depth": 1
     },
     {
-      "name": "BB_03_সাধারণ_গণিত",
-      "path": "/BB_03_সাধারণ_গণিত",
-      "depth": 1,
+      "name": "03_Mathematics",
       "children": [
         {
-          "name": "Arithmetic",
-          "path": "/BB_03_সাধারণ_গণিত/arithmetic",
-          "depth": 2,
+          "name": "Part_01_Arithmetic",
           "children": [
-            { "name": "Profit, Loss & Percentage", "path": "/BB_03_সাধারণ_গণিত/arithmetic/profit-loss-percentage", "depth": 3, "children": [] },
-            { "name": "Time, Speed & Distance", "path": "/BB_03_সাধারণ_গণিত/arithmetic/time-speed-distance", "depth": 3, "children": [] },
-            { "name": "Interest (Simple/Compound)", "path": "/BB_03_সাধারণ_গণিত/arithmetic/interest", "depth": 3, "children": [] }
-          ]
+            {
+              "name": "Real_Numbers",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/03_Mathematics/Part_01_Arithmetic/Real_Numbers",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "LCM_and_HCF",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/03_Mathematics/Part_01_Arithmetic/LCM_and_HCF",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "Percentages",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/03_Mathematics/Part_01_Arithmetic/Percentages",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "Simple_and_Compound_Interest",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/03_Mathematics/Part_01_Arithmetic/Simple_and_Compound_Interest",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "Ratios_Proportions_and_Mixtures",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/03_Mathematics/Part_01_Arithmetic/Ratios_Proportions_and_Mixtures",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "Profit_Loss_and_Discount",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/03_Mathematics/Part_01_Arithmetic/Profit_Loss_and_Discount",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/Bank_Grade9_Question_Bank_Detailed/03_Mathematics/Part_01_Arithmetic",
+          "depth": 2
         },
         {
-          "name": "Algebra",
-          "path": "/BB_03_সাধারণ_গণিত/algebra",
-          "depth": 2,
-          "children": [{ "name": "Equations & Fractions", "path": "/BB_03_সাধারণ_গণিত/algebra/equations-fractions", "depth": 3, "children": [] }]
+          "name": "Part_02_Algebra",
+          "children": [
+            {
+              "name": "Algebraic_Identities_and_Factorization",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/03_Mathematics/Part_02_Algebra/Algebraic_Identities_and_Factorization",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "Equations_and_Inequalities",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/03_Mathematics/Part_02_Algebra/Equations_and_Inequalities",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "Indices_and_Logarithms",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/03_Mathematics/Part_02_Algebra/Indices_and_Logarithms",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/Bank_Grade9_Question_Bank_Detailed/03_Mathematics/Part_02_Algebra",
+          "depth": 2
         },
         {
-          "name": "Geometry",
-          "path": "/BB_03_সাধারণ_গণিত/geometry",
-          "depth": 2,
-          "children": [{ "name": "Mensuration (Area/Perimeter)", "path": "/BB_03_সাধারণ_গণিত/geometry/mensuration", "depth": 3, "children": [] }]
+          "name": "Part_03_Sequences_and_Series",
+          "children": [
+            {
+              "name": "Arithmetic_Progression",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/03_Mathematics/Part_03_Sequences_and_Series/Arithmetic_Progression",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "Geometric_Progression",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/03_Mathematics/Part_03_Sequences_and_Series/Geometric_Progression",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/Bank_Grade9_Question_Bank_Detailed/03_Mathematics/Part_03_Sequences_and_Series",
+          "depth": 2
         },
         {
-          "name": "Logical Reasoning",
-          "path": "/BB_03_সাধারণ_গণিত/logical-reasoning",
-          "depth": 2,
-          "children": [{ "name": "Puzzles & Sets", "path": "/BB_03_সাধারণ_গণিত/logical-reasoning/puzzles-sets", "depth": 3, "children": [] }]
+          "name": "Part_04_Geometry_and_Mensuration",
+          "children": [
+            {
+              "name": "Lines_Angles_Triangles_Quadrilaterals_Circles",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/03_Mathematics/Part_04_Geometry_and_Mensuration/Lines_Angles_Triangles_Quadrilaterals_Circles",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "Pythagorean_Theorem",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/03_Mathematics/Part_04_Geometry_and_Mensuration/Pythagorean_Theorem",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "2D_Mensuration_Area_Perimeter",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/03_Mathematics/Part_04_Geometry_and_Mensuration/2D_Mensuration_Area_Perimeter",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "3D_Mensuration_Volume_Surface_Area",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/03_Mathematics/Part_04_Geometry_and_Mensuration/3D_Mensuration_Volume_Surface_Area",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/Bank_Grade9_Question_Bank_Detailed/03_Mathematics/Part_04_Geometry_and_Mensuration",
+          "depth": 2
+        },
+        {
+          "name": "Part_05_Statistics_and_Probability",
+          "children": [
+            {
+              "name": "Set_Theory_and_Venn_Diagrams",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/03_Mathematics/Part_05_Statistics_and_Probability/Set_Theory_and_Venn_Diagrams",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "Permutations_and_Combinations",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/03_Mathematics/Part_05_Statistics_and_Probability/Permutations_and_Combinations",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "Statistics_Mean_Median_Mode",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/03_Mathematics/Part_05_Statistics_and_Probability/Statistics_Mean_Median_Mode",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "Probability",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/03_Mathematics/Part_05_Statistics_and_Probability/Probability",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/Bank_Grade9_Question_Bank_Detailed/03_Mathematics/Part_05_Statistics_and_Probability",
+          "depth": 2
         }
-      ]
+      ],
+      "path": "/Bank_Grade9_Question_Bank_Detailed/03_Mathematics",
+      "depth": 1
     },
     {
-      "name": "BB_04_বিশ্লেষণী_দক্ষতা",
-      "path": "/BB_04_বিশ্লেষণী_দক্ষতা",
-      "depth": 1,
-      "children": [
-        { "name": "Analytical Reasoning", "path": "/BB_04_বিশ্লেষণী_দক্ষতা/analytical-reasoning", "depth": 2, "children": [] },
-        { "name": "Critical Reasoning", "path": "/BB_04_বিশ্লেষণী_দক্ষতা/critical-reasoning", "depth": 2, "children": [] },
-        { "name": "Data Interpretation", "path": "/BB_04_বিশ্লেষণী_দক্ষতা/data-interpretation", "depth": 2, "children": [] },
-        { "name": "Puzzles & Logical Sets", "path": "/BB_04_বিশ্লেষণী_দক্ষতা/puzzles-logical-sets", "depth": 2, "children": [] }
-      ]
-    },
-    {
-      "name": "BB_05_আর্থিক_ও_ব্যাংকিং_জ্ঞান",
-      "path": "/BB_05_আর্থিক_ও_ব্যাংকিং_জ্ঞান",
-      "depth": 1,
-      "children": [
-        { "name": "Banking & Finance", "path": "/BB_05_আর্থিক_ও_ব্যাংকিং_জ্ঞান/banking-finance", "depth": 2, "children": [] },
-        { "name": "Economy & Budget", "path": "/BB_05_আর্থিক_ও_ব্যাংকিং_জ্ঞান/economy-budget", "depth": 2, "children": [] },
-        { "name": "Monetary Policy & Central Banking", "path": "/BB_05_আর্থিক_ও_ব্যাংকিং_জ্ঞান/monetary-policy", "depth": 2, "children": [] }
-      ]
-    },
-    {
-      "name": "BB_06_সাধারণ_জ্ঞান",
-      "path": "/BB_06_সাধারণ_জ্ঞান",
-      "depth": 1,
+      "name": "04_Analytical_Skills",
       "children": [
         {
-          "name": "Current Affairs",
-          "path": "/BB_06_সাধারণ_জ্ঞান/current-affairs",
-          "depth": 2,
-          "children": [{ "name": "Sports, Awards, Geopolitics", "path": "/BB_06_সাধারণ_জ্ঞান/current-affairs/sports-awards-geopolitics", "depth": 3, "children": [] }]
+          "name": "01_Verbal_Reasoning",
+          "children": [
+            {
+              "name": "Logical_Deduction_and_Syllogism",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/04_Analytical_Skills/01_Verbal_Reasoning/Logical_Deduction_and_Syllogism",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "Statement_and_Assumptions",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/04_Analytical_Skills/01_Verbal_Reasoning/Statement_and_Assumptions",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/Bank_Grade9_Question_Bank_Detailed/04_Analytical_Skills/01_Verbal_Reasoning",
+          "depth": 2
         },
         {
-          "name": "Bangladesh Affairs",
-          "path": "/BB_06_সাধারণ_জ্ঞান/bangladesh-affairs",
-          "depth": 2,
-          "children": [{ "name": "Economy, Mega Projects, History", "path": "/BB_06_সাধারণ_জ্ঞান/bangladesh-affairs/economy-mega-projects-history", "depth": 3, "children": [] }]
+          "name": "02_Problem_Solving",
+          "children": [
+            {
+              "name": "Blood_Relations",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/04_Analytical_Skills/02_Problem_Solving/Blood_Relations",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "Ranking_and_Seating_Arrangements",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/04_Analytical_Skills/02_Problem_Solving/Ranking_and_Seating_Arrangements",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "Age_and_Calendar_Logic",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/04_Analytical_Skills/02_Problem_Solving/Age_and_Calendar_Logic",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/Bank_Grade9_Question_Bank_Detailed/04_Analytical_Skills/02_Problem_Solving",
+          "depth": 2
         },
         {
-          "name": "International Affairs",
-          "path": "/BB_06_সাধারণ_জ্ঞান/international-affairs",
-          "depth": 2,
-          "children": [{ "name": "Geography, Organizations", "path": "/BB_06_সাধারণ_জ্ঞান/international-affairs/geography-organizations", "depth": 3, "children": [] }]
+          "name": "03_Space_Relation",
+          "children": [
+            {
+              "name": "Direction_and_Distance_Vectors",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/04_Analytical_Skills/03_Space_Relation/Direction_and_Distance_Vectors",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "Mirror_and_Water_Images",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/04_Analytical_Skills/03_Space_Relation/Mirror_and_Water_Images",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/Bank_Grade9_Question_Bank_Detailed/04_Analytical_Skills/03_Space_Relation",
+          "depth": 2
+        },
+        {
+          "name": "04_Numerical_and_Series_Ability",
+          "children": [
+            {
+              "name": "Number_and_Alphabet_Series",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/04_Analytical_Skills/04_Numerical_and_Series_Ability/Number_and_Alphabet_Series",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "Data_Sufficiency_Logic",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/04_Analytical_Skills/04_Numerical_and_Series_Ability/Data_Sufficiency_Logic",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/Bank_Grade9_Question_Bank_Detailed/04_Analytical_Skills/04_Numerical_and_Series_Ability",
+          "depth": 2
         }
-      ]
+      ],
+      "path": "/Bank_Grade9_Question_Bank_Detailed/04_Analytical_Skills",
+      "depth": 1
     },
     {
-      "name": "BB_07_তথ্য_ও_যোগাযোগ_প্রযুক্তি",
-      "path": "/BB_07_তথ্য_ও_যোগাযোগ_প্রযুক্তি",
-      "depth": 1,
+      "name": "05_ICT",
       "children": [
-        { "name": "Fundamentals & Hardware", "path": "/BB_07_তথ্য_ও_যোগাযোগ_প্রযুক্তি/fundamentals-hardware", "depth": 2, "children": [] },
-        { "name": "Software & Programming", "path": "/BB_07_তথ্য_ও_যোগাযোগ_প্রযুক্তি/software-programming", "depth": 2, "children": [] },
-        { "name": "Networking & Cybersecurity", "path": "/BB_07_তথ্য_ও_যোগাযোগ_প্রযুক্তি/networking-cybersecurity", "depth": 2, "children": [] }
-      ]
+        {
+          "name": "01_Computer_Hardware_and_Architecture",
+          "children": [
+            {
+              "name": "Peripherals_Keyboards_Scanners_OCR",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/05_ICT/01_Computer_Hardware_and_Architecture/Peripherals_Keyboards_Scanners_OCR",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "CPU_ALU_Registers_Memory_Hierarchy_RAM_CMOS",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/05_ICT/01_Computer_Hardware_and_Architecture/CPU_ALU_Registers_Memory_Hierarchy_RAM_CMOS",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "Storage_Devices_HDD_SSD_Optical",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/05_ICT/01_Computer_Hardware_and_Architecture/Storage_Devices_HDD_SSD_Optical",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/Bank_Grade9_Question_Bank_Detailed/05_ICT/01_Computer_Hardware_and_Architecture",
+          "depth": 2
+        },
+        {
+          "name": "02_Software_and_OS",
+          "children": [
+            {
+              "name": "Operating_Systems_Windows_Linux_MacOS",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/05_ICT/02_Software_and_OS/Operating_Systems_Windows_Linux_MacOS",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "System_vs_Application_Software",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/05_ICT/02_Software_and_OS/System_vs_Application_Software",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "Utility_Software_Antivirus_Compression",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/05_ICT/02_Software_and_OS/Utility_Software_Antivirus_Compression",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/Bank_Grade9_Question_Bank_Detailed/05_ICT/02_Software_and_OS",
+          "depth": 2
+        },
+        {
+          "name": "03_MS_Office_Suite",
+          "children": [
+            {
+              "name": "MS_Word_Shortcuts_Formatting_Mail_Merge",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/05_ICT/03_MS_Office_Suite/MS_Word_Shortcuts_Formatting_Mail_Merge",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "MS_Excel_Formulas_Cell_Addressing_Functions",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/05_ICT/03_MS_Office_Suite/MS_Excel_Formulas_Cell_Addressing_Functions",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "MS_PowerPoint_Transitions_Animations_Views",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/05_ICT/03_MS_Office_Suite/MS_PowerPoint_Transitions_Animations_Views",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/Bank_Grade9_Question_Bank_Detailed/05_ICT/03_MS_Office_Suite",
+          "depth": 2
+        },
+        {
+          "name": "04_Networking_and_Web",
+          "children": [
+            {
+              "name": "Network_Topologies_LAN_WAN_Wi-Fi_WiMAX",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/05_ICT/04_Networking_and_Web/Network_Topologies_LAN_WAN_Wi-Fi_WiMAX",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "Protocols_SMTP_POP3_FTP_TCP_IP",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/05_ICT/04_Networking_and_Web/Protocols_SMTP_POP3_FTP_TCP_IP",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "World_Wide_Web_and_Cloud_Computing",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/05_ICT/04_Networking_and_Web/World_Wide_Web_and_Cloud_Computing",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "Internet_Security_Firewalls_Dark_Web",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/05_ICT/04_Networking_and_Web/Internet_Security_Firewalls_Dark_Web",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/Bank_Grade9_Question_Bank_Detailed/05_ICT/04_Networking_and_Web",
+          "depth": 2
+        },
+        {
+          "name": "05_Emerging_Tech_and_Number_Systems",
+          "children": [
+            {
+              "name": "Binary_Decimal_Hexadecimal_Conversions",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/05_ICT/05_Emerging_Tech_and_Number_Systems/Binary_Decimal_Hexadecimal_Conversions",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "Artificial_Intelligence_Chatbots_Prolog",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/05_ICT/05_Emerging_Tech_and_Number_Systems/Artificial_Intelligence_Chatbots_Prolog",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/Bank_Grade9_Question_Bank_Detailed/05_ICT/05_Emerging_Tech_and_Number_Systems",
+          "depth": 2
+        }
+      ],
+      "path": "/Bank_Grade9_Question_Bank_Detailed/05_ICT",
+      "depth": 1
+    },
+    {
+      "name": "06_Financial_Knowledge",
+      "children": [
+        {
+          "name": "01_Bangladesh_Bank_Framework",
+          "children": [
+            {
+              "name": "Core_Functions_and_Monetary_Policy",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/06_Financial_Knowledge/01_Bangladesh_Bank_Framework/Core_Functions_and_Monetary_Policy",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "Banking_Regulations_and_Paid-up_Capital_Guidelines",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/06_Financial_Knowledge/01_Bangladesh_Bank_Framework/Banking_Regulations_and_Paid-up_Capital_Guidelines",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "Financial_Inclusion_and_Digital_Banking",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/06_Financial_Knowledge/01_Bangladesh_Bank_Framework/Financial_Inclusion_and_Digital_Banking",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/Bank_Grade9_Question_Bank_Detailed/06_Financial_Knowledge/01_Bangladesh_Bank_Framework",
+          "depth": 2
+        },
+        {
+          "name": "02_Payment_and_Settlement_Systems",
+          "children": [
+            {
+              "name": "RTGS_Real_Time_Gross_Settlement",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/06_Financial_Knowledge/02_Payment_and_Settlement_Systems/RTGS_Real_Time_Gross_Settlement",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "BEFTN_and_NPSB",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/06_Financial_Knowledge/02_Payment_and_Settlement_Systems/BEFTN_and_NPSB",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "MFS_and_FinTech_Regulations",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/06_Financial_Knowledge/02_Payment_and_Settlement_Systems/MFS_and_FinTech_Regulations",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/Bank_Grade9_Question_Bank_Detailed/06_Financial_Knowledge/02_Payment_and_Settlement_Systems",
+          "depth": 2
+        },
+        {
+          "name": "03_Macroeconomics_and_Indicators",
+          "children": [
+            {
+              "name": "Inflation_GDP_Targets_and_Five_Year_Plans",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/06_Financial_Knowledge/03_Macroeconomics_and_Indicators/Inflation_GDP_Targets_and_Five_Year_Plans",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "Interest_Rate_Benchmarks_SOFR",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/06_Financial_Knowledge/03_Macroeconomics_and_Indicators/Interest_Rate_Benchmarks_SOFR",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "Exchange_Rates_and_Remittance_Flows",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/06_Financial_Knowledge/03_Macroeconomics_and_Indicators/Exchange_Rates_and_Remittance_Flows",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/Bank_Grade9_Question_Bank_Detailed/06_Financial_Knowledge/03_Macroeconomics_and_Indicators",
+          "depth": 2
+        },
+        {
+          "name": "04_Banking_Commerce_and_Taxation",
+          "children": [
+            {
+              "name": "Commercial_Banking_Operations",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/06_Financial_Knowledge/04_Banking_Commerce_and_Taxation/Commercial_Banking_Operations",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "Capital_Markets_BSEC_and_CMSF",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/06_Financial_Knowledge/04_Banking_Commerce_and_Taxation/Capital_Markets_BSEC_and_CMSF",
+              "depth": 3,
+              "leaf": true
+            },
+            {
+              "name": "International_Trade_Finance_LCs_and_Brent_Index",
+              "children": [],
+              "path": "/Bank_Grade9_Question_Bank_Detailed/06_Financial_Knowledge/04_Banking_Commerce_and_Taxation/International_Trade_Finance_LCs_and_Brent_Index",
+              "depth": 3,
+              "leaf": true
+            }
+          ],
+          "path": "/Bank_Grade9_Question_Bank_Detailed/06_Financial_Knowledge/04_Banking_Commerce_and_Taxation",
+          "depth": 2
+        }
+      ],
+      "path": "/Bank_Grade9_Question_Bank_Detailed/06_Financial_Knowledge",
+      "depth": 1
     }
-  ]
+  ],
+  "path": "/Bank_Grade9_Question_Bank_Detailed",
+  "depth": 0
 }

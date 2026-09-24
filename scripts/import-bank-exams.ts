@@ -76,11 +76,13 @@ const PAPERS = [
 ];
 
 // ── BB subject names (must match the BANGLADESH_BANK Subject rows) ──────────
-const BB_BANGLA = "বাংলা ব্যাকরণ ও সাহিত্য";
-const BB_ENGLISH = "English Grammar & Literature";
-const BB_MATH = "সাধারণ গণিত";
+// GK is archive-only (BB_ARCHIVE_SUBJECT_META): out-of-syllabus PYQs land
+// there instead of being dropped as unclassified.
+const BB_BANGLA = "বাংলা ভাষা ও সাহিত্য";
+const BB_ENGLISH = "English Language and Literature";
+const BB_MATH = "গণিত";
 const BB_ANALYTICAL = "বিশ্লেষণী দক্ষতা";
-const BB_BANKING = "আর্থিক ও ব্যাংকিং জ্ঞান";
+const BB_BANKING = "আর্থিক জ্ঞান";
 const BB_GK = "সাধারণ জ্ঞান";
 const BB_ICT = "তথ্য ও যোগাযোগ প্রযুক্তি";
 

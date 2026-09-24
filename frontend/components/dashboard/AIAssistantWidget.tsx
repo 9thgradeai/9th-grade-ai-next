@@ -140,15 +140,15 @@ export default function AIAssistantWidget() {
       });
     }
     const subjMap: Record<string, { en: string; bn: string }> = {
-      "বাংলা ব্যাকরণ ও সাহিত্য": { en: "Bangla", bn: "বাংলা" },
-      "English Grammar & Literature": { en: "English", bn: "ইংরেজি" },
-      "সাধারণ গণিত": { en: "Math", bn: "গণিত" },
+      "বাংলা ভাষা ও সাহিত্য": { en: "Bangla", bn: "বাংলা" },
+      "English Language and Literature": { en: "English", bn: "ইংরেজি" },
+      "গণিত": { en: "Math", bn: "গণিত" },
       "তথ্য ও যোগাযোগ প্রযুক্তি": { en: "ICT", bn: "আইসিটি" },
       "General Knowledge": { en: "GK", bn: "জিকে" },
       "সাধারণ জ্ঞান": { en: "GK", bn: "জিকে" },
     };
     const weakSubj = weak?.subject ?? "";
-    const hintSubj = subjMap[weakSubj] ?? (weakSubj ? { en: weakSubj, bn: weakSubj } : subjMap["সাধারণ গণিত"]);
+    const hintSubj = subjMap[weakSubj] ?? (weakSubj ? { en: weakSubj, bn: weakSubj } : subjMap["গণিত"]);
     out.push({
       labelEn: `Ask AI about ${hintSubj.en}`,
       labelBn: `${hintSubj.bn} নিয়ে জিজ্ঞেস করুন`,

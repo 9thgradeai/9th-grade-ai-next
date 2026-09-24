@@ -1,27 +1,49 @@
 /**
  * scripts/generate-taxonomy.ts
  * ----------------------------------------------------------------------------
- * Regenerates database/data/taxonomy.json from the canonical architecture
- * tree file (database/data/bcs_syllabus/BCS_Question_Bank_Detailed_*.txt).
+ * Regenerates taxonomy.json (BCS) or bb-taxonomy.json (Bank) from the
+ * canonical architecture tree file:
+ *   BCS  : database/data/bcs_syllabus/BCS_Question_Bank_Detailed_*.txt
+ *          → database/data/taxonomy.json
+ *   Bank : database/data/Bank/Taxonomy/Subjects_Taxonomy(Bank).txt
+ *          → database/data/bb-taxonomy.json
  *
  * The .txt is a standard `tree` listing: connector prefixes ("├── ", "└── ")
  * under 4-char indent groups ("│   " / "    "). Folder names carry a trailing
  * "/" which is stripped. Node depth = number of segments below the root.
  *
  * Output node shape (matches scripts/taxonomy.ts TaxonomyNode):
- *   { name, children, path: "/BCS_Question_Bank_Detailed/<segments>",
+ *   { name, children, path: "/<ROOT>/<segments>",
  *     depth, leaf?: true }   // leaf present only when children is empty
  *
- * Run after editing the architecture file:
- *   npx tsx scripts/generate-taxonomy.ts
+ * Run after editing an architecture file:
+ *   npx tsx scripts/generate-taxonomy.ts [--ecosystem=bcs|bank]  (default bcs)
  * ----------------------------------------------------------------------------
  */
 import { readFileSync, readdirSync, writeFileSync } from "fs";
 import { join } from "path";
 
-const ROOT_NAME = "BCS_Question_Bank_Detailed";
-const ARCH_DIR = join(process.cwd(), "database", "data", "bcs_syllabus");
-const OUT_FILE = join(process.cwd(), "database", "data", "taxonomy.json");
+const BCS_ROOT = "BCS_Question_Bank_Detailed";
+const BANK_ROOT = "Bank_Grade9_Question_Bank_Detailed";
+
+type Ecosystem = "bcs" | "bank";
+
+const ECOSYSTEMS: Record<Ecosystem, { root: string; archDir: string; outFile: string; prefix: string | null; exactFile: string | null }> = {
+  bcs: {
+    root: BCS_ROOT,
+    archDir: join(process.cwd(), "database", "data", "bcs_syllabus"),
+    outFile: join(process.cwd(), "database", "data", "taxonomy.json"),
+    prefix: `${BCS_ROOT}_`,
+    exactFile: null,
+  },
+  bank: {
+    root: BANK_ROOT,
+    archDir: join(process.cwd(), "database", "data", "Bank", "Taxonomy"),
+    outFile: join(process.cwd(), "database", "data", "bb-taxonomy.json"),
+    prefix: null,
+    exactFile: "Subjects_Taxonomy(Bank).txt",
+  },
+};
 
 type TaxonomyNode = {
   name: string;
@@ -55,27 +77,29 @@ function parseLine(line: string): ParsedLine | null {
   return { depth, name };
 }
 
-/** Find the newest architecture tree file in bcs_syllabus/. */
-function findArchitectureFile(): string {
-  const candidates = readdirSync(ARCH_DIR)
-    .filter((f) => f.startsWith(`${ROOT_NAME}_`) && f.endsWith(".txt"))
+/** Find the architecture tree file for an ecosystem (newest prefix match, or exact file). */
+function findArchitectureFile(eco: Ecosystem): string {
+  const cfg = ECOSYSTEMS[eco];
+  if (cfg.exactFile) return join(cfg.archDir, cfg.exactFile);
+  const candidates = readdirSync(cfg.archDir)
+    .filter((f) => f.startsWith(cfg.prefix as string) && f.endsWith(".txt"))
     .sort();
   if (candidates.length === 0) {
-    throw new Error(`No "${ROOT_NAME}_*.txt" architecture file found in ${ARCH_DIR}`);
+    throw new Error(`No "${cfg.prefix}*.txt" architecture file found in ${cfg.archDir}`);
   }
-  return join(ARCH_DIR, candidates[candidates.length - 1]);
+  return join(cfg.archDir, candidates[candidates.length - 1]);
 }
 
-function buildTaxonomy(): TaxonomyNode {
-  const lines = readFileSync(findArchitectureFile(), "utf8").split(/\r?\n/);
-  return buildTaxonomyFromLines(lines);
+function buildTaxonomy(eco: Ecosystem): TaxonomyNode {
+  const lines = readFileSync(findArchitectureFile(eco), "utf8").split(/\r?\n/);
+  return buildTaxonomyFromLines(lines, ECOSYSTEMS[eco].root);
 }
 
 /** Core parser — exported (pure) so tests can exercise it without fixtures on disk. */
-export function buildTaxonomyFromLines(lines: string[]): TaxonomyNode {
+export function buildTaxonomyFromLines(lines: string[], rootName: string = BCS_ROOT): TaxonomyNode {
   const root: TaxonomyNode = {
-    name: ROOT_NAME,
-    path: `/${ROOT_NAME}`,
+    name: rootName,
+    path: `/${rootName}`,
     depth: 0,
     children: [],
   };
@@ -88,8 +112,8 @@ export function buildTaxonomyFromLines(lines: string[]): TaxonomyNode {
     if (!parsed) continue;
 
     if (!started) {
-      if (parsed.name !== ROOT_NAME) {
-        throw new Error(`Expected root "${ROOT_NAME}", found "${parsed.name}"`);
+      if (parsed.name !== rootName) {
+        throw new Error(`Expected root "${rootName}", found "${parsed.name}"`);
       }
       started = true;
       continue;
@@ -145,12 +169,15 @@ function ordered(node: TaxonomyNode): Record<string, unknown> {
 }
 
 function main() {
-  const taxonomy = buildTaxonomy();
-  writeFileSync(OUT_FILE, `${JSON.stringify(ordered(taxonomy), null, 2)}\n`, "utf8");
+  const arg = process.argv.find((a) => a.startsWith("--ecosystem="));
+  const eco: Ecosystem = arg?.split("=")[1] === "bank" ? "bank" : "bcs";
+  const cfg = ECOSYSTEMS[eco];
+  const taxonomy = buildTaxonomy(eco);
+  writeFileSync(cfg.outFile, `${JSON.stringify(ordered(taxonomy), null, 2)}\n`, "utf8");
   const leaves = (function count(n: TaxonomyNode): number {
     return n.children.length === 0 ? 1 : n.children.reduce((a, c) => a + count(c), 0);
   })(taxonomy);
-  console.log(`✓ taxonomy.json regenerated from ${findArchitectureFile()}`);
+  console.log(`✓ ${cfg.outFile.split("/").pop()} regenerated from ${findArchitectureFile(eco)}`);
   console.log(`  ${leaves} leaves across ${taxonomy.children.length} subjects`);
 }
 

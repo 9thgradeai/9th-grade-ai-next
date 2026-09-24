@@ -34,6 +34,7 @@ import {
   SOLVER_EXAMPLES,
 } from "../../frontend/lib/data/study";
 import { seedQuestions } from "../../scripts/seed-questions";
+import { BB_SUBJECT_META, BB_ARCHIVE_SUBJECT_META } from "../../scripts/taxonomy";
 import { seedBcsQuestions } from "../../scripts/seed-bcs";
 import { seedVocabWords } from "../../backend/services/vocab-seed-run";
 import { sourceKey } from "../../scripts/seed-keys";
@@ -142,16 +143,9 @@ async function main() {
   });
   console.log(`  ✓ ${2} exam ecosystems`);
 
-  // --- BB Subjects + Topics (Bangladesh Bank ecosystem — 7 subjects) ---
-  const bbSubjectMeta = [
-    { nameBn: "বাংলা ব্যাকরণ ও সাহিত্য", nameEn: "Bangla Grammar & Literature" },
-    { nameBn: "English Grammar & Literature", nameEn: "English Grammar & Literature" },
-    { nameBn: "সাধারণ গণিত", nameEn: "General Mathematics" },
-    { nameBn: "বিশ্লেষণী দক্ষতা", nameEn: "Analytical Skills" },
-    { nameBn: "আর্থিক ও ব্যাংকিং জ্ঞান", nameEn: "Financial and Banking Knowledge" },
-    { nameBn: "সাধারণ জ্ঞান", nameEn: "General Knowledge" },
-    { nameBn: "তথ্য ও যোগাযোগ প্রযুক্তি", nameEn: "ICT / Computer" },
-  ];
+  // --- BB Subjects (Bangladesh Bank ecosystem — BB_SUBJECT_META, 6 subjects
+  // + archive-only subjects; topics created by seed-bb-subjects.ts) ---
+  const bbSubjectMeta = [...BB_SUBJECT_META, ...BB_ARCHIVE_SUBJECT_META].map((m) => ({ nameBn: m.nameBn, nameEn: m.nameEn }));
   let bbSortOrder = 1;
   for (const meta of bbSubjectMeta) {
     await prisma.subject.upsert({
