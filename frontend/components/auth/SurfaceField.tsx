@@ -88,7 +88,7 @@ export function SurfaceField({
           }`}
         />
         {rightSlot && (
-          <div className="absolute inset-y-0 right-0 flex items-center">{rightSlot}</div>
+          <div className="absolute inset-y-0 right-0 flex items-center pr-1">{rightSlot}</div>
         )}
       </div>
       {error && (

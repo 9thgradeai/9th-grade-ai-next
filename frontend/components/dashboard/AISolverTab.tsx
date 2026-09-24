@@ -19,27 +19,35 @@ export default function AISolverTab() {
   const [explanation, setExplanation] = useState<string>("");
   const [relatedConcept, setRelatedConcept] = useState<string>("");
   const [copied, setCopied] = useState(false);
+  const [solverError, setSolverError] = useState<string | null>(null);
+  const [fileError, setFileError] = useState<string | null>(null);
   const [selectedSubject, setSelectedSubject] = useState("General");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const subjects = ["General", "Physics", "Mathematics", "Biology", "Chemistry", "English", "বাংলা", "বangladesh বিষয়াবলি", "Computer"];
+  const subjects = ["General", "Physics", "Mathematics", "Biology", "Chemistry", "English", "বাংলা", "বাংলাদেশ বিষয়াবলি", "Computer"];
+  const MAX_TEXT = 2000;
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
+    e.target.value = "";
+    if (!file) return;
+    setFileError(null);
+    if (!file.type.startsWith("image/")) { setFileError("শুধু ছবি ফাইল দিন (image/*)।"); return; }
+    if (file.size > 5 * 1024 * 1024) { setFileError("ছবি ৫MB-এর কম হতে হবে।"); return; }
       const reader = new FileReader();
       reader.onload = (event) => {
         setImagePreview(event.target?.result as string);
       };
       reader.readAsDataURL(file);
-    }
   };
 
   const solveQuestion = async () => {
     if (!textInput.trim() && !imagePreview) return;
+    if (textInput.trim().length < 3) { setSolverError("প্রশ্নটি একটু বিস্তারিত লিখুন (কমপক্ষে ৩ অক্ষর)।"); return; }
 
     setIsSolving(true);
     setSolution(null);
+    setSolverError(null);
     setSteps([]);
 
     try {
@@ -53,7 +61,8 @@ export default function AISolverTab() {
       setExplanation(result.explanation ?? "");
       setRelatedConcept(result.relatedConcept ?? "");
     } catch {
-      setSolution("Sorry, the AI solver is temporarily unavailable. Please try again.");
+      setSolverError("AI solver সাময়িকভাবে unavailable। আবার চেষ্টা করুন।");
+      setSolution(null);
       setSteps([]);
       setExplanation("");
       setRelatedConcept("");
@@ -160,10 +169,13 @@ export default function AISolverTab() {
             <div className="relative">
               <textarea
                 value={textInput}
-                onChange={(e) => setTextInput(e.target.value)}
-                placeholder="Type your question here... (e.g., 'Solve: 2x + 5 = 15')"
+                onChange={(e) => setTextInput(e.target.value.slice(0, MAX_TEXT))}
+                maxLength={MAX_TEXT}
+                placeholder="আপনার প্রশ্ন লিখুন... (e.g., 'Solve: 2x + 5 = 15')"
+                aria-label="প্রশ্ন লিখুন"
                 className="w-full h-32 bg-subtle border border-primary/20 rounded-2xl p-4 text-sm text-text-secondary font-mono resize-none focus:outline-none focus:border-primary/40"
               />
+              <div className="mt-1 text-right text-[11px] font-mono text-text-muted">{textInput.length}/{MAX_TEXT}</div>
               {textInput && (
                 <button
                   onClick={clearAll}
@@ -184,6 +196,7 @@ export default function AISolverTab() {
               />
               {imagePreview ? (
                 <div className="relative">
+                  {/* eslint-disable-next-line @next/next/no-img-element -- data-URL preview, not optimizable */}
                   <img
                     src={imagePreview}
                     alt="Uploaded question"
@@ -215,6 +228,7 @@ export default function AISolverTab() {
               {SOLVER_EXAMPLES.map((ex, i) => (
                 <button
                   key={i}
+                  disabled={isSolving}
                   onClick={() => { setTextInput(ex.question); setInputType("text"); }}
                   className="px-3 py-1.5 bg-subtle border border-border rounded-lg text-xs text-text-muted hover:border-primary/20 hover:text-text-primary transition-all"
                 >
@@ -223,6 +237,14 @@ export default function AISolverTab() {
               ))}
             </div>
           </div>
+
+          {fileError && <p role="alert" className="text-xs font-mono text-red-400">{fileError}</p>}
+          {solverError && (
+            <div role="alert" className="rounded-xl border border-red-500/30 bg-red-500/10 p-3 flex items-center justify-between gap-2">
+              <p className="text-xs font-mono text-red-300">{solverError}</p>
+              <button onClick={() => void solveQuestion()} className="px-3 py-1.5 rounded-lg border border-red-500/30 text-xs font-mono">আবার চেষ্টা করুন</button>
+            </div>
+          )}
 
           <motion.button
             whileHover={{ scale: 1.02 }}

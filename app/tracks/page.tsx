@@ -97,7 +97,12 @@ const tracks = (questionCount: number) => [
 ];
 
 export default async function TracksPage() {
-  const questionCount = await prisma.question.count();
+  let questionCount = 0;
+  try {
+    questionCount = await prisma.question.count();
+  } catch (error) {
+    console.error("[tracks] question.count failed, rendering with fallback 0:", error);
+  }
   const trackList = tracks(questionCount);
   return (
     <PublicShell>

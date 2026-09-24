@@ -36,10 +36,9 @@ function loadState(): DashboardState {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return defaultState;
     const parsed = JSON.parse(raw) as Partial<DashboardState>;
-    const activeTab =
-      parsed.activeTab && TABS.some((t) => t.id === parsed.activeTab)
-        ? (parsed.activeTab as TabId)
-        : "home";
+    // URL is the source of truth for activeTab — never hydrate it from
+    // storage, otherwise a shared/bookmarked ?tab= link loses to stale local.
+    const activeTab = defaultState.activeTab;
     const questionBankFilters = parsed.questionBankFilters ?? defaultState.questionBankFilters;
     const examContext =
       typeof parsed.examContext === "string" && parsed.examContext.length > 0
@@ -78,7 +77,9 @@ function subscribe(cb: () => void) {
 function saveState(state: DashboardState) {
   if (typeof window === "undefined") return;
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    // Persist everything except activeTab (URL-owned).
+    const { activeTab: _omit, ...rest } = state;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(rest));
   } catch {
     // storage full or unavailable
   }
@@ -141,6 +142,18 @@ function useDashboardStoreWithSelector<T>(
   isEqual?: (a: T, b: T) => boolean,
 ): T {
   const lastRef = useRef<{ snap: DashboardState; value: T } | null>(null);
+  // Server snapshot must be referentially stable across renders (React dev
+  // errors "getServerSnapshot should be cached" when an inline selector
+  // builds a fresh object per call). Compute once per mount.
+  const serverCache = useRef<{ value: T } | null>(null);
+  const selRef = useRef(selector);
+  selRef.current = selector;
+  const getServerSelection = useCallback(() => {
+    if (serverCache.current) return serverCache.current.value;
+    const value = selRef.current({ ...getServerSnapshot(), ...actions });
+    serverCache.current = { value };
+    return value;
+  }, []);
   const getSelection = useCallback(() => {
     const snap = getSnapshot();
     if (lastRef.current && lastRef.current.snap === snap) return lastRef.current.value;
@@ -152,10 +165,6 @@ function useDashboardStoreWithSelector<T>(
     lastRef.current = { snap, value };
     return value;
   }, [selector, isEqual]);
-  const getServerSelection = useCallback(
-    () => selector({ ...getServerSnapshot(), ...actions }),
-    [selector],
-  );
   return useSyncExternalStore(subscribe, getSelection, getServerSelection);
 }
 

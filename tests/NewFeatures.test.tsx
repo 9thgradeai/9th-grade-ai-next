@@ -142,7 +142,7 @@ describe("AISolverTab", () => {
 
   it("allows typing in text area", () => {
     render(<EcosystemProvider><AISolverTab /></EcosystemProvider>);
-    const textarea = screen.getByPlaceholderText(/Type your question/);
+    const textarea = screen.getByLabelText(/প্রশ্ন লিখুন/);
     fireEvent.change(textarea, { target: { value: "Solve: 2x + 5 = 15" } });
     expect(textarea).toHaveValue("Solve: 2x + 5 = 15");
   });

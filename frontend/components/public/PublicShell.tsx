@@ -15,7 +15,7 @@ export default function PublicShell({ children }: { children: React.ReactNode })
         {t("common.skipToContent")}
       </a>
       <AppNavbar />
-      <main id="main-content" className="flex-1 pt-16">
+      <main id="main-content" tabIndex={-1} className="flex-1 pt-[var(--nav-h,4rem)] outline-none">
         {children}
       </main>
       <Footer />

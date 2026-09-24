@@ -341,9 +341,8 @@ export default function PracticeTab() {
   };
 
   const selectAnswer = (questionId: number, option: string) => {
-    if (lockedQuestions.has(questionId)) return;
+    // Re-tappable until submit: allow change-of-mind.
     setAnswers((prev) => ({ ...prev, [questionId]: option }));
-    setLockedQuestions((prev) => new Set(prev).add(questionId));
   };
 
   // ── Production-grade submit guard: duplicate hits JOIN the in-flight
@@ -404,10 +403,12 @@ export default function PracticeTab() {
   }, [submitAnswers]);
 
   const handleAutoSubmit = useCallback(async () => {
+    // Per-question timer expiry advances to the next question, it must never
+    // auto-grade the whole session with mostly-blank answers.
     if (resultRef.current) return;
-    if (practiceSubmitInFlight.current) return practiceSubmitInFlight.current;
-    try { await submitAnswers(); } catch { /* error surfaced via submitError */ }
-  }, [submitAnswers]);
+    setCurrentIndex((i) => Math.min(i + 1, Math.max(0, sessionQuestionsRef.current.length - 1)));
+    setTimerKey((k) => k + 1);
+  }, []);
 
   // Safe navigation: block route/tab close while a quick-practice submission is
   // in flight so a mobile browser kill can't abandon the request mid-flight.
@@ -678,18 +679,18 @@ export default function PracticeTab() {
                     </div>
 
                     <div className="rounded-xl border p-4 mb-5" style={{ background: "var(--dashboard-surface-raised)", borderColor: "var(--dashboard-border-muted)", boxShadow: "var(--dashboard-shadow-sm)" }}>
-                      <h3 className="text-[16px] font-semibold leading-relaxed" style={{ color: "var(--dashboard-text-primary)", lineHeight: "1.6", fontFamily: '"Comic Sans MS", "Comic Sans", cursive' }}>{currentQuestion.question}</h3>
+                      <h3 className="text-[16px] font-semibold leading-relaxed" style={{ color: "var(--dashboard-text-primary)", lineHeight: "1.6" }}>{currentQuestion.question}</h3>
                     </div>
 
                     <div className="space-y-2.5 mb-6" role="radiogroup" aria-label="উত্তর নির্বাচন করুন">
                       {currentQuestion.options.map((option, i) => {
                         const isSelected = answers[currentQuestion.id] === option;
-                        const isLocked = lockedQuestions.has(currentQuestion.id);
+                        const isLocked = false;
                         return (
                           <button
                             key={i}
                             onClick={() => selectAnswer(currentQuestion.id, option)}
-                            disabled={isLocked}
+                            disabled={false}
                             role="radio"
                             aria-checked={isSelected}
                             className="w-full text-left p-3.5 rounded-xl border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] disabled:cursor-not-allowed"
@@ -703,7 +704,7 @@ export default function PracticeTab() {
                               <span className="w-6 h-6 rounded-full border flex items-center justify-center text-xs font-mono flex-shrink-0" style={isSelected ? { background: "var(--dashboard-primary)", color: "var(--dashboard-text-inverse)", borderColor: "var(--dashboard-primary)" } : { background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-strong)", color: "var(--dashboard-text-secondary)" }}>
                                 {String.fromCharCode(65 + i)}
                               </span>
-                              <span className="text-sm font-medium" style={{ fontFamily: '"Comic Sans MS", "Comic Sans", cursive' }}>{option}</span>
+                              <span className="text-sm font-medium" style={{ fontFamily: 'inherit' }}>{option}</span>
                               {isSelected && <Check className="w-4 h-4 ml-auto" style={{ color: "var(--dashboard-primary)" }} />}
                             </div>
                           </button>
@@ -843,20 +844,20 @@ export default function PracticeTab() {
                           <XCircle className="w-4 h-4 text-[var(--dashboard-danger)] flex-shrink-0 mt-0.5" />
                         )}
                         <div className="min-w-0 flex-1">
-                          <p className="text-sm mb-1.5" style={{ color: "var(--dashboard-text-primary)", fontFamily: '"Comic Sans MS", "Comic Sans", cursive' }}>{i + 1}. {q.question}</p>
-                          <p className="text-xs text-[var(--dashboard-text-muted)]" style={{ fontFamily: '"Comic Sans MS", "Comic Sans", cursive' }}>
+                          <p className="text-sm mb-1.5" style={{ color: "var(--dashboard-text-primary)" }}>{i + 1}. {q.question}</p>
+                          <p className="text-xs text-[var(--dashboard-text-muted)]" style={{ fontFamily: 'inherit' }}>
                             আপনার উত্তর:{" "}
                             <span className={isCorrect ? "text-[var(--dashboard-success)]" : isUnanswered ? "text-[var(--dashboard-teal)]" : "text-[var(--dashboard-danger)]"}>
                               {userAnswer || "উত্তর দেওয়া হয়নি"}
                             </span>
                           </p>
                           {!isCorrect && (
-                            <p className="text-xs text-[var(--dashboard-success)] mt-0.5" style={{ fontFamily: '"Comic Sans MS", "Comic Sans", cursive' }}>
+                            <p className="text-xs text-[var(--dashboard-success)] mt-0.5" style={{ fontFamily: 'inherit' }}>
                               সঠিক উত্তর: {q.correctAnswer}
                             </p>
                           )}
                           {q.explanation && (
-                            <p className="text-xs text-[var(--dashboard-text-muted)] mt-1.5" style={{ fontFamily: '"Comic Sans MS", "Comic Sans", cursive', lineHeight: "1.7" }}>{q.explanation}</p>
+                            <p className="text-xs text-[var(--dashboard-text-muted)] mt-1.5" style={{ lineHeight: "1.7" }}>{q.explanation}</p>
                           )}
 
                           <AIExplanationButton

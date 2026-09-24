@@ -84,7 +84,7 @@ export default function AIWorkspace() {
 
   // Auto-read of AI replies (TTS). On by default so the coach voice actually
   // speaks; every loop guards on speechSynthesis existing in the window.
-  const [speakOnReply, setSpeakOnReply] = useState(true);
+  const [speakOnReply, setSpeakOnReply] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 

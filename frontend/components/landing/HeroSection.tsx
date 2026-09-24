@@ -23,7 +23,7 @@ export default function HeroSection({ subjectCount }: { subjectCount: number }) 
     <section
       ref={ref}
       className="hero-section-ref relative flex min-h-[92dvh] items-center overflow-hidden px-4 pb-24 pt-28 sm:px-6"
-      aria-label="Introduction"
+      aria-labelledby="hero-heading"
     >
       <motion.div className="absolute inset-0 z-0" style={{ opacity: bgOpacity, scale: bgScale }}>
         <HeroBackground />
@@ -37,7 +37,8 @@ export default function HeroSection({ subjectCount }: { subjectCount: number }) 
       </motion.div>
 
       <motion.div
-        className="hero-scroll absolute bottom-7 left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-1.5 text-white/45 sm:flex"
+        aria-hidden="true"
+        className="hero-scroll absolute bottom-7 left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-1.5 text-white/70 sm:flex"
         style={{ opacity: contentOpacity }}
       >
         <span className="font-mono text-[0.65rem] uppercase tracking-[0.22em]">{t("common.scroll")}</span>

@@ -2,12 +2,13 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useRef } from "react";
+import { Suspense, useEffect } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import dynamic from "next/dynamic";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 import { TABS, type TabId } from "@/lib/data";
 import { Skeleton, SkeletonCard } from "@/components/ui/Skeleton";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { LoadingShell } from "@/components/ui/LoadingShell";
 import { useT } from "@/lib/i18n";
 
@@ -58,21 +59,30 @@ const TAB_COMPONENTS: Record<TabId, React.ComponentType> = {
 
 function TabSwitcher() {
   const searchParams = useSearchParams();
-  const { activeTab, setActiveTab } = useDashboardStore();
+  const { activeTab, setActiveTab, setPracticeIntent, setQuestionBankFilters } = useDashboardStore();
   const shouldReduceMotion = useReducedMotion();
 
   const ActiveComponent = TAB_COMPONENTS[activeTab];
 
   const tab = searchParams.get("tab") as TabId | null;
-  const prevTabRef = useRef(tab);
+  const mode = searchParams.get("mode");
+  const view = searchParams.get("view");
+  // URL is the source of truth: any valid ?tab= wins over store state,
+  // including on first load (fixes stale-localStorage-wins deep-link bug).
   useEffect(() => {
-    if (tab !== prevTabRef.current) {
-      prevTabRef.current = tab;
-      if (tab && TABS.some((t) => t.id === tab) && tab !== activeTab) {
-        setActiveTab(tab);
-      }
+    if (tab && TABS.some((t) => t.id === tab) && tab !== activeTab) {
+      setActiveTab(tab);
     }
   }, [tab, activeTab, setActiveTab]);
+  // Distinct nav hrefs carry intent: ?mode= selects the practice mode,
+  // ?view=bookmarks lands on the saved-questions view (not the generic bank).
+  useEffect(() => {
+    if (tab === "practice" && (mode === "quick" || mode === "mock" || mode === "custom")) {
+      setPracticeIntent({ mode });
+    } else if (tab === "question-bank" && view === "bookmarks") {
+      setQuestionBankFilters({ query: "", category: "__saved__" });
+    }
+  }, [tab, mode, view, setPracticeIntent, setQuestionBankFilters]);
 
   return (
     <AnimatePresence mode="wait" initial={false}>
@@ -84,7 +94,19 @@ function TabSwitcher() {
         transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.2, ease: "easeOut" }}
         className="flex flex-1 flex-col"
       >
-        <ActiveComponent />
+        <ErrorBoundary
+          key={`eb-${activeTab}`}
+          fallback={(_error, reset) => (
+            <div className="glass-card rounded-2xl border border-red-500/20 p-8 text-center" role="alert">
+              <p className="font-mono text-sm text-[var(--dashboard-danger)]">এই ট্যাব লোড করতে সমস্যা হয়েছে।</p>
+              <button onClick={reset} className="mt-3 px-4 py-2 min-h-[44px] rounded-lg border border-[var(--dashboard-border-muted)] font-mono text-sm">
+                আবার চেষ্টা করুন
+              </button>
+            </div>
+          )}
+        >
+          <ActiveComponent />
+        </ErrorBoundary>
       </motion.div>
     </AnimatePresence>
   );

@@ -113,7 +113,7 @@ describe("VoiceAITutor (AI workspace)", () => {
   it("sends a message through the auto-growing textarea", async () => {
     render(<VoiceAITutor />);
     fireEvent.click(screen.getByLabelText("Open AI Tutor and Assistant"));
-    const textarea = screen.getByLabelText("Type your question or use voice input");
+    const textarea = screen.getByLabelText("আপনার প্রশ্ন লিখুন");
     fireEvent.change(textarea, { target: { value: "পরীক্ষা বার্তা" } });
     fireEvent.keyDown(textarea, { key: "Enter" });
     await waitFor(() => {

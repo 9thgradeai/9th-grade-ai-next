@@ -456,7 +456,7 @@ export default function VocabTab() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0, x: isSwiping ? swipeOffset.x * 0.3 : 0, rotate: isSwiping ? swipeOffset.x * 0.03 : 0 }}
             className="glass-card rounded-2xl border border-terminal-border p-6 md:p-8 space-y-5"
-            style={{ fontFamily: '"Comic Sans MS", "Comic Sans", cursive', touchAction: "pan-y" }}
+            style={{ touchAction: "pan-y" }}
           >
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="flex-1 min-w-0">

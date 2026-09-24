@@ -186,6 +186,21 @@ async function request<T>(
 
 const CACHE_TTL_MS = 15_000;
 const cache = new Map<string, { ts: number; data: unknown }>();
+// In-flight GET dedupe (notifications + rapid remounts join one request).
+const inflightGets = new Map<string, Promise<unknown>>();
+
+/** Clear cached GETs. Called on every mutation so toggles/bookmarks never render stale. */
+export function invalidateCache(prefix?: string): void {
+  if (!prefix) {
+    cache.clear();
+    return;
+  }
+  for (const key of [...cache.keys()]) {
+    if (key.startsWith(prefix) || key.includes(prefix)) cache.delete(key);
+  }
+}
+
+export type CachedMeta = { stale: boolean; fetchedAt: number | null };
 
 async function cachedGet<T>(
   url: string,
@@ -216,13 +231,17 @@ function mutate<T>(
   method: string,
   body?: unknown,
 ): Promise<T> {
-  return request<T>(url, {
+  const p = request<T>(url, {
     method,
     retries: 0,
     ...(body !== undefined
       ? { body: JSON.stringify(body), headers: { "Content-Type": "application/json" } }
       : {}),
   });
+  // Mutations invalidate the read cache so subsequent cachedGet() refetches
+  // instead of serving pre-mutation data as fresh (bookmarks, tasks, notifs).
+  void p.then(() => invalidateCache()).catch(() => {});
+  return p;
 }
 
 /** File download helper — returns a Blob for binary responses (PDF, etc.). */
@@ -383,7 +402,15 @@ export const api = {
     if (opts?.cursor) params.set("cursor", String(opts.cursor));
     if (opts?.type) params.set("type", opts.type);
     const qs = params.toString();
-    return request(`/api/notifications${qs ? `?${qs}` : ""}`);
+    const url = `/api/notifications${qs ? `?${qs}` : ""}`;
+    // Dedupe rapid remounts/tab switches: join the in-flight request.
+    const inflight = inflightGets.get(url);
+    if (inflight) return inflight as Promise<{ notifications: Server.NotificationDTO[]; total: number; nextCursor: number | null; unreadCount: number }>;
+    const p = request<{ notifications: Server.NotificationDTO[]; total: number; nextCursor: number | null; unreadCount: number }>(url).finally(() => {
+      inflightGets.delete(url);
+    });
+    inflightGets.set(url, p);
+    return p;
   },
 
   markNotificationRead: (id: number): Promise<{ read: boolean }> =>

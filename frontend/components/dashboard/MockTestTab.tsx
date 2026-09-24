@@ -86,9 +86,9 @@ export default function MockTestTab() {
     highlightTimeoutRef.current = window.setTimeout(() => {
       setHighlightedReview((h) => (h === status ? null : h));
     }, 2000);
-    const el = document.getElementById(`mock-review-${status}`);
-    if (el && typeof el.scrollIntoView === "function") {
-      el.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
+    const el = document.querySelector(`[data-review-status="${status}"]`);
+    if (el && typeof (el as HTMLElement).scrollIntoView === "function") {
+      (el as HTMLElement).scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
     }
   }, []);
 
@@ -320,9 +320,8 @@ export default function MockTestTab() {
   };
 
   const selectAnswer = (questionId: number, option: string) => {
-    if (lockedQuestions.has(questionId)) return;
+    // Re-tappable until submit: misclicks can be corrected.
     setAnswers((prev) => ({ ...prev, [questionId]: option }));
-    setLockedQuestions((prev) => new Set(prev).add(questionId));
   };
 
   const answeredCount = Object.keys(answers).length;
@@ -671,12 +670,12 @@ export default function MockTestTab() {
             <div className="space-y-2.5" role="radiogroup" aria-label={`প্রশ্ন ${currentQuestion + 1} — উত্তর নির্বাচন করুন`}>
               {q.options.map((option, i) => {
                 const isSelected = answers[q.id] === option;
-                const isLocked = lockedQuestions.has(q.id);
+                const isLocked = false; // re-tappable until submit
                 return (
                   <button
                     key={i}
                     onClick={() => selectAnswer(q.id, option)}
-                    disabled={isLocked}
+                    disabled={false}
                     role="radio"
                     aria-checked={isSelected}
                     className="w-full text-left p-3.5 rounded-xl border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] disabled:cursor-not-allowed"
@@ -908,7 +907,8 @@ export default function MockTestTab() {
             return (
               <div
                 key={r.questionId}
-                id={`mock-review-${r.status}`}
+                id={`mock-review-${r.status}-${r.questionId}`}
+                data-review-status={r.status}
                 className={`p-3.5 rounded-xl border transition-shadow ${
                   isCorrect
                     ? "border-[var(--success)]/20"

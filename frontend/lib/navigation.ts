@@ -46,8 +46,8 @@ export const NAVIGATION: MegaMenu[] = [
     id: "practice", label: "Practice", labelBn: "প্র্যাকটিস", show: "always",
     groups: [
       { label: "Practice", items: [
-        { label: "Quick Practice", href: "/dashboard?tab=practice", icon: LightningA, desc: "Start instantly" },
-        { label: "Question Drill", href: "/dashboard?tab=question-bank", icon: BookOpen, desc: "Topic-wise drill" },
+        { label: "Quick Practice", href: "/dashboard?tab=practice&mode=quick", icon: LightningA, desc: "Start instantly" },
+        { label: "Question Drill", href: "/dashboard?tab=question-bank&view=drill", icon: BookOpen, desc: "Topic-wise drill" },
         { label: "Study Planner", href: "/dashboard?tab=study-planner", icon: Calendar, desc: "Personalized schedule" },
       ]},
       { label: "Review", items: [
@@ -61,7 +61,7 @@ export const NAVIGATION: MegaMenu[] = [
     id: "exams", label: "Exams", labelBn: "পরীক্ষা", show: "always",
     groups: [
       { label: "Exams", items: [
-        { label: "Mock Tests", href: "/dashboard?tab=practice", icon: Trophy, desc: "Full-length timed exams" },
+        { label: "Mock Tests", href: "/dashboard?tab=practice&mode=mock", icon: Trophy, desc: "Full-length timed exams" },
         { label: "Exam Tracks", href: "/tracks", icon: GraduationCap, desc: "BCS / Bank / Teacher" },
         { label: "Archive Papers", href: "/archive", icon: FileText, desc: "1982 – 2026 collection" },
       ]},
@@ -75,9 +75,9 @@ export const NAVIGATION: MegaMenu[] = [
     id: "ai", label: "AI", labelBn: "এআই", show: "always",
     groups: [
       { label: "AI Tools", items: [
-        { label: "AI Tutor", href: "/dashboard?tab=practice", icon: AiGlyph, desc: "Bilingual doubt solving" },
-        { label: "AI Solver", href: "/dashboard?tab=practice", icon: Pen, desc: "Explain any question" },
-        { label: "Voice Tutor", href: "/dashboard?tab=practice", icon: Question, desc: "Speak & learn" },
+        { label: "AI Tutor", href: "/dashboard?tab=practice&mode=tutor", icon: AiGlyph, desc: "Bilingual doubt solving" },
+        { label: "AI Solver", href: "/dashboard?tab=practice&mode=solver", icon: Pen, desc: "Explain any question" },
+        { label: "Voice Tutor", href: "/dashboard?tab=practice&mode=voice", icon: Question, desc: "Speak & learn" },
       ]},
       { label: "Workspace", items: [
         { label: "Dashboard Home", href: "/dashboard?tab=home", icon: House, desc: "AI coaching & insights" },
@@ -93,7 +93,7 @@ export const NAVIGATION: MegaMenu[] = [
         { label: "Overview", href: "/dashboard?tab=progress", icon: ChartBar, desc: "Performance overview" },
         { label: "Planner", href: "/dashboard?tab=study-planner", icon: Calendar, desc: "Streaks & schedule" },
         { label: "Mistakes", href: "/dashboard?tab=mistakes", icon: TrendUp, desc: "Weak-area analysis" },
-        { label: "Bookmarks", href: "/dashboard?tab=question-bank", icon: Bookmark, desc: "Saved questions" },
+        { label: "Bookmarks", href: "/dashboard?tab=question-bank&view=bookmarks", icon: Bookmark, desc: "Saved questions" },
       ]},
     ],
     highlight: { title: "Know your edge", desc: "Accuracy, subject mastery & weak topics — all in one view.", href: "/dashboard?tab=progress", cta: "View Progress" },

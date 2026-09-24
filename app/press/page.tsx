@@ -42,8 +42,16 @@ const assets = [
 ];
 
 export default async function PressPage() {
-  const subjectCount = await prisma.subject.count();
-  const questionCount = await prisma.question.count();
+  let subjectCount = 0;
+  let questionCount = 0;
+  try {
+    [subjectCount, questionCount] = await Promise.all([
+      prisma.subject.count(),
+      prisma.question.count(),
+    ]);
+  } catch (error) {
+    console.error("[press] count queries failed, rendering with fallback 0:", error);
+  }
   return (
     <PublicShell>
       <PageHero

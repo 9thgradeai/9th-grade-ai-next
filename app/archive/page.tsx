@@ -31,7 +31,12 @@ const tracks = [
 ];
 
 export default async function ArchivePage() {
-  const questionCount = await prisma.question.count();
+  let questionCount = 0;
+  try {
+    questionCount = await prisma.question.count();
+  } catch (error) {
+    console.error("[archive] question.count failed, rendering with fallback 0:", error);
+  }
 
   return (
     <PublicShell>

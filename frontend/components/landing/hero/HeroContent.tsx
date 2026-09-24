@@ -153,7 +153,7 @@ export default function HeroContent({ subjectCount }: { subjectCount: number }) 
           {t("hero.eyebrow")}
         </p>
 
-        <h1 className="mb-6 font-display text-[clamp(2.75rem,8vw,5.25rem)] font-semibold leading-[1.02] tracking-tight text-white">
+        <h1 id="hero-heading" className="mb-6 font-display text-[clamp(2.75rem,8vw,5.25rem)] font-semibold leading-[1.02] tracking-tight text-white text-balance">
           <WordReveal text={t("hero.title1")} className="hero-title" />
           <br />
           <span className="relative inline-block">

@@ -74,6 +74,7 @@ export default function QuestionDrill({
   const [answered, setAnswered] = useState<DrillAnswered[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [lastFeedback, setLastFeedback] = useState<{ masteryStatus?: string | null; justMastered?: boolean } | null>(null);
+  const [syncFailed, setSyncFailed] = useState(false);
   const [timerKey, setTimerKey] = useState(0);
 
   const reportedRef = useRef(false);
@@ -129,29 +130,16 @@ export default function QuestionDrill({
   }, [index, done]);
 
   const handleAutoSubmit = useCallback(async () => {
+    // Time-up is a reveal step, never an auto-recorded wrong answer. The user
+    // sees the explanation and taps next; nothing is POSTed as "".
     if (revealed || submitting || submitInFlightRef.current) return;
-    submitInFlightRef.current = true;
-    setSubmitting(true);
-    let fb: { masteryStatus?: string | null; justMastered?: boolean } = {};
-    try {
-      const res = await api.submitPractice([{ questionId: current.id, selected: selected ?? "", durationSec: elapsedSec() }]);
-      const questionFb = res.feedback?.[current.id];
-      if (questionFb) {
-        fb = { masteryStatus: questionFb.masteryStatus, justMastered: questionFb.justMastered };
-      }
-    } catch {
-      /* Recording failure shouldn't block the user from reviewing the answer. */
-    } finally {
-      submitInFlightRef.current = false;
-      setSubmitting(false);
-      setRevealed(true);
-      setLastFeedback(fb);
-      setAnswered((prev) => [
-        ...prev,
-        { questionId: current.id, selected: selected ?? "", correct: selected !== null && selected.trim() === current.correctAnswer.trim(), ...fb },
-      ]);
-    }
-  }, [revealed, submitting, current.id, current.correctAnswer, selected, startedAtRef]);
+    setRevealed(true);
+    setLastFeedback(null);
+    setAnswered((prev) => [
+      ...prev,
+      { questionId: current.id, selected: selected ?? "(সময় শেষ)", correct: false, masteryStatus: null, justMastered: false },
+    ]);
+  }, [revealed, submitting, current.id, selected]);
 
   const handleSubmit = async () => {
     if (selected === null || revealed || submitting || submitInFlightRef.current) return;
@@ -165,7 +153,7 @@ export default function QuestionDrill({
         fb = { masteryStatus: questionFb.masteryStatus, justMastered: questionFb.justMastered };
       }
     } catch {
-      /* Recording failure shouldn't block the user from reviewing the answer. */
+      setSyncFailed(true);
     } finally {
       submitInFlightRef.current = false;
       setSubmitting(false);
@@ -207,6 +195,17 @@ export default function QuestionDrill({
         <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">
           {correctCount}/{questions.length} ঠিক
         </p>
+        {syncFailed && (
+          <p role="status" className="text-xs font-mono text-[var(--dashboard-warning)]">অফলাইন — কিছু অগ্রগতি সংরক্ষণ হয়নি (unsynced)।</p>
+        )}
+        <div className="text-left space-y-2 max-h-64 overflow-y-auto">
+          {answered.map((a, i) => (
+            <div key={a.questionId} className="text-xs font-mono px-3 py-2 rounded-lg border border-[var(--dashboard-border-muted)] flex justify-between gap-2">
+              <span className="truncate">{i + 1}. {questions[i]?.question?.slice(0, 60)}</span>
+              <span className={a.correct ? "text-[var(--dashboard-success)]" : "text-[var(--dashboard-danger)]"}>{a.correct ? "✓" : "✗"}</span>
+            </div>
+          ))}
+        </div>
         <div className="flex gap-3 justify-center">
           <button
             onClick={resetDrill}
@@ -261,7 +260,7 @@ export default function QuestionDrill({
           {current.sourceExam ? ` • ${current.sourceExam}` : ""}
         </div>
         <div className="rounded-xl border p-4 mb-4" style={{ background: "var(--dashboard-surface-raised)", borderColor: "var(--dashboard-border-muted)" }}>
-          <h4 className="text-lg font-semibold leading-relaxed" style={{ color: "var(--dashboard-text-primary)", lineHeight: "1.6", fontFamily: '"Comic Sans MS", "Comic Sans", cursive' }}>{current.question}</h4>
+          <h4 className="text-lg font-semibold leading-relaxed" style={{ color: "var(--dashboard-text-primary)", lineHeight: "1.6", fontFamily: 'inherit' }}>{current.question}</h4>
         </div>
 
         <div className="space-y-2">
@@ -284,12 +283,12 @@ export default function QuestionDrill({
               <button
                 key={optLetter}
                 disabled={disabled}
-                onClick={() => { if (!locked) { setSelected(opt); setLocked(true); } }}
+                onClick={() => { if (!revealed) { setSelected(opt); } }}
                 className="w-full text-left px-4 py-3 rounded-lg border text-sm transition-all flex items-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
                 style={style}
               >
                 <span className="font-bold">{optLetter}.</span>
-                <span className="font-medium" style={{ fontFamily: '"Comic Sans MS", "Comic Sans", cursive' }}>{opt}</span>
+                <span className="font-medium">{opt}</span>
                 {revealed && isAnswer && <CheckCircle className="w-4 h-4 ml-auto" style={{ color: "var(--dashboard-success)" }} />}
                 {revealed && isSelected && !isAnswer && <XCircle className="w-4 h-4 ml-auto" style={{ color: "var(--dashboard-danger)" }} />}
               </button>
@@ -298,7 +297,7 @@ export default function QuestionDrill({
         </div>
 
         {revealed && current.explanation && (
-          <p className="mt-4 text-sm text-[var(--dashboard-text-muted)] border-t border-terminal-border pt-3" style={{ fontFamily: '"Comic Sans MS", "Comic Sans", cursive', lineHeight: "1.7" }}>
+          <p className="mt-4 text-sm text-[var(--dashboard-text-muted)] border-t border-terminal-border pt-3" style={{ lineHeight: "1.7" }}>
             💡 {current.explanation}
           </p>
         )}

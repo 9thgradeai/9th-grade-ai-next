@@ -308,9 +308,9 @@ describe("MockTestTab — results review colors + jump tiles", () => {
     const unansweredTile = screen.getByRole("button", { name: /উত্তর দেওয়া হয়নি 1টি/ });
     expect(unansweredTile.className).toContain("dashboard-teal");
 
-    const correctRow = document.getElementById("mock-review-correct");
-    const wrongRow = document.getElementById("mock-review-wrong");
-    const unansweredRow = document.getElementById("mock-review-unanswered");
+    const correctRow = document.querySelector('[data-review-status="correct"]');
+    const wrongRow = document.querySelector('[data-review-status="wrong"]');
+    const unansweredRow = document.querySelector('[data-review-status="unanswered"]');
     expect(correctRow).not.toBeNull();
     expect(wrongRow).not.toBeNull();
     expect(unansweredRow).not.toBeNull();
@@ -328,13 +328,13 @@ describe("MockTestTab — results review colors + jump tiles", () => {
     try {
       fireEvent.click(screen.getByRole("button", { name: /ভুল 1টি/ }));
       expect(scrollIntoView).toHaveBeenCalledTimes(1);
-      const wrongRow = document.getElementById("mock-review-wrong");
+      const wrongRow = document.querySelector('[data-review-status="wrong"]');
       expect(wrongRow!.className).toContain("ring-2");
       expect(wrongRow!.className).toContain("ring-[var(--dashboard-danger)]");
 
       fireEvent.click(screen.getByRole("button", { name: /উত্তর দেওয়া হয়নি 1টি/ }));
       expect(scrollIntoView).toHaveBeenCalledTimes(2);
-      const unansweredRow = document.getElementById("mock-review-unanswered");
+      const unansweredRow = document.querySelector('[data-review-status="unanswered"]');
       expect(unansweredRow!.className).toContain("ring-2");
       expect(unansweredRow!.className).toContain("ring-[var(--dashboard-teal)]");
     } finally {

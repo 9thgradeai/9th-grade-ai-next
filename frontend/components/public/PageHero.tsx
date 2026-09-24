@@ -47,7 +47,7 @@ export default function PageHero({
         duration={14}
         breatheTo={1.1}
         delay={1.2}
-        className="absolute -top-16 right-1/5"
+        className="absolute -top-16 right-1/5 hidden sm:block"
       />
 
       <div className="relative max-w-4xl mx-auto text-center">
@@ -57,7 +57,7 @@ export default function PageHero({
         </motion.p>
         <motion.h1
           {...enter(0.05)}
-          className="font-display text-4xl sm:text-5xl md:text-6xl font-semibold text-white leading-[1.05] tracking-tight"
+          className="font-display text-4xl sm:text-5xl md:text-6xl font-semibold text-white leading-[1.05] tracking-tight text-balance break-words"
         >
           {title}
           {highlight ? (
@@ -85,7 +85,7 @@ export default function PageHero({
                 key={action.href}
                 href={action.href}
                 size="lg"
-                variant={action.variant === "ghost" ? "secondary" : "primary"}
+                variant={action.variant === "ghost" ? "ghost" : "primary"}
                 className={
                   action.variant === "ghost"
                     ? "font-mono w-full sm:w-auto"

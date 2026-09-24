@@ -18,10 +18,18 @@ const jsonLd = {
 };
 
 export default async function Home() {
-  const subjectCount = await prisma.subject.count();
+  // Degrade gracefully when the DB is unreachable (offline dev, cold Neon
+  // branch): the landing page must never hard-crash on a single count query.
+  let subjectCount = 0;
+  try {
+    subjectCount = await prisma.subject.count();
+  } catch (error) {
+    console.error("[home] subject.count failed, rendering with fallback 0:", error);
+  }
   return (
     <PublicShell>
       <script
+        id="jsonld-home"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />

@@ -16,7 +16,7 @@ import { EcosystemProvider, useEcosystem } from "@/lib/ecosystem-ctx";
 import { useAuth } from "@/lib/auth-ctx";
 import { LoadingShell } from "@/components/ui/LoadingShell";
 
-import { TABS, type TabId } from "@/lib/data";
+import { TABS, NAV_GROUPS, type TabId } from "@/lib/data";
 import BrandMark from "@/components/ui/BrandMark";
 import LanguageToggle from "@/components/ui/LanguageToggle";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
@@ -42,11 +42,9 @@ const PracticeDrillOverlay = dynamic(
   { ssr: false },
 );
 
-const DRAWER_GROUPS: { label: string; ids: TabId[] }[] = [
-  { label: "Primary", ids: ["home", "practice", "question-bank", "mistakes", "progress"] },
-  { label: "Study", ids: ["study-planner", "flashcards", "vocab", "exam-history", "real-exam"] },
-  { label: "Account", ids: ["settings"] },
-];
+// Drawer reuses the single NAV_GROUPS source + SideNav row markup via
+// SideNavDrawerContent below (grouping only — rows intentionally match SideNav).
+const DRAWER_GROUPS = NAV_GROUPS;
 
 function SideNavDrawerContent({ activeTab, onChange }: { activeTab: TabId; onChange: (t: TabId) => void }) {
   const { user } = useAuthForDrawer();
@@ -58,7 +56,7 @@ function SideNavDrawerContent({ activeTab, onChange }: { activeTab: TabId; onCha
       </div>
       <div className="flex-1 min-h-0 overflow-y-auto px-3 py-3">
         {DRAWER_GROUPS.map((group) => {
-          const tabs = group.ids.map((id) => TABS.find((t) => t.id === id)!).filter(Boolean);
+          const tabs = group.ids.map((id) => TABS.find((t) => t.id === id)).filter((t): t is (typeof TABS)[number] => Boolean(t));
           if (!tabs.length) return null;
           return (
             <div key={group.label} className="mb-1">
@@ -176,7 +174,7 @@ function ShortcutsSheet({ open, onClose }: { open: boolean; onClose: () => void 
         </div>
         <div className="mt-4 space-y-2 text-sm">
           <div className="flex justify-between"><span style={{ color: "var(--dashboard-text-secondary)" }}>Command palette</span><kbd className="px-1.5 py-0.5 rounded border text-xs font-mono" style={{ borderColor: "var(--dashboard-border-muted)" }}>⌘K</kbd></div>
-          <div className="flex justify-between"><span style={{ color: "var(--dashboard-text-secondary)" }}>Jump to tab 1–9, 10=0</span><kbd className="px-1.5 py-0.5 rounded border text-xs font-mono" style={{ borderColor: "var(--dashboard-border-muted)" }}>1 – 0</kbd></div>
+          <div className="flex justify-between"><span style={{ color: "var(--dashboard-text-secondary)" }}>Jump to first 10 tabs</span><kbd className="px-1.5 py-0.5 rounded border text-xs font-mono" style={{ borderColor: "var(--dashboard-border-muted)" }}>1 – 0</kbd></div>
           <div className="flex justify-between"><span style={{ color: "var(--dashboard-text-secondary)" }}>Search in question bank</span><kbd className="px-1.5 py-0.5 rounded border text-xs font-mono" style={{ borderColor: "var(--dashboard-border-muted)" }}>/</kbd></div>
           <p className="text-xs pt-2" style={{ color: "var(--dashboard-text-muted)" }}>Press <kbd className="font-mono">?</kbd> again or <kbd className="font-mono">Esc</kbd> to close.</p>
         </div>

@@ -3,20 +3,17 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useCallback } from "react";
 import type { ComponentType } from "react";
-import { TABS, type TabId } from "@/lib/data";
+import { TABS, BOTTOM_TAB_IDS, type TabId } from "@/lib/data";
 import { TAB_ICONS, type IconProps } from "@/lib/exam-ui";
 import { useDialogA11y } from "@/lib/use-dialog-a11y";
 import { DotsThreeVertical, X } from "@phosphor-icons/react";
 import LogoutButton from "./LogoutButton";
 
-// Primary 5 — Home, Practice, Question Bank, Mistakes, Progress per new IA
-const BOTTOM_TABS: { id: TabId; icon: ComponentType<IconProps>; label: string; short: string }[] = [
-  { id: "home", icon: TAB_ICONS.home, label: "হোম", short: "হোম" },
-  { id: "practice", icon: TAB_ICONS.practice, label: "প্র্যাকটিস", short: "প্র্যাকটিস" },
-  { id: "question-bank", icon: TAB_ICONS["question-bank"], label: "প্রশ্নব্যাংক", short: "ব্যাংক" },
-  { id: "mistakes", icon: TAB_ICONS.mistakes, label: "ভুল বিশ্লেষণ", short: "ভুল" },
-  { id: "progress", icon: TAB_ICONS.progress, label: "প্রোগ্রেস", short: "প্রোগ্রেস" },
-];
+// Primary tabs come from @/lib/data BOTTOM_TAB_IDS — do not hardcode a separate list.
+const BOTTOM_TABS: { id: TabId; icon: ComponentType<IconProps>; label: string; short: string }[] = BOTTOM_TAB_IDS.map((id) => {
+  const meta = TABS.find((t) => t.id === id)!;
+  return { id, icon: TAB_ICONS[id], label: meta.bengali, short: meta.bengali === "প্রশ্নব্যাংক" ? "ব্যাংক" : meta.bengali === "ভুল বিশ্লেষণ" ? "ভুল" : meta.bengali };
+});
 
 interface BottomNavProps {
   activeTab: TabId;

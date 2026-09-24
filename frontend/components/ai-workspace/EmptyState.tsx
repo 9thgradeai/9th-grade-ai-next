@@ -93,6 +93,9 @@ export default function EmptyState({ mode, contextChip, opening, onPrompt }: Emp
             <p className="mt-1 max-w-md text-sm leading-relaxed text-[var(--text-secondary)]">
               {meta.descBn}
             </p>
+            <p role="status" className="mt-2 font-mono text-[11px] text-[var(--dashboard-text-muted)]">
+              ব্যক্তিগত পরামর্শ এখনো লোড হয়নি — নিচের প্রম্পট দিয়ে শুরু করুন।
+            </p>
           </>
         )}
 

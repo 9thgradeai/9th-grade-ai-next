@@ -2,18 +2,14 @@
 
 import { useState } from "react";
 import { CaretDoubleLeft, CaretDoubleRight } from "@phosphor-icons/react";
-import { TABS, type TabId } from "@/lib/data";
+import { TABS, NAV_GROUPS, type TabId } from "@/lib/data";
 import { TAB_ICONS } from "@/lib/exam-ui";
 import { useAuth } from "@/lib/auth-ctx";
 import BrandMark from "@/components/ui/BrandMark";
 import LogoutButton from "./LogoutButton";
 import ExamSwitcher from "./ExamSwitcher";
 
-const NAV_GROUPS: { label: string; labelBn: string; ids: TabId[] }[] = [
-  { label: "Primary", labelBn: "প্রধান", ids: ["home", "practice", "question-bank", "mistakes", "progress"] },
-  { label: "Study", labelBn: "পড়াশোনা", ids: ["study-planner", "flashcards", "vocab", "exam-history", "real-exam"] },
-  { label: "Account", labelBn: "অ্যাকাউন্ট", ids: ["settings"] },
-];
+// Grouping lives in @/lib/data NAV_GROUPS — do not redeclare here.
 
 const COLLAPSE_KEY = "9th_grade_ai_sidenav_collapsed";
 
@@ -102,7 +98,7 @@ export default function SideNav({ activeTab, onChange }: SideNavProps) {
       {/* Grouped navigation */}
       <div className={`min-h-0 flex-1 overflow-y-auto py-3 ${collapsed ? "px-2" : "px-3"}`}>
         {NAV_GROUPS.map((group) => {
-          const tabs = group.ids.map((id) => TABS.find((t) => t.id === id)!).filter(Boolean);
+          const tabs = group.ids.map((id) => TABS.find((t) => t.id === id)).filter((t): t is (typeof TABS)[number] => Boolean(t));
           if (tabs.length === 0) return null;
           return (
             <div key={group.label} className="mb-1">
@@ -197,7 +193,11 @@ export default function SideNav({ activeTab, onChange }: SideNavProps) {
             </div>
           )}
         </div>
-        {!collapsed && (
+        {collapsed ? (
+          <div className="border-t pt-2 flex justify-center" style={{ borderColor: "var(--dashboard-border-muted)" }}>
+            <LogoutButton aria-label="Log out of your account" />
+          </div>
+        ) : (
           <div className="border-t pt-2" style={{ borderColor: "var(--dashboard-border-muted)" }}>
             <LogoutButton aria-label="Log out of your account" />
           </div>

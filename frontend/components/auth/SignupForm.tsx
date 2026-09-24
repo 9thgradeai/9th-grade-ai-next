@@ -10,12 +10,12 @@ import type { FocusField } from "./auth-state"
 export type SignupValues = { name: string; email: string; password: string }
 
 const STRENGTH_LABEL = [
-  "Too weak",
-  "Warming up",
-  "Building momentum",
-  "Exam-ready",
-  "Fortress",
-]
+  "Too weak · খুব দুর্বল",
+  "Warming up · শুরু",
+  "Building momentum · এগিয়ে যাচ্ছে",
+  "Exam-ready · পরীক্ষা-প্রস্তুত",
+  "Fortress · দুর্গ",
+];
 
 // Heuristic password strength 0-4; -1 when empty (no feedback yet).
 export function passwordStrength(password: string): number {
@@ -29,7 +29,8 @@ export function passwordStrength(password: string): number {
   return Math.min(4, score)
 }
 
-const SEGMENT_COLORS = ["bg-red-500", "bg-red-500", "bg-amber-500", "bg-emerald-500", "bg-cyan-400"]
+// Strength segments use design tokens so they track theme changes.
+const SEGMENT_COLORS = ["bg-[var(--danger)]", "bg-[var(--danger)]", "bg-[var(--warning)]", "bg-[var(--success)]", "bg-[var(--info)]"];
 
 export function SignupForm({
   onSubmit,
@@ -180,7 +181,7 @@ export function SignupForm({
               type="button"
               onClick={() => setShowPassword((s) => !s)}
               aria-label={showPassword ? "Hide password" : "Show password"}
-              className="rounded-lg p-1.5 text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)] focus-visible:ring-2 focus-visible:ring-emerald-400/80"
+              className="mr-1 flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)] focus-visible:ring-2 focus-visible:ring-emerald-400/80"
             >
               {showPassword ? (
                 <EyeSlash className="h-4 w-4" aria-hidden="true" />
@@ -191,7 +192,7 @@ export function SignupForm({
           }
         />
         {strength >= 0 && (
-          <div className="mt-2" aria-label={`Password strength: ${STRENGTH_LABEL[strength]}`}>
+          <div className="mt-2" role="status" aria-live="polite" aria-label={`Password strength: ${STRENGTH_LABEL[strength]}`}>
             <div className="flex gap-1.5">
               {[0, 1, 2, 3].map((i) => (
                 <div
@@ -224,7 +225,7 @@ export function SignupForm({
         onFocus={() => onFocusChange("confirm")}
         onBlur={() => onFocusChange(null)}
         error={fieldErrors.confirm}
-        autoComplete="new-password"
+        autoComplete="off"
         placeholder="Repeat your password"
       />
 
@@ -232,6 +233,7 @@ export function SignupForm({
         <p
           role="alert"
           id="auth-form-error"
+          ref={(el) => { if (el) el.focus({ preventScroll: true }); }}
           tabIndex={-1}
           className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400 outline-none"
         >
@@ -241,7 +243,7 @@ export function SignupForm({
 
       {locked && (
         <p
-          role="alert"
+          aria-live="polite"
           className="rounded-xl border border-amber-400/30 bg-amber-500/10 px-4 py-2.5 text-center text-sm text-amber-300"
         >
           Too many attempts — try again in {secondsLeft}s.

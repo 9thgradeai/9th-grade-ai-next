@@ -33,6 +33,7 @@ export default function AIAssistantWidget() {
   const [waving, setWaving] = useState(true);
   const [dismissed, setDismissed] = useState(false);
   const [intelligence, setIntelligence] = useState<Server.PreparationIntelligenceDTO | null>(null);
+  const [intelError, setIntelError] = useState(false);
   const [now, setNow] = useState(() => new Date());
 
   useEffect(() => {
@@ -78,7 +79,8 @@ export default function AIAssistantWidget() {
 
   useEffect(() => {
     let cancelled = false;
-    void api.preparationIntelligence().then((v) => { if (!cancelled) setIntelligence(v); }).catch(() => {});
+    setIntelError(false);
+    void api.preparationIntelligence().then((v) => { if (!cancelled) setIntelligence(v); }).catch(() => { if (!cancelled) setIntelError(true); });
     return () => { cancelled = true; };
   }, [ecosystem]);
 
@@ -133,7 +135,7 @@ export default function AIAssistantWidget() {
       "সাধারণ জ্ঞান": { en: "GK", bn: "জিকে" },
     };
     const weakSubj = weak?.subject ?? "";
-    const hintSubj = subjMap[weakSubj] ?? subjMap["সাধারণ গণিত"];
+    const hintSubj = subjMap[weakSubj] ?? (weakSubj ? { en: weakSubj, bn: weakSubj } : subjMap["সাধারণ গণিত"]);
     out.push({
       labelEn: `Ask AI about ${hintSubj.en}`,
       labelBn: `${hintSubj.bn} নিয়ে জিজ্ঞেস করুন`,

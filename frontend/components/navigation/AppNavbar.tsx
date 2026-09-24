@@ -62,7 +62,12 @@ export default function AppNavbar() {
   // Global Esc + outside click for desktop mega menu + profile
   useEffect(() => {
     if (!openId && !profileOpen) return;
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") closeAll(); };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      const trigger = openId ? document.getElementById(`nav-trigger-${openId}`) as HTMLElement | null : null;
+      closeAll();
+      trigger?.focus();
+    };
     const onDown = (e: MouseEvent) => {
       const t = e.target as Node;
       if (profileRef.current?.contains(t)) return;
@@ -92,6 +97,7 @@ export default function AppNavbar() {
     <>
       <header
         ref={headerRef}
+        style={{ ["--nav-h" as string]: "4rem" }}
         className="fixed top-0 inset-x-0 z-50 pt-safe border-b border-transparent bg-transparent backdrop-blur-xl"
       >
         <nav className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8" aria-label={t("nav.primaryNavigation")}>
@@ -101,15 +107,14 @@ export default function AppNavbar() {
               <span className="hidden sm:inline font-display text-[15.5px] font-semibold tracking-tight text-white">9Th-Grade AI</span>
             </Link>
 
-            {/* Desktop nav — keyboard: roving with Tab, open on click, Escape closes */}
-            <motion.div ref={desktopNavRef} className="hidden lg:flex items-center gap-1 ml-5" role="menubar" aria-label="Sections"
+            {/* Desktop nav — Tab to move, ←/→ between sections, Enter/Space opens, Esc closes + refocuses trigger */}
+            <motion.div ref={desktopNavRef} className="hidden lg:flex items-center gap-1 ml-5" role="navigation" aria-label="Sections"
               initial={{ opacity: 0, y: -6 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], staggerChildren: 0.04 }}
             >
               {isAuthed && (
                 <motion.span
-                  role="menuitem"
                   initial={{ opacity: 0, y: -6 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
@@ -132,7 +137,6 @@ export default function AppNavbar() {
                     key={m.id}
                     id={triggerId}
                     data-nav-trigger
-                    role="menuitem"
                     aria-haspopup="menu"
                     aria-expanded={expanded}
                     aria-controls={panelId}
@@ -140,6 +144,14 @@ export default function AppNavbar() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
                     onClick={() => setOpenId(expanded ? null : m.id)}
+                    onKeyDown={(e) => {
+                      if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+                      e.preventDefault();
+                      const triggers = Array.from(desktopNavRef.current?.querySelectorAll<HTMLButtonElement>("[data-nav-trigger]") ?? []);
+                      const i = triggers.findIndex((el) => el.id === triggerId);
+                      const next = e.key === "ArrowRight" ? triggers[(i + 1) % triggers.length] : triggers[(i - 1 + triggers.length) % triggers.length];
+                      next?.focus();
+                    }}
                     className={`inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 ${expanded ? "bg-white text-black" : "text-zinc-300 hover:bg-white/10 hover:text-white"}`}
                   >
                     {(m.labelBn && lang==="bn" ? m.labelBn : m.label)} {m.id === "ai" && <AiLogo className="h-3.5 w-3.5" />} <CaretDown className={`h-3.5 w-3.5 transition-transform ${expanded ? "rotate-180" : ""}`} aria-hidden="true" />
@@ -174,15 +186,16 @@ export default function AppNavbar() {
 
               {!isAuthed ? (
                 <>
-                  <Link href="/login" className="hidden sm:inline-flex rounded-full border border-white/15 px-4 py-1.5 text-sm font-medium text-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400">{t("nav.login")}</Link>
-                  <Link href="/login?register=true" className="inline-flex rounded-full bg-white px-4 py-1.5 text-sm font-semibold text-black hover:bg-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400">{t("nav.getStarted")}</Link>
+                  <Link href="/login" className="hidden sm:inline-flex min-h-[44px] items-center rounded-full border border-white/15 px-4 py-1.5 text-sm font-medium text-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400">{t("nav.login")}</Link>
+                  <Link href="/login?register=true" className="inline-flex min-h-[44px] items-center rounded-full bg-white px-4 py-1.5 text-sm font-semibold text-black hover:bg-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400">{t("nav.getStarted")}</Link>
                 </>
               ) : (
                 <>
                   <button
                     type="button"
-                    onClick={() => router.push("/dashboard?tab=progress")}
+                    onClick={() => router.push("/dashboard?tab=home")}
                     aria-label={t("nav.notifications")}
+                    title={t("nav.notifications")}
                     className="hidden sm:inline-flex p-2 rounded-full border border-white/10 text-zinc-300 hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
                   >
                     <Bell className="h-4 w-4" aria-hidden="true" />
@@ -206,7 +219,7 @@ export default function AppNavbar() {
                           <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-500 text-sm font-bold text-white" aria-hidden="true">{user?.name?.trim()?.charAt(0)?.toUpperCase() ?? "U"}</span>
                           <div className="min-w-0">
                             <p className="truncate text-sm font-semibold text-white">{user?.name}</p>
-                            <p className="truncate text-xs text-zinc-500">{user?.email}</p>
+                            <p className="truncate text-xs text-zinc-400">{user?.email}</p>
                           </div>
                         </div>
                         <div className="my-1 h-px bg-white/10" />
@@ -258,7 +271,7 @@ export default function AppNavbar() {
                 <div className="col-span-9 grid gap-6" style={{ gridTemplateColumns: `repeat(${Math.min(activeMenu.groups.length, 3)}, minmax(0,1fr))` }}>
                   {activeMenu.groups.map(g => (
                     <div key={g.label}>
-                      <p className="mb-3 text-[11px] font-bold tracking-[0.12em] uppercase text-zinc-500">{g.label}</p>
+                      <p className="mb-3 text-[11px] font-bold tracking-[0.12em] uppercase text-zinc-400">{g.label}</p>
                       <ul className="space-y-1" role="none">
                         {g.items.map(it => {
                           const Icon = it.icon;
@@ -281,7 +294,7 @@ export default function AppNavbar() {
                                 )}
                                 <span className="min-w-0">
                                   <span className={`flex items-center gap-1 text-sm font-medium ${active ? "text-black" : "text-white"}`}>{it.label}</span>
-                                  {it.desc && <span className={`line-clamp-1 text-xs ${active ? "text-black/60" : "text-zinc-500"}`}>{it.desc}</span>}
+                                  {it.desc && <span className={`line-clamp-1 text-xs ${active ? "text-black/60" : "text-zinc-400"}`}>{it.desc}</span>}
                                 </span>
                               </Link>
                             </li>
@@ -300,8 +313,8 @@ export default function AppNavbar() {
       {/* Mobile drawer — independent design, not shrunken desktop */}
       {mobileOpen && (
         <div className="fixed inset-0 z-[60] lg:hidden" role="dialog" aria-modal="true" aria-label="Navigation">
-          <button aria-label="Close navigation" className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
-          <div id="mobile-drawer" className="absolute right-0 top-0 bottom-0 flex w-[88%] max-w-[380px] flex-col overflow-hidden border-l border-white/10 bg-transparent backdrop-blur-2xl pt-safe">
+          <div aria-hidden="true" className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
+          <div id="mobile-drawer" ref={(el) => { if (el) el.focus({ preventScroll: true }); }} tabIndex={-1} className="absolute right-0 top-0 bottom-0 flex w-[88%] max-w-[380px] flex-col overflow-hidden border-l border-white/10 bg-[#0B0B0F] pt-safe outline-none">
             <div className="flex h-14 shrink-0 items-center justify-between border-b border-white/10 px-4">
               <span className="flex items-center gap-2 font-display font-semibold text-white"><BrandMark className="h-7 w-7 rounded-lg" aria-hidden="true" /> 9Th-Grade AI</span>
               <button type="button" onClick={() => setMobileOpen(false)} aria-label="Close navigation" className="p-2 rounded-xl border border-white/10 text-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"><X className="h-4 w-4" aria-hidden="true" /></button>
@@ -322,14 +335,14 @@ export default function AppNavbar() {
                       className="flex w-full items-center justify-between px-3 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 rounded-xl"
                     >
                       <span className="flex items-center gap-2 text-sm font-semibold text-white">{(m.labelBn && lang==="bn" ? m.labelBn : m.label)}{m.id === "ai" && <AiLogo className="h-4 w-4" />}</span>
-                      <CaretDown className={`h-4 w-4 text-zinc-500 transition-transform ${expanded ? "rotate-180" : ""}`} aria-hidden="true" />
+                      <CaretDown className={`h-4 w-4 text-zinc-400 transition-transform ${expanded ? "rotate-180" : ""}`} aria-hidden="true" />
                     </button>
                     {expanded && (
                       <div id={`mob-${m.id}`} className="px-2 pb-3 space-y-3">
                         {m.highlight && <Link href={m.highlight.href} onClick={() => setMobileOpen(false)} className="block rounded-xl border border-violet-500/20 bg-violet-500/10 px-3 py-2.5 text-sm font-medium text-white">{m.highlight.cta} — {m.highlight.title}</Link>}
                         {m.groups.map(g => (
                           <div key={g.label}>
-                            <p className="px-2 py-1 text-[11px] font-bold tracking-widest uppercase text-zinc-500">{g.label}</p>
+                            <p className="px-2 py-1 text-[11px] font-bold tracking-widest uppercase text-zinc-400">{g.label}</p>
                             {g.items.map(it => {
                               const active = isActiveLink(it.href, pathname, tab);
                               return (

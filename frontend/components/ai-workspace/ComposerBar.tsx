@@ -72,8 +72,8 @@ export default function ComposerBar({
     const file = e.target.files?.[0];
     e.target.value = "";
     if (!file) return;
-    if (!file.type.startsWith("image/")) return;
-    if (file.size > MAX_IMAGE_BYTES) return;
+    if (!file.type.startsWith("image/")) { alert("শুধু ছবি ফাইল (image/*) সংযুক্ত করুন।"); return; }
+    if (file.size > MAX_IMAGE_BYTES) { alert("ছবি ৫MB-এর কম হতে হবে।"); return; }
     const reader = new FileReader();
     reader.onload = () => {
       if (typeof reader.result === "string") onAttachImage(reader.result);
@@ -128,6 +128,7 @@ export default function ComposerBar({
         <div className="ai-composer mx-auto max-w-3xl">
           {imagePreview && (
             <div className="mr-2 flex items-center gap-2 self-center pb-1 sm:ml-1">
+              {/* eslint-disable-next-line @next/next/no-img-element -- data-URL preview, not optimizable */}
               <img
                 src={imagePreview}
                 alt="Attached question image"
@@ -153,11 +154,10 @@ export default function ComposerBar({
             ref={textareaRef}
             rows={1}
             value={input}
-            aria-label="Type your question or use voice input"
-            placeholder={isListening ? "Listening..." : "Ask 9Th-Grade AI anything…"}
+            aria-label="আপনার প্রশ্ন লিখুন"
+            placeholder={isListening ? "শুনছি..." : "9Th-Grade AI কে কিছু জিজ্ঞেস করুন…"}
             onChange={onInputChange}
             onKeyDown={onKeyDown}
-            disabled={generating}
             className="max-h-40 min-h-[26px] flex-1 resize-none self-center bg-transparent px-0.5 py-2.5 text-[15px] leading-6 text-[var(--dashboard-text-primary)] placeholder:text-[var(--dashboard-text-muted)] focus:outline-none disabled:opacity-60"
           />
 

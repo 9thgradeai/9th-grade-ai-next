@@ -416,7 +416,7 @@ export default function CustomExamTab() {
   };
 
   const selectAnswer = (questionId: number, option: string) => {
-    if (lockedQuestions.has(questionId)) return;
+    // re-tappable: no early return
     setAnswers((prev) => {
       const next = { ...prev, [questionId]: option };
       if (exam) {
@@ -940,12 +940,12 @@ export default function CustomExamTab() {
                 <div className="space-y-2.5">
                   {q.options.map((option, i) => {
                     const isSelected = userAnswer === option;
-                    const isLocked = lockedQuestions.has(q.id);
+                    const isLocked = false; // re-tappable until submit
                     return (
                       <button
                         key={i}
                         onClick={() => selectAnswer(q.id, option)}
-                        disabled={isLocked}
+                        disabled={false}
                         className="w-full text-left p-3 rounded-xl border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] disabled:cursor-not-allowed"
                         style={
                           isSelected

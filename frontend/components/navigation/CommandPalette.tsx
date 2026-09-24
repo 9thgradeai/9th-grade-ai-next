@@ -25,6 +25,8 @@ export default function CommandPalette() {
 
   const close = useCallback(() => setOpen(false), []);
 
+  // Marketing-only palette. Dashboard uses CommandBar (same ⌘K / app:open-command
+  // event) — this component registers no listeners and renders nothing there.
   useEffect(() => {
     if (isDashboard) return;
     const onKey = (e: KeyboardEvent) => {
@@ -89,7 +91,7 @@ export default function CommandPalette() {
           />
           <span className="hidden sm:inline-flex items-center gap-1 rounded-md border border-white/10 bg-white/5 px-1.5 py-1 text-[10px] font-mono text-zinc-400" aria-hidden="true"><CmdIcon className="h-3 w-3" />K</span>
         </div>
-        <ul ref={listRef} className="max-h-[320px] overflow-y-auto py-2" role="listbox" aria-label="Results">
+        <ul ref={listRef} className="max-h-[320px] overflow-y-auto py-2" role="listbox" aria-label="Results — use arrow keys, Enter to open">
           {filtered.length === 0 && <li className="px-4 py-8 text-center text-sm text-zinc-500">No results for “{q}”</li>}
           {filtered.map((c, i) => (
             <li key={c.label + c.href} role="option" aria-selected={i === active} data-idx={i}>

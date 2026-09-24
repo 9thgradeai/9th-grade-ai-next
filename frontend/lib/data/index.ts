@@ -16,6 +16,17 @@ export const TABS: { id: TabId; label: string; short: string; bengali: string; i
   { id: "settings", label: "SETTINGS", short: "SET", bengali: "সেটিংস", icon: "⚙️" },
 ];
 
+// ── Single source of truth for dashboard navigation ────────────
+// SideNav, BottomNav, and the dashboard drawer must all import these —
+// never redeclare grouping literals locally (drift guarantee otherwise).
+export const NAV_GROUPS: { label: string; labelBn: string; ids: TabId[] }[] = [
+  { label: "Primary", labelBn: "প্রধান", ids: ["home", "practice", "question-bank", "mistakes", "progress"] },
+  { label: "Study", labelBn: "পড়াশোনা", ids: ["study-planner", "flashcards", "vocab", "exam-history", "real-exam"] },
+  { label: "Account", labelBn: "অ্যাকাউন্ট", ids: ["settings"] },
+];
+
+export const BOTTOM_TAB_IDS: TabId[] = ["home", "practice", "question-bank", "mistakes", "progress"];
+
 // ── Archive categories (seed) ─────────────────────────────
 export const ARCHIVE_CATEGORIES = [
   {

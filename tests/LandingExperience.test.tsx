@@ -22,10 +22,8 @@ import BackToTop from "@/components/ui/BackToTop";
 describe("BackToTop", () => {
   it("renders an accessible control that is hidden until scrolled", () => {
     render(<BackToTop />);
-    const button = screen.getByRole("button", { name: /back to top/i });
-    // Hidden state pre-scroll: removed from tab order and faded out.
-    expect(button).toHaveAttribute("tabindex", "-1");
-    expect(button.className).toContain("opacity-0");
+    // Hidden state pre-scroll: not rendered at all (no tab-order trap, no AT noise).
+    expect(screen.queryByRole("button", { name: /back to top/i })).not.toBeInTheDocument();
   });
 });
 

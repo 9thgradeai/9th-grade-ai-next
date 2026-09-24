@@ -5,7 +5,7 @@ type Variant = "primary" | "secondary" | "ghost" | "hero";
 type Size = "sm" | "md" | "lg";
 
 const BASE =
-  "inline-flex items-center justify-center gap-2 font-medium rounded-full transition-[background-color,border-color,color,box-shadow,transform] duration-200 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] disabled:opacity-50 disabled:pointer-events-none whitespace-nowrap group";
+  "inline-flex items-center justify-center gap-2 font-medium rounded-full transition-[background-color,border-color,color,box-shadow,transform] duration-200 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)] disabled:opacity-50 disabled:pointer-events-none group";
 
 const VARIANTS: Record<Variant, string> = {
   primary:
@@ -17,7 +17,7 @@ const VARIANTS: Record<Variant, string> = {
 };
 
 const SIZES: Record<Size, string> = {
-  sm: "px-4 py-1.5 text-sm min-h-[36px]",
+  sm: "px-4 py-1.5 text-sm min-h-[44px]",
   md: "px-6 py-2.5 text-sm min-h-[44px]",
   lg: "px-7 py-3.5 text-base min-h-[48px]",
 };

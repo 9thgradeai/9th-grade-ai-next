@@ -64,7 +64,16 @@ export default function LazySection({
   const Comp = REGISTRY[name];
   return (
     <div ref={ref} style={{ minHeight: show ? undefined : minHeight }}>
-      {show ? <Comp /> : null}
+      {show ? <Comp /> : (
+        <div role="status" aria-label="Loading section" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
+          <span className="sr-only">Loading…</span>
+          <div aria-hidden="true" className="space-y-4">
+            <div className="skeleton-shimmer h-6 w-48 rounded-lg" />
+            <div className="skeleton-shimmer h-4 w-[80%] rounded-lg" />
+            <div className="skeleton-shimmer h-4 w-[65%] rounded-lg" />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

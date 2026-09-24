@@ -26,12 +26,13 @@ export function AuthSubmitButton({
   icon?: ReactNode
   form?: string
 }) {
+  const inactive = busy || disabled;
   return (
     <button
       type={type}
       form={form}
       disabled={busy || disabled}
-      className="btn-shine group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 px-6 py-3.5 text-base font-semibold text-white shadow-[0_8px_24px_rgba(16,185,129,0.25)] transition-all duration-200 hover:shadow-[0_10px_32px_rgba(16,185,129,0.4)] active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-emerald-400/80 disabled:cursor-not-allowed disabled:opacity-60"
+      className={`group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 px-6 py-3.5 text-base font-semibold text-white shadow-[0_8px_24px_rgba(16,185,129,0.25)] transition-all duration-200 hover:shadow-[0_10px_32px_rgba(16,185,129,0.4)] active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-emerald-400/80 disabled:cursor-not-allowed disabled:opacity-60 ${inactive ? "" : "btn-shine"}`}
     >
       {busy && <Spinner className="h-4 w-4 animate-spin" aria-hidden="true" />}
       <span className={busy ? "opacity-90" : undefined}>{busy ? busyLabel : children}</span>

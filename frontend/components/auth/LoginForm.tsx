@@ -123,7 +123,7 @@ export function LoginForm({
               type="button"
               onClick={() => setShowPassword((s) => !s)}
               aria-label={showPassword ? t("auth.hidePassword") : t("auth.showPassword")}
-              className="rounded-lg p-1.5 text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)] focus-visible:ring-2 focus-visible:ring-emerald-400/80"
+              className="mr-1 flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:text-[var(--foreground)] focus-visible:ring-2 focus-visible:ring-emerald-400/80"
             >
               {showPassword ? (
                 <EyeSlash className="h-4 w-4" aria-hidden="true" />
@@ -137,12 +137,12 @@ export function LoginForm({
       </div>
 
       <div className="flex items-center justify-between gap-3">
-        <label className="flex cursor-pointer items-center gap-2 text-sm text-[var(--text-muted)]">
+        <label className="flex min-h-[44px] cursor-pointer items-center gap-2.5 text-sm text-[var(--text-muted)]">
           <input
             type="checkbox"
             checked={remember}
             onChange={(e) => setRemember(e.target.checked)}
-            className="h-4 w-4 rounded border-[var(--border-muted)] bg-transparent text-emerald-500 accent-emerald-500 focus-visible:ring-2 focus-visible:ring-emerald-400/80"
+            className="h-5 w-5 rounded border-[var(--border-muted)] bg-transparent text-emerald-500 accent-emerald-500 focus-visible:ring-2 focus-visible:ring-emerald-400/80"
           />
           {t("auth.remember")}
         </label>
@@ -158,6 +158,7 @@ export function LoginForm({
         <p
           role="alert"
           id="auth-form-error"
+          ref={(el) => { if (el) el.focus({ preventScroll: true }); }}
           tabIndex={-1}
           className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400 outline-none"
         >
@@ -167,7 +168,7 @@ export function LoginForm({
 
       {locked && (
         <p
-          role="alert"
+          aria-live="polite"
           className="rounded-xl border border-amber-400/30 bg-amber-500/10 px-4 py-2.5 text-center text-sm text-amber-300"
         >
           {t("auth.tooManyAttempts").replace("{seconds}", String(secondsLeft))}

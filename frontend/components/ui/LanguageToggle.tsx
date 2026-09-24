@@ -1,7 +1,7 @@
 "use client";
 
 import { useContext } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Translate } from "@phosphor-icons/react";
 import { LanguageContext, type Language } from "@/lib/lang-ctx";
 import { LANGUAGE_KEY } from "@/lib/lang-key";
@@ -20,10 +20,12 @@ export default function LanguageToggle({ className }: { className?: string }) {
     } catch { /* ignore */ }
   });
 
+  const reduceMotion = useReducedMotion();
+
   return (
     <motion.button
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
+      whileHover={reduceMotion ? undefined : { scale: 1.05 }}
+      whileTap={reduceMotion ? undefined : { scale: 0.95 }}
       onClick={toggleLang}
       className={
         className ??
@@ -31,7 +33,6 @@ export default function LanguageToggle({ className }: { className?: string }) {
       }
       title={lang === "bn" ? "Switch to English" : "বাংলায় টগল করুন"}
       aria-label={lang === "bn" ? "Switch interface language to English" : "ইন্টারফেস ভাষা বাংলায় পরিবর্তন করুন"}
-      aria-pressed={lang === "bn"}
       type="button"
     >
       <Translate className="w-4 h-4" aria-hidden="true" />

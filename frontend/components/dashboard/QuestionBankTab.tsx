@@ -97,6 +97,15 @@ export default function QuestionBankTab() {
     setBcsTerm(null);
   };
 
+  // Deep-link: ?view=bookmarks lands on the saved view (sentinel category
+  // "__saved__" from the dashboard router), not the generic bank.
+  useEffect(() => {
+    if (questionBankFilters.category === "__saved__") {
+      setView("saved");
+      setQuestionBankFilters({ category: "" });
+    }
+  }, [questionBankFilters.category, setQuestionBankFilters]);
+
   // Load categories + bookmarks from the DB (fallback to static data).
   useEffect(() => {
     let cancelled = false;
