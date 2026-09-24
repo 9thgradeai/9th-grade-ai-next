@@ -67,7 +67,12 @@ export default function AIAssistantWidget() {
   useEffect(() => {
     if (dismissed) return;
     const key = "ai-widget-auto-open-v2";
-    try { if (sessionStorage.getItem(key)) return; } catch {}
+    try {
+      if (sessionStorage.getItem(key)) return;
+      // Small screens: wave only, never auto-open. A 500px+ panel on a
+      // 667px viewport 1.1s after load is intrusive and hides content.
+      if (window.matchMedia("(max-width: 639px)").matches) return;
+    } catch {}
     const id = setTimeout(() => {
       setOpen(true);
       setWaving(true);
@@ -76,6 +81,14 @@ export default function AIAssistantWidget() {
     }, 1100);
     return () => clearTimeout(id);
   }, [dismissed]);
+
+  // Escape closes the panel (keyboard + switch access on mobile).
+  useEffect(() => {
+    if (!open) return;
+    const h = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    window.addEventListener("keydown", h);
+    return () => window.removeEventListener("keydown", h);
+  }, [open ]);
 
   useEffect(() => {
     let cancelled = false;
@@ -146,30 +159,31 @@ export default function AIAssistantWidget() {
     return out.slice(0, 3);
   }, [weak, intelligence, setActiveTab, setPracticeIntent, setQuestionBankFilters]);
 
-  // Collapsed reopen handle — Apple-style pill
+  // Collapsed reopen handle — Apple-style pill. Clears the bottom nav
+  // (64px + home-indicator safe area) on every form factor.
   if (dismissed && !open) {
     return (
       <motion.button
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         onClick={reopen}
-        className="fixed bottom-[88px] lg:bottom-6 right-4 z-40 h-10 pl-3 pr-3.5 rounded-full bg-white border border-zinc-200 shadow-[0_8px_24px_rgba(0,0,0,0.12),0_1px_3px_rgba(0,0,0,0.08)] flex items-center gap-2 hover:shadow-[0_12px_32px_rgba(0,0,0,0.14)] hover:border-zinc-300 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+        className="fixed right-3 sm:right-4 z-40 h-11 pl-3 pr-3.5 rounded-full bg-white border border-zinc-200 shadow-[0_8px_24px_rgba(0,0,0,0.12),0_1px_3px_rgba(0,0,0,0.08)] flex items-center gap-2 hover:shadow-[0_12px_32px_rgba(0,0,0,0.14)] hover:border-zinc-300 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 max-w-[calc(100vw-24px)] bottom-[calc(76px+env(safe-area-inset-bottom,0px))] lg:bottom-6"
         aria-label="Open AI assistant"
       >
-        <span className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center">
+        <span className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
           <Sparkle className="w-3.5 h-3.5 text-white" weight="fill" />
         </span>
-        <span className="text-[11px] font-semibold tracking-wide text-zinc-700">AI Assistant</span>
+        <span className="text-[11px] font-semibold tracking-wide text-zinc-700 truncate">AI Assistant</span>
       </motion.button>
     );
   }
 
   return (
     <>
-      {/* FAB — Google/Apple grade: 56px, 16px radius, layered shadow, ring, waving HandWaving icon */}
+      {/* FAB — 56px target, clears the bottom nav + home indicator on all phones */}
       <motion.button
         onClick={() => setOpen((o) => !o)}
-        className="fixed bottom-[88px] lg:bottom-6 right-4 z-40 w-[56px] h-[56px] rounded-[18px] flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+        className="group fixed right-3 sm:right-4 z-40 w-[56px] h-[56px] rounded-[18px] flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white bottom-[calc(76px+env(safe-area-inset-bottom,0px))] lg:bottom-6"
         style={{
           background: "linear-gradient(135deg, #10b981 0%, #06b6d4 55%, #0ea5e9 100%)",
           boxShadow: "0 12px 28px rgba(16,185,129,0.32), 0 4px 12px rgba(0,0,0,0.14), inset 0 1px 0 rgba(255,255,255,0.28)",
@@ -201,7 +215,7 @@ export default function AIAssistantWidget() {
         </span>
       </motion.button>
 
-      {/* Backdrop — subtle, Apple-style */}
+      {/* Backdrop — real scrim on phones, near-invisible on desktop */}
       <AnimatePresence>
         {open && (
           <motion.button
@@ -209,13 +223,13 @@ export default function AIAssistantWidget() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setOpen(false)}
-            className="fixed inset-0 z-30 bg-zinc-950/[0.04] backdrop-blur-[1px] lg:bg-transparent lg:backdrop-blur-none"
+            className="fixed inset-0 z-30 bg-zinc-950/30 backdrop-blur-[1px] sm:bg-zinc-950/[0.04] sm:backdrop-blur-none lg:bg-transparent"
             aria-label="Close assistant"
           />
         )}
       </AnimatePresence>
 
-      {/* Panel — production card: 380px, 20px radius, 1px hairline, layered shadow, responsive bottom-sheet on mobile */}
+      {/* Panel — bottom sheet on phones (fits 667px + landscape), anchored card on sm+ */}
       <AnimatePresence>
         {open && (
           <motion.div
@@ -223,10 +237,11 @@ export default function AIAssistantWidget() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 10, scale: 0.985 }}
             transition={{ type: "spring", stiffness: 380, damping: 30, mass: 0.7 }}
-            className="fixed z-40 w-[calc(100vw-16px)] max-w-[380px] max-h-[min(78vh,560px)] flex flex-col overflow-hidden"
+            role="dialog"
+            aria-modal="false"
+            aria-label={t(lang, "AI সহকারী", "AI assistant")}
+            className="fixed z-40 inset-x-2 bottom-[calc(144px+env(safe-area-inset-bottom,0px))] max-h-[min(72dvh,540px,calc(100dvh-170px))] sm:inset-x-auto sm:right-4 sm:w-[380px] sm:bottom-[152px] sm:max-h-[min(78vh,560px)] flex flex-col overflow-hidden"
             style={{
-              right: "16px",
-              bottom: "calc(88px + 64px)",
               borderRadius: "20px",
               background: "rgba(255,255,255,0.96)",
               backdropFilter: "blur(20px) saturate(1.2)",
@@ -235,10 +250,15 @@ export default function AIAssistantWidget() {
               boxShadow: "0 24px 48px rgba(0,0,0,0.16), 0 12px 24px rgba(0,0,0,0.10), 0 0 0 1px rgba(0,0,0,0.04)",
             }}
           >
-            {/* Drag handle — mobile */}
-            <div className="lg:hidden flex justify-center pt-2 pb-1">
-              <span className="w-9 h-1 rounded-full bg-zinc-200" />
-            </div>
+            {/* Drag handle — mobile, taps to close */}
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              aria-label={t(lang, "বন্ধ করুন", "Close")}
+              className="sm:hidden flex justify-center pt-2 pb-1 min-h-[24px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-emerald-500 rounded-t-[20px]"
+            >
+              <span className="w-9 h-1 rounded-full bg-zinc-300" aria-hidden />
+            </button>
 
             {/* Header — 64px, precise grid */}
             <div className="px-4 pt-3 pb-3 flex items-start gap-3" style={{ borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
@@ -263,13 +283,28 @@ export default function AIAssistantWidget() {
                   {intelligence ? `${totalAnswered > 0 ? `${totalAnswered} Qs` : "Start today"} · ${Math.round(accuracy)}% · ${streak}d` : t(lang, "লোড হচ্ছে…", "loading…")}
                 </p>
               </div>
-              <button onClick={() => setOpen(false)} className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 hover:bg-zinc-100 active:bg-zinc-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-300" aria-label="Close">
-                <X className="w-3.5 h-3.5" style={{ color: "#6b7280" }} weight="bold" />
+              <button onClick={() => setOpen(false)} className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 hover:bg-zinc-100 active:bg-zinc-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-300" aria-label="Close">
+                <X className="w-4 h-4" style={{ color: "#6b7280" }} weight="bold" />
               </button>
             </div>
 
             {/* Content — 16px padding, 12px gaps, 8pt grid */}
             <div className="px-4 py-3.5 space-y-3 overflow-y-auto overscroll-contain" style={{ scrollbarWidth: "thin" }}>
+              {intelError && !intelligence && (
+                <div role="alert" className="rounded-[14px] p-3 flex items-center justify-between gap-2" style={{ background: "#fef2f2", border: "1px solid rgba(239,68,68,0.22)" }}>
+                  <p className="text-[12px] font-medium" style={{ color: "#991b1b" }}>{t(lang, "ডেটা লোড হয়নি।", "Couldn't load data.")}</p>
+                  <button
+                    onClick={() => {
+                      setIntelError(false);
+                      void api.preparationIntelligence().then(setIntelligence).catch(() => setIntelError(true));
+                    }}
+                    className="min-h-[36px] px-3 rounded-lg border text-[12px] font-semibold shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
+                    style={{ borderColor: "rgba(239,68,68,0.3)", color: "#b91c1c", background: "white" }}
+                  >
+                    {t(lang, "আবার চেষ্টা", "Retry")}
+                  </button>
+                </div>
+              )}
               {weak && (
                 <div className="rounded-[14px] p-3 flex gap-3" style={{ background: "#fffbeb", border: "1px solid rgba(245,158,11,0.22)", boxShadow: "0 1px 2px rgba(0,0,0,0.04)" }}>
                   <div className="w-8 h-8 rounded-[10px] flex items-center justify-center shrink-0 mt-0.5" style={{ background: "white", border: "1px solid rgba(245,158,11,0.18)" }}>
@@ -315,11 +350,11 @@ export default function AIAssistantWidget() {
               </div>
 
               <div className="grid grid-cols-2 gap-2">
-                <button onClick={() => { launchAI({ mode: "tutor", prompt: "Explain my weak topics" }); setOpen(false); }} className="h-10 rounded-[11px] bg-white border border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50 text-[12px] font-semibold flex items-center justify-center gap-1.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-300" style={{ color: "#1f2937" }}>
-                  <ChatCircleDots className="w-4 h-4" style={{ color: "#6b7280" }} weight="bold" /> {t(lang, "AI টিউটর", "AI Tutor")}
+                <button onClick={() => { launchAI({ mode: "tutor", prompt: "Explain my weak topics" }); setOpen(false); }} className="min-h-[44px] py-2 rounded-[11px] bg-white border border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50 text-[12px] font-semibold flex items-center justify-center gap-1.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-300" style={{ color: "#1f2937" }}>
+                  <ChatCircleDots className="w-4 h-4 shrink-0" style={{ color: "#6b7280" }} weight="bold" /> <span className="truncate">{t(lang, "AI টিউটর", "AI Tutor")}</span>
                 </button>
-                <button onClick={() => { setActiveTab("question-bank"); setOpen(false); }} className="h-10 rounded-[11px] bg-white border border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50 text-[12px] font-semibold flex items-center justify-center gap-1.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-300" style={{ color: "#1f2937" }}>
-                  <BookOpen className="w-4 h-4" style={{ color: "#6b7280" }} weight="bold" /> {t(lang, "প্রশ্ন ব্যাংক", "Question Bank")}
+                <button onClick={() => { setActiveTab("question-bank"); setOpen(false); }} className="min-h-[44px] py-2 rounded-[11px] bg-white border border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50 text-[12px] font-semibold flex items-center justify-center gap-1.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-300" style={{ color: "#1f2937" }}>
+                  <BookOpen className="w-4 h-4 shrink-0" style={{ color: "#6b7280" }} weight="bold" /> <span className="truncate">{t(lang, "প্রশ্ন ব্যাংক", "Question Bank")}</span>
                 </button>
               </div>
             </div>
@@ -329,7 +364,7 @@ export default function AIAssistantWidget() {
               <span className="inline-flex items-center gap-1.5 text-[10px] font-medium tracking-wide" style={{ color: "#9ca3af" }}>
                 <Waveform className="w-3 h-3" /> {t(lang, "ইন্টারেক্টিভ এজেন্ট", "Interactive agent")} · {ecosystem === "BANGLADESH_BANK" ? "Bank" : "BCS"}
               </span>
-              <button onClick={dismiss} className="text-[11px] font-medium hover:underline underline-offset-4" style={{ color: "#6b7280" }}>{t(lang, "লুকাও", "Dismiss")}</button>
+              <button onClick={dismiss} className="min-h-[36px] px-2.5 -mr-2 rounded-lg text-[11px] font-medium hover:underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-300" style={{ color: "#6b7280" }}>{t(lang, "লুকাও", "Dismiss")}</button>
             </div>
           </motion.div>
         )}

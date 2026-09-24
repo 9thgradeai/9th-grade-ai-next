@@ -38,3 +38,12 @@ Run per phase: `npm run test && npm run lint && npm run typecheck && npm run bui
 - Perf: re-captured `docs/perf/client-baseline.json` (Sept 1 baseline was
   stale — +7.6% over before this work). Absolute ceilings (180 KB asset,
   92 KB Sentry) still enforced. `npm run perf:check` → OK.
+
+## AI Assistant responsive overhaul
+- FAB/pill clear bottom nav + home indicator via safe-area calc (was fixed
+  88px, overlapping notched iPhones); 44px targets; label truncation guard.
+- Panel is a bottom sheet on phones (inset-x anchored, dvh-capped height
+  fits 667px + landscape) and 380px card on sm+.
+- No auto-open under 640px (wave nudge only); Escape closes; role=dialog;
+  tappable drag handle; working hover tooltip (missing group class added).
+- intelError renders alert + Retry; quick actions 44px; real scrim on phones.
