@@ -25,7 +25,6 @@ import {
   tutorTurn,
   askAssistant,
   runAgentTurn,
-  getAIOpening,
   renameConversation,
   pinConversation,
   deleteConversation,
@@ -33,13 +32,12 @@ import {
   AIError,
 } from "@/lib/services/ai";
 import type { AIConversationSummary, AIMessageDto } from "@/lib/services/ai/types";
-import type { AgentBlockDto, AIOpeningDto } from "@/lib/types";
+import type { AgentBlockDto } from "@/lib/types";
 import { subscribeToLaunch } from "@/lib/ai-launcher";
 import { useAuth } from "@/lib/auth-ctx";
 import ModeSwitcher from "./ModeSwitcher";
 import ConversationRail from "./ConversationRail";
 import ComposerBar from "./ComposerBar";
-import EmptyState from "./EmptyState";
 import ThreadView from "./ThreadView";
 import { AGENT_FOLLOWUPS } from "./prompts";
 import {
@@ -88,9 +86,6 @@ export default function AIWorkspace() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
-  // Personalized opening (greeting, summary, insights, starter prompts).
-  const [opening, setOpening] = useState<AIOpeningDto | null>(null);
-
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const terminalRef = useRef<HTMLDivElement>(null);
@@ -111,16 +106,6 @@ export default function AIWorkspace() {
     }
   }, []);
 
-  // Personalized opening for empty conversations — non-fatal (the workspace
-  // works fine without it if the call fails).
-  const refreshOpening = useCallback(async () => {
-    try {
-      setOpening(await getAIOpening());
-    } catch {
-      setOpening(null);
-    }
-  }, []);
-
   useEffect(() => {
     if (!showModal) return;
     let cancelled = false;
@@ -130,13 +115,6 @@ export default function AIWorkspace() {
       })
       .catch(() => {
         // non-fatal
-      });
-    getAIOpening()
-      .then((op) => {
-        if (!cancelled) setOpening(op);
-      })
-      .catch(() => {
-        if (!cancelled) setOpening(null);
       });
     return () => {
       cancelled = true;
@@ -203,8 +181,7 @@ export default function AIWorkspace() {
     setLiveTools([]);
     toolMapRef.current.clear();
     setImagePreview(null);
-    void refreshOpening();
-  }, [refreshOpening]);
+  }, []);
 
   // ── TTS helpers ─────────────────────────────────────────────
   const stopSpeaking = useCallback(() => {
@@ -246,7 +223,6 @@ export default function AIWorkspace() {
     setError(null);
     setSidebarOpen(false);
     setMeta(null);
-    setOpening(null);
     setImagePreview(null);
     try {
       const data = await getConversation(id);
@@ -878,12 +854,17 @@ export default function AIWorkspace() {
                   </AnimatePresence>
 
                   {messages.length === 0 ? (
-                    <EmptyState
-                      mode={mode}
-                      contextChip={contextChip}
-                      opening={opening}
-                      onPrompt={runPrompt}
-                    />
+                    <div className="flex min-h-0 flex-1 flex-col items-center justify-center px-4">
+                      {/* No greeting screen: a fresh conversation opens
+                          straight into chat. Inbound context (if any) is
+                          still surfaced so launched prompts aren't lost. */}
+                      {contextChip && (
+                        <div className="flex min-w-0 max-w-full items-center gap-1.5 rounded-full border border-[var(--dashboard-border-muted)] bg-[var(--dashboard-surface-muted)] px-3 py-1 text-xs text-[var(--dashboard-text-secondary)]">
+                          <span className="flex-shrink-0 font-mono text-[var(--dashboard-primary)]">context</span>
+                          <span className="min-w-0 max-w-[50vw] truncate sm:max-w-[320px]">{contextChip}</span>
+                        </div>
+                      )}
+                    </div>
                   ) : (
                     <ThreadView
                       messages={messages}

@@ -73,19 +73,23 @@ describe("VoiceAITutor (AI workspace)", () => {
     expect(screen.getByText("সহায়ক")).toBeInTheDocument();
   });
 
-  it("shows preset prompts in tutor mode", () => {
+  it("opens straight into chat with no greeting screen", () => {
     render(<VoiceAITutor />);
     fireEvent.click(screen.getByLabelText("Open AI Tutor and Assistant"));
-    expect(screen.getByText("৯ম শ্রেণীর পদার্থবিজ্ঞানের গতি সূত্রগুলো ব্যাখ্যা করো")).toBeInTheDocument();
-    expect(screen.getByText("রসায়নের পর্যায় সারণি মনে রাখার সহজ উপায়")).toBeInTheDocument();
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    // Composer is ready immediately; no preset prompts or greeting tile.
+    expect(screen.getByLabelText("আপনার প্রশ্ন লিখুন")).toBeInTheDocument();
+    expect(screen.queryByText("৯ম শ্রেণীর পদার্থবিজ্ঞানের গতি সূত্রগুলো ব্যাখ্যা করো")).not.toBeInTheDocument();
+    expect(screen.queryByText("রসায়নের পর্যায় সারণি মনে রাখার সহজ উপায়")).not.toBeInTheDocument();
   });
 
-  it("switches to assistant mode and shows quick actions", () => {
+  it("switches modes without any greeting screen", () => {
     render(<VoiceAITutor />);
     fireEvent.click(screen.getByLabelText("Open AI Tutor and Assistant"));
     fireEvent.click(screen.getByText("সহায়ক"));
-    expect(screen.getByText("আজ কী পড়ব?")).toBeInTheDocument();
-    expect(screen.getByText("কারেন্ট অ্যাফেয়ার্স")).toBeInTheDocument();
+    expect(screen.queryByText("আজ কী পড়ব?")).not.toBeInTheDocument();
+    expect(screen.queryByText("কারেন্ট অ্যাফেয়ার্স")).not.toBeInTheDocument();
+    expect(screen.getByLabelText("আপনার প্রশ্ন লিখুন")).toBeInTheDocument();
   });
 
   it("closes the workspace on Escape", async () => {
@@ -151,7 +155,7 @@ describe("VoiceAITutor (AI workspace)", () => {
     });
   });
 
-  it("shows the personalized opening instead of the static identity tile", async () => {
+  it("never fetches nor shows a personalized opening", async () => {
     vi.mocked(getAIOpening).mockResolvedValueOnce({
       greeting: "শুভ সকাল, Test User!",
       hasHistory: true,
@@ -166,9 +170,10 @@ describe("VoiceAITutor (AI workspace)", () => {
     render(<VoiceAITutor />);
     fireEvent.click(screen.getByLabelText("Open AI Tutor and Assistant"));
     await waitFor(() => {
-      expect(screen.getByText("শুভ সকাল, Test User!")).toBeInTheDocument();
+      expect(screen.getByLabelText("আপনার প্রশ্ন লিখুন")).toBeInTheDocument();
     });
-    expect(screen.getByText("৩টি ফ্ল্যাশকার্ড রিভিশন বাকি।")).toBeInTheDocument();
-    expect(screen.getByText("আজ ২টি কাজ বাকি।")).toBeInTheDocument();
+    expect(vi.mocked(getAIOpening)).not.toHaveBeenCalled();
+    expect(screen.queryByText("শুভ সকাল, Test User!")).not.toBeInTheDocument();
+    expect(screen.queryByText("আজকের প্ল্যান কী?")).not.toBeInTheDocument();
   });
 });
