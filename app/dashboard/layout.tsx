@@ -27,7 +27,6 @@ import { TAB_ICONS } from "@/lib/exam-ui";
 import { useAuth as useAuthForDrawer } from "@/lib/auth-ctx";
 import LogoutButton from "@/components/dashboard/LogoutButton";
 import { useT } from "@/lib/i18n";
-import AIAssistantWidget from "@/components/dashboard/AIAssistantWidget";
 
 // The voice tutor (speech-recognition stack) is only needed when launched —
 // keep it out of the critical dashboard bundle.
@@ -349,7 +348,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <PracticeDrillOverlay />
             <CommandBar />
             <ShortcutsSheet open={shortcutsOpen} onClose={() => setShortcutsOpen(false)} />
-            <AIAssistantWidget />
             </div>
         </EmailVerificationGate>
       </EcosystemProvider>
