@@ -194,7 +194,7 @@
   cursor: not-allowed;
 }
 
-/* Chips — prompt suggestions + agent actions */
+/* Chips — prompt suggestions + agent actions. 44px targets, wrap-safe. */
 .ai-chip {
   display: inline-flex;
   align-items: center;
@@ -207,6 +207,9 @@
   line-height: 1.4;
   font-weight: 500;
   padding: 0.4rem 0.7rem;
+  min-height: 44px;
+  max-width: 100%;
+  overflow-wrap: break-word;
   transition: border-color 150ms ease, color 150ms ease, background-color 150ms ease, transform 120ms ease;
   text-align: left;
 }
@@ -521,11 +524,30 @@
   }
 }
 
+/* Compact toolbar buttons keep their look but expose a 44px hit area via
+   an invisible slop pseudo-element (clicks land on the button itself). */
+.ai-actions .ai-icon-btn {
+  position: relative;
+}
+.ai-actions .ai-icon-btn::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ai-msg-enter,
   .ai-stream-caret::after,
   .ai-status.is-working::before,
   .ai-status.is-listening::before {
+    animation: none !important;
+  }
+  /* Tailwind motion utilities used inside the workspace (typing dots,
+     live pulse, spinners) honour reduced motion without touching global CSS. */
+  .ai-workspace .animate-bounce,
+  .ai-workspace .animate-ping,
+  .ai-workspace .animate-pulse,
+  .ai-workspace .animate-spin {
     animation: none !important;
   }
 }

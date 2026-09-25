@@ -24,7 +24,7 @@ export default function ModeSwitcher({ mode, onChange }: ModeSwitcherProps) {
             onClick={() => onChange(m.id)}
             aria-pressed={active}
             title={`${m.labelEn} — ${m.descBn}`}
-            className={`flex h-8 flex-shrink-0 items-center gap-1.5 rounded-md px-2 sm:px-3 font-mono text-xs font-semibold transition-colors ${
+            className={`flex h-9 min-h-[36px] flex-shrink-0 items-center gap-1.5 rounded-md px-2 sm:px-3 font-mono text-xs font-semibold transition-colors ${
               active
                 ? "bg-[var(--dashboard-primary)] text-[var(--dashboard-text-inverse)]"
                 : "text-[var(--dashboard-text-muted)] hover:text-[var(--dashboard-text-primary)]"

@@ -47,26 +47,28 @@ export default function EmptyState({ mode, contextChip, opening, onPrompt }: Emp
       : prompts;
 
   return (
-    <div className="flex h-full flex-col items-center justify-center overflow-y-auto px-4 py-6">
-      <div className="flex w-full max-w-xl flex-col items-center text-center">
+    <div className="flex h-full flex-col overflow-y-auto px-4 py-6 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+      {/* m-auto (not justify-center) so tall content never clips the top
+          on short viewports — the classic flex-centering overflow trap. */}
+      <div className="m-auto flex w-full max-w-xl flex-col items-center text-center">
         {opening ? (
           <>
-            <h2 className="font-mono text-lg tracking-tight text-[var(--text-primary)]">
+            <h2 className="text-balance font-mono text-[clamp(1rem,4vw,1.125rem)] tracking-tight text-[var(--text-primary)]">
               {opening.greeting}
             </h2>
             {opening.summary.length > 0 && (
-              <ul className="mt-3 space-y-1 text-sm leading-relaxed text-[var(--text-secondary)]">
+              <ul className="mt-3 w-full space-y-1 break-words text-sm leading-relaxed text-[var(--text-secondary)]">
                 {opening.summary.map((s, i) => (
                   <li key={i}>{s}</li>
                 ))}
               </ul>
             )}
             {opening.insights.length > 0 && (
-              <div className="mt-4 flex flex-col gap-1.5">
+              <div className="mt-4 flex w-full flex-col gap-1.5">
                 {opening.insights.map((ins) => (
                   <div
                     key={ins.id}
-                    className="flex max-w-full items-center gap-2 rounded-lg border border-[var(--dashboard-border-muted)] bg-[var(--dashboard-surface-muted)] px-3 py-1.5 text-left text-xs text-[var(--dashboard-text-secondary)]"
+                    className="flex w-full max-w-full items-center gap-2 rounded-lg border border-[var(--dashboard-border-muted)] bg-[var(--dashboard-surface-muted)] px-3 py-1.5 text-left text-xs text-[var(--dashboard-text-secondary)]"
                   >
                     <AiLogo
                       solid={false}
@@ -76,7 +78,7 @@ export default function EmptyState({ mode, contextChip, opening, onPrompt }: Emp
                           : "text-[var(--dashboard-primary)]"
                       }`}
                     />
-                    <span className="min-w-0 flex-1">{ins.text}</span>
+                    <span className="min-w-0 flex-1 break-words">{ins.text}</span>
                   </div>
                 ))}
               </div>
@@ -87,10 +89,10 @@ export default function EmptyState({ mode, contextChip, opening, onPrompt }: Emp
             <div className="ai-avatar h-14 w-14" aria-hidden="true">
               <meta.icon className="h-6 w-6 text-[var(--ai-accent)]" />
             </div>
-            <h2 className="mt-3 font-mono text-lg tracking-tight text-[var(--text-primary)]">
+            <h2 className="mt-3 text-balance font-mono text-[clamp(1rem,4vw,1.125rem)] tracking-tight text-[var(--text-primary)]">
               {`${meta.labelBn} · ${meta.labelEn.toUpperCase()}`}
             </h2>
-            <p className="mt-1 max-w-md text-sm leading-relaxed text-[var(--text-secondary)]">
+            <p className="mt-1 max-w-md text-balance break-words text-sm leading-relaxed text-[var(--text-secondary)]">
               {meta.descBn}
             </p>
             <p role="status" className="mt-2 font-mono text-[11px] text-[var(--dashboard-text-muted)]">
@@ -100,23 +102,23 @@ export default function EmptyState({ mode, contextChip, opening, onPrompt }: Emp
         )}
 
         {contextChip && (
-          <div className="mt-4 flex max-w-full items-center gap-1.5 rounded-full border border-[var(--dashboard-border-muted)] bg-[var(--dashboard-surface-muted)] px-3 py-1 text-xs text-[var(--dashboard-text-secondary)]">
+          <div className="mt-4 flex min-w-0 max-w-full items-center gap-1.5 rounded-full border border-[var(--dashboard-border-muted)] bg-[var(--dashboard-surface-muted)] px-3 py-1 text-xs text-[var(--dashboard-text-secondary)]">
             <PushPin className="h-3 w-3 flex-shrink-0 text-[var(--dashboard-primary)]" aria-hidden="true" />
-            <span className="font-mono text-[var(--dashboard-primary)]">context</span>
-            <span className="max-w-[220px] truncate">{contextChip}</span>
+            <span className="flex-shrink-0 font-mono text-[var(--dashboard-primary)]">context</span>
+            <span className="min-w-0 max-w-[50vw] truncate sm:max-w-[220px]">{contextChip}</span>
           </div>
         )}
 
-        <div className="mt-6 flex max-w-xl flex-wrap justify-center gap-2">
+        <div className="mt-6 flex w-full max-w-xl flex-wrap justify-center gap-2">
           {starterPrompts.map((p) => (
             <button
               key={p.id}
               type="button"
               onClick={() => onPrompt(p.prompt)}
-              className="ai-chip group"
+              className="ai-chip group min-w-0"
             >
-              <FileText className="h-3 w-3" aria-hidden="true" />
-              {p.labelBn}
+              <FileText className="h-3 w-3 flex-shrink-0" aria-hidden="true" />
+              <span className="min-w-0 break-words">{p.labelBn}</span>
             </button>
           ))}
         </div>

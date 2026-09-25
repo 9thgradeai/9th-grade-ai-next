@@ -94,7 +94,7 @@ export default function ThreadView({
         )}
 
         {showMeta && (
-          <p className="px-1 font-mono text-[10px] tracking-[0.12em] text-[var(--dashboard-text-muted)]">
+          <p className="break-words px-1 font-mono text-[10px] leading-relaxed tracking-[0.12em] text-[var(--dashboard-text-muted)]">
             source: <span className="text-[var(--dashboard-primary)]">{meta.provider ?? "unset"}</span>
             {meta.model ? ` · ${meta.model}` : ""}
             {meta.latencyMs !== undefined && meta.latencyMs > 0 ? ` · ${Math.round(meta.latencyMs)}ms` : ""}

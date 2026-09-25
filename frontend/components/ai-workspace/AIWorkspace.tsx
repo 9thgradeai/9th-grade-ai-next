@@ -716,7 +716,9 @@ export default function AIWorkspace() {
       {/* Floating AI launcher — with a live pulse while a background
           generation is running with the panel dismissed. The launcher itself
           is bottom-anchored; the pulse pill stacks above it. */}
-      <div className="fixed bottom-20 right-4 z-40 flex flex-col items-end gap-2 sm:bottom-24 sm:right-6">
+      {/* Floating AI launcher — clears the bottom nav + home indicator on
+          phones (safe-area calc), docks low on lg where no bottom nav exists. */}
+      <div className="fixed bottom-[calc(76px+env(safe-area-inset-bottom,0px))] right-3 z-40 flex flex-col items-end gap-2 sm:right-4 lg:bottom-6">
         <AnimatePresence>
           {status === "generating" && !showModal && (
             <motion.div

@@ -158,7 +158,7 @@ export default function ComposerBar({
             placeholder={isListening ? "শুনছি..." : "9Th-Grade AI কে কিছু জিজ্ঞেস করুন…"}
             onChange={onInputChange}
             onKeyDown={onKeyDown}
-            className="max-h-40 min-h-[26px] flex-1 resize-none self-center bg-transparent px-0.5 py-2.5 text-[15px] leading-6 text-[var(--dashboard-text-primary)] placeholder:text-[var(--dashboard-text-muted)] focus:outline-none disabled:opacity-60"
+            className="max-h-40 min-h-[26px] flex-1 resize-none self-center bg-transparent px-0.5 py-2.5 text-base leading-6 text-[var(--dashboard-text-primary)] placeholder:text-[var(--dashboard-text-muted)] focus:outline-none disabled:opacity-60 sm:text-[15px]"
           />
 
           <div className="flex flex-shrink-0 items-center gap-1 pl-1">
@@ -166,7 +166,7 @@ export default function ComposerBar({
               type="button"
               onClick={() => attachRef.current?.click()}
               disabled={!canAttachImage || generating}
-              className="ai-icon-btn h-10 w-10 text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)] disabled:opacity-40"
+              className="ai-icon-btn h-11 w-11 text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)] disabled:opacity-40"
               title={
                 mode === "tutor"
                   ? "Attach a photo/screenshot of the question"
@@ -182,7 +182,7 @@ export default function ComposerBar({
               type="button"
               onClick={onToggleVoice}
               disabled={generating}
-              className={`ai-icon-btn h-10 w-10 ${
+              className={`ai-icon-btn h-11 w-11 ${
                 isListening
                   ? "bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)]"
                   : "text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)]"
@@ -203,7 +203,7 @@ export default function ComposerBar({
               <button
                 type="button"
                 onClick={onStop}
-                className="ai-stop h-10 w-10 flex-shrink-0"
+                className="ai-stop h-11 w-11 flex-shrink-0"
                 aria-label="Stop generating"
                 title="Stop"
               >
@@ -213,7 +213,7 @@ export default function ComposerBar({
               <button
                 type="submit"
                 disabled={!canSend}
-                className="ai-send h-10 w-10 flex-shrink-0"
+                className="ai-send h-11 w-11 flex-shrink-0"
                 aria-label="Send message"
                 title="Send"
               >
@@ -232,7 +232,7 @@ export default function ComposerBar({
             type="button"
             onClick={onToggleSpeak}
             disabled={generating}
-            className={`inline-flex items-center gap-1.5 transition-colors disabled:opacity-50 ${
+            className={`inline-flex min-h-[32px] flex-shrink-0 items-center gap-1.5 transition-colors disabled:opacity-50 ${
               isSpeaking ? "text-[var(--dashboard-primary)]" : "hover:text-[var(--dashboard-text-secondary)]"
             }`}
             aria-pressed={speakOnReply}
@@ -252,7 +252,7 @@ export default function ComposerBar({
             Auto-read {speakOnReply ? "on" : "off"}
           </button>
           <span className="hidden truncate sm:inline">Enter to send · Shift+Enter for a new line</span>
-          <span className="truncate">9Th-Grade AI can make mistakes. Verify important facts.</span>
+          <span className="min-w-0 flex-1 truncate text-right sm:flex-none">9Th-Grade AI can make mistakes. Verify important facts.</span>
         </div>
       </form>
     </div>

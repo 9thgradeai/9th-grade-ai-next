@@ -91,7 +91,7 @@ function ChatMessageInner({
   if (message.role === "user") {
     return (
       <div className="flex justify-end">
-        <div className="max-w-[88%] whitespace-pre-wrap rounded-2xl rounded-br-md bg-[var(--dashboard-primary-subtle)] px-4 py-2.5 text-sm leading-relaxed text-[var(--text-primary)] shadow-sm ring-1 ring-[var(--border-strong)]/40 sm:max-w-[72%]">
+        <div className="max-w-[88%] whitespace-pre-wrap break-words rounded-2xl rounded-br-md bg-[var(--dashboard-primary-subtle)] px-4 py-2.5 text-sm leading-relaxed text-[var(--text-primary)] shadow-sm ring-1 ring-[var(--border-strong)]/40 sm:max-w-[72%]">
           {message.text}
         </div>
       </div>
@@ -127,7 +127,7 @@ function ChatMessageInner({
                 key={`${message.id}-${a.id}`}
                 type="button"
                 onClick={() => onAction(a.labelBn)}
-                className="group flex items-center justify-between gap-2 rounded-xl border border-[var(--dashboard-border-muted)] bg-[var(--dashboard-surface-muted)]/70 px-3 py-2 text-left transition-colors hover:border-[var(--dashboard-primary)]/40 hover:bg-[var(--dashboard-primary-subtle)]"
+                className="group flex min-h-[44px] items-center justify-between gap-2 rounded-xl border border-[var(--dashboard-border-muted)] bg-[var(--dashboard-surface-muted)]/70 px-3 py-2 text-left transition-colors hover:border-[var(--dashboard-primary)]/40 hover:bg-[var(--dashboard-primary-subtle)]"
               >
                 <span className="min-w-0">
                   <span className="block truncate text-xs font-medium text-[var(--text-primary)]">
