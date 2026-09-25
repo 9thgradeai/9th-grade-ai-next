@@ -13,6 +13,7 @@ import {
   recoverPendingSubmission,
 } from "@/lib/services/exam-submission";
 import type { Server } from "@/lib/types";
+import { shuffleSessionOptions } from "@/lib/shuffle-options";
 import SubjectTopicSelect from "./SubjectTopicSelect";
 import AIExplanationButton from "./AIExplanationButton";
 import {
@@ -377,10 +378,13 @@ export default function CustomExamTab() {
       // submit of the new exam 409s with ATTEMPT_HASH_MISMATCH.
       clearAttemptId(STORAGE_KEY);
       const attemptId = ensureAttemptId(STORAGE_KEY);
+      // Serve-time option shuffle, seeded by the attempt: stable for this
+      // exam (answering, review, AI explanations) and fresh next attempt.
+      // Grading + hash are id/text-based, so display order is free.
       const persisted: PersistedExam = {
         examId: built.examId,
         attemptId,
-        questions: built.questions,
+        questions: shuffleSessionOptions(built.questions, `exam-${attemptId}`),
         answers: {},
         startsAt: Date.now(),
         durationSec: built.durationSec,
@@ -1160,6 +1164,11 @@ export default function CustomExamTab() {
           {result.review.map((item, i) => {
             const isCorrect = item.status === "correct";
             const isUnanswered = item.status === "unanswered";
+            // Review must mirror the SESSION option order the student saw
+            // (serve-time shuffled), not the server snapshot's stored order —
+            // letter labels + AI explanations derive from this array.
+            const displayOptions =
+              exam?.questions.find((q) => q.id === item.questionId)?.options ?? item.options;
             const ringColor = isCorrect
               ? "ring-[var(--dashboard-success)]"
               : isUnanswered
@@ -1207,7 +1216,7 @@ export default function CustomExamTab() {
 
                     {/* Options with correct/user highlighting */}
                     <div className="space-y-1 mb-2">
-                      {item.options.map((option, oi) => {
+                      {displayOptions.map((option, oi) => {
                         const isUser = option === item.userAnswer;
                         const isRight = option === item.correctAnswer;
                         let cls = "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)]";
@@ -1243,7 +1252,7 @@ export default function CustomExamTab() {
                     <AIExplanationButton
                       questionId={item.questionId}
                       question={item.question}
-                      options={item.options}
+                      options={displayOptions}
                       correctAnswer={item.correctAnswer}
                       userAnswer={item.userAnswer}
                       subject={item.subject}

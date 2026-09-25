@@ -15,6 +15,7 @@ import {
 import { useDialogA11y } from "@/lib/use-dialog-a11y";
 import { DIFFICULTY_LABEL } from "@/lib/exam-ui";
 import type { Server } from "@/lib/types";
+import { shuffleSessionOptions } from "@/lib/shuffle-options";
 import SubjectTopicSelect from "./SubjectTopicSelect";
 import AIExplanationButton from "./AIExplanationButton";
 import {
@@ -294,7 +295,8 @@ export default function MockTestTab() {
       // exam's submit 409s with ATTEMPT_HASH_MISMATCH.
       clearAttemptId(STORAGE_KEY);
       const attemptId = ensureAttemptId(STORAGE_KEY);
-      setQuestions(built.questions);
+      // Serve-time option shuffle, seeded by the attempt (see CustomExamTab).
+      setQuestions(shuffleSessionOptions(built.questions, `exam-${attemptId}`));
       setAnswers({});
       setLockedQuestions(new Set());
       setCurrentQuestion(0);
@@ -899,6 +901,10 @@ export default function MockTestTab() {
           {result.review.map((r, i) => {
             const isCorrect = r.status === "correct";
             const isUnanswered = r.status === "unanswered";
+            // Session-order options (see CustomExamTab): letters + AI
+            // explanations derive from the arrangement the student saw.
+            const displayOptions =
+              questions.find((q) => q.id === r.questionId)?.options ?? r.options;
             const ringColor = isCorrect
               ? "ring-[var(--dashboard-success)]"
               : isUnanswered
@@ -951,7 +957,7 @@ export default function MockTestTab() {
                     <AIExplanationButton
                       questionId={r.questionId}
                       question={r.question}
-                      options={r.options}
+                      options={displayOptions}
                       correctAnswer={r.correctAnswer}
                       userAnswer={r.userAnswer}
                       subject={r.subject}

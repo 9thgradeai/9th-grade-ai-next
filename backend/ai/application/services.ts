@@ -728,7 +728,7 @@ export async function explainQuestion(opts: {
     });
     runAfterResponse(async () => {
       const fallback = "ব্যাখ্যা তৈরি করা যাচ্ছে না। অনুগ্রহ করে আবার চেষ্টা করুন।";
-      const result = validateExplainOutput(cached, fallback);
+      const result = validateExplainOutput(cached, fallback, request.options);
       result.source = "cache";
       await persistExplainResult(userId, conversation.id, request.question, JSON.stringify(result), "cache", "cached", subjectId);
       await finalizeUsage({ userId, task: "solver", provider: "cache", model: "cached", started, inputText: system + userText, outputText: cached, success: true, estimatedCostUsd: 0, intent: "explain" });
@@ -793,7 +793,7 @@ export async function explainQuestion(opts: {
     await done;
     const rawText = sanitizeReply(getFullText());
     const fallback = "ব্যাখ্যা তৈরি করা যাচ্ছে না। অনুগ্রহ করে আবার চেষ্টা করুন।";
-    const result = validateExplainOutput(rawText, fallback);
+    const result = validateExplainOutput(rawText, fallback, request.options);
     result.source = name;
     await persistExplainResult(userId, conversation.id, request.question, JSON.stringify(result), name, modelName, subjectId);
     const cacheKey2 = aiCacheKey(["explain", userId, request.question, request.correctAnswer, context.subject?.id ?? ""]);

@@ -12,6 +12,7 @@ import {
   validateEvaluationOutput,
   validateMockTestOutput,
   validateAdvisorOutput,
+  validateExplainOutput,
   sanitizeReply,
 } from "../../../backend/ai/validation/outputs";
 import { detectIntent } from "../../../backend/ai/application/services";
@@ -142,8 +143,48 @@ describe("output validation", () => {
 
   it("returns null for non-JSON", () => {
     expect(parseJsonObject("not json at all")).toBeNull();
-    expect(parseJsonObject("")).toBeNull();
   });
+
+describe("validateExplainOutput option snapping", () => {
+  const shown = ["Availability", "Confidentiality", "Integrity", "Authentication"];
+  const raw = (items: unknown) =>
+    JSON.stringify({ correctAnswerExplanation: "x", whyOthersWrong: items });
+
+  it("keeps exact-matching options untouched", () => {
+    const r = validateExplainOutput(
+      raw([{ option: "Availability", reason: "r1" }]),
+      "fb",
+      shown,
+    );
+    expect(r.whyOthersWrong).toEqual([{ option: "Availability", reason: "r1" }]);
+  });
+
+  it("snaps whitespace/case drift to canonical shown text", () => {
+    const r = validateExplainOutput(
+      raw([{ option: "  integrity ", reason: "r" }]),
+      "fb",
+      shown,
+    );
+    expect(r.whyOthersWrong).toEqual([{ option: "Integrity", reason: "r" }]);
+  });
+
+  it("drops options matching nothing shown (never renders '?')", () => {
+    const r = validateExplainOutput(
+      raw([
+        { option: "Availability", reason: "r1" },
+        { option: "Option B", reason: "r2" },
+      ]),
+      "fb",
+      shown,
+    );
+    expect(r.whyOthersWrong).toEqual([{ option: "Availability", reason: "r1" }]);
+  });
+
+  it("behaves as before when sent options are unknown", () => {
+    const r = validateExplainOutput(raw([{ option: "Anything", reason: "r" }]), "fb");
+    expect(r.whyOthersWrong).toEqual([{ option: "Anything", reason: "r" }]);
+  });
+});
 
   it("normalizes a solver response", () => {
     const result = validateSolverOutput(

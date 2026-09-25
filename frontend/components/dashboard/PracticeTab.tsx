@@ -18,6 +18,7 @@ import {
   flattenNodes,
 } from "./TopicTreePicker";
 import { allocateEvenly, shuffle } from "@/lib/balanced";
+import { shuffleSessionOptions } from "@/lib/shuffle-options";
 
 type PracticeMode = "custom" | "mock" | "quick";
 
@@ -327,7 +328,10 @@ export default function PracticeTab() {
         setLoadError("নির্বাচিত টপিক থেকে কোনো প্রশ্ন পাওয়া যায়নি।");
         setQuestions([]);
       } else {
-        const finalQuestions = shuffle(merged);
+        // Serve-time option shuffle: one seed per session keeps the
+        // arrangement stable while answering + reviewing, and grading +
+        // AI explanations key off option text so they stay exact.
+        const finalQuestions = shuffleSessionOptions(shuffle(merged), `practice-${Date.now()}`);
         setQuestions(finalQuestions);
         setSessionActive(true);
         requestAnimationFrame(() => scrollDashboardTop());

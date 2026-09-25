@@ -216,8 +216,12 @@ export function validateAdvisorOutput(raw: string, fallback: string): AdvisorPla
   };
 }
 
-/** Normalize a raw model response into a valid AIExplanationResult. */
-export function validateExplainOutput(raw: string, fallback: string): AIExplanationResult {
+/** Normalize a raw model response into a valid AIExplanationResult.
+ * `sentOptions` (the exact option texts shown to the student) snaps each
+ * whyOthersWrong entry to canonical text and drops non-matching entries —
+ * so letter labels derived client-side always match the displayed order,
+ * even when options were shuffled per session. */
+export function validateExplainOutput(raw: string, fallback: string, sentOptions?: string[]): AIExplanationResult {
   const parsed = parseJsonObject(raw);
   const correctAnswerExplanation = parsed
     ? asString(parsed.correctAnswerExplanation, fallback)
@@ -237,7 +241,19 @@ export function validateExplainOutput(raw: string, fallback: string): AIExplanat
         option: asString(item.option, ""),
         reason: asString(item.reason, ""),
       }))
-      .filter((item) => item.option && item.reason);
+      .filter((item) => item.option && item.reason)
+      .map((item) => {
+        if (!sentOptions) return item;
+        const exact = sentOptions.find((o) => o === item.option);
+        if (exact !== undefined) return item;
+        // Tolerate whitespace/case drift by snapping to canonical text;
+        // drop anything that matches no shown option (never render "?").
+        const close = sentOptions.find(
+          (o) => o.trim().toLowerCase() === item.option.trim().toLowerCase(),
+        );
+        return close !== undefined ? { option: close, reason: item.reason } : null;
+      })
+      .filter((item): item is { option: string; reason: string } => item !== null);
   }
 
   return {
