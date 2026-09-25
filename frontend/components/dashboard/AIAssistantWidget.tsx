@@ -2,7 +2,8 @@
 
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { X, Sparkle, ArrowRight, BookOpen, Target, Brain, ChatCircleDots, Lightbulb, TrendUp, Flame, HandWaving, Waveform } from "@phosphor-icons/react";
+import { X, ArrowRight, BookOpen, Target, Brain, ChatCircleDots, Lightbulb, TrendUp, Flame, Waveform } from "@phosphor-icons/react";
+import AiLogo from "@/components/ui/AiLogo";
 import { useAuth } from "@/lib/auth-ctx";
 import { useLanguage, t } from "@/lib/lang-ctx/index";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
@@ -170,9 +171,7 @@ export default function AIAssistantWidget() {
         className="fixed right-3 sm:right-4 z-40 h-11 pl-3 pr-3.5 rounded-full bg-white border border-zinc-200 shadow-[0_8px_24px_rgba(0,0,0,0.12),0_1px_3px_rgba(0,0,0,0.08)] flex items-center gap-2 hover:shadow-[0_12px_32px_rgba(0,0,0,0.14)] hover:border-zinc-300 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 max-w-[calc(100vw-24px)] bottom-[calc(76px+env(safe-area-inset-bottom,0px))] lg:bottom-6"
         aria-label="Open AI assistant"
       >
-        <span className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
-          <Sparkle className="w-3.5 h-3.5 text-white" weight="fill" />
-        </span>
+        <AiLogo solid className="w-6 h-6 shrink-0" />
         <span className="text-[11px] font-semibold tracking-wide text-zinc-700 truncate">AI Assistant</span>
       </motion.button>
     );
@@ -196,14 +195,14 @@ export default function AIAssistantWidget() {
       >
         {/* Subtle inner highlight */}
         <span className="absolute inset-[1px] rounded-[17px] pointer-events-none" style={{ background: "linear-gradient(180deg, rgba(255,255,255,0.22) 0%, transparent 55%)" }} aria-hidden />
-        {/* Waving icon — Phosphor HandWaving for crisp vector */}
+        {/* Single AI identity (AiLogo) with the wave motion — no competing marks */}
         <motion.span
           className="relative text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.18)]"
           animate={waving && !reduceMotion ? { rotate: [0, 16, -10, 16, -8, 0] } : { rotate: 0 }}
           transition={waving ? { duration: 1.3, repeat: 1, ease: [0.4, 0, 0.2, 1] } : { duration: 0.25 }}
           style={{ display: "inline-block", transformOrigin: "75% 75%" }}
         >
-          <HandWaving className="w-[28px] h-[28px]" weight="fill" />
+          <AiLogo solid={false} className="w-[28px] h-[28px]" />
         </motion.span>
         {/* Live dot */}
         <span className="absolute -top-1 -right-1 w-[13px] h-[13px] rounded-full bg-white shadow-[0_2px_8px_rgba(0,0,0,0.18)] flex items-center justify-center">
@@ -264,7 +263,7 @@ export default function AIAssistantWidget() {
             <div className="px-4 pt-3 pb-3 flex items-start gap-3" style={{ borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
               <div className="w-10 h-10 rounded-[12px] flex items-center justify-center shrink-0" style={{ background: "linear-gradient(135deg, #ecfdf5 0%, #f0fdfa 100%)", border: "1px solid rgba(16,185,129,0.18)", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.8)" }}>
                 <motion.span animate={waving && !reduceMotion ? { rotate: [0, 14, -10, 14, 0] } : {}} transition={{ duration: 1.1, repeat: 1 }} style={{ display: "inline-block", color: "#059669" }}>
-                  <HandWaving className="w-5 h-5" weight="fill" />
+                  <AiLogo solid={false} className="w-5 h-5" />
                 </motion.span>
               </div>
               <div className="min-w-0 flex-1">
