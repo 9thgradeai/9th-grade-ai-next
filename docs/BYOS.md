@@ -163,14 +163,20 @@ Env rules (enforced in `backend/auth/google.ts`, fail-fast with a clear
 server log — Google itself only shows the generic mismatch page):
 
 - `GOOGLE_AUTH_REDIRECT_URI` is the sign-in callback. Set it in production.
-  If `NEXT_PUBLIC_APP_URL` is set (no trailing slash, `https`), it is used
-  automatically — then `GOOGLE_AUTH_REDIRECT_URI` is optional.
+- Otherwise sign-in uses the **request origin** (the host demonstrably
+  serving traffic) — `NEXT_PUBLIC_APP_URL` is never used for sign-in, only
+  drift-checked: if it disagrees with the serving origin you get a
+  `[google-oauth]` server-log warning naming both values. A bad app URL can
+  therefore never bounce production users to a dead host
+  (`404 DEPLOYMENT_NOT_FOUND`).
 - `GOOGLE_REDIRECT_URI` belongs to the **storage** flow only. A legacy
   `GOOGLE_REDIRECT_URI` pointing at `/api/auth/google/callback` is still
   honored; one pointing at the storage path is ignored for sign-in.
-- Non-canonical hosts (Vercel preview URLs — Google forbids wildcards, so
-  previews can never be registered) are bounced to the canonical host
-  before the flow starts, keeping cookie + callback on one origin.
+- Only Vercel **preview** deployments (`VERCEL_ENV=preview`, whose URLs
+  Google forbids registering) bounce to the canonical host
+  (`GOOGLE_AUTH_REDIRECT_URI` → `VERCEL_PROJECT_PRODUCTION_URL` →
+  `NEXT_PUBLIC_APP_URL`) before the flow starts, keeping cookie + callback
+  on one origin.
 
 ## 13. Tests
 

@@ -13,6 +13,7 @@ vi.mock("~backend/auth/google", () => ({
   isGoogleEnabled: () => true,
   getGoogleRedirectUri: (origin: string) => `${origin}/api/auth/google/callback`,
   getCanonicalAppOrigin: vi.fn((origin: string) => new URL(origin).origin),
+  isPreviewDeployment: vi.fn(() => false),
   generateOAuthState: () => "state-abc-123",
   generateCodeVerifier: () => "verifier-xyz-789",
   sha256Base64Url: () => "challenge-s256",
@@ -92,7 +93,8 @@ describe("GET /api/auth/google (start)", () => {
   });
 
   it("bounces non-canonical hosts to the canonical authorize URL", async () => {
-    const { getCanonicalAppOrigin } = await import("~backend/auth/google");
+    const { getCanonicalAppOrigin, isPreviewDeployment } = await import("~backend/auth/google");
+    vi.mocked(isPreviewDeployment).mockReturnValueOnce(true);
     vi.mocked(getCanonicalAppOrigin).mockReturnValueOnce("https://9th-grade-ai.vercel.app");
     const res = await googleStartGET(
       new Request("https://preview-123.vercel.app/api/auth/google?redirect=/dashboard", { method: "GET" }),

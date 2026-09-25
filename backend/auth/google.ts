@@ -48,8 +48,13 @@ export function isGoogleEnabled(): boolean {
  *      (Drive) callback `/api/storage/google/callback` — that value is
  *      ignored here (with a server-side warning) because sending it to
  *      Google produces `Error 400: redirect_uri_mismatch`.
- *   3. Canonical `<NEXT_PUBLIC_APP_URL>/api/auth/google/callback`.
- *   4. Last resort: the request origin (local dev / unconfigured deploys).
+ *   3. The request origin (normalized).
+ *
+ * Deliberately NOT `NEXT_PUBLIC_APP_URL`: that var has pointed at dead or
+ * preview hosts in real deployments, and redirecting users away from the
+ * host that demonstrably serves traffic yields `404 DEPLOYMENT_NOT_FOUND`.
+ * A conflicting NEXT_PUBLIC_APP_URL is reported via console.warn so the
+ * misconfiguration is visible in server logs instead of failing silently.
  *
  * The URI sent to Google must be byte-identical to one registered in the
  * Google Cloud Console OAuth client ("Authorized redirect URIs").
@@ -74,6 +79,25 @@ function assertValidRedirectUri(uri: string, source: string): void {
   if (!parsed.pathname.startsWith(GOOGLE_SIGNIN_CALLBACK_PATH)) {
     throw new ConfigurationError(
       `${source} must point at ${GOOGLE_SIGNIN_CALLBACK_PATH}: ${uri}`,
+    );
+  }
+}
+
+/** Compare a configured app URL against the live request origin (origin-only). */
+function checkAppUrlDrift(requestOrigin: string): void {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL?.trim();
+  if (!appUrl) return;
+  let configured: string;
+  try {
+    configured = new URL(stripTrailingSlash(appUrl)).origin;
+  } catch {
+    console.warn(`[google-oauth] NEXT_PUBLIC_APP_URL is not a valid URL: ${appUrl}. Ignoring it for sign-in.`);
+    return;
+  }
+  if (configured !== new URL(requestOrigin).origin) {
+    console.warn(
+      `[google-oauth] NEXT_PUBLIC_APP_URL (${configured}) differs from the serving origin (${new URL(requestOrigin).origin}). ` +
+        `Sign-in uses the serving origin; fix NEXT_PUBLIC_APP_URL or set GOOGLE_AUTH_REDIRECT_URI to silence this.`,
     );
   }
 }
@@ -107,29 +131,37 @@ export function getGoogleRedirectUri(origin: string): string {
     );
   }
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL?.trim();
-  if (appUrl) {
-    const uri = `${stripTrailingSlash(appUrl)}${GOOGLE_SIGNIN_CALLBACK_PATH}`;
-    assertValidRedirectUri(uri, "NEXT_PUBLIC_APP_URL");
-    return uri;
-  }
-
+  checkAppUrlDrift(origin);
   return `${stripTrailingSlash(origin)}${GOOGLE_SIGNIN_CALLBACK_PATH}`;
 }
 
 /**
- * Canonical app origin for OAuth (scheme + host, no path). Same precedence
- * as getGoogleRedirectUri but returns the origin so routes can detect
- * non-canonical hosts (e.g. Vercel preview deployments, whose URLs can
- * never be pre-registered with Google) and bounce to the canonical host
- * before starting the flow.
+ * Canonical app origin for OAuth bounce targets (scheme + host, no path):
+ * explicit override → Vercel production URL → NEXT_PUBLIC_APP_URL.
+ * Only consulted when isPreviewDeployment() so a bad env value can never
+ * redirect production traffic to a dead host (404 DEPLOYMENT_NOT_FOUND).
  */
+/** True on Vercel preview deployments, whose URLs Google can never
+ * pre-register (no wildcards allowed) — the only case that may bounce. */
+export function isPreviewDeployment(): boolean {
+  return process.env.VERCEL_ENV === "preview";
+}
+
 export function getCanonicalAppOrigin(requestOrigin: string): string {
   const explicit = process.env.GOOGLE_AUTH_REDIRECT_URI?.trim();
   if (explicit) {
     const uri = stripTrailingSlash(explicit);
     assertValidRedirectUri(uri, "GOOGLE_AUTH_REDIRECT_URI");
     return new URL(uri).origin;
+  }
+  const vercelProd = process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim();
+  if (vercelProd) {
+    const withScheme = vercelProd.includes("://") ? vercelProd : `https://${vercelProd}`;
+    try {
+      return new URL(stripTrailingSlash(withScheme)).origin;
+    } catch {
+      throw new ConfigurationError(`VERCEL_PROJECT_PRODUCTION_URL is not a valid URL: ${vercelProd}`);
+    }
   }
   const appUrl = process.env.NEXT_PUBLIC_APP_URL?.trim();
   if (appUrl) {

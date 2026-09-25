@@ -18,6 +18,7 @@ import {
   sha256Base64Url,
   buildGoogleAuthUrl,
   getGoogleRedirectUri,
+  isPreviewDeployment,
   getCanonicalAppOrigin,
 } from "~backend/auth/google";
 import { AppError, toHttpResponse } from "~backend/errors";
@@ -50,11 +51,13 @@ export async function GET(request: Request) {
     const redirect = searchParams.get("redirect") ?? "/dashboard";
 
     // Google only accepts pre-registered redirect URIs (no wildcards), so a
-    // non-canonical host (Vercel preview URL, proxy host) can never complete
-    // the flow locally — bounce to the canonical host first so the state
-    // cookie, authorize call, and callback all share one origin.
+    // Vercel preview deployment can never complete the flow on its own host.
+    // Bounce previews to the canonical host first — and ONLY previews. A bad
+    // env value must never redirect production traffic to a dead host
+    // (404 DEPLOYMENT_NOT_FOUND): production-like hosts always use their own
+    // origin, which is where traffic demonstrably flows.
     const canonicalOrigin = getCanonicalAppOrigin(origin);
-    if (new URL(origin).origin !== canonicalOrigin) {
+    if (isPreviewDeployment() && new URL(origin).origin !== canonicalOrigin) {
       const canonical = new URL("/api/auth/google", canonicalOrigin);
       canonical.searchParams.set("redirect", redirect);
       const hint = searchParams.get("login_hint");
@@ -68,6 +71,8 @@ export async function GET(request: Request) {
     const verifier = generateCodeVerifier();
     const challenge = sha256Base64Url(verifier);
     const redirectUri = getGoogleRedirectUri(origin);
+    // No secrets here — aids diagnosing redirect_uri_mismatch from logs.
+    console.info(`[google-oauth] authorize redirect_uri=${redirectUri}`);
 
     const googleUrl = buildGoogleAuthUrl({
       state,
