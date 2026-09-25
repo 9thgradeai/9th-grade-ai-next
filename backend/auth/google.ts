@@ -38,13 +38,108 @@ export function isGoogleEnabled(): boolean {
 }
 
 /**
- * Redirect URI used for the OAuth `redirect_uri`. Defaults to
- * `<origin>/api/auth/google/callback`; override with GOOGLE_REDIRECT_URI when the
- * app is served behind a proxy or on a different canonical host than the
- * browser sees.
+ * Redirect URI used for the sign-in OAuth `redirect_uri`.
+ *
+ * Resolution order (first hit wins):
+ *   1. `GOOGLE_AUTH_REDIRECT_URI` — full explicit URL, e.g.
+ *      `https://9th-grade-ai.vercel.app/api/auth/google/callback`.
+ *   2. Legacy `GOOGLE_REDIRECT_URI`, but ONLY when it points at the sign-in
+ *      callback path. NOTE: docs historically set this var to the *storage*
+ *      (Drive) callback `/api/storage/google/callback` — that value is
+ *      ignored here (with a server-side warning) because sending it to
+ *      Google produces `Error 400: redirect_uri_mismatch`.
+ *   3. Canonical `<NEXT_PUBLIC_APP_URL>/api/auth/google/callback`.
+ *   4. Last resort: the request origin (local dev / unconfigured deploys).
+ *
+ * The URI sent to Google must be byte-identical to one registered in the
+ * Google Cloud Console OAuth client ("Authorized redirect URIs").
  */
+export const GOOGLE_SIGNIN_CALLBACK_PATH = "/api/auth/google/callback";
+
+function stripTrailingSlash(url: string): string {
+  return url.replace(/\/+$/, "");
+}
+
+/** Fail fast on malformed redirect URIs instead of sending Google a bad one. */
+function assertValidRedirectUri(uri: string, source: string): void {
+  let parsed: URL;
+  try {
+    parsed = new URL(uri);
+  } catch {
+    throw new ConfigurationError(`${source} is not a valid URL: ${uri}`);
+  }
+  if (process.env.NODE_ENV === "production" && parsed.protocol !== "https:") {
+    throw new ConfigurationError(`${source} must use https in production: ${uri}`);
+  }
+  if (!parsed.pathname.startsWith(GOOGLE_SIGNIN_CALLBACK_PATH)) {
+    throw new ConfigurationError(
+      `${source} must point at ${GOOGLE_SIGNIN_CALLBACK_PATH}: ${uri}`,
+    );
+  }
+}
+
 export function getGoogleRedirectUri(origin: string): string {
-  return process.env.GOOGLE_REDIRECT_URI || `${origin}/api/auth/google/callback`;
+  const explicit = process.env.GOOGLE_AUTH_REDIRECT_URI?.trim();
+  if (explicit) {
+    const uri = stripTrailingSlash(explicit);
+    assertValidRedirectUri(uri, "GOOGLE_AUTH_REDIRECT_URI");
+    return uri;
+  }
+
+  const legacy = process.env.GOOGLE_REDIRECT_URI?.trim();
+  if (legacy) {
+    const normalized = stripTrailingSlash(legacy);
+    try {
+      const pathname = new URL(normalized).pathname;
+      if (pathname === GOOGLE_SIGNIN_CALLBACK_PATH || pathname.startsWith(`${GOOGLE_SIGNIN_CALLBACK_PATH}/`)) {
+        assertValidRedirectUri(normalized, "GOOGLE_REDIRECT_URI");
+        return normalized;
+      }
+    } catch {
+      // Falls through to canonical resolution below.
+    }
+    // The common misconfiguration: GOOGLE_REDIRECT_URI points at the Drive
+    // storage callback. Say so in the server log — the client only ever sees
+    // Google's generic redirect_uri_mismatch page.
+    console.warn(
+      `[google-oauth] GOOGLE_REDIRECT_URI points at a non-sign-in callback and will be ignored for sign-in: ${legacy}. ` +
+        `Set GOOGLE_AUTH_REDIRECT_URI to the sign-in callback instead.`,
+    );
+  }
+
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL?.trim();
+  if (appUrl) {
+    const uri = `${stripTrailingSlash(appUrl)}${GOOGLE_SIGNIN_CALLBACK_PATH}`;
+    assertValidRedirectUri(uri, "NEXT_PUBLIC_APP_URL");
+    return uri;
+  }
+
+  return `${stripTrailingSlash(origin)}${GOOGLE_SIGNIN_CALLBACK_PATH}`;
+}
+
+/**
+ * Canonical app origin for OAuth (scheme + host, no path). Same precedence
+ * as getGoogleRedirectUri but returns the origin so routes can detect
+ * non-canonical hosts (e.g. Vercel preview deployments, whose URLs can
+ * never be pre-registered with Google) and bounce to the canonical host
+ * before starting the flow.
+ */
+export function getCanonicalAppOrigin(requestOrigin: string): string {
+  const explicit = process.env.GOOGLE_AUTH_REDIRECT_URI?.trim();
+  if (explicit) {
+    const uri = stripTrailingSlash(explicit);
+    assertValidRedirectUri(uri, "GOOGLE_AUTH_REDIRECT_URI");
+    return new URL(uri).origin;
+  }
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL?.trim();
+  if (appUrl) {
+    try {
+      return new URL(stripTrailingSlash(appUrl)).origin;
+    } catch {
+      throw new ConfigurationError(`NEXT_PUBLIC_APP_URL is not a valid URL: ${appUrl}`);
+    }
+  }
+  return new URL(requestOrigin).origin;
 }
 
 function clientId(): string {

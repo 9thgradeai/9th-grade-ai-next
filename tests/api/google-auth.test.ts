@@ -12,6 +12,7 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 vi.mock("~backend/auth/google", () => ({
   isGoogleEnabled: () => true,
   getGoogleRedirectUri: (origin: string) => `${origin}/api/auth/google/callback`,
+  getCanonicalAppOrigin: vi.fn((origin: string) => new URL(origin).origin),
   generateOAuthState: () => "state-abc-123",
   generateCodeVerifier: () => "verifier-xyz-789",
   sha256Base64Url: () => "challenge-s256",
@@ -88,6 +89,19 @@ describe("GET /api/auth/google (start)", () => {
     const res = await googleStartGET(new Request(`${BASE}/api/auth/google`, { method: "GET" }));
     const setCookie = decodeURIComponent(res.headers.get("set-cookie") ?? "");
     expect(setCookie).toContain('"redirect":"/dashboard"');
+  });
+
+  it("bounces non-canonical hosts to the canonical authorize URL", async () => {
+    const { getCanonicalAppOrigin } = await import("~backend/auth/google");
+    vi.mocked(getCanonicalAppOrigin).mockReturnValueOnce("https://9th-grade-ai.vercel.app");
+    const res = await googleStartGET(
+      new Request("https://preview-123.vercel.app/api/auth/google?redirect=/dashboard", { method: "GET" }),
+    );
+    expect(res.status).toBe(307);
+    const location = res.headers.get("location") ?? "";
+    expect(location).toBe("https://9th-grade-ai.vercel.app/api/auth/google?redirect=%2Fdashboard");
+    // No oauth cookie planted on the non-canonical host.
+    expect(res.headers.get("set-cookie") ?? "").not.toContain("oauth_google=");
   });
 });
 

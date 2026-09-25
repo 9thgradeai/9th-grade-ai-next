@@ -138,12 +138,39 @@ DIRECT_DATABASE_URL=postgresql://... (for db push)
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 GOOGLE_REDIRECT_URI=https://your-app.com/api/storage/google/callback
+GOOGLE_AUTH_REDIRECT_URI=https://your-app.com/api/auth/google/callback
 GOOGLE_OAUTH_ENCRYPTION_KEY= # 32+ random hex, or falls back to AUTH_SECRET
 AUTH_SECRET= # also used for session JWT
 NEXT_PUBLIC_APP_URL=https://your-app.com
 CRON_SECRET= # for /api/storage/worker Bearer
 REDIS_URL= # optional for QueryCache
 ```
+
+### Google sign-in redirect URIs (fixes `Error 400: redirect_uri_mismatch`)
+
+Google accepts ONLY byte-identical pre-registered redirect URIs. In the
+Google Cloud Console OAuth client, under **Authorized redirect URIs**,
+register exactly these two (no trailing slashes):
+
+```
+https://your-app.com/api/auth/google/callback       ← user sign-in
+https://your-app.com/api/storage/google/callback    ← Drive storage (BYOS)
+http://localhost:3000/api/auth/google/callback      ← local dev sign-in
+http://localhost:3000/api/storage/google/callback   ← local dev storage
+```
+
+Env rules (enforced in `backend/auth/google.ts`, fail-fast with a clear
+server log — Google itself only shows the generic mismatch page):
+
+- `GOOGLE_AUTH_REDIRECT_URI` is the sign-in callback. Set it in production.
+  If `NEXT_PUBLIC_APP_URL` is set (no trailing slash, `https`), it is used
+  automatically — then `GOOGLE_AUTH_REDIRECT_URI` is optional.
+- `GOOGLE_REDIRECT_URI` belongs to the **storage** flow only. A legacy
+  `GOOGLE_REDIRECT_URI` pointing at `/api/auth/google/callback` is still
+  honored; one pointing at the storage path is ignored for sign-in.
+- Non-canonical hosts (Vercel preview URLs — Google forbids wildcards, so
+  previews can never be registered) are bounced to the canonical host
+  before the flow starts, keeping cookie + callback on one origin.
 
 ## 13. Tests
 

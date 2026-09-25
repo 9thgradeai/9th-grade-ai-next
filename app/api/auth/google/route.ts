@@ -18,6 +18,7 @@ import {
   sha256Base64Url,
   buildGoogleAuthUrl,
   getGoogleRedirectUri,
+  getCanonicalAppOrigin,
 } from "~backend/auth/google";
 import { AppError, toHttpResponse } from "~backend/errors";
 import { checkRateLimit, getRateLimitKey, LIMITS } from "~backend/rate-limit";
@@ -47,6 +48,21 @@ export async function GET(request: Request) {
 
     const { searchParams } = new URL(request.url);
     const redirect = searchParams.get("redirect") ?? "/dashboard";
+
+    // Google only accepts pre-registered redirect URIs (no wildcards), so a
+    // non-canonical host (Vercel preview URL, proxy host) can never complete
+    // the flow locally — bounce to the canonical host first so the state
+    // cookie, authorize call, and callback all share one origin.
+    const canonicalOrigin = getCanonicalAppOrigin(origin);
+    if (new URL(origin).origin !== canonicalOrigin) {
+      const canonical = new URL("/api/auth/google", canonicalOrigin);
+      canonical.searchParams.set("redirect", redirect);
+      const hint = searchParams.get("login_hint");
+      if (hint) canonical.searchParams.set("login_hint", hint);
+      const res = NextResponse.redirect(canonical);
+      applySecurityHeaders(res);
+      return res;
+    }
 
     const state = generateOAuthState();
     const verifier = generateCodeVerifier();
