@@ -26,6 +26,7 @@ import { List, MagnifyingGlass, X, Question } from "@phosphor-icons/react";
 import { TAB_ICONS } from "@/lib/exam-ui";
 import { useAuth as useAuthForDrawer } from "@/lib/auth-ctx";
 import LogoutButton from "@/components/dashboard/LogoutButton";
+import WorldMapBackdrop from "@/components/dashboard/WorldMapBackdrop";
 import { useT } from "@/lib/i18n";
 
 // The voice tutor (speech-recognition stack) is only needed when launched —
@@ -238,6 +239,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <EcosystemProvider>
       <EmailVerificationGate>
           <div className="dashboard-shell h-dvh overflow-hidden flex" style={{ background: "var(--dashboard-background)" }}>
+            {/* Ambient world map (desktop only, decorative, non-interactive) */}
+            <WorldMapBackdrop />
             {/* Skip link — first focusable element for keyboard users */}
             <a
               href="#dashboard-content"
@@ -332,8 +335,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 </div>
               </header>
 
-              {/* Scrollable Content — isolated dashboard canvas */}
-              <main id="dashboard-content" className="flex-1 min-h-0 overflow-y-auto overscroll-contain pb-[72px] lg:pb-8" style={{ background: "var(--dashboard-background)" }}>
+              {/* Scrollable Content — isolated dashboard canvas. Transparent so
+                  the ambient world map shows through the gutters; the shell
+                  behind it keeps the base background color. */}
+              <main id="dashboard-content" className="relative z-[1] flex-1 min-h-0 overflow-y-auto overscroll-contain pb-[72px] lg:pb-8" style={{ background: "transparent" }}>
                 <div className="max-w-[1360px] mx-auto p-4 sm:p-6 lg:p-8 min-w-0">
                   {children}
                 </div>

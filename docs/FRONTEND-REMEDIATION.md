@@ -47,3 +47,15 @@ Run per phase: `npm run test && npm run lint && npm run typecheck && npm run bui
 - No auto-open under 640px (wave nudge only); Escape closes; role=dialog;
   tappable drag handle; working hover tooltip (missing group class added).
 - intelError renders alert + Retry; quick actions 44px; real scrim on phones.
+
+## Ambient world-map dashboard backdrop
+- Asset: `scripts/build-world-map.ts` decodes Natural Earth 110m land
+  TopoJSON (public domain), drops Antarctica, Douglas–Peucker simplifies,
+  splits antimeridian streaks, emits `frontend/lib/data/world-map.ts`
+  (16.6KB; script fails over 25KB).
+- `WorldMapBackdrop` (dashboard layout, `lg+` only): fixed, aria-hidden,
+  pointer-events-none, radially masked, transform-only 90s drift; Dhaka
+  default spotlight rebinds to weakest geography-flavoured topic.
+- Main canvas is transparent over the shell base so the map shows in
+  gutters only; cards/nav stay opaque. Reduced-motion + forced-colors
+  guards included. Verified dark/light screenshots + 909/909 tests.
