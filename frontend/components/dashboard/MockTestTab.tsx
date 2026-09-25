@@ -74,7 +74,6 @@ export default function MockTestTab() {
   const submittingRef = useRef(false);
   const startedAtRef = useRef(0);
   const totalSecRef = useRef(0);
-  const [lockedQuestions, setLockedQuestions] = useState<Set<number>>(new Set());
   const [highlightedReview, setHighlightedReview] = useState<string | null>(null);
   const highlightTimeoutRef = useRef<number | null>(null);
 
@@ -298,7 +297,6 @@ export default function MockTestTab() {
       // Serve-time option shuffle, seeded by the attempt (see CustomExamTab).
       setQuestions(shuffleSessionOptions(built.questions, `exam-${attemptId}`));
       setAnswers({});
-      setLockedQuestions(new Set());
       setCurrentQuestion(0);
       startedAtRef.current = Date.now();
       totalSecRef.current = built.durationSec;
@@ -322,7 +320,9 @@ export default function MockTestTab() {
   };
 
   const selectAnswer = (questionId: number, option: string) => {
-    // Re-tappable until submit: misclicks can be corrected.
+    // One answer per question: locked once answered (lock derives from
+    // answers presence, so it survives resume).
+    if (answers[questionId] !== undefined) return;
     setAnswers((prev) => ({ ...prev, [questionId]: option }));
   };
 
@@ -447,7 +447,6 @@ export default function MockTestTab() {
     setDurationMin(30);
     setQuestions([]);
     setAnswers({});
-    setLockedQuestions(new Set());
     setCurrentQuestion(0);
     setTimeRemaining(0);
     setResult(null);
@@ -672,12 +671,12 @@ export default function MockTestTab() {
             <div className="space-y-2.5" role="radiogroup" aria-label={`প্রশ্ন ${currentQuestion + 1} — উত্তর নির্বাচন করুন`}>
               {q.options.map((option, i) => {
                 const isSelected = answers[q.id] === option;
-                const isLocked = false; // re-tappable until submit
+                const isLocked = answers[q.id] !== undefined;
                 return (
                   <button
                     key={i}
                     onClick={() => selectAnswer(q.id, option)}
-                    disabled={false}
+                    disabled={isLocked}
                     role="radio"
                     aria-checked={isSelected}
                     className="w-full text-left p-3.5 rounded-xl border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] disabled:cursor-not-allowed"
@@ -698,6 +697,11 @@ export default function MockTestTab() {
                 );
               })}
             </div>
+            {answers[q.id] !== undefined && (
+              <p role="status" className="text-xs font-mono text-[var(--dashboard-text-muted)] mt-3">
+                ✓ উত্তর লক হয়েছে — পরিবর্তন করা যাবে না
+              </p>
+            )}
           </motion.div>
         ) : (
           <div className="rounded-2xl border p-10 text-center" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}>

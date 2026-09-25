@@ -110,8 +110,30 @@ describe("MockTestTab (subtopic selection + build)", () => {
     expect(body.durationSec).toBe(1800); // default 30 minutes
   });
 
-  it("shows the available count for a selected subtopic", async () => {
+  it("locks the answer after the first selection (cannot be changed)", async () => {
     render(<EcosystemProvider><MockTestTab /></EcosystemProvider>);
+
+    const subjectElements = await screen.findAllByText("বাংলা ভাষা ও সাহিত্য");
+    fireEvent.click(subjectElements[0]);
+    fireEvent.click(await screen.findByRole("checkbox", { name: /ভাষা/ }));
+    fireEvent.click(await screen.findByRole("checkbox", { name: /বানান ও শুদ্ধি/ }));
+    fireEvent.click(screen.getByText("মক টেস্ট শুরু করুন"));
+    await screen.findByText("নিচের কোনটি শুদ্ধ বানান?");
+
+    const group = screen.getByRole("radiogroup");
+    const radios = within(group).getAllByRole("radio");
+    fireEvent.click(radios[0]);
+    expect(radios[0]).toHaveAttribute("aria-checked", "true");
+
+    // Second tap on another option must not change the answer; options lock.
+    fireEvent.click(radios[1]);
+    expect(radios[0]).toHaveAttribute("aria-checked", "true");
+    expect(radios[1]).toHaveAttribute("aria-checked", "false");
+    expect(radios[1]).toBeDisabled();
+    expect(await screen.findByText(/উত্তর লক হয়েছে/)).toBeInTheDocument();
+  });
+
+  it("shows the available count for a selected subtopic", async () => {    render(<EcosystemProvider><MockTestTab /></EcosystemProvider>);
     const subjectElements = await screen.findAllByText("বাংলা ভাষা ও সাহিত্য");
     fireEvent.click(subjectElements[0]);
     fireEvent.click(await screen.findByRole("checkbox", { name: /ভাষা/ }));

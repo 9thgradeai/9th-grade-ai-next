@@ -100,7 +100,6 @@ export default function PracticeTab() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [showUnansweredConfirm, setShowUnansweredConfirm] = useState(false);
-  const [lockedQuestions, setLockedQuestions] = useState<Set<number>>(new Set());
   const [timerKey, setTimerKey] = useState(0);
 
   const scrollDashboardTop = () => {
@@ -223,7 +222,6 @@ export default function PracticeTab() {
     setResult(null);
     setLoadError(null);
     setSubmitError(null);
-    setLockedQuestions(new Set());
     setTimerKey((k) => k + 1);
   };
 
@@ -286,7 +284,6 @@ export default function PracticeTab() {
     setSubmitError(null);
     setAnswers({});
     setCurrentIndex(0);
-    setLockedQuestions(new Set());
     setTimerKey((k) => k + 1);
     try {
       const pools = await Promise.all(
@@ -345,7 +342,10 @@ export default function PracticeTab() {
   };
 
   const selectAnswer = (questionId: number, option: string) => {
-    // Re-tappable until submit: allow change-of-mind.
+    // One answer per question: once answered the options lock and the
+    // selection cannot be changed. Lock derives from answers presence so
+    // it survives session resume.
+    if (answers[questionId] !== undefined) return;
     setAnswers((prev) => ({ ...prev, [questionId]: option }));
   };
 
@@ -689,12 +689,12 @@ export default function PracticeTab() {
                     <div className="space-y-2.5 mb-6" role="radiogroup" aria-label="উত্তর নির্বাচন করুন">
                       {currentQuestion.options.map((option, i) => {
                         const isSelected = answers[currentQuestion.id] === option;
-                        const isLocked = false;
+                        const isLocked = answers[currentQuestion.id] !== undefined;
                         return (
                           <button
                             key={i}
                             onClick={() => selectAnswer(currentQuestion.id, option)}
-                            disabled={false}
+                            disabled={isLocked}
                             role="radio"
                             aria-checked={isSelected}
                             className="w-full text-left p-3.5 rounded-xl border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] disabled:cursor-not-allowed"
@@ -715,6 +715,11 @@ export default function PracticeTab() {
                         );
                       })}
                     </div>
+                    {answers[currentQuestion.id] !== undefined && (
+                      <p role="status" className="text-xs font-mono text-[var(--dashboard-text-muted)] mb-4">
+                        ✓ উত্তর লক হয়েছে — পরিবর্তন করা যাবে না
+                      </p>
+                    )}
 
                     {/* Navigation */}
                     <div className="flex items-center justify-between">
@@ -809,8 +814,7 @@ export default function PracticeTab() {
                       setAnswers({});
                       setCurrentIndex(0);
                       setQuestions([]);
-                      setLockedQuestions(new Set());
-                      setTimerKey((k) => k + 1);
+                                        setTimerKey((k) => k + 1);
                     }}
                     className="px-5 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2 shadow-neon-glow"
                   >
