@@ -11,7 +11,7 @@
  * ----------------------------------------------------------------------------
  */
 import { describe, it, expect } from "vitest";
-import { parseIctFile, routeTopic, fileSlug } from "../scripts/import-bank-ict";
+import { parseIctFile, routeTopic, fileSlug, balanceOptions, seededShuffle } from "../scripts/import-bank-ict";
 
 describe("parseIctFile — single-line format", () => {
   it("parses options, answer letter and explanation", () => {
@@ -137,5 +137,40 @@ describe("routeTopic", () => {
     expect(fileSlug("Questions(MS Office Mastery,System Software)[9Th-Grade AI].txt")).toBe("ms-office");
     expect(fileSlug("Questions-(CPU & Memory Hierarchy)[9Th-Grade AI].txt")).toBe("cpu-memory");
     expect(fileSlug("Questions-(Network Topology & OSI)[9Th-Grade AI].txt")).toBe("network-topology");
+  });
+});
+
+describe("balanceOptions", () => {
+  const opts: [string, string, string, string] = ["L1", "SRAM", "Registers", "SSD"];
+
+  it("places the correct text at the requested slot and preserves the set", () => {
+    for (const slot of [0, 1, 2, 3]) {
+      const out = balanceOptions(opts, "Registers", slot, "seed-1");
+      expect(out[slot]).toBe("Registers");
+      expect([...out].sort()).toEqual([...opts].sort());
+    }
+  });
+
+  it("is deterministic for the same seed", () => {
+    expect(balanceOptions(opts, "Registers", 1, "k")).toEqual(balanceOptions(opts, "Registers", 1, "k"));
+  });
+
+  it("round-robin slots distribute uniformly", () => {
+    const counts = [0, 0, 0, 0];
+    for (let i = 0; i < 100; i++) {
+      const out = balanceOptions(opts, "Registers", i % 4, `key-${i}`);
+      counts[out.indexOf("Registers")]++;
+    }
+    expect(counts).toEqual([25, 25, 25, 25]);
+  });
+
+  it("throws when the correct text is missing (never silently corrupts)", () => {
+    expect(() => balanceOptions(opts, "Ghost", 0, "k")).toThrow();
+  });
+
+  it("seededShuffle is a stable permutation", () => {
+    const out = seededShuffle(["a", "b", "c", "d"], 42);
+    expect([...out].sort()).toEqual(["a", "b", "c", "d"]);
+    expect(seededShuffle(["a", "b", "c", "d"], 42)).toEqual(out);
   });
 });

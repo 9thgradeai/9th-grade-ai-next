@@ -272,6 +272,60 @@ export type IctImportReport = {
   topics: Record<string, number>;
 };
 
+// ── Answer-position balancing ────────────────────────────────────
+// Source files are heavily answer-biased (~65% B). Grading compares option
+// TEXT (never letters), and explanations never reference positions, so the
+// stored order can be rearranged freely. balanceOptions puts the correct
+// text at `slot` and fills the rest with the distractors in seeded order.
+// Callers assign slots round-robin over sourceKey-sorted rows → ~25% each,
+// deterministic and reproducible on every rerun.
+
+/** mulberry32 — tiny seeded PRNG (deterministic per question). */
+export function seededShuffle<T>(items: T[], seed: number): T[] {
+  const out = [...items];
+  let a = seed >>> 0;
+  for (let i = out.length - 1; i > 0; i--) {
+    a |= 0;
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    const j = ((t ^ (t >>> 14)) >>> 0) % (i + 1);
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
+}
+
+export function hashSeed(s: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
+export function balanceOptions(
+  options: [string, string, string, string],
+  correctText: string,
+  slot: number,
+  seed: string,
+): [string, string, string, string] {
+  const correct = options.find((o) => o === correctText);
+  if (correct === undefined) throw new Error("correctAnswer not found in options");
+  // Remove exactly one occurrence of the correct text (duplicated option
+  // texts stay with the distractors).
+  const pool = [...options];
+  pool.splice(pool.indexOf(correctText), 1);
+  const shuffled = seededShuffle(pool, hashSeed(seed));
+  const out = new Array<string>(4);
+  out[slot % 4] = correctText;
+  let d = 0;
+  for (let i = 0; i < 4; i++) {
+    if (out[i] === undefined) out[i] = shuffled[d++];
+  }
+  return out as [string, string, string, string];
+}
+
 export async function importBankIct(prisma: PrismaClient): Promise<IctImportReport> {
   const bb = await prisma.examEcosystem.findUnique({ where: { code: "BANGLADESH_BANK" } });
   if (!bb) throw new Error("BANGLADESH_BANK ecosystem missing — run the seed first");
@@ -354,6 +408,13 @@ export async function importBankIct(prisma: PrismaClient): Promise<IctImportRepo
     }
     console.log(`  ✓ ${file}: ${parsed.records.length} parsed`);
   }
+
+  // Balance answer positions: sourceKey-sorted round-robin → ~25% each.
+  // Deterministic: identical input always yields identical stored order.
+  const ordered = [...ops].sort((a, b) => (a.key < b.key ? -1 : a.key > b.key ? 1 : 0));
+  ordered.forEach((o, i) => {
+    o.data.options = balanceOptions(o.data.options, o.data.correctAnswer, i % 4, o.key);
+  });
 
   // Batched writes: the pooler RTT makes per-row roundtrips infeasible at
   // this volume. One lookup + chunked createMany + one transaction of updates.
