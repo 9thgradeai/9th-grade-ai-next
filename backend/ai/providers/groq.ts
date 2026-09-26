@@ -126,3 +126,16 @@ export function estimateTokens(input: string): number {
 export function isGroqConfigured(): boolean {
   return Boolean(process.env.GROQ_API_KEY);
 }
+
+/**
+ * Dedicated key for MCQ explanations (AI Exp. buttons on Practice/Mock/
+ * Custom-exam review). Falls back to the shared GROQ_API_KEY when unset, so
+ * existing deployments keep working with zero config changes.
+ */
+export function getExplainApiKey(): string | undefined {
+  return process.env.GROQ_API_KEY_EXPLAIN || process.env.GROQ_API_KEY || undefined;
+}
+
+export function isExplainGroqConfigured(): boolean {
+  return Boolean(getExplainApiKey());
+}

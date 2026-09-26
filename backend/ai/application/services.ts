@@ -9,7 +9,7 @@ import { buildContext, questionContextIds } from "../context/context-engine";
 import { loadContextSlices } from "../context/slices";
 import { resolveContextPlan } from "../context/resolver";
 import { buildTutorSystem, buildSolverSystem, buildAssistantSystem, buildEvaluatorSystem, buildMockTestSystem, buildAdvisorSystem, buildExplainSystem } from "../prompts";
-import { resolveModel, resolveModelCandidates, type LLMProvider, type LLMProviderName } from "../providers";
+import { resolveModel, resolveModelCandidates, resolveExplainCandidates, type LLMProvider, type LLMProviderName, type ModelSelection } from "../providers";
 import { notePreferredLanguage, noteTopicSignal, upsertMemory } from "../memory/memory-store";
 import {
   addMessage,
@@ -48,6 +48,32 @@ const TITLE_SNIPPET = 60;
 // Streaming timeout (ms) — serverless functions have limits (Vercel: 60s for Pro, 10s for Hobby)
 const STREAM_TIMEOUT_MS = 30_000;
 
+/** Forward a source stream: reader acquired once, pumped until done.
+ * (Acquiring a new reader inside pull() truncates multi-chunk responses —
+ * the 2nd getReader throws "locked" — which surfaced as invalid JSON
+ * for longer answers such as Math explanations.) */
+function forwardStream(stream: ReadableStream<Uint8Array>): ReadableStream<Uint8Array> {
+  const reader = stream.getReader();
+  return new ReadableStream<Uint8Array>({
+    async start(controller) {
+      try {
+        while (true) {
+          const { value, done: streamDone } = await reader.read();
+          if (streamDone) break;
+          controller.enqueue(value);
+        }
+        controller.close();
+      } catch (err) {
+        controller.error(err);
+      } finally {
+        reader.releaseLock();
+      }
+    },
+    cancel() {
+      reader.cancel().catch(() => {});
+    },
+  });
+}
 /**
  * Wrap a ReadableStream with a timeout. If the stream doesn't produce data
  * within the timeout, it will be cancelled and an error thrown.
@@ -231,8 +257,9 @@ async function withFailover<T>(
   task: "tutor" | "assistant" | "solver",
   opts: { image?: boolean },
   fn: (p: LLMProvider, name: LLMProviderName) => Promise<T>,
+  candidatesOverride?: ModelSelection[],
 ): Promise<{ value: T; provider: LLMProviderName; model: string; isMock: boolean }> {
-  const candidates = resolveModelCandidates(task, opts);
+  const candidates = candidatesOverride ?? resolveModelCandidates(task, opts);
   let lastErr: unknown;
   for (const cand of candidates) {
     try {
@@ -417,24 +444,7 @@ export async function createTutorTurn(opts: {
   // Apply streaming timeout guard
   const timedStream = withStreamTimeout(stream, STREAM_TIMEOUT_MS);
 
-  const wrapped = new ReadableStream<Uint8Array>({
-    async pull(controller) {
-      const reader = timedStream.getReader();
-      try {
-        while (true) {
-          const { value, done: streamDone } = await reader.read();
-          if (streamDone) break;
-          controller.enqueue(value);
-        }
-        controller.close();
-      } catch (err) {
-        controller.error(err);
-      }
-    },
-    cancel() {
-      timedStream.cancel().catch(() => {});
-    },
-  });
+  const wrapped = forwardStream(timedStream);
 
   // Persistence + usage must outlive the HTTP response (serverless freezes
   // the invocation when the stream ends) — schedule via waitUntil.
@@ -590,24 +600,7 @@ export async function solveQuestion(opts: {
   const { stream, done, getFullText } = streamResult;
   const timedStream = withStreamTimeout(stream, STREAM_TIMEOUT_MS);
 
-  const wrapped = new ReadableStream<Uint8Array>({
-    async pull(controller) {
-      const reader = timedStream.getReader();
-      try {
-        while (true) {
-          const { value, done: streamDone } = await reader.read();
-          if (streamDone) break;
-          controller.enqueue(value);
-        }
-        controller.close();
-      } catch (err) {
-        controller.error(err);
-      }
-    },
-    cancel() {
-      timedStream.cancel().catch(() => {});
-    },
-  });
+  const wrapped = forwardStream(timedStream);
 
   runAfterResponse(async () => {
     await done;
@@ -673,14 +666,23 @@ export async function explainQuestion(opts: {
   let subjectId: number | undefined;
   let topicId: number | undefined;
   let topicPath = "";
+  // questionId is enrichment-only (topic-scoped context + grounding). A stale
+  // id (e.g. resumed practice session after a reseed, or a removed question)
+  // must not fail the explanation — the posted question text is sufficient.
+  let resolvedQuestionId: number | undefined;
   if (request.questionId) {
-    const ids = await questionContextIds(request.questionId);
-    subjectId = ids.subjectId ?? subjectId;
-    topicId = ids.topicId ?? undefined;
-    topicPath = ids.topicPath;
+    try {
+      const ids = await questionContextIds(request.questionId);
+      subjectId = ids.subjectId ?? subjectId;
+      topicId = ids.topicId ?? undefined;
+      topicPath = ids.topicPath;
+      resolvedQuestionId = request.questionId;
+    } catch {
+      resolvedQuestionId = undefined;
+    }
   }
 
-  const context = await buildContext({ userId, task: "solver", subjectId, topicId, questionId: request.questionId });
+  const context = await buildContext({ userId, task: "solver", subjectId, topicId, questionId: resolvedQuestionId });
   const domain = await retrieveQuestionBank({
     subjectId: context.subject?.id,
     topicId: context.topic?.id,
@@ -744,10 +746,51 @@ export async function explainQuestion(opts: {
         messages: [{ role: "user", content: userText }],
         maxTokens: 1024,
       }),
+      resolveExplainCandidates(),
     );
     streamResult = fo.value;
     name = fo.provider;
     modelName = fo.model;
+    // Mock fallback streams solver-shaped prose, which has no
+    // correctAnswerExplanation — synthesize a labelled, explain-shaped
+    // response instead so every subject/section renders structured output
+    // even with no API key configured.
+    if (fo.isMock) {
+      const mockExplain = JSON.stringify({
+        correctAnswerExplanation: `সঠিক উত্তর: ${request.correctAnswer}। (MOCK — কোনো API key কনফিগার করা নেই। বাস্তব AI ব্যাখ্যার জন্য GROQ_API_KEY / ANTHROPIC_API_KEY সেট করুন।)`,
+        whyOthersWrong: request.options
+          .filter((o) => o !== request.correctAnswer)
+          .map((o) => ({
+            option: o,
+            reason: "MOCK — API key সেট করলে এই অপশনটি কেন ভুল তার ব্যাখ্যা দেখানো হবে।",
+          })),
+        keyDefinitions: [],
+        relatedConcepts: "",
+        examTip: "MOCK response — configure an API key for real exam tips.",
+        source: "mock",
+      });
+      const enc = new TextEncoder();
+      const mockStream = new ReadableStream<Uint8Array>({
+        start(controller) {
+          controller.enqueue(enc.encode(mockExplain));
+          controller.close();
+        },
+      });
+      const mockName = name;
+      const mockModel = modelName;
+      const mockSubjectId = subjectId;
+      const mockConversationId = conversation.id;
+      const mockUserId = userId;
+      const mockQuestion = request.question;
+      const mockSystem = system;
+      const mockUserText = userText;
+      const mockStarted = started;
+      runAfterResponse(async () => {
+        await persistExplainResult(mockUserId, mockConversationId, mockQuestion, mockExplain, mockName, mockModel, mockSubjectId);
+        await finalizeUsage({ userId: mockUserId, task: "solver", provider: mockName, model: mockModel, started: mockStarted, inputText: mockSystem + mockUserText, outputText: mockExplain, success: true, estimatedCostUsd: 0, intent: "explain" });
+      });
+      return { stream: mockStream, conversationId: conversation.id, provider: name, model: modelName };
+    }
   } catch (err) {
     const formatted = JSON.stringify({
       correctAnswerExplanation: "দুঃখিত, ব্যাখ্যা তৈরি করা যাচ্ছে না। অনুগ্রহ করে কিছুক্ষণ পরে আবার চেষ্টা করুন।",
@@ -770,24 +813,7 @@ export async function explainQuestion(opts: {
   const { stream, done, getFullText } = streamResult;
   const timedStream = withStreamTimeout(stream, STREAM_TIMEOUT_MS);
 
-  const wrapped = new ReadableStream<Uint8Array>({
-    async pull(controller) {
-      const reader = timedStream.getReader();
-      try {
-        while (true) {
-          const { value, done: streamDone } = await reader.read();
-          if (streamDone) break;
-          controller.enqueue(value);
-        }
-        controller.close();
-      } catch (err) {
-        controller.error(err);
-      }
-    },
-    cancel() {
-      timedStream.cancel().catch(() => {});
-    },
-  });
+  const wrapped = forwardStream(timedStream);
 
   runAfterResponse(async () => {
     await done;
@@ -923,24 +949,7 @@ export async function assistantTurn(opts: {
   }
 
   const { stream, done, getFullText } = streamResult;
-  const wrapped = new ReadableStream<Uint8Array>({
-    async pull(controller) {
-      const reader = stream.getReader();
-      try {
-        while (true) {
-          const { value, done: streamDone } = await reader.read();
-          if (streamDone) break;
-          controller.enqueue(value);
-        }
-        controller.close();
-      } catch (err) {
-        controller.error(err);
-      }
-    },
-    cancel() {
-      stream.cancel().catch(() => {});
-    },
-  });
+  const wrapped = forwardStream(stream);
 
   runAfterResponse(async () => {
     await done;

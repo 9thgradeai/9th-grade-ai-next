@@ -4,6 +4,7 @@ export {
   resolveCandidatesForModelTask,
   resolveModel,
   resolveModelCandidates,
+  resolveExplainCandidates,
   resolvedProviderName,
   reportProviderOutcome,
 } from "./registry";

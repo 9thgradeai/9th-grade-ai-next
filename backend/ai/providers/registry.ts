@@ -15,22 +15,22 @@ import { candidateOrder, resolveModelName, tierForTask, type ModelTask } from ".
 import type { AITask } from "../types";
 import { isCircuitClosed, recordSuccess, recordFailure, type CircuitBreakerConfig } from "../infrastructure/circuit-breaker";
 import { recordProviderFailover } from "../infrastructure/metrics";
-import { GroqProvider, isGroqConfigured } from "./groq";
+import { GroqProvider, isGroqConfigured, getExplainApiKey, isExplainGroqConfigured } from "./groq";
 import { AnthropicProvider, isAnthropicConfigured } from "./anthropic";
 import { MockProvider } from "./mock";
 import type { LLMProvider, LLMProviderName } from "./types";
 
 const cache = new Map<string, LLMProvider>();
 
-function getProvider(name: LLMProviderName, seed: string): LLMProvider {
-  const cacheKey = `${name}:${seed}`;
+function getProvider(name: LLMProviderName, seed: string, apiKeyOverride?: string): LLMProvider {
+  const cacheKey = apiKeyOverride ? `${name}:${seed}:explain` : `${name}:${seed}`;
   const cached = cache.get(cacheKey);
   if (cached) return cached;
 
   let provider: LLMProvider;
   switch (name) {
     case "groq":
-      provider = new GroqProvider(process.env.GROQ_API_KEY as string, seed);
+      provider = new GroqProvider((apiKeyOverride ?? process.env.GROQ_API_KEY) as string, seed);
       break;
     case "anthropic":
       provider = new AnthropicProvider(process.env.ANTHROPIC_API_KEY as string, seed);
@@ -112,6 +112,28 @@ export function resolveModelCandidates(task: AITask, opts?: { image?: boolean })
     (provider) => resolveModelName(provider, "primary"),
     task,
   );
+}
+
+/**
+ * Candidate chain for MCQ explanations (AI Exp. buttons). Groq leads with the
+ * dedicated GROQ_API_KEY_EXPLAIN key (falling back to GROQ_API_KEY when the
+ * dedicated key is unset), so explanation traffic never touches the
+ * Assistant's quota — then Anthropic, then the labelled mock.
+ */
+export function resolveExplainCandidates(): ModelSelection[] {
+  const out: ModelSelection[] = [];
+  const model = resolveModelName("groq", "primary");
+  if (isExplainGroqConfigured() && isCircuitClosed("groq")) {
+    out.push({ provider: getProvider("groq", model, getExplainApiKey()), name: "groq" });
+  }
+  if (isAnthropicConfigured() && isCircuitClosed("anthropic")) {
+    out.push({
+      provider: getProvider("anthropic", resolveModelName("anthropic", "primary")),
+      name: "anthropic",
+    });
+  }
+  out.push({ provider: getProvider("mock", "explain"), name: "mock" });
+  return out;
 }
 
 /**
