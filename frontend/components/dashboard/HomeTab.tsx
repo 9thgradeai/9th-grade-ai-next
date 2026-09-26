@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import dynamic from "next/dynamic";
 import { motion, useReducedMotion } from "framer-motion";
 import { Clock, ArrowRight, Flame, Trophy, CaretRight, ArrowCounterClockwise } from "@phosphor-icons/react";
@@ -9,7 +10,8 @@ import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 import { useMotionCapabilities } from "@/lib/motion/device";
 import { useLanguage, t } from "@/lib/lang-ctx";
 import { useToastSafe } from "@/lib/toast-ctx";
-import { api } from "@/lib/services/api";
+import { api, invalidateCache } from "@/lib/services/api";
+import { useDialogA11y } from "@/lib/use-dialog-a11y";
 import { homePerf } from "@/lib/perf";
 import { EMPTY_INTELLIGENCE, mergeIntelligence } from "@/lib/intelligence";
 import type { Server, PrepIntelligenceRecommendation } from "@/lib/types";
@@ -124,6 +126,7 @@ export default function HomeTab() {
   const [analyticsFailed, setAnalyticsFailed] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
   const [perfRange, setPerfRange] = useState<PerfRange>("30D");
+  const cancelledRef = useRef(false);
 
   const resetStages = () => {
     setIntelligence(null);
@@ -135,54 +138,68 @@ export default function HomeTab() {
     setAnalyticsFailed(false);
   };
 
+  const setScopeReady = (scope: "pulse" | "tasks" | "analytics", ready: boolean) => {
+    if (scope === "pulse") setPulseReady(ready);
+    else if (scope === "tasks") setTasksReady(ready);
+    else setAnalyticsReady(ready);
+  };
+
+  const setScopeFailed = (scope: "pulse" | "tasks" | "analytics", failed: boolean) => {
+    if (scope === "pulse") setPulseFailed(failed);
+    else if (scope === "tasks") setTasksFailed(failed);
+    else setAnalyticsFailed(failed);
+  };
+
+  // One scope fetch + merge. `first` = initial load (failures surface section
+  // errors); background revalidations keep existing data on failure.
+  // Stable identity: only stable setters + module singletons inside.
+  const runScope = useCallback(
+    async (scope: "pulse" | "tasks" | "analytics", first: boolean): Promise<boolean> => {
+      try {
+        const patch = await api.preparationIntelligenceScope(scope);
+        setIntelligence((prev) => mergeIntelligence(prev ?? EMPTY_INTELLIGENCE, patch));
+        setScopeReady(scope, true);
+        setScopeFailed(scope, false);
+        homePerf.record(scope);
+        return true;
+      } catch {
+        setScopeFailed(scope, true);
+        if (first) setScopeReady(scope, true);
+        return false;
+      }
+    },
+    [],
+  );
+
   useEffect(() => {
-    let cancelled = false;
+    cancelledRef.current = false;
     homePerf.start();
     // Stage 1 — pulse: cheap header fields, paints first.
-    void api
-      .preparationIntelligenceScope("pulse")
-      .then((patch) => {
-        if (cancelled) return;
-        setIntelligence(mergeIntelligence(EMPTY_INTELLIGENCE, patch));
-        setPulseReady(true);
-        homePerf.record("pulse");
+    void (async () => {
+      if ((await runScope("pulse", true)) && !cancelledRef.current) {
         // Stage 2 — tasks + analytics in parallel once the header is up.
-        void api
-          .preparationIntelligenceScope("tasks")
-          .then((t) => {
-            if (cancelled) return;
-            setIntelligence((prev) => mergeIntelligence(prev ?? EMPTY_INTELLIGENCE, t));
-            setTasksReady(true);
-            homePerf.record("tasks");
-          })
-          .catch(() => {
-            if (!cancelled) {
-              setTasksFailed(true);
-              setTasksReady(true);
-            }
-          });
-        void api
-          .preparationIntelligenceScope("analytics")
-          .then((a) => {
-            if (cancelled) return;
-            setIntelligence((prev) => mergeIntelligence(prev ?? EMPTY_INTELLIGENCE, a));
-            setAnalyticsReady(true);
-            homePerf.record("analytics");
-          })
-          .catch(() => {
-            if (!cancelled) {
-              setAnalyticsFailed(true);
-              setAnalyticsReady(true);
-            }
-          });
-      })
-      .catch(() => {
-        if (!cancelled) setPulseFailed(true);
-      });
+        void runScope("tasks", true);
+        void runScope("analytics", true);
+      }
+    })();
     return () => {
-      cancelled = true;
+      cancelledRef.current = true;
     };
-  }, [reloadKey]);
+  }, [reloadKey, runScope]);
+
+  // Phase 4: background revalidation — refresh-merge without skeleton flash
+  // when data is already on screen; full staged load only on first paint.
+  const revalidateAll = useCallback(() => {
+    invalidateCache("/api/preparation-intelligence");
+    if (!intelligence) {
+      resetStages();
+      setReloadKey((k) => k + 1);
+      return;
+    }
+    void runScope("pulse", false);
+    void runScope("tasks", false);
+    void runScope("analytics", false);
+  }, [intelligence, runScope]);
 
   // Streak milestone celebration (real streak only).
   useEffect(() => {
@@ -201,8 +218,7 @@ export default function HomeTab() {
 
   useEffect(() => {
     const onRefresh = () => {
-      resetStages();
-      setReloadKey((k) => k + 1);
+      revalidateAll();
     };
     const onStartPractice = () => {
       setPracticeIntent({ mode: "quick" });
@@ -214,7 +230,7 @@ export default function HomeTab() {
       window.removeEventListener("ai:refresh-home", onRefresh);
       window.removeEventListener("dashboard:start-practice", onStartPractice);
     };
-  }, [setActiveTab, setPracticeIntent]);
+  }, [setActiveTab, setPracticeIntent, revalidateAll]);
 
   const nextExam = intelligence?.nextExam ?? null;
   const examDaysLeft = useExamDaysLeft(nextExam?.date ?? null);
@@ -308,7 +324,11 @@ export default function HomeTab() {
     }
   };
 
-  // Keyboard Shortcuts Listener [P, M, W, A, F, Q, L, R]
+  const [shortcutsOpen, setShortcutsOpen] = useState(false);
+  const closeShortcuts = useCallback(() => setShortcutsOpen(false), []);
+  const shortcutsRef = useDialogA11y<HTMLDivElement>(shortcutsOpen, closeShortcuts);
+
+  // Keyboard Shortcuts Listener [P, M, W, A, F, Q, L, R, ?]
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (
@@ -320,6 +340,10 @@ export default function HomeTab() {
       }
       if (e.metaKey || e.ctrlKey || e.altKey) return;
 
+      if (e.key === "?") {
+        setShortcutsOpen((v) => !v);
+        return;
+      }
       const key = e.key.toUpperCase();
       if (key === "P") {
         setPracticeIntent({ mode: "quick" });
@@ -338,50 +362,23 @@ export default function HomeTab() {
       } else if (key === "L") {
         setActiveTab("study-planner");
       } else if (key === "R") {
-        resetStages();
-        setReloadKey((k) => k + 1);
+        revalidateAll();
         toast.success(t(lang, "হোম ডেটা রিফ্রেশ হয়েছে", "Home data refreshed"));
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [setActiveTab, setPracticeIntent, toast, lang]);
+  }, [setActiveTab, setPracticeIntent, toast, lang, revalidateAll]);
 
   const skeleton = !pulseReady && !pulseFailed;
 
   const retryScope = (scope: "tasks" | "analytics") => {
-    if (scope === "tasks") {
-      setTasksFailed(false);
-      setTasksReady(false);
-      void api
-        .preparationIntelligenceScope("tasks")
-        .then((t) => {
-          setIntelligence((prev) => mergeIntelligence(prev ?? EMPTY_INTELLIGENCE, t));
-          setTasksReady(true);
-          homePerf.record("tasks");
-        })
-        .catch(() => {
-          setTasksFailed(true);
-          setTasksReady(true);
-        });
-    } else {
-      setAnalyticsFailed(false);
-      setAnalyticsReady(false);
-      void api
-        .preparationIntelligenceScope("analytics")
-        .then((a) => {
-          setIntelligence((prev) => mergeIntelligence(prev ?? EMPTY_INTELLIGENCE, a));
-          setAnalyticsReady(true);
-          homePerf.record("analytics");
-        })
-        .catch(() => {
-          setAnalyticsFailed(true);
-          setAnalyticsReady(true);
-        });
-    }
+    setScopeFailed(scope, false);
+    setScopeReady(scope, false);
+    void runScope(scope, true);
   };
 
-  if (pulseFailed) {
+  if (pulseFailed && !intelligence) {
     return (
       <div
         role="alert"
@@ -424,6 +421,16 @@ export default function HomeTab() {
               <Clock className="w-3.5 h-3.5 text-[var(--dashboard-primary)]" aria-hidden="true" /> {user?.examTarget ?? t(lang, "লক্ষ্য নির্ধারিত হয়নি", "Target not set")}
               {nextExam ? ` · ${t(lang, nextExam.titleBn, nextExam.titleEn)}` : ""}
             </span>
+            <button
+              type="button"
+              onClick={() => setShortcutsOpen(true)}
+              aria-label={t(lang, "কিবোর্ড শর্টকাট", "Keyboard shortcuts")}
+              title="?"
+              className="inline-flex items-center justify-center w-7 h-7 min-w-[28px] min-h-[28px] rounded-lg border font-mono text-xs font-bold transition-colors hover:border-[var(--dashboard-primary)]"
+              style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-muted)", background: "var(--dashboard-surface-muted)" }}
+            >
+              ?
+            </button>
             <span
               className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-bold"
               style={{
@@ -497,7 +504,7 @@ export default function HomeTab() {
           )}
         </motion.div>
         <motion.div variants={STAGGER_ITEM} className="min-w-0">
-          {tasksFailed ? (
+          {tasksFailed && !tasksReady ? (
             <ScopeError
               message={t(lang, "আজকের পরিকল্পনা লোড করা যায়নি", "Could not load today's plan")}
               retryLabel={t(lang, "আবার চেষ্টা করুন", "Try again")}
@@ -518,7 +525,7 @@ export default function HomeTab() {
       {/* ── Hero Mission — primary CTA with command-card--hero treatment ── */}
       <div className="grid gap-5 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
         <motion.div variants={STAGGER_ITEM} className="min-w-0">
-          {analyticsFailed ? (
+          {analyticsFailed && !analyticsReady ? (
             <ScopeError
               message={t(lang, "আজকের মিশন লোড করা যায়নি", "Could not load today's mission")}
               retryLabel={t(lang, "আবার চেষ্টা করুন", "Try again")}
@@ -537,7 +544,7 @@ export default function HomeTab() {
           )}
         </motion.div>
         <motion.div variants={STAGGER_ITEM} className="min-w-0">
-          {analyticsFailed ? (
+          {analyticsFailed && !analyticsReady ? (
             <ScopeError
               message={t(lang, "প্রস্তাবনা লোড করা যায়নি", "Could not load recommendations")}
               retryLabel={t(lang, "আবার চেষ্টা করুন", "Try again")}
@@ -630,6 +637,68 @@ export default function HomeTab() {
           </div>
         </motion.div>
       )}
+      {/* ── Keyboard shortcut cheat-sheet (Phase 4 a11y, portaled: the
+          motion ancestor's transform would break position:fixed) ── */}
+      {shortcutsOpen &&
+        createPortal(
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ background: "color-mix(in srgb, black 55%, transparent)" }}
+            onClick={closeShortcuts}
+          >,
+          <div
+            ref={shortcutsRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="home-shortcuts-title"
+            tabIndex={-1}
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-sm rounded-2xl border p-5 outline-none"
+            style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}
+          >
+            <div className="flex items-center justify-between">
+              <p id="home-shortcuts-title" className="text-sm font-bold" style={{ color: "var(--dashboard-text-primary)" }}>
+                {t(lang, "কিবোর্ড শর্টকাট", "Keyboard shortcuts")}
+              </p>
+              <button
+                type="button"
+                onClick={closeShortcuts}
+                aria-label={t(lang, "বন্ধ করো", "Close")}
+                className="inline-flex items-center justify-center w-9 h-9 min-h-[36px] rounded-lg border text-xs"
+                style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-secondary)" }}
+              >
+                ✕
+              </button>
+            </div>
+            <ul className="mt-3 space-y-1.5 text-xs" style={{ color: "var(--dashboard-text-secondary)" }}>
+              {(
+                [
+                  ["P", t(lang, "দ্রুত অনুশীলন", "Quick practice")],
+                  ["M", t(lang, "মক টেস্ট", "Mock test")],
+                  ["W", t(lang, "ভুল বিশ্লেষণ", "Mistake review")],
+                  ["A", t(lang, "AI টিউটর", "AI tutor")],
+                  ["F", t(lang, "ফ্ল্যাশকার্ড", "Flashcards")],
+                  ["Q", t(lang, "প্রশ্নব্যাংক", "Question bank")],
+                  ["L", t(lang, "স্টাডি প্ল্যানার", "Study planner")],
+                  ["R", t(lang, "হোম রিফ্রেশ", "Refresh home")],
+                  ["?", t(lang, "এই তালিকা", "This list")],
+                ] as [string, string][]
+              ).map(([key, label]) => (
+                <li key={key} className="flex items-center justify-between gap-3">
+                  <span>{label}</span>
+                  <kbd
+                    className="rounded-md border px-2 py-0.5 font-mono font-bold"
+                    style={{ borderColor: "var(--dashboard-border-muted)", background: "var(--dashboard-surface-muted)", color: "var(--dashboard-text-primary)" }}
+                  >
+                    {key}
+                  </kbd>
+                </li>
+              ))}
+            </ul>
+          </div>
+          </div>,
+          document.body,
+        )}
     </motion.div>
   );
 }

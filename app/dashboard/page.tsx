@@ -6,6 +6,7 @@ import { Suspense, useEffect } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import dynamic from "next/dynamic";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
+import { api } from "@/lib/services/api";
 import { TABS, type TabId } from "@/lib/data";
 import { Skeleton, SkeletonCard } from "@/components/ui/Skeleton";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
@@ -63,6 +64,13 @@ function TabSwitcher() {
   const shouldReduceMotion = useReducedMotion();
 
   const ActiveComponent = TAB_COMPONENTS[activeTab];
+
+  // Phase 4: warm the cheap pulse scope the moment the dashboard shell mounts
+  // (right after login). By the time the Home chunk streams in, the 15s read
+  // cache usually serves pulse instantly — header paints with zero network.
+  useEffect(() => {
+    void api.preparationIntelligenceScope("pulse").catch(() => undefined);
+  }, []);
 
   const tab = searchParams.get("tab") as TabId | null;
   const mode = searchParams.get("mode");
