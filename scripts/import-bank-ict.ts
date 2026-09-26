@@ -376,7 +376,9 @@ export async function importBankIct(prisma: PrismaClient): Promise<IctImportRepo
       }
       // Same-file text duplicates (e.g. repeated review questions): keep the
       // first occurrence so the bank never shows the same question twice.
-      const textKey = r.question.trim().toLowerCase();
+      // Identity = stem + all four options: same-stem records with different
+      // options (e.g. corrupted copy-paste rows) are distinct questions.
+      const textKey = r.question.trim().toLowerCase() + "\n" + r.options.join("\n");
       if (seenText.has(textKey)) {
         report.skippedRecords++;
         console.warn(`  [skip] ${file}: duplicate of #${r.n} in-file: ${r.question.slice(0, 70)}`);
