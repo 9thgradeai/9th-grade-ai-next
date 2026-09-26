@@ -11,6 +11,41 @@ const MATH_DIR = join(process.cwd(), "database/data/ques/Math");
 const SUBJECT_BN="গাণিতিক যুক্তি";
 function matchOptionBlock(body:string){ const esc=(s:string)=>s.replace(/[.*+?^${}()|[\]\\]/g,"\\$&"); const re=new RegExp(`${esc("ক.")} (.*) ${esc("খ.")} (.*) ${esc("গ.")} (.*) ${esc("ঘ.")} (.*)$`); return body.match(re);}
 function stripLeadingNumber(t:string){return t.replace(/^\s*[০-৯0-9]+\s*\.\s*/,"").trim();}
+/**
+ * Multi-line "প্রশ্ন N. / A.-D. / উত্তর: X / ব্যাখ্যা:" block format (e.g. the
+ * বীজগাণিতিক_সূত্রাবলি ও বহুপদী_উৎপাদক file). Returns raw records — the import
+ * gate (scanMca) strips the "প্রশ্ন N." scaffold and resolves letter answers.
+ */
+function parseAlgebraBlocks(raw:string){
+  const lines=raw.replace(/^\uFEFF/,"").split(/\r?\n/);
+  const blocks:string[][]=[]; let cur:string[]=[];
+  const isQ=(l:string)=>/^\s*প্রশ্ন\s*[০-৯0-9]+\s*\./.test(l);
+  for(const line of lines){
+    if(isQ(line)){ if(cur.length) blocks.push(cur); cur=[line]; }
+    else if(cur.length) cur.push(line);
+  }
+  if(cur.length) blocks.push(cur);
+  const out:{question:string;options:string[];answerRaw:string;explanation:string}[]=[];
+  for(const b of blocks){
+    const qLine=(b[0]??"").trim();
+    const opts:string[]=[]; let answerRaw=""; const expl:string[]=[]; let inExpl=false;
+    for(const ln of b.slice(1)){
+      const t=ln.trim();
+      const om=/^([A-D])\.\s*(.*)$/.exec(t);
+      if(om && !inExpl && opts.length<4){ opts.push(om[2].trim()); continue; }
+      const am=/^উত্তর\s*:\s*(.+)$/.exec(t);
+      if(am && !inExpl){ answerRaw=am[1].trim(); continue; }
+      if(/^ব্যাখ্যা\s*:?\s*$/.test(t)){ inExpl=true; continue; }
+      const em=/^ব্যাখ্যা\s*:\s*(.+)$/.exec(t);
+      if(em){ inExpl=true; if(em[1].trim()) expl.push(em[1].trim()); continue; }
+      if(inExpl && t) expl.push(t);
+    }
+    // Always push — structurally short records are REJECTed by the gate
+    // with proper counts instead of vanishing silently.
+    out.push({question:qLine,options:opts,answerRaw,explanation:expl.join("\n").trim()});
+  }
+  return out;
+}
 function parseMathLine(rawLine:string){
   let line=rawLine.trim();
   const expIdx=line.indexOf("ব্যাখ্যা:");
@@ -50,7 +85,19 @@ async function main(){
     "Questions-(Ratio, Age & Partnership)-(9Th-Grade AI).txt":["08_গাণিতিক_যুক্তি/Part_01_পাটিগণিত/অনুপাত_ও_সমানুপাত"],
     "Questions-(Simple & Compound Interest)-(9Th-Grade AI).txt":["08_গাণিতিক_যুক্তি/Part_01_পাটিগণিত/সরল_ও_যৌগিক_মুনাফা"],
     "Questions-(সমান্তর ও গুণোত্তর ধারা (AP & GP))-(9Th-Grade AI).txt":["08_গাণিতিক_যুক্তি/Part_03_সূচক_ও_ধারা/সমান্তর_অনুক্রম_ও_ধারা","08_গাণিতিক_যুক্তি/Part_03_সূচক_ও_ধারা/গুণোত্তর_অনুক্রম_ও_ধারা"],
+    "Questions(বীজগাণিতিক_সূত্রাবলি ও বহুপদী_উৎপাদক).txt":["08_গাণিতিক_যুক্তি/Part_02_বীজগণিত/বীজগাণিতিক_সূত্রাবলি","08_গাণিতিক_যুক্তি/Part_02_বীজগণিত/বহুপদী_উৎপাদক"],
+    "Questions(সূচক ও লগারিদম)_9Th-Grade AI.txt":["08_গাণিতিক_যুক্তি/Part_03_সূচক_ও_ধারা/সূচক","08_গাণিতিক_যুক্তি/Part_03_সূচক_ও_ধারা/লগারিদম"],
   };
+  // Multi-line প্রশ্ন/A-D/উত্তর/ব্যাখ্যা block files (vs the legacy single-line কখগঘ format).
+  const BLOCK_FILES=new Set([
+    "Questions(বীজগাণিতিক_সূত্রাবলি ও বহুপদী_উৎপাদক).txt",
+    "Questions(সূচক ও লগারিদম)_9Th-Grade AI.txt",
+  ]);
+  // HELD — formulas missing from source (unanswerable as text). Skipped until
+  // a fixed file is shared; the leaf map above is ready for that run.
+  const HELD_FILES=new Set([
+    "Questions(সূচক ও লগারিদম)_9Th-Grade AI.txt",
+  ]);
   // For Math import we allow overriding global duplicates — user explicitly wants all 1000 under Math
   const dupSet=new Set<string>();
   let totalAccepted=0, totalRejected=0;
@@ -63,12 +110,16 @@ async function main(){
   const existingTexts=new Set(existingQs.map(r=>r.question.normalize("NFC")));
   for(const file of files){
     const raw=readFileSync(join(MATH_DIR,file),"utf8").replace(/^\uFEFF/,"");
-    const lines=raw.split(/\r?\n/).map(l=>l.trim()).filter(l=>l && !l.startsWith("পর্ব"));
+    if(HELD_FILES.has(file)){ console.log(`${file}: HELD (formulas missing from source) — skipped`); continue; }
     const leaves=fileLeafMap[file]||["08_গাণিতিক_যুক্তি/Part_01_পাটিগণিত/বাস্তব_সংখ্যা"];
-    const leafPaths=leaves.length===2 ? lines.map((_,i)=> i < Math.ceil(lines.length/2) ? leaves[0] : leaves[1]) : lines.map(()=>leaves[0]);
+    // Normalize both source formats into parsed records before the gate.
+    const parsedRecs = BLOCK_FILES.has(file)
+      ? parseAlgebraBlocks(raw).map((p)=>({question:p.question, options:p.options, correctAnswer:(resolveAnswerToOption(p.answerRaw, p.options) ?? p.answerRaw).trim(), explanation:p.explanation}))
+      : raw.split(/\r?\n/).map(l=>l.trim()).filter(l=>l && !l.startsWith("পর্ব")).map(l=>parseMathLine(l));
+    const leafPaths=leaves.length===2 ? parsedRecs.map((_,i)=> i < Math.ceil(parsedRecs.length/2) ? leaves[0] : leaves[1]) : parsedRecs.map(()=>leaves[0]);
     let fa=0, fr=0;
-    for(let i=0;i<lines.length;i++){
-      const parsed=parseMathLine(lines[i]); if(!parsed){fr++; totalRejected++; continue;}
+    for(let i=0;i<parsedRecs.length;i++){
+      const parsed=parsedRecs[i]; if(!parsed){fr++; totalRejected++; continue;}
       const gate=scanMca(parsed); if(gate.verdict==="REJECT"){fr++; totalRejected++; for(const f of gate.fatal) rejects[f.code+"@"+f.field]=(rejects[f.code+"@"+f.field]||0)+1; continue;}
       const norm=gate.normalized;
       const sig=mcaSignature({question:norm.question, options:norm.options, correctAnswer:norm.correctAnswer, explanation:norm.explanation});
