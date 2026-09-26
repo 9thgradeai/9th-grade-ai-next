@@ -16,6 +16,7 @@ import { homePerf } from "@/lib/perf";
 import { EMPTY_INTELLIGENCE, mergeIntelligence } from "@/lib/intelligence";
 import type { Server, PrepIntelligenceRecommendation } from "@/lib/types";
 import StreakHeatmap from "./StreakHeatmap";
+import ReadinessRing from "./command-center/ReadinessRing";
 import HomeCoach from "./ai/HomeCoach";
 import { useExamDaysLeft } from "./HomeTabHelpers";
 import TodayMission from "./command-center/TodayMission";
@@ -454,10 +455,19 @@ export default function HomeTab() {
             className="w-fit max-w-full border-l-2 border-[var(--dashboard-primary)] py-1 pl-5 flex items-center gap-4"
             style={{ background: "var(--dashboard-surface)", borderLeftColor: "var(--dashboard-primary)" }}
           >
-            <div className="text-center">
-              <p className="font-display font-black text-2xl leading-none text-[var(--dashboard-primary)]">{examDaysLeft}</p>
-              <p className="text-[10px] font-bold uppercase tracking-widest mt-0.5 text-[var(--dashboard-text-muted)]">Days left</p>
-            </div>
+            <ReadinessRing
+              value={Math.max(0, Math.min(100, 100 - (examDaysLeft / 90) * 100))}
+              size={76}
+              strokeWidth={8}
+              ambientGlow
+              ariaLabel={`${t(lang, nextExam.titleBn, nextExam.titleEn)} — ${examDaysLeft} days left`}
+              center={
+                <p className="font-mono font-black text-xl leading-none tabular-nums text-[var(--dashboard-primary)]">{examDaysLeft}</p>
+              }
+              label={
+                <p className="text-[9px] font-bold uppercase tracking-widest mt-0.5 text-[var(--dashboard-text-muted)]">Days left</p>
+              }
+            />
             <div className="w-px h-10 bg-[var(--dashboard-border-muted)]" />
             <div>
               <p className="text-xs font-extrabold leading-tight text-[var(--dashboard-text-primary)]">

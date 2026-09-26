@@ -143,6 +143,32 @@ Defined in `app/globals.css`:
   `--shadow-panel`. Use these tokens — arbitrary glow shadows in components
   are a lint-review smell.
 
+### Command Deck additions (Home tab refinement)
+
+All in one commented block at the end of `app/globals.css` (search
+`COMMAND DECK additions`):
+
+- **`--cd-glow-ambient`**: emerald radial wash. Applied via `.cd-glow-layer`
+  (pre-sized pseudo-element, opacity-only animation) + `.cd-glow-breathe`
+  (4000ms idle) / `.cd-glow-stream` (1400ms streaming). Ambient glow is
+  restricted to the AI Hero card and the header readiness ring — every other
+  card keeps `glass-card`/`command-card` unchanged.
+- **`--cd-ring-track` / `--cd-ring-progress`**: ring gauge colors
+  (track white 6%, progress emerald).
+- **`ReadinessRing`** (`frontend/components/dashboard/command-center/`):
+  the single shared ring gauge — header readiness ring and TodayMission
+  orbit gauge both use it. Progress springs via `useSpring` on
+  `strokeDashoffset`; paints instantly when motion is gated off. Do not
+  build a second ring.
+- **`useMotionTier()` + `useFirstMountAnimate()`**
+  (`frontend/lib/motion/use-motion-tier.ts`): the single motion gate
+  (device tier + `prefers-reduced-motion`) and the identical first-mount
+  gating pattern. Every Command Deck animation consumes these — never
+  re-implement detection per section.
+- Rules: opacity/transform only, one ambient blur layer max, entrance
+  animations never re-fire on silent revalidation, glow loops always settle
+  to static at rest.
+
 ## Layout
 
 - **Dashboard**: Side navigation (desktop `lg:`, ≥1024px) + bottom navigation (below `lg:`).

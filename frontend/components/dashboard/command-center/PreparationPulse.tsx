@@ -1,6 +1,9 @@
 "use client";
 
+import { useEffect, useRef } from "react";
+import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 import { useLanguage, t } from "@/lib/lang-ctx";
+import { useMotionTier, useFirstMountAnimate } from "@/lib/motion/use-motion-tier";
 import { Target, BookOpen, Timer, Flame, TrendUp, TrendDown } from "@phosphor-icons/react";
 import type { PreparationIntelligenceDTO } from "@/lib/types";
 
@@ -18,6 +21,29 @@ export function formatStudyTime(sec: number): string {
 
 function TrendBadge({ delta, suffix = "", duration = false }: { delta: number; suffix?: string; duration?: boolean }) {
   const { lang } = useLanguage();
+  const { fullMotion } = useMotionTier();
+  // Count-up (≤400ms) toward each new delta; skipped when the value hasn't
+  // changed, and rendered instantly when motion is gated off. The accessible
+  // label always carries the final value — no screen-reader churn mid-flight.
+  const mv = useMotionValue(delta);
+  const prevRef = useRef<number | null>(null);
+  useEffect(() => {
+    const from = prevRef.current ?? 0;
+    prevRef.current = delta;
+    if (!fullMotion || from === delta) {
+      mv.set(delta);
+      return;
+    }
+    const controls = animate(mv, delta, { duration: 0.4, ease: "easeOut" });
+    return () => controls.stop();
+  }, [delta, fullMotion, mv]);
+  const animatedText = useTransform(mv, (v) => {
+    const rounded = Math.round(v);
+    const display = duration
+      ? `${rounded < 0 ? "−" : ""}${formatStudyTime(Math.abs(rounded))}`
+      : `${rounded}${suffix}`;
+    return `${rounded > 0 ? "+" : ""}${display}`;
+  });
   const display = duration ? `${delta < 0 ? "−" : ""}${formatStudyTime(Math.abs(delta))}` : `${delta}${suffix}`;
   const dir = delta > 0 ? "up" : delta < 0 ? "down" : "flat";
   const color =
@@ -34,8 +60,7 @@ function TrendBadge({ delta, suffix = "", duration = false }: { delta: number; s
       aria-label={`${delta > 0 ? "+" : ""}${display} ${t(lang, "আগের সময়ের তুলনায়", "vs previous period")}`}
     >
       {Icon && <Icon className="w-3 h-3" aria-hidden="true" />}
-      {delta > 0 ? "+" : ""}
-      {display}
+      <motion.span>{animatedText}</motion.span>
     </span>
   );
 }
@@ -49,6 +74,7 @@ function PulseItem({
   hint,
   duration,
   samples = [],
+  animateBars,
 }: {
   icon: typeof Target;
   label: string;
@@ -58,6 +84,7 @@ function PulseItem({
   hint: string;
   duration?: boolean;
   samples?: { date: string; value: number }[];
+  animateBars: boolean;
 }) {
   const max = Math.max(1, ...samples.map((sample) => sample.value));
   return (
@@ -73,10 +100,15 @@ function PulseItem({
           {samples.length > 0 && (
             <div role="img" aria-label={`${label}: ${samples.map((sample) => `${sample.date}: ${sample.value}`).join(", ")}`} className="flex h-8 w-24 shrink-0 items-end gap-1">
               {samples.map((sample) => (
-                <span
+                <motion.span
                   key={sample.date}
-                  className="flex-1 rounded-t-sm bg-[var(--dashboard-primary)] hover:opacity-80 transition-opacity cursor-default"
+                  className="flex-1 rounded-t-sm bg-[var(--dashboard-primary)] hover:opacity-80 transition-opacity cursor-default origin-bottom"
                   style={{ height: `${(sample.value / max) * 100}%` }}
+                  // Height-in from 0 on first mount only (transform-only,
+                  // spring-driven); final layout height is untouched.
+                  initial={animateBars ? { scaleY: 0 } : false}
+                  animate={{ scaleY: 1 }}
+                  transition={animateBars ? { type: "spring", stiffness: 300, damping: 30 } : undefined}
                   title={`${sample.date}: ${sample.value}`}
                   aria-label={`${sample.date}: ${sample.value}`}
                 />
@@ -94,9 +126,12 @@ function PulseItem({
 
 export default function PreparationPulse({ intelligence }: PreparationPulseProps) {
   const { lang } = useLanguage();
+  const { fullMotion } = useMotionTier();
   const overall = intelligence?.overall;
   const period = intelligence?.period;
   const hasData = (overall?.totalAttempts ?? 0) > 0;
+  // Sparkline height-in runs on first mount only — never on revalidation.
+  const animateBars = useFirstMountAnimate(fullMotion && hasData);
 
   if (!hasData || !overall || !period) {
     return (
@@ -131,6 +166,7 @@ export default function PreparationPulse({ intelligence }: PreparationPulseProps
         delta={period.accuracyDelta}
         suffix=" pp"
         hint={t(lang, "সব সময়ের গড়", "All-time average")}
+        animateBars={animateBars}
       />
       <PulseItem
         icon={BookOpen}
@@ -139,6 +175,7 @@ export default function PreparationPulse({ intelligence }: PreparationPulseProps
         delta={period.attemptsDelta}
         hint={t(lang, "মোট উত্তর দেওয়া হয়েছে", "Total answered")}
         samples={intelligence.activity.slice(-7).map((day) => ({ date: day.date, value: day.answered }))}
+        animateBars={animateBars}
       />
       <PulseItem
         icon={Timer}
@@ -147,12 +184,14 @@ export default function PreparationPulse({ intelligence }: PreparationPulseProps
         delta={period.studyTimeDeltaSec}
         hint={`${formatStudyTime(period.currentStudyTimeSec)} ${t(lang, "গত ৩০ দিনে", "last 30 days")}`}
         duration
+        animateBars={animateBars}
       />
       <PulseItem
         icon={Flame}
         label={t(lang, "স্ট্রিক", "Streak")}
         value={`${overall.streak}`}
         hint={t(lang, "টানা অধ্যয়নের দিন", "Consecutive study days")}
+        animateBars={animateBars}
       />
     </section>
   );

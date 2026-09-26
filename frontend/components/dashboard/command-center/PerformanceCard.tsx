@@ -1,13 +1,83 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { animate } from "framer-motion";
 import { Pulse, TrendUp, ChartBar, Timer } from "@phosphor-icons/react";
+import { useMotionTier } from "@/lib/motion/use-motion-tier";
 
 type ActivityPoint = { date: string; answered: number; correct: number; durationSec?: number };
 export type PerfRange = "7D" | "30D" | "90D" | "ALL";
 type MetricMode = "solved" | "accuracy" | "time";
 
 export const PERF_RANGES: PerfRange[] = ["7D", "30D", "90D", "ALL"];
+
+type PathPoint = { x: number; y: number };
+
+/** Linearly resample a value series to exactly n samples. */
+function resample(values: number[], n: number): number[] {
+  if (values.length === 0) return new Array(n).fill(0);
+  if (values.length === 1) return new Array(n).fill(values[0]);
+  const out: number[] = [];
+  for (let i = 0; i < n; i++) {
+    const pos = (i / (n - 1)) * (values.length - 1);
+    const lo = Math.floor(pos);
+    const hi = Math.min(values.length - 1, lo + 1);
+    out.push(values[lo] + (values[hi] - values[lo]) * (pos - lo));
+  }
+  return out;
+}
+
+/**
+ * Morph the plotted path between datasets instead of hard-swapping: on range
+ * or metric change, previous and next y-series are resampled to a common
+ * length and interpolated over ~350ms. Dots, tooltips, labels and summaries
+ * always render from the final dataset — only the line + area sweep.
+ * Identical data, first mount, and gated motion render the final path
+ * directly (no animation on unchanged data, ever).
+ */
+function useMorphedPaths(
+  target: PathPoint[],
+  fullMotion: boolean,
+  width: number,
+  pad: number,
+): PathPoint[] {
+  const [display, setDisplay] = useState<PathPoint[]>(target);
+  const mountedRef = useRef(false);
+  const prevRef = useRef<PathPoint[]>(target);
+  useEffect(() => {
+    if (!mountedRef.current) {
+      mountedRef.current = true;
+      prevRef.current = target;
+      setDisplay(target);
+      return;
+    }
+    const prev = prevRef.current;
+    prevRef.current = target;
+    const same =
+      prev.length === target.length && prev.every((c, i) => c.y === target[i].y);
+    if (!fullMotion || same || target.length === 0) {
+      setDisplay(target);
+      return;
+    }
+    const n = Math.max(prev.length, target.length, 2);
+    const fromY = resample(prev.map((c) => c.y), n);
+    const toY = resample(target.map((c) => c.y), n);
+    const controls = animate(0, 1, {
+      duration: 0.35,
+      ease: "easeOut",
+      onUpdate: (k) => {
+        setDisplay(
+          toY.map((y, i) => ({
+            x: pad + (i / (n - 1)) * (width - pad * 2),
+            y: fromY[i] + (y - fromY[i]) * k,
+          })),
+        );
+      },
+    });
+    return () => controls.stop();
+  }, [target, fullMotion, width, pad]);
+  return display;
+}
 
 function fmtTime(sec: number): string {
   const min = Math.round(sec / 60);
@@ -38,6 +108,7 @@ export default function PerformanceCard({
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
   const [pinnedIdx, setPinnedIdx] = useState<number | null>(null);
   const dotRefs = useRef<(SVGGElement | null)[]>([]);
+  const { fullMotion } = useMotionTier();
 
   const points = useMemo(() => {
     const count = range === "7D" ? 7 : range === "30D" ? 30 : range === "90D" ? 90 : activity.length;
@@ -79,16 +150,18 @@ export default function PerformanceCard({
     });
   }, [points, metric, maxVal, step]);
 
-  const pathD = useMemo(() => {
-    if (coords.length === 0) return "";
-    return coords.map((c, i) => `${i === 0 ? "M" : "L"} ${c.x} ${c.y}`).join(" ");
-  }, [coords]);
-
-  const areaD = useMemo(() => {
-    if (coords.length === 0) return "";
-    const lastX = coords[coords.length - 1].x;
-    return `${pathD} L ${lastX} ${H - pad} L ${pad} ${H - pad} Z`;
-  }, [coords, pathD]);
+  // Morphed line + area for range/metric switches; dots and everything else
+  // stay pinned to the final dataset.
+  const morphPts = useMorphedPaths(coords, fullMotion, W, pad);
+  const morphPathD = useMemo(() => {
+    if (morphPts.length === 0) return "";
+    return morphPts.map((c, i) => `${i === 0 ? "M" : "L"} ${c.x} ${c.y}`).join(" ");
+  }, [morphPts]);
+  const morphAreaD = useMemo(() => {
+    if (morphPts.length === 0) return "";
+    const lastX = morphPts[morphPts.length - 1].x;
+    return `${morphPathD} L ${lastX} ${H - pad} L ${pad} ${H - pad} Z`;
+  }, [morphPts, morphPathD]);
 
   const activeIdx = pinnedIdx ?? hoveredIdx;
   const hoveredPoint = activeIdx !== null ? coords[activeIdx] : null;
@@ -203,10 +276,10 @@ export default function PerformanceCard({
                 </linearGradient>
               </defs>
 
-              <path d={areaD} fill="url(#chartAreaGrad)" />
+              <path d={morphAreaD} fill="url(#chartAreaGrad)" />
 
               <path
-                d={pathD}
+                d={morphPathD}
                 fill="none"
                 stroke="var(--dashboard-primary)"
                 strokeWidth="2.5"

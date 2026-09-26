@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Calendar, ArrowRight, Check, Plus, Spinner } from "@phosphor-icons/react";
+import { motion } from "framer-motion";
+import { Calendar, ArrowRight, Plus, Spinner } from "@phosphor-icons/react";
 import type { Server } from "@/lib/types";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 import { useToastSafe } from "@/lib/toast-ctx";
 import { useLanguage, t } from "@/lib/lang-ctx";
+import { useMotionTier } from "@/lib/motion/use-motion-tier";
 import { api } from "@/lib/services/api";
 
 type Props = {
@@ -18,6 +20,7 @@ export default function TodayPlanCard({ tasks, onToggle, onTaskAdded }: Props) {
   const { setActiveTab } = useDashboardStore();
   const toast = useToastSafe();
   const { lang } = useLanguage();
+  const { fullMotion } = useMotionTier();
   const [showAddForm, setShowAddForm] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [newSubject, setNewSubject] = useState("বাংলাদেশ বিষয়াবলি");
@@ -168,7 +171,21 @@ export default function TodayPlanCard({ tasks, onToggle, onTaskAdded }: Props) {
                   color: "var(--dashboard-text-inverse)",
                 }}
               >
-                {t.completed ? <Check className="w-3 h-3 stroke-[3]" /> : null}
+                {t.completed ? (
+                  <svg viewBox="0 0 12 12" className="w-3 h-3" aria-hidden="true">
+                    <motion.path
+                      d="M2 6.5 4.8 9 10 3"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={2.4}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      initial={fullMotion ? { pathLength: 0 } : false}
+                      animate={{ pathLength: 1 }}
+                      transition={{ duration: 0.15, ease: "easeOut" }}
+                    />
+                  </svg>
+                ) : null}
               </button>
               <div className="flex-1 min-w-0">
                 <p

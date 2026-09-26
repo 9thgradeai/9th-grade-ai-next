@@ -1,6 +1,9 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { useLanguage, t, type Language } from "@/lib/lang-ctx";
+import { useMotionTier, useFirstMountAnimate } from "@/lib/motion/use-motion-tier";
+import SpotlightCard from "@/components/ui/SpotlightCard";
 import { CaretRight, LightningA, BookOpen, WarningCircle, GridFour, CalendarCheck, Target, Sun } from "@phosphor-icons/react";
 import type { PreparationIntelligenceDTO, PrepIntelligenceRecommendation } from "@/lib/types";
 
@@ -79,7 +82,12 @@ function recDescription(rec: PrepIntelligenceRecommendation, lang: Language): st
 
 export default function RecommendedActions({ intelligence, onAction }: RecommendedActionsProps) {
   const { lang } = useLanguage();
+  const { fullMotion } = useMotionTier();
   const recs = (intelligence?.recommendations ?? []).slice(0, 3);
+  // Stagger-in on analytics resolve, first mount only — revalidations paint
+  // the final state directly. (Manual motion instead of AnimatedList: this is
+  // an <ol> with custom item markup + SpotlightCard hover treatment.)
+  const animateOnce = useFirstMountAnimate(fullMotion && recs.length > 0);
 
   if (recs.length === 0) return null;
 
@@ -94,41 +102,70 @@ export default function RecommendedActions({ intelligence, onAction }: Recommend
         {t(lang, "আপনার জন্য প্রস্তাবিত", "Recommended for you")}
       </h3>
 
-      <ol className="mt-3 space-y-2">
+      <motion.ol
+        className="mt-3 space-y-2"
+        initial={animateOnce ? "hidden" : false}
+        animate="show"
+        variants={
+          animateOnce ? { hidden: {}, show: { transition: { staggerChildren: 0.05 } } } : undefined
+        }
+      >
         {recs.map((rec, i) => {
           const Icon = REC_ICON[rec.id] ?? LightningA;
           const tone =
             rec.priority === "high"
               ? "var(--dashboard-primary)"
               : "var(--dashboard-text-secondary)";
-          return (
-            <li key={`${rec.id}-${i}`}>
-              <button
-                onClick={() => onAction(rec)}
-                className="w-full flex items-center gap-3 rounded-xl border p-3 text-left transition-colors hover:border-[var(--dashboard-primary)]/40"
-                style={{ background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-muted)" }}
+          const card = (
+            <button
+              onClick={() => onAction(rec)}
+              className="w-full flex items-center gap-3 rounded-xl border p-3 text-left transition-colors hover:border-[var(--dashboard-primary)]/40"
+              style={{ background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-muted)" }}
+            >
+              <span
+                className="flex items-center justify-center w-9 h-9 rounded-lg shrink-0 border"
+                style={{ background: "var(--dashboard-surface)", color: tone, borderColor: "var(--dashboard-border-muted)" }}
+                aria-hidden="true"
               >
-                <span
-                  className="flex items-center justify-center w-9 h-9 rounded-lg shrink-0 border"
-                  style={{ background: "var(--dashboard-surface)", color: tone, borderColor: "var(--dashboard-border-muted)" }}
-                  aria-hidden="true"
-                >
-                  <Icon className="w-4 h-4" />
+                <Icon className="w-4 h-4" />
+              </span>
+              <span className="flex-1 min-w-0">
+                <span className="block text-sm font-bold truncate" style={{ color: "var(--dashboard-text-primary)" }}>
+                  {i + 1}. {recTitle(rec, lang)}
                 </span>
-                <span className="flex-1 min-w-0">
-                  <span className="block text-sm font-bold truncate" style={{ color: "var(--dashboard-text-primary)" }}>
-                    {i + 1}. {recTitle(rec, lang)}
-                  </span>
-                  <span className="block text-[11px] mt-0.5 line-clamp-2" style={{ color: "var(--dashboard-text-muted)" }}>
-                    {recDescription(rec, lang)}
-                  </span>
+                <span className="block text-[11px] mt-0.5 line-clamp-2" style={{ color: "var(--dashboard-text-muted)" }}>
+                  {recDescription(rec, lang)}
                 </span>
-                <CaretRight className="w-4 h-4 shrink-0" style={{ color: "var(--dashboard-text-muted)" }} aria-hidden="true" />
-              </button>
-            </li>
+              </span>
+              <CaretRight className="w-4 h-4 shrink-0" style={{ color: "var(--dashboard-text-muted)" }} aria-hidden="true" />
+            </button>
+          );
+          return (
+            <motion.li
+              key={`${rec.id}-${i}`}
+              variants={
+                animateOnce
+                  ? {
+                      hidden: { opacity: 0, y: 8 },
+                      show: {
+                        opacity: 1,
+                        y: 0,
+                        transition: { type: "spring", stiffness: 300, damping: 30 },
+                      },
+                    }
+                  : undefined
+              }
+              whileHover={fullMotion ? { y: -2, scale: 1.01 } : undefined}
+            >
+              {fullMotion ? (
+                <SpotlightCard className="rounded-xl">{card}</SpotlightCard>
+              ) : (
+                card
+              )}
+            </motion.li>
           );
         })}
-      </ol>
+      </motion.ol>
     </section>
   );
 }

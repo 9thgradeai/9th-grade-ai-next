@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { Crosshair, Target, ArrowRight, Clock, ShieldCheck } from "@phosphor-icons/react";
 import { useLanguage, t, type Language } from "@/lib/lang-ctx";
 import type { PreparationIntelligenceDTO, PrepIntelligenceRecommendation } from "@/lib/types";
+import ReadinessRing from "./ReadinessRing";
 
 const WEEKDAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
@@ -230,9 +231,6 @@ export default function TodayMission({
       ? t(lang, `${accuracy}% নির্ভুলতা — সব সময়ের গড়`, `${accuracy}% accuracy — all-time average`)
       : t(lang, "প্রথম প্রশ্ন সমাধান করলে এখানে অগ্রগতি দেখা যাবে", "Solve your first question and progress appears here");
 
-  const ORBIT_CIRCUMFERENCE = 2 * Math.PI * 44;
-  const clampedPct = Math.max(0, Math.min(100, orbitPct));
-  const orbitDash = `${(ORBIT_CIRCUMFERENCE * clampedPct) / 100} ${ORBIT_CIRCUMFERENCE}`;
   const hasMission = Boolean(mission) && hasData;
 
   return (
@@ -242,35 +240,22 @@ export default function TodayMission({
     >
       <div className="command-aurora opacity-60" aria-hidden="true" />
       <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center">
-        <div className="study-orbit relative shrink-0 self-start lg:self-center" aria-hidden="true">
-          <svg viewBox="0 0 120 120" className="h-32 w-32 lg:h-40 lg:w-40">
-            <circle cx="60" cy="60" r="54" fill="none" stroke="var(--dashboard-border-muted)" strokeWidth="1" />
-            <circle cx="60" cy="60" r="35" fill="none" stroke="var(--dashboard-border-muted)" strokeWidth="1" strokeDasharray="2 4" />
-            <circle
-              cx="60"
-              cy="60"
-              r="44"
-              fill="none"
-              stroke={hasPlan || hasOverall ? "var(--dashboard-primary)" : "var(--dashboard-border-strong)"}
-              strokeWidth="5"
-              strokeLinecap="round"
-              strokeDasharray={orbitDash}
-              transform="rotate(-90 60 60)"
-              className="transition-[stroke-dasharray] duration-700 ease-out"
-            />
-            {hasPlan || hasOverall ? (
-              <circle
-                cx={60 + 54 * Math.cos((2 * Math.PI * Math.max(0, Math.min(100, orbitPct))) / 100 - Math.PI / 2)}
-                cy={60 + 54 * Math.sin((2 * Math.PI * Math.max(0, Math.min(100, orbitPct))) / 100 - Math.PI / 2)}
-                r="4"
-                fill="var(--dashboard-primary)"
-              />
-            ) : null}
-          </svg>
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-            <p className="font-mono text-lg font-bold leading-none text-[var(--dashboard-text-primary)]">{orbitValue}</p>
-            <p className="mt-1 text-[9px] font-bold uppercase tracking-[0.14em] text-[var(--dashboard-text-muted)]">{orbitLabel}</p>
-          </div>
+        <div className="study-orbit shrink-0 self-start lg:self-center">
+          {/* Shared ring gauge (same implementation as the header readiness
+              ring) — progress springs on data change, paints instantly when
+              motion is gated off. */}
+          <ReadinessRing
+            value={orbitPct}
+            size={144}
+            strokeWidth={9}
+            ariaLabel={`${orbitLabel} — ${orbitValue}`}
+            center={
+              <p className="font-mono text-lg font-bold leading-none text-[var(--dashboard-text-primary)]">{orbitValue}</p>
+            }
+            label={
+              <p className="mt-1 text-[9px] font-bold uppercase tracking-[0.14em] text-[var(--dashboard-text-muted)]">{orbitLabel}</p>
+            }
+          />
         </div>
 
         <div className="min-w-0 flex-1">
