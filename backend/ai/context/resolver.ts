@@ -34,6 +34,17 @@ const STRATEGY_SLICES: ContextSliceKey[] = [
   "revision",
 ];
 
+// Home-brief turns ("what should I do right now?") ground on the full
+// at-a-glance state: today's plan, exam pressure, mistake load, revision
+// backlog and recent mock form.
+const HOME_BRIEF_SLICES: ContextSliceKey[] = [
+  "todayPlan",
+  "exam",
+  "mistakes",
+  "revision",
+  "mockPerformance",
+];
+
 const PLAN: Record<AIIntent | "general", ContextPlan> = {
   tutor: { slices: [], focus: "tutor" },
   solve: { slices: [], focus: "solve" },
@@ -53,6 +64,7 @@ const PLAN: Record<AIIntent | "general", ContextPlan> = {
   exam_strategy: { slices: STRATEGY_SLICES, focus: "exam_strategy" },
   career: { slices: ["exam"], focus: "career" },
   navigation: { slices: [], focus: "navigation" },
+  home_brief: { slices: HOME_BRIEF_SLICES, focus: "home_brief" },
 };
 
 /** Resolve the slice plan for an intent. Unknown/absent → light plan. */

@@ -21,7 +21,8 @@ export type AIIntent =
   | "mock_exam"
   | "exam_strategy"
   | "career"
-  | "navigation";
+  | "navigation"
+  | "home_brief";
 
 export type AIMessageInput = {
   role: "user" | "assistant" | "system";

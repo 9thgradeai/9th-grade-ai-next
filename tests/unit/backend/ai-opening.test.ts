@@ -41,6 +41,12 @@ describe("resolveContextPlan", () => {
     expect(resolveContextPlan("solve").slices).toEqual([]);
     expect(resolveContextPlan(undefined).slices).toEqual([]);
   });
+
+  it("grounds home-brief turns on the full at-a-glance state", () => {
+    const plan = resolveContextPlan("home_brief");
+    expect(plan.focus).toBe("home_brief");
+    expect(plan.slices).toEqual(["todayPlan", "exam", "mistakes", "revision", "mockPerformance"]);
+  });
 });
 
 describe("renderSlicesForPrompt", () => {

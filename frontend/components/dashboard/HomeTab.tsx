@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import dynamic from "next/dynamic";
 import { motion, useReducedMotion } from "framer-motion";
 import { Clock, ArrowRight, Flame, Trophy, CaretRight, ArrowCounterClockwise } from "@phosphor-icons/react";
 import { useAuth } from "@/lib/auth-ctx";
@@ -22,6 +23,18 @@ import PerformanceCard from "./command-center/PerformanceCard";
 import type { PerfRange } from "./command-center/PerformanceCard";
 import TodayPlanCard from "./command-center/TodayPlanCard";
 import { launchAI } from "@/lib/ai-launcher";
+import type { HomeHeroSignals } from "./ai/HomeHero";
+
+// AI Hero loads on demand (agent SSE client excluded from the initial
+// bundle) and renders nothing server-side (greeting + streaming are live).
+const HomeHero = dynamic(() => import("./ai/HomeHero"), {
+  ssr: false,
+  loading: () => (
+    <div role="status" aria-label="Loading AI command" className="rounded-2xl border p-5 animate-pulse" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}>
+      <div className="h-10 rounded-xl" style={{ background: "var(--dashboard-surface-muted)" }} />
+    </div>
+  ),
+});
 
 const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const WEEKDAY_SHORT_BN = ["শনি", "রবি", "সোম", "মঙ্গল", "বুধ", "বৃহ", "শুক্র"];
@@ -198,6 +211,22 @@ export default function HomeTab() {
     [intelligence],
   );
   const results = useMemo(() => intelligence?.recentResults ?? [], [intelligence]);
+
+  // Deterministic hero chips (Phase 2): numbers come from live aggregates —
+  // the model only narrates, never invents them.
+  const heroSignals = useMemo<HomeHeroSignals>(() => {
+    const weakSub = intelligence?.recommendations.find((r) => r.id === "practice-weak-subject");
+    const weakTopicRec = intelligence?.recommendations.find((r) => r.id === "practice-weak-topic");
+    return {
+      weakSubject: weakSub?.subject ?? weakTopicRec?.subject,
+      weakTopic: weakTopicRec?.topic,
+      weakAccuracy: weakSub?.accuracy ?? weakTopicRec?.accuracy,
+      unmasteredMistakes: intelligence?.mistakes.unmastered,
+      flashcardsDue: intelligence?.flashcardsDue,
+      dailyQuizAvailable: intelligence?.dailyQuizAvailable,
+      streak: intelligence?.streak,
+    };
+  }, [intelligence]);
 
   const toggleTask = async (taskId: number) => {
     setIntelligence((prev) =>
@@ -422,6 +451,11 @@ export default function HomeTab() {
           </div>
         )}
       </motion.header>
+
+      {/* ── AI Hero: ask-first command bar (Phase 2) ── */}
+      <motion.div variants={STAGGER_ITEM} className="min-w-0">
+        <HomeHero signals={heroSignals} />
+      </motion.div>
 
       {/* ── Secondary: Pulse — compact, muted ── */}
       <motion.div variants={STAGGER_ITEM}>

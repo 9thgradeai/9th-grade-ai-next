@@ -59,6 +59,7 @@ Response headers: `X-AI-Source` (`groq` | `anthropic` | `mock`), `X-Conversation
 ## Context & Memory
 
 - **Context engine** (`context/context-engine.ts`): assembles `AIContext` — exam target, subject, topic, question, learning profile (from `UserProgress`/attempts), and persisted memories.
+- **Intent → slices** (`context/resolver.ts`): each `AIIntent` declares the live data slices its turn needs (pure, unit-tested). The Home command bar uses the `home_brief` intent, grounded on `todayPlan` + `exam` + `mistakes` + `revision` + `mockPerformance` — the full at-a-glance state. Suggested chips are built client-side from deterministic aggregates; the model narrates, never invents numbers.
 - **Memory store** (`memory/memory-store.ts`): `AIMemory` rows keyed by `[userId, type, key]`; only the AI application layer writes memory (never raw model output). Stores preferred language, topic signals, exam goals.
 - **Conversation persistence** (`persistence/conversations.ts`): every turn is stored in `AIConversation`/`AIMessage`; history is scoped to the authenticated user on every read.
 
@@ -91,8 +92,8 @@ Every AI call records an `AIUsage` row (tokens, latency, success, estimated cost
 
 ## Evaluation
 
-- Unit tests: `tests/unit/backend/ai.test.ts` (schemas, output validation, intent, prompts, rate limits).
-- Component tests: `tests/unit/frontend/ai-workspace.test.tsx` (AI workspace UI).
+- Unit tests: `tests/unit/backend/ai.test.ts` (schemas, output validation, intent, prompts, rate limits), `tests/unit/backend/ai-opening.test.ts` (intent → context-slice plans, incl. `home_brief`).
+- Component tests: `tests/unit/frontend/ai-workspace.test.tsx` (AI workspace UI), `tests/unit/frontend/home-hero.test.tsx` (Home command bar: chips, `home_brief` intent, streaming, error states).
 - Web-search module tests: `tests/unit/backend/web-search.test.ts`.
 
 ## Response Rendering & Formatting

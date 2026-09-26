@@ -32,6 +32,7 @@ const VALID_INTENTS = new Set<AIIntent>([
   "exam_strategy",
   "career",
   "navigation",
+  "home_brief",
 ]);
 
 function isRecord(value: unknown): value is Record<string, unknown> {
