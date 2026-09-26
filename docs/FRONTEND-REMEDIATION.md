@@ -56,6 +56,8 @@ Run per phase: `npm run test && npm run lint && npm run typecheck && npm run bui
 - `WorldMapBackdrop` (dashboard layout, `lg+` only): fixed, aria-hidden,
   pointer-events-none, radially masked, transform-only 90s drift; Dhaka
   default spotlight rebinds to weakest geography-flavoured topic.
-- Main canvas is transparent over the shell base so the map shows in
-  gutters only; cards/nav stay opaque. Reduced-motion + forced-colors
+- Main canvas is transparent over the shell base (overrides the
+  `!important` canvas-background rules, shell keeps base color) so the map
+  shows in gutters only; presence 0.14 dark / 0.17 light after
+  live-dashboard screenshot verification; reduced-motion + forced-colors
   guards included. Verified dark/light screenshots + 909/909 tests.

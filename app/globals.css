@@ -2264,12 +2264,12 @@ html.light .skeleton-shimmer {
 }
 .world-map-land {
   fill: none;
-  stroke: var(--dashboard-text-muted);
-  stroke-width: 1;
+  stroke: color-mix(in srgb, var(--dashboard-primary) 42%, var(--dashboard-text-muted));
+  stroke-width: 1.1;
   vector-effect: non-scaling-stroke;
 }
-.dashboard-theme-scope[data-dashboard-theme="dark"] .world-map-svg { opacity: 0.14; }
-.dashboard-theme-scope[data-dashboard-theme="light"] .world-map-svg { opacity: 0.17; }
+.dashboard-theme-scope[data-dashboard-theme="dark"] .world-map-svg { opacity: 0.22; }
+.dashboard-theme-scope[data-dashboard-theme="light"] .world-map-svg { opacity: 0.2; }
 /* Weak-topic spotlight — one quiet pulse + caption. */
 .world-map-spot {
   position: absolute;
