@@ -10,7 +10,10 @@ vi.mock("@/lib/ecosystem-ctx", () => ({
 }));
 
 vi.mock("@/lib/services/api", () => ({
-  api: { preparationIntelligence: vi.fn().mockResolvedValue(null) },
+  api: {
+    preparationIntelligence: vi.fn().mockResolvedValue(null),
+    preparationIntelligenceScope: vi.fn().mockResolvedValue(null),
+  },
 }));
 
 describe("world-map asset contract", () => {

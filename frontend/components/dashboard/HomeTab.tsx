@@ -8,6 +8,8 @@ import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 import { useLanguage, t } from "@/lib/lang-ctx";
 import { useToastSafe } from "@/lib/toast-ctx";
 import { api } from "@/lib/services/api";
+import { homePerf } from "@/lib/perf";
+import { EMPTY_INTELLIGENCE, mergeIntelligence } from "@/lib/intelligence";
 import type { Server, PrepIntelligenceRecommendation } from "@/lib/types";
 import StreakHeatmap from "./StreakHeatmap";
 import HomeCoach from "./ai/HomeCoach";
@@ -38,6 +40,42 @@ const STAGGER_ITEM = {
   show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 320, damping: 30 } },
 };
 
+/** Shimmer placeholder for one not-yet-loaded Home section. */
+function ScopeSkeleton({ label }: { label: string }) {
+  return (
+    <div
+      role="status"
+      aria-label={label}
+      className="rounded-2xl border p-5 animate-pulse"
+      style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}
+    >
+      <div className="h-3 w-1/3 rounded" style={{ background: "var(--dashboard-surface-muted)" }} />
+      <div className="mt-3 h-8 rounded-xl" style={{ background: "var(--dashboard-surface-muted)" }} />
+      <div className="mt-2 h-8 rounded-xl" style={{ background: "var(--dashboard-surface-muted)" }} />
+    </div>
+  );
+}
+
+/** Inline retry for one failed scope — the rest of Home keeps working. */
+function ScopeError({ message, retryLabel, onRetry }: { message: string; retryLabel: string; onRetry: () => void }) {
+  return (
+    <div
+      role="alert"
+      className="rounded-2xl border p-5 text-center"
+      style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}
+    >
+      <p className="text-xs font-bold" style={{ color: "var(--dashboard-text-secondary)" }}>{message}</p>
+      <button
+        onClick={onRetry}
+        className="mt-3 inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-lg border"
+        style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-primary)" }}
+      >
+        <ArrowCounterClockwise className="w-3.5 h-3.5" /> {retryLabel}
+      </button>
+    </div>
+  );
+}
+
 export default function HomeTab() {
   const { user } = useAuth();
   const { setActiveTab, setPracticeIntent, setMistakeIntent, setQuestionBankFilters } = useDashboardStore();
@@ -46,23 +84,71 @@ export default function HomeTab() {
   const reduceMotion = useReducedMotion();
 
   const [intelligence, setIntelligence] = useState<Server.PreparationIntelligenceDTO | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [loadFailed, setLoadFailed] = useState(false);
+  // Staged loading (Phase 1): pulse paints the header instantly; tasks and
+  // analytics stream in afterwards. Each section owns its skeleton/error so a
+  // slow analytics query never blocks the whole page.
+  const [pulseReady, setPulseReady] = useState(false);
+  const [tasksReady, setTasksReady] = useState(false);
+  const [analyticsReady, setAnalyticsReady] = useState(false);
+  const [pulseFailed, setPulseFailed] = useState(false);
+  const [tasksFailed, setTasksFailed] = useState(false);
+  const [analyticsFailed, setAnalyticsFailed] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
   const [perfRange, setPerfRange] = useState<PerfRange>("30D");
 
+  const resetStages = () => {
+    setIntelligence(null);
+    setPulseReady(false);
+    setTasksReady(false);
+    setAnalyticsReady(false);
+    setPulseFailed(false);
+    setTasksFailed(false);
+    setAnalyticsFailed(false);
+  };
+
   useEffect(() => {
     let cancelled = false;
+    homePerf.start();
+    // Stage 1 — pulse: cheap header fields, paints first.
     void api
-      .preparationIntelligence()
-      .then((v) => {
-        if (!cancelled) setIntelligence(v);
+      .preparationIntelligenceScope("pulse")
+      .then((patch) => {
+        if (cancelled) return;
+        setIntelligence(mergeIntelligence(EMPTY_INTELLIGENCE, patch));
+        setPulseReady(true);
+        homePerf.record("pulse");
+        // Stage 2 — tasks + analytics in parallel once the header is up.
+        void api
+          .preparationIntelligenceScope("tasks")
+          .then((t) => {
+            if (cancelled) return;
+            setIntelligence((prev) => mergeIntelligence(prev ?? EMPTY_INTELLIGENCE, t));
+            setTasksReady(true);
+            homePerf.record("tasks");
+          })
+          .catch(() => {
+            if (!cancelled) {
+              setTasksFailed(true);
+              setTasksReady(true);
+            }
+          });
+        void api
+          .preparationIntelligenceScope("analytics")
+          .then((a) => {
+            if (cancelled) return;
+            setIntelligence((prev) => mergeIntelligence(prev ?? EMPTY_INTELLIGENCE, a));
+            setAnalyticsReady(true);
+            homePerf.record("analytics");
+          })
+          .catch(() => {
+            if (!cancelled) {
+              setAnalyticsFailed(true);
+              setAnalyticsReady(true);
+            }
+          });
       })
       .catch(() => {
-        if (!cancelled) setLoadFailed(true);
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) setPulseFailed(true);
       });
     return () => {
       cancelled = true;
@@ -86,8 +172,7 @@ export default function HomeTab() {
 
   useEffect(() => {
     const onRefresh = () => {
-      setLoading(true);
-      setLoadFailed(false);
+      resetStages();
       setReloadKey((k) => k + 1);
     };
     const onStartPractice = () => {
@@ -208,8 +293,7 @@ export default function HomeTab() {
       } else if (key === "L") {
         setActiveTab("study-planner");
       } else if (key === "R") {
-        setLoading(true);
-        setLoadFailed(false);
+        resetStages();
         setReloadKey((k) => k + 1);
         toast.success(t(lang, "হোম ডেটা রিফ্রেশ হয়েছে", "Home data refreshed"));
       }
@@ -218,9 +302,41 @@ export default function HomeTab() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [setActiveTab, setPracticeIntent, toast, lang]);
 
-  const skeleton = loading && !intelligence;
+  const skeleton = !pulseReady && !pulseFailed;
 
-  if (loadFailed && !skeleton) {
+  const retryScope = (scope: "tasks" | "analytics") => {
+    if (scope === "tasks") {
+      setTasksFailed(false);
+      setTasksReady(false);
+      void api
+        .preparationIntelligenceScope("tasks")
+        .then((t) => {
+          setIntelligence((prev) => mergeIntelligence(prev ?? EMPTY_INTELLIGENCE, t));
+          setTasksReady(true);
+          homePerf.record("tasks");
+        })
+        .catch(() => {
+          setTasksFailed(true);
+          setTasksReady(true);
+        });
+    } else {
+      setAnalyticsFailed(false);
+      setAnalyticsReady(false);
+      void api
+        .preparationIntelligenceScope("analytics")
+        .then((a) => {
+          setIntelligence((prev) => mergeIntelligence(prev ?? EMPTY_INTELLIGENCE, a));
+          setAnalyticsReady(true);
+          homePerf.record("analytics");
+        })
+        .catch(() => {
+          setAnalyticsFailed(true);
+          setAnalyticsReady(true);
+        });
+    }
+  };
+
+  if (pulseFailed) {
     return (
       <div
         role="alert"
@@ -235,8 +351,7 @@ export default function HomeTab() {
         </p>
         <button
           onClick={() => {
-            setLoading(true);
-            setLoadFailed(false);
+            resetStages();
             setReloadKey((k) => k + 1);
           }}
           className="command-primary-btn mt-4"
@@ -254,6 +369,11 @@ export default function HomeTab() {
           <h1 className="font-display text-xl font-semibold tracking-tight text-[var(--dashboard-text-primary)]">
             {t(lang, "প্রস্তুতির সারাংশ", "Preparation overview")}
           </h1>
+          {skeleton ? (
+            <div role="status" aria-label={t(lang, "লোড হচ্ছে", "Loading")} className="mt-2 flex items-center gap-2 animate-pulse">
+              <div className="h-6 w-40 rounded-full" style={{ background: "var(--dashboard-surface-muted)" }} />
+            </div>
+          ) : (
           <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-[var(--dashboard-text-secondary)]">
             <span className="inline-flex items-center gap-1.5">
               <Clock className="w-3.5 h-3.5 text-[var(--dashboard-primary)]" aria-hidden="true" /> {user?.examTarget ?? t(lang, "লক্ষ্য নির্ধারিত হয়নি", "Target not set")}
@@ -274,9 +394,10 @@ export default function HomeTab() {
               </span>
             </span>
           </div>
+          )}
         </div>
 
-        {nextExam && examDaysLeft != null && (
+        {pulseReady && nextExam && examDaysLeft != null && (
           <div
             className="w-fit max-w-full border-l-2 border-[var(--dashboard-primary)] py-1 pl-5 flex items-center gap-4"
             style={{ background: "var(--dashboard-surface)", borderLeftColor: "var(--dashboard-primary)" }}
@@ -303,51 +424,93 @@ export default function HomeTab() {
       </motion.header>
 
       {/* ── Secondary: Pulse — compact, muted ── */}
-      <motion.div variants={STAGGER_ITEM} className={skeleton ? "opacity-60 pointer-events-none" : ""}>
-        <PreparationPulse intelligence={intelligence} />
+      <motion.div variants={STAGGER_ITEM}>
+        {!pulseReady ? (
+          <ScopeSkeleton label={t(lang, "প্রস্তুতির পালস লোড হচ্ছে", "Loading preparation pulse")} />
+        ) : (
+          <PreparationPulse intelligence={intelligence} />
+        )}
       </motion.div>
 
       <div className="study-home-analytics grid gap-5 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
         <motion.div variants={STAGGER_ITEM} className="min-w-0 opacity-[0.98]">
-          <PerformanceCard
-            activity={intelligence?.activity ?? []}
-            results={results}
-            range={perfRange}
-            onRangeChange={setPerfRange}
-            loading={loading}
-          />
+          {!pulseReady ? (
+            <ScopeSkeleton label={t(lang, "পারফরম্যান্স লোড হচ্ছে", "Loading performance")} />
+          ) : (
+            <PerformanceCard
+              activity={intelligence?.activity ?? []}
+              results={results}
+              range={perfRange}
+              onRangeChange={setPerfRange}
+              loading={false}
+            />
+          )}
         </motion.div>
         <motion.div variants={STAGGER_ITEM} className="min-w-0">
-          <TodayPlanCard
-            tasks={todaysTasks}
-            onToggle={toggleTask}
-            onTaskAdded={() => setReloadKey((k) => k + 1)}
-          />
+          {tasksFailed ? (
+            <ScopeError
+              message={t(lang, "আজকের পরিকল্পনা লোড করা যায়নি", "Could not load today's plan")}
+              retryLabel={t(lang, "আবার চেষ্টা করুন", "Try again")}
+              onRetry={() => retryScope("tasks")}
+            />
+          ) : !tasksReady ? (
+            <ScopeSkeleton label={t(lang, "আজকের পরিকল্পনা লোড হচ্ছে", "Loading today's plan")} />
+          ) : (
+            <TodayPlanCard
+              tasks={todaysTasks}
+              onToggle={toggleTask}
+              onTaskAdded={() => setReloadKey((k) => k + 1)}
+            />
+          )}
         </motion.div>
       </div>
 
       {/* ── Hero Mission — primary CTA with command-card--hero treatment ── */}
       <div className="grid gap-5 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
         <motion.div variants={STAGGER_ITEM} className="min-w-0">
-          <TodayMission
-            intelligence={intelligence}
-            onStartPractice={practiceSubject}
-            onStartMistakes={() => mistakeSubject()}
-            onReviewFlashcards={() => setActiveTab("flashcards")}
-            onStartDailyQuiz={() => setActiveTab("practice")}
-          />
+          {analyticsFailed ? (
+            <ScopeError
+              message={t(lang, "আজকের মিশন লোড করা যায়নি", "Could not load today's mission")}
+              retryLabel={t(lang, "আবার চেষ্টা করুন", "Try again")}
+              onRetry={() => retryScope("analytics")}
+            />
+          ) : !analyticsReady ? (
+            <ScopeSkeleton label={t(lang, "আজকের মিশন লোড হচ্ছে", "Loading today's mission")} />
+          ) : (
+            <TodayMission
+              intelligence={intelligence}
+              onStartPractice={practiceSubject}
+              onStartMistakes={() => mistakeSubject()}
+              onReviewFlashcards={() => setActiveTab("flashcards")}
+              onStartDailyQuiz={() => setActiveTab("practice")}
+            />
+          )}
         </motion.div>
         <motion.div variants={STAGGER_ITEM} className="min-w-0">
-          <RecommendedActions intelligence={intelligence} onAction={handleRecommendation} />
+          {analyticsFailed ? (
+            <ScopeError
+              message={t(lang, "প্রস্তাবনা লোড করা যায়নি", "Could not load recommendations")}
+              retryLabel={t(lang, "আবার চেষ্টা করুন", "Try again")}
+              onRetry={() => retryScope("analytics")}
+            />
+          ) : !analyticsReady ? (
+            <ScopeSkeleton label={t(lang, "প্রস্তাবনা লোড হচ্ছে", "Loading recommendations")} />
+          ) : (
+            <RecommendedActions intelligence={intelligence} onAction={handleRecommendation} />
+          )}
         </motion.div>
       </div>
 
       <motion.div variants={STAGGER_ITEM}>
-        <ContinueLearning
-          intelligence={intelligence}
-          onResumeExam={() => setActiveTab("practice")}
-          onStartDailyQuiz={() => setActiveTab("practice")}
-        />
+        {!tasksReady && !tasksFailed ? (
+          <ScopeSkeleton label={t(lang, "চলমান শেখা লোড হচ্ছে", "Loading continue learning")} />
+        ) : (
+          <ContinueLearning
+            intelligence={intelligence}
+            onResumeExam={() => setActiveTab("practice")}
+            onStartDailyQuiz={() => setActiveTab("practice")}
+          />
+        )}
       </motion.div>
 
       {/* ── Deferred: AI Study Coach — collapsed by default to reduce initial cognitive load ── */}

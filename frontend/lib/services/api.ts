@@ -439,10 +439,24 @@ export const api = {
     return cachedGet<{ stats: Server.DashboardStatsDTO }>(`/api/dashboard-stats${suffix}`).then((d) => d.stats);
   },
 
-  preparationIntelligence: (): Promise<Server.PreparationIntelligenceDTO> =>
-    request<{ intelligence: Server.PreparationIntelligenceDTO }>("/api/preparation-intelligence").then(
-      (d) => d.intelligence,
-    ),
+  preparationIntelligence: (opts?: { window?: number }): Promise<Server.PreparationIntelligenceDTO> => {
+    const suffix = opts?.window ? `?window=${opts.window}` : "";
+    return request<{ intelligence: Server.PreparationIntelligenceDTO }>(
+      `/api/preparation-intelligence${suffix}`,
+    ).then((d) => d.intelligence);
+  },
+
+  /**
+   * Staged Home load (Phase 1): fetch one cheap scope at a time so the
+   * header/pulse paints before the heavy analytics resolve. Returns a
+   * partial DTO — merge over EMPTY_INTELLIGENCE (see `@/lib/intelligence`).
+   */
+  preparationIntelligenceScope: (
+    scope: "pulse" | "tasks" | "analytics",
+  ): Promise<Partial<Server.PreparationIntelligenceDTO>> =>
+    request<{ intelligence: Partial<Server.PreparationIntelligenceDTO> }>(
+      `/api/preparation-intelligence?scope=${scope}`,
+    ).then((d) => d.intelligence),
 
   examSchedule: (): Promise<Server.ExamScheduleDTO[]> =>
     cachedGet<{ exams: Server.ExamScheduleDTO[] }>("/api/exam-schedule").then((d) => d.exams),

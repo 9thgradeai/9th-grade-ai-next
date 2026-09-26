@@ -6,6 +6,7 @@ import TodayMission, { selectMission } from "@/components/dashboard/command-cent
 
 const components = vi.hoisted(() => ({
   preparationIntelligence: vi.fn(),
+  preparationIntelligenceScope: vi.fn(),
   toggleStudyTask: vi.fn(),
   setActiveTab: vi.fn(),
   setPracticeIntent: vi.fn(),
@@ -14,6 +15,7 @@ const components = vi.hoisted(() => ({
 vi.mock("@/lib/services/api", () => ({
   api: {
     preparationIntelligence: components.preparationIntelligence,
+    preparationIntelligenceScope: components.preparationIntelligenceScope,
     toggleStudyTask: components.toggleStudyTask,
   },
 }));
@@ -187,7 +189,7 @@ describe("PreparationPulse metrics", () => {
 
 describe("HomeTab rearrangement", () => {
   beforeEach(() => {
-    components.preparationIntelligence.mockResolvedValue({
+    const fixture = {
       ...intelligenceBase,
       // Ensure at least one task is for today so the toggle button renders
       studyTasks: [
@@ -197,6 +199,35 @@ describe("HomeTab rearrangement", () => {
           day: new Date().toLocaleDateString('en-US', { weekday: 'long' }) as any,
         },
       ],
+    };
+    components.preparationIntelligence.mockResolvedValue(fixture);
+    // Staged HomeTab resolves each scope from the same fixture.
+    components.preparationIntelligenceScope.mockImplementation(async (scope: string) => {
+      if (scope === "pulse") {
+        const { overall, activity, period, streak, flashcardsDue, nextExam, dailyQuizAvailable } =
+          fixture;
+        return { overall, activity, period, streak, flashcardsDue, nextExam, dailyQuizAvailable };
+      }
+      if (scope === "tasks") {
+        const { studyTasks, unfinishedActivities } = fixture;
+        return { studyTasks, unfinishedActivities };
+      }
+      const {
+        subjectPerformance,
+        weakTopics,
+        masteryDistribution,
+        mistakes,
+        recentResults,
+        recommendations,
+      } = fixture;
+      return {
+        subjectPerformance,
+        weakTopics,
+        masteryDistribution,
+        mistakes,
+        recentResults,
+        recommendations,
+      };
     });
   });
 

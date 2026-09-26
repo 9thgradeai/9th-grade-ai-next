@@ -52,11 +52,12 @@ export default function WorldMapBackdrop() {
   const [hotspot, setHotspot] = useState<Hotspot>({ ...DHAKA_SPOT, label: "Bangladesh" });
 
   // Bind the pulse to the learner's weakest geography-flavoured topic.
-  // Non-fatal: any failure keeps the default Dhaka spotlight.
+  // Non-fatal: any failure keeps the default Dhaka spotlight. Uses the cheap
+  // analytics scope (weak topics only) instead of the full 365-day payload.
   useEffect(() => {
     let cancelled = false;
     void api
-      .preparationIntelligence()
+      .preparationIntelligenceScope("analytics")
       .then((intel) => {
         if (cancelled) return;
         const weak = intel?.weakTopics?.[0] as unknown as { topic?: string } | undefined;

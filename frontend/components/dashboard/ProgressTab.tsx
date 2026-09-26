@@ -34,7 +34,7 @@ export default function ProgressTab() {
     let cancelled = false;
     void (async () => {
       try {
-        const [i, l] = await Promise.allSettled([api.preparationIntelligence(), api.leaderboard()]);
+        const [i, l] = await Promise.allSettled([api.preparationIntelligence({ window: 365 }), api.leaderboard()]);
         if (cancelled) return;
         if (i.status === "fulfilled") setIntelligence(i.value);
         if (l.status === "fulfilled") setBoard(l.value);

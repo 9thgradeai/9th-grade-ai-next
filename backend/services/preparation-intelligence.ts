@@ -40,6 +40,8 @@ import type {
 
 /** Longest activity window the client charts against ("ALL" = 365 days). */
 const ACTIVITY_WINDOW_DAYS = 365;
+/** Default activity window for scoped Home loads (covers the 30+30 comparison). */
+export const HOME_ACTIVITY_WINDOW_DAYS = 90;
 /** Two adjacent windows used for period-over-period comparison. */
 const COMPARISON_WINDOW_DAYS = 30;
 /** Minimum attempts before a subject/topic is eligible for weak-rankings. */
@@ -222,7 +224,43 @@ function buildRecommendations(input: RecommendationInput): PrepIntelligenceRecom
   return recs.slice(0, 4);
 }
 
-export async function getPreparationIntelligence(userId: string): Promise<PreparationIntelligenceDTO> {
+export type IntelligenceScope = "pulse" | "tasks" | "analytics" | "full";
+
+type NextExamRow = NonNullable<Awaited<ReturnType<typeof fetchNextExam>>>;
+
+async function fetchNextExam() {
+  return prisma.examSchedule.findFirst({
+    where: { verified: true, date: { gte: new Date() } },
+    orderBy: [{ date: "asc" }, { sortOrder: "asc" }],
+  });
+}
+
+function mapNextExam(nextExam: NextExamRow): PreparationIntelligenceDTO["nextExam"] {
+  return {
+    id: nextExam.id,
+    titleBn: nextExam.titleBn,
+    titleEn: nextExam.titleEn,
+    type: nextExam.type,
+    date: nextExam.date.toISOString(),
+    year: nextExam.year,
+    circularNo: nextExam.circularNo,
+    note: nextExam.note,
+    sourceUrl: nextExam.sourceUrl ?? undefined,
+    verified: nextExam.verified,
+  };
+}
+
+function examDaysLeftOf(nextExam: { date: Date } | null): number | null {
+  return nextExam
+    ? Math.max(0, Math.ceil((nextExam.date.getTime() - Date.now()) / 86_400_000))
+    : null;
+}
+
+export async function getPreparationIntelligence(
+  userId: string,
+  opts?: { activityDays?: number },
+): Promise<PreparationIntelligenceDTO> {
+  const activityDays = opts?.activityDays ?? ACTIVITY_WINDOW_DAYS;
   try {
     const [
       progress,
@@ -253,10 +291,7 @@ export async function getPreparationIntelligence(userId: string): Promise<Prepar
       getMistakesBySubjectForUser(userId),
       getMockTestResults(userId),
       getStudyPlan(userId),
-      prisma.examSchedule.findFirst({
-        where: { verified: true, date: { gte: new Date() } },
-        orderBy: [{ date: "asc" }, { sortOrder: "asc" }],
-      }),
+      fetchNextExam(),
       prisma.examAttempt.findMany({
         where: { userId, status: { in: ["IN_PROGRESS", "SUBMITTING"] } },
         orderBy: { startedAt: "desc" },
@@ -268,7 +303,7 @@ export async function getPreparationIntelligence(userId: string): Promise<Prepar
         where: { userId },
         _count: { _all: true },
       }),
-      aggregateDailyActivity(userId, ACTIVITY_WINDOW_DAYS),
+      aggregateDailyActivity(userId, activityDays),
       prisma.dailyQuizParticipation.findFirst({
         where: { userId, status: { not: "COMPLETED" } },
         select: { id: true },
@@ -283,7 +318,7 @@ export async function getPreparationIntelligence(userId: string): Promise<Prepar
       }),
     ]);
 
-    const activity = buildActivityWindow(dailyActivityRaw, ACTIVITY_WINDOW_DAYS);
+    const activity = buildActivityWindow(dailyActivityRaw, activityDays);
     const period = computePeriodComparison(activity, COMPARISON_WINDOW_DAYS);
     const subjectPerformance = buildSubjectPerformance(subjectTopicAgg);
 
@@ -292,9 +327,7 @@ export async function getPreparationIntelligence(userId: string): Promise<Prepar
       (d) => d.date === todayKey && d.answered > 0,
     );
 
-    const examDaysLeft = nextExam
-      ? Math.max(0, Math.ceil((nextExam.date.getTime() - Date.now()) / 86_400_000))
-      : null;
+    const examDaysLeft = examDaysLeftOf(nextExam);
 
     const rank =
       progress && progress.points > 0
@@ -356,20 +389,7 @@ export async function getPreparationIntelligence(userId: string): Promise<Prepar
         bySubject: mistakeSubjects,
       },
       recentResults,
-      nextExam: nextExam
-        ? {
-            id: nextExam.id,
-            titleBn: nextExam.titleBn,
-            titleEn: nextExam.titleEn,
-            type: nextExam.type,
-            date: nextExam.date.toISOString(),
-            year: nextExam.year,
-            circularNo: nextExam.circularNo,
-            note: nextExam.note,
-            sourceUrl: nextExam.sourceUrl ?? undefined,
-            verified: nextExam.verified,
-          }
-        : null,
+      nextExam: nextExam ? mapNextExam(nextExam) : null,
       studyTasks,
       unfinishedActivities,
       recommendations,
@@ -378,5 +398,183 @@ export async function getPreparationIntelligence(userId: string): Promise<Prepar
   } catch (err) {
     console.error("[preparation-intelligence] failed:", err);
     throw new InternalServerError("Failed to build preparation intelligence");
+  }
+}
+
+// ── Scoped builders (Phase 1: staged Home loads) ─────────────────────
+// Each scope is self-sufficient: it issues only the queries its fields need,
+// so the dashboard can paint the header/pulse first and stream the heavier
+// analytics afterwards. All three merge cleanly into PreparationIntelligenceDTO.
+
+/** Header + pulse: identity stats, short activity window, streak, next exam. */
+export async function getIntelligencePulse(
+  userId: string,
+): Promise<Partial<PreparationIntelligenceDTO>> {
+  try {
+    const [
+      progress,
+      overall,
+      streak,
+      nextExam,
+      flashcardDueCount,
+      dailyQuizAvailable,
+      practiceStudySec,
+      mockStudySec,
+      dailyActivityRaw,
+    ] = await Promise.all([
+      prisma.userProgress.findUnique({ where: { userId } }),
+      getOverallStatsForUser(userId),
+      computeStreak(userId),
+      fetchNextExam(),
+      prisma.flashcardUserState.count({ where: { userId, nextReview: { lte: new Date() } } }),
+      prisma.dailyQuizParticipation.findFirst({
+        where: { userId, status: { not: "COMPLETED" } },
+        select: { id: true },
+      }),
+      prisma.questionAttempt.aggregate({ where: { userId }, _sum: { durationSec: true } }),
+      prisma.mockTestResult.aggregate({ where: { userId }, _sum: { durationSec: true } }),
+      aggregateDailyActivity(userId, HOME_ACTIVITY_WINDOW_DAYS),
+    ]);
+
+    const activity = buildActivityWindow(dailyActivityRaw, HOME_ACTIVITY_WINDOW_DAYS);
+    const rank =
+      progress && progress.points > 0
+        ? (await prisma.userProgress.count({ where: { points: { gt: progress.points } } })) + 1
+        : progress
+          ? 1
+          : 0;
+
+    return {
+      overall: {
+        totalAttempts: overall.totalAttempts,
+        totalCorrect: overall.totalCorrect,
+        totalWrong: overall.totalWrong,
+        accuracy: overall.accuracy,
+        questionsAttempted: overall.questionsAttempted,
+        points: progress?.points ?? 0,
+        rank,
+        streak,
+        flashcardsReviewed: progress?.flashcardsReviewed ?? 0,
+        aiQuestionsAsked: progress?.aiQuestionsAsked ?? 0,
+        examsAttempted: progress?.examsAttempted ?? 0,
+        studyTimeSec:
+          Number(practiceStudySec._sum.durationSec ?? 0) + Number(mockStudySec._sum.durationSec ?? 0),
+      },
+      activity,
+      period: computePeriodComparison(activity, COMPARISON_WINDOW_DAYS),
+      streak,
+      flashcardsDue: flashcardDueCount,
+      nextExam: nextExam ? mapNextExam(nextExam) : null,
+      dailyQuizAvailable: dailyQuizAvailable !== null,
+    };
+  } catch (err) {
+    console.error("[preparation-intelligence:pulse] failed:", err);
+    throw new InternalServerError("Failed to build preparation pulse");
+  }
+}
+
+/** Today's plan: study tasks + unfinished exam activities. */
+export async function getIntelligenceTasks(
+  userId: string,
+): Promise<Partial<PreparationIntelligenceDTO>> {
+  try {
+    const [studyTasks, unfinishedExams] = await Promise.all([
+      getStudyPlan(userId),
+      prisma.examAttempt.findMany({
+        where: { userId, status: { in: ["IN_PROGRESS", "SUBMITTING"] } },
+        orderBy: { startedAt: "desc" },
+        take: 3,
+        select: { id: true, startedAt: true },
+      }),
+    ]);
+    return {
+      studyTasks,
+      unfinishedActivities: unfinishedExams.map((e) => ({
+        type: "mock_test" as const,
+        id: String(e.id),
+        startedAt: e.startedAt.toISOString(),
+      })),
+    };
+  } catch (err) {
+    console.error("[preparation-intelligence:tasks] failed:", err);
+    throw new InternalServerError("Failed to build preparation tasks");
+  }
+}
+
+/** Heavy analytics: mastery, mistakes, results, recommendations. */
+export async function getIntelligenceAnalytics(
+  userId: string,
+): Promise<Partial<PreparationIntelligenceDTO>> {
+  try {
+    const [
+      subjectTopicAgg,
+      weakTopicRows,
+      mistakeStats,
+      mistakeSubjects,
+      recentResults,
+      masteries,
+      flashcardDueCount,
+      dailyQuizAvailable,
+      unfinishedCount,
+      nextExam,
+      todayActivity,
+    ] = await Promise.all([
+      aggregateAttemptsBySubjectTopic(userId),
+      getWeakTopics(userId, { limit: 8 }),
+      getMistakeStatsForUser(userId),
+      getMistakesBySubjectForUser(userId),
+      getMockTestResults(userId),
+      prisma.userQuestionProgress.groupBy({
+        by: ["masteryStatus"],
+        where: { userId },
+        _count: { _all: true },
+      }),
+      prisma.flashcardUserState.count({ where: { userId, nextReview: { lte: new Date() } } }),
+      prisma.dailyQuizParticipation.findFirst({
+        where: { userId, status: { not: "COMPLETED" } },
+        select: { id: true },
+      }),
+      prisma.examAttempt.count({
+        where: { userId, status: { in: ["IN_PROGRESS", "SUBMITTING"] } },
+      }),
+      fetchNextExam(),
+      aggregateDailyActivity(userId, 1),
+    ]);
+
+    const subjectPerformance = buildSubjectPerformance(subjectTopicAgg);
+    const todayKey = new Date().toISOString().slice(0, 10);
+    const studiedToday = todayActivity.some((d) => d.date === todayKey && d.answered > 0);
+
+    return {
+      subjectPerformance,
+      weakTopics: weakTopicRows,
+      masteryDistribution: masteries.map((m) => ({
+        status: m.masteryStatus,
+        count: m._count._all,
+      })),
+      mistakes: {
+        totalMistakes: mistakeStats.totalMistakes,
+        unmastered: mistakeStats.unmastered,
+        struggling: mistakeStats.struggling,
+        reviewing: mistakeStats.reviewing,
+        improving: mistakeStats.improving,
+        mastered: mistakeStats.mastered,
+        bySubject: mistakeSubjects,
+      },
+      recentResults,
+      recommendations: buildRecommendations({
+        subjectPerformance,
+        weakTopics: weakTopicRows,
+        unmasteredMistakes: mistakeStats.unmastered,
+        flashcardsDue: flashcardDueCount,
+        dailyQuizAvailable: dailyQuizAvailable !== null,
+        studiedToday,
+        unfinishedExams: unfinishedCount,
+        examDaysLeft: examDaysLeftOf(nextExam),
+      }),
+    };
+  } catch (err) {
+    console.error("[preparation-intelligence:analytics] failed:", err);
+    throw new InternalServerError("Failed to build preparation analytics");
   }
 }
