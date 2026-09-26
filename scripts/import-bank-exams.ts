@@ -76,15 +76,16 @@ const PAPERS = [
 ];
 
 // ── BB subject names (must match the BANGLADESH_BANK Subject rows) ──────────
+// Names are EXACT taxonomy node names (see BB_SUBJECT_META in taxonomy.ts).
 // GK is archive-only (BB_ARCHIVE_SUBJECT_META): out-of-syllabus PYQs land
 // there instead of being dropped as unclassified.
-const BB_BANGLA = "বাংলা ভাষা ও সাহিত্য";
-const BB_ENGLISH = "English Language and Literature";
-const BB_MATH = "গণিত";
-const BB_ANALYTICAL = "বিশ্লেষণী দক্ষতা";
-const BB_BANKING = "আর্থিক জ্ঞান";
+const BB_BANGLA = "০১_বাংলা_ভাষা_ও_সাহিত্য";
+const BB_ENGLISH = "02_English_Language_and_Literature";
+const BB_MATH = "03_Mathematics";
+const BB_ANALYTICAL = "04_Analytical_Skills";
+const BB_BANKING = "06_Financial_Knowledge";
 const BB_GK = "সাধারণ জ্ঞান";
-const BB_ICT = "তথ্য ও যোগাযোগ প্রযুক্তি";
+const BB_ICT = "05_ICT";
 
 const has = (re: RegExp, s: string) => re.test(s);
 const banglaRatio = (s: string) => {

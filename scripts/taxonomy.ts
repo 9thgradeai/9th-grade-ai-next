@@ -78,14 +78,17 @@ export function subjectMetaByNameBn(nameBn: string): SubjectMeta | undefined {
 
 // ── Bangladesh Bank ecosystem subjects (6) ──────────────────
 // architectureName segments must match database/data/bb-taxonomy.json
-// (generated from database/data/Bank/Taxonomy/Subjects_Taxonomy(Bank).txt).
+// (generated from database/data/Bank/Taxonomy/Bank_Grade9_Question_Bank_Detailed.txt).
+// Display names (nameBn) are intentionally IDENTICAL to the architecture
+// segments: the Bank Practice section shows subject names exactly as they
+// appear in the taxonomy file.
 export const BB_SUBJECT_META: SubjectMeta[] = [
-  { nameBn: "বাংলা ভাষা ও সাহিত্য", nameEn: "Bangla Language & Literature", architectureName: "01_Bangla_Language_and_Literature", icon: "📖", color: "text-emerald-400", bg: "bg-emerald-500/10" },
-  { nameBn: "English Language and Literature", nameEn: "English Language and Literature", architectureName: "02_English_Language_and_Literature", icon: "📚", color: "text-sky-400", bg: "bg-sky-500/10" },
-  { nameBn: "গণিত", nameEn: "Mathematics", architectureName: "03_Mathematics", icon: "🧮", color: "text-amber-400", bg: "bg-amber-500/10" },
-  { nameBn: "বিশ্লেষণী দক্ষতা", nameEn: "Analytical Skills", architectureName: "04_Analytical_Skills", icon: "🧠", color: "text-rose-400", bg: "bg-rose-500/10" },
-  { nameBn: "তথ্য ও যোগাযোগ প্রযুক্তি", nameEn: "ICT", architectureName: "05_ICT", icon: "💻", color: "text-purple-400", bg: "bg-purple-500/10" },
-  { nameBn: "আর্থিক জ্ঞান", nameEn: "Financial Knowledge", architectureName: "06_Financial_Knowledge", icon: "🏦", color: "text-green-400", bg: "bg-green-500/10" },
+  { nameBn: "০১_বাংলা_ভাষা_ও_সাহিত্য", nameEn: "Bangla Language & Literature", architectureName: "০১_বাংলা_ভাষা_ও_সাহিত্য", icon: "📖", color: "text-emerald-400", bg: "bg-emerald-500/10" },
+  { nameBn: "02_English_Language_and_Literature", nameEn: "English Language and Literature", architectureName: "02_English_Language_and_Literature", icon: "📚", color: "text-sky-400", bg: "bg-sky-500/10" },
+  { nameBn: "03_Mathematics", nameEn: "Mathematics", architectureName: "03_Mathematics", icon: "🧮", color: "text-amber-400", bg: "bg-amber-500/10" },
+  { nameBn: "04_Analytical_Skills", nameEn: "Analytical Skills", architectureName: "04_Analytical_Skills", icon: "🧠", color: "text-rose-400", bg: "bg-rose-500/10" },
+  { nameBn: "05_ICT", nameEn: "ICT", architectureName: "05_ICT", icon: "💻", color: "text-purple-400", bg: "bg-purple-500/10" },
+  { nameBn: "06_Financial_Knowledge", nameEn: "Financial Knowledge", architectureName: "06_Financial_Knowledge", icon: "🏦", color: "text-green-400", bg: "bg-green-500/10" },
 ];
 
 export function bbSubjectMetaByNameBn(nameBn: string): SubjectMeta | undefined {

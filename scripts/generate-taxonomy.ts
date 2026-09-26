@@ -5,7 +5,7 @@
  * canonical architecture tree file:
  *   BCS  : database/data/bcs_syllabus/BCS_Question_Bank_Detailed_*.txt
  *          → database/data/taxonomy.json
- *   Bank : database/data/Bank/Taxonomy/Subjects_Taxonomy(Bank).txt
+ *   Bank : database/data/Bank/Taxonomy/Bank_Grade9_Question_Bank_Detailed.txt
  *          → database/data/bb-taxonomy.json
  *
  * The .txt is a standard `tree` listing: connector prefixes ("├── ", "└── ")
@@ -41,7 +41,7 @@ const ECOSYSTEMS: Record<Ecosystem, { root: string; archDir: string; outFile: st
     archDir: join(process.cwd(), "database", "data", "Bank", "Taxonomy"),
     outFile: join(process.cwd(), "database", "data", "bb-taxonomy.json"),
     prefix: null,
-    exactFile: "Subjects_Taxonomy(Bank).txt",
+    exactFile: "Bank_Grade9_Question_Bank_Detailed.txt",
   },
 };
 
