@@ -140,12 +140,28 @@ export function normalizeField(s: string): string {
 }
 
 /**
+ * Strip a leading question-number scaffold ("Question 164.", "Q.12:", "প্রশ্ন
+ * ১৬৪।") from question TEXT. The Practice UI already renders its own counter,
+ * so the scaffold must never live in the stored text. Only an explicit
+ * leading marker is removed — in-body numbers and bare leading digits (e.g.
+ * "10110 বাইনারি…") are left untouched.
+ */
+export function stripQuestionScaffold(s: string): string {
+  return s.replace(
+    /^\s*(question|ques\.?|q\.?|প্রশ্ন)\s*(no\.?|নং|নম্বর|number)?\s*[0-9০-৯]+\s*[.\-:;)।]?\s*/i,
+    "",
+  );
+}
+
+/**
  * Normalize an entire MCQ record. Pure; mirrors the wording used at import:
  * fields are normalized individually so null/legit-empty inputs survive.
  */
 export function normalizeMca(rec: McaInput): McaInput {
   return {
-    question: normalizeField(rec.question ?? ""),
+    // Question-only: the counter scaffold is stripped here so every future
+    // import/reseed stores clean text (options/explanations keep verbatim).
+    question: stripQuestionScaffold(normalizeField(rec.question ?? "")),
     options: (rec.options ?? []).map((o) => normalizeField(o ?? "")),
     correctAnswer: normalizeField(rec.correctAnswer ?? ""),
     explanation: normalizeField(rec.explanation ?? ""),

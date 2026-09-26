@@ -290,3 +290,59 @@ describe("cleanup plan builder", () => {
     expect(plan.removed[0].code).toBe("SCRAMBLED_CONTENT");
   });
 });
+// ---------------------------------------------------------------------------
+// stripQuestionScaffold — leading "Question N." counters never enter the DB
+// ---------------------------------------------------------------------------
+describe("import gate: leading question-number scaffold is stripped", () => {
+  it("strips the exact production shape (Question 164.)", () => {
+    const g = scanMca(
+      clean({ question: "Question 164. 10110 বাইনারি সংখ্যাটির 2's complement কত?" }),
+    );
+    expect(g.verdict).toBe("ACCEPT");
+    expect(g.normalized.question).toBe("10110 বাইনারি সংখ্যাটির 2's complement কত?");
+  });
+
+  it("strips Q / Ques / No. / Bengali variants", () => {
+    const cases: Array<[string, string]> = [
+      ["Q.12: মডেমের কাজ কী?", "মডেমের কাজ কী?"],
+      ["Q164) USB-এর পূর্ণরূপ কী?", "USB-এর পূর্ণরূপ কী?"],
+      ["Question No. 7: CPU কী?", "CPU কী?"],
+      ["প্রশ্ন ১৬৪। SSD কী?", "SSD কী?"],
+      ["প্রশ্ন নং 164. RAM কী?", "RAM কী?"],
+    ];
+    for (const [raw, expected] of cases) {
+      expect(scanMca(clean({ question: raw })).normalized.question).toBe(expected);
+    }
+  });
+
+  it("leaves legitimate leading digits and in-body numbers alone", () => {
+    expect(
+      scanMca(clean({ question: "10110 বাইনারি সংখ্যাটির মান কত?" })).normalized.question,
+    ).toBe("10110 বাইনারি সংখ্যাটির মান কত?");
+    expect(
+      scanMca(clean({ question: "১৯৭১ সালে কত তারিখে স্বাধীনতা ঘোষণা হয়?" })).normalized.question,
+    ).toBe("১৯৭১ সালে কত তারিখে স্বাধীনতা ঘোষণা হয়?");
+    expect(
+      scanMca(clean({ question: "Question Bank থেকে ৫টি প্রশ্ন পড়ো" })).normalized.question,
+    ).toBe("Question Bank থেকে ৫টি প্রশ্ন পড়ো");
+  });
+
+  it("rejects a scaffold-only question as empty", () => {
+    const g = scanMca(clean({ question: "Question 5." }));
+    expect(g.verdict).toBe("REJECT");
+    expect(g.fatal.some((i) => i.code === "EMPTY_QUESTION")).toBe(true);
+  });
+
+  it("never touches options or explanations", () => {
+    const g = scanMca(
+      clean({
+        question: "CPU কী?",
+        options: ["Question 1", "খ", "গ", "ঘ"],
+        correctAnswer: "Question 1",
+        explanation: "Question 2 ব্যাখ্যা করে।",
+      }),
+    );
+    expect(g.normalized.options[0]).toBe("Question 1");
+    expect(g.normalized.explanation).toBe("Question 2 ব্যাখ্যা করে।");
+  });
+});
