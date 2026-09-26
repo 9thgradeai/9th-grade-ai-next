@@ -93,10 +93,9 @@ async function main(){
     "Questions(বীজগাণিতিক_সূত্রাবলি ও বহুপদী_উৎপাদক).txt",
     "Questions(সূচক ও লগারিদম)_9Th-Grade AI.txt",
   ]);
-  // HELD — formulas missing from source (unanswerable as text). Skipped until
-  // a fixed file is shared; the leaf map above is ready for that run.
-  const HELD_FILES=new Set([
-    "Questions(সূচক ও লগারিদম)_9Th-Grade AI.txt",
+  // HELD — none currently. (The সূচক ও লগারিদম file was held until its
+  // formulas were recovered from the .docx; it now seeds normally.)
+  const HELD_FILES=new Set<string>([
   ]);
   // For Math import we allow overriding global duplicates — user explicitly wants all 1000 under Math
   const dupSet=new Set<string>();
