@@ -71,8 +71,6 @@ export async function GET(request: Request) {
     const verifier = generateCodeVerifier();
     const challenge = sha256Base64Url(verifier);
     const redirectUri = getGoogleRedirectUri(origin);
-    // No secrets here — aids diagnosing redirect_uri_mismatch from logs.
-    console.info(`[google-oauth] authorize redirect_uri=${redirectUri}`);
 
     const googleUrl = buildGoogleAuthUrl({
       state,
