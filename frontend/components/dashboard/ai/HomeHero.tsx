@@ -7,7 +7,6 @@ import { useAuth } from "@/lib/auth-ctx";
 import { useLanguage, t } from "@/lib/lang-ctx";
 import { runAgentTurn, AIError } from "@/lib/services/ai";
 import type { AgentBlockDto } from "@/lib/types";
-import { useMotionTier } from "@/lib/motion/use-motion-tier";
 import AiLogo from "@/components/ui/AiLogo";
 import AgentBlocks from "./AgentBlocks";
 
@@ -43,33 +42,6 @@ function greeting(lang: "bn" | "en", name?: string | null): string {
   return name ? `${part}, ${name}` : part;
 }
 
-/**
- * Word-level visual reveal for streamed prose. Purely presentational
- * (`aria-hidden`) — the sr-only `aria-live` region below carries the same
- * full text so assistive tech always announces complete, coherent chunks.
- * Opacity-only spans (GPU-safe); static text when motion is gated off.
- */
-function StreamWords({ text, animated }: { text: string; animated: boolean }) {
-  if (!animated) return <>{text}</>;
-  return (
-    <>
-      {text.split(/(\s+)/).map((part, i) =>
-        /^\s+$/.test(part) || part === "" ? (
-          <span key={i}>{part}</span>
-        ) : (
-          <motion.span
-            key={i}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.18 }}
-          >
-            {part}
-          </motion.span>
-        ),
-      )}
-    </>
-  );
-}
 /**
  * AI Hero command bar (Phase 2) — the conversational entry point of Home.
  * Asks the `home_brief` agent turn (grounded on todayPlan/exam/mistakes/
@@ -183,16 +155,6 @@ export default function HomeHero({ signals }: { signals: HomeHeroSignals }) {
   }, [signals, lang]);
 
   const chipList = chips();
-  const { fullMotion } = useMotionTier();
-  // Glow state machine (Command Deck): idle breathes, streaming pulses
-  // faster with a border shift, result/error settle to a static layer so no
-  // animation loop burns CPU at rest. Fully static when motion is gated off.
-  const glowState: "idle" | "streaming" | "settled" = running
-    ? "streaming"
-    : error || result
-      ? "settled"
-      : "idle";
-  const streamText = result?.text ?? runText;
 
   return (
     <motion.section
@@ -200,22 +162,7 @@ export default function HomeHero({ signals }: { signals: HomeHeroSignals }) {
       animate={{ opacity: 1, y: 0 }}
       aria-label={t(lang, "AI কমান্ড", "AI command")}
       className="command-card command-card--hero p-5 sm:p-6 relative overflow-hidden"
-      style={
-        glowState === "streaming"
-          ? { borderColor: "color-mix(in srgb, var(--dashboard-primary) 32%, transparent)" }
-          : undefined
-      }
     >
-      <span
-        className={
-          fullMotion && glowState === "idle"
-            ? "cd-glow-layer cd-glow-breathe"
-            : fullMotion && glowState === "streaming"
-              ? "cd-glow-layer cd-glow-stream"
-              : "cd-glow-layer"
-        }
-        aria-hidden="true"
-      />
       <div
         className="absolute inset-x-0 top-0 h-px"
         style={{ background: "linear-gradient(90deg, transparent, var(--dashboard-primary), transparent)" }}
@@ -296,34 +243,13 @@ export default function HomeHero({ signals }: { signals: HomeHeroSignals }) {
       </form>
 
       {chipList.length > 0 && !running && !result && (
-        <motion.div
-          className="mt-3 flex flex-wrap gap-2"
-          initial={fullMotion ? "hidden" : false}
-          animate="show"
-          variants={
-            fullMotion
-              ? { hidden: {}, show: { transition: { staggerChildren: 0.04 } } }
-              : undefined
-          }
-        >
+        <div className="mt-3 flex flex-wrap gap-2">
           {chipList.map((c) => (
-            <motion.button
+            <button
               key={c.label}
               type="button"
               onClick={() => void ask(c.prompt)}
-              variants={
-                fullMotion
-                  ? {
-                      hidden: { opacity: 0, y: 6 },
-                      show: {
-                        opacity: 1,
-                        y: 0,
-                        transition: { type: "spring", stiffness: 300, damping: 30 },
-                      },
-                    }
-                  : undefined
-              }
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold transition-colors hover:border-[var(--dashboard-primary)] disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold transition-all hover:border-[var(--dashboard-primary)] disabled:opacity-50"
               style={{
                 background: "var(--dashboard-surface-muted)",
                 borderColor: "var(--dashboard-border-muted)",
@@ -332,9 +258,9 @@ export default function HomeHero({ signals }: { signals: HomeHeroSignals }) {
             >
               <Sparkle className="w-3.5 h-3.5 text-[var(--dashboard-primary)]" />
               {c.label}
-            </motion.button>
+            </button>
           ))}
-        </motion.div>
+        </div>
       )}
 
       {(running || error || result || runText) && (
@@ -350,35 +276,12 @@ export default function HomeHero({ signals }: { signals: HomeHeroSignals }) {
               {error}
             </p>
           )}
-          {(runText || result?.text) && running ? (
-            <>
-              {/* Visual word-level reveal (aria-hidden); the sr-only live
-                  region announces the same full text coherently. */}
-              <p aria-hidden="true" className="whitespace-pre-wrap text-sm leading-relaxed" style={{ color: "var(--dashboard-text-secondary)" }}>
-                <StreamWords text={streamText} animated={fullMotion} />
-              </p>
-              <p aria-live="polite" className="sr-only">
-                {streamText}
-              </p>
-            </>
-          ) : (
-            (runText || result?.text) && (
-              <p aria-live="polite" className="whitespace-pre-wrap text-sm leading-relaxed" style={{ color: "var(--dashboard-text-secondary)" }}>
-                {streamText}
-              </p>
-            )
+          {(runText || result?.text) && (
+            <p aria-live="polite" className="whitespace-pre-wrap text-sm leading-relaxed" style={{ color: "var(--dashboard-text-secondary)" }}>
+              {result?.text ?? runText}
+            </p>
           )}
-          {(result?.blocks ?? runBlocks).length > 0 && (
-            <motion.div
-              initial={fullMotion ? { opacity: 0, y: 8 } : false}
-              animate={{ opacity: 1, y: 0 }}
-              transition={
-                fullMotion ? { type: "spring", stiffness: 300, damping: 30 } : undefined
-              }
-            >
-              <AgentBlocks blocks={result?.blocks ?? runBlocks} />
-            </motion.div>
-          )}
+          {(result?.blocks ?? runBlocks).length > 0 && <AgentBlocks blocks={result?.blocks ?? runBlocks} />}
           {result && (
             <p className="pt-1 font-mono text-[10px]" style={{ color: "var(--dashboard-text-muted)" }}>
               {result.provider === "mock"

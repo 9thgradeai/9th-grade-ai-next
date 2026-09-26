@@ -31,8 +31,7 @@ describe("HomeHero (AI command bar)", () => {
         signals={{ weakSubject: "গণিত", unmasteredMistakes: 5, flashcardsDue: 0, dailyQuizAvailable: true }}
       />,
     );
-    // NB: the hero greets "late night" between 00:00–04:00 local time.
-    expect(screen.getByText(/Good (morning|afternoon|evening|night)|late night/)).toBeInTheDocument();
+    expect(screen.getByText(/Good (morning|afternoon|evening|night)/)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Fix গণিত/ })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Fix 5 mistakes/ })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Today's quiz/ })).toBeInTheDocument();
@@ -77,28 +76,5 @@ describe("HomeHero (AI command bar)", () => {
     fireEvent.change(screen.getByLabelText("Ask the AI"), { target: { value: "hello" } });
     fireEvent.click(screen.getByRole("button", { name: "Send" }));
     await screen.findByRole("alert");
-  });
-
-  it("reveals streaming words visually while the live region announces full text", async () => {
-    // Hang mid-stream: delta delivered, promise never settles.
-    components.runAgentTurn.mockImplementation(async ({ onDelta }) => {
-      onDelta?.("Solve ten questions today.");
-      await new Promise(() => {});
-      return { text: "", blocks: [], provider: "mock", model: "" };
-    });
-    const { container } = render(<HomeHero signals={{}} />);
-    fireEvent.change(screen.getByLabelText("Ask the AI"), { target: { value: "stream please" } });
-    fireEvent.click(screen.getByRole("button", { name: "Send" }));
-
-    // Streaming glow state is active (no settled static layer).
-    await waitFor(() => {
-      expect(container.querySelector(".cd-glow-stream")).toBeInTheDocument();
-    });
-    // Visual word reveal is aria-hidden; the sr-only live region carries the
-    // same complete text for assistive tech.
-    const visual = container.querySelector('p[aria-hidden="true"].whitespace-pre-wrap');
-    expect(visual?.textContent).toBe("Solve ten questions today.");
-    const live = container.querySelector('p[aria-live="polite"].sr-only');
-    expect(live?.textContent).toBe("Solve ten questions today.");
   });
 });
