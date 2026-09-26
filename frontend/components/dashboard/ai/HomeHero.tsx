@@ -212,7 +212,7 @@ export default function HomeHero({ signals }: { signals: HomeHeroSignals }) {
           disabled={running}
           placeholder={t(lang, "যেমন: ২০ মিনিট আছে, কী পড়ব?", "E.g. I have 20 minutes — what should I study?")}
           autoComplete="off"
-          className="min-w-0 flex-1 rounded-xl border px-4 py-2.5 text-sm outline-none transition-colors focus:border-[var(--dashboard-primary)] disabled:opacity-60"
+          className="min-w-0 flex-1 rounded-xl border px-4 py-2.5 min-h-[44px] text-sm outline-none transition-colors focus:border-[var(--dashboard-primary)] disabled:opacity-60"
           style={{
             background: "var(--dashboard-surface-muted)",
             borderColor: "var(--dashboard-border-muted)",
@@ -224,7 +224,7 @@ export default function HomeHero({ signals }: { signals: HomeHeroSignals }) {
             type="button"
             onClick={stop}
             aria-label={t(lang, "থামাও", "Stop")}
-            className="command-primary-btn shrink-0"
+            className="command-primary-btn shrink-0 min-h-[44px]"
           >
             <Stop className="w-4 h-4" />
             <span className="hidden sm:inline">{t(lang, "থামাও", "Stop")}</span>
@@ -234,7 +234,7 @@ export default function HomeHero({ signals }: { signals: HomeHeroSignals }) {
             type="submit"
             disabled={!input.trim()}
             aria-label={t(lang, "পাঠাও", "Send")}
-            className="command-primary-btn shrink-0 disabled:opacity-50"
+            className="command-primary-btn shrink-0 disabled:opacity-50 min-h-[44px]"
           >
             <ArrowRight className="w-4 h-4" />
             <span className="hidden sm:inline">{t(lang, "জিজ্ঞেস করো", "Ask")}</span>

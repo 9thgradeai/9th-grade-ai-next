@@ -6,6 +6,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { Clock, ArrowRight, Flame, Trophy, CaretRight, ArrowCounterClockwise } from "@phosphor-icons/react";
 import { useAuth } from "@/lib/auth-ctx";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
+import { useMotionCapabilities } from "@/lib/motion/device";
 import { useLanguage, t } from "@/lib/lang-ctx";
 import { useToastSafe } from "@/lib/toast-ctx";
 import { api } from "@/lib/services/api";
@@ -19,11 +20,22 @@ import TodayMission from "./command-center/TodayMission";
 import PreparationPulse from "./command-center/PreparationPulse";
 import ContinueLearning from "./command-center/ContinueLearning";
 import RecommendedActions from "./command-center/RecommendedActions";
-import PerformanceCard from "./command-center/PerformanceCard";
 import type { PerfRange } from "./command-center/PerformanceCard";
 import TodayPlanCard from "./command-center/TodayPlanCard";
 import { launchAI } from "@/lib/ai-launcher";
 import type { HomeHeroSignals } from "./ai/HomeHero";
+
+// PerformanceCard carries the SVG chart chunk — split it off the initial
+// Home bundle; the skeleton covers the load gap.
+const PerformanceCard = dynamic(() => import("./command-center/PerformanceCard"), {
+  ssr: false,
+  loading: () => (
+    <div role="status" aria-label="Loading performance" className="rounded-2xl border p-5 animate-pulse" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}>
+      <div className="h-3 w-1/3 rounded" style={{ background: "var(--dashboard-surface-muted)" }} />
+      <div className="mt-3 h-24 rounded-xl" style={{ background: "var(--dashboard-surface-muted)" }} />
+    </div>
+  ),
+});
 
 // AI Hero loads on demand (agent SSE client excluded from the initial
 // bundle) and renders nothing server-side (greeting + streaming are live).
@@ -95,6 +107,10 @@ export default function HomeTab() {
   const { lang } = useLanguage();
   const toast = useToastSafe();
   const reduceMotion = useReducedMotion();
+  const caps = useMotionCapabilities();
+  // Phase 3: low-tier devices (coarse pointer, low RAM, save-data) skip the
+  // stagger/spring choreography entirely — sections paint instantly.
+  const lowMotion = reduceMotion || caps.tier === "low";
 
   const [intelligence, setIntelligence] = useState<Server.PreparationIntelligenceDTO | null>(null);
   // Staged loading (Phase 1): pulse paints the header instantly; tasks and
@@ -392,7 +408,7 @@ export default function HomeTab() {
   }
 
   return (
-    <motion.div variants={STAGGER} initial={reduceMotion ? false : "hidden"} animate="show" className="study-home space-y-5 pb-24 sm:pb-6">
+    <motion.div variants={lowMotion ? undefined : STAGGER} initial={lowMotion ? false : "hidden"} animate={lowMotion ? undefined : "show"} className="study-home space-y-5 pb-24 sm:pb-6">
       <motion.header variants={STAGGER_ITEM} className="study-home-header flex flex-wrap items-center justify-between gap-3">
         <div className="min-w-0">
           <h1 className="font-display text-xl font-semibold tracking-tight text-[var(--dashboard-text-primary)]">

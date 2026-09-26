@@ -447,14 +447,17 @@ export const api = {
   },
 
   /**
-   * Staged Home load (Phase 1): fetch one cheap scope at a time so the
-   * header/pulse paints before the heavy analytics resolve. Returns a
-   * partial DTO — merge over EMPTY_INTELLIGENCE (see `@/lib/intelligence`).
+   * Staged Home load (Phase 1) with Phase-3 caching: served from the shared
+   * 15s read cache (in-flight dedupe + offline fallback included). Every
+   * mutation (`mutate()`) invalidates this cache, so task toggles and exam
+   * submissions never render stale — while rapid Home remounts/tab switches
+   * within the TTL cost zero network. Returns a partial DTO — merge over
+   * EMPTY_INTELLIGENCE (see `@/lib/intelligence`).
    */
   preparationIntelligenceScope: (
     scope: "pulse" | "tasks" | "analytics",
   ): Promise<Partial<Server.PreparationIntelligenceDTO>> =>
-    request<{ intelligence: Partial<Server.PreparationIntelligenceDTO> }>(
+    cachedGet<{ intelligence: Partial<Server.PreparationIntelligenceDTO> }>(
       `/api/preparation-intelligence?scope=${scope}`,
     ).then((d) => d.intelligence),
 
