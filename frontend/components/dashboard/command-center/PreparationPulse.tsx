@@ -1,6 +1,8 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { useLanguage, t } from "@/lib/lang-ctx";
+import { useMotionTier, useFirstMountAnimate } from "@/lib/motion/use-motion-tier";
 import { Target, BookOpen, Timer, Flame, TrendUp, TrendDown } from "@phosphor-icons/react";
 import type { PreparationIntelligenceDTO } from "@/lib/types";
 
@@ -49,6 +51,7 @@ function PulseItem({
   hint,
   duration,
   samples = [],
+  animateBars,
 }: {
   icon: typeof Target;
   label: string;
@@ -58,6 +61,7 @@ function PulseItem({
   hint: string;
   duration?: boolean;
   samples?: { date: string; value: number }[];
+  animateBars: boolean;
 }) {
   const max = Math.max(1, ...samples.map((sample) => sample.value));
   return (
@@ -73,10 +77,15 @@ function PulseItem({
           {samples.length > 0 && (
             <div role="img" aria-label={`${label}: ${samples.map((sample) => `${sample.date}: ${sample.value}`).join(", ")}`} className="flex h-8 w-24 shrink-0 items-end gap-1">
               {samples.map((sample) => (
-                <span
+                <motion.span
                   key={sample.date}
-                  className="flex-1 rounded-t-sm bg-[var(--dashboard-primary)] hover:opacity-80 transition-opacity cursor-default"
+                  className="flex-1 rounded-t-sm bg-[var(--dashboard-primary)] hover:opacity-80 transition-opacity cursor-default origin-bottom"
                   style={{ height: `${(sample.value / max) * 100}%` }}
+                  // Bars spring up from 0 on first mount only (transform-only);
+                  // the final layout height is untouched.
+                  initial={animateBars ? { scaleY: 0 } : false}
+                  animate={{ scaleY: 1 }}
+                  transition={animateBars ? { type: "spring", stiffness: 320, damping: 20 } : undefined}
                   title={`${sample.date}: ${sample.value}`}
                   aria-label={`${sample.date}: ${sample.value}`}
                 />
@@ -94,9 +103,12 @@ function PulseItem({
 
 export default function PreparationPulse({ intelligence }: PreparationPulseProps) {
   const { lang } = useLanguage();
+  const { fullMotion } = useMotionTier();
   const overall = intelligence?.overall;
   const period = intelligence?.period;
   const hasData = (overall?.totalAttempts ?? 0) > 0;
+  // Bar height-in runs on first mount only — never on revalidation.
+  const animateBars = useFirstMountAnimate(fullMotion && hasData);
 
   if (!hasData || !overall || !period) {
     return (
@@ -131,6 +143,7 @@ export default function PreparationPulse({ intelligence }: PreparationPulseProps
         delta={period.accuracyDelta}
         suffix=" pp"
         hint={t(lang, "সব সময়ের গড়", "All-time average")}
+        animateBars={animateBars}
       />
       <PulseItem
         icon={BookOpen}
@@ -139,6 +152,7 @@ export default function PreparationPulse({ intelligence }: PreparationPulseProps
         delta={period.attemptsDelta}
         hint={t(lang, "মোট উত্তর দেওয়া হয়েছে", "Total answered")}
         samples={intelligence.activity.slice(-7).map((day) => ({ date: day.date, value: day.answered }))}
+        animateBars={animateBars}
       />
       <PulseItem
         icon={Timer}
@@ -147,12 +161,14 @@ export default function PreparationPulse({ intelligence }: PreparationPulseProps
         delta={period.studyTimeDeltaSec}
         hint={`${formatStudyTime(period.currentStudyTimeSec)} ${t(lang, "গত ৩০ দিনে", "last 30 days")}`}
         duration
+        animateBars={animateBars}
       />
       <PulseItem
         icon={Flame}
         label={t(lang, "স্ট্রিক", "Streak")}
         value={`${overall.streak}`}
         hint={t(lang, "টানা অধ্যয়নের দিন", "Consecutive study days")}
+        animateBars={animateBars}
       />
     </section>
   );

@@ -1,6 +1,8 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { useLanguage, t, type Language } from "@/lib/lang-ctx";
+import { useMotionTier, useFirstMountAnimate } from "@/lib/motion/use-motion-tier";
 import { CaretRight, LightningA, BookOpen, WarningCircle, GridFour, CalendarCheck, Target, Sun } from "@phosphor-icons/react";
 import type { PreparationIntelligenceDTO, PrepIntelligenceRecommendation } from "@/lib/types";
 
@@ -79,7 +81,10 @@ function recDescription(rec: PrepIntelligenceRecommendation, lang: Language): st
 
 export default function RecommendedActions({ intelligence, onAction }: RecommendedActionsProps) {
   const { lang } = useLanguage();
+  const { fullMotion } = useMotionTier();
   const recs = (intelligence?.recommendations ?? []).slice(0, 3);
+  // Cards cascade in on first mount only — revalidations paint instantly.
+  const animateOnce = useFirstMountAnimate(fullMotion && recs.length > 0);
 
   if (recs.length === 0) return null;
 
@@ -94,7 +99,14 @@ export default function RecommendedActions({ intelligence, onAction }: Recommend
         {t(lang, "আপনার জন্য প্রস্তাবিত", "Recommended for you")}
       </h3>
 
-      <ol className="mt-3 space-y-2">
+      <motion.ol
+        className="mt-3 space-y-2"
+        initial={animateOnce ? "hidden" : false}
+        animate="show"
+        variants={
+          animateOnce ? { hidden: {}, show: { transition: { staggerChildren: 0.07 } } } : undefined
+        }
+      >
         {recs.map((rec, i) => {
           const Icon = REC_ICON[rec.id] ?? LightningA;
           const tone =
@@ -102,7 +114,22 @@ export default function RecommendedActions({ intelligence, onAction }: Recommend
               ? "var(--dashboard-primary)"
               : "var(--dashboard-text-secondary)";
           return (
-            <li key={`${rec.id}-${i}`}>
+            <motion.li
+              key={`${rec.id}-${i}`}
+              variants={
+                animateOnce
+                  ? {
+                      hidden: { opacity: 0, x: -16, scale: 0.98 },
+                      show: {
+                        opacity: 1,
+                        x: 0,
+                        scale: 1,
+                        transition: { type: "spring", stiffness: 320, damping: 22 },
+                      },
+                    }
+                  : undefined
+              }
+            >
               <button
                 onClick={() => onAction(rec)}
                 className="w-full flex items-center gap-3 rounded-xl border p-3 text-left transition-colors hover:border-[var(--dashboard-primary)]/40"
@@ -125,10 +152,10 @@ export default function RecommendedActions({ intelligence, onAction }: Recommend
                 </span>
                 <CaretRight className="w-4 h-4 shrink-0" style={{ color: "var(--dashboard-text-muted)" }} aria-hidden="true" />
               </button>
-            </li>
+            </motion.li>
           );
         })}
-      </ol>
+      </motion.ol>
     </section>
   );
 }

@@ -31,7 +31,8 @@ describe("HomeHero (AI command bar)", () => {
         signals={{ weakSubject: "গণিত", unmasteredMistakes: 5, flashcardsDue: 0, dailyQuizAvailable: true }}
       />,
     );
-    expect(screen.getByText(/Good (morning|afternoon|evening|night)/)).toBeInTheDocument();
+    // NB: the hero greets "late night" between 00:00–04:00 local time.
+    expect(screen.getByText(/Good (morning|afternoon|evening|night)|late night/)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Fix গণিত/ })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Fix 5 mistakes/ })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Today's quiz/ })).toBeInTheDocument();

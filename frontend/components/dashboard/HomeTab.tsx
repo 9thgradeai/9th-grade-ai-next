@@ -8,6 +8,7 @@ import { Clock, ArrowRight, Flame, Trophy, CaretRight, ArrowCounterClockwise } f
 import { useAuth } from "@/lib/auth-ctx";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 import { useMotionCapabilities } from "@/lib/motion/device";
+import { useMotionTier } from "@/lib/motion/use-motion-tier";
 import { useLanguage, t } from "@/lib/lang-ctx";
 import { useToastSafe } from "@/lib/toast-ctx";
 import { api, invalidateCache } from "@/lib/services/api";
@@ -61,11 +62,44 @@ function lastSevenDayLabels(): string[] {
 }
 const WEEKDAY_LABELS_7 = lastSevenDayLabels();
 
-const STAGGER = { hidden: {}, show: { transition: { staggerChildren: 0.03, delayChildren: 0.01 } } };
-const STAGGER_ITEM = {
-  hidden: { opacity: 0, y: 8 },
-  show: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 320, damping: 30 } },
+/**
+ * Eye-catchy section entrance — each Home section pops in with a springy
+ * rise + settle the first time it scrolls into view (above-the-fold sections
+ * fire on mount). Opacity/transform only; low-tier and reduced-motion render
+ * the final state instantly with zero keyframes.
+ */
+const SECTION_POP = {
+  hidden: { opacity: 0, y: 32, scale: 0.98 },
+  show: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { type: "spring" as const, stiffness: 260, damping: 21 },
+  },
 };
+
+function RevealSection({ children, className, id }: { children: React.ReactNode; className?: string; id?: string }) {
+  const { fullMotion } = useMotionTier();
+  if (!fullMotion) {
+    return (
+      <div className={className} id={id}>
+        {children}
+      </div>
+    );
+  }
+  return (
+    <motion.div
+      className={className}
+      id={id}
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true, margin: "-40px" }}
+      variants={SECTION_POP}
+    >
+      {children}
+    </motion.div>
+  );
+}
 
 /** Shimmer placeholder for one not-yet-loaded Home section. */
 function ScopeSkeleton({ label }: { label: string }) {
@@ -405,8 +439,14 @@ export default function HomeTab() {
   }
 
   return (
-    <motion.div variants={lowMotion ? undefined : STAGGER} initial={lowMotion ? false : "hidden"} animate={lowMotion ? undefined : "show"} className="study-home space-y-5 pb-24 sm:pb-6">
-      <motion.header variants={STAGGER_ITEM} className="study-home-header flex flex-wrap items-center justify-between gap-3">
+    <div className="study-home space-y-5 pb-24 sm:pb-6">
+      <motion.header
+        initial={lowMotion ? false : "hidden"}
+        whileInView={lowMotion ? undefined : "show"}
+        viewport={{ once: true, margin: "-40px" }}
+        variants={lowMotion ? undefined : SECTION_POP}
+        className="study-home-header flex flex-wrap items-center justify-between gap-3"
+      >
         <div className="min-w-0">
           <h1 className="font-display text-xl font-semibold tracking-tight text-[var(--dashboard-text-primary)]">
             {t(lang, "প্রস্তুতির সারাংশ", "Preparation overview")}
@@ -476,21 +516,21 @@ export default function HomeTab() {
       </motion.header>
 
       {/* ── AI Hero: ask-first command bar (Phase 2) ── */}
-      <motion.div variants={STAGGER_ITEM} className="min-w-0">
+      <RevealSection className="min-w-0">
         <HomeHero signals={heroSignals} />
-      </motion.div>
+      </RevealSection>
 
       {/* ── Secondary: Pulse — compact, muted ── */}
-      <motion.div variants={STAGGER_ITEM}>
+      <RevealSection>
         {!pulseReady ? (
           <ScopeSkeleton label={t(lang, "প্রস্তুতির পালস লোড হচ্ছে", "Loading preparation pulse")} />
         ) : (
           <PreparationPulse intelligence={intelligence} />
         )}
-      </motion.div>
+      </RevealSection>
 
       <div className="study-home-analytics grid gap-5 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-        <motion.div variants={STAGGER_ITEM} className="min-w-0 opacity-[0.98]">
+        <RevealSection className="min-w-0 opacity-[0.98]">
           {!pulseReady ? (
             <ScopeSkeleton label={t(lang, "পারফরম্যান্স লোড হচ্ছে", "Loading performance")} />
           ) : (
@@ -502,8 +542,8 @@ export default function HomeTab() {
               loading={false}
             />
           )}
-        </motion.div>
-        <motion.div variants={STAGGER_ITEM} className="min-w-0">
+        </RevealSection>
+        <RevealSection className="min-w-0">
           {tasksFailed && !tasksReady ? (
             <ScopeError
               message={t(lang, "আজকের পরিকল্পনা লোড করা যায়নি", "Could not load today's plan")}
@@ -519,12 +559,12 @@ export default function HomeTab() {
               onTaskAdded={() => setReloadKey((k) => k + 1)}
             />
           )}
-        </motion.div>
+        </RevealSection>
       </div>
 
       {/* ── Hero Mission — primary CTA with command-card--hero treatment ── */}
       <div className="grid gap-5 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-        <motion.div variants={STAGGER_ITEM} className="min-w-0">
+        <RevealSection className="min-w-0">
           {analyticsFailed && !analyticsReady ? (
             <ScopeError
               message={t(lang, "আজকের মিশন লোড করা যায়নি", "Could not load today's mission")}
@@ -542,8 +582,8 @@ export default function HomeTab() {
               onStartDailyQuiz={() => setActiveTab("practice")}
             />
           )}
-        </motion.div>
-        <motion.div variants={STAGGER_ITEM} className="min-w-0">
+        </RevealSection>
+        <RevealSection className="min-w-0">
           {analyticsFailed && !analyticsReady ? (
             <ScopeError
               message={t(lang, "প্রস্তাবনা লোড করা যায়নি", "Could not load recommendations")}
@@ -555,10 +595,10 @@ export default function HomeTab() {
           ) : (
             <RecommendedActions intelligence={intelligence} onAction={handleRecommendation} />
           )}
-        </motion.div>
+        </RevealSection>
       </div>
 
-      <motion.div variants={STAGGER_ITEM}>
+      <RevealSection>
         {!tasksReady && !tasksFailed ? (
           <ScopeSkeleton label={t(lang, "চলমান শেখা লোড হচ্ছে", "Loading continue learning")} />
         ) : (
@@ -568,10 +608,10 @@ export default function HomeTab() {
             onStartDailyQuiz={() => setActiveTab("practice")}
           />
         )}
-      </motion.div>
+      </RevealSection>
 
       {/* ── Deferred: AI Study Coach — collapsed by default to reduce initial cognitive load ── */}
-      <motion.div variants={STAGGER_ITEM} id="dashboard-ai-coach" className="scroll-mt-6">
+      <RevealSection id="dashboard-ai-coach" className="scroll-mt-6">
         <details className="group rounded-2xl border" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}>
           <summary className="flex items-center justify-between gap-3 px-5 py-4 cursor-pointer list-none">
             <div className="flex items-center gap-3 min-w-0">
@@ -591,11 +631,11 @@ export default function HomeTab() {
             <HomeCoach />
           </div>
         </details>
-      </motion.div>
+      </RevealSection>
 
       {/* ── Recent Mock Exam Results (real history) ── */}
       {results.length > 0 && (
-        <motion.div variants={STAGGER_ITEM} className="command-card p-5">
+        <RevealSection className="command-card p-5">
           <div className="flex items-center justify-between">
             <p className="command-eyebrow !text-[10px]">{t(lang, "সাম্প্রতিক মক টেস্ট", "Recent mock tests")}</p>
             <button onClick={() => setActiveTab("progress")} className="text-xs font-bold inline-flex items-center gap-1" style={{ color: "var(--dashboard-primary)" }}>
@@ -635,7 +675,7 @@ export default function HomeTab() {
               </button>
             ))}
           </div>
-        </motion.div>
+        </RevealSection>
       )}
       {/* ── Keyboard shortcut cheat-sheet (Phase 4 a11y, portaled: the
           motion ancestor's transform would break position:fixed) ── */}
@@ -699,6 +739,6 @@ export default function HomeTab() {
           </div>,
           document.body,
         )}
-    </motion.div>
+    </div>
   );
 }
