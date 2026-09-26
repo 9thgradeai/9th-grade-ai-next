@@ -9,7 +9,7 @@ import Redis from "ioredis";
 const DEFAULT_TTL_MS = 60_000; // 1 minute default
 const MAX_MEM_ENTRIES = 500;
 
-const mem = new Map<string, { value: unknown; evictOrder: number }>();
+const mem = new Map<string, { value: unknown; evictOrder: number; expiresAt: number }>();
 let evictCounter = 0;
 
 let redis: Redis | null = null;
@@ -37,6 +37,12 @@ export async function queryCacheGet<T>(prefix: string, key: string): Promise<T |
     }
     const hit = mem.get(fullKey);
     if (hit) {
+      // Memory fallback honors TTL exactly like Redis (PX): stale entries
+      // are evicted on read so taxonomy/content changes surface promptly.
+      if (Date.now() > hit.expiresAt) {
+        mem.delete(fullKey);
+        return null;
+      }
       // Touch to update eviction order
       hit.evictOrder = ++evictCounter;
       return hit.value as T;
@@ -67,7 +73,7 @@ export async function queryCacheSet<T>(prefix: string, key: string, value: T, tt
       }
       if (oldestKey) mem.delete(oldestKey);
     }
-    mem.set(fullKey, { value, evictOrder: ++evictCounter });
+    mem.set(fullKey, { value, evictOrder: ++evictCounter, expiresAt: Date.now() + ttlMs });
   } catch {
     // fail open
   }

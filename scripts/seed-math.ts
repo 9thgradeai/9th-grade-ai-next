@@ -150,12 +150,18 @@ async function main(){
     "Questions(বীজগাণিতিক_সূত্রাবলি ও বহুপদী_উৎপাদক).txt":["08_গাণিতিক_যুক্তি/Part_02_বীজগণিত/বীজগাণিতিক_সূত্রাবলি","08_গাণিতিক_যুক্তি/Part_02_বীজগণিত/বহুপদী_উৎপাদক"],
     "Questions(সূচক ও লগারিদম)_9Th-Grade AI.txt":["08_গাণিতিক_যুক্তি/Part_03_সূচক_ও_ধারা/সূচক","08_গাণিতিক_যুক্তি/Part_03_সূচক_ও_ধারা/লগারিদম"],
     "Questions(রেখা ও কোণ, ত্রিভুজ, চতুর্ভুজ, পিথাগোরাস এবং বৃত্ত ).txt":["ROUTED"],
+    "Questions(সরল_সহসমীকরণ ).txt":["08_গাণিতিক_যুক্তি/Part_02_বীজগণিত/সরল_ও_দ্বিপদী_সমীকরণ"],
   };
   // Multi-line প্রশ্ন/A-D/উত্তর/ব্যাখ্যা block files (vs the legacy single-line কখগঘ format).
+  // The geometry + equations files carry সংশোধিত correction blocks and parse
+  // via parseGeometryBlocks; other block files use parseAlgebraBlocks.
   const BLOCK_FILES=new Set([
     "Questions(বীজগাণিতিক_সূত্রাবলি ও বহুপদী_উৎপাদক).txt",
     "Questions(সূচক ও লগারিদম)_9Th-Grade AI.txt",
+  ]);
+  const CORRIGENDUM_FILES=new Set([
     "Questions(রেখা ও কোণ, ত্রিভুজ, চতুর্ভুজ, পিথাগোরাস এবং বৃত্ত ).txt",
+    "Questions(সরল_সহসমীকরণ ).txt",
   ]);
   // HELD — none currently. (The সূচক ও লগারিদম file was held until its
   // formulas were recovered from the .docx; it now seeds normally.)
@@ -178,7 +184,8 @@ async function main(){
     // Normalize both source formats into parsed records before the gate.
     // Geometry blocks carry সংশোধিত-preference + per-block leaf routing.
     const isGeo = file.startsWith("Questions(রেখা");
-    const parsedRecs = isGeo
+    const useCorrigendumParser = isGeo || CORRIGENDUM_FILES.has(file);
+    const parsedRecs = useCorrigendumParser
       ? parseGeometryBlocks(raw).map((p)=>({question:p.question, options:p.options, correctAnswer:(resolveAnswerToOption(p.answerRaw, p.options) ?? p.answerRaw).trim(), explanation:p.explanation}))
       : BLOCK_FILES.has(file)
       ? parseAlgebraBlocks(raw).map((p)=>({question:p.question, options:p.options, correctAnswer:(resolveAnswerToOption(p.answerRaw, p.options) ?? p.answerRaw).trim(), explanation:p.explanation}))
