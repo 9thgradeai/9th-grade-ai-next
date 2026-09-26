@@ -104,7 +104,7 @@ export default function RecommendedActions({ intelligence, onAction }: Recommend
         initial={animateOnce ? "hidden" : false}
         animate="show"
         variants={
-          animateOnce ? { hidden: {}, show: { transition: { staggerChildren: 0.07 } } } : undefined
+          animateOnce ? { hidden: {}, show: { transition: { staggerChildren: 0.09 } } } : undefined
         }
       >
         {recs.map((rec, i) => {
@@ -119,12 +119,13 @@ export default function RecommendedActions({ intelligence, onAction }: Recommend
               variants={
                 animateOnce
                   ? {
-                      hidden: { opacity: 0, x: -16, scale: 0.98 },
+                      hidden: { opacity: 0, x: -28, scale: 0.94, rotate: -1.5 },
                       show: {
                         opacity: 1,
                         x: 0,
                         scale: 1,
-                        transition: { type: "spring", stiffness: 320, damping: 22 },
+                        rotate: 0,
+                        transition: { type: "spring", stiffness: 380, damping: 15 },
                       },
                     }
                   : undefined

@@ -26,7 +26,7 @@ export default function StreakHeatmap({ activeDays, labels }: StreakHeatmapProps
       animate="show"
       variants={
         animateOnce
-          ? { hidden: {}, show: { transition: { staggerChildren: 0.05 } } }
+          ? { hidden: {}, show: { transition: { staggerChildren: 0.06 } } }
           : undefined
       }
     >
@@ -37,11 +37,12 @@ export default function StreakHeatmap({ activeDays, labels }: StreakHeatmapProps
           variants={
             animateOnce
               ? {
-                  hidden: { opacity: 0, scale: 0.5 },
+                  hidden: { opacity: 0, scale: 0.3, rotate: -14 },
                   show: {
                     opacity: 1,
                     scale: 1,
-                    transition: { type: "spring", stiffness: 380, damping: 18 },
+                    rotate: 0,
+                    transition: { type: "spring", stiffness: 450, damping: 13 },
                   },
                 }
               : undefined

@@ -85,7 +85,7 @@ function PulseItem({
                   // the final layout height is untouched.
                   initial={animateBars ? { scaleY: 0 } : false}
                   animate={{ scaleY: 1 }}
-                  transition={animateBars ? { type: "spring", stiffness: 320, damping: 20 } : undefined}
+                  transition={animateBars ? { type: "spring", stiffness: 400, damping: 14 } : undefined}
                   title={`${sample.date}: ${sample.value}`}
                   aria-label={`${sample.date}: ${sample.value}`}
                 />

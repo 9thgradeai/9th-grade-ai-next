@@ -63,18 +63,18 @@ function lastSevenDayLabels(): string[] {
 const WEEKDAY_LABELS_7 = lastSevenDayLabels();
 
 /**
- * Eye-catchy section entrance — each Home section pops in with a springy
- * rise + settle the first time it scrolls into view (above-the-fold sections
- * fire on mount). Opacity/transform only; low-tier and reduced-motion render
- * the final state instantly with zero keyframes.
+ * Party-style section entrance — each Home section bounces in with an
+ * overshooting spring (rise + pop + settle) the first time it scrolls into
+ * view (above-the-fold sections fire on mount). Opacity/transform only;
+ * low-tier and reduced-motion render the final state instantly.
  */
 const SECTION_POP = {
-  hidden: { opacity: 0, y: 32, scale: 0.98 },
+  hidden: { opacity: 0, y: 44, scale: 0.94 },
   show: {
     opacity: 1,
     y: 0,
     scale: 1,
-    transition: { type: "spring" as const, stiffness: 260, damping: 21 },
+    transition: { type: "spring" as const, stiffness: 380, damping: 15 },
   },
 };
 
