@@ -46,6 +46,68 @@ function parseAlgebraBlocks(raw:string){
   }
   return out;
 }
+/**
+ * Geometry blocks: same shape as parseAlgebraBlocks, plus "সংশোধিত প্রশ্ন"
+ * correction blocks — a সংশোধিত block REPLACES the flawed প্রশ্ন block right
+ * before it (the file's own errata; e.g. options missing the answer).
+ */
+function parseGeometryBlocks(raw:string){
+  const lines=raw.replace(/^\uFEFF/,"").split(/\r?\n/);
+  const isH=(l:string)=>/^\s*(সংশোধিত প্রশ্ন|প্রশ্ন)\s*[০-৯0-9]*\s*[:.]/.test(l);
+  const groups:string[][]=[]; let cur:string[]=[];
+  for(const line of lines){
+    if(isH(line)){ if(cur.length) groups.push(cur); cur=[line]; }
+    else if(cur.length) cur.push(line);
+  }
+  if(cur.length) groups.push(cur);
+  const kept:string[][]=[];
+  for(const g of groups){
+    if(/^\s*সংশোধিত প্রশ্ন/.test(g[0])) kept.pop();
+    kept.push(g);
+  }
+  const norm=(b:string[])=>b[0].trim().replace(/^\s*সংশোধিত প্রশ্ন\s*[০-৯0-9]*\s*[:.]\s*/,"");
+  return kept.map((b)=>{
+    const qLine=norm(b);
+    const opts:string[]=[]; let answerRaw=""; const expl:string[]=[]; let inExpl=false;
+    for(const ln of b.slice(1)){
+      const t=ln.trim();
+      const om=/^([A-D])\.\s*(.*)$/.exec(t);
+      if(om && !inExpl && opts.length<4){ opts.push(om[2].trim()); continue; }
+      const am=/^উত্তর\s*:\s*(.+)$/.exec(t);
+      if(am && !inExpl){ answerRaw=am[1].trim(); continue; }
+      if(/^ব্যাখ্যা\s*:?\s*$/.test(t)){ inExpl=true; continue; }
+      const em=/^ব্যাখ্যা\s*:\s*(.+)$/.exec(t);
+      if(em){ inExpl=true; if(em[1].trim()) expl.push(em[1].trim()); continue; }
+      if(inExpl && t) expl.push(t);
+    }
+    return {question:qLine,options:opts,answerRaw,explanation:expl.join("\n").trim()};
+  });
+}
+const GEO_LEAVES={
+  CIRC:"08_গাণিতিক_যুক্তি/Part_04_জ্যামিতি/বৃত্ত_সংক্রান্ত_উপপাদ্য",
+  PYTH:"08_গাণিতিক_যুক্তি/Part_04_জ্যামিতি/পিথাগোরাসের_উপপাদ্য",
+  TRI:"08_গাণিতিক_যুক্তি/Part_04_জ্যামিতি/ত্রিভুজ_সংক্রান্ত_উপপাদ্য",
+  QUAD:"08_গাণিতিক_যুক্তি/Part_04_জ্যামিতি/চতুর্ভুজ_সংক্রান্ত_উপপাদ্য",
+  ANG:"08_গাণিতিক_যুক্তি/Part_04_জ্যামিতি/রেখা_ও_কোণ_সংক্রান্ত_উপপাদ্য",
+} as const;
+const GEO_KEYS:Record<keyof typeof GEO_LEAVES,string[]>={
+  CIRC:["বৃত্ত","জ্যা","ব্যাস","চাপ","স্পর্শক","কেন্দ্র","পরিধি","বৃত্তকলা","বৃত্তাংশ","অর্ধবৃত্ত"],
+  PYTH:["পিথাগোরাস","মই","সিঁড়ি","সিঁড়ি","খুঁটি","অতিভুজ","দণ্ডায়মান","দণ্ডায়মান","ট্রিপলেট","স্থানাঙ্ক","সোজাসুজি"],
+  TRI:["ত্রিভুজ","সমবাহু","সমদ্বিবাহু","সমকোণী","মধ্যমা","সর্বসম","সদৃশ","লম্বকেন্দ্র","ভরকেন্দ্র","পরিকেন্দ্র","অন্তঃকেন্দ্র","পরিবৃত্ত","অন্তর্বৃত্ত"],
+  QUAD:["চতুর্ভুজ","সামান্তরিক","আয়ত","বর্গ","রম্বস","ট্রাপিজি","ঘুড়ি","ঘুড়ি","কর্ণ","ঘনক","ঘনবস্তু","আয়তঘন"],
+  ANG:["পূরক","সম্পূরক","সন্নিহিত","বিপ্রতীপ","সমান্তরাল","সমদ্বিখণ্ড","ছেদক","ছেদ","কোণ","ঘড়ি","ঘড়ি","কাঁটা","বহুভুজ","ষড়ভুজ","ষড়ভুজ","পঞ্চভুজ","অন্তঃস্থ","বহিঃস্থ"],
+};
+/** Keyword-route one geometry MCQ to its Part_04 leaf (topics are intermixed in-file). */
+function routeGeometryLeaf(question:string, explanation:string):string{
+  const text=question+"\n"+explanation;
+  const order:(keyof typeof GEO_LEAVES)[]=["CIRC","PYTH","TRI","QUAD","ANG"];
+  let best: string=GEO_LEAVES.ANG; let bestScore=0;
+  for(const k of order){
+    let s=0; for(const kw of GEO_KEYS[k]) if(text.includes(kw)) s++;
+    if(s>bestScore){ bestScore=s; best=GEO_LEAVES[k]; }
+  }
+  return best;
+}
 function parseMathLine(rawLine:string){
   let line=rawLine.trim();
   const expIdx=line.indexOf("ব্যাখ্যা:");
@@ -87,11 +149,13 @@ async function main(){
     "Questions-(সমান্তর ও গুণোত্তর ধারা (AP & GP))-(9Th-Grade AI).txt":["08_গাণিতিক_যুক্তি/Part_03_সূচক_ও_ধারা/সমান্তর_অনুক্রম_ও_ধারা","08_গাণিতিক_যুক্তি/Part_03_সূচক_ও_ধারা/গুণোত্তর_অনুক্রম_ও_ধারা"],
     "Questions(বীজগাণিতিক_সূত্রাবলি ও বহুপদী_উৎপাদক).txt":["08_গাণিতিক_যুক্তি/Part_02_বীজগণিত/বীজগাণিতিক_সূত্রাবলি","08_গাণিতিক_যুক্তি/Part_02_বীজগণিত/বহুপদী_উৎপাদক"],
     "Questions(সূচক ও লগারিদম)_9Th-Grade AI.txt":["08_গাণিতিক_যুক্তি/Part_03_সূচক_ও_ধারা/সূচক","08_গাণিতিক_যুক্তি/Part_03_সূচক_ও_ধারা/লগারিদম"],
+    "Questions(রেখা ও কোণ, ত্রিভুজ, চতুর্ভুজ, পিথাগোরাস এবং বৃত্ত ).txt":["ROUTED"],
   };
   // Multi-line প্রশ্ন/A-D/উত্তর/ব্যাখ্যা block files (vs the legacy single-line কখগঘ format).
   const BLOCK_FILES=new Set([
     "Questions(বীজগাণিতিক_সূত্রাবলি ও বহুপদী_উৎপাদক).txt",
     "Questions(সূচক ও লগারিদম)_9Th-Grade AI.txt",
+    "Questions(রেখা ও কোণ, ত্রিভুজ, চতুর্ভুজ, পিথাগোরাস এবং বৃত্ত ).txt",
   ]);
   // HELD — none currently. (The সূচক ও লগারিদম file was held until its
   // formulas were recovered from the .docx; it now seeds normally.)
@@ -112,7 +176,11 @@ async function main(){
     if(HELD_FILES.has(file)){ console.log(`${file}: HELD (formulas missing from source) — skipped`); continue; }
     const leaves=fileLeafMap[file]||["08_গাণিতিক_যুক্তি/Part_01_পাটিগণিত/বাস্তব_সংখ্যা"];
     // Normalize both source formats into parsed records before the gate.
-    const parsedRecs = BLOCK_FILES.has(file)
+    // Geometry blocks carry সংশোধিত-preference + per-block leaf routing.
+    const isGeo = file.startsWith("Questions(রেখা");
+    const parsedRecs = isGeo
+      ? parseGeometryBlocks(raw).map((p)=>({question:p.question, options:p.options, correctAnswer:(resolveAnswerToOption(p.answerRaw, p.options) ?? p.answerRaw).trim(), explanation:p.explanation}))
+      : BLOCK_FILES.has(file)
       ? parseAlgebraBlocks(raw).map((p)=>({question:p.question, options:p.options, correctAnswer:(resolveAnswerToOption(p.answerRaw, p.options) ?? p.answerRaw).trim(), explanation:p.explanation}))
       : raw.split(/\r?\n/).map(l=>l.trim()).filter(l=>l && !l.startsWith("পর্ব")).map(l=>parseMathLine(l));
     const leafPaths=leaves.length===2 ? parsedRecs.map((_,i)=> i < Math.ceil(parsedRecs.length/2) ? leaves[0] : leaves[1]) : parsedRecs.map(()=>leaves[0]);
@@ -123,7 +191,7 @@ async function main(){
       const norm=gate.normalized;
       const sig=mcaSignature({question:norm.question, options:norm.options, correctAnswer:norm.correctAnswer, explanation:norm.explanation});
       if(existingTexts.has(norm.question.normalize("NFC"))){ fr++; totalRejected++; rejects["DUPLICATE_GLOBAL"]=(rejects["DUPLICATE_GLOBAL"]||0)+1; continue;}
-      const path=leafPaths[i];
+      const path=isGeo?routeGeometryLeaf(norm.question, norm.explanation):leafPaths[i];
       const key=sourceKey(subject.id, path, norm.question);
       if(seenKeys.has(key) || existingKeys.has(key)){ fr++; totalRejected++; rejects["DUPLICATE_SOURCEKEY"]=(rejects["DUPLICATE_SOURCEKEY"]||0)+1; continue;}
       const parts=path.split("/"); const topicName=parts[1]??""; const subtopicName=parts[2]??"";
