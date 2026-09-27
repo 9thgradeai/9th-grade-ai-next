@@ -149,4 +149,20 @@ describe("session versioning claims", () => {
     const { payload } = await jwtVerify(token, secret);
     expect((payload as { ver?: number }).ver).toBeUndefined();
   });
+
+  it("mints tokens expiring in the future for string and Date expiries", async () => {
+    // Regression: passing raw seconds (604800) once minted 1970-expired
+    // tokens because jose reads numbers as epoch timestamps, locking every
+    // user out with 401s. signSession only accepts "7d"-style strings/Dates.
+    const nowSec = Math.floor(Date.now() / 1000);
+    for (const token of [
+      await signSession({ email: "a@b.com" }),
+      await signSession({ email: "a@b.com" }, "30d"),
+      await signSession({ email: "a@b.com" }, new Date(Date.now() + 3_600_000)),
+    ]) {
+      const { payload } = await jwtVerify(token, secret);
+      expect(typeof payload.exp).toBe("number");
+      expect(payload.exp as number).toBeGreaterThan(nowSec);
+    }
+  });
 });

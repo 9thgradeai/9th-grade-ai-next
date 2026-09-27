@@ -182,6 +182,9 @@ export function extractSessionToken(req: Request): string | null {
  * Sign a session JWT payload and return the string token.
  * Default 7-day expiry (pass `expiresIn` for remember-me / capped refresh).
  * Sets algorithm explicitly to HS256.
+ * `expiresIn` is a jose timespan string ("7d") or a Date. NOTE: a raw
+ * number is an epoch timestamp in jose, NOT a duration — never pass seconds
+ * here (passing 604800 once minted instantly-expired 1970 tokens).
  * `origIat` (optional, seconds) preserves the ORIGINAL issue time across
  * refresh hops so the refresh endpoint can enforce an absolute session cap.
  * `ver` is the user's tokenVersion — bumped server-side to revoke all tokens
@@ -190,7 +193,7 @@ export function extractSessionToken(req: Request): string | null {
  */
 export async function signSession(
   payload: { email: string; origIat?: number; ver?: number; sid?: string },
-  expiresIn: string | number = "7d",
+  expiresIn: string | Date = "7d",
 ) {
   const claims: Record<string, unknown> = { email: payload.email };
   if (typeof payload.origIat === "number") {

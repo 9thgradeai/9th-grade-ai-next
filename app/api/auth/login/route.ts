@@ -61,7 +61,7 @@ export async function POST(request: Request) {
     const sessionMs = remember ? REMEMBER_SESSION_MS : SESSION_DURATION_MS;
     const token = await signSession(
       { email: user.email, ver: user.tokenVersion, sid: sessionId },
-      Math.floor(sessionMs / 1000),
+      remember ? "30d" : "7d",
     );
     await addUserSession(user.id, sessionMeta);
 

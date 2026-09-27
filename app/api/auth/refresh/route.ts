@@ -76,7 +76,7 @@ export async function POST(request: Request) {
     const lifetimeMs = Math.max(60_000, Math.min(SESSION_DURATION_MS, absoluteEndMs - Date.now()));
     const freshToken = await signSession(
       { email: payload.email, origIat, ver: user.tokenVersion },
-      Math.floor(lifetimeMs / 1000),
+      new Date(Date.now() + lifetimeMs),
     );
     const { passwordHash: _passwordHash, ...safeUser } = user;
     const res = NextResponse.json({ expiresIn: lifetimeMs, user: safeUser });
