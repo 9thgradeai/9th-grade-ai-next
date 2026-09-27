@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { shuffleOptions, shuffleSessionOptions, isPinnedOption } from "@/lib/shuffle-options";
+import { shuffleOptions, shuffleSessionOptions, isPinnedOption, hasLetterReference } from "@/lib/shuffle-options";
 
 describe("isPinnedOption", () => {
   it("pins conventional options exactly", () => {
@@ -11,6 +11,23 @@ describe("isPinnedOption", () => {
   it("does not pin content that merely starts the same", () => {
     expect(isPinnedOption("Neither type of matters")).toBe(false);
     expect(isPinnedOption("All of them together")).toBe(false);
+  });
+});
+
+describe("hasLetterReference", () => {
+  it("detects self-referential options", () => {
+    expect(hasLetterReference(["Both A and B are perfectly standard.", "X"])).toBe(true);
+    expect(hasLetterReference(["A and C are correct", "X"])).toBe(true);
+    expect(hasLetterReference(["X", "Only B"])).toBe(true);
+    expect(hasLetterReference(["X", "All are correct except D"])).toBe(true);
+    expect(hasLetterReference(["X", "Option C is wrong"])).toBe(true);
+  });
+  it("ignores ordinary prose", () => {
+    expect(hasLetterReference(["Vitamin A and iron are essential", "X"])).toBe(false);
+    expect(hasLetterReference(["Neither type of matters", "X"])).toBe(false);
+    expect(hasLetterReference(["The repo rate was adjusted", "X"])).toBe(false);
+    expect(hasLetterReference(["Only a fine", "10 years imprisonment"])).toBe(false);
+    expect(hasLetterReference(["Only a civil matter", "Legal"])).toBe(false);
   });
 });
 
@@ -39,6 +56,17 @@ describe("shuffleOptions", () => {
   it("handles short/degenerate lists without crashing", () => {
     expect(shuffleOptions([], "s")).toEqual([]);
     expect(shuffleOptions(["only"], "s")).toEqual(["only"]);
+  });
+  it("keeps the full authored order for self-referential questions", () => {
+    const opts = [
+      "Both A and B are perfectly standard.",
+      "The officer addressed his friends that they should stand united during that crisis.",
+      "The officer proposed to his friends that they should stand united during that crisis.",
+      "The officer addressed them as friends and proposed that they should stand united during that crisis.",
+    ];
+    for (const seed of ["s1", "s2", "s3", "practice-123:456"]) {
+      expect(shuffleOptions(opts, seed)).toEqual(opts);
+    }
   });
 });
 

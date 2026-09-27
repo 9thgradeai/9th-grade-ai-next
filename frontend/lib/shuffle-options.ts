@@ -7,10 +7,15 @@
  * review, AI explanations all see the same arrangement), different across
  * sessions (no positional memorization).
  *
- * Conventional options (`All of the above`, `None of these`, …) stay pinned
- * at their authored index — shuffling them would read as broken. The match
- * is exact (case-insensitive) so content like "Neither type of matters"
- * still shuffles normally.
+ * Two pin rules:
+ * 1. Conventional options (`All of the above`, `None of these`, …) stay
+ *    pinned at their authored index — shuffling them would read as broken.
+ *    The match is exact (case-insensitive) so content like
+ *    "Neither type of matters" still shuffles normally.
+ * 2. Self-referential questions keep their ENTIRE authored order. Any option
+ *    citing option letters ("Both A and B are perfectly standard",
+ *    "A and C are correct", "Only B", "Except D", "option C") breaks the
+ *    moment anything moves — so the whole question is exempt from shuffling.
  */
 
 // Pinned only on exact match — see module docblock for why.
@@ -18,6 +23,25 @@ const PINNED_OPTION = /^(all of the above|none of the above|all of these|none of
 
 export function isPinnedOption(text: string): boolean {
   return PINNED_OPTION.test(text.trim());
+}
+
+// Option-letter cross-references ("Both A and B", "A and C are correct",
+// "Only B", "Except D", "option C"). The matched span must itself contain an
+// UPPERCASE cited letter — so "Only a fine" (article "a") and prose like
+// "vitamin A and iron" never trip it, while genuine references always do.
+// Pinning is fail-safe anyway: a false positive only keeps authored order.
+const LETTER_REF =
+  /(both|either|neither)\s+[A-E]\b|\b[A-E]\s+and\s+[A-E]\b|\b(only|except)\s+[A-E]\b|\boptions?\s+[A-E]\b/i;
+
+/**
+ * True when any option cites option letters — the question's meaning depends
+ * on the authored order, so it must not be shuffled at all.
+ */
+export function hasLetterReference(options: readonly string[]): boolean {
+  return options.some((opt) => {
+    const m = LETTER_REF.exec(opt);
+    return m !== null && /[A-E]/.test(m[0]);
+  });
 }
 
 export function hashSeed(s: string): number {
@@ -43,10 +67,12 @@ function mulberry32(seed: number): () => number {
 /**
  * Shuffle one question's options deterministically. Pinned options keep
  * their index; everything else fills the free slots in seeded order.
+ * Questions with letter cross-references keep their full authored order.
  * `correctAnswer` is never touched — it stays the exact option text.
  */
 export function shuffleOptions<T extends string>(options: readonly T[], seed: string | number): T[] {
   if (options.length < 2) return [...options];
+  if (hasLetterReference(options)) return [...options];
   const rand = mulberry32(typeof seed === "number" ? seed : hashSeed(seed));
   const freeIdx: number[] = [];
   const out: (T | undefined)[] = new Array(options.length);
@@ -78,7 +104,8 @@ export type ShufflableQuestion = {
  * Shuffle every question's options for a session. Seed once per session
  * (e.g. `Date.now()` or the attempt id) and reuse the SAME seed for all
  * questions — per-question salt comes from the question id, so each
- * question still gets its own arrangement.
+ * question still gets its own arrangement. Self-referential questions
+ * (letter cross-references) are left in authored order.
  */
 export function shuffleSessionOptions<T extends ShufflableQuestion>(questions: readonly T[], sessionSeed: string | number): T[] {
   return questions.map((q) => ({
