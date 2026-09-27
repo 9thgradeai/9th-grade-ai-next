@@ -716,7 +716,7 @@ export const api = {
   },
 
   submitPractice: async (
-    answers: { questionId: number; selected: string; durationSec?: number; confidence?: number }[],
+    answers: { questionId: number; selected: string | string[]; durationSec?: number; confidence?: number }[],
   ): Promise<{
     correct: number;
     total: number;

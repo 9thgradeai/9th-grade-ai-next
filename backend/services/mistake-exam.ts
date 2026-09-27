@@ -122,6 +122,10 @@ export async function buildMistakeExam(
         difficulty: true,
         sourceExam: true,
         year: true,
+        questionType: true,
+        correctAnswers: true,
+        statements: true,
+        media: true,
         subject: { select: { nameBn: true } },
       },
     });
@@ -144,6 +148,14 @@ export async function buildMistakeExam(
           difficulty: q.difficulty as ExamQuestionDTO["difficulty"],
           sourceExam: q.sourceExam,
           year: q.year,
+          questionType: q.questionType as ExamQuestionDTO["questionType"],
+          correctAnswers: Array.isArray(q.correctAnswers)
+            ? (q.correctAnswers as string[]).filter((x): x is string => typeof x === "string")
+            : [],
+          statements: Array.isArray(q.statements)
+            ? (q.statements as string[]).filter((x): x is string => typeof x === "string")
+            : [],
+          media: Array.isArray(q.media) ? (q.media as ExamQuestionDTO["media"]) : [],
         };
       })
       .filter((q): q is ExamQuestionDTO => q !== null);

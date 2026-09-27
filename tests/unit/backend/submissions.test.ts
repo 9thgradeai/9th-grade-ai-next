@@ -76,6 +76,59 @@ describe("submitPracticeAnswers (atomic attempts + progress)", () => {
   });
 });
 
+describe("submitPracticeAnswers (multi-pick, all-or-nothing)", () => {
+  const multiRow = {
+    id: 7,
+    correctAnswer: "A",
+    correctAnswers: ["A", "C"],
+    subjectId: 9,
+    ecosystemId: 2,
+    topicId: null,
+    topic: "T",
+    difficulty: "MEDIUM",
+    subject: { nameBn: "English" },
+  };
+
+  beforeEach(() => {
+    vi.mocked(prisma.question.findMany).mockResolvedValue([multiRow] as never);
+    vi.mocked(prisma.userQuestionProgress.findMany).mockResolvedValue([] as never);
+    vi.mocked(prisma.$transaction).mockImplementation(async (fn) =>
+      (fn as unknown as (tx: unknown) => Promise<unknown>)(prisma),
+    );
+  });
+
+  it("grades the exact set correct regardless of order", async () => {
+    const summary = await submitPracticeAnswers("userA", [{ questionId: 7, selected: ["C", "A"] }]);
+    expect(summary.correct).toBe(1);
+    expect(summary.total).toBe(1);
+    const data = vi.mocked(prisma.questionAttempt.createMany).mock.calls[0][0].data;
+    expect(data[0].correct).toBe(true);
+    expect(data[0].selectedAnswer).toBe("C ‖ A");
+  });
+
+  it("grades partial and superset picks wrong", async () => {
+    for (const selected of [["A"], ["A", "C", "D"], ["B"]]) {
+      vi.clearAllMocks();
+      const summary = await submitPracticeAnswers("userA", [{ questionId: 7, selected }]);
+      expect(summary.correct).toBe(0);
+    }
+  });
+
+  it("skips empty picks without recording attempts", async () => {
+    const summary = await submitPracticeAnswers("userA", [{ questionId: 7, selected: [] }]);
+    expect(summary.total).toBe(0);
+    expect(prisma.questionAttempt.createMany).not.toHaveBeenCalled();
+  });
+
+  it("keeps legacy single-string picks working", async () => {
+    vi.mocked(prisma.question.findMany).mockResolvedValue([
+      { ...multiRow, id: 8, correctAnswers: [] },
+    ] as never);
+    const summary = await submitPracticeAnswers("userA", [{ questionId: 8, selected: "A" }]);
+    expect(summary.correct).toBe(1);
+  });
+});
+
 describe("createUser (atomic registration)", () => {
   it("creates user and initial progress inside one transaction", async () => {
     const passwordHash = await hash("password123", 10);

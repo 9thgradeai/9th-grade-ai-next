@@ -168,7 +168,7 @@ function hashQuestionSet(ids: number[]): string {
 }
 
 function gradeAnswers(
-  answers: SubmittedAnswer[],
+  answers: Array<{ questionId: number; selected: string }>,
   reference: Map<number, ExamQuestionRow>,
 ): {
   correct: number;
@@ -284,7 +284,17 @@ export async function submitExamAttempt(
           "VALIDATION_ERROR",
         );
       }
+      // Graded exams are single-pick only (multi-pick lives in practice).
+      if (typeof a.selected !== "string") {
+        throw new AppError(
+          400,
+          "Selected must be a single option string for graded exams.",
+          "VALIDATION_ERROR",
+        );
+      }
     }
+    // Guarded above — downstream grading stays single-pick typed.
+    const validAnswers = answers as Array<Omit<SubmittedAnswer, "selected"> & { selected: string }>;
 
     // ── Fast path: this attempt was already finalized. ───────────
     // Reading outside the transaction is safe because the unique constraint
@@ -371,7 +381,7 @@ export async function submitExamAttempt(
       );
     }
     const byId = new Map(questions.map((q) => [q.id, q]));
-    const { correct, wrong, attempted, review } = gradeAnswers(answers, byId);
+    const { correct, wrong, attempted, review } = gradeAnswers(validAnswers, byId);
 
     // Previous per-question progress — read before the transaction so the
     // error classifier sees the state PRIOR to this exam, not after.
@@ -423,7 +433,7 @@ export async function submitExamAttempt(
       selectedAnswer: string;
       errorType?: MistakeErrorType;
     }> = [];
-    for (const a of answers) {
+    for (const a of validAnswers) {
       const userAnswer = (a.selected ?? "").trim();
       if (userAnswer.length === 0) continue; // unanswered — not an attempt
       const q = byId.get(a.questionId);
@@ -449,7 +459,7 @@ export async function submitExamAttempt(
     }
     // Full per-question outcome (incl. deliberately unanswered) for the
     // LearningEvent timeline — emitted only after the transaction commits.
-    const attemptFacts: AttemptFact[] = answers.map((a) => {
+    const attemptFacts: AttemptFact[] = validAnswers.map((a) => {
       const userAnswer = (a.selected ?? "").trim();
       const q = byId.get(a.questionId);
       return {
@@ -533,7 +543,7 @@ export async function submitExamAttempt(
             number,
             { masteryStatus: string | null; justMastered: boolean }
           >();
-          for (const a of answers) {
+          for (const a of validAnswers) {
             const q = byId.get(a.questionId);
             if (!q) continue;
             const userAnswer = (a.selected ?? "").trim();

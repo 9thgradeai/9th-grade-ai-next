@@ -300,6 +300,64 @@ export function validatePositiveInteger(value: unknown, fieldName: string): numb
   return requirePositiveInteger(value, fieldName);
 }
 
+export const QUESTION_TYPES = [
+  "SINGLE_CHOICE",
+  "MULTIPLE_CHOICE",
+  "STATEMENT_COMBINATION",
+  "SCENARIO_BASED",
+] as const;
+
+export type QuestionTypeValue = (typeof QUESTION_TYPES)[number];
+
+export interface QuestionTypeFields {
+  questionType?: unknown;
+  options?: unknown;
+  correctAnswer?: unknown;
+  correctAnswers?: unknown;
+  statements?: unknown;
+}
+
+/**
+ * Cross-field validation for multi-type questions (import + seed path).
+ * Invariants:
+ *   • MULTIPLE_CHOICE ⇒ correctAnswers has ≥ 2 entries, each ∈ options.
+ *   • STATEMENT_COMBINATION ⇒ statements has ≥ 2 entries.
+ *   • correctAnswers (when present) ⊆ options — every type.
+ *   • SINGLE_CHOICE (default) keeps legacy behavior: correctAnswer only.
+ * Returns the normalized { questionType, correctAnswers, statements }.
+ */
+export function validateQuestionTypeFields(input: QuestionTypeFields): {
+  questionType: QuestionTypeValue;
+  correctAnswers: string[];
+  statements: string[];
+} {
+  const questionType =
+    validateEnumValue(input.questionType, QUESTION_TYPES, "questionType") ?? "SINGLE_CHOICE";
+
+  const options = Array.isArray(input.options)
+    ? input.options.filter((o): o is string => typeof o === "string")
+    : [];
+  const correctAnswers = Array.isArray(input.correctAnswers)
+    ? input.correctAnswers.filter((o): o is string => typeof o === "string")
+    : [];
+  const statements = Array.isArray(input.statements)
+    ? input.statements.filter((o): o is string => typeof o === "string").map((s) => s.trim()).filter(Boolean)
+    : [];
+
+  for (const a of correctAnswers) {
+    if (!options.includes(a)) {
+      throw new ValidationError("correctAnswers must each match one of options.");
+    }
+  }
+  if (questionType === "MULTIPLE_CHOICE" && correctAnswers.length < 2) {
+    throw new ValidationError("MULTIPLE_CHOICE requires at least 2 correctAnswers.");
+  }
+  if (questionType === "STATEMENT_COMBINATION" && statements.length < 2) {
+    throw new ValidationError("STATEMENT_COMBINATION requires at least 2 statements.");
+  }
+  return { questionType, correctAnswers, statements };
+}
+
 export interface ResetPasswordInput {
   token: string;
   password: string;

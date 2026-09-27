@@ -154,6 +154,10 @@ export default function QuestionBankTab() {
               year: null,
               sourceExam: "",
               bcsTerm: null,
+              questionType: "SINGLE_CHOICE",
+              correctAnswers: [],
+              statements: [],
+              media: [],
             })),
           );
         }

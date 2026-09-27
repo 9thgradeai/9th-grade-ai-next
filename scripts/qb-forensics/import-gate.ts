@@ -48,7 +48,7 @@ import {
 } from "./bangla";
 import { applyTransforms, resolveLetterAnswer } from "./classify";
 
-export type GateField = "question" | "options" | "correctAnswer" | "explanation" | "record";
+export type GateField = "question" | "options" | "correctAnswer" | "explanation" | "statements" | "record";
 
 export type GateIssueCode =
   | "REPLACEMENT_CHAR"
@@ -69,6 +69,10 @@ export type GateIssueCode =
   | "EMPTY_ANSWER"
   | "ANSWER_MISMATCH"
   | "EMPTY_EXPLANATION"
+  | "BAD_QUESTION_TYPE"
+  | "MULTI_TOO_FEW_ANSWERS"
+  | "ANSWER_NOT_IN_OPTIONS"
+  | "STATEMENT_TOO_FEW"
   | "NON_NFC"
   | "NON_STANDARD_SPACE";
 
@@ -83,8 +87,19 @@ export interface GateIssue {
 export interface McaInput {
   question: string;
   options: string[];
-  correctAnswer: string;
+  correctAnswer?: string;
   explanation: string;
+  /** Optional multi-type fields — absent = legacy SINGLE_CHOICE. */
+  questionType?: string;
+  correctAnswers?: string[];
+  statements?: string[];
+}
+
+/** McaInput with guaranteed normalized fields (all arrays non-optional). */
+export interface NormalizedMca extends McaInput {
+  questionType: string;
+  correctAnswers: string[];
+  statements: string[];
 }
 
 export type GateVerdict = "ACCEPT" | "REJECT";
@@ -157,15 +172,22 @@ export function stripQuestionScaffold(s: string): string {
  * Normalize an entire MCQ record. Pure; mirrors the wording used at import:
  * fields are normalized individually so null/legit-empty inputs survive.
  */
-export function normalizeMca(rec: McaInput): McaInput {
-  return {
-    // Question-only: the counter scaffold is stripped here so every future
-    // import/reseed stores clean text (options/explanations keep verbatim).
+export function normalizeMca(rec: McaInput): NormalizedMca {
+  const qt = rec.questionType ?? "SINGLE_CHOICE";
+  const result: NormalizedMca = {
+    ...rec,
+    questionType: qt,
     question: stripQuestionScaffold(normalizeField(rec.question ?? "")),
     options: (rec.options ?? []).map((o) => normalizeField(o ?? "")),
     correctAnswer: normalizeField(rec.correctAnswer ?? ""),
     explanation: normalizeField(rec.explanation ?? ""),
+    correctAnswers: rec.correctAnswers?.map((c) => normalizeField(c)) ?? [],
+    statements: rec.statements?.map((s) => normalizeField(s ?? "")) ?? [],
   };
+    if (qt === "SINGLE_CHOICE" && result.correctAnswers.length === 0 && rec.correctAnswer) {
+     result.correctAnswers = [normalizeField(rec.correctAnswer)];
+   }
+  return result;
 }
 
 /**
@@ -181,6 +203,9 @@ export function scanMca(raw: McaInput): McaGateResult {
     options: Array.isArray(raw.options) ? raw.options : [],
     correctAnswer: raw.correctAnswer ?? "",
     explanation: raw.explanation ?? "",
+    questionType: raw.questionType ?? "SINGLE_CHOICE",
+    correctAnswers: Array.isArray(raw.correctAnswers) ? raw.correctAnswers : [],
+    statements: Array.isArray(raw.statements) ? raw.statements : [],
   };
   const issues: GateIssue[] = [];
   const fatal: GateIssue[] = [];
@@ -189,18 +214,13 @@ export function scanMca(raw: McaInput): McaGateResult {
     if (i.fatal) fatal.push(i);
   };
 
-  // ── 1. Unicode health gate on every text field ──────────────────────────
-  // Corruption checks run against the FULLY NORMALIZED field value (BOM /
-  // weird spaces / composition already applied). A leading BOM or NBSP is a
-  // harmless file artifact — normalized away, never a reason to reject a
-  // salvageable MCQ. Real control chars (C0/C1, ZWSP U+200B, soft hyphen)
-  // survive normalization and are still caught as fatal.
-  const norm = normalizeMca(rec);
-  const textFields: Array<{ field: GateField; value: string; index?: number }> = [
-    { field: "question", value: rec.question },
-    { field: "correctAnswer", value: rec.correctAnswer },
-    { field: "explanation", value: rec.explanation },
+  const norm: NormalizedMca = normalizeMca(rec);
+   const textFields: Array<{ field: GateField; value: string; index?: number }> = [
+     { field: "question", value: rec.question },
+     { field: "correctAnswer", value: rec.correctAnswer ?? "" },
+     { field: "explanation", value: rec.explanation },
     ...rec.options.map((o, i) => ({ field: "options" as GateField, value: o, index: i })),
+    ...(norm.statements ?? []).map((s, i) => ({ field: "statements" as GateField, value: s, index: i })),
   ];
 
   for (const { field, value, index } of textFields) {
@@ -335,11 +355,14 @@ export function scanMca(raw: McaInput): McaGateResult {
     });
   }
 
-  // ── 2. Structural gate ──────────────────────────────────────────────────
-  const nq = norm.question;
-  const nOpts = norm.options;
-  const na = norm.correctAnswer;
-  const ne = norm.explanation;
+   // ── 2. Structural gate ──────────────────────────────────────────────────
+   const nq = norm.question;
+   const nOpts = norm.options;
+   const na = norm.correctAnswer;
+   const ne = norm.explanation;
+   const correctSet = norm.correctAnswers && norm.correctAnswers.length > 0
+     ? [...norm.correctAnswers]
+     : (na ? [na] : []);
 
   if (!nq) {
     push({ code: "EMPTY_QUESTION", field: "question", fatal: true, detail: "Question text is empty" });
@@ -376,32 +399,59 @@ export function scanMca(raw: McaInput): McaGateResult {
       seen.add(key);
     }
   }
-  if (!na) {
-    push({ code: "EMPTY_ANSWER", field: "correctAnswer", fatal: true, detail: "Correct answer is empty" });
-  }
-  if (!ne) {
-    push({ code: "EMPTY_EXPLANATION", field: "explanation", fatal: true, detail: "Explanation is mandatory for every MCQ" });
-  }
-
-  // Answer must resolve to one of the options (exact normalized match, or a
-  // letter whose remainder matches its option). Never guessed.
-  if (na && nOpts.length >= 2) {
-    const direct = nOpts.findIndex((o) => o === na);
-    if (direct === -1) {
-      const res = resolveLetterAnswer(na);
-      const matches = res !== null && res.index < nOpts.length && (res.rest === "" || res.rest === nOpts[res.index]);
-      if (!matches) {
-        push({
-          code: "ANSWER_MISMATCH",
-          field: "correctAnswer",
-          fatal: true,
-          detail: `correctAnswer "${snippet(na, 40)}" does not match any option (and is not a resolvable letter)`,
-        });
-      }
+    if (!na && correctSet.length === 0) {
+      push({ code: "EMPTY_ANSWER", field: "correctAnswer", fatal: true, detail: "Correct answer is empty" });
     }
-  }
+   if (!ne) {
+     push({ code: "EMPTY_EXPLANATION", field: "explanation", fatal: true, detail: "Explanation is mandatory for every MCQ" });
+   }
 
-  return { verdict: fatal.length > 0 ? "REJECT" : "ACCEPT", issues, fatal, normalized: norm };
+   // ── 3. Type-field gate ──────────────────────────────────────────────
+   const qt = norm.questionType as string;
+   const validTypes = ["SINGLE_CHOICE", "MULTI_CHOICE", "STATEMENT_COMBINATION", "MEDIA_ATTACHMENT"];
+   if (qt && !validTypes.includes(qt)) {
+     push({
+       code: "BAD_QUESTION_TYPE",
+       field: "record",
+       fatal: true,
+       detail: `questionType "${qt}" is not one of: ${validTypes.join(", ")}`,
+     });
+   }
+    if (qt === "MULTI_CHOICE") {
+     if (correctSet.length < 2) {
+        push({ code: "MULTI_TOO_FEW_ANSWERS", field: "correctAnswer", fatal: true, detail: "MULTI_CHOICE requires at least 2 correct answers" });
+      }
+      for (const ca of correctSet) {
+        if (ca && !nOpts.includes(ca)) {
+          push({ code: "ANSWER_NOT_IN_OPTIONS", field: "correctAnswer", fatal: true, detail: `correctAnswer "${snippet(ca, 40)}" is not one of the options` });
+        }
+      }
+   }
+   if (qt === "STATEMENT_COMBINATION") {
+      if (norm.statements.length < 2) {
+       push({ code: "STATEMENT_TOO_FEW", field: "statements", fatal: true, detail: "STATEMENT_COMBINATION requires at least 2 statements" });
+     }
+   }
+
+   // Answer must resolve to one of the options (exact normalized match, or a
+   // letter whose remainder matches its option). Never guessed.
+   if (na && nOpts.length >= 2) {
+     const direct = nOpts.findIndex((o) => o === na);
+     if (direct === -1) {
+       const res = resolveLetterAnswer(na);
+       const matches = res !== null && res.index < nOpts.length && (res.rest === "" || res.rest === nOpts[res.index]);
+       if (!matches) {
+         push({
+           code: "ANSWER_MISMATCH",
+           field: "correctAnswer",
+           fatal: true,
+           detail: `correctAnswer "${snippet(na, 40)}" does not match any option (and is not a resolvable letter)`,
+         });
+       }
+     }
+   }
+
+   return { verdict: fatal.length > 0 ? "REJECT" : "ACCEPT", issues, fatal, normalized: norm };
 }
 
 /**
@@ -419,14 +469,18 @@ export function dupSignature(question: string, correctAnswer: string, explanatio
   return [norm(question), norm(correctAnswer), norm(explanation)].join("|");
 }
 
-/** Signature of a full record (same as dupSignature with its fields). */
+/** Signature of a full record — uses correctAnswers when present (multi-type), else correctAnswer. */
 export function mcaSignature(rec: McaInput): string {
-  return dupSignature(rec.question, rec.correctAnswer, rec.explanation);
+  const norm = normalizeMca(rec);
+  const correctKey = norm.correctAnswers && norm.correctAnswers.length > 0
+     ? [...norm.correctAnswers].sort().join("‖")
+     : norm.correctAnswer ?? "";
+   return dupSignature(norm.question, correctKey, norm.explanation);
 }
 
 /** Convenience: true when any text field is fatally corrupt. */
 export function isCorrupt(rec: McaInput): boolean {
   return scanMca(rec).fatal.some((i) =>
-    ["REPLACEMENT_CHAR", "MOJIBAKE", "DOUBLE_ENCODING", "CONTROL_CHAR", "VISUAL_ORDER_BANGLA", "FOREIGN_SCRIPT", "MANGLED_HEADER", "OPTION_MARKER_LEAK", "QUESTION_SCAFFOLD", "QUESTION_HEADER_LEAK", "EXPLANATION_SCAFFOLD"].includes(i.code),
+    ["REPLACEMENT_CHAR", "MOJIBAKE", "DOUBLE_ENCODING", "CONTROL_CHAR", "VISUAL_ORDER_BANGLA", "FOREIGN_SCRIPT", "MANGLED_HEADER", "OPTION_MARKER_LEAK", "QUESTION_SCAFFOLD", "QUESTION_HEADER_LEAK", "EXPLANATION_SCAFFOLD", "BAD_QUESTION_TYPE", "MULTI_TOO_FEW_ANSWERS", "ANSWER_NOT_IN_OPTIONS", "STATEMENT_TOO_FEW"].includes(i.code),
   );
 }

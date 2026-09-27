@@ -126,6 +126,61 @@ export async function getQuestions(
   return questions;
 }
 
+type QuestionRow = {
+  id: number;
+  subjectId: number;
+  subject?: { nameBn: string } | null;
+  topic: string;
+  subtopic: string;
+  question: string;
+  options: unknown;
+  correctAnswer: string;
+  explanation: string;
+  difficulty: string;
+  year: number | null;
+  sourceExam: string;
+  bcsTerm: string | null;
+  questionType: string;
+  correctAnswers: unknown;
+  statements: unknown;
+  media: unknown;
+  paperId: number | null;
+  examId: number | null;
+  questionNumber: number | null;
+};
+
+function asStringArray(v: unknown): string[] {
+  return Array.isArray(v) ? v.filter((x): x is string => typeof x === "string") : [];
+}
+
+/** Canonical Question row → DTO mapping (single place — extend here). */
+export function toQuestionDTO(q: QuestionRow): QuestionDTO {
+  return {
+    id: q.id,
+    subjectId: q.subjectId,
+    subject: q.subject?.nameBn ?? "",
+    topic: q.topic,
+    subtopic: q.subtopic,
+    question: q.question,
+    options: asStringArray(q.options),
+    correctAnswer: q.correctAnswer,
+    explanation: q.explanation,
+    difficulty: q.difficulty as QuestionDTO["difficulty"],
+    year: q.year,
+    sourceExam: q.sourceExam,
+    bcsTerm: q.bcsTerm,
+    questionType: q.questionType as QuestionDTO["questionType"],
+    correctAnswers: asStringArray(q.correctAnswers),
+    statements: asStringArray(q.statements),
+    media: Array.isArray(q.media)
+      ? (q.media as { kind: string; url: string; alt?: string }[]).filter((m) => typeof m?.url === "string")
+      : [],
+    paperId: q.paperId,
+    examId: q.examId,
+    questionNumber: q.questionNumber,
+  };
+}
+
 /** Page + total count so clients can render pagination controls. */
 export async function getQuestionsPage(
   opts?: QuestionFilters & { page?: number; limit?: number },
@@ -163,24 +218,7 @@ export async function getQuestionsPage(
     }
 
     const result = {
-      questions: rows.map((q) => ({
-        id: q.id,
-        subjectId: q.subjectId,
-        subject: q.subject?.nameBn ?? "",
-        topic: q.topic,
-        subtopic: q.subtopic,
-        question: q.question,
-        options: (q.options as string[]) ?? [],
-        correctAnswer: q.correctAnswer,
-        explanation: q.explanation,
-        difficulty: q.difficulty as QuestionDTO["difficulty"],
-        year: q.year,
-        sourceExam: q.sourceExam,
-        bcsTerm: q.bcsTerm,
-        paperId: q.paperId,
-        examId: q.examId,
-        questionNumber: q.questionNumber,
-      })),
+      questions: rows.map((q) => toQuestionDTO(q)),
       total,
       page,
       limit,
@@ -202,24 +240,7 @@ export async function getQuestionById(id: number): Promise<QuestionDTO | null> {
       include: { subject: true },
     });
     if (!q) return null;
-    return {
-      id: q.id,
-      subjectId: q.subjectId,
-      subject: q.subject?.nameBn ?? "",
-      topic: q.topic,
-      subtopic: q.subtopic,
-      question: q.question,
-      options: (q.options as string[]) ?? [],
-      correctAnswer: q.correctAnswer,
-      explanation: q.explanation,
-      difficulty: q.difficulty as QuestionDTO["difficulty"],
-      year: q.year,
-      sourceExam: q.sourceExam,
-      bcsTerm: q.bcsTerm,
-      paperId: q.paperId,
-      examId: q.examId,
-      questionNumber: q.questionNumber,
-    };
+    return toQuestionDTO(q);
   } catch {
     throw new InternalServerError("Failed to fetch question by id");
   }

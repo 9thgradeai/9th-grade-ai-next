@@ -15,7 +15,8 @@ import { recordQuestionAttempt } from "./question-progress";
 
 export type SubmittedAnswer = {
   questionId: number;
-  selected: string;
+  /** Single pick (legacy) or multi-pick set — both graded all-or-nothing. */
+  selected: string | string[];
   /** Optional per-answer time (s) — drives error classification. */
   durationSec?: number;
   /** Optional learner self-confidence 0–100. */
@@ -86,26 +87,55 @@ async function recordAttemptsAtomically(
 
 function gradeAnswers(
   answers: SubmittedAnswer[],
-  reference: Array<{ id: number; correctAnswer: string }>,
+  reference: Array<{ id: number; correctAnswer: string; correctAnswers?: unknown }>,
 ): { correct: number; total: number } {
   if (!Array.isArray(answers)) {
     throw new AppError(400, "answers must be an array.", "VALIDATION_ERROR");
   }
   // The runtime payload may contain malformed entries; validate defensively.
   const raw = answers as Array<Partial<SubmittedAnswer> | null>;
-  const byId = new Map(reference.map((q) => [q.id, q.correctAnswer]));
+  const byId = new Map(reference.map((q) => [q.id, q]));
   let correct = 0;
   for (const a of raw) {
-    if (!a || !Number.isInteger(a.questionId) || typeof a.selected !== "string") {
+    if (!a || !Number.isInteger(a.questionId) || (typeof a.selected !== "string" && !Array.isArray(a.selected))) {
       throw new AppError(400, "Each answer needs a numeric questionId and a selected string.", "VALIDATION_ERROR");
     }
-    const right = byId.get(a.questionId as number);
-    if (right === undefined) {
+    const ref = byId.get(a.questionId as number);
+    if (ref === undefined) {
       throw new AppError(400, `Unknown questionId ${a.questionId}.`, "VALIDATION_ERROR");
     }
-    if (a.selected.trim() === right.trim()) correct += 1;
+    if (isSelectionCorrect(toSelectedArray(a.selected), ref)) correct += 1;
   }
   return { correct, total: answers.length };
+}
+
+/** Normalize a legacy string pick or multi-pick set to a trimmed array. */
+export function toSelectedArray(selected: string | string[] | unknown): string[] {
+  const arr = Array.isArray(selected) ? selected : [selected];
+  return [...new Set(arr.filter((s): s is string => typeof s === "string").map((s) => s.trim()))].filter((s) => s.length > 0);
+}
+
+/** Authoritative correct set: correctAnswers iff non-empty, else [correctAnswer]. */
+function getCorrectSet(ref: { correctAnswer: string; correctAnswers?: unknown }): string[] {
+  const arr = Array.isArray(ref.correctAnswers)
+    ? ref.correctAnswers.filter((s): s is string => typeof s === "string")
+    : [];
+  const set = arr.length > 0 ? arr : [ref.correctAnswer];
+  return [...new Set(set.map((s) => s.trim()))].filter((s) => s.length > 0);
+}
+
+/** All-or-nothing set equality (mirrors frontend isAnswerCorrect). */
+function isSelectionCorrect(
+  selected: string[],
+  ref: { correctAnswer: string; correctAnswers?: unknown },
+): boolean {
+  const correct = getCorrectSet(ref);
+  return selected.length === correct.length && selected.every((s) => correct.includes(s));
+}
+
+/** Serialize for the QuestionAttempt.selectedAnswer string column. */
+function serializeSelected(selected: string | string[]): string {
+  return toSelectedArray(selected).join(" ‖ ");
 }
 
 // ── Practice (Question table) ─────────────────────────────
@@ -114,10 +144,10 @@ export async function submitPracticeAnswers(
   answers: SubmittedAnswer[],
 ): Promise<SubmissionSummary> {
   try {
-    // Unanswered questions are sent as "" — skip them so they are neither
-    // scored as wrong nor recorded as an attempt (deflating accuracy / polluting
-    // weak-topic analytics). Mirrors the exam engine's behavior.
-    const answered = answers.filter((a) => a.selected.trim().length > 0);
+    // Unanswered questions are sent as "" (or []) — skip them so they are
+    // neither scored as wrong nor recorded as an attempt (deflating accuracy
+    // / polluting weak-topic analytics). Mirrors the exam engine's behavior.
+    const answered = answers.filter((a) => toSelectedArray(a.selected).length > 0);
     const ids = answered.map((a) => a.questionId);
     const questions = await prisma.question.findMany({
       where: { id: { in: ids } },
@@ -128,6 +158,7 @@ export async function submitPracticeAnswers(
         topicId: true,
         topic: true,
         correctAnswer: true,
+        correctAnswers: true,
         difficulty: true,
         subject: { select: { nameBn: true } },
       },
@@ -150,7 +181,7 @@ export async function submitPracticeAnswers(
 
     const attempts: AttemptRow[] = answered.map((a) => {
       const q = byId.get(a.questionId);
-      const isCorrect = a.selected.trim() === q?.correctAnswer.trim();
+      const isCorrect = q ? isSelectionCorrect(toSelectedArray(a.selected), q) : false;
       const errorType = classifyErrorType({
         isCorrect,
         difficulty: q?.difficulty ?? null,
@@ -166,7 +197,7 @@ export async function submitPracticeAnswers(
         topic: q?.topic ?? "",
         correct: isCorrect,
         source: "practice",
-        selectedAnswer: a.selected,
+        selectedAnswer: serializeSelected(a.selected),
         durationSec: toDurationSec(a.durationSec),
         confidence: toConfidence(a.confidence),
         errorType: errorType ?? undefined,
@@ -176,7 +207,7 @@ export async function submitPracticeAnswers(
       const q = byId.get(a.questionId);
       return {
         questionId: a.questionId,
-        correct: a.selected.trim() === q?.correctAnswer.trim(),
+        correct: q ? isSelectionCorrect(toSelectedArray(a.selected), q) : false,
         answered: true,
         subjectId: q?.subjectId ?? null,
         topicId: q?.topicId ?? null,
@@ -190,7 +221,7 @@ export async function submitPracticeAnswers(
       // Record per-question mastery progress for mistake tracking.
       for (const a of answered) {
         const q = byId.get(a.questionId);
-        const isCorrect = a.selected.trim() === q?.correctAnswer.trim();
+        const isCorrect = q ? isSelectionCorrect(toSelectedArray(a.selected), q) : false;
         const fb = await recordQuestionAttempt(tx, {
           userId,
           questionId: a.questionId,
@@ -240,9 +271,16 @@ export async function submitDailyQuiz(
       throw new AppError(404, "Daily quiz not found.", "NOT_FOUND");
     }
 
+    // Daily quiz is single-pick only (multi-pick lives in practice).
+    const single = answers.map((a) => {
+      if (!a || !Number.isInteger(a.questionId) || typeof a.selected !== "string") {
+        throw new AppError(400, "Each answer needs a numeric questionId and a selected string.", "VALIDATION_ERROR");
+      }
+      return { ...a, selected: a.selected };
+    });
     // Unanswered questions are sent as "" — skip them (same rationale as
     // practice) so they are not recorded as wrong attempts.
-    const answered = answers.filter((a) => a.selected.trim().length > 0);
+    const answered = single.filter((a) => a.selected.trim().length > 0);
     const { correct, total } = gradeAnswers(answered, quiz.questions);
     const byId = new Map(quiz.questions.map((q) => [q.id, q]));
     const score = total > 0 ? Math.round((correct / total) * 100) : 0;

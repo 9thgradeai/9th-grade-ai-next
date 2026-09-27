@@ -347,7 +347,7 @@ export function normalizeBankRecord(raw: RawBankRecord, opts: { lenient?: boolea
             subject,
             question: regated.normalized.question,
             options: regated.normalized.options,
-            correctAnswer: regated.normalized.correctAnswer,
+            correctAnswer: regated.normalized.correctAnswer ?? "",
             explanation: regated.normalized.explanation,
             questionNumber: raw.qnum,
           };
@@ -378,7 +378,7 @@ export function normalizeBankRecord(raw: RawBankRecord, opts: { lenient?: boolea
     subject,
     question: gate.normalized.question,
     options: gate.normalized.options,
-    correctAnswer: gate.normalized.correctAnswer,
+    correctAnswer: gate.normalized.correctAnswer ?? "",
     explanation: gate.normalized.explanation,
     questionNumber: raw.qnum,
   };

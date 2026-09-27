@@ -234,6 +234,10 @@ Per-question mastery stage in the mistake-practice model (see `UserQuestionProgr
 - `options` Json — string array
 - `correctAnswer` String
 - `explanation` String — default `""`
+- `questionType` QuestionType — default `SINGLE_CHOICE` (`SINGLE_CHOICE` | `MULTIPLE_CHOICE` | `STATEMENT_COMBINATION` | `SCENARIO_BASED`). Additive — every pre-existing row is `SINGLE_CHOICE`.
+- `correctAnswers` Json — string array, default `[]`. Authoritative **iff non-empty** (`MULTIPLE_CHOICE` needs ≥ 2, each ∈ options). `correctAnswer` stays the source of truth for `SINGLE_CHOICE`.
+- `statements` Json — string array, default `[]`. I/II/III stems for `STATEMENT_COMBINATION` (≥ 2 required).
+- `media` Json — default `[]`. `[{ kind: "image", url, alt }]` — URLs only, files live in `public/`.
 - `difficulty` Difficulty — default `MEDIUM`
 - `year` Int?
 - `sourceExam` String — default `""`

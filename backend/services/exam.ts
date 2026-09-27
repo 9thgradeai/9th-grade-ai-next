@@ -524,7 +524,11 @@ export async function submitCustomExam(
         throw new AppError(400, "Each answer needs a numeric questionId and a selected string.", "VALIDATION_ERROR");
       }
     }
-    const validAnswers = raw.filter((a): a is SubmittedAnswer => a !== null);
+    // Graded exams are single-pick only (multi-pick lives in practice) —
+    // narrow here so arrays are rejected above, never graded half-way.
+    const validAnswers = raw.filter(
+      (a): a is Omit<SubmittedAnswer, "selected"> & { selected: string } => a !== null,
+    );
 
     const ids = validAnswers.map((a) => a.questionId);
     if (ids.length === 0) {

@@ -11,7 +11,7 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { scanMca, normalizeField, mcaSignature, dupSignature, type McaInput } from "../scripts/qb-forensics/import-gate";
+import { scanMca, normalizeField, normalizeMca, mcaSignature, dupSignature, type McaInput } from "../scripts/qb-forensics/import-gate";
 import { buildRemovalPlan, type ScanRow } from "../scripts/clean-broken-questions";
 
 function clean(over: Partial<McaInput> = {}): McaInput {
@@ -23,6 +23,73 @@ function clean(over: Partial<McaInput> = {}): McaInput {
     ...over,
   };
 }
+
+describe("scanMca — multi-type gate", () => {
+  it("accepts SINGLE_CHOICE by default", () => {
+    const g = scanMca(clean());
+    expect(g.verdict).toBe("ACCEPT");
+  });
+
+  it("rejects bad questionType", () => {
+    const g = scanMca(clean({ questionType: "BAD_TYPE" }));
+    expect(g.verdict).toBe("REJECT");
+    expect(g.fatal.some((i) => i.code === "BAD_QUESTION_TYPE")).toBe(true);
+  });
+
+  it("accepts MULTI_CHOICE with ≥2 correct answers", () => {
+    const g = scanMca(clean({
+      questionType: "MULTI_CHOICE",
+      correctAnswers: ["খ", "গ"],
+      correctAnswer: "",
+    }));
+    expect(g.verdict).toBe("ACCEPT");
+    expect(g.normalized.correctAnswers).toEqual(["খ", "গ"]);
+  });
+
+  it("rejects MULTI_CHOICE with only 1 correct answer", () => {
+    const g = scanMca(clean({
+      questionType: "MULTI_CHOICE",
+      correctAnswers: ["খ"],
+      correctAnswer: "",
+    }));
+    expect(g.verdict).toBe("REJECT");
+    expect(g.fatal.some((i) => i.code === "MULTI_TOO_FEW_ANSWERS")).toBe(true);
+  });
+
+  it("rejects MULTI_CHOICE when a correct answer is not an option", () => {
+    const g = scanMca(clean({
+      questionType: "MULTI_CHOICE",
+      correctAnswers: ["খ", "অ"],
+    }));
+    expect(g.verdict).toBe("REJECT");
+    expect(g.fatal.some((i) => i.code === "ANSWER_NOT_IN_OPTIONS")).toBe(true);
+  });
+
+  it("rejects STATEMENT_COMBINATION with <2 statements", () => {
+    const g = scanMca(clean({
+      questionType: "STATEMENT_COMBINATION",
+      statements: ["Only one"],
+      correctAnswers: [],
+    }));
+    expect(g.verdict).toBe("REJECT");
+    expect(g.fatal.some((i) => i.code === "STATEMENT_TOO_FEW")).toBe(true);
+  });
+
+  it("accepts STATEMENT_COMBINATION with ≥2 statements", () => {
+    const g = scanMca(clean({
+      questionType: "STATEMENT_COMBINATION",
+      statements: ["Statement A", "Statement B"],
+      correctAnswers: [],
+    }));
+    expect(g.verdict).toBe("ACCEPT");
+    expect(g.normalized.statements).toEqual(["Statement A", "Statement B"]);
+  });
+
+  it("derives correctAnswers from correctAnswer for legacy SINGLE_CHOICE", () => {
+    const g = scanMca(clean());
+    expect(g.normalized.correctAnswers).toEqual(["খ"]);
+  });
+});
 
 function row(id: number, over: Partial<ScanRow> = {}): ScanRow {
   return {

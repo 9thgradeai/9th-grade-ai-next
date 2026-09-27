@@ -11,6 +11,8 @@ import type { Server } from "@/lib/types";
 import MockTestTab from "./MockTestTab";
 import CustomExamTab from "./CustomExamTab";
 import RichText from "@/components/ui/RichText";
+import QuestionRenderer from "./practice/QuestionRenderer";
+import { isAnswerCorrect, serializeAnswer, getCorrectSet } from "@/lib/question-type";
 import SubjectTopicSelect from "./SubjectTopicSelect";
 import AIExplanationButton from "./AIExplanationButton";
 import {
@@ -30,9 +32,18 @@ const QUICK_STORAGE_KEY = "ninth-grade-ai:practice:quick";
 
 type PersistedQuickSession = {
   questions: Server.QuestionDTO[];
-  answers: Record<number, string>;
+  // Selection is always string[] (single = 1-element). Legacy snapshots
+  // stored plain strings — normalized to arrays on resume below.
+  answers: Record<number, string[] | string>;
+  multiLocked?: Record<number, true>;
   currentIndex: number;
 };
+
+/** Normalize a persisted answer (string legacy or string[]) to string[]. */
+function toAnswerArray(v: string[] | string | undefined): string[] | undefined {
+  if (v === undefined) return undefined;
+  return Array.isArray(v) ? v : [v];
+}
 
 /** Unbiased Fisher-Yates shuffle (sort-compare is biased). */
 function shuffled<T>(items: T[]): T[] {
@@ -96,7 +107,10 @@ export default function PracticeTab() {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [sessionActive, setSessionActive] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [answers, setAnswers] = useState<Record<number, string>>({});
+  const [answers, setAnswers] = useState<Record<number, string[]>>({});
+  // Explicit locks for MULTIPLE_CHOICE only — single-choice locks on first
+  // pick (presence), but multi needs several toggles before locking.
+  const [multiLocked, setMultiLocked] = useState<Record<number, true>>({});
   const [result, setResult] = useState<{ correct: number; total: number; score: number; pointsEarned: number } | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -220,6 +234,7 @@ export default function PracticeTab() {
     setSessionActive(false);
     setCurrentIndex(0);
     setAnswers({});
+    setMultiLocked({});
     setResult(null);
     setLoadError(null);
     setSubmitError(null);
@@ -239,7 +254,13 @@ export default function PracticeTab() {
         const saved = JSON.parse(raw) as PersistedQuickSession;
         if (!saved?.questions?.length) return;
         setQuestions(saved.questions);
-        setAnswers(saved.answers ?? {});
+        const normalized: Record<number, string[]> = {};
+        for (const [k, v] of Object.entries(saved.answers ?? {})) {
+          const arr = toAnswerArray(v);
+          if (arr) normalized[Number(k)] = arr;
+        }
+        setAnswers(normalized);
+        setMultiLocked(saved.multiLocked ?? {});
         setCurrentIndex(Math.min(saved.currentIndex ?? 0, saved.questions.length - 1));
         setSessionActive(true);
       } catch {
@@ -255,12 +276,12 @@ export default function PracticeTab() {
   useEffect(() => {
     if (!sessionActive || result || questions.length === 0) return;
     try {
-      const snapshot: PersistedQuickSession = { questions, answers, currentIndex };
+      const snapshot: PersistedQuickSession = { questions, answers, multiLocked, currentIndex };
       localStorage.setItem(QUICK_STORAGE_KEY, JSON.stringify(snapshot));
     } catch {
       /* storage full/unavailable — resume just won't be available */
     }
-  }, [sessionActive, result, questions, answers, currentIndex]);
+  }, [sessionActive, result, questions, answers, multiLocked, currentIndex]);
 
   // When a quick-practice session starts or its result appears, always show the
   // top (question 1 / score summary) — fix: previously kept previous scroll.
@@ -284,6 +305,7 @@ export default function PracticeTab() {
     setResult(null);
     setSubmitError(null);
     setAnswers({});
+    setMultiLocked({});
     setCurrentIndex(0);
     setTimerKey((k) => k + 1);
     try {
@@ -342,12 +364,22 @@ export default function PracticeTab() {
     }
   };
 
-  const selectAnswer = (questionId: number, option: string) => {
-    // One answer per question: once answered the options lock and the
-    // selection cannot be changed. Lock derives from answers presence so
-    // it survives session resume.
-    if (answers[questionId] !== undefined) return;
-    setAnswers((prev) => ({ ...prev, [questionId]: option }));
+  const isMulti = (q: Server.QuestionDTO) => q.questionType === "MULTIPLE_CHOICE";
+  const isLocked = (q: Server.QuestionDTO) =>
+    answers[q.id] !== undefined && (!isMulti(q) || multiLocked[q.id] === true);
+
+  const selectAnswer = (questionId: number, next: string[]) => {
+    const q = questions.find((x) => x.id === questionId);
+    // Single-choice locks on first pick; multi toggles freely until the
+    // explicit lock button. Locks survive session resume via state below.
+    if (!q || isLocked(q)) return;
+    if (next.length === 0) return;
+    setAnswers((prev) => ({ ...prev, [questionId]: next }));
+  };
+
+  const lockMultiAnswer = (questionId: number) => {
+    if ((answers[questionId] ?? []).length === 0) return;
+    setMultiLocked((prev) => ({ ...prev, [questionId]: true }));
   };
 
   // ── Production-grade submit guard: duplicate hits JOIN the in-flight
@@ -372,7 +404,10 @@ export default function PracticeTab() {
     setSubmitError(null);
     const p = (async () => {
       const summary = await api.submitPractice(
-        qs.map((q) => ({ questionId: q.id, selected: answersRef.current[q.id] ?? "" })),
+        qs.map((q) => {
+          const sel = answersRef.current[q.id];
+          return { questionId: q.id, selected: sel && sel.length > 0 ? sel : "" };
+        }),
       );
       try {
         localStorage.removeItem(QUICK_STORAGE_KEY);
@@ -683,41 +718,22 @@ export default function PracticeTab() {
                       </span>
                     </div>
 
-                    <div className="rounded-xl border p-4 mb-5" style={{ background: "var(--dashboard-surface-raised)", borderColor: "var(--dashboard-border-muted)", boxShadow: "var(--dashboard-shadow-sm)" }}>
-                      <h3 className="text-[16px] font-semibold leading-relaxed" style={{ color: "var(--dashboard-text-primary)", lineHeight: "1.6" }}><RichText text={currentQuestion.question} /></h3>
-                    </div>
-
-                    <div className="space-y-2.5 mb-6" role="radiogroup" aria-label="উত্তর নির্বাচন করুন">
-                      {currentQuestion.options.map((option, i) => {
-                        const isSelected = answers[currentQuestion.id] === option;
-                        const isLocked = answers[currentQuestion.id] !== undefined;
-                        return (
-                          <button
-                            key={i}
-                            onClick={() => selectAnswer(currentQuestion.id, option)}
-                            disabled={isLocked}
-                            role="radio"
-                            aria-checked={isSelected}
-                            className="w-full text-left p-3.5 rounded-xl border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] disabled:cursor-not-allowed"
-                            style={
-                              isSelected
-                                ? { background: "var(--dashboard-primary-subtle)", borderColor: "var(--dashboard-primary)", color: "var(--dashboard-primary)" }
-                                : { background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-strong)", color: "var(--dashboard-text-primary)" }
-                            }
-                          >
-                            <div className="flex items-center gap-3">
-                              <span className="w-6 h-6 rounded-full border flex items-center justify-center text-xs font-mono flex-shrink-0" style={isSelected ? { background: "var(--dashboard-primary)", color: "var(--dashboard-text-inverse)", borderColor: "var(--dashboard-primary)" } : { background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-strong)", color: "var(--dashboard-text-secondary)" }}>
-                                {String.fromCharCode(65 + i)}
-                              </span>
-                              <span className="text-sm font-medium" style={{ fontFamily: 'inherit' }}><RichText text={option} /></span>
-                              {isSelected && <Check className="w-4 h-4 ml-auto" style={{ color: "var(--dashboard-primary)" }} />}
-                            </div>
-                          </button>
-                        );
-                      })}
-                    </div>
-                    {answers[currentQuestion.id] !== undefined && (
-                      <p role="status" className="text-xs font-mono text-[var(--dashboard-text-muted)] mb-4">
+                    <QuestionRenderer
+                      question={currentQuestion}
+                      selected={answers[currentQuestion.id] ?? []}
+                      locked={isLocked(currentQuestion)}
+                      onSelect={(next) => selectAnswer(currentQuestion.id, next)}
+                    />
+                    {isMulti(currentQuestion) && !isLocked(currentQuestion) && (answers[currentQuestion.id] ?? []).length > 0 && (
+                      <button
+                        onClick={() => lockMultiAnswer(currentQuestion.id)}
+                        className="w-full mt-3 py-3 rounded-xl bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm flex items-center justify-center gap-2"
+                      >
+                        <Check className="w-4 h-4" /> উত্তর লক করুন ({(answers[currentQuestion.id] ?? []).length}টি নির্বাচিত)
+                      </button>
+                    )}
+                    {isLocked(currentQuestion) && (
+                      <p role="status" className="text-xs font-mono text-[var(--dashboard-text-muted)] mb-4 mt-3">
                         ✓ উত্তর লক হয়েছে — পরিবর্তন করা যাবে না
                       </p>
                     )}
@@ -810,10 +826,11 @@ export default function PracticeTab() {
                       try {
                         localStorage.removeItem(QUICK_STORAGE_KEY);
                       } catch { /* ignore */ }
-                      setSessionActive(false);
-                      setResult(null);
-                      setAnswers({});
-                      setCurrentIndex(0);
+                    setSessionActive(false);
+                    setResult(null);
+                    setAnswers({});
+                    setMultiLocked({});
+                    setCurrentIndex(0);
                       setQuestions([]);
                                         setTimerKey((k) => k + 1);
                     }}
@@ -833,9 +850,9 @@ export default function PracticeTab() {
               {/* Review */}
               <div className="p-5 max-h-96 overflow-y-auto space-y-2">
                 {sessionQuestions.map((q, i) => {
-                  const userAnswer = answers[q.id];
-                  const isCorrect = userAnswer === q.correctAnswer;
-                  const isUnanswered = !userAnswer;
+                  const userAnswer = answers[q.id] ?? [];
+                  const isCorrect = userAnswer.length > 0 && isAnswerCorrect(q, userAnswer);
+                  const isUnanswered = userAnswer.length === 0;
                   return (
                     <div key={q.id} className={`p-3.5 rounded-xl border ${
                       isCorrect
@@ -857,12 +874,12 @@ export default function PracticeTab() {
                           <p className="text-xs text-[var(--dashboard-text-muted)]" style={{ fontFamily: 'inherit' }}>
                             আপনার উত্তর:{" "}
                             <span className={isCorrect ? "text-[var(--dashboard-success)]" : isUnanswered ? "text-[var(--dashboard-teal)]" : "text-[var(--dashboard-danger)]"}>
-                              {userAnswer || "উত্তর দেওয়া হয়নি"}
+                              {isUnanswered ? "উত্তর দেওয়া হয়নি" : <RichText text={serializeAnswer(userAnswer)} />}
                             </span>
                           </p>
                           {!isCorrect && (
                             <p className="text-xs text-[var(--dashboard-success)] mt-0.5" style={{ fontFamily: 'inherit' }}>
-                              সঠিক উত্তর: <RichText text={q.correctAnswer} />
+                              সঠিক উত্তর: <RichText text={serializeAnswer(getCorrectSet(q))} />
                             </p>
                           )}
                           {q.explanation && (
@@ -874,7 +891,7 @@ export default function PracticeTab() {
                             question={q.question}
                             options={q.options}
                             correctAnswer={q.correctAnswer}
-                            userAnswer={answers[q.id]}
+                            userAnswer={isUnanswered ? undefined : serializeAnswer(userAnswer)}
                             subject={q.subject}
                             topic={q.topic}
                           />

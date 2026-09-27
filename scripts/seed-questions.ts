@@ -213,7 +213,7 @@ function parseSanitizedLines(lines: string[]): {
     accepted.push({
       question: gate.normalized.question,
       options: gate.normalized.options,
-      correctAnswer: gate.normalized.correctAnswer,
+      correctAnswer: gate.normalized.correctAnswer ?? "",
       explanation: gate.normalized.explanation,
     });
   }

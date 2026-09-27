@@ -335,6 +335,10 @@ export default function WrongAnswerNotebookTab() {
           year: q.year,
           sourceExam: q.sourceExam,
           bcsTerm: null,
+          questionType: q.questionType ?? "SINGLE_CHOICE",
+          correctAnswers: q.correctAnswers ?? [],
+          statements: q.statements ?? [],
+          media: q.media ?? [],
         }))}
         title="Mistake Practice"
         onComplete={(answered) => {

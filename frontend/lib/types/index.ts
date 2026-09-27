@@ -447,6 +447,14 @@ export namespace Server {
     year: number | null;
     sourceExam: string;
     bcsTerm: string | null;
+    /** Answering format — every legacy row is SINGLE_CHOICE. */
+    questionType: "SINGLE_CHOICE" | "MULTIPLE_CHOICE" | "STATEMENT_COMBINATION" | "SCENARIO_BASED";
+    /** Authoritative correct set iff non-empty; else [correctAnswer]. */
+    correctAnswers: string[];
+    /** I/II/III stems for STATEMENT_COMBINATION. */
+    statements: string[];
+    /** [{ kind: "image", url, alt }] — URLs only. */
+    media: { kind: string; url: string; alt?: string }[];
     /** Exam-library linkage (absent for generic subject-wise questions). */
     paperId?: number | null;
     examId?: number | null;
@@ -816,6 +824,14 @@ export namespace Server {
      */
     correctAnswer?: string;
     explanation?: string;
+    /**
+     * Multi-type answering (drill builders only, same absence rule as above).
+     * correctAnswers is authoritative iff non-empty.
+     */
+    questionType?: QuestionDTO["questionType"];
+    correctAnswers?: string[];
+    statements?: string[];
+    media?: QuestionDTO["media"];
   };
 
   export type ExamBuildResultDTO = {
