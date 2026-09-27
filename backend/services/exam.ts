@@ -11,6 +11,11 @@ import { AppError, InternalServerError } from "~backend/errors";
 import { recomputeAndAward } from "~backend/repositories/progress.repository";
 import { emit } from "~backend/events/bus";
 import { QueryCache } from "~backend/infrastructure/cache/query-cache";
+import {
+  getBanglaSubjects,
+  foldSiblingCounts,
+  unionEligibleLeaves,
+} from "~backend/services/bangla-union";
 import type { SubmittedAnswer } from "./activity";
 import { recordQuestionAttempt } from "./question-progress";
 import type {
@@ -115,6 +120,17 @@ export async function getExamSelectionTree(ecosystemId?: number): Promise<ExamSu
   }
 
   try {
+    // Bangla union: sibling Bangla rows (other ecosystem) must be visible for
+    // counting even when building a single-ecosystem tree — otherwise sparse
+    // nodes prune to zero and the picker hides pool the union would serve.
+    const bangla = await getBanglaSubjects().catch(() => null);
+    const siblingBanglaIds = (bangla?.ids ?? []).filter((id) => id > 0);
+    const countWhere =
+      ecosystemId && siblingBanglaIds.length > 1
+        ? { OR: [{ ecosystemId }, { subjectId: { in: siblingBanglaIds } }] }
+        : ecosystemId
+          ? { ecosystemId }
+          : {};
     const subjectWhere = ecosystemId ? { ecosystemId } : {};
     const [subjects, topicRows, countRows] = await Promise.all([
       prisma.subject.findMany({ where: subjectWhere, orderBy: { sortOrder: "asc" } }),
@@ -124,7 +140,7 @@ export async function getExamSelectionTree(ecosystemId?: number): Promise<ExamSu
       prisma.question.groupBy({
         by: ["subjectId", "path"],
         _count: { _all: true },
-        where: ecosystemId ? { ecosystemId } : {},
+        where: countWhere,
       }),
     ]);
 
@@ -136,6 +152,29 @@ export async function getExamSelectionTree(ecosystemId?: number): Promise<ExamSu
         countMap.set(row.subjectId, sub);
       }
       sub.set(row.path, row._count._all);
+    }
+
+    // Fold sibling Bangla counts into each Bangla subject's map (matched by
+    // taxonomy-relative suffix) so tree nodes reflect the combined pool.
+    if (siblingBanglaIds.length > 1) {
+      const banglaInTree = subjects.filter((s) => (bangla?.names.has(s.id) ?? false));
+      for (const s of banglaInTree) {
+        const sibs = siblingBanglaIds.filter((id) => id !== s.id);
+        const sibLeaves: Array<{ path: string; count: number }> = [];
+        for (const row of countRows) {
+          if (sibs.includes(row.subjectId)) sibLeaves.push({ path: row.path, count: row._count._all });
+        }
+        if (sibLeaves.length === 0) continue;
+        const ownPaths = topicRows.filter((t) => t.subjectId === s.id).map((t) => t.path);
+        const extra = foldSiblingCounts(ownPaths, sibLeaves);
+        if (extra.size === 0) continue;
+        let sub = countMap.get(s.id);
+        if (!sub) {
+          sub = new Map();
+          countMap.set(s.id, sub);
+        }
+        for (const [path, count] of extra) sub.set(path, (sub.get(path) ?? 0) + count);
+      }
     }
 
     const buildNode = (
@@ -216,19 +255,6 @@ async function getLeafCounts(): Promise<Map<number, Map<string, number>>> {
     sub.set(row.path, row._count._all);
   }
   return map;
-}
-
-// Resolves the eligible leaf paths for a subject selection: the union of every
-// selected node's subtree. `paths: []` means the whole subject.
-function eligibleLeafPaths(
-  leafCounts: Map<number, Map<string, number>>,
-  subjectId: number,
-  paths: string[],
-): string[] {
-  const counts = leafCounts.get(subjectId) ?? new Map<string, number>();
-  const leaves = [...counts.keys()];
-  if (paths.length === 0) return leaves;
-  return leaves.filter((leaf) => paths.some((p) => leaf === p || leaf.startsWith(p + "/")));
 }
 
 // ── Validation ─────────────────────────────────────────────
@@ -330,8 +356,16 @@ export async function buildCustomExam(config: ExamSelectionRequest): Promise<Exa
 
   try {
     const subjectIds = subjects.map((s) => s.subjectId);
+    // Bangla union: sibling subject names are needed for result DTOs when a
+    // Bangla subject pulls rows from the other ecosystem.
+    const banglaForBuild = await getBanglaSubjects().catch(() => null);
+    const unionSibs = (sid: number): number[] =>
+      banglaForBuild && banglaForBuild.names.has(sid) && banglaForBuild.ids.length > 1
+        ? banglaForBuild.ids.filter((id) => id !== sid)
+        : [];
+    const fetchIds = [...new Set([...subjectIds, ...subjectIds.flatMap(unionSibs)])];
     const subjectRows = await prisma.subject.findMany({
-      where: { id: { in: subjectIds } },
+      where: { id: { in: fetchIds } },
       select: { id: true, nameBn: true },
     });
     const nameBySubject = new Map(subjectRows.map((s) => [s.id, s.nameBn]));
@@ -339,12 +373,17 @@ export async function buildCustomExam(config: ExamSelectionRequest): Promise<Exa
     // Leaf question counts per subject drive availability + selection.
     const leafCounts = await getLeafCounts();
 
-    // Per-subject availability: the union of every selected node's subtree.
-    const subjectTotals = subjects.map((subject) => {
-      const eligible = eligibleLeafPaths(leafCounts, subject.subjectId, subject.paths);
-      const counts = leafCounts.get(subject.subjectId) ?? new Map<string, number>();
-      return eligible.reduce((acc, p) => acc + (counts.get(p) ?? 0), 0);
-    });
+    // Per-subject availability: eligible (subjectId, path) pairs — the union
+    // of every selected node's subtree, plus sibling Bangla leaves mapped by
+    // taxonomy-relative suffix (see unionEligibleLeaves).
+    const eligiblePairs = subjects.map((subject) =>
+      unionEligibleLeaves(leafCounts, subject.subjectId, unionSibs(subject.subjectId), subject.paths),
+    );
+    const pairCount = (pair: { subjectId: number; path: string }): number =>
+      leafCounts.get(pair.subjectId)?.get(pair.path) ?? 0;
+    const subjectTotals = eligiblePairs.map((pairs) =>
+      pairs.reduce((acc, p) => acc + pairCount(p), 0),
+    );
 
     const totalAvailable = subjectTotals.reduce((acc, c) => acc + c, 0);
     const finalCount = Math.min(questionCount, totalAvailable);
@@ -365,19 +404,18 @@ export async function buildCustomExam(config: ExamSelectionRequest): Promise<Exa
         const allocation = subjectAllocations[si];
         if (allocation === 0) return;
 
-        const eligible = eligibleLeafPaths(leafCounts, subject.subjectId, subject.paths);
+        const eligible = eligiblePairs[si];
         if (eligible.length === 0) return;
 
-        // Evenly balanced across eligible leaves/topics
-        const counts = leafCounts.get(subject.subjectId) ?? new Map<string, number>();
-        const leafCaps = eligible.map((p) => counts.get(p) ?? 0);
+        // Evenly balanced across eligible leaves/topics (both ecosystems)
+        const leafCaps = eligible.map((p) => pairCount(p));
         const perLeafAlloc = allocateEvenly(allocation, leafCaps);
         const leafIds: number[] = [];
         await Promise.all(
-          eligible.map(async (leafPath, li) => {
+          eligible.map(async (pair, li) => {
             const need = perLeafAlloc[li];
             if (need <= 0) return;
-            const ids = await pickQuestionIds({ subjectId: subject.subjectId, path: { in: [leafPath] } } as unknown as Record<string, unknown>, need, seed + si * 131_071 + li * 7919);
+            const ids = await pickQuestionIds({ subjectId: pair.subjectId, path: { in: [pair.path] } } as unknown as Record<string, unknown>, need, seed + si * 131_071 + li * 7919);
             leafIds.push(...ids);
           }),
         );

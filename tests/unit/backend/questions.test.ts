@@ -110,3 +110,59 @@ describe("getQuestions paperId filter (exam library)", () => {
     });
   });
 });
+
+describe("getQuestions Bangla union (BCS pool shared into Bank Bangla)", () => {
+  const BANK_BN = "০১_বাংলা_ভাষা_ও_সাহিত্য";
+  const BCS_LEAF = "01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/বানান";
+
+  beforeEach(async () => {
+    const { clearBanglaSubjectsCache, clearBanglaLeafPathsCache } = await import(
+      "~backend/services/bangla-union"
+    );
+    clearBanglaSubjectsCache();
+    clearBanglaLeafPathsCache();
+    vi.mocked(prisma.subject.findMany).mockResolvedValue([
+      { id: 1, nameBn: "বাংলা ভাষা ও সাহিত্য" },
+      { id: 7, nameBn: BANK_BN },
+    ] as never);
+    vi.mocked(prisma.question.groupBy).mockResolvedValue([
+      { subjectId: 1, path: BCS_LEAF },
+    ] as never);
+  });
+
+  it("spans both Bangla subjects and drops the ecosystem fence", async () => {
+    vi.mocked(prisma.subject.findFirst).mockResolvedValue({ id: 7, nameBn: BANK_BN } as never);
+    vi.mocked(prisma.question.findMany).mockResolvedValue([]);
+    vi.mocked(prisma.question.count).mockResolvedValue(0);
+
+    await getQuestions({
+      subject: BANK_BN,
+      paths: [`${BANK_BN}/ভাষা`],
+      ecosystemId: 2,
+      limit: 50,
+    });
+
+    const call = vi.mocked(prisma.question.findMany).mock.calls[0][0];
+    const and = call?.where as { AND: Record<string, unknown>[] };
+    // subjectId spans both Bangla subjects…
+    expect(and.AND).toContainEqual({ subjectId: { in: [1, 7] } });
+    // …and no ecosystemId fence remains (rows live in two ecosystems)…
+    expect(JSON.stringify(and)).not.toContain("ecosystemId");
+    // …while the path OR covers the Bank node AND the mapped BCS leaf.
+    const or = and.AND.find((c) => "OR" in c) as { OR: Record<string, unknown>[] };
+    expect(or.OR).toContainEqual({ path: { in: expect.arrayContaining([BCS_LEAF]) } });
+  });
+
+  it("stays single-subject for non-Bangla subjects", async () => {
+    vi.mocked(prisma.subject.findFirst).mockResolvedValue({ id: 9, nameBn: "সাধারণ জ্ঞান" } as never);
+    vi.mocked(prisma.question.findMany).mockResolvedValue([]);
+    vi.mocked(prisma.question.count).mockResolvedValue(0);
+
+    await getQuestions({ subject: "সাধারণ জ্ঞান", ecosystemId: 2, limit: 20 });
+
+    const call = vi.mocked(prisma.question.findMany).mock.calls[0][0];
+    expect(call?.where).toEqual({
+      AND: [{ subjectId: 9 }, { ecosystemId: 2 }],
+    });
+  });
+});

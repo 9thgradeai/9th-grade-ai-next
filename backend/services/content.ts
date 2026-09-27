@@ -13,6 +13,11 @@ import {
   fetchWrongNotebookQuestionIds,
 } from "~backend/repositories/analytics.repository";
 import { QueryCache } from "~backend/infrastructure/cache/query-cache";
+import {
+  getBanglaSubjects,
+  getBanglaLeafPaths,
+  mapSiblingPaths,
+} from "~backend/services/bangla-union";
 import type {
   QuestionDTO,
   QuestionBankCategoryDTO,
@@ -45,18 +50,40 @@ type QuestionFilters = {
 
 async function buildQuestionWhere(opts?: QuestionFilters): Promise<Record<string, unknown>> {
   const conditions: Record<string, unknown>[] = [];
-  if (opts?.ecosystemId) {
-    conditions.push({ ecosystemId: opts.ecosystemId });
-  }
+  // Bangla union (Practice: BCS Bangla pool shared into Bank Bangla and vice
+  // versa — see backend/services/bangla-union.ts). When active, the subject
+  // constraint spans both Bangla subjects and the ecosystem constraint is
+  // dropped (rows live in two ecosystems by design).
+  let unionPaths: string[] | null = null;
   if (opts?.subject) {
     const subject = await prisma.subject.findFirst({ where: { nameBn: opts.subject } });
-    if (subject) conditions.push({ subjectId: subject.id });
+    if (subject) {
+      const bangla = await getBanglaSubjects();
+      if (bangla.names.has(subject.id) && bangla.ids.length > 1) {
+        const siblingIds = bangla.ids.filter((id) => id !== subject.id);
+        conditions.push({ subjectId: { in: bangla.ids } });
+        if (opts?.paths && opts.paths.length > 0) {
+          const sibLeaves = await getBanglaLeafPaths(siblingIds);
+          unionPaths = mapSiblingPaths(sibLeaves, siblingIds, opts.paths);
+        }
+      } else {
+        conditions.push({ subjectId: subject.id });
+        if (opts?.ecosystemId) {
+          conditions.push({ ecosystemId: opts.ecosystemId });
+        }
+      }
+    } else if (opts?.ecosystemId) {
+      conditions.push({ ecosystemId: opts.ecosystemId });
+    }
+  } else if (opts?.ecosystemId) {
+    conditions.push({ ecosystemId: opts.ecosystemId });
   }
   if (opts?.paths && opts.paths.length > 0) {
-    const or: Record<string, unknown>[] = opts.paths.map((p) => ({
+    const allPaths = unionPaths ? [...opts.paths, ...unionPaths] : opts.paths;
+    const or: Record<string, unknown>[] = allPaths.map((p) => ({
       path: { startsWith: p.endsWith("/") ? p : `${p}/` },
     }));
-    or.push({ path: { in: opts.paths } });
+    or.push({ path: { in: allPaths } });
     conditions.push({ OR: or });
   }
   if (opts?.topic) conditions.push({ topic: opts.topic });

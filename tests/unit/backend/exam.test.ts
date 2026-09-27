@@ -29,6 +29,11 @@ function fullQuestion(id: number, correctAnswer: string) {
 beforeEach(async () => {
   vi.clearAllMocks();
   await QueryCache.invalidateExamTree();
+  const { clearBanglaSubjectsCache, clearBanglaLeafPathsCache } = await import(
+    "~backend/services/bangla-union"
+  );
+  clearBanglaSubjectsCache();
+  clearBanglaLeafPathsCache();
 });
 
 describe("shuffleWithSeed", () => {
@@ -226,6 +231,82 @@ describe("buildCustomExam", () => {
     await expect(buildCustomExam({ ...config, subjects: [] })).rejects.toMatchObject({
       statusCode: 400,
     });
+  });
+
+  it("keeps a Bank Bangla node with zero own rows when the BCS union has them", async () => {
+    const BANK = "০১_বাংলা_ভাষা_ও_সাহিত্য";
+    const BCS_ROOT = "01_বাংলা_ভাষা_ও_সাহিত্য";
+    vi.mocked(prisma.subject.findMany).mockImplementation(async (args) => {
+      const hasSelect = !!(args as { select?: unknown } | undefined)?.select;
+      const all = [
+        { id: 1, nameBn: "বাংলা ভাষা ও সাহিত্য" },
+        { id: 7, nameBn: BANK },
+      ];
+      // Bangla detection (select) sees both ecosystems; the tree list is Bank-only.
+      return (hasSelect ? all : [{ id: 7, nameBn: BANK }]) as never;
+    });
+    vi.mocked(prisma.topic.findMany).mockResolvedValue([
+      { id: 10, subjectId: 7, parentId: null, name: "ভাষা", slug: "ভাষা", path: `${BANK}/ভাষা`, depth: 1, sortOrder: 0, questionCount: "0" },
+      { id: 11, subjectId: 7, parentId: 10, name: "বানান", slug: "বানান", path: `${BANK}/ভাষা/বানান`, depth: 2, sortOrder: 0, questionCount: "0" },
+    ] as never);
+    vi.mocked(prisma.question.groupBy).mockResolvedValue([
+      { subjectId: 1, path: `${BCS_ROOT}/ভাষা/বানান`, _count: { _all: 40 } },
+    ] as never);
+
+    const tree = await getExamSelectionTree(2);
+    expect(tree).toHaveLength(1);
+    expect(tree[0].questionCount).toBe(40);
+    expect(tree[0].nodes[0]).toMatchObject({ name: "ভাষা", questionCount: 40 });
+    expect(tree[0].nodes[0].children[0]).toMatchObject({ name: "বানান", questionCount: 40 });
+  });
+
+  it("builds a Bank Bangla exam from BCS union rows", async () => {
+    const BANK = "০১_বাংলা_ভাষা_ও_সাহিত্য";
+    const BCS_ROOT = "01_বাংলা_ভাষা_ও_সাহিত্য";
+    vi.mocked(prisma.subject.findMany).mockResolvedValue([
+      { id: 1, nameBn: "বাংলা ভাষা ও সাহিত্য" },
+      { id: 7, nameBn: BANK },
+    ] as never);
+    vi.mocked(prisma.question.groupBy).mockResolvedValue([
+      { subjectId: 7, path: `${BANK}/ভাষা/বানান`, _count: { _all: 2 } },
+      { subjectId: 1, path: `${BCS_ROOT}/ভাষা/বানান`, _count: { _all: 40 } },
+    ] as never);
+    vi.mocked(prisma.question.findMany).mockImplementation(async (args) => {
+      const a = args as {
+        select?: Record<string, boolean>;
+        orderBy?: unknown;
+        where?: { subjectId?: number; path?: { in?: string[] }; id?: { in?: number[] } };
+      };
+      const isPick = !!a.orderBy && !!a.select && Object.keys(a.select).length === 1 && a.select.id === true;
+      if (isPick) {
+        // Bank leaf offers ids 1-2, BCS leaf offers 101-140.
+        const pool = a.where?.subjectId === 1
+          ? Array.from({ length: 40 }, (_, i) => 101 + i)
+          : [1, 2];
+        return pool.map((id) => ({ id })) as never;
+      }
+      const ids = (a.where?.id?.in ?? []).flat();
+      return ids.map((id) => ({ ...fullQuestion(id, "ক"), subjectId: id >= 101 ? 1 : 7 })) as never;
+    });
+
+    const exam = await buildCustomExam({
+      subjects: [{ subjectId: 7, paths: [`${BANK}/ভাষা`] }],
+      questionCount: 10,
+      durationSec: 600,
+      seed: 7,
+      shuffleQuestions: false,
+    });
+    expect(exam.available).toBe(42);
+    expect(exam.totalQuestions).toBe(10);
+    expect(exam.shortfall).toBe(0);
+    // Union draws from both pools.
+    const fromBcs = exam.questions.filter((q) => q.id >= 101).length;
+    expect(fromBcs).toBeGreaterThan(0);
+    // The pick query reached the BCS subject, not just Bank.
+    const pickSubjects = vi
+      .mocked(prisma.question.findMany)
+      .mock.calls.map((c) => (c[0]?.where as { subjectId?: number } | undefined)?.subjectId);
+    expect(pickSubjects).toContain(1);
   });
 });
 
