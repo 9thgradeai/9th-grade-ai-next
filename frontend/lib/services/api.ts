@@ -409,6 +409,7 @@ export const api = {
     sourceExam?: string;
     bcsTerm?: string;
     paperId?: number;
+    pyqOnly?: boolean;
     limit?: number;
     page?: number;
     ecosystem?: string;

@@ -135,7 +135,9 @@ export default function QuestionBankTab() {
     };
   }, [ecosystem]);
 
-  // Load questions for the active category from the DB (with PYQ filters).
+  // Load questions for the active category from the DB (PYQ only — the
+  // Question Bank tab shows Previous Years Questions exclusively; the
+  // subject-wise practice pool lives in Practice / Mock flows).
   useEffect(() => {
     if (view === "saved") return;
     let cancelled = false;
@@ -150,6 +152,7 @@ export default function QuestionBankTab() {
           year: year ?? undefined,
           sourceExam: sourceExam ?? undefined,
           bcsTerm: bcsTerm ?? undefined,
+          pyqOnly: true,
           ecosystem,
         });
         if (!cancelled) setQuestions(qs);
@@ -180,7 +183,7 @@ export default function QuestionBankTab() {
     return () => {
       cancelled = true;
     };
-  }, [activeCategory, year, sourceExam, view, ecosystem]);
+  }, [activeCategory, year, sourceExam, bcsTerm, view, ecosystem]);
 
   // Load saved (bookmarked) questions when that view is active.
   useEffect(() => {

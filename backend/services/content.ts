@@ -46,6 +46,8 @@ type QuestionFilters = {
   bcsTerm?: string;
   paperId?: number;
   ecosystemId?: number;
+  /** When true, return only Previous-Year Questions (paperId NOT NULL). */
+  pyqOnly?: boolean;
 };
 
 async function buildQuestionWhere(opts?: QuestionFilters): Promise<Record<string, unknown>> {
@@ -110,6 +112,9 @@ async function buildQuestionWhere(opts?: QuestionFilters): Promise<Record<string
   }
   if (opts?.paperId) {
     conditions.push({ paperId: opts.paperId });
+  }
+  if (opts?.pyqOnly) {
+    conditions.push({ paperId: { not: null } });
   }
   return conditions.length > 0 ? { AND: conditions } : {};
 }
@@ -220,16 +225,18 @@ export async function getQuestionById(id: number): Promise<QuestionDTO | null> {
   }
 }
 
-// Counts are derived live from the real Question table (grouped by subject)
-// rather than the seeded `QuestionBankCategory.count`, which was a fabricated
-// static number. The `label` returned is the canonical `Subject.nameBn` so the
-// client can keep using it as the subject filter in buildQuestionWhere.
+// Counts are derived live from real Previous-Year Questions only
+// (paperId NOT NULL) grouped by subject — the Question Bank tab shows PYQ
+// exclusively; the subject-wise practice pool (paperId NULL) is excluded.
+// The `label` returned is the canonical `Subject.nameBn` so the client can
+// keep using it as the subject filter in buildQuestionWhere.
 export async function getQuestionBankCategories(ecosystemId?: number): Promise<QuestionBankCategoryDTO[]> {
   try {
+    const pyqWhere = ecosystemId ? { ecosystemId, paperId: { not: null } } : { paperId: { not: null } };
     const subjectWhere = ecosystemId ? { ecosystemId } : {};
     const [subjects, counts] = await Promise.all([
       prisma.subject.findMany({ where: subjectWhere, select: { id: true, nameBn: true } }),
-      prisma.question.groupBy({ by: ["subjectId"], _count: { _all: true }, where: ecosystemId ? { ecosystemId } : {} }),
+      prisma.question.groupBy({ by: ["subjectId"], _count: { _all: true }, where: pyqWhere }),
     ]);
     const countBySubject = new Map(counts.map((c) => [c.subjectId, c._count._all]));
     return subjects

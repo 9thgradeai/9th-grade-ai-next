@@ -194,6 +194,8 @@ export interface QuestionSearchFilters {
   bcsTerm?: string;
   /** Restrict to a specific ExamPaper id (exam-library paper browse). */
   paperId?: number;
+  /** When true, return only Previous-Year Questions (paperId NOT NULL). Practice-pool MCQs excluded. */
+  pyqOnly?: boolean;
 }
 
 export interface PaginationParams {
@@ -456,6 +458,7 @@ export function validateQuestionSearchParams(params: URLSearchParams): QuestionS
     "sourceExam",
     "bcsTerm",
     "paperId",
+    "pyqOnly",
     "ecosystem",
   ];
   const unexpected = [...params.keys()].filter((k) => !allowedParams.includes(k));
@@ -476,6 +479,7 @@ export function validateQuestionSearchParams(params: URLSearchParams): QuestionS
   const sourceExam = params.get("sourceExam");
   const bcsTerm = params.get("bcsTerm");
   const paperId = params.get("paperId");
+  const pyqOnly = params.get("pyqOnly");
 
   if (subject && subject.length > 0) filters.subject = subject;
   if (topic && topic.length > 0) filters.topic = topic;
@@ -567,6 +571,13 @@ export function validateQuestionSearchParams(params: URLSearchParams): QuestionS
       throw new ValidationError("paperId must be a positive integer.");
     }
     filters.paperId = parsed;
+  }
+
+  if (pyqOnly !== null && pyqOnly !== undefined && pyqOnly.length > 0) {
+    if (pyqOnly !== "true" && pyqOnly !== "false" && pyqOnly !== "1" && pyqOnly !== "0") {
+      throw new ValidationError("pyqOnly must be a boolean.");
+    }
+    filters.pyqOnly = pyqOnly === "true" || pyqOnly === "1";
   }
 
   return filters;
