@@ -328,7 +328,7 @@ export default function CommandBar() {
 
   return (
     <div
-      className="fixed inset-0 z-[80] flex items-start justify-center bg-[var(--overlay)] px-4 pt-[14vh] backdrop-blur-sm"
+      className="fixed inset-0 z-[var(--z-modal)] flex items-start justify-center bg-[var(--overlay)] px-4 pt-[14vh] backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
       aria-label="Command center"

@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * Small status indicator pill (e.g. "SYSTEM: ONLINE"). The pulsing dot is a pure
  * CSS animation, so no animation library is pulled into the initial bundle.

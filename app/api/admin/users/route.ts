@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 import { requireRole } from "~backend/services/user";
 import { listUsers } from "~backend/services/admin";
 import { toHttpResponse } from "~backend/errors";
+import { parseAdminListParams } from "~backend/validation";
 import { getRequestId, startTiming, applySecurityHeaders } from "../../_middleware";
 
 export async function GET(request: Request) {
@@ -15,9 +16,7 @@ export async function GET(request: Request) {
     await requireRole(request, ["admin"]);
 
     const url = new URL(request.url);
-    const page = Math.max(1, Number(url.searchParams.get("page") ?? "1"));
-    const limit = Math.min(100, Math.max(1, Number(url.searchParams.get("limit") ?? "20")));
-    const search = url.searchParams.get("search") ?? "";
+    const { page, limit, search } = parseAdminListParams(url);
 
     const result = await listUsers({ page, limit, search });
 

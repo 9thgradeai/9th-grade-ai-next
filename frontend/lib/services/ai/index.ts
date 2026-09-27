@@ -1,5 +1,3 @@
-"use client";
-
 // AI service layer — the single typed entry point for AI features.
 // Feature components must use these methods, never raw fetch("/api/ai/...").
 

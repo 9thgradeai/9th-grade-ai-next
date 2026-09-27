@@ -1,5 +1,3 @@
-"use client";
-
 // Curated start-of-conversation prompts for the AI workspace. Tutor prompts are
 // seeded from the app's `PRESET_PROMPTS`; assistant/coach quick acts are real,
 // honest follow-ups to the learner's own performance data — nothing here fakes

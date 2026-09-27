@@ -217,6 +217,79 @@ describe("POST /api/exam/submit", () => {
     expect(res.status).toBe(401);
   });
 
+  it("rejects banned users with 401 even with a valid JWT", async () => {
+    vi.mocked(prisma.user.findUnique).mockImplementation((async (args: unknown) => {
+      const a = args as { where: { id?: string; email?: string } };
+      if (a.where.email === "submit@example.com" || a.where.id === "usr_submit") {
+        return mockUser({ passwordHash: passwordHashBcrypt, role: "BANNED", tokenVersion: 0 });
+      }
+      return null;
+    }) as never);
+    const cookie = await sessionCookie();
+    const res = await submitPOST(
+      jsonRequest(
+        "/api/exam/submit",
+        { attemptId: ATTEMPT_ID, questionIds: [1, 2], durationSec: 60, answers },
+        { cookie },
+      ),
+    );
+    expect(res.status).toBe(401);
+  });
+
+  it("rejects non-integer questionIds with 400 instead of silently stripping", async () => {
+    await setupAuthedUser();
+    const cookie = await sessionCookie();
+    const res = await submitPOST(
+      jsonRequest(
+        "/api/exam/submit",
+        { attemptId: ATTEMPT_ID, questionIds: ["1", null], durationSec: 60, answers },
+        { cookie },
+      ),
+    );
+    expect(res.status).toBe(400);
+    const body = (await res.json()) as { code: string };
+    expect(body.code).toBe("VALIDATION_ERROR");
+  });
+
+  it("rejects malformed answer entries with 400 instead of silently stripping", async () => {
+    await setupAuthedUser();
+    const cookie = await sessionCookie();
+    const res = await submitPOST(
+      jsonRequest(
+        "/api/exam/submit",
+        {
+          attemptId: ATTEMPT_ID,
+          questionIds: [1, 2],
+          durationSec: 60,
+          answers: [{ questionId: 1 }, { questionId: "x", selected: 42 }],
+        },
+        { cookie },
+      ),
+    );
+    expect(res.status).toBe(400);
+  });
+
+  it("rejects unknown body fields and non-integer durationSec with 400", async () => {
+    await setupAuthedUser();
+    const cookie = await sessionCookie();
+    const withExtra = await submitPOST(
+      jsonRequest(
+        "/api/exam/submit",
+        { attemptId: ATTEMPT_ID, questionIds: [1, 2], durationSec: 60, answers, admin: true },
+        { cookie },
+      ),
+    );
+    expect(withExtra.status).toBe(400);
+    const withBadDuration = await submitPOST(
+      jsonRequest(
+        "/api/exam/submit",
+        { attemptId: ATTEMPT_ID, questionIds: [1, 2], durationSec: "sixty", answers },
+        { cookie },
+      ),
+    );
+    expect(withBadDuration.status).toBe(400);
+  });
+
   it("accepts a fresh submission and returns outcome: submitted", async () => {
     await setupAuthedUser();
     vi.mocked(prisma.examAttempt.findUnique).mockResolvedValue(null);

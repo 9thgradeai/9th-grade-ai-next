@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { validateLoginInput } from "~backend/validation";
 import { AppError, toHttpResponse } from "~backend/errors";
 import { findUserByEmail, verifyPassword, DUMMY_PASSWORD_HASH } from "~backend/services/user";
-import { signSession, setSessionCookie, addUserSession } from "~backend/auth";
+import { signSession, setSessionCookie, addUserSession, SESSION_DURATION_MS, REMEMBER_SESSION_MS } from "~backend/auth";
 import { assertLoginAllowed } from "~backend/rate-limit";
 import { getRequestId, startTiming, applySecurityHeaders, applyCorsHeaders, assertSameOrigin } from "../../_middleware";
 import { log } from "~backend/infrastructure/observability/logger";
@@ -46,21 +46,28 @@ export async function POST(request: Request) {
 
     // Create session with unique ID for concurrency tracking
     const sessionId = crypto.randomUUID();
+    // Client-controlled leftmost x-forwarded-for entries are spoofable; the
+    // last entry is appended by our proxy. Informational only (session list).
+    const forwarded = request.headers.get("x-forwarded-for")?.split(",").map((s) => s.trim()).filter(Boolean);
     const sessionMeta = {
       id: sessionId,
       createdAt: new Date().toISOString(),
       userAgent: request.headers.get("user-agent") ?? undefined,
-      ip: request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? undefined,
+      ip: (forwarded && forwarded[forwarded.length - 1]) ?? undefined,
     };
 
-    const token = await signSession({ email: user.email, ver: user.tokenVersion, sid: sessionId });
+    // "Stay signed in" extends JWT + cookie + client scheduler from 7 to 30
+    // days together — previously the cookie said 30d while the JWT said 7d.
+    const sessionMs = remember ? REMEMBER_SESSION_MS : SESSION_DURATION_MS;
+    const token = await signSession(
+      { email: user.email, ver: user.tokenVersion, sid: sessionId },
+      Math.floor(sessionMs / 1000),
+    );
     await addUserSession(user.id, sessionMeta);
 
     const { passwordHash: _passwordHash, ...safeUser } = user;
-    const res = NextResponse.json({ user: safeUser });
-    // "Stay signed in" extends the cookie from 7 to 30 days; otherwise the
-    // session expires when the browser closes-ish (7-day cap in either case).
-    await setSessionCookie(token, res, remember ? 60 * 60 * 24 * 30 : undefined);
+    const res = NextResponse.json({ user: safeUser, expiresIn: sessionMs });
+    await setSessionCookie(token, res, Math.floor(sessionMs / 1000));
 
     log.info("auth.login.success", { requestId, userId: user.id });
 

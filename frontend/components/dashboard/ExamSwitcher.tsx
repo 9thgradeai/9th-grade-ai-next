@@ -119,7 +119,7 @@ export default function ExamSwitcher({ compact = false, id }: ExamSwitcherProps)
         </button>
         {open && (
           <div
-            className="absolute left-12 top-0 z-50 w-56 overflow-hidden rounded-xl border shadow-xl"
+            className="absolute left-12 top-0 z-[var(--z-dropdown)] w-56 overflow-hidden rounded-xl border shadow-xl"
             style={{
               background: "var(--dashboard-surface-solid)",
               borderColor: "var(--dashboard-border-muted)",
@@ -189,7 +189,7 @@ export default function ExamSwitcher({ compact = false, id }: ExamSwitcherProps)
       </button>
       {open && (
         <div
-          className="absolute left-0 right-0 top-full z-50 mt-1.5 overflow-hidden rounded-xl border shadow-xl"
+          className="absolute left-0 right-0 top-full z-[var(--z-dropdown)] mt-1.5 overflow-hidden rounded-xl border shadow-xl"
           style={{
             background: "var(--dashboard-surface-solid)",
             borderColor: "var(--dashboard-border-muted)",

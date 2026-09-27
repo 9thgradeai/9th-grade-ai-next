@@ -69,7 +69,7 @@ export async function listUsers(opts: {
     return { users, total, page, limit, totalPages: Math.ceil(total / limit) };
   } catch (error) {
     if (error instanceof AppError) throw error;
-    throw new InternalServerError("Failed to list users");
+    throw new InternalServerError("Failed to list users", { cause: error });
   }
 }
 
@@ -99,7 +99,7 @@ export async function getUserDetail(userId: string): Promise<AdminUserDetail> {
     return user;
   } catch (error) {
     if (error instanceof AppError) throw error;
-    throw new InternalServerError("Failed to get user details");
+    throw new InternalServerError("Failed to get user details", { cause: error });
   }
 }
 
@@ -115,7 +115,7 @@ export async function adminAction(
     if (action === "ban") {
       await prisma.user.update({
         where: { id: userId },
-        data: { role: "BANNED" as "STUDENT" | "ADMIN" | "BANNED" },
+        data: { role: "BANNED" },
       });
       await revokeAllSessions(userId);
     } else if (action === "unban") {
@@ -132,6 +132,6 @@ export async function adminAction(
     return { success: true, action };
   } catch (error) {
     if (error instanceof AppError) throw error;
-    throw new InternalServerError("Failed to perform admin action");
+    throw new InternalServerError("Failed to perform admin action", { cause: error });
   }
 }

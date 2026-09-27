@@ -44,12 +44,23 @@ const withPWA = require("next-pwa")({
     { urlPattern: /^https:\/\/fonts\.(googleapis|gstatic)\.com\/.*/i, handler: "CacheFirst", options: { cacheName: "google-fonts", expiration: { maxEntries: 4, maxAgeSeconds: 365 * 24 * 60 * 60 } } },
     { urlPattern: /^https:\/\/.*\.sentry\.io\/.*/i, handler: "NetworkFirst", options: { cacheName: "sentry", expiration: { maxEntries: 32, maxAgeSeconds: 24 * 60 * 60 }, networkTimeoutSeconds: 10 } },
     { urlPattern: /^https:\/\/api\.(groq|anthropic)\.com\/.*/i, handler: "NetworkOnly", options: { cacheName: "ai-api" } },
-    { urlPattern: /\/api\/questions/, handler: "StaleWhileRevalidate", options: { cacheName: "questions-api", expiration: { maxEntries: 64, maxAgeSeconds: 5 * 60 } } },
-    { urlPattern: /\/api\/flashcards/, handler: "StaleWhileRevalidate", options: { cacheName: "flashcards-api", expiration: { maxEntries: 32, maxAgeSeconds: 15 * 60 } } },
+    // Cookie-authenticated, per-user payloads MUST be NetworkOnly. Caching
+    // them in SW CacheStorage persists User A's study-plan/badges on shared
+    // devices and can serve them to User B after logout (no reliable
+    // cross-user purge exists). The in-memory gateway cache in
+    // frontend/lib/services/api.ts already covers offline/blip resilience
+    // per-tab without persisting across sessions — so nothing is lost.
+    { urlPattern: /\/api\/questions/, handler: "NetworkOnly", options: { cacheName: "questions-api" } },
+    { urlPattern: /\/api\/flashcards/, handler: "NetworkOnly", options: { cacheName: "flashcards-api" } },
     { urlPattern: /\/api\/exam\/config/, handler: "NetworkOnly", options: { cacheName: "exam-config-api" } },
-    { urlPattern: /\/api\/flash-news/, handler: "StaleWhileRevalidate", options: { cacheName: "flash-news-api", expiration: { maxEntries: 16, maxAgeSeconds: 10 * 60 } } },
-    { urlPattern: /\/api\/dashboard-stats/, handler: "NetworkFirst", options: { cacheName: "dashboard-stats-api", expiration: { maxEntries: 32, maxAgeSeconds: 60 }, networkTimeoutSeconds: 5 } },
-    { urlPattern: /\/api\/study-plan/, handler: "StaleWhileRevalidate", options: { cacheName: "study-plan-api", expiration: { maxEntries: 16, maxAgeSeconds: 5 * 60 } } },
+    { urlPattern: /\/api\/flash-news/, handler: "NetworkOnly", options: { cacheName: "flash-news-api" } },
+    { urlPattern: /\/api\/dashboard-stats/, handler: "NetworkOnly", options: { cacheName: "dashboard-stats-api" } },
+    { urlPattern: /\/api\/study-plan/, handler: "NetworkOnly", options: { cacheName: "study-plan-api" } },
+    { urlPattern: /\/api\/mistakes/, handler: "NetworkOnly", options: { cacheName: "mistakes-api" } },
+    { urlPattern: /\/api\/bookmarks/, handler: "NetworkOnly", options: { cacheName: "bookmarks-api" } },
+    { urlPattern: /\/api\/notifications/, handler: "NetworkOnly", options: { cacheName: "notifications-api" } },
+    { urlPattern: /\/api\/vocab\//, handler: "NetworkOnly", options: { cacheName: "vocab-api" } },
+    { urlPattern: /\/api\/exam-history/, handler: "NetworkOnly", options: { cacheName: "exam-history-api" } },
     { urlPattern: /\.(?:png|jpg|jpeg|svg|webp|avif|ico)$/, handler: "CacheFirst", options: { cacheName: "images", expiration: { maxEntries: 128, maxAgeSeconds: 30 * 24 * 60 * 60 } } },
     { urlPattern: /^https:\/\/.*\.(woff2?|ttf|otf)$/, handler: "CacheFirst", options: { cacheName: "fonts", expiration: { maxEntries: 16, maxAgeSeconds: 365 * 24 * 60 * 60 } } },
   ],
@@ -61,6 +72,12 @@ const baseConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
   compress: true,
+  // Barrel imports (`@phosphor-icons/react` in ~90 files, `framer-motion`
+  // in ~20) resolve to per-module imports at build time, so tab code-splitting
+  // isn't defeated by a single giant icon/motion chunk.
+  experimental: {
+    optimizePackageImports: ["@phosphor-icons/react", "framer-motion"],
+  },
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "*.mux.com" },

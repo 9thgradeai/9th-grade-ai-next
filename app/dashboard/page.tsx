@@ -6,7 +6,7 @@ import { Suspense, useEffect } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import dynamic from "next/dynamic";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
-import { api } from "@/lib/services/api";
+import { api, invalidateCache } from "@/lib/services/api";
 import { TABS, type TabId } from "@/lib/data";
 import { Skeleton, SkeletonCard } from "@/components/ui/Skeleton";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
@@ -104,6 +104,11 @@ function TabSwitcher() {
       >
         <ErrorBoundary
           key={`eb-${activeTab}`}
+          resetKeys={[activeTab]}
+          // A crash may have been caused by a poisoned cache entry — drop it
+          // so "try again" refetches instead of re-rendering the same stale
+          // data into the same crash.
+          onReset={() => invalidateCache()}
           fallback={(_error, reset) => (
             <div className="glass-card rounded-2xl border border-red-500/20 p-8 text-center" role="alert">
               <p className="font-mono text-sm text-[var(--dashboard-danger)]">এই ট্যাব লোড করতে সমস্যা হয়েছে।</p>

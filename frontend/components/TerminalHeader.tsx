@@ -103,7 +103,7 @@ export default function TerminalHeader() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 pt-safe transition-[background-color,border-color,backdrop-filter,box-shadow] duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-[var(--z-sticky)] pt-safe transition-[background-color,border-color,backdrop-filter,box-shadow] duration-300 ${
         scrolled || isMobileMenuOpen
           ? "glass border-b border-white/10 shadow-[0_8px_32px_rgba(2,6,12,0.35)]"
           : "bg-transparent border-b border-transparent"

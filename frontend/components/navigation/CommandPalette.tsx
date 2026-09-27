@@ -71,7 +71,7 @@ export default function CommandPalette() {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-start justify-center px-4 pt-[14vh] pb-4" role="dialog" aria-modal="true" aria-label="Command palette">
+    <div className="fixed inset-0 z-[var(--z-modal)] flex items-start justify-center px-4 pt-[14vh] pb-4" role="dialog" aria-modal="true" aria-label="Command palette">
       <button aria-label="Close command palette" className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={close} />
       <div className="relative w-full max-w-[560px] overflow-hidden rounded-2xl border border-white/10 bg-[#0D0D0D] shadow-2xl">
         <div className="flex items-center gap-3 border-b border-white/10 px-4">

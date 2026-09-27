@@ -1,5 +1,3 @@
-"use client";
-
 import { streamChat, parseStreamedJson } from "./client";
 import type { AIIntent, SuggestedActionDto } from "./types";
 import type { AssistantResultDto } from "./types";

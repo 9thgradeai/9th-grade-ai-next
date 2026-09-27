@@ -28,6 +28,7 @@ import { useAuth as useAuthForDrawer } from "@/lib/auth-ctx";
 import LogoutButton from "@/components/dashboard/LogoutButton";
 import WorldMapBackdrop from "@/components/dashboard/WorldMapBackdrop";
 import { useT } from "@/lib/i18n";
+import { useLanguage, t as pickLang } from "@/lib/lang-ctx";
 
 // The voice tutor (speech-recognition stack) is only needed when launched —
 // keep it out of the critical dashboard bundle.
@@ -140,21 +141,22 @@ function EmailVerificationGate({ children }: { children: React.ReactNode }) {
 
 function GlobalEcosystemToggle() {
   const { ecosystem, setEcosystem } = useEcosystem();
+  const { lang } = useLanguage();
   return (
     <div
       className="flex items-center gap-1 sm:gap-1.5 bg-[var(--dashboard-surface-muted)] border border-[var(--dashboard-border-muted)] rounded-lg p-0.5 shrink-0"
       role="group"
-      aria-label="Exam ecosystem"
+      aria-label={pickLang(lang, "পরীক্ষা ইকোসিস্টেম", "Exam ecosystem")}
     >
       {(["BCS", "BANGLADESH_BANK"] as const).map((code) => (
         <button
           key={code}
           onClick={() => setEcosystem(code)}
           aria-pressed={ecosystem === code}
-          aria-label={code === "BCS" ? "BCS" : "বাংলাদেশ ব্যাংক"}
+          aria-label={code === "BCS" ? "BCS" : pickLang(lang, "বাংলাদেশ ব্যাংক", "Bangladesh Bank")}
           className={`min-h-[28px] sm:min-h-[30px] px-2 sm:px-2.5 py-1 text-[10px] sm:text-[11px] font-bold rounded-md transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] focus-visible:ring-offset-1 ${ecosystem === code ? "bg-[var(--dashboard-primary)] text-white shadow-sm" : "text-[var(--dashboard-text-secondary)] hover:text-[var(--dashboard-text-primary)] hover:bg-[var(--surface-hover)]"}`}
         >
-          {code === "BCS" ? "BCS" : "ব্যাংক"}
+          {code === "BCS" ? "BCS" : pickLang(lang, "ব্যাংক", "Bank")}
         </button>
       ))}
     </div>
@@ -165,7 +167,7 @@ function ShortcutsSheet({ open, onClose }: { open: boolean; onClose: () => void 
   const ref = useDialogA11y<HTMLDivElement>(open, onClose);
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-[85] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Keyboard shortcuts">
+    <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Keyboard shortcuts">
       <div className="absolute inset-0 backdrop-blur-sm" style={{ background: "var(--dashboard-overlay)" }} onClick={onClose} />
       <div ref={ref} tabIndex={-1} className="relative w-full max-w-md rounded-2xl border shadow-xl p-5" style={{ background: "var(--dashboard-surface-solid)", borderColor: "var(--dashboard-border-muted)" }}>
         <div className="flex items-center justify-between">
@@ -194,11 +196,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const activeLabel = TABS.find((t) => t.id === activeTab)?.label ?? "DASHBOARD";
 
-  const handleTabChange = (tab: TabId) => {
+  const handleTabChange = useCallback((tab: TabId) => {
     setActiveTab(tab);
     router.push(`/dashboard?tab=${tab}`);
     closeNavDrawer();
-  };
+    // setActiveTab is a module-stable store action; router/closeNavDrawer are
+    // stable across renders, so this callback identity never churns.
+  }, [router, closeNavDrawer, setActiveTab]);
 
   // Keyboard shortcuts: 1-9/0 to switch tabs, Cmd+K for command bar, ? for help
   useEffect(() => {
@@ -232,7 +236,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [shortcutsOpen]);
+  }, [shortcutsOpen, handleTabChange]);
 
   return (
     <DashboardThemeProvider>
@@ -244,7 +248,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             {/* Skip link — first focusable element for keyboard users */}
             <a
               href="#dashboard-content"
-              className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-emerald-500 focus:text-zinc-950 focus:font-mono focus:text-sm"
+              className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[var(--z-tooltip)] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-emerald-500 focus:text-zinc-950 focus:font-mono focus:text-sm"
             >
               {t("dashboard.skipToContent")}
             </a>
@@ -255,7 +259,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             {/* Tablet/Mobile Drawer — makes left tab sections fully visible on <lg */}
             {navDrawerOpen && (
               <div
-                className="fixed inset-0 z-50 lg:hidden"
+                className="fixed inset-0 z-[var(--z-modal)] lg:hidden"
                 role="dialog"
                 aria-modal="true"
                 aria-label="Navigation menu"
@@ -288,12 +292,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             {/* Main Column */}
             <div className="flex-1 min-w-0 flex flex-col h-full">
               {/* Fixed Top Header — academic premium */}
-              <header className="shrink-0 z-30 border-b pt-safe backdrop-blur-md" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}>
+              <header className="shrink-0 z-[var(--z-sticky)] border-b pt-safe backdrop-blur-md" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}>
                 <div className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 lg:px-6 h-14 lg:h-16 min-w-0">
                   {/* Hamburger — visible on tablet + mobile (<lg) to expose left tabs */}
                   <button
                     onClick={() => setNavDrawerOpen(true)}
-                    className="lg:hidden inline-flex items-center justify-center w-9 h-9 rounded-xl border shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                    className="lg:hidden inline-flex items-center justify-center w-10 h-10 rounded-xl border shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
                     style={{ borderColor: "var(--dashboard-border-muted)", background: "var(--dashboard-surface-muted)", color: "var(--dashboard-text-primary)" }}
                     aria-label="Open navigation"
                     aria-expanded={navDrawerOpen}
@@ -317,6 +321,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     type="button"
                     onClick={() => window.dispatchEvent(new Event("app:open-command"))}
                     aria-label="Search dashboard"
+                    aria-haspopup="dialog"
                     className="hidden sm:flex h-10 w-64 items-center gap-3 rounded-lg border px-3 text-sm text-[var(--dashboard-text-secondary)] bg-[var(--dashboard-surface-muted)] border-[var(--dashboard-border-muted)] hover:border-[var(--dashboard-primary)] transition-colors"
                   >
                     <MagnifyingGlass className="h-4 w-4 shrink-0" aria-hidden="true" />
@@ -327,9 +332,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
                   <div className="ml-auto flex items-center gap-1 sm:gap-1.5 min-w-0 shrink-0">
                     <GlobalEcosystemToggle />
-                    <button onClick={() => setShortcutsOpen(true)} aria-label="Keyboard shortcuts" className="hidden sm:inline-flex items-center justify-center w-8 h-8 rounded-lg border" style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-muted)", background: "var(--dashboard-surface-muted)" }}><Question className="w-4 h-4" /></button>
+                    <button onClick={() => setShortcutsOpen(true)} aria-label="Keyboard shortcuts" className="hidden sm:inline-flex items-center justify-center w-10 h-10 rounded-lg border" style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-muted)", background: "var(--dashboard-surface-muted)" }}><Question className="w-4 h-4" /></button>
                     <NotificationCenter />
-                    <ThemeToggle />
+                    {/* Header theme toggle hides below 400px to keep the row
+                        from overflowing on 320–360px screens — theme switching
+                        stays available in Settings. */}
+                    <span className="hidden min-[400px]:inline-flex"><ThemeToggle /></span>
                     <LanguageToggle />
                   </div>
                 </div>
@@ -338,7 +346,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               {/* Scrollable Content — isolated dashboard canvas. Transparent so
                   the ambient world map shows through the gutters; the shell
                   behind it keeps the base background color. */}
-              <main id="dashboard-content" className="relative z-[1] flex-1 min-h-0 overflow-y-auto overscroll-contain pb-[72px] lg:pb-8" style={{ background: "transparent" }}>
+              <main id="dashboard-content" className="relative z-[1] flex-1 min-h-0 overflow-y-auto overscroll-contain pb-[calc(var(--bottom-nav-h)+env(safe-area-inset-bottom,0px)+8px)] lg:pb-8" style={{ background: "transparent" }}>
                 <div className="max-w-[1360px] mx-auto p-4 sm:p-6 lg:p-8 min-w-0">
                   {children}
                 </div>

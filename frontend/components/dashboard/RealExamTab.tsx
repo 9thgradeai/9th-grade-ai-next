@@ -868,7 +868,7 @@ export default function RealExamTab() {
 
       <AnimatePresence>
         {exporting && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed bottom-6 right-6 z-50 glass-card rounded-xl border border-[var(--primary)]/30 px-4 py-3 flex items-center gap-2 shadow-2xl">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed bottom-6 right-6 z-[var(--z-toast)] glass-card rounded-xl border border-[var(--primary)]/30 px-4 py-3 flex items-center gap-2 shadow-2xl">
             <Spinner className="w-4 h-4 animate-spin text-[var(--dashboard-primary)]" />
             <span className="text-xs font-mono text-[var(--text-primary)]">PDF তৈরি হচ্ছে...</span>
           </motion.div>

@@ -597,7 +597,7 @@ export default function MockTestTab() {
     return (
       <div className="space-y-4">
         {/* Sticky header: timer + progress + submit */}
-          <div className="sticky top-0 z-50 -mx-1 px-1">
+          <div className="sticky top-0 z-[var(--z-sticky)] -mx-1 px-1">
             <div className="glass-card rounded-2xl border border-[var(--primary)]/30 px-4 py-3">
               <div className="flex items-center justify-between gap-3 flex-wrap">
                 <div className="flex items-center gap-2">
@@ -784,7 +784,7 @@ export default function MockTestTab() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 bg-[var(--overlay)] backdrop-blur-sm flex items-center justify-center p-4"
+              className="fixed inset-0 z-[var(--z-modal)] bg-[var(--overlay)] backdrop-blur-sm flex items-center justify-center p-4"
               onClick={() => setShowUnansweredConfirm(false)}
             >
               <motion.div

@@ -1,5 +1,3 @@
-"use client";
-
 // Low-level HTTP helpers for the AI service layer. All AI calls are
 // authenticated via cookies; errors are normalized to AIError.
 

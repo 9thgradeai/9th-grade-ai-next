@@ -29,8 +29,8 @@
 ## Authorization
 
 - Middleware guards `/dashboard` and `/login` based on cookie presence.
-- Protected API routes verify JWT via `getUserIdFromRequest()` and return `401` if invalid.
-- No role-based access control (RBAC) beyond `student`/`admin` in the User model (admin features not yet implemented).
+- Protected API routes verify JWT via `getUserIdFromRequest()` and return `401` if invalid. Database failures propagate as `500` (never masquerade as `401`) so outages are visible.
+- Roles: `student` / `admin` / `banned`. `BANNED` users are rejected at session resolution (`getSessionUser` returns `null`) and explicitly in `requireRole` (`403`), so bans take effect immediately even with an unexpired JWT.
 
 ## API Validation
 
@@ -42,12 +42,17 @@
 
 - Implemented in `backend/rate-limit.ts` (token buckets behind a pluggable
   `RateLimitStore`): login (per-IP + per-account hashed), register, refresh,
-  password change, AI endpoints (per-minute + daily quota with a DB-backed
+  password change, forgot-password and resend-verification (per-IP +
+  per-account hashed), AI endpoints (per-minute + daily quota with a DB-backed
   usage-ledger backstop), and graded submissions.
+- Client identity prefers platform-set headers (`cf-connecting-ip`,
+  `x-real-ip`) and takes the LAST `x-forwarded-for` entry (proxy-appended);
+  the spoofable leftmost entry is never trusted.
 - Limits are env-tunable (`RL_*` variables) — see `.env.local.example`.
 - Production MUST set `REDIS_URL` so counters are shared across serverless
-  instances (ADR-0009); on Redis outage requests fail open and the failure is
-  logged.
+  instances (ADR-0009); on Redis outage the fast store fails open and the
+  failure is logged, but the AI usage-ledger backstop fails CLOSED so cost
+  cannot run unbounded during a DB outage.
 
 ## CORS
 
@@ -72,8 +77,12 @@
 
 ## Logging
 
-- Errors logged to server console (`console.error`).
-- No structured logging or external log aggregation.
+- Non-operational (`500`) errors are logged server-side with their `cause`
+  chain (`toHttpResponse`); clients receive a generic message except in local
+  development (`NODE_ENV=development`), where message + stack are returned.
+  Staging must never receive internals.
+- Service catch blocks rethrow `InternalServerError(message, { cause })` so
+  on-call retains query context.
 
 ## Sensitive Information
 

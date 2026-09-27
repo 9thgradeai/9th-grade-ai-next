@@ -150,6 +150,57 @@ describe("useExamEngine", () => {
 
     addSpy.mockRestore();
   });
+
+  it("should guard beforeunload mid-exam (answered, not yet submitting)", () => {
+    const { result } = renderHook(() =>
+      useExamEngine({ ecosystem: "BCS" }),
+    );
+
+    const addSpy = vi.spyOn(window, "addEventListener");
+
+    act(() => {
+      result.current.selectAnswer(1, "A");
+    });
+
+    expect(addSpy).toHaveBeenCalledWith("beforeunload", expect.any(Function));
+
+    addSpy.mockRestore();
+  });
+
+  it("should keep selectAnswer referentially stable across answers", () => {
+    const { result } = renderHook(() =>
+      useExamEngine({ ecosystem: "BCS" }),
+    );
+
+    const first = result.current.selectAnswer;
+    act(() => {
+      result.current.selectAnswer(1, "A");
+    });
+    act(() => {
+      result.current.selectAnswer(2, "B");
+    });
+
+    expect(result.current.selectAnswer).toBe(first);
+    expect(result.current.answers).toEqual({ 1: "A", 2: "B" });
+  });
+
+  it("should submit immediately when answers land in the same tick (no stale ref)", () => {
+    const { result } = renderHook(() =>
+      useExamEngine({ ecosystem: "BCS" }),
+    );
+
+    const submitFn = vi.fn();
+    act(() => {
+      result.current.selectAnswer(1, "A");
+      result.current.selectAnswer(2, "B");
+      // Same tick as the answers: the ref is synced synchronously, so the
+      // unanswered-confirm modal must NOT appear.
+      result.current.handleSubmitRequest(2, submitFn);
+    });
+
+    expect(submitFn).toHaveBeenCalled();
+    expect(result.current.showUnansweredConfirm).toBe(false);
+  });
 });
 
 describe("formatTime", () => {

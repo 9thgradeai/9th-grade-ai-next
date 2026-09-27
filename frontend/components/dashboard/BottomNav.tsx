@@ -1,18 +1,33 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useState, useCallback } from "react";
 import type { ComponentType } from "react";
 import { TABS, BOTTOM_TAB_IDS, type TabId } from "@/lib/data";
 import { TAB_ICONS, type IconProps } from "@/lib/exam-ui";
 import { useDialogA11y } from "@/lib/use-dialog-a11y";
+import { useLanguage, t } from "@/lib/lang-ctx";
 import { DotsThreeVertical, X } from "@phosphor-icons/react";
 import LogoutButton from "./LogoutButton";
 
 // Primary tabs come from @/lib/data BOTTOM_TAB_IDS — do not hardcode a separate list.
-const BOTTOM_TABS: { id: TabId; icon: ComponentType<IconProps>; label: string; short: string }[] = BOTTOM_TAB_IDS.map((id) => {
+const SHORT_EN: Partial<Record<TabId, string>> = {
+  home: "Home",
+  practice: "Practice",
+  "question-bank": "Bank",
+  mistakes: "Mistakes",
+  progress: "Progress",
+};
+const BOTTOM_TABS: { id: TabId; icon: ComponentType<IconProps>; label: string; labelEn: string; short: string; shortEn: string }[] = BOTTOM_TAB_IDS.map((id) => {
   const meta = TABS.find((t) => t.id === id)!;
-  return { id, icon: TAB_ICONS[id], label: meta.bengali, short: meta.bengali === "প্রশ্নব্যাংক" ? "ব্যাংক" : meta.bengali === "ভুল বিশ্লেষণ" ? "ভুল" : meta.bengali };
+  return {
+    id,
+    icon: TAB_ICONS[id],
+    label: meta.bengali,
+    labelEn: meta.label,
+    short: meta.bengali === "প্রশ্নব্যাংক" ? "ব্যাংক" : meta.bengali === "ভুল বিশ্লেষণ" ? "ভুল" : meta.bengali,
+    shortEn: SHORT_EN[id] ?? meta.label,
+  };
 });
 
 interface BottomNavProps {
@@ -21,6 +36,8 @@ interface BottomNavProps {
 }
 
 export default function BottomNav({ activeTab, onChange }: BottomNavProps) {
+  const { lang } = useLanguage();
+  const shouldReduceMotion = useReducedMotion();
   const [moreOpen, setMoreOpen] = useState(false);
   const closeMore = useCallback(() => setMoreOpen(false), []);
   const sheetRef = useDialogA11y<HTMLDivElement>(moreOpen, closeMore);
@@ -37,7 +54,7 @@ export default function BottomNav({ activeTab, onChange }: BottomNavProps) {
   return (
     <>
       <nav
-        className="fixed bottom-0 left-0 right-0 z-40 border-t lg:hidden pb-safe backdrop-blur-md"
+        className="fixed bottom-0 left-0 right-0 z-[var(--z-sticky)] border-t lg:hidden pb-safe backdrop-blur-md min-h-[var(--bottom-nav-h)]"
         style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}
         aria-label="Mobile navigation"
       >
@@ -49,8 +66,8 @@ export default function BottomNav({ activeTab, onChange }: BottomNavProps) {
               <button
                 key={tab.id}
                 onClick={() => selectTab(tab.id)}
-                className="relative flex flex-col items-center justify-center gap-1 flex-1 min-h-[64px] py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
-                aria-label={tab.label}
+                className="relative flex flex-col items-center justify-center gap-1 flex-1 min-h-[var(--bottom-nav-h)] py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                aria-label={t(lang, tab.label, tab.labelEn)}
                 aria-current={active ? "page" : undefined}
               >
                 {active && (
@@ -58,22 +75,22 @@ export default function BottomNav({ activeTab, onChange }: BottomNavProps) {
                 )}
                 <Icon className="w-5 h-5" strokeWidth={active ? 2.3 : 1.9} style={{ color: active ? "var(--dashboard-primary)" : "var(--dashboard-text-secondary)" }} />
                 <span className="text-[10px] font-semibold leading-none" style={{ color: active ? "var(--dashboard-primary)" : "var(--dashboard-text-secondary)" }}>
-                  {tab.short}
+                  {t(lang, tab.short, tab.shortEn)}
                 </span>
               </button>
             );
           })}
           <button
             onClick={() => setMoreOpen(true)}
-            className="relative flex flex-col items-center justify-center gap-1 flex-1 min-h-[64px] py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
-            aria-label="More options"
+            className="relative flex flex-col items-center justify-center gap-1 flex-1 min-h-[var(--bottom-nav-h)] py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+            aria-label={t(lang, "আরও বিকল্প", "More options")}
             aria-haspopup="dialog"
             aria-expanded={moreOpen}
             style={{ color: isMoreActive ? "var(--dashboard-primary)" : "var(--dashboard-text-secondary)" }}
           >
             {isMoreActive && <span className="absolute top-0 w-8 h-0.5 rounded-full" style={{ background: "var(--dashboard-primary)" }} aria-hidden="true" />}
             <DotsThreeVertical className="w-5 h-5" strokeWidth={isMoreActive ? 2.2 : 1.9} />
-            <span className="text-[10px] font-semibold leading-none">আরও</span>
+            <span className="text-[10px] font-semibold leading-none">{t(lang, "আরও", "More")}</span>
           </button>
         </div>
       </nav>
@@ -84,20 +101,20 @@ export default function BottomNav({ activeTab, onChange }: BottomNavProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 lg:hidden"
+            transition={shouldReduceMotion ? { duration: 0 } : undefined}
+            className="fixed inset-0 z-[var(--z-modal)] lg:hidden"
             role="dialog"
             aria-modal="true"
-            aria-label="More navigation"
+            aria-label={t(lang, "আরও নেভিগেশন", "More navigation")}
           >
             <div className="absolute inset-0 backdrop-blur-sm" style={{ background: "var(--dashboard-overlay)" }} onClick={closeMore} />
             <motion.div
               ref={sheetRef}
-              role="document"
               tabIndex={-1}
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
-              transition={{ type: "spring", stiffness: 340, damping: 32 }}
+              transition={shouldReduceMotion ? { duration: 0 } : { type: "spring", stiffness: 340, damping: 32 }}
               className="absolute bottom-0 left-0 right-0 rounded-t-[20px] border-t shadow-2xl pb-safe max-h-[72vh] overflow-y-auto"
               style={{ background: "var(--dashboard-surface-solid)", borderColor: "var(--dashboard-border-muted)" }}
             >
@@ -105,8 +122,8 @@ export default function BottomNav({ activeTab, onChange }: BottomNavProps) {
                 <span className="w-9 h-1 rounded-full" style={{ background: "var(--dashboard-border-muted)" }} aria-hidden="true" />
               </div>
               <div className="flex items-center justify-between px-5 pb-3">
-                <h2 className="text-sm font-semibold" style={{ color: "var(--dashboard-text-primary)" }}>সকল সুবিধা</h2>
-                <button onClick={closeMore} className="p-2 rounded-lg" style={{ color: "var(--dashboard-text-muted)" }} aria-label="বন্ধ করুন">
+                <h2 className="text-sm font-semibold" style={{ color: "var(--dashboard-text-primary)" }}>{t(lang, "সকল সুবিধা", "All features")}</h2>
+                <button onClick={closeMore} className="p-2 rounded-lg" style={{ color: "var(--dashboard-text-muted)" }} aria-label={t(lang, "বন্ধ করুন", "Close")}>
                   <X className="w-5 h-5" />
                 </button>
               </div>

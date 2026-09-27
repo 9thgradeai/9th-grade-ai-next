@@ -30,7 +30,7 @@ export default function Toaster() {
     <div
       aria-live="polite"
       aria-label="Notifications"
-      className="pointer-events-none fixed inset-x-0 bottom-0 z-[60] flex flex-col items-center gap-2 px-4 pb-[calc(env(safe-area-inset-bottom)+5.5rem)] lg:pb-6 lg:items-end lg:right-4 lg:left-auto"
+      className="pointer-events-none fixed inset-x-0 bottom-0 z-[var(--z-toast)] flex flex-col items-center gap-2 px-4 pb-[calc(env(safe-area-inset-bottom)+5.5rem)] lg:pb-6 lg:items-end lg:right-4 lg:left-auto"
     >
       <AnimatePresence initial={false}>
         {toasts.map((toast) => {

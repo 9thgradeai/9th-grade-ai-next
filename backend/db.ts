@@ -29,7 +29,8 @@ function createPrismaClient(): PrismaClient {
   return client;
 }
 
-async function connectWithRetry(client: PrismaClient): Promise<void> {
+/** Manual connect with retry — call from health checks, never at import. */
+export async function connectWithRetry(client: PrismaClient): Promise<void> {
   let attempt = 0;
   while (attempt < MAX_RETRIES) {
     try {
@@ -50,31 +51,21 @@ async function connectWithRetry(client: PrismaClient): Promise<void> {
   }
 }
 
-export const prisma =
+export const prisma: PrismaClient =
   globalForPrisma.prisma ?? createPrismaClient();
 
-if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = prisma;
+// Always cache in globalThis so serverless function instances reuse the
+// client instead of fanning out new connections per invocation.
+globalForPrisma.prisma = prisma;
+
+// Do NOT $connect() at import time: Prisma lazy-connects on first query,
+// which keeps cold starts fast and avoids booting with a broken client.
+// Graceful-shutdown handlers only apply to long-lived Node servers, not
+// serverless runtimes where `process.on` leaks listeners per invocation.
+if (typeof process !== "undefined" && process.env.NEXT_RUNTIME !== "edge") {
+  const existing = (process as unknown as { __prismaHandlersBound?: boolean })
+    .__prismaHandlersBound;
+  if (!existing && process.env.NODE_ENV !== "production") {
+    (process as unknown as { __prismaHandlersBound?: boolean }).__prismaHandlersBound = true;
+  }
 }
-
-connectWithRetry(prisma).catch((error) => {
-  console.error("Failed to establish initial database connection:", error);
-});
-
-process.on("SIGINT", () => {
-  prisma.$disconnect()
-    .then(() => process.exit(0))
-    .catch((error) => {
-      console.error("Shutdown error:", error);
-      process.exit(1);
-    });
-});
-
-process.on("SIGTERM", () => {
-  prisma.$disconnect()
-    .then(() => process.exit(0))
-    .catch((error) => {
-      console.error("Shutdown error:", error);
-      process.exit(1);
-    });
-});

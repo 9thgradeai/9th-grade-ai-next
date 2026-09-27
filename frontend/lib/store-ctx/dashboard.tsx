@@ -55,14 +55,18 @@ function loadState(): DashboardState {
 // ── External store ─────────────────────────────────────────
 
 let storeState: DashboardState = defaultState;
-let hydrated = false;
 const listeners = new Set<() => void>();
 
+// Hydrate once at module evaluation (client only), NOT inside getSnapshot().
+// Reading localStorage in getSnapshot is a side effect in the snapshot path —
+// React may call it repeatedly (StrictMode double-render, concurrent reads),
+// which re-parses storage and can clobber in-memory updates made between
+// calls. Module init runs exactly once per JS instance.
+if (typeof window !== "undefined") {
+  storeState = loadState();
+}
+
 function getSnapshot(): DashboardState {
-  if (!hydrated && typeof window !== "undefined") {
-    storeState = loadState();
-    hydrated = true;
-  }
   return storeState;
 }
 function getServerSnapshot(): DashboardState {

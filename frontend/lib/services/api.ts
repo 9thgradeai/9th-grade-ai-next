@@ -1,5 +1,3 @@
-"use client";
-
 import type { Server } from "@/lib/types";
 
 // ── Constants ──────────────────────────────────────────────
@@ -13,13 +11,11 @@ const IDEMPOTENT_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 // ── Error class ────────────────────────────────────────────
 
 export class ApiError extends Error {
-  message: string;
   code: string;
   status: number;
 
   constructor(message: string, code = "UNKNOWN_ERROR", status = 500) {
     super(message);
-    this.message = message;
     this.code = code;
     this.status = status;
     this.name = "ApiError";
@@ -134,9 +130,7 @@ async function request<T>(
 
         const shouldRetry =
           attempt < retries &&
-          (response.status >= 500 ||
-            response.status === 408 ||
-            (typeof body.error === "string" && body.error.includes("Network")));
+          (response.status >= 500 || response.status === 408);
 
         if (shouldRetry) {
           const delay = getBackoffDelay(attempt);
@@ -177,55 +171,171 @@ async function request<T>(
   throw lastError ?? new ApiError("Request failed after retries.", "REQUEST_FAILED", 500);
 }
 
+/**
+ * Auth/session calls share the gateway: timeout, x-request-id, ApiError
+ * normalization, and opt-in retries for idempotent verbs. Mutations (login,
+ * register, logout) are never retried automatically.
+ */
+export function authGateway<T>(url: string, options: RequestOptions = {}): Promise<T> {
+  return request<T>(url, { credentials: "include", cache: "no-store", ...options });
+}
+
 // ── Read cache (stale-while-revalidate) ─────────────────────
 // GETs are cached in-memory for a short TTL. Within the TTL the cached value is
 // returned instantly (no refetch on every dashboard remount / tab switch); past
 // it we refetch and update the cache. On a network failure we fall back to the
 // last cached value instead of throwing, so the dashboard still renders offline
-// or during blips. Mutations never touch this cache.
+// or during blips.
+//
+// Bounds: the cache is a capped LRU (MAX_CACHE_ENTRIES) so long sessions on
+// low-end devices cannot grow it without limit. In-flight GETs are deduped so
+// rapid remounts/tab switches join one request instead of stampeding.
 
 const CACHE_TTL_MS = 15_000;
-const cache = new Map<string, { ts: number; data: unknown }>();
+const MAX_CACHE_ENTRIES = 100;
+const cache = new Map<string, { ts: number; ttlMs: number; data: unknown }>();
 // In-flight GET dedupe (notifications + rapid remounts join one request).
 const inflightGets = new Map<string, Promise<unknown>>();
 
-/** Clear cached GETs. Called on every mutation so toggles/bookmarks never render stale. */
+function cachePathKey(url: string): string {
+  // Cache key is origin + path + sorted query, so param order never forks
+  // entries and per-user data stays keyed by the full URL (cookies still
+  // gate the server response — this cache is per-tab memory only).
+  try {
+    const u = new URL(url, "http://local");
+    u.searchParams.sort();
+    return u.pathname + (u.search ? `?${u.searchParams.toString()}` : "");
+  } catch {
+    return url;
+  }
+}
+
+function cacheSet(key: string, entry: { ts: number; ttlMs: number; data: unknown }): void {
+  cache.delete(key); // re-insert to mark most-recently-used
+  cache.set(key, entry);
+  while (cache.size > MAX_CACHE_ENTRIES) {
+    const oldest = cache.keys().next().value;
+    if (oldest === undefined) break;
+    cache.delete(oldest);
+  }
+}
+
+/** Clear cached GETs. With a prefix, only entries under that path are dropped
+ * (e.g. a bookmark toggle invalidates `/api/bookmarks*`, not the whole
+ * dashboard). Without a prefix the entire cache is cleared. */
 export function invalidateCache(prefix?: string): void {
   if (!prefix) {
     cache.clear();
     return;
   }
+  const norm = cachePathKey(prefix);
   for (const key of [...cache.keys()]) {
-    if (key.startsWith(prefix) || key.includes(prefix)) cache.delete(key);
+    if (key === norm || key.startsWith(norm.endsWith("/") ? norm : `${norm}/`) || key.startsWith(`${norm}?`)) {
+      cache.delete(key);
+    }
+  }
+}
+
+/** Derive the invalidation scope for a mutation URL: `/api/<resource>` —
+ * `/api/notifications/5/read` → `/api/notifications`,
+ * `/api/study-plan/tasks/3/toggle` → `/api/study-plan`. */
+function mutationScope(url: string): string {
+  try {
+    const u = new URL(url, "http://local");
+    const segs = u.pathname.split("/").filter(Boolean);
+    return segs.length >= 2 ? `/${segs[0]}/${segs[1]}` : u.pathname;
+  } catch {
+    return url;
   }
 }
 
 export type CachedMeta = { stale: boolean; fetchedAt: number | null };
 
+/**
+ * Envelope assertion for gateway reads. The gateway throws on HTTP errors,
+ * but a 200 with a drifted shape (`{ stat }` vs `{ stats }`) would otherwise
+ * unwrap to `undefined` and crash a tab far from the cause. Fail fast with a
+ * diagnosable INVALID_RESPONSE instead.
+ */
+function envelope<T>(data: unknown, key: string): T {
+  if (!data || typeof data !== "object" || !(key in data)) {
+    throw new ApiError(
+      `Malformed response: missing "${key}".`,
+      "INVALID_RESPONSE",
+      500,
+    );
+  }
+  return (data as Record<string, T>)[key];
+}
+
+/** SRS review state returned by POST /api/flashcards/review (mirrors
+ * submitFlashcardReview in backend/services/flashcards.ts; dates arrive as
+ * ISO strings over JSON). */
+export type FlashcardReviewState = {
+  flashcardId: number;
+  nextReview: string;
+  interval: number;
+  easeFactor: number;
+  repetitions: number;
+  lapses: number;
+};
+
+/** Result of POST /api/vocab/review (mirrors reviewVocabWord: SM-2 progress
+ * plus the reviewed word). */
+export type VocabReviewResult = {
+  progress: {
+    status: string;
+    ease: number;
+    interval: number;
+    repetitions: number;
+    nextReview: string;
+    totalReviews: number;
+    correctCount: number;
+  };
+  word: { id: number; word: string };
+};
+
 async function cachedGet<T>(
   url: string,
   options: RequestOptions = {},
+  ttlMs: number = CACHE_TTL_MS,
 ): Promise<T> {
-  const cached = cache.get(url);
-  const fresh = cached && Date.now() - cached.ts < CACHE_TTL_MS;
+  const key = cachePathKey(url);
+  const cached = cache.get(key);
+  const fresh = cached && Date.now() - cached.ts < cached.ttlMs;
 
   if (fresh) {
+    // Touch for LRU recency.
+    cache.delete(key);
+    cache.set(key, cached);
     return cached.data as T;
   }
 
-  try {
-    const data = await request<T>(url, options);
-    cache.set(url, { ts: Date.now(), data });
-    return data;
-  } catch (error) {
-    if (cached) {
-      return cached.data as T;
+  // Join an in-flight request for the same key instead of stampeding.
+  const inflight = inflightGets.get(key);
+  if (inflight) return inflight as Promise<T>;
+
+  const p = (async (): Promise<T> => {
+    try {
+      const data = await request<T>(url, options);
+      cacheSet(key, { ts: Date.now(), ttlMs, data });
+      return data;
+    } catch (error) {
+      if (cached) {
+        return cached.data as T;
+      }
+      throw error;
+    } finally {
+      inflightGets.delete(key);
     }
-    throw error;
-  }
+  })();
+  inflightGets.set(key, p);
+  return p;
 }
 
-/** JSON mutation helper — sets Content-Type, serializes the body, never retried. */
+/** JSON mutation helper — sets Content-Type, serializes the body, never retried.
+ * On success only the mutation's own scope (e.g. `/api/bookmarks`) is
+ * invalidated — unrelated cached tabs keep serving instead of thundering. */
 function mutate<T>(
   url: string,
   method: string,
@@ -238,9 +348,9 @@ function mutate<T>(
       ? { body: JSON.stringify(body), headers: { "Content-Type": "application/json" } }
       : {}),
   });
-  // Mutations invalidate the read cache so subsequent cachedGet() refetches
-  // instead of serving pre-mutation data as fresh (bookmarks, tasks, notifs).
-  void p.then(() => invalidateCache()).catch(() => {});
+  // Mutations invalidate their own read scope so subsequent cachedGet()
+  // refetches instead of serving pre-mutation data as fresh.
+  void p.then(() => invalidateCache(mutationScope(url))).catch(() => {});
   return p;
 }
 
@@ -377,16 +487,16 @@ export const api = {
     return cachedGet<{ flashcards: Server.FlashcardDTO[] }>(`/api/flashcards${qs}`).then((d) => d.flashcards);
   },
 
-  reviewFlashcard: (flashcardId: number, rating: 0 | 1 | 2 | 3): Promise<unknown> =>
-    request<{ state: unknown }>("/api/flashcards/review", {
+  reviewFlashcard: (flashcardId: number, rating: 0 | 1 | 2 | 3): Promise<FlashcardReviewState> =>
+    request<{ state: FlashcardReviewState }>("/api/flashcards/review", {
       method: "POST",
       ...AUTH_FETCH_INIT,
       body: JSON.stringify({ flashcardId, rating }),
       headers: { "Content-Type": "application/json" },
-    }).then((d) => d.state),
+    }).then((d) => envelope<FlashcardReviewState>(d, "state")),
 
   studyPlan: (): Promise<Server.StudyTaskDTO[]> =>
-    cachedGet<{ tasks: Server.StudyTaskDTO[] }>("/api/study-plan").then((d) => d.tasks),
+    cachedGet<{ tasks: Server.StudyTaskDTO[] }>("/api/study-plan").then((d) => envelope<Server.StudyTaskDTO[]>(d, "tasks")),
 
   dailyQuiz: (ecosystem?: string): Promise<Server.DailyQuizDTO | null> => {
     const qs = ecosystem ? `?ecosystem=${encodeURIComponent(ecosystem)}` : "";
@@ -403,14 +513,10 @@ export const api = {
     if (opts?.type) params.set("type", opts.type);
     const qs = params.toString();
     const url = `/api/notifications${qs ? `?${qs}` : ""}`;
-    // Dedupe rapid remounts/tab switches: join the in-flight request.
-    const inflight = inflightGets.get(url);
-    if (inflight) return inflight as Promise<{ notifications: Server.NotificationDTO[]; total: number; nextCursor: number | null; unreadCount: number }>;
-    const p = request<{ notifications: Server.NotificationDTO[]; total: number; nextCursor: number | null; unreadCount: number }>(url).finally(() => {
-      inflightGets.delete(url);
-    });
-    inflightGets.set(url, p);
-    return p;
+    // Unified on cachedGet with ttl 0: no caching (same freshness as before),
+    // but rapid remounts join one in-flight request and failures fall back to
+    // the last value instead of blanking the bell.
+    return cachedGet<{ notifications: Server.NotificationDTO[]; total: number; nextCursor: number | null; unreadCount: number }>(url, {}, 0);
   },
 
   markNotificationRead: (id: number): Promise<{ read: boolean }> =>
@@ -436,14 +542,14 @@ export const api = {
 
   dashboardStats: (days?: number): Promise<Server.DashboardStatsDTO> => {
     const suffix = days && days > 7 ? `?days=${days}` : "";
-    return cachedGet<{ stats: Server.DashboardStatsDTO }>(`/api/dashboard-stats${suffix}`).then((d) => d.stats);
+    return cachedGet<{ stats: Server.DashboardStatsDTO }>(`/api/dashboard-stats${suffix}`).then((d) => envelope<Server.DashboardStatsDTO>(d, "stats"));
   },
 
   preparationIntelligence: (opts?: { window?: number }): Promise<Server.PreparationIntelligenceDTO> => {
     const suffix = opts?.window ? `?window=${opts.window}` : "";
     return request<{ intelligence: Server.PreparationIntelligenceDTO }>(
       `/api/preparation-intelligence${suffix}`,
-    ).then((d) => d.intelligence);
+    ).then((d) => envelope<Server.PreparationIntelligenceDTO>(d, "intelligence"));
   },
 
   /**
@@ -459,7 +565,7 @@ export const api = {
   ): Promise<Partial<Server.PreparationIntelligenceDTO>> =>
     cachedGet<{ intelligence: Partial<Server.PreparationIntelligenceDTO> }>(
       `/api/preparation-intelligence?scope=${scope}`,
-    ).then((d) => d.intelligence),
+    ).then((d) => envelope<Partial<Server.PreparationIntelligenceDTO>>(d, "intelligence")),
 
   examSchedule: (): Promise<Server.ExamScheduleDTO[]> =>
     cachedGet<{ exams: Server.ExamScheduleDTO[] }>("/api/exam-schedule").then((d) => d.exams),
@@ -476,7 +582,7 @@ export const api = {
 
   /** Fetch user's exam history (past attempts + upcoming exams). */
   examHistory: (): Promise<Server.ExamHistoryDTO> =>
-    cachedGet<{ history: Server.ExamHistoryDTO }>("/api/exam-history").then((d) => d.history),
+    cachedGet<{ history: Server.ExamHistoryDTO }>("/api/exam-history").then((d) => envelope<Server.ExamHistoryDTO>(d, "history")),
 
   /** Fetch available exam papers for real exam (offline PDF). */
   examPapers: (): Promise<Array<{
@@ -645,7 +751,7 @@ export const api = {
     cachedGet<{ documents: Server.DocumentDTO[] }>("/api/documents").then((d) => d.documents),
 
   bookmarks: (): Promise<number[]> =>
-    cachedGet<{ bookmarked: number[] }>("/api/bookmarks").then((d) => d.bookmarked),
+    cachedGet<{ bookmarked: number[] }>("/api/bookmarks").then((d) => envelope<number[]>(d, "bookmarked")),
 
   toggleBookmark: (questionId: number): Promise<{ bookmarked: boolean }> =>
     mutate("/api/bookmarks", "POST", { questionId }),
@@ -732,8 +838,8 @@ export const api = {
   },
   vocabStats: (): Promise<{ total: number; mastered: number; learning: number; due: number; reviewed: number }> =>
     cachedGet<{ total: number; mastered: number; learning: number; due: number; reviewed: number }>("/api/vocab/stats").then((d) => d),
-  reviewVocab: (wordId: number, rating: number): Promise<unknown> =>
-    request("/api/vocab/review", { method: "POST", ...AUTH_FETCH_INIT, body: JSON.stringify({ wordId, rating }), headers: { "Content-Type": "application/json" } }),
+  reviewVocab: (wordId: number, rating: number): Promise<VocabReviewResult> =>
+    request<VocabReviewResult>("/api/vocab/review", { method: "POST", ...AUTH_FETCH_INIT, body: JSON.stringify({ wordId, rating }), headers: { "Content-Type": "application/json" } }),
   vocabDaily: (): Promise<{ wordsReviewed: number; totalReviewsToday: number; correctToday: number; streak: number }> =>
     cachedGet<{ wordsReviewed: number; totalReviewsToday: number; correctToday: number; streak: number }>("/api/vocab/daily").then((d) => d),
   vocabQuiz: (params?: { count?: number; difficulty?: string }): Promise<Server.VocabQuizWordDTO[]> => {

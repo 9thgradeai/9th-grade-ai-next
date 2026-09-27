@@ -572,8 +572,7 @@ export function validateQuestionSearchParams(params: URLSearchParams): QuestionS
   return filters;
 }
 
-export function validatePagination(params: URLSearchParams): PaginationParams {
-  let page = 1;
+export function validatePagination(params: URLSearchParams): PaginationParams {  let page = 1;
   let limit = 20;
 
   const pageParam = params.get("page");
@@ -596,4 +595,28 @@ export function validatePagination(params: URLSearchParams): PaginationParams {
   }
 
   return { page, limit };
+}
+
+/**
+ * Admin list pagination + search. Non-numeric `page`/`limit` (NaN) used to
+ * flow into Prisma `skip`/`take` as NaN → 500. Now rejected as 400, and
+ * `search` is length-capped so unbounded input can't hit a LIKE query.
+ */
+export function parseAdminListParams(url: URL): {
+  page: number;
+  limit: number;
+  search: string;
+} {
+  const rawPage = url.searchParams.get("page") ?? "1";
+  const rawLimit = url.searchParams.get("limit") ?? "20";
+  const page = Number(rawPage);
+  const limit = Number(rawLimit);
+  if (!Number.isInteger(page) || page < 1) {
+    throw new ValidationError("page must be a positive integer.");
+  }
+  if (!Number.isInteger(limit) || limit < 1 || limit > 100) {
+    throw new ValidationError("limit must be an integer between 1 and 100.");
+  }
+  const search = (url.searchParams.get("search") ?? "").slice(0, 100);
+  return { page, limit, search };
 }

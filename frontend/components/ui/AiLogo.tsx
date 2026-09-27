@@ -1,5 +1,3 @@
-"use client";
-
 // 9Th-Grade AI assistant logo — "The Ninth Signal" (নব-তারা / Navotara).
 //
 // A bespoke mark drawn from the product's own identity instead of a generic

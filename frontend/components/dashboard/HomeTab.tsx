@@ -682,7 +682,7 @@ export default function HomeTab() {
       {shortcutsOpen &&
         createPortal(
           <div
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4"
             style={{ background: "color-mix(in srgb, black 55%, transparent)" }}
             onClick={closeShortcuts}
           >,

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { AppError, toHttpResponse } from "~backend/errors";
 import { requestPasswordReset } from "~backend/services/user";
-import { checkRateLimit, getRateLimitKey } from "~backend/rate-limit";
+import { assertAccountAllowed } from "~backend/rate-limit";
 import { getRequestId, startTiming, applySecurityHeaders, assertSameOrigin } from "../../_middleware";
 
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
@@ -12,12 +12,10 @@ export async function POST(request: Request) {
 
   try {
     assertSameOrigin(request);
-    if (!(await checkRateLimit(getRateLimitKey(request, "auth:forgot"), 10, 60_000))) {
-      throw new AppError(429, "Too many requests. Please try again later.", "RATE_LIMIT_EXCEEDED");
-    }
-
     const body = await request.json().catch(() => ({}));
     const email = typeof body?.email === "string" ? body.email.trim().toLowerCase() : "";
+    // Per-IP + per-account buckets: rotating IPs must not spam one mailbox.
+    await assertAccountAllowed(request, "auth:forgot", email || "invalid", 10, 60_000);
     if (!EMAIL_RE.test(email)) {
       throw new AppError(400, "A valid email is required.", "INVALID_EMAIL");
     }

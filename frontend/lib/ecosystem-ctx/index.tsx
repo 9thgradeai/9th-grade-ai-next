@@ -43,6 +43,11 @@ function writeEcosystem(eco: ExamEcosystemCode) {
 /**
  * Provides the active exam ecosystem (BCS / Bangladesh Bank) across the
  * dashboard. Persists to localStorage and syncs via storage events.
+ *
+ * NOTE: this is the API-scoping code (passed to examConfig/dailyQuiz/etc.),
+ * NOT the dashboard store's `examContext` (a category slug like "bcs" used
+ * by ExamSwitcher as UI preparation context). The two are intentionally
+ * separate — do not merge them.
  */
 export function EcosystemProvider({ children }: { children: React.ReactNode }) {
   const [ecosystem, setEcosystemState] = useState<ExamEcosystemCode>(readEcosystem);

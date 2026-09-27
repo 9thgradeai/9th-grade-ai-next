@@ -1,5 +1,3 @@
-"use client";
-
 import { streamChat, parseStreamedJson } from "./client";
 import type { SolverResultDto } from "./types";
 

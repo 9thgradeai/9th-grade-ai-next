@@ -99,7 +99,7 @@ export default function PracticeDrillOverlay() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[80] flex items-center justify-center p-4 sm:p-6"
+          className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4 sm:p-6"
           role="dialog"
           aria-modal="true"
           aria-label="AI প্র্যাকটিস সেশন"

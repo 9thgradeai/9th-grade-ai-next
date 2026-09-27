@@ -26,7 +26,7 @@ export type UserRecord = {
   handle: string;
   passwordHash: string;
   tokenVersion: number;
-  role: "student" | "admin";
+  role: "student" | "admin" | "banned";
   emailVerified: boolean;
   onboarded: boolean;
   createdAt: string;
@@ -96,7 +96,7 @@ export function toUserRecord(u: RawUser): UserRecord {
     handle: u.handle,
     passwordHash: u.passwordHash,
     tokenVersion: u.tokenVersion,
-    role: u.role === "ADMIN" ? "admin" : "student",
+    role: u.role === "ADMIN" ? "admin" : u.role === "BANNED" ? "banned" : "student",
     emailVerified: u.emailVerified,
     onboarded: u.onboarded,
     createdAt: u.createdAt.toISOString(),
@@ -115,8 +115,8 @@ export async function findUserByEmail(email: string): Promise<UserRecord | null>
     const u = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
     if (!u) return null;
     return toUserRecord(u);
-  } catch {
-    throw new InternalServerError("Failed to fetch user by email");
+  } catch (error) {
+    throw new InternalServerError("Failed to fetch user by email", { cause: error });
   }
 }
 
@@ -142,6 +142,10 @@ export async function createUser({
       (err as { code?: string }).code === "P2002";
 
     let u;
+    // Mint ONE verification token: store its hash, email its raw value.
+    // Previously two independent tokens were minted (one stored, one emailed)
+    // so verification could never succeed when email was configured.
+    const pendingVerify = hasEmailTransport() ? makeToken() : null;
     try {
       u = await prisma.$transaction(async (tx) => {
         const created = await tx.user.create({
@@ -152,8 +156,8 @@ export async function createUser({
             passwordHash: await hash(password, 10),
             role: "STUDENT",
             emailVerified: !hasEmailTransport(),
-            emailVerifyToken: hasEmailTransport() ? makeToken()?.hash ?? null : null,
-            emailVerifyExpires: hasEmailTransport()
+            emailVerifyToken: pendingVerify ? pendingVerify.hash : null,
+            emailVerifyExpires: pendingVerify
               ? new Date(Date.now() + VERIFY_TTL_MS)
               : null,
           },
@@ -168,7 +172,7 @@ export async function createUser({
       throw err;
     }
 
-    const verify = hasEmailTransport() ? makeToken() : null;
+    const verify = pendingVerify;
     if (origin && verify) {
       const link = `${origin}/verify-email?token=${verify.raw}`;
       const { sent } = await sendEmail({
@@ -184,7 +188,7 @@ export async function createUser({
     return toUserRecord(u);
   } catch (error) {
     if (error instanceof AppError) throw error;
-    throw new InternalServerError("Failed to create user");
+    throw new InternalServerError("Failed to create user", { cause: error });
   }
 }
 
@@ -253,7 +257,7 @@ export async function findOrCreateGoogleUser(profile: {
     return toUserRecord(created);
   } catch (error) {
     if (error instanceof AppError) throw error;
-    throw new InternalServerError("Failed to sign in with Google");
+    throw new InternalServerError("Failed to sign in with Google", { cause: error });
   }
 }
 
@@ -291,37 +295,33 @@ export async function verifyPassword(hashStr: string, plain: string): Promise<bo
  */
 export const DUMMY_PASSWORD_HASH = "$2b$10$mfEU02aBWld.H0jui8HgCuZz9R1S7WV8QTsnKc3JsxZkLjC4WbMCK";
 
-/** Resolve the authenticated user's id from the request cookies. */
+/** Resolve the authenticated user's id from the request cookies.
+ * Returns null only for missing/invalid sessions. Database failures propagate
+ * as 500s (via toHttpResponse) instead of masquerading as 401s, so outages
+ * are visible instead of looking like mass logouts. */
 export async function getUserIdFromRequest(
   req: Request,
 ): Promise<string | null> {
-  try {
-    // Delegates to getSessionUser so every session check (JWT signature,
-    // existence, tokenVersion) stays in one place.
-    const user = await getSessionUser(req);
-    return user?.id ?? null;
-  } catch {
-    return null;
-  }
+  // Delegates to getSessionUser so every session check (JWT signature,
+  // existence, tokenVersion) stays in one place.
+  const user = await getSessionUser(req);
+  return user?.id ?? null;
 }
 
-export type AuthedUser = { id: string; email: string; role: "student" | "admin" };
+export type AuthedUser = { id: string; email: string; role: "student" | "admin" | "banned" };
 
 /** Resolve the authenticated user (id + role) from the request cookies. */
 export async function getAuthedUser(req: Request): Promise<AuthedUser | null> {
-  try {
-    // Delegates to getSessionUser so every session check stays in one place.
-    const user = await getSessionUser(req);
-    if (!user) return null;
-    return { id: user.id, email: user.email, role: user.role };
-  } catch {
-    return null;
-  }
+  // Delegates to getSessionUser so every session check stays in one place.
+  const user = await getSessionUser(req);
+  if (!user) return null;
+  return { id: user.id, email: user.email, role: user.role };
 }
 
 /**
  * Gate for admin-only surfaces. Throws UnauthorizedError (401) when no valid
  * session exists and ForbiddenError (403) when the session lacks the role.
+ * Banned users are always rejected, even if "banned" were passed in roles.
  * Returns the authenticated user on success.
  */
 export async function requireRole(
@@ -331,6 +331,9 @@ export async function requireRole(
   const user = await getAuthedUser(req);
   if (!user) {
     throw new UnauthorizedError("Authentication required");
+  }
+  if (user.role === "banned") {
+    throw new ForbiddenError("This account has been banned.");
   }
   if (!roles.includes(user.role)) {
     throw new ForbiddenError(`Requires one of: ${roles.join(", ")}`);
@@ -345,8 +348,8 @@ export async function getBookmarkedQuestionIds(userId: string): Promise<number[]
       select: { questionId: true },
     });
     return rows.map((r) => r.questionId);
-  } catch {
-    throw new InternalServerError("Failed to fetch bookmarks");
+  } catch (error) {
+    throw new InternalServerError("Failed to fetch bookmarks", { cause: error });
   }
 }
 
@@ -364,8 +367,8 @@ export async function toggleBookmark(
     }
     await prisma.bookmark.create({ data: { userId, questionId } });
     return { bookmarked: true };
-  } catch {
-    throw new InternalServerError("Failed to toggle bookmark");
+  } catch (error) {
+    throw new InternalServerError("Failed to toggle bookmark", { cause: error });
   }
 }
 
@@ -392,7 +395,7 @@ export async function toggleStudyTask(
     });
   } catch (error) {
     if (error instanceof AppError) throw error;
-    throw new InternalServerError("Failed to toggle study task");
+    throw new InternalServerError("Failed to toggle study task", { cause: error });
   }
 }
 
@@ -401,8 +404,8 @@ export async function findUserById(userId: string): Promise<UserRecord | null> {
     const u = await prisma.user.findUnique({ where: { id: userId } });
     if (!u) return null;
     return toUserRecord(u);
-  } catch {
-    throw new InternalServerError("Failed to fetch user");
+  } catch (error) {
+    throw new InternalServerError("Failed to fetch user", { cause: error });
   }
 }
 
@@ -422,7 +425,7 @@ export async function updateUserProfile(
     return toUserRecord(u);
   } catch (error) {
     if (error instanceof AppError) throw error;
-    throw new InternalServerError("Failed to update profile");
+    throw new InternalServerError("Failed to update profile", { cause: error });
   }
 }
 
@@ -456,7 +459,7 @@ export async function changeUserPassword(
     return { tokenVersion };
   } catch (error) {
     if (error instanceof AppError) throw error;
-    throw new InternalServerError("Failed to change password");
+    throw new InternalServerError("Failed to change password", { cause: error });
   }
 }
 
@@ -478,7 +481,7 @@ export async function revokeAllSessions(userId: string): Promise<void> {
     });
   } catch (error) {
     if (error instanceof AppError) throw error;
-    throw new InternalServerError("Failed to revoke sessions");
+    throw new InternalServerError("Failed to revoke sessions", { cause: error });
   }
 }
 
@@ -490,7 +493,7 @@ export async function deleteUserAccount(userId: string): Promise<void> {
     await prisma.user.delete({ where: { id: userId } });
   } catch (error) {
     if (error instanceof AppError) throw error;
-    throw new InternalServerError("Failed to delete account");
+    throw new InternalServerError("Failed to delete account", { cause: error });
   }
 }
 
@@ -534,7 +537,7 @@ export async function requestPasswordReset(
     return {};
   } catch (error) {
     if (error instanceof AppError) throw error;
-    throw new InternalServerError("Failed to request password reset");
+    throw new InternalServerError("Failed to request password reset", { cause: error });
   }
 }
 
@@ -571,7 +574,7 @@ export async function resetPassword(token: string, newPassword: string): Promise
     });
   } catch (error) {
     if (error instanceof AppError) throw error;
-    throw new InternalServerError("Failed to reset password");
+    throw new InternalServerError("Failed to reset password", { cause: error });
   }
 }
 
@@ -718,7 +721,7 @@ export async function completeOnboarding(
     return toUserRecord(u);
   } catch (error) {
     if (error instanceof AppError) throw error;
-    throw new InternalServerError("Failed to save onboarding");
+    throw new InternalServerError("Failed to save onboarding", { cause: error });
   }
 }
 

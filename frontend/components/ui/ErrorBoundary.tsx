@@ -1,14 +1,26 @@
 "use client";
 
 import { Component, ReactNode } from "react";
+import { captureException } from "@sentry/nextjs";
 
 interface ErrorBoundaryProps {
   children: ReactNode;
   fallback?: (error: Error, reset: () => void) => ReactNode;
+  /** Remount (clear the error) when any key changes — e.g. activeTab. */
+  resetKeys?: unknown[];
+  /** Runs on retry (after the error clears) — use to refetch, otherwise the
+   * retry re-renders the same crashed tree against the same stale cache. */
+  onReset?: () => void;
 }
 
 interface ErrorBoundaryState {
   error: Error | null;
+}
+
+function keysChanged(prev: unknown[] | undefined, next: unknown[] | undefined): boolean {
+  if (prev === next) return false;
+  if (!prev || !next || prev.length !== next.length) return true;
+  return prev.some((k, i) => !Object.is(k, next[i]));
 }
 
 export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
@@ -19,11 +31,29 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   }
 
   componentDidCatch(error: Error, info: { componentStack: string }) {
-    console.error("[ErrorBoundary]", error, info.componentStack);
+    // Client crashes previously vanished into console.error — forward to
+    // Sentry so tab crashes are actually visible on-call.
+    try {
+      captureException(error, {
+        contexts: { react: { componentStack: info.componentStack } },
+      });
+    } catch {
+      // Reporting must never break the fallback UI.
+    }
+    // eslint-disable-next-line no-restricted-globals -- NODE_ENV inlined by Next.js at build time
+    if (process.env.NODE_ENV === "development") {
+      console.error("[ErrorBoundary]", error, info.componentStack);
+    }  }
+
+  componentDidUpdate(prevProps: ErrorBoundaryProps) {
+    if (this.state.error && keysChanged(prevProps.resetKeys, this.props.resetKeys)) {
+      this.reset();
+    }
   }
 
   reset = () => {
     this.setState({ error: null });
+    this.props.onReset?.();
   };
 
   render() {

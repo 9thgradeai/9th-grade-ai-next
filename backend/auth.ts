@@ -41,6 +41,15 @@ const SESSION_COOKIE = "auth_token";
 // Max concurrent sessions per user
 const MAX_CONCURRENT_SESSIONS = 5;
 
+// Session lifetimes. Standard sessions live 7 days; "remember me" sessions
+// live 30 days (JWT exp + cookie + session-list window must ALL agree —
+// previously the cookie said 30d while the JWT said 7d, so remember-me users
+// died on day 7 with a confusing failure). The session-list prune window
+// covers the longest lifetime; JWT exp remains the real gate for short ones.
+export const SESSION_DURATION_MS = 7 * 24 * 60 * 60 * 1000;
+export const REMEMBER_SESSION_MS = 30 * 24 * 60 * 60 * 1000;
+const SESSION_PRUNE_MS = REMEMBER_SESSION_MS;
+
 // Session metadata stored in JWT and user.sessions JSON
 type SessionMeta = {
   id: string;
@@ -52,8 +61,15 @@ type SessionMeta = {
 function parseSessions(json: unknown): SessionMeta[] {
   if (!json) return [];
   try {
-    const arr = JSON.parse(json as string);
-    return Array.isArray(arr) ? arr : [];
+    // Prisma returns Json columns already parsed (array/object), not a string.
+    // Accept all three shapes; anything else resolves to [] (no sessions).
+    const arr: unknown =
+      typeof json === "string" ? JSON.parse(json) : json;
+    if (!Array.isArray(arr)) return [];
+    return arr.filter(
+      (s): s is SessionMeta =>
+        !!s && typeof s === "object" && typeof (s as SessionMeta).id === "string",
+    );
   } catch {
     return [];
   }
@@ -68,37 +84,43 @@ function serializeSessions(sessions: SessionMeta[]): string {
  * Returns the updated session list and the new session ID.
  */
 async function addUserSession(userId: string, session: SessionMeta): Promise<SessionMeta[]> {
-  const user = await prisma.user.findUnique({ where: { id: userId }, select: { sessions: true } });
-  const sessions = parseSessions(user?.sessions ?? "[]");
+  // Atomic read-modify-write inside a transaction so concurrent logins
+  // cannot clobber each other's sessions or bypass the concurrency cap.
+  return prisma.$transaction(async (tx) => {
+    const user = await tx.user.findUnique({ where: { id: userId }, select: { sessions: true } });
+    const sessions = parseSessions(user?.sessions ?? "[]");
 
-  // Remove expired sessions (> 7 days)
-  const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
-  const active = sessions.filter((s) => new Date(s.createdAt).getTime() > sevenDaysAgo);
+    // Remove expired sessions (older than the longest supported lifetime)
+    const cutoff = Date.now() - SESSION_PRUNE_MS;
+    const active = sessions.filter((s) => new Date(s.createdAt).getTime() > cutoff);
 
-  // If at limit, remove oldest
-  if (active.length >= MAX_CONCURRENT_SESSIONS) {
-    active.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
-    active.shift(); // remove oldest
-  }
+    // If at limit, remove oldest
+    if (active.length >= MAX_CONCURRENT_SESSIONS) {
+      active.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+      active.shift(); // remove oldest
+    }
 
-  active.push(session);
-  await prisma.user.update({
-    where: { id: userId },
-    data: { sessions: serializeSessions(active) },
+    active.push(session);
+    await tx.user.update({
+      where: { id: userId },
+      data: { sessions: serializeSessions(active) },
+    });
+    return active;
   });
-  return active;
 }
 
 /**
  * Remove a session from user's session list (on logout).
  */
 async function removeUserSession(userId: string, sessionId: string): Promise<void> {
-  const user = await prisma.user.findUnique({ where: { id: userId }, select: { sessions: true } });
-  const sessions = parseSessions(user?.sessions ?? "[]");
-  const filtered = sessions.filter((s) => s.id !== sessionId);
-  await prisma.user.update({
-    where: { id: userId },
-    data: { sessions: serializeSessions(filtered) },
+  await prisma.$transaction(async (tx) => {
+    const user = await tx.user.findUnique({ where: { id: userId }, select: { sessions: true } });
+    const sessions = parseSessions(user?.sessions ?? "[]");
+    const filtered = sessions.filter((s) => s.id !== sessionId);
+    await tx.user.update({
+      where: { id: userId },
+      data: { sessions: serializeSessions(filtered) },
+    });
   });
 }
 
@@ -108,8 +130,8 @@ async function removeUserSession(userId: string, sessionId: string): Promise<voi
 async function getActiveSessionCount(userId: string): Promise<number> {
   const user = await prisma.user.findUnique({ where: { id: userId }, select: { sessions: true } });
   const sessions = parseSessions(user?.sessions ?? "[]");
-  const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
-  return sessions.filter((s) => new Date(s.createdAt).getTime() > sevenDaysAgo).length;
+  const cutoff = Date.now() - SESSION_PRUNE_MS;
+  return sessions.filter((s) => new Date(s.createdAt).getTime() > cutoff).length;
 }
 
 /**
@@ -145,14 +167,21 @@ export function safeRedirect(target: string | null | undefined): string {
 export function extractSessionToken(req: Request): string | null {
   const header = req.headers.get("cookie") ?? "";
   const match = header.match(/(?:^|;\s*)auth_token=([^;]*)/);
-  return match?.[1] || null;
+  const raw = match?.[1];
+  if (!raw) return null;
+  try {
+    return decodeURIComponent(raw);
+  } catch {
+    return raw;
+  }
 }
 
 // ----- Helpers ---------------------------------------------------
 
 /**
  * Sign a session JWT payload and return the string token.
- * 7-day expiry. Sets algorithm explicitly to HS256.
+ * Default 7-day expiry (pass `expiresIn` for remember-me / capped refresh).
+ * Sets algorithm explicitly to HS256.
  * `origIat` (optional, seconds) preserves the ORIGINAL issue time across
  * refresh hops so the refresh endpoint can enforce an absolute session cap.
  * `ver` is the user's tokenVersion — bumped server-side to revoke all tokens
@@ -161,6 +190,7 @@ export function extractSessionToken(req: Request): string | null {
  */
 export async function signSession(
   payload: { email: string; origIat?: number; ver?: number; sid?: string },
+  expiresIn: string | number = "7d",
 ) {
   const claims: Record<string, unknown> = { email: payload.email };
   if (typeof payload.origIat === "number") {
@@ -175,7 +205,7 @@ export async function signSession(
   return await new SignJWT(claims)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
-    .setExpirationTime("7d")
+    .setExpirationTime(expiresIn)
     .sign(getJoseSecret());
 }
 
@@ -253,6 +283,12 @@ export async function getSessionUser(req: Request): Promise<UserRecord | null> {
   const u = await prisma.user.findUnique({ where: { email: payload.email } });
   if (!u) return null;
 
+  // Banned users lose all access immediately, even with an unexpired JWT.
+  // (Ban also bumps tokenVersion via revokeAllSessions; this is belt-and-braces.)
+  // `as string` avoids narrowing `u.role` — the mapping below still needs the
+  // full STUDENT | ADMIN | BANNED union.
+  if ((u.role as string) === "BANNED") return null;
+
   // Session-version check: tokens minted before the user's current
   // tokenVersion (password change / revoke-all) are dead even if unexpired.
   // Legacy tokens without a `ver` claim count as version 0.
@@ -267,8 +303,8 @@ export async function getSessionUser(req: Request): Promise<UserRecord | null> {
     : null;
   if (sid) {
     const sessions = parseSessions(u.sessions ?? "[]");
-    const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
-    const active = sessions.filter((s) => new Date(s.createdAt).getTime() > sevenDaysAgo);
+    const cutoff = Date.now() - SESSION_PRUNE_MS;
+    const active = sessions.filter((s) => new Date(s.createdAt).getTime() > cutoff);
     if (!active.some((s) => s.id === sid)) {
       return null; // Session revoked (concurrency limit or manual logout)
     }
@@ -281,7 +317,7 @@ export async function getSessionUser(req: Request): Promise<UserRecord | null> {
     handle: u.handle,
     passwordHash: u.passwordHash,
     tokenVersion: u.tokenVersion,
-    role: u.role === "ADMIN" ? "admin" : "student",
+    role: u.role === "ADMIN" ? "admin" : u.role === "BANNED" ? "banned" : "student",
     emailVerified: u.emailVerified,
     onboarded: u.onboarded,
     createdAt: u.createdAt.toISOString(),

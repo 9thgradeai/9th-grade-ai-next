@@ -20,6 +20,7 @@ export default function EmptyState({
 }) {
   return (
     <div
+      role="status"
       className={`flex flex-col items-center justify-center text-center ${
         compact ? "py-6 gap-2" : "py-12 gap-3"
       }`}

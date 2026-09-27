@@ -82,4 +82,16 @@ describe("requireRole (role enforcement)", () => {
     const user = await requireRole(requestWithCookie("tok"), ["student", "admin"]);
     expect(user.role).toBe("student");
   });
+
+  it("rejects banned users even when the gate allows students", async () => {
+    mockedSession.mockResolvedValue({
+      id: "u9",
+      email: "b@b.c",
+      role: "banned",
+    } as never);
+
+    await expect(
+      requireRole(requestWithCookie("tok"), ["student", "admin"]),
+    ).rejects.toBeInstanceOf(ForbiddenError);
+  });
 });

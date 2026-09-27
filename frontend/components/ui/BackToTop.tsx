@@ -43,7 +43,7 @@ export default function BackToTop() {
       type="button"
       onClick={scrollToTop}
       aria-label="Back to top"
-      className={`fixed bottom-5 right-5 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-[var(--border-subtle)] bg-[var(--surface-overlay)] text-[var(--dashboard-text-secondary)] shadow-panel backdrop-blur-md transition-[opacity,transform,border-color,color] duration-300 hover:border-[var(--primary)] hover:text-[var(--dashboard-primary)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)] ${
+      className={`fixed bottom-5 right-5 z-[var(--z-sticky)] flex h-11 w-11 items-center justify-center rounded-full border border-[var(--border-subtle)] bg-[var(--surface-overlay)] text-[var(--dashboard-text-secondary)] shadow-panel backdrop-blur-md transition-[opacity,transform,border-color,color] duration-300 hover:border-[var(--primary)] hover:text-[var(--dashboard-primary)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)] ${
         visible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-3 opacity-0"
       }`}
     >

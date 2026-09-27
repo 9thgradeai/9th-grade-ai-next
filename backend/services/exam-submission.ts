@@ -644,7 +644,7 @@ export async function submitExamAttempt(
     };
   } catch (error) {
     if (error instanceof AppError) throw error;
-    throw new InternalServerError("Failed to submit exam attempt.");
+    throw new InternalServerError("Failed to submit exam attempt.", { cause: error });
   }
 }
 
@@ -715,7 +715,7 @@ export async function registerExamAttempt(
     });
   } catch (error) {
     if (error instanceof AppError) throw error;
-    throw new InternalServerError("Failed to register exam attempt.");
+    throw new InternalServerError("Failed to register exam attempt.", { cause: error });
   }
 }
 

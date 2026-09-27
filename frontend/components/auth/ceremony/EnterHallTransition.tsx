@@ -22,7 +22,7 @@ export function EnterHallTransition({ onNavigate }: { onNavigate: () => void }) 
   return (
     <motion.div
       aria-hidden="true"
-      className="fixed inset-0 z-[80] flex items-center justify-center overflow-hidden"
+      className="fixed inset-0 z-[var(--z-tooltip)] flex items-center justify-center overflow-hidden"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: reduced ? 0.2 : 0.3 }}

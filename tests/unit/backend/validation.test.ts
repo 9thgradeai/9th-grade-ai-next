@@ -10,6 +10,7 @@ import {
   validateQuestionSearchParams,
   validatePagination,
   validatePositiveInteger,
+  parseAdminListParams,
 } from "~backend/validation";
 
 const VALIDATION_ERROR = { statusCode: 400, code: "VALIDATION_ERROR" };
@@ -161,5 +162,33 @@ describe("question search — notebook / PYQ filters", () => {
     expect(() => validateQuestionSearchParams(new URLSearchParams("paperId=abc"))).toThrow(/positive integer/);
     expect(() => validateQuestionSearchParams(new URLSearchParams("paperId=0"))).toThrow(/positive integer/);
     expect(() => validateQuestionSearchParams(new URLSearchParams("paper=7"))).toThrow(/paper/);
+  });
+});
+
+describe("parseAdminListParams (admin pagination)", () => {
+  const url = (qs: string) => new URL(`https://app.example.com/api/admin/users?${qs}`);
+
+  it("parses valid page/limit/search", () => {
+    expect(parseAdminListParams(url("page=2&limit=10&search=abc"))).toEqual({
+      page: 2,
+      limit: 10,
+      search: "abc",
+    });
+  });
+
+  it("rejects NaN page/limit with 400 instead of leaking NaN to Prisma", () => {
+    for (const qs of ["page=abc", "limit=abc", "page=0", "limit=0", "limit=101"]) {
+      try {
+        parseAdminListParams(url(qs));
+        expect.unreachable(`expected 400 for ?${qs}`);
+      } catch (err) {
+        expect(err).toMatchObject(VALIDATION_ERROR);
+      }
+    }
+  });
+
+  it("caps search at 100 chars", () => {
+    const { search } = parseAdminListParams(url(`search=${"x".repeat(500)}`));
+    expect(search).toHaveLength(100);
   });
 });

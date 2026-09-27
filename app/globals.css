@@ -552,6 +552,15 @@ label {
 
 /* ══════════════════════════════════════════════════════════════════════════════
    Z-INDEX SCALE — centralized per taste-skill §6.F
+   Usage (Tailwind v4 arbitrary): z-[var(--z-modal)] etc. Never hardcode
+   z-50/z-[60]/z-[100] in components — every overlay must use this scale:
+   - dropdown (40): ExamSwitcher menus, autocomplete popovers
+   - sticky (50): nav headers, bottom nav, sticky tab headers, FABs
+   - overlay (60): scrims reserved for future use (modal scrims use modal)
+   - modal (70): ALL dialog scrims — nav drawers, palettes, sheets, confirm
+     dialogs, practice-drill overlay (toasts stay above via toast)
+   - toast (80): Toaster only
+   - tooltip (90): boot loader, skip links (topmost, transient)
    ══════════════════════════════════════════════════════════════════════════════ */
 :root {
   --z-dropdown: 40;
@@ -656,7 +665,16 @@ label {
 
 /* ══════════════════════════════════════════════════════════════════════════════
    SAFE AREA (iOS)
+   ─────────────────────────────────────────────────────────────────────────────
+   --bottom-nav-h is the single source for the mobile bottom-nav height: the
+   nav itself sizes from it and the dashboard content clearance derives from
+   it, so safe-area growth can never desync the two (previously a hardcoded
+   pb-[72px] fought a min-h-[64px] + pb-safe pair).
    ══════════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  --bottom-nav-h: 64px;
+}
 
 @utility pb-safe {
   padding-bottom: env(safe-area-inset-bottom);
@@ -827,6 +845,26 @@ hr {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* ── Scroll reveal (IntersectionObserver + CSS; see ui/Reveal.tsx) ──────────
+   Below-fold fade-up without a motion runtime. Starts hidden; `.is-visible`
+   (added once by the observer) transitions to resting state. Delay is injected
+   per-instance via `--reveal-delay`. The reduced-motion block above collapses
+   the transition; content is still revealed (opacity 1) — never stuck hidden. */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0s),
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0s);
+  will-change: opacity, transform;
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+  will-change: auto;
 }
 
 /* ══════════════════════════════════════════════════════════════════════════════

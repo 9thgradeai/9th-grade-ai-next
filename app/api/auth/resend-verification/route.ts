@@ -6,8 +6,8 @@
 
 import { NextResponse } from "next/server";
 import { resendVerification } from "~backend/services/user";
-import { AppError, toHttpResponse } from "~backend/errors";
-import { checkRateLimit, getRateLimitKey, LIMITS } from "~backend/rate-limit";
+import { toHttpResponse } from "~backend/errors";
+import { assertAccountAllowed, LIMITS } from "~backend/rate-limit";
 import { getRequestId, startTiming, applySecurityHeaders, assertSameOrigin } from "../../_middleware";
 
 export async function POST(request: Request) {
@@ -17,11 +17,10 @@ export async function POST(request: Request) {
   try {
     assertSameOrigin(request);
 
-    if (!(await checkRateLimit(getRateLimitKey(request, "auth:resend"), LIMITS.passwordPerMin, 60_000))) {
-      throw new AppError(429, "Too many requests. Please wait a moment.", "RATE_LIMIT_EXCEEDED");
-    }
-
     const body = (await request.json().catch(() => ({}))) as { email?: string };
+    const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
+    await assertAccountAllowed(request, "auth:resend", email || "invalid", LIMITS.passwordPerMin, 60_000);
+
     const origin = new URL(request.url).origin;
     const { ok, devLink, autoVerified } = await resendVerification(body.email ?? "", origin);
 

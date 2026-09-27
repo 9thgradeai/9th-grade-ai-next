@@ -2,8 +2,6 @@
 // Shared exam engine state, derivations, and utilities extracted from
 // MockTestTab, CustomExamTab, and PracticeTab to eliminate duplication.
 
-"use client";
-
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { api } from "@/lib/services/api";
 import type { ExamEcosystemCode } from "@/lib/types";
@@ -149,6 +147,10 @@ export function useExamEngine({
   const questionsRef = useRef<Server.ExamQuestionDTO[]>([]);
   const answersRef = useRef<Record<number, string>>({});
   const submittingRef = useRef(false);
+  // Synchronous mirror of lockedQuestions: lets selectAnswer stay referentially
+  // stable (empty deps) while still refusing locked questions, without
+  // re-creating the callback — and every question row — on each answer.
+  const lockedRef = useRef<Set<number>>(new Set());
   const highlightTimeoutRef = useRef<number | null>(null);
   const [highlightedReview, setHighlightedReview] = useState<
     "correct" | "wrong" | "unanswered" | null
@@ -216,15 +218,33 @@ export function useExamEngine({
     [],
   );
 
-  // ── selectAnswer ──
-  const selectAnswer = useCallback(
-    (questionId: number, option: string) => {
-      if (lockedQuestions.has(questionId)) return;
-      setAnswers((prev) => ({ ...prev, [questionId]: option }));
-      setLockedQuestions((prev) => new Set(prev).add(questionId));
+  // ── Answer-state setter that keeps answersRef synchronously fresh ──
+  // Tabs may call setAnswers directly (resets, restores). Writing the ref
+  // inside the updater guarantees handleSubmitRequest never reads a stale
+  // count on rapid double-tap submit — the effect-based sync below only runs
+  // after render, which is too late. (React may double-invoke updaters in
+  // StrictMode; the assignment is idempotent so that's harmless.)
+  const setAnswersSync = useCallback(
+    (value: React.SetStateAction<Record<number, string>>) => {
+      setAnswers((prev) => {
+        const next =
+          typeof value === "function"
+            ? (value as (p: Record<number, string>) => Record<number, string>)(prev)
+            : value;
+        answersRef.current = next;
+        return next;
+      });
     },
-    [lockedQuestions],
+    [],
   );
+  // ── selectAnswer (stable: never re-created, rows don't re-render) ──
+  const selectAnswer = useCallback((questionId: number, option: string) => {
+    if (lockedRef.current.has(questionId)) return;
+    lockedRef.current.add(questionId);
+    answersRef.current = { ...answersRef.current, [questionId]: option };
+    setAnswers(answersRef.current);
+    setLockedQuestions(new Set(lockedRef.current));
+  }, []);
 
   // ── handleSubmitRequest ──
   const handleSubmitRequest = useCallback(
@@ -247,16 +267,19 @@ export function useExamEngine({
     [],
   );
 
-  // ── beforeunload guard ──
+  // ── beforeunload guard: exam in progress OR submitting ──
+  // Previously keyed on `submitting` (the submit phase) only, so accidental
+  // navigation mid-exam — the actual data-loss vector — was unguarded.
+  const examInProgress = Object.keys(answers).length > 0 || submitting;
   useEffect(() => {
-    if (!submitting) return;
+    if (!examInProgress) return;
     const handler = (e: BeforeUnloadEvent) => {
       e.preventDefault();
       e.returnValue = "";
     };
     window.addEventListener("beforeunload", handler);
     return () => window.removeEventListener("beforeunload", handler);
-  }, [submitting]);
+  }, [examInProgress]);
 
   // ── jumpToReview ──
   const jumpToReview = useCallback(
@@ -307,7 +330,7 @@ export function useExamEngine({
 
     // Answers
     answers,
-    setAnswers,
+    setAnswers: setAnswersSync,
     lockedQuestions,
     setLockedQuestions,
     answeredCount,

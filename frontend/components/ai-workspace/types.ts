@@ -1,5 +1,3 @@
-"use client";
-
 // Shared state shapes for the AI workspace. All turn branches (tutor,
 // assistant, coach) converge on the same UIMessage row model so the thread can
 // render uniformly. `Mode`/`Status` are also used by the header chip and the

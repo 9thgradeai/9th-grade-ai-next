@@ -10,7 +10,7 @@ import LanguageToggle from "@/components/ui/LanguageToggle";
 import { useAuth } from "@/lib/auth-ctx";
 import { visibleMenus } from "@/lib/navigation";
 import { useT } from "@/lib/i18n";
-import { LanguageContext } from "@/lib/lang-ctx";
+import { LanguageContext, t as pickLang } from "@/lib/lang-ctx";
 import { useContext } from "react";
 
 function isActiveLink(href: string, pathname: string, tab: string | null): boolean {
@@ -98,7 +98,7 @@ export default function AppNavbar() {
       <header
         ref={headerRef}
         style={{ ["--nav-h" as string]: "4rem" }}
-        className="fixed top-0 inset-x-0 z-50 pt-safe border-b border-transparent bg-transparent backdrop-blur-xl"
+        className="fixed top-0 inset-x-0 z-[var(--z-sticky)] pt-safe border-b border-transparent bg-transparent backdrop-blur-xl"
       >
         <nav className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8" aria-label={t("nav.primaryNavigation")}>
           <div className="flex h-14 sm:h-16 items-center gap-2">
@@ -175,7 +175,8 @@ export default function AppNavbar() {
                 type="button"
                 onClick={() => window.dispatchEvent(new Event("app:open-command"))}
                 aria-label={t("nav.search")}
-                className="inline-flex sm:hidden p-2 rounded-full border border-white/10 text-zinc-300 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
+                aria-haspopup="dialog"
+                className="inline-flex sm:hidden min-h-[40px] min-w-[40px] items-center justify-center p-2 rounded-full border border-white/10 text-zinc-300 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
               >
                 <MagnifyingGlass className="h-4 w-4" aria-hidden="true" />
               </button>
@@ -196,7 +197,7 @@ export default function AppNavbar() {
                     onClick={() => router.push("/dashboard?tab=home")}
                     aria-label={t("nav.notifications")}
                     title={t("nav.notifications")}
-                    className="hidden sm:inline-flex p-2 rounded-full border border-white/10 text-zinc-300 hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
+                    className="hidden sm:inline-flex min-h-[40px] min-w-[40px] items-center justify-center p-2 rounded-full border border-white/10 text-zinc-300 hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
                   >
                     <Bell className="h-4 w-4" aria-hidden="true" />
                   </button>
@@ -248,12 +249,13 @@ export default function AppNavbar() {
           </div>
         </nav>
 
-        {/* Desktop mega panel — compact, not giant */}
+        {/* Desktop mega panel — navigation links, not menu actions, so it
+            uses nav/list semantics (role="menu" is for action menus and
+            confuses SR navigation shortcuts). */}
         {activeMenu && (
-          <div
+          <nav
             id={`nav-panel-${activeMenu.id}`}
-            role="menu"
-            aria-labelledby={`nav-trigger-${activeMenu.id}`}
+            aria-label={pickLang(lang, activeMenu.labelBn, activeMenu.label)}
             className="hidden lg:block border-t border-white/10 bg-transparent backdrop-blur-2xl"
           >
             <div className="mx-auto max-w-[1440px] px-6 lg:px-8 py-6">
@@ -262,25 +264,24 @@ export default function AppNavbar() {
                   <p className="text-xs font-bold tracking-[0.14em] uppercase text-violet-300">{(activeMenu.labelBn && lang==="bn" ? activeMenu.labelBn : activeMenu.label)}</p>
                   {activeMenu.highlight && (
                     <div className="mt-4 rounded-2xl border border-white/10 bg-gradient-to-br from-violet-500/15 via-indigo-500/10 to-transparent p-4">
-                      <p className="text-sm font-semibold text-white">{activeMenu.highlight.title}</p>
-                      <p className="mt-1 text-xs leading-relaxed text-zinc-400">{activeMenu.highlight.desc}</p>
-                      <Link href={activeMenu.highlight.href} onClick={closeAll} className="mt-3 inline-flex items-center gap-1 rounded-full bg-white px-3.5 py-1.5 text-xs font-semibold text-black hover:bg-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400">{activeMenu.highlight.cta} →</Link>
+                      <p className="text-sm font-semibold text-white">{pickLang(lang, activeMenu.highlight.titleBn, activeMenu.highlight.title)}</p>
+                      <p className="mt-1 text-xs leading-relaxed text-zinc-400">{pickLang(lang, activeMenu.highlight.descBn, activeMenu.highlight.desc)}</p>
+                      <Link href={activeMenu.highlight.href} onClick={closeAll} className="mt-3 inline-flex items-center gap-1 rounded-full bg-white px-3.5 py-1.5 text-xs font-semibold text-black hover:bg-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400">{pickLang(lang, activeMenu.highlight.ctaBn, activeMenu.highlight.cta)} →</Link>
                     </div>
                   )}
                 </div>
                 <div className="col-span-9 grid gap-6" style={{ gridTemplateColumns: `repeat(${Math.min(activeMenu.groups.length, 3)}, minmax(0,1fr))` }}>
                   {activeMenu.groups.map(g => (
                     <div key={g.label}>
-                      <p className="mb-3 text-[11px] font-bold tracking-[0.12em] uppercase text-zinc-400">{g.label}</p>
-                      <ul className="space-y-1" role="none">
+                      <p className="mb-3 text-[11px] font-bold tracking-[0.12em] uppercase text-zinc-400">{pickLang(lang, g.labelBn, g.label)}</p>
+                      <ul className="space-y-1">
                         {g.items.map(it => {
                           const Icon = it.icon;
                           const active = isActiveLink(it.href, pathname, tab);
                           return (
-                            <li key={it.label} role="none">
+                            <li key={it.label}>
                               <Link
                                 href={it.href}
-                                role="menuitem"
                                 target={it.external ? "_blank" : undefined}
                                 rel={it.external ? "noopener noreferrer" : undefined}
                                 aria-current={active ? "page" : undefined}
@@ -293,8 +294,8 @@ export default function AppNavbar() {
                                   </span>
                                 )}
                                 <span className="min-w-0">
-                                  <span className={`flex items-center gap-1 text-sm font-medium ${active ? "text-black" : "text-white"}`}>{it.label}</span>
-                                  {it.desc && <span className={`line-clamp-1 text-xs ${active ? "text-black/60" : "text-zinc-400"}`}>{it.desc}</span>}
+                                  <span className={`flex items-center gap-1 text-sm font-medium ${active ? "text-black" : "text-white"}`}>{pickLang(lang, it.labelBn, it.label)}</span>
+                                  {it.desc && <span className={`line-clamp-1 text-xs ${active ? "text-black/60" : "text-zinc-400"}`}>{pickLang(lang, it.descBn, it.desc)}</span>}
                                 </span>
                               </Link>
                             </li>
@@ -306,13 +307,13 @@ export default function AppNavbar() {
                 </div>
               </div>
             </div>
-          </div>
+          </nav>
         )}
       </header>
 
       {/* Mobile drawer — independent design, not shrunken desktop */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-[60] lg:hidden" role="dialog" aria-modal="true" aria-label="Navigation">
+        <div className="fixed inset-0 z-[var(--z-modal)] lg:hidden" role="dialog" aria-modal="true" aria-label="Navigation">
           <div aria-hidden="true" className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
           <div id="mobile-drawer" ref={(el) => { if (el) el.focus({ preventScroll: true }); }} tabIndex={-1} className="absolute right-0 top-0 bottom-0 flex w-[88%] max-w-[380px] flex-col overflow-hidden border-l border-white/10 bg-[#0B0B0F] pt-safe outline-none">
             <div className="flex h-14 shrink-0 items-center justify-between border-b border-white/10 px-4">
@@ -339,15 +340,15 @@ export default function AppNavbar() {
                     </button>
                     {expanded && (
                       <div id={`mob-${m.id}`} className="px-2 pb-3 space-y-3">
-                        {m.highlight && <Link href={m.highlight.href} onClick={() => setMobileOpen(false)} className="block rounded-xl border border-violet-500/20 bg-violet-500/10 px-3 py-2.5 text-sm font-medium text-white">{m.highlight.cta} — {m.highlight.title}</Link>}
+                        {m.highlight && <Link href={m.highlight.href} onClick={() => setMobileOpen(false)} className="block rounded-xl border border-violet-500/20 bg-violet-500/10 px-3 py-2.5 text-sm font-medium text-white">{pickLang(lang, m.highlight.ctaBn, m.highlight.cta)} — {pickLang(lang, m.highlight.titleBn, m.highlight.title)}</Link>}
                         {m.groups.map(g => (
                           <div key={g.label}>
-                            <p className="px-2 py-1 text-[11px] font-bold tracking-widest uppercase text-zinc-400">{g.label}</p>
+                            <p className="px-2 py-1 text-[11px] font-bold tracking-widest uppercase text-zinc-400">{pickLang(lang, g.labelBn, g.label)}</p>
                             {g.items.map(it => {
                               const active = isActiveLink(it.href, pathname, tab);
                               return (
                                 <Link key={it.label} href={it.href} target={it.external ? "_blank" : undefined} rel={it.external ? "noopener noreferrer" : undefined} aria-current={active ? "page" : undefined} onClick={() => setMobileOpen(false)} className={`flex min-h-[44px] items-center gap-2.5 rounded-lg px-2 py-2.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 ${active ? "bg-white text-black" : "text-zinc-300 hover:bg-white/5 hover:text-white"}`}>
-                                  {it.icon && <it.icon className="h-4 w-4 shrink-0 opacity-70" aria-hidden="true" />}{it.label}
+                                  {it.icon && <it.icon className="h-4 w-4 shrink-0 opacity-70" aria-hidden="true" />}{pickLang(lang, it.labelBn, it.label)}
                                 </Link>
                               );
                             })}

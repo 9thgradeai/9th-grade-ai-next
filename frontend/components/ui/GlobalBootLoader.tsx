@@ -65,7 +65,7 @@ export default function GlobalBootLoader() {
           initial={{ opacity: 1 }}
           exit={{ opacity: 0, filter: "blur(8px)", scale: 1.02 }}
           transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          className="fixed inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden bg-[#050507] px-4"
+          className="fixed inset-0 z-[var(--z-tooltip)] flex flex-col items-center justify-center overflow-hidden bg-[#050507] px-4"
           aria-label="System boot"
           role="status"
           onClick={() => allowedToDismissRef.current && setVisible(false)}

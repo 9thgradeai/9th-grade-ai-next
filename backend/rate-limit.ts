@@ -108,8 +108,13 @@ async function checkDailyAuthority(
   let used = 0;
   try {
     used = await countUsageToday(userId, task);
-  } catch {
-    used = 0; // ledger unavailable → fail open to store-based decision
+  } catch (error) {
+    // Fail CLOSED: without the ledger there is no trustworthy daily count,
+    // so allowing traffic would let cost run unbounded during a DB outage.
+    // (The fast store still fails open per docs/SECURITY.md; the AI routes
+    // need the DB for conversation persistence anyway.)
+    console.error(`[rate-limit] usage ledger unavailable for ${route}:${userId}`, error);
+    return false;
   }
   if (!Number.isFinite(used)) used = 0;
   return used < dailyMax;
@@ -117,15 +122,23 @@ async function checkDailyAuthority(
 
 // ── Identity helpers ──────────────────────────────────────
 
-/** Best-effort client identity from platform-controlled headers. */
+/** Best-effort client identity from platform-controlled headers.
+ * Prefers headers set by the platform (x-real-ip, cf-connecting-ip) over
+ * x-forwarded-for, and when falling back to x-forwarded-for takes the LAST
+ * entry (appended by our proxy) — the leftmost entry is client-controlled
+ * and trivially spoofable, so it must never be trusted. */
 export function getClientKey(req: Request): string {
   if ((process.env.TRUST_CLIENT_IP ?? "true") === "false") {
     return "opaque";
   }
-  const forwarded = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
   const realIp = req.headers.get("x-real-ip")?.trim();
   const cfIp = req.headers.get("cf-connecting-ip")?.trim();
-  const ip = cfIp ?? realIp ?? forwarded ?? "unknown";
+  const forwarded = req.headers
+    .get("x-forwarded-for")
+    ?.split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const ip = cfIp || realIp || (forwarded && forwarded[forwarded.length - 1]) || "unknown";
   return `${ip}:${req.headers.get("host") ?? ""}`;
 }
 
@@ -139,6 +152,28 @@ function hashEmail(email: string): string {
 }
 
 // ── Product rules ─────────────────────────────────────────
+
+/**
+ * Per-account throttle for anonymous email-triggered endpoints
+ * (forgot-password, resend-verification). Keyed on a hash of the submitted
+ * email so rotating IPs cannot spam a single mailbox, while the companion
+ * per-IP bucket protects the endpoint globally.
+ */
+export async function assertAccountAllowed(
+  req: Request,
+  route: string,
+  email: string,
+  max: number,
+  windowMs: number,
+): Promise<void> {
+  if (!(await checkRateLimit(getRateLimitKey(req, route), max, windowMs))) {
+    throw new RateLimitError("Too many requests. Please try again later.");
+  }
+  const accountKey = `${route}:acct:${hashEmail(email)}`;
+  if (!(await checkRateLimit(accountKey, max, windowMs))) {
+    throw new RateLimitError("Too many requests for this account. Please try again later.");
+  }
+}
 
 /**
  * Login throttle: per-IP bucket AND per-account bucket. The account bucket is

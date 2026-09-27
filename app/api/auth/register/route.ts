@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { AppError, toHttpResponse } from "~backend/errors";
 import { validateRegisterInput } from "~backend/validation";
 import { findUserByEmail, createUser } from "~backend/services/user";
-import { signSession, setSessionCookie } from "~backend/auth";
+import { signSession, setSessionCookie, SESSION_DURATION_MS } from "~backend/auth";
 import { checkRateLimit, getRateLimitKey, LIMITS } from "~backend/rate-limit";
 import { getRequestId, startTiming, applySecurityHeaders, applyCorsHeaders, assertSameOrigin } from "../../_middleware";
 import { log } from "~backend/infrastructure/observability/logger";
@@ -41,7 +41,7 @@ export async function POST(request: Request) {
     const token = await signSession({ email, ver: newUser.tokenVersion });
     const { passwordHash: _passwordHash, ...safeUser } = newUser;
 
-    const res = NextResponse.json({ user: safeUser }, { status: 201 });
+    const res = NextResponse.json({ user: safeUser, expiresIn: SESSION_DURATION_MS }, { status: 201 });
     await setSessionCookie(token, res);
 
     log.info("auth.register.success", { requestId, userId: newUser.id });

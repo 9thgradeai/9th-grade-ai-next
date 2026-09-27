@@ -1,5 +1,3 @@
-"use client";
-
 import { aiJson } from "./client";
 import type { StudentModelDto } from "./types";
 
