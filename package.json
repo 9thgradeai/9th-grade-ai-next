@@ -55,7 +55,7 @@
     "@sentry/nextjs": "^10.72.0",
     "@sentry/node": "^10.72.0",
     "@sparticuz/chromium": "^153.0.0",
-    "ai": "^4.3.16",
+    "ai": "^7.0.105",
     "bcryptjs": "^3.0.3",
     "framer-motion": "^13.1.0",
     "geist": "^1.7.2",
