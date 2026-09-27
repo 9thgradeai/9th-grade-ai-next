@@ -2270,9 +2270,16 @@ html.light .skeleton-shimmer {
 
 /* ══════════════════════════════════════════════════════════════════════════════
    AMBIENT WORLD-MAP BACKDROP (dashboard, desktop only)
-   Faint line-art continents behind the content: passive geography
-   familiarity at zero interaction cost. Decorative only — pointer-events
-   none, aria-hidden, radially masked, transform-only drift animation.
+   A clearly-visible-but-quiet world map behind the content: filled + stroked
+   landmasses, an aurora wash, a faint graticule grid, and a weak-topic
+   spotlight. Modern ambient best practices:
+   · decorative only — pointer-events none, aria-hidden, transform/opacity
+     animations exclusively (compositor thread, zero layout cost);
+   · legibility first — radially masked edges, content sits above (z-index
+     scale), per-theme tuned alphas so light mode stays calm and dark mode
+     glows without haze;
+   · invisible on <lg (mobile GPUs/battery spared), under reduced motion,
+     and in forced-colors mode.
    Asset: frontend/lib/data/world-map.ts (scripts/build-world-map.ts).
    ══════════════════════════════════════════════════════════════════════════════ */
 .world-map-backdrop {
@@ -2282,33 +2289,74 @@ html.light .skeleton-shimmer {
   pointer-events: none;
   overflow: hidden;
 }
+/* Aurora wash — soft primary-tinted glow behind the continents. */
+.world-map-glow {
+  position: absolute;
+  top: -12%;
+  right: -14%;
+  width: min(1100px, 80vw);
+  aspect-ratio: 16 / 10;
+  background: radial-gradient(
+    ellipse 58% 52% at 58% 46%,
+    color-mix(in srgb, var(--dashboard-primary) 16%, transparent),
+    transparent 72%
+  );
+  filter: blur(10px);
+  animation: world-map-breathe 14s ease-in-out infinite alternate;
+}
+@keyframes world-map-breathe {
+  from { opacity: 0.65; transform: scale(1); }
+  to { opacity: 1; transform: scale(1.06); }
+}
+/* Faint graticule grid — techy depth cue, barely-there by design. */
+.world-map-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--dashboard-text-muted) 9%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--dashboard-text-muted) 9%, transparent) 1px, transparent 1px);
+  background-size: 56px 56px;
+  -webkit-mask-image: radial-gradient(ellipse 70% 62% at 68% 40%, black 12%, transparent 68%);
+  mask-image: radial-gradient(ellipse 70% 62% at 68% 40%, black 12%, transparent 68%);
+  opacity: 0.5;
+}
 .world-map-drift {
   position: absolute;
-  top: 4%;
-  right: -6%;
-  width: min(1200px, 88vw);
-  -webkit-mask-image: radial-gradient(ellipse 92% 86% at 62% 42%, black 28%, transparent 74%);
-  mask-image: radial-gradient(ellipse 92% 86% at 62% 42%, black 28%, transparent 74%);
+  top: 2%;
+  right: -10%;
+  width: min(1350px, 96vw);
+  -webkit-mask-image: radial-gradient(ellipse 92% 88% at 60% 42%, black 38%, transparent 78%);
+  mask-image: radial-gradient(ellipse 92% 88% at 60% 42%, black 38%, transparent 78%);
   animation: world-map-drift 90s ease-in-out infinite alternate;
 }
 @keyframes world-map-drift {
-  from { transform: translateX(-1.6%); }
-  to { transform: translateX(1.6%); }
+  from { transform: translateX(-2.2%); }
+  to { transform: translateX(2.2%); }
 }
 .world-map-svg {
   display: block;
   width: 100%;
   height: auto;
 }
+/* Filled + stroked continents: the fill gives body, the stroke gives edge. */
 .world-map-land {
-  fill: none;
-  stroke: color-mix(in srgb, var(--dashboard-primary) 42%, var(--dashboard-text-muted));
-  stroke-width: 1.1;
+  fill: color-mix(in srgb, var(--dashboard-primary) 10%, transparent);
+  stroke: color-mix(in srgb, var(--dashboard-primary) 62%, var(--dashboard-text-muted));
+  stroke-width: 1.25;
   vector-effect: non-scaling-stroke;
+  stroke-linejoin: round;
 }
-.dashboard-theme-scope[data-dashboard-theme="dark"] .world-map-svg { opacity: 0.22; }
-.dashboard-theme-scope[data-dashboard-theme="light"] .world-map-svg { opacity: 0.2; }
-/* Weak-topic spotlight — one quiet pulse + caption. */
+/* Per-theme presence tuning: dark glows, light stays crisp and calm. */
+.dashboard-theme-scope[data-dashboard-theme="dark"] .world-map-svg { opacity: 0.52; }
+.dashboard-theme-scope[data-dashboard-theme="light"] .world-map-svg { opacity: 0.42; }
+.dashboard-theme-scope[data-dashboard-theme="light"] .world-map-land {
+  fill: color-mix(in srgb, var(--dashboard-primary) 8%, transparent);
+  stroke: color-mix(in srgb, var(--dashboard-primary) 55%, #1F2937);
+}
+.dashboard-theme-scope[data-dashboard-theme="dark"] .world-map-glow { opacity: 1; }
+.dashboard-theme-scope[data-dashboard-theme="light"] .world-map-glow { opacity: 0.55; }
+.dashboard-theme-scope[data-dashboard-theme="light"] .world-map-grid { opacity: 0.35; }
+/* Weak-topic spotlight — pulsing dot with halo + caption. */
 .world-map-spot {
   position: absolute;
   width: 0;
@@ -2316,44 +2364,49 @@ html.light .skeleton-shimmer {
 }
 .world-map-spot-dot {
   position: absolute;
-  left: -3px;
-  top: -3px;
-  width: 6px;
-  height: 6px;
+  left: -4px;
+  top: -4px;
+  width: 8px;
+  height: 8px;
   border-radius: 999px;
   background: var(--dashboard-primary);
-  opacity: 0.8;
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--dashboard-primary) 28%, transparent),
+    0 0 18px 4px color-mix(in srgb, var(--dashboard-primary) 45%, transparent);
+  opacity: 0.95;
 }
 .world-map-spot-ring {
   position: absolute;
-  left: -3px;
-  top: -3px;
-  width: 6px;
-  height: 6px;
+  left: -4px;
+  top: -4px;
+  width: 8px;
+  height: 8px;
   border-radius: 999px;
-  border: 1px solid var(--dashboard-primary);
-  opacity: 0.7;
+  border: 1.5px solid var(--dashboard-primary);
+  opacity: 0.8;
   animation: world-map-ping 3.2s cubic-bezier(0.22, 1, 0.36, 1) infinite;
 }
 @keyframes world-map-ping {
-  0% { transform: scale(1); opacity: 0.7; }
-  70%, 100% { transform: scale(4.2); opacity: 0; }
+  0% { transform: scale(1); opacity: 0.8; }
+  70%, 100% { transform: scale(5); opacity: 0; }
 }
 .world-map-spot-label {
   position: absolute;
-  left: 10px;
-  top: -8px;
+  left: 14px;
+  top: -9px;
   white-space: nowrap;
   font-family: var(--font-mono);
   font-size: 10px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--dashboard-text-muted);
-  opacity: 0.75;
+  color: var(--dashboard-text-secondary);
+  opacity: 0.9;
+  text-shadow: 0 1px 8px color-mix(in srgb, var(--dashboard-background) 80%, transparent);
 }
 @media (prefers-reduced-motion: reduce) {
   .world-map-drift,
-  .world-map-spot-ring {
+  .world-map-spot-ring,
+  .world-map-glow {
     animation: none !important;
   }
 }
