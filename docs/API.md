@@ -40,6 +40,7 @@ All mutating endpoints (auth and non-auth) reject cross-origin requests via an O
 | GET | `/api/question-bank/categories` | List question bank categories (Previous-Year Questions only — counts exclude the practice pool) |
 | GET | `/api/question-bank/exams` | List the exam-library taxonomy as a hierarchy: `category → [exam → [paper]]`. Papers carry `availableQuestions` (curated); used by the dashboard's BCS exam browser. Cached 5min (`stale-while-revalidate` 10min) |
 | GET | `/api/flashcards` | List flashcards, optionally filtered by `?subject=`. Authenticated callers additionally receive a per-card `srs` overlay (their own SM-2 state) |
+| GET | `/api/vocab/words` | List vocabulary words, filterable by `?search=`, `?difficulty=`, `?exam=`, `?status=` (new/learning/due/mastered), `?due=true`, `?kind=` (`words` = regular words only, `idioms` = Idiom/Phrase entries only for the Idioms & Phrases tab; unset = all). Response: `{ words }` |
 | GET | `/api/exam-schedule` | List published exam dates (public, no auth) |
 | GET | `/api/study-plan` | **Auth required** — List the caller's study plan tasks |
 | GET | `/api/daily-quiz` | Get today's quiz |

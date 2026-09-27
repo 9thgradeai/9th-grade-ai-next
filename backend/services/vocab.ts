@@ -255,7 +255,7 @@ export async function seedVocabWords() {
 
 export async function getVocabWords(
   userId?: string,
-  opts?: { limit?: number; exam?: string; difficulty?: string; search?: string; due?: string; status?: string },
+  opts?: { limit?: number; exam?: string; difficulty?: string; search?: string; due?: string; status?: string; kind?: string },
 ) {
   const limit = Math.min(opts?.limit ?? 20, 100);
 
@@ -263,6 +263,17 @@ export async function getVocabWords(
   const where: Record<string, unknown> = {};
   if (opts?.difficulty && opts.difficulty.toUpperCase() !== "ALL") {
     where.difficulty = opts.difficulty.toUpperCase();
+  }
+
+  // Kind split: "idioms" returns only Idiom/Phrase entries (the Idioms &
+  // Phrases tab), "words" returns regular words only (the Words tab).
+  // Future idiom/phrase imports just seed VocabWord rows with partOfSpeech
+  // "Idiom" / "Phrase". Unset kind keeps the legacy unfiltered behavior.
+  const kind = opts?.kind?.toLowerCase();
+  if (kind === "idioms") {
+    where.partOfSpeech = { in: ["Idiom", "Phrase"] };
+  } else if (kind === "words") {
+    where.partOfSpeech = { notIn: ["Idiom", "Phrase"] };
   }
 
   const words = await prisma.vocabWord.findMany({
