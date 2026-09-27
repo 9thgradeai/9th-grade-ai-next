@@ -6,6 +6,7 @@ import { CaretRight, GridFour, BookOpen, Clock, ListChecks, Play, Calendar, Shuf
 import { api } from "@/lib/services/api";
 import { useEcosystem } from "@/lib/ecosystem-ctx";
 import type { ExamCategoryDTO, ExamDTO, ExamPaperDTO, QuestionDTO } from "@/lib/types";
+import RichText from "@/components/ui/RichText";
 import ScrollPractice from "./ScrollPractice";
 
 type PaperSelection = {
@@ -238,7 +239,7 @@ export default function ExamLibraryView() {
                       </span>
                     </div>
                   </div>
-                  <p className="text-sm text-[var(--text-primary)]">{item.question}</p>
+                  <p className="text-sm text-[var(--text-primary)]"><RichText text={item.question} /></p>
                   <div className="grid sm:grid-cols-2 gap-1.5 mt-3">
                     {item.options.map((opt, oi) => (
                       <div
@@ -246,7 +247,7 @@ export default function ExamLibraryView() {
                         className="flex items-start gap-2 text-xs text-[var(--dashboard-text-secondary)] bg-[var(--surface-muted)] border border-terminal-border rounded px-2.5 py-1.5"
                       >
                         <span className="font-mono text-[var(--dashboard-text-muted)]">{["ক", "খ", "গ", "ঘ"][oi] ?? oi + 1}.</span>
-                        <span>{opt}</span>
+                        <RichText text={opt} />
                       </div>
                     ))}
                   </div>

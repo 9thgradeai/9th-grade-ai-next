@@ -16,6 +16,7 @@ import type { Server } from "@/lib/types";
 import { shuffleSessionOptions } from "@/lib/shuffle-options";
 import SubjectTopicSelect from "./SubjectTopicSelect";
 import AIExplanationButton from "./AIExplanationButton";
+import RichText from "@/components/ui/RichText";
 import {
   type Selection,
   flattenNodes,
@@ -936,7 +937,7 @@ export default function CustomExamTab() {
                 </div>
 
                 <div className="rounded-xl border p-4 mb-4" style={{ background: "var(--dashboard-surface-raised)", borderColor: "var(--dashboard-border-muted)", boxShadow: "var(--dashboard-shadow-sm)" }}>
-                  <h3 className="text-sm md:text-[15px] font-semibold leading-relaxed" style={{ color: "var(--dashboard-text-primary)", lineHeight: "1.6" }}>{q.question}</h3>
+                  <h3 className="text-sm md:text-[15px] font-semibold leading-relaxed" style={{ color: "var(--dashboard-text-primary)", lineHeight: "1.6" }}><RichText text={q.question} /></h3>
                 </div>
 
                 <div className="space-y-2.5">
@@ -959,7 +960,7 @@ export default function CustomExamTab() {
                           <span className="w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-mono border" style={isSelected ? { background: "var(--dashboard-primary)", color: "var(--dashboard-text-inverse)", borderColor: "var(--dashboard-primary)" } : { background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-strong)", color: "var(--dashboard-text-secondary)" }}>
                             {OPTION_LABELS[i] ?? i + 1}
                           </span>
-                          <span className="text-sm font-medium">{option}</span>
+                          <span className="text-sm font-medium"><RichText text={option} /></span>
                           {isSelected && <Check className="w-4 h-4 ml-auto" style={{ color: "var(--dashboard-primary)" }} />}
                         </div>
                       </button>
@@ -1215,7 +1216,7 @@ export default function CustomExamTab() {
                       <span className="text-[10px] font-mono text-[var(--dashboard-text-muted)]">{item.subject}</span>
                     </div>
 
-                    <p className="text-sm text-[var(--text-primary)] mb-2">{item.question}</p>
+                    <p className="text-sm text-[var(--text-primary)] mb-2"><RichText text={item.question} /></p>
 
                     {/* Options with correct/user highlighting */}
                     <div className="space-y-1 mb-2">
@@ -1228,7 +1229,7 @@ export default function CustomExamTab() {
                         return (
                           <div key={oi} className={`rounded-lg border px-3 py-1.5 text-xs flex items-center gap-2 ${cls}`}>
                             <span className="font-mono">{OPTION_LABELS[oi] ?? oi + 1}</span>
-                            <span className="flex-1">{option}</span>
+                            <span className="flex-1"><RichText text={option} /></span>
                             {isRight && <Check className="w-3.5 h-3.5 text-[var(--dashboard-success)]" />}
                             {isUser && !isRight && <X className="w-3.5 h-3.5 text-[var(--dashboard-danger)]" />}
                           </div>
@@ -1249,7 +1250,7 @@ export default function CustomExamTab() {
                     </p>
 
                     {item.explanation && (
-                      <p className="text-xs text-[var(--dashboard-text-muted)] mt-2 leading-relaxed">{item.explanation}</p>
+                      <p className="text-xs text-[var(--dashboard-text-muted)] mt-2 leading-relaxed"><RichText text={item.explanation} /></p>
                     )}
 
                     <AIExplanationButton

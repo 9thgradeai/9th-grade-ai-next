@@ -7,6 +7,7 @@ import { api } from "@/lib/services/api";
 import { useEcosystem } from "@/lib/ecosystem-ctx";
 import type { Server } from "@/lib/types";
 import SubjectTopicSelect from "./SubjectTopicSelect";
+import RichText from "@/components/ui/RichText";
 import {
   type Selection,
   flattenNodes,
@@ -821,7 +822,7 @@ export default function RealExamTab() {
                           : <span className="ml-auto flex items-center gap-1 px-2 py-0.5 rounded bg-[var(--dashboard-danger-subtle)] text-[10px] font-mono text-[var(--dashboard-danger)]"><XCircle className="w-3 h-3" /> ভুল</span>
                       )}
                     </div>
-                    <h3 className="text-sm md:text-[15px] font-semibold leading-relaxed text-[var(--dashboard-text-primary)] mb-4">{q.question}</h3>
+                    <h3 className="text-sm md:text-[15px] font-semibold leading-relaxed text-[var(--dashboard-text-primary)] mb-4"><RichText text={q.question} /></h3>
                     <div className="space-y-2.5">
                       {q.options.map((option, i) => {
                         if (!option || option.trim() === "") return null;
@@ -845,7 +846,7 @@ export default function RealExamTab() {
                           >
                             <div className="flex items-center gap-3">
                               <span className="w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-mono border border-current">{OPTION_LABELS[i] ?? i + 1}</span>
-                              <span className="text-sm font-medium">{option}</span>
+                              <span className="text-sm font-medium"><RichText text={option} /></span>
                               {isSelected && <Check className="w-4 h-4 ml-auto" />}
                             </div>
                           </button>
@@ -855,7 +856,7 @@ export default function RealExamTab() {
                     {checked && includeExplanations !== false && q.explanation && q.explanation.trim() !== "" && (
                       <div className="mt-3 p-3 rounded-xl bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)]">
                         <p className="text-xs font-mono text-[var(--dashboard-text-muted)] mb-1">ব্যাখ্যা:</p>
-                        <p className="text-xs text-[var(--dashboard-text-secondary)]">{q.explanation}</p>
+                        <p className="text-xs text-[var(--dashboard-text-secondary)]"><RichText text={q.explanation} /></p>
                       </div>
                     )}
                   </div>

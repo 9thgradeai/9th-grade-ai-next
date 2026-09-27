@@ -18,6 +18,7 @@ import type { Server } from "@/lib/types";
 import { shuffleSessionOptions } from "@/lib/shuffle-options";
 import SubjectTopicSelect from "./SubjectTopicSelect";
 import AIExplanationButton from "./AIExplanationButton";
+import RichText from "@/components/ui/RichText";
 import {
   type Selection,
   buildExamSelectionRequest,
@@ -665,7 +666,7 @@ export default function MockTestTab() {
             </div>
 
             <div className="rounded-xl border p-4 mb-5" style={{ background: "var(--dashboard-surface-raised)", borderColor: "var(--dashboard-border-muted)", boxShadow: "var(--dashboard-shadow-sm)" }}>
-              <h3 className="text-base md:text-[16px] font-semibold leading-relaxed" style={{ color: "var(--dashboard-text-primary)", lineHeight: "1.6" }}>{q.question}</h3>
+              <h3 className="text-base md:text-[16px] font-semibold leading-relaxed" style={{ color: "var(--dashboard-text-primary)", lineHeight: "1.6" }}><RichText text={q.question} /></h3>
             </div>
 
             <div className="space-y-2.5" role="radiogroup" aria-label={`প্রশ্ন ${currentQuestion + 1} — উত্তর নির্বাচন করুন`}>
@@ -690,7 +691,7 @@ export default function MockTestTab() {
                       <span className="w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-mono border" style={isSelected ? { background: "var(--dashboard-primary)", color: "var(--dashboard-text-inverse)", borderColor: "var(--dashboard-primary)" } : { background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-strong)", color: "var(--dashboard-text-secondary)" }}>
                         {OPTION_LABELS[i] ?? i + 1}
                       </span>
-                      <span className="text-sm font-medium">{option}</span>
+                      <span className="text-sm font-medium"><RichText text={option} /></span>
                       {isSelected && <Check className="w-4 h-4 ml-auto" style={{ color: "var(--dashboard-primary)" }} />}
                     </div>
                   </button>
@@ -936,7 +937,7 @@ export default function MockTestTab() {
                     <CircleDashed className="w-4 h-4 text-[var(--dashboard-teal)] flex-shrink-0 mt-0.5" />
                   )}
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm text-[var(--text-primary)] mb-1.5">{i + 1}. {r.question}</p>
+                    <p className="text-sm text-[var(--text-primary)] mb-1.5">{i + 1}. <RichText text={r.question} /></p>
                     <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">
                       আপনার উত্তর:{" "}
                       <span className={
@@ -955,7 +956,7 @@ export default function MockTestTab() {
                       </p>
                     )}
                     {r.explanation && (
-                      <p className="text-xs text-[var(--dashboard-text-muted)] mt-1.5">{r.explanation}</p>
+                      <p className="text-xs text-[var(--dashboard-text-muted)] mt-1.5"><RichText text={r.explanation} /></p>
                     )}
 
                     <AIExplanationButton

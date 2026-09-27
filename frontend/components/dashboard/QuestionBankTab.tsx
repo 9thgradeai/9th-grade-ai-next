@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Terminal, Clock, CheckCircle, XCircle, Bookmark, Play } from "@phosphor-icons/react";
 import { QUESTION_BANK_CATEGORIES } from "@/lib/data";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
+import RichText from "@/components/ui/RichText";
 import { useToastSafe } from "@/lib/toast-ctx";
 import { api } from "@/lib/services/api";
 import { useEcosystem } from "@/lib/ecosystem-ctx";
@@ -45,26 +46,6 @@ const SAMPLE_QUESTIONS: Record<string, { q: string; a: string; difficulty: strin
     { q: "সুশাসনের মূল উপাদান কোনটি?", a: "স্বচ্ছতা, জবাবদিহিতা, দায়িত্ব", difficulty: "MEDIUM" },
   ],
 };
-
-/** Highlights case-insensitive matches of `query` inside `text`. */
-function Highlight({ text, query }: { text: string; query: string }) {
-  const trimmed = query.trim();
-  if (!trimmed) return <>{text}</>;
-  const parts = text.split(new RegExp(`(${trimmed.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "ig"));
-  return (
-    <>
-      {parts.map((part, i) =>
-        part.toLowerCase() === trimmed.toLowerCase() ? (
-          <mark key={i} className="bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] rounded-sm px-0.5">
-            {part}
-          </mark>
-        ) : (
-          <span key={i}>{part}</span>
-        ),
-      )}
-    </>
-  );
-}
 
 export default function QuestionBankTab() {
   const toast = useToastSafe();
@@ -536,13 +517,13 @@ export default function QuestionBankTab() {
                     </button>
                   </div>
                   <p className="text-sm text-[var(--text-primary)] mb-3">
-                    <Highlight text={item.question} query={query} />
+                    <RichText text={item.question} query={query} />
                   </p>
                   {(view === "saved" || item.options.length === 0) && (
                     <div className="flex items-center justify-between gap-3">
                       <div className="flex items-center gap-2 text-xs text-[var(--dashboard-primary)] font-mono">
                         <CheckCircle className="w-3.5 h-3.5" />
-                        <span>{item.correctAnswer}</span>
+                        <span><RichText text={item.correctAnswer} /></span>
                       </div>
                       <div className="flex items-center gap-1 text-xs text-[var(--dashboard-text-muted)] font-mono">
                         <Clock className="w-3 h-3" /> 45s

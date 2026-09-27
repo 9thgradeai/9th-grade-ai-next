@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Check, Trophy, ArrowRight, Package, Sun } from "@phosphor-icons/react";
 import { api } from "@/lib/services/api";
+import RichText from "@/components/ui/RichText";
 import { useDialogA11y } from "@/lib/use-dialog-a11y";
 import type { Server } from "@/lib/types";
 
@@ -283,7 +284,7 @@ export default function DailyQuizWidget() {
                   <span className="text-[10px] text-[var(--dashboard-warning)] font-mono uppercase tracking-wider mb-2 block">
                     {currentQuestion?.subject} • {currentQuestion?.topic}
                   </span>
-                  <h3 className="text-base font-medium text-[var(--text-primary)] mb-4">{currentQuestion?.question}</h3>
+                  <h3 className="text-base font-medium text-[var(--text-primary)] mb-4">{currentQuestion?.question ? <RichText text={currentQuestion.question} /> : null}</h3>
                   <div className="space-y-2" role="radiogroup" aria-label="উত্তর নির্বাচন করুন">
                     {currentQuestion?.options.map((option, i) => {
                       const isSelected = answers[currentIndex] === option;
@@ -303,7 +304,7 @@ export default function DailyQuizWidget() {
                             <span className="w-6 h-6 rounded-full bg-[var(--surface-overlay)] border border-[var(--border-strong)] flex items-center justify-center text-xs font-mono">
                               {String.fromCharCode(65 + i)}
                             </span>
-                            <span className="text-sm">{option}</span>
+                            <span className="text-sm"><RichText text={option} /></span>
                             {isSelected && <Check className="w-4 h-4 text-[var(--dashboard-warning)] ml-auto" />}
                           </div>
                         </button>
@@ -369,7 +370,7 @@ export default function DailyQuizWidget() {
                   const isCorrect = userAnswer === q.correctAnswer;
                   return (
                     <div key={q.id} className={`p-3 rounded-xl border ${isCorrect ? "border-[var(--accent)]/20" : "border-[var(--danger)]/20"}`}>
-                      <p className="text-sm text-[var(--text-primary)] mb-1">{i + 1}. {q.question}</p>
+                      <p className="text-sm text-[var(--text-primary)] mb-1">{i + 1}. <RichText text={q.question} /></p>
                       <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">
                         আপনার উত্তর: <span className={isCorrect ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-danger)]"}>{userAnswer || "উত্তর দেওয়া হয়নি"}</span>
                       </p>

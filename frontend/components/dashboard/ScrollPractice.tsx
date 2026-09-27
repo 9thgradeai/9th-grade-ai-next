@@ -4,6 +4,7 @@ import { useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { CheckCircle, XCircle, ArrowUp, CaretDown, ArrowCounterClockwise } from "@phosphor-icons/react";
 import { api } from "@/lib/services/api";
+import RichText from "@/components/ui/RichText";
 import type { QuestionDTO } from "@/lib/types";
 
 export type DrillAnswered = {
@@ -190,7 +191,7 @@ export default function ScrollPractice({
               </div>
 
               <div className="rounded-xl border p-3 mb-3" style={{ background: "var(--dashboard-surface-raised)", borderColor: "var(--dashboard-border-muted)" }}>
-                <h4 className="text-[15px] font-semibold leading-relaxed" style={{ color: "var(--dashboard-text-primary)", lineHeight: "1.6" }}>{q.question}</h4>
+                <h4 className="text-[15px] font-semibold leading-relaxed" style={{ color: "var(--dashboard-text-primary)", lineHeight: "1.6" }}><RichText text={q.question} /></h4>
               </div>
 
               <div className="space-y-2">
@@ -218,7 +219,7 @@ export default function ScrollPractice({
                       style={style}
                     >
                       <span className="font-bold">{optLetter}.</span>
-                      <span className="font-medium" style={{ fontFamily: 'inherit' }}>{opt}</span>
+                      <span className="font-medium" style={{ fontFamily: 'inherit' }}><RichText text={opt} /></span>
                       {submitted && isAnswer && <CheckCircle className="w-4 h-4 ml-auto" style={{ color: "var(--dashboard-success)" }} />}
                       {submitted && isSelected && !isAnswer && <XCircle className="w-4 h-4 ml-auto" style={{ color: "var(--dashboard-danger)" }} />}
                     </button>
@@ -262,7 +263,7 @@ export default function ScrollPractice({
                   className="mt-2 text-sm text-[var(--dashboard-text-muted)] border-t border-terminal-border pt-3 overflow-hidden"
                   style={{ lineHeight: "1.7" }}
                 >
-                  💡 {q.explanation}
+                  💡 <RichText text={q.explanation} />
                 </motion.p>
               )}
             </motion.div>

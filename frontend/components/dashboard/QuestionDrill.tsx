@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { CheckCircle, XCircle, ArrowRight, ArrowCounterClockwise, TrendUp, Timer } from "@phosphor-icons/react";
 import { api } from "@/lib/services/api";
+import RichText from "@/components/ui/RichText";
 import type { QuestionDTO } from "@/lib/types";
 
 export type DrillAnswered = {
@@ -260,7 +261,7 @@ export default function QuestionDrill({
           {current.sourceExam ? ` • ${current.sourceExam}` : ""}
         </div>
         <div className="rounded-xl border p-4 mb-4" style={{ background: "var(--dashboard-surface-raised)", borderColor: "var(--dashboard-border-muted)" }}>
-          <h4 className="text-lg font-semibold leading-relaxed" style={{ color: "var(--dashboard-text-primary)", lineHeight: "1.6", fontFamily: 'inherit' }}>{current.question}</h4>
+          <h4 className="text-lg font-semibold leading-relaxed" style={{ color: "var(--dashboard-text-primary)", lineHeight: "1.6", fontFamily: 'inherit' }}><RichText text={current.question} /></h4>
         </div>
 
         <div className="space-y-2">
@@ -288,7 +289,7 @@ export default function QuestionDrill({
                 style={style}
               >
                 <span className="font-bold">{optLetter}.</span>
-                <span className="font-medium">{opt}</span>
+                <span className="font-medium"><RichText text={opt} /></span>
                 {revealed && isAnswer && <CheckCircle className="w-4 h-4 ml-auto" style={{ color: "var(--dashboard-success)" }} />}
                 {revealed && isSelected && !isAnswer && <XCircle className="w-4 h-4 ml-auto" style={{ color: "var(--dashboard-danger)" }} />}
               </button>
@@ -298,7 +299,7 @@ export default function QuestionDrill({
 
         {revealed && current.explanation && (
           <p className="mt-4 text-sm text-[var(--dashboard-text-muted)] border-t border-terminal-border pt-3" style={{ lineHeight: "1.7" }}>
-            💡 {current.explanation}
+            💡 <RichText text={current.explanation} />
           </p>
         )}
       </div>

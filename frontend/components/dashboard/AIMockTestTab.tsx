@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { generateMockTest } from "@/lib/services/ai/mockTest";
+import RichText from "@/components/ui/RichText";
 import type { GeneratedMockTest, GeneratedMockQuestion } from "@/lib/services/ai/types";
 
 type Difficulty = "EASY" | "MEDIUM" | "HARD";
@@ -191,7 +192,7 @@ function QuestionCard({
       <div className="mb-4 flex items-start gap-2">
         <span className="mt-0.5 font-mono text-xs text-text-muted">{index}.</span>
         <div>
-          <p className="text-sm text-text-primary">{q.question}</p>
+          <p className="text-sm text-text-primary"><RichText text={q.question} /></p>
           {q.topic && <span className="text-[10px] text-text-muted">{q.topic}</span>}
         </div>
       </div>

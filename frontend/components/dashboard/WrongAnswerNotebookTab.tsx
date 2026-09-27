@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Book, Play, ArrowCounterClockwise, Funnel, Target, TrendUp, Medal, Warning, CaretDown, CaretRight, MagnifyingGlass, X, Brain, Clock, ChartBar, CheckCircle, XCircle, Trophy, Sun } from "@phosphor-icons/react";
 import { api } from "@/lib/services/api";
+import RichText from "@/components/ui/RichText";
 import type { MistakeItemDTO, MistakeStatsDTO, SubjectMistakeCountDTO, ExamBuildResultDTO } from "@/lib/types";
 import QuestionDrill, { type DrillAnswered } from "./QuestionDrill";
 import { useToastSafe } from "@/lib/toast-ctx";
@@ -457,7 +458,7 @@ export default function WrongAnswerNotebookTab() {
                         </span>
                       )}
                     </div>
-                    <p className="text-sm text-[var(--text-primary)]">{q.question}</p>
+                    <p className="text-sm text-[var(--text-primary)]"><RichText text={q.question} /></p>
                   </div>
                 </div>
               </motion.div>
@@ -796,7 +797,7 @@ export default function WrongAnswerNotebookTab() {
                         </span>
                       )}
                     </div>
-                    <p className="text-sm text-[var(--dashboard-text-primary)] leading-relaxed line-clamp-2">{q.question}</p>
+                    <p className="text-sm text-[var(--dashboard-text-primary)] leading-relaxed line-clamp-2"><RichText text={q.question} /></p>
                   </div>
                   <CaretDown
                     className={`w-4 h-4 text-[var(--dashboard-text-muted)] shrink-0 transition-transform ${isExpanded ? "rotate-180" : ""}`}
@@ -854,7 +855,7 @@ export default function WrongAnswerNotebookTab() {
 
                         {q.explanation && (
                           <p className="text-xs text-[var(--dashboard-text-muted)] font-mono border-t border-terminal-border pt-3">
-                            💡 {q.explanation}
+                            💡 <RichText text={q.explanation} />
                           </p>
                         )}
 
