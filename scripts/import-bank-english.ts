@@ -30,10 +30,56 @@ import { readFileSync, readdirSync } from "fs";
 import { join } from "path";
 import { sourceKey } from "./seed-keys";
 import { scanMca, mcaSignature } from "./qb-forensics/import-gate";
+import { QueryCache } from "../backend/infrastructure/cache/query-cache";
 
 const MD_DIR = join(process.cwd(), "database", "data", "Bank", "English", "md");
 
 const LETTERS = ["A", "B", "C", "D", "E"];
+
+// File topic → taxonomy leaf (must be an existing Topic row — the Practice
+// selection tree only counts questions whose path attaches to the taxonomy).
+// Voice & Narration splits per question by stem cue (see routeVoiceNarration).
+const TOPIC_ROUTE: Record<string, { path: string; topic: string; subtopic: string }> = {
+  "clauses-and-phrases": {
+    path: "02_English_Language_and_Literature/PART-I_Language/Idioms_and_Phrases/Identifying_Phrases",
+    topic: "Identifying_Phrases",
+    subtopic: "Clauses & Phrases",
+  },
+  "errors-detection": {
+    path: "02_English_Language_and_Literature/PART-I_Language/Corrections_and_Agreement",
+    topic: "Corrections_and_Agreement",
+    subtopic: "Errors Detection",
+  },
+  "idioms-and-phrases": {
+    path: "02_English_Language_and_Literature/PART-I_Language/Idioms_and_Phrases/Meanings_of_Idioms",
+    topic: "Meanings_of_Idioms",
+    subtopic: "Idioms & Phrases",
+  },
+  "synonym-antonym": {
+    path: "02_English_Language_and_Literature/PART-I_Language/Words_Vocabulary/Synonyms_and_Antonyms",
+    topic: "Synonyms_and_Antonyms",
+    subtopic: "Synonym-Antonym",
+  },
+  "voice-and-narration": {
+    path: "02_English_Language_and_Literature/PART-I_Language/Sentences_and_Transformations/Active_and_Passive_Voice",
+    topic: "Active_and_Passive_Voice",
+    subtopic: "Voice & Narration",
+  },
+};
+
+const VOICE_NARRATION_PATH =
+  "02_English_Language_and_Literature/PART-I_Language/Sentences_and_Transformations/Direct_and_Indirect_Narration";
+
+/** Narration cue in the stem (narration questions never say "change the voice"). */
+export function routeVoiceNarration(question: string): { path: string; topic: string } {
+  const q = question.toLowerCase();
+  const isNarration =
+    (q.includes("narrat") || q.includes("indirect speech") || q.includes("direct speech") || q.includes("reported speech")) &&
+    !q.includes("change the voice");
+  if (isNarration) return { path: VOICE_NARRATION_PATH, topic: "Direct_and_Indirect_Narration" };
+  const base = TOPIC_ROUTE["voice-and-narration"];
+  return { path: base.path, topic: base.topic };
+}
 
 type BankEnglishRecord = {
   topic: string;
@@ -106,6 +152,9 @@ export async function importBankEnglish(prisma: PrismaClient, opts?: { dryRun?: 
   });
   if (!subject) throw new Error("Bank English subject missing");
 
+  const topicRows = await prisma.topic.findMany({ where: { subjectId: subject.id } });
+  const topicIdByPath = new Map(topicRows.map((t) => [t.path, t.id]));
+
   const files = readdirSync(MD_DIR).filter((f) => f.endsWith(".md")).sort();
   if (files.length === 0) throw new Error(`No .md files in ${MD_DIR} — run docx-bank-english-to-md.py first`);
 
@@ -176,19 +225,27 @@ export async function importBankEnglish(prisma: PrismaClient, opts?: { dryRun?: 
       }
       globalSigs.add(sig);
 
-      // Key includes the full option set: the source repeats stems with
-      // different distractors (e.g. ZENITH twice) and each variant is a
-      // distinct MCQ. Deterministic across runs (same input → same key).
+      const route = TOPIC_ROUTE[r.slug];
+      if (!route) {
+        report.skipped += 1;
+        console.warn(`  [skip] ${file} Q#${r.n}: no taxonomy route for slug '${r.slug}'`);
+        continue;
+      }
+      const topicIdRow = topicIdByPath.get(
+        r.slug === "voice-and-narration" ? routeVoiceNarration(r.question).path : route.path,
+      );
+      const routed =
+        r.slug === "voice-and-narration" ? routeVoiceNarration(r.question) : { path: route.path, topic: route.topic };
       const key = sourceKey(subject.id, `bank-english:${r.slug}`, r.question, r.options.join(" | "));
       ops.push({
         key,
         data: {
           ecosystemId: bb.id,
           subjectId: subject.id,
-          topicId: null,
-          topic: r.topic,
-          subtopic: "",
-          path: "",
+          topicId: topicIdRow ?? null,
+          topic: routed.topic,
+          subtopic: route.subtopic,
+          path: routed.path,
           question: r.question,
           options: r.options,
           correctAnswer: r.options[answerIdx],
@@ -234,6 +291,10 @@ export async function importBankEnglish(prisma: PrismaClient, opts?: { dryRun?: 
     report.updated += stale.length;
   }
   for (const o of ops) report.topics[o.data.topic as string] = (report.topics[o.data.topic as string] ?? 0) + 1;
+  // Practice selection tree caches counts — bust it so the new pool shows up.
+  if (!dryRun && (report.inserted > 0 || report.updated > 0)) {
+    await QueryCache.invalidateExamTree().catch(() => {});
+  }
   return report;
 }
 

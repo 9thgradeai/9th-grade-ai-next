@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { parseMdFile } from "../scripts/import-bank-english";
+import { parseMdFile, routeVoiceNarration } from "../scripts/import-bank-english";
 
 const SAMPLE = `# Bank English · Clauses & Phrases
 
@@ -53,5 +53,17 @@ Exp: All fruits except one.
     const { records, skipped } = parseMdFile("X.md", "# Header\n\nSome intro paragraph.\n");
     expect(records).toHaveLength(0);
     expect(skipped.length).toBeGreaterThan(0);
+  });
+});
+
+describe("routeVoiceNarration", () => {
+  it("routes voice stems to the Active/Passive leaf", () => {
+    const r = routeVoiceNarration("*Change the voice:* The bank raised the rate.");
+    expect(r.topic).toBe("Active_and_Passive_Voice");
+  });
+
+  it("routes narration stems to the Narration leaf", () => {
+    const r = routeVoiceNarration("Change the narration: He said, *I am busy*.");
+    expect(r.topic).toBe("Direct_and_Indirect_Narration");
   });
 });
