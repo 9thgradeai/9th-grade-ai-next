@@ -3,6 +3,7 @@ import { join } from "path";
 import { PrismaClient } from "@prisma/client";
 import { sourceKey } from "./seed-keys";
 import { scanMca, mcaSignature } from "./qb-forensics/import-gate";
+import { unicodeMathToLatex } from "./qb-forensics/unicode-math-to-latex";
 import { resolveAnswerToOption } from "./qb-forensics/parse-flat";
 import { loadTaxonomy, SUBJECT_META, contentPath } from "./taxonomy";
 import type { TaxonomyNode } from "./taxonomy";
@@ -193,7 +194,15 @@ async function main(){
     const leafPaths=leaves.length===2 ? parsedRecs.map((_,i)=> i < Math.ceil(parsedRecs.length/2) ? leaves[0] : leaves[1]) : parsedRecs.map(()=>leaves[0]);
     let fa=0, fr=0;
     for(let i=0;i<parsedRecs.length;i++){
-      const parsed=parsedRecs[i]; if(!parsed){fr++; totalRejected++; continue;}
+      const rawParsed=parsedRecs[i]; if(!rawParsed){fr++; totalRejected++; continue;}
+      // Legacy .txt files carry linearized Unicode math — migrate to LaTeX
+      // BEFORE the gate so sourceKeys are stable for future reseeds.
+      const parsed={
+        question: unicodeMathToLatex(rawParsed.question),
+        options: rawParsed.options.map(unicodeMathToLatex),
+        correctAnswer: unicodeMathToLatex(rawParsed.correctAnswer),
+        explanation: unicodeMathToLatex(rawParsed.explanation),
+      };
       const gate=scanMca(parsed); if(gate.verdict==="REJECT"){fr++; totalRejected++; for(const f of gate.fatal) rejects[f.code+"@"+f.field]=(rejects[f.code+"@"+f.field]||0)+1; continue;}
       const norm=gate.normalized;
       const sig=mcaSignature({question:norm.question, options:norm.options, correctAnswer:norm.correctAnswer, explanation:norm.explanation});

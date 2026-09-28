@@ -13,7 +13,7 @@ import { describe, it, expect } from "vitest";
 import { parseMathText } from "../scripts/import-bank-math-indices";
 
 describe("parseMathText — bank math indices", () => {
-  it("parses a record with Unicode equations intact", () => {
+  it("parses a record with LaTeX equations (migrated from Unicode)", () => {
     const { records, skipped } = parseMathText(
       [
         "Section I: Easy Level Questions",
@@ -24,7 +24,7 @@ describe("parseMathText — bank math indices", () => {
     expect(records).toHaveLength(1);
     expect(records[0]).toMatchObject({
       n: 1,
-      question: "If 2⁰⁺³ + 2⁰⁺¹ = 320, find the value of x.",
+      question: "If $2^{0+3}$ + $2^{0+1}$ = 320, find the value of x.",
       options: ["4", "5", "6", "7"],
       answerLetter: "B",
       difficulty: "EASY",
@@ -57,11 +57,11 @@ describe("parseMathText — bank math indices", () => {
     expect(records[0].explanation).toContain("flipping");
   });
 
-  it("fixes the Q18 superscript-f source quirk", () => {
+  it("fixes the Q18 superscript-f source quirk (as LaTeX)", () => {
     const { records } = parseMathText(
       "Question 18. If 2ᵃ = 3 and 7⁺ = 8, find it.A. 1B. 2C. 3D. 4Answer: CExplanation: Chain rule.",
     );
-    expect(records[0].question).toContain("7ᶠ = 8");
+    expect(records[0].question).toContain("$7^{f}$ = 8");
   });
 
   it("skips records with missing options", () => {

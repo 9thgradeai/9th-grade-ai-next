@@ -393,3 +393,12 @@ Grammar **সমাস** folder file (`database/data/ques/বাংলা ভা
   (bare letter, or a remainder that IS the option). Multi-answer / contradictory
   answers ("ক,গ (উভয়ই)", "খ বা ঘ. …") are kept raw and rejected by
   `ANSWER_MISMATCH` instead of silently forcing a wrong option.
+
+## ADR-0xx: KaTeX for book-exact math rendering (Math MCQs)
+
+- **Date**: 2026-09-28
+- **Status**: Accepted
+- **Context**: Math MCQs (BCS database/data/ques/Math/*.txt, Bank database/data/Bank/Math/*.docx with OMML equations) were linearized to Unicode plain text and rendered as plain text. Readable but not book-exact: stacked fractions, roots, superscripts lost print layout.
+- **Decision**: Store real math as inline LaTeX ($...$) and render with katex. New MathText/RichText renders $...$ via katex.renderToString({ throwOnError: false }); OMML converts to LaTeX (m:f -> frac, m:sSup -> ^{}, m:rad -> sqrt); legacy Unicode math migrated by scripts/qb-forensics/unicode-math-to-latex.ts.
+- **Rationale**: KaTeX is dependency-light, SSR-safe (string render), offline-capable, accessible, keeps questions searchable — unlike equation screenshots. Alternatives rejected: MathJax (heavier, slower), images (not searchable, blurry, manual work).
+- **Consequences**: katex + katex.min.css ship to client bundle; LaTeX re-imports upsert by existing sourceKeys (reversible).

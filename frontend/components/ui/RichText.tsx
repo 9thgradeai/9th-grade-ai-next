@@ -1,14 +1,42 @@
 "use client";
 
 import { Fragment } from "react";
+import { MathSpans } from "@/components/ui/MathText";
 
 function escapeRegExp(s: string) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-/** Highlights case-insensitive matches of `query` inside plain text. */
+/** Highlights case-insensitive matches of `query` inside plain text. Math
+ * spans ($...$) are typeset by KaTeX; highlight matches never split LaTeX. */
 function Highlighted({ text, query }: { text: string; query: string }) {
   const trimmed = query.trim();
+  if (text.includes("$")) {
+    if (!trimmed) return <MathSpans text={text} />;
+    // Highlight only outside $...$ spans so LaTeX commands stay intact.
+    const parts = text.split(/(\$[^$]+\$)/g);
+    return (
+      <>
+        {parts.map((part, i) =>
+          part.startsWith("$") && part.endsWith("$") && part.length > 2 ? (
+            <MathSpans key={i} text={part} />
+          ) : (
+            <Fragment key={i}>
+              {part.split(new RegExp(`(${escapeRegExp(trimmed)})`, "ig")).map((p, j) =>
+                p.toLowerCase() === trimmed.toLowerCase() ? (
+                  <mark key={j} className="bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] rounded-sm px-0.5">
+                    {p}
+                  </mark>
+                ) : (
+                  <span key={j}>{p}</span>
+                ),
+              )}
+            </Fragment>
+          ),
+        )}
+      </>
+    );
+  }
   if (!trimmed) return <>{text}</>;
   const parts = text.split(new RegExp(`(${escapeRegExp(trimmed)})`, "ig"));
   return (
@@ -29,7 +57,8 @@ function Highlighted({ text, query }: { text: string; query: string }) {
 const TOKEN_RE = /(\*\*\*.+?\*\*\*|\*\*.+?\*\*|\*[^*\n]+?\*)/g;
 
 /**
- * Renders question-bank text with inline **bold** / *italic* markers.
+ * Renders question-bank text with inline **bold** / *italic* markers and
+ * `$...$` LaTeX math (KaTeX, book-exact fractions/roots/scripts).
  *
  * Imported MCQs carry markdown-style emphasis (converted from the source
  * .docx bold/italic runs). Plain strings render unchanged; unmatched `*`

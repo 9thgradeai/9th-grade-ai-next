@@ -275,6 +275,15 @@ describe("import gate: non-fatal issues are auto-normalized", () => {
   it("keeps zero-width joiners intact through normalization", () => {
     expect(normalizeField("র\u200D্যাকিট")).toBe("র\u200D্যাকিট");
   });
+
+  it("leaves $...$ LaTeX spans intact (no escape/space mangling)", () => {
+    // Regression: decodeLiteralEscapes turned \times into " imes" and
+    // collapseSpaces touched math. LaTeX commands must survive the gate.
+    const q = "Simplify $\\frac{x^{a}}{x^{b}}$ and $2^{5} \\cdot 2^{1/2}$?";
+    const g = scanMca(clean({ question: q }));
+    expect(g.verdict).toBe("ACCEPT");
+    expect(g.normalized.question).toBe(q);
+  });
 });
 
 // ---------------------------------------------------------------------------

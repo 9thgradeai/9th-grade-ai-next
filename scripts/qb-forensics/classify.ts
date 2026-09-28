@@ -70,9 +70,20 @@ const TRANSFORMS: TransformChain[] = [
   { code: "WS_NON_STANDARD", apply: (s) => s.replace(/[\u00A0\u1680\u2028\u2029\u202F\u205F\u3000\u2027]/g, " ") },
   { code: "WS_MULTI+TRIM", apply: (s) => s.replace(/[ \t\r\f\v]{2,}/g, " ").trim() },
   { code: "NFC", apply: (s) => s.normalize("NFC") },
-  { code: "HTML_ENTITY", apply: (s) => decodeHtmlEntities(s).out },
-  { code: "LITERAL_ESCAPE", apply: (s) => decodeLiteralEscapes(s).out },
+  // LaTeX-span-aware: \times, \theta, \to… contain a literal "\t" that
+  // decodeLiteralEscapes would otherwise eat, and &amp; inside math must
+  // stay escaped. Transforms apply to prose only; $...$ passes through.
+  { code: "HTML_ENTITY", apply: (s) => outsideLatex(s, (seg) => decodeHtmlEntities(seg).out) },
+  { code: "LITERAL_ESCAPE", apply: (s) => outsideLatex(s, (seg) => decodeLiteralEscapes(seg).out) },
 ];
+
+/** Apply fn only to prose segments — $...$ LaTeX spans pass through intact. */
+export function outsideLatex(s: string, fn: (seg: string) => string): string {
+  return s
+    .split(/(\$[^$]*\$)/g)
+    .map((part, i) => (i % 2 === 1 ? part : fn(part)))
+    .join("");
+}
 
 export function applyTransforms(s: string): { value: string; applied: string[]; fromEach: string[] } {
   let cur = s;

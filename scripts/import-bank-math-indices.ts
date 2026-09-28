@@ -6,8 +6,8 @@
  * into the BANGLADESH_BANK "03_Mathematics" subject ONLY. Never touches BCS.
  *
  * Pipeline:
- *   1. Converts the .docx to text with scripts/docx-math-to-text.py
- *      (OMML equations → Unicode: 2⁰⁺³, log₃81, √(…), (num)/(den)).
+ *   1. Converts the .docx to text with scripts/docx-math-to-latex.py
+ *      (OMML equations → LaTeX: $\frac{..}{..}$, $x^{..}$, $\sqrt[4]{..}$).
  *   2. Parses single-paragraph records:
  *        Question N. <stem>A. …B. …C. …D. …Answer: <L>Explanation: …
  *   3. Runs the shared import gate (scanMca). Rejects are counted + reported.
@@ -30,6 +30,7 @@ import { join } from "path";
 import { PrismaClient } from "@prisma/client";
 import { sourceKey } from "./seed-keys";
 import { scanMca } from "./qb-forensics/import-gate";
+import { unicodeMathToLatex, mathFingerprint } from "./qb-forensics/unicode-math-to-latex";
 
 const DOCX = join(
   process.cwd(),
@@ -39,7 +40,7 @@ const DOCX = join(
   "Math",
   "Indices and Logarithms — Bank Mathematics MCQ.docx",
 );
-const CONVERTER = join(process.cwd(), "scripts", "docx-math-to-text.py");
+const CONVERTER = join(process.cwd(), "scripts", "docx-math-to-latex.py");
 const BB_MATH_NAMEBN = "03_Mathematics";
 const LEAF_PATH = "03_Mathematics/Part_02_Algebra/Indices_and_Logarithms";
 const KEY_NS = "bank-math|indices-logarithms";
@@ -99,7 +100,7 @@ export function parseMathText(text: string): { records: MathRecord[]; skipped: s
       continue;
     }
     const [, stem, a, b, c, d, letter, expl] = m;
-    const opts = [a, b, c, d].map((o) => o.trim().normalize("NFC"));
+    const opts = [a, b, c, d].map((o) => unicodeMathToLatex(o.trim()));
     if (opts.some((o) => !o)) {
       skipped.push(`Q${n}: empty option`);
       continue;
@@ -109,13 +110,21 @@ export function parseMathText(text: string): { records: MathRecord[]; skipped: s
       continue;
     }
     // Known source quirk: Q18's "7^f = 8" superscript-f renders as "7⁺".
-    const fixSupF = (s: string) => s.replace(/7⁺\s*=\s*8/g, "7ᶠ = 8");
+    // Fix on the RAW stem first — after LaTeX migration the glyph is gone.
+    // The OMML→LaTeX converter may already have produced "$7^{+}$ = 8";
+    // cover that shape too.
+    const fixSupF = (s: string) =>
+      unicodeMathToLatex(
+        s
+          .replace(/7⁺\s*=\s*8/g, "7ᶠ = 8")
+          .replace(/\$7\^{\+}\$\s*=\s*8/g, "$7^{f}$ = 8"),
+      );
     const rec: MathRecord = {
       n,
       question: fixSupF(stem.trim().normalize("NFC")),
       options: opts as [string, string, string, string],
       answerLetter: letter as MathRecord["answerLetter"],
-      explanation: expl.trim().normalize("NFC"),
+      explanation: unicodeMathToLatex(expl.trim()),
       difficulty: difficultyFor(section),
     };
     records.push(rec);
@@ -152,6 +161,7 @@ export async function importBankMathIndices(
     parsed: records.length,
     inserted: 0,
     updated: 0,
+    adopted: 0,
     rejected: 0,
     skippedParas: skipped.length,
     byDifficulty: {} as Record<string, number>,
@@ -226,7 +236,28 @@ export async function importBankMathIndices(
   }
   if (Object.keys(rejects).length > 0) console.log("  rejects:", rejects);
 
-  if (dryRun) return report;
+  if (dryRun) {
+    // Report content-adoptions without writing: fresh records whose key is
+    // new but whose fingerprint matches exactly one existing leaf row.
+    const rows = await prisma.question.findMany({
+      where: { subjectId: subject.id, path: LEAF_PATH },
+      select: { sourceKey: true, question: true },
+    });
+    const haveKeys = new Set(rows.map((r) => r.sourceKey));
+    const fpIndex = new Map<string, number>();
+    let collisions = 0;
+    for (const r of rows) {
+      const fp = mathFingerprint(r.question);
+      if (fpIndex.has(fp)) collisions++;
+      else fpIndex.set(fp, 1);
+    }
+    for (const o of ops) {
+      if (haveKeys.has(o.key)) continue;
+      if (fpIndex.get(mathFingerprint(o.data.question)) === 1) report.adopted++;
+    }
+    if (collisions > 0) console.log(`  note: ${collisions} fingerprint collisions in leaf (adopt skipped for those)`);
+    return report;
+  }
   const existing = await prisma.question.findMany({
     where: { subjectId: subject.id, sourceKey: { in: ops.map((o) => o.key) } },
     select: { sourceKey: true },
@@ -234,9 +265,39 @@ export async function importBankMathIndices(
   const existingKeys = new Set(existing.map((e) => e.sourceKey));
   const fresh = ops.filter((o) => !existingKeys.has(o.key));
   const stale = ops.filter((o) => existingKeys.has(o.key));
-  for (let i = 0; i < fresh.length; i += 200) {
-    await prisma.question.createMany({ data: fresh.slice(i, i + 200).map((o) => ({ sourceKey: o.key, ...o.data })) });
-    report.inserted += Math.min(200, fresh.length - i);
+  // Content adoption: a fresh-keyed op that fingerprint-matches exactly one
+  // existing leaf row (same question, older pipeline generation) UPDATES
+  // that row instead of inserting a duplicate.
+  const claimed = new Set<number>();
+  const adopted: { op: (typeof ops)[number]; id: number }[] = [];
+  const inserted: typeof ops = [];
+  if (fresh.length > 0) {
+    const leafRows = await prisma.question.findMany({
+      where: { subjectId: subject.id, path: LEAF_PATH },
+      select: { id: true, sourceKey: true, question: true },
+    });
+    const fpIndex = new Map<string, { id: number; sourceKey: string }[]>();
+    for (const r of leafRows) {
+      if (existingKeys.has(r.sourceKey)) continue; // already claimed by key
+      const fp = mathFingerprint(r.question);
+      fpIndex.set(fp, [...(fpIndex.get(fp) ?? []), r]);
+    }
+    for (const o of fresh) {
+      const cands = (fpIndex.get(mathFingerprint(o.data.question)) ?? []).filter(
+        (r) => !claimed.has(r.id),
+      );
+      if (cands.length === 1) {
+        claimed.add(cands[0].id);
+        adopted.push({ op: o, id: cands[0].id });
+      } else {
+        if (cands.length > 1) console.warn(`  [adopt-skip] Q${o.n}: ${cands.length} fingerprint matches`);
+        inserted.push(o);
+      }
+    }
+  }
+  for (let i = 0; i < inserted.length; i += 200) {
+    await prisma.question.createMany({ data: inserted.slice(i, i + 200).map((o) => ({ sourceKey: o.key, ...o.data })) });
+    report.inserted += Math.min(200, inserted.length - i);
   }
   if (stale.length > 0) {
     await prisma.$transaction(
@@ -248,6 +309,17 @@ export async function importBankMathIndices(
       ),
     );
     report.updated += stale.length;
+  }
+  if (adopted.length > 0) {
+    await prisma.$transaction(
+      adopted.map(({ op, id }) =>
+        prisma.question.update({
+          where: { id },
+          data: { sourceKey: op.key, ...op.data },
+        }),
+      ),
+    );
+    report.adopted += adopted.length;
   }
   // Refresh the leaf's denormalised count (Practice tree reads questionCount).
   const count = await prisma.question.count({ where: { subjectId: subject.id, path: LEAF_PATH } });
@@ -273,7 +345,7 @@ async function main() {
   try {
     const report = await importBankMathIndices(prisma, undefined, dryRun);
     console.log(
-      `\n✓ Done${dryRun ? " (dry-run)" : ""}. parsed=${report.parsed} inserted=${report.inserted} updated=${report.updated} rejected=${report.rejected} skippedParas=${report.skippedParas} byDifficulty=${JSON.stringify(report.byDifficulty)}`,
+      `\n✓ Done${dryRun ? " (dry-run)" : ""}. parsed=${report.parsed} inserted=${report.inserted} updated=${report.updated} adopted=${report.adopted} rejected=${report.rejected} skippedParas=${report.skippedParas} byDifficulty=${JSON.stringify(report.byDifficulty)}`,
     );
   } finally {
     await prisma.$disconnect();
