@@ -80,10 +80,26 @@ _SUP_SET = set(_SUP_MAP) | set(_SUB_MAP)  # sub glyphs may nest in sup runs
 _SUB_SET = set(_SUB_MAP)
 _SUP_CLS = "".join(sorted(_SUP_SET))
 _SUB_CLS = "".join(sorted(_SUB_SET))
+# Superscript glyphs that are plain digits (root degrees, not variables).
+_SUP_DIGITS = "".join(sorted(c for c in _SUP_SET if _SUP_MAP.get(c, c).isdigit()))
+# Lone-letter script glyphs (footnote suspects in prose, genuine math in equations).
+_SUP_LETTERS = "".join(sorted(
+    c for c in _SUP_SET
+    if len(_SUP_MAP.get(c, c)) == 1 and _SUP_MAP.get(c, c).isalpha() and c not in _SUB_SET
+))
+_SUB_LETTERS = "".join(sorted(
+    c for c in _SUB_SET
+    if len(_SUB_MAP.get(c, c)) == 1 and _SUB_MAP.get(c, c).isalpha()
+))
 
 
 def _cls(s: str) -> str:
     return re.escape(s)
+
+
+def _is_degree(lead: str, offset: int, full: str) -> bool:
+    """A sup-digit lead is a root degree unless glued to a preceding base."""
+    return bool(lead) and (offset == 0 or full[offset - 1] not in "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ০১২৩৪৫৬৭৮৯)]।}")
 
 
 def plain_run(s: str, wrap: bool = True) -> str:
@@ -95,6 +111,27 @@ def plain_run(s: str, wrap: bool = True) -> str:
     """
     pre = "$" if wrap else ""
     post = "$" if wrap else ""
+    has_eq = "=" in s
+
+    def plain_run_inner(s: str) -> str:
+        for _ in range(5):
+            before = s
+            s = re.sub(
+                r"([0-9a-zA-Z০-৯\]।]+)([" + _cls(_SUP_CLS) + r"]{1,12})",
+                lambda m: m.group(0) if all(c in _SUB_SET for c in m.group(2))
+                else f"{m.group(1)}^{{{''.join(_SUP_MAP.get(c, c) for c in m.group(2))}}}",
+                s,
+            )
+            s = re.sub(
+                r"([a-zA-Z০-৯]+(?:\\.[a-zA-Z০-৯]+)*)([" + _cls(_SUB_CLS) + r"]{1,6})",
+                lambda m: f"\\{m.group(1)}_{{{''.join(_SUB_MAP.get(c, c) for c in m.group(2))}}}"
+                if m.group(1) in ("log", "Log")
+                else f"{m.group(1)}_{{{''.join(_SUB_MAP.get(c, c) for c in m.group(2))}}}",
+                s,
+            )
+            if s == before:
+                break
+        return s
     s = (
         s.replace("&", "\\&")
         .replace("%", "\\%")
@@ -111,11 +148,33 @@ def plain_run(s: str, wrap: bool = True) -> str:
         lambda m: f"{pre}\\log_{{{''.join(_SUB_MAP[c] for c in m.group(1))}}}{{{m.group(2)}}}{post}",
         s,
     )
+    # Degree lead in front of an already-built root span: ⁴$\sqrt{…}$.
+    def lead_span_repl(m):
+        lead = m.group(1)
+        if not _is_degree(lead, m.start(), s):
+            return m.group(0)
+        deg = "".join(_SUP_MAP.get(c, c) for c in lead)
+        return f"{pre}$\\sqrt[{deg}]{{"
+    # NOTE: these replacements are built by functions (verbatim output),
+    # so a single f-string backslash is correct here.
+    s = re.sub(r"([" + _cls(_SUP_DIGITS) + r"]{1,3})\$\sqrt\{", lead_span_repl, s)
+    # Cube-root lead in front of a raw radical: ³√(8²) → $\sqrt[3]{8^{2}}$.
+    def lead_rad_repl(m):
+        lead, body = m.group(1), m.group(2)
+        inner = plain_run_inner(body)
+        if lead and not _is_degree(lead, m.start(), s):
+            return m.group(0)
+        if lead:
+            deg = "".join(_SUP_MAP.get(c, c) for c in lead)
+            return f"{pre}$\\sqrt[{deg}]{{{inner}}}{post}"
+        return f"{pre}$\\sqrt{{{inner}}}{post}"
+    s = re.sub(r"([" + _cls(_SUP_DIGITS) + r"]{1,3})?√\(([^)$]{1,120})\)", lead_rad_repl, s)
     # Base + superscript run (balanced "(...)" binds as one base; a lone
     # ")" also binds so frozen splits like "(x …)ˣ" wrap for later fusion.
     # Nested runs inside the base are thawed first: (xᵃ/xᵇ)² → $(x^{a}/x^{b})^{2}$.
     # Footnote guard mirrors scripts/qb-forensics/unicode-math-to-latex.ts:
-    # lone-letter runs convert only on a numeric/paren base (2ᵃ, not reportᵃ).
+    # lone-letter runs convert only on a numeric/paren base (2ᵃ, not reportᵃ)
+    # — or anywhere in an equation (a field containing `=`).
     def sup_repl(m):
         base, run = m.group(1), m.group(2)
         if all(c in _SUB_SET for c in run):
@@ -129,25 +188,6 @@ def plain_run(s: str, wrap: bool = True) -> str:
         inner = plain_run_inner(base)
         return f"{pre}{inner}^{{{ascii}}}{post}"
 
-    def plain_run_inner(s: str) -> str:
-        for _ in range(5):
-            before = s
-            s = re.sub(
-                r"([0-9a-zA-Z০-৯\]।]+)([" + _cls(_SUP_CLS) + r"]{1,12})",
-                lambda m: m.group(0) if all(c in _SUB_SET for c in m.group(2))
-                else f"{m.group(1)}^{{{''.join(_SUP_MAP.get(c, c) for c in m.group(2))}}}",
-                s,
-            )
-            s = re.sub(
-                r"([a-zA-Z০-৯]+)([" + _cls(_SUB_CLS) + r"]{1,6})",
-                lambda m: f"\\{m.group(1)}_{{{''.join(_SUB_MAP.get(c, c) for c in m.group(2))}}}"
-                if m.group(1) in ("log", "Log")
-                else f"{m.group(1)}_{{{''.join(_SUB_MAP.get(c, c) for c in m.group(2))}}}",
-                s,
-            )
-            if s == before:
-                break
-        return s
     s = re.sub(
         r"(\([^()$]{1,60}\)|[0-9a-zA-Z০-৯\]।\)]+)([" + _cls(_SUP_CLS) + r"]{1,12})",
         sup_repl,
@@ -164,10 +204,29 @@ def plain_run(s: str, wrap: bool = True) -> str:
             return f"{pre}\\{base}_{{{ascii}}}{post}"
         return f"{pre}{base}_{{{ascii}}}{post}"
     s = re.sub(
-        r"([a-zA-Z০-৯]+)([" + _cls(_SUB_CLS) + r"]{1,6})",
+        r"([a-zA-Z০-৯]+(?:\\.[a-zA-Z০-৯]+)*)([" + _cls(_SUB_CLS) + r"]{1,6})",
         sub_repl,
         s,
     )
+    # Second chance for lone-letter scripts in EQUATIONS (bʸ=c): the guards
+    # above skip them as footnote suspects, but `=` means equation, not footnote.
+    if has_eq:
+        s = re.sub(
+            r"([A-Za-z])([" + _cls(_SUP_LETTERS) + r"]{1,6})",
+            lambda m: f"{pre}{m.group(1)}^{{{''.join(_SUP_MAP.get(c, c) for c in m.group(2))}}}{post}",
+            s,
+        )
+        def eq_sub_repl(m):
+            base, run = m.group(1), m.group(2)
+            body = "".join(_SUB_MAP.get(c, c) for c in run)
+            if base in ("log", "Log"):
+                return f"{pre}\\{base}_{{{body}}}{post}"
+            return f"{pre}{base}_{{{body}}}{post}"
+        s = re.sub(
+            r"([A-Za-z])([" + _cls(_SUB_LETTERS) + r"]{1,6})",
+            eq_sub_repl,
+            s,
+        )
     return s
 
 

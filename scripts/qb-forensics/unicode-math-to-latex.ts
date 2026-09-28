@@ -33,11 +33,12 @@ const SUP_MAP: Record<string, string> = {
   // vulgar-fraction runs in the Bank Indices docx body text.
   "ᐟ": "/",
 };
-// U+207A–207F leftovers that SUP_MAP misses (e.g. U+207F ⁿ is covered above,
-// but be exhaustive for the superscript block + common modifier letters).
-const SUP_EXTRA: Record<string, string> = {
-  "⁎": "*", "‧": ".", "⋅": "\\cdot ",
-};
+// U+207A–207F leftovers and modifier-letter punctuation that may appear
+// ADJACENT to script runs in source text. NOTE: these are deliberately NOT
+// members of any run class — ⋅/⁎/‧ directly after a run (as in "4ˣ⋅…")
+// would otherwise poison it past the footnote guard and freeze the run.
+// They render natively and need no conversion.
+const SUP_EXTRA: Record<string, string> = {};
 const SUB_MAP: Record<string, string> = {
   "₀": "0", "₁": "1", "₂": "2", "₃": "3", "₄": "4",
   "₅": "5", "₆": "6", "₇": "7", "₈": "8", "₉": "9",
@@ -70,13 +71,58 @@ function splitLatex(s: string): { latex: boolean; text: string }[] {
   return parts;
 }
 
-/** Minimal LaTeX escaping for raw (non-math-command) text inside $...$. */
+/**
+ * Brace-aware splitter: like splitLatex, but a `$` nested INSIDE braces of
+ * an open span (legacy corruption like `$\sqrt{$8^{2}$}$`,
+ * `$\frac{$a$}{$b}$}`) is dropped instead of splitting there. This both
+ * repairs old nested rows and keeps future passes from re-nesting.
+ * Unclosed trailing `$` passes through as prose (never invent closers).
+ */
+export function splitLatexBraced(s: string): { latex: boolean; text: string }[] {
+  const parts: { latex: boolean; text: string }[] = [];
+  let buf = "";
+  let inMath = false;
+  let depth = 0;
+  const flush = (latex: boolean) => {
+    if (buf) parts.push({ latex, text: buf });
+    buf = "";
+  };
+  for (const c of s) {
+    if (c === "$") {
+      if (!inMath) {
+        flush(false);
+        inMath = true;
+        depth = 0;
+        buf += c;
+      } else if (depth === 0) {
+        buf += c;
+        flush(true);
+        inMath = false;
+      }
+      // else: spurious inner $ — drop it.
+    } else {
+      if (inMath) {
+        if (c === "{") depth++;
+        else if (c === "}") depth = Math.max(0, depth - 1);
+      }
+      buf += c;
+    }
+  }
+  flush(inMath);
+  return parts;
+}
+
+/** Minimal LaTeX escaping for raw text that is about to enter a $...$ span.
+ *
+ * Already-valid LaTeX passes through byte-identical: `\commands` (with
+ * their brace groups left alone — escaping those broke a live row into
+ * "\textbackslash cdot") and `\X` escapes like `\%` are kept verbatim.
+ * Only truly raw characters are escaped (`% & # _ { }`, `*`/`×` → `\times`).
+ */
 function latexEscapeRaw(s: string): string {
-  return s
-    .replace(/\\/g, "\\textbackslash ")
-    .replace(/([%&#_{}])/g, "\\$1")
-    .replace(/\*/g, "\\times ")
-    .replace(/×/g, "\\times ");
+  return s.replace(/\\[a-zA-Z]+|\\[^a-zA-Z]|([%&#_*×{}])/g, (m, c) =>
+    c === undefined ? m : `\\${c === "*" || c === "×" ? "times " : c}`,
+  );
 }
 
 function supToAscii(run: string): string {
@@ -85,6 +131,15 @@ function supToAscii(run: string): string {
 
 function subToAscii(run: string): string {
   return [...run].map((c) => SUB_MAP[c] ?? c).join("");
+}
+
+// Superscript glyphs that are plain digits (root degrees, not variables).
+const SUP_DIGIT_CLS = [...SUP_CHARS].filter((c) => /[0-9]/.test(supToAscii(c)));
+
+/** A sup-digit lead is a root degree unless glued to a preceding base
+ * (x²√y → the ² belongs to x, not to the root). */
+function leadIsDegree(lead: string | undefined, offset: number, full: string): boolean {
+  return !!lead && (offset === 0 || !/[0-9a-zA-Z০-৯)\]}।]$/.test(full[offset - 1]));
 }
 
 /**
@@ -131,8 +186,9 @@ export function convertInnerBare(s: string): string {
       },
     );
     // Dangling ")ˣ" inside spans → bare )^{x} (caller fuses $$ pairs).
+    // Brackets ]/} included (frozen "$\log_{2}{log}$₂" style splits).
     out = out.replace(
-      new RegExp(`(\\))([${esc(SUP_CHARS)}]{1,6})`, "g"),
+      new RegExp(`([)\\]\\}])([${esc(SUP_CHARS)}]{1,6})`, "g"),
       (m, b, r) => {
         if ([...r].every((c) => c in SUB_MAP)) return m;
         return `${b}^{${supToAscii(r)}}`;
@@ -160,9 +216,41 @@ function convertSegment(seg: string): string {
     return `$\\frac{${latexEscapeRaw(n.trim())}}{${latexEscapeRaw(d.trim())}}$`;
   });
 
-  // 2. Radicals: √(body) / √X → \sqrt{...}
-  out = out.replace(/√\(([^)$]{1,120})\)/g, (_m, b) => `$\\sqrt{${latexEscapeRaw(b.trim())}}$`);
-  out = out.replace(/√([0-90-9a-zA-Z০-৯]{1,12})/g, (_m, b) => `$\\sqrt{${latexEscapeRaw(b)}}$`);
+  // 2. Radicals: √(body) / √X → \sqrt{...}, with an optional leading
+  // superscript degree: ³√(8²) / ⁴√(81x⁸) → $\sqrt[3]{8^{2}}$ (book-exact
+  // n-th roots; a non-digit lead falls through to the plain radical).
+  const supDigitCls = SUP_DIGIT_CLS;
+  // Degree lead in front of an already-built root span (left by un-nesting
+  // "⁴$\sqrt{...}$"): ⁴$\sqrt{81x^{8}}$ → $\sqrt[4]{81x^{8}}$.
+  // NOTE: a lead split from its span by segmentation ("⁴" | "$\sqrt…")
+  // is fused by the pre-split pass in unicodeMathToLatex below.
+  out = out.replace(
+    new RegExp(`([${esc(supDigitCls.join(""))}]{1,3})\\$\\sqrt\\{`, "g"),
+    (m, lead, offset, full) => {
+      if (!leadIsDegree(lead, offset, full)) return m;
+      return `$\\sqrt[${supToAscii(lead as string)}]{`;
+    },
+  );
+  out = out.replace(
+    new RegExp(`([${esc(supDigitCls.join(""))}]{1,3})?√\\(([^)$]{1,120})\\)`, "g"),
+    (m, lead, b, offset, full) => {
+      if (leadIsDegree(lead, offset, full)) {
+        return `$\\sqrt[${supToAscii(lead as string)}]{${convertInnerBare(latexEscapeRaw((b as string).trim()))}}$`;
+      }
+      if (lead) return `${lead}$\\sqrt{${convertInnerBare(latexEscapeRaw((b as string).trim()))}}$`;
+      return `$\\sqrt{${convertInnerBare(latexEscapeRaw((b as string).trim()))}}$`;
+    },
+  );
+  out = out.replace(
+    new RegExp(`([${esc(supDigitCls.join(""))}]{1,3})?√([0-90-9a-zA-Z০-৯]{1,12})`, "g"),
+    (m, lead, b, offset, full) => {
+      if (leadIsDegree(lead, offset, full)) {
+        return `$\\sqrt[${supToAscii(lead as string)}]{${latexEscapeRaw(b as string)}}$`;
+      }
+      if (lead) return `${lead}$\\sqrt{${latexEscapeRaw(b as string)}}$`;
+      return `$\\sqrt{${latexEscapeRaw(b as string)}}$`;
+    },
+  );
 
   // 3. Base + superscript-run → $base^{sup}$ (e.g. 2ˣ⁺¹, ৫², arⁿ⁻¹, 7ᶠ).
   // A balanced "(...)" group binds as one base so "(a+b)²" → "$(a+b)^{2}$".
@@ -185,17 +273,21 @@ function convertSegment(seg: string): string {
     return `$${inner}^{${latexEscapeRaw(ascii)}}$`;
   });
 
-  // 3b. Dangling ")ˣ" AFTER the group rule (a frozen split like
-  // "(x $\sqrt{x}$)ˣ"): wrap the paren so the step-7 $$-merge fuses it
-  // with the preceding span. Runs after step 3 so "(a+b)²" still binds
-  // the whole group as one base.
-  out = out.replace(new RegExp(`(\\))([${esc(SUP_CHARS)}]{1,6})`, "g"), (m, b, r) => {
+  // 3b. Dangling bracket + raw script run AFTER the group rule (frozen
+  // splits like "(x $\sqrt{x}$)ˣ" or "$\log_{2}{log}$₂"): wrap the run so
+  // the step-7 $$-merge fuses it with the preceding span. Runs after step
+  // 3 so "(a+b)²" still binds the whole group as one base.
+  out = out.replace(new RegExp(`([)\\]\\}])([${esc(SUP_CHARS)}]{1,6})`, "g"), (m, b, r) => {
     if ([...r].every((c) => c in SUB_MAP)) return m;
     return `$${b}^{${supToAscii(r)}}$`;
   });
+  out = out.replace(new RegExp(`([)\\]\\}])([${esc(SUB_CHARS)}]{1,6})`, "g"), (m, b, r) => {
+    return `$${b}_{${subToAscii(r)}}$`;
+  });
 
-  // 4. Base + subscript-run → $base_{sub}$ (e.g. log₃81 handled below, x₁)
-  const subRe = new RegExp(`([a-zA-Z${BN_DIGITS}]+)([${esc(SUB_CHARS)}]{1,6})`, "g");
+  // 4. Base + subscript-run → $base_{sub}$ (e.g. log₃81 handled below, x₁).
+  // Dots bind inside the base so decimal log bases survive (log₀.₅).
+  const subRe = new RegExp(`([a-zA-Z${BN_DIGITS}]+(?:\\.[a-zA-Z${BN_DIGITS}]+)*)([${esc(SUB_CHARS)}]{1,6})`, "g");
   out = out.replace(subRe, (m, base, run, offset, full) => {
     // Skip if this subscript run is already inside a freshly minted $...$
     // (sup pass) — splitLatex runs once upfront, so check the local context.
@@ -211,6 +303,29 @@ function convertSegment(seg: string): string {
   // 5. Fallback: log<sub>X when the subscript pass split it (rare — step 0
   // handles the common raw form). Matches only RAW subscript glyphs.
   out = out.replace(logRe, (_m, sub, rest) => `$\\log_{${latexEscapeRaw(subToAscii(sub))}}{${latexEscapeRaw(rest)}}$`);
+
+  // 5b. Second chance for lone single/multi-letter scripts in EQUATIONS:
+  // bʸ=c, x₁+x₂=5 — the main guard skips these as footnote suspects, but a
+  // field containing `=` is an equation, never a footnote (verified: all 16
+  // lone-letter rows in the Math corpus carry `=` and are genuine math).
+  if (out.includes("=")) {
+    const supLetters = [...SUP_CHARS].filter(
+      (c) => /^[a-zA-Z]$/.test(supToAscii(c)) && !(c in SUB_MAP),
+    );
+    const subLetters = [...SUB_CHARS].filter((c) => /^[a-zA-Z]$/.test(subToAscii(c)));
+    out = out.replace(
+      new RegExp(`([A-Za-z])([${esc(supLetters.join(""))}]{1,6})`, "g"),
+      (_m, b, r) => `$${b}^{${[...r].map((c: string) => supToAscii(c)).join("")}}$`,
+    );
+    out = out.replace(
+      new RegExp(`([A-Za-z])([${esc(subLetters.join(""))}]{1,6})`, "g"),
+      (m, b, r, offset, full) => {
+        if (full.slice(Math.max(0, offset - 1), offset) === "{") return m;
+        const base = /^[Ll]og$/.test(b) ? `\\${b}` : b;
+        return `$${base}_{${[...r].map((c: string) => subToAscii(c)).join("")}}$`;
+      },
+    );
+  }
 
   // 6. Caret powers: X^(exp) / X^n → $X^{...}$ (attached to the base;
   // a balanced "(...)" group binds as one base).
@@ -229,6 +344,27 @@ function convertSegment(seg: string): string {
 export function mergeAdjacentSpans(s: string): string {
   let out = s.replace(/\$\$/g, "");
   out = out.replace(/\$([^$]{1,60})\$\s*(_\^|\^_|_|\^)\s*\$([^$]{1,60})\$/g, "$\\1$2{$3}$");
+  // fold the fraction into the base → "$\log_{0.5}(".
+  out = out.replace(/\$\\log_\{([^$}]*)\}\$\.([₀₁₂₃₄₅₆₇₈₉₊₋₍₎ₐₑₓₙₒᵢᵣᵤₖₗₘₚₛₜₕⱼ]+)/g, (_m, base, run) => {
+    const folded = [...run].map((c: string) => SUB_MAP[c] ?? c).join("");
+    // Re-emit the consumed closing $ — dropping it unbalances every
+    // later span in the field (live incident on a log₀.₅ row).
+    return `$\\log_{${base}.${folded}}$`;
+
+  });
+
+  // Repair an UNCLOSED log span left by the pre-fix fusion bug
+  // ("$\log_{0.5}($x^{2}$…"): re-emit the missing closer so
+  // later spans pair correctly. Guarded by odd-$ count: well-formed
+  // "$\log_{10}$(1000)…" text is already even and must not gain a $.
+  if (((out.match(/\$/g) || []).length % 2) === 1) {
+    out = out.replace(/(\$\\log_\{[^$}]*\})(\()/g, "$1$$$2");
+    // Mirror image: trailing span missing its OPENER after a closed span
+    // ("$\log_{10}$(1000)^{1/3}$" → insert it; the $$-merge fuses next
+    // round). The parenthesised chunk must itself look like math (^/_)
+    // so prose prices never fuse.
+    out = out.replace(/(\$[^$]+)\$\(([^$()]+)\)(\^\{[^$}]*\})\$/g, "$1($2)$3$");
+  }
   return out;
 }
 
@@ -239,29 +375,53 @@ export function mergeAdjacentSpans(s: string): string {
 export function unicodeMathToLatex(input: string): string {
   if (!input || !input.includes) return input;
   const norm = input.normalize("NFC");
-  // Fast path: no math trigger at all.
+  // Fast path: no math trigger at all ($ itself is a trigger so existing
+  // LaTeX always takes the slow path).
   if (
-    !new RegExp(`[${esc(SUP_CHARS)}${esc(SUB_CHARS)}√^]`).test(norm) &&
+    !new RegExp(`[${esc(SUP_CHARS)}${esc(SUB_CHARS)}√^$]`).test(norm) &&
     !/\(.+\)\/\(.+\)/.test(norm) &&
     !/log/.test(norm)
   ) {
     return norm;
   }
-  const joined = splitLatex(norm)
-    .map((p) => {
-      if (p.latex) {
-        // Thaw frozen runs inside existing spans (e.g. legacy
-        // "$(xᵃ/xᵇ)^{a+b}$" → "$(x^{a}/x^{b})^{a+b}$"). Real LaTeX has no
-        // raw script glyphs, so well-formed spans pass through untouched.
-        const m = p.text.match(/^\$([^$]*)\$$/);
-        if (m) return `$${convertInnerBare(m[1])}$`;
-        return p.text;
-      }
-      return convertSegment(p.text);
-    })
-    .join("");
-  // Fuse $$ pairs created across segment boundaries by thawing/wrapping.
-  return mergeAdjacentSpans(joined);
+  // Fixpoint: each round strictly consumes raw triggers or fuses spans, so
+  // this terminates (cap is a backstop). Needed because one round can
+  // expose new work — e.g. un-nesting reveals a raw run, or a `)ˣ` wrap
+  // needs fusing with a preceding span.
+  let s = norm;
+  // Fuse a degree lead split from its root span by segmentation:
+  // "⁴" | "$\sqrt{81x^{8}}$" → "$\sqrt[4]{81x^{8}}$".
+  const fuseLeadSpan = (t: string) =>
+    t.replace(
+      new RegExp(`([${esc(SUP_DIGIT_CLS.join(""))}]{1,3})(\\$\\\\sqrt\\{)`, "g"),
+      (m, lead, _span, offset, full) => {
+        if (!leadIsDegree(lead, offset, full)) return m;
+        return `$\\sqrt[${supToAscii(lead as string)}]{`;
+      },
+    );
+  for (let round = 0; round < 4; round++) {
+    const next = mergeAdjacentSpans(
+      fuseLeadSpan(
+        splitLatexBraced(s)
+          .map((p) => {
+            if (p.latex) {
+              // Thaw frozen runs inside existing spans (e.g. legacy
+              // "$(xᵃ/xᵇ)^{a+b}$" → "$(x^{a}/x^{b})^{a+b}$"). Real LaTeX has
+              // no raw script glyphs, so well-formed spans pass through
+              // untouched.
+              const m = p.text.match(/^\$([^$]*)\$$/);
+              if (m) return `$${convertInnerBare(m[1])}$`;
+              return p.text;
+            }
+            return convertSegment(p.text);
+          })
+          .join(""),
+      ),
+    );
+    if (next === s) return next;
+    s = next;
+  }
+  return s;
 }
 
 /** Convert all MCQ text fields of a record. */

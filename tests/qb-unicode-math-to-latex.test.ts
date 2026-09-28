@@ -92,6 +92,27 @@ describe("unicodeMathToLatex — math MCQ migration", () => {
     expect(out.explanation).toBe(nfc("কারণ $\\sqrt{১৬}$ = ৪।"));
   });
 
+  it("does not let a trailing ⋅ poison the superscript run", () => {
+    expect(unicodeMathToLatex("4ˣ⋅$4^{1}$+$4^{x}$=320")).toBe("$4^{x}$⋅$4^{1}$+$4^{x}$=320");
+  });
+
+  it("folds a decimal log base split across spans without dropping $", () => {
+    expect(unicodeMathToLatex("Solve $\\log_{0}$.₅(x).")).toBe("Solve $\\log_{0.5}$(x).");
+  });
+
+  it("repairs an unclosed log span left by the pre-fix fusion", () => {
+    expect(unicodeMathToLatex("Solve $\\log_{0.5}($x^{2}$ - 5x + 6) = 0.")).toBe(
+      "Solve $\\log_{0.5}$($x^{2}$ - 5x + 6) = 0.",
+    );
+  });
+
+  it("fuses a log span with a directly following power span", () => {
+    // Odd-$ input heals to one balanced span across fixpoint rounds.
+    expect(unicodeMathToLatex("A $\\log_{10}$(1000)^{1/3}$ B")).toBe(
+      "A $\\log_{10}(1000)^{1/3}$ B",
+    );
+  });
+
   it("fingerprints pipeline generations identically (matching only)", () => {
     // Same source through old-Unicode vs new-OMML generations.
     expect(mathFingerprint("$(xᵃ / xᵇ)^{a+b}$")).toBe(mathFingerprint("$(x^{a} / x^{b})^{a+b}$"));
