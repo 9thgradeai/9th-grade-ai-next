@@ -30,7 +30,10 @@ import { join } from "path";
 import { PrismaClient } from "@prisma/client";
 import { sourceKey } from "./seed-keys";
 import { scanMca } from "./qb-forensics/import-gate";
-import { unicodeMathToLatex, mathFingerprint } from "./qb-forensics/unicode-math-to-latex";
+// Canonical math pipeline — single facade (converges with seed/AI/manual).
+import { mathFingerprint } from "./qb-forensics/unicode-math-to-latex";
+import { toCanonicalMath } from "../frontend/lib/math/canonical-math";
+const unicodeMathToLatex = (s: string) => toCanonicalMath(s);
 
 const DOCX = join(
   process.cwd(),

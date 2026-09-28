@@ -1,7 +1,22 @@
 // Output validation — model output is never trusted blindly. JSON responses
 // are parsed and normalized to the expected shape before being returned.
+//
+// AI → JSON/schema → canonical math normalization → validation → consumer.
+// Math fields NEVER pass through raw: every question/option/explanation is
+// run through the single canonical layer (@/lib/math/canonical-math).
 
 import type { SolverResult } from "../types";
+import { normalizeMathContent } from "@/lib/math/canonical-math";
+
+/** Normalize one AI text field through the canonical math pipeline. */
+function canonMath(s: string, field: string): string {
+  if (!s || typeof s !== "string") return s;
+  try {
+    return normalizeMathContent(s, { field }).output;
+  } catch {
+    return s;
+  }
+}
 
 export type AIExplanationResult = {
   correctAnswerExplanation: string;
@@ -57,9 +72,9 @@ export function validateSolverOutput(raw: string, fallback: string): SolverResul
   const steps = parsed ? asStringArray(parsed.steps) : [];
 
   return {
-    solution: solution.slice(0, MAX_RESPONSE_CHARS),
-    steps: steps.slice(0, 20),
-    explanation: parsed ? asString(parsed.explanation, "") : undefined,
+    solution: canonMath(solution, "solution").slice(0, MAX_RESPONSE_CHARS),
+    steps: steps.map((s) => canonMath(s, "step")).slice(0, 20),
+    explanation: parsed ? canonMath(asString(parsed.explanation, ""), "explanation") : undefined,
     relatedConcept: parsed ? asString(parsed.relatedConcept, "") : undefined,
     misconception: parsed ? asString(parsed.misconception, "") : undefined,
     source: "ai",
@@ -147,10 +162,10 @@ export function validateMockTestOutput(raw: string, fallback: string, count = 10
     if (!options.some((o) => o.id === answer)) continue;
     questions.push({
       id: asString(obj.id, `q${questions.length + 1}`),
-      question,
-      options,
+      question: canonMath(question, "question"),
+      options: options.map((o) => ({ id: o.id, text: canonMath(o.text, "option") })),
       answer,
-      explanation: asString(obj.explanation, ""),
+      explanation: canonMath(asString(obj.explanation, ""), "explanation"),
       topic: asString(obj.topic, ""),
       difficulty: asDifficulty(obj.difficulty),
     });

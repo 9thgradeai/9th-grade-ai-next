@@ -402,3 +402,54 @@ Grammar **সমাস** folder file (`database/data/ques/বাংলা ভা
 - **Decision**: Store real math as inline LaTeX ($...$) and render with katex. New MathText/RichText renders $...$ via katex.renderToString({ throwOnError: false }); OMML converts to LaTeX (m:f -> frac, m:sSup -> ^{}, m:rad -> sqrt); legacy Unicode math migrated by scripts/qb-forensics/unicode-math-to-latex.ts.
 - **Rationale**: KaTeX is dependency-light, SSR-safe (string render), offline-capable, accessible, keeps questions searchable — unlike equation screenshots. Alternatives rejected: MathJax (heavier, slower), images (not searchable, blurry, manual work).
 - **Consequences**: katex + katex.min.css ship to client bundle; LaTeX re-imports upsert by existing sourceKeys (reversible).
+
+## ADR-0xx: Single canonical math pipeline (production math typesetting)
+
+- **Date**: 2026-09-29
+- **Status**: Accepted
+- **Context**: The KaTeX ADR above left conversion logic scattered: the core
+  converter lived in `scripts/qb-forensics/unicode-math-to-latex.ts` (imported
+  ad-hoc by seed/import scripts), AI output passed through raw, `MathText`
+  handled only `$...$`, and no validation or preservation checking existed.
+- **Decision**: One canonical layer — `frontend/lib/math/canonical-math.ts`
+  (pure, client+server safe) fronted server-side by `backend/services/math.ts`.
+  Contract: `$...$` inline + `$$...$$` display LaTeX; Unicode accepted as input,
+  never as storage. All ingestion (seed-math, import-bank-math-indices,
+  upgrade-math-to-latex, AI validation in `backend/ai/validation/outputs.ts`,
+  manual/admin) converges here. Strict rules: never auto-fraction ambiguous
+  `a/b`, never store escaped/triple/nested delimiters, preservation failures
+  (`LOST_*`) reject the row instead of persisting silently. No new dependencies
+  (reuses `katex`, existing converter core).
+- **Rationale**: A single boundary makes math idempotent, testable, and
+  future-proof (DOCX/TXT/AI/manual all share normalize → validate → preserve →
+  MCQ-check). Pure module avoids client/server duplication without leaking
+  secrets (`backend/services/math.ts` intentionally omits `server-only` so tsx
+  scripts can reuse it).
+- **Consequences**: Migration dry-run on 2026-09-29: 2292 Math rows scanned,
+  38 converted, 0 rejected. `MathText` renders `$$...$$` display blocks with
+  `data-math-error` diagnostics; textbook KaTeX styling lives once in
+  `app/globals.css`. Tests: `tests/math-canonical.test.ts` (44),
+  `tests/math-visual-fixture.test.tsx` (19).
+
+## ADR-0xx: Book-style fractions + corruption healing (math migration II)
+
+- **Date**: 2026-09-29
+- **Status**: Accepted
+- **Context**: After the canonical pipeline, ~700 Math rows still showed inline
+  `a/b` prose fractions and ~90 fields carried legacy span corruption
+  (`($..$)^{n}$` splits, `√[..]` brackets, `log\_x`, vulgar `½`, `³ᐟ₂`,
+  `textbackslash` artifacts), rendering as flat text instead of book equations.
+- **Decision**: Extended the canonical layer with deterministic-only repairs:
+  number/number and explicitly-grouped fractions stack to `\frac`
+  (word/word alternatives, dates, fiscal years, `1/2x`, `a/b+c` never convert);
+  frozen span splits fuse; `log` binding is preserved (`log 5/(…)` →
+  `$\frac{\log 5}{…}$`, never `log·(…)`); Bengali-word/`π` bases wrap in
+  equation context; preservation checker accounts consumed slashes/parens.
+  Triage-driven: every new rule was proven by DB sampling; 10 over-eager rows
+  were restored from backup and the rule narrowed (never delete `$`s).
+- **Consequences**: 2292/2292 rows canonical and fixpoint-clean (re-run = 0
+  changes), 0 rows rejected, 0 regressions introduced (backup-verified).
+  Exactly 1 row (id 39242, nested `[$\log_{2}$(x - $2)]^{2}$`) remains for
+  manual review — deleting `$`s there would destroy information. Practice tab
+  and all surfaces render the healed equations via the shared
+  RichText → MathText → KaTeX chain with no per-page changes.

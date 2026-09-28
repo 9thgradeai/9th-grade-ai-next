@@ -22,7 +22,7 @@
  */
 import { join } from "path";
 import { PrismaClient } from "@prisma/client";
-import { unicodeMathToLatex } from "./qb-forensics/unicode-math-to-latex";
+import { normalizeMcqFields } from "../backend/services/math";
 import { sourceKey } from "./seed-keys";
 
 const BCS_MATH_BN = "গাণিতিক যুক্তি";
@@ -45,6 +45,11 @@ export async function upgradeMathToLatex(prisma: PrismaClient, dryRun = false) {
     keysUpdated: 0,
     keySkipped: 0,
     keyConflicts: 0,
+    converted: 0,
+    alreadyCanonical: 0,
+    repaired: 0,
+    rejected: 0,
+    needsReview: 0,
     bySubject: {} as Record<string, number>,
   };
 
@@ -87,17 +92,30 @@ export async function upgradeMathToLatex(prisma: PrismaClient, dryRun = false) {
     for (const r of rows) {
       report.scanned++;
       const opts = Array.isArray(r.options) ? (r.options as string[]) : [];
-      const next = {
-        question: unicodeMathToLatex(r.question),
-        options: opts.map(unicodeMathToLatex),
-        correctAnswer: unicodeMathToLatex(r.correctAnswer),
-        explanation: unicodeMathToLatex(r.explanation),
-      };
-      const textChanged =
-        next.question !== r.question ||
-        next.correctAnswer !== r.correctAnswer ||
-        next.explanation !== r.explanation ||
-        next.options.some((o, i) => o !== opts[i]);
+      // Canonical pipeline: normalize → validate → preservation check.
+      // HARD FAILURE on preservation loss: the field is rejected, never
+      // silently persisted with dropped math.
+      const { record: next, changed: textChanged, diagnostics } = normalizeMcqFields({
+        question: r.question,
+        options: opts,
+        correctAnswer: r.correctAnswer,
+        explanation: r.explanation,
+      });
+      const fatal = diagnostics.filter((d) => d.type.startsWith("LOST_"));
+      if (fatal.length > 0) {
+        report.rejected++;
+        report.needsReview++;
+        console.warn(
+          `  [preserve-fail] id=${r.id} ${fatal.map((d) => `${d.type}@${d.field}`).join(", ")} — row skipped`,
+        );
+        continue;
+      }
+      if (!textChanged) report.alreadyCanonical++;
+      else {
+        report.converted++;
+        if (diagnostics.some((d) => d.type.startsWith("REPAIRED") || d.type === "NORMALIZED_FIXPOINT"))
+          report.repaired++;
+      }
 
       // Recompute the seeder-stable key from the migrated text.
       let wantKey: string | null = null;
@@ -162,7 +180,7 @@ async function main() {
   try {
     const report = await upgradeMathToLatex(prisma, dryRun);
     console.log(
-      `\n✓ Done${dryRun ? " (dry-run)" : ""}. scanned=${report.scanned} updated=${report.updated} unchanged=${report.unchanged} keysUpdated=${report.keysUpdated} keySkipped=${report.keySkipped} keyConflicts=${report.keyConflicts} bySubject=${JSON.stringify(report.bySubject)}`,
+      `\n✓ Done${dryRun ? " (dry-run)" : ""}. scanned=${report.scanned} updated=${report.updated} unchanged=${report.unchanged} converted=${report.converted} alreadyCanonical=${report.alreadyCanonical} repaired=${report.repaired} rejected=${report.rejected} needsReview=${report.needsReview} keysUpdated=${report.keysUpdated} keySkipped=${report.keySkipped} keyConflicts=${report.keyConflicts} bySubject=${JSON.stringify(report.bySubject)}`,
     );
   } finally {
     await prisma.$disconnect();

@@ -2416,3 +2416,70 @@ html.light .skeleton-shimmer {
     display: none !important;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   CANONICAL MATH TYPESETTING — textbook-style KaTeX
+   Inline math sits naturally in Bangla/English prose; display math gets
+   vertical spacing. Dark-mode + mobile-safe. Single shared renderer
+   (RichText → MathText → KaTeX) — no per-page math CSS.
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+.math-inline {
+  display: inline-block;
+  font-size: 1.04em;
+  line-height: 1.2;
+  vertical-align: baseline;
+  white-space: nowrap;
+  color: inherit;
+}
+
+.math-inline .katex {
+  font-size: 1.04em;
+  line-height: 1.2;
+  white-space: nowrap;
+  text-rendering: optimizeLegibility;
+}
+
+.math-display {
+  display: block;
+  overflow-x: auto;
+  overflow-y: hidden;
+  margin: 0.9rem 0;
+  padding: 0.55rem 0.75rem;
+  line-height: 1.7;
+  text-align: center;
+  scrollbar-width: thin;
+}
+
+.math-display .katex-display {
+  margin: 0;
+  padding: 0.25rem 0;
+}
+
+.math-display .katex-display > .katex {
+  font-size: 1.12em;
+  white-space: nowrap;
+}
+
+/* Cross-theme: KaTeX inherits surrounding text color in both modes. */
+.math-inline .katex,
+.math-display .katex {
+  color: inherit;
+}
+
+/* Flagged fallbacks stay visible but honest (raw-text safety net). */
+[data-math-error="true"] {
+  outline: 1px dashed color-mix(in srgb, var(--warning, #fbbf24) 60%, transparent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+@media (max-width: 640px) {
+  .math-inline .katex {
+    font-size: 1em;
+  }
+  .math-display {
+    margin: 0.7rem 0;
+    text-align: left;
+  }
+}

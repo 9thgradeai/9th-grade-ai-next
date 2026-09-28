@@ -38,13 +38,17 @@ export function buildMockTestSystem(
 Generate a practice mock test with exactly ${count} multiple-choice questions on the subject "${subject}".
 Questions must be exam-realistic, syllabus-aligned, and written in ${lang}.${difficulty}
 
-Rules:
-- Each question has exactly 4 options labelled A-D.
-- Only one option is correct; set "answer" to its id.
-- Distractors must be plausible but clearly wrong.
-- Provide a concise explanation for the correct answer.
-- Avoid repeating the same topic back-to-back.
-- Keep wording unbiased and factual.
+ Rules:
+ - Each question has exactly 4 options labelled A-D.
+ - Only one option is correct; set "answer" to its id.
+ - Distractors must be plausible but clearly wrong.
+ - Provide a concise explanation for the correct answer.
+ - Avoid repeating the same topic back-to-back.
+ - Keep wording unbiased and factual.
+ - Mathematics contract: ALL math MUST use LaTeX delimiters ($...$ inline,
+   $$...$$ display). Never emit Unicode superscripts/subscripts, raw √,
+   ASCII fractions, bare x^2, or code-formatted math. Server output is
+   normalized + validated; malformed math is rejected.
 
 ${MOCK_TEST_OUTPUT_SCHEMA}`;
 }

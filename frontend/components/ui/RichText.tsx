@@ -8,17 +8,20 @@ function escapeRegExp(s: string) {
 }
 
 /** Highlights case-insensitive matches of `query` inside plain text. Math
- * spans ($...$) are typeset by KaTeX; highlight matches never split LaTeX. */
+ * spans ($...$ inline, $$...$$ display) are typeset by KaTeX; highlight
+ * matches never split LaTeX. */
 function Highlighted({ text, query }: { text: string; query: string }) {
   const trimmed = query.trim();
   if (text.includes("$")) {
     if (!trimmed) return <MathSpans text={text} />;
-    // Highlight only outside $...$ spans so LaTeX commands stay intact.
-    const parts = text.split(/(\$[^$]+\$)/g);
+    // Highlight only outside math spans so LaTeX commands stay intact.
+    // Display ($$...$$) alternation comes first so it is never split into
+    // stray "$" prose nodes around an inline span.
+    const parts = text.split(/(\$\$[\s\S]+?\$\$|\$[^$\n]+?\$)/g);
     return (
       <>
         {parts.map((part, i) =>
-          part.startsWith("$") && part.endsWith("$") && part.length > 2 ? (
+          /^(\$\$[\s\S]+\$\$|\$[^$]+\$)$/.test(part) ? (
             <MathSpans key={i} text={part} />
           ) : (
             <Fragment key={i}>

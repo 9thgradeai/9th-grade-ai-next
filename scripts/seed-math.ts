@@ -3,7 +3,9 @@ import { join } from "path";
 import { PrismaClient } from "@prisma/client";
 import { sourceKey } from "./seed-keys";
 import { scanMca, mcaSignature } from "./qb-forensics/import-gate";
-import { unicodeMathToLatex } from "./qb-forensics/unicode-math-to-latex";
+// Canonical math pipeline — single facade (converges with import/AI/manual).
+import { toCanonicalMath } from "../frontend/lib/math/canonical-math";
+const unicodeMathToLatex = (s: string) => toCanonicalMath(s);
 import { resolveAnswerToOption } from "./qb-forensics/parse-flat";
 import { loadTaxonomy, SUBJECT_META, contentPath } from "./taxonomy";
 import type { TaxonomyNode } from "./taxonomy";

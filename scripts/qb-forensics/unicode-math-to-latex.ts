@@ -13,7 +13,8 @@
  */
 
 // Superscript Unicode → ASCII source.
-const SUP_MAP: Record<string, string> = {
+// Exported for the canonical layer (post-span run fusion, equation rescue).
+export const SUP_MAP: Record<string, string> = {
   "⁰": "0", "¹": "1", "²": "2", "³": "3", "⁴": "4",
   "⁵": "5", "⁶": "6", "⁷": "7", "⁸": "8", "⁹": "9",
   "⁺": "+", "⁻": "-", "⁽": "(", "⁾": ")",
@@ -39,7 +40,7 @@ const SUP_MAP: Record<string, string> = {
 // would otherwise poison it past the footnote guard and freeze the run.
 // They render natively and need no conversion.
 const SUP_EXTRA: Record<string, string> = {};
-const SUB_MAP: Record<string, string> = {
+export const SUB_MAP: Record<string, string> = {
   "₀": "0", "₁": "1", "₂": "2", "₃": "3", "₄": "4",
   "₅": "5", "₆": "6", "₇": "7", "₈": "8", "₉": "9",
   "₊": "+", "₋": "-", "₍": "(", "₎": ")",
@@ -162,7 +163,7 @@ export function convertInnerBare(s: string): string {
     );
     // √(body) / √X → \sqrt{...} (bare).
     out = out.replace(/√\(([^)$]{1,120})\)/g, (_m, b) => `\\sqrt{${b.trim()}}`);
-    out = out.replace(/√([0-90-9a-zA-Z০-৯]{1,12})/g, (_m, b) => `\\sqrt{${b}}`);
+    out = out.replace(/√([0-90-9a-zA-Z০-৯π]{1,12})/g, (_m, b) => `\\sqrt{${b}}`);
     // Base + superscript run → base^{sup} (bare). Guard is intentionally
     // looser than the prose pass: this runs on paren-group bases already
     // bound to math (or inside $...$ spans), where footnote protection
@@ -242,7 +243,7 @@ function convertSegment(seg: string): string {
     },
   );
   out = out.replace(
-    new RegExp(`([${esc(supDigitCls.join(""))}]{1,3})?√([0-90-9a-zA-Z০-৯]{1,12})`, "g"),
+    new RegExp(`([${esc(supDigitCls.join(""))}]{1,3})?√([0-90-9a-zA-Z০-৯π]{1,12})`, "g"),
     (m, lead, b, offset, full) => {
       if (leadIsDegree(lead, offset, full)) {
         return `$\\sqrt[${supToAscii(lead as string)}]{${latexEscapeRaw(b as string)}}$`;
