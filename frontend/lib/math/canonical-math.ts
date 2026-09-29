@@ -71,6 +71,13 @@ const VALID_COMMANDS = new Set([
   "gamma",
   "theta",
   "pi",
+  "circ",
+  "Rightarrow",
+  "rightarrow",
+  "therefore",
+  "because",
+  "pm",
+  "mp",
   "text",
   "mathrm",
   "left",
@@ -743,7 +750,7 @@ function rescueBengaliScripts(s: string, push: (type: string, loc: string) => vo
   // script run (`× ভূমি₁ ×` vs `অনুপাত = ...`).
   const mathCtx = s.includes("=");
   const supLetters = SUP_RUN_CHARS.filter((c) => !(c in SUB_MAP));
-  const word = "[\u0980-\u09E5\u09F0-\u09FF\u03C0](?:[\u0980-\u09FF\u03C0 0-9\u09E6-\u09EF]*[\u0980-\u09E5\u09F0-\u09FF\u03C0])?";
+  const word = "[\u0980-\u09E5\u09F0-\u09FF\u03C0](?:[\u0980-\u09FF\u03C00-9\u09E6-\u09EF]*[\u0980-\u09E5\u09F0-\u09FF\u03C0])?";
   const re = new RegExp(`(${word})((?:[${escCls(SUB_RUN_CHARS)}]{1,4})?)([${escCls(supLetters)}]{0,6})`, "g");
   const hasRun = (sub: string, sup: string) =>
     (sub ?? "") !== "" || [...(sup ?? "")].some((c) => !(c in SUB_MAP));
@@ -869,6 +876,139 @@ function uprightBareLogs(s: string, push: (type: string, loc: string) => void): 
 }
 
 /**
+ * Bare math-expression wrapper (runs LAST): `৩x + ২x = ৯০` -> `$৩x + ২x = ৯০$`.
+ * The pipeline decorates recognized structures (frac/sup/sub/root/log) but
+ * plain arithmetic never got `$` spans, so KaTeX never typeset it.
+ *
+ * Conservative by construction:
+ * - Only chunks containing `=`, `⇒` or `∴` (equation context).
+ * - Chunk = maximal run of math tokens; Bengali letters always break chunks
+ *   (pure Bengali equalities like `বিজোড় + বিজোড় = জোড়` stay prose).
+ * - Balanced `()[]` required (trailing openers / leading closers trimmed,
+ *   else abort); both sides of the first `=` non-empty.
+ * - Must contain a digit, Latin letter, or π; must NOT contain `_`, `^`
+ *   (owned by the dedicated script rules) or `$`.
+ * - Symbol mapping for KaTeX safety: `=>`/`⇒`->`\Rightarrow`,
+ *   `∴`->`\therefore`, `∵`->`\because`, `→`->`\rightarrow`, `±`->`\pm`,
+ *   `°`->`^{\circ}`, `≤`->`\leq`, `≥`->`\geq`, `≠`->`\neq`, `∞`->`\infty`,
+ *   `÷`->`\div`; escapes `%`, `&`, `#`.
+ * Idempotent: output spans are skipped on re-entry.
+ */
+function wrapMathExpressions(s: string, push: (type: string, loc: string) => void): string {
+  const SYM: Array<[RegExp, string]> = [
+    [/=>/g, "\\Rightarrow "],
+    [/⇒/g, "\\Rightarrow "],
+    [/∴/g, "\\therefore "],
+    [/∵/g, "\\because "],
+    [/→/g, "\\rightarrow "],
+    [/±/g, "\\pm "],
+    [/°/g, "^{\\circ}"],
+    [/≤/g, "\\leq "],
+    [/≥/g, "\\geq "],
+    [/≠/g, "\\neq "],
+    [/∞/g, "\\infty "],
+    [/÷/g, "\\div "],
+    [/%/g, "\\%"],
+    [/&/g, "\\&"],
+    [/#/g, "\\#"],
+  ];
+  // Math-token run: digits (both scripts), Latin letters, π, operators,
+  // spaces, punctuation — but NO Bengali letters and NO `$`.
+  const CHUNK = "[0-9০-৯A-Za-zπ+\\-×·*/^=<>≤≥!%.,;:\\s()\\[\\]|⇒∴∵→±°≠∞÷&=>#]+";
+  const re = new RegExp(`(${CHUNK})`, "g");
+  return splitLatexBraced(s)
+    .map((p) => {
+      if (p.latex) return p.text;
+      return p.text.replace(re, (m) => {
+        if (!/[=⇒∴]/.test(m)) return m;
+        // Edge punctuation/brackets belong OUTSIDE the span (never dropped):
+        // `সমীকরণ: ৩x..` keeps `: `, `..-১ (` keeps ` (` after `$`.
+        let core = m;
+        const lead = core.match(/^[\s:;,)\]}]+/)?.[0] ?? "";
+        core = core.slice(lead.length);
+        let trail = "";
+        const trailM = core.match(/[\s:;,=\[({>]+$/);
+        if (trailM) {
+          trail = trailM[0];
+          core = core.slice(0, core.length - trail.length);
+        }
+        if (!core) return m;
+        // Never start from a binary operator (`) / ab = 2` after lead-strip
+        // is not an equation — abort instead of wrapping `/ ab = 2`).
+        // Unary minus stays allowed (`-x = 5`).
+        if (/^[/*+]/.test(core)) return m;
+        // Arrow completeness: `=>`/`⇒`/`∴` must be followed by a real
+        // operand (`2\n=> (` aborts; `a => b = c` wraps whole).
+        const am = core.match(/(=>|⇒|∴)([\s\S]*)$/);
+        if (am && !/^\s*[0-9A-Za-zπ০-৯($\[]/.test(am[2])) return m;
+        // Balanced brackets required (never split `৬(১)`-style juxtaposition).
+        const opens = (core.match(/[[({]/g) || []).length;
+        const closes = (core.match(/[\])}]/g) || []).length;
+        if (opens !== closes) return m;
+        if (!/[0-9০-৯A-Za-zπ]/.test(core)) return m;
+        if (/[_$^]/.test(core)) return m;
+        let sides = core.split("=");
+        // Empty left side (`যোগফল = 1+2+3 = 15` after Bengali split): retry
+        // from the first `=` so the real equation still wraps.
+        let head = "";
+        if (sides.length >= 2 && !sides[0].trim()) {
+          const cut = core.indexOf("=") + 1;
+          head = core.slice(0, cut);
+          core = core.slice(cut);
+          const sp = core.match(/^\s+/)?.[0] ?? "";
+          head += sp;
+          core = core.slice(sp.length);
+          sides = core.split("=");
+        }
+        if (sides.length < 2 || !sides[0].trim() || !sides[1].trim()) return m;
+        // Prose guard: 3+ letter Latin runs outside math (`The ratio Mr.`)
+        // stay prose. Single letters/digits (`a`, `2x`) are symbolic.
+        if (/[A-Za-z]{3,}/.test(core)) return m;
+        let body = core;
+        // Newlines never survive inside `$..$` (the renderer and validator
+        // treat them as span boundaries) — fold to spaces.
+        body = body.replace(/\s*\n\s*/g, " ");
+        // Raw radicals inside the equation use real commands for KaTeX.
+        // Balanced scan for `√(...)` (a regex would stop at the first `)`).
+        {
+          let out = "";
+          let i = 0;
+          for (;;) {
+            const j = body.indexOf("√(", i);
+            if (j === -1) {
+              out += body.slice(i);
+              break;
+            }
+            let d = 0;
+            let k = j + 1;
+            while (k < body.length) {
+              if (body[k] === "(") d++;
+              else if (body[k] === ")") {
+                d--;
+                if (d === 0) break;
+              }
+              k++;
+            }
+            if (k >= body.length || k - (j + 2) > 120 || k - (j + 2) < 1) {
+              out += body.slice(i, j + 2);
+              i = j + 2;
+              continue;
+            }
+            out += body.slice(i, j) + "\\sqrt{" + body.slice(j + 2, k) + "}";
+            i = k + 1;
+          }
+          body = out;
+        }
+        body = body.replace(/√([0-9a-zA-Z০-৯π]{1,12})/g, "\\sqrt{$1}");
+        for (const [rx, rep] of SYM) body = body.replace(rx, rep);
+        push("REPAIRED_EXPRESSION", core.slice(0, 60));
+        return lead + head + "$" + body + "$" + trail;
+      });
+    })
+    .join("");
+}
+
+/**
  * Canonical normalizer — the single entry point for ALL math ingestion.
  * Idempotent: normalize(normalize(x)) === normalize(x).
  */
@@ -899,6 +1039,7 @@ export function normalizeMathContent(input: string, options: NormalizeOptions = 
     r = rescueEquationScripts(r, collect);
     r = rescueBengaliScripts(r, collect);
     r = uprightBareLogs(r, collect);
+    r = wrapMathExpressions(r, collect);
     const before = r;
     r = r.replace(/\$(\\sqrt(?:\[[^\]]*\])?)\{\$([^$]*)\$\}/g, "$$$1{$2}$");
     r = mergeAdjacentSpans(r);
@@ -1055,12 +1196,27 @@ export function checkMathPreservation(source: string, canonical: string, field =
     const b = count(canonical, new RegExp(re.source, "g"));
     // Canonical adds LaTeX syntax chars ({,},\,^,_) so only flag LOSSES.
     if (name === "variables") continue; // \log/\frac add letters legitimately
+    if (name === "equality") {
+      // `=>` arrows map to `\Rightarrow` (no `=` left): count those as kept.
+      // `=` in `=>` is excluded on both sides for symmetry.
+      const eqRe = /=(?![>])/g;
+      const aEq = (source.normalize("NFC").match(eqRe) || []).length;
+      const bEq =
+        (canonical.match(eqRe) || []).length +
+        (canonical.match(/\\(Rightarrow|rightarrow|therefore|because)/g) || []).length;
+      if (bEq < aEq - 2)
+        diags.push({ type: "LOST_EQUALITY", field, detail: `${aEq}→${bEq}` });
+      continue;
+    }
     const allowed = name === "parentheses" ? 2 + 2 * fracCount : 2;
     if (b < a - allowed)
       diags.push({ type: `LOST_${name.toUpperCase()}`, field, detail: `${a}→${b}` });
   }
-  // Catastrophic: source had `=` but canonical has none.
-  if (/=/.test(source) && !/=/.test(canonical))
+  // Catastrophic: source had `=` but canonical has none (arrows count too).
+  const srcHasEq = /=/.test(source);
+  const dstHasEq =
+    /=/.test(canonical) || /\\(Rightarrow|rightarrow|therefore|because)/.test(canonical);
+  if (srcHasEq && !dstHasEq)
     diags.push({ type: "LOST_EQUATION", field, detail: "equality disappeared" });
   return diags;
 }
@@ -1182,4 +1338,4 @@ export const AI_MATH_SYSTEM_INSTRUCTION =
   "Allowed: $x^{2}+2x+1$, $\\frac{x+1}{x-1}$, $\\sqrt[3]{x^{2}}$, $\\log_{2}x$. " +
   "Output structured JSON: {question, options[4], answer, explanation}.";
 
-export { convertInnerBare };
+export { convertInnerBare, splitLatexBraced };

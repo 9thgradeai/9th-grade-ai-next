@@ -476,3 +476,26 @@ Grammar **সমাস** folder file (`database/data/ques/বাংলা ভা
   exactly 1 manual-review row (id 39242) with 0 introduced regressions.
   Practice tab serves the healed text verbatim via `/api/questions`
   (2-minute query cache only) through RichText → MathText → KaTeX.
+
+## ADR-0xx: Bare-equation wrapping (math migration IV)
+
+- **Date**: 2026-09-29
+- **Status**: Accepted
+- **Context**: Topic audit showed 417 BCS rows with `=` but zero `$` spans —
+  plain arithmetic (`৩x + ২x = ৯০`, `৫ = ৬(১)-১`) the pipeline decorated
+  around but never wrapped, so KaTeX never typeset it. Practice tab showed a
+  mix of textbook equations and flat prose arithmetic.
+- **Decision**: Conservative `wrapMathExpressions` as the final pipeline
+  stage: wrap chunks containing `=`/`⇒`/`∴` built only from math tokens
+  (Bengali letters always break chunks, so pure-Bengali equalities stay
+  prose); balanced brackets required with edge punctuation preserved outside
+  (never split `৬(১)` juxtaposition, never drop `(`/`:`); both `=` sides
+  non-empty with empty-left retry; KaTeX-safe symbol mapping
+  (`=>`→`\Rightarrow`, `%`→`\%`, …); newlines folded (renderer treats them
+  as span boundaries); trailing-dangling-`=` and incomplete-arrow guards.
+  Two live defects fixed mid-pass from DB evidence: `$$`-merge mispairing
+  (fuse directly instead) and `=>`-heavy rows tripping preservation (arrows
+  counted as kept equality).
+- **Consequences**: +1470 rows healed this pass; math-span coverage BCS
+  1292→1728 of 1944, Bank 348 total → 298 with math. Corpus triage: exactly
+  1 manual-review row (id 39242), 0 introduced, 0 rejected, fixpoint-clean.

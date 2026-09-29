@@ -240,8 +240,8 @@ describe("canonical math pipeline — words, pi and general fuse", () => {
   it("Bengali prose never wraps", () =>
     expect(canon("খাতা কলম")).toBe("খাতা কলম"));
   it("√π typesets", () => expect(canon("√π : ২")).toBe("$\\sqrt{π}$ : ২"));
-  it("r√π keeps coefficient outside", () =>
-    expect(canon("a = r√π।")).toBe("a = r$\\sqrt{π}$।"));
+  it("whole equation wraps with real sqrt command", () =>
+    expect(canon("a = r√π।")).toBe("$a = r\\sqrt{π}$।"));
   it("multi-span paren fuses", () =>
     expect(canon("($\\sqrt{3}$ + $\\sqrt{2})^{2}$")).toBe("$((\\sqrt{3} + \\sqrt{2})^{2}$".replace("((", "(")));
 });
@@ -325,4 +325,32 @@ describe("canonical math pipeline — span-adjacent fractions", () => {
     expect(canon("x^2/y=5")).toBe("$\\frac{x^{2}}{y}$=5");
     expect(canon("a/y^2=5")).toBe("$\\frac{a}{y^{2}}$=5");
   });
+});
+describe("canonical math pipeline — bare equation wrapping", () => {
+  it("symbolic equations wrap", () =>
+    expect(canon("সমীকরণ: ৩x + ২x = ৯০ ⇒ x = ১৮।")).toBe(
+      "সমীকরণ: $৩x + ২x = ৯০ \\Rightarrow  x = ১৮$।",
+    ));
+  it("units stay outside", () =>
+    expect(canon("৪+৪+২+২+৩ = ১৫টি।")).toBe("$৪+৪+২+২+৩ = ১৫$টি।"));
+  it("paren groups never split", () =>
+    expect(canon("যেমন: ৫ = ৬(১)-১ (ভাগশেষ ৫)।")).toBe(
+      "যেমন: $৫ = ৬(১)-১$ (ভাগশেষ ৫)।",
+    ));
+  it("pure Bengali equalities stay prose", () =>
+    expect(canon("বিজোড় + বিজোড় = জোড়।")).toBe("বিজোড় + বিজোড় = জোড়।"));
+  it("option letters untouched", () =>
+    expect(canon("কোনটি সঠিক? (a) খ (b) গ")).toBe("কোনটি সঠিক? (a) খ (b) গ"));
+  it("degree without equation untouched", () =>
+    expect(canon("তাপমাত্রা ১০০° সেলসিয়াস।")).toBe("তাপমাত্রা ১০০° সেলসিয়াস।"));
+});
+describe("canonical math pipeline — bare equation wrapping", () => {
+  it("symbolic chains wrap with arrows mapped", () =>
+    expect(canon("সমীকরণ: ৩x + ২x = ৯০ ⇒ x = ১৮।")).toBe(
+      "সমীকরণ: $৩x + ২x = ৯০ \\Rightarrow  x = ১৮$।",
+    ));
+  it("retry after prose left side", () =>
+    expect(canon("যোগফল = 1+2+3+4+5 = 15।")).toBe("যোগফল = $1+2+3+4+5 = 15$।"));
+  it("lone values never wrap", () =>
+    expect(canon("মোট = ৫০।")).toBe("মোট = ৫০।"));
 });

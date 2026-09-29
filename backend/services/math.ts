@@ -24,6 +24,7 @@ export {
   adaptManualInput,
   validateMcq,
   AI_MATH_SYSTEM_INSTRUCTION,
+  splitLatexBraced,
 } from "@/lib/math/canonical-math";
 export type {
   MathDiagnostic,
