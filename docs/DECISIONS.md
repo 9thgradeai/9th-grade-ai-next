@@ -517,3 +517,48 @@ Grammar **সমাস** folder file (`database/data/ques/বাংলা ভা
 - **Consequences**: Bank 306/348 with math (Indices 200/200); remaining 42
   verified trigger-free pure prose. Corpus: 1 manual row (id 39242),
   0 introduced, 0 rejected, fixpoint-clean.
+
+## ADR-026: quickNormalize Lightweight Helper for New Inputs
+
+- **Date**: 2026-09-29
+- **Status**: Accepted
+- **Context**: New BCS/Bank Math questions entered via admin forms, AI route
+  responses, or file imports may contain Unicode math (x², √x, x₁) that the
+  canonical pipeline (`normalizeMathContent`) would fully handle — but calling
+  the full pipeline from every save path adds import complexity and testing
+  surface. A lightweight helper that covers the most common cases is sufficient
+  as a pre-validation pass-through before storage.
+- **Decision**: Add `frontend/lib/math/quick-normalize.ts` — `quickNormalize()`
+  — a pure, dependency-free function that converts Unicode superscripts (²–⁹, ⁿ),
+  subscripts (₀–₉), and Unicode root characters (√, ∛, ∜) to `$...$`-wrapped
+  LaTeX, while protecting already-canonical `$...$` / `$$...$$` spans and
+  returning everything else byte-identical.
+- **Rationale**:
+  - Zero deps; safe to import in both client and server contexts.
+  - Idempotent by design: `quickNormalize(quickNormalize(x)) === quickNormalize(x)`.
+  - Does NOT replace `canonical-math.ts` for ingestion pipelines — it is a
+    fast pre-pass that reduces obvious Unicode noise before the full pipeline.
+- **Consequences**: Admins and import adapters gain a one-liner sanitizer.
+  Any edge-case math not covered falls through to canonical-math (no regression risk).
+
+## ADR-027: LLM-Powered One-Time Math Migration Script
+
+- **Date**: 2026-09-29
+- **Status**: Accepted
+- **Context**: `upgrade-math-to-latex.ts` handles rule-based Unicode → LaTeX
+  conversion, but cannot recover complex legacy cases like bare fractions,
+  mixed notation, or corrupted OCR output. An LLM batch pass is the pragmatic
+  80/20 solution for the remaining hard cases.
+- **Decision**: Add `scripts/migrate-math-llm.ts` that:
+  1. Fetches BCS and Bank Math question rows, skips already-canonical ones.
+  2. Sends batches of 10 to Claude (claude-haiku-4-5) with a strict JSON-only
+     system prompt to convert Unicode math to `$...$` LaTeX.
+  3. Applies a preservation guard (Bengali + Latin word set must survive).
+  4. Writes back only text fields (question/options/correctAnswer/explanation).
+  5. Supports `--dry-run` and `--limit=N` for incremental testing.
+- **Rationale**: Claude Haiku is cheap and accurate for this JSON transform.
+  Preservation guard prevents silent data corruption. Existing rule-based
+  `upgrade-math-to-latex.ts` remains the canonical path; this is supplementary.
+- **Consequences**: Requires `ANTHROPIC_API_KEY` at run time (script-only,
+  never in the client bundle). One-time operation; subsequent reseeds preserve
+  migrated LaTeX via sourceKey matching.

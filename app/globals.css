@@ -2418,68 +2418,109 @@ html.light .skeleton-shimmer {
 }
 
 /* ══════════════════════════════════════════════════════════════════════════════
-   CANONICAL MATH TYPESETTING — textbook-style KaTeX
+   CANONICAL MATH TYPESETTING — publication-grade book-style KaTeX
    Inline math sits naturally in Bangla/English prose; display math gets
-   vertical spacing. Dark-mode + mobile-safe. Single shared renderer
-   (RichText → MathText → KaTeX) — no per-page math CSS.
+   a softly elevated block with generous vertical breathing room.
+   Dark-mode + mobile-safe. Single shared renderer (RichText → MathText → KaTeX)
+   — no per-page math CSS. Phase 25: book-typography refinements.
    ══════════════════════════════════════════════════════════════════════════════ */
 
+/* ── Inline math: baselines locked to surrounding Bangla / Latin prose ─── */
 .math-inline {
-  display: inline-block;
-  font-size: 1.04em;
-  line-height: 1.2;
+  display: inline;
+  font-size: 1.06em;
+  /* Slightly larger so KaTeX metrics match the Bangla cap-height */
+  line-height: inherit;
+  /* Inherits the paragraph line-height — no orphaned gaps */
   vertical-align: baseline;
   white-space: nowrap;
   color: inherit;
 }
 
 .math-inline .katex {
-  font-size: 1.04em;
-  line-height: 1.2;
+  font-size: 1em;
+  /* Relative to .math-inline's own 1.06em — renders at 1.06× prose size */
+  line-height: inherit;
   white-space: nowrap;
   text-rendering: optimizeLegibility;
+  /* Tight letter-spacing mirrors textbook KaTeX output */
+  letter-spacing: 0.01em;
 }
 
+/* ── Display math: centred block with a subtle elevated surface ─────────── */
 .math-display {
   display: block;
   overflow-x: auto;
   overflow-y: hidden;
-  margin: 0.9rem 0;
-  padding: 0.55rem 0.75rem;
-  line-height: 1.7;
+  /* Subtle surface + rounded corners — feels like a printed theorem box */
+  background: color-mix(in srgb, var(--surface-raised, #f8fafc) 40%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border-subtle, #e2e8f0) 60%, transparent);
+  border-radius: 10px;
+  margin: 1.1rem 0;
+  padding: 0.7rem 1.1rem;
+  line-height: 1.8;
   text-align: center;
   scrollbar-width: thin;
+  /* Smooth horizontal scroll on mobile without layout jank */
+  -webkit-overflow-scrolling: touch;
 }
 
 .math-display .katex-display {
   margin: 0;
-  padding: 0.25rem 0;
+  padding: 0.3rem 0;
 }
 
 .math-display .katex-display > .katex {
-  font-size: 1.12em;
+  font-size: 1.15em;
+  /* Slightly larger than inline — matches printed textbook display scale */
   white-space: nowrap;
+  letter-spacing: 0.01em;
 }
 
-/* Cross-theme: KaTeX inherits surrounding text color in both modes. */
+/* Cross-theme: KaTeX inherits surrounding text color in both light and dark. */
 .math-inline .katex,
 .math-display .katex {
   color: inherit;
 }
 
-/* Flagged fallbacks stay visible but honest (raw-text safety net). */
+/* Dark-mode: lighten the display-math surface slightly */
+@media (prefers-color-scheme: dark) {
+  .math-display {
+    background: color-mix(in srgb, var(--surface-raised, #1e2533) 55%, transparent);
+    border-color: color-mix(in srgb, var(--border-subtle, #334155) 55%, transparent);
+  }
+}
+
+/* [data-theme="dark"] mirror for JS-toggled dark themes */
+[data-theme="dark"] .math-display {
+  background: color-mix(in srgb, var(--surface-raised, #1e2533) 55%, transparent);
+  border-color: color-mix(in srgb, var(--border-subtle, #334155) 55%, transparent);
+}
+
+/* ── Error fallback: dashed outline without breaking layout ─────────────── */
 [data-math-error="true"] {
   outline: 1px dashed color-mix(in srgb, var(--warning, #fbbf24) 60%, transparent);
   outline-offset: 2px;
   border-radius: 4px;
 }
 
+/* ── Mobile refinements ─────────────────────────────────────────────────── */
 @media (max-width: 640px) {
+  .math-inline {
+    font-size: 1.02em;
+    /* Preserve visual weight on small screens */
+  }
   .math-inline .katex {
     font-size: 1em;
   }
   .math-display {
-    margin: 0.7rem 0;
+    margin: 0.75rem 0;
+    padding: 0.55rem 0.75rem;
     text-align: left;
+    /* Left-align on mobile so long equations start from the visible edge */
+    border-radius: 8px;
+  }
+  .math-display .katex-display > .katex {
+    font-size: 1.08em;
   }
 }
