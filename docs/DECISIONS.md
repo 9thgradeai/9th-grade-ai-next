@@ -499,3 +499,21 @@ Grammar **সমাস** folder file (`database/data/ques/বাংলা ভা
 - **Consequences**: +1470 rows healed this pass; math-span coverage BCS
   1292→1728 of 1944, Bank 348 total → 298 with math. Corpus triage: exactly
   1 manual-review row (id 39242), 0 introduced, 0 rejected, fixpoint-clean.
+
+## ADR-0xx: Bank Math + expression segmentation (math migration V)
+
+- **Date**: 2026-09-29
+- **Status**: Accepted
+- **Context**: Bank `03_Mathematics` had 50 equation-bearing rows without spans
+  (`2(6+x) = 20`, `x + (x+10)+... = ...`), blocked because English context
+  words (`Now,`, `gain`, `price`) vetoed whole chunks; plus a contamination
+  finding: most of the 148 `(no path)` Bank rows are non-math questions
+  (poets, Nobel, idioms) misfiled under Mathematics.
+- **Decision**: Segment prose on Bengali runs + 3+ Latin runs before chunking
+  (words pass through, equations convert); stoplist for 2-letter words and
+  titles (`of`, `Mr.`); `।?!` boundary punctuation; quoted/whole-part rules
+  unchanged. Contaminated non-math rows left untouched (taxonomy fix is a
+  separate task — no equations exist to convert).
+- **Consequences**: Bank 306/348 with math (Indices 200/200); remaining 42
+  verified trigger-free pure prose. Corpus: 1 manual row (id 39242),
+  0 introduced, 0 rejected, fixpoint-clean.

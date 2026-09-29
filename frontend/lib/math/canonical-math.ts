@@ -943,15 +943,22 @@ function wrapMathExpressions(s: string, push: (type: string, loc: string) => voi
   return splitLatexBraced(s)
     .map((p) => {
       if (p.latex) return p.text;
-      return p.text.replace(re, (m) => {
+      // Split off prose words first: Bengali runs and 3+ letter Latin runs
+      // pass through untouched. This turns `Now, 2(6+x) = 20` into `Now, `
+      // + `2(6+x) = 20`, so leading context can no longer veto the equation.
+      return p.text
+        .split(/([\u0980-\u09E5\u09F0-\u09FF]+|[A-Za-z]{3,})/g)
+        .map((seg, idx) => {
+          if (idx % 2 === 1) return seg;
+          return seg.replace(re, (m) => {
         if (!/[=⇒∴]/.test(m)) return m;
         // Edge punctuation/brackets belong OUTSIDE the span (never dropped):
         // `সমীকরণ: ৩x..` keeps `: `, `..-১ (` keeps ` (` after `$`.
         let core = m;
-        const lead = core.match(/^[\s:;,)\]}]+/)?.[0] ?? "";
+        const lead = core.match(/^[\s:;,)\]}।?!]+/)?.[0] ?? "";
         core = core.slice(lead.length);
         let trail = "";
-        const trailM = core.match(/[\s:;,=\[({>]+$/);
+        const trailM = core.match(/[\s:;,।?!=\[({>.]+$/);
         if (trailM) {
           trail = trailM[0];
           core = core.slice(0, core.length - trail.length);
@@ -985,9 +992,10 @@ function wrapMathExpressions(s: string, push: (type: string, loc: string) => voi
           sides = core.split("=");
         }
         if (sides.length < 2 || !sides[0].trim() || !sides[1].trim()) return m;
-        // Prose guard: 3+ letter Latin runs outside math (`The ratio Mr.`)
-        // stay prose. Single letters/digits (`a`, `2x`) are symbolic.
-        if (/[A-Za-z]{3,}/.test(core)) return m;
+        // Prose stoplist: common 2-letter English words and titles (`of x`,
+        // `Mr./X`) abort — 3+ letter runs were already split out above.
+        // Variables (`ax+by`) are untouched by this list.
+        if (/\b(of|is|at|to|an|or|as|by|in|on|up|so|no|if|mr|mrs|ms|dr)\b/i.test(core)) return m;
         let body = core;
         // Newlines never survive inside `$..$` (the renderer and validator
         // treat them as span boundaries) — fold to spaces.
@@ -1027,8 +1035,10 @@ function wrapMathExpressions(s: string, push: (type: string, loc: string) => voi
         for (const [rx, rep] of SYM) body = body.replace(rx, rep);
         push("REPAIRED_EXPRESSION", core.slice(0, 60));
         return lead + head + "$" + body + "$" + trail;
-      });
-    })
+          }); // end replace callback
+        }) // end segment map
+        .join("");
+    }) // end span-parts map
     .join("");
 }
 
