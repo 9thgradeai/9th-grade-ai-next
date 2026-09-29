@@ -121,6 +121,22 @@ function preRepair(input: string, diagnostics: MathDiagnostic[], field?: string)
     push("REPAIRED_LOG_PLAIN", `log_${sub}`);
     return `${pre}$\\log_{${sub}}$`;
   });
+  // Quoted single-letter divisions (`'x/z'`, `"a/b"`): unambiguous math in
+  // this corpus (exactly one such row). Uppercase-only pairs (`M/F`) never
+  // convert — at least one side must be lowercase (variables, not acronyms).
+  s = splitLatexBraced(s)
+    .map((p) => {
+      if (p.latex) return p.text;
+      return p.text.replace(
+        /(['"‘’“”])([A-Za-z])\/([A-Za-z])(['"‘’“”])/g,
+        (m, q1, a, b, q2) => {
+          if (!/[a-z]/.test(a + b)) return m;
+          push("REPAIRED_FRACTION", `${q1}${a}/${b}${q2}`);
+          return `${q1}$\\frac{${a}}{${b}}$${q2}`;
+        },
+      );
+    })
+    .join("");
   // Legacy escaped logarithm `log\\_abc` (plain-text subscript from linearized
   // sources) -> `$\\log_{abc}$`. Deterministic: `\\_` outside math spans only
   // ever denotes a subscript in this corpus; already-canonical `\\log_{..}`
@@ -353,6 +369,14 @@ function fracLeft(t: string, at: number): { text: string; start: number; grouped
 }
 
 function fracSegment(t: string, push: (type: string, loc: string) => void): string {
+  // Whole-part single-letter division (`a/b` as an entire option): nothing
+  // else in the segment, so no prose reading exists. Lowercase required.
+  const whole = t.trim();
+  const wm = whole.match(/^([A-Za-z])\/([A-Za-z])$/);
+  if (wm && /[a-z]/.test(wm[1] + wm[2])) {
+    push("REPAIRED_FRACTION", whole);
+    return t.replace(whole, `$\\frac{${wm[1]}}{${wm[2]}}$`);
+  }
   let out = "";
   let i = 0;
   while (i < t.length) {

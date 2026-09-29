@@ -354,3 +354,13 @@ describe("canonical math pipeline — bare equation wrapping", () => {
   it("lone values never wrap", () =>
     expect(canon("মোট = ৫০।")).toBe("মোট = ৫০।"));
 });
+describe("canonical math pipeline — quoted and whole-part divisions", () => {
+  it("quoted single letters stack, quotes kept", () =>
+    expect(canon("তাহলে 'x/z' এর মান?")).toBe("তাহলে '$\\frac{x}{z}$' এর মান?"));
+  it("whole-part single letters stack", () =>
+    expect(canon("a/b")).toBe("$\\frac{a}{b}$"));
+  it("uppercase-only never converts", () =>
+    expect(canon("'M/F' ratio")).toBe("'M/F' ratio"));
+  it("unquoted prose pairs never convert", () =>
+    expect(canon("x/y coordinates")).toBe("x/y coordinates"));
+});
