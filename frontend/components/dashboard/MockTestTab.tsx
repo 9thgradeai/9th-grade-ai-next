@@ -947,12 +947,12 @@ export default function MockTestTab() {
                             ? "text-[var(--dashboard-teal)]"
                             : "text-[var(--dashboard-danger)]"
                       }>
-                        {r.userAnswer || "উত্তর দেওয়া হয়নি"}
+                        {r.userAnswer ? <RichText text={r.userAnswer} /> : "উত্তর দেওয়া হয়নি"}
                       </span>
                     </p>
                     {!isCorrect && (
                       <p className="text-xs text-[var(--dashboard-success)] font-mono mt-0.5">
-                        সঠিক উত্তর: {r.correctAnswer}
+                        সঠিক উত্তর: <RichText text={r.correctAnswer} />
                       </p>
                     )}
                     {r.explanation && (

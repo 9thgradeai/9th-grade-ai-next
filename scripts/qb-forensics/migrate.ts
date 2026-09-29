@@ -83,8 +83,8 @@ function invariant(records: ClassifiedRecord[], fixMap: Map<string, Map<string, 
   return violations;
 }
 
-export function backupDatabase(dumpPath: string): void {
-  execFileSync("pg_dump", ["-d", process.env.DATABASE_URL as string, "-F", "c", "-f", dumpPath], {
+export function backupDatabase(dumpPath: string, binary = "pg_dump"): void {
+  execFileSync(binary, ["-d", process.env.DATABASE_URL as string, "-F", "c", "-f", dumpPath], {
     stdio: "inherit",
     env: process.env,
   });

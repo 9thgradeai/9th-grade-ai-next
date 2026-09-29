@@ -60,6 +60,20 @@ function Highlighted({ text, query }: { text: string; query: string }) {
 const TOKEN_RE = /(\*\*\*.+?\*\*\*|\*\*.+?\*\*|\*[^*\n]+?\*)/g;
 
 /**
+ * Truncate to `max` chars WITHOUT ever splitting a `$...$` math span: an
+ * unterminated `$` opens a span that would render as raw code, so the cut is
+ * pulled back to the last `$`. Appends `…` when truncation happens.
+ */
+export function truncateMathSafe(text: string, max = 60): string {
+  if (text.length <= max) return text;
+  let cut = text.slice(0, max);
+  if (((cut.match(/\$/g) ?? []).length) % 2 === 1) {
+    cut = cut.slice(0, cut.lastIndexOf("$"));
+  }
+  return cut.trimEnd() + "…";
+}
+
+/**
  * Renders question-bank text with inline **bold** / *italic* markers and
  * `$...$` LaTeX math (KaTeX, book-exact fractions/roots/scripts).
  *

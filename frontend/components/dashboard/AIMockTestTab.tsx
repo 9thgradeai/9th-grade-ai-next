@@ -221,14 +221,14 @@ function QuestionCard({
               className={`flex items-center gap-2 rounded-lg border px-4 py-2.5 text-left text-sm transition-colors ${cls}`}
             >
               <span className="font-mono text-xs text-text-muted">{opt.id}.</span>
-              <span>{opt.text}</span>
+              <span><RichText text={opt.text} /></span>
             </button>
           );
         })}
 
         {showAnswer && q.explanation && (
           <p className="mt-3 rounded-lg bg-surface-muted px-4 py-2 text-xs text-text-secondary">
-            {q.explanation}
+            <RichText text={q.explanation} />
           </p>
         )}
       </div>

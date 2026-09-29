@@ -8,6 +8,7 @@ import { solve } from "@/lib/services/ai";
 import { launchAI } from "@/lib/ai-launcher";
 import Markdown from "@/components/chat/Markdown";
 import AiLogo from "@/components/ui/AiLogo";
+import RichText, { truncateMathSafe } from "@/components/ui/RichText";
 
 export default function AISolverTab() {
   const [inputType, setInputType] = useState<"text" | "image">("text");
@@ -232,7 +233,7 @@ export default function AISolverTab() {
                   onClick={() => { setTextInput(ex.question); setInputType("text"); }}
                   className="px-3 py-1.5 bg-subtle border border-border rounded-lg text-xs text-text-muted hover:border-primary/20 hover:text-text-primary transition-all"
                 >
-                  {ex.subject}: {ex.question.slice(0, 40)}...
+                  {ex.subject}: <RichText text={truncateMathSafe(ex.question, 40)} />
                 </button>
               ))}
             </div>

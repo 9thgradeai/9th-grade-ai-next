@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { CheckCircle, XCircle, ArrowRight, ArrowCounterClockwise, TrendUp, Timer } from "@phosphor-icons/react";
 import { api } from "@/lib/services/api";
-import RichText from "@/components/ui/RichText";
+import RichText, { truncateMathSafe } from "@/components/ui/RichText";
 import type { QuestionDTO } from "@/lib/types";
 
 export type DrillAnswered = {
@@ -202,7 +202,7 @@ export default function QuestionDrill({
         <div className="text-left space-y-2 max-h-64 overflow-y-auto">
           {answered.map((a, i) => (
             <div key={a.questionId} className="text-xs font-mono px-3 py-2 rounded-lg border border-[var(--dashboard-border-muted)] flex justify-between gap-2">
-              <span className="truncate">{i + 1}. {questions[i]?.question?.slice(0, 60)}</span>
+              <span className="truncate">{i + 1}. <RichText text={truncateMathSafe(questions[i]?.question ?? "", 60)} /></span>
               <span className={a.correct ? "text-[var(--dashboard-success)]" : "text-[var(--dashboard-danger)]"}>{a.correct ? "✓" : "✗"}</span>
             </div>
           ))}

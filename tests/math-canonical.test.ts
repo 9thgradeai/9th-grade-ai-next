@@ -364,3 +364,156 @@ describe("canonical math pipeline — quoted and whole-part divisions", () => {
   it("unquoted prose pairs never convert", () =>
     expect(canon("x/y coordinates")).toBe("x/y coordinates"));
 });
+describe("canonical math pipeline — LaTeX artifact repair (Phase 1)", () => {
+  it("literal \\% outside math becomes %", () => {
+    expect(canon("a 15\\% profit turns into a 5\\% loss.")).toBe(
+      "a 15% profit turns into a 5% loss.",
+    );
+    expect(canon("The answer is 12\\%.")).toBe("The answer is 12%.");
+  });
+  it("\\% inside a span stays escaped", () =>
+    expect(canon("Value is $15\\%$ of total.")).toBe("Value is $15\\%$ of total."));
+  it("bare \\sqrt wraps; lost closer consumed on odd parity", () =>
+    expect(canon("Mean proportional = \\sqrt{0.04 × 0.09}$ = √0.0036 = 0.06.")).toBe(
+      "Mean proportional = $\\sqrt{0.04 × 0.09}$ = $\\sqrt{0.0036}$ = 0.06.",
+    ));
+  it("bare \\sqrt with no stray $ wraps directly", () =>
+    expect(canon("R = \\sqrt{Fraction × 100}  = 3.33\\%.")).toBe(
+      "R = $\\sqrt{Fraction × 100}$  = 3.33%.",
+    ));
+  it("span-in-brace command stays untouched for review", () => {
+    const raw = "Time = \\sqrt{$\\frac{4}{9}$ × 100}$ = 20/3.";
+    expect(canon(raw)).toBe(raw);
+    expect(validateMathContent(raw).valid).toBe(false);
+  });
+  it("broken implication arrow maps to ⇒", () => {
+    const out = canon("Set $6n + 2 = 164$ 🡆 $6n = 162$.");
+    expect(out).not.toContain("🡆");
+    expect(out).toContain(" ⇒ ");
+  });
+  it("double-struck pi becomes π", () => expect(canon("ℼ = 3.14")).toContain("π"));
+  it("decimal radicand never splits at the point", () => {
+    expect(canon("x = √0.0036.")).toBe("x = $\\sqrt{0.0036}$.");
+    expect(canon("√36 = 6")).toBe("$\\sqrt{36}$ = 6");
+  });
+  it("linearized subscripts heal to spans", () => {
+    expect(canon("T\\_4+T\\_$8 = 2a + 10d = 24$")).toBe(
+      "$T_{4}$+$T_{8} = 2a + 10d = 24$",
+    );
+    expect(canon("S\\_\\{p+q\\} = -(p+q)")).toContain("$S_{p+q}$");
+    expect(canon("Solve for x: log\\_(x+1) ($2x^{2}$ + 1) = 2.")).toBe(
+      "Solve for x: $\\log_{x+1}$ ($2x^{2}$ + 1) = 2.",
+    );
+    expect(canon("Evaluate log\\_$\\sqrt{2}$ 16.")).toBe(
+      "Evaluate $\\log_{\\sqrt{2}}$ 16.",
+    );
+    expect(canon("$\\log_{25}$ x = log\\_$5^{2}$ x = 2.")).toBe(
+      "$\\log_{25}$ x = $\\log_{5^{2}}$ $x = 2$.",
+    );
+  });
+  it("unrepairable linearized subscript fails validation (review net)", () => {
+    const out = canon("V\\_new = R\\_$\\frac{new}{P}$\\_new = 1.5");
+    expect(validateMathContent(out).valid).toBe(false);
+    expect(detectLegacyMath("R\\_$x$ remains")).toBe(true);
+  });
+  it("currency and keyboard dollar usage is never touched", () => {
+    expect(canon("move $10M through your account.")).toBe(
+      "move $10M through your account.",
+    );
+    expect(canon("It costs $80")).toBe("It costs $80");
+    expect(canon("Ctrl + Shift + $")).toBe("Ctrl + Shift + $");
+    expect(canon("The '$' symbol corresponds to currency format.")).toBe(
+      "The '$' symbol corresponds to currency format.",
+    );
+  });
+  it("all artifact repairs are idempotent", () => {
+    for (const raw of [
+      "a 15\\% profit.",
+      "Mean proportional = \\sqrt{0.04 × 0.09}$ = √0.0036 = 0.06.",
+      "Set $6n + 2 = 164$ 🡆 $n = 27$.",
+      "T\\_4+T\\_$8 = 2a + 10d = 24$",
+      "log\\_(x+1) ($2x^{2}$ + 1) = 2.",
+      "S\\_\\{p+q\\} = -(p+q)",
+      "move $10M through your account.",
+      "Time = \\sqrt{$\\frac{4}{9}$ × 100}$ = 20/3.",
+    ]) {
+      const once = canon(raw);
+      expect(canon(once)).toBe(once);
+    }
+  });
+});
+
+describe("canonical math pipeline — false-refusal fixes (heal phase)", () => {
+  it("√(x) paren consumption does not trip LOST_PARENTHESES", () => {
+    const raw = "অতিভুজ = √(১২² + ৫²) = √(১৪৪ + ২৫) = √১৬৯ = ১৩ মিটার।";
+    const out = canon(raw);
+    expect(out).toContain("\\sqrt{");
+    expect(checkMathPreservation(raw, out)).toEqual([]);
+  });
+  it("in-span (a)/(b) group is preserved, not flagged as lost fraction", () => {
+    const raw = "Set up ratio: $(4x-8)/(x+8)=2/3$. Solving yields $x=4$.";
+    const out = canon(raw);
+    expect(out).toContain("(4x-8)/(x+8)");
+    expect(checkMathPreservation(raw, out)).toEqual([]);
+  });
+  it("genuine paren/frac loss is still flagged", () => {
+    expect(
+      checkMathPreservation("(a)(b)(c)(d)", "no parens here").some(
+        (d) => d.type === "LOST_PARENTHESES",
+      ),
+    ).toBe(true);
+    expect(
+      checkMathPreservation("\\frac{a}{b}", "no frac here").some(
+        (d) => d.type === "LOST_FRACTION",
+      ),
+    ).toBe(true);
+  });
+  it("KaTeX-supported commands used in the bank validate", () => {
+    for (const s of [
+      "$-11, -7, -3, 1, \\dots$",
+      "$T_n = 40 - 4(n-1) > 0 \\implies n \\le 10$",
+      "$4d = 16 \\implies d = 4$",
+    ]) {
+      expect(
+        validateMathContent(s).errors.filter((e) => e.type === "UNKNOWN_COMMAND"),
+      ).toEqual([]);
+    }
+  });
+});
+
+describe("canonical math pipeline — paren-consumer allowances & base notation", () => {
+  it("power, log-subscript and prose-group paren consumption do not flag", () => {
+    expect(
+      checkMathPreservation(
+        "range = -(2^(n-1)) থেকে +(2^(n-1) - 1)",
+        canon("range = -(2^(n-1)) থেকে +(2^(n-1) - 1)"),
+      ),
+    ).toEqual([]);
+    expect(
+      checkMathPreservation(
+        "Simplify log\\_(a/b) + log\\_(b/c) + log\\_(c/a).",
+        canon("Simplify log\\_(a/b) + log\\_(b/c) + log\\_(c/a)."),
+      ),
+    ).toEqual([]);
+    expect(
+      checkMathPreservation(
+        "The inverse of f(x) = (x + 1)/(x − 2) is—",
+        canon("The inverse of f(x) = (x + 1)/(x − 2) is—"),
+      ),
+    ).toEqual([]);
+  });
+  it("in-span fraction groups next to prose parens never fabricate a lost fraction", () => {
+    const raw = "Ratio = ($\\frac{2}{5}$)/($\\frac{5}{12}$).";
+    expect(checkMathPreservation(raw, canon(raw))).toEqual([]);
+  });
+  it("(digits)unicodeSubscript becomes one balanced span", () => {
+    const raw = "(10111)₂ = 23।";
+    const out = canon(raw);
+    expect(out).toContain("$(10111)_{2}$");
+    expect(validateMathContent(out, "question").errors).toEqual([]);
+    expect(checkMathPreservation(raw, out, "question")).toEqual([]);
+    const bn = canon("(১০১০)₂ বাইনারি সংখ্যা।");
+    expect(bn).toContain("$(১০১০)_{2}$");
+    expect(canon(out)).toBe(out);
+  });
+});

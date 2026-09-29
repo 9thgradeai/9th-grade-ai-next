@@ -1240,11 +1240,11 @@ export default function CustomExamTab() {
                     <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">
                       আপনার উত্তর:{" "}
                       <span className={isCorrect ? "text-[var(--dashboard-success)]" : isUnanswered ? "text-[var(--dashboard-teal)]" : "text-[var(--dashboard-danger)]"}>
-                        {item.userAnswer || "উত্তর দেওয়া হয়নি"}
+                        {item.userAnswer ? <RichText text={item.userAnswer} /> : "উত্তর দেওয়া হয়নি"}
                       </span>
                       {!isCorrect && !isUnanswered && (
                         <>
-                          {" "}• সঠিক উত্তর: <span className="text-[var(--dashboard-success)]">{item.correctAnswer}</span>
+                          {" "}• সঠিক উত্তর: <span className="text-[var(--dashboard-success)]"><RichText text={item.correctAnswer} /></span>
                         </>
                       )}
                     </p>

@@ -16,7 +16,7 @@
  *
  * Pipeline per record:
  *   1. docx-math-to-latex.py: OMML → $\LaTeX$ (book-exact fractions/roots/scripts)
- *   2. toCanonicalMath: Unicode residuals → $...$
+ *   2. normalizeMcqFields: canonical math normalization (repair + validate)
  *   3. scanMca import gate: reject corrupt / empty / structural failures
  *   4. upsert by sourceKey = md5(subjectId|namespace|question)
  *
@@ -34,13 +34,11 @@ import { PrismaClient } from "@prisma/client";
 import { sourceKey } from "./seed-keys";
 import { scanMca } from "./qb-forensics/import-gate";
 import { mathFingerprint } from "./qb-forensics/unicode-math-to-latex";
-import { toCanonicalMath } from "../frontend/lib/math/canonical-math";
+import { normalizeMcqFields } from "../backend/services/math";
 
 const DATA_DIR = join(process.cwd(), "database", "data", "Bank", "Math", "updated");
 const CONVERTER = join(process.cwd(), "scripts", "docx-math-to-latex.py");
 const BB_MATH_NAMEBN = "03_Mathematics";
-
-const canonicalize = (s: string) => toCanonicalMath(s);
 
 // ── Topic config ─────────────────────────────────────────────────────────────
 
@@ -229,15 +227,15 @@ export function parseMathFile(
     } else {
       records.push({
         n: pendingN,
-        question: canonicalize(stem.normalize("NFC")),
-        options: opts.map((o) => canonicalize(o.normalize("NFC"))) as [
+        question: stem.normalize("NFC"),
+        options: opts.map((o) => o.normalize("NFC")) as [
           string,
           string,
           string,
           string,
         ],
         answerLetter: letter as "A" | "B" | "C" | "D",
-        explanation: canonicalize(expl.normalize("NFC")),
+        explanation: expl.normalize("NFC"),
         difficulty: section ? difficultyFor(section) : defaultDifficulty,
       });
     }
@@ -352,12 +350,15 @@ async function importOneTopic(
 
   for (const r of records) {
     const answerText = r.options[["A", "B", "C", "D"].indexOf(r.answerLetter)];
-    const gate = scanMca({
+    // Canonical math normalization (repair + preservation + validation) runs
+    // here — the gate then REJECTs anything that still cannot render.
+    const { record: canonRec } = normalizeMcqFields({
       question: r.question,
       options: r.options,
       correctAnswer: answerText,
       explanation: r.explanation,
     });
+    const gate = scanMca(canonRec);
     if (gate.verdict === "REJECT") {
       report.rejected++;
       for (const f of gate.fatal) {

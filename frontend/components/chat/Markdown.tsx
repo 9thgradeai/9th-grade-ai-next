@@ -15,6 +15,7 @@
 
 import { Fragment, useMemo, useState, type ReactNode } from "react";
 import { Check, Copy } from "@phosphor-icons/react";
+import { MathSpans } from "@/components/ui/MathText";
 
 type Block =
   | { type: "paragraph"; content: string }
@@ -220,6 +221,10 @@ function findRun(text: string, from: number, ch: string, run: number): number {
   return -1;
 }
 
+// Same shape as MathSpans: display first, then inline; an unclosed trailing
+// `$` passes through as prose (currency / keyboard usage).
+const MATH_SPAN_AT = /\$\$[\s\S]+?\$\$|\$[^$\n]+?\$/y;
+
 function renderInline(text: string, keyBase: string): ReactNode[] {
   const nodes: ReactNode[] = [];
   const buf: string[] = [];
@@ -240,6 +245,19 @@ function renderInline(text: string, keyBase: string): ReactNode[] {
       buf.push(text[i + 1]);
       i += 2;
       continue;
+    }
+
+    // `$...$` / `$$...$$` LaTeX — typeset atomically so emphasis/code
+    // handlers never split the span's internals.
+    if (ch === "$") {
+      MATH_SPAN_AT.lastIndex = i;
+      const m = MATH_SPAN_AT.exec(text);
+      if (m) {
+        flush();
+        nodes.push(<MathSpans key={`${keyBase}-m${token++}`} text={m[0]} />);
+        i += m[0].length;
+        continue;
+      }
     }
 
     if (ch === "`") {

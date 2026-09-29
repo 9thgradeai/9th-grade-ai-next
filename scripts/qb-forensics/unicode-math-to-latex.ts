@@ -161,9 +161,13 @@ export function convertInnerBare(s: string): string {
       new RegExp(`log([${esc(SUB_CHARS)}]{1,4})([0-9a-zA-Z${BN_DIGITS}]+)`, "g"),
       (_m, sub, rest) => `\\log_{${subToAscii(sub)}}{${rest}}`,
     );
-    // √(body) / √X → \sqrt{...} (bare).
+    // √(body) / √X → \sqrt{...} (bare). Decimal radicands (√0.0036) match
+    // first so the point is never split off (`√0.0036` ≠ `\sqrt{0}.0036`).
     out = out.replace(/√\(([^)$]{1,120})\)/g, (_m, b) => `\\sqrt{${b.trim()}}`);
-    out = out.replace(/√([0-90-9a-zA-Z০-৯π]{1,12})/g, (_m, b) => `\\sqrt{${b}}`);
+    out = out.replace(
+      /√([0-9০-৯]{1,12}\.[0-9০-৯]{1,12}|[0-90-9a-zA-Z০-৯π]{1,12})/g,
+      (_m, b) => `\\sqrt{${b}}`,
+    );
     // Base + superscript run → base^{sup} (bare). Guard is intentionally
     // looser than the prose pass: this runs on paren-group bases already
     // bound to math (or inside $...$ spans), where footnote protection
@@ -243,7 +247,10 @@ function convertSegment(seg: string): string {
     },
   );
   out = out.replace(
-    new RegExp(`([${esc(supDigitCls.join(""))}]{1,3})?√([0-90-9a-zA-Z০-৯π]{1,12})`, "g"),
+    new RegExp(
+      `([${esc(supDigitCls.join(""))}]{1,3})?√([0-9০-৯]{1,12}\\.[0-9০-৯]{1,12}|[0-90-9a-zA-Z০-৯π]{1,12})`,
+      "g",
+    ),
     (m, lead, b, offset, full) => {
       if (leadIsDegree(lead, offset, full)) {
         return `$\\sqrt[${supToAscii(lead as string)}]{${latexEscapeRaw(b as string)}}$`;

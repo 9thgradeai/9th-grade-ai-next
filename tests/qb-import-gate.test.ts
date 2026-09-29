@@ -422,3 +422,52 @@ describe("import gate: leading question-number scaffold is stripped", () => {
     expect(g.normalized.explanation).toBe("Question 2 ব্যাখ্যা করে।");
   });
 });
+
+describe("import gate: math rendering (MATH_* codes)", () => {
+  it("repairs unicode math at normalize time and accepts", () => {
+    const g = scanMca(clean({ question: "√25 হলো কত?" }));
+    expect(g.verdict).toBe("ACCEPT");
+    expect(g.normalized.question).toContain("\\sqrt{25}");
+    expect(g.fatal.some((i) => i.code.startsWith("MATH_"))).toBe(false);
+  });
+
+  it("rejects literal LaTeX the pipeline cannot repair", () => {
+    const g = scanMca(clean({ question: "If V\\_new = R\\_$\\frac{new}{P}$\\_new = 1.5 then?" }));
+    expect(g.verdict).toBe("REJECT");
+    expect(g.fatal.some((i) => i.code === "MATH_LITERAL_LATEX")).toBe(true);
+  });
+
+  it("rejects garbled unbalanced $ around attempted LaTeX", () => {
+    const g = scanMca(clean({ explanation: "যেমন $\\frac{1}{2}$ এবং $2/3 এর সমষ্টি নয়।" }));
+    expect(g.verdict).toBe("REJECT");
+    const issue = g.fatal.find((i) => i.code === "MATH_UNBALANCED_DOLLAR");
+    expect(issue).toBeTruthy();
+  });
+
+  it("keeps currency odd-$ as a non-fatal warning", () => {
+    const g = scanMca(
+      clean({
+        question: "He earns $10M per year. How much in 2 years?",
+        options: ["$5M", "$10M", "$20M", "$40M"],
+        correctAnswer: "$10M",
+      }),
+    );
+    expect(g.verdict).toBe("ACCEPT");
+    const issue = g.issues.find((i) => i.code === "MATH_UNBALANCED_DOLLAR");
+    expect(issue).toBeTruthy();
+    expect(issue?.fatal).toBe(false);
+  });
+
+  it("rejects a span KaTeX cannot parse", () => {
+    const g = scanMca(clean({ explanation: "যেমন $a^{\\log}_{a}^{b}$ হবে।" }));
+    expect(g.verdict).toBe("REJECT");
+    expect(g.fatal.some((i) => i.code === "MATH_KATEX_ERROR")).toBe(true);
+  });
+
+  it("normalizeMca output is math-canonical (idempotent through the gate)", () => {
+    const once = normalizeMca(clean({ question: "√16 = 4 কি না?" }));
+    expect(once.question).toContain("\\sqrt{16}");
+    const twice = normalizeMca(once);
+    expect(twice.question).toBe(once.question);
+  });
+});

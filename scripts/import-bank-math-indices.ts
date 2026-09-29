@@ -32,8 +32,7 @@ import { sourceKey } from "./seed-keys";
 import { scanMca } from "./qb-forensics/import-gate";
 // Canonical math pipeline — single facade (converges with seed/AI/manual).
 import { mathFingerprint } from "./qb-forensics/unicode-math-to-latex";
-import { toCanonicalMath } from "../frontend/lib/math/canonical-math";
-const unicodeMathToLatex = (s: string) => toCanonicalMath(s);
+import { normalizeMcqFields } from "../backend/services/math";
 
 const DOCX = join(
   process.cwd(),
@@ -103,7 +102,7 @@ export function parseMathText(text: string): { records: MathRecord[]; skipped: s
       continue;
     }
     const [, stem, a, b, c, d, letter, expl] = m;
-    const opts = [a, b, c, d].map((o) => unicodeMathToLatex(o.trim()));
+    const opts = [a, b, c, d].map((o) => o.trim());
     if (opts.some((o) => !o)) {
       skipped.push(`Q${n}: empty option`);
       continue;
@@ -117,17 +116,15 @@ export function parseMathText(text: string): { records: MathRecord[]; skipped: s
     // The OMML→LaTeX converter may already have produced "$7^{+}$ = 8";
     // cover that shape too.
     const fixSupF = (s: string) =>
-      unicodeMathToLatex(
-        s
-          .replace(/7⁺\s*=\s*8/g, "7ᶠ = 8")
-          .replace(/\$7\^{\+}\$\s*=\s*8/g, "$7^{f}$ = 8"),
-      );
+      s
+        .replace(/7⁺\s*=\s*8/g, "7ᶠ = 8")
+        .replace(/\$7\^{\+}\$\s*=\s*8/g, "$7^{f}$ = 8");
     const rec: MathRecord = {
       n,
       question: fixSupF(stem.trim().normalize("NFC")),
       options: opts as [string, string, string, string],
       answerLetter: letter as MathRecord["answerLetter"],
-      explanation: unicodeMathToLatex(expl.trim()),
+      explanation: expl.trim(),
       difficulty: difficultyFor(section),
     };
     records.push(rec);
@@ -195,12 +192,15 @@ export async function importBankMathIndices(
   const rejects: Record<string, number> = {};
   for (const r of records) {
     const answerText = r.options[["A", "B", "C", "D"].indexOf(r.answerLetter)];
-    const gate = scanMca({
+    // Canonical math normalization (repair + preservation + validation) runs
+    // here — the gate then REJECTs anything that still cannot render.
+    const { record: canonRec } = normalizeMcqFields({
       question: r.question,
       options: r.options,
       correctAnswer: answerText,
       explanation: r.explanation,
     });
+    const gate = scanMca(canonRec);
     if (gate.verdict === "REJECT") {
       report.rejected++;
       for (const f of gate.fatal) rejects[`${f.code}@${f.field}`] = (rejects[`${f.code}@${f.field}`] ?? 0) + 1;

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Sparkle, CaretDown, CaretUp, CheckCircle, XCircle, BookOpen, Lightbulb } from "@phosphor-icons/react";
 import { getExplanation, type ExplainOptions } from "@/lib/services/ai/explain";
 import type { AIExplanationDto } from "@/lib/types";
+import RichText from "@/components/ui/RichText";
 
 type AIExplanationButtonProps = ExplainOptions;
 
@@ -83,7 +84,7 @@ export default function AIExplanationButton(props: AIExplanationButtonProps) {
                   </span>
                 </div>
                 <p className="text-xs leading-relaxed" style={{ color: "var(--dashboard-text-primary)" }}>
-                  {result.correctAnswerExplanation}
+                  <RichText text={result.correctAnswerExplanation} />
                 </p>
               </div>
 
@@ -103,8 +104,8 @@ export default function AIExplanationButton(props: AIExplanationButtonProps) {
                           {OPTION_LABELS[props.options.indexOf(item.option)] ?? "?"}.
                         </span>
                         <div>
-                          <span className="font-medium" style={{ color: "var(--dashboard-text-primary)" }}>{item.option}: </span>
-                          <span style={{ color: "var(--dashboard-text-secondary)" }}>{item.reason}</span>
+                          <span className="font-medium" style={{ color: "var(--dashboard-text-primary)" }}><RichText text={`${item.option}: `} /></span>
+                          <span style={{ color: "var(--dashboard-text-secondary)" }}><RichText text={item.reason} /></span>
                         </div>
                       </div>
                     ))}
@@ -123,7 +124,7 @@ export default function AIExplanationButton(props: AIExplanationButtonProps) {
                   </div>
                   <ul className="list-disc list-inside text-xs space-y-0.5" style={{ color: "var(--dashboard-text-secondary)" }}>
                     {result.keyDefinitions.map((def, i) => (
-                      <li key={i}>{def}</li>
+                      <li key={i}><RichText text={def} /></li>
                     ))}
                   </ul>
                 </div>
@@ -138,7 +139,7 @@ export default function AIExplanationButton(props: AIExplanationButtonProps) {
                       সম্পর্কিত বিষয়
                     </span>
                   </div>
-                  <p className="text-xs" style={{ color: "var(--dashboard-text-secondary)" }}>{result.relatedConcepts}</p>
+                  <p className="text-xs" style={{ color: "var(--dashboard-text-secondary)" }}><RichText text={result.relatedConcepts} /></p>
                 </div>
               )}
 
@@ -151,7 +152,7 @@ export default function AIExplanationButton(props: AIExplanationButtonProps) {
                       পরীক্ষার টিপ
                     </span>
                   </div>
-                  <p className="text-xs" style={{ color: "var(--dashboard-text-secondary)" }}>{result.examTip}</p>
+                  <p className="text-xs" style={{ color: "var(--dashboard-text-secondary)" }}><RichText text={result.examTip} /></p>
                 </div>
               )}
             </div>

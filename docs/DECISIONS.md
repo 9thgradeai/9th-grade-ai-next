@@ -562,3 +562,50 @@ Grammar **সমাস** folder file (`database/data/ques/বাংলা ভা
 - **Consequences**: Requires `ANTHROPIC_API_KEY` at run time (script-only,
   never in the client bundle). One-time operation; subsequent reseeds preserve
   migrated LaTeX via sourceKey matching.
+
+## ADR-028: Book-exact math everywhere — heal, gate, render (screen + PDF)
+
+- **Date**: 2026-09-30
+- **Status**: Accepted
+- **Context**: KaTeX typesetting existed (ADR-0xx series), but three gaps kept
+  math from matching book quality: (1) legacy corpus rows still carried
+  raw/Unicode TeX (`\%`, `🡆`, `log_(...)`, bare `\frac{}` outside math mode);
+  (2) the import gate allowed literal LaTeX through with no math checks; (3)
+  many surfaces (Markdown chat, mock-test/explanation tabs, PDF export) printed
+  `$...$` as plain text.
+- **Decision** — three coordinated layers:
+  1. **Heal (one-time, reversible)** — `scripts/latex-heal/shared.ts`
+     classifies every Question/Quiz/Mock row as CLEAN/HEALED/REVIEW with a row
+     invariant (`correctAnswer ∈ options`); `repairLatexArtifacts` gained a
+     `(1010)₂`-style subscript-paren rule. `scripts/audit-latex.ts` (read-only)
+     and `scripts/heal-latex-artifacts.ts` (dry-run default, `--apply`) run
+     under `npm run math:audit|math:heal|math:heal:apply`. Writes go through
+     one transaction (10 min timeout) after a `pg_dump` ≥18 backup into
+     gitignored `backups/`, then re-audit to a fixpoint (exit 1 if HEALED > 0).
+     REVIEW rows are never modified. **Result: 1,243 rows / 2,850 fields healed
+     to a fixpoint (`clean=13013, healed=0`); 33 REVIEW rows left for manual
+     data fixes** (currency `$`, garbled OCR, invariant breaks).
+  2. **Gate (every future import)** — `import-gate.ts` gained
+     `MATH_LITERAL_LATEX`, `MATH_UNBALANCED_DOLLAR`, `MATH_KATEX_ERROR` codes;
+     `normalizeMca` runs `normalizeMathContent` on every field so imports land
+     canonical. Odd `$` is fatal only when LaTeX evidence exists (currency-safe,
+     non-fatal warning otherwise). `katex`-validates every span.
+  3. **Render (all surfaces)** — `Markdown` gained an atomic `$...$` handler
+     (before `*`/`_`, so emphasis can never split a span); plain-text sites in
+     AIMockTestTab, MockTestTab, CustomExamTab, DailyQuizWidget,
+     WrongAnswerNotebookTab, AIExplanationButton, QuestionDrill and
+     AISolverTab now render via `RichText`; truncation uses the new
+     `truncateMathSafe()` (never cuts inside a span). PDF export renders
+     server-side KaTeX (`backend/services/pdf/mathHtml.ts`) and inlines
+     `katex.min.css` with woff2 fonts as data URIs — required because the
+     renderer's `page.setContent` runs on about:blank where no relative
+     assets load.
+- **Rationale**: one repair stage + one gate + one renderer keeps math
+  consistent between screen, import, and print; every layer degrades to escaped
+  literal text instead of failing (`throwOnError: false`).
+- **Consequences**: exports grow ~400 KB (inlined KaTeX fonts, cached per
+  process). Corpus holds 33 known-broken REVIEW rows awaiting manual fix.
+  Tests: `math-canonical` (129), `qb-import-gate` (48), `math-html` (16),
+  `MarkdownMath` (6), `RichText` (12). Real-Chromium PDF tests remain
+  excluded from CI (`@sparticuz/chromium` is Linux-only; the HTML pipeline is
+  covered with a mocked Chromium instead).

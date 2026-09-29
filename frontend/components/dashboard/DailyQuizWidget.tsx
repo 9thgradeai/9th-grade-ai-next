@@ -372,10 +372,10 @@ export default function DailyQuizWidget() {
                     <div key={q.id} className={`p-3 rounded-xl border ${isCorrect ? "border-[var(--accent)]/20" : "border-[var(--danger)]/20"}`}>
                       <p className="text-sm text-[var(--text-primary)] mb-1">{i + 1}. <RichText text={q.question} /></p>
                       <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">
-                        আপনার উত্তর: <span className={isCorrect ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-danger)]"}>{userAnswer || "উত্তর দেওয়া হয়নি"}</span>
+                        আপনার উত্তর: <span className={isCorrect ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-danger)]"}>{userAnswer ? <RichText text={userAnswer} /> : "উত্তর দেওয়া হয়নি"}</span>
                       </p>
                       {!isCorrect && (
-                        <p className="text-xs text-[var(--dashboard-primary)] font-mono">সঠিক উত্তর: {q.correctAnswer}</p>
+                        <p className="text-xs text-[var(--dashboard-primary)] font-mono">সঠিক উত্তর: <RichText text={q.correctAnswer} /></p>
                       )}
                     </div>
                   );

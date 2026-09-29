@@ -4,8 +4,7 @@ import { PrismaClient } from "@prisma/client";
 import { sourceKey } from "./seed-keys";
 import { scanMca, mcaSignature } from "./qb-forensics/import-gate";
 // Canonical math pipeline — single facade (converges with import/AI/manual).
-import { toCanonicalMath } from "../frontend/lib/math/canonical-math";
-const unicodeMathToLatex = (s: string) => toCanonicalMath(s);
+import { normalizeMcqFields } from "../backend/services/math";
 import { resolveAnswerToOption } from "./qb-forensics/parse-flat";
 import { loadTaxonomy, SUBJECT_META, contentPath } from "./taxonomy";
 import type { TaxonomyNode } from "./taxonomy";
@@ -197,14 +196,15 @@ async function main(){
     let fa=0, fr=0;
     for(let i=0;i<parsedRecs.length;i++){
       const rawParsed=parsedRecs[i]; if(!rawParsed){fr++; totalRejected++; continue;}
-      // Legacy .txt files carry linearized Unicode math — migrate to LaTeX
-      // BEFORE the gate so sourceKeys are stable for future reseeds.
-      const parsed={
-        question: unicodeMathToLatex(rawParsed.question),
-        options: rawParsed.options.map(unicodeMathToLatex),
-        correctAnswer: unicodeMathToLatex(rawParsed.correctAnswer),
-        explanation: unicodeMathToLatex(rawParsed.explanation),
-      };
+      // Canonical math normalization (repair + preservation + validation)
+      // runs here so sourceKeys are stable for future reseeds; the gate then
+      // REJECTs anything that still cannot render.
+      const { record: parsed }=normalizeMcqFields({
+        question: rawParsed.question,
+        options: rawParsed.options,
+        correctAnswer: rawParsed.correctAnswer,
+        explanation: rawParsed.explanation,
+      });
       const gate=scanMca(parsed); if(gate.verdict==="REJECT"){fr++; totalRejected++; for(const f of gate.fatal) rejects[f.code+"@"+f.field]=(rejects[f.code+"@"+f.field]||0)+1; continue;}
       const norm=gate.normalized;
       const sig=mcaSignature({question:norm.question, options:norm.options, correctAnswer:norm.correctAnswer, explanation:norm.explanation});

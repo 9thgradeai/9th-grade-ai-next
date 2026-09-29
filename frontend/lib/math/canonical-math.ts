@@ -82,16 +82,238 @@ const VALID_COMMANDS = new Set([
   "mathrm",
   "left",
   "right",
+  // KaTeX-supported commands observed in question-bank data (verified by
+  // renderToString) — \le may be written instead of \leq etc.
+  "implies",
+  "dots",
+  "ldots",
+  "cdots",
+  "le",
+  "ge",
+  "ne",
+  "approx",
+  "equiv",
 ]);
 
-/** Suspicious legacy/broken math OUTSIDE canonical delimiters (runtime net). */
-const LEGACY_HINT = /(√|³|⁴|ˣ|ⁿ|²|₁|₂|log_[0-9a-zA-Z])/;
+/** Suspicious legacy/broken math OUTSIDE canonical delimiters (runtime net).
+ * `\\_` is a linearized subscript (`T\_4`, `log\_(x+1)`) — repaired by the
+ * canonical pipeline; a residue outside spans means the row needs review. */
+const LEGACY_HINT = /(√|³|⁴|ˣ|ⁿ|²|₁|₂|\\_|log_[0-9a-zA-Z])/;
 
 function stripMathSpans(s: string): string {
   return splitLatexBraced(s)
     .filter((p) => !p.latex)
     .map((p) => p.text)
     .join(" ");
+}
+
+/** True when `idx` falls inside a WELL-FORMED `$...$`/`$$...$$` span.
+ * An unterminated `$` never forms a span, so the text after a stray dollar
+ * stays prose (literal `\%` there must still be repaired). */
+function inMathAt(str: string, idx: number): boolean {
+  const re = /\$\$[\s\S]*?\$\$|\$[^$\n]*\$/g;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(str)) !== null) {
+    if (m.index > idx) return false;
+    if (idx < m.index + m[0].length) return true;
+  }
+  return false;
+}
+
+/** Split into complete math spans + prose gaps (never drops characters). */
+function spanParts(s: string): { math: boolean; text: string }[] {
+  const parts: { math: boolean; text: string }[] = [];
+  const re = /\$\$[\s\S]*?\$\$|\$[^$\n]*\$/g;
+  let last = 0;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(s)) !== null) {
+    if (m.index > last) parts.push({ math: false, text: s.slice(last, m.index) });
+    parts.push({ math: true, text: m[0] });
+    last = m.index + m[0].length;
+  }
+  if (last < s.length) parts.push({ math: false, text: s.slice(last) });
+  return parts;
+}
+
+/** Word immediately before `off+1` ends in the log functions (their `\_`
+ * shapes are owned by the log rules / left for review — never rewritten by
+ * the generic subscript rules). */
+function logWordBoundary(str: string, off: number): boolean {
+  const w = (str.slice(0, off + 1).match(/[A-Za-z]+$/) ?? [""])[0];
+  return w.endsWith("log") || w.endsWith("ln");
+}
+
+/**
+ * LaTeX-artifact repair — deterministic fixes for corruption introduced by
+ * ingestion (AI/DOCX flattening) that the core converter never sees:
+ *
+ * 1. Literal `\%` OUTSIDE math → `%` (today renders as a literal backslash).
+ * 2. Bare `\cmd{...}` outside delimiters → `$\cmd{...}$`. A trailing `$`
+ *    after the command is consumed as the closer ONLY when the field has
+ *    odd `$` parity (it is the unmatched opener of a lost span); even
+ *    parity means a real span opener follows, so that shape is left for
+ *    review. Commands whose brace content holds `$` are garbled nesting —
+ *    never touched.
+ * 3. Legacy linearized `\_` subscripts: `log\_(x+1)`, `log\_$...$`,
+ *    `T\_4`, `S\_{p+q}`, `T\_$8 = ...$` → delimited forms.
+ * 4. `🡆` (broken implication arrow) → `⇒` in prose / `\Rightarrow` in math;
+ *    `ℼ` (double-struck pi) → `π` / `\pi`.
+ * 5. `(10111)₂` base/subscript notation → `$(10111)_{2}$`: without this the
+ *    script converter opens the span at the `)` and leaves `(` outside,
+ *    producing an unbalanced-paren span.
+ *
+ * Currency and keyboard dollar usage (`$10M`, `Ctrl + Shift + $`, `'$'`)
+ * carry no LaTeX commands, so no rule can ever match them. Every rule is
+ * idempotent: outputs are complete spans that later passes skip.
+ */
+function repairLatexArtifacts(s: string, push: (type: string, loc: string) => void): string {
+  // 5) `(digits)unicodeSubscript` → `$(digits)_{n}$` (whole group delimited
+  // BEFORE the unicode-script passes run, so the paren pair stays in-span).
+  if (/\)[₀-９]/.test(s)) {
+    s = spanParts(s)
+      .map((p) =>
+        p.math
+          ? p.text
+          : p.text.replace(/\(([^()$\n]{1,24})\)([₀-₉]+)/g, (_m, body: string, sub: string) => {
+              const digits = [...sub]
+                .map((c) => String.fromCharCode(0x30 + (c.charCodeAt(0) - 0x2080)))
+                .join("");
+              push("REPAIRED_SUBSCRIPT_PAREN", `(${body})${sub}`.slice(0, 40));
+              return `$(${body})_{${digits}}$`;
+            }),
+      )
+      .join("");
+  }
+  // 1) Literal `\%` in prose (inside spans `\%` is already correct).
+  if (/\\%/.test(s)) {
+    s = spanParts(s)
+      .map((p) =>
+        p.math || !p.text.includes("\\%")
+          ? p.text
+          : p.text.replace(/\\%/g, () => {
+              push("REPAIRED_LITERAL_PERCENT", "\\%");
+              return "%";
+            }),
+      )
+      .join("");
+  }
+  // 4a) Broken glyphs, scoped by span type.
+  if (/🡆|ℼ/.test(s)) {
+    s = spanParts(s)
+      .map((p) =>
+        p.math
+          ? p.text.replace(/🡆/g, "\\Rightarrow ").replace(/ℼ/g, "\\pi")
+          : p.text.replace(/🡆/g, " ⇒ ").replace(/ℼ/g, "π"),
+      )
+      .join("");
+    push("REPAIRED_GLYPH", "🡆/ℼ");
+  }
+  // 3a) log base in parens: log\_(x+1), log\_(a/b) → $\log_{x+1}$.
+  s = s.replace(/log\\_\(([^()\n$]{1,40})\)/g, (m, body: string, off: number) => {
+    if (inMathAt(s, off) || !body.trim()) return m;
+    push("REPAIRED_LOG_BASE", `log_(${body})`.slice(0, 40));
+    return `$\\log_{${body}}$`;
+  });
+  // 3b) log base as span: log\_$\sqrt{17}$ / log\_($\frac{x}{16}$) → $\log_{...}$.
+  s = s.replace(/log\\_\((\$[^$\n]{1,40}\$)\)/g, (m, span: string, off: number) => {
+    if (inMathAt(s, off)) return m;
+    const body = span.slice(1, -1);
+    if (!body.trim() || body.includes("$")) return m;
+    push("REPAIRED_LOG_BASE", `log_(${body})`.slice(0, 40));
+    return `$\\log_{${body}}$`;
+  });
+  s = s.replace(/log\\_(\$[^$\n]{1,40}\$)/g, (m, span: string, off: number) => {
+    if (inMathAt(s, off)) return m;
+    const body = span.slice(1, -1);
+    if (!body.trim() || body.includes("$")) return m;
+    push("REPAIRED_LOG_BASE", `log_${body}`.slice(0, 40));
+    return `$\\log_{${body}}$`;
+  });
+  // 3c) Escaped-brace subscript: S\_{p+q} / S\_\{p+q\} → $S_{p+q}$ (lazy body
+  // so an escaped closer `\}` never leaks into the capture).
+  s = s.replace(
+    /([A-Za-z0-9])\\_(?:\\)?\{([^{}\n]{1,30}?)(?:\\)?\}/g,
+    (m, letter: string, body: string, off: number) => {
+      if (inMathAt(s, off) || logWordBoundary(s, off)) return m;
+      push("REPAIRED_SPAN_SUBSCRIPT", m.slice(0, 40));
+      return `$${letter}_{${body}}$`;
+    },
+  );
+  // 3d) Plain alnum subscript: T\_4, V\_new → $T_{4}$, $V_{new}$.
+  s = s.replace(/([A-Za-z0-9])\\_([0-9A-Za-z]{1,12})/g, (m, letter: string, sub: string, off: number) => {
+    if (inMathAt(s, off) || logWordBoundary(s, off)) return m;
+    push("REPAIRED_SPAN_SUBSCRIPT", m.slice(0, 40));
+    return `$${letter}_{${sub}}$`;
+  });
+  // 3e) Subscript fused to a span opener: T\_$8 = 2a + 10d = 24$ →
+  //     $T_{8} = 2a + 10d = 24$ (the existing delimiters are reused, so
+  //     parity is preserved).
+  s = s.replace(
+    /([A-Za-z0-9])\\_\$([0-9A-Za-z]{1,6})([^$\n]{0,120}?)\$/g,
+    (m, letter: string, sub: string, rest: string, off: number) => {
+      if (inMathAt(s, off) || logWordBoundary(s, off)) return m;
+      push("REPAIRED_SPAN_SUBSCRIPT", m.slice(0, 40));
+      return `$${letter}_{${sub}}${rest}$`;
+    },
+  );
+  // 2) Bare `\cmd{...}` outside math → wrapped in delimiters.
+  if (/\\[a-zA-Z]/.test(s)) {
+    const oddParity = (s.replace(/\$\$/g, "").match(/\$/g) || []).length % 2 === 1;
+    let consumed = false;
+    let out = "";
+    let pos = 0;
+    const cmdRe = /\\([a-zA-Z]+)/g;
+    let m: RegExpExecArray | null;
+    while ((m = cmdRe.exec(s)) !== null) {
+      const j = m.index;
+      if (inMathAt(s, j)) continue;
+      if (j > 0 && s[j - 1] === "\\") continue; // `\\cmd` — literal double backslash
+      // Consume consecutive balanced brace groups (`\frac{a}{b}`, `\sqrt{..}`).
+      let k = j + m[0].length;
+      let groups = 0;
+      let ok = true;
+      while (ok && k < s.length && s[k] === "{") {
+        const start = k;
+        let depth = 0;
+        while (k < s.length) {
+          if (s[k] === "{") depth++;
+          else if (s[k] === "}") {
+            depth--;
+            if (depth === 0) {
+              k++;
+              break;
+            }
+          }
+          k++;
+        }
+        if (depth !== 0 || k - start > 140) {
+          ok = false;
+          break;
+        }
+        groups++;
+      }
+      if (!ok || groups === 0) continue;
+      const content = s.slice(j + m[0].length, k);
+      if (content.includes("$") || k - j > 180) continue;
+      let emitClose = true;
+      if (s[k] === "$") {
+        // A trailing `$` is only the lost span's closer when the field is
+        // unbalanced; otherwise it opens a real span we must not consume.
+        if (!oddParity || consumed || inMathAt(s, k)) continue;
+        consumed = true;
+        emitClose = false;
+      }
+      out += s.slice(pos, j) + "$" + m[0] + content;
+      if (emitClose) out += "$";
+      pos = k;
+      push("REPAIRED_BARE_LATEX", (m[0] + content).slice(0, 60));
+    }
+    if (pos > 0) {
+      out += s.slice(pos);
+      s = out;
+    }
+  }
+  return s;
 }
 
 /** Pre-repair deterministic legacy corruption before the core converter. */
@@ -196,6 +418,7 @@ function preRepair(input: string, diagnostics: MathDiagnostic[], field?: string)
     if (replaced) push("REPAIRED_ROOT_BRACKET", "√[...]");
     s = out;
   }
+  s = repairLatexArtifacts(s, push);
   return s;
 }
 
@@ -1203,10 +1426,12 @@ export function checkMathPreservation(source: string, canonical: string, field =
   if (dstRoots < srcRoots)
     diags.push({ type: "LOST_ROOT", field, detail: `${srcRoots}→${dstRoots}` });
   // Only patterns the pipeline converts count as losable: real `\\frac`
-  // and explicit `(num)/(den)` (single-sided `a/(b)` is deliberately left
-  // alone as ambiguous per Phase 7 — never flag it).
-  const srcFrac =
-    count(source, /\\frac/g) + count(source, /\([^()$]{1,60}\)\/\([^()$]{1,60}\)/g);
+  // and explicit `(num)/(den)` in PROSE. Masking (instead of removing)
+  // spans keeps their parens from rejoining into phantom groups and keeps
+  // in-span groups — which are preserved verbatim — out of the count.
+  const masked = source.replace(/\$\$([\s\S]*?)\$\$|\$([^$\n]*?)\$/g, "$");
+  const srcGroups = count(masked, /\([^()$]{1,60}\)\/\([^()$]{1,60}\)/g);
+  const srcFrac = count(source, /\\frac/g) + srcGroups;
   const dstFrac = count(canonical, /\\frac/g);
   if (dstFrac < srcFrac)
     diags.push({ type: "LOST_FRACTION", field, detail: `${srcFrac}→${dstFrac}` });
@@ -1242,7 +1467,21 @@ export function checkMathPreservation(source: string, canonical: string, field =
         diags.push({ type: "LOST_EQUALITY", field, detail: `${aEq}→${bEq}` });
       continue;
     }
-    const allowed = name === "parentheses" ? 2 + 2 * fracCount : 2;
+    // Legitimate paren consumers, each evidenced on both sides so real
+    // losses are still flagged:
+    //   `√(x)` → `\sqrt{x}`      `2^(n)` → `2^{n}`      `log\_(x)` → `_{x}`
+    //   `(a)/(b)` → `\frac{a}{b}` (2 pairs per converted prose group)
+    const sqrtP = Math.min(
+      count(source, /√\([^)$]{1,120}\)/g),
+      count(canonical, /\\sqrt/g),
+    );
+    const powP = Math.min(count(source, /\^\(/g), count(canonical, /\^\{/g));
+    const subP = Math.min(count(source, /\\_\(/g), count(canonical, /_\{/g));
+    const grpP = Math.min(srcGroups, count(canonical, /\\frac/g));
+    const allowed =
+      name === "parentheses"
+        ? 2 + 2 * fracCount + 2 * sqrtP + 2 * powP + 2 * subP + 4 * grpP
+        : 2;
     if (b < a - allowed)
       diags.push({ type: `LOST_${name.toUpperCase()}`, field, detail: `${a}→${b}` });
   }

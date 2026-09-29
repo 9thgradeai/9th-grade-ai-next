@@ -3,7 +3,9 @@
  * ----------------------------------------------------------------------------
  * Parser guarantees for the Bank Math Indices & Logarithms import pipeline
  * (scripts/import-bank-math-indices.ts):
- *   1. Single-paragraph records parse with Unicode math intact.
+ *   1. Single-paragraph records parse with Unicode math intact (extraction is
+ *      raw); canonical math normalization runs in the import loop via
+ *      normalizeMcqFields before the gate.
  *   2. Section headers drive difficulty (Easy/Medium/Hard).
  *   3. Multi-paragraph explanation continuations attach to the prior record.
  *   4. Malformed records are skipped with reasons, never half-imported.
@@ -11,6 +13,15 @@
  */
 import { describe, it, expect } from "vitest";
 import { parseMathText } from "../scripts/import-bank-math-indices";
+import { normalizeMcqFields } from "../backend/services/math";
+
+const canonFields = (r: { question: string; options: string[]; correctAnswer: string; explanation: string }) =>
+  normalizeMcqFields({
+    question: r.question,
+    options: r.options,
+    correctAnswer: r.options[0],
+    explanation: r.explanation,
+  }).record;
 
 describe("parseMathText — bank math indices", () => {
   it("parses a record with LaTeX equations (migrated from Unicode)", () => {
@@ -24,12 +35,15 @@ describe("parseMathText — bank math indices", () => {
     expect(records).toHaveLength(1);
     expect(records[0]).toMatchObject({
       n: 1,
-      question: "If $2^{0+3}$ + $2^{0+1}$ = 320, find the value of x.",
+      question: "If 2⁰⁺³ + 2⁰⁺¹ = 320, find the value of x.",
       options: ["4", "5", "6", "7"],
       answerLetter: "B",
       difficulty: "EASY",
     });
-    expect(records[0].explanation).toContain("x = 5");
+    // Canonical normalization (import loop, before the gate) migrates it:
+    const canon = canonFields(records[0]);
+    expect(canon.question).toBe("If $2^{0+3}$ + $2^{0+1}$ = 320, find the value of x.");
+    expect(canon.explanation).toContain("x = 5");
   });
 
   it("maps Moderate/Difficult sections to MEDIUM/HARD", () => {
@@ -61,7 +75,8 @@ describe("parseMathText — bank math indices", () => {
     const { records } = parseMathText(
       "Question 18. If 2ᵃ = 3 and 7⁺ = 8, find it.A. 1B. 2C. 3D. 4Answer: CExplanation: Chain rule.",
     );
-    expect(records[0].question).toContain("$7^{f}$ = 8");
+    expect(records[0].question).toContain("7ᶠ = 8");
+    expect(canonFields(records[0]).question).toContain("$7^{f}$ = 8");
   });
 
   it("skips records with missing options", () => {

@@ -851,7 +851,7 @@ export default function WrongAnswerNotebookTab() {
                                 }`}
                               >
                                 <span className="font-bold mr-2">{letter}.</span>
-                                {opt}
+                                <RichText text={opt} />
                               </div>
                             );
                           })}

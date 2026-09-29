@@ -16,6 +16,11 @@
  *        • Empty question / empty option / fewer than 4 options / empty answer
  *        • correctAnswer that matches no option (and is not a resolvable letter)
  *        • Empty EXPLANATION (question-bank policy: explanations are mandatory)
+ *        • Math that still cannot render AFTER canonical normalization:
+ *          literal LaTeX outside math (MATH_LITERAL_LATEX), garbled unbalanced
+ *          `$` around attempted LaTeX (MATH_UNBALANCED_DOLLAR), or a span
+ *          KaTeX rejects (MATH_KATEX_ERROR). Odd `$` with no LaTeX evidence
+ *          is a currency/keyboard dollar — non-fatal warning only.
  *
  *   2. NON-FATAL — normalized automatically before import (verdict ACCEPT with
  *      `normalized` content): non-NFC composition, non-standard spaces, BOM,
@@ -47,6 +52,12 @@ import {
   hasForeignIndicScript,
 } from "./bangla";
 import { applyTransforms, resolveLetterAnswer } from "./classify";
+import katex from "katex";
+import {
+  normalizeMathContent,
+  validateMathContent,
+  splitLatexBraced,
+} from "../../frontend/lib/math/canonical-math";
 
 export type GateField = "question" | "options" | "correctAnswer" | "explanation" | "statements" | "record";
 
@@ -74,7 +85,11 @@ export type GateIssueCode =
   | "ANSWER_NOT_IN_OPTIONS"
   | "STATEMENT_TOO_FEW"
   | "NON_NFC"
-  | "NON_STANDARD_SPACE";
+  | "NON_STANDARD_SPACE"
+  // Math rendering (FATAL — canonical pipeline could not make it render):
+  | "MATH_LITERAL_LATEX"
+  | "MATH_UNBALANCED_DOLLAR"
+  | "MATH_KATEX_ERROR";
 
 export interface GateIssue {
   code: GateIssueCode;
@@ -140,6 +155,27 @@ function snippet(s: string, maxLen = 90): string {
   return s.slice(0, maxLen) + "…";
 }
 
+/** Parse every `$...$`/`$$...$$` span with KaTeX; first error message or null. */
+function katexError(s: string): string | null {
+  const re = /\$\$([\s\S]*?)\$\$|\$([^$\n]*?)\$/g;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(s)) !== null) {
+    const body = m[1] ?? m[2] ?? "";
+    if (!body.trim()) continue;
+    try {
+      katex.renderToString(body, { throwOnError: true, strict: false });
+    } catch (e) {
+      return String((e as Error).message).replace(/\s+/g, " ").slice(0, 110);
+    }
+  }
+  return null;
+}
+
+/** Attempted-but-broken LaTeX: commands / radicals / scripts anywhere in the field. */
+function latexEvidence(s: string): boolean {
+  return /\\(?:[a-zA-Z]+|%)|√|\^\{|_\{/.test(s);
+}
+
 function fieldLabel(field: GateField, index?: number): string {
   if (field === "options") return `options[${index ?? 0}]`;
   return field;
@@ -174,15 +210,18 @@ export function stripQuestionScaffold(s: string): string {
  */
 export function normalizeMca(rec: McaInput): NormalizedMca {
   const qt = rec.questionType ?? "SINGLE_CHOICE";
+  // Canonical math pass: unicode math / LaTeX artifacts are repaired here so
+  // `normalized` is exactly what must render. Idempotent.
+  const m = (field: string, s: string) => normalizeMathContent(s, { field }).output;
   const result: NormalizedMca = {
     ...rec,
     questionType: qt,
-    question: stripQuestionScaffold(normalizeField(rec.question ?? "")),
-    options: (rec.options ?? []).map((o) => normalizeField(o ?? "")),
-    correctAnswer: normalizeField(rec.correctAnswer ?? ""),
-    explanation: normalizeField(rec.explanation ?? ""),
-    correctAnswers: rec.correctAnswers?.map((c) => normalizeField(c)) ?? [],
-    statements: rec.statements?.map((s) => normalizeField(s ?? "")) ?? [],
+    question: m("question", stripQuestionScaffold(normalizeField(rec.question ?? ""))),
+    options: (rec.options ?? []).map((o, i) => m(`options[${i}]`, normalizeField(o ?? ""))),
+    correctAnswer: m("correctAnswer", normalizeField(rec.correctAnswer ?? "")),
+    explanation: m("explanation", normalizeField(rec.explanation ?? "")),
+    correctAnswers: rec.correctAnswers?.map((c, i) => m(`correctAnswers[${i}]`, normalizeField(c))) ?? [],
+    statements: rec.statements?.map((s, i) => m(`statements[${i}]`, normalizeField(s ?? ""))) ?? [],
   };
     if (qt === "SINGLE_CHOICE" && result.correctAnswers.length === 0 && rec.correctAnswer) {
      result.correctAnswers = [normalizeField(rec.correctAnswer)];
@@ -302,6 +341,57 @@ export function scanMca(raw: McaInput): McaGateResult {
         field,
         fatal: false,
         detail: `${fieldLabel(field, index)} contains non-standard space characters (will be normalized)`,
+      });
+    }
+  }
+
+  // ── Math gate (post-canonical) ────────────────────────────────────────────
+  // After normalizeMca's canonical pass the stored text must actually render:
+  //   • literal LaTeX left outside math          → MATH_LITERAL_LATEX (fatal)
+  //   • unbalanced `$` around attempted LaTeX     → MATH_UNBALANCED_DOLLAR (fatal;
+  //     odd `$` without LaTeX evidence is a currency/keyboard `$` → non-fatal)
+  //   • a span KaTeX cannot parse                 → MATH_KATEX_ERROR (fatal)
+  const mathFields: Array<{ field: GateField; value: string; index?: number }> = [
+    { field: "question", value: norm.question },
+    { field: "correctAnswer", value: norm.correctAnswer ?? "" },
+    { field: "explanation", value: norm.explanation },
+    ...norm.options.map((o, i) => ({ field: "options" as GateField, value: o, index: i })),
+    ...norm.statements.map((s, i) => ({ field: "statements" as GateField, value: s, index: i })),
+  ];
+  for (const { field, value, index } of mathFields) {
+    if (!value) continue;
+    const label = fieldLabel(field, index);
+    const mathOut = normalizeMathContent(value, { field: label }).output;
+    const v = validateMathContent(mathOut, label);
+    if (v.errors.some((e) => e.type === "RAW_UNICODE_MATH" || e.type === "RAW_LOG_SUBSCRIPT")
+      || splitLatexBraced(mathOut).some((p) => !p.latex && /\\(?:[a-zA-Z]+|%)/.test(p.text))) {
+      push({
+        code: "MATH_LITERAL_LATEX",
+        field,
+        fatal: true,
+        detail: `${label} still contains literal LaTeX outside math after canonical normalization`,
+        snippet: snippet(value),
+      });
+    }
+    if (v.errors.some((e) => e.type === "UNBALANCED_DOLLAR")) {
+      push({
+        code: "MATH_UNBALANCED_DOLLAR",
+        field,
+        fatal: latexEvidence(mathOut),
+        detail: latexEvidence(mathOut)
+          ? `${label} has unbalanced $ around attempted LaTeX (garbled span)`
+          : `${label} has an odd $ count (likely currency/keyboard — review only)`,
+        snippet: snippet(value),
+      });
+    }
+    const kErr = katexError(mathOut);
+    if (kErr !== null) {
+      push({
+        code: "MATH_KATEX_ERROR",
+        field,
+        fatal: true,
+        detail: `${label} contains a span KaTeX cannot parse: ${kErr}`,
+        snippet: snippet(value),
       });
     }
   }
@@ -481,6 +571,6 @@ export function mcaSignature(rec: McaInput): string {
 /** Convenience: true when any text field is fatally corrupt. */
 export function isCorrupt(rec: McaInput): boolean {
   return scanMca(rec).fatal.some((i) =>
-    ["REPLACEMENT_CHAR", "MOJIBAKE", "DOUBLE_ENCODING", "CONTROL_CHAR", "VISUAL_ORDER_BANGLA", "FOREIGN_SCRIPT", "MANGLED_HEADER", "OPTION_MARKER_LEAK", "QUESTION_SCAFFOLD", "QUESTION_HEADER_LEAK", "EXPLANATION_SCAFFOLD", "BAD_QUESTION_TYPE", "MULTI_TOO_FEW_ANSWERS", "ANSWER_NOT_IN_OPTIONS", "STATEMENT_TOO_FEW"].includes(i.code),
+    ["REPLACEMENT_CHAR", "MOJIBAKE", "DOUBLE_ENCODING", "CONTROL_CHAR", "VISUAL_ORDER_BANGLA", "FOREIGN_SCRIPT", "MANGLED_HEADER", "OPTION_MARKER_LEAK", "QUESTION_SCAFFOLD", "QUESTION_HEADER_LEAK", "EXPLANATION_SCAFFOLD", "BAD_QUESTION_TYPE", "MULTI_TOO_FEW_ANSWERS", "ANSWER_NOT_IN_OPTIONS", "STATEMENT_TOO_FEW", "MATH_LITERAL_LATEX", "MATH_UNBALANCED_DOLLAR", "MATH_KATEX_ERROR"].includes(i.code),
   );
 }

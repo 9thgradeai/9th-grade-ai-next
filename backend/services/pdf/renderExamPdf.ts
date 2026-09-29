@@ -12,6 +12,7 @@ import type {
 } from "./examPdfTypes";
 import { PdfExportError } from "./examPdfErrors";
 import { sanitizeForPdf } from "./unicode";
+import { renderMathHtml, katexInlineCss } from "./mathHtml";
 
 // ── Font loading (cached at module level) ───────────────────────
 const FONTS_DIR = path.join(process.cwd(), "fonts");
@@ -89,7 +90,7 @@ function buildQuestionHtml(
       .map((o, j) => {
         const label = sanitizeForPdf(o.key || String(j + 1), 10);
         const oText = sanitizeForPdf(o.text, 3000);
-        return `<li style="padding-left:18px;margin-bottom:1px;position:relative;"><span style="position:absolute;left:0;font-weight:700;color:#111827;">${escapeHtml(label)}.</span><span>${escapeHtml(oText)}</span></li>`;
+        return `<li style="padding-left:18px;margin-bottom:1px;position:relative;"><span style="position:absolute;left:0;font-weight:700;color:#111827;">${escapeHtml(label)}.</span><span>${renderMathHtml(oText)}</span></li>`;
       })
       .join("");
     optionsHtml = `<ul style="list-style:none;margin:2px 0 4px 18px;padding:0;">${items}</ul>`;
@@ -99,14 +100,14 @@ function buildQuestionHtml(
   let answersSection = "";
   if (opts.includeAnswers && q.correctAnswer) {
     const answerText = sanitizeForPdf(String(q.correctAnswer), 2000);
-    answersSection += `<div style="margin:6px 0;padding:4px 8px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:3px;"><span style="font-weight:700;font-size:8pt;color:#166534;">Answer: </span><span style="font-size:8pt;color:#14532d;">${escapeHtml(answerText)}</span></div>`;
+    answersSection += `<div style="margin:6px 0;padding:4px 8px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:3px;"><span style="font-weight:700;font-size:8pt;color:#166534;">Answer: </span><span style="font-size:8pt;color:#14532d;">${renderMathHtml(answerText)}</span></div>`;
   }
   if (opts.includeExplanations && q.explanation) {
     const explText = sanitizeForPdf(q.explanation, 4000);
-    answersSection += `<div style="margin:3px 0;padding:4px 8px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:3px;font-size:7.5pt;color:#1e3a5a;line-height:1.4;">${escapeHtml(explText)}</div>`;
+    answersSection += `<div style="margin:3px 0;padding:4px 8px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:3px;font-size:7.5pt;color:#1e3a5a;line-height:1.4;">${renderMathHtml(explText)}</div>`;
   }
 
-  return `<section style="padding:4px 0;margin-top:4px;border-top:1px solid #e5e7eb;break-inside:avoid;column-break-inside:avoid;"><div style="font-weight:700;color:#111827;margin-bottom:2px;font-size:9pt;">${escapeHtml(num)}. <span style="font-weight:400;">${escapeHtml(text)}</span></div>${meta ? `<div style="font-size:7pt;color:#6b7280;margin:1px 0 2px 0;">${escapeHtml(meta)}</div>` : ""}${optionsHtml}${answersSection}</section>`;
+  return `<section style="padding:4px 0;margin-top:4px;border-top:1px solid #e5e7eb;break-inside:avoid;column-break-inside:avoid;"><div style="font-weight:700;color:#111827;margin-bottom:2px;font-size:9pt;">${escapeHtml(num)}. <span style="font-weight:400;">${renderMathHtml(text)}</span></div>${meta ? `<div style="font-size:7pt;color:#6b7280;margin:1px 0 2px 0;">${escapeHtml(meta)}</div>` : ""}${optionsHtml}${answersSection}</section>`;
 }
 
 // ── Build full HTML document ────────────────────────────────────
@@ -174,6 +175,9 @@ function buildHtml(
 <title>${titleText} — ${brand}</title>
 <style>
 ${fontFaceCss()}
+${katexInlineCss()}
+.katex{color:inherit;}
+.katex .mord{text-wrap:initial;}
 @page{
   size:A4;
   margin:12mm 10mm 14mm 10mm;
