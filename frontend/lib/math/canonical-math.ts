@@ -185,7 +185,7 @@ const supAscii = (run: string) => [...run].map((c) => SUP_MAP[c] ?? c).join("");
 const subAscii = (run: string) => [...run].map((c) => SUB_MAP[c] ?? c).join("");
 
 /** Token characters for a bare math operand (Latin/Bengali letters, digits). */
-const FRAC_TOKEN = "A-Za-z\u0980-\u09FF0-9\u09E6-\u09EF\u03C0";
+const FRAC_TOKEN = "A-Za-z\u0980-\u09FF0-9\u09E6-\u09EF\u03C0.";
 const FRAC_NUM_RE = /^-?[0-9\u09E6-\u09EF]+(?:\.[0-9\u09E6-\u09EF]+)?$/;
 
 function isFracTokenChar(c: string): boolean {
@@ -274,16 +274,23 @@ function fracLeft(t: string, at: number): { text: string; start: number; grouped
       continue;
     }
     if (isFracTokenChar(t[j])) {
-      // Bare-token absorption only extends an already-grouped operand
-      // (`n(n+1)`); a lone token never eats preceding prose (`মান ১/২`
-      // keeps numerator `১`). `log 5` is handled by the fm-absorb below.
+      // Bare-token absorption only extends an already-grouped operand, and
+      // only over mathy tokens (single Latin letters, numbers, π) — never
+      // over prose words (`জন করে (১৯×৯×৫)/৫৭` keeps ` জন করে ` outside).
+      // A lone token never eats preceding prose (`মান ১/২` keeps `১`).
+      // `log 5` is handled by the fm-absorb below.
       if (!hasGroup) break;
       let m = j;
       while (m >= 0 && isFracTokenChar(t[m])) m--;
+      const tok = t.slice(m + 1, j + 1);
+      if (!/^([A-Za-z]|[0-9\u09E6-\u09EF]+(?:\.[0-9\u09E6-\u09EF]+)?|\u03C0)$/.test(tok)) break;
       start = m + 1;
       continue;
     }
     if (t[j] === "(") {
+      // Only absorb an opener into an already-grouped operand (`((a+b))`);
+      // a lone token keeps its paren outside (`(x/19` -> `($\frac{x}{19}$...`).
+      if (!hasGroup) break;
       start = j;
       hasGroup = true;
       break;
@@ -374,10 +381,25 @@ function fracSegment(t: string, push: (type: string, loc: string) => void): stri
       }
     }
     if (!done && left && right) {
+      if (left.start < i) {
+        // Operand reaches back into already-converted output
+        // (`[(10x/551)/(x/19)]` outer slash): skip it — the inner
+        // conversions stand on their own instead of doubling.
+        out += t.slice(i, j + 1);
+        i = j + 1;
+        continue;
+      }
       const bothNumbers = FRAC_NUM_RE.test(left.text) && FRAC_NUM_RE.test(right.text);
-      const yearGuard =
-        left.text.replace(/[^0-9\u09E6-\u09EF]/g, "").length >= 4 ||
-        right.text.replace(/[^0-9\u09E6-\u09EF]/g, "").length >= 4;
+      // Year guard: skip fiscal/calendar years (`2024/25`, `২০২৪/২৫`).
+      // Only contiguous 19xx/20xx runs count — total digit COUNT was a bug
+      // that blocked genuine groups like `(80 × 100) / 125`.
+      // Bypass: `NUM/NUM = NUM` asserted contiguous (`২০২৮/১৬৯ = ১২`) is
+      // deterministically division — years never carry a quotient.
+      const yearish =
+        /(19|20)[0-9]{2}|(১৯|২০)[০-৯]{2}/.test(left.text) ||
+        /(19|20)[0-9]{2}|(১৯|২০)[০-৯]{2}/.test(right.text);
+      const quotientAhead = /^\s*=\s*-?[0-9০-৯]/.test(t.slice(right.end));
+      const yearGuard = yearish && !(bothNumbers && quotientAhead);
       // π-rule: `πr / ২` in an equation is unambiguously division (π never
       // appears in Bengali prose otherwise). Single tokens only.
       const piRule =
@@ -387,7 +409,56 @@ function fracSegment(t: string, push: (type: string, loc: string) => void): stri
         /^[A-Za-z0-9\u09E6-\u09EF\u03C0\u00D7\u00B7]+$/.test(right.text) &&
         (left.text.includes("\u03C0") || right.text.includes("\u03C0")) &&
         t.includes("=");
-      if ((left.grouped || right.grouped || bothNumbers || piRule) && !yearGuard) {
+      // Equation letter/number rule: `x / 19`, `a / b` inside an equation
+      // (`=` in segment) are unambiguously division. Both sides must be
+      // single tokens with no Bengali letters, and either side is a single
+      // char or carries a digit/π (so `cost/x`, `cats/dogs` never convert).
+      const cleanTok = (x: string) =>
+        /^[A-Za-z0-9\u09E6-\u09EF\u03C0\u00D7\u00B7]+$/.test(x) &&
+        !/[\u0980-\u09E5\u09F0-\u09FF]/.test(x);
+      const mathRule =
+        !left.grouped &&
+        !right.grouped &&
+        cleanTok(left.text) &&
+        cleanTok(right.text) &&
+        t.includes("=") &&
+        (left.text.length === 1 ||
+          right.text.length === 1 ||
+          /[0-9০-৯π]/.test(left.text) ||
+          /[0-9০-৯π]/.test(right.text));
+      // Digit rule: single ASCII letter vs pure number (`x / 19`) is
+      // unambiguously division even without `=` nearby. No `=` required,
+      // but dots/words disqualify (`Mr./X`, `Q2/3` never convert).
+      const digitRule =
+        !left.grouped &&
+        !right.grouped &&
+        ((/^[A-Za-z]$/.test(left.text) && FRAC_NUM_RE.test(right.text)) ||
+          (/^[A-Za-z]$/.test(right.text) && FRAC_NUM_RE.test(left.text)));
+      // Caret adjacency: `x^2/y`, `a/y^2` belong to the `^` rule, not
+      // `/` (converting here would strand exponents). The caret pass runs
+      // first, so by the time we see spans (`$x^{2}$/y`) it is safe.
+      const caretAdj =
+        (() => {
+          let b = left.start - 1;
+          while (b >= 0 && t[b] === " ") b--;
+          let a = right.end;
+          while (a < t.length && t[a] === " ") a++;
+          return t[b] === "^" || t[a] === "^";
+        })();
+      if (caretAdj) {
+        out += t.slice(i, j + 1);
+        i = j + 1;
+        continue;
+      }
+      if (
+        (left.grouped ||
+          right.grouped ||
+          bothNumbers ||
+          piRule ||
+          mathRule ||
+          digitRule) &&
+        !yearGuard
+      ) {
         // Bare word/word (খাতা/কলম, and/or alternatives) falls through here:
         // neither grouped nor numeric, so it is NEVER converted.
         // Upright raw `log`/`ln` absorbed into operands (`log 5` -> `\log 5`).
@@ -578,6 +649,44 @@ function fuseSpanSplits(s: string, push: (type: string, loc: string) => void): s
       return "$[" + inner + "]^{" + exp + "}$";
     },
   );
+  // Span-adjacent fractions: the prose splitter separates spans from `/`,
+  // so these are fused here on the full string. `$x^{2}$/y` (the caret pass
+  // runs first, so `x^2/y` arrives in this shape) -> `$\frac{x^{2}}{y}$`;
+  // `1/$x^{3}$` -> `$\frac{1}{x^{3}}$`; `$A$/$B$` -> `$\frac{A}{B}$`.
+  // A trailing `^` aborts (`$a$/$b$^2` keeps its exponent outside).
+  // stripL/stripR mark which operand is a `$...$` span (unwrap one level).
+  const spanFrac = (re: RegExp, stripL: boolean, stripR: boolean) => {
+    s = s.replace(
+      re,
+      (
+        m: string,
+        g1: string,
+        g2: string,
+        off: number,
+        full: string,
+      ): string => {
+        const l = stripL ? g1.slice(1, -1) : g1;
+        const r = stripR ? g2.slice(1, -1) : g2;
+        if (!l.trim() || !r.trim()) return m;
+        let after = off + m.length;
+        while (after < full.length && full[after] === " ") after++;
+        if (full[after] === "^") return m;
+        push("REPAIRED_FRACTION", m.slice(0, 60));
+        return "$\\frac{" + l.trim() + "}{" + r.trim() + "}$";
+      },
+    );
+  };
+  spanFrac(
+    /(\$[^$\n]{1,60}\$)\s*\/\s*(\([^()\n$]{1,60}\)|[A-Za-z0-9০-৯π]+)/g,
+    true,
+    false,
+  );
+  spanFrac(
+    /(\([^()\n$]{1,60}\)|[A-Za-z0-9০-৯π]+)\s*\/\s*(\$[^$\n]{1,60}\$)/g,
+    false,
+    true,
+  );
+  spanFrac(/(\$[^$\n]{1,60}\$)\s*\/\s*(\$[^$\n]{1,60}\$)/g, true, true);
   // Script run glued after a span: `$..$ˣ`, `$..$₂`, `$..$ₐᵇ`.
   const runRe = new RegExp(
     `\\$([^$\\n]{1,60})\\$([${subCls}]{1,4})?([${supCls}]{1,6})`,
@@ -698,6 +807,68 @@ function rescueEquationScripts(s: string, push: (type: string, loc: string) => v
 }
 
 /**
+ * Bare `log`/`ln` uprighting (prose segments, runs LAST so log-fractions and
+ * span repairs consume first): `log 5` -> `$\log 5$`, `loga` -> `$\log_{a}$`.
+ * The argument must be a single letter/digit/paren — `log table`, `log on`,
+ * `catalog`, `login`, `dialog` never match. Glued `logx` additionally needs
+ * `=` in the segment (equation context).
+ * Idempotent: output spans are skipped on re-entry.
+ */
+function uprightBareLogs(s: string, push: (type: string, loc: string) => void): string {
+  // Cross-boundary `log $X$` (the span splitter separates `log ` from its
+  // span argument): fuse directly into ONE span (`$\log x^{2}$`) — never via
+  // a `$$` intermediate (the merge pass pairs those greedily and corrupts).
+  // Full-string with a $-parity guard so `log` inside spans is untouched.
+  s = s.replace(
+    /(^|[\s(=+\-*/×·,;:])(log|ln)\s+(\$[^$\n]{1,30}\$)/g,
+    (m, pre, fn, span, offset, full) => {
+      const dollars = (full.slice(0, offset as number).match(/\$/g) || []).length;
+      if (dollars % 2 === 1) return m;
+      const inner = String(span).slice(1, -1);
+      push("REPAIRED_BARE_LOG", `${fn} ${span}`.slice(0, 40));
+      return pre + "$\\" + fn + " " + inner + "$";
+    },
+  );
+  return splitLatexBraced(s)
+    .map((p) => {
+      if (p.latex) return p.text;
+      let t = p.text;
+      // Spaced form needs a complete argument: a number, a lone letter
+      // (not a word start like `on`), a paren/bracket group, or a span
+      // (`log $x^{2}$` fuses via the later merge pass). `log table`,
+      // `catalog`, `Take log on` never match.
+      t = t.replace(
+        /(^|[\s(=+\-*/×·,;:0-9০-৯])(log|ln)\s+([0-9০-৯]+(?:\.[0-9০-৯]+)?|[A-Za-z](?![A-Za-z0-9০-৯])|\([^()\n$]{1,30}\)|\[[^\]\n$]{1,30}\]|\$[^$\n]{1,30}\$)/g,
+        (_m, pre, fn, arg) => {
+          push("REPAIRED_BARE_LOG", `${fn} ${arg}`.slice(0, 40));
+          return pre + "$\\" + fn + " " + arg + "$";
+        },
+      );
+      // Glued form without space: `log(5x)`, `log[..]`, `log2`. Glued
+      // LETTERS stay exclusive to the `=`-gated subscript rule below
+      // (`loga` -> `$\log_{a}$`, never `$\log a$`).
+      t = t.replace(
+        /(^|[\s(=+\-*/×·,;:])(log|ln)(\([^()\n$]{1,30}\)|\[[^\]\n$]{1,30}\]|[0-9০-৯]+(?:\.[0-9০-৯]+)?)/g,
+        (_m, pre, fn, arg) => {
+          push("REPAIRED_BARE_LOG", `${fn}${arg}`.slice(0, 40));
+          return pre + "$\\" + fn + arg + "$";
+        },
+      );
+      if (t.includes("=")) {
+        t = t.replace(
+          /(^|[^A-Za-z\\])(log|ln)([a-zA-Z])(?![A-Za-z0-9০-৯])/g,
+          (_m, pre, fn, arg) => {
+            push("REPAIRED_BARE_LOG", `${fn}${arg}`);
+            return pre + "$\\" + fn + "_{" + arg + "}$";
+          },
+        );
+      }
+      return t;
+    })
+    .join("");
+}
+
+/**
  * Canonical normalizer — the single entry point for ALL math ingestion.
  * Idempotent: normalize(normalize(x)) === normalize(x).
  */
@@ -708,46 +879,41 @@ export function normalizeMathContent(input: string, options: NormalizeOptions = 
   if (typeof input !== "string") return { output: input, changed: false, diagnostics };
 
   const original = input.normalize("NFC");
-  let s = preRepair(original, diagnostics, field);
-  s = wrapBareAsciiMath(s);
-  s = convertDeterministicFractions(s, (type, location) =>
-    diagnostics.push({ type, field, location }),
-  );
-  s = unicodeMathToLatex(s);
-  s = convertDeterministicFractions(s, (type, location) =>
-    diagnostics.push({ type, field, location }),
-  );
-  s = fuseSpanSplits(s, (type, location) =>
-    diagnostics.push({ type, field, location }),
-  );
-  // Vulgar fractions folded above (`½` -> `1/2`) now stack via the fraction pass.
-  s = convertDeterministicFractions(s, (type, location) =>
-    diagnostics.push({ type, field, location }),
-  );
-  s = rescueEquationScripts(s, (type, location) =>
-    diagnostics.push({ type, field, location }),
-  );
-  s = rescueBengaliScripts(s, (type, location) =>
-    diagnostics.push({ type, field, location }),
-  );
-  // Post-pass: repair nested `$\sqrt{$x$}$` → `$\sqrt{x}$` leftovers.
-  const before = s;
-  s = s.replace(/\$(\\sqrt(?:\[[^\]]*\])?)\{\$([^$]*)\$\}/g, "$$$1{$2}$");
-  s = mergeAdjacentSpans(s);
-  if (s !== before) diagnostics.push({ type: "REPAIRED_NESTED_DELIMITER", field, location: "nested $ inside braces" });
-
+  const push = (type: string, location: string) => {
+    diagnostics.push({ type, field, location });
+  };
+  // Full pipeline as a unit so the fixpoint check below is honest: every
+  // stage (including fuse/rescue/bare-log) participates in both passes.
+  const runPipeline = (text: string, collect: (t: string, l: string) => void): string => {
+    // preRepair appends into diagnostics directly; give it a throwaway here
+    // and re-emit through collect for uniform {type, field} shaping.
+    const preDiag: MathDiagnostic[] = [];
+    let r = preRepair(text, preDiag, field);
+    for (const d of preDiag) collect(d.type, d.location ?? "");
+    r = wrapBareAsciiMath(r);
+    r = convertDeterministicFractions(r, collect);
+    r = unicodeMathToLatex(r);
+    r = convertDeterministicFractions(r, collect);
+    r = fuseSpanSplits(r, collect);
+    r = convertDeterministicFractions(r, collect);
+    r = rescueEquationScripts(r, collect);
+    r = rescueBengaliScripts(r, collect);
+    r = uprightBareLogs(r, collect);
+    const before = r;
+    r = r.replace(/\$(\\sqrt(?:\[[^\]]*\])?)\{\$([^$]*)\$\}/g, "$$$1{$2}$");
+    r = mergeAdjacentSpans(r);
+    if (r !== before) collect("REPAIRED_NESTED_DELIMITER", "nested $ inside braces");
+    return r;
+  };
+  let out = runPipeline(original, push);
   // Second application must be a fixpoint (idempotency guardrail for callers).
-  const again = mergeAdjacentSpans(
-    unicodeMathToLatex(
-      convertDeterministicFractions(wrapBareAsciiMath(preRepair(s, [], field)), () => {}),
-    ),
-  );
-  if (again !== s) {
+  const again = runPipeline(out, () => {});
+  if (again !== out) {
     // Deterministic third pass converges; record it, don't loop forever.
-    s = again;
+    out = again;
     diagnostics.push({ type: "NORMALIZED_FIXPOINT", field, location: "second pass converged" });
   }
-  return { output: s, changed: s !== original, diagnostics };
+  return { output: out, changed: out !== original, diagnostics };
 }
 
 /** Convenience: normalize and return the string only. */

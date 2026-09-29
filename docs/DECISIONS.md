@@ -453,3 +453,26 @@ Grammar **সমাস** folder file (`database/data/ques/বাংলা ভা
   manual review — deleting `$`s there would destroy information. Practice tab
   and all surfaces render the healed equations via the shared
   RichText → MathText → KaTeX chain with no per-page changes.
+
+## ADR-0xx: Algebraic fractions, logs, span-fractions (math migration III)
+
+- **Date**: 2026-09-29
+- **Status**: Accepted
+- **Context**: Practice-tab equations still showed inline divisions
+  (`(80 × 100) / 125`, `x / 19`, `($R^{2}$/100)%`, `$A_{4}$/$A_{2}$`,
+  `1/$x^{3}$`, bare `log 5`) because the year guard counted total digits,
+  letter operands needed `=`, span-adjacent slashes were unreachable after
+  span splitting, and bare logs had no rules.
+- **Decision**: Year guard matches only contiguous 19xx/20xx runs (bypassed
+  when `= number` follows: `২০২৮/১৬৯ = ১২`); decimal tokens supported;
+  equation letter/number (`x/19`), single-letter/number without `=`
+  (`x / 19`), span-adjacent (`$x^{2}$/y`, `$A$/$B$`), and in-span `π`
+  fractions stack; caret adjacency aborts (`x^2/y` via caret-then-span);
+  bare `log`/`ln` upright with complete arguments only (`log table`,
+  `log on`, `catalog`, `Mr./X`, `Q2/3` never match); quoted `'x/z'` left raw.
+  Two live bugs fixed mid-pass: prose absorption into groups and nested-slash
+  doubling (overlap guard), both proven by DB audit before apply.
+- **Consequences**: +340 rows healed this pass; corpus-wide triage holds at
+  exactly 1 manual-review row (id 39242) with 0 introduced regressions.
+  Practice tab serves the healed text verbatim via `/api/questions`
+  (2-minute query cache only) through RichText → MathText → KaTeX.

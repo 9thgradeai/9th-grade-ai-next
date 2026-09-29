@@ -195,8 +195,20 @@ describe("canonical math pipeline — log fractions", () => {
     expect(canon("x = log 5 / (log 5 - log 2)")).toBe(
       "x = $\\frac{\\log 5}{\\log 5 - \\log 2}$",
     ));
-  it("standalone log without division is untouched", () =>
-    expect(canon("Take log: x log 2 = 5")).toBe("Take log: x log 2 = 5"));
+  it("standalone log uprights its argument", () =>
+    expect(canon("Take log: x log 2 = 5")).toBe("Take log: x $\\log 2$ = 5"));
+  it("bare log series uprights", () =>
+    expect(canon("2log b = log a + log c")).toBe(
+      "2$\\log b$ = $\\log a$ + $\\log c$",
+    ));
+  it("glued log-subscripts upright in equations", () =>
+    expect(canon("(যেহেতু loga-logb=x)")).toBe(
+      "(যেহেতু $\\log_{a}$-$\\log_{b}$=x)",
+    ));
+  it("prose words never match log rules", () => {
+    expect(canon("Take log on both sides")).toBe("Take log on both sides");
+    expect(canon("catalog 5 items")).toBe("catalog 5 items");
+  });
 });
 describe("canonical math pipeline — span-split fusion", () => {
   it("($\\sqrt{3})^{5}$ fuses", () =>
@@ -258,4 +270,59 @@ describe("canonical math pipeline — bracket power", () => {
     expect(canon("[$(2/3)^{4}]^{3/4}$")).toBe("$[(2/3)^{4}]^{3/4}$"));
   it("prose brackets never fuse", () =>
     expect(canon("cost [$5 and $10] done")).toBe("cost [$5 and $10] done"));
+});
+describe("canonical math pipeline — grouped and algebraic fractions", () => {
+  it("multi-digit groups stack (year-count bug fixed)", () => {
+    expect(canon("x = (80 × 100) / 125 = 64")).toBe("x = $\\frac{80 × 100}{125}$ = 64");
+    expect(canon("S = (0 + 2 + 4 + 5 + 9) / 5")).toBe("S = $\\frac{0 + 2 + 4 + 5 + 9}{5}$");
+    expect(canon("x = (40000 × 3) / 2")).toBe("x = $\\frac{40000 × 3}{2}$");
+  });
+  it("letter/number stacks without equation", () =>
+    expect(canon("ক্রয়মূল্য x / 19 টাকা।")).toBe("ক্রয়মূল্য $\\frac{x}{19}$ টাকা।"));
+  it("both sides stack inside parens", () =>
+    expect(canon("ক্ষতি = (x/19 - x/29)")).toBe("ক্ষতি = ($\\frac{x}{19}$ - $\\frac{x}{29}$)"));
+  it("nested groups never fragment", () =>
+    expect(canon("n(n+1)/2 = ৫")).toBe("$\\frac{n(n+1)}{2}$ = ৫"));
+  it("abbreviations and codes never convert", () => {
+    expect(canon("The ratio Mr./X = 5")).toBe("The ratio Mr./X = 5");
+    expect(canon("Q2/3 বেছে নাও")).toBe("Q2/3 বেছে নাও");
+  });
+});
+describe("canonical math pipeline — no prose absorption, no doubling", () => {
+  it("prose words stay outside stacked groups", () =>
+    expect(canon("জন করে (১৯×৯×৫)/৫৭ = ৫")).toBe(
+      "জন করে $\\frac{১৯×৯×৫}{৫৭}$ = ৫",
+    ));
+  it("nested slashes stack inner only, never double", () =>
+    expect(canon("ক্ষতি = [(10x / 551) / (x / 19)] = ৫")).toBe(
+      "ক্ষতি = [($\\frac{10x}{551}$) / ($\\frac{x}{19}$)] = ৫",
+    ));
+  it("juxtaposed single letters still absorb", () =>
+    expect(canon("n(n+1)/2 = ৫")).toBe("$\\frac{n(n+1)}{2}$ = ৫"));
+});
+describe("canonical math pipeline — bare log arguments", () => {
+  it("log with span argument fuses to one span", () =>
+    expect(canon("Simplify log $x^{2}$ + log $x^{3}$.")).toBe(
+      "Simplify $\\log x^{2}$ + $\\log x^{3}$.",
+    ));
+  it("log(paren) and log[number] glue", () => {
+    expect(canon("log(5x) = 2")).toBe("$\\log(5x)$ = 2");
+    expect(canon("log2 = 1")).toBe("$\\log2$ = 1");
+  });
+  it("log of bracket group", () =>
+    expect(canon("log[(x + 5)(x - 5)] = 11")).toBe("$\\log[(x + 5)(x - 5)]$ = 11"));
+});
+describe("canonical math pipeline — span-adjacent fractions", () => {
+  it("span/number stacks, keeps % outside", () =>
+    expect(canon("($R^{2}$/100)%")).toBe("($\\frac{R^{2}}{100}$)%"));
+  it("span/span stacks", () =>
+    expect(canon("$A_{4}$/$A_{2}$ = 1.5")).toBe("$\\frac{A_{4}}{A_{2}}$ = 1.5"));
+  it("number/span stacks", () =>
+    expect(canon("1/$x^{3}$ + 5")).toBe("$\\frac{1}{x^{3}}$ + 5"));
+  it("trailing exponent aborts", () =>
+    expect(canon("$a$/$b$^2 = 5")).toBe("$a$/$b$^2 = 5"));
+  it("caret binds before slash", () => {
+    expect(canon("x^2/y=5")).toBe("$\\frac{x^{2}}{y}$=5");
+    expect(canon("a/y^2=5")).toBe("$\\frac{a}{y^{2}}$=5");
+  });
 });
