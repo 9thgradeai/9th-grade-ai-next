@@ -738,3 +738,30 @@ Grammar **সমাস** folder file (`database/data/ques/বাংলা ভা
   (`log_(b)(m)` vs option `$\log_{b}{(m)}$`), reproduced from
   `Questions(সূচক ও লগারিদম)_9Th-Grade AI.txt` and left untouched as
   out of scope; it needs a source fix, not a DB-only patch.
+
+## ADR-034: Stack reciprocals stranded inside an existing `$…$` span
+
+- **Date**: 2026-10-01
+- **Status**: Accepted
+- **Context**: every fraction stage in `canonical-math.ts` deliberately skips
+  text inside `$…$` (that region is already canonical LaTeX). A span written as
+  `$(x + 1/x)^{2}$` therefore kept its inline slash forever — the deterministic
+  converter never saw the `1/x`. Result: mixed styling inside one line, e.g.
+  `x - $\frac{1}{x}$ = 3 হলে, $(x + 1/x)^{2}$ …` (question `#35943`), which
+  read as visually inconsistent next to the stacked fraction beside it.
+  23 rows in the বীজগাণিতিক leaves were affected; 266 more exist DB-wide.
+- **Decision**: add one narrow stage, `stackSpanReciprocals`, that runs inside
+  `$…$` spans and stacks a reciprocal ONLY when all of these hold: the
+  numerator is a bare unit `1`; the slash sits at brace depth 0; and the
+  denominator is a single variable (optionally scripted) or a parenthesised
+  group. Everything else is deliberately left alone, because the book prints
+  it inline: exponent fractions (`x^{5/2}`, `k^{1/x}`, `(27)^{-2/3}`) are at
+  depth > 0, and arithmetic working lines (`$72/2=36$`, `$=(101+199)/2=150$`)
+  have a non-unit numerator. The stage is idempotent and re-running it is a
+  no-op, so the answer-in-options invariant is untouched.
+- **Consequences**: `1/x` now renders stacked everywhere it is a term, and
+  inline only where the book prints it inline. Re-normalising the two leaves
+  changed 23 rows (`explanation` ×23, `question` ×1), every diff proven to be
+  a `1/x` → `\frac{1}{x}` rewrite and nothing else. The other 266 DB-wide
+  cases were NOT rewritten: they are arithmetic/exponent spans outside this
+  topic and are correct as-is.

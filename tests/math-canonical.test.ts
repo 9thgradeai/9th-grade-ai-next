@@ -575,3 +575,49 @@ describe("canonical math pipeline — root-over-division (Practice-Tab fix)", ()
     expect(canon(raw)).toBe(raw);
   });
 });
+
+describe("reciprocals stranded inside a $…$ span", () => {
+  const canon = (s: string) => normalizeMathContent(s).output;
+  const idem = (s: string) => canon(canon(s)) === canon(s);
+
+  it("stacks 1/x stranded in an existing span (regression #35943)", () => {
+    expect(canon("$(x + 1/x)^{2}$")).toBe("$(x + \\frac{1}{x})^{2}$");
+    expect(canon("$(x - 1/x)^{2}$")).toBe("$(x - \\frac{1}{x})^{2}$");
+    expect(idem("$(x + 1/x)^{2}$")).toBe(true);
+  });
+  it("stacks a scripted denominator without eating the exponent", () => {
+    expect(canon("$(x^{2} + 1/x^{2})^{2}$")).toBe(
+      "$(x^{2} + \\frac{1}{x^{2}})^{2}$",
+    );
+  });
+  it("makes a mixed-style question consistent end to end", () => {
+    const raw = "x - $\\frac{1}{x}$ = 3 হলে, $(x + 1/x)^{2}$ এর মান কত?";
+    expect(canon(raw)).toBe(
+      "x - $\\frac{1}{x}$ = 3 হলে, $(x + \\frac{1}{x})^{2}$ এর মান কত?",
+    );
+  });
+
+  // Guards: the book prints these INLINE, so they must survive untouched.
+  it("leaves exponent fractions inline", () => {
+    expect(canon("$x^{5/2}$")).toBe("$x^{5/2}$");
+    expect(canon("$(27)^{-2/3}$")).toBe("$(27)^{-2/3}$");
+    expect(canon("$k^{1/x}$")).toBe("$k^{1/x}$");
+    expect(canon("$k^{(1/x+1/y)}$")).toBe("$k^{(1/x+1/y)}$");
+    expect(canon("$2^{x/2}$")).toBe("$2^{x/2}$");
+  });
+  it("leaves arithmetic working lines inline", () => {
+    expect(canon("$72/2=36$")).toBe("$72/2=36$");
+    expect(canon("$=(101+199)/2=150$")).toBe("$=(101+199)/2=150$");
+    expect(canon("$r = 1/2$")).toBe("$r = 1/2$");
+  });
+  it("is idempotent (never double-wraps)", () => {
+    for (const s of ["$(x + \\frac{1}{x})^{2}$", "$x + \\frac{1}{x}$", "$(x + 1/x)^{2}$"]) {
+      expect(idem(s)).toBe(true);
+    }
+  });
+  it("output stays valid LaTeX", () => {
+    const out = canon("$(x + 1/x)^{2}$ = $(x - 1/x)^{2}$ + 4 = $3^{2}$ + 4");
+    expect(validateMathContent(out, "explanation").errors).toEqual([]);
+    expect(checkMathPreservation("$(x + 1/x)^{2}$", out, "explanation")).toEqual([]);
+  });
+});

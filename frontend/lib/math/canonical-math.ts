@@ -318,6 +318,69 @@ function repairLatexArtifacts(s: string, push: (type: string, loc: string) => vo
   return s;
 }
 
+/** Brace depth of `body` at `idx` — 0 means top level of the math span. */
+function spanBraceDepth(body: string, idx: number): number {
+  let d = 0;
+  for (let i = 0; i < idx; i++) {
+    if (body[i] === "{") d++;
+    else if (body[i] === "}") d--;
+  }
+  return d;
+}
+
+/**
+ * Stack reciprocals that are stranded INSIDE an existing `$…$` span.
+ *
+ * Root cause this repairs: every other fraction stage deliberately skips text
+ * inside `$…$` (that region is already canonical LaTeX), so a span written as
+ * `$(x + 1/x)^{2}$` kept its inline slash forever — the deterministic
+ * converter never saw the `1/x`. The result renders inconsistently against the
+ * surrounding prose, e.g. `x - $\frac{1}{x}$ = 3 … $(x + 1/x)^{2}$`.
+ *
+ * Deliberately narrow, because most slashes inside a span are CORRECT:
+ *  - exponent fractions (`x^{5/2}`, `k^{1/x}`, `(27)^{-2/3}`) stay inline,
+ *    which is how the book prints them → skipped by the depth>0 rule;
+ *  - arithmetic working lines (`$72/2=36$`) stay inline → skipped because the
+ *    numerator is not the unit `1`;
+ *  - chained denominators are skipped when already `\frac`-wrapped.
+ *
+ * Only a bare unit-numerator reciprocal over a single variable at TOP level of
+ * the span is stacked.
+ */
+function stackSpanReciprocals(input: string, collect: (t: string, l: string) => void): string {
+  // numerator is exactly `1`; denominator is one letter, optionally scripted
+  // as `x`, `x^{2}`, `x^{\2}`, or a parenthesised group.
+  const re = /(?<![\w\\])1\s*\/\s*(\([^()]{1,24}\)|[A-Za-z](?:\^\{?-?\\?[A-Za-z0-9]+\}?)?)/g;
+  return spanParts(input)
+    .map((part) => {
+      if (!part.math) return part.text;
+      const body = part.text;
+      re.lastIndex = 0;
+      let out = "";
+      let last = 0;
+      let m: RegExpExecArray | null;
+      const fixed: string[] = [];
+      while ((m = re.exec(body)) !== null) {
+        const slash = m.index + m[0].indexOf("/");
+        // exponent / braced sub-expression → the book prints these inline
+        if (spanBraceDepth(body, slash) !== 0) continue;
+        // already inside `\frac{…}{…}` → nothing to do
+        if (/\\frac\s*$/.test(body.slice(0, m.index))) continue;
+        const den = m[1];
+        out += body.slice(last, m.index);
+        out += `\\frac{1}{${den}}`;
+        last = m.index + m[0].length;
+        fixed.push(den);
+        re.lastIndex = last;
+      }
+      if (!fixed.length) return part.text;
+      out += body.slice(last);
+      for (const den of fixed) collect("REPAIRED_SPAN_RECIPROCAL", `1/${den.slice(0, 20)}`);
+      return out;
+    })
+    .join("");
+}
+
 /** Pre-repair deterministic legacy corruption before the core converter. */
 function preRepair(input: string, diagnostics: MathDiagnostic[], field?: string): string {
   let s = input.normalize("NFC");
@@ -1323,6 +1386,7 @@ export function normalizeMathContent(input: string, options: NormalizeOptions = 
     let r = preRepair(text, preDiag, field);
     for (const d of preDiag) collect(d.type, d.location ?? "");
     r = wrapBareAsciiMath(r);
+    r = stackSpanReciprocals(r, collect);
     r = convertDeterministicFractions(r, collect);
     r = unicodeMathToLatex(r);
     r = convertDeterministicFractions(r, collect);
