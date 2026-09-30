@@ -898,3 +898,83 @@ Grammar **সমাস** folder file (`database/data/ques/বাংলা ভা
   silently repaired: two of those rows store `correctAnswer` as
   `"b. 2$\sqrt{14}$ $cm^{2}$"` — an option with the letter glued on, so the
   string is not in `options`.
+
+## ADR-038: The BCS Mathematics pool is re-imported verbatim, updating rows in place
+
+- **Context**: BCS Mathematics (`subjectId=608`, `ecosystemId=1`) held 1944
+  MCQs seeded by `scripts/seed-math.ts` from the same nine
+  `database/data/ques/Math/*.txt` files this importer reads. `seed-math.ts`
+  runs every field through `normalizeMcqFields` + `scanMca`, which rewrites a
+  large share of the book's Unicode into `$…$` LaTeX and silently drops rows it
+  cannot render. ADR-036 established that `Question.rawMath` bypasses the
+  display normalizer, so the fix is to re-import verbatim under that flag.
+- **Decision**: `scripts/import-bcs-math-raw-unicode.ts` parses the same nine
+  sources, keeps the *parse* and the *routing*, discards the normalisation, and
+  writes every row with `rawMath=true`. Output is byte-identical to the source
+  — superscripts, `√`, `−`, fractions in Unicode are preserved, never converted.
+- **Identity is preserved by UPDATE, not delete-and-recreate.** Deleting the
+  pool would change every `Question.id`, and `UserQuestionProgress` cascades on
+  delete while `QuestionAttempt.questionId` is `SetNull` — so a naive swap
+  discards mastery silently. Each parsed row is instead paired with the row it
+  replaces by matching the text `seed-math.ts` stored, i.e.
+  `scanMca(normalizeMcqFields(rec)).normalized.question` re-run over our raw
+  text, then updated in place. 1896 of 1943 rows matched and kept their ids;
+  only 47 rows needed inserting.
+- **Resumability**: the match indexes *both* the legacy normalised form and the
+  raw form, so a re-run after an interrupted `--apply` re-finds its own rows
+  instead of orphaning them. Planned insert keys are also checked against live
+  and planned keys up front, so a duplicate surfaces as a thrown error before
+  any write rather than a `P2002` halfway through.
+- **Repair policy** (all deterministic, listed per file, echoed by the dry run):
+  - `errata` — a `সংশোধিত প্রশ্ন` block REPLACES the flawed block above it
+    (10 blocks across Geometry and Simple/Quadratic Equations).
+  - `stripScratch` — drop English self-talk left inside a Bengali explanation.
+  - `extArabic` — map stray Extended-Arabic digits `۰۱৪৮۹` to Bengali `০১৪৮৯`
+    *before* parsing. The mapping table is generated from code points because
+    the hand-written literal had corrupted entries (U+06E7 for U+06F1, and
+    Bengali U+09EA where U+06F4 belonged).
+  - `confusables` — map a Telugu option label standing in for Bengali `খ`/`গ`.
+  - `dedupe` — where a draft re-used a printed question number, keep the first
+    complete candidate.
+  - `vietnamese` — one option read `điều harmonic`; mapped to `জ্যামিতিক`.
+  - Option labels are recognised only with a Latin `.` (optionally unspaced),
+    never a Bengali sentence danda `।`, and are found by walking backward from
+    the final `ঘ` with strictly decreasing indices — so `গ.সা.গু` inside a stem
+    and a stem ending in a label-like token cannot fabricate options.
+- **Six defective MCQs are excluded, at the user's direction** ("drop all 6"):
+  Number System #87 (all four options are `১৯৮`), Ratio #89 (`২৫` twice), Ratio
+  #130 (answer is `অপশন অপ্রাসঙ্গিক`), Interest #144 (`১৫৫` twice), AP&GP #179
+  (`৭/১৬` and `৭৭/১৭৬` are the same number), AP&GP #198 (three identical
+  options). The importer reports each one with its reason on every run.
+- **Source duplicates are deduped, not imported twice.** Two files re-use
+  printed numbers. AP&GP has 207 numbered lines but only 199 distinct
+  questions (eight aborted re-drafts; question 96 is absent entirely).
+  Simple & Compound Interest has 250 blocks but questions 151–200 each appear
+  **twice, byte-identically**, so it holds 200 distinct questions. Importing
+  either file verbatim would put the same question in the pool two or three
+  times.
+- **Result**: `2017` raw blocks − 10 errata replacements − 58 duplicate blocks
+  (8 AP&GP + 50 Interest) − 6 excluded defects = **1943 questions across 22
+  leaves**, every row `rawMath=true`, zero answer-not-in-options, zero stray
+  `$$`, zero Extended-Arabic survivors, zero duplicate `sourceKey`. This equals
+  the 1943 distinct stems the previous pool contained, which is the
+  independent check that the dedupe is right.
+- **Four new leaves** were created for the files' own orphan sections:
+  `মিশ্রিত_ও_অ্যাডভান্সড_MCQ` (100), `বয়স_সংক্রান্ত_সমস্যা` (58),
+  `অংশীদারি_কারবার` (60) under `Part_01_পাটিগণিত`, and
+  `বিশেষ_ধারা_ও_মধ্যক` (38) under `Part_03_সূচক_ও_ধারা`.
+- **User data**: every run writes a full JSON backup of the pool plus its
+  `QuestionAttempt` and `UserQuestionProgress` rows to `database/backups/`
+  before touching anything. 58 progress rows and 58 attempts survived the swap
+  attached to the same question ids. 13 progress rows and 19 attempts were lost
+  only because their questions were removed from the source after the previous
+  seed (verified: none of those 13 stems appears in any source file, so they
+  were stale content, not parse misses). 0 bookmarks existed.
+- **Left deliberately**: leaves `সরল_ও_দ্বিপদী_সমীকরণ` (19818) and
+  `সরল_ও_দ্বিপদী_অসমতা` (19819) existed in the taxonomy but are not written by
+  any of the nine sources; they now hold 0 rows rather than the 150 stale rows
+  they carried. They stay in place for future content.
+- **Also deliberate**: repeated *stems* are kept where the source offers
+  genuinely different options (e.g. `log₁₀(0.0001)` appears at Q48, Q145 and
+  Q190 with different distractors). Those are distinct MCQs, not duplicates,
+  so they are not collapsed.
