@@ -234,7 +234,7 @@ Per-question mastery stage in the mistake-practice model (see `UserQuestionProgr
 - `options` Json — string array
 - `correctAnswer` String
 - `explanation` String — default `""`
-- `rawMath` Boolean — default `false`. When `true`, the stored text is authoritative **book Unicode** (superscripts `ˣ⁺³`, subscripts `log₂`, `√`, `−` U+2212) and the read path must NOT normalize it into LaTeX — `toQuestionDTO` emits `question`, `options`, `correctAnswer`, `explanation`, `correctAnswers` and `statements` byte-identical. Set by `scripts/import-raw-unicode-topic.ts`. Legacy rows are `false` and keep the KaTeX normalizer. See ADR-036.
+- `rawMath` Boolean — default `false`. When `true`, the stored text is authoritative **book Unicode** (superscripts `ˣ⁺³`, subscripts `log₂`, `√`, `−` U+2212) and the read path must NOT normalize it into LaTeX — `toQuestionDTO` emits `question`, `options`, `correctAnswer`, `explanation`, `correctAnswers` and `statements` byte-identical. Set by `scripts/import-raw-unicode-topic.ts` and `scripts/import-bank-math-raw-unicode.ts`. Legacy rows are `false` and keep the KaTeX normalizer. See ADR-036 and ADR-037.
 - `questionType` QuestionType — default `SINGLE_CHOICE` (`SINGLE_CHOICE` | `MULTIPLE_CHOICE` | `STATEMENT_COMBINATION` | `SCENARIO_BASED`). Additive — every pre-existing row is `SINGLE_CHOICE`.
 - `correctAnswers` Json — string array, default `[]`. Authoritative **iff non-empty** (`MULTIPLE_CHOICE` needs ≥ 2, each ∈ options). `correctAnswer` stays the source of truth for `SINGLE_CHOICE`.
 - `statements` Json — string array, default `[]`. I/II/III stems for `STATEMENT_COMBINATION` (≥ 2 required).

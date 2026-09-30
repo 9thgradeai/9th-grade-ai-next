@@ -845,3 +845,56 @@ Grammar **সমাস** folder file (`database/data/ques/বাংলা ভা
 - **Also noted**: position 176 of the document is mislabelled `175`
   (a duplicate of position 175's number). `questionNumber` is set from ordinal
   position, so the stored sequence is a clean 1..200.
+
+## ADR-037: The whole Bank Mathematics pool is imported verbatim from its source `.docx`
+
+- **Context**: Bank Mathematics (`subjectId=4960`, `ecosystemId=2`) held 1130
+  MCQs across eight topics. They were LaTeX-converted copies of the
+  `database/data/Bank/Math/updated/*.docx` sources, and reading them through
+  `normalizeFieldForDisplay` produced both a different-looking rendering and
+  real corruption. ADR-036 fixed one topic (`Indices_and_Logarithms`) by
+  proving the `rawMath` flag works end to end; the remaining seven topics were
+  never migrated.
+- **Decision**: replace all eight topics with a verbatim import driven by
+  `scripts/import-bank-math-raw-unicode.ts`. Every row is written with
+  `rawMath = true`, so the document's own glyphs are what the Practice tab
+  shows. Defaults per row: `SINGLE_CHOICE`, `difficulty=MEDIUM`,
+  `sourceExam="Bank Mathematics · <subtopic>"`, `questionNumber` = ordinal
+  position. `path`/`topic`/`subtopic` come from the `Topic` row, not from a
+  hard-coded string.
+- **Sources are not uniform**, and the script treats that as a first-class
+  concern rather than an accident:
+  - `Arithmetic_Progression` (619 OMML objects) and
+    `Ratios_Proportions_and_Mixtures` (112) carry real Office Math. `<w:t>`
+    extraction silently *drops* those equations, so both go through the
+    existing `scripts/docx-math-to-text.py` lineariser. The other six files
+    have zero OMML and are read straight from `<w:t>` so no byte is touched.
+  - A single interactive transaction over all 1160 rows fails against Neon's
+    pooled endpoint with `P2028`; each topic is therefore swapped in its own
+    short transaction, keeping the replacement atomic *per topic*.
+- **Authoring leftovers** are handled by one positional rule rather than
+  ad-hoc edits: keep the **first candidate that parses completely**, keyed by
+  question number. This drops the exact duplicate blocks in
+  `Profit_Loss_and_Discount` (191 repeated numbers, 5 of them restated) and
+  `Percentages`, and rejects the aborted `Question 70.` draft in
+  `Simple_and_Compound_Interest` (a stem with no options) without ever
+  guessing which restatement the author preferred.
+  `Indices_and_Logarithms` is the exception that proves the rule: its printed
+  digits are wrong (two questions labelled `175`, none labelled `176`), so
+  that file is renumbered by ordinal position and its redrafted `Question 186.`
+  line — verified byte-identical to position 186 — is dropped.
+- **Inline `$…$` is allowed but counted.** Twelve `Arithmetic_Progression`
+  questions carry the author's own LaTeX in the `.docx`; those spans render
+  through the existing `MathText` KaTeX path (verified: 12/12 render with zero
+  `katex-error`). Display math `$$` is still a hard validation failure.
+- **Verification**: 1160 rows live (100/150/200/100/200/200/110/100), every row
+  `rawMath=true`, zero answer-not-in-options, zero stray `$$`, no duplicate
+  `sourceKey`. The live API returns all 1160 rows byte-identical, with 271
+  super/subscript glyphs, 299 `−`, 146 radicals preserved.
+- **Not touched**: the 148 `topicId = null` rows in subject 4960 are
+  exam-attached (`examId=162`, all four Senior Officer papers) with empty
+  `path`, so they are unreachable from the Practice tab's path filter and
+  remain in place. One pre-existing defect is left visible rather than
+  silently repaired: two of those rows store `correctAnswer` as
+  `"b. 2$\sqrt{14}$ $cm^{2}$"` — an option with the letter glued on, so the
+  string is not in `options`.

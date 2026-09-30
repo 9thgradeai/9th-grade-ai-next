@@ -59,6 +59,11 @@ const ALLOWLIST: Record<
       "verbatim book-Unicode importer (.docx → Question). Deliberately does NOT normalise: it sets rawMath=true so the read path bypasses the LaTeX normalizer, and aborts before any DB write unless every question has 4 options and a resolvable answer that is present in them.",
     markers: [/rawMath: true/, /not among options/, /ABORT/],
   },
+  "scripts/import-bank-math-raw-unicode.ts": {
+    reason:
+      "verbatim bank-math Unicode importer (.docx → Question). Sets rawMath=true for all imported rows, validates options/answer before any write, and does not attempt to canonicalize math text.",
+    markers: [/rawMath: true/, /answer not in options/, /validation problems/],
+  },
 };
 
 function tsFiles(dir: string): string[] {
