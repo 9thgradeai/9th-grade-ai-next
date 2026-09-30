@@ -517,3 +517,42 @@ describe("canonical math pipeline — paren-consumer allowances & base notation"
     expect(canon(out)).toBe(out);
   });
 });
+
+describe("canonical math pipeline — root-over-division (Practice-Tab fix)", () => {
+  const clean = (raw: string) => {
+    const out = canon(raw);
+    expect(validateMathContent(out, "question").errors).toEqual([]);
+    expect(checkMathPreservation(raw, out, "question")).toEqual([]);
+    expect(canon(out)).toBe(out); // fixpoint
+    return out;
+  };
+  it("√3/2 → frac-of-root (never strands √ outside)", () =>
+    expect(clean("If sin x = √3/2, then tan x = ?")).toContain(
+      "$\\frac{\\sqrt{3}}{2}$",
+    ));
+  it("legacy stranded √$\\frac$ repairs to frac-of-root", () =>
+    expect(clean("√$\\frac{3}{2}$")).toBe("$\\frac{\\sqrt{3}}{2}$"));
+  it("nested radicals resolve to balanced \\sqrt nesting", () =>
+    expect(
+      clean("What is the value of √(10+√(25+√(108+√(154+√225))))"),
+    ).toBe(
+      "What is the value of $\\sqrt{10+\\sqrt{25+\\sqrt{108+\\sqrt{154+\\sqrt{225}}}}}$",
+    ));
+  it("degree roots still fold (³√(x²), ⁴√(81x⁸))", () => {
+    expect(clean("³√(x²)")).toBe("$\\sqrt[3]{x^{2}}$");
+    expect(clean("⁴√(81x⁸)")).toBe("$\\sqrt[4]{81x^{8}}$");
+  });
+  it("x²√y keeps ² on x (not a root degree)", () =>
+    expect(clean("x²√y")).toContain("$x^{2}\\sqrt{y}$"));
+  it("linguistic √ + Bengali letter (√দয় etymology) is prose, not math", () => {
+    const raw = "√দয় + আলু = দয়ালু";
+    expect(canon(raw)).toBe(raw);
+    expect(validateMathContent(raw, "question").errors).toEqual([]);
+    expect(checkMathPreservation(raw, raw, "question")).toEqual([]);
+    expect(detectLegacyMath(raw)).toBe(false);
+  });
+  it("unbalanced √ group passes through for manual review", () => {
+    const raw = "unbalanced √(abc leaves review";
+    expect(canon(raw)).toBe(raw);
+  });
+});

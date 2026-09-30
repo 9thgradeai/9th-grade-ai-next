@@ -23,6 +23,7 @@ import { join } from "path";
 import { PrismaClient, Prisma } from "@prisma/client";
 import { sourceKey } from "./seed-keys";
 import { balanceOptions } from "./import-bank-ict";
+import { scanMca } from "./qb-forensics/import-gate";
 
 const MENTAL_DIR = join(process.cwd(), "database", "data", "ques", "Mental Ablity");
 const BCS_MENTAL_NAMEBN = "মানসিক দক্ষতা";
@@ -233,6 +234,24 @@ export async function importBcsMental(prisma: PrismaClient): Promise<MentalImpor
       }
       seenText.add(textKey);
       const topicPath = routeTopic(slug);
+      const answerText = r.options[LETTERS.indexOf(r.answerLetter)];
+      // Import gate: canonical math normalization + REJECT on corrupt /
+      // unrenderable content (Phase 3 — every writer converges here).
+      // sourceKey stays on the RAW stem so reruns match existing rows.
+      const gate = scanMca({
+        question: r.question,
+        options: r.options,
+        correctAnswer: answerText,
+        explanation: r.explanation,
+      });
+      if (gate.verdict === "REJECT") {
+        report.skippedRecords++;
+        console.warn(
+          `  [reject] ${file} #${r.n}: ${gate.fatal.map((f) => `${f.code}@${f.field}`).join(", ")}`,
+        );
+        continue;
+      }
+      const norm = gate.normalized;
       ops.push({
         key: sourceKey(subject.id, "bcs-mental", slug, r.n, r.question),
         topicPath,
@@ -244,10 +263,10 @@ export async function importBcsMental(prisma: PrismaClient): Promise<MentalImpor
           topic: topicPath.split("/").pop() ?? "",
           subtopic: "",
           path: topicPath,
-          question: r.question,
-          options: r.options,
-          correctAnswer: r.options[LETTERS.indexOf(r.answerLetter)],
-          explanation: r.explanation,
+          question: norm.question ?? r.question,
+          options: (norm.options ?? r.options) as [string, string, string, string],
+          correctAnswer: norm.correctAnswer ?? answerText,
+          explanation: norm.explanation ?? r.explanation,
           difficulty: "MEDIUM",
           year: null,
           sourceExam: `BCS Mental · ${slug}`,

@@ -13,6 +13,7 @@ import {
   fetchWrongNotebookQuestionIds,
 } from "~backend/repositories/analytics.repository";
 import { QueryCache } from "~backend/infrastructure/cache/query-cache";
+import { normalizeFieldForDisplay } from "~backend/services/math";
 import {
   getBanglaSubjects,
   getBanglaLeafPaths,
@@ -153,25 +154,40 @@ function asStringArray(v: unknown): string[] {
   return Array.isArray(v) ? v.filter((x): x is string => typeof x === "string") : [];
 }
 
-/** Canonical Question row → DTO mapping (single place — extend here). */
+/** Canonical Question row → DTO mapping (single place — extend here).
+ *
+ * Display safety net: every free-text field passes through
+ * `normalizeFieldForDisplay`, so rows missed by ingestion-time normalization
+ * still render book-exact KaTeX on the Practice Tab. The normalizer is
+ * deterministic per input string (identical sources → identical outputs),
+ * which preserves the answer-in-options invariant, and returns REVIEW-grade
+ * fields byte-identical — the DB is never written here.
+ */
 export function toQuestionDTO(q: QuestionRow): QuestionDTO {
+  const options = asStringArray(q.options).map((o, i) =>
+    normalizeFieldForDisplay(o, `options[${i}]`),
+  );
   return {
     id: q.id,
     subjectId: q.subjectId,
     subject: q.subject?.nameBn ?? "",
     topic: q.topic,
     subtopic: q.subtopic,
-    question: q.question,
-    options: asStringArray(q.options),
-    correctAnswer: q.correctAnswer,
-    explanation: q.explanation,
+    question: normalizeFieldForDisplay(q.question, "question"),
+    options,
+    correctAnswer: normalizeFieldForDisplay(q.correctAnswer, "correctAnswer"),
+    explanation: normalizeFieldForDisplay(q.explanation, "explanation"),
     difficulty: q.difficulty as QuestionDTO["difficulty"],
     year: q.year,
     sourceExam: q.sourceExam,
     bcsTerm: q.bcsTerm,
     questionType: q.questionType as QuestionDTO["questionType"],
-    correctAnswers: asStringArray(q.correctAnswers),
-    statements: asStringArray(q.statements),
+    correctAnswers: asStringArray(q.correctAnswers).map((o, i) =>
+      normalizeFieldForDisplay(o, `correctAnswers[${i}]`),
+    ),
+    statements: asStringArray(q.statements).map((s, i) =>
+      normalizeFieldForDisplay(s, `statements[${i}]`),
+    ),
     media: Array.isArray(q.media)
       ? (q.media as { kind: string; url: string; alt?: string }[]).filter((m) => typeof m?.url === "string")
       : [],

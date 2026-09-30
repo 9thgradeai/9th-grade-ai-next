@@ -97,8 +97,10 @@ const VALID_COMMANDS = new Set([
 
 /** Suspicious legacy/broken math OUTSIDE canonical delimiters (runtime net).
  * `\\_` is a linearized subscript (`T\_4`, `log\_(x+1)`) — repaired by the
- * canonical pipeline; a residue outside spans means the row needs review. */
-const LEGACY_HINT = /(√|³|⁴|ˣ|ⁿ|²|₁|₂|\\_|log_[0-9a-zA-Z])/;
+ * canonical pipeline; a residue outside spans means the row needs review.
+ * A √ glued to a Bengali LETTER (`√দয়`, Sanskrit-etymology marker) is
+ * linguistic prose, not math — only √ before digits/parens/Latin/π hints. */
+const LEGACY_HINT = /(√(?![\u0980-\u09E5\u09F0-\u09FF])|³|⁴|ˣ|ⁿ|²|₁|₂|\\_|log_[0-9a-zA-Z])/;
 
 function stripMathSpans(s: string): string {
   return splitLatexBraced(s)
@@ -643,6 +645,16 @@ function fracSegment(t: string, push: (type: string, loc: string) => void): stri
         i = j + 1;
         continue;
       }
+      // Root adjacency: `√3/2`, `√(10)/2` belong to the radical rules (frac-
+      // of-root), not `/` — converting here strands the √ outside its own
+      // $\frac$ (`√$\frac{3}{2}$`, a live Practice-Tab rendering bug).
+      let rb = left.start - 1;
+      while (rb >= 0 && t[rb] === " ") rb--;
+      if (t[rb] === "√") {
+        out += t.slice(i, j + 1);
+        i = j + 1;
+        continue;
+      }
       const bothNumbers = FRAC_NUM_RE.test(left.text) && FRAC_NUM_RE.test(right.text);
       // Year guard: skip fiscal/calendar years (`2024/25`, `২০২৪/২৫`).
       // Only contiguous 19xx/20xx runs count — total digit COUNT was a bug
@@ -785,6 +797,13 @@ function wrapBareAsciiMath(s: string): string {
 function fuseSpanSplits(s: string, push: (type: string, loc: string) => void): string {
   const supCls = escCls(SUP_RUN_CHARS);
   const subCls = escCls(SUB_RUN_CHARS);
+  // Stranded-root repair (whole-string: √ is prose, $\frac$ is a span):
+  // `√$\frac{3}{2}$` (legacy output of the pre-fix fraction pass) →
+  // `$\frac{\sqrt{3}}{2}$`. Book-exact and idempotent (no √ remains).
+  s = s.replace(/√\$\\frac\{([^{}]+)\}\{([^{}]+)\}\$/g, (_m, a, b) => {
+    push("REPAIRED_ROOT_FRACTION", `√$\\frac{${a}}{${b}}$`);
+    return `$\\frac{\\sqrt{${a}}}{${b}}$`;
+  });
   // Vulgar fractions first (prose segments only): ½ -> 1/2, ³ᐟ₂ -> 3/2.
   const VULGAR: Record<string, string> = {
     "½": "1/2", "⅓": "1/3", "⅔": "2/3", "¼": "1/4", "¾": "3/4",
@@ -1415,11 +1434,14 @@ export function checkMathPreservation(source: string, canonical: string, field =
     [/[+\-×·*]/g, "operators"],
   ];
   // Roots/fractions/exponents counted on the RAW source (unicode + ascii).
-  // Only convertible radicals count: `√(...)` / `√X` (the core converter
-  // handles exactly these; `√[...]` is rewritten to `√(...)` in preRepair).
+  // Only convertible radicals count: `√(...)` / `√X` where X is what the
+  // core converter accepts (digits incl. Bengali ০-৯, Latin, π, decimals).
+  // A √ glued to a Bengali LETTER (`√দয়` etymology marker) is linguistic
+  // prose the converter never touches — counting it caused false LOST_ROOT.
+  // `√[...]` is rewritten to `√(...)` in preRepair.
   const convertRoots = (t: string) =>
     count(t, /√\([^)$]{1,120}\)/g) +
-    count(t, /√[0-90-9a-zA-Z\u0980-\u09FF]/g) +
+    count(t, /√[0-90-9a-zA-Z\u09E6-\u09EFπ]/g) +
     count(t, /\\sqrt/g);
   const srcRoots = convertRoots(source);
   const dstRoots = count(canonical, /\\sqrt/g);
@@ -1467,14 +1489,17 @@ export function checkMathPreservation(source: string, canonical: string, field =
         diags.push({ type: "LOST_EQUALITY", field, detail: `${aEq}→${bEq}` });
       continue;
     }
-    // Legitimate paren consumers, each evidenced on both sides so real
-    // losses are still flagged:
-    //   `√(x)` → `\sqrt{x}`      `2^(n)` → `2^{n}`      `log\_(x)` → `_{x}`
-    //   `(a)/(b)` → `\frac{a}{b}` (2 pairs per converted prose group)
-    const sqrtP = Math.min(
-      count(source, /√\([^)$]{1,120}\)/g),
-      count(canonical, /\\sqrt/g),
-    );
+  // Legitimate paren consumers, each evidenced on both sides so real
+  // losses are still flagged:
+  //   `√(x)` → `\sqrt{x}`      `2^(n)` → `2^{n}`      `log\_(x)` → `_{x}`
+  //   `(a)/(b)` → `\frac{a}{b}` (2 pairs per converted prose group)
+  // Each `√(` consumes its own paren pair — nested √(…√(…)…) sets consume
+  // 2 chars per root, so count openers (not first-`)` matches, which
+  // undercount nesting and caused false LOST_PARENTHESES on deep radicals.
+  const sqrtP = Math.min(
+    count(source, /√\(/g),
+    count(canonical, /\\sqrt/g),
+  );
     const powP = Math.min(count(source, /\^\(/g), count(canonical, /\^\{/g));
     const subP = Math.min(count(source, /\\_\(/g), count(canonical, /_\{/g));
     const grpP = Math.min(srcGroups, count(canonical, /\\frac/g));

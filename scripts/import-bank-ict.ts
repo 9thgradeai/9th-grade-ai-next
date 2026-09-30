@@ -20,6 +20,7 @@ import { readdirSync, readFileSync } from "fs";
 import { join } from "path";
 import { PrismaClient } from "@prisma/client";
 import { sourceKey } from "./seed-keys";
+import { scanMca } from "./qb-forensics/import-gate";
 
 const ICT_DIR = join(process.cwd(), "database", "data", "Bank", "Questions", "ICT");
 const BB_ICT_NAMEBN = "তথ্য ও যোগাযোগ প্রযুক্তি";
@@ -387,6 +388,23 @@ export async function importBankIct(prisma: PrismaClient): Promise<IctImportRepo
       seenText.add(textKey);
       const topicPath = routeTopic(slug, r.header);
       const answerText = r.options[LETTERS.indexOf(r.answerLetter)];
+      // Import gate: canonical math normalization + REJECT on corrupt /
+      // unrenderable content (Phase 3 — every writer converges here).
+      // sourceKey stays on the RAW stem so reruns match existing rows.
+      const gate = scanMca({
+        question: r.question,
+        options: r.options,
+        correctAnswer: answerText,
+        explanation: r.explanation,
+      });
+      if (gate.verdict === "REJECT") {
+        report.skippedRecords++;
+        console.warn(
+          `  [reject] ${file} #${r.n}: ${gate.fatal.map((f) => `${f.code}@${f.field}`).join(", ")}`,
+        );
+        continue;
+      }
+      const norm = gate.normalized;
       ops.push({
         key: sourceKey(subject.id, "bank-ict", slug, r.n, r.question),
         data: {
@@ -396,10 +414,10 @@ export async function importBankIct(prisma: PrismaClient): Promise<IctImportRepo
           topic: topicPath.split("/").pop() ?? "",
           subtopic: r.header,
           path: topicPath,
-          question: r.question,
-          options: r.options,
-          correctAnswer: answerText,
-          explanation: r.explanation,
+          question: norm.question ?? r.question,
+          options: (norm.options ?? r.options) as [string, string, string, string],
+          correctAnswer: norm.correctAnswer ?? answerText,
+          explanation: norm.explanation ?? r.explanation,
           difficulty: "MEDIUM" as const,
           year: null as number | null,
           sourceExam: `Bank ICT · ${slug}`,

@@ -35,6 +35,7 @@ export type {
 } from "@/lib/math/canonical-math";
 
 /** Normalize every MCQ text field; returns normalized record + diagnostics. */
+import katex from "katex";
 import {
   normalizeMathContent,
   validateMathContent,
@@ -75,4 +76,44 @@ export function normalizeMcqFields<T extends McqTextFields>(rec: T): {
     explanation: field("explanation", rec.explanation ?? ""),
   };
   return { record, changed, diagnostics };
+}
+
+/**
+ * Display-time safety net (read path): normalize one STORED text field for
+ * rendering. Returns the normalized form ONLY when it is fully clean
+ * (validation + no LOST_* preservation + every `$…$` span parses in KaTeX
+ * with throwOnError); otherwise returns the source byte-identical.
+ *
+ * Contract: never throws, never writes (DB rows untouched — callers map
+ * DTOs through this), idempotent, and deterministic per input string (so
+ * the answer-in-options invariant survives: identical sources map to
+ * identical outputs). Unchanged prose returns by reference-equal fast path.
+ */
+export function normalizeFieldForDisplay(input: unknown, field = "field"): string {
+  const src = typeof input === "string" ? input : "";
+  if (!src) return src;
+  let out: string;
+  try {
+    out = normalizeMathContent(src, { field }).output;
+  } catch {
+    return src;
+  }
+  if (out === src) return src;
+  try {
+    if (validateMathContent(out, field).errors.length > 0) return src;
+    if (
+      checkMathPreservation(src, out, field).some((d) => d.type.startsWith("LOST_"))
+    )
+      return src;
+    const re = /\$\$([\s\S]*?)\$\$|\$([^$\n]*?)\$/g;
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(out)) !== null) {
+      const body = (m[1] ?? m[2] ?? "").trim();
+      if (!body) return src;
+      katex.renderToString(body, { throwOnError: true, strict: false });
+    }
+  } catch {
+    return src;
+  }
+  return out;
 }

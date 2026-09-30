@@ -609,3 +609,61 @@ Grammar **সমাস** folder file (`database/data/ques/বাংলা ভা
   `MarkdownMath` (6), `RichText` (12). Real-Chromium PDF tests remain
   excluded from CI (`@sparticuz/chromium` is Linux-only; the HTML pipeline is
   covered with a mocked Chromium instead).
+
+## ADR-029: Math read-path safety net + root/fraction repair (Practice-Tab parity)
+
+- **Date**: 2026-09-30
+- **Status**: Accepted
+- **Context**: After ADR-028, the Practice Tab still showed raw equations on
+  math MCQs while the same content looked book-exact in source files. Root
+  cause: one renderer (`RichText → MathSpans → KaTeX`) only typesets `$...$`
+  spans, but ~70% of math rows stored raw Unicode with no `$`, and the
+  canonical pipeline refused three systematic shapes: `√3/2` (fraction pass
+  stranded `√` outside its own `$\frac$`), nested radicals (inner `$` spans
+  split segments and froze outer roots), and `√দয়` etymology markers (false
+  LOST_ROOT/RAW_UNICODE_MATH).
+- **Decision** — two coordinated layers:
+  1. **Repair (pipeline)** — `unicode-math-to-latex.ts` converts `√num/den`
+     to frac-of-root before plain radicals and resolves `√(…)` groups with
+     a balanced-paren scanner (arbitrary depth, one pass); `fracSegment`
+     skips `/` glued to `√`; `fuseSpanSplits` repairs stored
+     `√$\frac{a}{b}$`; validation/preservation exempt √+Bengali-letter
+     prose and count `√(` openers for nesting. 5 further rows healed to a
+     fixpoint (`clean=13010, healed=0`); 26 genuinely-broken REVIEW rows
+     (currency `$`, double superscripts, shattered spans) stay manual.
+  2. **Safety net (every read)** — `toQuestionDTO` maps all free-text fields
+     through `normalizeFieldForDisplay`, which returns the normalized form
+     only when validation + preservation + KaTeX-throwOnError all pass,
+     else the source byte-identical. Deterministic per string, so
+     answer-in-options survives; DB never written on read; query cache
+     absorbs the per-field cost.
+- **Consequences**: Practice Tab renders book-exact math even for rows no
+  importer ever normalized; future imports remain gated (ADR-028).
+  Tests: `math-canonical` (+7 root/fraction cases), new
+  `display-normalization` (7: normalizer gates + DTO mapping).
+
+## ADR-030: Gate every question-text writer (Phase 3)
+
+- **Date**: 2026-09-30
+- **Status**: Accepted
+- **Context**: ADR-029 repaired the pipeline and the read path, but two
+  writer scripts (`import-bank-ict.ts`, `import-bcs-mental.ts`) still wrote
+  raw parsed text with no gate, and `migrate-math-llm.ts` wrote raw LLM
+  output behind only a text-divergence guard. Any rerun could land
+  un-normalized math back in the DB.
+- **Decision**:
+  1. Both importers now run each record through `scanMca` and write
+     `gate.normalized` fields; REJECTs are skipped + warned (same contract
+     as the Bank-math importers). `sourceKey` stays on the RAW stem so
+     reruns still match existing rows (no duplicates). Offline validation:
+     ICT 1395/1395 accept, Mental 985/995 (10 pre-existing
+     DUPLICATE_OPTION rows now refused; their DB rows are left untouched).
+  2. `migrate-math-llm.ts` runs every LLM record through `scanMca` before
+     writing and stores `gate.normalized`; REJECTs join `needsReview`
+     (AI output never trusted, per AI Rules).
+  3. New `tests/qb-import-gate-coverage.test.ts`: every script writing
+     Question text must reference a gate marker, else be allowlisted with a
+     documented non-text reason (option reorder, taxonomy moves, bcsTerm
+     metadata, fix-engine invariants, deletes).
+- **Consequences**: no writer can introduce un-normalized math; the test
+  fails loudly if a future script adds an ungated write.

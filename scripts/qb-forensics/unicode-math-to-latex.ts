@@ -137,6 +137,13 @@ function subToAscii(run: string): string {
 // Superscript glyphs that are plain digits (root degrees, not variables).
 const SUP_DIGIT_CLS = [...SUP_CHARS].filter((c) => /[0-9]/.test(supToAscii(c)));
 
+// Body pattern for √(…) — innermost-first: no RAW √ inside (nested roots
+// resolve bottom-up across fixpoint rounds), but already-built $…$ spans
+// and one paren-nesting level are allowed so outer roots are not frozen
+// by inner conversions (e.g. √(10+√(25+√…)) — live nested-radical rows).
+const RAD_BODY = "((?:[^()$√]|\\([^()]*\\)|\\$[^$\\n]*\\$){1,250})";
+const RAD_PAREN_RE = new RegExp(`√\\(${RAD_BODY}\\)`, "g");
+
 /** A sup-digit lead is a root degree unless glued to a preceding base
  * (x²√y → the ² belongs to x, not to the root). */
 function leadIsDegree(lead: string | undefined, offset: number, full: string): boolean {
@@ -163,7 +170,14 @@ export function convertInnerBare(s: string): string {
     );
     // √(body) / √X → \sqrt{...} (bare). Decimal radicands (√0.0036) match
     // first so the point is never split off (`√0.0036` ≠ `\sqrt{0}.0036`).
-    out = out.replace(/√\(([^)$]{1,120})\)/g, (_m, b) => `\\sqrt{${b.trim()}}`);
+    // Paren bodies resolve innermost-first across iterations (nested
+    // √(10+√(25+…)) — outer bodies still holding a raw √ wait a round).
+    for (let k = 0; k < 6; k++) {
+      const b2 = out;
+      RAD_PAREN_RE.lastIndex = 0;
+      out = out.replace(RAD_PAREN_RE, (_m, b) => `\\sqrt{${(b as string).trim()}}`);
+      if (out === b2) break;
+    }
     out = out.replace(
       /√([0-9০-৯]{1,12}\.[0-9০-৯]{1,12}|[0-90-9a-zA-Z০-৯π]{1,12})/g,
       (_m, b) => `\\sqrt{${b}}`,
@@ -204,6 +218,47 @@ export function convertInnerBare(s: string): string {
   return out;
 }
 
+/**
+ * Convert √(…) groups with balanced-paren scanning (arbitrary nesting
+ * depth in ONE pass): finds each `√(`, matches its closing paren by depth,
+ * recursively converts the body, then wraps. Regex-only matching freezes
+ * nested radicals (√(10+√(25+…))) because inner conversions insert `$`
+ * spans that split later segments — the scanner consumes the whole group
+ * before any `$` exists. Unbalanced groups pass through for review.
+ * `wrap`/`inner` inject the prose (span-wrapping) vs bare conversions.
+ */
+function convertNestedRootParen(
+  s: string,
+  wrap: (latexInner: string) => string,
+  inner: (t: string) => string,
+): string {
+  let out = "";
+  let i = 0;
+  for (let guard = 0; guard < 100; guard++) {
+    const j = s.indexOf("√(", i);
+    if (j === -1) return out + s.slice(i);
+    // Depth-scan from inside the opener (depth starts at 1 for s[j+1]).
+    let depth = 1;
+    let k = j + 2;
+    for (; k < s.length && k - j < 600; k++) {
+      if (s[k] === "(") depth++;
+      else if (s[k] === ")") {
+        depth--;
+        if (depth === 0) break;
+      }
+    }
+    if (k >= s.length || k - j >= 600 || s[k] !== ")") {
+      out += s.slice(i, j + 2);
+      i = j + 2;
+      continue;
+    }
+    const bodyInner = convertNestedRootParen(inner(s.slice(j + 2, k)), wrap, inner);
+    out += s.slice(i, j) + wrap(bodyInner);
+    i = k + 1;
+  }
+  return out + s.slice(i);
+}
+
 function convertSegment(seg: string): string {
   let out = seg;
 
@@ -224,26 +279,35 @@ function convertSegment(seg: string): string {
   // 2. Radicals: √(body) / √X → \sqrt{...}, with an optional leading
   // superscript degree: ³√(8²) / ⁴√(81x⁸) → $\sqrt[3]{8^{2}}$ (book-exact
   // n-th roots; a non-digit lead falls through to the plain radical).
-  const supDigitCls = SUP_DIGIT_CLS;
-  // Degree lead in front of an already-built root span (left by un-nesting
-  // "⁴$\sqrt{...}$"): ⁴$\sqrt{81x^{8}}$ → $\sqrt[4]{81x^{8}}$.
-  // NOTE: a lead split from its span by segmentation ("⁴" | "$\sqrt…")
-  // is fused by the pre-split pass in unicodeMathToLatex below.
+  // Root-over-division FIRST (√3/2 → frac-of-root): otherwise the fraction
+  // pass strands the √ outside its own $\frac$ (`√$\frac{3}{2}$` — live bug
+  // on sin/cos/tan rows). The fracSegment √-guard in canonical-math keeps
+  // these intact until here.
+  const NUM_FRAC = `[0-9${BN_DIGITS}]{1,12}(?:\\.[0-9${BN_DIGITS}]{1,12})?`;
   out = out.replace(
-    new RegExp(`([${esc(supDigitCls.join(""))}]{1,3})\\$\\sqrt\\{`, "g"),
-    (m, lead, offset, full) => {
-      if (!leadIsDegree(lead, offset, full)) return m;
-      return `$\\sqrt[${supToAscii(lead as string)}]{`;
-    },
+    new RegExp(`√(${NUM_FRAC})\\s*/\\s*(${NUM_FRAC})`, "g"),
+    (_m, n, d) => `$\\frac{\\sqrt{${n}}}{${d}}$`,
   );
   out = out.replace(
-    new RegExp(`([${esc(supDigitCls.join(""))}]{1,3})?√\\(([^)$]{1,120})\\)`, "g"),
-    (m, lead, b, offset, full) => {
-      if (leadIsDegree(lead, offset, full)) {
-        return `$\\sqrt[${supToAscii(lead as string)}]{${convertInnerBare(latexEscapeRaw((b as string).trim()))}}$`;
-      }
-      if (lead) return `${lead}$\\sqrt{${convertInnerBare(latexEscapeRaw((b as string).trim()))}}$`;
-      return `$\\sqrt{${convertInnerBare(latexEscapeRaw((b as string).trim()))}}$`;
+    new RegExp(`√\\(${RAD_BODY}\\)\\s*/\\s*(${NUM_FRAC})`, "g"),
+    (_m, b, d) => `$\\frac{\\sqrt{${convertInnerBare(latexEscapeRaw((b as string).trim()))}}}{${d}}$`,
+  );
+  const supDigitCls = SUP_DIGIT_CLS;
+  const degCls = esc(supDigitCls.join(""));
+  // Paren groups via balanced scanning (arbitrary nesting depth in one
+  // pass — nested √(10+√(25+…)) rows). Degree leads (³√(x²)) fold below.
+  out = convertNestedRootParen(
+    out,
+    (latexInner) => `$\\sqrt{${latexInner}}$`,
+    (t) => convertInnerBare(latexEscapeRaw(t.trim())),
+  );
+  // Fold degree leads glued to fresh spans (⁴$\sqrt{…}$ → $\sqrt[4]{…}$;
+  // already-folded `⁴$\sqrt[…]` passes through untouched).
+  out = out.replace(
+    new RegExp(`([${degCls}]{1,3})\\$\\sqrt\\[?`, "g"),
+    (m, lead, offset, full) => {
+      if (!leadIsDegree(lead, offset, full)) return m;
+      return m.includes("[") ? m : `$\\sqrt[${supToAscii(lead as string)}]{`;
     },
   );
   out = out.replace(
@@ -394,8 +458,9 @@ export function unicodeMathToLatex(input: string): string {
   }
   // Fixpoint: each round strictly consumes raw triggers or fuses spans, so
   // this terminates (cap is a backstop). Needed because one round can
-  // expose new work — e.g. un-nesting reveals a raw run, or a `)ˣ` wrap
-  // needs fusing with a preceding span.
+  // expose new work — e.g. un-nesting reveals a raw run, a `)ˣ` wrap
+  // needs fusing with a preceding span, or a nested √(…(…)) resolves one
+  // level per round (depth-5 radicals need ~6 rounds incl. $-repair).
   let s = norm;
   // Fuse a degree lead split from its root span by segmentation:
   // "⁴" | "$\sqrt{81x^{8}}$" → "$\sqrt[4]{81x^{8}}$".
@@ -407,7 +472,7 @@ export function unicodeMathToLatex(input: string): string {
         return `$\\sqrt[${supToAscii(lead as string)}]{`;
       },
     );
-  for (let round = 0; round < 4; round++) {
+  for (let round = 0; round < 8; round++) {
     const next = mergeAdjacentSpans(
       fuseLeadSpan(
         splitLatexBraced(s)

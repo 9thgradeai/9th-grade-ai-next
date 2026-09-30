@@ -363,3 +363,13 @@ GET /api/questions?paths=01_বাংলা_ভাষা_ও_সাহিত্�
 ```
 Passing no `paths` returns the whole subject (or the entire question set when no
 other filter is given). The client SDK accepts an array: `api.questions({ paths: ["a/b"], limit: 10 })`.
+
+### Display normalization on `GET /api/questions`
+Free-text fields (`question`, `options`, `correctAnswer`, `explanation`,
+`statements`, `correctAnswers`) pass through `normalizeFieldForDisplay`
+(`backend/services/math.ts`) at read time, so rows missed by ingestion-time
+normalization still arrive book-exact (`$...$` KaTeX). The normalizer only
+applies fully-clean outputs (validation + preservation + KaTeX parse);
+REVIEW-grade fields arrive byte-identical to storage, deterministically
+(answer-in-options invariant preserved). The database is never written on
+the read path.

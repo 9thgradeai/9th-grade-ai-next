@@ -30,6 +30,9 @@
  * Safety:
  *   - Preservation check: if Claude drops a non-math word it shouldn't, the
  *     row is flagged `needs_review` and the original is kept.
++ *   - Canonical gate (Phase 3): every LLM record runs through `scanMca`
++ *     (normalize + KaTeX + structure). REJECT verdicts are never written —
++ *     flagged `needs_review`, original kept. AI output is never trusted.
  *   - Schema: never mutates schema — only question/options/correctAnswer/
  *     explanation text fields.
  *   - Auth: ANTHROPIC_API_KEY only from env, never client-visible.
@@ -37,6 +40,7 @@
  */
 
 import { join } from "path";
+import { scanMca } from "./qb-forensics/import-gate";
 
 // ── Interfaces ────────────────────────────────────────────────────────────────
 
@@ -320,14 +324,32 @@ async function main() {
           continue;
         }
 
+        // Canonical gate: never trust LLM output — normalize + KaTeX +
+        // structure check; REJECT verdicts keep the original (Phase 3).
+        const gate = scanMca({
+          question: next.question ?? "",
+          options: Array.isArray(next.options) ? next.options : [],
+          correctAnswer: next.correctAnswer ?? "",
+          explanation: next.explanation ?? "",
+        });
+        if (gate.verdict === "REJECT") {
+          report.needsReview.push({
+            id: orig.id,
+            reason: `gate: ${gate.fatal.map((f) => `${f.code}@${f.field}`).join(", ")}`,
+          });
+          report.preserved++;
+          continue;
+        }
+        const norm = gate.normalized;
+
         try {
           await prisma.question.update({
             where: { id: orig.id },
             data: {
-              question: next.question,
-              options: next.options,
-              correctAnswer: next.correctAnswer,
-              explanation: next.explanation ?? orig.explanation,
+              question: norm.question ?? next.question,
+              options: norm.options ?? next.options,
+              correctAnswer: norm.correctAnswer ?? next.correctAnswer,
+              explanation: norm.explanation ?? next.explanation ?? orig.explanation,
             },
           });
           report.migrated++;
