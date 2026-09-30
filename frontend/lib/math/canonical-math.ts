@@ -440,6 +440,13 @@ function isFracTokenChar(c: string): boolean {
   return new RegExp(`[${FRAC_TOKEN}]`).test(c);
 }
 
+/** Drop a trailing true-superscript run: `x²` -> `x`, `²` -> ``. */
+function stripTrailingSup(s: string): string {
+  let i = s.length;
+  while (i > 0 && SUP_RUN_CHARS.includes(s[i - 1])) i--;
+  return s.slice(0, i);
+}
+
 /** Scan forward from `at` (spaces skipped): balanced `(group)` or bare token. */
 function fracRight(t: string, at: number): { text: string; end: number; grouped: boolean } | null {
   let k = at;
@@ -465,6 +472,11 @@ function fracRight(t: string, at: number): { text: string; end: number; grouped:
   const start = m;
   while (m < t.length && isFracTokenChar(t[m])) m++;
   if (m === start) return null;
+  // A trailing superscript binds to the DENOMINATOR in linear notation:
+  // `1/x²` means 1/(x²), not (1/x)². Absorb the run so the exponent lands
+  // inside the `\frac` brace instead of being stranded after it and
+  // re-merged into `\frac{1}{x}^{2}` (a value-changing rendering bug).
+  while (m < t.length && SUP_RUN_CHARS.includes(t[m])) m++;
   return { text: t.slice(k, m), end: m, grouped: false };
 }
 
@@ -655,7 +667,11 @@ function fracSegment(t: string, push: (type: string, loc: string) => void): stri
         i = j + 1;
         continue;
       }
-      const bothNumbers = FRAC_NUM_RE.test(left.text) && FRAC_NUM_RE.test(right.text);
+      // Eligibility guards judge the BASE operand: a trailing superscript
+      // absorbed by `fracRight` must not disqualify an otherwise-valid
+      // division (`1/x²`, `8/x³`). Only emission keeps the exponent.
+      const rightBase = stripTrailingSup(right.text);
+      const bothNumbers = FRAC_NUM_RE.test(left.text) && FRAC_NUM_RE.test(rightBase);
       // Year guard: skip fiscal/calendar years (`2024/25`, `২০২৪/২৫`).
       // Only contiguous 19xx/20xx runs count — total digit COUNT was a bug
       // that blocked genuine groups like `(80 × 100) / 125`.
@@ -663,7 +679,7 @@ function fracSegment(t: string, push: (type: string, loc: string) => void): stri
       // deterministically division — years never carry a quotient.
       const yearish =
         /(19|20)[0-9]{2}|(১৯|২০)[০-৯]{2}/.test(left.text) ||
-        /(19|20)[0-9]{2}|(১৯|২০)[০-৯]{2}/.test(right.text);
+        /(19|20)[0-9]{2}|(১৯|২০)[০-৯]{2}/.test(rightBase);
       const quotientAhead = /^\s*=\s*-?[0-9০-৯]/.test(t.slice(right.end));
       const yearGuard = yearish && !(bothNumbers && quotientAhead);
       // π-rule: `πr / ২` in an equation is unambiguously division (π never
@@ -672,8 +688,8 @@ function fracSegment(t: string, push: (type: string, loc: string) => void): stri
         !left.grouped &&
         !right.grouped &&
         /^[A-Za-z0-9\u09E6-\u09EF\u03C0\u00D7\u00B7]+$/.test(left.text) &&
-        /^[A-Za-z0-9\u09E6-\u09EF\u03C0\u00D7\u00B7]+$/.test(right.text) &&
-        (left.text.includes("\u03C0") || right.text.includes("\u03C0")) &&
+        /^[A-Za-z0-9\u09E6-\u09EF\u03C0\u00D7\u00B7]+$/.test(rightBase) &&
+        (left.text.includes("\u03C0") || rightBase.includes("\u03C0")) &&
         t.includes("=");
       // Equation letter/number rule: `x / 19`, `a / b` inside an equation
       // (`=` in segment) are unambiguously division. Both sides must be
@@ -686,20 +702,20 @@ function fracSegment(t: string, push: (type: string, loc: string) => void): stri
         !left.grouped &&
         !right.grouped &&
         cleanTok(left.text) &&
-        cleanTok(right.text) &&
+        cleanTok(rightBase) &&
         t.includes("=") &&
         (left.text.length === 1 ||
-          right.text.length === 1 ||
+          rightBase.length === 1 ||
           /[0-9০-৯π]/.test(left.text) ||
-          /[0-9০-৯π]/.test(right.text));
+          /[0-9০-৯π]/.test(rightBase));
       // Digit rule: single ASCII letter vs pure number (`x / 19`) is
       // unambiguously division even without `=` nearby. No `=` required,
       // but dots/words disqualify (`Mr./X`, `Q2/3` never convert).
       const digitRule =
         !left.grouped &&
         !right.grouped &&
-        ((/^[A-Za-z]$/.test(left.text) && FRAC_NUM_RE.test(right.text)) ||
-          (/^[A-Za-z]$/.test(right.text) && FRAC_NUM_RE.test(left.text)));
+        ((/^[A-Za-z]$/.test(left.text) && FRAC_NUM_RE.test(rightBase)) ||
+          (/^[A-Za-z]$/.test(rightBase) && FRAC_NUM_RE.test(left.text)));
       // Caret adjacency: `x^2/y`, `a/y^2` belong to the `^` rule, not
       // `/` (converting here would strand exponents). The caret pass runs
       // first, so by the time we see spans (`$x^{2}$/y`) it is safe.

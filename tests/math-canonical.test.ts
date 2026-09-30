@@ -177,6 +177,25 @@ describe("canonical math pipeline — deterministic book fractions", () => {
     expect(canon("তারিখ ১২/০৫/২০২৪")).toBe("তারিখ ১২/০৫/২০২৪"));
   it("fiscal years NEVER convert", () =>
     expect(canon("2024/25 অর্থবছর")).toBe("2024/25 অর্থবছর"));
+  // A trailing superscript binds to the DENOMINATOR in linear notation:
+  // `1/x²` is 1/(x²). Stranding it after the brace renders `\frac{1}{x}^{2}`,
+  // which reads as (1/x)² — wrong values reach the learner.
+  it("1/x² → exponent stays inside the denominator brace", () =>
+    expect(canon("x² - 1/x² = 8")).toContain("$\\frac{1}{x^{2}}$"));
+  it("8/x³ → exponent stays inside the denominator brace", () =>
+    expect(canon("8x³ - 8/x³")).toContain("$\\frac{8}{x^{3}}$"));
+  it("1/9x² → multi-token denominator keeps its exponent", () =>
+    expect(canon("9x² + 1/9x²")).toContain("$\\frac{1}{9x^{2}}$"));
+  it("no stranded exponent outside any \\frac brace", () => {
+    const out = canon("x² - 1/x² = 8 হলে, x + 1/x এর মান কত?");
+    expect(out).not.toMatch(/\\frac\{[^}]*\}\s*\^\{/);
+  });
+  it("superscripted numerator is unaffected", () =>
+    expect(canon("x/y + y/x = 3 হলে, x²/y²")).toContain("$\\frac{x^{2}}{y^{2}}$"));
+  it("superscript before the slash does not block conversion", () =>
+    expect(canon("ab = (a+b)²/4 - (a-b)²/4")).toBe(
+      "ab = $\\frac{(a+b)^{2}}{4}$ - $\\frac{(a-b)^{2}}{4}$",
+    ));
   it("1/2x, a/b+c, x/y NEVER convert", () => {
     expect(canon("choose 1/2x of them")).toBe("choose 1/2x of them");
     expect(canon("a/b+c")).toBe("a/b+c");

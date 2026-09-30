@@ -667,3 +667,74 @@ Grammar **সমাস** folder file (`database/data/ques/বাংলা ভা
      metadata, fix-engine invariants, deletes).
 - **Consequences**: no writer can introduce un-normalized math; the test
   fails loudly if a future script adds an ungated write.
+
+## ADR-031: Bind a linear superscript to the fraction denominator
+
+- **Date**: 2026-09-30
+- **Status**: Accepted
+- **Context**: `FRAC_TOKEN` (the `\frac` operand scanner) covered letters,
+  digits and `π`, but not Unicode superscript glyphs. For `1/x²` the
+  denominator scan therefore stopped at `x`, leaving the `²` outside the
+  `\frac` span; `mergeAdjacentSpans` then re-absorbed it as
+  `\frac{1}{x}^{2}`, which renders as `(1/x)²` instead of `1/(x²)`. Every
+  reciprocal-power MCQ in the বীজগাণিতিক corpus was affected. The DB was
+  already healed by hand, so the defect was invisible until a re-import
+  regenerated the broken form.
+- **Decision**:
+  1. `fracRight` now absorbs a trailing true-superscript run into the
+     operand, so `1/x²` becomes `\frac{1}{x²}` and `unicodeMathToLatex`
+     renders `\frac{1}{x^{2}}`.
+  2. Eligibility guards (`bothNumbers`, `yearGuard`, `piRule`, `mathRule`,
+     `digitRule`) evaluate `rightBase` — the operand minus its exponent — so
+     absorbing the run cannot change which divisions are considered
+     unambiguous. Prose guards are untouched: `Mr./X`, `cats/dogs`,
+     `2024/25` still never convert.
+  3. Numerator-side superscripts already resolved correctly via a later
+     pass (`x²/y²` -> `\frac{x^{2}}{y^{2}}`); that path is unchanged and
+     pinned by tests.
+- **Consequences**: reciprocal powers render book-exact and a future
+  re-import no longer regenerates the broken form. Regression cases live in
+  `tests/math-canonical.test.ts` (6 added), including a blanket assertion
+  that no `\frac{…}` is ever followed by a stranded `^{`.
+
+## ADR-032: Repair the বীজগাণিতিক corpus in place, never re-import
+
+- **Date**: 2026-09-30
+- **Status**: Accepted
+- **Context**: `Questions(বীজগাণিতিক_সূত্রাবলি ও বহুপদী_উৎপাদক).txt` parsed
+  to 201 blocks (Q70 and Q94 each appeared twice) and carried LLM
+  self-talk, a wrong key for Q56 (99 instead of 63), an unsatisfiable Q94
+  stem, and a Q125 key that pointed at a meta-option instead of a value.
+  A delete-and-reimport was rejected: it would have dropped 42 rows whose
+  stored LaTeX had been hand-healed, and destroyed 4 `QuestionAttempt`
+  rows via cascade.
+- **Decision**: fix the `.txt` source of truth (200 contiguous blocks,
+  1–200, no duplicates) and repair only the affected DB rows, with
+  `normalizeMcqFields` applied so stored text matches what a re-import
+  would produce. Q70's broken duplicate (id 36008) was deleted; its
+  corrected twin (36009) kept. IDs 29661 (AP) and 29662 (Pythagoras) were
+  re-pointed to `Part_03_সূচক_ও_ধারা/সমান্তর_অনুক্রম_ও_ধারা` and
+  `Part_04_জ্যামিতি/পিথাগোরাসের_উপপাদ্য` instead of being deleted, keeping
+  their attempts. `sourceKey` was recomputed for the one row whose stem
+  changed. Full pre-repair snapshot:
+  `database/backups/bcj-alg-factorisation-pre-repair.json`.
+- **Consequences**: 199 target rows, all 4 attempts preserved, zero
+  key/option mismatches and zero stranded exponents in the target set.
+
+## ADR-033: `correctAnswer` holds option TEXT, not a letter
+
+- **Date**: 2026-09-30
+- **Status**: Accepted
+- **Context**: repair work nearly wrote letters (`"B"`) into
+  `Question.correctAnswer`. The column stores the resolved option *string*
+  (the seeder runs `resolveAnswerToOption(answerRaw, options)` first), so
+  a letter would match nothing and silently mark every answer wrong.
+- **Decision**: repairs always resolve the letter against the option list
+  and assert post-normalization that the stored key still matches an option
+  before writing; abort otherwise. Use `Question.correctAnswer`, never
+  `Question.answer`, in any inspection or repair script.
+- **Consequences**: the key/option invariant is checked, not assumed. One
+  pre-existing violation remains in subject 608 — id 36163
+  (`log_(b)(m)` vs option `$\log_{b}{(m)}$`), reproduced from
+  `Questions(সূচক ও লগারিদম)_9Th-Grade AI.txt` and left untouched as
+  out of scope; it needs a source fix, not a DB-only patch.
