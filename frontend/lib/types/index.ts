@@ -459,6 +459,9 @@ export namespace Server {
     paperId?: number | null;
     examId?: number | null;
     questionNumber?: number | null;
+    /** True when the text is authoritative book Unicode and was emitted
+     *  byte-identical (no LaTeX normalisation) — see ADR-036. */
+    rawMath?: boolean;
   };
 
   /** Exam-library hierarchy: ExamCategory "BCS" → Exam "BCS Preliminary" → papers. */

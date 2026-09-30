@@ -148,6 +148,7 @@ type QuestionRow = {
   paperId: number | null;
   examId: number | null;
   questionNumber: number | null;
+  rawMath: boolean;
 };
 
 function asStringArray(v: unknown): string[] {
@@ -164,8 +165,14 @@ function asStringArray(v: unknown): string[] {
  * fields byte-identical — the DB is never written here.
  */
 export function toQuestionDTO(q: QuestionRow): QuestionDTO {
+  // `rawMath` rows hold authoritative book Unicode (superscripts, subscripts,
+  // √, −). The normalizer would rewrite ~44% of those fields into LaTeX, so
+  // those rows bypass it entirely and are emitted byte-identical.
+  const show = q.rawMath
+    ? (v: unknown, field: string) => (typeof v === "string" ? v : "")
+    : normalizeFieldForDisplay;
   const options = asStringArray(q.options).map((o, i) =>
-    normalizeFieldForDisplay(o, `options[${i}]`),
+    show(o, `options[${i}]`),
   );
   return {
     id: q.id,
@@ -173,20 +180,20 @@ export function toQuestionDTO(q: QuestionRow): QuestionDTO {
     subject: q.subject?.nameBn ?? "",
     topic: q.topic,
     subtopic: q.subtopic,
-    question: normalizeFieldForDisplay(q.question, "question"),
+    question: show(q.question, "question"),
     options,
-    correctAnswer: normalizeFieldForDisplay(q.correctAnswer, "correctAnswer"),
-    explanation: normalizeFieldForDisplay(q.explanation, "explanation"),
+    correctAnswer: show(q.correctAnswer, "correctAnswer"),
+    explanation: show(q.explanation, "explanation"),
     difficulty: q.difficulty as QuestionDTO["difficulty"],
     year: q.year,
     sourceExam: q.sourceExam,
     bcsTerm: q.bcsTerm,
     questionType: q.questionType as QuestionDTO["questionType"],
     correctAnswers: asStringArray(q.correctAnswers).map((o, i) =>
-      normalizeFieldForDisplay(o, `correctAnswers[${i}]`),
+      show(o, `correctAnswers[${i}]`),
     ),
     statements: asStringArray(q.statements).map((s, i) =>
-      normalizeFieldForDisplay(s, `statements[${i}]`),
+      show(s, `statements[${i}]`),
     ),
     media: Array.isArray(q.media)
       ? (q.media as { kind: string; url: string; alt?: string }[]).filter((m) => typeof m?.url === "string")
@@ -194,6 +201,7 @@ export function toQuestionDTO(q: QuestionRow): QuestionDTO {
     paperId: q.paperId,
     examId: q.examId,
     questionNumber: q.questionNumber,
+    rawMath: q.rawMath ?? false,
   };
 }
 

@@ -384,6 +384,10 @@ model Question {
   options        Json // string[]
   correctAnswer  String
   explanation    String          @default("")
+  // When true, the stored text is authoritative book Unicode and the read
+  // path must NOT run it through the LaTeX normalizer (see ADR-035 follow-up).
+  // Used by the raw-Unicode import path under evaluation.
+  rawMath        Boolean         @default(false)
   // ── Multi-type answering (additive; legacy rows are SINGLE_CHOICE) ──
   // correctAnswer stays the source of truth for SINGLE_CHOICE.
   // correctAnswers is authoritative iff non-empty (MULTIPLE_CHOICE needs ≥2).

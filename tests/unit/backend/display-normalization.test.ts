@@ -25,6 +25,7 @@ const baseRow = (over: Partial<Row>): Row => ({
   paperId: null,
   examId: null,
   questionNumber: null,
+  rawMath: false,
   ...over,
 });
 
@@ -80,5 +81,69 @@ describe("toQuestionDTO — display normalization", () => {
     );
     expect(dto.question).toBe("ক্ষুদ্রতম মৌলিক সংখ্যা কোনটি?");
     expect(dto.options[0]).toBe("It costs $80");
+  });
+});
+
+describe("toQuestionDTO — rawMath passthrough (book-Unicode import)", () => {
+  // Real row from topic 133177 "Indices_and_Logarithms", imported verbatim
+  // from the .docx. Every one of these fields WOULD be rewritten by the
+  // normalizer, which is exactly why rawMath bypasses it.
+  const RAW = {
+    question: "If 2ˣ⁺³ + 2ˣ⁺¹ = 320, find the value of x.",
+    options: ["4", "5", "6", "7"],
+    correctAnswer: "5",
+    explanation: "Factoring out 2ˣ, we get 2ˣ(2³ + 2¹) = 320 ⇒ 10 · 2ˣ = 320 ⇒ 2ˣ = 2⁵.",
+  };
+
+  it("emits every field byte-identical to the stored Unicode", () => {
+    const dto = toQuestionDTO(baseRow({ ...RAW, rawMath: true }));
+    expect(dto.question).toBe(RAW.question);
+    expect(dto.options).toEqual(RAW.options);
+    expect(dto.correctAnswer).toBe(RAW.correctAnswer);
+    expect(dto.explanation).toBe(RAW.explanation);
+  });
+
+  it("never emits a LaTeX delimiter, even though the normalizer would add one", () => {
+    const dto = toQuestionDTO(baseRow({ ...RAW, rawMath: true }));
+    expect(normalizeFieldForDisplay(RAW.question, "question")).toContain("$"); // control
+    expect(dto.question).not.toContain("$");
+    expect(dto.explanation).not.toContain("$");
+  });
+
+  it("preserves radicals, true minus signs and Unicode minus in options", () => {
+    const dto = toQuestionDTO(
+      baseRow({
+        rawMath: true,
+        question: "Express logₐ √(a √(a √a)) in simplified numerical form.",
+        options: ["1/8", "3/4", "7/8", "15/16"],
+        correctAnswer: "7/8",
+        explanation: "Simplify logₐ √(a √(a √a)).",
+      }),
+    );
+    expect(dto.question).toContain("√");
+    expect(dto.options).toEqual(["1/8", "3/4", "7/8", "15/16"]);
+    expect(dto.options).toContain(dto.correctAnswer);
+  });
+
+  it("keeps answer-in-options intact when the answer is a Unicode minus", () => {
+    const dto = toQuestionDTO(
+      baseRow({
+        rawMath: true,
+        question: "Solve for x: 4ˣ = 1/64.",
+        options: ["−3", "−2", "3", "1/3"],
+        correctAnswer: "−3",
+        explanation: "4ˣ = 1/64 = 2⁻⁶.",
+      }),
+    );
+    expect(dto.correctAnswer).toBe("−3");
+    expect(dto.options).toContain(dto.correctAnswer);
+  });
+
+  it("defaults rawMath to false, so legacy rows keep normalizing", () => {
+    const dto = toQuestionDTO(
+      baseRow({ question: "If sin x = √3/2, then tan x = ?" }),
+    );
+    expect(dto.rawMath).toBe(false);
+    expect(dto.question).toContain("\\sqrt");
   });
 });

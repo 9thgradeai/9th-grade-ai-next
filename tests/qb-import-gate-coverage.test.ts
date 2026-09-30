@@ -54,6 +54,11 @@ const ALLOWLIST: Record<
       "generic field-migration engine; writes only classified AUTO fixes after invariant() passes, dry-run by default",
     markers: [/invariant\(/, /dryRun/],
   },
+  "scripts/import-raw-unicode-topic.ts": {
+    reason:
+      "verbatim book-Unicode importer (.docx → Question). Deliberately does NOT normalise: it sets rawMath=true so the read path bypasses the LaTeX normalizer, and aborts before any DB write unless every question has 4 options and a resolvable answer that is present in them.",
+    markers: [/rawMath: true/, /not among options/, /ABORT/],
+  },
 };
 
 function tsFiles(dir: string): string[] {

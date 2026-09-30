@@ -803,3 +803,45 @@ Grammar **সমাস** folder file (`database/data/ques/বাংলা ভা
   stored-data change was needed. Four rows elsewhere still hold a literal `√`
   immediately followed by a math span (`#39819`, `#40303`); two others are
   Bengali etymology prose where `√` is a letter, correctly untouched.
+
+## ADR-036: `Question.rawMath` — opt-out of LaTeX normalisation for verbatim book-Unicode imports
+
+- **Date**: 2026-10-01
+- **Status**: Accepted (under evaluation; reversible by flipping the flag)
+- **Context**: KaTeX rendering of Math MCQs on the Practice tab was reported as
+  unreliable, so topic `133177` `Indices_and_Logarithms` was to be re-imported
+  verbatim from
+  `database/data/Bank/Math/updated/Indices and Logarithms — Bank Mathematics MCQ.docx`.
+  That document has **no OMML** — every equation is plain Unicode
+  (superscripts `ˣ⁺³`, subscripts `log₂`, `√`, `−` U+2212, `ᐟ` fraction slash).
+- **The problem**: storing the Unicode verbatim is not sufficient.
+  `toQuestionDTO` runs every field through `normalizeFieldForDisplay`, which
+  measured **533 of 1200 fields (44%)** from this exact document into LaTeX —
+  i.e. the dashboard would still show the LaTeX the user rejected. Worse, the
+  normalizer also produced real defects, e.g. `Prime factorize $72: 72 = 8 \times
+  9$` (the colon swallowed into a math span).
+- **Decision**: add `Question.rawMath Boolean @default(false)`. When `true`,
+  `toQuestionDTO` bypasses the normalizer and emits all six text fields
+  byte-identical. The flag is per row, so this is a controlled experiment on one
+  topic and reversing it restores the previous behaviour with no data rewrite.
+- **Import**: `scripts/import-raw-unicode-topic.ts` parses the .docx, aborts on
+  any validation failure (option count, unresolvable answer, answer not in
+  options, stray `$`) *before* touching the DB, backs up the rows it replaces,
+  inserts the verbatim text, carries `QuestionAttempt`/`UserQuestionProgress`
+  over by ordinal position, then deletes the superseded rows.
+- **Verification**: the 200 old rows were confirmed to be this same document
+  already LaTeX-converted (126/200 byte-identical after pushing both sides
+  through the same normalizer; the rest differ only in math representation;
+  all 17 answer differences are cosmetic — ASCII `-` vs `−`, `1/3` vs
+  `\frac{1}{3}`). Post-import the live API returns 200 rows with **zero** `$`
+  anywhere, zero answer-in-options violations, and 1218 super/subscript
+  glyphs, 39 `√`, 319 `−`, 86 `ᐟ` preserved. All 21 glyph classes needed by the
+  document render in-browser with distinct advances — **no tofu**.
+  The old LaTeX rows also contained a real corruption, `2^{x+3}` stored as
+  `2^{0+3}`, which the verbatim import fixes.
+- **Trade-off accepted for this topic**: a bare `√` has no vinculum, so
+  `√(x + 1)` is visually ambiguous with `√x + 1`. That is inherent to the source
+  document, not to this decision; it is the behaviour being evaluated.
+- **Also noted**: position 176 of the document is mislabelled `175`
+  (a duplicate of position 175's number). `questionNumber` is set from ordinal
+  position, so the stored sequence is a clean 1..200.
