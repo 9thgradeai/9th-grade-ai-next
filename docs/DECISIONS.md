@@ -765,3 +765,41 @@ Grammar **সমাস** folder file (`database/data/ques/বাংলা ভা
   a `1/x` → `\frac{1}{x}` rewrite and nothing else. The other 266 DB-wide
   cases were NOT rewritten: they are arithmetic/exponent spans outside this
   topic and are correct as-is.
+
+## ADR-035: Roots stay LaTeX; reclaim space in CSS, not by dropping the vinculum
+
+- **Date**: 2026-10-01
+- **Status**: Accepted
+- **Context**: a report that roots "overlap at right and take unwanted much
+  more space", with a request to render them "fully unicode" (plain `√`).
+  Measured across 397 questions / 203 roots in the বীজগাণিতিক leaves and
+  their neighbours, at 1100px and 390px:
+  - roots overlapping adjacent prose: **0** (measured with `Range` rects,
+    excluding each root's own radicand — the naive `nextElementSibling`
+    check reports 239 false positives because prose is a text node, and
+    the radicand digits live inside the root box by design);
+  - SVG overbar shorter/longer than its radicand: **0 / 0**;
+  - root width p50 23px, max 70px; sections overflowing: **0** at 1100px,
+    **5** at 390px.
+  So the overlap does not reproduce in this corpus; the real, measurable
+  space waste is elsewhere.
+- **Decision**: do NOT convert roots to bare Unicode `√`. Measured per root,
+  Unicode is 20–30% narrower (`\sqrt{x^{2}+1}` 87.5px → 64.8px; nested
+  `\sqrt{10+\sqrt{25}}` 121.6px → 92.4px) but a bare `√` has **no
+  vinculum**, so `√x+1` becomes ambiguous between `√(x+1)` and `√x + 1`.
+  Trading a correct radical for a few pixels is a bad bargain for exam
+  preparation. Instead reclaim space in CSS, where it costs no meaning:
+  1. dropped the blanket `letter-spacing: 0.01em` on `.katex` — KaTeX kerns
+     atoms itself; the override only added width (total math width
+     103367px → 99171px, −4.1%);
+  2. on `max-width: 640px`, long inline math became a scrollable
+     `inline-block` instead of overflowing the card (overflowing sections
+     at 390px: 5 → 0; the page no longer scrolls sideways).
+  A `padding-left` tightening of the radical sign was tried and **rejected
+  on measurement** — it inflated total root width by 50%, because that
+  padding is what positions the radicand clear of the sign.
+- **Consequences**: radicals keep a correct overbar and stay compact on both
+  desktop and mobile. `\sqrt` remains the only root form; no source or
+  stored-data change was needed. Four rows elsewhere still hold a literal `√`
+  immediately followed by a math span (`#39819`, `#40303`); two others are
+  Bengali etymology prose where `√` is a letter, correctly untouched.

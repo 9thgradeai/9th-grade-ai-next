@@ -2443,8 +2443,9 @@ html.light .skeleton-shimmer {
   line-height: inherit;
   white-space: nowrap;
   text-rendering: optimizeLegibility;
-  /* Tight letter-spacing mirrors textbook KaTeX output */
-  letter-spacing: 0.01em;
+  /* No letter-spacing: KaTeX already spaces atoms via its own kerning, and a
+     blanket 0.01em on every glyph added ~1.9% to total math width (measured
+     across 397 questions / 203 roots) for no typographic gain. */
 }
 
 /* ── Display math: centred block with a subtle elevated surface ─────────── */
@@ -2474,7 +2475,6 @@ html.light .skeleton-shimmer {
   font-size: 1.15em;
   /* Slightly larger than inline — matches printed textbook display scale */
   white-space: nowrap;
-  letter-spacing: 0.01em;
 }
 
 /* Cross-theme: KaTeX inherits surrounding text color in both light and dark. */
@@ -2522,5 +2522,17 @@ html.light .skeleton-shimmer {
   }
   .math-display .katex-display > .katex {
     font-size: 1.08em;
+  }
+  /* A long inline span (e.g. a factorised option like $(x+1)(x-2)(x+3)$) is
+     `nowrap` by design so it never breaks mid-equation. On a narrow screen that
+     used to push it straight past the card edge — measured 5 sections
+     overflowing a 348px column at 390px wide. Let those spans scroll inside
+     their own box instead of overflowing the page. */
+  .math-inline {
+    display: inline-block;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    vertical-align: top;
   }
 }
