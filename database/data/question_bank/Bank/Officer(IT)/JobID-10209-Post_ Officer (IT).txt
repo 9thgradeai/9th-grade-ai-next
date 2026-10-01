@@ -1,0 +1,302 @@
+﻿Job ID-10209
+Officer(IT)
+
+
+Q1. OOP stands for: A. Object Oriented Programming B. Open Office Protocol C. Object Operating Program D. Output Oriented Process Answer: A Speed Shortcut: Fundamental software paradigm definition; OOP stands for Object Oriented Programming.
+
+
+Q2. Which attack floods a system with traffic? A. Phishing B. DOS C. Spoofing D. Sniffing Answer: B Speed Shortcut: "Floods a system with traffic" immediately identifies a Denial-of-Service (DoS) attack.
+
+
+Q3. HTTPS is more secure than HTTP because it uses: A. IP B. Encryption C. Cookies D. Proxy Answer: B Speed Shortcut: Security protocol identification; HTTPS wraps HTTP traffic in SSL/TLS encryption.
+
+
+Q4. Firewall is used to: A. Store data B. Monitor network traffic C. Compile programs D. Create backups Answer: B Speed Shortcut: Firewalls act as network security traffic filters and monitors.
+
+
+Q5. Which model is known as linear sequential model? A. Agile B. Spiral C. Waterfall D. V-Model Answer: C Speed Shortcut: The Waterfall model is universally defined by its sequential, step-by-step linear flow.
+
+
+Q6. Cloud computing provides: A. Hardware only B. Software only C. On-demand resources D. Offline services Answer: C Speed Shortcut: Cloud computing delivers broad, on-demand online resources.
+
+
+Q7. Which protocol is used for file transfer? A. SMTP B. FTP C. SNMP D. TELNET Answer: B Speed Shortcut: FTP stands explicitly for File Transfer Protocol.
+
+
+Q8. IPv4 address size is: A. 16-bit B. 32-bit C. 64-bit D. 128-bit Answer: B Speed Shortcut: Standard IPv4 = 32 bits; IPv6 = 128 bits.
+
+
+Q9. Which layer is responsible for routing in OSI model? A. Network B. Transport C. Data Link D. Session Answer: A Speed Shortcut: Layer 3 (Network Layer) handles packet routing and logical IP addressing.
+
+
+Q10. Which tool is used for version control? A. Git B. Jenkins C. Docker D. Maven Answer: A Speed Shortcut: Git is the industry standard distributed version control system.
+
+
+Q11. Which storage has fastest access speed? A. HDD B. SSD C. Cache D. DVD Answer: C Speed Shortcut: CPU cache memory sits closest to the processor, making it the fastest volatile storage tier.
+
+
+Q12. Which component is often referred to as the "brain" of the computer? A. Hard Drive B. Central Processing Unit (CPU) C. RAM D. Power Supply Unit Answer: B Speed Shortcut: Classic computing definition: CPU is the processing brain.
+
+
+Q13. What does "GUI" stand for in computing? A. Global User Interface B. Graphical User Interface C. General Utility Interface D. Graphical Unit Interconnection Answer: B Speed Shortcut: GUI = Graphical User Interface.
+
+
+Q14. Which protocol is primarily used for securely browsing the web? A. HTTP B. FTP C. HTTPS D. SMTP Answer: C Speed Shortcut: The 'S' in HTTPS stands for Secure/encrypted web traffic.
+
+
+Q15. A user reports the internet is down. You can Ping 8.8.8.8 but cannot browse "www.google.com". What is the most likely issue? A. The ISP gateway is down B. The DNS server is unreachable or misconfigured C. The network cable is unplugged D. The DHCP server is full Answer: B Speed Shortcut: Successful IP ping means basic network works; failure to resolve domain names points straight to DNS.
+
+
+Q16. What is "Cloud Storage"? A. Storing data on your local hard drive B. Storing data on the internet servers managed by a provider C. Storing data on a CD-ROM D. Printing data on paper Answer: B Speed Shortcut: Remote internet-hosted server storage equals cloud storage.
+
+
+Q17. Which concept ensures that a sender cannot deny having sent a message? A. Confidentiality B. Integrity C. Non-repudiation D. Availability Answer: C Speed Shortcut: Definition of non-repudiation in security.
+
+
+Q18. Which command in Linux is used to change the permissions of a file? A. chown B. chmod C. chgrp D. umask Answer: B Speed Shortcut: chmod = change mode/permissions.
+
+
+Q19. Which command is used to display the IP configuration on a Windows host? A. ipconfig B. route print C. netstat D. tracert Answer: A Speed Shortcut: Windows IP configuration command is ipconfig.
+
+
+Q20. Which of the following describes a "Phishing" attack? A. Scanning ports to find open services B. Sending fraudulent emails to trick users into revealing credentials C. Overloading a server with traffic D. Intercepting Wi-Fi signals from a parking lot Answer: B Speed Shortcut: Deceptive social engineering emails designed to steal credentials = Phishing.
+
+
+Q21. What is the result of the logic operation: (1 AND 0) OR (1 AND 1)? A. 0 B. 1 C. Null D. -1 Answer: B Speed Shortcut: (0) OR (1) = 1.
+
+
+Q22. Which of the following is a key principle of "Agile" project management? A. Detailed documentation is more important than working software B. Following a plan is more important than responding to change C. Iterative development and customer collaboration D. Contract negotiation is the primary goal Answer: C Speed Shortcut: Agile centers on iterative increments and close customer collaboration.
+
+
+Q23. Which of the following effectively mitigates "Social Engineering" attacks? A. Installing a stronger firewall B. Regular security awareness training for employees C. Increasing the complexity of database passwords D. Upgrading the server RAM Answer: B Speed Shortcut: Human-targeted attacks require human training/education.
+
+
+Q24. What is the correct binary representation of the IP address 192.168.1.1? A. 11000000.10101000.00000001.00000001 B. 10100000.10101000.00000001.00000001 C. 11000000.10001000.00000001.00000001 D. 1100000010101000.00000011,00000001 Answer: A Speed Shortcut: 192 = 11000000 binary; match the leading octet.
+
+
+Q25. What is the definition of "Throughput" in networking? A. The theoretical maximum speed of the medium B. The actual amount of data successfully transferred over a period C. The time it takes for a packet to travel to the destination D. The number of errors on the line Answer: B Speed Shortcut: Actual successful delivery rate = Throughput.
+
+
+Q26. What is a "Logic Gate" that outputs 1 only if the inputs are different (e.g., 1 and 0)? A. AND B. OR C. XOR D. NAND Answer: C Speed Shortcut: Exclusive-OR (XOR) requires differing inputs to output true (1).
+
+
+Q27. Which of the following is an Administrative Control? A. Security Guards B. User Training Program C. Smart Cards D. Encryption Answer: B Speed Shortcut: Policies, procedures, and training are administrative/management controls.
+
+
+Q28. Which port must be open to allow sending emails from a client to a server? A. 25 or 587 B. 110 C. 143 D. 443 Answer: A Speed Shortcut: SMTP ports for sending mail are 25 and 587.
+
+
+Q29. Which of the following is the most secure method for remote administration of a Linux server? A. Telnet using root account B. SSH using password authentication C. SSH using key-based authentication D. VNC without encryption Answer: C Speed Shortcut: SSH with public key cryptography eliminates password brute-force risks.
+
+
+Q30. What describes a "Dictionary Attack"? A. Guessing passwords by trying every word in a pre-defined list B. Trying every possible combination of characters (Brute Force) C. Stealing the physical password notebook D. Asking the user for their password Answer: A Speed Shortcut: Uses a precompiled word/phrase list (dictionary) to guess passwords.
+
+
+Q31. What is the primary purpose of a "Demilitarized Zone" (DMZ)? A. To store the core database B. To host public-facing services (Web, Email) separate from the internal LAN C. To connect the CEO's computer to the internet D. To test viruses safely Answer: B Speed Shortcut: Isolates public-facing servers to protect the private internal network.
+
+
+Q32. The data structure required to check whether an expression contains a balanced parenthesis is? A. Stack B. Queue C. Tree D. Array Answer: A Speed Shortcut: Nested bracket tracking requires LIFO stack processing.
+
+
+Q33. What data structure often results in a time-space tradeoff by using extra memory to speed up operations? A. Arrays B. Hash tables C. Stacks D. Queues Answer: B Speed Shortcut: Hash tables trade extra space for  constant time lookups.
+
+
+Q34. Which dynamic programming approach starts solving from the smallest subproblems? A. Greedy approach B. Recursive approach C. Top-down approach D. Bottom-up approach Answer: D Speed Shortcut: Bottom-up builds solutions iteratively from base subproblems upward.
+
+
+Q35. Which of the following service use TCP? A. DHCP B. SMTP C. CSMA D. DNS Answer: B Speed Shortcut: Reliable email transmission via SMTP mandates connection-oriented TCP.
+
+
+Q36. Which standard TCP port is assigned for contacting SSH servers? A. 21 B. 22 C. 23 D. 24 Answer: B Speed Shortcut: Port 22 = Secure Shell (SSH).
+
+
+Q37. The memory that is allocated for any object is A. Cache B. HDD C. ROM D. RAM Answer: D Speed Shortcut: Runtime objects live in volatile heap RAM.
+
+
+Q38. What does ACID stand for in database transactions? A. All Columns in Database B. Atomicity, Consistency, Isolation, Durability C. Automated Commit in Database D. Association of Conditions in Data Answer: B Speed Shortcut: Standard database acronym: Atomicity, Consistency, Isolation, Durability.
+
+
+Q39. Which neural network architecture is the foundation of most modern LLMs? A. Bayesian Network B. Convolutional Neural Network (CNN) C. Transformer D. Autoencoder Answer: C Speed Shortcut: Self-attention transformers power modern LLMs (e.g., GPT).
+
+
+Q40. If a process fails, most operating system write the error information to a A. new file B. another running process C. log file D. database Answer: C Speed Shortcut: OS error diagnostics are systematically dumped into log files.
+
+
+Q41. Which data structure is generally used for implementing recursion? A. Stack B. Queue C. List D. Array Answer: A Speed Shortcut: Call stack frames track recursive functions (LIFO).
+
+
+Q42. Which of the following tags is used to define an image in HTML? A. <img> B. <image> C. <picture> D. <src> Answer: A Speed Shortcut: Standard HTML image tag is <img>.
+
+
+Q43. What does CSS stand for? A. Computer Style Sheets B. Creative Style Sheets C. Cascading Style Sheets D. Colorful Style Sheets Answer: C Speed Shortcut: CSS = Cascading Style Sheets.
+
+
+Q44. Which of the following is a type of memory that retains its contents even when the power is turned off? A. RAM B. ROM C. Cache memory D. Register Answer: B Speed Shortcut: Non-volatile storage definition; ROM keeps data unpowered.
+
+
+Q45. After groups have been established, SQL applies predicates in the clause, allowing aggregate functions to be used. A. Having B. Where C. With D. Select Answer: A Speed Shortcut: HAVING filters grouped aggregate results; WHERE filters raw rows.
+
+
+Q46. An administrator is troubleshooting network connectivity and would like to view the path that packets are taking from workstation A to server 1. Which of the following command line tools is MOST appropriate to use? A. traceroute B. dig C. ping D. route Answer: A Speed Shortcut: Tracks router hops hop-by-hop = traceroute.
+
+
+Q47. Wrapping data and its related functionality into a single entity is known as- A. Abstraction B. Encapsulation C. Polymorphism D. Modularity Answer: B Speed Shortcut: Bundling data and methods into a unit = Encapsulation.
+
+
+Q48. In the Model-View-Controller (MVC) architecture used in web applications, which component is responsible for handling HTTP requests such as GET and POST? A. Model B. View C. Controller D. Both Model and View Answer: C Speed Shortcut: Controllers intercept incoming HTTP requests/actions.
+
+
+Q49. Source code translation and Program modularization are the activities of A. Reverse engineering B. Forward engineering C. Reengineering D. Testing Answer: C Speed Shortcut: Software reengineering restructures and translates existing code bases.
+
+
+Q50. Which one of these is NOT shared by the same process's threads? A. Address Space B. Stack C. Message Queue D. File Descriptor Table Answer: B Speed Shortcut: Each thread maintains its own private execution stack.
+
+
+Q51. If a process is executing in its critical section, then no other processes can be executing in their critical section. What is this condition called? A. mutual exclusion B. race condition C. critical condition D. synchronous condition Answer: A Speed Shortcut: Exclusive single-process entry rule = Mutual Exclusion.
+
+
+Q52. Which statement best describes a public IP address? A. Used only within a local network B. Not routable on the Internet C. Assigned only by local routers D. Unique and globally routable on the Internet Answer: D Speed Shortcut: Public IPs are globally unique and internet-routable.
+
+
+Q53. Which scheduling algorithm gives minimum average waiting time? A. FCFS B. Round Robin C. SJF D. Priority Answer: C Speed Shortcut: Shortest Job First (SJF) mathematically optimizes minimum average wait times.
+
+
+Q54. Context switching occurs in: A. Compiler B. Memory C. CPU D. I/O device Answer: C Speed Shortcut: Saving/restoring processor execution registers happens in the CPU.
+
+
+Q55. Port number for HTTP is: A. 21 B. 25 C. 80 D. 443 Answer: C Speed Shortcut: Standard web HTTP port = 80.
+
+
+Q56. Which language is used to manage databases? A. HTML B. SQL C. XML D. Java Answer: B Speed Shortcut: SQL handles relational database queries and management.
+
+
+Q57. Which command is used to remove a table? A. DELETE B. DROP C. REMOVE D. TRUNCATE Answer: B Speed Shortcut: DROP completely deletes table structures; DELETE/TRUNCATE clears rows.
+
+
+Q58. Which is not a programming language? A. Python B. Java C. HTML D. C++ Answer: C Speed Shortcut: HTML is a markup presentation language, not a programming language.
+
+
+Q59. Which command is used to view active connections and listening ports? A. netstat B. ping C. nslookup D. ipconfig Answer: A Speed Shortcut: Socket statistics / active connections = netstat.
+
+
+Q60. What is the decimal value of the binary number 111? A. 3 B. 5 C. 7 D. 9 Answer: C Speed Shortcut: Binary .
+
+
+Q61. এক কথায় প্রকাশ করুন: অক্ষির অভিমুখে - A. প্রত্যক্ষ B. পরোক্ষ C. সমক্ষ D. চাক্ষুষ Answer: A Speed Shortcut: মুখামুখি বা অক্ষির অভিমুখে প্রকাশ করে "প্রত্যক্ষ".
+
+
+Q62. 'প্রত্যয়'-এর বিপরীত শব্দ কী? A. উপচয় B. অপচয় C. সংশয় D. সন্দেহ Answer: C Speed Shortcut: প্রত্যয় (বিশ্বাস/নিশ্চয়তা) এর বিপরীতার্থক শব্দ হলো সংশয় (দ্বিধা).
+
+
+Q63. সে এখন যাবে না। এই বাক্যে 'না' কোন পদ? A. বিশেষণ B. অব্যয় C. ক্রিয়াবিশেষণ D. অনুসর্গ Answer: C Speed Shortcut: ক্রিয়ার সম্পাদনার ভাব বা না-বাচকতা নির্দেশ করায় 'না' এখানে ক্রিয়াবিশেষণ.
+
+
+Q64. 'অক্কাপাওয়া' বাগধারায় ফারসি 'অক্কা' শব্দের অর্থ কী? A. প্রভু B. মৃত্যু C. বেহেশত D. আত্মা Answer: A Speed Shortcut: ঐতিহাসিক ও ভাষার উৎপত্তিগত দিক থেকে ফারসি 'অক্কা' শব্দের অর্থ প্রভু/ঈশ্বর (যিনি প্রাণ হরণ করেন).
+
+
+Q65. শুদ্ধ বানান গুচ্ছ- A. পরিষ্কার, পুরস্কার B. বিকৃত, বিক্রীত C. স্বিকার, শীকার D. ধরণ, ধারনা Answer: B Speed Shortcut: 'বিকৃত' ও 'বিক্রীত' উভয় বানানই ব্যাকরণগতভাবে শুদ্ধ.
+
+
+Q66. 'ন্যূনতম' শব্দের উচ্চারণ- A. নুনোতমো B. নুনুনোতমো C. নুনোতম D. নুনোতম Answer: A Speed Shortcut: ফনোলজিক্যাল নিয়ম অনুযায়ী ন্যূনতম শব্দের সঠিক প্রতিবর্ণীকৃত উচ্চারণ 'নুনোতমো'.
+
+
+Q67. 'কানে কলম' কোন সমাসের উদাহরণ? A. উপপদ তৎপুরুষ B. অলুক দ্বন্দ্ব C. প্রত্যয়ান্ত বহুব्रीহি D. অলুক বহুব্রীহি Answer: B Speed Shortcut: সমাসবদ্ধ পদে বিভক্তি লোপ পায় না, তাই এটি অলুক দ্বন্দ্ব সমাসের অন্তর্ভুক্ত.
+
+
+Q68. "Graphic"-এর বাংলা পরিভাষা কী? A. নকশা B. রৈখিক C. খসড়া D. অঙ্কন Answer: B Speed Shortcut: প্রাতিষ্ঠানিক বাংলা পরিভাষায় Graphic-এর সঠিক প্রতিশব্দ 'রৈখিক'.
+
+
+Q69. 'তীক্ষ্ণ' শব্দের যুক্তব্যঞ্জনের সঠিক বিশ্লেষণ কোনটি? A. ক + ষ + ণ B. ক + ত + য C. ক + ম + ম D. ঙ + ক + ষ Answer: A Speed Shortcut: ক্ষ্ণ যুক্তবর্ণটি গঠিত হয় ক + ষ + ণ যোগে.
+
+
+Q70. Empty vessels sound much - এর সঠিক বঙ্গানুবাদ কোনটি? A. যত কথা তত কাজ। B. অসারের তর্জন গর্জনই সার। C. মুখে বুলি লম্বা, কাজে অষ্টরম্ভা। D. এক মাঘে শীত যায়না। Answer: B Speed Shortcut: প্রবচনটির ভাবানুবাদ হলো "অসারের তর্জন গর্জনই সার".
+
+
+Q71. Pluck me a flower. The correct passive voice form is- A. Let a flower be plucked by me. B. Let a flower be plucked for me C. Let me a flower be plucked to me. D. A flower is plucked by me. Answer: B Speed Shortcut: Imperative sentence with object shift: Let + object + be past participle + for/to + agent.
+
+
+Q72. Find out the correct form- A. I, you and Shuma are guilty. B. Shuma, you and I are guilty. C. Shuma, I and you are guilty. D. I, you and Shuma is guilty. Answer: A Speed Shortcut: Normal pronoun sequence rule for plural/general confession: 2nd person, 3rd person, then 1st person (or standard sequence as framed in options with proper verb agreement).
+
+
+Q73. The man who came here yesterday has applied for the post. The underlined clause is a/an clause. A. Noun B. Adjective C. Adverbial D. Principal Answer: B Speed Shortcut: Modifies the preceding noun "man", functioning structurally as an adjective clause.
+
+
+Q74. Opportunity comes responsibility. A. From B. Before C. Without D. With Answer: D Speed Shortcut: Standard collocation phrase: Opportunity comes with responsibility.
+
+
+Q75. Are you sure that you the killer before? A. will have seen B. had seen C. would have seen D. must have seen Answer: B Speed Shortcut: Past time marker "before" in a secondary past-referenced context requires past perfect tense (had seen).
+
+
+Q76. What is the antonym of 'segregate'? A. isolate B. combine C. divide D. sever Answer: B Speed Shortcut: Segregate means to separate; antonym is combine.
+
+
+Q77. A restaurant makes 20% profit after selling a set menu at a discount of 20%. What is the percentage increase of marked price? A. 30% B. 20% C. 40% D. 50% Answer: D Speed Shortcut: Apply markup ratio formula  (50% increase).
+
+
+Q78. A ladder rests against a wall that is perpendicular to the ground. If the bottom of the ladder is 4m away from the bottom of the wall, while the tip of the ladder is at a height of 3m, what is the length of the ladder? A. 7m B. 35m C. 5m D. 25m Answer: C Speed Shortcut: Classic 3-4-5 Pythagorean right triangle ().
+
+
+Q79. A box having height 2m, length 10m and width 7m have the top lid open. What is the surface area of the box? A. 138 B. 118 C. 104 D. 208 Answer: A Speed Shortcut: Base area () + 4 wall areas () = 138.
+
+
+Q80. If . What is the value of  A. 14 B. 21 C. 51 D. 49 Answer: C Speed Shortcut: Formula  (mapped to test key option C).
+
+
+Q81. Which two pairs of x satisfies the equation  A. 1, 4 B. 1, -4 C. -1, -4 D. -1, 4 Answer: B Speed Shortcut: Back-substitution: test  and  (satisfied).
+
+
+Q82. The H.C.F. and L.C.M. of two numbers are 12 and 288 respectively. If one of the numbers is 96, find the other. A. 34 B. 36 C. 38 D. 40 Answer: B Speed Shortcut: .
+
+
+Q83. Which of the following is a buffer state? A. Bangladesh B. Pakistan C. Maldives D. Bhutan Answer: D Speed Shortcut: Bhutan serves geographically as a classic geopolitical buffer state between India and China.
+
+
+Q84. Where is the Ethnic Cultural Academy Birisiri situated? A. Rangamati B. Habiganj C. Netrakona D. Mymensingh Answer: C Speed Shortcut: Birisiri Cultural Academy is located in Netrakona district.
+
+
+Q85. Which of the following Bengali scientists is famous for inventing Mercurous Nitrite? A. Satyendra Nath Bose B. Jagadish Chandra Bose C. Muhammad Qudrat-i-Khuda D. Prafulla Chandra Roy Answer: D Speed Shortcut: Acharya Prafulla Chandra Roy discovered mercurous nitrite in 1896.
+
+
+Q86. Which organization led the Language Movement first? A. East Pakistan Muslim League B. Tamaddun Majlish C. All-Party Central Language Action Committee D. Dhaka University Language Action Committee Answer: B Speed Shortcut: Tamaddun Majlish spearheaded the initial foundation of the Language Movement in 1947.
+
+
+Q87. What does NPSB stand for in Bangladesh's banking sector? A. National Payment System of Banks B. National Payment Switch Bangladesh C. National Processing Service Bureau D. Network Payment and Settlement Board Answer: B Speed Shortcut: NPSB stands for National Payment Switch Bangladesh.
+
+
+Q88. Which country introduced the AI-powered, document-free immigration corridor? A. United States B. United Arab Emirates C. United Kingdom D. Singapore Answer: B Speed Shortcut: UAE (Dubai International Airport) introduced biometric AI document-free corridors.
+
+
+Q89. In which district the 'Tin Bigha Corridor' is located? A. Nilphamari B. Lalmonirhat C. Rangpur D. Kurigram Answer: B Speed Shortcut: Tin Bigha Corridor connects Dahagram-Angarpota enclave inside Lalmonirhat.
+
+
+Q90. I bought you a new dress, would you be happy? A. If B. When C. As D. Since Answer: A Speed Shortcut: Conditional structure matching subjunctive clause rule (If).
+
+
+Q91. "I want you to understand that worldly gains cannot guarantee everlasting happiness?" A. The B. An C. No article D. A Answer: C Speed Shortcut: Abstract mass nouns like "happiness" typically take zero/no article.
+
+
+Q92. Which of the following words is spelt wrong? A. Commitment B. Disciplinary C. Jewelery D. Absorption Answer: C Speed Shortcut: Correct British/American spelling is "Jewellery" or "Jewelry"; "Jewelery" contains a misspelling.
+
+
+Q93. "The biriyani tastes as good as it looks." Make comparative degree of adjectives: A. The biriyani looks better than it tastes B. The biriyani tastes better than it looks C. The biriyani both tastes and looks better D. The biriyani tastes no better than it looks Answer: A Speed Shortcut: Logical conversion of positive equality to comparative degree negation structure.
+
+
+Q94. How many linear factors of  have? A. 0 B. 1 C. 2 D. 3 Answer: D Speed Shortcut: Algebraic grouping yields 3 linear factors.
+
+
+Q95. The factors of  is. A.  B.  C.  D.  Answer: D Speed Shortcut: Sophie Germain identity completion factor rule gives option D.
+
+
+Q96. A train 220 m long is moving at . The time taken by the train to cross a tunnel 260 m long, is- A. 25.4 sec B. 35.4 sec C. 38.4 sec D. 40.4 sec Answer: C Speed Shortcut: Total distance = . Speed = . Time = .
+
+
+Q97. Two trucks 300 km away are travelling towards each other with a constant speed. Truck A is moving at a constant speed of  while Truck B is moving at a constant speed of  How long does it take for them to meet? A. 5 hrs B. 3 hrs C. 2.5 hrs D. 6 hrs Answer: C Speed Shortcut: Time = .
+
+
+Q98. The International Literacy Day -- A. 4 October B. 4 September C. 8 September D. 8 November Answer: C Speed Shortcut: International Literacy Day is observed globally on September 8.
+
+
+Q99. First Computer in Bangladesh was installed at the A. Dhaka University Science Library B. ICDDR,B C. Atomic Energy Center D. BCSIR Answer: C Speed Shortcut: IBM 1620 mainframe was installed in 1964 at the Atomic Energy Center in Dhaka.
+
+
+Q100. Where did artist Hamidur Rahman create his mural titled "Borak Duldul"? A. TSC B. Bangla Academy C. Curzon Hall D. Dhaka University Library Answer: D Speed Shortcut: Hamidur Rahman's mural "Borak Duldul" is located on the Dhaka University Central Library walls.

@@ -1,0 +1,55 @@
+﻿JobID-10225
+Senior Officer(IT)
+Q1. What is the full form of IDE in programming? A. Integrated Development Environment B. Internet Development Environment C. Internal Design Engine D. Integrated Data Execution Answer: A Speed Shortcut: IDE stands for Integrated Development Environment, a software application providing comprehensive tools for programmers.
+Q2. What is the broadcast address of 192.168.10.1/26? A. 192.168.10.0 B. 192.168.10.62 C. 192.168.10.63 D. 192.168.10.255 Answer: C SpeedShortcut: For the /26 subnet containing 192.168.10.1, the network range is 192.168.10.0 to 192.168.10.63, making 192.168.10.63 the broadcast address.
+Q3. Which one is not a web browser? A. Google Chrome B. Mozilla Firefox C. Microsoft Edge D. Microsoft Excel Answer: D Speed Shortcut: Microsoft Excel is a spreadsheet application, whereas Chrome, Firefox, and Edge are web browsers.
+Q4. Routing is performed at which layer of the OSI model? A. Physical Layer B. Data Link Layer C. Network Layer D. Transport Layer Answer: C Speed Shortcut: Routers and path selection operate at Layer 3, the Network Layer.
+Q5. Which command is used to test connectivity between devices? A. ipconfig B. ping C. tracert D. netstat Answer: B Speed Shortcut: The ping command uses ICMP protocol to check host reachability and measure response time.
+Q6. What is the purpose of a Firewall? A. To increase internet speed B. To protect a network from unauthorized access C. To store data permanently D. To create computer programs Answer: B Speed Shortcut: Firewalls monitor and control network traffic to protect against unauthorized access and threats.
+Q7. Which SQL command is used to give user permission to access a table? A. GRANT B. REVOKE C. COMMIT D. CREATE Answer: A Speed Shortcut: The GRANT command provides database privileges and permissions to users.
+Q8. Which SQL clause is used to filter rows (records) in a query? A. SELECT B. WHERE C. ORDER BY D. GROUP BY Answer: B Speed Shortcut: The WHERE clause filters database records based on specified conditions.
+Q9. Which normal form is used to remove partial dependency? A. First Normal Form (1NF) B. Second Normal Form (2NF) C. Third Normal Form (3NF) D. Boyce-Codd Normal Form (BCNF) Answer: B Speed Shortcut: Converting a relation from 1NF to 2NF removes partial dependency on composite primary keys.
+Q10. Which symbol is used as a wildcard in SQL LIKE operator? A. # B. % C. & D. @ Answer: B Speed Shortcut: The percent sign (%) matches zero or more characters in a SQL LIKE pattern search.
+Q11. What is the best method to protect passwords when storing them in a database? A. Store passwords as plain text B. Store passwords using encryption only C. Store passwords using salted hashing D. Store passwords in a text file Answer: C Speed Shortcut: Salted hashing adds a unique random value to each password to defend against rainbow table attacks.
+Q12. Which of the following is an example of an Operating System (OS)? A. Microsoft Word B. Windows C. Google Chrome D. MySQL Answer: B Speed Shortcut: Windows is core system software functioning as an Operating System.
+Q13. Which command is used for a single-line comment in Java? A. /* Comment */ B. // Comment C. D. # Comment Answer: B Speed Shortcut: Double slashes (//) denote single-line comments ignored by the Java compiler.
+Q14. Which SQL command is used to retrieve data from a database? A. INSERT B. UPDATE C. SELECT D. DELETE Answer: C Speed Shortcut: The SELECT statement fetches data from database tables.
+Q15. What is Single Center Cable? A. Single-mode Fiber Optic Cable B. Coaxial Cable C. Twisted Pair Cable D. Multi-mode Fiber Cable Answer: A Speed Shortcut: Single Center Cable refers to Single-mode Fiber Optic Cable featuring a single core for long-distance transmission.
+Q16. Which one is used to uniquely identify a record in a database table? A. Foreign Key B. Primary Key C. Candidate Key D. Composite Key Answer: B Speed Shortcut: A Primary Key uniquely identifies each row and cannot contain NULL or duplicate values.
+Q17. Which of the following is a Tautology? A. P  P B. P $\land$ P C. P  P D. P Answer: C Speed Shortcut: P  P evaluates to true under all truth values, making it a tautology.
+Q18. Which traversal method is used to visit nodes in a tree? A. Deque B. BFS C. Queue D. Stack Answer: B Speed Shortcut: Breadth-First Search (BFS) visits tree nodes level by level utilizing a Queue.
+Q19. Which is a Class A IP Address? A. 10.25.16.5 B. 172.16.10.1 C. 192.168.1.10 D. 224.0.0.5 Answer: A Speed Shortcut: Class A IP address ranges span from 1.0.0.0 to 126.255.255.255 (with private range 10.0.0.0/8).
+Q20. Which is a Private IP Address? A. 8.8.8.8 B. 172.16.5.10 C. 200.1.1.1 D. 150.10.10.5 Answer: B Speed Shortcut: 172.16.5.10 falls within the RFC 1918 Class B private IP address range (172.16.0.0 – 172.31.255.255).
+Q21. What is a Bug? A. A type of computer hardware B. An error or defect in a software program C. A computer virus only D. A programming language Answer: B Speed Shortcut: A bug represents a software defect causing incorrect results or unexpected application behavior.
+Q22. What is Two-Factor Authentication? A. A security process that requires two different methods of verification B. A method of creating two user accounts C. A technique used to store two copies of data D. A process of using two passwords only Answer: A Speed Shortcut: Two-Factor Authentication mandates two distinct verification factors to confirm user identity.
+Q23. What is the HTTPS Port Number? A. 21 B. 80 C. 443 D. 2 Answer: C Speed Shortcut: Port 443 is universally designated for secure HTTPS web communication.
+Q24. HTTP stands for - A. HyperText Transfer Protocol B. HighText Transfer Program C. Hyper Transfer Text Process D. Hyper Tool Transfer Protocol Answer: A Speed Shortcut: HTTP stands for HyperText Transfer Protocol for web page transfer over the internet.
+Q25. Which is a Layer 2 Device? A. Router B. Switch C. Gateway D. Repeater Answer: B Speed Shortcut: Network switches operate at Layer 2 (Data Link Layer) using MAC addresses.
+Q26. Which Routing Protocol Uses Hop Count as a Metric? A. OSPF B. RIP C. BGP D. EIGRP Answer: B Speed Shortcut: Routing Information Protocol (RIP) uses hop count metrics to determine path selection.
+Q27. What is RAID 10? A. A combination of RAID 0 and RAID 1 (Striping + Mirroring) B. A combination of RAID 1 and RAID 5 C. A single disk storage technology D. A backup software system Answer: A Speed Shortcut: RAID 10 combines disk striping (RAID 0) and mirroring (RAID 1) for performance and redundancy.
+Q28. What is the Purpose of a Neural Network in AI? A. To store files permanently in a computer B. To enable machines to learn patterns and make decisions from data C. To increase the speed of computer hardware D. To create computer networks only Answer: B Speed Shortcut: Neural networks mimic biological brains to learn patterns, recognize information, and predict outcomes.
+Q29. What is AI Development? A. The process of creating systems that can perform tasks requiring human intelligence B. The process of repairing computer hardware C. The process of designing only computer networks D. The process of increasing internet speed Answer: A Speed Shortcut: AI development builds intelligent systems capable of human-like cognitive tasks.
+Q30. In the CIA Triad, what does "A" stand for? A. Authentication B. Availability C. Authorization D. Access Control Answer: B Speed Shortcut: The CIA triad comprises Confidentiality, Integrity, and Availability.
+Q31. What is DHCP? A. Dynamic Host Configuration Protocol B. Data Host Control Protocol C. Digital Hypertext Configuration Protocol D. Dynamic Hardware Communication Protocol Answer: A Speed Shortcut: DHCP dynamically assigns IP addresses and network configuration parameters to devices.
+Q32. Convert: 
+A. 
+B. 
+C. 
+D. 
+Answer: B Speed Shortcut: Decimal 15 in binary evaluates to .
+Q33. Calculate: 
+A. 
+B. 
+C. 
+D. 
+Answer: B Speed Shortcut:  and ; , which equals .
+Q34. What is Demand Money? A. Money kept only for investment purposes B. Money that people want to hold for transactions and daily needs C. Money stored in a bank for a fixed period D. Money used only for international trade Answer: B Speed Shortcut: Demand for money reflects liquid asset holding motives for daily transactions and precautionary needs.
+Q35. What is a 404 Error? A. Server is not found B. Requested web page or resource is not found on the server C. Internet connection is disconnected D. A security attack on a website Answer: B Speed Shortcut: HTTP 404 indicates the requested server resource does not exist or cannot be located.
+Q36. A computer operator in an organization has accidentally deleted an important document. How can the document be recovered? A. By formatting the hard disk B. By restoring from the Recycle Bin or backup copy C. By installing a new operating system D. By deleting temporary files Answer: B Speed Shortcut: Deleted files can be retrieved via the Recycle Bin or valid data backup copies.
+Q37. Identify the correct passive form of the sentence "Open the door". A. Let the door is opened B. Let the door be opened C. Let the door be open D. The door should be opened Answer: B Speed Shortcut: Imperative active forms convert to passive structure: Let + object + be + past participle.
+Q38. He was accused ___ stealing. A. of B. by C. for D. with Answer: A Speed Shortcut: The correct preposition used with accused is 'of'.
+Q39. Choose the correct one. A. Let he, you and I go there B. Let I, you and he go there C. Let you, him and me go there D. Let you, me and him go there Answer: D Speed Shortcut: Objective pronouns (you, me, him) follow the preposition 'let'.
+Q40. What is the meaning of 'French leave'? A. Leave on holidays B. Spending time in French C. Leave without permission D. Emergency leave Answer: C Speed Shortcut: French leave defines departing a place or duty without authorization or notice.
+Q41. What is the antonym of 'Honorary'? A. Official B. Literary C. Honorable D. Salaried Answer: D Speed Shortcut: Honorary (unpaid/volunteer) is antonymous to salaried (paid employment).
+Q42. What is the abstract noun form of 'Hero'? A. Heroism B. Heroine C. Heroic D. Hero-like Answer: A Speed Shortcut: Heroism represents the abstract quality and actions associated with a hero.
+Q43. What are computer crimes that are organized around the Internet called? A. Cyber Crimes B. Computer Hardware Crimes C. Software Errors D. Network Maintenance Answer: A Speed Shortcut: Internet and network-based digital crimes are broadly classified as cyber crimes.

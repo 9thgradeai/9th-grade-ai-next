@@ -1,0 +1,389 @@
+﻿JobID-25104
+Senior Officer(IT)
+
+
+Q1. What are the physical security measures in a data center to prevent data hacking?
+A. Encryption and Firewall
+B. Fingerprint-based access control and CCTV surveillance
+C. Antivirus and Password policy
+D. Data backup and RAID configuration
+Answer: B
+Speed Shortcut: Physical security relies on biometric access control and surveillance systems rather than software-based measures.
+Q2. If data is stored in a SQL database, which attack is possible to hack the data?
+A. Phishing Attack
+B. SQL Injection Attack
+C. DDoS Attack
+D. Man-in-the-Middle Attack
+Answer: B
+Speed Shortcut: SQL Injection involves inserting malicious SQL commands into input fields to access database contents.
+Q3. CBS full form
+A. Central Banking System
+B. Core Banking Solution
+C. Computer Banking Service
+D. Central Bank Software
+Answer: B
+Speed Shortcut: Core Banking Solution (CBS) is the standard banking network term.
+Q4. What is the Port number of HTTPS?
+A. 21
+B. 25
+C. 80
+D. 443
+Answer: D
+Speed Shortcut: Port 443 is universally designated for secure HTTPS web traffic.
+Q5. What is Firewall?
+A. A device used for printing documents
+B. A network security system that filters network traffic
+C. A software used for creating presentations
+D. A device used for storing data
+Answer: B
+Speed Shortcut: Firewalls monitor and filter network traffic as a protective network barrier.
+Q6. Which Algorithm used in Artificial neural network?
+A. Dijkstra Algorithm
+B. Backpropagation Algorithm
+C. Kruskal Algorithm
+D. Prim's Algorithm
+Answer: B
+Speed Shortcut: Backpropagation adjusts neural network connection weights by minimizing errors via gradient descent.
+Q7. Which Git command is used in file local repository?
+A. git clone
+B. git init
+C. git push
+D. git pull
+Answer: B
+Speed Shortcut: 'git init' initializes a new local Git repository.
+Q8. What is the useful technique of Password security?
+A. Storing passwords in a text file
+B. Encryption
+C. Salted Hash
+D. Plain text storage
+Answer: C
+Speed Shortcut: Salted hashing adds a random value to passwords before hashing, defending against rainbow tables.
+Q9. In J-K Flip Flop, when  and , which mode is used?
+A. Set Mode
+B. Reset Mode
+C. Toggle Mode
+D. No Change Mode
+Answer: C
+Speed Shortcut:  sets the J-K flip flop into toggle mode, inverting its complement output.
+Q10. Convert: 
+A. 
+B. 
+C. 
+D. 
+Answer: D
+Speed Shortcut: Hex to binary conversion followed by grouping into 3-bit octal digits yields .
+Q11. What is the full meaning of RTGS?
+A. Real Time Gross Settlement
+B. Real Transfer Global System
+C. Rapid Transaction Guarantee Service
+D. Real Time Gateway System
+Answer: A
+Speed Shortcut: RTGS stands for Real Time Gross Settlement for instant high-value fund transfers.
+Q12. What is the use of Client-side scripting?
+A. PHP
+B. Java Servlet
+C. JavaScript
+D. ASP.NET
+Answer: C
+Speed Shortcut: JavaScript runs directly in the user browser as a client-side scripting language.
+Q13. ; What type of theorem is this?
+A. Associative Theorem
+B. Absorption Theorem
+C. Distributive Theorem
+D. Complement Theorem
+Answer: B
+Speed Shortcut:  defines the Absorption Theorem in Boolean algebra.
+Q14. Which are not performance characteristics of hard disk?
+A. data transfer time
+B. response time
+C. power consumption
+D. shelf life
+Answer: D
+Speed Shortcut: Shelf life relates to physical deterioration over time rather than operational performance metrics.
+Q15. If , 
+A. 2
+B. 3
+C. 4
+D. 5
+Answer: C
+Speed Shortcut: Since ,  equals 4.
+Q16. সংশয় এর বিপরীত শব্দ কী?
+A. সন্দেহ
+B. প্রত্যয়
+C. দ্বিধা
+D. ভয়
+Answer: B
+Speed Shortcut: সংশয় (doubt) এর বিপরীতার্থক শব্দ হলো প্রত্যয় (conviction/faith).
+Q17. কবর কবিতাটির রচয়িতা কে?
+A. জসীমউদ্দীন
+B. কাজী নজরুল ইসলাম
+C. রবীন্দ্রনাথ ঠাকুর
+D. জীবনানন্দ দাশ
+Answer: A
+Speed Shortcut: পল্লীকবি জসীমউদ্দীন বিখ্যাত 'কবর' কবিতার রচয়িতা.
+Q18. কাজী নজরুল ইসলাম এর প্রথম কাব্যগ্রন্থ কোনটি?
+A. অগ্নিবীণা
+B. বিষের বাঁশী
+C. ভাঙার গান
+D. দোলনচাঁপা
+Answer: A
+Speed Shortcut: ১৯২২ সালে প্রকাশিত 'অগ্নিবীণা' কাজী নজরুল ইসলামের প্রথম কাব্যগ্রন্থ.
+Q19. ভাষার মূল উপাদান কোনটি?
+A. ধ্বনি
+B. শব্দ
+C. বাক্য
+D. বর্ণ
+Answer: A
+Speed Shortcut: ধ্বনি হলো ভাষার মূল, ক্ষুদ্রতম ও মৌলিক উপাদান.
+Q20. অর্ধ চন্দ্র বাগধারা মানে কি?
+A. অল্প চাঁদ
+B. গলাধাক্কা দিয়ে বের করে দেওয়া
+C. অর্ধেক কাজ করা
+D. চাঁদের মতো সুন্দর
+Answer: B
+Speed Shortcut: 'অর্ধ চন্দ্র' বাগধারার অর্থ গলাধাক্কা দিয়ে বের করে দেওয়া.
+Q21. রত্নাকর শব্দের সন্ধি বিচ্ছেদ কোনটি?
+A. রত্ন + আকর
+B. রত + নাকর
+C. রত্ন + কর
+D. রত + আকার
+Answer: A
+Speed Shortcut: রত্ন + আকর মিলে রত্নাকর গঠিত হয়.
+Q22. সমাস শব্দের অর্থ নিচের কোনটি?
+A. মিলন
+B. সংক্ষেপণ
+C. পদের মিলন
+D. বিস্তৃতি
+Answer: B
+Speed Shortcut: সমাস শব্দের অর্থ সংক্ষেপণ বা সংক্ষিপ্ত করা.
+Q23. নিচের কোন বানানটি শুদ্ধ?
+A. মুহুরমুহ
+B. মুহুর্মুহ
+C. মুহুর্মুহু
+D. মুহর মুহ
+Answer: C
+Speed Shortcut: সঠিক বানানটি হলো মুহুর্মুহু.
+Q24. নদী শব্দের বিপরীত শব্দ কি?
+A. খাল
+B. সাগর
+C. পাহাড়
+D. হ্রদ
+Answer: C
+Speed Shortcut: নদী (water stream) এর বিপরীত হিসেবে পাহাড় (mountain) নির্দেশিত হয়েছে.
+Q25. যার কাজে ক্লান্তি নেই এক কথায় কি বলে?
+A. কর্মঠ
+B. পরিশ্রমী
+C. অক্লান্ত
+D. উদ্যমী
+Answer: C
+Speed Shortcut: ক্লান্তিহীন বা যার কাজে ক্লান্তি নেই তাকে অক্লান্ত বলে.
+Q26. One of my friends ___ a doctor.
+A. are
+B. were
+C. is
+D. have
+Answer: C
+Speed Shortcut: 'One of' takes a singular verb ('is') agreeing with 'one'.
+Q27. Find the Synonym: Rightless?
+A. Powerful
+B. Privileged
+C. Disenfranchised
+D. Wealthy
+Answer: C
+Speed Shortcut: Rightless and disenfranchised both mean deprived of rights.
+Q28. Voice Change: 'Shut the door'.
+A. Let the door be shut.
+B. The door is shut.
+C. The door has been shut.
+D. Shut was the door.
+Answer: A
+Speed Shortcut: Imperative sentences in active voice change to 'Let + object + be + past participle'.
+Q29. He parted ___ his friends in tears.
+A. from
+B. with
+C. to
+D. by
+Answer: A
+Speed Shortcut: Part from someone means to separate from them.
+Q30. The main thread of cloud-based provisioning is-?
+A. Cost
+B. Security
+C. Visualization
+D. All of above
+Answer: B
+Speed Shortcut: Security serves as the primary critical thread in cloud-based provisioning.
+Q31. Which of the following sends data packets over unprotected system?
+A. OSI
+B. NAT
+C. TCP
+D. UDP
+Answer: D
+Speed Shortcut: UDP is a connectionless protocol that sends packets without error-checking guarantees.
+Q32. Domain name to IP address mapping is done by-
+A. Web server
+B. Database server
+C. DNS server
+D. Proxy Server
+Answer: C
+Speed Shortcut: DNS (Domain Name Server) maps human-readable domain names to numeric IP addresses.
+Q33. World Bank Headquarters কোথায় অবস্থিত?
+A. জেনেভা, সুইজারল্যান্ড
+B. নিউইয়র্ক, যুক্তরাষ্ট্র
+C. ওয়াশিংটন, ডি.সি., যুক্তরাষ্ট্র
+D. প্যারিস, ফ্রান্স
+Answer: C
+Speed Shortcut: বিশ্বব্যাংকের সদর দফতর ওয়াশিংটন, ডি.সি., মার্কিন যুক্তরাষ্ট্রে অবস্থিত.
+Q34. বাংলাদেশ কত সালে জাতিসংঘের সদস্যপদ লাভ করে?
+A. ১৯৭১ সাল
+B. ১৯৭২ সাল
+C. ১৯৭৪ সাল
+D. ১৯৭৫ সাল
+Answer: C
+Speed Shortcut: বাংলাদেশ ১৭ সেপ্টেম্বর ১৯৭৪ সালে জাতিসংঘের সদস্যপদ লাভ করে.
+Q35. নিচের কোনটি SAARC এর সদস্যভুক্ত দেশ নয়?
+A. আফগানিস্তান
+B. মিয়ানমার
+C. নেপাল
+D. ভুটান
+Answer: B
+Speed Shortcut: মিয়ানমার সার্কের (SAARC) সদস্য দেশ নয়.
+Q36. পদ্মা সেতুর দৈর্ঘ্য কত?
+A. ৫.৫৮ কিলোমিটার
+B. ৬.১৫ কিলোমিটার
+C. ৭.২৫ কিলোমিটার
+D. ৮.১০ কিলোমিটার
+Answer: B
+Speed Shortcut: পদ্মা সেতুর মূল সেতুর দৈর্ঘ্য ৬.১৫ কিলোমিটার.
+Q37. Who Control the stock Market?
+A. Stock Exchange Authority / Regulatory Authority
+B. Government
+C. Central Bank
+D. Commercial Banks
+Answer: A
+Speed Shortcut: Regulatory authorities (like SEC) oversee and control stock markets.
+Q38. Who is the trade partner of Bangladesh?
+A. China
+B. India
+C. Japan
+D. United States
+Answer: A
+Speed Shortcut: China is a primary major trading partner and import source for Bangladesh.
+Q39. If  & , So 
+A. 44
+B. 76
+C. -52
+D. -20
+Answer: C
+Speed Shortcut: Expanding $(x+y)^2 = x^2 + 2xy + y^2 \implies 12 = x^2 + 2(32) + y^2 \implies x^2+y^2 = -52$.
+Q40. The perimeter of a rectangle is 40 meters. If its length is 12 meters, what is its area?
+A. 
+B. 
+C. 
+D. 
+Answer: A
+Speed Shortcut: Width = ; Area = .
+Q41. একটি নৌকা স্রোতের অনুকূলে ২৪ এবং প্রতিকূলে ২৮ কি.মি. যায় ৬ ঘণ্টায় আবার অনুকূলে ২৯ এবং প্রতিকূলে ২২ কি.মি. যায় ৬.৫ ঘণ্টায়। নৌকার বেগ কত?
+A. স্রোতের অনুকূল ও প্রতিকূল বেগের সম্পর্কভিত্তিক মান
+B. নির্দিষ্ট তথ্য অসম্পূর্ণ
+C. গাণিতিক সমাধান অনুপলব্ধ
+D. প্রযোজ্য নয়
+Answer: A
+Speed Shortcut: নৌকা ও স্রোতের বেগের সমস্যা যুগপৎ সমীকরণের মাধ্যমে সমাধান করা হয়।
+Q42. দুটি ডাইস নিক্ষেপ করলে যোগফল ৯ হওয়ার সম্ভাব্যতা কত?
+A. 
+B. 
+C. 
+D. 
+Answer: B
+Speed Shortcut: Favorable outcomes are (3,6), (4,5), (5,4), (6,3) out of 36 total outcomes, giving .
+Q43. A একটি কাজ ১০ দিনে করতে পারে, B কাজটি ১৫ দিনে করতে পারে। A ও B একত্রে কাজটি কত দিনে করতে পারবে?
+A. ৫ দিন
+B. ৬ দিন
+C. ৭ দিন
+D. ৮ দিন
+Answer: B
+Speed Shortcut: Combined rate is , so they take 6 days together.
+Q44. 'A piece of cake' meaning?
+A. Something very expensive
+B. Something very difficult
+C. Something very easy
+D. Something impossible
+Answer: C
+Speed Shortcut: 'A piece of cake' idioms denote something very simple and easy to do.
+Q45. "স্মার্ট বাংলাদেশ" এর ভিত্তি/স্তর কয়টি?
+A. ২টি
+B. ৩টি
+C. ৪টি
+D. ৫টি
+Answer: C
+Speed Shortcut: Smart Bangladesh rests on 4 pillars: Citizen, Government, Economy, and Society.
+Q46. What was the first submarine?
+A. Turtle
+B. Nautilus
+C. Holland
+D. Triton
+Answer: A
+Speed Shortcut: 'Turtle' designed by David Bushnell was the first practical human-operated submarine.
+Q47. Choose the correct spelling of:
+A. Bureacracy
+B. Bureaucracy
+C. Bureaucrasy
+D. Beurocracy
+Answer: B
+Speed Shortcut: Correct spelling is Bureaucracy.
+Q48. What is the role of Cloud in smart grid architecture of IoT?
+A. Store data
+B. Manage data
+C. Collect data
+D. Security
+Answer: B
+Speed Shortcut: The cloud primarily handles data processing, analysis, and management in smart grids.
+Q49. Multiprogramming OS mainly improves-
+A. Storage capacity
+B. CPU utilization
+C. Internet speed
+D. Printer speed
+Answer: B
+Speed Shortcut: Multiprogramming keeps multiple jobs in memory to maximize CPU utilization.
+Q50. Which network has better performance under heavy load?
+A. Client-Server
+B. Peer-to-Peer
+C. Both
+D. None
+Answer: A
+Speed Shortcut: Client-server architecture handles heavy loads better via dedicated resource management servers.
+Q51. Which storage device uses magnetic technology for storing data?
+A. SSD
+B. HDD
+C. RAM
+D. Cache Memory
+Answer: B
+Speed Shortcut: Hard Disk Drives (HDD) store data magnetically on rotating platters.
+Q52. Which email protocol keeps messages on the server and synchronizes across multiple devices?
+A. SMTP
+B. IMAP
+C. POP3
+D. HTTP
+Answer: B
+Speed Shortcut: IMAP keeps emails on the server for cross-device synchronization.
+Q53. Which OSI layer does a switch primarily operate at?
+A. Physical Layer
+B. Data Link Layer (Layer 2)
+C. Network Layer
+D. Transport Layer
+Answer: B
+Speed Shortcut: Network switches operate at Layer 2 (Data Link Layer) using MAC addresses.
+Q54. The outputs of a Full Adder are:
+A. A and B
+B. Sum and Carry
+C. Input and Output
+D. XOR and AND
+Answer: B
+Speed Shortcut: A full adder computes the Sum and Carry outputs from three input bits.
+Q55. Method Overriding occurs when:
+A. Two methods have different names.
+B. A method is overloaded in the same class.
+C. A subclass provides its own implementation of a superclass method.
+D. Two classes have the same constructor.
+Answer: C
+Speed Shortcut: Method overriding allows a subclass to provide a specific implementation of a superclass method.
