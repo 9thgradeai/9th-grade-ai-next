@@ -11,7 +11,6 @@ import { api } from "@/lib/services/api";
 import { useT } from "@/lib/i18n";
 
 type Action = {
-  keyLabel: string;
   label: string;
   icon: React.ComponentType<{ className?: string }>;
   /** tab to switch to, or null for special actions */
@@ -48,14 +47,14 @@ export default function QuickActions({ pendingMistakes = 0, flashcardsDue = null
   }, []);
 
   const ACTIONS: Action[] = useMemo(() => [
-    { keyLabel: "P", label: t("dock.practice"),   icon: LightningA,           tab: "practice",      primary: true, mode: "quick" },
-    { keyLabel: "M", label: t("dock.mockExam"),  icon: CheckSquare, tab: "practice",     mode: "mock" },
-    { keyLabel: "W", label: t("dock.wrongAns"),  icon: Target,         tab: "mistakes",     badge: pendingMistakes > 0 ? pendingMistakes : undefined },
-    { keyLabel: "A", label: t("dock.aiTutor"),   icon: AiGlyph,       tab: null,           special: "ai-tutor" },
-    { keyLabel: "L", label: t("dock.planner"),    icon: Calendar,       tab: "study-planner" },
-    { keyLabel: "Q", label: t("dock.qbank"),     icon: BookOpen,       tab: "question-bank", badge: qbankCount && qbankCount>0 ? (qbankCount>999?"999+":String(qbankCount)) : undefined },
-    { keyLabel: "F", label: t("dock.flashcards"), icon: Brain,          tab: "flashcards",   badge: flashcardsDue && flashcardsDue > 0 ? flashcardsDue : undefined },
-    { keyLabel: "K", label: t("dock.analytics"),  icon: ChartBar,      tab: "progress" },
+    { label: t("dock.practice"),   icon: LightningA,           tab: "practice",      primary: true, mode: "quick" },
+    { label: t("dock.mockExam"),  icon: CheckSquare, tab: "practice",     mode: "mock" },
+    { label: t("dock.wrongAns"),  icon: Target,         tab: "mistakes",     badge: pendingMistakes > 0 ? pendingMistakes : undefined },
+    { label: t("dock.aiTutor"),   icon: AiGlyph,       tab: null,           special: "ai-tutor" },
+    { label: t("dock.planner"),    icon: Calendar,       tab: "study-planner" },
+    { label: t("dock.qbank"),     icon: BookOpen,       tab: "question-bank", badge: qbankCount && qbankCount>0 ? (qbankCount>999?"999+":String(qbankCount)) : undefined },
+    { label: t("dock.flashcards"), icon: Brain,          tab: "flashcards",   badge: flashcardsDue && flashcardsDue > 0 ? flashcardsDue : undefined },
+    { label: t("dock.analytics"),  icon: ChartBar,      tab: "progress" },
   ], [t, pendingMistakes, flashcardsDue, qbankCount]);
 
   const navigate = useCallback((tab: TabId) => {
@@ -82,29 +81,15 @@ export default function QuickActions({ pendingMistakes = 0, flashcardsDue = null
     }
   }, [onAction, navigate, setPracticeIntent]);
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.metaKey || e.ctrlKey || e.altKey) return;
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement || (e.target as HTMLElement)?.isContentEditable) return;
-      const key = e.key.toUpperCase();
-      const hit = ACTIONS.find(ax => ax.keyLabel === key);
-      if (!hit) return;
-      e.preventDefault();
-      handle(hit);
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [ACTIONS, handle]);
-
+  // Phase 5: no global letter bindings. This dock duplicated HomeTab's
+  // P/M/W/A/L/Q/F/K hijacks (one press fired two handlers). Keyboard users
+  // navigate via ⌘K / 1–0 / ? (see ShortcutList).
   return (
     <div className="command-card p-4">
       <div className="flex items-center justify-between mb-3">
         <p className="command-eyebrow !text-[10px] flex items-center gap-1.5">
           <Command className="w-3 h-3 text-[var(--dashboard-primary)]" /> {t("dock.title")}
         </p>
-        <span className="text-[10px] font-mono text-[var(--dashboard-text-muted)] hidden sm:inline-block">
-          {t("dock.hotkeys")}
-        </span>
       </div>
 
       <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
@@ -112,19 +97,16 @@ export default function QuickActions({ pendingMistakes = 0, flashcardsDue = null
           <button
             key={a.label}
             onClick={() => handle(a)}
-            aria-label={`${a.label} (Hotkey ${a.keyLabel})`}
-            className={`command-dock-btn relative group ${a.primary ? "command-dock-btn--primary" : ""}`}
+            aria-label={a.label}
+            className={`command-dock-btn relative ${a.primary ? "command-dock-btn--primary" : ""}`}
           >
             {a.badge != null && (
               <span className="absolute -top-1 -right-1 px-1.5 py-0.2 min-w-[18px] text-[9px] font-mono font-bold rounded-full bg-[var(--dashboard-danger)] text-white shadow-sm z-10">
                 {a.badge}
               </span>
             )}
-            <a.icon className="w-5 h-5 transition-transform group-hover:scale-110" />
+            <a.icon className="w-5 h-5" />
             <span className="truncate w-full text-center">{a.label}</span>
-            <span className="text-[9px] font-mono opacity-50 font-semibold group-hover:opacity-100 group-hover:text-[var(--dashboard-primary)] transition-opacity">
-              [{a.keyLabel}]
-            </span>
           </button>
         ))}
       </div>

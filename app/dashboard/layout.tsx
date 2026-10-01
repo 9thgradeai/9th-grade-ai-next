@@ -23,9 +23,9 @@ import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 
 import { useDialogA11y } from "@/lib/use-dialog-a11y";
 import { List, MagnifyingGlass, X, Question } from "@phosphor-icons/react";
-import { TAB_ICONS } from "@/lib/exam-ui";
-import { useAuth as useAuthForDrawer } from "@/lib/auth-ctx";
 import LogoutButton from "@/components/dashboard/LogoutButton";
+import NavRows from "@/components/dashboard/NavRows";
+import ShortcutList from "@/components/dashboard/ShortcutList";
 import WorldMapBackdrop from "@/components/dashboard/WorldMapBackdrop";
 import { useT } from "@/lib/i18n";
 import { useLanguage, t as pickLang } from "@/lib/lang-ctx";
@@ -43,12 +43,10 @@ const PracticeDrillOverlay = dynamic(
   { ssr: false },
 );
 
-// Drawer reuses the single NAV_GROUPS source + SideNav row markup via
-// SideNavDrawerContent below (grouping only — rows intentionally match SideNav).
-const DRAWER_GROUPS = NAV_GROUPS;
-
+// Drawer reuses the shared NavRows source — zero row-markup duplication
+// with SideNav (Phase 2 shell dedup).
 function SideNavDrawerContent({ activeTab, onChange }: { activeTab: TabId; onChange: (t: TabId) => void }) {
-  const { user } = useAuthForDrawer();
+  const { user } = useAuth();
   const initial = user?.name?.charAt(0) ?? "G";
   return (
     <div className="flex flex-col h-full">
@@ -56,37 +54,7 @@ function SideNavDrawerContent({ activeTab, onChange }: { activeTab: TabId; onCha
         <ExamSwitcher />
       </div>
       <div className="flex-1 min-h-0 overflow-y-auto px-3 py-3">
-        {DRAWER_GROUPS.map((group) => {
-          const tabs = group.ids.map((id) => TABS.find((t) => t.id === id)).filter((t): t is (typeof TABS)[number] => Boolean(t));
-          if (!tabs.length) return null;
-          return (
-            <div key={group.label} className="mb-1">
-              <p className="px-3 pt-5 pb-1.5 text-[10px] font-bold tracking-[0.14em] uppercase" style={{ color: "var(--dashboard-text-secondary)", opacity: 0.82 }}>{group.label}</p>
-              <div className="space-y-0.5">
-                {tabs.map((tab) => {
-                  const Icon = TAB_ICONS[tab.id];
-                  const isActive = activeTab === tab.id;
-                  return (
-                    <button
-                      key={tab.id}
-                      onClick={() => onChange(tab.id)}
-                      aria-current={isActive ? "page" : undefined}
-                      className="relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
-                      style={isActive ? { background: "var(--dashboard-primary-subtle)", color: "var(--dashboard-primary)", border: "1px solid color-mix(in srgb, var(--dashboard-primary) 16%, transparent)" } : { color: "var(--dashboard-text-primary)", border: "1px solid transparent" }}
-                    >
-                      {isActive && <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-6 rounded-r-full" style={{ background: "var(--dashboard-primary)" }} aria-hidden="true" />}
-                      <Icon className="w-[18px] h-[18px] shrink-0" strokeWidth={isActive ? 2.2 : 1.9} style={{ color: isActive ? "var(--dashboard-primary)" : "var(--dashboard-text-secondary)" }} />
-                      <span className="flex flex-col min-w-0">
-                        <span className="text-[13px] font-semibold leading-none truncate" style={{ color: isActive ? "var(--dashboard-primary)" : "var(--dashboard-text-primary)" }}>{tab.label}</span>
-                        <span className="text-[11px] leading-none mt-1 truncate font-medium" style={{ color: isActive ? "var(--dashboard-primary)" : "var(--dashboard-text-secondary)", opacity: isActive ? 0.82 : 0.88 }}>{tab.bengali}</span>
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          );
-        })}
+        <NavRows activeTab={activeTab} onChange={onChange} variant="drawer" />
       </div>
       <div className="border-t px-3 py-4 space-y-3" style={{ borderColor: "var(--dashboard-sidebar-border)" }}>
         <div className="flex items-center gap-3 px-2">
@@ -144,7 +112,7 @@ function GlobalEcosystemToggle() {
   const { lang } = useLanguage();
   return (
     <div
-      className="flex items-center gap-1 sm:gap-1.5 bg-[var(--dashboard-surface-muted)] border border-[var(--dashboard-border-muted)] rounded-lg p-0.5 shrink-0"
+      className="flex items-center gap-1 bg-[var(--dashboard-surface-muted)] border border-[var(--dashboard-border-muted)] rounded-xl p-1 shrink-0"
       role="group"
       aria-label={pickLang(lang, "পরীক্ষা ইকোসিস্টেম", "Exam ecosystem")}
     >
@@ -154,7 +122,7 @@ function GlobalEcosystemToggle() {
           onClick={() => setEcosystem(code)}
           aria-pressed={ecosystem === code}
           aria-label={code === "BCS" ? "BCS" : pickLang(lang, "বাংলাদেশ ব্যাংক", "Bangladesh Bank")}
-          className={`min-h-[28px] sm:min-h-[30px] px-2 sm:px-2.5 py-1 text-[10px] sm:text-[11px] font-bold rounded-md transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] focus-visible:ring-offset-1 ${ecosystem === code ? "bg-[var(--dashboard-primary)] text-white shadow-sm" : "text-[var(--dashboard-text-secondary)] hover:text-[var(--dashboard-text-primary)] hover:bg-[var(--surface-hover)]"}`}
+          className={`min-h-[40px] min-w-[52px] px-3 py-1 text-xs font-bold rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] ${ecosystem === code ? "bg-[var(--dashboard-primary)] text-white shadow-sm" : "text-[var(--dashboard-text-secondary)] hover:text-[var(--dashboard-text-primary)]"}`}
         >
           {code === "BCS" ? "BCS" : pickLang(lang, "ব্যাংক", "Bank")}
         </button>
@@ -172,13 +140,11 @@ function ShortcutsSheet({ open, onClose }: { open: boolean; onClose: () => void 
       <div ref={ref} tabIndex={-1} className="relative w-full max-w-md rounded-2xl border shadow-xl p-5" style={{ background: "var(--dashboard-surface-solid)", borderColor: "var(--dashboard-border-muted)" }}>
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-bold" style={{ color: "var(--dashboard-text-primary)" }}>Keyboard shortcuts</h2>
-          <button onClick={onClose} className="p-1.5 rounded-lg" style={{ color: "var(--dashboard-text-muted)" }} aria-label="Close"><X className="w-4 h-4" /></button>
+          <button onClick={onClose} className="inline-flex h-9 w-9 items-center justify-center rounded-lg" style={{ color: "var(--dashboard-text-muted)" }} aria-label="Close"><X className="w-4 h-4" /></button>
         </div>
-        <div className="mt-4 space-y-2 text-sm">
-          <div className="flex justify-between"><span style={{ color: "var(--dashboard-text-secondary)" }}>Command palette</span><kbd className="px-1.5 py-0.5 rounded border text-xs font-mono" style={{ borderColor: "var(--dashboard-border-muted)" }}>⌘K</kbd></div>
-          <div className="flex justify-between"><span style={{ color: "var(--dashboard-text-secondary)" }}>Jump to first 10 tabs</span><kbd className="px-1.5 py-0.5 rounded border text-xs font-mono" style={{ borderColor: "var(--dashboard-border-muted)" }}>1 – 0</kbd></div>
-          <div className="flex justify-between"><span style={{ color: "var(--dashboard-text-secondary)" }}>Search in question bank</span><kbd className="px-1.5 py-0.5 rounded border text-xs font-mono" style={{ borderColor: "var(--dashboard-border-muted)" }}>/</kbd></div>
-          <p className="text-xs pt-2" style={{ color: "var(--dashboard-text-muted)" }}>Press <kbd className="font-mono">?</kbd> again or <kbd className="font-mono">Esc</kbd> to close.</p>
+        {/* Unified global map — same content as the HomeTab cheat-sheet (ShortcutList). */}
+        <div className="mt-4">
+          <ShortcutList />
         </div>
       </div>
     </div>
@@ -194,7 +160,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const closeNavDrawer = useCallback(() => setNavDrawerOpen(false), []);
   const drawerRef = useDialogA11y<HTMLDivElement>(navDrawerOpen, closeNavDrawer);
 
-  const activeLabel = TABS.find((t) => t.id === activeTab)?.label ?? "DASHBOARD";
+  const activeMeta = TABS.find((t) => t.id === activeTab);
+  const activeGroup = NAV_GROUPS.find((g) => g.ids.includes(activeTab));
 
   const handleTabChange = useCallback((tab: TabId) => {
     setActiveTab(tab);
@@ -204,11 +171,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     // stable across renders, so this callback identity never churns.
   }, [router, closeNavDrawer, setActiveTab]);
 
-  // Keyboard shortcuts: 1-9/0 to switch tabs, Cmd+K for command bar, ? for help
+  // Global shortcuts (Phase 5 unified map): 1-9/0 tabs, ? help, Esc close.
+  // ⌘K lives in CommandBar. No single-letter hijacks anywhere.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "?" && !e.metaKey && !e.ctrlKey && !e.altKey) {
         if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+        if (e.target instanceof HTMLElement && e.target.isContentEditable) return;
+        // Don't hijack keys while a dialog (command palette, sheets) is open.
+        if (e.target instanceof HTMLElement && e.target.closest('[role="dialog"]')) return;
         e.preventDefault();
         setShortcutsOpen((o) => !o);
         return;
@@ -291,9 +262,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
             {/* Main Column */}
             <div className="flex-1 min-w-0 flex flex-col h-full">
-              {/* Fixed Top Header — academic premium */}
+              {/* Fixed Top Header — Phase 2: breadcrumb left, search center, actions right */}
               <header className="shrink-0 z-[var(--z-sticky)] border-b pt-safe backdrop-blur-md" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}>
-                <div className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 lg:px-6 h-14 lg:h-16 min-w-0">
+                <div className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 lg:px-6 h-16 min-w-0">
                   {/* Hamburger — visible on tablet + mobile (<lg) to expose left tabs */}
                   <button
                     onClick={() => setNavDrawerOpen(true)}
@@ -305,39 +276,55 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   >
                     <List className="w-5 h-5" />
                   </button>
-                  {/* Mobile logo — text hides on very narrow screens to keep toggle + actions visible */}
+                  {/* Mobile logo icon only — text removed to keep search + actions visible on 320px */}
                   <Link
                     href="/"
-                    className="lg:hidden flex items-center gap-2 font-display font-bold text-[15px] min-w-0 shrink-0"
+                    className="lg:hidden flex items-center min-w-0 shrink-0"
                     style={{ color: "var(--dashboard-text-primary)" }}
                     aria-label="9Th-Grade AI home"
                   >
                     <BrandMark className="h-8 w-8 rounded-lg ring-1 ring-black/5 shrink-0" />
-                    <span className="hidden min-[360px]:inline truncate">9Th-Grade AI</span>
                   </Link>
 
-                  {/* Desktop page title — clean, no terminal $ */}
+                  {/* Breadcrumb — desktop: group › tab (replaces bare activeLabel) */}
+                  <nav aria-label="Breadcrumb" className="hidden lg:flex min-w-0 shrink-0 items-center gap-1.5 text-[13px]">
+                    <span className="shrink-0 font-medium" style={{ color: "var(--dashboard-text-muted)" }}>
+                      {activeGroup?.label ?? "Dashboard"}
+                    </span>
+                    <span aria-hidden="true" style={{ color: "var(--dashboard-text-muted)" }}>›</span>
+                    <span className="truncate font-bold" style={{ color: "var(--dashboard-text-primary)" }}>
+                      {activeMeta ? `${activeMeta.bengali} · ${activeMeta.label}` : "DASHBOARD"}
+                    </span>
+                  </nav>
+
+                  {/* Command trigger — fluid center (icon-only on xs) */}
                   <button
                     type="button"
                     onClick={() => window.dispatchEvent(new Event("app:open-command"))}
                     aria-label="Search dashboard"
                     aria-haspopup="dialog"
-                    className="hidden sm:flex h-10 w-64 items-center gap-3 rounded-lg border px-3 text-sm text-[var(--dashboard-text-secondary)] bg-[var(--dashboard-surface-muted)] border-[var(--dashboard-border-muted)] hover:border-[var(--dashboard-primary)] transition-colors"
+                    className="hidden sm:flex h-10 flex-1 max-w-md items-center gap-3 rounded-xl border px-3 text-sm text-[var(--dashboard-text-secondary)] bg-[var(--dashboard-surface-muted)] border-[var(--dashboard-border-muted)] hover:border-[var(--dashboard-primary)] transition-colors"
                   >
                     <MagnifyingGlass className="h-4 w-4 shrink-0" aria-hidden="true" />
                     <span className="truncate">{t("dashboard.controlCenter")}</span>
                     <kbd className="ml-auto hidden lg:inline-flex items-center gap-1 rounded bg-[var(--dashboard-surface)] border border-[var(--dashboard-border-muted)] px-1.5 py-0.5 text-[10px] font-mono">⌘K</kbd>
                   </button>
-                  <span className="hidden xl:block text-xs text-[var(--dashboard-text-muted)] truncate max-w-[160px]">{activeLabel}</span>
+                  <button
+                    type="button"
+                    onClick={() => window.dispatchEvent(new Event("app:open-command"))}
+                    aria-label="Search dashboard"
+                    aria-haspopup="dialog"
+                    className="sm:hidden inline-flex h-10 w-10 items-center justify-center rounded-xl border shrink-0"
+                    style={{ borderColor: "var(--dashboard-border-muted)", background: "var(--dashboard-surface-muted)", color: "var(--dashboard-text-secondary)" }}
+                  >
+                    <MagnifyingGlass className="h-4 w-4" aria-hidden="true" />
+                  </button>
 
-                  <div className="ml-auto flex items-center gap-1 sm:gap-1.5 min-w-0 shrink-0">
+                  <div className="ml-auto flex items-center gap-1.5 min-w-0 shrink-0">
                     <GlobalEcosystemToggle />
-                    <button onClick={() => setShortcutsOpen(true)} aria-label="Keyboard shortcuts" className="hidden sm:inline-flex items-center justify-center w-10 h-10 rounded-lg border" style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-muted)", background: "var(--dashboard-surface-muted)" }}><Question className="w-4 h-4" /></button>
+                    <button onClick={() => setShortcutsOpen(true)} aria-label="Keyboard shortcuts" className="hidden md:inline-flex items-center justify-center w-10 h-10 rounded-xl border" style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-muted)", background: "var(--dashboard-surface-muted)" }}><Question className="w-4 h-4" /></button>
                     <NotificationCenter />
-                    {/* Header theme toggle hides below 400px to keep the row
-                        from overflowing on 320–360px screens — theme switching
-                        stays available in Settings. */}
-                    <span className="hidden min-[400px]:inline-flex"><ThemeToggle /></span>
+                    <ThemeToggle />
                     <LanguageToggle />
                   </div>
                 </div>

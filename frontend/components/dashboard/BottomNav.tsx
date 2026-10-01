@@ -58,7 +58,7 @@ export default function BottomNav({ activeTab, onChange }: BottomNavProps) {
         style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}
         aria-label="Mobile navigation"
       >
-        <div className="flex items-stretch">
+        <div className="flex items-stretch gap-1 px-2 py-1.5">
           {BOTTOM_TABS.map((tab) => {
             const Icon = tab.icon;
             const active = isActive(tab.id);
@@ -66,15 +66,17 @@ export default function BottomNav({ activeTab, onChange }: BottomNavProps) {
               <button
                 key={tab.id}
                 onClick={() => selectTab(tab.id)}
-                className="relative flex flex-col items-center justify-center gap-1 flex-1 min-h-[var(--bottom-nav-h)] py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                className="relative flex flex-col items-center justify-center gap-1 flex-1 min-h-[56px] rounded-2xl py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                style={
+                  active
+                    ? { background: "var(--dashboard-primary-subtle)", color: "var(--dashboard-primary)" }
+                    : { background: "transparent", color: "var(--dashboard-text-secondary)" }
+                }
                 aria-label={t(lang, tab.label, tab.labelEn)}
                 aria-current={active ? "page" : undefined}
               >
-                {active && (
-                  <span className="absolute top-0 w-8 h-0.5 rounded-full" style={{ background: "var(--dashboard-primary)" }} aria-hidden="true" />
-                )}
-                <Icon className="w-5 h-5" strokeWidth={active ? 2.3 : 1.9} style={{ color: active ? "var(--dashboard-primary)" : "var(--dashboard-text-secondary)" }} />
-                <span className="text-[10px] font-semibold leading-none" style={{ color: active ? "var(--dashboard-primary)" : "var(--dashboard-text-secondary)" }}>
+                <Icon className="h-[22px] w-[22px]" strokeWidth={active ? 2.3 : 1.9} />
+                <span className="text-[10px] font-bold leading-none">
                   {t(lang, tab.short, tab.shortEn)}
                 </span>
               </button>
@@ -82,15 +84,18 @@ export default function BottomNav({ activeTab, onChange }: BottomNavProps) {
           })}
           <button
             onClick={() => setMoreOpen(true)}
-            className="relative flex flex-col items-center justify-center gap-1 flex-1 min-h-[var(--bottom-nav-h)] py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+            className="relative flex flex-col items-center justify-center gap-1 flex-1 min-h-[56px] rounded-2xl py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
             aria-label={t(lang, "আরও বিকল্প", "More options")}
             aria-haspopup="dialog"
             aria-expanded={moreOpen}
-            style={{ color: isMoreActive ? "var(--dashboard-primary)" : "var(--dashboard-text-secondary)" }}
+            style={
+              isMoreActive
+                ? { background: "var(--dashboard-primary-subtle)", color: "var(--dashboard-primary)" }
+                : { background: "transparent", color: "var(--dashboard-text-secondary)" }
+            }
           >
-            {isMoreActive && <span className="absolute top-0 w-8 h-0.5 rounded-full" style={{ background: "var(--dashboard-primary)" }} aria-hidden="true" />}
-            <DotsThreeVertical className="w-5 h-5" strokeWidth={isMoreActive ? 2.2 : 1.9} />
-            <span className="text-[10px] font-semibold leading-none">{t(lang, "আরও", "More")}</span>
+            <DotsThreeVertical className="h-[22px] w-[22px]" strokeWidth={isMoreActive ? 2.2 : 1.9} />
+            <span className="text-[10px] font-bold leading-none">{t(lang, "আরও", "More")}</span>
           </button>
         </div>
       </nav>
@@ -127,7 +132,7 @@ export default function BottomNav({ activeTab, onChange }: BottomNavProps) {
                   <X className="w-5 h-5" />
                 </button>
               </div>
-              <div className="grid grid-cols-2 gap-2.5 p-4 pt-0">
+              <div className="grid grid-cols-1 gap-2 p-4 pt-0 sm:grid-cols-2 sm:gap-2.5">
                 {extraTabs.map((tab) => {
                   const Icon = TAB_ICONS[tab.id];
                   const active = isActive(tab.id);
@@ -135,21 +140,21 @@ export default function BottomNav({ activeTab, onChange }: BottomNavProps) {
                     <button
                       key={tab.id}
                       onClick={() => selectTab(tab.id)}
-                      className="flex items-center gap-3 rounded-2xl border p-3.5 min-h-[72px] transition-colors text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                      className="flex min-h-[56px] items-center gap-3 rounded-2xl border p-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
                       style={
                         active
                           ? { background: "var(--dashboard-primary-subtle)", borderColor: "var(--dashboard-primary)", color: "var(--dashboard-primary)" }
-                          : { background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-secondary)" }
+                          : { background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-primary)" }
                       }
                       aria-current={active ? "page" : undefined}
                       aria-label={`${tab.label} — ${tab.bengali}`}
                     >
-                      <span className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border" style={{ background: active ? "var(--dashboard-primary-subtle)" : "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}>
-                        <Icon className="w-5 h-5" />
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border" style={{ background: active ? "var(--dashboard-primary-subtle)" : "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}>
+                        <Icon className="h-5 w-5" />
                       </span>
-                      <span className="flex flex-col min-w-0">
-                        <span className="text-[13px] font-semibold leading-none truncate">{tab.bengali}</span>
-                        <span className="text-[11px] leading-none mt-1 truncate" style={{ color: "var(--dashboard-text-muted)" }}>{tab.label}</span>
+                      <span className="flex min-w-0 flex-1 items-baseline justify-between gap-2">
+                        <span className="truncate text-[14px] font-semibold leading-none">{tab.bengali}</span>
+                        <span className="shrink-0 truncate text-[11px] font-medium uppercase leading-none tracking-wide" style={{ color: "var(--dashboard-text-muted)" }}>{tab.label}</span>
                       </span>
                     </button>
                   );

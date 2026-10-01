@@ -169,7 +169,6 @@ export const en: Dict = {
 
   // HUD dock
   "dock.title": "HUD Command Dock",
-  "dock.hotkeys": "Press hotkeys P M A for instant navigation",
   "dock.practice": "Practice",
   "dock.mockExam": "Mock Exam",
   "dock.wrongAns": "Wrong Ans",
@@ -423,7 +422,6 @@ export const bn: Dict = {
   "tabs.settings.bn": "সেটিংস",
 
   "dock.title": "হাড কমান্ড ডক",
-  "dock.hotkeys": "দ্রুত যেতে P M A চাপুন",
   "dock.practice": "প্র্যাকটিস",
   "dock.mockExam": "মক পরীক্ষা",
   "dock.wrongAns": "ভুল উত্তর",

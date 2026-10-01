@@ -399,6 +399,14 @@
   --foreground: var(--text-primary);
   --surface-solid: var(--surface-raised);
   --border-muted: var(--border-subtle);
+  color-scheme: dark;
+}
+
+.dashboard-theme-scope[data-dashboard-theme="light"] {
+  color-scheme: light;
+}
+.dashboard-theme-scope[data-dashboard-theme="dark"] {
+  color-scheme: dark;
 }
 
 html.light {
@@ -533,11 +541,13 @@ label {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Tactile tap feedback (compositor-only, perf-neutral) */
+/* Tactile tap feedback — scoped to command controls only (perf + calm).
+   Global button scale caused motion overload fighting card/dock hovers. */
 @media (prefers-reduced-motion: no-preference) {
-  button:active:not(:disabled),
-  [role="button"]:active:not([aria-disabled="true"]) {
-    transform: scale(0.97);
+  .command-primary-btn:active:not(:disabled),
+  .command-secondary-btn:active:not(:disabled),
+  .command-dock-btn:active:not(:disabled) {
+    transform: scale(0.98);
     transition: transform 80ms ease;
   }
 }
@@ -575,15 +585,15 @@ label {
 .dashboard-theme-scope[data-dashboard-theme="light"] #dashboard-content {
   /* Transparent: the ambient world map shows through the gutters. The shell
      behind it keeps the base background color. */
-  background: transparent !important;
+  background: transparent;
 }
 
 .dashboard-theme-scope[data-dashboard-theme="dark"] .dashboard-shell {
-  background: var(--surface-base) !important;
+  background: var(--surface-base);
 }
 .dashboard-theme-scope[data-dashboard-theme="dark"] #dashboard-content {
   /* Transparent: see light-theme note above. */
-  background: transparent !important;
+  background: transparent;
 }
 
 /* ══════════════════════════════════════════════════════════════════════════════
@@ -610,16 +620,20 @@ label {
   border-color: var(--border-strong);
 }
 
+/* Phase 0 card unification: .glass / .glass-card are legacy aliases of the
+   single .command-card surface. Kept for compat — no independent values. */
 .glass {
-  background: var(--surface);
-  border: 1px solid var(--border-muted);
-  box-shadow: var(--shadow-sm);
+  background: var(--command-card-bg, var(--surface));
+  border: 1px solid var(--command-card-border, var(--border-muted));
+  border-radius: var(--card-radius, 16px);
+  box-shadow: var(--command-card-shadow, var(--shadow-sm));
 }
 
 .glass-card {
-  background: var(--surface-raised);
-  border: 1px solid var(--border-muted);
-  box-shadow: var(--shadow-sm);
+  background: var(--command-card-bg, var(--surface-raised));
+  border: 1px solid var(--command-card-border, var(--border-muted));
+  border-radius: var(--card-radius, 16px);
+  box-shadow: var(--command-card-shadow, var(--shadow-sm));
 }
 
 /* ══════════════════════════════════════════════════════════════════════════════
@@ -1132,11 +1146,14 @@ hr {
    aurora meshes, shimmer, and orchestrated micro-interactions.
    ══════════════════════════════════════════════════════════════════════════════ */
 
-/* ── Fluid Typography Scale ─────────────────────────────────────────────── */
+/* ── Fluid Typography Scale (Phase 0: Bengali-safe) ──────────────────────
+   Previous 800/-0.035em/0.95 clipped Bengali matras (Hind Siliguri needs
+   looser leading). Dashboard keeps tight Latin display but Bengali text
+   always gets safe leading via the :lang(bn) override below. */
 .dashboard-theme-scope {
-  --font-display-weight: 800;
-  --font-display-tracking: -0.035em;
-  --font-display-leading: 0.95;
+  --font-display-weight: 700;
+  --font-display-tracking: -0.015em;
+  --font-display-leading: 1.1;
 }
 
 /* Display headlines — weight/leading only (family lives in the block above).
@@ -1147,24 +1164,23 @@ hr {
   line-height: var(--font-display-leading);
 }
 
-/* Eyebrow — single gradient definition (base sizing lives in the first
-   .command-eyebrow block). Falls back to solid color where background-clip
-   is unsupported so text never goes invisible. */
+/* Bengali display text: never tighten — matras need air. */
+.dashboard-theme-scope .font-display:lang(bn),
+.dashboard-theme-scope [lang="bn"] .font-display {
+  letter-spacing: 0;
+  line-height: 1.5;
+  font-weight: 700;
+}
+
+/* Eyebrow — solid AA-compliant color (Phase 0). Gradient-clip text failed
+   contrast in both themes and broke screen-reader/high-contrast rendering.
+   Gradient accents are reserved for large display numerals only. */
 .command-eyebrow {
-  letter-spacing: 0.22em;
-  font-weight: 800;
+  letter-spacing: 0.16em;
+  font-weight: 700;
   font-size: 11px;
   text-transform: uppercase;
   color: var(--dashboard-primary);
-  background: linear-gradient(90deg, var(--dashboard-primary), color-mix(in oklch, var(--dashboard-primary) 72%, var(--dashboard-info)));
-  -webkit-background-clip: text;
-  background-clip: text;
-}
-@supports ((-webkit-background-clip: text) or (background-clip: text)) {
-  .command-eyebrow {
-    -webkit-text-fill-color: transparent;
-    color: transparent;
-  }
 }
 
 /* ── Enhanced Color Depth — Dark: richer indigo/violet aurora ──────────── */
@@ -1258,19 +1274,12 @@ hr {
 }
 
 
-/* ── Card Depth Upgrade — dual-layer border + inner glow ──────────────── */
+/* ── Card Depth (Phase 0: calm) — solid surface, no backdrop-blur on cards.
+   Blur stays on header + modal scrims only (perf). Depth via border+shadow. */
 .command-card {
-  border: 1px solid color-mix(in oklch, var(--command-card-border) 88%, transparent);
-  background:
-    radial-gradient(120% 90% at 100% 0%, color-mix(in oklch, var(--dashboard-primary) 5%, transparent) 0%, transparent 52%),
-    radial-gradient(80% 60% at 0% 100%, color-mix(in oklch, var(--dashboard-info) 4%, transparent) 0%, transparent 60%),
-    var(--command-card-bg);
-  box-shadow:
-    0 1px 2px oklch(0 0 0 / 0.04),
-    0 8px 24px oklch(0 0 0 / 0.06),
-    inset 0 1px 0 oklch(1 0 0 / 0.04);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--command-card-border);
+  background: var(--command-card-bg);
+  box-shadow: var(--command-card-shadow);
 }
 .dashboard-theme-scope[data-dashboard-theme="dark"] .command-card {
   box-shadow:
@@ -1285,34 +1294,17 @@ hr {
     var(--command-card-bg);
 }
 .command-card--interactive:hover {
-  transform: translateY(-3px) scale(1.005);
-  box-shadow:
-    0 12px 32px oklch(0 0 0 / 0.10),
-    0 0 0 1px color-mix(in oklch, var(--dashboard-primary) 14%, transparent);
-  border-color: color-mix(in oklch, var(--dashboard-primary) 22%, var(--command-card-border));
-}
-.command-card::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  background: linear-gradient(105deg, transparent 40%, oklch(1 0 0 / 0.035) 50%, transparent 60%);
-  opacity: 0;
-  transition: opacity 400ms ease;
-}
-.command-card:hover::after {
-  opacity: 1;
+  transform: translateY(-2px);
+  box-shadow: var(--command-card-shadow-hover);
+  border-color: var(--border-default);
 }
 
-/* ── Aurora Mesh Upgrade ─────────────────────────────────────────────── */
+/* ── Aurora (Phase 4: single wash, no blur) — triple radial + blur filter
+   per card was pure overdraw. One static gradient reads as depth. */
 .command-aurora {
   background:
-    radial-gradient(ellipse 520px 300px at 92% -8%, color-mix(in oklch, var(--dashboard-primary) 14%, transparent) 0%, transparent 60%),
-    radial-gradient(ellipse 420px 260px at 8% 108%, color-mix(in oklch, var(--dashboard-info) 10%, transparent) 0%, transparent 62%),
-    radial-gradient(ellipse 300px 200px at 50% 50%, color-mix(in oklch, var(--dashboard-primary) 3%, transparent) 0%, transparent 70%);
-  opacity: 0.85;
-  filter: blur(0.5px);
+    radial-gradient(ellipse 520px 300px at 92% -8%, color-mix(in oklch, var(--dashboard-primary) 10%, transparent) 0%, transparent 60%);
+  opacity: 0.6;
 }
 
 /* ── Button Upgrade — gradient border + shimmer ─────────────────────── */
@@ -1349,8 +1341,7 @@ hr {
   transform: scale(0.97);
 }
 .command-secondary-btn {
-  backdrop-filter: blur(6px);
-  transition: all 200ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition: border-color 180ms ease, background 180ms ease, color 180ms ease, box-shadow 180ms ease;
 }
 .command-secondary-btn:hover {
   background: var(--command-card-bg);
@@ -1358,34 +1349,19 @@ hr {
   box-shadow: 0 2px 8px oklch(0 0 0 / 0.06);
 }
 
-/* ── Dock Upgrade — spring hover + active indicator ─────────────────── */
+/* ── Dock (Phase 4: calm) — flat lift, no spring/underline/scale ─────────
+   Previous -4px + scale(1.02) + animated underline fought card hovers and
+   the global tap scale. Blur removed (perf: 8 dock buttons × blur). */
 .command-dock-btn {
   position: relative;
-  overflow: hidden;
-  backdrop-filter: blur(4px);
-  transition: transform 260ms cubic-bezier(0.34, 1.56, 0.64, 1), border-color 200ms ease, background 200ms ease, color 200ms ease, box-shadow 200ms ease;
-}
-.command-dock-btn::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  width: 0;
-  height: 2px;
-  background: var(--dashboard-primary);
-  border-radius: 999px;
-  transform: translateX(-50%);
-  transition: width 260ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-.command-dock-btn:hover::after {
-  width: 56%;
+  transition: transform 180ms ease-out, border-color 180ms ease, background 180ms ease, color 180ms ease, box-shadow 180ms ease;
 }
 .command-dock-btn:hover {
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 8px 20px oklch(0 0 0 / 0.08);
+  transform: translateY(-2px);
+  box-shadow: var(--command-card-shadow-hover);
 }
 .command-dock-btn:active {
-  transform: scale(0.96);
+  transform: scale(0.98);
 }
 .command-dock-btn:focus-visible {
   outline: 2px solid var(--dashboard-primary);
@@ -1440,14 +1416,9 @@ hr {
   to { stroke-dashoffset: var(--ring-offset, 0); }
 }
 
-/* Apply entrance to command cards */
-.command-card {
-  animation: commandCardIn 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-.command-card:nth-child(1) { animation-delay: 0ms; }
-.command-card:nth-child(2) { animation-delay: 60ms; }
-.command-card:nth-child(3) { animation-delay: 110ms; }
-.command-card:nth-child(4) { animation-delay: 160ms; }
+/* Phase 3 motion calm: no auto-entrance on .command-card. Section entrances
+   are owned exclusively by RevealSection (single fade-up, once, 220ms).
+   Keyframes stay for opt-in use only — never auto-applied. */
 
 /* Hero metric pop — opt-in class only, never every .font-display */
 .metric-pop {
@@ -1459,15 +1430,12 @@ hr {
   transform-origin: left;
 }
 
-/* ── Grain Texture (subtle) ─────────────────────────────────────────── */
+/* ── Grain Texture (Phase 4: off in dashboard) ──────────────────────────
+   Fixed full-viewport noise stacked over cosmic-bg + world-map + shell bg =
+   triple overdraw for 0.015 opacity. Grain stays on marketing via .noise. */
 .dashboard-shell::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.015;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-  z-index: 0;
+  content: none;
+  display: none;
 }
 
 /* ── Scrollbar Upgrade ─────────────────────────────────────────────── */

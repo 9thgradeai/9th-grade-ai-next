@@ -113,7 +113,9 @@ describe("HomeTab Phase 4 — shortcuts dialog", () => {
     fireEvent.keyDown(window, { key: "?" });
     const dialog = await screen.findByRole("dialog", { name: "Keyboard shortcuts" });
     expect(dialog).toHaveAttribute("aria-modal", "true");
-    expect(screen.getByText("Quick practice")).toBeInTheDocument();
+    // Phase 5 unified map: palette + numbered tabs only, no letter hijacks.
+    expect(screen.getByText("Command palette")).toBeInTheDocument();
+    expect(screen.queryByText("Quick practice")).not.toBeInTheDocument();
 
     fireEvent.keyDown(document, { key: "Escape" });
     await waitFor(() => {

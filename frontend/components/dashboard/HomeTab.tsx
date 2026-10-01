@@ -25,7 +25,7 @@ import ContinueLearning from "./command-center/ContinueLearning";
 import RecommendedActions from "./command-center/RecommendedActions";
 import type { PerfRange } from "./command-center/PerformanceCard";
 import TodayPlanCard from "./command-center/TodayPlanCard";
-import { launchAI } from "@/lib/ai-launcher";
+import ShortcutList from "./ShortcutList";
 import type { HomeHeroSignals } from "./ai/HomeHero";
 
 // PerformanceCard carries the SVG chart chunk — split it off the initial
@@ -63,18 +63,16 @@ function lastSevenDayLabels(): string[] {
 const WEEKDAY_LABELS_7 = lastSevenDayLabels();
 
 /**
- * Party-style section entrance — each Home section bounces in with an
- * overshooting spring (rise + pop + settle) the first time it scrolls into
- * view (above-the-fold sections fire on mount). Opacity/transform only;
- * low-tier and reduced-motion render the final state instantly.
+ * Phase 3 calm entrance — a single fade-up (16px / 220ms easeOut) per Home
+ * section, fired once on scroll into view. No spring, no scale, no stagger.
+ * Opacity/transform only; low-tier and reduced-motion render instantly.
  */
-const SECTION_POP = {
-  hidden: { opacity: 0, y: 44, scale: 0.94 },
+const SECTION_FADE = {
+  hidden: { opacity: 0, y: 16 },
   show: {
     opacity: 1,
     y: 0,
-    scale: 1,
-    transition: { type: "spring" as const, stiffness: 380, damping: 15 },
+    transition: { duration: 0.22, ease: "easeOut" as const },
   },
 };
 
@@ -94,43 +92,44 @@ function RevealSection({ children, className, id }: { children: React.ReactNode;
       initial="hidden"
       whileInView="show"
       viewport={{ once: true, margin: "-40px" }}
-      variants={SECTION_POP}
+      variants={SECTION_FADE}
     >
       {children}
     </motion.div>
   );
 }
 
-/** Shimmer placeholder for one not-yet-loaded Home section. */
+/**
+ * Unified section placeholder (Phase 3) — one shimmer style for every
+ * not-yet-loaded Home section. Uses the shared `skeleton-shimmer` sweep,
+ * never a bare `animate-pulse` block.
+ */
 function ScopeSkeleton({ label }: { label: string }) {
   return (
     <div
       role="status"
       aria-label={label}
-      className="rounded-2xl border p-5 animate-pulse"
-      style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}
+      className="command-card p-5"
     >
-      <div className="h-3 w-1/3 rounded" style={{ background: "var(--dashboard-surface-muted)" }} />
-      <div className="mt-3 h-8 rounded-xl" style={{ background: "var(--dashboard-surface-muted)" }} />
-      <div className="mt-2 h-8 rounded-xl" style={{ background: "var(--dashboard-surface-muted)" }} />
+      <div className="skeleton-shimmer h-3 w-1/3 rounded" />
+      <div className="skeleton-shimmer mt-3 h-8 rounded-xl" />
+      <div className="skeleton-shimmer mt-2 h-8 rounded-xl" />
     </div>
   );
 }
 
-/** Inline retry for one failed scope — the rest of Home keeps working. */
+/**
+ * Unified inline retry (Phase 3) — one error style per failed scope; the
+ * rest of Home keeps working. Retry uses the shared secondary button.
+ */
 function ScopeError({ message, retryLabel, onRetry }: { message: string; retryLabel: string; onRetry: () => void }) {
   return (
     <div
       role="alert"
-      className="rounded-2xl border p-5 text-center"
-      style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}
+      className="command-card p-5 text-center"
     >
       <p className="text-xs font-bold" style={{ color: "var(--dashboard-text-secondary)" }}>{message}</p>
-      <button
-        onClick={onRetry}
-        className="mt-3 inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-lg border"
-        style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-primary)" }}
-      >
+      <button onClick={onRetry} className="command-secondary-btn mt-3 !py-2 text-xs">
         <ArrowCounterClockwise className="w-3.5 h-3.5" /> {retryLabel}
       </button>
     </div>
@@ -362,9 +361,13 @@ export default function HomeTab() {
   const closeShortcuts = useCallback(() => setShortcutsOpen(false), []);
   const shortcutsRef = useDialogA11y<HTMLDivElement>(shortcutsOpen, closeShortcuts);
 
-  // Keyboard Shortcuts Listener [P, M, W, A, F, Q, L, R, ?]
+  // Phase 5: `?` opens the cheat-sheet only. Single-letter tab hijacks
+  // (P/M/W/A/F/Q/L/R) are removed — QuickActions bound the same letters, so
+  // one press fired two handlers and stole keystrokes from search fields.
+  // Global navigation lives in the layout (⌘K, 1–0, ?, Esc).
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
       if (
         e.target instanceof HTMLInputElement ||
         e.target instanceof HTMLTextAreaElement ||
@@ -372,71 +375,29 @@ export default function HomeTab() {
       ) {
         return;
       }
-      if (e.metaKey || e.ctrlKey || e.altKey) return;
-
+      // Never hijack keys while a dialog (command palette, sheets) is open.
+      if (e.target instanceof HTMLElement && e.target.closest('[role="dialog"]')) return;
       if (e.key === "?") {
+        e.preventDefault();
         setShortcutsOpen((v) => !v);
-        return;
-      }
-      const key = e.key.toUpperCase();
-      if (key === "P") {
-        setPracticeIntent({ mode: "quick" });
-        setActiveTab("practice");
-      } else if (key === "M") {
-        setPracticeIntent({ mode: "mock" });
-        setActiveTab("practice");
-      } else if (key === "W") {
-        setActiveTab("mistakes");
-      } else if (key === "A") {
-        launchAI({ mode: "tutor" });
-      } else if (key === "F") {
-        setActiveTab("flashcards");
-      } else if (key === "Q") {
-        setActiveTab("question-bank");
-      } else if (key === "L") {
-        setActiveTab("study-planner");
-      } else if (key === "R") {
-        revalidateAll();
-        toast.success(t(lang, "হোম ডেটা রিফ্রেশ হয়েছে", "Home data refreshed"));
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [setActiveTab, setPracticeIntent, toast, lang, revalidateAll]);
+  }, []);
 
   const skeleton = !pulseReady && !pulseFailed;
 
-  const retryScope = (scope: "tasks" | "analytics") => {
+  const retryScope = (scope: "pulse" | "tasks" | "analytics") => {
     setScopeFailed(scope, false);
     setScopeReady(scope, false);
     void runScope(scope, true);
   };
 
-  if (pulseFailed && !intelligence) {
-    return (
-      <div
-        role="alert"
-        className="rounded-2xl border p-8 text-center command-card"
-        style={{ borderColor: "var(--dashboard-danger)" }}
-      >
-        <p className="text-sm font-bold" style={{ color: "var(--dashboard-text-primary)" }}>
-          {t(lang, "ড্যাশবোর্ড ডেটা লোড করা যায়নি", "Dashboard data could not be loaded")}
-        </p>
-        <p className="mt-1 text-xs" style={{ color: "var(--dashboard-text-muted)" }}>
-          {t(lang, "ইন্টারনেট সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।", "Check your connection and try again.")}
-        </p>
-        <button
-          onClick={() => {
-            resetStages();
-            setReloadKey((k) => k + 1);
-          }}
-          className="command-primary-btn mt-4"
-        >
-          <ArrowCounterClockwise className="w-4 h-4" /> {t(lang, "আবার চেষ্টা করুন", "Try again")}
-        </button>
-      </div>
-    );
-  }
+  const retryAll = () => {
+    resetStages();
+    setReloadKey((k) => k + 1);
+  };
 
   return (
     <div className="study-home space-y-5 pb-24 sm:pb-6">
@@ -444,7 +405,7 @@ export default function HomeTab() {
         initial={lowMotion ? false : "hidden"}
         whileInView={lowMotion ? undefined : "show"}
         viewport={{ once: true, margin: "-40px" }}
-        variants={lowMotion ? undefined : SECTION_POP}
+        variants={lowMotion ? undefined : SECTION_FADE}
         className="study-home-header flex flex-wrap items-center justify-between gap-3"
       >
         <div className="min-w-0">
@@ -466,7 +427,7 @@ export default function HomeTab() {
               onClick={() => setShortcutsOpen(true)}
               aria-label={t(lang, "কিবোর্ড শর্টকাট", "Keyboard shortcuts")}
               title="?"
-              className="inline-flex items-center justify-center w-7 h-7 min-w-[28px] min-h-[28px] rounded-lg border font-mono text-xs font-bold transition-colors hover:border-[var(--dashboard-primary)]"
+              className="inline-flex items-center justify-center w-9 h-9 min-w-[36px] min-h-[36px] rounded-lg border font-mono text-xs font-bold transition-colors hover:border-[var(--dashboard-primary)]"
               style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-muted)", background: "var(--dashboard-surface-muted)" }}
             >
               ?
@@ -481,7 +442,7 @@ export default function HomeTab() {
             >
               <Flame className="w-3.5 h-3.5 fill-current" aria-hidden="true" />
               {intelligence?.streak ?? 0} {t(lang, "দিনের স্ট্রিক", "day streak")}
-              <span className="hidden sm:inline-flex ml-1">
+              <span className="inline-flex ml-1">
                 <StreakHeatmap activeDays={activityDays} labels={WEEKDAY_LABELS_7} />
               </span>
             </span>
@@ -491,16 +452,16 @@ export default function HomeTab() {
 
         {pulseReady && nextExam && examDaysLeft != null && (
           <div
-            className="w-fit max-w-full border-l-2 border-[var(--dashboard-primary)] py-1 pl-5 flex items-center gap-4"
-            style={{ background: "var(--dashboard-surface)", borderLeftColor: "var(--dashboard-primary)" }}
+            className="command-card command-card--compact flex w-fit max-w-full items-center gap-4 px-5"
+            aria-label={t(lang, `পরীক্ষার বাকি ${examDaysLeft} দিন`, `${examDaysLeft} days left`)}
           >
             <div className="text-center">
-              <p className="font-display font-black text-2xl leading-none text-[var(--dashboard-primary)]">{examDaysLeft}</p>
-              <p className="text-[10px] font-bold uppercase tracking-widest mt-0.5 text-[var(--dashboard-text-muted)]">Days left</p>
+              <p className="font-display text-2xl font-extrabold tabular-nums leading-none text-[var(--dashboard-primary)]">{examDaysLeft}</p>
+              <p className="text-[10px] font-bold uppercase tracking-widest mt-1 text-[var(--dashboard-text-muted)]">{t(lang, "দিন বাকি", "Days left")}</p>
             </div>
-            <div className="w-px h-10 bg-[var(--dashboard-border-muted)]" />
+            <div className="w-px h-10 bg-[var(--dashboard-border-muted)]" aria-hidden="true" />
             <div>
-              <p className="text-xs font-extrabold leading-tight text-[var(--dashboard-text-primary)]">
+              <p className="text-[13px] font-bold leading-snug text-[var(--dashboard-text-primary)]">
                 {t(lang, nextExam.titleBn, nextExam.titleEn)}
               </p>
               <p className="text-[11px] text-[var(--dashboard-text-muted)] mt-0.5">
@@ -515,22 +476,52 @@ export default function HomeTab() {
         )}
       </motion.header>
 
-      {/* ── AI Hero: ask-first command bar (Phase 2) ── */}
+      {/* ── Non-blocking pulse notice — header always paints; sections show
+           their own skeletons/retries below (Phase 3: no full-page block). ── */}
+      {pulseFailed && !intelligence && (
+        <div
+          role="alert"
+          className="command-card flex flex-wrap items-center justify-between gap-3 p-4"
+          style={{ borderColor: "var(--dashboard-danger)" }}
+        >
+          <p className="text-xs font-bold" style={{ color: "var(--dashboard-text-primary)" }}>
+            {t(lang, "ড্যাশবোর্ড ডেটা লোড করা যায়নি — সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।", "Dashboard data could not be loaded — check your connection and try again.")}
+          </p>
+          <button onClick={retryAll} className="command-primary-btn !py-2 text-xs">
+            <ArrowCounterClockwise className="w-4 h-4" /> {t(lang, "আবার চেষ্টা করুন", "Try again")}
+          </button>
+        </div>
+      )}
+
+      {/* ── 1 · Hero Mission — the single primary CTA ── */}
+      <RevealSection className="min-w-0">
+        {analyticsFailed && !analyticsReady ? (
+          <ScopeError
+            message={t(lang, "আজকের মিশন লোড করা যায়নি", "Could not load today's mission")}
+            retryLabel={t(lang, "আবার চেষ্টা করুন", "Try again")}
+            onRetry={() => retryScope("analytics")}
+          />
+        ) : !analyticsReady ? (
+          <ScopeSkeleton label={t(lang, "আজকের মিশন লোড হচ্ছে", "Loading today's mission")} />
+        ) : (
+          <TodayMission
+            intelligence={intelligence}
+            onStartPractice={practiceSubject}
+            onStartMistakes={() => mistakeSubject()}
+            onReviewFlashcards={() => setActiveTab("flashcards")}
+            onStartDailyQuiz={() => setActiveTab("practice")}
+          />
+        )}
+      </RevealSection>
+
+      {/* ── 2 · AI Hero: ask-first command bar ── */}
       <RevealSection className="min-w-0">
         <HomeHero signals={heroSignals} />
       </RevealSection>
 
-      {/* ── Secondary: Pulse — compact, muted ── */}
-      <RevealSection>
-        {!pulseReady ? (
-          <ScopeSkeleton label={t(lang, "প্রস্তুতির পালস লোড হচ্ছে", "Loading preparation pulse")} />
-        ) : (
-          <PreparationPulse intelligence={intelligence} />
-        )}
-      </RevealSection>
-
+      {/* ── 3 · Performance + today's plan (2-col) ── */}
       <div className="study-home-analytics grid gap-5 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-        <RevealSection className="min-w-0 opacity-[0.98]">
+        <RevealSection className="min-w-0">
           {!pulseReady ? (
             <ScopeSkeleton label={t(lang, "পারফরম্যান্স লোড হচ্ছে", "Loading performance")} />
           ) : (
@@ -562,42 +553,22 @@ export default function HomeTab() {
         </RevealSection>
       </div>
 
-      {/* ── Hero Mission — primary CTA with command-card--hero treatment ── */}
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-        <RevealSection className="min-w-0">
-          {analyticsFailed && !analyticsReady ? (
-            <ScopeError
-              message={t(lang, "আজকের মিশন লোড করা যায়নি", "Could not load today's mission")}
-              retryLabel={t(lang, "আবার চেষ্টা করুন", "Try again")}
-              onRetry={() => retryScope("analytics")}
-            />
-          ) : !analyticsReady ? (
-            <ScopeSkeleton label={t(lang, "আজকের মিশন লোড হচ্ছে", "Loading today's mission")} />
-          ) : (
-            <TodayMission
-              intelligence={intelligence}
-              onStartPractice={practiceSubject}
-              onStartMistakes={() => mistakeSubject()}
-              onReviewFlashcards={() => setActiveTab("flashcards")}
-              onStartDailyQuiz={() => setActiveTab("practice")}
-            />
-          )}
-        </RevealSection>
-        <RevealSection className="min-w-0">
-          {analyticsFailed && !analyticsReady ? (
-            <ScopeError
-              message={t(lang, "প্রস্তাবনা লোড করা যায়নি", "Could not load recommendations")}
-              retryLabel={t(lang, "আবার চেষ্টা করুন", "Try again")}
-              onRetry={() => retryScope("analytics")}
-            />
-          ) : !analyticsReady ? (
-            <ScopeSkeleton label={t(lang, "প্রস্তাবনা লোড হচ্ছে", "Loading recommendations")} />
-          ) : (
-            <RecommendedActions intelligence={intelligence} onAction={handleRecommendation} />
-          )}
-        </RevealSection>
-      </div>
+      {/* ── 4 · Recommended actions (full width) ── */}
+      <RevealSection className="min-w-0">
+        {analyticsFailed && !analyticsReady ? (
+          <ScopeError
+            message={t(lang, "প্রস্তাবনা লোড করা যায়নি", "Could not load recommendations")}
+            retryLabel={t(lang, "আবার চেষ্টা করুন", "Try again")}
+            onRetry={() => retryScope("analytics")}
+          />
+        ) : !analyticsReady ? (
+          <ScopeSkeleton label={t(lang, "প্রস্তাবনা লোড হচ্ছে", "Loading recommendations")} />
+        ) : (
+          <RecommendedActions intelligence={intelligence} onAction={handleRecommendation} />
+        )}
+      </RevealSection>
 
+      {/* ── 5 · Continue learning ── */}
       <RevealSection>
         {!tasksReady && !tasksFailed ? (
           <ScopeSkeleton label={t(lang, "চলমান শেখা লোড হচ্ছে", "Loading continue learning")} />
@@ -610,9 +581,89 @@ export default function HomeTab() {
         )}
       </RevealSection>
 
-      {/* ── Deferred: AI Study Coach — collapsed by default to reduce initial cognitive load ── */}
+      {/* ── 6 · Secondary pulse — compact, muted, deferred ── */}
+      <RevealSection>
+        {!pulseReady ? (
+          pulseFailed ? (
+            <ScopeError
+              message={t(lang, "প্রস্তুতির পালস লোড করা যায়নি", "Could not load preparation pulse")}
+              retryLabel={t(lang, "আবার চেষ্টা করুন", "Try again")}
+              onRetry={() => retryScope("pulse")}
+            />
+          ) : (
+            <ScopeSkeleton label={t(lang, "প্রস্তুতির পালস লোড হচ্ছে", "Loading preparation pulse")} />
+          )
+        ) : (
+          <PreparationPulse intelligence={intelligence} />
+        )}
+      </RevealSection>
+
+      {/* ── 7 · Recent mocks — collapsed by default (history, not action) ── */}
+      {results.length > 0 && (
+        <RevealSection className="scroll-mt-6">
+          <details className="group command-card">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-5">
+              <span className="command-eyebrow">{t(lang, "সাম্প্রতিক মক টেস্ট", "Recent mock tests")}</span>
+              <span className="flex shrink-0 items-center gap-2">
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setActiveTab("progress");
+                  }}
+                  className="inline-flex items-center gap-1 text-xs font-bold"
+                  style={{ color: "var(--dashboard-primary)" }}
+                >
+                  {t(lang, "পুরো টাইমলাইন", "Full timeline")} <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+                <span
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-lg border"
+                  style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-secondary)", background: "var(--dashboard-surface-muted)" }}
+                  aria-hidden="true"
+                >
+                  <CaretRight className="h-3.5 w-3.5 rotate-90 transition-transform group-open:rotate-[270deg]" />
+                </span>
+              </span>
+            </summary>
+            <div className="space-y-2 px-5 pb-5">
+              {results.slice(0, 4).map((r) => (
+                <button
+                  key={r.id}
+                  onClick={() => setActiveTab("progress")}
+                  className="w-full flex items-center gap-3 rounded-xl border px-3 py-2.5 text-left hover:border-[var(--dashboard-primary)]/40 transition-colors"
+                  style={{ background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-muted)" }}
+                >
+                  <span
+                    className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 border"
+                    style={{
+                      background:
+                        r.score >= 80 ? "var(--dashboard-success-subtle)" : r.score >= 50 ? "var(--dashboard-warning-subtle)" : "var(--dashboard-danger-subtle)",
+                      color: r.score >= 80 ? "var(--dashboard-success)" : r.score >= 50 ? "var(--dashboard-warning)" : "var(--dashboard-danger)",
+                      borderColor: "color-mix(in srgb, currentColor 20%, transparent)",
+                    }}
+                  >
+                    <Trophy className="w-4 h-4" />
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-bold truncate" style={{ color: "var(--dashboard-text-primary)" }}>
+                      {r.title}
+                    </p>
+                    <p className="text-[11px]" style={{ color: "var(--dashboard-text-muted)" }}>
+                      {r.correct}/{r.total} correct · {new Date(r.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short" })}
+                    </p>
+                  </div>
+                  <span className="text-xs font-mono font-extrabold flex items-center gap-1 tabular-nums" style={{ color: "var(--dashboard-text-primary)" }}>
+                    {r.score}% <CaretRight className="w-3.5 h-3.5 opacity-50" />
+                  </span>
+                </button>
+              ))}
+            </div>
+          </details>
+        </RevealSection>
+      )}
+
+      {/* ── 8 · AI Study Coach — collapsed by default, icon-only chevron ── */}
       <RevealSection id="dashboard-ai-coach" className="scroll-mt-6">
-        <details className="group rounded-2xl border" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}>
+        <details className="group command-card">
           <summary className="flex items-center justify-between gap-3 px-5 py-4 cursor-pointer list-none">
             <div className="flex items-center gap-3 min-w-0">
               <span className="w-9 h-9 rounded-xl flex items-center justify-center border shrink-0" style={{ background: "var(--dashboard-primary-subtle)", borderColor: "color-mix(in srgb, var(--dashboard-primary) 18%, transparent)", color: "var(--dashboard-primary)" }}>
@@ -623,8 +674,15 @@ export default function HomeTab() {
                 <p className="text-xs truncate" style={{ color: "var(--dashboard-text-muted)" }}>{t(lang, "প্রয়োজনে খুলে দ্রুত কৌশল নিন", "Open when you need a quick strategy")}</p>
               </div>
             </div>
-            <span className="shrink-0 inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1.5 rounded-lg border group-open:rotate-180 transition-transform" style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-secondary)", background: "var(--dashboard-surface-muted)" }}>
-              <CaretRight className="w-3.5 h-3.5 rotate-90" /> {t(lang, "খুলুন", "Open")}
+            <span className="flex shrink-0 items-center gap-2">
+              <span className="text-xs font-bold" style={{ color: "var(--dashboard-text-secondary)" }}>{t(lang, "খুলুন", "Open")}</span>
+              <span
+                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border transition-transform group-open:rotate-180"
+                style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-secondary)", background: "var(--dashboard-surface-muted)" }}
+                aria-hidden="true"
+              >
+                <CaretRight className="h-3.5 w-3.5 rotate-90" />
+              </span>
             </span>
           </summary>
           <div className="px-5 pb-5 pt-1 border-t" style={{ borderColor: "var(--dashboard-border-muted)" }}>
@@ -632,51 +690,6 @@ export default function HomeTab() {
           </div>
         </details>
       </RevealSection>
-
-      {/* ── Recent Mock Exam Results (real history) ── */}
-      {results.length > 0 && (
-        <RevealSection className="command-card p-5">
-          <div className="flex items-center justify-between">
-            <p className="command-eyebrow !text-[10px]">{t(lang, "সাম্প্রতিক মক টেস্ট", "Recent mock tests")}</p>
-            <button onClick={() => setActiveTab("progress")} className="text-xs font-bold inline-flex items-center gap-1" style={{ color: "var(--dashboard-primary)" }}>
-              {t(lang, "পুরো টাইমলাইন", "Full timeline")} <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          </div>
-          <div className="mt-4 space-y-2">
-            {results.slice(0, 4).map((r) => (
-              <button
-                key={r.id}
-                onClick={() => setActiveTab("progress")}
-                className="w-full flex items-center gap-3 rounded-xl border px-3 py-2.5 text-left hover:border-[var(--dashboard-primary)]/40 transition-colors"
-                style={{ background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-muted)" }}
-              >
-                <span
-                  className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 border"
-                  style={{
-                    background:
-                      r.score >= 80 ? "var(--dashboard-success-subtle)" : r.score >= 50 ? "var(--dashboard-warning-subtle)" : "var(--dashboard-danger-subtle)",
-                    color: r.score >= 80 ? "var(--dashboard-success)" : r.score >= 50 ? "var(--dashboard-warning)" : "var(--dashboard-danger)",
-                    borderColor: "color-mix(in srgb, currentColor 20%, transparent)",
-                  }}
-                >
-                  <Trophy className="w-4 h-4" />
-                </span>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-bold truncate" style={{ color: "var(--dashboard-text-primary)" }}>
-                    {r.title}
-                  </p>
-                  <p className="text-[11px]" style={{ color: "var(--dashboard-text-muted)" }}>
-                    {r.correct}/{r.total} correct · {new Date(r.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short" })}
-                  </p>
-                </div>
-                <span className="text-xs font-mono font-extrabold flex items-center gap-1" style={{ color: "var(--dashboard-text-primary)" }}>
-                  {r.score}%                   <CaretRight className="w-3.5 h-3.5 opacity-50" />
-                </span>
-              </button>
-            ))}
-          </div>
-        </RevealSection>
-      )}
       {/* ── Keyboard shortcut cheat-sheet (Phase 4 a11y, portaled: the
           motion ancestor's transform would break position:fixed) ── */}
       {shortcutsOpen &&
@@ -685,7 +698,7 @@ export default function HomeTab() {
             className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4"
             style={{ background: "color-mix(in srgb, black 55%, transparent)" }}
             onClick={closeShortcuts}
-          >,
+          >
           <div
             ref={shortcutsRef}
             role="dialog"
@@ -710,31 +723,9 @@ export default function HomeTab() {
                 ✕
               </button>
             </div>
-            <ul className="mt-3 space-y-1.5 text-xs" style={{ color: "var(--dashboard-text-secondary)" }}>
-              {(
-                [
-                  ["P", t(lang, "দ্রুত অনুশীলন", "Quick practice")],
-                  ["M", t(lang, "মক টেস্ট", "Mock test")],
-                  ["W", t(lang, "ভুল বিশ্লেষণ", "Mistake review")],
-                  ["A", t(lang, "AI টিউটর", "AI tutor")],
-                  ["F", t(lang, "ফ্ল্যাশকার্ড", "Flashcards")],
-                  ["Q", t(lang, "প্রশ্নব্যাংক", "Question bank")],
-                  ["L", t(lang, "স্টাডি প্ল্যানার", "Study planner")],
-                  ["R", t(lang, "হোম রিফ্রেশ", "Refresh home")],
-                  ["?", t(lang, "এই তালিকা", "This list")],
-                ] as [string, string][]
-              ).map(([key, label]) => (
-                <li key={key} className="flex items-center justify-between gap-3">
-                  <span>{label}</span>
-                  <kbd
-                    className="rounded-md border px-2 py-0.5 font-mono font-bold"
-                    style={{ borderColor: "var(--dashboard-border-muted)", background: "var(--dashboard-surface-muted)", color: "var(--dashboard-text-primary)" }}
-                  >
-                    {key}
-                  </kbd>
-                </li>
-              ))}
-            </ul>
+            <div className="mt-3">
+              <ShortcutList />
+            </div>
           </div>
           </div>,
           document.body,

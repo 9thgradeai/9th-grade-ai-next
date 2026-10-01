@@ -104,7 +104,7 @@ export default function SettingsTab() {
   const router = useRouter();
   const shouldReduceMotion = useReducedMotion();
   const { user, updateProfile, logout, tokenExpiry, refreshToken } = useAuth();
-  const { theme, toggleTheme } = useDashboardTheme();
+  const { theme, preference, setPreference } = useDashboardTheme();
   const { resetStore } = useDashboardStore();
 
   // ── Profile edit ──
@@ -448,22 +448,40 @@ export default function SettingsTab() {
               {theme === "dark" ? <Moon className="w-5 h-5 text-[var(--dashboard-primary)]" aria-hidden="true" /> : <Sun className="w-5 h-5 text-[var(--dashboard-warning)]" aria-hidden="true" />}
               <div>
                 <p className="text-sm text-[var(--dashboard-text-primary)] font-medium">Appearance</p>
-                <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">{theme === "dark" ? "Dark mode active" : "Light mode active"}</p>
+                <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">
+                  {preference === "system" ? `System (${theme} active)` : `${theme} mode active`}
+                </p>
               </div>
             </div>
-            <button
-              onClick={toggleTheme}
-              className="relative w-14 h-7 rounded-full bg-[var(--surface-overlay)] border border-[var(--border-strong)] transition-colors"
-              role="switch"
-              aria-checked={theme === "light"}
-              aria-label="Toggle theme"
+            <div
+              className="flex items-center gap-1 rounded-xl border border-[var(--dashboard-border-muted)] bg-[var(--dashboard-surface-muted)] p-1"
+              role="group"
+              aria-label="Appearance preference"
             >
-              <motion.span
-                layout
-                transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                className={`absolute top-0.5 w-6 h-6 rounded-full bg-[var(--accent)] shadow-neon-glow ${theme === "light" ? "left-[30px]" : "left-0.5"}`}
-              />
-            </button>
+              {(
+                [
+                  { id: "light", label: "Light" },
+                  { id: "dark", label: "Dark" },
+                  { id: "system", label: "Auto" },
+                ] as const
+              ).map((opt) => {
+                const active = preference === opt.id;
+                return (
+                  <button
+                    key={opt.id}
+                    onClick={() => setPreference(opt.id)}
+                    aria-pressed={active}
+                    className={`min-h-[36px] min-w-[52px] rounded-lg px-3 text-xs font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] ${
+                      active
+                        ? "bg-[var(--dashboard-primary)] text-white shadow-sm"
+                        : "text-[var(--dashboard-text-secondary)] hover:text-[var(--dashboard-text-primary)]"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           <div className="flex items-center justify-between gap-4 p-3.5 rounded-xl bg-subtle border border-[var(--dashboard-border-muted)]">
