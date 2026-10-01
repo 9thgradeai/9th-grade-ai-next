@@ -10,11 +10,19 @@
  * modifies them. Each record is single-line:
  *   NN. <question> ক. <o1> খ. <o2> গ. <o3> ঘ. <o4> [ঙ. <o5>] Ans. <key>. <text> ব্যাখ্যা: <exp>
  *
- * Topic routing (taxonomy leaf per file; path drives Practice filtering):
+ * Topic routing (taxonomy leaf per file; path drives Practice filtering).
+ * Files whose topic has no taxonomy leaf use a standalone `ভাষা/<topic>`
+ * path (precedent: the 95 legacy `ভাষা/কারক` rows) — visible at subject and
+ * ভাষা-group level via prefix matching:
  *   Questions(বাক্য সংকোচন).txt → ভাষা/বাক্য            (subtopic "বাক্য সংকোচন")
  *   Questions(বাংলা বানান).txt   → ভাষা/বানান_ও_বাক্য_শুদ্ধি
  *   Questions(বিপরীত শব্দ).txt   → ভাষা/বিপরীতার্থক_শব্দ
  *   Questions(Terminology).txt    → ভাষা/পরিভাষা
+ *   Questions(উপসর্গ).txt         → ভাষা/উপসর্গ (standalone, subtopic "উপসর্গ")
+ *   Questions(কারক)up.txt         → ভাষা/কারক (standalone, precedes 95 legacy rows)
+ *   Questions(ধাতু, প্রকৃতি এবং প্রত্যয়).txt → ভাষা/প্রত্যয়
+ *   প্রয়োগ-অপপ্রয়োগ (1).txt     → ভাষা/প্রয়োগ-অপপ্রয়োগ
+ *   Questions(বাচ্য).txt          → ভাষা/বাক্য (subtopic "বাচ্য")
  *
  * Safety (mirrors seed-questions.ts):
  *   - every record passes the shared import gate (scanMca) — REJECTs are
@@ -55,6 +63,11 @@ const ROUTES: FileRoute[] = [
   { file: "Questions(বাংলা বানান).txt", label: "বাংলা বানান", leaf: "বানান_ও_বাক্য_শুদ্ধি", subtopic: "বানান_ও_বাক্য_শুদ্ধি" },
   { file: "Questions(বিপরীত শব্দ).txt", label: "বিপরীত শব্দ", leaf: "বিপরীতার্থক_শব্দ", subtopic: "বিপরীতার্থক_শব্দ" },
   { file: "Questions(Terminology).txt", label: "Terminology", leaf: "পরিভাষা", subtopic: "পরিভাষা" },
+  { file: "Questions(উপসর্গ).txt", label: "উপসর্গ", leaf: "উপসর্গ", subtopic: "উপসর্গ" },
+  { file: "Questions(কারক)up.txt", label: "কারক", leaf: "কারক", subtopic: "কারক" },
+  { file: "Questions(ধাতু, প্রকৃতি এবং প্রত্যয়).txt", label: "ধাতু, প্রকৃতি এবং প্রত্যয়", leaf: "প্রত্যয়", subtopic: "প্রত্যয়" },
+  { file: "প্রয়োগ-অপপ্রয়োগ (1).txt", label: "প্রয়োগ-অপপ্রয়োগ", leaf: "প্রয়োগ-অপপ্রয়োগ", subtopic: "প্রয়োগ-অপপ্রয়োগ" },
+  { file: "Questions(বাচ্য).txt", label: "বাচ্য", leaf: "বাক্য", subtopic: "বাচ্য" },
 ];
 
 const LETTERS = ["ক", "খ", "গ", "ঘ", "ঙ"] as const;
@@ -86,11 +99,23 @@ export function parseLine(line: string): Parsed | { skip: string } | null {
   const answerRaw = body.slice(ansM.index + ansM[0].length).trim();
   const qAndOpts = body.slice(0, ansM.index);
 
-  // Locate option markers ক/খ/গ/ঘ (+ optional ঙ) in order.
-  const markerRe = /([কখগঘঙ])\s*[.)]\s*/g;
+  // Locate option markers ক/খ/গ/ঘ (+ optional ঙ) in order. Both "." and
+  // ")" terminators are accepted, but a ")" marker inside parentheses is
+  // ignored — e.g. the "ক)" in "তৃতীয়া (দ্বারা, দিয়া, কর্তৃক)" is option
+  // TEXT, not a marker (depth-aware scan).
+  const markerRe = /([কখগঘঙ])\s*([.)])\s*/g;
   const marks: Array<{ letter: string; index: number; end: number }> = [];
   let m: RegExpExecArray | null;
   while ((m = markerRe.exec(qAndOpts)) !== null) {
+    if (m[2] === ")") {
+      let depth = 0;
+      for (let i = 0; i < m.index; i++) {
+        const ch = qAndOpts[i];
+        if (ch === "(") depth += 1;
+        else if (ch === ")") depth = Math.max(0, depth - 1);
+      }
+      if (depth > 0) continue;
+    }
     marks.push({ letter: m[1], index: m.index, end: m.index + m[0].length });
   }
   const seq = marks.map((x) => x.letter).join("");
@@ -191,6 +216,12 @@ export async function importBanglaGrammar(
     const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
     let parsed = 0;
     for (const line of lines) {
+      // Title/header lines ("প্রয়োগ-অপপ্রয়োগ", "বাচ্য") carry no record —
+      // ignore silently instead of reporting them as skips.
+      if (!/^[০-৯0-9]+\s*\./.test(line)) {
+        console.log(`  [title] ${route.file}: ignoring header — ${line.slice(0, 50)}`);
+        continue;
+      }
       const p = parseLine(line);
       if (p === null) {
         report.skipped += 1;

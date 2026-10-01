@@ -30,6 +30,15 @@ describe("parseLine (bangla grammar single-line records)", () => {
     expect(p.correctAnswer).toBe("বিতত");
   });
 
+  it("ignores a ) marker inside option-text parentheses (কর্তৃক)", () => {
+    const p = parseLine(
+      "১৬. কর্মবাচ্যের কর্তায় কোন বিভক্তি যুক্ত হয়? ক. দ্বিতীয়া খ. তৃতীয়া (দ্বারা, দিয়া, কর্তৃক) গ. পঞ্চমী ঘ. সপ্তমী Ans. খ. তৃতীয়া (দ্বারা, দিয়া, কর্তৃক) ব্যাখ্যা: কিছু ব্যাখ্যা।",
+    ) as { options: string[]; correctAnswer: string };
+    expect(p.options).toHaveLength(4);
+    expect(p.options[1]).toBe("তৃতীয়া (দ্বারা, দিয়া, কর্তৃক)");
+    expect(p.correctAnswer).toBe("তৃতীয়া (দ্বারা, দিয়া, কর্তৃক)");
+  });
+
   it("skips parenthesised answers that match no option (never fabricates)", () => {
     const p = parseLine(
       "১৯. 'অপাঙ্ক্তেয়'-এর বিপরীতার্থক শব্দ কোনটি? ক. অতুলনীয় খ. ঘরোয়া গ. সামাজিক ঘ. পঙ্ক্তিহীন Ans. (সঠিক উত্তর: পাঙ্ক্তেয়) ব্যাখ্যা: কিছু ব্যাখ্যা।",
