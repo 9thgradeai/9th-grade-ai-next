@@ -101,7 +101,7 @@ export default function QuickActions({ pendingMistakes = 0, flashcardsDue = null
             className={`command-dock-btn relative ${a.primary ? "command-dock-btn--primary" : ""}`}
           >
             {a.badge != null && (
-              <span className="absolute -top-1 -right-1 px-1.5 py-0.2 min-w-[18px] text-[9px] font-mono font-bold rounded-full bg-[var(--dashboard-danger)] text-white shadow-sm z-10">
+              <span className="absolute -top-1 -right-1 px-1.5 py-0.2 min-w-[18px] text-[9px] font-mono font-bold rounded-full bg-[var(--dashboard-danger)] text-[var(--dashboard-text-inverse)] shadow-sm z-10">
                 {a.badge}
               </span>
             )}

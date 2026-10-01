@@ -473,7 +473,7 @@ export default function SettingsTab() {
                     aria-pressed={active}
                     className={`min-h-[36px] min-w-[52px] rounded-lg px-3 text-xs font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] ${
                       active
-                        ? "bg-[var(--dashboard-primary)] text-white shadow-sm"
+                        ? "bg-[var(--dashboard-primary)] text-[var(--dashboard-text-inverse)] shadow-sm"
                         : "text-[var(--dashboard-text-secondary)] hover:text-[var(--dashboard-text-primary)]"
                     }`}
                   >

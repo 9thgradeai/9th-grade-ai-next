@@ -72,7 +72,7 @@ export default function SubjectMastery({ reports, onPractice }: { reports: Repor
                 key={tab.id}
                 onClick={() => setFilter(tab.id)}
                 className={`px-2.5 py-1 text-[11px] font-bold rounded-md transition-colors ${
-                  filter === tab.id ? "bg-[var(--dashboard-primary)] text-white shadow-sm" : "text-[var(--dashboard-text-muted)]"
+                  filter === tab.id ? "bg-[var(--dashboard-primary)] text-[var(--dashboard-text-inverse)] shadow-sm" : "text-[var(--dashboard-text-muted)]"
                 }`}
               >
                 {tab.label}

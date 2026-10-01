@@ -175,7 +175,7 @@ export default function SessionSummary({
             {tier.icon === "gold" ? (
               <Star size={32} weight="fill" className="text-yellow-500" />
             ) : tier.icon === "silver" ? (
-              <Trophy size={32} className="text-gray-400" />
+              <Trophy size={32} className="text-[var(--dashboard-text-muted)]" />
             ) : (
               <Trophy size={32} className="text-orange-700" />
             )}
@@ -188,7 +188,7 @@ export default function SessionSummary({
           </h2>
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 p-1 rounded-lg hover:bg-black/10 transition-colors"
+            className="absolute top-4 right-4 min-h-[36px] min-w-[36px] inline-flex items-center justify-center rounded-lg text-[var(--dashboard-text-muted)] hover:bg-[var(--dashboard-surface-muted)] hover:text-[var(--dashboard-text-primary)] transition-colors"
           >
             <X size={20} style={{ color: "var(--text-muted)" }} />
           </button>

@@ -104,8 +104,8 @@ export default function DataStorageCard() {
         <div className="flex-1 min-w-0">
           <h3 className="text-sm font-semibold text-[var(--text-primary)] uppercase tracking-wider flex items-center gap-2">
             {t(lang, "ডেটা ও স্টোরেজ", "Data & Storage")}
-            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${connected ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400" : "bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300"}`}>
-              <span className={`w-1.5 h-1.5 rounded-full ${connected ? "bg-emerald-500 animate-pulse" : "bg-zinc-400"}`} />
+            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${connected ? "bg-[var(--dashboard-success-subtle)] border-[var(--dashboard-border-muted)] text-[var(--dashboard-success)]" : "bg-[var(--dashboard-surface-muted)] border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-secondary)]"}`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${connected ? "bg-[var(--dashboard-success)] animate-pulse" : "bg-[var(--dashboard-text-muted)]"}`} />
               {connected ? t(lang, "সংযুক্ত", "Connected") : t(lang, "সংযুক্ত নয়", "Not connected")}
             </span>
           </h3>
@@ -138,7 +138,7 @@ export default function DataStorageCard() {
 
       {/* Sync state */}
       {status && (status.pendingJobs > 0 || status.failedJobs > 0) && (
-        <div className={`mb-4 p-3 rounded-xl border flex items-center gap-2 text-xs ${status.failedJobs > 0 ? "bg-amber-500/10 border-amber-500/20 text-amber-600 dark:text-amber-400" : "bg-sky-500/10 border-sky-500/20 text-sky-600 dark:text-sky-400"}`}>
+        <div className={`mb-4 p-3 rounded-xl border flex items-center gap-2 text-xs ${status.failedJobs > 0 ? "bg-[var(--dashboard-warning-subtle)] border-[var(--dashboard-border-muted)] text-[var(--dashboard-warning)]" : "bg-[var(--dashboard-info-subtle)] border-[var(--dashboard-border-muted)] text-[var(--dashboard-info)]"}`}>
           {status.pendingJobs > 0 ? <ArrowsClockwise className="w-4 h-4 animate-spin" /> : <Warning className="w-4 h-4" />}
           <span>
             {status.pendingJobs > 0
@@ -163,7 +163,7 @@ export default function DataStorageCard() {
       )}
 
       {msg && (
-        <p className={`text-xs font-mono mb-3 flex items-center gap-1.5 ${msg.ok ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}>
+        <p className={`text-xs font-mono mb-3 flex items-center gap-1.5 ${msg.ok ? "text-[var(--dashboard-success)]" : "text-[var(--dashboard-danger)]"}`}>
           {msg.ok ? <CheckCircle className="w-3.5 h-3.5" /> : <Warning className="w-3.5 h-3.5" />} {msg.text}
         </p>
       )}
@@ -182,7 +182,7 @@ export default function DataStorageCard() {
             <button onClick={connect} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-[var(--border-strong)] bg-[var(--dashboard-surface)] text-[var(--dashboard-text-primary)] text-sm font-medium hover:bg-[var(--surface-hover)] transition-colors">
               <Link className="w-4 h-4" /> {t(lang, "পুনরায় সংযুক্ত", "Reconnect")}
             </button>
-            <button onClick={() => void disconnect()} disabled={!!actionLoading} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 text-sm font-medium hover:bg-red-100 dark:hover:bg-red-500/20 disabled:opacity-60 transition-colors">
+            <button onClick={() => void disconnect()} disabled={!!actionLoading} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-[var(--dashboard-border-muted)] bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)] text-sm font-medium hover:bg-[var(--dashboard-surface-muted)] disabled:opacity-60 transition-colors">
               {actionLoading === "disconnect" ? <Spinner className="w-4 h-4 animate-spin" /> : <X className="w-4 h-4" />} {t(lang, "বিচ্ছিন্ন করুন", "Disconnect")}
             </button>
           </>

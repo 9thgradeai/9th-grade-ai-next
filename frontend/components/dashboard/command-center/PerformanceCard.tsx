@@ -141,7 +141,7 @@ export default function PerformanceCard({
                 onClick={() => setMetric(val)}
                 aria-pressed={metric === val}
                 className={`px-2 py-1 text-[10px] font-bold rounded-md transition-colors ${
-                  metric === val ? "bg-[var(--dashboard-primary)] text-white shadow-sm" : "text-[var(--dashboard-text-muted)]"
+                  metric === val ? "bg-[var(--dashboard-primary)] text-[var(--dashboard-text-inverse)] shadow-sm" : "text-[var(--dashboard-text-muted)]"
                 }`}
               >
                 {label}

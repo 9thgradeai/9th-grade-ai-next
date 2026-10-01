@@ -55,6 +55,27 @@
      --z-tooltip). Do not redeclare --z-* here. */
 }
 
+/* Bare color utilities (bg-accent, text-primary, border-border,
+   border-terminal-border, text-text-muted, shadow-neon-glow, …) forward to
+   the runtime tokens. `inline` keeps the var() reference live so every
+   utility resolves per dashboard theme (light/dark) at runtime instead of
+   baking one mode's value — or emitting nothing at all (the pre-fix bug:
+   ~200 dashboard classes generated zero CSS, leaving buttons borderless
+   and text uninherited). Do NOT add baked values here. */
+@theme inline {
+  --color-primary: var(--primary);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-border: var(--border);
+  --color-surface: var(--surface);
+  --color-terminal-border: var(--border-subtle);
+  --color-text-inverse: var(--text-inverse);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --shadow-neon-glow: 0 2px 12px rgb(99 102 241 / 0.28), 0 0 0 1px rgb(99 102 241 / 0.35);
+}
+
 /* ══════════════════════════════════════════════════════════════════════════════
    DARK MODE (Default) — Pure Black
    ─────────────────────────────────────────────────────────────────────────────

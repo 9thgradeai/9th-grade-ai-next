@@ -29,11 +29,13 @@ const TYPE_ICONS: Record<string, typeof CheckCircle> = {
   REMINDER: Bell,
 };
 
+// Theme-coupled semantic tokens (never `dark:` — that follows the OS, not
+// the dashboard theme, so light-dashboard + dark-OS rendered wrong colors).
 const TYPE_COLORS: Record<string, { bg: string; text: string; border: string }> = {
-  SUCCESS: { bg: "bg-emerald-500/10", text: "text-emerald-600 dark:text-emerald-400", border: "border-l-emerald-500" },
-  WARNING: { bg: "bg-amber-500/10", text: "text-amber-600 dark:text-amber-400", border: "border-l-amber-500" },
-  INFO: { bg: "bg-sky-500/10", text: "text-sky-600 dark:text-sky-400", border: "border-l-sky-500" },
-  REMINDER: { bg: "bg-violet-500/10", text: "text-violet-600 dark:text-violet-400", border: "border-l-violet-500" },
+  SUCCESS: { bg: "bg-[var(--dashboard-success-subtle)]", text: "text-[var(--dashboard-success)]", border: "border-l-[var(--dashboard-success)]" },
+  WARNING: { bg: "bg-[var(--dashboard-warning-subtle)]", text: "text-[var(--dashboard-warning)]", border: "border-l-[var(--dashboard-warning)]" },
+  INFO: { bg: "bg-[var(--dashboard-info-subtle)]", text: "text-[var(--dashboard-info)]", border: "border-l-[var(--dashboard-info)]" },
+  REMINDER: { bg: "bg-[var(--dashboard-primary-subtle)]", text: "text-[var(--dashboard-primary)]", border: "border-l-[var(--dashboard-primary)]" },
 };
 
 const TYPE_LABELS: Record<string, string> = {
@@ -578,7 +580,7 @@ export default function NotificationCenter() {
                           <span
                             className={`px-2 py-0.5 rounded text-[10px] font-medium ${
                               badge.unlocked
-                                ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                                ? "bg-[var(--dashboard-success-subtle)] text-[var(--dashboard-success)]"
                                 : "bg-[var(--surface-muted)] text-[var(--dashboard-text-muted)]"
                             }`}
                           >
