@@ -110,7 +110,8 @@ describe("CustomExamTab (config phase)", () => {
 
     expect(await screen.findByText("পরীক্ষা নিশ্চিত করুন")).toBeInTheDocument();
     expect(screen.getByText(/সঠিক \+১/)).toBeInTheDocument();
-    expect(screen.getByText(/−০\.৫/)).toBeInTheDocument();
+    // Penalty label appears in the header blurb and the confirm-modal scoring row.
+    expect(screen.getAllByText(/−০\.৫/).length).toBeGreaterThanOrEqual(1);
   });
 
   it("per-subject count defaults and feeds the total", async () => {

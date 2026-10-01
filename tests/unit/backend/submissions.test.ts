@@ -42,6 +42,10 @@ describe("submitPracticeAnswers (atomic attempts + progress)", () => {
       total: 2,
       score: 50,
       pointsEarned: 10,
+      wrong: 1,
+      negativeMarks: 0.5,
+      finalScore: 0.5,
+      penaltyPerWrong: 0.5,
       feedback: {
         1: { masteryStatus: "NEW", isMistake: false, justMastered: false },
         2: { masteryStatus: "STRUGGLING", isMistake: true, justMastered: false },
@@ -126,6 +130,49 @@ describe("submitPracticeAnswers (multi-pick, all-or-nothing)", () => {
     ] as never);
     const summary = await submitPracticeAnswers("userA", [{ questionId: 8, selected: "A" }]);
     expect(summary.correct).toBe(1);
+  });
+});
+
+describe("submitPracticeAnswers (ecosystem negative marking)", () => {
+  const bankRow = {
+    id: 21,
+    correctAnswer: "ক",
+    correctAnswers: [],
+    subjectId: 5,
+    ecosystemId: 2,
+    topicId: null,
+    topic: "সাধারণ জ্ঞান",
+    difficulty: "MEDIUM",
+    subject: { nameBn: "ব্যাংক" },
+    ecosystem: { code: "BANGLADESH_BANK" },
+  };
+
+  beforeEach(() => {
+    vi.mocked(prisma.question.findMany).mockResolvedValue([bankRow] as never);
+    vi.mocked(prisma.userQuestionProgress.findMany).mockResolvedValue([] as never);
+    vi.mocked(prisma.$transaction).mockImplementation(async (fn) =>
+      (fn as unknown as (tx: unknown) => Promise<unknown>)(prisma),
+    );
+  });
+
+  it("applies −0.25 per wrong MCQ for Bank questions", async () => {
+    const summary = await submitPracticeAnswers("userA", [{ questionId: 21, selected: "খ" }]);
+    expect(summary.wrong).toBe(1);
+    expect(summary.penaltyPerWrong).toBe(0.25);
+    expect(summary.negativeMarks).toBe(0.25);
+    expect(summary.finalScore).toBe(-0.25);
+  });
+
+  it("applies −0.50 per wrong MCQ for BCS (explicit ecosystem)", async () => {
+    vi.mocked(prisma.question.findMany).mockResolvedValue([{ ...bankRow, ecosystem: { code: "BCS" } }] as never);
+    const summary = await submitPracticeAnswers(
+      "userA",
+      [{ questionId: 21, selected: "খ" }],
+      "BCS",
+    );
+    expect(summary.penaltyPerWrong).toBe(0.5);
+    expect(summary.negativeMarks).toBe(0.5);
+    expect(summary.finalScore).toBe(-0.5);
   });
 });
 

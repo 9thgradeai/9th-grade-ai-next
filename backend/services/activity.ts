@@ -28,6 +28,14 @@ export type SubmissionSummary = {
   total: number;
   score: number; // percentage 0-100
   pointsEarned: number;
+  /** Wrong count (answered but incorrect). */
+  wrong?: number;
+  /** Negative marks deducted (wrong × penalty). */
+  negativeMarks?: number;
+  /** Net score: correct − wrong × penalty. */
+  finalScore?: number;
+  /** Penalty applied per wrong MCQ (0.25 Bank, 0.50 BCS). */
+  penaltyPerWrong?: number;
   /** Per-question mastery feedback, keyed by questionId (mistake practice). */
   feedback?: Record<number, { masteryStatus: string; isMistake: boolean; justMastered: boolean }>;
 };
@@ -142,6 +150,7 @@ function serializeSelected(selected: string | string[]): string {
 export async function submitPracticeAnswers(
   userId: string,
   answers: SubmittedAnswer[],
+  ecosystemCode?: string | null,
 ): Promise<SubmissionSummary> {
   try {
     // Unanswered questions are sent as "" (or []) — skip them so they are
@@ -161,6 +170,7 @@ export async function submitPracticeAnswers(
         correctAnswers: true,
         difficulty: true,
         subject: { select: { nameBn: true } },
+        ecosystem: { select: { code: true } },
       },
     });
     // Previous per-question progress (READ BEFORE the transaction writes) — the
@@ -178,6 +188,17 @@ export async function submitPracticeAnswers(
     const priorById = new Map(priorProgress.map((p) => [p.questionId, p]));
     const { correct, total } = gradeAnswers(answered, questions);
     const byId = new Map(questions.map((q) => [q.id, q]));
+    // Negative marking per ecosystem: Bank −0.25 / wrong, BCS −0.50 / wrong.
+    // Prefer the explicit client ecosystem; fall back to the questions' own
+    // ecosystem codes so mixed/unknown sessions use the BCS rule.
+    const codeFromQuestions =
+      questions.length > 0 && questions.every((q) => q.ecosystem?.code === "BANGLADESH_BANK")
+        ? "BANGLADESH_BANK"
+        : "BCS";
+    const penaltyPerWrong = (ecosystemCode ?? codeFromQuestions) === "BANGLADESH_BANK" ? 0.25 : 0.5;
+    const wrong = answered.length - correct;
+    const negativeMarks = Math.round(wrong * penaltyPerWrong * 100) / 100;
+    const finalScore = Math.round((correct - wrong * penaltyPerWrong) * 100) / 100;
 
     const attempts: AttemptRow[] = answered.map((a) => {
       const q = byId.get(a.questionId);
@@ -247,7 +268,7 @@ export async function submitPracticeAnswers(
       score: total > 0 ? Math.round((correct / total) * 100) : 0,
       attempts: attemptFacts,
     });
-    return { correct, total, score: total > 0 ? Math.round((correct / total) * 100) : 0, pointsEarned, feedback };
+    return { correct, total, score: total > 0 ? Math.round((correct / total) * 100) : 0, pointsEarned, feedback, wrong, negativeMarks, finalScore, penaltyPerWrong };
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new InternalServerError("Failed to record practice answers");

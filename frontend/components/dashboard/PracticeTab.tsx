@@ -2,9 +2,10 @@
 
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
-import { Check, Play, BookOpen, Timer, CaretLeft, CaretRight, CircleDashed, Trophy, ArrowCounterClockwise, Target, CheckCircle, XCircle, Spinner, Warning, Package, Sun } from "@phosphor-icons/react";
+import { Check, Play, BookOpen, Timer, CaretLeft, CaretRight, CircleDashed, Trophy, ArrowCounterClockwise, Target, CheckCircle, XCircle, Spinner, Warning, Package, Sun, Minus, Plus } from "@phosphor-icons/react";
 import { api } from "@/lib/services/api";
 import { useEcosystem } from "@/lib/ecosystem-ctx";
+import { autoDurationMin, autoDurationSec, formatDurationShort, negativeLabelForEcosystem, negativePenaltyForEcosystem, SECONDS_PER_QUESTION } from "@/lib/exam-scoring";
 import { DIFFICULTY_LABEL } from "@/lib/exam-ui";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 import type { Server } from "@/lib/types";
@@ -25,7 +26,7 @@ import { shuffleSessionOptions } from "@/lib/shuffle-options";
 
 type PracticeMode = "custom" | "mock" | "quick";
 
-const QUESTION_TIME_LIMIT = 30;
+const QUESTION_TIME_LIMIT = SECONDS_PER_QUESTION;
 
 // Quick-practice sessions survive tab switches/remounts via localStorage.
 const QUICK_STORAGE_KEY = "ninth-grade-ai:practice:quick";
@@ -111,11 +112,14 @@ export default function PracticeTab() {
   // Explicit locks for MULTIPLE_CHOICE only — single-choice locks on first
   // pick (presence), but multi needs several toggles before locking.
   const [multiLocked, setMultiLocked] = useState<Record<number, true>>({});
-  const [result, setResult] = useState<{ correct: number; total: number; score: number; pointsEarned: number } | null>(null);
+  const [result, setResult] = useState<{ correct: number; total: number; score: number; pointsEarned: number; wrong?: number; negativeMarks?: number; finalScore?: number; penaltyPerWrong?: number } | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [showUnansweredConfirm, setShowUnansweredConfirm] = useState(false);
   const [timerKey, setTimerKey] = useState(0);
+  // Total session time (minutes, editable). Auto = 30s per selected MCQ.
+  const [durationMin, setDurationMin] = useState(10);
+  const [durationTouched, setDurationTouched] = useState(false);
 
   const scrollDashboardTop = () => {
     const prefersReduced = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -217,6 +221,20 @@ export default function PracticeTab() {
 
   const insufficient = totalCount > availableTotal;
   const sessionTitle = selectedSubjects.map((s) => s.nameBn).join(", ");
+  const penaltyPerWrong = negativePenaltyForEcosystem(ecosystem);
+  const negativeLabel = negativeLabelForEcosystem(ecosystem);
+  const autoMin = autoDurationMin(totalCount);
+  const autoSec = autoDurationSec(totalCount);
+
+  // Auto time = 30s per selected MCQ; user edits opt out of auto-sync.
+  useEffect(() => {
+    if (!durationTouched && totalCount > 0) setDurationMin(autoDurationMin(totalCount));
+  }, [totalCount, durationTouched]);
+
+  const adjustDuration = (delta: number) => {
+    setDurationTouched(true);
+    setDurationMin((d) => Math.max(1, Math.min(180, d + delta)));
+  };
 
   const sessionQuestions = questions;
 
@@ -239,6 +257,7 @@ export default function PracticeTab() {
     setLoadError(null);
     setSubmitError(null);
     setTimerKey((k) => k + 1);
+    setDurationTouched(false);
   };
 
   // Resume an interrupted quick-practice session so tab switches never
@@ -389,9 +408,11 @@ export default function PracticeTab() {
   const sessionQuestionsRef = useRef(sessionQuestions);
   const answersRef = useRef(answers);
   const resultRef = useRef(result);
+  const ecosystemRef = useRef(ecosystem);
   useEffect(() => { sessionQuestionsRef.current = sessionQuestions; }, [sessionQuestions]);
   useEffect(() => { answersRef.current = answers; }, [answers]);
   useEffect(() => { resultRef.current = result; }, [result]);
+  useEffect(() => { ecosystemRef.current = ecosystem; }, [ecosystem]);
 
   const submitAnswers = useCallback(async () => {
     if (practiceSubmitInFlight.current) return practiceSubmitInFlight.current;
@@ -408,6 +429,7 @@ export default function PracticeTab() {
           const sel = answersRef.current[q.id];
           return { questionId: q.id, selected: sel && sel.length > 0 ? sel : "" };
         }),
+        ecosystemRef.current,
       );
       try {
         localStorage.removeItem(QUICK_STORAGE_KEY);
@@ -568,26 +590,63 @@ export default function PracticeTab() {
                     onSelectionChange={setSelection}
                   />
 
-                  {/* Total questions */}
-                  <div className="glass-card rounded-xl border border-terminal-border p-4 flex items-center justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="text-sm text-[var(--dashboard-text-secondary)] font-mono">মোট প্রশ্ন</p>
-                      <p className="text-xs text-[var(--dashboard-text-muted)] mt-0.5">
-                        উপলব্ধ:{" "}
-                        <span className={`font-mono ${insufficient ? "text-[var(--dashboard-danger)]" : "text-[var(--dashboard-primary)]"}`}>
-                          {availableTotal}টি
-                        </span>
-                      </p>
+                  {/* Total questions + editable time (auto 30s per MCQ) */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="glass-card rounded-xl border border-terminal-border p-4 flex items-center justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="text-sm text-[var(--dashboard-text-secondary)] font-mono">মোট প্রশ্ন</p>
+                        <p className="text-xs text-[var(--dashboard-text-muted)] mt-0.5">
+                          উপলব্ধ:{" "}
+                          <span className={`font-mono ${insufficient ? "text-[var(--dashboard-danger)]" : "text-[var(--dashboard-primary)]"}`}>
+                            {availableTotal}টি
+                          </span>
+                        </p>
+                      </div>
+                      <span
+                        className={`text-2xl font-bold font-mono ${
+                          totalCount > 0 ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-text-secondary)]"
+                        }`}
+                      >
+                        {totalCount}
+                        <span className="text-xs text-[var(--dashboard-text-muted)] ml-1">প্র.</span>
+                      </span>
                     </div>
-                    <span
-                      className={`text-2xl font-bold font-mono ${
-                        totalCount > 0 ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-text-secondary)]"
-                      }`}
-                    >
-                      {totalCount}
-                      <span className="text-xs text-[var(--dashboard-text-muted)] ml-1">প্র.</span>
-                    </span>
+
+                    <div className="glass-card rounded-xl border border-terminal-border p-4 flex items-center justify-between gap-3">
+                      <div>
+                        <p className="text-sm text-[var(--dashboard-text-secondary)] font-mono">সময়সীমা</p>
+                        <p className="text-xs text-[var(--dashboard-text-muted)] mt-0.5">
+                          {durationMin} মিনিট{durationTouched ? " (নিজে নির্ধারিত)" : totalCount > 0 ? ` (অটো: ${totalCount}×৩০সে = ${formatDurationShort(autoSec)})` : " (অটো: ৩০সে/প্রশ্ন)"}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => adjustDuration(-1)}
+                          className="w-8 h-8 rounded-lg bg-[var(--surface-raised)] border border-[var(--primary)]/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-[var(--primary)]/40"
+                          aria-label="সময় কমান"
+                        >
+                          <Minus className="w-4 h-4" />
+                        </button>
+                        <span className="text-2xl font-bold text-[var(--dashboard-primary)] font-mono w-8 text-center">{durationMin}</span>
+                        <button
+                          onClick={() => adjustDuration(1)}
+                          className="w-8 h-8 rounded-lg bg-[var(--surface-raised)] border border-[var(--primary)]/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-[var(--primary)]/40"
+                          aria-label="সময় বাড়ান"
+                        >
+                          <Plus className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
                   </div>
+                  {!durationTouched && totalCount > 0 && durationMin !== autoMin && (
+                    <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">
+                      অটো সময় {autoMin} মিনিট — প্রয়োজনে +/− দিয়ে বদলাতে পারেন।
+                    </p>
+                  )}
+
+                  <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">
+                    স্কোরিং: সঠিক +১ • ভুল {negativeLabel} • না দেওয়া ০ ({ecosystem === "BCS" ? "BCS" : "ব্যাংক"} নিয়ম)
+                  </p>
 
                   {insufficient && (
                     <div className="flex items-start gap-2 rounded-xl border border-[var(--warning)]/30 bg-[var(--dashboard-warning-subtle)] p-3 text-xs text-[var(--dashboard-warning)]">
@@ -814,6 +873,11 @@ export default function PracticeTab() {
                 <p className="text-sm text-[var(--dashboard-text-muted)] font-mono mb-1">
                   {result.correct} / {result.total} সঠিক
                 </p>
+                {result.wrong !== undefined && (
+                  <p className="text-xs text-[var(--dashboard-text-muted)] font-mono mb-1">
+                    ভুল {result.wrong}টি × {negativeLabelForEcosystem(ecosystem)} = −{result.negativeMarks ?? 0} • নিট {result.finalScore ?? result.correct}
+                  </p>
+                )}
                 <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">
                   +{result.pointsEarned} পয়েন্ট অর্জিত
                 </p>

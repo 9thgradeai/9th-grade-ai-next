@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Trophy, Play, Flag, Timer, Check, CaretLeft, CaretRight, Minus, Plus, Spinner, Warning, CircleDashed, CheckCircle, XCircle,  } from "@phosphor-icons/react";
 import { api } from "@/lib/services/api";
 import { useEcosystem } from "@/lib/ecosystem-ctx";
+import { autoDurationMin, autoDurationSec, formatDurationShort, negativeLabelForEcosystem } from "@/lib/exam-scoring";
 import {
   submitExamAttempt as canonicalSubmitExamAttempt,
   registerExam,
@@ -59,6 +60,7 @@ export default function MockTestTab() {
   const [configError, setConfigError] = useState<string | null>(null);
   const [selection, setSelection] = useState<Selection>({});
   const [durationMin, setDurationMin] = useState(30);
+  const [durationTouched, setDurationTouched] = useState(false);
   const [buildLoading, setBuildLoading] = useState(false);
   const [buildError, setBuildError] = useState<string | null>(null);
 
@@ -274,8 +276,15 @@ export default function MockTestTab() {
   );
 
   const insufficient = totalCount > availableTotal;
+  const negativeLabel = negativeLabelForEcosystem(ecosystem);
+
+  // Auto time = 30s per selected MCQ; manual +/− opts out of auto-sync.
+  useEffect(() => {
+    if (!durationTouched && totalCount > 0) setDurationMin(autoDurationMin(totalCount));
+  }, [totalCount, durationTouched]);
 
   const adjustDuration = (delta: number) => {
+    setDurationTouched(true);
     setDurationMin((d) => Math.max(1, Math.min(180, d + delta)));
   };
 
@@ -446,6 +455,7 @@ export default function MockTestTab() {
     setTestState("setup");
     setSelection({});
     setDurationMin(30);
+    setDurationTouched(false);
     setQuestions([]);
     setAnswers({});
     setCurrentQuestion(0);
@@ -474,7 +484,7 @@ export default function MockTestTab() {
               <h2 className="text-lg font-bold text-[var(--text-primary)]">মক টেস্ট</h2>
             </div>
             <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">
-              বিষয়, টপিক ও সাবটপিক বেছে নিয়ে সময়সীমা সহ পূর্ণাঙ্গ মক পরীক্ষা দিন — নেগেটিভ মার্কিং সহ বিসিএস ধাঁচে।
+              বিষয়, টপিক ও সাবটপিক বেছে নিয়ে সময়সীমা সহ পূর্ণাঙ্গ মক পরীক্ষা দিন — নেগেটিভ মার্কিং সহ {ecosystem === "BCS" ? "বিসিএস" : "ব্যাংক"} ধাঁচে (ভুল {negativeLabel})।
             </p>
           </div>
         </motion.div>
@@ -536,7 +546,7 @@ export default function MockTestTab() {
               <div className="glass-card rounded-xl border border-terminal-border p-4 flex items-center justify-between gap-3">
                 <div>
                   <p className="text-sm text-[var(--dashboard-text-secondary)] font-mono">সময়সীমা</p>
-                  <p className="text-xs text-[var(--dashboard-text-muted)] mt-0.5">{durationMin} মিনিট</p>
+                  <p className="text-xs text-[var(--dashboard-text-muted)] mt-0.5">{durationMin} মিনিট{durationTouched ? " (নিজে নির্ধারিত)" : totalCount > 0 ? ` (অটো: ${totalCount}×৩০সে = ${formatDurationShort(autoDurationSec(totalCount))})` : " (অটো: ৩০সে/প্রশ্ন)"}</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <button

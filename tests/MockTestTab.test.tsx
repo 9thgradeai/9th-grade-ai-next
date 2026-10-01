@@ -107,7 +107,8 @@ describe("MockTestTab (subtopic selection + build)", () => {
     const buildCall = fetchMock.mock.calls.find((c) => String(c[0]).startsWith("/api/exam/build"));
     const body = JSON.parse(String(buildCall?.[1]?.body)) as Server.ExamSelectionRequest;
     expect(body.subjects[0].paths).toEqual(["ভাষা/বানান ও শুদ্ধি"]);
-    expect(body.durationSec).toBe(1800); // default 30 minutes
+    // Auto time: 10 selected MCQs × 30s = 300s (user-editable via +/−).
+    expect(body.durationSec).toBe(300);
   });
 
   it("locks the answer after the first selection (cannot be changed)", async () => {

@@ -24,10 +24,10 @@ export async function POST(request: Request) {
     }
     await assertSubmitAllowed(userId);
 
-    const body = (await request.json().catch(() => ({}))) as { answers?: SubmittedAnswer[] };
+    const body = (await request.json().catch(() => ({}))) as { answers?: SubmittedAnswer[]; ecosystem?: string };
     validateSubmittedAnswers(body.answers);
 
-    const summary = await submitPracticeAnswers(userId, body.answers);
+    const summary = await submitPracticeAnswers(userId, body.answers, body.ecosystem ?? null);
     const res = NextResponse.json({ summary });
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");

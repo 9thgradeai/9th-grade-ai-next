@@ -551,6 +551,7 @@ export async function submitCustomExam(
         year: true,
         difficulty: true,
         subject: { select: { nameBn: true } },
+        ecosystem: { select: { code: true } },
       },
     });
     if (questions.length !== new Set(ids).size) {
@@ -558,6 +559,11 @@ export async function submitCustomExam(
     }
 
     const byId = new Map(questions.map((q) => [q.id, q]));
+    // Negative marking per ecosystem: Bank −0.25 / wrong, BCS −0.50 / wrong.
+    const penaltyPerWrong =
+      questions.length > 0 && questions.every((q) => q.ecosystem?.code === "BANGLADESH_BANK")
+        ? 0.25
+        : 0.5;
     let correct = 0;
     let wrong = 0;
     let attempted = 0;
@@ -580,7 +586,7 @@ export async function submitCustomExam(
       } else {
         status = "wrong";
         wrong += 1;
-        marks = -0.5;
+        marks = -penaltyPerWrong;
       }
       if (status !== "unanswered") attempted += 1;
 
@@ -602,8 +608,8 @@ export async function submitCustomExam(
     const total = review.length;
     const unanswered = total - attempted;
     const positiveMarks = correct;
-    const negativeMarks = Math.round(wrong * 0.5 * 100) / 100;
-    const finalScore = Math.round((correct - wrong * 0.5) * 100) / 100;
+    const negativeMarks = Math.round(wrong * penaltyPerWrong * 100) / 100;
+    const finalScore = Math.round((correct - wrong * penaltyPerWrong) * 100) / 100;
     const accuracy = attempted > 0 ? Math.round((correct / attempted) * 100) : 0;
     const percentage = total > 0 ? Math.max(0, Math.min(100, Math.round((finalScore / total) * 100))) : 0;
     const pointsEarned = correct * 10;

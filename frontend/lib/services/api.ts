@@ -717,11 +717,16 @@ export const api = {
 
   submitPractice: async (
     answers: { questionId: number; selected: string | string[]; durationSec?: number; confidence?: number }[],
+    ecosystem?: string | null,
   ): Promise<{
     correct: number;
     total: number;
     score: number;
     pointsEarned: number;
+    wrong?: number;
+    negativeMarks?: number;
+    finalScore?: number;
+    penaltyPerWrong?: number;
     feedback?: Record<number, { masteryStatus: string; isMistake: boolean; justMastered: boolean }>;
   }> => {
     const data = await request<{
@@ -730,6 +735,10 @@ export const api = {
         total: number;
         score: number;
         pointsEarned: number;
+        wrong?: number;
+        negativeMarks?: number;
+        finalScore?: number;
+        penaltyPerWrong?: number;
         feedback?: Record<number, { masteryStatus: string; isMistake: boolean; justMastered: boolean }>;
       };
     }>(
@@ -737,7 +746,7 @@ export const api = {
       {
         method: "POST",
         ...AUTH_FETCH_INIT,
-        body: JSON.stringify({ answers }),
+        body: JSON.stringify({ answers, ecosystem: ecosystem ?? undefined }),
         headers: { "Content-Type": "application/json" },
         // No auto-retry: practice writes attempts without an idempotency key;
         // a retry could double-count points. The caller surfaces the error and

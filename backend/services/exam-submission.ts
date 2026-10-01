@@ -52,6 +52,22 @@ import type { ExamReviewDTO } from "@/lib/types";
 
 const POINTS_PER_CORRECT = 10;
 
+/** Negative marking per wrong MCQ: Bank −0.25, BCS (default) −0.50. */
+export function negativePenaltyForEcosystem(code?: string | null): number {
+  return code === "BANGLADESH_BANK" ? 0.25 : 0.5;
+}
+
+/** Derive the session penalty from the loaded questions' ecosystem codes.
+ * A session is Bank only when every question belongs to BANGLADESH_BANK;
+ * mixed/unknown sessions fall back to the BCS rule (−0.50). */
+function penaltyForQuestions(
+  questions: Array<{ ecosystem?: { code?: string } | null }>,
+): number {
+  if (questions.length === 0) return 0.5;
+  const allBank = questions.every((q) => q.ecosystem?.code === "BANGLADESH_BANK");
+  return allBank ? 0.25 : 0.5;
+}
+
 // Network grace window granted past the configured exam deadline. The client
 // auto-submits on timer expiry, so a legitimate submit lands within ~1s of the
 // deadline; this buffer absorbs clock skew and high-latency deployments.
@@ -170,6 +186,7 @@ function hashQuestionSet(ids: number[]): string {
 function gradeAnswers(
   answers: Array<{ questionId: number; selected: string }>,
   reference: Map<number, ExamQuestionRow>,
+  penaltyPerWrong = 0.5,
 ): {
   correct: number;
   wrong: number;
@@ -197,7 +214,7 @@ function gradeAnswers(
     } else {
       status = "wrong";
       wrong += 1;
-      marks = -0.5;
+      marks = -penaltyPerWrong;
     }
     if (status !== "unanswered") attempted += 1;
     review.push({
@@ -228,6 +245,7 @@ type ExamQuestionRow = {
   correctAnswer: string | null;
   explanation: string;
   subject: { nameBn: string } | null;
+  ecosystem?: { code?: string } | null;
 };
 
 /** Snapshot stored on ExamAttempt.summaryJson so idempotent retries can
@@ -371,6 +389,7 @@ export async function submitExamAttempt(
         explanation: true,
         difficulty: true,
         subject: { select: { nameBn: true } },
+        ecosystem: { select: { code: true } },
       },
     });
     if (questions.length !== new Set(questionIds).size) {
@@ -381,7 +400,8 @@ export async function submitExamAttempt(
       );
     }
     const byId = new Map(questions.map((q) => [q.id, q]));
-    const { correct, wrong, attempted, review } = gradeAnswers(validAnswers, byId);
+    const penaltyPerWrong = penaltyForQuestions(questions);
+    const { correct, wrong, attempted, review } = gradeAnswers(validAnswers, byId, penaltyPerWrong);
 
     // Previous per-question progress — read before the transaction so the
     // error classifier sees the state PRIOR to this exam, not after.
@@ -400,8 +420,8 @@ export async function submitExamAttempt(
     const total = review.length;
     const unanswered = total - attempted;
     const positiveMarks = correct;
-    const negativeMarks = Math.round(wrong * 0.5 * 100) / 100;
-    const finalScore = Math.round((correct - wrong * 0.5) * 100) / 100;
+    const negativeMarks = Math.round(wrong * penaltyPerWrong * 100) / 100;
+    const finalScore = Math.round((correct - wrong * penaltyPerWrong) * 100) / 100;
     const accuracy = attempted > 0 ? Math.round((correct / attempted) * 100) : 0;
     const percentage =
       total > 0 ? Math.max(0, Math.min(100, Math.round((finalScore / total) * 100))) : 0;

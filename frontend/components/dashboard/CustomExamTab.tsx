@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Check, Play, Timer, BookOpen, Trophy, ArrowCounterClockwise, Warning, CheckCircle, XCircle, Minus, Plus, GridFour, List, Clock, Flag, CircleDashed, Spinner,  } from "@phosphor-icons/react";
 import { api } from "@/lib/services/api";
 import { useEcosystem } from "@/lib/ecosystem-ctx";
+import { autoDurationMin, autoDurationSec, formatDurationShort, negativeLabelForEcosystem } from "@/lib/exam-scoring";
 import {
   submitExamAttempt as canonicalSubmitExamAttempt,
   registerExam,
@@ -119,6 +120,7 @@ export default function CustomExamTab() {
   const [configError, setConfigError] = useState<string | null>(null);
   const [selection, setSelection] = useState<Selection>({});
   const [durationMin, setDurationMin] = useState(15);
+  const [durationTouched, setDurationTouched] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [buildLoading, setBuildLoading] = useState(false);
   const [buildError, setBuildError] = useState<string | null>(null);
@@ -354,8 +356,15 @@ export default function CustomExamTab() {
   );
 
   const insufficient = totalCount > availableTotal;
+  const negativeLabel = negativeLabelForEcosystem(ecosystem);
+
+  // Auto time = 30s per selected MCQ; manual +/− opts out of auto-sync.
+  useEffect(() => {
+    if (!durationTouched && totalCount > 0) setDurationMin(autoDurationMin(totalCount));
+  }, [totalCount, durationTouched]);
 
   const adjustDuration = (delta: number) => {
+    setDurationTouched(true);
     setDurationMin((d) => Math.max(1, Math.min(180, d + delta)));
   };
 
@@ -559,6 +568,7 @@ export default function CustomExamTab() {
     setShowUnansweredConfirm(false);
     setSelection({});
     setDurationMin(15);
+    setDurationTouched(false);
     try {
       localStorage.removeItem(STORAGE_KEY);
     } catch {
@@ -587,7 +597,7 @@ export default function CustomExamTab() {
               <h2 className="text-lg font-bold text-[var(--text-primary)]">কাস্টম বিসিএস পরীক্ষা</h2>
             </div>
             <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">
-              বিষয়, টপিক ও সাবটপিক বেছে নিয়ে নিজের পছন্দের পরীক্ষা তৈরি করুন — নেগেটিভ মার্কিং সহ বাস্তব বিসিএস ধাঁচে।
+              বিষয়, টপিক ও সাবটপিক বেছে নিয়ে নিজের পছন্দের পরীক্ষা তৈরি করুন — নেগেটিভ মার্কিং সহ বাস্তব {ecosystem === "BCS" ? "বিসিএস" : "ব্যাংক"} ধাঁচে (ভুল {negativeLabel})।
             </p>
           </div>
         </motion.div>
@@ -646,7 +656,7 @@ export default function CustomExamTab() {
                 <div>
                   <p className="text-sm text-[var(--dashboard-text-secondary)] font-mono">সময়সীমা</p>
                   <p className="text-xs text-[var(--dashboard-text-muted)] mt-0.5">
-                    {durationMin} মিনিট (প্রশ্নপ্রতি ~{Math.max(1, Math.round(durationMin / Math.max(1, totalCount)))} মি.)
+                    {durationMin} মিনিট{durationTouched ? " (নিজে নির্ধারিত)" : totalCount > 0 ? ` (অটো: ${totalCount}×৩০সে = ${formatDurationShort(autoDurationSec(totalCount))})` : " (অটো: ৩০সে/প্রশ্ন)"} (প্রশ্নপ্রতি ~{Math.max(1, Math.round(durationMin / Math.max(1, totalCount)))} মি.)
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -786,7 +796,7 @@ export default function CustomExamTab() {
                       </p>
                       <p className="flex justify-between text-xs">
                         <span className="text-[var(--dashboard-text-muted)] font-mono">স্কোরিং</span>
-                        <span className="text-[var(--text-primary)] font-mono">সঠিক +১ • ভুল −০.৫ • না দেওয়া ০</span>
+                        <span className="text-[var(--text-primary)] font-mono">সঠিক +১ • ভুল {negativeLabel} • না দেওয়া ০</span>
                       </p>
                     </div>
 
