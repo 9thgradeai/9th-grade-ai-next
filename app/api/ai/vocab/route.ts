@@ -11,6 +11,7 @@ import {
   explainWordRelationships,
 } from "~backend/services/vocab-ai";
 import { getRequestId, startTiming, applySecurityHeaders, assertSameOrigin } from "../../_middleware";
+import { enforceAiQuotas } from "~backend/rate-limit";
 
 type VocabAction = "mnemonic" | "examples" | "wordOfDay" | "relationships";
 
@@ -63,6 +64,10 @@ export async function POST(request: Request) {
     if (!userId) {
       throw new UnauthorizedError("Sign in to use AI vocabulary features.");
     }
+
+    // Every action fans out to a real LLM call — same quota bucket as the
+    // other generative endpoints so one account cannot loop unbounded spend.
+    await enforceAiQuotas(request, "solver", userId);
 
     const body = await request.json().catch(() => ({}));
     const req = validateRequest(body);

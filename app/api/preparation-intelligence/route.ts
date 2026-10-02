@@ -62,11 +62,6 @@ export async function GET(request: Request) {
     applyCacheHeaders(res, { public: false, maxAge: 0 });
     applySecurityHeaders(res);
     return res;
-    res.headers.set("X-Request-Id", requestId);
-    res.headers.set("X-Response-Time", getTime() + "ms");
-    applyCacheHeaders(res, { public: false, maxAge: 0 });
-    applySecurityHeaders(res);
-    return res;
   } catch (err) {
     const res = toHttpResponse(err);
     res.headers.set("X-Request-Id", requestId);

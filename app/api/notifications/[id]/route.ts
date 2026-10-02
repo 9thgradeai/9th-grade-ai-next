@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { deleteNotification } from "~backend/services/notification";
+import { deleteUserNotification } from "~backend/services/notification";
 import { getUserIdFromRequest } from "~backend/services/user";
 import { AppError, toHttpResponse, ValidationError } from "~backend/errors";
 import { getRequestId, startTiming, applySecurityHeaders, assertSameOrigin } from "../../_middleware";
@@ -24,8 +24,10 @@ export async function DELETE(
       throw new ValidationError("Notification id must be a positive integer.");
     }
 
-    const result = await deleteNotification(notificationId);
-    const res = NextResponse.json(result);
+    // Ownership-scoped: deletes the caller's own notification, hides (marks
+    // read) shared broadcasts. Never deletes another user's row.
+    await deleteUserNotification(userId, notificationId);
+    const res = NextResponse.json({ deleted: true });
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");
     applySecurityHeaders(res);

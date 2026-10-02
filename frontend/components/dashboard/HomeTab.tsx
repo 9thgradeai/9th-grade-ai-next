@@ -333,13 +333,22 @@ export default function HomeTab() {
     setActiveTab("mistakes");
   };
 
+  const startDailyWarmup = () => {
+    setPracticeIntent({ mode: "quick" });
+    setActiveTab("practice");
+  };
+
   const handleRecommendation = (rec: PrepIntelligenceRecommendation) => {
     switch (rec.id) {
-      case "resume-exam": /* practice tab resumes the persisted mock test */
+      case "resume-exam": /* unfinished mock resumes in mock mode */
       case "exam-near":
+        setPracticeIntent({ mode: "mock" });
+        setActiveTab("practice");
+        break;
       case "daily-quiz":
       case "daily-warmup":
       case "keep-going":
+        setPracticeIntent({ mode: "quick" });
         setActiveTab("practice");
         break;
       case "practice-weak-topic":
@@ -509,7 +518,7 @@ export default function HomeTab() {
             onStartPractice={practiceSubject}
             onStartMistakes={() => mistakeSubject()}
             onReviewFlashcards={() => setActiveTab("flashcards")}
-            onStartDailyQuiz={() => setActiveTab("practice")}
+            onStartDailyQuiz={startDailyWarmup}
           />
         )}
       </RevealSection>
@@ -575,8 +584,11 @@ export default function HomeTab() {
         ) : (
           <ContinueLearning
             intelligence={intelligence}
-            onResumeExam={() => setActiveTab("practice")}
-            onStartDailyQuiz={() => setActiveTab("practice")}
+            onResumeExam={() => {
+              setPracticeIntent({ mode: "mock" });
+              setActiveTab("practice");
+            }}
+            onStartDailyQuiz={startDailyWarmup}
           />
         )}
       </RevealSection>

@@ -3,9 +3,13 @@ import { prisma } from "~backend/db";
 import { getWeakTopics } from "~backend/services/analytics";
 import { getWrongAnswerNotebook, getLeaderboard } from "~backend/services/content";
 import { getDailyQuizHistory } from "~backend/services/activity";
+import { clearQueryCache } from "~backend/infrastructure/cache/query-cache";
 
 beforeEach(() => {
   vi.clearAllMocks();
+  // getLeaderboard reads the 30s result cache — reset it so mocked Prisma rows
+  // (not a previous test's entries) drive every assertion.
+  clearQueryCache();
 });
 
 describe("getWeakTopics (weak-topic report)", () => {

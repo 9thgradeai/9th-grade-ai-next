@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Check, BookOpen, Timer, CaretLeft, CaretRight, CircleDashed, Trophy, ArrowCounterClockwise, Target, CheckCircle, XCircle, Spinner, Warning, Package, Sun } from "@phosphor-icons/react";
 import { api } from "@/lib/services/api";
@@ -93,8 +94,9 @@ function PracticeTimer({
 }
 
 export default function PracticeTab() {
-  const { practiceIntent, setPracticeIntent } = useDashboardStore(s => ({ practiceIntent: s.practiceIntent, setPracticeIntent: s.setPracticeIntent }));
+  const { practiceIntent, setPracticeIntent, setMistakeIntent } = useDashboardStore(s => ({ practiceIntent: s.practiceIntent, setPracticeIntent: s.setPracticeIntent, setMistakeIntent: s.setMistakeIntent }));
   const { ecosystem } = useEcosystem();
+  const router = useRouter();
   const [mode, setMode] = useState<PracticeMode>("custom");
 
   // ── Config state (quick practice selection tree) ──
@@ -848,7 +850,7 @@ export default function PracticeTab() {
                 {submitError && (
                   <p className="mt-3 text-xs text-[var(--dashboard-danger)]">{submitError}</p>
                 )}
-                <div className="flex items-center justify-center gap-3 mt-5">
+                <div className="flex items-center justify-center gap-3 mt-5 flex-wrap">
                   <button
                     onClick={() => {
                       try {
@@ -872,6 +874,24 @@ export default function PracticeTab() {
                   >
                     <Target className="w-4 h-4" /> নতুন নির্বাচন
                   </button>
+                  {sessionQuestions.some((q) => {
+                    const ua = answers[q.id] ?? [];
+                    return ua.length > 0 && !isAnswerCorrect(q, ua);
+                  }) && (
+                    <button
+                      onClick={() => {
+                        const wrongSubject = sessionQuestions.find((q) => {
+                          const ua = answers[q.id] ?? [];
+                          return ua.length > 0 && !isAnswerCorrect(q, ua);
+                        })?.subject;
+                        setMistakeIntent(wrongSubject ? { subject: wrongSubject } : null);
+                        router.push("/dashboard?tab=mistakes");
+                      }}
+                      className="px-5 py-2.5 bg-[var(--dashboard-warning-subtle)] border border-[var(--dashboard-warning)]/30 text-[var(--dashboard-warning)] font-mono text-sm rounded-xl hover:brightness-110 transition-all flex items-center gap-2"
+                    >
+                      <XCircle className="w-4 h-4" /> ভুলগুলো পর্যালোচনা করুন
+                    </button>
+                  )}
                 </div>
               </div>
 

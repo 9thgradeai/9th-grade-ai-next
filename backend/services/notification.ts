@@ -190,25 +190,6 @@ export async function markAllNotificationsRead(
   }
 }
 
-export async function deleteNotification(
-  notificationId: number,
-): Promise<{ deleted: boolean }> {
-  try {
-    const notification = await prisma.appNotification.findUnique({
-      where: { id: notificationId },
-    });
-    if (!notification) {
-      throw new AppError(404, "Notification not found.", "NOT_FOUND");
-    }
-
-    await prisma.appNotification.delete({ where: { id: notificationId } });
-    return { deleted: true };
-  } catch (error) {
-    if (error instanceof AppError) throw error;
-    throw new InternalServerError("Failed to delete notification");
-  }
-}
-
 export async function deleteUserNotification(
   userId: string,
   notificationId: number,

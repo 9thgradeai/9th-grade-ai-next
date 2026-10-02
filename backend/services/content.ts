@@ -397,11 +397,13 @@ export async function getLeaderboard(
   limit = 20,
 ): Promise<LeaderboardDTO> {
   try {
-    const progress = await prisma.userProgress.findUnique({
-      where: { userId },
-      select: { points: true },
-    });
-
+    // Leaderboard is hot but slow-changing: serve the 30s cache when fresh so
+    // the per-row streak fan-out below doesn't run on every poll.
+    const cached = await QueryCache.getLeaderboard(limit);
+    if (cached) {
+      const me = await leaderboardMe(userId);
+      return { ...(cached as Omit<LeaderboardDTO, "me">), me };
+    }
     const rows = await prisma.userProgress.findMany({
       orderBy: { points: "desc" },
       take: limit,
@@ -423,17 +425,25 @@ export async function getLeaderboard(
       streak: streakResults[i],
     }));
 
-    let me: { rank: number; points: number } | null = null;
-    if (progress) {
-      const rank =
-        (await prisma.userProgress.count({ where: { points: { gt: progress.points } } })) + 1;
-      me = { rank, points: progress.points };
-    }
+    const me = await leaderboardMe(userId);
 
-    return { entries, me };
+    const result = { entries, me };
+    await QueryCache.setLeaderboard(limit, { entries });
+    return result;
   } catch {
     throw new InternalServerError("Failed to fetch leaderboard");
   }
+}
+
+async function leaderboardMe(userId: string): Promise<LeaderboardDTO["me"]> {
+  const progress = await prisma.userProgress.findUnique({
+    where: { userId },
+    select: { points: true },
+  });
+  if (!progress) return null;
+  const rank =
+    (await prisma.userProgress.count({ where: { points: { gt: progress.points } } })) + 1;
+  return { rank, points: progress.points };
 }
 
 // ── Badge catalog (moved out of the route handler — Phase 4) ──
