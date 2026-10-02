@@ -42,7 +42,7 @@ export default function AIMockTestTab() {
   };
 
   /** Weakness-built mock: focus generation on the learner's weakest topics. */
-  const useWeakTopics = async () => {
+  const loadWeakTopics = async () => {
     setError(null);
     setTopicsLoading(true);
     try {
@@ -120,7 +120,7 @@ export default function AIMockTestTab() {
         </button>
         <button
           type="button"
-          onClick={() => void useWeakTopics()}
+          onClick={() => void loadWeakTopics()}
           disabled={loading || topicsLoading}
           className="rounded-xl border border-border px-5 py-2 text-sm font-medium text-text-secondary transition-colors hover:border-primary/40 disabled:opacity-60 disabled:cursor-not-allowed"
         >
