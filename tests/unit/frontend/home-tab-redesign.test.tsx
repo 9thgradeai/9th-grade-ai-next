@@ -10,6 +10,7 @@ const components = vi.hoisted(() => ({
   toggleStudyTask: vi.fn(),
   setActiveTab: vi.fn(),
   setPracticeIntent: vi.fn(),
+  recordRecAccepted: vi.fn(),
 }));
 
 vi.mock("@/lib/services/api", () => ({
@@ -17,6 +18,7 @@ vi.mock("@/lib/services/api", () => ({
     preparationIntelligence: components.preparationIntelligence,
     preparationIntelligenceScope: components.preparationIntelligenceScope,
     toggleStudyTask: components.toggleStudyTask,
+    recordRecAccepted: components.recordRecAccepted,
   },
 }));
 

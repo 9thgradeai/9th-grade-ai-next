@@ -88,7 +88,7 @@ export default function PracticeStartDock({
                   type="button"
                   onClick={() => onAdjustDuration(-1)}
                   aria-label="সময় কমান"
-                  className="w-8 h-8 min-w-[2rem] rounded-lg bg-[var(--surface-raised)] border border-[var(--primary)]/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-[var(--primary)]/40 active:scale-95 transition-all"
+                  className="w-11 h-11 min-w-[44px] rounded-lg bg-[var(--surface-raised)] border border-[var(--primary)]/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-[var(--primary)]/40 active:scale-95 transition-all"
                 >
                   <Minus className="w-4 h-4" />
                 </button>
@@ -102,7 +102,7 @@ export default function PracticeStartDock({
                   type="button"
                   onClick={() => onAdjustDuration(1)}
                   aria-label="সময় বাড়ান"
-                  className="w-8 h-8 min-w-[2rem] rounded-lg bg-[var(--surface-raised)] border border-[var(--primary)]/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-[var(--primary)]/40 active:scale-95 transition-all"
+                  className="w-11 h-11 min-w-[44px] rounded-lg bg-[var(--surface-raised)] border border-[var(--primary)]/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-[var(--primary)]/40 active:scale-95 transition-all"
                 >
                   <Plus className="w-4 h-4" />
                 </button>

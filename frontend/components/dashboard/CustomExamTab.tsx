@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Check, Play, Timer, BookOpen, Trophy, ArrowCounterClockwise, Warning, CheckCircle, XCircle, Minus, Plus, GridFour, List, Clock, Flag, CircleDashed, Spinner,  } from "@phosphor-icons/react";
 import { api } from "@/lib/services/api";
+import { useDialogA11y } from "@/lib/use-dialog-a11y";
 import { useEcosystem } from "@/lib/ecosystem-ctx";
 import { autoDurationMin, autoDurationSec, formatDurationShort, negativeLabelForEcosystem } from "@/lib/exam-scoring";
 import {
@@ -131,6 +132,12 @@ export default function CustomExamTab() {
 
   const [phase, setPhase] = useState<ExamPhase>("config");
   const [showUnansweredConfirm, setShowUnansweredConfirm] = useState(false);
+  const closeUnansweredConfirm = useCallback(() => setShowUnansweredConfirm(false), []);
+  const unansweredDialogRef = useDialogA11y<HTMLDivElement>(showUnansweredConfirm, closeUnansweredConfirm);
+  const closeBuildConfirm = useCallback(() => {
+    if (!buildLoading) setShowConfirm(false);
+  }, [buildLoading]);
+  const buildConfirmDialogRef = useDialogA11y<HTMLDivElement>(showConfirm, closeBuildConfirm);
   const [submitting, setSubmitting] = useState(false);
   const [reconciling, setReconciling] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -662,7 +669,7 @@ export default function CustomExamTab() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => adjustDuration(-1)}
-                    className="w-8 h-8 rounded-lg bg-[var(--surface-raised)] border border-[var(--primary)]/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-[var(--primary)]/40"
+                    className="w-11 h-11 rounded-lg bg-[var(--surface-raised)] border border-[var(--primary)]/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-[var(--primary)]/40 active:scale-95 transition-all"
                     aria-label="সময় কমান"
                   >
                     <Minus className="w-4 h-4" />
@@ -670,7 +677,7 @@ export default function CustomExamTab() {
                   <span className="text-2xl font-bold text-[var(--dashboard-primary)] font-mono w-8 text-center">{durationMin}</span>
                   <button
                     onClick={() => adjustDuration(1)}
-                    className="w-8 h-8 rounded-lg bg-[var(--surface-raised)] border border-[var(--primary)]/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-[var(--primary)]/40"
+                    className="w-11 h-11 rounded-lg bg-[var(--surface-raised)] border border-[var(--primary)]/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-[var(--primary)]/40 active:scale-95 transition-all"
                     aria-label="সময় বাড়ান"
                   >
                     <Plus className="w-4 h-4" />
@@ -756,9 +763,13 @@ export default function CustomExamTab() {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   className="fixed inset-0 z-[var(--z-modal)] bg-[var(--overlay)] backdrop-blur-sm flex items-center justify-center p-4"
-                  onClick={() => !buildLoading && setShowConfirm(false)}
+                  onClick={closeBuildConfirm}
                 >
                   <motion.div
+                    ref={buildConfirmDialogRef}
+                    role="dialog"
+                    aria-modal="true"
+                    aria-label="পরীক্ষা নিশ্চিত করুন"
                     initial={{ scale: 0.95, y: 10 }}
                     animate={{ scale: 1, y: 0 }}
                     exit={{ scale: 0.95, y: 10 }}
@@ -1035,6 +1046,7 @@ export default function CustomExamTab() {
               onClick={() => setShowUnansweredConfirm(false)}
             >
               <motion.div
+                ref={unansweredDialogRef}
                 initial={{ scale: 0.95, y: 10 }}
                 animate={{ scale: 1, y: 0 }}
                 exit={{ scale: 0.95, y: 10 }}

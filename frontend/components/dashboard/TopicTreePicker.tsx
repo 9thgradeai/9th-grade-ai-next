@@ -305,7 +305,7 @@ export default function TopicTreePicker({
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setSubjectCount(subject, (sel.count ?? 0) - 1)}
-                    className="w-8 h-8 rounded-lg bg-[var(--surface-raised)] border border-[var(--accent)]/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-[var(--accent)]/40"
+                    className="w-11 h-11 rounded-lg bg-[var(--surface-raised)] border border-[var(--accent)]/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-[var(--accent)]/40 active:scale-95 transition-all"
                     aria-label="বিষয়ের প্রশ্ন কমান"
                   >
                     <Minus className="w-4 h-4" />
@@ -321,7 +321,7 @@ export default function TopicTreePicker({
                   />
                   <button
                     onClick={() => setSubjectCount(subject, (sel.count ?? 0) + 1)}
-                    className="w-8 h-8 rounded-lg bg-[var(--surface-raised)] border border-[var(--accent)]/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-[var(--accent)]/40"
+                    className="w-11 h-11 rounded-lg bg-[var(--surface-raised)] border border-[var(--accent)]/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-[var(--accent)]/40 active:scale-95 transition-all"
                     aria-label="বিষয়ের প্রশ্ন বাড়ান"
                   >
                     <Plus className="w-4 h-4" />

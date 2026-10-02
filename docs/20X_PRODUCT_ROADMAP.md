@@ -17,13 +17,16 @@
 - [x] New-user diagnostic mission (O1, P-U5).
 - [x] Difficulty picker in quick practice (O5, P-U3).
 - [x] Revision-due strip on Home (O4).
-- [ ] Dialog-trap adoption ×6, 44px targets (P-D1, P-D2).
+- [x] Dialog-trap adoption (Practice/Custom confirms, NotificationCenter) + 44px targets
+  (steppers, modal closes, segmented controls).
 - Tokenize marketing/command surfaces (P-D3); timer regime labels (P-U4).
 - Tab consolidation design (IA1): Practice hub + Past papers + Exams.
 
 ## Phase 2 — Intelligence foundation
 
-- Rec funnel events (shown/accepted/completed) (P-N1) — prerequisite for all learning.
+- [x] Rec funnel events (REC_ACCEPTED via POST /api/learning-events; emitted on rec + mission
+  acceptance) (P-N1) — prerequisite for all learning. REC_COMPLETED still open (needs
+  session-intent correlation).
 - Readiness drivers v1 (deterministic; O8 without LLM).
 - Revision-due strip (O4); ContinueLearning resume coverage (B4).
 - Difficulty picker + accuracy-by-level (O5, P-U3).

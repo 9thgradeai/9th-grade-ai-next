@@ -16,6 +16,7 @@ import {
   Funnel,
 } from "@phosphor-icons/react";
 import { api } from "@/lib/services/api";
+import { useDialogA11y } from "@/lib/use-dialog-a11y";
 import type { Server } from "@/lib/types";
 import { AnimatedList } from "@/components/ui/AnimatedList";
 
@@ -72,7 +73,8 @@ export default function NotificationCenter() {
   const [showFilters, setShowFilters] = useState(false);
   const [showPrefs, setShowPrefs] = useState(false);
   const [prefs, setPrefs] = useState({ info: true, success: true, warning: true, reminder: true });
-  const panelRef = useRef<HTMLDivElement>(null);
+  const closePanel = useCallback(() => setIsOpen(false), []);
+  const panelRef = useDialogA11y<HTMLDivElement>(isOpen, closePanel);
   const bellRef = useRef<HTMLButtonElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -131,46 +133,6 @@ export default function NotificationCenter() {
       if (pollingRef.current) clearInterval(pollingRef.current);
     };
   }, [isOpen, filterType, fetchNotifications]);
-
-  // Focus trap + escape to close
-  useEffect(() => {
-    if (!isOpen) return;
-    const panel = panelRef.current;
-    if (!panel) return;
-
-    const prevFocused = document.activeElement as HTMLElement | null;
-    const focusable = panel.querySelector<HTMLElement>("button");
-    focusable?.focus();
-
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setIsOpen(false);
-        return;
-      }
-      if (e.key !== "Tab") return;
-      const nodes = Array.from(
-        panel.querySelectorAll<HTMLElement>(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-        ),
-      ).filter((el) => !el.hasAttribute("disabled"));
-      if (nodes.length === 0) return;
-      const first = nodes[0];
-      const last = nodes[nodes.length - 1];
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault();
-        first.focus();
-      }
-    };
-
-    document.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.removeEventListener("keydown", onKeyDown);
-      prevFocused?.focus?.();
-    };
-  }, [isOpen]);
 
   const filteredNotifications = filterType === "ALL"
     ? notifications

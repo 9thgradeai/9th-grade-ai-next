@@ -441,7 +441,7 @@ export default function HomeTab() {
               onClick={() => setShortcutsOpen(true)}
               aria-label={t(lang, "কিবোর্ড শর্টকাট", "Keyboard shortcuts")}
               title="?"
-              className="inline-flex items-center justify-center w-9 h-9 min-w-[36px] min-h-[36px] rounded-lg border font-mono text-xs font-bold transition-colors hover:border-[var(--dashboard-primary)]"
+              className="inline-flex items-center justify-center w-11 h-11 min-w-[44px] min-h-[44px] rounded-lg border font-mono text-xs font-bold transition-colors hover:border-[var(--dashboard-primary)]"
               style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-muted)", background: "var(--dashboard-surface-muted)" }}
             >
               ?
@@ -760,7 +760,7 @@ export default function HomeTab() {
                 type="button"
                 onClick={closeShortcuts}
                 aria-label={t(lang, "বন্ধ করো", "Close")}
-                className="inline-flex items-center justify-center w-9 h-9 min-h-[36px] rounded-lg border text-xs"
+                className="inline-flex items-center justify-center w-11 h-11 min-w-[44px] min-h-[44px] rounded-lg border text-xs"
                 style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-secondary)" }}
               >
                 ✕

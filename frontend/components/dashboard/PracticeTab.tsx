@@ -25,6 +25,7 @@ import {
 } from "./TopicTreePicker";
 import { allocateEvenly, shuffle } from "@/lib/balanced";
 import { shuffleSessionOptions } from "@/lib/shuffle-options";
+import { useDialogA11y } from "@/lib/use-dialog-a11y";
 
 type PracticeMode = "custom" | "mock" | "quick";
 
@@ -119,6 +120,8 @@ export default function PracticeTab() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [showUnansweredConfirm, setShowUnansweredConfirm] = useState(false);
+  const closeUnansweredConfirm = useCallback(() => setShowUnansweredConfirm(false), []);
+  const unansweredDialogRef = useDialogA11y<HTMLDivElement>(showUnansweredConfirm, closeUnansweredConfirm);
   const [timerKey, setTimerKey] = useState(0);
   // Total session time (minutes, editable). Auto = 30s per selected MCQ.
   const [durationMin, setDurationMin] = useState(10);
@@ -835,8 +838,8 @@ export default function PracticeTab() {
 
           {/* Unanswered confirm for quick practice */}
           {showUnansweredConfirm && (
-            <div className="fixed inset-0 z-[var(--z-modal)] bg-[var(--overlay)] backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setShowUnansweredConfirm(false)}>
-              <div onClick={(e) => e.stopPropagation()} className="rounded-2xl border p-6 w-full max-w-sm" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)", boxShadow: "var(--dashboard-shadow-lg)" }}>
+            <div className="fixed inset-0 z-[var(--z-modal)] bg-[var(--overlay)] backdrop-blur-sm flex items-center justify-center p-4" onClick={closeUnansweredConfirm}>
+              <div ref={unansweredDialogRef} role="dialog" aria-modal="true" aria-label="উত্তর দেওয়া বাকি আছে" onClick={(e) => e.stopPropagation()} className="rounded-2xl border p-6 w-full max-w-sm" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)", boxShadow: "var(--dashboard-shadow-lg)" }}>
                 <div className="flex items-center gap-2 mb-3">
                   <Warning className="w-5 h-5" style={{ color: "var(--dashboard-warning)" }} />
                   <h3 className="text-base font-bold" style={{ color: "var(--dashboard-text-primary)" }}>উত্তর দেওয়া বাকি আছে</h3>

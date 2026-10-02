@@ -551,7 +551,7 @@ export default function MockTestTab() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => adjustDuration(-1)}
-                    className="w-8 h-8 rounded-lg bg-[var(--surface-raised)] border border-[var(--primary)]/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-[var(--primary)]/40"
+                    className="w-11 h-11 rounded-lg bg-[var(--surface-raised)] border border-[var(--primary)]/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-[var(--primary)]/40 active:scale-95 transition-all"
                     aria-label="সময় কমান"
                   >
                     <Minus className="w-4 h-4" />
@@ -559,7 +559,7 @@ export default function MockTestTab() {
                   <span className="text-2xl font-bold text-[var(--dashboard-primary)] font-mono w-8 text-center">{durationMin}</span>
                   <button
                     onClick={() => adjustDuration(1)}
-                    className="w-8 h-8 rounded-lg bg-[var(--surface-raised)] border border-[var(--primary)]/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-[var(--primary)]/40"
+                    className="w-11 h-11 rounded-lg bg-[var(--surface-raised)] border border-[var(--primary)]/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-[var(--primary)]/40 active:scale-95 transition-all"
                     aria-label="সময় বাড়ান"
                   >
                     <Plus className="w-4 h-4" />

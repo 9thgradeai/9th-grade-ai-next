@@ -353,7 +353,7 @@ export default function SubjectTopicSelect({
                 type="button"
                 onClick={closePopup}
                 aria-label="বন্ধ করুন"
-                className="w-9 h-9 rounded-xl flex items-center justify-center text-[var(--dashboard-text-muted)] hover:text-[var(--dashboard-text-primary)] hover:bg-[var(--surface-hover)] flex-shrink-0 transition-colors"
+                className="w-11 h-11 rounded-xl flex items-center justify-center text-[var(--dashboard-text-muted)] hover:text-[var(--dashboard-text-primary)] hover:bg-[var(--surface-hover)] flex-shrink-0 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -414,7 +414,7 @@ export default function SubjectTopicSelect({
                     onClick={() => setPopupCount((popupSel?.count ?? 0) - 1)}
                     aria-label="বিষয়ের প্রশ্ন কমান"
                     disabled={(popupSel?.count ?? 0) <= 0}
-                    className="w-10 h-10 rounded-xl bg-[var(--surface-raised)] border border-[var(--accent)]/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-[var(--accent)]/40 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    className="w-11 h-11 rounded-xl bg-[var(--surface-raised)] border border-[var(--accent)]/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-[var(--accent)]/40 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
                   >
                     <Minus className="w-5 h-5" />
                   </button>
@@ -431,7 +431,7 @@ export default function SubjectTopicSelect({
                     type="button"
                     onClick={() => setPopupCount((popupSel?.count ?? 0) + 1)}
                     aria-label="বিষয়ের প্রশ্ন বাড়ান"
-                    className="w-10 h-10 rounded-xl bg-[var(--surface-raised)] border border-[var(--accent)]/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-[var(--accent)]/40 transition-colors"
+                    className="w-11 h-11 rounded-xl bg-[var(--surface-raised)] border border-[var(--accent)]/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-[var(--accent)]/40 active:scale-95 transition-all"
                   >
                     <Plus className="w-5 h-5" />
                   </button>
