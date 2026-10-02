@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { generateMockTest } from "@/lib/services/ai/mockTest";
+import { api } from "@/lib/services/api";
 import RichText from "@/components/ui/RichText";
 import type { GeneratedMockTest, GeneratedMockQuestion } from "@/lib/services/ai/types";
 
@@ -11,6 +12,8 @@ export default function AIMockTestTab() {
   const [subject, setSubject] = useState("");
   const [count, setCount] = useState<number>(10);
   const [difficulty, setDifficulty] = useState<Difficulty | "">("");
+  const [topics, setTopics] = useState<string[]>([]);
+  const [topicsLoading, setTopicsLoading] = useState(false);
   const [test, setTest] = useState<GeneratedMockTest | null>(null);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
@@ -28,12 +31,33 @@ export default function AIMockTestTab() {
         subject: subject.trim() || undefined,
         count,
         difficulty: difficulty || undefined,
+        topics: topics.length > 0 ? topics : undefined,
       });
       setTest(res);
     } catch (e) {
       setError(e instanceof Error ? e.message : "মক টেস্ট তৈরি করা যায়নি। আবার চেষ্টা করো।");
     } finally {
       setLoading(false);
+    }
+  };
+
+  /** Weakness-built mock: focus generation on the learner's weakest topics. */
+  const useWeakTopics = async () => {
+    setError(null);
+    setTopicsLoading(true);
+    try {
+      const weak = await api.weakTopics();
+      const labels = weak.slice(0, 3).map((w) => `${w.subject} → ${w.topic}`);
+      if (labels.length === 0) {
+        setError("দুর্বল টপিক পাওয়া যায়নি — আগে কিছু প্রশ্ন সমাধান করো।");
+        return;
+      }
+      setTopics(labels);
+      if (!subject.trim() && weak[0]) setSubject(weak[0].subject);
+    } catch {
+      setError("দুর্বল টপিক লোড করা যায়নি। আবার চেষ্টা করো।");
+    } finally {
+      setTopicsLoading(false);
     }
   };
 
@@ -94,7 +118,40 @@ export default function AIMockTestTab() {
         >
           {loading ? "তৈরি হচ্ছে…" : "টেস্ট তৈরি করো"}
         </button>
+        <button
+          type="button"
+          onClick={() => void useWeakTopics()}
+          disabled={loading || topicsLoading}
+          className="rounded-xl border border-border px-5 py-2 text-sm font-medium text-text-secondary transition-colors hover:border-primary/40 disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          {topicsLoading ? "খুঁজছি…" : "দুর্বল টপিক থেকে বানাও"}
+        </button>
       </div>
+
+      {topics.length > 0 && (
+        <div className="flex flex-wrap items-center gap-2">
+          {topics.map((tp) => (
+            <span key={tp} className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1 text-xs text-text-secondary">
+              {tp}
+              <button
+                type="button"
+                onClick={() => setTopics((prev) => prev.filter((x) => x !== tp))}
+                aria-label={`${tp} সরাও`}
+                className="flex h-6 w-6 items-center justify-center rounded-full hover:bg-surface-raised"
+              >
+                ✕
+              </button>
+            </span>
+          ))}
+          <button
+            type="button"
+            onClick={() => setTopics([])}
+            className="text-xs text-text-muted underline underline-offset-2 hover:text-text-secondary"
+          >
+            সব মুছো
+          </button>
+        </div>
+      )}
 
       {error && <p className="text-sm text-dashboard-danger">{error}</p>}
 

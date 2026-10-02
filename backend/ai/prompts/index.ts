@@ -30,6 +30,7 @@ export {
 } from "./advisor";
 export {
   buildExplainSystem,
+  buildTopicEpisodicBlock,
   EXPLAIN_PROMPT_VERSION,
   EXPLAIN_OUTPUT_SCHEMA,
 } from "./explain";

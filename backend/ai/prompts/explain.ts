@@ -36,12 +36,54 @@ const DOMAIN_RULES =
   "Use this context to ground your explanation in exam-relevant facts.\n\n" +
   "=== Retrieved question-bank entries (trusted, curated) ===\n";
 
-/** Build the explain system prompt. */
-export function buildExplainSystem(ctx: AIContext, domainBlock = ""): string {
+/** Build the explain system prompt. `episodicBlock` carries the learner's own
+ * history with this exact topic (counts only — never fabricated). */
+export function buildExplainSystem(ctx: AIContext, domainBlock = "", episodicBlock = ""): string {
   const subjectLine = ctx.subject
     ? `\n[Subject: ${ctx.subject.nameBn} (${ctx.subject.nameEn})]`
     : "";
-  return PERSONA + subjectLine + (domainBlock ? DOMAIN_RULES + domainBlock : "");
+  return PERSONA + subjectLine + (domainBlock ? DOMAIN_RULES + domainBlock : "") + episodicBlock;
+}
+
+/**
+ * Render the episodic topic-history block from real progress rows. Returns ""
+ * when there is no history — the caller then sends no personalization rather
+ * than inventing any.
+ */
+export function buildTopicEpisodicBlock(
+  topicName: string,
+  rows: Array<{
+    totalAttempts: number;
+    correctAttempts: number;
+    isMistake: boolean;
+    lastIncorrectAt: Date | null;
+  }>,
+  now: Date = new Date(),
+): string {
+  const touched = rows.length;
+  if (touched === 0) return "";
+  const attempts = rows.reduce((a, r) => a + r.totalAttempts, 0);
+  const correct = rows.reduce((a, r) => a + r.correctAttempts, 0);
+  const accuracy = attempts > 0 ? Math.round((correct / attempts) * 100) : 0;
+  const openMistakes = rows.filter((r) => r.isMistake).length;
+  const lastWrong = rows
+    .map((r) => r.lastIncorrectAt?.getTime() ?? 0)
+    .reduce((a, b) => Math.max(a, b), 0);
+  const daysAgo =
+    lastWrong > 0 ? Math.max(0, Math.round((now.getTime() - lastWrong) / 86_400_000)) : null;
+
+  let block =
+    "\n\n## Learner's History With This Topic (personalization — adapt depth, not facts)\n" +
+    `Topic "${topicName}": ${attempts} attempts across ${touched} question(s), ${accuracy}% accuracy` +
+    `, ${openMistakes} still marked as mistake(s)`;
+  block += daysAgo != null ? ` (last wrong ${daysAgo} day(s) ago)` : " (no recent wrong answers)";
+  block += ".\n";
+  if (openMistakes > 0 && attempts >= 3) {
+    block +=
+      "This is a repeat struggle: address the underlying misconception explicitly, " +
+      "not just this question, and end relatedConcepts with what to practice next.\n";
+  }
+  return block;
 }
 
 /** JSON shape the model must return; validated by the application layer. */

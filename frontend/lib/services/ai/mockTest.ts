@@ -9,6 +9,8 @@ export type GenerateMockTestOptions = {
   exam?: string;
   count?: number;
   difficulty?: "EASY" | "MEDIUM" | "HARD";
+  /** Learner weak-topic labels ("Subject → Topic", max 5) to focus generation. */
+  topics?: string[];
 };
 
 /** Generate an AI-written multiple-choice mock test. */

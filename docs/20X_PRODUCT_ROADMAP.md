@@ -34,11 +34,17 @@
 
 ## Phase 3 — AI transformation
 
-- AI Study Brief, numbers-deterministic (O6).
-- "Why wrong" with episodic context (AI3 fix).
-- Executable agent blocks + cancel (P-A2).
-- Mistake-to-drill generation (O7); weakness-built mocks (AI5 fix).
-- Feedback aggregation → prompt decisions (AI6 fix).
+- [x] "Why wrong" with episodic context (AI3 fix) — explain prompt carries the learner's
+  real per-topic history; repeat struggles flagged for misconception-level teaching.
+- [x] Agent cancel + executable blocks (P-A2) — verified already present (ComposerBar Stop →
+  abort; block dispatcher → drill overlay/tab nav). No code needed.
+- [x] Mistake-to-drill generation → implemented as weakness-built AI mocks (O7): `topics`
+  focus in mock-test gen + "দুর্বল টপিক থেকে বানাও" in AIMockTestTab.
+- [x] Readiness drivers (O8): accuracy/mock/coverage/consistency/trend + biggest lever.
+- [ ] O6 AI Study Brief — RESOLVED WITHOUT NEW SURFACE: `ai/opening` already delivers the
+  deterministic brief (greeting, summary, insights, prompts) in the workspace and TodayMission
+  covers the decision on Home; a third surface would duplicate (see DO_NOT_BUILD §7).
+- [ ] Feedback aggregation → prompt decisions (AI6 fix).
 
 ## Phase 4 — Adaptive learning (started: batch mastery writes)
 

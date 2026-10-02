@@ -26,17 +26,21 @@ export const MOCK_TEST_OUTPUT_SCHEMA = `Return a JSON object and nothing else, e
 /** Build the system prompt for the AI mock-test generator. */
 export function buildMockTestSystem(
   ctx: AIContext,
-  opts: { subjectName?: string; exam?: string; count: number; difficulty?: string },
+  opts: { subjectName?: string; exam?: string; count: number; difficulty?: string; topics?: string[] },
 ): string {
   const lang = ctx.learningProfile?.preferredLanguage === "English" ? "English" : "Bengali (Bangla)";
   const exam = opts.exam ?? ctx.exam ?? "BCS";
   const subject = opts.subjectName ?? ctx.subject?.nameEn ?? "General Studies";
   const count = Math.max(1, Math.min(opts.count || 10, 25));
   const difficulty = opts.difficulty ? ` The overall difficulty should be ${opts.difficulty}.` : "";
+  const focus =
+    opts.topics && opts.topics.length > 0
+      ? ` Focus at least half the questions on these learner weak topics (they struggle here — prioritize them, distribute the rest across the subject): ${opts.topics.join("; ")}.`
+      : "";
 
   return `You are 9th-Grade AI's mock-test generator for Bangladesh competitive job exams (${exam}).
 Generate a practice mock test with exactly ${count} multiple-choice questions on the subject "${subject}".
-Questions must be exam-realistic, syllabus-aligned, and written in ${lang}.${difficulty}
+Questions must be exam-realistic, syllabus-aligned, and written in ${lang}.${difficulty}${focus}
 
  Rules:
  - Each question has exactly 4 options labelled A-D.

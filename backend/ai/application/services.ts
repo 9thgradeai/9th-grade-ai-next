@@ -8,7 +8,7 @@ import { prisma } from "~backend/db";
 import { buildContext, questionContextIds } from "../context/context-engine";
 import { loadContextSlices } from "../context/slices";
 import { resolveContextPlan } from "../context/resolver";
-import { buildTutorSystem, buildSolverSystem, buildAssistantSystem, buildEvaluatorSystem, buildMockTestSystem, buildAdvisorSystem, buildExplainSystem } from "../prompts";
+import { buildTutorSystem, buildSolverSystem, buildAssistantSystem, buildEvaluatorSystem, buildMockTestSystem, buildAdvisorSystem, buildExplainSystem, buildTopicEpisodicBlock } from "../prompts";
 import { resolveModel, resolveModelCandidates, resolveExplainCandidates, type LLMProvider, type LLMProviderName, type ModelSelection } from "../providers";
 import { notePreferredLanguage, noteTopicSignal, upsertMemory } from "../memory/memory-store";
 import {
@@ -688,7 +688,28 @@ export async function explainQuestion(opts: {
     topicId: context.topic?.id,
     query: request.question,
   });
-  const system = buildExplainSystem(context, domain.block);
+  // Episodic personalization: the learner's own history with THIS topic
+  // (counts only). Fail-open — a lookup miss sends no block rather than a
+  // fabricated one.
+  let episodicBlock = "";
+  if (topicId) {
+    try {
+      const rows = await prisma.userQuestionProgress.findMany({
+        where: { userId, question: { topicId } },
+        select: {
+          totalAttempts: true,
+          correctAttempts: true,
+          isMistake: true,
+          lastIncorrectAt: true,
+        },
+      });
+      const topicName = context.topic?.name ?? request.topic ?? "";
+      episodicBlock = buildTopicEpisodicBlock(topicName, rows);
+    } catch {
+      episodicBlock = "";
+    }
+  }
+  const system = buildExplainSystem(context, domain.block, episodicBlock);
 
   // Build the user message with question context
   const optionsBlock = request.options
@@ -1315,6 +1336,8 @@ export type GenerateMockTestRequest = {
   exam?: string;
   count?: number;
   difficulty?: "EASY" | "MEDIUM" | "HARD";
+  /** Learner weak topics to focus generation on ("Subject → Topic" labels, max 5). */
+  topics?: string[];
 };
 
 /**
@@ -1330,18 +1353,23 @@ export async function generateMockTest(opts: {
   const parsed = raw as GenerateMockTestRequest;
   const count = Math.max(1, Math.min(parsed.count ? Number(parsed.count) : 10, 25));
   const difficulty = parsed.difficulty;
+  // Weak-topic focus is caller-asserted ("Subject → Topic" labels, max 5) —
+  // sanitized here so prompt + cache key share one canonical form.
+  const topics = Array.isArray(parsed.topics)
+    ? parsed.topics.filter((t): t is string => typeof t === "string" && t.trim().length > 0).slice(0, 5)
+    : [];
 
   const context = await buildContext({ userId, task: "solver", subjectId: parsed.subjectId });
   const subjectName = parsed.subject ?? context.subject?.nameEn ?? context.subject?.nameBn ?? undefined;
 
-  const system = buildMockTestSystem(context, { subjectName, exam: parsed.exam, count, difficulty });
+  const system = buildMockTestSystem(context, { subjectName, exam: parsed.exam, count, difficulty, topics });
   const userText = `Generate a ${count}-question mock test${subjectName ? ` for ${subjectName}` : ""}.`;
 
   const started = Date.now();
   let rawText = "";
   let usageProvider = "cache";
   let usageModel = "cached";
-  const cacheKey = aiCacheKey(["mock-test", userId, subjectName ?? "", String(count), difficulty ?? ""]);
+  const cacheKey = aiCacheKey(["mock-test", userId, subjectName ?? "", String(count), difficulty ?? "", topics.join("|")]);
 
   const cached = await aiCacheGet(cacheKey);
   if (cached) {

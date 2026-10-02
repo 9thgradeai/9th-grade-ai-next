@@ -33,9 +33,10 @@ Model resolution is task-driven via `resolveModel(task, { image })`:
 |----------|------|---------|
 | `POST /api/ai/tutor` | required | **Streaming** teaching turn (SSE-style text stream + headers) |
 | `POST /api/ai/solver` | required | Structured step-by-step solver (`{ solution, steps, explanation, relatedConcept }`) |
+| `POST /api/ai/explain` | required | Post-exam MCQ explanation (`{ correctAnswerExplanation, whyOthersWrong[], keyDefinitions[], relatedConcepts, examTip }`). The system prompt carries an episodic topic-history block (attempts/accuracy/open mistakes on that exact topic from `UserQuestionProgress`, fail-open) so repeat struggles get misconception-level teaching |
 | `POST /api/ai/assistant` | required | Structured study guidance (`{ reply, suggestedActions }`) |
 | `POST /api/ai/evaluate` | required | Answer evaluator: grade a learner's written answer (`{ score, verdict, strengths[], gaps[], modelAnswer, improvementTips[] }`), grounded on the curated question bank when `questionId` is supplied |
-| `POST /api/ai/mock-test` | required | AI mock-test generator: produce N multiple-choice questions (`{ title, questions:[{ id, question, options[], answer, explanation, topic, difficulty }] }`) for a subject/exam |
+| `POST /api/ai/mock-test` | required | AI mock-test generator: produce N multiple-choice questions (`{ title, questions:[{ id, question, options[], answer, explanation, topic, difficulty }] }`) for a subject/exam. Accepts optional `topics` (max 5 `"Subject → Topic"` labels, e.g. from `/api/weak-topics`) — at least half the questions focus on those weak topics; included in the response-cache key |
 | `POST /api/ai/advisor` | required | Career/exam advisor: personalized target + study plan (`{ summary, recommendedExam, focusAreas[], timelineWeeks, weeklyPlan[], tips[] }`) from the learner profile |
 | `GET /api/ai/student-model` | required | Long-term student model: aggregated goals, language, weak/strong topics (from `AIMemory`) + usage counts |
 | `GET /api/ai/usage/summary` | required | Observability: per-caller AI usage (`totalCalls`, `totalCostUsd`, `successRate`, `avgLatencyMs`, `byProvider`, `byDay`) — no prompt content stored |
