@@ -24,8 +24,8 @@
  * it centers as a maximized-height dialog.
  */
 
-import { useState, useCallback } from "react";
-import { Check, Minus, Plus, X } from "@phosphor-icons/react";
+import { useState, useCallback, useMemo } from "react";
+import { Check, MagnifyingGlass, Minus, Plus, X } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 import type { Server } from "@/lib/types";
 import { useDialogA11y } from "@/lib/use-dialog-a11y";
@@ -117,9 +117,27 @@ export default function SubjectTopicSelect({
   onSelectionChange,
 }: Props) {
   const [openSubject, setOpenSubject] = useState<Server.ExamSubjectDTO | null>(null);
+  const [query, setQuery] = useState("");
 
   const closePopup = useCallback(() => setOpenSubject(null), []);
   const dialogRef = useDialogA11y<HTMLDivElement>(openSubject !== null, closePopup);
+
+  // Live search across Bangla + English names — the subject list is long on
+  // small screens, and thumb-typing a filter beats scrolling the grid.
+  const visibleSubjects = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return subjects;
+    return subjects.filter(
+      (s) =>
+        s.nameBn.toLowerCase().includes(q) ||
+        (s.nameEn ?? "").toLowerCase().includes(q),
+    );
+  }, [subjects, query]);
+
+  const selectedIds = useMemo(
+    () => new Set(Object.keys(selection).map(Number)),
+    [selection],
+  );
 
   // Tapping a card selects the subject (with defaults when new) and opens its
   // popup. Selection changes are committed live to the parent.
@@ -197,11 +215,47 @@ export default function SubjectTopicSelect({
     <div className="space-y-4">
       {/* ── Subjects ── */}
       <div>
-        <p className="text-xs text-[var(--dashboard-text-muted)] font-mono uppercase tracking-widest mb-2">
-          ১. বিষয় নির্বাচন করুন
-        </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {subjects.map((subject) => {
+        <div className="flex items-center justify-between gap-2 mb-2">
+          <p className="text-xs text-[var(--dashboard-text-muted)] font-mono uppercase tracking-widest">
+            ১. বিষয় নির্বাচন করুন
+          </p>
+          {selectedIds.size > 0 && (
+            <span
+              data-testid="subject-selected-summary"
+              className="text-[11px] font-mono tabular-nums px-2 py-0.5 rounded-full bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] border border-[var(--dashboard-primary)]/20"
+            >
+              {selectedIds.size}টি নির্বাচিত
+            </span>
+          )}
+        </div>
+        {subjects.length > 4 && (
+          <div className="relative mb-3">
+            <MagnifyingGlass
+              className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[var(--dashboard-text-muted)] pointer-events-none"
+              aria-hidden="true"
+            />
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="বিষয় খুঁজুন…"
+              aria-label="বিষয় খুঁজুন"
+              className="w-full bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] rounded-xl pl-9 pr-8 py-2.5 text-sm text-[var(--dashboard-text-primary)] placeholder:text-[var(--dashboard-text-muted)] focus:outline-none focus:border-[var(--accent)]/50 transition-colors [&::-webkit-search-cancel-button]:hidden"
+            />
+            {query && (
+              <button
+                type="button"
+                onClick={() => setQuery("")}
+                aria-label="খোঁজা মুছুন"
+                className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-lg flex items-center justify-center text-[var(--dashboard-text-muted)] hover:text-[var(--dashboard-text-primary)] hover:bg-[var(--surface-hover)] transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+        )}
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3">
+          {visibleSubjects.map((subject) => {
             const sel = selection[subject.id];
             const selected = sel !== undefined;
             return (
@@ -210,10 +264,10 @@ export default function SubjectTopicSelect({
                 type="button"
                 onClick={() => handleCardClick(subject)}
                 aria-expanded={openSubject?.id === subject.id}
-                className={`glass-card rounded-2xl border p-3 text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-primary)] ${
+                className={`glass-card rounded-2xl border p-3 text-left transition-all active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-primary)] ${
                   selected
                     ? "border-[var(--accent)]/40 bg-[var(--dashboard-primary-subtle)] shadow-neon-glow"
-                    : "border-terminal-border hover:border-[var(--accent)]/20"
+                    : "border-terminal-border hover:border-[var(--accent)]/20 hover:-translate-y-0.5"
                 }`}
               >
                 <div className="flex items-center gap-2">
@@ -251,6 +305,11 @@ export default function SubjectTopicSelect({
             );
           })}
         </div>
+        {visibleSubjects.length === 0 && (
+          <p className="text-xs text-[var(--dashboard-text-muted)] font-mono text-center py-6">
+            “{query}” এর সাথে কোনো বিষয় মেলেনি।
+          </p>
+        )}
       </div>
 
       {/* ── Popup: multi-select topics / count for the clicked subject ── */}

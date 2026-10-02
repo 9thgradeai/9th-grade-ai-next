@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
-import { Check, Play, BookOpen, Timer, CaretLeft, CaretRight, CircleDashed, Trophy, ArrowCounterClockwise, Target, CheckCircle, XCircle, Spinner, Warning, Package, Sun, Minus, Plus } from "@phosphor-icons/react";
+import { Check, BookOpen, Timer, CaretLeft, CaretRight, CircleDashed, Trophy, ArrowCounterClockwise, Target, CheckCircle, XCircle, Spinner, Warning, Package, Sun } from "@phosphor-icons/react";
 import { api } from "@/lib/services/api";
 import { useEcosystem } from "@/lib/ecosystem-ctx";
 import { autoDurationMin, autoDurationSec, formatDurationShort, negativeLabelForEcosystem, negativePenaltyForEcosystem, SECONDS_PER_QUESTION } from "@/lib/exam-scoring";
@@ -15,6 +15,7 @@ import RichText from "@/components/ui/RichText";
 import QuestionRenderer from "./practice/QuestionRenderer";
 import { isAnswerCorrect, serializeAnswer, getCorrectSet } from "@/lib/question-type";
 import SubjectTopicSelect from "./SubjectTopicSelect";
+import PracticeStartDock from "./PracticeStartDock";
 import AIExplanationButton from "./AIExplanationButton";
 import {
   type Selection,
@@ -590,57 +591,29 @@ export default function PracticeTab() {
                     onSelectionChange={setSelection}
                   />
 
-                  {/* Total questions + editable time (auto 30s per MCQ) */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div className="glass-card rounded-xl border border-terminal-border p-4 flex items-center justify-between gap-3">
-                      <div className="min-w-0">
-                        <p className="text-sm text-[var(--dashboard-text-secondary)] font-mono">মোট প্রশ্ন</p>
-                        <p className="text-xs text-[var(--dashboard-text-muted)] mt-0.5">
-                          উপলব্ধ:{" "}
-                          <span className={`font-mono ${insufficient ? "text-[var(--dashboard-danger)]" : "text-[var(--dashboard-primary)]"}`}>
-                            {availableTotal}টি
-                          </span>
-                        </p>
-                      </div>
-                      <span
-                        className={`text-2xl font-bold font-mono ${
-                          totalCount > 0 ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-text-secondary)]"
-                        }`}
-                      >
-                        {totalCount}
-                        <span className="text-xs text-[var(--dashboard-text-muted)] ml-1">প্র.</span>
-                      </span>
-                    </div>
-
-                    <div className="glass-card rounded-xl border border-terminal-border p-4 flex items-center justify-between gap-3">
-                      <div>
-                        <p className="text-sm text-[var(--dashboard-text-secondary)] font-mono">সময়সীমা</p>
-                        <p className="text-xs text-[var(--dashboard-text-muted)] mt-0.5">
-                          {durationMin} মিনিট{durationTouched ? " (নিজে নির্ধারিত)" : totalCount > 0 ? ` (অটো: ${totalCount}×৩০সে = ${formatDurationShort(autoSec)})` : " (অটো: ৩০সে/প্রশ্ন)"}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => adjustDuration(-1)}
-                          className="w-8 h-8 rounded-lg bg-[var(--surface-raised)] border border-[var(--primary)]/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-[var(--primary)]/40"
-                          aria-label="সময় কমান"
-                        >
-                          <Minus className="w-4 h-4" />
-                        </button>
-                        <span className="text-2xl font-bold text-[var(--dashboard-primary)] font-mono w-8 text-center">{durationMin}</span>
-                        <button
-                          onClick={() => adjustDuration(1)}
-                          className="w-8 h-8 rounded-lg bg-[var(--surface-raised)] border border-[var(--primary)]/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-[var(--primary)]/40"
-                          aria-label="সময় বাড়ান"
-                        >
-                          <Plus className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
+                  {/* Sticky one-handed start dock: totals + time + start stay
+                      pinned above the bottom nav — no scrolling to begin. */}
+                  <PracticeStartDock
+                    totalCount={totalCount}
+                    availableTotal={availableTotal}
+                    insufficient={insufficient}
+                    durationMin={durationMin}
+                    durationTouched={durationTouched}
+                    autoCaption={
+                      durationTouched
+                        ? " · নিজে নির্ধারিত"
+                        : totalCount > 0
+                          ? ` · ${totalCount}×৩০সে`
+                          : ""
+                    }
+                    selectedCount={selectedSubjects.length}
+                    loading={loading}
+                    onAdjustDuration={adjustDuration}
+                    onStart={() => void startSession()}
+                  />
                   {!durationTouched && totalCount > 0 && durationMin !== autoMin && (
                     <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">
-                      অটো সময় {autoMin} মিনিট — প্রয়োজনে +/− দিয়ে বদলাতে পারেন।
+                      অটো সময় {autoMin} মিনিট ({formatDurationShort(autoSec)}) — প্রয়োজনে +/− দিয়ে বদলাতে পারেন।
                     </p>
                   )}
 
@@ -657,15 +630,6 @@ export default function PracticeTab() {
                       </p>
                     </div>
                   )}
-
-                  <button
-                    onClick={() => void startSession()}
-                    disabled={selectedSubjects.length === 0 || totalCount === 0 || loading}
-                    className="mt-4 w-full py-3 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center justify-center gap-2 shadow-neon-glow disabled:opacity-40 disabled:cursor-not-allowed"
-                  >
-                    <Play className="w-4 h-4" />
-                    প্র্যাকটিস শুরু করুন
-                  </button>
                 </>
               )}
             </motion.div>
