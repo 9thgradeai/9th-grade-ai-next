@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { Crosshair, Target, ArrowRight, Clock, ShieldCheck } from "@phosphor-icons/react";
 import { useLanguage, t, type Language } from "@/lib/lang-ctx";
+import { api } from "@/lib/services/api";
 import type { PreparationIntelligenceDTO, PrepIntelligenceRecommendation } from "@/lib/types";
 
 const WEEKDAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -210,6 +211,9 @@ export default function TodayMission({
     (intelligence?.recommendations.length ?? 0) > 0;
 
   const runAction = (m: MissionDescriptor) => {
+    // Funnel: mission acceptance feeds the Phase-2 re-ranker (fire-and-forget).
+    const target = m.action === "mistakes" ? "mistakes" : m.action === "flashcards" ? "flashcards" : "practice";
+    api.recordRecAccepted({ recId: m.id, target, subject: m.subject });
     switch (m.action) {
       case "practice":
         onStartPractice(m.subject);

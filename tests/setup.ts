@@ -181,6 +181,10 @@ vi.mock("~backend/db", () => ({
       delete: vi.fn(),
       count: vi.fn(),
     },
+    learningEvent: {
+      createMany: vi.fn(),
+      count: vi.fn(),
+    },
     studyTaskCompletion: {
       findMany: vi.fn(),
       findUnique: vi.fn(),

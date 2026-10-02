@@ -165,6 +165,9 @@ enum LearningEventType {
   AI_TUTOR_SESSION
   STUDY_PLAN_CREATED
   STUDY_PLAN_COMPLETED
+  // Recommendation funnel (client-emitted via POST /api/learning-events,
+  // strict allowlist — the decision engine learns from acceptance).
+  REC_ACCEPTED
 }
 
 enum MistakeErrorType {

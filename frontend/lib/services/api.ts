@@ -538,6 +538,25 @@ export const api = {
   badges: (): Promise<Server.BadgeDTO[]> =>
     cachedGet<{ badges: Server.BadgeDTO[] }>("/api/badges").then((d) => d.badges),
 
+  /**
+   * Recommendation funnel (fire-and-forget — never blocks navigation or
+   * surfaces errors; the decision engine learns from acceptance counts).
+   */
+  recordRecAccepted: (rec: { recId: string; target: string; subject?: string; topic?: string }): void => {
+    try {
+      void request<{ ok: boolean }>("/api/learning-events", {
+        method: "POST",
+        ...AUTH_FETCH_INIT,
+        body: JSON.stringify({ type: "REC_ACCEPTED", metadata: rec }),
+        headers: { "Content-Type": "application/json" },
+      }).catch(() => {
+        /* analytics must never break the product */
+      });
+    } catch {
+      /* ignore */
+    }
+  },
+
   subjectReports: (): Promise<Array<{ name: string; score: number; attempted: number; correct: number }>> =>
     cachedGet<{ reports: Array<{ name: string; score: number; attempted: number; correct: number }> }>("/api/subject-reports").then((d) => d.reports),
 

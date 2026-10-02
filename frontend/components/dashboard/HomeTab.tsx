@@ -339,6 +339,8 @@ export default function HomeTab() {
   };
 
   const handleRecommendation = (rec: PrepIntelligenceRecommendation) => {
+    // Funnel: acceptance feeds the Phase-2 re-ranker (fire-and-forget).
+    api.recordRecAccepted({ recId: rec.id, target: rec.target, subject: rec.subject, topic: rec.topic });
     switch (rec.id) {
       case "diagnostic":
         practiceSubject();

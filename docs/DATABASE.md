@@ -121,11 +121,14 @@ ever rebuilt outside migrations:
 - `FAILED` — provider/validation failure (errorCode set)
 
 #### LearningEventType
-- `attempt` — a question attempt recorded
-- `practice` — a practice session started/completed
-- `mock_exam` — a mock exam event
-- `review` — a revision/spaced-repetition review event
-- `milestone` — a derived milestone (streak, level-up)
+- Session markers: `SESSION_STARTED`, `SESSION_COMPLETED`, `MOCK_EXAM_COMPLETED`
+- Per-question outcomes: `QUESTION_ATTEMPTED`, `QUESTION_CORRECT`, `QUESTION_WRONG`, `QUESTION_SKIPPED`
+- Review loop: `TOPIC_REVIEWED`, `REVISION_COMPLETED`
+- AI turns: `AI_EXPLANATION_REQUESTED`, `AI_TUTOR_SESSION`
+- Planner: `STUDY_PLAN_CREATED`, `STUDY_PLAN_COMPLETED`
+- Recommendation funnel (client-emitted, allowlisted): `REC_ACCEPTED` — a Home/mission
+  recommendation was tapped (metadata: `{ recId, target, subject?, topic? }`). Feeds the
+  acceptance-learning re-ranker (roadmap Phase 2).
 
 #### MistakeErrorType
 - `CONCEPTUAL` — misunderstanding of a concept
