@@ -4,6 +4,11 @@ import { submitExamAttempt, type SubmitExamRequest } from "~backend/services/exa
 import { getUserIdFromRequest } from "~backend/services/user";
 import { assertSubmitAllowed } from "~backend/rate-limit";
 import { AppError, toHttpResponse } from "~backend/errors";
+import {
+  validateExamAnswers,
+  validateExamDurationSec,
+  validateExamQuestionIds,
+} from "~backend/validation";
 import { getRequestId, startTiming, applySecurityHeaders, assertSameOrigin } from "../../../_middleware";
 
 /**
@@ -37,18 +42,11 @@ export async function POST(request: Request, { params }: { params: Promise<{ att
 
     const result = await submitExamAttempt(userId, {
       attemptId,
-      questionIds: Array.isArray((body as any).questionIds) ? (body as any).questionIds.filter((id: unknown): id is number => Number.isInteger(id)) : [],
-      durationSec: typeof (body as any).durationSec === "number" ? (body as any).durationSec : 0,
-      answers: Array.isArray((body as any).answers)
-        ? (body as any).answers
-            .map((a: unknown) => {
-              if (a && typeof a === "object" && Number.isInteger((a as any).questionId) && typeof (a as any).selected === "string") {
-                return { questionId: (a as any).questionId, selected: (a as any).selected };
-              }
-              return null;
-            })
-            .filter((a: unknown): a is { questionId: number; selected: string } => a !== null)
-        : [],
+      // Strict contract shared with /api/exam/submit (backend/validation.ts):
+      // malformed input is REJECTED with 400, never silently stripped.
+      questionIds: validateExamQuestionIds((body as any).questionIds),
+      durationSec: validateExamDurationSec((body as any).durationSec),
+      answers: validateExamAnswers((body as any).answers),
     });
 
     const res = NextResponse.json({ result, success: true, attemptId: result.attemptId, status: "SUBMITTED", resultId: (result as any).resultId ?? result.attemptId, score: result.summary.percentage, submittedAt: result.submittedAt });

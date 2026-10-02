@@ -248,6 +248,57 @@ export function validateSubmittedAnswers(
   }
 }
 
+export type ExamAnswerEntry = { questionId: number; selected: string };
+
+/**
+ * Strict exam-submit validators shared by `/api/exam/submit` and
+ * `/api/exams/[attemptId]/submit`. Malformed input is REJECTED with 400, never
+ * silently stripped — filtering used to mask client bugs and let answer-subset
+ * drift past the questionSetHash check.
+ */
+export function validateExamQuestionIds(value: unknown): number[] {
+  if (!Array.isArray(value)) {
+    throw new ValidationError("questionIds must be an array.");
+  }
+  if (value.length > MAX_SUBMITTED_ANSWERS) {
+    throw new ValidationError(
+      `questionIds must contain at most ${MAX_SUBMITTED_ANSWERS} entries.`,
+    );
+  }
+  for (const id of value) {
+    if (!Number.isInteger(id)) {
+      throw new ValidationError("questionIds must all be integers.");
+    }
+  }
+  return value as number[];
+}
+
+/** durationSec is required context for scoring analytics; no silent fallback. */
+export function validateExamDurationSec(value: unknown): number {
+  if (typeof value !== "number" || !Number.isInteger(value) || value < 0) {
+    throw new ValidationError("durationSec must be a non-negative integer.");
+  }
+  return value;
+}
+
+/** Shape-and-size check plus per-entry validation — rejects, never strips. */
+export function validateExamAnswers(value: unknown): ExamAnswerEntry[] {
+  validateSubmittedAnswers(value);
+  for (const a of value) {
+    if (
+      !a ||
+      typeof a !== "object" ||
+      !Number.isInteger((a as { questionId?: unknown }).questionId) ||
+      typeof (a as { selected?: unknown }).selected !== "string"
+    ) {
+      throw new ValidationError(
+        "answers entries must be { questionId: integer, selected: string }.",
+      );
+    }
+  }
+  return value as ExamAnswerEntry[];
+}
+
 /** Positive integer with an upper bound; defaults when absent. */
 export function validateBoundedInt(
   value: unknown,
