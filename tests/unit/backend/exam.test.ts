@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { prisma } from "~backend/db";
 import {
   buildCustomExam,
-  submitCustomExam,
   getExamSelectionTree,
   shuffleWithSeed,
 } from "~backend/services/exam";
@@ -310,60 +309,3 @@ describe("buildCustomExam", () => {
   });
 });
 
-describe("submitCustomExam", () => {
-  it("grades BCS-style (+1 / −0.5 / 0) and persists attempts", async () => {
-    const userId = "user-1";
-    vi.mocked(prisma.question.findMany).mockResolvedValue([
-      fullQuestion(1, "খ"),
-      fullQuestion(2, "ক"),
-      fullQuestion(3, "ঘ"),
-    ]);
-    vi.mocked(prisma.questionAttempt.createMany).mockResolvedValue({ count: 2 } as never);
-    vi.mocked(prisma.$executeRaw).mockResolvedValue(1 as never);
-    vi.mocked(prisma.$transaction).mockImplementation(async (fn) =>
-      (fn as unknown as (tx: unknown) => Promise<unknown>)(prisma),
-    );
-
-    const result = await submitCustomExam(userId, [
-      { questionId: 1, selected: "খ" }, // correct +1
-      { questionId: 2, selected: "গ" }, // wrong −0.5
-      { questionId: 3, selected: "" }, // unanswered 0
-    ]);
-
-    expect(result.summary).toMatchObject({
-      total: 3,
-      attempted: 2,
-      correct: 1,
-      wrong: 1,
-      unanswered: 1,
-      positiveMarks: 1,
-      negativeMarks: 0.5,
-      finalScore: 0.5,
-      accuracy: 50,
-    });
-    expect(result.review[0].status).toBe("correct");
-    expect(result.review[0].marks).toBe(1);
-    expect(result.review[1].status).toBe("wrong");
-    expect(result.review[1].marks).toBe(-0.5);
-    expect(result.review[2].status).toBe("unanswered");
-    expect(result.review[2].marks).toBe(0);
-
-    // Only answered questions persist as attempts.
-    const attempts = vi.mocked(prisma.questionAttempt.createMany).mock.calls[0][0];
-    expect(attempts.data).toHaveLength(2);
-    expect(attempts.data.map((a: { questionId: number }) => a.questionId)).toEqual([1, 2]);
-    // Progress recompute + exam counter is the single atomic statement
-    // (params: userId, pointsEarned, examsIncrement ×2).
-    expect(prisma.$executeRaw).toHaveBeenCalledTimes(1);
-    const rawValues = vi.mocked(prisma.$executeRaw).mock.calls[0].slice(1);
-    expect(rawValues[0]).toBe("user-1");
-    expect(rawValues[1]).toBe(10); // 1 correct × 10 points
-    expect(rawValues[2]).toBe(1); // exam counter increment
-  });
-
-  it("rejects malformed answers", async () => {
-    await expect(
-      submitCustomExam("user-1", [{ questionId: 1, selected: 123 as unknown as string }]),
-    ).rejects.toMatchObject({ statusCode: 400 });
-  });
-});

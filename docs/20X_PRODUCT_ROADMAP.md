@@ -1,20 +1,23 @@
 # 20× Product Roadmap — 9Th-Grade AI
 
-## Phase 0 — Critical fixes (now; implemented P-S1, P-S2)
+## Phase 0 — Critical fixes
 
 - [x] `DELETE notifications/[id]` → `deleteUserNotification(userId, id)` (P-S1).
 - [x] `POST ai/vocab` quota guard (P-S2).
-- [ ] Unify dual exam-submit validators on strict (P-B1).
-- [ ] Delete legacy `submitCustomExam` after unrouted proof (P-B2).
-- [ ] Leaderboard streak cache read (P-F1).
-- [ ] Dhaka-tz `studiedToday` (P-C2); remove dead route block (P-C3).
+- [x] Unify dual exam-submit validators on strict (P-B1).
+- [x] Delete legacy `submitCustomExam` after unrouted proof (P-B2).
+- [x] Leaderboard streak cache read (P-F1).
+- [ ] Dhaka-tz `studiedToday` (P-C2) — needs timezone-coherent SQL rework, not a one-line patch.
+- [x] Remove dead route block (P-C3).
 
-## Phase 1 — UX foundation (next)
+## Phase 1 — UX foundation
 
-- Unbroken rec intents (O2, P-U1) — [x] quiz/resume intents carried.
-- Post-result mistake loop (O3, P-U2).
-- New-user diagnostic mission (O1, P-U5).
-- Dialog-trap adoption ×6, 44px targets (P-D1, P-D2).
+- [x] Unbroken rec intents (O2, P-U1) — quiz/resume intents carried.
+- [x] Post-result mistake loop (O3, P-U2).
+- [x] New-user diagnostic mission (O1, P-U5).
+- [x] Difficulty picker in quick practice (O5, P-U3).
+- [x] Revision-due strip on Home (O4).
+- [ ] Dialog-trap adoption ×6, 44px targets (P-D1, P-D2).
 - Tokenize marketing/command surfaces (P-D3); timer regime labels (P-U4).
 - Tab consolidation design (IA1): Practice hub + Past papers + Exams.
 

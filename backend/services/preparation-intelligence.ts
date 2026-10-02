@@ -133,10 +133,24 @@ type RecommendationInput = {
   studiedToday: boolean;
   unfinishedExams: number;
   examDaysLeft: number | null;
+  /** All-time answered questions — drives the cold-start diagnostic rule. */
+  totalAttempts: number;
 };
 
 function buildRecommendations(input: RecommendationInput): PrepIntelligenceRecommendation[] {
   const recs: PrepIntelligenceRecommendation[] = [];
+
+  // 0. Cold start → one-click diagnostic. Outranks everything until the learner
+  // has real performance data; the mission card + rec both deep-link to quick
+  // practice, so the first screen propels instead of idling on honest zeros.
+  if (input.totalAttempts === 0) {
+    recs.push({
+      id: "diagnostic",
+      priority: "high",
+      target: "practice",
+      count: 10,
+    });
+  }
 
   // 1. An exam the candidate already started → highest value: finish it.
   if (input.unfinishedExams > 0) {
@@ -352,6 +366,7 @@ export async function getPreparationIntelligence(
       studiedToday,
       unfinishedExams: unfinishedExams.length,
       examDaysLeft,
+      totalAttempts: subjectPerformance.reduce((a, s) => a + s.attempted, 0),
     });
 
     return {
@@ -571,6 +586,7 @@ export async function getIntelligenceAnalytics(
         studiedToday,
         unfinishedExams: unfinishedCount,
         examDaysLeft: examDaysLeftOf(nextExam),
+        totalAttempts: subjectPerformance.reduce((a, s) => a + s.attempted, 0),
       }),
     };
   } catch (err) {

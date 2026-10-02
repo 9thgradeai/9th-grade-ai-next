@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import dynamic from "next/dynamic";
 import { motion, useReducedMotion } from "framer-motion";
-import { Clock, ArrowRight, Flame, Trophy, CaretRight, ArrowCounterClockwise } from "@phosphor-icons/react";
+import { Clock, ArrowRight, Flame, Trophy, CaretRight, ArrowCounterClockwise, Stack } from "@phosphor-icons/react";
 import { useAuth } from "@/lib/auth-ctx";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 import { useMotionCapabilities } from "@/lib/motion/device";
@@ -340,6 +340,9 @@ export default function HomeTab() {
 
   const handleRecommendation = (rec: PrepIntelligenceRecommendation) => {
     switch (rec.id) {
+      case "diagnostic":
+        practiceSubject();
+        break;
       case "resume-exam": /* unfinished mock resumes in mock mode */
       case "exam-near":
         setPracticeIntent({ mode: "mock" });
@@ -522,6 +525,32 @@ export default function HomeTab() {
           />
         )}
       </RevealSection>
+
+      {/* ── 1b · Revision due strip — SRS cards needing review today ── */}
+      {analyticsReady && (intelligence?.flashcardsDue ?? 0) > 0 && (
+        <RevealSection className="min-w-0">
+          <button
+            type="button"
+            onClick={() => setActiveTab("flashcards")}
+            className="w-full flex items-center gap-3 rounded-2xl border border-[var(--dashboard-primary)]/25 bg-[var(--dashboard-primary-subtle)] px-4 py-3 text-left transition-all hover:border-[var(--dashboard-primary)]/50 active:scale-[0.99] min-h-[56px]"
+          >
+            <span className="w-9 h-9 rounded-xl bg-[var(--dashboard-primary)]/15 flex items-center justify-center flex-shrink-0">
+              <Stack className="w-5 h-5 text-[var(--dashboard-primary)]" aria-hidden="true" />
+            </span>
+            <span className="flex-1 min-w-0">
+              <span className="block text-sm font-semibold text-[var(--dashboard-text-primary)]">
+                {t(lang, `আজ ${intelligence!.flashcardsDue}টি কার্ড রিভিশন বাকি`, `${intelligence!.flashcardsDue} cards due for revision today`)}
+              </span>
+              <span className="block text-[11px] font-mono text-[var(--dashboard-text-muted)]">
+                {t(lang, "স্পেসড রিপিটিশন — ~৫ মিনিট", "Spaced repetition — ~5 min")}
+              </span>
+            </span>
+            <span className="flex items-center gap-1 text-xs font-mono font-bold text-[var(--dashboard-primary)] flex-shrink-0">
+              {t(lang, "রিভিশন", "Revise")} <CaretRight className="w-4 h-4" aria-hidden="true" />
+            </span>
+          </button>
+        </RevealSection>
+      )}
 
       {/* ── 2 · AI Hero: ask-first command bar ── */}
       <RevealSection className="min-w-0">

@@ -49,6 +49,17 @@ function missionFromRecommendation(
   const estimateMin = rec.count ? Math.max(8, Math.round(rec.count * 0.75)) : 12;
 
   switch (rec.id) {
+    case "diagnostic":
+      return {
+        id: rec.id,
+        title: bn("প্রথম ডায়াগনস্টিক দিন", "Take your first diagnostic"),
+        sub: bn("১০টি প্রশ্ন · ~৫ মিনিট", "10 questions · ~5 minutes"),
+        detail: bn("আপনার লেভেল মেপে প্রথম মিশন তৈরি করা হবে — এটাই শুরু।", "We'll measure your level and build your first mission from it."),
+        estimateMin: 5,
+        cta: bn("ডায়াগনস্টিক শুরু করুন", "Start diagnostic"),
+        action: "practice",
+        priority: "high",
+      };
     case "resume-exam":
       return {
         id: rec.id,

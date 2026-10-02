@@ -12,6 +12,7 @@ type RecommendedActionsProps = {
 };
 
 const REC_ICON: Record<string, typeof LightningA> = {
+  "diagnostic": Target,
   "resume-exam": CalendarCheck,
   "practice-weak-topic": Target,
   "practice-weak-subject": Target,
@@ -26,6 +27,8 @@ const REC_ICON: Record<string, typeof LightningA> = {
 function recTitle(rec: PrepIntelligenceRecommendation, lang: Language): string {
   const bn = (b: string, e: string) => t(lang, b, e);
   switch (rec.id) {
+    case "diagnostic":
+      return bn("প্রথম ডায়াগনস্টিক দিন (১০টি প্রশ্ন)", "Take your first diagnostic (10 questions)");
     case "resume-exam":
       return bn("অসমাপ্ত মক টেস্ট শেষ করুন", "Finish your in-progress mock test");
     case "practice-weak-topic":
@@ -54,6 +57,8 @@ function recTitle(rec: PrepIntelligenceRecommendation, lang: Language): string {
 function recDescription(rec: PrepIntelligenceRecommendation, lang: Language): string {
   const bn = (b: string, e: string) => t(lang, b, e);
   switch (rec.id) {
+    case "diagnostic":
+      return bn("আপনার লেভেল মেপে প্রথম মিশন তৈরি হবে।", "We'll measure your level and build your first mission.");
     case "resume-exam":
       return bn("শুরু করা পরীক্ষা শেষ করলে প্রস্তুতির হিসাব হালনাগাদ হয়।", "Finishing it keeps your performance snapshot accurate.");
     case "practice-weak-topic":

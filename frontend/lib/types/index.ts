@@ -1083,6 +1083,7 @@ export namespace Server {
   export type PrepIntelligenceRecommendation = {
     /** Stable rule id — the client maps it to localized copy. */
     id:
+      | "diagnostic"
       | "resume-exam"
       | "practice-weak-subject"
       | "practice-weak-topic"

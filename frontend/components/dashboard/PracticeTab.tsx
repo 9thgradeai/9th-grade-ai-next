@@ -123,6 +123,11 @@ export default function PracticeTab() {
   // Total session time (minutes, editable). Auto = 30s per selected MCQ.
   const [durationMin, setDurationMin] = useState(10);
   const [durationTouched, setDurationTouched] = useState(false);
+  // Session difficulty filter (ALL = mixed). Passed to /api/questions, which
+  // already validates it — the leaf counts stay difficulty-agnostic, so a
+  // narrow filter may yield fewer than requested (existing fallback applies).
+  const [difficulty, setDifficulty] = useState<"ALL" | "EASY" | "MEDIUM" | "HARD">("ALL");
+  const difficultyParam = difficulty === "ALL" ? undefined : difficulty;
 
   const scrollDashboardTop = () => {
     const prefersReduced = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -261,6 +266,7 @@ export default function PracticeTab() {
     setSubmitError(null);
     setTimerKey((k) => k + 1);
     setDurationTouched(false);
+    setDifficulty("ALL");
   };
 
   // Resume an interrupted quick-practice session so tab switches never
@@ -342,7 +348,7 @@ export default function PracticeTab() {
             ? allLeaves
             : allLeaves.filter((leaf) => sel.paths.some((p) => leaf.path === p || leaf.path.startsWith(p + "/")));
           if (eligible.length === 0) {
-            const res = await api.questions({ subject: s.nameBn, paths: sel.paths.length > 0 ? sel.paths : undefined, limit: Math.min(requested, 200), ecosystem });
+            const res = await api.questions({ subject: s.nameBn, paths: sel.paths.length > 0 ? sel.paths : undefined, limit: Math.min(requested, 200), ecosystem, difficulty: difficultyParam });
             return res;
           }
           const caps = eligible.map((l) => l.questionCount);
@@ -351,13 +357,13 @@ export default function PracticeTab() {
             eligible.map((leaf, idx) => {
               const need = alloc[idx];
               if (need <= 0) return [] as Server.QuestionDTO[];
-              return api.questions({ subject: s.nameBn, paths: [leaf.path], limit: need, ecosystem });
+              return api.questions({ subject: s.nameBn, paths: [leaf.path], limit: need, ecosystem, difficulty: difficultyParam });
             }),
           );
           const mergedLeaf = perLeafPools.flat().filter(Boolean);
           // If leaf counts were stale and we got fewer than requested, fallback to whole-subject fetch
           if (mergedLeaf.length < requested) {
-            const fallback = await api.questions({ subject: s.nameBn, paths: sel.paths.length > 0 ? sel.paths : undefined, limit: requested, ecosystem });
+            const fallback = await api.questions({ subject: s.nameBn, paths: sel.paths.length > 0 ? sel.paths : undefined, limit: requested, ecosystem, difficulty: difficultyParam });
             // Merge and deduplicate, then balanced-sample the fallback pool
             const seen = new Set(mergedLeaf.map((q) => q.id));
             for (const q of fallback) if (!seen.has(q.id)) mergedLeaf.push(q);
@@ -592,6 +598,30 @@ export default function PracticeTab() {
                     selection={selection}
                     onSelectionChange={setSelection}
                   />
+
+                  {/* Difficulty filter — session-level, passed to /api/questions */}
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-xs text-[var(--dashboard-text-muted)] font-mono uppercase tracking-widest">
+                      কাঠিন্য
+                    </span>
+                    <div className="flex items-center gap-1.5" role="group" aria-label="প্রশ্নের কাঠিন্য">
+                      {(["ALL", "EASY", "MEDIUM", "HARD"] as const).map((d) => (
+                        <button
+                          key={d}
+                          type="button"
+                          onClick={() => setDifficulty(d)}
+                          aria-pressed={difficulty === d}
+                          className={`min-h-[44px] px-4 rounded-xl border font-mono text-xs transition-all active:scale-95 ${
+                            difficulty === d
+                              ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] border-[var(--accent)] shadow-neon-glow"
+                              : "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-secondary)] hover:border-[var(--accent)]/40"
+                          }`}
+                        >
+                          {d === "ALL" ? "সব" : DIFFICULTY_LABEL[d]}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
 
                   {/* Sticky one-handed start dock: totals + time + start stay
                       pinned above the bottom nav — no scrolling to begin. */}
