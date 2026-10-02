@@ -90,4 +90,27 @@ describe("POST /api/learning-events", () => {
       metadata: { recId: "diagnostic", target: "practice" },
     });
   });
+
+  it("records REC_COMPLETED with the session outcome", async () => {
+    const cookie = await sessionCookieFor("aspirant@example.com");
+    vi.mocked(prisma.user.findUnique).mockResolvedValue(mockUser());
+    const createMany = vi.fn().mockResolvedValue({ count: 1 });
+    vi.mocked(prisma.learningEvent.createMany).mockImplementation(createMany);
+    const res = await learningEventsPOST(
+      postRequest(
+        {
+          type: "REC_COMPLETED",
+          metadata: { recId: "practice-weak-topic", target: "practice", total: 10, correct: 7 },
+        },
+        { cookie },
+      ),
+    );
+    expect(res.status).toBe(200);
+    const rows = createMany.mock.calls[0][0] as { data: Array<Record<string, unknown>> };
+    expect(rows.data[0]).toMatchObject({
+      userId: "usr_123",
+      type: "REC_COMPLETED",
+      metadata: { recId: "practice-weak-topic", target: "practice", total: 10, correct: 7 },
+    });
+  });
 });

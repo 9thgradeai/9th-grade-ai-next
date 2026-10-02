@@ -127,8 +127,9 @@ ever rebuilt outside migrations:
 - AI turns: `AI_EXPLANATION_REQUESTED`, `AI_TUTOR_SESSION`
 - Planner: `STUDY_PLAN_CREATED`, `STUDY_PLAN_COMPLETED`
 - Recommendation funnel (client-emitted, allowlisted): `REC_ACCEPTED` — a Home/mission
-  recommendation was tapped (metadata: `{ recId, target, subject?, topic? }`). Feeds the
-  acceptance-learning re-ranker (roadmap Phase 2).
+  recommendation was tapped (metadata: `{ recId, target, subject?, topic? }`); `REC_COMPLETED` —
+  a rec-started practice session was submitted (metadata: `{ recId, target, total, correct }`).
+  Feeds the acceptance-learning re-ranker (roadmap Phase 2).
 
 #### MistakeErrorType
 - `CONCEPTUAL` — misunderstanding of a concept

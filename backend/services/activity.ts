@@ -11,7 +11,7 @@ import { recomputeAndAward } from "~backend/repositories/progress.repository";
 import { emit } from "~backend/events/bus";
 import type { AttemptFact } from "~backend/events/types";
 import { classifyErrorType } from "./error-classifier";
-import { recordQuestionAttempt } from "./question-progress";
+import { recordQuestionAttempts } from "./question-progress";
 
 export type SubmittedAnswer = {
   questionId: number;
@@ -239,19 +239,23 @@ export async function submitPracticeAnswers(
     const feedback: NonNullable<SubmissionSummary["feedback"]> = {};
     await prisma.$transaction(async (tx) => {
       await recordAttemptsAtomically(tx, userId, attempts, pointsEarned);
-      // Record per-question mastery progress for mistake tracking.
-      for (const a of answered) {
-        const q = byId.get(a.questionId);
-        const isCorrect = q ? isSelectionCorrect(toSelectedArray(a.selected), q) : false;
-        const fb = await recordQuestionAttempt(tx, {
-          userId,
-          questionId: a.questionId,
-          isCorrect,
-          subject: q?.subject?.nameBn,
-          topic: q?.topic,
-        });
+      // Batched mastery write: one bulk read + one upsert per question.
+      const masteryResults = await recordQuestionAttempts(
+        tx,
+        answered.map((a) => {
+          const q = byId.get(a.questionId);
+          return {
+            userId,
+            questionId: a.questionId,
+            isCorrect: q ? isSelectionCorrect(toSelectedArray(a.selected), q) : false,
+            subject: q?.subject?.nameBn,
+            topic: q?.topic,
+          };
+        }),
+      );
+      for (const [questionId, fb] of masteryResults) {
         if (fb && fb.masteryStatus) {
-          feedback[a.questionId] = {
+          feedback[questionId] = {
             masteryStatus: fb.masteryStatus,
             isMistake: fb.isMistake,
             justMastered: fb.justMastered,
@@ -369,18 +373,20 @@ export async function submitDailyQuiz(
           completedAt: new Date(),
         },
       });
-      // Record per-question mastery progress for mistake tracking.
-      for (const a of answered) {
-        const q = byId.get(a.questionId);
-        const isCorrect = a.selected.trim() === q?.correctAnswer.trim();
-        await recordQuestionAttempt(tx, {
-          userId,
-          questionId: a.questionId,
-          isCorrect,
-          subject: q?.subject,
-          topic: q?.topic,
-        });
-      }
+      // Batched mastery write: one bulk read + one upsert per question.
+      await recordQuestionAttempts(
+        tx,
+        answered.map((a) => {
+          const q = byId.get(a.questionId);
+          return {
+            userId,
+            questionId: a.questionId,
+            isCorrect: a.selected.trim() === q?.correctAnswer.trim(),
+            subject: q?.subject,
+            topic: q?.topic,
+          };
+        }),
+      );
     });
 
     emit({

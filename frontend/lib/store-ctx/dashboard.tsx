@@ -16,7 +16,7 @@ type DashboardState = {
   // Client-side preparation context only — never overrides server data.
   examContext: string | null;
   // Cross-tab intents — consumed once by target tab then cleared.
-  practiceIntent?: { subject?: string; mode?: "quick" | "mock" | "custom" } | null;
+  practiceIntent?: { subject?: string; mode?: "quick" | "mock" | "custom"; recId?: string } | null;
   mistakeIntent?: { subject?: string; status?: string } | null;
 };
 

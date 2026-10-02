@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-vi.mock("~backend/db", () => ({ prisma: { userQuestionProgress: { findUnique: vi.fn(), upsert: vi.fn() } } }));
+vi.mock("~backend/db", () => ({ prisma: { userQuestionProgress: { findUnique: vi.fn(), findMany: vi.fn(), upsert: vi.fn() } } }));
 import { prisma } from "~backend/db";
-import { recordQuestionAttempt } from "~backend/services/question-progress";
+import { recordQuestionAttempt, recordQuestionAttempts } from "~backend/services/question-progress";
 
 function progressRow(overrides: Record<string, unknown> = {}) {
   return {
@@ -227,5 +227,93 @@ describe("recordQuestionAttempt", () => {
     expect(result?.justMastered).toBe(true);
     expect(result?.masteryStatus).toBe("MASTERED");
     expect(result?.isMistake).toBe(false);
+  });
+});
+
+describe("recordQuestionAttempts (batch)", () => {
+  it("uses one bulk read plus one upsert per question", async () => {
+    tx.userQuestionProgress.findMany.mockResolvedValue([
+      progressRow({ questionId: 1 }),
+    ]);
+    tx.userQuestionProgress.upsert.mockImplementation((call: any) =>
+      Promise.resolve({ ...progressRow(), ...call.update }),
+    );
+
+    const out = await recordQuestionAttempts(tx, [
+      { userId: "user-1", questionId: 1, isCorrect: false },
+      { userId: "user-1", questionId: 2, isCorrect: true },
+    ]);
+
+    expect(tx.userQuestionProgress.findMany).toHaveBeenCalledOnce();
+    expect(tx.userQuestionProgress.findMany).toHaveBeenCalledWith({
+      where: { userId: "user-1", questionId: { in: [1, 2] } },
+    });
+    expect(tx.userQuestionProgress.findUnique).not.toHaveBeenCalled();
+    expect(tx.userQuestionProgress.upsert).toHaveBeenCalledTimes(2);
+    // Existing row (qid 1, was STRUGGLING/mistake 1) stays a mistake…
+    expect(out.get(1)?.isMistake).toBe(true);
+    // …new row (qid 2, correct first attempt) is clean.
+    expect(out.get(2)).toMatchObject({ masteryStatus: "NEW", isMistake: false });
+  });
+
+  it("chains a repeated questionId onto the row written earlier in the batch", async () => {
+    tx.userQuestionProgress.findMany.mockResolvedValue([]);
+    tx.userQuestionProgress.upsert.mockImplementation((call: any) =>
+      Promise.resolve({
+        ...progressRow({ questionId: 9, totalAttempts: 0, masteryStatus: "NEW" }),
+        ...call.update,
+        questionId: call.where.userId_questionId.questionId,
+      }),
+    );
+
+    const out = await recordQuestionAttempts(tx, [
+      { userId: "user-1", questionId: 9, isCorrect: true },
+      { userId: "user-1", questionId: 9, isCorrect: true },
+    ]);
+
+    const updates = tx.userQuestionProgress.upsert.mock.calls.map((c: any) => c[0].update);
+    expect(updates[0].totalAttempts).toBe(1);
+    // Second occurrence builds on the first write, not the (absent) preload.
+    expect(updates[1].totalAttempts).toBe(2);
+    expect(out.get(9)?.masteryStatus).toBe("NEW");
+  });
+
+  it("isolates a single bad row without aborting the batch", async () => {
+    tx.userQuestionProgress.findMany.mockResolvedValue([]);
+    tx.userQuestionProgress.upsert.mockImplementation((call: any) => {
+      if (call.where.userId_questionId.questionId === 2) {
+        return Promise.reject(new Error("boom"));
+      }
+      return Promise.resolve({});
+    });
+
+    const out = await recordQuestionAttempts(tx, [
+      { userId: "user-1", questionId: 1, isCorrect: true },
+      { userId: "user-1", questionId: 2, isCorrect: true },
+      { userId: "user-1", questionId: 3, isCorrect: false },
+    ]);
+
+    expect(out.get(1)?.masteryStatus).toBe("NEW");
+    expect(out.get(2)).toBeNull();
+    expect(out.get(3)?.isMistake).toBe(true);
+  });
+
+  it("falls back to per-question reads when the bulk read fails", async () => {
+    tx.userQuestionProgress.findMany.mockRejectedValue(new Error("read down"));
+    tx.userQuestionProgress.findUnique.mockResolvedValue(null);
+    tx.userQuestionProgress.upsert.mockResolvedValue({});
+
+    const out = await recordQuestionAttempts(tx, [
+      { userId: "user-1", questionId: 1, isCorrect: true },
+    ]);
+
+    expect(tx.userQuestionProgress.findUnique).toHaveBeenCalledOnce();
+    expect(out.get(1)?.masteryStatus).toBe("NEW");
+  });
+
+  it("returns an empty map without touching the database for empty input", async () => {
+    const out = await recordQuestionAttempts(tx, []);
+    expect(out.size).toBe(0);
+    expect(tx.userQuestionProgress.findMany).not.toHaveBeenCalled();
   });
 });

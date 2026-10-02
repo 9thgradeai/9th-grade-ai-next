@@ -46,7 +46,7 @@ import { recomputeAndAward } from "~backend/repositories/progress.repository";
 import { emit } from "~backend/events/bus";
 import type { AttemptFact } from "~backend/events/types";
 import { classifyErrorType } from "./error-classifier";
-import { recordQuestionAttempt } from "./question-progress";
+import { recordQuestionAttempts } from "./question-progress";
 import type { SubmittedAnswer } from "./activity";
 import type { ExamReviewDTO } from "@/lib/types";
 
@@ -563,21 +563,32 @@ export async function submitExamAttempt(
             number,
             { masteryStatus: string | null; justMastered: boolean }
           >();
+          // Batched mastery write: one bulk read + one upsert per question
+          // (was: a read + write per question inside this Serializable txn).
+          const masteryInputs: Array<{
+            userId: string;
+            questionId: number;
+            isCorrect: boolean;
+            subject?: string;
+            topic?: string;
+          }> = [];
           for (const a of validAnswers) {
             const q = byId.get(a.questionId);
             if (!q) continue;
             const userAnswer = (a.selected ?? "").trim();
             if (userAnswer.length === 0) continue;
-            const isCorrect = userAnswer === (q.correctAnswer ?? "").trim();
-            const fb = await recordQuestionAttempt(tx, {
+            masteryInputs.push({
               userId,
               questionId: a.questionId,
-              isCorrect,
+              isCorrect: userAnswer === (q.correctAnswer ?? "").trim(),
               subject: q.subject?.nameBn,
               topic: q.topic,
             });
+          }
+          const masteryResults = await recordQuestionAttempts(tx, masteryInputs);
+          for (const [questionId, fb] of masteryResults) {
             if (fb && fb.masteryStatus) {
-              feedbackByQid.set(a.questionId, {
+              feedbackByQid.set(questionId, {
                 masteryStatus: fb.masteryStatus,
                 justMastered: fb.justMastered,
               });

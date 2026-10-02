@@ -10,7 +10,7 @@ const WEEKDAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "
 
 type TodayMissionProps = {
   intelligence: PreparationIntelligenceDTO | null;
-  onStartPractice: (subject?: string) => void;
+  onStartPractice: (subject?: string, recId?: string) => void;
   onStartMistakes: () => void;
   onReviewFlashcards: () => void;
   onStartDailyQuiz: () => void;
@@ -216,7 +216,7 @@ export default function TodayMission({
     api.recordRecAccepted({ recId: m.id, target, subject: m.subject });
     switch (m.action) {
       case "practice":
-        onStartPractice(m.subject);
+        onStartPractice(m.subject, m.id);
         break;
       case "mistakes":
         onStartMistakes();

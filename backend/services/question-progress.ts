@@ -7,6 +7,7 @@ import "server-only";
 
 import { prisma } from "~backend/db";
 import { InternalServerError } from "~backend/errors";
+import type { UserQuestionProgress } from "@prisma/client";
 import {
   upsertProgress,
   getMistakesBySubject,
@@ -55,26 +56,32 @@ export type AttemptFeedback = {
 
 export type RecordAttemptResult = AttemptFeedback | null;
 
-export async function recordQuestionAttempt(
-  tx: Parameters<Parameters<typeof prisma.$transaction>[0]>[0],
+type TxnClient = Parameters<Parameters<typeof prisma.$transaction>[0]>[0];
+
+type ProgressTransition = {
+  fields: Record<string, string | number | boolean | Date | null>;
+  feedback: AttemptFeedback;
+};
+
+/**
+ * Pure transition: existing row (or null) + attempt → upsert fields + feedback.
+ * Shared by the single and batch write paths so the two can never drift apart.
+ */
+function computeNextProgress(
+  existing: UserQuestionProgress | null,
   input: RecordAttemptInput,
-): Promise<RecordAttemptResult> {
-  try {
-    const { userId, questionId, isCorrect, subject, topic, exam } = input;
-    const now = new Date();
+  now: Date,
+): ProgressTransition {
+  const { isCorrect, subject, topic, exam } = input;
 
-    // Read current progress (inside the same transaction for consistency).
-    const existing = await tx.userQuestionProgress.findUnique({
-      where: { userId_questionId: { userId, questionId } },
-    });
+  if (!existing) {
+    // First attempt ever — create the progress row.
+    const newStatus: MasteryStatus = isCorrect ? "NEW" : "STRUGGLING";
+    const newScore = computeMasteryScore(0, isCorrect);
+    const isMistake = !isCorrect;
 
-    if (!existing) {
-      // First attempt ever — create the progress row.
-      const newStatus: MasteryStatus = isCorrect ? "NEW" : "STRUGGLING";
-      const newScore = computeMasteryScore(0, isCorrect);
-      const isMistake = !isCorrect;
-
-      await upsertProgress(tx, userId, questionId, {
+    return {
+      fields: {
         totalAttempts: 1,
         correctAttempts: isCorrect ? 1 : 0,
         incorrectAttempts: isCorrect ? 0 : 1,
@@ -90,33 +97,35 @@ export async function recordQuestionAttempt(
         lastSubject: subject ?? "",
         lastTopic: topic ?? "",
         lastExam: exam ?? "",
-      });
-      return { masteryStatus: newStatus, isMistake, justMastered: false };
-    }
+      },
+      feedback: { masteryStatus: newStatus, isMistake, justMastered: false },
+    };
+  }
 
-    // Update existing progress row.
-    const totalAttempts = existing.totalAttempts + 1;
-    const correctAttempts = existing.correctAttempts + (isCorrect ? 1 : 0);
-    const incorrectAttempts = existing.incorrectAttempts + (isCorrect ? 0 : 1);
-    const consecutiveCorrect = isCorrect ? existing.consecutiveCorrect + 1 : 0;
-    const consecutiveIncorrect = isCorrect ? 0 : existing.consecutiveIncorrect + 1;
-    const mistakeCount = existing.mistakeCount + (isCorrect ? 0 : 1);
-    const masteryScore = computeMasteryScore(existing.masteryScore, isCorrect);
-    const masteryStatus = computeMasteryStatus(
-      existing.masteryStatus,
-      isCorrect,
-      consecutiveCorrect,
-    );
-    const isMistake = isStillAMistake(masteryStatus, incorrectAttempts);
-    const justMastered = masteryStatus === "MASTERED" && existing.masteryStatus !== "MASTERED";
+  // Update existing progress row.
+  const totalAttempts = existing.totalAttempts + 1;
+  const correctAttempts = existing.correctAttempts + (isCorrect ? 1 : 0);
+  const incorrectAttempts = existing.incorrectAttempts + (isCorrect ? 0 : 1);
+  const consecutiveCorrect = isCorrect ? existing.consecutiveCorrect + 1 : 0;
+  const consecutiveIncorrect = isCorrect ? 0 : existing.consecutiveIncorrect + 1;
+  const mistakeCount = existing.mistakeCount + (isCorrect ? 0 : 1);
+  const masteryScore = computeMasteryScore(existing.masteryScore, isCorrect);
+  const masteryStatus = computeMasteryStatus(
+    existing.masteryStatus,
+    isCorrect,
+    consecutiveCorrect,
+  );
+  const isMistake = isStillAMistake(masteryStatus, incorrectAttempts);
+  const justMastered = masteryStatus === "MASTERED" && existing.masteryStatus !== "MASTERED";
 
-    // Review scheduling
-    const reviewCount = existing.reviewCount + (isCorrect && existing.isMistake ? 1 : 0);
-    const nextReviewAt = isMistake
-      ? new Date(now.getTime() + computeReviewInterval(mistakeCount, masteryStatus) * 60 * 60 * 1000)
-      : null;
+  // Review scheduling
+  const reviewCount = existing.reviewCount + (isCorrect && existing.isMistake ? 1 : 0);
+  const nextReviewAt = isMistake
+    ? new Date(now.getTime() + computeReviewInterval(mistakeCount, masteryStatus) * 60 * 60 * 1000)
+    : null;
 
-    await upsertProgress(tx, userId, questionId, {
+  return {
+    fields: {
       totalAttempts,
       correctAttempts,
       incorrectAttempts,
@@ -136,14 +145,99 @@ export async function recordQuestionAttempt(
       lastSubject: subject ?? existing.lastSubject,
       lastTopic: topic ?? existing.lastTopic,
       lastExam: exam ?? existing.lastExam,
+    },
+    feedback: { masteryStatus, isMistake, justMastered },
+  };
+}
+
+async function applyProgress(
+  tx: TxnClient,
+  userId: string,
+  questionId: number,
+  existing: UserQuestionProgress | null,
+  input: RecordAttemptInput,
+  now: Date,
+): Promise<{ feedback: AttemptFeedback; updated: UserQuestionProgress }> {
+  const { fields, feedback } = computeNextProgress(existing, input, now);
+  const updated = await upsertProgress(tx, userId, questionId, fields);
+  return { feedback, updated };
+}
+
+export async function recordQuestionAttempt(
+  tx: TxnClient,
+  input: RecordAttemptInput,
+): Promise<RecordAttemptResult> {
+  try {
+    const { userId, questionId } = input;
+
+    // Read current progress (inside the same transaction for consistency).
+    const existing = await tx.userQuestionProgress.findUnique({
+      where: { userId_questionId: { userId, questionId } },
     });
 
-    return { masteryStatus, isMistake, justMastered };
+    const { feedback } = await applyProgress(tx, userId, questionId, existing, input, new Date());
+    return feedback;
   } catch (error) {
     // Never break the submission flow — log and swallow.
     console.error("[question-progress] Failed to record attempt:", error);
     return null;
   }
+}
+
+/**
+ * Batch mastery write: ONE bulk read + one upsert per question (was: a
+ * read + write per question). Same pure transition, same per-question
+ * error isolation (a single bad row yields null feedback, never aborts the
+ * batch), same fail-open contract as the singular path.
+ *
+ * In-batch chaining: a repeated questionId in one batch builds on the row
+ * written earlier in the same loop, mirroring sequential read-modify-write.
+ * If the bulk read itself fails, falls back to per-question reads.
+ */
+export async function recordQuestionAttempts(
+  tx: TxnClient,
+  inputs: RecordAttemptInput[],
+): Promise<Map<number, RecordAttemptResult>> {
+  const out = new Map<number, RecordAttemptResult>();
+  if (inputs.length === 0) return out;
+  const now = new Date();
+  const userId = inputs[0].userId;
+
+  let preloaded: Map<number, UserQuestionProgress>;
+  try {
+    const ids = [...new Set(inputs.map((i) => i.questionId))];
+    const rows = await tx.userQuestionProgress.findMany({
+      where: { userId, questionId: { in: ids } },
+    });
+    preloaded = new Map(rows.map((r) => [r.questionId, r]));
+  } catch (error) {
+    console.error("[question-progress] Bulk read failed, falling back per question:", error);
+    for (const input of inputs) {
+      out.set(input.questionId, await recordQuestionAttempt(tx, input));
+    }
+    return out;
+  }
+
+  const chained = new Map<number, UserQuestionProgress>();
+  for (const input of inputs) {
+    try {
+      const base = chained.get(input.questionId) ?? preloaded.get(input.questionId) ?? null;
+      const { feedback, updated } = await applyProgress(
+        tx,
+        input.userId,
+        input.questionId,
+        base,
+        input,
+        now,
+      );
+      chained.set(input.questionId, updated);
+      out.set(input.questionId, feedback);
+    } catch (error) {
+      console.error("[question-progress] Failed to record attempt:", error);
+      out.set(input.questionId, null);
+    }
+  }
+  return out;
 }
 
 // ── Read API (delegates to repository) ─────────────────────

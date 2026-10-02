@@ -168,6 +168,7 @@ enum LearningEventType {
   // Recommendation funnel (client-emitted via POST /api/learning-events,
   // strict allowlist — the decision engine learns from acceptance).
   REC_ACCEPTED
+  REC_COMPLETED
 }
 
 enum MistakeErrorType {

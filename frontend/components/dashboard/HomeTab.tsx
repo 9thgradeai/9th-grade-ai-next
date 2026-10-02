@@ -321,8 +321,8 @@ export default function HomeTab() {
     }
   };
 
-  const practiceSubject = (subject?: string) => {
-    setPracticeIntent(subject ? { subject, mode: "quick" } : { mode: "quick" });
+  const practiceSubject = (subject?: string, recId?: string) => {
+    setPracticeIntent({ subject, mode: "quick", recId });
     if (subject) setQuestionBankFilters({ category: subject });
     setActiveTab("practice");
   };
@@ -343,22 +343,21 @@ export default function HomeTab() {
     api.recordRecAccepted({ recId: rec.id, target: rec.target, subject: rec.subject, topic: rec.topic });
     switch (rec.id) {
       case "diagnostic":
-        practiceSubject();
+        practiceSubject(undefined, rec.id);
         break;
       case "resume-exam": /* unfinished mock resumes in mock mode */
       case "exam-near":
-        setPracticeIntent({ mode: "mock" });
+        setPracticeIntent({ mode: "mock", recId: rec.id });
         setActiveTab("practice");
         break;
       case "daily-quiz":
       case "daily-warmup":
       case "keep-going":
-        setPracticeIntent({ mode: "quick" });
-        setActiveTab("practice");
+        practiceSubject(undefined, rec.id);
         break;
       case "practice-weak-topic":
       case "practice-weak-subject":
-        practiceSubject(rec.subject);
+        practiceSubject(rec.subject, rec.id);
         break;
       case "review-mistakes":
         mistakeSubject();

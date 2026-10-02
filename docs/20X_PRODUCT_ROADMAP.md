@@ -24,9 +24,9 @@
 
 ## Phase 2 — Intelligence foundation
 
-- [x] Rec funnel events (REC_ACCEPTED via POST /api/learning-events; emitted on rec + mission
-  acceptance) (P-N1) — prerequisite for all learning. REC_COMPLETED still open (needs
-  session-intent correlation).
+- [x] Rec funnel events (REC_ACCEPTED + REC_COMPLETED via POST /api/learning-events;
+  accepted on rec/mission tap, completed on rec-started quick-practice submit with outcome)
+  (P-N1) — prerequisite for all learning.
 - Readiness drivers v1 (deterministic; O8 without LLM).
 - Revision-due strip (O4); ContinueLearning resume coverage (B4).
 - Difficulty picker + accuracy-by-level (O5, P-U3).
@@ -40,7 +40,13 @@
 - Mistake-to-drill generation (O7); weakness-built mocks (AI5 fix).
 - Feedback aggregation → prompt decisions (AI6 fix).
 
-## Phase 4 — Adaptive learning
+## Phase 4 — Adaptive learning (started: batch mastery writes)
+
+- [x] Batch mastery writes (P-F2): bulk-read + per-row upsert via shared pure transition
+  (`recordQuestionAttempts`), all three submit paths migrated with identical semantics.
+- [x] Dead code removed: `SessionSummary.tsx`, `NextBestAction.tsx` (+ orphan test).
+
+## Phase 5 — Advanced intelligence
 
 - Acceptance-weighted re-ranker (O10) — bandit over rec ids.
 - Forgetting curves per topic; interleaved drills; confidence calibration.

@@ -332,6 +332,7 @@ export default function PracticeTab() {
   // Fetch questions with whole-subject even distribution across topics.
   const startSession = async () => {
     setLoading(true);
+    sessionRecRef.current = practiceIntentRef.current?.recId ?? null;
     setLoadError(null);
     setResult(null);
     setSubmitError(null);
@@ -417,6 +418,11 @@ export default function PracticeTab() {
   // request instead of wedging the button. Covers double-click, mobile
   // double-tap, and timer auto-submit racing a manual submit.
   const practiceSubmitInFlight = useRef<Promise<void> | null>(null);
+  // Rec funnel: which recommendation (if any) started this session. Snapshotted
+  // at start so mid-session intent changes can't misattribute the outcome.
+  const practiceIntentRef = useRef(practiceIntent);
+  useEffect(() => { practiceIntentRef.current = practiceIntent; }, [practiceIntent]);
+  const sessionRecRef = useRef<string | null>(null);
   const sessionQuestionsRef = useRef(sessionQuestions);
   const answersRef = useRef(answers);
   const resultRef = useRef(result);
@@ -447,6 +453,16 @@ export default function PracticeTab() {
         localStorage.removeItem(QUICK_STORAGE_KEY);
       } catch { /* ignore */ }
       setResult(summary);
+      // Funnel: the session this rec started has now completed with an outcome.
+      if (sessionRecRef.current) {
+        api.recordRecCompleted({
+          recId: sessionRecRef.current,
+          target: "practice",
+          total: summary.total,
+          correct: summary.correct,
+        });
+        sessionRecRef.current = null;
+      }
       requestAnimationFrame(() => scrollDashboardTop());
     })();
     practiceSubmitInFlight.current = p;

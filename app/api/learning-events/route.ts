@@ -12,7 +12,7 @@ import { getRequestId, startTiming, applySecurityHeaders, assertSameOrigin } fro
  * Anything else is rejected — this is not a generic event sink (prevents
  * table garbage and keeps the analytics contract reviewable).
  */
-const ALLOWED_TYPES = ["REC_ACCEPTED"] as const;
+const ALLOWED_TYPES = ["REC_ACCEPTED", "REC_COMPLETED"] as const;
 type AllowedType = (typeof ALLOWED_TYPES)[number];
 
 function validateBody(body: unknown): { type: AllowedType; metadata: Record<string, unknown> } {

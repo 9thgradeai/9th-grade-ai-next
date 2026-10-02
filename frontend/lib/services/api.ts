@@ -557,6 +557,30 @@ export const api = {
     }
   },
 
+  /**
+   * Session completion for a rec-started session (same fire-and-forget
+   * contract). Emitted once per session with its outcome attached.
+   */
+  recordRecCompleted: (rec: {
+    recId: string;
+    target: string;
+    total: number;
+    correct: number;
+  }): void => {
+    try {
+      void request<{ ok: boolean }>("/api/learning-events", {
+        method: "POST",
+        ...AUTH_FETCH_INIT,
+        body: JSON.stringify({ type: "REC_COMPLETED", metadata: rec }),
+        headers: { "Content-Type": "application/json" },
+      }).catch(() => {
+        /* analytics must never break the product */
+      });
+    } catch {
+      /* ignore */
+    }
+  },
+
   subjectReports: (): Promise<Array<{ name: string; score: number; attempted: number; correct: number }>> =>
     cachedGet<{ reports: Array<{ name: string; score: number; attempted: number; correct: number }> }>("/api/subject-reports").then((d) => d.reports),
 

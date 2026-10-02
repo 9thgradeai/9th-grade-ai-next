@@ -256,7 +256,8 @@ describe("HomeTab rearrangement", () => {
   it("preserves the relocated mission action", async () => {
     render(<HomeTab />);
     fireEvent.click(await screen.findByRole("button", { name: /Start warm-up/ }));
-    expect(components.setPracticeIntent).toHaveBeenCalledWith({ mode: "quick" });
+    // Mission CTA carries the rec id so completion can be attributed (REC_COMPLETED).
+    expect(components.setPracticeIntent).toHaveBeenCalledWith({ mode: "quick", subject: undefined, recId: "daily-warmup" });
     expect(components.setActiveTab).toHaveBeenCalledWith("practice");
   });
 
