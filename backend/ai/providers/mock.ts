@@ -14,16 +14,22 @@ import {
 
 function mockText(task: string, messages: AIMessageInput[]): string {
   const lastUser = [...messages].reverse().find((m) => m.role === "user")?.content ?? "";
-  const label = "MOCK — no API key configured. Set GROQ_API_KEY / ANTHROPIC_API_KEY for real AI.";
+  // Honest in both cases: either no key is configured, or a configured key's
+  // provider call failed (invalid key, retired model name, network outage, or
+  // an open circuit breaker after repeated failures). The latter is
+  // indistinguishable here by design — the server logs carry the real error.
+  const label =
+    "MOCK — real AI is unavailable. No key? Set GROQ_API_KEY / ANTHROPIC_API_KEY and restart the server. " +
+    "Key IS set? Then the provider call failed (bad key, bad model, network) — check the server logs for the provider error.";
   const question = lastUser ? `Your question: "${lastUser.slice(0, 120)}"` : "";
   if (task === "agent") {
     // Valid ToolCallEnvelope so the agent loop pipeline is exercised end-to-end.
     return JSON.stringify({
-      thought: "No real provider configured — returning a labelled text only response.",
+      thought: "No real provider available — returning a labelled text only response.",
       blocks: [
         {
           type: "text",
-          text: `${label}\n\n${question}\n\nআপনার শেখার অগ্রগতি বিশ্লেষণ করতে একটি API key কনফিগার করুন। For real AI answers, configure GROQ_API_KEY / ANTHROPIC_API_KEY.`,
+          text: `${label}\n\n${question}`,
         },
       ],
     });
@@ -41,8 +47,7 @@ function mockText(task: string, messages: AIMessageInput[]): string {
   }
   return (
     `${label}\n\n${question}\n\n` +
-    "আমি বিষয়টি সহজভাবে বুঝিয়ে দেব। প্রথমে মূল ধারণাটি দেখি, তারপর একটি উদাহরণ দিব। " +
-    "For real AI answers, configure GROQ_API_KEY (tutor) or ANTHROPIC_API_KEY (solver)."
+    "আমি বিষয়টি সহজভাবে বুঝিয়ে দেব। প্রথমে মূল ধারণাটি দেখি, তারপর একটি উদাহরণ দিব।"
   );
 }
 

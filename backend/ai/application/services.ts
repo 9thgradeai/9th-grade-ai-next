@@ -778,12 +778,12 @@ export async function explainQuestion(opts: {
     // even with no API key configured.
     if (fo.isMock) {
       const mockExplain = JSON.stringify({
-        correctAnswerExplanation: `সঠিক উত্তর: ${request.correctAnswer}। (MOCK — কোনো API key কনফিগার করা নেই। বাস্তব AI ব্যাখ্যার জন্য GROQ_API_KEY / ANTHROPIC_API_KEY সেট করুন।)`,
+        correctAnswerExplanation: `সঠিক উত্তর: ${request.correctAnswer}। (MOCK — real AI unavailable. API key সেট না থাকলে GROQ_API_KEY / ANTHROPIC_API_KEY সেট করে সার্ভার রিস্টার্ট করুন; key থাকা সত্ত্বেও এটা দেখালে provider call failed — server logs দেখুন।)`,
         whyOthersWrong: request.options
           .filter((o) => o !== request.correctAnswer)
           .map((o) => ({
             option: o,
-            reason: "MOCK — API key সেট করলে এই অপশনটি কেন ভুল তার ব্যাখ্যা দেখানো হবে।",
+            reason: "MOCK — বাস্তব AI সক্রিয় হলে এই অপশনটি কেন ভুল তার ব্যাখ্যা দেখানো হবে।",
           })),
         keyDefinitions: [],
         relatedConcepts: "",

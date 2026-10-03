@@ -75,7 +75,32 @@ function buildSelections(
   if (out.length === 0 || out[out.length - 1].name !== "mock") {
     out.push({ provider: getProvider("mock", task), name: "mock" });
   }
+  warnIfMockOnly(out);
   return out;
+}
+
+// One-time, actionable server log when every turn would fall back to mock:
+// names the missing env vars, or points at the circuit breaker when keys ARE
+// set (the per-provider failure lines above carry the real error).
+let mockOnlyWarned = false;
+function warnIfMockOnly(out: ModelSelection[]): void {
+  if (mockOnlyWarned || out.some((s) => s.name !== "mock")) return;
+  mockOnlyWarned = true;
+  const missing = [
+    !isGroqConfigured() ? "GROQ_API_KEY" : null,
+    !isAnthropicConfigured() ? "ANTHROPIC_API_KEY" : null,
+  ].filter((v): v is string => v !== null);
+  if (missing.length > 0) {
+    console.warn(
+      `[ai] No AI provider configured (missing: ${missing.join(", ")}). ` +
+        "Responses will be labelled mocks until a key is set and the server restarted.",
+    );
+  } else {
+    console.warn(
+      "[ai] All configured AI providers were skipped (circuit open after repeated failures) — " +
+        "falling back to labelled mocks. See the earlier [ai:*] provider failure lines for the cause.",
+    );
+  }
 }
 
 /**
