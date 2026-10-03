@@ -131,8 +131,7 @@ const SOURCE_FILES: SourceFile[] = [
 
 const TOPIC = "আধুনিক_যুগ_১৮০০_হতে_বর্তমান";
 
-async function main() {
-  const prisma = new PrismaClient();
+export async function seedBanglaLitQuestions(prisma: PrismaClient): Promise<number> {
   try {
     const bcsEcosystem = await prisma.examEcosystem.findUnique({ where: { code: "BCS" } });
     const bbEcosystem = await prisma.examEcosystem.findUnique({ where: { code: "BANGLADESH_BANK" } });
@@ -301,7 +300,15 @@ async function main() {
   }
 }
 
-main().catch((e) => {
-  console.error("Seed failed:", e);
-  process.exit(1);
-});
+if (process.argv[1]?.endsWith("seed-bangla-lit.ts")) {
+  const prisma = new PrismaClient();
+  seedBanglaLitQuestions(prisma)
+    .then((n) => {
+      console.log(`\nDone. Inserted ${n} questions.`);
+    })
+    .catch((e) => {
+      console.error("Seed failed:", e);
+      process.exit(1);
+    })
+    .finally(() => prisma.$disconnect());
+}
