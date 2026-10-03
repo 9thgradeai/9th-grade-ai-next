@@ -1,5 +1,4 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "npm run build",
-  "postdeploy": "npm run db:seed"
+  "buildCommand": "npm run build && npm run db:seed"
 }
