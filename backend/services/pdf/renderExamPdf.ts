@@ -351,12 +351,24 @@ export async function renderExamPdf(
   // ── Launch Chromium and render ──────────────────────────────
   let browser;
   try {
-    const { default: chromium } = await import("@sparticuz/chromium");
-    const executablePath = await chromium.executablePath();
+    // @sparticuz/chromium bundles a Linux x64 binary for serverless
+    // runtimes (Vercel/AWS Lambda). On any other platform (local dev
+    // on macOS/Windows) that binary is unexecutable — spawn ENOEXEC —
+    // so non-Linux platforms fall back to the Chromium installed by
+    // `npx playwright install` (~/.cache/ms-playwright), which
+    // playwright-core resolves automatically when no executablePath
+    // is given.
+    let executablePath: string | undefined;
+    let browserArgs: string[] | undefined;
+    if (process.platform === "linux") {
+      const { default: chromium } = await import("@sparticuz/chromium");
+      executablePath = await chromium.executablePath();
+      browserArgs = chromium.args;
+    }
     const { default: playwright } = await import("playwright-core");
     browser = await playwright.chromium.launch({
       executablePath,
-      args: chromium.args,
+      args: browserArgs,
       headless: true,
     });
     const page = await browser.newPage();

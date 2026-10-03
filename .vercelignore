@@ -1,0 +1,4 @@
+# CLI-deploy only: audit backup artifacts with very long
+# Bangla filenames exceed the build filesystem's path limit
+# (ENAMETOOLONG) and are never needed at runtime.
+scripts/qb-audit/backups/

@@ -105,7 +105,16 @@ const baseConfig: NextConfig = {
   // the route's .nft.json trace standalone). Tracing the whole package fixes
   // it (~3.5MB incl. .afm data) without affecting any other route.
   outputFileTracingIncludes: {
-    "/api/real-exam/export": ["./fonts/**/*", "./node_modules/pdfkit/**/*"],
+    "/api/real-exam/export": [
+      "./fonts/**/*",
+      "./node_modules/pdfkit/**/*",
+      // katex.min.css and its woff2 fonts are read from disk at
+      // render time (backend/services/pdf/mathHtml.ts) and inlined
+      // as base64 into the print HTML. Not tracing them surfaces as
+      // ENOENT .../node_modules/katex/dist/katex.min.css → generic
+      // 500 "PDF rendering failed" inside the Vercel lambda.
+      "./node_modules/katex/dist/**/*",
+    ],
   },
 } satisfies NextConfig;
 

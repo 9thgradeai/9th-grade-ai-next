@@ -996,3 +996,12 @@ Grammar **সমাস** folder file (`database/data/ques/বাংলা ভা
 - **Decision**: Add `@tiptap/react` + `@tiptap/starter-kit` + `@tiptap/extension-highlight` (headless editor, no heavy UI kit — toolbar is our own buttons), `docx` + `file-saver` (native DOCX generation + download), and promote `zod` to a direct dependency (the agent's `CurrentAffairsSchema` enforces the LLM contract; `generateObject` already required it transitively).
 - **Rationale**: No existing dependency covers a proper block editor or OOXML generation. Alternatives rejected: `@tavily/core` SDK (repo already calls Tavily's REST API directly in `app/api/ai/_search.ts` — a second client for the same REST endpoint adds nothing); `html2pdf.js` (client-side HTML→PDF is fragile and print-dependent; `pdfkit` was already installed and renders deterministic server-side PDFs); Quill/ProseMirror wrappers (TipTap is the standard ProseMirror abstraction with the smallest bundle for our toolbar needs).
 - **Consequences**: `zod` moves from transitive to direct (same version, no behavior change); DOCX/PDF export code lives in `frontend/components/current-affairs/exportNote.ts` (client) and `backend/services/current-affairs.ts` (`buildNotePdf`, server).
+
+## ADR-059: playwright-core as a direct dependency
+
+- **Date**: 2026-10-03
+- **Status**: Accepted
+- **Context**: The Real Exam PDF renderer (`backend/services/pdf/renderExamPdf.ts`) dynamically imports `playwright-core` to drive headless Chromium. It was only present transitively (via the `playwright` devDependency, installed for e2e tests), so the production serverless function's dependency on it was implicit and fragile — a devDependency prune would break the export route at runtime.
+- **Decision**: Declare `playwright-core` (^1.62.1, version-matched to `playwright`) in `dependencies`. It is a small wrapper package (no browser binaries — browsers come from `@sparticuz/chromium` on Linux serverless and from the locally installed Playwright Chromium on dev machines).
+- **Rationale**: Directly-imported packages must be direct dependencies. No new runtime surface is added — the package was already being loaded at runtime.
+- **Consequences**: None behavioral; lockfile gains an explicit edge. Paired with the platform-aware launch (Linux → `@sparticuz/chromium`, other platforms → Playwright's installed Chromium) which fixes `spawn ENOEXEC` on macOS dev machines, and the `outputFileTracingIncludes` entry for `node_modules/katex/dist/**/*` which fixes the `ENOENT katex.min.css` 500 on Vercel.
