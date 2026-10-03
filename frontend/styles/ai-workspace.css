@@ -114,21 +114,13 @@
   align-items: center;
   justify-content: center;
   border-radius: 14px;
-  background: linear-gradient(
-    135deg,
-    var(--ai-accent),
-    color-mix(in srgb, var(--ai-accent) 76%, var(--info))
-  );
+  background: var(--ai-accent);
   color: #ffffff;
-  box-shadow: 0 4px 14px -6px color-mix(in srgb, var(--ai-accent) 60%, transparent);
+  box-shadow: var(--shadow-sm);
   transition: opacity 150ms ease, transform 120ms ease, box-shadow 150ms ease;
 }
 .ai-send:hover:not(:disabled) {
-  background: linear-gradient(
-    135deg,
-    var(--ai-accent-hover),
-    color-mix(in srgb, var(--ai-accent-hover) 76%, var(--info))
-  );
+  background: var(--ai-accent-hover);
   transform: translateY(-1px);
 }
 .ai-send:disabled {
@@ -557,11 +549,16 @@
    Light & dark both get WCAG AAA text, premium oklch palette, aurora mesh,
    glass elevation, and orchestrated micro-motion. Every token increased for
    perfect legibility on both themes.
+
+   UX-REFACTOR (Phase 3A): accent unified to the canonical indigo system
+   (was: green fork #236342/#7dbf92, which fought globals.css per-theme).
+   Structure, AAA muted text, and button visibility work below is unchanged —
+   only hues now resolve to one accent in both themes.
    ══════════════════════════════════════════════════════════════════════════════ */
 
 .dashboard-theme-scope[data-dashboard-theme="light"] {
   color-scheme: light;
-  --background: #edf2ef;
+  --background: #F3F4F8;
   --surface: oklch(1 0 0);
   --surface-soft: oklch(0.977 0.007 255);
   --surface-elevated: oklch(1 0 0);
@@ -572,20 +569,20 @@
   --text-disabled: oklch(0.62 0.01 260);
   --border: oklch(0.88 0.012 260);
   --border-strong: oklch(0.84 0.015 260);
-  --primary: #236342;
-  --primary-hover: #194e33;
-  --primary-active: #153f2a;
-  --primary-soft: #e2efe6;
-  --primary-muted: #edf5ef;
-  --sidebar-bg: #f7f9f7;
-  --sidebar-bg-active: #2c6041;
-  --sidebar-text-active: #f4faf6;
-  --sidebar-text: #526058;
-  --sidebar-border: #dce3de;
+  --primary: #6366F1;
+  --primary-hover: #4F46E5;
+  --primary-active: #4338CA;
+  --primary-soft: rgb(99 102 241 / 0.08);
+  --primary-muted: rgb(99 102 241 / 0.05);
+  --sidebar-bg: #FFFFFF;
+  --sidebar-bg-active: #6366F1;
+  --sidebar-text-active: #FFFFFF;
+  --sidebar-text: #4B5563;
+  --sidebar-border: #E5E7EB;
   --input-focus: var(--primary);
-  --chart-1: #35754e;
-  --focus-ring: #35754e;
-  --border-focus: #35754e;
+  --chart-1: #6366F1;
+  --focus-ring: rgb(99 102 241 / 0.4);
+  --border-focus: rgb(99 102 241 / 0.5);
   --shadow-sm: 0 1px 2px oklch(0.2 0.02 260 / 0.06), 0 2px 8px oklch(0.2 0.02 260 / 0.05), inset 0 1px 0 oklch(1 0 0 / 0.9);
   --shadow-md: 0 4px 16px oklch(0.2 0.02 260 / 0.08), 0 1px 3px oklch(0.2 0.02 260 / 0.06);
   --shadow-lg: 0 12px 32px oklch(0.2 0.02 260 / 0.11), 0 4px 12px oklch(0.2 0.02 260 / 0.07);
@@ -593,32 +590,32 @@
 
 .dashboard-theme-scope[data-dashboard-theme="dark"] {
   color-scheme: dark;
-  --background: #101211;
-  --surface: #161917;
-  --surface-soft: #131614;
-  --surface-elevated: #191d1a;
-  --surface-highest: #222824;
-  --surface-hover: #242c26;
-  --surface-active: #2b352e;
-  --input-bg: #161917;
-  --sidebar-bg: #111412;
-  --sidebar-bg-active: #2c6041;
-  --sidebar-text-active: #f4faf6;
-  --sidebar-text: #a7b0aa;
-  --sidebar-border: #2a302c;
-  --chart-1: #4a9663;
-  --focus-ring: #7dbf92;
-  --border-focus: #7dbf92;
+  --background: #000000;
+  --surface: #0D0D0D;
+  --surface-soft: #0D0D0D;
+  --surface-elevated: #111111;
+  --surface-highest: #161616;
+  --surface-hover: #1A1D24;
+  --surface-active: #22262E;
+  --input-bg: #111111;
+  --sidebar-bg: #0D0D0D;
+  --sidebar-bg-active: #6366F1;
+  --sidebar-text-active: #FFFFFF;
+  --sidebar-text: #B7BFCC;
+  --sidebar-border: #252A33;
+  --chart-1: #818CF8;
+  --focus-ring: rgb(129 140 248 / 0.6);
+  --border-focus: rgb(129 140 248 / 0.6);
   --text-primary: oklch(0.97 0.005 260);
   --text-secondary: oklch(0.78 0.01 260);
   --text-muted: oklch(0.62 0.01 260);
   --border: oklch(0.22 0.015 260);
   --border-strong: oklch(0.28 0.015 260);
-  --primary: #7dbf92;
-  --primary-hover: #9aceab;
-  --primary-active: #b8dec3;
-  --primary-soft: #20392a;
-  --primary-muted: #192c21;
+  --primary: oklch(0.68 0.18 278);
+  --primary-hover: oklch(0.74 0.16 278);
+  --primary-active: oklch(0.80 0.12 278);
+  --primary-soft: oklch(0.22 0.08 278 / 0.18);
+  --primary-muted: oklch(0.18 0.06 278 / 0.10);
   --shadow-sm: 0 1px 2px oklch(0 0 0 / 0.5), 0 2px 8px oklch(0 0 0 / 0.4), inset 0 1px 0 oklch(1 0 0 / 0.06);
   --shadow-md: 0 8px 24px oklch(0 0 0 / 0.5), 0 2px 6px oklch(0 0 0 / 0.4);
   --shadow-lg: 0 16px 40px oklch(0 0 0 / 0.6), 0 4px 12px oklch(0 0 0 / 0.45);
@@ -632,7 +629,7 @@
   -webkit-backdrop-filter: none;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: var(--card-radius, 16px);
   box-shadow: none;
   animation: none;
   transition: transform 220ms cubic-bezier(0.22,1,0.36,1), box-shadow 220ms ease, border-color 220ms ease, background 220ms ease;

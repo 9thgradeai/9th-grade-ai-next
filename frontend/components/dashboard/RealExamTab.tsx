@@ -483,7 +483,7 @@ export default function RealExamTab() {
             </div>
             <button
               onClick={() => void enterBuild()}
-              className="px-4 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center justify-center gap-2 shadow-neon-glow flex-shrink-0"
+              className="px-4 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center justify-center gap-2 flex-shrink-0"
             >
               <GridFour className="w-4 h-4" /> নতুন প্রশ্নপত্র তৈরি করুন
             </button>
@@ -701,7 +701,7 @@ export default function RealExamTab() {
             <button
               onClick={() => void buildCustomPaper()}
               disabled={selectedSubjects.length === 0 || totalCount === 0 || buildLoading}
-              className="mt-4 w-full py-3 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center justify-center gap-2 shadow-neon-glow disabled:opacity-40 disabled:cursor-not-allowed"
+              className="mt-4 w-full py-3 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {buildLoading ? <Spinner className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />}
               {buildLoading ? "প্রশ্নপত্র তৈরি হচ্ছে..." : "প্রশ্নপত্র তৈরি করুন ও PDF নিন"}

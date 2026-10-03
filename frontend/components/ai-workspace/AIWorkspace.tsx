@@ -47,10 +47,9 @@ import {
   type Status,
   type UIMessage,
   type WorkspaceMeta,
-  type SpeechRecognitionLike,
-  type SpeechRecognitionCtor,
 } from "./types";
-import { messageToUI, detectSpeechLang, statusVariant } from "./utils";
+import { messageToUI, statusVariant } from "./utils";
+import { useVoiceInput, useVoiceOutput } from "@/lib/hooks/useVoice";
 
 export default function AIWorkspace() {
   const { user } = useAuth();
@@ -67,6 +66,19 @@ export default function AIWorkspace() {
   const [isListening, setIsListening] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [feedbackSent, setFeedbackSent] = useState<Set<string>>(new Set());
+  const voiceOut = useVoiceOutput();
+  const voiceIn = useVoiceInput({
+    lang: "bn-BD",
+    onTranscript: (transcript) => {
+      setInput(transcript);
+      setIsListening(false);
+      setStatus((s) => (s === "listening" ? "idle" : s));
+    },
+    onEnd: () => {
+      setIsListening(false);
+      setStatus((s) => (s === "listening" ? "idle" : s));
+    },
+  });
 
   // Real coach activity surfaced from the agent stream. `liveTools` feeds both
   // the composer's running pills and the thread's activity timeline; on
@@ -83,10 +95,7 @@ export default function AIWorkspace() {
   // Auto-read of AI replies (TTS). On by default so the coach voice actually
   // speaks; every loop guards on speechSynthesis existing in the window.
   const [speakOnReply, setSpeakOnReply] = useState(false);
-  const [isSpeaking, setIsSpeaking] = useState(false);
-  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
-  const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const terminalRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -126,33 +135,6 @@ export default function AIWorkspace() {
     if (el) el.scrollTop = el.scrollHeight;
   }, [messages, status]);
 
-  // Voice recognition setup (Chrome/Edge).
-  useEffect(() => {
-    if (typeof window !== "undefined" && "webkitSpeechRecognition" in window) {
-      const Ctor = (window as unknown as { webkitSpeechRecognition: SpeechRecognitionCtor })
-        .webkitSpeechRecognition;
-      const recognition = new Ctor();
-      recognition.continuous = false;
-      recognition.interimResults = false;
-      recognition.lang = "bn-BD";
-      recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        setInput(transcript);
-        setIsListening(false);
-        if (status === "listening") setStatus("idle");
-      };
-      recognition.onerror = () => {
-        setIsListening(false);
-        if (status === "listening") setStatus("idle");
-      };
-      recognition.onend = () => {
-        setIsListening(false);
-        if (status === "listening") setStatus("idle");
-      };
-      recognitionRef.current = recognition;
-    }
-  }, [status]);
-
   // Launch from other surfaces (Solver handoff, etc.).
   useEffect(() => {
     return subscribeToLaunch((ctx) => {
@@ -183,40 +165,23 @@ export default function AIWorkspace() {
     setImagePreview(null);
   }, []);
 
-  // ── TTS helpers ─────────────────────────────────────────────
+  // ── Voice output (shared hook; gated on the reply-aloud toggle) ─────────
   const stopSpeaking = useCallback(() => {
-    if (typeof window === "undefined") return;
-    window.speechSynthesis.cancel();
-    utteranceRef.current = null;
-    setIsSpeaking(false);
-  }, []);
+    voiceOut.cancel();
+  }, [voiceOut]);
 
   const speakText = useCallback(
     (text: string) => {
-      if (
-        typeof window === "undefined" ||
-        typeof window.speechSynthesis === "undefined" ||
-        !speakOnReply ||
-        !text
-      ) {
-        return;
-      }
-      window.speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(text);
-      u.lang = detectSpeechLang(text);
-      u.onstart = () => setIsSpeaking(true);
-      u.onend = () => setIsSpeaking(false);
-      u.onerror = () => setIsSpeaking(false);
-      utteranceRef.current = u;
-      window.speechSynthesis.speak(u);
+      if (!speakOnReply || !text) return;
+      voiceOut.speak(text);
     },
-    [speakOnReply],
+    [speakOnReply, voiceOut],
   );
 
   const toggleSpeak = useCallback(() => {
-    if (speakOnReply) stopSpeaking();
+    if (speakOnReply) voiceOut.cancel();
     setSpeakOnReply((v) => !v);
-  }, [speakOnReply, stopSpeaking]);
+  }, [speakOnReply, voiceOut]);
 
   const openConversation = useCallback(async (id: string) => {
     setActiveConversationId(id);
@@ -583,21 +548,21 @@ export default function AIWorkspace() {
   );
 
   const toggleListening = useCallback(() => {
-    if (!recognitionRef.current) {
+    if (!voiceIn.supported) {
       setError("Speech recognition is not supported in this browser. Use Chrome or Edge.");
       return;
     }
     if (isListening) {
-      recognitionRef.current.stop();
+      voiceIn.stop();
       setIsListening(false);
       setStatus("idle");
     } else {
       setError(null);
-      recognitionRef.current.start();
+      voiceIn.start();
       setIsListening(true);
       setStatus("listening");
     }
-  }, [isListening]);
+  }, [isListening, voiceIn]);
 
   const runPrompt = useCallback(
     (text: string) => {
@@ -904,7 +869,7 @@ export default function AIWorkspace() {
                     imagePreview={imagePreview}
                     canAttachImage={mode === "tutor"}
                     speakOnReply={speakOnReply}
-                    isSpeaking={isSpeaking}
+                    isSpeaking={voiceOut.speaking}
                     isListening={isListening}
                     textareaRef={inputRef}
                     onInputChange={handleInputChange}

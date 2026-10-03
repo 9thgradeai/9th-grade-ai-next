@@ -141,6 +141,26 @@ export function biggestLever(drivers: ReadinessDriver[]): ReadinessDriver | null
   return actionable.reduce((a, b) => (b.leverage > a.leverage ? b : a));
 }
 
+/**
+ * Bespoke readiness trajectory: mock scores as SVG polyline points
+ * (chronological). Pure + tested — the chart library never sees this shape.
+ * Flat guard keeps a constant series on a midline instead of dividing by zero.
+ */
+export function mockScorePoints(scores: number[], width = 120, height = 36, pad = 4): string {
+  if (scores.length === 0) return "";
+  const lo = Math.min(...scores);
+  const hi = Math.max(...scores);
+  const span = hi - lo;
+  return scores
+    .map((s, i) => {
+      const x = scores.length === 1 ? width / 2 : pad + (i * (width - pad * 2)) / (scores.length - 1);
+      // Flat series centers on the midline instead of pinning to an edge.
+      const y = span === 0 ? height / 2 : height - pad - ((s - lo) / span) * (height - pad * 2);
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    })
+    .join(" ");
+}
+
 function toneFor(value: number): string {
   if (value >= 80) return "var(--dashboard-success)";
   if (value >= 55) return "var(--dashboard-warning)";
@@ -217,6 +237,23 @@ export default function ReadinessIndicatorCard({ intelligence }: ReadinessIndica
           <p className="mt-3 text-[11px] font-mono" style={{ color: "var(--dashboard-text-muted)" }}>
             {readiness.basedOn} {exams.length > 0 ? `· ${exams.length}টি মক টেস্ট` : ""}
           </p>
+          {exams.length >= 2 && (
+            <div className="mt-3 flex items-center gap-3" role="img" aria-label={t(lang, "সাম্প্রতিক মক স্কোরের গতিপথ", "Recent mock score trajectory")}>
+              <svg viewBox="0 0 120 36" className="h-9 w-[120px] shrink-0" aria-hidden="true">
+                <polyline
+                  points={mockScorePoints([...exams].reverse().map((r) => r.score))}
+                  fill="none"
+                  stroke={toneFor(readiness.value)}
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <p className="text-[11px] leading-snug" style={{ color: "var(--dashboard-text-muted)" }}>
+                {t(lang, `সর্বশেষ ${exams.length}টি মকের গতিপথ`, `Last ${exams.length} mocks trajectory`)}
+              </p>
+            </div>
+          )}
           <p className="mt-2 inline-flex items-start gap-1.5 text-[11px]" style={{ color: "var(--dashboard-text-muted)" }}>
             <Info className="w-3 h-3 shrink-0 mt-0.5" aria-hidden="true" />
             {t(
@@ -228,7 +265,7 @@ export default function ReadinessIndicatorCard({ intelligence }: ReadinessIndica
 
           {drivers.length > 0 && (
             <div className="mt-4 pt-4 border-t" style={{ borderColor: "var(--dashboard-border-muted)" }}>
-              <p className="text-[10px] font-mono uppercase tracking-widest mb-2" style={{ color: "var(--dashboard-text-muted)" }}>
+              <p className="text-caption-mono mb-2">
                 {t(lang, "কী কী নম্বর বদলাবে", "What moves the number")}
               </p>
               <ul className="space-y-1.5">

@@ -40,7 +40,7 @@ export type WorkspaceMeta = {
 
 // Minimal typings for the vendor-prefixed Web Speech API.
 export type SpeechRecognitionResultLike = {
-  results: ArrayLike<ArrayLike<{ transcript: string }>>;
+  results: ArrayLike<ArrayLike<{ transcript: string }> & { isFinal?: boolean }>;
 };
 export interface SpeechRecognitionLike {
   continuous: boolean;

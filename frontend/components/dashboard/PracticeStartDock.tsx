@@ -47,12 +47,12 @@ export default function PracticeStartDock({
       data-testid="practice-start-dock"
       className="sticky z-[var(--z-sticky)] bottom-[calc(var(--bottom-nav-h)+12px+env(safe-area-inset-bottom))] lg:bottom-4"
     >
-      <div className="glass-card rounded-2xl border border-[var(--accent)]/30 shadow-neon-glow overflow-hidden">
+      <div className="glass-card rounded-2xl border border-[var(--accent)]/30 overflow-hidden">
         <div className="flex flex-col lg:flex-row lg:items-center gap-3 p-3 sm:p-4">
           {/* Stats: questions + time stepper */}
           <div className="flex items-center gap-3 flex-1 min-w-0">
             <div className="min-w-0">
-              <p className="text-[10px] font-mono uppercase tracking-widest text-[var(--dashboard-text-muted)]">
+              <p className="text-caption-mono">
                 মোট প্রশ্ন
               </p>
               <p className="leading-none">
@@ -77,7 +77,7 @@ export default function PracticeStartDock({
             <div className="w-px self-stretch bg-[var(--dashboard-border-muted)]" aria-hidden="true" />
 
             <div className="min-w-0">
-              <p className="text-[10px] font-mono uppercase tracking-widest text-[var(--dashboard-text-muted)] flex items-center gap-1">
+              <p className="text-caption-mono flex items-center gap-1">
                 <Timer className="w-3 h-3" aria-hidden="true" /> সময়
                 {!durationTouched && totalCount > 0 && (
                   <span className="normal-case tracking-normal">· অটো</span>
@@ -119,7 +119,7 @@ export default function PracticeStartDock({
             data-testid="dock-start"
             onClick={onStart}
             disabled={!canStart}
-            className="w-full lg:w-auto lg:min-w-56 min-h-12 px-6 py-3 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm font-bold rounded-xl hover:bg-[var(--accent-hover)] active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-neon-glow disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
+            className="w-full lg:w-auto lg:min-w-56 min-h-12 px-6 py-3 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm font-bold rounded-xl hover:bg-[var(--accent-hover)] active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
           >
             <Play className="w-4 h-4" weight="fill" aria-hidden="true" />
             {loading ? "লোড হচ্ছে..." : `প্র্যাকটিস শুরু${totalCount > 0 ? ` · ${totalCount}টি` : ""}`}

@@ -216,7 +216,7 @@ export default function TopicTreePicker({
                 onClick={() => toggleSubject(subject)}
                 className={`glass-card rounded-2xl border p-3 text-left transition-all ${
                   selected
-                    ? "border-[var(--accent)]/40 bg-[var(--dashboard-primary-subtle)] shadow-neon-glow"
+                    ? "border-[var(--accent)]/40 bg-[var(--dashboard-primary-subtle)]"
                     : "border-terminal-border hover:border-[var(--accent)]/20"
                 }`}
               >

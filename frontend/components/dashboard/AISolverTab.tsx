@@ -286,7 +286,7 @@ export default function AISolverTab() {
             whileTap={{ scale: 0.98 }}
             onClick={() => void solveQuestion()}
             disabled={isSolving || (!textInput.trim() && !imagePreview)}
-            className="w-full py-3 bg-accent text-text-inverse font-mono rounded-lg hover:bg-accent-hover transition-colors flex items-center justify-center gap-2 shadow-neon-glow disabled:opacity-40 disabled:cursor-not-allowed"
+            className="w-full py-3 bg-accent text-text-inverse font-mono rounded-lg hover:bg-accent-hover transition-colors flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {isSolving ? (
               <>

@@ -749,7 +749,7 @@ export default function CustomExamTab() {
             <button
               onClick={() => setShowConfirm(true)}
               disabled={selectedSubjects.length === 0 || totalCount === 0 || buildLoading}
-              className="mt-4 w-full py-3 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center justify-center gap-2 shadow-neon-glow disabled:opacity-40 disabled:cursor-not-allowed"
+              className="mt-4 w-full py-3 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <Play className="w-4 h-4" />
               কনফিগারেশন রিভিউ করে শুরু করুন
@@ -821,7 +821,7 @@ export default function CustomExamTab() {
                     <button
                       onClick={() => void confirmAndStart()}
                       disabled={buildLoading}
-                      className="w-full py-3 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center justify-center gap-2 shadow-neon-glow disabled:opacity-40"
+                      className="w-full py-3 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center justify-center gap-2 disabled:opacity-40"
                     >
                       {buildLoading ? "তৈরি হচ্ছে..." : (
                         <>
@@ -874,7 +874,7 @@ export default function CustomExamTab() {
               disabled={submitting || totalQuestions === 0}
               aria-busy={submitting}
               aria-label="পরীক্ষা জমা দিন"
-              className="px-4 py-2 min-h-11 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-xs rounded-lg hover:bg-[var(--accent-hover)] transition-colors shadow-neon-glow flex items-center gap-1.5 disabled:opacity-40 z-50 relative pointer-events-auto cursor-pointer"
+              className="px-4 py-2 min-h-11 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-xs rounded-lg hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-1.5 disabled:opacity-40 z-50 relative pointer-events-auto cursor-pointer"
             >
               <Flag className="w-3.5 h-3.5" />
               {(submitting || reconciling) ? (reconciling ? "যাচাই করা হচ্ছে..." : "জমা হচ্ছে...") : "জমা দিন"}
@@ -1020,7 +1020,7 @@ export default function CustomExamTab() {
               disabled={submitting}
               aria-busy={submitting}
               aria-label="পরীক্ষা জমা দিন"
-              className="px-6 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors shadow-neon-glow flex items-center gap-2 disabled:opacity-40 z-50 relative pointer-events-auto cursor-pointer"
+              className="px-6 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2 disabled:opacity-40 z-50 relative pointer-events-auto cursor-pointer"
             >
               {submitting ? "জমা হচ্ছে..." : (
                 <>
@@ -1076,7 +1076,7 @@ export default function CustomExamTab() {
                     onClick={(e) => { e.preventDefault(); e.stopPropagation(); finalizeSubmit(); }}
                     disabled={submitting}
                     aria-busy={submitting}
-                    className="flex-1 py-2.5 min-h-11 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors shadow-neon-glow disabled:opacity-40"
+                    className="flex-1 py-2.5 min-h-11 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors disabled:opacity-40"
                   >
                     {(submitting || reconciling) ? (reconciling ? "যাচাই করা হচ্ছে..." : "জমা হচ্ছে...") : "জমা দিন"}
                   </button>
@@ -1174,7 +1174,7 @@ export default function CustomExamTab() {
             <div className="flex items-center justify-center gap-3 mt-6">
               <button
                 onClick={resetAll}
-                className="px-5 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2 shadow-neon-glow"
+                className="px-5 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2"
               >
                 <ArrowCounterClockwise className="w-4 h-4" /> নতুন পরীক্ষা
               </button>
@@ -1294,7 +1294,7 @@ export default function CustomExamTab() {
         <div className="flex items-center justify-center gap-3">
           <button
             onClick={resetAll}
-            className="px-6 py-3 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2 shadow-neon-glow"
+            className="px-6 py-3 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2"
           >
             <ArrowCounterClockwise className="w-4 h-4" /> নতুন পরীক্ষা শুরু করুন
           </button>

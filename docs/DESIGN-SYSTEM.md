@@ -211,3 +211,29 @@ Defined in `app/globals.css`:
 - **Tab navigation**: URL-driven via `router.push(`/dashboard?tab=${tab}`)`.
 - **Theme toggle**: Persisted in `localStorage`, applied via `<html>` class.
 - **Auth**: Redirect-based (middleware + client-side effects).
+
+## Motion Signature (Phase 3E)
+
+One recognizable interaction language, not generic animation:
+
+- **Entrance**: single fade-up (16px / 220ms easeOut, `SECTION_FADE`), fired once
+  on scroll into view. No springs, no scale, no stagger — except first-mount
+  cascades (`useFirstMountAnimate`), which never re-fire on revalidation.
+- **Micro-interaction**: `active:scale-[0.98..0.99]` presses, 120–180ms border/
+  background transitions, `ease-out` token (`--ease-out`).
+- **Ambient (brand)**: world-map backdrop + AI avatar glow + status pulse only;
+  desktop-only, compositor-thread transforms, killed under
+  `prefers-reduced-motion`, hidden below `lg`.
+- **Rule**: motion guides attention (streaming deltas, progress, reveal) or
+  confirms action (press, toggle). Decorative looped motion needs a reason;
+  spinners appear only with an `aria-live` status line, never bare.
+
+## Dashboard Accent (Phase 3A — single source)
+
+- One accent: **indigo** (`#6366F1` light / `oklch(0.68 0.18 278)` dark),
+  via `--primary` → `--dashboard-primary` → `--accent` alias chain.
+- The `ai-workspace.css` green fork (#236342/#7dbf92) was unified to indigo
+  after computed-style verification showed a split brain (dark=green,
+  light=indigo). Guarded by `npm run lint:tokens`.
+- Color is functional: neutrals + one accent; red/green/amber reserved for
+  status. No second decorative accent on dashboard chrome.

@@ -405,7 +405,7 @@ export default function WrongAnswerNotebookTab() {
             <div className="flex items-center justify-center gap-3 mt-6">
               <button
                 onClick={() => { setView("dashboard"); setExamResult(null); setDrillResults(null); void loadStats().then(() => loadMistakes()); }}
-                className="px-5 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2 shadow-neon-glow"
+                className="px-5 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2"
               >
                 <ArrowCounterClockwise className="w-4 h-4" /> ড্যাশবোর্ডে ফিরুন
               </button>

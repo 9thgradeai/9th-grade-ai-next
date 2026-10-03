@@ -182,7 +182,7 @@ export default function VocabTab() {
           onClick={() => setSection("words")}
           className={`px-3 py-1.5 rounded-full text-xs font-mono border transition-all flex items-center gap-1.5 ${
             section === "words"
-              ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] border-[var(--accent)] shadow-neon-glow"
+              ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] border-[var(--accent)]"
               : "bg-subtle border-[var(--accent)]/20 text-[var(--dashboard-text-muted)] hover:border-[var(--accent)]/40 hover:text-[var(--text-primary)]"
           }`}
         >
@@ -192,7 +192,7 @@ export default function VocabTab() {
           onClick={() => setSection("idioms")}
           className={`px-3 py-1.5 rounded-full text-xs font-mono border transition-all flex items-center gap-1.5 ${
             section === "idioms"
-              ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] border-[var(--accent)] shadow-neon-glow"
+              ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] border-[var(--accent)]"
               : "bg-subtle border-[var(--accent)]/20 text-[var(--dashboard-text-muted)] hover:border-[var(--accent)]/40 hover:text-[var(--text-primary)]"
           }`}
         >
@@ -279,7 +279,7 @@ export default function VocabTab() {
             ))}
             <button
               onClick={() => setShowQuiz(true)}
-              className="px-3 py-1.5 rounded-full text-xs font-mono border border-[var(--accent)]/30 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] hover:bg-[var(--accent-hover)] transition-all flex items-center gap-1.5 shadow-neon-glow"
+              className="px-3 py-1.5 rounded-full text-xs font-mono border border-[var(--accent)]/30 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] hover:bg-[var(--accent-hover)] transition-all flex items-center gap-1.5"
             >
               <GameController className="w-3.5 h-3.5" /> {t(lang, "কুইজ", "Quiz")}
             </button>

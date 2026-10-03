@@ -266,7 +266,7 @@ export default function SubjectTopicSelect({
                 aria-expanded={openSubject?.id === subject.id}
                 className={`glass-card rounded-2xl border p-3 text-left transition-all active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-primary)] ${
                   selected
-                    ? "border-[var(--accent)]/40 bg-[var(--dashboard-primary-subtle)] shadow-neon-glow"
+                    ? "border-[var(--accent)]/40 bg-[var(--dashboard-primary-subtle)]"
                     : "border-terminal-border hover:border-[var(--accent)]/20 hover:-translate-y-0.5"
                 }`}
               >
@@ -377,7 +377,7 @@ export default function SubjectTopicSelect({
               {/* Multi-select topic tree */}
               <div>
                 <p
-                  className="block text-[10px] font-mono uppercase tracking-widest mb-1.5"
+                  className="block text-caption-mono mb-1.5"
                   style={{ color: "var(--dashboard-text-muted)" }}
                 >
                   টপিক নির্বাচন করুন
@@ -453,7 +453,7 @@ export default function SubjectTopicSelect({
               <button
                 type="button"
                 onClick={closePopup}
-                className="flex-1 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors shadow-neon-glow"
+                className="flex-1 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors"
               >
                 সম্পন্ন
               </button>

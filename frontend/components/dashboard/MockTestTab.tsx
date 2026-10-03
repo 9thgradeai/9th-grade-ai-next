@@ -588,7 +588,7 @@ export default function MockTestTab() {
             <button
               onClick={() => void buildAndStart()}
               disabled={selectedSubjects.length === 0 || totalCount === 0 || buildLoading}
-              className="mt-4 w-full py-3 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center justify-center gap-2 shadow-neon-glow disabled:opacity-40 disabled:cursor-not-allowed"
+              className="mt-4 w-full py-3 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <Play className="w-4 h-4" />
               {buildLoading ? "তৈরি হচ্ছে..." : "মক টেস্ট শুরু করুন"}
@@ -628,7 +628,7 @@ export default function MockTestTab() {
                       handleSubmitRequest();
                     }}
                     disabled={submitting || totalQuestions === 0}
-                    className="px-4 py-2 min-h-11 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-xs rounded-lg hover:bg-[var(--accent-hover)] transition-colors shadow-neon-glow flex items-center gap-1.5 disabled:opacity-40 z-50 relative"
+                    className="px-4 py-2 min-h-11 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-xs rounded-lg hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-1.5 disabled:opacity-40 z-50 relative"
                   >
                     <Flag className="w-3.5 h-3.5" />
                     {submitting ? "জমা হচ্ছে..." : "জমা দিন"}
@@ -747,7 +747,7 @@ export default function MockTestTab() {
                 handleSubmitRequest();
               }}
               disabled={submitting}
-              className="px-5 py-2 min-h-11 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2 shadow-neon-glow disabled:opacity-40 z-50 relative"
+              className="px-5 py-2 min-h-11 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2 disabled:opacity-40 z-50 relative"
             >
               <Flag className="w-4 h-4" />
               {submitting ? "জমা হচ্ছে..." : "জমা দিন"}
@@ -827,7 +827,7 @@ export default function MockTestTab() {
                   </button>
                   <button
                     onClick={finalizeSubmit}
-                    className="flex-1 py-2.5 min-h-11 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors shadow-neon-glow"
+                    className="flex-1 py-2.5 min-h-11 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors"
                   >
                     জমা দিন
                   </button>
@@ -900,7 +900,7 @@ export default function MockTestTab() {
             <div className="flex items-center justify-center gap-3 mt-5">
               <button
                 onClick={resetTest}
-                className="px-5 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2 shadow-neon-glow"
+                className="px-5 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2"
               >
                 <Play className="w-4 h-4" /> আবার মক টেস্ট
               </button>

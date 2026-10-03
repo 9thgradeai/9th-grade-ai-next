@@ -502,7 +502,7 @@ export default function SettingsTab() {
               <motion.span
                 layout
                 transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                className={`absolute top-0.5 w-6 h-6 rounded-full bg-[var(--accent)] shadow-neon-glow ${notifPref ? "left-[30px]" : "left-0.5"}`}
+                className={`absolute top-0.5 w-6 h-6 rounded-full bg-[var(--accent)] ${notifPref ? "left-[30px]" : "left-0.5"}`}
               />
             </button>
           </div>

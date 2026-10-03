@@ -527,7 +527,7 @@ export default function PracticeTab() {
               onClick={() => setMode(m.id)}
               className={`flex items-center gap-2 px-4 py-2 text-sm font-mono rounded-lg transition-all ${
                 mode === m.id
-                  ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] shadow-neon-glow"
+                  ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)]"
                   : "text-[var(--dashboard-text-secondary)] hover:text-[var(--dashboard-text-primary)] hover:bg-[var(--surface-hover)]"
               }`}
             >
@@ -632,7 +632,7 @@ export default function PracticeTab() {
                           aria-pressed={difficulty === d}
                           className={`min-h-[44px] px-4 rounded-xl border font-mono text-xs transition-all active:scale-95 ${
                             difficulty === d
-                              ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] border-[var(--accent)] shadow-neon-glow"
+                              ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] border-[var(--accent)]"
                               : "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-secondary)] hover:border-[var(--accent)]/40"
                           }`}
                         >
@@ -913,7 +913,7 @@ export default function PracticeTab() {
                       setQuestions([]);
                                         setTimerKey((k) => k + 1);
                     }}
-                    className="px-5 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2 shadow-neon-glow"
+                    className="px-5 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2"
                   >
                     <ArrowCounterClockwise className="w-4 h-4" /> আবার প্র্যাকটিস
                   </button>

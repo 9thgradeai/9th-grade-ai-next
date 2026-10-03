@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { computeDrivers, biggestLever } from "@/components/dashboard/command-center/ReadinessIndicatorCard";
+import { computeDrivers, biggestLever, mockScorePoints } from "@/components/dashboard/command-center/ReadinessIndicatorCard";
 import type { PreparationIntelligenceDTO } from "@/lib/types";
 
 function intel(overrides: Partial<PreparationIntelligenceDTO> = {}): PreparationIntelligenceDTO {
@@ -68,5 +68,16 @@ describe("readiness drivers (O8)", () => {
     // accuracy 90 good, mock ~88 good, coverage good, consistency good, trend good.
     expect(drivers.every((d) => d.status === "good")).toBe(true);
     expect(biggestLever(drivers)).toBeNull();
+  });
+
+  it("maps mock scores to chronological SVG points with padding", () => {
+    expect(mockScorePoints([])).toBe("");
+    // Rising series: first point low-right... last point top-right.
+    const pts = mockScorePoints([40, 60, 80]).split(" ").map((p) => p.split(",").map(Number));
+    expect(pts).toHaveLength(3);
+    expect(pts[0][0]).toBeLessThan(pts[2][0]);
+    expect(pts[0][1]).toBeGreaterThan(pts[2][1]);
+    // Flat series stays on the midline instead of dividing by zero.
+    expect(mockScorePoints([70, 70])).toBe("4.0,18.0 116.0,18.0");
   });
 });

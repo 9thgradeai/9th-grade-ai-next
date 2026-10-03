@@ -9,6 +9,7 @@
     "db:deploy-sync": "DATABASE_URL=\"${DIRECT_DATABASE_URL:-$DATABASE_URL}\" prisma db push --schema database/prisma/schema.prisma && DATABASE_URL=\"${DIRECT_DATABASE_URL:-$DATABASE_URL}\" npm run db:seed",
     "start": "next start",
     "lint": "eslint",
+    "lint:tokens": "bash scripts/check-design-tokens.sh",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",

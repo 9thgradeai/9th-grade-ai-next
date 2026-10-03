@@ -1,46 +1,36 @@
 "use client";
 
-/* SpeechRecognition types are not in the standard lib DOM; we access them
-   dynamically, so disable the explicit-any rule for this file only. */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Markdown from "@/components/chat/Markdown";
 import { SpeakerHigh, SpeakerX, Square } from "@phosphor-icons/react";
 import { tutorTurn } from "@/lib/services/ai/tutor";
+import { useVoiceInput, useVoiceOutput } from "@/lib/hooks/useVoice";
 
 type Msg = { id: string; role: "user" | "ai"; text: string };
-
-const BENGALI_RE = /[ঀ-৿]/;
 
 export default function VoiceInterviewTab() {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
-  const [listening, setListening] = useState(false);
   const [busy, setBusy] = useState(false);
   const [autoSpeak, setAutoSpeak] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [supported] = useState(
-    typeof window !== "undefined" &&
-      Boolean((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition),
-  );
 
   const conversationId = useRef<string | undefined>(undefined);
-  const recognitionRef = useRef<any>(null);
-  const activeTts = useRef<SpeechSynthesisUtterance | null>(null);
+  const sendRef = useRef<(text: string) => Promise<void>>(async () => {});
 
-  const speak = useCallback((text: string) => {
-    if (typeof window === "undefined" || !window.speechSynthesis) return;
-    window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = BENGALI_RE.test(text) ? "bn-BD" : "en-US";
-    activeTts.current = u;
-    window.speechSynthesis.speak(u);
-  }, []);
+  const voiceOut = useVoiceOutput();
+  const voiceIn = useVoiceInput({
+    lang: "bn-BD",
+    interimResults: true,
+    onTranscript: (transcript, isFinal) => {
+      setInput(transcript);
+      if (isFinal) void sendRef.current(transcript);
+    },
+  });
+  const { supported, listening } = voiceIn;
 
   const send = useCallback(
-    async (text: string) => {
-      const content = text.trim();
+    async (text: string) => {      const content = text.trim();
       if (!content || busy) return;
       setError(null);
       const userMsg: Msg = { id: `u-${Date.now()}`, role: "user", text: content };
@@ -64,7 +54,7 @@ export default function VoiceInterviewTab() {
           setTimeout(() => {
             setMessages((m) => {
               const t = m.find((x) => x.id === aiId)?.text ?? "";
-              if (t) speak(t);
+              if (t) voiceOut.speak(t);
               return m;
             });
           }, 50);
@@ -76,41 +66,24 @@ export default function VoiceInterviewTab() {
         setBusy(false);
       }
     },
-    [autoSpeak, busy, messages, speak],
+    [busy, messages, voiceOut, autoSpeak],
   );
+  // Mirror latest send after render so the recognition callback (which
+  // outlives any single render) always acts on fresh state.
+  useEffect(() => {
+    sendRef.current = send;
+  });
 
   const toggleMic = useCallback(() => {
     if (listening) {
-      recognitionRef.current?.stop();
-      setListening(false);
+      voiceIn.stop();
       return;
     }
-    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SR) {
+    const err = voiceIn.start();
+    if (err) {
       setError("এই ব্রাউজারে ভয়েস ইনপুট সাপোর্ট করে না। Chrome/Edge ব্যবহার করো।");
-      return;
     }
-    const rec = new SR();
-    rec.lang = "bn-BD";
-    rec.interimResults = true;
-    rec.continuous = false;
-    rec.onresult = (ev: any) => {
-      const transcript = Array.from(ev.results)
-        .map((r: any) => r[0].transcript)
-        .join("");
-      setInput(transcript);
-      if (ev.results[0].isFinal) {
-        rec.stop();
-        setListening(false);
-        void send(transcript);
-      }
-    };
-    rec.onerror = () => setListening(false);
-    rec.onend = () => setListening(false);
-    recognitionRef.current = rec;
-    rec.start();
-    setListening(true);
-  }, [listening, send]);
+  }, [listening, voiceIn]);
 
   return (
     <div className="mx-auto flex h-full w-full max-w-3xl flex-col gap-4 px-4 py-6">
@@ -154,7 +127,7 @@ export default function VoiceInterviewTab() {
               {m.text && (
                 <button
                   type="button"
-                  onClick={() => speak(m.text)}
+                  onClick={() => voiceOut.speak(m.text)}
                   aria-label="শোনো"
                   className="mt-1 rounded-lg border border-[var(--border-subtle)] p-1.5 text-[var(--dashboard-text-muted)] hover:text-[var(--dashboard-primary)]"
                 >

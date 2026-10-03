@@ -311,7 +311,7 @@ export default function QuestionBankTab() {
           onClick={() => setBrowseMode("subject")}
           className={`px-3 py-1.5 rounded-full text-xs font-mono border transition-all ${
             mode === "subject"
-              ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] border-[var(--accent)] shadow-neon-glow"
+              ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] border-[var(--accent)]"
               : "bg-subtle border-[var(--accent)]/20 text-[var(--dashboard-text-muted)] hover:border-[var(--accent)]/40 hover:text-[var(--text-primary)]"
           }`}
         >
@@ -321,7 +321,7 @@ export default function QuestionBankTab() {
           onClick={() => setBrowseMode("exam")}
           className={`px-3 py-1.5 rounded-full text-xs font-mono border transition-all ${
             mode === "exam"
-              ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] border-[var(--accent)] shadow-neon-glow"
+              ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] border-[var(--accent)]"
               : "bg-subtle border-[var(--accent)]/20 text-[var(--dashboard-text-muted)] hover:border-[var(--accent)]/40 hover:text-[var(--text-primary)]"
           }`}
         >
@@ -335,7 +335,7 @@ export default function QuestionBankTab() {
           onClick={() => setView("all")}
           className={`px-3 py-1.5 rounded-full text-xs font-mono border transition-all ${
             view === "all"
-              ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] border-[var(--accent)] shadow-neon-glow"
+              ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] border-[var(--accent)]"
               : "bg-subtle border-[var(--accent)]/20 text-[var(--dashboard-text-muted)] hover:border-[var(--accent)]/40 hover:text-[var(--text-primary)]"
           }`}
         >
@@ -345,7 +345,7 @@ export default function QuestionBankTab() {
           onClick={() => setView("saved")}
           className={`px-3 py-1.5 rounded-full text-xs font-mono border transition-all flex items-center gap-1.5 ${
             view === "saved"
-              ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] border-[var(--accent)] shadow-neon-glow"
+              ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] border-[var(--accent)]"
               : "bg-subtle border-[var(--accent)]/20 text-[var(--dashboard-text-muted)] hover:border-[var(--accent)]/40 hover:text-[var(--text-primary)]"
           }`}
         >
@@ -362,7 +362,7 @@ export default function QuestionBankTab() {
         {view === "all" && visibleQuestions.length > 0 && (
           <button
             onClick={() => setPracticeMode("scroll")}
-            className="px-3 py-1.5 rounded-full text-xs font-mono border border-[var(--accent)]/30 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] hover:bg-[var(--accent-hover)] transition-all flex items-center gap-1.5 shadow-neon-glow"
+            className="px-3 py-1.5 rounded-full text-xs font-mono border border-[var(--accent)]/30 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] hover:bg-[var(--accent-hover)] transition-all flex items-center gap-1.5"
           >
             <Play className="w-3.5 h-3.5" /> স্ক্রল প্র্যাকটিস — {visibleQuestions.length} প্রশ্ন
           </button>
@@ -454,7 +454,7 @@ export default function QuestionBankTab() {
               onClick={() => setActiveCategory(cat.label)}
               className={`px-3 py-1.5 rounded-full text-xs font-mono border transition-all ${
                 activeCategory === cat.label
-                  ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] border-[var(--accent)] shadow-neon-glow"
+                  ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] border-[var(--accent)]"
                   : "bg-subtle border-[var(--accent)]/20 text-[var(--dashboard-text-muted)] hover:border-[var(--accent)]/40 hover:text-[var(--text-primary)]"
               }`}
             >

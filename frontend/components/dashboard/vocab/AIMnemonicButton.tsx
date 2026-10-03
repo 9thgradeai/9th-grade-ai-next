@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkle, Copy, ArrowClockwise, Check } from "@phosphor-icons/react";
 import { api } from "@/lib/services/api";
+import AISourceFooter from "../ai/AISourceFooter";
 import { useToastSafe } from "@/lib/toast-ctx";
 import { useLanguage, t } from "@/lib/lang-ctx";
 
@@ -22,6 +23,7 @@ export default function AIMnemonicButton({ word, bengaliMeaning, context, existi
   const { lang } = useLanguage();
   const [state, setState] = useState<MnemonicState>("idle");
   const [aiMnemonic, setAiMnemonic] = useState("");
+  const [aiSource, setAiSource] = useState("");
   const [showSeed, setShowSeed] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -35,6 +37,7 @@ export default function AIMnemonicButton({ word, bengaliMeaning, context, existi
     try {
       const result = await api.vocabAiMnemonic(word, bengaliMeaning, context);
       setAiMnemonic(result.mnemonic);
+      setAiSource(result.source ?? "");
       setState("generated");
       onMnemonicGenerated?.(result.mnemonic);
     } catch {
@@ -105,6 +108,7 @@ export default function AIMnemonicButton({ word, bengaliMeaning, context, existi
                   <span className="text-[10px] font-mono text-amber-600 bg-amber-500/10 px-1.5 py-0.5 rounded">AI</span>
                 </div>
                 <p className="text-sm text-[var(--dashboard-text-secondary)] leading-relaxed">{aiMnemonic}</p>
+                <AISourceFooter provider={aiSource} className="mt-2" />
               </div>
               <button
                 onClick={() => void copyToClipboard()}

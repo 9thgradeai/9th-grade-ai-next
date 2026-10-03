@@ -259,7 +259,7 @@ export default function StudyPlannerTab() {
                       onClick={() => {
                         void toggleTask(task.id);
                       }}
-                      className="px-3 py-1.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-xs rounded hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-1 shadow-neon-glow"
+                      className="px-3 py-1.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-xs rounded hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-1"
                     >
                       Start <CaretRight className="w-3 h-3" />
                     </motion.button>
