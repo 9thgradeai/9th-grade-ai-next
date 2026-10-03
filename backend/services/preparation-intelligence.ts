@@ -22,6 +22,7 @@ import {
   aggregateDailyActivity,
   buildActivityWindow,
   computeStreak,
+  toAppDateKey,
 } from "~backend/repositories/analytics.repository";
 import { getWeakTopics } from "~backend/services/analytics";
 import { getMockTestResults, getStudyPlan } from "~backend/services/content";
@@ -88,7 +89,7 @@ function computePeriodComparison(
 }
 
 function buildSubjectPerformance(
-  rows: { subjectName: string; topic: string; attempted: number; correct: number }[],
+  rows: { subjectName: string; topic: string; attempted: number; correct: number; lastAttemptedAt?: string | null }[],
 ): PrepIntelligenceSubjectPerformance[] {
   const bySubject = new Map<
     string,
@@ -110,6 +111,7 @@ function buildSubjectPerformance(
       attempted: r.attempted,
       correct: r.correct,
       accuracy: round((r.correct / r.attempted) * 100),
+      lastAttemptedAt: r.lastAttemptedAt ?? null,
     });
   }
   return [...bySubject.entries()]
@@ -336,7 +338,7 @@ export async function getPreparationIntelligence(
     const period = computePeriodComparison(activity, COMPARISON_WINDOW_DAYS);
     const subjectPerformance = buildSubjectPerformance(subjectTopicAgg);
 
-    const todayKey = new Date().toISOString().slice(0, 10);
+    const todayKey = toAppDateKey(Date.now());
     const studiedToday = activity.some(
       (d) => d.date === todayKey && d.answered > 0,
     );
@@ -557,7 +559,7 @@ export async function getIntelligenceAnalytics(
     ]);
 
     const subjectPerformance = buildSubjectPerformance(subjectTopicAgg);
-    const todayKey = new Date().toISOString().slice(0, 10);
+    const todayKey = toAppDateKey(Date.now());
     const studiedToday = todayActivity.some((d) => d.date === todayKey && d.answered > 0);
 
     return {

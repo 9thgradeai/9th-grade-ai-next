@@ -8,6 +8,7 @@ import "server-only";
 
 import { createHash } from "node:crypto";
 import { prisma } from "~backend/db";
+import { toAppDateKey } from "~backend/repositories/analytics.repository";
 import { ValidationError } from "~backend/errors";
 import type { StudyTaskDTO } from "@/lib/types";
 
@@ -67,7 +68,7 @@ export async function createStudyTask(
   const description =
     typeof input.description === "string" ? input.description.trim().slice(0, 300) : "";
 
-  const date = new Date().toISOString().slice(0, 10);
+  const date = toAppDateKey(Date.now());
   const sourceKey = createHash("md5").update(`${day}|${date}`).digest("hex");
 
   let dayRow = await prisma.studyPlanDay.findUnique({

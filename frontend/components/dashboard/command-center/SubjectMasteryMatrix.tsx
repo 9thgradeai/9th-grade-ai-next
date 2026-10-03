@@ -18,6 +18,23 @@ function accuracyTone(accuracy: number): string {
   return "var(--dashboard-danger)";
 }
 
+/** Days since an ISO timestamp (null when unknown). Exported pure for tests. */
+export function daysSince(iso: string | null | undefined, nowMs: number = Date.now()): number | null {
+  if (!iso) return null;
+  const ms = new Date(iso).getTime();
+  if (Number.isNaN(ms)) return null;
+  return Math.max(0, Math.floor((nowMs - ms) / 86_400_000));
+}
+
+/** Forgetting-risk flag: attempted before, but nothing in the last 14 days. */
+export function isTopicStale(
+  lastAttemptedAt: string | null | undefined,
+  nowMs: number = Date.now(),
+): boolean {
+  const days = daysSince(lastAttemptedAt, nowMs);
+  return days != null && days >= 14;
+}
+
 function SubjectRow({
   subject,
   lang,
@@ -85,6 +102,7 @@ function SubjectRow({
             <div className="p-3 space-y-1.5">
               {subject.topics.map((topic) => {
                 const tt = accuracyTone(topic.accuracy);
+                const stale = isTopicStale(topic.lastAttemptedAt);
                 return (
                   <div
                     key={`${topic.subject}-${topic.topic}`}
@@ -92,7 +110,18 @@ function SubjectRow({
                     style={{ background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-muted)" }}
                   >
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs font-bold truncate" style={{ color: "var(--dashboard-text-primary)" }}>{topic.topic}</p>
+                      <p className="text-xs font-bold truncate" style={{ color: "var(--dashboard-text-primary)" }}>
+                        {topic.topic}{" "}
+                        {stale && (
+                          <span
+                            className="ml-1 inline-block align-middle text-[10px] font-mono font-bold px-1.5 py-px rounded-full border"
+                            style={{ color: "var(--dashboard-warning)", borderColor: "color-mix(in srgb, var(--dashboard-warning) 35%, transparent)", background: "var(--dashboard-warning-subtle)" }}
+                            title={t(lang, "১৪+ দিন ধরা হয়নি — ভুলে যাওয়ার ঝুঁকি", "Untouched for 14+ days — forgetting risk")}
+                          >
+                            {t(lang, "ঝিমন্ত", "stale")}
+                          </span>
+                        )}
+                      </p>
                       <p className="text-[11px] font-mono mt-0.5" style={{ color: "var(--dashboard-text-muted)" }}>
                         {topic.attempted} · {topic.correct} ✓
                       </p>

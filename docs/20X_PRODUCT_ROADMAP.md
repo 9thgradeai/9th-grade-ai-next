@@ -7,7 +7,9 @@
 - [x] Unify dual exam-submit validators on strict (P-B1).
 - [x] Delete legacy `submitCustomExam` after unrouted proof (P-B2).
 - [x] Leaderboard streak cache read (P-F1).
-- [ ] Dhaka-tz `studiedToday` (P-C2) — needs timezone-coherent SQL rework, not a one-line patch.
+- [x] Dhaka-tz day boundaries (P-C2) — `APP_TIMEZONE` + `AT TIME ZONE` grouping in
+  analytics SQL, key-based cursor math, studied-today + study-plan labels. Follow-ups:
+  vocab-analytics buckets and the AI quota-day window still use UTC/server-local days.
 - [x] Remove dead route block (P-C3).
 
 ## Phase 1 — UX foundation
@@ -30,7 +32,8 @@
 - Readiness drivers v1 (deterministic; O8 without LLM).
 - Revision-due strip (O4); ContinueLearning resume coverage (B4).
 - Difficulty picker + accuracy-by-level (O5, P-U3).
-- Weakness heatmap from existing mastery (O9).
+- [x] Weakness heatmap from existing mastery (O9) — SubjectMasteryMatrix accuracy rows +
+  14-day forgetting-risk ("ঝিমন্ত") flags from per-topic recency.
 
 ## Phase 3 — AI transformation
 
@@ -44,7 +47,8 @@
 - [ ] O6 AI Study Brief — RESOLVED WITHOUT NEW SURFACE: `ai/opening` already delivers the
   deterministic brief (greeting, summary, insights, prompts) in the workspace and TodayMission
   covers the decision on Home; a third surface would duplicate (see DO_NOT_BUILD §7).
-- [ ] Feedback aggregation → prompt decisions (AI6 fix).
+- [x] Feedback aggregation pipeline (AI6) — bounded ledger summary + CLI report driving
+  prompt/model decisions (automation waits on live volume).
 
 ## Phase 4 — Adaptive learning (started: batch mastery writes)
 

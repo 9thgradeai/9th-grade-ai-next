@@ -1041,6 +1041,8 @@ export namespace Server {
     attempted: number;
     correct: number;
     accuracy: number;
+    /** ISO timestamp of the newest attempt (forgetting-risk flags). Null when unknown. */
+    lastAttemptedAt?: string | null;
   };
 
   export type PrepIntelligenceSubjectPerformance = {

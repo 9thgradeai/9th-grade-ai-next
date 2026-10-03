@@ -56,4 +56,21 @@ describe("computeStreak (server-authoritative streaks)", () => {
     ] as never);
     expect(await computeStreak("u1")).toBe(2);
   });
+
+  it("credits post-midnight-Dhaka attempts to the Dhaka day (P-C2)", async () => {
+    // 18:30 UTC = 00:30 Dhaka next day. The DB groups by Dhaka day, so the
+    // row arrives keyed 2026-08-24 while UTC still says Aug 23.
+    vi.setSystemTime(new Date("2026-08-23T18:30:00.000Z"));
+    vi.mocked(prisma.$queryRaw).mockResolvedValue([{ day: "2026-08-24" }] as never);
+    expect(await computeStreak("u1")).toBe(1);
+  });
+
+  it("anchors on Dhaka yesterday when today is untouched", async () => {
+    vi.setSystemTime(new Date("2026-08-23T18:30:00.000Z"));
+    vi.mocked(prisma.$queryRaw).mockResolvedValue([
+      { day: "2026-08-23" },
+      { day: "2026-08-22" },
+    ] as never);
+    expect(await computeStreak("u1")).toBe(2);
+  });
 });

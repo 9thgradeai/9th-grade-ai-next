@@ -92,6 +92,7 @@ describe("aggregateDailyActivity (DB-side grouping)", () => {
 
     const out = await aggregateDailyActivity("userA", 7);
     expect(out).toEqual([{ date: "2026-08-22", answered: 3, correct: 2, durationSec: 90 }]);
-    expect(vi.mocked(prisma.$queryRaw).mock.calls[0].slice(1)).toEqual(["userA", 7]);
+    // Timezone travels as the first bound param (product-day grouping), then user + window.
+    expect(vi.mocked(prisma.$queryRaw).mock.calls[0].slice(1)).toEqual(["Asia/Dhaka", "userA", 7]);
   });
 });

@@ -8,6 +8,33 @@ import "server-only";
 
 import { prisma } from "~backend/db";
 
+/**
+ * Product timezone: every "day" boundary in analytics (activity windows,
+ * streaks, studied-today) is an Asia/Dhaka calendar day, not UTC. A learner
+ * studying at 00:30 Dhaka must credit today, not yesterday. Dhaka has no DST,
+ * and calendar-day arithmetic on date keys is DST-immune regardless.
+ */
+export const APP_TIMEZONE = "Asia/Dhaka";
+
+const dhakaDateFmt = new Intl.DateTimeFormat("en-CA", {
+  timeZone: APP_TIMEZONE,
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
+
+/** Instant → YYYY-MM-DD calendar day in the product timezone. */
+export function toAppDateKey(ms: number | Date): string {
+  return dhakaDateFmt.format(ms instanceof Date ? ms : new Date(ms));
+}
+
+/** Calendar-day arithmetic on YYYY-MM-DD keys (tz-safe: keys are days, not instants). */
+export function addDaysKey(key: string, deltaDays: number): string {
+  const d = new Date(`${key}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + deltaDays);
+  return d.toISOString().slice(0, 10);
+}
+
 export type SubjectAttemptAggregate = {
   subjectName: string;
   attempted: number;
@@ -102,6 +129,8 @@ export type SubjectTopicAggregate = {
   topic: string;
   attempted: number;
   correct: number;
+  /** Newest attempt in the group (powers forgetting-risk flags). Null when none. */
+  lastAttemptedAt: string | null;
 };
 
 /**
@@ -112,12 +141,13 @@ export async function aggregateAttemptsBySubjectTopic(
   userId: string,
 ): Promise<SubjectTopicAggregate[]> {
   const rows = await prisma.$queryRaw<
-    { subjectName: string | null; topic: string | null; attempted: number; correct: number }[]
+    { subjectName: string | null; topic: string | null; attempted: number; correct: number; lastAttemptedAt: Date | null }[]
   >`
     SELECT "subjectName" AS "subjectName",
            "topic" AS "topic",
            COUNT(*)::int AS "attempted",
-           COALESCE(SUM(CASE WHEN "correct" THEN 1 ELSE 0 END), 0)::int AS "correct"
+           COALESCE(SUM(CASE WHEN "correct" THEN 1 ELSE 0 END), 0)::int AS "correct",
+           MAX("createdAt") AS "lastAttemptedAt"
     FROM "QuestionAttempt"
     WHERE "userId" = ${userId}
     GROUP BY "subjectName", "topic"`;
@@ -127,6 +157,7 @@ export async function aggregateAttemptsBySubjectTopic(
     topic: r.topic ?? "",
     attempted: Number(r.attempted),
     correct: Number(r.correct),
+    lastAttemptedAt: r.lastAttemptedAt ? new Date(r.lastAttemptedAt).toISOString() : null,
   }));
 }
 
@@ -148,7 +179,7 @@ export async function aggregateRecentAccuracy(
 
 export type DayActivity = { date: string; answered: number; correct: number; durationSec: number };
 
-/** Per-UTC-day totals since `${days}-1` days ago, grouped IN THE DATABASE. */
+/** Per-product-day totals since `${days}-1` days ago, grouped IN THE DATABASE. */
 export async function aggregateDailyActivity(
   userId: string,
   days = 7,
@@ -156,7 +187,7 @@ export async function aggregateDailyActivity(
   const rows = await prisma.$queryRaw<
     { date: string; answered: number; correct: number; durationSec: number }[]
   >`
-    SELECT to_char(date_trunc('day', "createdAt"), 'YYYY-MM-DD') AS "date",
+    SELECT to_char(date_trunc('day', "createdAt" AT TIME ZONE '${APP_TIMEZONE}'), 'YYYY-MM-DD') AS "date",
            COUNT(*)::int AS "answered",
            COALESCE(SUM(CASE WHEN "correct" THEN 1 ELSE 0 END), 0)::int AS "correct",
            COALESCE(SUM("durationSec"), 0)::int AS "durationSec"
@@ -175,7 +206,7 @@ export async function aggregateDailyActivity(
 
 /**
  * Pure zero-fill: expand sparse per-day rows into a continuous window ending
- * today (UTC). Exported for unit testing.
+ * today (product timezone). Exported for unit testing.
  */
 export function buildActivityWindow(
   rows: DayActivity[],
@@ -184,28 +215,28 @@ export function buildActivityWindow(
 ): DayActivity[] {
   const byDate = new Map(rows.map((r) => [r.date, r]));
   const out: DayActivity[] = [];
-  for (let i = days - 1; i >= 0; i--) {
-    const d = new Date(nowMs - i * 86_400_000);
-    const key = d.toISOString().slice(0, 10);
+  let key = toAppDateKey(nowMs);
+  for (let i = 0; i < days; i++) {
     const hit = byDate.get(key);
-    out.push({
+    out.unshift({
       date: key,
       answered: hit?.answered ?? 0,
       correct: hit?.correct ?? 0,
       durationSec: hit?.durationSec ?? 0,
     });
+    key = addDaysKey(key, -1);
   }
   return out;
 }
 
 /**
- * Server-authoritative study streak: consecutive UTC days with at least one
- * attempt, ending today or yesterday. Derived from the attempt log so it can
- * never be inflated by the client. Bounded to a year of distinct days.
+ * Server-authoritative study streak: consecutive product-timezone days with at
+ * least one attempt, ending today or yesterday. Derived from the attempt log
+ * so it can never be inflated by the client. Bounded to a year of distinct days.
  */
 export async function computeStreak(userId: string): Promise<number> {
   const rows = await prisma.$queryRaw<{ day: string }[]>`
-    SELECT DISTINCT to_char(date_trunc('day', "createdAt"), 'YYYY-MM-DD') AS "day"
+    SELECT DISTINCT to_char(date_trunc('day', "createdAt" AT TIME ZONE '${APP_TIMEZONE}'), 'YYYY-MM-DD') AS "day"
     FROM "QuestionAttempt"
     WHERE "userId" = ${userId}
       AND "createdAt" >= now() - interval '365 days'
@@ -218,14 +249,14 @@ export async function computeStreak(userId: string): Promise<number> {
   let streak = 0;
   // Start from today; allow yesterday as the streak anchor so the counter
   // doesn't reset to 0 before the user has studied today.
-  const cursor = new Date();
-  if (!activeDays.has(cursor.toISOString().slice(0, 10))) {
-    cursor.setUTCDate(cursor.getUTCDate() - 1);
-    if (!activeDays.has(cursor.toISOString().slice(0, 10))) return 0;
+  let cursor = toAppDateKey(Date.now());
+  if (!activeDays.has(cursor)) {
+    cursor = addDaysKey(cursor, -1);
+    if (!activeDays.has(cursor)) return 0;
   }
-  while (activeDays.has(cursor.toISOString().slice(0, 10))) {
+  while (activeDays.has(cursor)) {
     streak++;
-    cursor.setUTCDate(cursor.getUTCDate() - 1);
+    cursor = addDaysKey(cursor, -1);
   }
   return streak;
 }
