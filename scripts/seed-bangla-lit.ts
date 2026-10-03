@@ -131,7 +131,7 @@ const SOURCE_FILES: SourceFile[] = [
 
 const TOPIC = "আধুনিক_যুগ_১৮০০_হতে_বর্তমান";
 
-export async function seedBanglaLitQuestions(prisma: PrismaClient): Promise<number> {
+export async function seedBanglaLitQuestions(prisma: PrismaClient): Promise<void> {
   try {
     const bcsEcosystem = await prisma.examEcosystem.findUnique({ where: { code: "BCS" } });
     const bbEcosystem = await prisma.examEcosystem.findUnique({ where: { code: "BANGLADESH_BANK" } });
