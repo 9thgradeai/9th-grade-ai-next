@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useMotionTier, useFirstMountAnimate } from "@/lib/motion/use-motion-tier";
+import { useLanguage, t } from "@/lib/lang-ctx";
 
 type StreakHeatmapProps = {
   activeDays: boolean[];
@@ -9,6 +10,7 @@ type StreakHeatmapProps = {
 };
 
 export default function StreakHeatmap({ activeDays, labels }: StreakHeatmapProps) {
+  const { lang } = useLanguage();
   const { fullMotion } = useMotionTier();
   const days = activeDays.slice(-7);
   const dayLabels = labels.slice(-7);
@@ -21,7 +23,7 @@ export default function StreakHeatmap({ activeDays, labels }: StreakHeatmapProps
     <motion.div
       className="flex items-center gap-1.5"
       role="img"
-      aria-label={`গত ৭ দিনের মধ্যে ${activeCount} দিন অধ্যয়ন করেছেন`}
+      aria-label={t(lang, `গত ৭ দিনের মধ্যে ${activeCount} দিন অধ্যয়ন করেছেন`, `Studied ${activeCount} of the last 7 days`)}
       initial={animateOnce ? "hidden" : false}
       animate="show"
       variants={
@@ -34,6 +36,7 @@ export default function StreakHeatmap({ activeDays, labels }: StreakHeatmapProps
         <motion.div
           key={i}
           className="flex flex-col items-center gap-1"
+          title={`${dayLabels[i]} — ${active ? t(lang, "পড়া হয়েছে", "studied") : t(lang, "পড়া হয়নি", "missed")}${i === days.length - 1 ? ` (${t(lang, "আজ", "today")})` : ""}`}
           variants={
             animateOnce
               ? {
@@ -53,7 +56,7 @@ export default function StreakHeatmap({ activeDays, labels }: StreakHeatmapProps
               active
                 ? "bg-[var(--accent)] border-[var(--primary)] shadow-[0_0_10px_var(--primary)]"
                 : "bg-[var(--dashboard-surface-muted)] border-[var(--border-strong)]"
-            }`}
+            } ${i === days.length - 1 ? "ring-1 ring-[var(--dashboard-primary)]" : ""}`}
             aria-hidden="true"
           />
           <span className="text-[9px] text-[var(--dashboard-text-muted)] font-mono">{dayLabels[i]}</span>

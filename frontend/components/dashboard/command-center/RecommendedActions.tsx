@@ -5,10 +5,12 @@ import { useLanguage, t, type Language } from "@/lib/lang-ctx";
 import { useMotionTier, useFirstMountAnimate } from "@/lib/motion/use-motion-tier";
 import { CaretRight, LightningA, BookOpen, WarningCircle, GridFour, CalendarCheck, Target, Sun } from "@phosphor-icons/react";
 import type { PreparationIntelligenceDTO, PrepIntelligenceRecommendation } from "@/lib/types";
+import HomeEmptyChecklist from "./HomeEmptyChecklist";
 
 type RecommendedActionsProps = {
   intelligence: PreparationIntelligenceDTO | null;
   onAction: (rec: PrepIntelligenceRecommendation) => void;
+  onOpenPlanner: () => void;
 };
 
 const REC_ICON: Record<string, typeof LightningA> = {
@@ -84,14 +86,21 @@ function recDescription(rec: PrepIntelligenceRecommendation, lang: Language): st
   }
 }
 
-export default function RecommendedActions({ intelligence, onAction }: RecommendedActionsProps) {
+export default function RecommendedActions({ intelligence, onAction, onOpenPlanner }: RecommendedActionsProps) {
   const { lang } = useLanguage();
   const { fullMotion } = useMotionTier();
   const recs = (intelligence?.recommendations ?? []).slice(0, 3);
   // Cards cascade in on first mount only — revalidations paint instantly.
   const animateOnce = useFirstMountAnimate(fullMotion && recs.length > 0);
 
-  if (recs.length === 0) return null;
+  // No recommendations yet → the single onboarding checklist (never blank).
+  if (recs.length === 0) {
+    return (
+      <div className="min-h-[220px]">
+        <HomeEmptyChecklist onAction={onAction} onOpenPlanner={onOpenPlanner} />
+      </div>
+    );
+  }
 
   return (
     <section

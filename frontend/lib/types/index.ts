@@ -215,6 +215,7 @@ export namespace Client {
     relatedConcept?: string;
     misconception?: string;
     source: string;
+    model?: string;
     conversationId?: string;
   };
 
@@ -225,6 +226,7 @@ export namespace Client {
     relatedConcepts?: string;
     examTip?: string;
     source: string;
+    model?: string;
   };
 
   export type SuggestedActionDto = {
@@ -249,6 +251,7 @@ export namespace Client {
     modelAnswer: string;
     improvementTips: string[];
     source: string;
+    model?: string;
     conversationId?: string;
   };
 
@@ -266,6 +269,7 @@ export namespace Client {
     title: string;
     questions: GeneratedMockQuestion[];
     source: string;
+    model?: string;
   };
   export type AdvisorPlanDto = {
     summary: string;
@@ -275,6 +279,7 @@ export namespace Client {
     weeklyPlan: { week: number; focus: string; tasks: string[] }[];
     tips: string[];
     source: string;
+    model?: string;
   };
   export type StudentModelTopicDto = { topic: string; detail: string; confidence: number };
   export type StudentModelDto = {

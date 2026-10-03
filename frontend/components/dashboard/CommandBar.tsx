@@ -18,6 +18,7 @@ import { TAB_ICONS } from "@/lib/exam-ui";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 import { api } from "@/lib/services/api";
 import { launchAI } from "@/lib/ai-launcher";
+import { askAssistant } from "@/lib/services/ai/assistant";
 import type { Server } from "@/lib/types";
 
 type CommandItem = {
@@ -139,6 +140,10 @@ export default function CommandBar() {
   const [mistakes, setMistakes] = useState<Server.MistakeItemDTO[]>([]);
   const [papers, setPapers] = useState<{ id: number; titleBn: string; titleEn: string }[]>([]);
   const [contentLoading, setContentLoading] = useState(false);
+  // Inline AI answer (⇧Enter): preview here, full thread via Tutor.
+  const [aiReply, setAiReply] = useState<string | null>(null);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
 
@@ -281,8 +286,33 @@ export default function CommandBar() {
     setMistakes([]);
     setPapers([]);
     setActive(0);
+    setAiReply(null);
+    setAiError(null);
+    setAiLoading(false);
     setOpen(true);
   };
+
+  const askInline = useCallback(async (question: string) => {
+    const q = question.trim();
+    if (q.length < 2 || aiLoading) return;
+    setAiLoading(true);
+    setAiError(null);
+    setAiReply(null);
+    try {
+      const res = await askAssistant({ content: q });
+      setAiReply(res.reply.trim().slice(0, 600));
+    } catch {
+      setAiError("AI উত্তর দিতে পারেনি — টিউটরে খুলে জিজ্ঞেস করুন।");
+    } finally {
+      setAiLoading(false);
+    }
+  }, [aiLoading]);
+
+  const openInTutor = useCallback(() => {
+    const q = query.trim();
+    setOpen(false);
+    launchAI({ mode: "tutor", prompt: q || undefined });
+  }, [query]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -343,7 +373,11 @@ export default function CommandBar() {
           <input
             ref={inputRef}
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setAiReply(null);
+              setAiError(null);
+            }}
             onKeyDown={(e) => {
               if (e.key === "ArrowDown") {
                 e.preventDefault();
@@ -353,7 +387,11 @@ export default function CommandBar() {
                 setActive((a) => Math.max(a - 1, 0));
               } else if (e.key === "Enter") {
                 e.preventDefault();
-                choose(flat[safeActive]);
+                if (e.shiftKey && query.trim().length >= 2) {
+                  void askInline(query);
+                } else {
+                  choose(flat[safeActive]);
+                }
               } else if (e.key === "Escape") {
                 setOpen(false);
               }
@@ -393,6 +431,56 @@ export default function CommandBar() {
                 Try a destination like “progress”, an action like “mock”, or at least 2
                 characters to search your mistakes and papers.
               </p>
+            </li>
+          )}
+          {query.trim().length >= 2 && (
+            <li role="presentation">
+              <p
+                className="px-4 pb-1 pt-2 text-[10px] font-bold uppercase tracking-[0.14em]"
+                style={{ color: "var(--dashboard-text-muted)" }}
+                aria-hidden="true"
+              >
+                Ask AI
+              </p>
+              <div className="px-4 pb-1">
+                <button
+                  type="button"
+                  onClick={() => void askInline(query)}
+                  disabled={aiLoading}
+                  className="flex w-full items-center gap-3 rounded-xl border px-4 py-2.5 text-left text-sm transition-colors hover:border-[var(--dashboard-primary)]/40 disabled:opacity-60"
+                  style={{ background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-muted)" }}
+                >
+                  <Sparkle className="h-4 w-4 shrink-0 text-[var(--dashboard-primary)]" aria-hidden="true" />
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate font-medium" style={{ color: "var(--dashboard-text-primary)" }}>
+                      Ask: “{truncate(query, 48)}”
+                    </span>
+                    <span className="block text-[11px]" style={{ color: "var(--dashboard-text-muted)" }}>
+                      {aiLoading ? "উত্তর তৈরি হচ্ছে…" : "⇧↵ চাপুন — প্যালেটেই সংক্ষিপ্ত উত্তর"}
+                    </span>
+                  </span>
+                </button>
+                {aiError && (
+                  <p role="alert" className="mt-2 text-xs font-mono" style={{ color: "var(--dashboard-danger)" }}>
+                    {aiError}
+                  </p>
+                )}
+                {aiReply && (
+                  <div className="mt-2 rounded-xl border p-3" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}>
+                    <p className="whitespace-pre-wrap text-sm leading-relaxed" style={{ color: "var(--dashboard-text-secondary)" }}>
+                      {aiReply}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={openInTutor}
+                      className="mt-2 inline-flex items-center gap-1.5 text-xs font-bold"
+                      style={{ color: "var(--dashboard-primary)" }}
+                    >
+                      টিউটরে পুরো আলোচনা <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+                    </button>
+                  </div>
+                )}
+              </div>
             </li>
           )}
           {sections.map((section) => (
@@ -468,6 +556,9 @@ export default function CommandBar() {
           </span>
           <span>
             <kbd className="font-mono">↵</kbd> select
+          </span>
+          <span>
+            <kbd className="font-mono">⇧↵</kbd> ask AI
           </span>
           <span className="hidden sm:inline">
             <kbd className="font-mono">⌘K</kbd> toggle

@@ -318,7 +318,7 @@ export default function FlashcardsTab() {
               initial={false}
               animate={{ scaleX: reviewQueue.length > 0 ? currentIndex / reviewQueue.length : 0 }}
               style={{ transformOrigin: "left" }}
-              className="h-full w-full bg-gradient-to-r from-[var(--success)] to-[var(--success)] rounded-full"
+              className="h-full w-full bg-[var(--success)] rounded-full"
             />
           </div>
 

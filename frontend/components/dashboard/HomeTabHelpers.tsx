@@ -26,43 +26,6 @@ export function useCountdown(target: string) {
   return remaining;
 }
 
-export function CountdownClock({ target }: { target: string }) {
-  const remaining = useCountdown(target);
-  return (
-    <span className="font-bold text-lg tracking-widest tabular-nums" style={{ color: "var(--dashboard-primary)" }}>
-      {remaining.d}:{remaining.h}:{remaining.m}:{remaining.s}
-    </span>
-  );
-}
-
-export function CountdownRing({ daysLeft }: { daysLeft: number }) {
-  const fraction = Math.max(0, Math.min(1, daysLeft / 90));
-  const r = 26;
-  const circ = 2 * Math.PI * r;
-  const offset = circ * (1 - fraction);
-  return (
-    <svg viewBox="0 0 64 64" className="w-16 h-16 -rotate-90" aria-hidden="true">
-      <circle cx="32" cy="32" r={r} fill="none" stroke="var(--dashboard-border-muted)" strokeWidth="5" />
-      <circle
-        cx="32"
-        cy="32"
-        r={r}
-        fill="none"
-        stroke="var(--dashboard-primary)"
-        strokeWidth="5"
-        strokeLinecap="round"
-        strokeDasharray={circ}
-        strokeDashoffset={offset}
-      />
-    </svg>
-  );
-}
-
-export function CountdownRingLive({ target }: { target: string }) {
-  const remaining = useCountdown(target);
-  return <CountdownRing daysLeft={Number(remaining.d) || 0} />;
-}
-
 export function useExamDaysLeft(target: string | null): number | null {
   const [days, setDays] = useState<number | null>(null);
   useEffect(() => {
@@ -81,8 +44,8 @@ export function useExamDaysLeft(target: string | null): number | null {
   return days;
 }
 
-export function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("bn-BD", {
+export function formatDate(iso: string, lang: "bn" | "en" = "bn") {
+  return new Date(iso).toLocaleDateString(lang === "bn" ? "bn-BD" : "en-GB", {
     day: "numeric",
     month: "long",
     year: "numeric",

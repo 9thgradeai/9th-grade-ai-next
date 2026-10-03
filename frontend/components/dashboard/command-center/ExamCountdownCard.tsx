@@ -43,7 +43,7 @@ export default function ExamCountdownCard({ exam }: { exam: Server.ExamScheduleD
             {t(lang, exam.titleBn, exam.titleEn)}
           </h3>
           <p className="text-xs mt-1" style={{ color: "var(--dashboard-text-muted)" }}>
-            Official Date: <span className="font-bold font-mono" style={{ color: "var(--dashboard-text-primary)" }}>{formatDate(exam.date)}</span> {exam.note ? `· ${exam.note}` : ""}
+            Official Date: <span className="font-bold font-mono" style={{ color: "var(--dashboard-text-primary)" }}>{formatDate(exam.date, lang)}</span> {exam.note ? `· ${exam.note}` : ""}
           </p>
         </div>
 

@@ -61,19 +61,19 @@ export default function TodayPlanCard({ tasks, onToggle, onTaskAdded }: Props) {
             >
               <Calendar className="w-4 h-4" />
             </span>
-            <p className="command-eyebrow !text-[10px]">Today&apos;s Adaptive Plan</p>
+            <p className="command-eyebrow !text-[10px]">{t(lang, "আজকের অভিযোজন পরিকল্পনা", "Today's Adaptive Plan")}</p>
           </div>
           <div className="flex items-center gap-2">
             {tasks.length > 0 && (
               <span className="text-xs font-mono font-bold px-2 py-0.5 rounded-full border" style={{ background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-primary)" }}>
-                {completed}/{tasks.length} Done ({progressPct}%)
+                {completed}/{tasks.length} {t(lang, "সম্পন্ন", "Done")} ({progressPct}%)
               </span>
             )}
             <button
               onClick={() => setShowAddForm((p) => !p)}
               className="w-7 h-7 rounded-lg border flex items-center justify-center text-[var(--dashboard-primary)] hover:bg-[var(--dashboard-primary-subtle)] transition-colors"
               style={{ borderColor: "var(--dashboard-border-muted)" }}
-              title="Add task to today's plan"
+              title={t(lang, "আজকের পরিকল্পনায় কাজ যোগ করুন", "Add task to today's plan")}
             >
               <Plus className="w-4 h-4" />
             </button>
@@ -94,10 +94,10 @@ export default function TodayPlanCard({ tasks, onToggle, onTaskAdded }: Props) {
       {/* Quick Add Form */}
       {showAddForm && (
         <form onSubmit={(e) => { void handleAddTask(e); }} className="mt-3 p-3 rounded-xl border space-y-2 animate-in fade-in" style={{ background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-primary)" }}>
-          <p className="text-xs font-bold" style={{ color: "var(--dashboard-text-primary)" }}>Add Task to Today&apos;s Target</p>
+          <p className="text-xs font-bold" style={{ color: "var(--dashboard-text-primary)" }}>{t(lang, "আজকের লক্ষ্যে কাজ যোগ করুন", "Add Task to Today's Target")}</p>
           <input
             type="text"
-            placeholder="e.g. Solve 20 BCS History Questions"
+            placeholder={t(lang, "যেমন: বিসিএস ইতিহাসের ২০টি প্রশ্ন সমাধান", "e.g. Solve 20 BCS History Questions")}
             value={newTitle}
             onChange={(e) => setNewTitle(e.target.value)}
             className="w-full px-3 py-1.5 text-xs rounded-lg border focus:outline-none"
@@ -123,14 +123,14 @@ export default function TodayPlanCard({ tasks, onToggle, onTaskAdded }: Props) {
                 onClick={() => setShowAddForm(false)}
                 className="px-2.5 py-1 text-xs font-semibold rounded-lg text-[var(--dashboard-text-muted)]"
               >
-                Cancel
+                {t(lang, "বাতিল", "Cancel")}
               </button>
               <button
                 type="submit"
                 disabled={adding || !newTitle.trim()}
                 className="command-primary-btn !px-3 !py-1 !text-xs"
               >
-                {adding ? <Spinner className="w-3 h-3 animate-spin" /> : "Save"}
+                {adding ? <Spinner className="w-3 h-3 animate-spin" /> : t(lang, "সংরক্ষণ", "Save")}
               </button>
             </div>
           </div>
@@ -140,10 +140,10 @@ export default function TodayPlanCard({ tasks, onToggle, onTaskAdded }: Props) {
       {/* Task List */}
       {tasks.length === 0 && !showAddForm ? (
         <div className="mt-6 flex-1 flex flex-col items-center justify-center text-center py-6">
-          <p className="text-sm font-semibold" style={{ color: "var(--dashboard-text-primary)" }}>No tasks scheduled for today</p>
-          <p className="text-xs mt-1" style={{ color: "var(--dashboard-text-muted)" }}>Generate a study schedule or add your custom task.</p>
+          <p className="text-sm font-semibold" style={{ color: "var(--dashboard-text-primary)" }}>{t(lang, "আজকের জন্য কোনো কাজ নির্ধারিত নেই", "No tasks scheduled for today")}</p>
+          <p className="text-xs mt-1" style={{ color: "var(--dashboard-text-muted)" }}>{t(lang, "পড়ার সময়সূচি তৈরি করুন বা নিজের কাজ যোগ করুন।", "Generate a study schedule or add your custom task.")}</p>
           <button onClick={() => setActiveTab("study-planner")} className="command-primary-btn mt-4">
-            Open AI Planner <ArrowRight className="w-4 h-4" />
+            {t(lang, "AI প্ল্যানার খুলুন", "Open AI Planner")} <ArrowRight className="w-4 h-4" />
           </button>
         </div>
       ) : (
@@ -201,9 +201,9 @@ export default function TodayPlanCard({ tasks, onToggle, onTaskAdded }: Props) {
       {/* Footer Link */}
       <div className="mt-4 pt-2 border-t flex items-center justify-between" style={{ borderColor: "var(--dashboard-border-muted)" }}>
         <button onClick={() => setActiveTab("study-planner")} className="text-xs font-semibold inline-flex items-center gap-1" style={{ color: "var(--dashboard-primary)" }}>
-          Full AI Planner <ArrowRight className="w-3.5 h-3.5" />
+          {t(lang, "সম্পূর্ণ AI প্ল্যানার", "Full AI Planner")} <ArrowRight className="w-3.5 h-3.5" />
         </button>
-        <span className="text-[10px] font-mono text-[var(--dashboard-text-muted)]">Adaptive Queue</span>
+        <span className="text-[10px] font-mono text-[var(--dashboard-text-muted)]">{t(lang, "অভিযোজন সারি", "Adaptive Queue")}</span>
       </div>
     </div>
   );

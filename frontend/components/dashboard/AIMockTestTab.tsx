@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { generateMockTest } from "@/lib/services/ai/mockTest";
 import { api } from "@/lib/services/api";
+import AISourceFooter from "./ai/AISourceFooter";
+import AIExplanationButton from "./AIExplanationButton";
 import RichText from "@/components/ui/RichText";
 import type { GeneratedMockTest, GeneratedMockQuestion } from "@/lib/services/ai/types";
 
@@ -160,7 +162,7 @@ export default function AIMockTestTab() {
           <div className="rounded-2xl border border-border bg-surface px-5 py-4">
             <div className="flex items-center justify-between mb-3">
               <h2 className="font-semibold text-text-primary">{test.title}</h2>
-              <p className="text-xs text-text-muted">{test.source}</p>
+              <AISourceFooter provider={test.source} model={test.model} />
             </div>
             {submitted && (
               <div className="flex items-center gap-3">
@@ -188,34 +190,53 @@ export default function AIMockTestTab() {
             ))}
 
             {!submitted && !showResults && (
-              <button
-                type="button"
-                onClick={() => setShowResults(true)}
-                className="w-full rounded-xl bg-accent px-6 py-2.5 text-sm font-medium text-text-inverse transition-colors hover:bg-accent-hover"
-              >
-                সমাধান দেখুন
-              </button>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <button
+                  type="button"
+                  onClick={() => setSubmitted(true)}
+                  className="flex-1 rounded-xl bg-accent px-6 py-2.5 text-sm font-medium text-text-inverse transition-colors hover:bg-accent-hover"
+                >
+                  জমা দাও (স্কোর দেখো)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowResults(true)}
+                  className="flex-1 rounded-xl border border-border px-6 py-2.5 text-sm text-text-primary transition-colors hover:border-primary/50"
+                >
+                  সমাধান দেখুন
+                </button>
+              </div>
             )}
 
             {submitted ? (
-              <button
-                type="button"
-                onClick={() => {
-                  setSubmitted(false);
-                  setAnswers({});
-                  setShowResults(false);
-                }}
-                className="w-full rounded-xl border border-border px-6 py-2.5 text-sm text-text-primary transition-colors hover:border-primary/50"
-              >
-                আবার চেষ্টা করো
-              </button>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSubmitted(false);
+                    setAnswers({});
+                    setShowResults(false);
+                  }}
+                  className="flex-1 rounded-xl border border-border px-6 py-2.5 text-sm text-text-primary transition-colors hover:border-primary/50"
+                >
+                  আবার চেষ্টা করো
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void generate()}
+                  disabled={loading}
+                  className="flex-1 rounded-xl border border-border px-6 py-2.5 text-sm text-text-primary transition-colors hover:border-primary/50 disabled:opacity-60"
+                >
+                  {loading ? "তৈরি হচ্ছে…" : "একই নিয়মে পুনরায় তৈরি"}
+                </button>
+              </div>
             ) : showResults && (
               <button
                 type="button"
                 onClick={() => setShowResults(false)}
                 className="w-full rounded-xl border border-border px-6 py-2.5 text-sm text-text-primary transition-colors hover:border-primary/50"
               >
-                পরীক্ষা ধরে নagain
+                সমাধান লুকাও
               </button>
             )}
           </div>
@@ -284,9 +305,17 @@ function QuestionCard({
         })}
 
         {showAnswer && q.explanation && (
-          <p className="mt-3 rounded-lg bg-surface-muted px-4 py-2 text-xs text-text-secondary">
-            <RichText text={q.explanation} />
-          </p>
+          <>
+            <p className="mt-3 rounded-lg bg-surface-muted px-4 py-2 text-xs text-text-secondary">
+              <RichText text={q.explanation} />
+            </p>
+            <AIExplanationButton
+              question={q.question}
+              options={q.options.map((o) => o.text)}
+              correctAnswer={q.options.find((o) => o.id === q.answer)?.text ?? q.answer}
+              topic={q.topic}
+            />
+          </>
         )}
       </div>
     </div>

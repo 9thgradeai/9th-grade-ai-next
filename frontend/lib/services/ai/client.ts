@@ -31,6 +31,21 @@ export async function aiJson<T>(
   method: "GET" | "POST" | "PATCH" | "DELETE",
   body?: unknown,
 ): Promise<T> {
+  const { data } = await aiJsonWithMeta<T>(url, method, body);
+  return data;
+}
+
+export type AiJsonMeta = { source: string; model: string };
+
+/**
+ * aiJson variant that also returns the AI provenance headers (X-AI-Source /
+ * X-AI-Model) so surfaces can render the standard AISourceFooter.
+ */
+export async function aiJsonWithMeta<T>(
+  url: string,
+  method: "GET" | "POST" | "PATCH" | "DELETE",
+  body?: unknown,
+): Promise<{ data: T; meta: AiJsonMeta }> {
   const res = await fetch(url, {
     method,
     credentials: "include",
@@ -43,8 +58,14 @@ export async function aiJson<T>(
   });
 
   if (!res.ok) throw await parseError(res);
-  if (res.status === 204) return undefined as T;
-  return (await res.json()) as T;
+  if (res.status === 204) return { data: undefined as T, meta: { source: "", model: "" } };
+  return {
+    data: (await res.json()) as T,
+    meta: {
+      source: res.headers.get("x-ai-source") ?? "",
+      model: res.headers.get("x-ai-model") ?? "",
+    },
+  };
 }
 
 export type StreamChatMeta = {

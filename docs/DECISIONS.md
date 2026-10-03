@@ -978,3 +978,12 @@ Grammar **সমাস** folder file (`database/data/ques/বাংলা ভা
   genuinely different options (e.g. `log₁₀(0.0001)` appears at Q48, Q145 and
   Q190 with different distractors). Those are distinct MCQs, not duplicates,
   so they are not collapsed.
+
+## ADR-057: UX Refactor — AI-summary-first home, provenance footers, dead-code removal
+
+- **Date**: 2026-10-03
+- **Status**: Accepted
+- **Context**: 2026 SaaS/AI-dashboard research consensus (see `docs/UX_REFACTOR_PLAN.md`): prioritization signals maturity; AI summaries lead, charts verify; provenance builds trust; corner-chat reads as dated.
+- **Decision**: (1) HomeHero streams the `home_brief` summary first (auto-draft per signals snapshot) with TodayMission as the single action below it. (2) All five single-shot AI surfaces thread `X-AI-Source`/`X-AI-Model` headers into DTOs and render a shared `AISourceFooter` (Bengali mock warning included). (3) Deleted orphan `DailyQuizWidget` (~400 LOC, unmounted anywhere) instead of wiring a fourth quiz entry point. (4) HomeTab-local shortcuts portal removed; layout `ShortcutsSheet` is the single cheat-sheet. (5) `NotificationCenter` toggle knob keeps hardcoded `bg-white` as a deliberate cross-theme constant. (6) `ai-workspace.css` green theme fork and neon-glow accent language explicitly deferred to Phase 3 (needs visual review, not a blind token swap).
+- **Rationale**: Smallest changes that move the product toward summary-first + explainable AI without a rewrite; deletions preferred over new surfaces.
+- **Consequences**: `RecommendedActions` requires new `onOpenPlanner` prop; AI service wrappers return `model?` alongside `source`; `aiJsonWithMeta` added next to `aiJson` (no breaking change).

@@ -884,7 +884,7 @@ export default function CustomExamTab() {
             </div>
             <div className="h-1.5 bg-[var(--surface-overlay)] rounded-full overflow-hidden mt-2">
               <div
-                className="h-full w-full origin-left bg-gradient-to-r from-[var(--success)] to-[var(--success)] rounded-full transition-transform duration-300"
+                className="h-full w-full origin-left bg-[var(--success)] rounded-full transition-transform duration-300"
                 style={{ transform: `scaleX(${progressPct / 100})` }}
               />
             </div>
@@ -1159,7 +1159,7 @@ export default function CustomExamTab() {
             <div className="mt-4 h-2 bg-[var(--surface-overlay)] rounded-full overflow-hidden max-w-md mx-auto">
               <div
                 className={`h-full w-full origin-left rounded-full transition-transform duration-700 ${
-                  summary.percentage >= 80 ? "bg-gradient-to-r from-[var(--warning)] to-[var(--warning)]" : summary.percentage >= 50 ? "bg-gradient-to-r from-[var(--success)] to-[var(--success)]" : "bg-gradient-to-r from-[var(--danger)] to-[var(--danger)]"
+                  summary.percentage >= 80 ? "bg-[var(--warning)]" : summary.percentage >= 50 ? "bg-[var(--success)]" : "bg-[var(--danger)]"
                 }`}
                 style={{ transform: `scaleX(${summary.percentage / 100})` }}
               />

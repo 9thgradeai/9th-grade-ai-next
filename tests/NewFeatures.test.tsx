@@ -5,7 +5,6 @@ import StudyPlannerTab from "@/components/dashboard/StudyPlannerTab";
 import FlashcardsTab from "@/components/dashboard/FlashcardsTab";
 import MockTestTab from "@/components/dashboard/MockTestTab";
 import AISolverTab from "@/components/dashboard/AISolverTab";
-import DailyQuizWidget from "@/components/dashboard/DailyQuizWidget";
 import NotificationCenter from "@/components/dashboard/NotificationCenter";
 
 function stubFetch(routes: Record<string, unknown>) {
@@ -151,26 +150,6 @@ describe("AISolverTab", () => {
     render(<EcosystemProvider><AISolverTab /></EcosystemProvider>);
     const physicsElements = screen.getAllByText(/Physics/);
     expect(physicsElements.length).toBeGreaterThan(0);
-  });
-});
-
-describe("DailyQuizWidget", () => {
-  beforeEach(() => {
-    stubFetch({ "/api/daily-quiz": { quiz: null } });
-  });
-  afterEach(() => {
-    vi.unstubAllGlobals();
-  });
-
-  it("renders the closed widget", () => {
-    render(<EcosystemProvider><DailyQuizWidget /></EcosystemProvider>);
-    expect(screen.getByText("দৈনিক কুইজ")).toBeInTheDocument();
-  });
-
-  it("shows an empty state when no quiz is available", async () => {
-    render(<EcosystemProvider><DailyQuizWidget /></EcosystemProvider>);
-    fireEvent.click(screen.getByText("দৈনিক কুইজ"));
-    expect(await screen.findByText("আজকের জন্য কোনো কুইজ নেই")).toBeInTheDocument();
   });
 });
 

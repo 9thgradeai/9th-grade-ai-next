@@ -105,28 +105,20 @@ describe("HomeTab Phase 4 — background revalidation", () => {
   });
 });
 
-describe("HomeTab Phase 4 — shortcuts dialog", () => {
-  it("opens on ? with a labelled dialog and closes on Escape", async () => {
+describe("HomeTab shortcuts — single global sheet lives in layout", () => {
+  it("renders no HomeTab-local shortcuts dialog on ? (layout owns the sheet)", async () => {
     render(<HomeTab />);
     await screen.findByText("Today's Mission");
 
     fireEvent.keyDown(window, { key: "?" });
-    const dialog = await screen.findByRole("dialog", { name: "Keyboard shortcuts" });
-    expect(dialog).toHaveAttribute("aria-modal", "true");
-    // Phase 5 unified map: palette + numbered tabs only, no letter hijacks.
-    expect(screen.getByText("Command palette")).toBeInTheDocument();
-    expect(screen.queryByText("Quick practice")).not.toBeInTheDocument();
-
-    fireEvent.keyDown(document, { key: "Escape" });
     await waitFor(() => {
       expect(screen.queryByRole("dialog", { name: "Keyboard shortcuts" })).not.toBeInTheDocument();
     });
   });
 
-  it("opens from the header ? button", async () => {
+  it("has no header ? button (single entry point in layout header)", async () => {
     render(<HomeTab />);
     await screen.findByText("Today's Mission");
-    fireEvent.click(screen.getByRole("button", { name: "Keyboard shortcuts" }));
-    await screen.findByRole("dialog", { name: "Keyboard shortcuts" });
+    expect(screen.queryByRole("button", { name: "Keyboard shortcuts" })).not.toBeInTheDocument();
   });
 });

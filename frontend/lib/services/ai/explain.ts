@@ -26,14 +26,19 @@ export async function getExplanation(opts: ExplainOptions): Promise<AIExplanatio
   if (opts.topic) body.topic = opts.topic;
 
   let full = "";
-  await streamChat({ url: "/api/ai/explain", body, onChunk: (c) => { full += c; } });
+  const meta = await streamChat({ url: "/api/ai/explain", body, onChunk: (c) => { full += c; } });
   const parsed = parseStreamedJson(full) as AIExplanationDto | null;
+  const withMeta = (dto: AIExplanationDto): AIExplanationDto => ({
+    ...dto,
+    source: dto.source || meta.source || "ai",
+    model: meta.model || undefined,
+  });
   if (parsed && typeof parsed.correctAnswerExplanation === "string" && parsed.correctAnswerExplanation.trim()) {
-    return {
+    return withMeta({
       ...parsed,
       correctAnswerExplanation: parsed.correctAnswerExplanation.trim(),
       whyOthersWrong: Array.isArray(parsed.whyOthersWrong) ? parsed.whyOthersWrong : [],
-    };
+    });
   }
   // Graceful degradation: the model sometimes returns prose (e.g. Math with
   // LaTeX braces) instead of strict JSON, or a stream cut off mid-object.
@@ -41,15 +46,15 @@ export async function getExplanation(opts: ExplainOptions): Promise<AIExplanatio
   // message, so the student still gets the content.
   const raw = full.trim().replace(/^```(?:json)?/i, "").replace(/```$/, "").trim();
   if (raw) {
-    return {
+    return withMeta({
       correctAnswerExplanation: raw.slice(0, 8000),
       whyOthersWrong: [],
       source: "ai",
-    };
+    });
   }
-  return {
+  return withMeta({
     correctAnswerExplanation: "দুঃখিত, AI ব্যাখ্যা এইমাত্র উপলব্ধ নয়। অনুগ্রহ করে পরে আবার চেষ্টা করুন।",
     whyOthersWrong: [],
     source: "mock",
-  };
+  });
 }

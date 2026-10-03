@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Sparkle, CaretDown, CaretUp, CheckCircle, XCircle, BookOpen, Lightbulb } from "@phosphor-icons/react";
 import { getExplanation, type ExplainOptions } from "@/lib/services/ai/explain";
 import type { AIExplanationDto } from "@/lib/types";
+import AISourceFooter from "./ai/AISourceFooter";
 import RichText from "@/components/ui/RichText";
 
 type AIExplanationButtonProps = ExplainOptions;
@@ -155,6 +156,7 @@ export default function AIExplanationButton(props: AIExplanationButtonProps) {
                   <p className="text-xs" style={{ color: "var(--dashboard-text-secondary)" }}><RichText text={result.examTip} /></p>
                 </div>
               )}
+              <AISourceFooter provider={result.source} model={result.model} />
             </div>
           </motion.div>
         )}

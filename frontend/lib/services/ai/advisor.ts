@@ -1,4 +1,4 @@
-import { aiJson } from "./client";
+import { aiJsonWithMeta } from "./client";
 import type { AdvisorPlanDto } from "./types";
 
 export type AdvisorOptions = {
@@ -11,5 +11,6 @@ export type AdvisorOptions = {
 
 /** Get a personalized exam-target recommendation + study plan. */
 export async function getCareerAdvice(opts: AdvisorOptions): Promise<AdvisorPlanDto> {
-  return aiJson<AdvisorPlanDto>("/api/ai/advisor", "POST", opts);
+  const { data, meta } = await aiJsonWithMeta<AdvisorPlanDto>("/api/ai/advisor", "POST", opts);
+  return { ...data, source: data.source || meta.source || "ai", model: meta.model || undefined };
 }

@@ -142,7 +142,7 @@ function ShortcutsSheet({ open, onClose }: { open: boolean; onClose: () => void 
           <h2 className="text-sm font-bold" style={{ color: "var(--dashboard-text-primary)" }}>Keyboard shortcuts</h2>
           <button onClick={onClose} className="inline-flex h-9 w-9 items-center justify-center rounded-lg" style={{ color: "var(--dashboard-text-muted)" }} aria-label="Close"><X className="w-4 h-4" /></button>
         </div>
-        {/* Unified global map — same content as the HomeTab cheat-sheet (ShortcutList). */}
+        {/* Unified global keyboard-shortcut map (single cheat-sheet). */}
         <div className="mt-4">
           <ShortcutList />
         </div>

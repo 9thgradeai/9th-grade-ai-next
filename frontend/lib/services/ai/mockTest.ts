@@ -1,6 +1,6 @@
 "use client";
 
-import { aiJson } from "./client";
+import { aiJsonWithMeta } from "./client";
 import type { GeneratedMockTest } from "./types";
 
 export type GenerateMockTestOptions = {
@@ -15,5 +15,6 @@ export type GenerateMockTestOptions = {
 
 /** Generate an AI-written multiple-choice mock test. */
 export async function generateMockTest(opts: GenerateMockTestOptions): Promise<GeneratedMockTest> {
-  return aiJson<GeneratedMockTest>("/api/ai/mock-test", "POST", opts);
+  const { data, meta } = await aiJsonWithMeta<GeneratedMockTest>("/api/ai/mock-test", "POST", opts);
+  return { ...data, source: data.source || meta.source || "ai", model: meta.model || undefined };
 }

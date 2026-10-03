@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { getCareerAdvice } from "@/lib/services/ai/advisor";
+import { launchAI } from "@/lib/ai-launcher";
+import AISourceFooter from "./ai/AISourceFooter";
 import type { AdvisorPlanDto } from "@/lib/services/ai/types";
 
 export default function AdvisorTab() {
@@ -143,7 +145,39 @@ export default function AdvisorTab() {
               </ul>
             </div>
           )}
-          <p className="text-xs text-[var(--dashboard-text-muted)]">সূত্র: {plan.source}</p>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                const text = [
+                  plan.summary,
+                  `লক্ষ্য: ${plan.recommendedExam}`,
+                  `ফোকাস: ${plan.focusAreas.join(", ")}`,
+                  ...plan.weeklyPlan.flatMap((w) => [`সপ্তাহ ${w.week}: ${w.focus}`, ...w.tasks.map((t) => `- ${t}`)]),
+                  `টিপস: ${plan.tips.join("; ")}`,
+                ].join("\n");
+                void navigator.clipboard?.writeText(text).catch(() => {});
+              }}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold transition-colors hover:border-[var(--dashboard-primary)]/40"
+              style={{ background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-primary)" }}
+            >
+              পরিকল্পনা কপি করো
+            </button>
+            <button
+              type="button"
+              onClick={() =>
+                launchAI({
+                  mode: "tutor",
+                  prompt: `আমার প্রস্তাবিত পরীক্ষা: ${plan.recommendedExam}। ফোকাস এলাকা: ${plan.focusAreas.join(", ")}। প্রথম সপ্তাহ থেকে ধাপে ধাপে পড়াও।`,
+                })
+              }
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold transition-colors hover:border-[var(--dashboard-primary)]/40"
+              style={{ background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-primary)" }}
+            >
+              টিউটরের সাথে শুরু করো
+            </button>
+          </div>
+          <AISourceFooter provider={plan.source} model={plan.model} />
         </div>
       )}
     </div>

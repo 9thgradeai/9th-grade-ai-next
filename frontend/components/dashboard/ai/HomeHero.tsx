@@ -48,8 +48,12 @@ function greeting(lang: "bn" | "en", name?: string | null): string {
  * revision/mockPerformance slices) and streams prose + executable blocks.
  * Suggested chips are deterministic, built from live Home signals — the LLM
  * never invents the numbers, it only narrates the next step.
+ *
+ * With `autoBrief`, the hero drafts the brief itself once per distinct
+ * signals snapshot (aborted on unmount / superseded by manual asks), so the
+ * summary — not an empty input — is what returning users see first.
  */
-export default function HomeHero({ signals }: { signals: HomeHeroSignals }) {
+export default function HomeHero({ signals, autoBrief = false }: { signals: HomeHeroSignals; autoBrief?: boolean }) {
   const { user } = useAuth();
   const { lang } = useLanguage();
   const [input, setInput] = useState("");
@@ -108,6 +112,26 @@ export default function HomeHero({ signals }: { signals: HomeHeroSignals }) {
   );
 
   const stop = useCallback(() => abortRef.current?.abort(), []);
+
+  // Auto-brief: draft the summary once per distinct signals snapshot. Skipped
+  // when there is nothing to summarize, while a run is in flight, or once the
+  // user has a result / typed output (manual asks always win).
+  const signalsSig = JSON.stringify(signals);
+  const hasSignal = Boolean(
+    signals.weakSubject ||
+      (signals.unmasteredMistakes ?? 0) > 0 ||
+      (signals.flashcardsDue ?? 0) > 0 ||
+      signals.dailyQuizAvailable,
+  );
+  const autoRanSig = useRef<string | null>(null);
+  useEffect(() => {
+    if (!autoBrief || !hasSignal || running || result || runText) return;
+    if (autoRanSig.current === signalsSig) return;
+    autoRanSig.current = signalsSig;
+    void ask(
+      t(lang, "আজকের সংক্ষিপ্ত ব্রিফ দাও: অগ্রগতি, সবচেয়ে বড় সুযোগ, আর একটি পরবর্তী ধাপ।", "Give today's short brief: progress, biggest opportunity, one next step."),
+    );
+  }, [autoBrief, hasSignal, signalsSig, running, result, runText, ask, lang]);
 
   const chips = useCallback((): { label: string; prompt: string }[] => {
     const out: { label: string; prompt: string }[] = [];

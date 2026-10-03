@@ -2,12 +2,14 @@
 
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowUp, Camera, X, Copy, Check, Spinner, Lightbulb, Chat } from "@phosphor-icons/react";
+import { ArrowUp, Camera, X, Copy, Check, Spinner, Lightbulb, Chat, Target } from "@phosphor-icons/react";
 import { SOLVER_EXAMPLES } from "@/lib/data/study";
 import { solve } from "@/lib/services/ai";
+import { api } from "@/lib/services/api";
 import { launchAI } from "@/lib/ai-launcher";
 import Markdown from "@/components/chat/Markdown";
 import AiLogo from "@/components/ui/AiLogo";
+import AISourceFooter from "./ai/AISourceFooter";
 import RichText, { truncateMathSafe } from "@/components/ui/RichText";
 
 export default function AISolverTab() {
@@ -19,7 +21,10 @@ export default function AISolverTab() {
   const [steps, setSteps] = useState<string[]>([]);
   const [explanation, setExplanation] = useState<string>("");
   const [relatedConcept, setRelatedConcept] = useState<string>("");
+  const [sourceMeta, setSourceMeta] = useState<{ source: string; model?: string } | null>(null);
   const [copied, setCopied] = useState(false);
+  const [drilling, setDrilling] = useState(false);
+  const [drillError, setDrillError] = useState<string | null>(null);
   const [solverError, setSolverError] = useState<string | null>(null);
   const [fileError, setFileError] = useState<string | null>(null);
   const [selectedSubject, setSelectedSubject] = useState("General");
@@ -49,7 +54,9 @@ export default function AISolverTab() {
     setIsSolving(true);
     setSolution(null);
     setSolverError(null);
+    setDrillError(null);
     setSteps([]);
+    setSourceMeta(null);
 
     try {
       const result = await solve({
@@ -61,12 +68,14 @@ export default function AISolverTab() {
       setSteps(result.steps ?? []);
       setExplanation(result.explanation ?? "");
       setRelatedConcept(result.relatedConcept ?? "");
+      setSourceMeta({ source: result.source, model: result.model });
     } catch {
       setSolverError("AI solver সাময়িকভাবে unavailable। আবার চেষ্টা করুন।");
       setSolution(null);
       setSteps([]);
       setExplanation("");
       setRelatedConcept("");
+      setSourceMeta(null);
     } finally {
       setIsSolving(false);
     }
@@ -77,6 +86,29 @@ export default function AISolverTab() {
       mode: "tutor",
       prompt: `The question was: ${textInput || "the uploaded image question"}. Please teach me the concept behind this solution step by step.`,
     });
+  };
+
+  const drillSimilar = async () => {
+    const query = relatedConcept.trim() || textInput.trim().split(/\s+/).slice(0, 8).join(" ");
+    if (!query || drilling) return;
+    setDrilling(true);
+    setDrillError(null);
+    try {
+      const qs = await api.questions({ q: query, limit: 5 });
+      if (qs.length === 0) {
+        setDrillError("এই বিষয়ে প্রশ্নব্যাংকে কিছু পাওয়া যায়নি।");
+        return;
+      }
+      window.dispatchEvent(
+        new CustomEvent("ai:start-practice", {
+          detail: { questionIds: qs.map((q) => q.id), title: "AI সুপারিশকৃত ড্রিল" },
+        }),
+      );
+    } catch {
+      setDrillError("ড্রিল লোড করা যায়নি — আবার চেষ্টা করুন।");
+    } finally {
+      setDrilling(false);
+    }
   };
 
   const copyToClipboard = async (text: string) => {
@@ -96,6 +128,8 @@ export default function AISolverTab() {
     setSteps([]);
     setExplanation("");
     setRelatedConcept("");
+    setSourceMeta(null);
+    setDrillError(null);
   };
 
   return (
@@ -345,6 +379,20 @@ export default function AISolverTab() {
               <Chat className="w-4 h-4" />
               Ask the AI Tutor to explain this step by step
             </button>
+            <button
+              onClick={() => void drillSimilar()}
+              disabled={drilling}
+              className="mt-2 w-full flex items-center justify-center gap-2 py-2.5 bg-surface-raised border border-primary/20 text-primary rounded-lg text-sm font-mono hover:bg-primary-subtle transition-colors disabled:opacity-60"
+            >
+              {drilling ? <Spinner className="w-4 h-4 animate-spin" /> : <Target className="w-4 h-4" />}
+              {drilling ? "ড্রিল তৈরি হচ্ছে…" : "একই বিষয়ে ড্রিল করো"}
+            </button>
+            {drillError && (
+              <p role="alert" className="mt-2 text-xs font-mono text-[var(--dashboard-danger)]">{drillError}</p>
+            )}
+            {sourceMeta && (
+              <AISourceFooter provider={sourceMeta.source} model={sourceMeta.model} className="mt-3" />
+            )}
           </motion.div>
         )}
       </AnimatePresence>

@@ -32,6 +32,7 @@ describe("diagnostic mission (cold-start O1)", () => {
         <RecommendedActions
           intelligence={intelWith([{ ...diagnostic }])}
           onAction={onAction}
+          onOpenPlanner={vi.fn()}
         />
       </LanguageProvider>,
     );
@@ -39,6 +40,28 @@ describe("diagnostic mission (cold-start O1)", () => {
     fireEvent.click(cta.closest("button") ?? cta);
     expect(onAction).toHaveBeenCalledOnce();
     expect(onAction.mock.calls[0][0]).toMatchObject({ id: "diagnostic" });
+  });
+
+  it("renders the onboarding checklist (never blank) when recs are empty", () => {
+    const onAction = vi.fn();
+    const onOpenPlanner = vi.fn();
+    render(
+      <LanguageProvider>
+        <RecommendedActions
+          intelligence={intelWith([])}
+          onAction={onAction}
+          onOpenPlanner={onOpenPlanner}
+        />
+      </LanguageProvider>,
+    );
+    // Three steps, first routes through the standard diagnostic pipeline.
+    expect(screen.getByText(/Get started|শুরু করুন/)).toBeInTheDocument();
+    const stepButtons = screen.getAllByRole("button");
+    expect(stepButtons).toHaveLength(3);
+    fireEvent.click(stepButtons[0]);
+    expect(onAction).toHaveBeenCalledWith({ id: "diagnostic", priority: "high", target: "practice" });
+    fireEvent.click(stepButtons[2]);
+    expect(onOpenPlanner).toHaveBeenCalledOnce();
   });
 
   it("returns null when there are no recommendations", () => {

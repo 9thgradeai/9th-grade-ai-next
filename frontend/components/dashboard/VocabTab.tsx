@@ -240,7 +240,7 @@ export default function VocabTab() {
                 </div>
                 <div className="h-1.5 rounded-full bg-[var(--surface-muted)] overflow-hidden">
                   <div
-                    className="h-full rounded-full bg-gradient-to-r from-[var(--accent)] to-emerald-500 transition-all duration-500"
+                    className="h-full rounded-full bg-[var(--accent)] transition-all duration-500"
                     style={{ width: `${Math.min(100, (dailyProgress.wordsReviewed / dailyGoal) * 100)}%` }}
                   />
                 </div>

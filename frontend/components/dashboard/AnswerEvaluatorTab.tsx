@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { evaluateAnswer } from "@/lib/services/ai/evaluator";
 import type { EvaluationResultDto } from "@/lib/services/ai/types";
+import { launchAI } from "@/lib/ai-launcher";
+import AISourceFooter from "./ai/AISourceFooter";
 
 const VERDICT_LABEL: Record<EvaluationResultDto["verdict"], { bn: string; color: string }> = {
   correct: { bn: "সঠিক", color: "text-[var(--dashboard-primary)]" },
@@ -89,7 +91,7 @@ export default function AnswerEvaluatorTab() {
               <div className={`text-lg font-semibold ${VERDICT_LABEL[result.verdict].color}`}>
                 {VERDICT_LABEL[result.verdict].bn}
               </div>
-              <p className="text-sm text-[var(--dashboard-text-muted)]">সূত্র: {result.source}</p>
+              <p className="text-sm text-[var(--dashboard-text-muted)]"><AISourceFooter provider={result.source} model={result.model} /></p>
             </div>
           </div>
 
@@ -106,6 +108,29 @@ export default function AnswerEvaluatorTab() {
           {result.improvementTips.length > 0 && (
             <Section title="উন্নতির টিপস" items={result.improvementTips} />
           )}
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => void navigator.clipboard?.writeText(result.modelAnswer).catch(() => {})}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold transition-colors hover:border-[var(--dashboard-primary)]/40"
+              style={{ background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-primary)" }}
+            >
+              মডেল উত্তর কপি করো
+            </button>
+            <button
+              type="button"
+              onClick={() =>
+                launchAI({
+                  mode: "tutor",
+                  prompt: `প্রশ্ন: ${question}\nআমার উত্তর: ${answer}\nঘাটতি: ${result.gaps.join("; ")}\nএই ঘাটতিগুলো ধাপে ধাপে শিখিয়ে দাও।`,
+                })
+              }
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold transition-colors hover:border-[var(--dashboard-primary)]/40"
+              style={{ background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-primary)" }}
+            >
+              টিউটরের কাছে আবার শেখো
+            </button>
+          </div>
         </div>
       )}
     </div>

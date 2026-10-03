@@ -171,12 +171,12 @@ export default function DataStorageCard() {
       {/* Actions */}
       <div className="flex flex-wrap gap-2">
         {!connected ? (
-          <button onClick={connect} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#4285F4] text-white text-sm font-semibold hover:bg-[#357ae8] transition-colors shadow-sm">
+          <button onClick={connect} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--info)] text-white text-sm font-semibold hover:brightness-110 transition-all shadow-sm">
             <Plugs className="w-4 h-4" /> {t(lang, "Google Drive সংযুক্ত করুন", "Connect Google Drive")}
           </button>
         ) : (
           <>
-            <button onClick={() => void sync(true)} disabled={!!actionLoading} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 disabled:opacity-60 transition-colors">
+            <button onClick={() => void sync(true)} disabled={!!actionLoading} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--success)] text-white text-sm font-semibold hover:brightness-110 disabled:opacity-60 transition-all">
               {actionLoading === "sync" ? <Spinner className="w-4 h-4 animate-spin" /> : <ArrowsClockwise className="w-4 h-4" />} {t(lang, "এখনই সিঙ্ক করুন", "Sync now")}
             </button>
             <button onClick={connect} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-[var(--border-strong)] bg-[var(--dashboard-surface)] text-[var(--dashboard-text-primary)] text-sm font-medium hover:bg-[var(--surface-hover)] transition-colors">

@@ -637,7 +637,7 @@ export default function MockTestTab() {
               </div>
               <div className="h-1.5 bg-[var(--surface-overlay)] rounded-full overflow-hidden mt-2">
                 <div
-                  className="h-full w-full origin-left bg-gradient-to-r from-[var(--success)] to-[var(--success)] rounded-full transition-transform duration-300"
+                  className="h-full w-full origin-left bg-[var(--success)] rounded-full transition-transform duration-300"
                   style={{ transform: `scaleX(${progressPct / 100})` }}
                 />
               </div>

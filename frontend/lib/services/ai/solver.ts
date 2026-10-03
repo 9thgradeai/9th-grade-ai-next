@@ -19,15 +19,20 @@ export async function solve(opts: SolverTurnOptions): Promise<SolverResultDto> {
   if (opts.questionId) body.questionId = opts.questionId;
 
   let full = "";
-  await streamChat({ url: "/api/ai/solver", body, onChunk: (c) => { full += c; } });
+  const meta = await streamChat({ url: "/api/ai/solver", body, onChunk: (c) => { full += c; } });
   const parsed = parseStreamedJson(full);
+  const withMeta = (dto: SolverResultDto): SolverResultDto => ({
+    ...dto,
+    source: dto.source || meta.source || "ai",
+    model: meta.model || undefined,
+  });
   return (
-    (parsed as SolverResultDto) ?? {
+    withMeta((parsed as SolverResultDto) ?? {
       solution: "Sorry, the AI solver is temporarily unavailable. Please try again.",
       steps: [],
       explanation: "",
       relatedConcept: "",
       source: "mock",
-    }
+    })
   );
 }

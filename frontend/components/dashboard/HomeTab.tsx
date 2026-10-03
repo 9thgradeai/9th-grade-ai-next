@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { createPortal } from "react-dom";
 import dynamic from "next/dynamic";
 import { motion, useReducedMotion } from "framer-motion";
 import { Clock, ArrowRight, Flame, Trophy, CaretRight, ArrowCounterClockwise, Stack } from "@phosphor-icons/react";
@@ -12,7 +11,6 @@ import { useMotionTier } from "@/lib/motion/use-motion-tier";
 import { useLanguage, t } from "@/lib/lang-ctx";
 import { useToastSafe } from "@/lib/toast-ctx";
 import { api, invalidateCache } from "@/lib/services/api";
-import { useDialogA11y } from "@/lib/use-dialog-a11y";
 import { homePerf } from "@/lib/perf";
 import { EMPTY_INTELLIGENCE, mergeIntelligence } from "@/lib/intelligence";
 import type { Server, PrepIntelligenceRecommendation } from "@/lib/types";
@@ -25,7 +23,6 @@ import ContinueLearning from "./command-center/ContinueLearning";
 import RecommendedActions from "./command-center/RecommendedActions";
 import type { PerfRange } from "./command-center/PerformanceCard";
 import TodayPlanCard from "./command-center/TodayPlanCard";
-import ShortcutList from "./ShortcutList";
 import type { HomeHeroSignals } from "./ai/HomeHero";
 
 // PerformanceCard carries the SVG chart chunk — split it off the initial
@@ -52,7 +49,8 @@ const HomeHero = dynamic(() => import("./ai/HomeHero"), {
 });
 
 const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-const WEEKDAY_SHORT_BN = ["শনি", "রবি", "সোম", "মঙ্গল", "বুধ", "বৃহ", "শুক্র"];
+// Index-aligned with Date.getDay() (0 = Sunday = রবি).
+const WEEKDAY_SHORT_BN = ["রবি", "সোম", "মঙ্গল", "বুধ", "বৃহ", "শুক্র", "শনি"];
 
 function lastSevenDayLabels(): string[] {
   const today = new Date().getDay();
@@ -370,35 +368,8 @@ export default function HomeTab() {
     }
   };
 
-  const [shortcutsOpen, setShortcutsOpen] = useState(false);
-  const closeShortcuts = useCallback(() => setShortcutsOpen(false), []);
-  const shortcutsRef = useDialogA11y<HTMLDivElement>(shortcutsOpen, closeShortcuts);
-
-  // Phase 5: `?` opens the cheat-sheet only. Single-letter tab hijacks
-  // (P/M/W/A/F/Q/L/R) are removed — QuickActions bound the same letters, so
-  // one press fired two handlers and stole keystrokes from search fields.
-  // Global navigation lives in the layout (⌘K, 1–0, ?, Esc).
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.metaKey || e.ctrlKey || e.altKey) return;
-      if (
-        e.target instanceof HTMLInputElement ||
-        e.target instanceof HTMLTextAreaElement ||
-        (e.target instanceof HTMLElement && e.target.isContentEditable)
-      ) {
-        return;
-      }
-      // Never hijack keys while a dialog (command palette, sheets) is open.
-      if (e.target instanceof HTMLElement && e.target.closest('[role="dialog"]')) return;
-      if (e.key === "?") {
-        e.preventDefault();
-        setShortcutsOpen((v) => !v);
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
-
+  // Global navigation lives in the layout (⌘K, 1–0, ?, Esc) — HomeTab owns
+  // no key handlers; the layout ShortcutsSheet is the single cheat-sheet.
   const skeleton = !pulseReady && !pulseFailed;
 
   const retryScope = (scope: "pulse" | "tasks" | "analytics") => {
@@ -435,16 +406,6 @@ export default function HomeTab() {
               <Clock className="w-3.5 h-3.5 text-[var(--dashboard-primary)]" aria-hidden="true" /> {user?.examTarget ?? t(lang, "লক্ষ্য নির্ধারিত হয়নি", "Target not set")}
               {nextExam ? ` · ${t(lang, nextExam.titleBn, nextExam.titleEn)}` : ""}
             </span>
-            <button
-              type="button"
-              onClick={() => setShortcutsOpen(true)}
-              aria-label={t(lang, "কিবোর্ড শর্টকাট", "Keyboard shortcuts")}
-              title="?"
-              className="inline-flex items-center justify-center w-11 h-11 min-w-[44px] min-h-[44px] rounded-lg border font-mono text-xs font-bold transition-colors hover:border-[var(--dashboard-primary)]"
-              style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-muted)", background: "var(--dashboard-surface-muted)" }}
-            >
-              ?
-            </button>
             <span
               className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-bold"
               style={{
@@ -506,7 +467,13 @@ export default function HomeTab() {
         </div>
       )}
 
-      {/* ── 1 · Hero Mission — the single primary CTA ── */}
+      {/* ── 1 · AI brief hero: the summary IS the hero. Auto-drafts once per
+             signals snapshot; the mission CTA below is the single action. ── */}
+      <RevealSection className="min-w-0">
+        <HomeHero signals={heroSignals} autoBrief={analyticsReady} />
+      </RevealSection>
+
+      {/* ── 2 · Hero Mission — the single primary CTA ── */}
       <RevealSection className="min-w-0">
         {analyticsFailed && !analyticsReady ? (
           <ScopeError
@@ -553,12 +520,7 @@ export default function HomeTab() {
         </RevealSection>
       )}
 
-      {/* ── 2 · AI Hero: ask-first command bar ── */}
-      <RevealSection className="min-w-0">
-        <HomeHero signals={heroSignals} />
-      </RevealSection>
-
-      {/* ── 3 · Performance + today's plan (2-col) ── */}
+      {/* ── 3 · Performance + today's plan (2-col, verification below the brief) ── */}
       <div className="study-home-analytics grid gap-5 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
         <RevealSection className="min-w-0">
           {!pulseReady ? (
@@ -592,8 +554,8 @@ export default function HomeTab() {
         </RevealSection>
       </div>
 
-      {/* ── 4 · Recommended actions (full width) ── */}
-      <RevealSection className="min-w-0">
+      {/* ── 4 · Recommended actions (full width, min-h holds layout) ── */}
+      <RevealSection className="min-w-0 min-h-[220px]">
         {analyticsFailed && !analyticsReady ? (
           <ScopeError
             message={t(lang, "প্রস্তাবনা লোড করা যায়নি", "Could not load recommendations")}
@@ -603,12 +565,16 @@ export default function HomeTab() {
         ) : !analyticsReady ? (
           <ScopeSkeleton label={t(lang, "প্রস্তাবনা লোড হচ্ছে", "Loading recommendations")} />
         ) : (
-          <RecommendedActions intelligence={intelligence} onAction={handleRecommendation} />
+          <RecommendedActions
+            intelligence={intelligence}
+            onAction={handleRecommendation}
+            onOpenPlanner={() => setActiveTab("study-planner")}
+          />
         )}
       </RevealSection>
 
-      {/* ── 5 · Continue learning ── */}
-      <RevealSection>
+      {/* ── 5 · Continue learning (min-h holds layout when empty) ── */}
+      <RevealSection className="min-h-[120px]">
         {!tasksReady && !tasksFailed ? (
           <ScopeSkeleton label={t(lang, "চলমান শেখা লোড হচ্ছে", "Loading continue learning")} />
         ) : (
@@ -689,9 +655,9 @@ export default function HomeTab() {
                     <p className="text-xs font-bold truncate" style={{ color: "var(--dashboard-text-primary)" }}>
                       {r.title}
                     </p>
-                    <p className="text-[11px]" style={{ color: "var(--dashboard-text-muted)" }}>
-                      {r.correct}/{r.total} correct · {new Date(r.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short" })}
-                    </p>
+                      <p className="text-[11px]" style={{ color: "var(--dashboard-text-muted)" }}>
+                        {r.correct}/{r.total} {t(lang, "সঠিক", "correct")} · {new Date(r.createdAt).toLocaleDateString(lang === "bn" ? "bn-BD" : "en-GB", { day: "2-digit", month: "short" })}
+                      </p>
                   </div>
                   <span className="text-xs font-mono font-extrabold flex items-center gap-1 tabular-nums" style={{ color: "var(--dashboard-text-primary)" }}>
                     {r.score}% <CaretRight className="w-3.5 h-3.5 opacity-50" />
@@ -732,46 +698,6 @@ export default function HomeTab() {
           </div>
         </details>
       </RevealSection>
-      {/* ── Keyboard shortcut cheat-sheet (Phase 4 a11y, portaled: the
-          motion ancestor's transform would break position:fixed) ── */}
-      {shortcutsOpen &&
-        createPortal(
-          <div
-            className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4"
-            style={{ background: "color-mix(in srgb, black 55%, transparent)" }}
-            onClick={closeShortcuts}
-          >
-          <div
-            ref={shortcutsRef}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="home-shortcuts-title"
-            tabIndex={-1}
-            onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-sm rounded-2xl border p-5 outline-none"
-            style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}
-          >
-            <div className="flex items-center justify-between">
-              <p id="home-shortcuts-title" className="text-sm font-bold" style={{ color: "var(--dashboard-text-primary)" }}>
-                {t(lang, "কিবোর্ড শর্টকাট", "Keyboard shortcuts")}
-              </p>
-              <button
-                type="button"
-                onClick={closeShortcuts}
-                aria-label={t(lang, "বন্ধ করো", "Close")}
-                className="inline-flex items-center justify-center w-11 h-11 min-w-[44px] min-h-[44px] rounded-lg border text-xs"
-                style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-secondary)" }}
-              >
-                ✕
-              </button>
-            </div>
-            <div className="mt-3">
-              <ShortcutList />
-            </div>
-          </div>
-          </div>,
-          document.body,
-        )}
     </div>
   );
 }

@@ -250,7 +250,7 @@ export default function QuestionDrill({
           initial={false}
           animate={{ scaleX: (index + (revealed ? 1 : 0)) / questions.length }}
           style={{ transformOrigin: "left" }}
-          className="h-full w-full bg-gradient-to-r from-[var(--success)] to-[var(--success)] rounded-full"
+          className="h-full w-full bg-[var(--success)] rounded-full"
         />
       </div>
 
