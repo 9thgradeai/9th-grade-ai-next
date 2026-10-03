@@ -9,20 +9,19 @@ import dynamic from "next/dynamic";
 import SideNav from "@/components/dashboard/SideNav";
 import BottomNav from "@/components/dashboard/BottomNav";
 import ExamSwitcher from "@/components/dashboard/ExamSwitcher";
-import NotificationCenter from "@/components/dashboard/NotificationCenter";
+import HeaderActions, { GlobalEcosystemToggle } from "@/components/dashboard/HeaderActions";
 import CommandBar from "@/components/dashboard/CommandBar";
-import { ThemeToggle, DashboardThemeProvider } from "@/lib/dashboard-theme-ctx";
-import { EcosystemProvider, useEcosystem } from "@/lib/ecosystem-ctx";
+import { DashboardThemeProvider } from "@/lib/dashboard-theme-ctx";
+import { EcosystemProvider } from "@/lib/ecosystem-ctx";
 import { useAuth } from "@/lib/auth-ctx";
 import { LoadingShell } from "@/components/ui/LoadingShell";
 
 import { TABS, NAV_GROUPS, type TabId } from "@/lib/data";
 import BrandMark from "@/components/ui/BrandMark";
-import LanguageToggle from "@/components/ui/LanguageToggle";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 
 import { useDialogA11y } from "@/lib/use-dialog-a11y";
-import { List, MagnifyingGlass, X, Question } from "@phosphor-icons/react";
+import { List, MagnifyingGlass, X } from "@phosphor-icons/react";
 import LogoutButton from "@/components/dashboard/LogoutButton";
 import NavRows from "@/components/dashboard/NavRows";
 import ShortcutList from "@/components/dashboard/ShortcutList";
@@ -47,11 +46,24 @@ const PracticeDrillOverlay = dynamic(
 // with SideNav (Phase 2 shell dedup).
 function SideNavDrawerContent({ activeTab, onChange }: { activeTab: TabId; onChange: (t: TabId) => void }) {
   const { user } = useAuth();
+  const { lang } = useLanguage();
   const initial = user?.name?.charAt(0) ?? "G";
   return (
     <div className="flex flex-col h-full">
       <div className="px-3 pt-3">
         <ExamSwitcher />
+      </div>
+      {/* Ecosystem quick switch — the header drops this below `sm`
+          to keep the language button visible, so it lives here on
+          phones. */}
+      <div className="px-3 pt-3">
+        <p
+          className="mb-1.5 px-1 text-[10px] font-bold uppercase tracking-[0.12em]"
+          style={{ color: "var(--dashboard-text-muted)" }}
+        >
+          {pickLang(lang, "ইকোসিস্টেম", "Ecosystem")}
+        </p>
+        <GlobalEcosystemToggle />
       </div>
       <div className="flex-1 min-h-0 overflow-y-auto px-3 py-3">
         <NavRows activeTab={activeTab} onChange={onChange} variant="drawer" />
@@ -105,30 +117,6 @@ function EmailVerificationGate({ children }: { children: React.ReactNode }) {
   }
 
   return <>{children}</>;
-}
-
-function GlobalEcosystemToggle() {
-  const { ecosystem, setEcosystem } = useEcosystem();
-  const { lang } = useLanguage();
-  return (
-    <div
-      className="flex items-center gap-1 bg-[var(--dashboard-surface-muted)] border border-[var(--dashboard-border-muted)] rounded-xl p-1 shrink-0"
-      role="group"
-      aria-label={pickLang(lang, "পরীক্ষা ইকোসিস্টেম", "Exam ecosystem")}
-    >
-      {(["BCS", "BANGLADESH_BANK"] as const).map((code) => (
-        <button
-          key={code}
-          onClick={() => setEcosystem(code)}
-          aria-pressed={ecosystem === code}
-          aria-label={code === "BCS" ? "BCS" : pickLang(lang, "বাংলাদেশ ব্যাংক", "Bangladesh Bank")}
-          className={`min-h-[40px] min-w-[52px] px-3 py-1 text-xs font-bold rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] ${ecosystem === code ? "bg-[var(--dashboard-primary)] text-white shadow-sm" : "text-[var(--dashboard-text-secondary)] hover:text-[var(--dashboard-text-primary)]"}`}
-        >
-          {code === "BCS" ? "BCS" : pickLang(lang, "ব্যাংক", "Bank")}
-        </button>
-      ))}
-    </div>
-  );
 }
 
 function ShortcutsSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
@@ -264,7 +252,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <div className="flex-1 min-w-0 flex flex-col h-full">
               {/* Fixed Top Header — Phase 2: breadcrumb left, search center, actions right */}
               <header className="shrink-0 z-[var(--z-sticky)] border-b pt-safe backdrop-blur-md" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}>
-                <div className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 lg:px-6 h-16 min-w-0">
+                <div className="flex items-center gap-1.5 sm:gap-3 px-2 sm:px-4 lg:px-6 h-16 min-w-0">
                   {/* Hamburger — visible on tablet + mobile (<lg) to expose left tabs */}
                   <button
                     onClick={() => setNavDrawerOpen(true)}
@@ -321,11 +309,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   </button>
 
                   <div className="ml-auto flex items-center gap-1.5 min-w-0 shrink-0">
-                    <GlobalEcosystemToggle />
-                    <button onClick={() => setShortcutsOpen(true)} aria-label="Keyboard shortcuts" className="hidden md:inline-flex items-center justify-center w-10 h-10 rounded-xl border" style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-muted)", background: "var(--dashboard-surface-muted)" }}><Question className="w-4 h-4" /></button>
-                    <NotificationCenter />
-                    <ThemeToggle />
-                    <LanguageToggle />
+                    <HeaderActions onOpenShortcuts={() => setShortcutsOpen(true)} />
                   </div>
                 </div>
               </header>
