@@ -1,6 +1,6 @@
 // Centralized static data for the 9Th-Grade AI dashboard and seed.
 
-export type TabId = "home" | "study-planner" | "practice" | "flashcards" | "question-bank" | "progress" | "mistakes" | "settings" | "exam-history" | "real-exam" | "vocab";
+export type TabId = "home" | "study-planner" | "practice" | "flashcards" | "question-bank" | "progress" | "mistakes" | "settings" | "exam-history" | "real-exam" | "vocab" | "current-affairs";
 
 export const TABS: { id: TabId; label: string; short: string; bengali: string; icon: string }[] = [
   { id: "home", label: "HOME", short: "HOM", bengali: "হোম", icon: "🏠" },
@@ -13,6 +13,7 @@ export const TABS: { id: TabId; label: string; short: string; bengali: string; i
   { id: "exam-history", label: "EXAM HISTORY", short: "EXH", bengali: "পরীক্ষা ইতিহাস", icon: "📋" },
   { id: "real-exam", label: "REAL EXAM", short: "REX", bengali: "রিয়েল এক্সাম", icon: "📄" },
   { id: "vocab", label: "VOCAB", short: "VOC", bengali: "ভোকাব", icon: "📖" },
+  { id: "current-affairs", label: "CURRENT AFFAIRS", short: "CAF", bengali: "সাম্প্রতিক সমাচার", icon: "📰" },
   { id: "settings", label: "SETTINGS", short: "SET", bengali: "সেটিংস", icon: "⚙️" },
 ];
 
@@ -21,7 +22,7 @@ export const TABS: { id: TabId; label: string; short: string; bengali: string; i
 // never redeclare grouping literals locally (drift guarantee otherwise).
 export const NAV_GROUPS: { label: string; labelBn: string; ids: TabId[] }[] = [
   { label: "Primary", labelBn: "প্রধান", ids: ["home", "practice", "question-bank", "mistakes", "progress"] },
-  { label: "Study", labelBn: "পড়াশোনা", ids: ["study-planner", "flashcards", "vocab", "exam-history", "real-exam"] },
+  { label: "Study", labelBn: "পড়াশোনা", ids: ["study-planner", "flashcards", "vocab", "current-affairs", "exam-history", "real-exam"] },
   { label: "Account", labelBn: "অ্যাকাউন্ট", ids: ["settings"] },
 ];
 

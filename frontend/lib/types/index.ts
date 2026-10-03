@@ -1205,6 +1205,42 @@ export namespace Server {
     masteredCount: number;
     isFavorited?: boolean;
   };
+
+  // ── Daily Current Affairs (autonomous agent) ──────────
+  export type CurrentAffairsCitationDTO = {
+    id: string;
+    publisher: string;
+    articleTitle: string;
+    sourceUrl: string;
+    publishedAt: string | null;
+  };
+
+  export type CurrentAffairsMcqDTO = {
+    id: string;
+    question: string;
+    options: string[];
+    correctOption: number;
+    explanation: string | null;
+    explanationBn: string | null;
+    relevantExam: string;
+  };
+
+  export type CurrentAffairsNoteDTO = {
+    id: string;
+    date: string; // YYYY-MM-DD
+    title: string;
+    summary: string | null;
+    contentJson: unknown; // TipTap doc JSON AST
+    status: string;
+    source: string;
+    citations: CurrentAffairsCitationDTO[];
+    mcqs: CurrentAffairsMcqDTO[];
+  };
+
+  export type CurrentAffairsLatestDTO = {
+    note: CurrentAffairsNoteDTO | null;
+    userNote: { customContentJson: unknown; updatedAt: string } | null;
+  };
 }
 
 // ── Re-exports for convenience ──────────────────────────────

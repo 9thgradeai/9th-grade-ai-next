@@ -1,6 +1,6 @@
 # AI System
 
-The AI system is a real, authenticated, provider-abstracted layer behind the Tutor, Solver, and Assistant. All business logic lives in `backend/ai/` (the domain seam); route handlers in `app/api/ai/*` stay thin.
+The AI system is a real, authenticated, provider-abstracted layer behind the Tutor, Solver, Assistant, and the autonomous Daily Current Affairs agent. All business logic lives in `backend/ai/` (the domain seam); route handlers in `app/api/ai/*` stay thin.
 
 ## Architecture
 
@@ -44,8 +44,20 @@ Model resolution is task-driven via `resolveModel(task, { image })`:
 | `GET/PATCH/DELETE /api/ai/conversations/:id` | required | Read / rename / pin / delete one conversation (ownership-checked) |
 | `POST /api/ai/agent` | required | **Study coach** — bounded, tool-using agent loop. SSE events: `agent.started`, `agent.status`, `tool.started`, `tool.completed`, `message.delta`, `block.created`, `agent.completed` (with `latencyMs`), `agent.error` |
 | `POST /api/ai/feedback` | required | Record HELPFUL / NOT_HELPFUL feedback on a message |
+| `GET /api/cron/daily-current-affairs` | cron secret | Triggers the Daily Current Affairs agent (see below) — not a user endpoint |
 
 Response headers: `X-AI-Source` (`groq` | `anthropic` | `mock`), `X-Conversation-Id`, `X-AI-Intent`, `X-AI-Model`.
+
+## Daily Current Affairs Agent (`backend/ai/current-affairs.ts`)
+
+Autonomous, zero-hallucination pipeline behind the dashboard's Current Affairs tab, published idempotently once per day by `GET /api/cron/daily-current-affairs` (CRON_SECRET-gated, `?date=YYYY-MM-DD` override).
+
+1. **Search** — `searchNews(date)` queries Tavily's REST API (`TAVILY_API_KEY`, top 8 results; the SDK is deliberately not used — the repo already speaks plain Tavily REST in `app/api/ai/_search.ts`).
+2. **Generate** — `generateDailyCurrentAffairs(date)` calls Groq via Vercel AI SDK `generateObject` with a strict `CurrentAffairsSchema` (zod): 5–10 MCQs (exactly 4 options, `correctOption` 0–3, Bengali explanations), 5–8 key facts each bound to a search-result citation index, and a long-form Bangla note with `[n]` citation markers. Model: `AI_CURRENT_AFFAIRS_MODEL` (default `llama-3.3-70b-versatile`), temperature 0.3.
+3. **Ground** — `enforceGrounding()` is the anti-hallucination guardrail: citations whose URL was not returned by the live search are stripped, facts bound to stripped citations are dropped, remaining citations are re-indexed and note markers renumbered, sections left empty are removed, and if the model fabricated every citation the raw search hits are used as the citation set instead. The model can never invent sources.
+4. **Publish** — `backend/services/current-affairs.ts` persists `DailyCurrentAffairsNote` + `SourceCitation` + `ExamMcq` rows in a transaction (`publishDailyNote`); a duplicate-day publish returns `{ generated: false }` (unique `date` key).
+
+Failures (missing `GROQ_API_KEY`/`TAVILY_API_KEY`, provider errors) throw and the cron route returns `503`; the UI shows an honest error state — no mock fallback, since fabricated current affairs would be actively harmful.
 
 ## Tutor streaming flow
 

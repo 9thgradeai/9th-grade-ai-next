@@ -915,6 +915,28 @@ export const api = {
     cachedGet<{ analytics: Server.VocabAnalyticsDTO }>("/api/vocab/analytics").then((d) => d.analytics),
   vocabDecks: (): Promise<Server.VocabDeckDTO[]> =>
     cachedGet<{ decks: Server.VocabDeckDTO[] }>("/api/vocab/decks").then((d) => d.decks),
+
+  // ── Daily Current Affairs ───────────────────────────────
+  currentAffairsLatest: (date?: string): Promise<Server.CurrentAffairsLatestDTO> =>
+    request<Server.CurrentAffairsLatestDTO>(
+      `/api/current-affairs/latest${date ? `?date=${encodeURIComponent(date)}` : ""}`,
+      { ...AUTH_FETCH_INIT },
+    ),
+
+  saveCurrentAffairsNote: (
+    dailyNoteId: string,
+    customContentJson: unknown,
+  ): Promise<{ updatedAt: string }> =>
+    mutate<{ updatedAt: string }>("/api/current-affairs/user-note", "POST", {
+      dailyNoteId,
+      customContentJson,
+    }),
+
+  exportCurrentAffairsPdf: (date?: string): Promise<Blob> =>
+    downloadFile(
+      `/api/current-affairs/export${date ? `?date=${encodeURIComponent(date)}` : ""}`,
+      { ...AUTH_FETCH_INIT },
+    ),
 };
 
 // ── Account / settings methods (auth endpoints) ─────────────

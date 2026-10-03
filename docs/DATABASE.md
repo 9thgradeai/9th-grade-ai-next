@@ -120,6 +120,11 @@ ever rebuilt outside migrations:
 - `COMPLETED` — loop produced a validated typed response
 - `FAILED` — provider/validation failure (errorCode set)
 
+#### NoteStatus
+- `DRAFT` — reserved (cron currently publishes directly as `PUBLISHED`)
+- `PUBLISHED` — visible to all users (dashboard Current Affairs tab)
+- `ARCHIVED` — superseded notes, no longer served
+
 #### LearningEventType
 - Session markers: `SESSION_STARTED`, `SESSION_COMPLETED`, `MOCK_EXAM_COMPLETED`
 - Per-question outcomes: `QUESTION_ATTEMPTED`, `QUESTION_CORRECT`, `QUESTION_WRONG`, `QUESTION_SKIPPED`
@@ -197,7 +202,7 @@ Per-question mastery stage in the mistake-practice model (see `UserQuestionProgr
  - `emailVerifyExpires` DateTime? — expiry for `emailVerifyToken`
  - `passwordResetToken` String? — SHA-256 hash of the password-reset token (raw token is emailed)
  - `passwordResetExpires` DateTime? — expiry for `passwordResetToken` (1 hour)
- - Relations: `progress`, `bookmarks`, `studyTasks`, `notifications`, `sessions`, `aiConversations`, `aiMemories`, `aiUsage`, `aiFeedback`, `agentRuns`, `learningEvents`
+ - Relations: `progress`, `bookmarks`, `studyTasks`, `notifications`, `sessions`, `aiConversations`, `aiMemories`, `aiUsage`, `aiFeedback`, `agentRuns`, `learningEvents`, `currentAffairsNotes`
 
 #### Subject
 - `id` Int — PK, auto-increment
@@ -801,6 +806,57 @@ Lightweight user feedback on AI responses — the seed of an evaluation set.
 - `comment` String? — default `""`
 - `createdAt` DateTime — default `now()`
 - Indexes: `[userId, createdAt]`, `[messageId]`
+
+#### DailyCurrentAffairsNote
+AI-generated daily current-affairs note (autonomous pipeline — `backend/ai/current-affairs.ts`, published by `GET /api/cron/daily-current-affairs`).
+- `id` String (cuid) — PK
+- `date` DateTime — **unique** (normalized to 00:00 UTC of the target day); idempotency key for the cron job
+- `title` String — Bengali headline of the note
+- `note` String — long-form Bangla body (markdown)
+- `source` String — default `"agent"` — generation provenance (`"agent"` = Groq + Tavily pipeline)
+- `status` NoteStatus — default `PUBLISHED`
+- `createdAt` DateTime — default `now()`
+- `updatedAt` DateTime — updatedAt
+- Relations: `citations`, `mcqs`, `userNotes`
+- Indexes: `[date, status]`
+
+#### SourceCitation
+A web source backing a fact in a `DailyCurrentAffairsNote`. Every `fact` in the note text carries a `[n]` marker that maps to one of these rows.
+- `id` String (cuid) — PK
+- `noteId` String — FK to DailyCurrentAffairsNote (cascade)
+- `note` DailyCurrentAffairsNote — relation
+- `index` Int — 1-based citation number used by `[n]` markers in the note
+- `publisher` String — e.g. `The Daily Star`
+- `articleTitle` String
+- `sourceUrl` String
+- `createdAt` DateTime — default `now()`
+- Indexes: `[noteId, index]`
+
+#### ExamMcq
+A multiple-choice question accompanying a `DailyCurrentAffairsNote` (5–10 per note, exactly 4 options, one correct).
+- `id` String (cuid) — PK
+- `noteId` String — FK to DailyCurrentAffairsNote (cascade)
+- `note` DailyCurrentAffairsNote — relation
+- `question` String
+- `options` Json — array of exactly 4 strings
+- `correctOption` Int — 0–3 (index into `options`)
+- `explanationEn` String — why the correct option is right
+- `explanationBn` String — default `""` (Bangla explanation shown when the UI language is Bangla)
+- `citationIndexes` Json — default `[]` — indexes of the SourceCitation rows that ground this MCQ
+- `createdAt` DateTime — default `now()`
+- Indexes: `[noteId]`
+
+#### UserCustomizedNote
+Per-user customization of a daily note (TipTap JSON editor content).
+- `id` String (cuid) — PK
+- `userId` String — FK to User (cascade)
+- `user` User — relation (`User.currentAffairsNotes`)
+- `noteId` String — FK to DailyCurrentAffairsNote (cascade)
+- `note` DailyCurrentAffairsNote — relation
+- `content` Json — TipTap JSON document (`{ type: "doc", content: [...] }`)
+- `createdAt` DateTime — default `now()`
+- `updatedAt` DateTime — updatedAt
+- `@@unique([userId, noteId])` — one customization per user per note
 
 ## Migrations
 

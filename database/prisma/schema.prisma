@@ -251,6 +251,7 @@ model User {
   vocabProgress           VocabProgress[]
   vocabDecks              UserVocabDeck[]
   createdDecks            VocabDeck[]
+  currentAffairsNotes     UserCustomizedNote[]
 
   storageConnection       StorageConnection?
   storageFiles            StorageFile[]
@@ -1377,4 +1378,74 @@ model StorageRevision {
 
   @@unique([userId, entityType, version])
   @@index([userId, entityType, createdAt])
+}
+
+// ── Daily Current Affairs (autonomous agent) ──────────
+// One note per calendar day (date is normalized to 00:00 UTC
+// of the target day so the @unique constraint holds across
+// cron runs). Facts are grounded: every fact binds to a
+// citation returned by the web search — nothing invented.
+enum NoteStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model DailyCurrentAffairsNote {
+  id          String                  @id @default(cuid())
+  date        DateTime                @unique
+  title       String
+  summary     String?                 @db.Text
+  contentJson Json                    // TipTap JSON AST
+  status      NoteStatus              @default(PUBLISHED)
+  // Provenance label (AI safety rule): "agent" = Groq+Tavily
+  // pipeline output; never an unlabeled synthetic fallback.
+  source      String                  @default("agent")
+  citations   SourceCitation[]
+  mcqs        ExamMcq[]
+  userNotes   UserCustomizedNote[]
+  createdAt   DateTime                @default(now())
+  updatedAt   DateTime                @updatedAt
+
+  @@index([date, status])
+}
+
+model SourceCitation {
+  id           String                  @id @default(cuid())
+  dailyNoteId  String
+  dailyNote    DailyCurrentAffairsNote @relation(fields: [dailyNoteId], references: [id], onDelete: Cascade)
+  publisher    String
+  articleTitle String
+  sourceUrl    String
+  publishedAt  DateTime?
+  createdAt    DateTime                @default(now())
+
+  @@index([dailyNoteId])
+}
+
+model ExamMcq {
+  id             String                  @id @default(cuid())
+  dailyNoteId    String
+  dailyNote      DailyCurrentAffairsNote @relation(fields: [dailyNoteId], references: [id], onDelete: Cascade)
+  question       String                  @db.Text
+  options        String[]
+  correctOption  Int                     // 0–3
+  explanation    String?                 @db.Text
+  explanationBn  String?                 @db.Text
+  relevantExam   String                  // "BCS" | "Bank" | "Both"
+  createdAt      DateTime                @default(now())
+
+  @@index([dailyNoteId])
+}
+
+model UserCustomizedNote {
+  id              String                  @id @default(cuid())
+  userId          String
+  user            User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dailyNoteId     String
+  dailyNote       DailyCurrentAffairsNote @relation(fields: [dailyNoteId], references: [id], onDelete: Cascade)
+  customContentJson Json                  // User's edited TipTap JSON AST
+  updatedAt       DateTime                @updatedAt
+
+  @@unique([userId, dailyNoteId])
 }
