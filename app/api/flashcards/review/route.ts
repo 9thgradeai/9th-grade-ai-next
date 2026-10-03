@@ -8,6 +8,7 @@ import {
   validateEnumValue,
 } from "~backend/validation";
 import { getRequestId, startTiming, applySecurityHeaders, assertSameOrigin } from "../../_middleware";
+import { QueryCache } from "~backend/infrastructure/cache/query-cache";
 
 const RATINGS = [0, 1, 2, 3] as const; // again | hard | good | easy
 
@@ -33,6 +34,7 @@ export async function POST(request: Request) {
 
     const state = await submitFlashcardReview(userId, flashcardId, rating as FlashcardRating);
 
+    await QueryCache.invalidateIntelligence(userId);
     const res = NextResponse.json({ state });
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");

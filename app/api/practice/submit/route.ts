@@ -4,6 +4,7 @@ import { getUserIdFromRequest } from "~backend/services/user";
 import { assertSubmitAllowed } from "~backend/rate-limit";
 import { AppError, toHttpResponse } from "~backend/errors";
 import { validateSubmittedAnswers } from "~backend/validation";
+import { QueryCache } from "~backend/infrastructure/cache/query-cache";
 import {
   getRequestId,
   startTiming,
@@ -28,6 +29,8 @@ export async function POST(request: Request) {
     validateSubmittedAnswers(body.answers);
 
     const summary = await submitPracticeAnswers(userId, body.answers, body.ecosystem ?? null);
+    // Fresh attempts change every aggregate the intelligence endpoint serves.
+    await QueryCache.invalidateIntelligence(userId);
     const res = NextResponse.json({ summary });
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");

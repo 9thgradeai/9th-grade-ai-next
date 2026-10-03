@@ -12,6 +12,7 @@ import {
   validateExamDurationSec,
   validateExamQuestionIds,
 } from "~backend/validation";
+import { QueryCache } from "~backend/infrastructure/cache/query-cache";
 import {
   getRequestId,
   startTiming,
@@ -68,6 +69,7 @@ export async function POST(request: Request) {
       answers: validateExamAnswers(body.answers),
     });
 
+    await QueryCache.invalidateIntelligence(userId);
     const res = NextResponse.json({ result });
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");

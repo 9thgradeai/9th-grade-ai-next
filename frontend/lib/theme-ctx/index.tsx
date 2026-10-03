@@ -13,6 +13,13 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 const THEME_KEY = "9th-grade-ai-theme";
 
+// Static singleton: theme is pinned (see below), so one shared identity
+// avoids re-rendering every consumer on each provider render.
+const STATIC_VALUE: ThemeContextType = {
+  theme: "dark",
+  toggleTheme: () => {},
+};
+
 // Public pages (landing, marketing, auth, navbar) ship a single unified dark
 // design. Light/dark switching lives only inside the user dashboard (see
 // `frontend/lib/dashboard-theme-ctx`). To preserve backwards compatibility with
@@ -30,13 +37,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const value: ThemeContextType = {
-    theme: "dark",
-    toggleTheme: () => {},
-  };
-
   return (
-    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
+    <ThemeContext.Provider value={STATIC_VALUE}>{children}</ThemeContext.Provider>
   );
 }
 

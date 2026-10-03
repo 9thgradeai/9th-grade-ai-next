@@ -4,6 +4,7 @@ import { createStudyTask } from "~backend/services/study-plan";
 import { getUserIdFromRequest } from "~backend/services/user";
 import { AppError, toHttpResponse } from "~backend/errors";
 import { getRequestId, startTiming, applySecurityHeaders, assertSameOrigin, applyCacheHeaders } from "../_middleware";
+import { QueryCache } from "~backend/infrastructure/cache/query-cache";
 
 export async function GET(request: Request) {
   const requestId = getRequestId(request);
@@ -46,6 +47,7 @@ export async function POST(request: Request) {
     const body = await request.json().catch(() => ({}));
     const task = await createStudyTask(userId, body);
 
+    await QueryCache.invalidateIntelligence(userId);
     const res = NextResponse.json({ task }, { status: 201 });
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");

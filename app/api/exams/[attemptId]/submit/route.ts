@@ -9,6 +9,7 @@ import {
   validateExamDurationSec,
   validateExamQuestionIds,
 } from "~backend/validation";
+import { QueryCache } from "~backend/infrastructure/cache/query-cache";
 import { getRequestId, startTiming, applySecurityHeaders, assertSameOrigin } from "../../../_middleware";
 
 /**
@@ -49,6 +50,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ att
       answers: validateExamAnswers((body as any).answers),
     });
 
+    await QueryCache.invalidateIntelligence(userId);
     const res = NextResponse.json({ result, success: true, attemptId: result.attemptId, status: "SUBMITTED", resultId: (result as any).resultId ?? result.attemptId, score: result.summary.percentage, submittedAt: result.submittedAt });
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");

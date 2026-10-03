@@ -15,6 +15,7 @@ import {
 } from "~backend/services/preparation-intelligence";
 import { signSession } from "~backend/auth";
 import { prisma } from "~backend/db";
+import { clearQueryCache } from "~backend/infrastructure/cache/query-cache";
 
 vi.mock("~backend/services/preparation-intelligence", () => ({
   getPreparationIntelligence: vi.fn(),
@@ -49,6 +50,7 @@ function mockUser() {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  clearQueryCache();
 });
 
 describe("GET /api/preparation-intelligence", () => {
@@ -128,5 +130,39 @@ describe("GET /api/preparation-intelligence", () => {
       "usr_123",
       { activityDays: 365 },
     ]);
+  });
+
+  it("serves repeat scope requests from cache without rebuilding", async () => {
+    const cookie = await sessionCookieFor("aspirant@example.com");
+    vi.mocked(prisma.user.findUnique).mockResolvedValue(mockUser() as never);
+    vi.mocked(getIntelligenceAnalytics).mockResolvedValue({ recommendations: [] } as never);
+
+    const first = await intelligenceGET(
+      getRequest("/api/preparation-intelligence?scope=analytics", { cookie }),
+    );
+    expect(first.status).toBe(200);
+    expect(first.headers.get("X-Intelligence-Cache")).toBe("MISS");
+
+    const second = await intelligenceGET(
+      getRequest("/api/preparation-intelligence?scope=analytics", { cookie }),
+    );
+    expect(second.status).toBe(200);
+    expect(second.headers.get("X-Intelligence-Cache")).toBe("HIT");
+    expect((await second.json()).intelligence).toEqual({ recommendations: [] });
+    expect(vi.mocked(getIntelligenceAnalytics).mock.calls).toHaveLength(1);
+  });
+
+  it("isolates cache entries per scope", async () => {
+    const cookie = await sessionCookieFor("aspirant@example.com");
+    vi.mocked(prisma.user.findUnique).mockResolvedValue(mockUser() as never);
+    vi.mocked(getIntelligencePulse).mockResolvedValue({ streak: 7 } as never);
+    vi.mocked(getIntelligenceTasks).mockResolvedValue({ studyTasks: [] } as never);
+
+    await intelligenceGET(getRequest("/api/preparation-intelligence?scope=pulse", { cookie }));
+    const tasksRes = await intelligenceGET(
+      getRequest("/api/preparation-intelligence?scope=tasks", { cookie }),
+    );
+    expect(tasksRes.headers.get("X-Intelligence-Cache")).toBe("MISS");
+    expect(vi.mocked(getIntelligenceTasks).mock.calls).toHaveLength(1);
   });
 });

@@ -4,6 +4,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useMemo,
   useState,
 } from "react";
 import type { ExamEcosystemCode } from "@/lib/types";
@@ -57,8 +58,11 @@ export function EcosystemProvider({ children }: { children: React.ReactNode }) {
     setEcosystemState(eco);
   }, []);
 
+  // Memoized so unrelated parent renders don't cascade to all consumers.
+  const value = useMemo(() => ({ ecosystem, setEcosystem }), [ecosystem, setEcosystem]);
+
   return (
-    <EcosystemContext.Provider value={{ ecosystem, setEcosystem }}>
+    <EcosystemContext.Provider value={value}>
       {children}
     </EcosystemContext.Provider>
   );

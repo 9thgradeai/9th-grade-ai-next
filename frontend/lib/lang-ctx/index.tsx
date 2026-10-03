@@ -4,6 +4,7 @@ import {
   createContext,
   useContext,
   useCallback,
+  useMemo,
   useSyncExternalStore,
   useEffect,
 } from "react";
@@ -78,8 +79,11 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     [],
   );
 
+  // Memoized so unrelated parent renders don't cascade to all consumers.
+  const value = useMemo(() => ({ lang, setLang, toggleLang }), [lang, setLang, toggleLang]);
+
   return (
-    <LanguageContext.Provider value={{ lang, setLang, toggleLang }}>
+    <LanguageContext.Provider value={value}>
       {children}
     </LanguageContext.Provider>
   );

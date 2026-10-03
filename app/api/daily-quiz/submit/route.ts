@@ -4,6 +4,7 @@ import { getUserIdFromRequest } from "~backend/services/user";
 import { assertSubmitAllowed } from "~backend/rate-limit";
 import { AppError, toHttpResponse } from "~backend/errors";
 import { validateSubmittedAnswers } from "~backend/validation";
+import { QueryCache } from "~backend/infrastructure/cache/query-cache";
 import {
   getRequestId,
   startTiming,
@@ -35,6 +36,7 @@ export async function POST(request: Request) {
 
     const quizId = body.quizId as number;
     const summary = await submitDailyQuiz(userId, quizId, body.answers);
+    await QueryCache.invalidateIntelligence(userId);
     const res = NextResponse.json({ summary });
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");

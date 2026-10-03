@@ -9,6 +9,7 @@ import {
 import { getUserIdFromRequest } from "~backend/services/user";
 import { AppError, toHttpResponse } from "~backend/errors";
 import { getRequestId, startTiming, applySecurityHeaders, applyCacheHeaders } from "../_middleware";
+import { QueryCache } from "~backend/infrastructure/cache/query-cache";
 
 const SCOPES: IntelligenceScope[] = ["pulse", "tasks", "analytics", "full"];
 
@@ -22,8 +23,11 @@ const SCOPES: IntelligenceScope[] = ["pulse", "tasks", "analytics", "full"];
 // the heavy mastery/mistake/recommendation aggregates. Omitting `scope`
 // returns the full DTO (Progress tab, WorldMap backdrop).
 // `?window=<days>` overrides the activity window for full loads (1–365).
-// Response is intentionally NOT cached: the dashboard must reflect the very
-// last practice/exam/mistake action.
+// Response is cached server-side per user+scope (45s TTL): the analytics
+// scope fans out to ~11 aggregates (~0.9s warm, 3s+ cold), and repeat
+// Home/Progress visits must not pay that on every mount. Mutations that
+// change the underlying data invalidate via invalidateIntelligence, so the
+// dashboard still reflects the very last action within seconds.
 export async function GET(request: Request) {
   const requestId = getRequestId(request);
   const getTime = startTiming();
@@ -46,6 +50,18 @@ export async function GET(request: Request) {
       throw new AppError(400, `Invalid window "${windowParam}"`, "INTELLIGENCE_BAD_WINDOW");
     }
 
+    const cached = await QueryCache.getIntelligence(userId, scope, activityDays);
+    if (cached !== null && cached !== undefined) {
+      const res = NextResponse.json({ intelligence: cached, scope });
+      res.headers.set("X-Request-Id", requestId);
+      res.headers.set("X-Response-Time", getTime() + "ms");
+      res.headers.set("X-Intelligence-Scope", scope);
+      res.headers.set("X-Intelligence-Cache", "HIT");
+      applyCacheHeaders(res, { public: false, maxAge: 0 });
+      applySecurityHeaders(res);
+      return res;
+    }
+
     const intelligence =
       scope === "pulse"
         ? await getIntelligencePulse(userId)
@@ -55,10 +71,13 @@ export async function GET(request: Request) {
             ? await getIntelligenceAnalytics(userId)
             : await getPreparationIntelligence(userId, { activityDays });
 
+    await QueryCache.setIntelligence(userId, scope, intelligence, activityDays);
+
     const res = NextResponse.json({ intelligence, scope });
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");
     res.headers.set("X-Intelligence-Scope", scope);
+    res.headers.set("X-Intelligence-Cache", "MISS");
     applyCacheHeaders(res, { public: false, maxAge: 0 });
     applySecurityHeaders(res);
     return res;

@@ -7,6 +7,7 @@ import {
   applySecurityHeaders,
   assertSameOrigin,
 } from "../../../../_middleware";
+import { QueryCache } from "~backend/infrastructure/cache/query-cache";
 
 export async function POST(
   request: Request,
@@ -30,6 +31,7 @@ export async function POST(
     }
 
     const result = await toggleStudyTask(userId, taskId);
+    await QueryCache.invalidateIntelligence(userId);
     const res = NextResponse.json(result);
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");

@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, useRef } from "react";
+import { createContext, useCallback, useContext, useMemo, useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import type { Client } from "@/lib/types";
 import { AppError, handleApiError, getUserFriendlyMessage } from "@/lib/errors";
@@ -73,7 +73,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     })();
   }, []);
 
-  const refreshToken = async () => {
+  const refreshToken = useCallback(async () => {
     if (isRefreshingRef.current) return;
     isRefreshingRef.current = true;
 
@@ -93,7 +93,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     } finally {
       isRefreshingRef.current = false;
     }
-  };
+  }, []);
 
   useEffect(() => {
     if (tokenExpiry === null) return;
@@ -127,9 +127,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         checkIntervalRef.current = null;
       }
     };
-  }, [tokenExpiry]);
+  }, [tokenExpiry, refreshToken]);
 
-  const login = async (email: string, password: string, options?: { redirect?: boolean; remember?: boolean }) => {
+  const login = useCallback(async (email: string, password: string, options?: { redirect?: boolean; remember?: boolean }) => {
     try {
       const data = await authGateway<SessionResponse>("/api/auth/login", {
         method: "POST",
@@ -145,9 +145,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     } catch (error) {
       toFriendly(error);
     }
-  };
+  }, [router]);
 
-  const register = async (name: string, email: string, password: string, options?: { redirect?: boolean; remember?: boolean }) => {
+  const register = useCallback(async (name: string, email: string, password: string, options?: { redirect?: boolean; remember?: boolean }) => {
     try {
       const data = await authGateway<SessionResponse>("/api/auth/register", {
         method: "POST",
@@ -163,9 +163,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     } catch (error) {
       toFriendly(error);
     }
-  };
+  }, [router]);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     try {
       await authGateway("/api/auth/logout", { method: "POST" });
     } catch {
@@ -175,27 +175,32 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setTokenExpiry(null);
       router.push("/");
     }
-  };
+  }, [router]);
 
-  const updateProfile = async (name: string) => {
+  const updateProfile = useCallback(async (name: string) => {
     const { user: updated } = await account.updateProfile(name);
     setUser(updated);
     return updated;
-  };
+  }, []);
+
+  // Memoized value: without this, every provider re-render (e.g. the 30s
+  // session check) re-renders the entire consumer tree below.
+  const value = useMemo<AuthContextType>(
+    () => ({
+      user,
+      isLoading,
+      login,
+      register,
+      logout,
+      updateProfile,
+      refreshToken,
+      tokenExpiry,
+    }),
+    [user, isLoading, login, register, logout, updateProfile, refreshToken, tokenExpiry],
+  );
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isLoading,
-        login,
-        register,
-        logout,
-        updateProfile,
-        refreshToken,
-        tokenExpiry,
-      }}
-    >
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );

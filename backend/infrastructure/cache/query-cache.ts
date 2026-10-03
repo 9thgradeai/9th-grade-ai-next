@@ -83,10 +83,12 @@ export async function queryCacheInvalidate(prefix: string, pattern: string): Pro
   try {
     const fullPattern = getKey(prefix, pattern);
     if (redis) {
+      // SCAN MATCH is a glob — a bare prefix never matches suffixed keys.
+      const glob = fullPattern.endsWith("*") ? fullPattern : `${fullPattern}*`;
       // Use SCAN to find matching keys
       let cursor = '0';
       do {
-        const [nextCursor, keys] = await redis.scan(cursor, 'MATCH', fullPattern, 'COUNT', 100);
+        const [nextCursor, keys] = await redis.scan(cursor, 'MATCH', glob, 'COUNT', 100);
         cursor = nextCursor;
         if (keys.length > 0) {
           await redis.del(...keys);
@@ -150,5 +152,20 @@ export const QueryCache = {
   },
   async invalidateDashboardStats(userId: string): Promise<void> {
     return queryCacheInvalidate('dashboard', userId);
+  },
+
+  // Preparation intelligence - per user+scope, short TTL. The analytics scope
+  // fans out to ~11 parallel aggregates (~0.9s warm); caching makes repeat
+  // Home/Progress visits instant. Mutations that change the underlying data
+  // (practice/exam/daily-quiz submits, mistake exams, flashcard reviews,
+  // task toggles) call invalidateIntelligence — best-effort, never throws.
+  async getIntelligence(userId: string, scope: string, window?: number): Promise<unknown | null> {
+    return queryCacheGet('intelligence', `${userId}:${scope}:${window ?? ''}`);
+  },
+  async setIntelligence(userId: string, scope: string, data: unknown, window?: number): Promise<void> {
+    return queryCacheSet('intelligence', `${userId}:${scope}:${window ?? ''}`, data, 45_000); // 45 sec TTL
+  },
+  async invalidateIntelligence(userId: string): Promise<void> {
+    return queryCacheInvalidate('intelligence', `${userId}:`);
   },
 };
