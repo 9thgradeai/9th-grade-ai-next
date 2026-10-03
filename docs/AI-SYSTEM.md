@@ -93,9 +93,14 @@ Every AI call records an `AIUsage` row (tokens, latency, success, estimated cost
 
 ## Evaluation
 
-- Unit tests: `tests/unit/backend/ai.test.ts` (schemas, output validation, intent, prompts, rate limits), `tests/unit/backend/ai-opening.test.ts` (intent → context-slice plans, incl. `home_brief`).
+- Unit tests: `tests/unit/backend/ai.test.ts` (schemas, output validation, intent, prompts, rate limits), `tests/unit/backend/ai-opening.test.ts` (intent → context-slice plans, incl. `home_brief`), `tests/unit/backend/ai-feedback.test.ts` (ledger aggregation).
 - Component tests: `tests/unit/frontend/ai-workspace.test.tsx` (AI workspace UI), `tests/unit/frontend/home-hero.test.tsx` (Home command bar: chips, `home_brief` intent, streaming, error states).
 - Web-search module tests: `tests/unit/backend/web-search.test.ts`.
+- Live-traffic eval loop (AI6): `POST /api/ai/feedback` rows aggregate via `getFeedbackSummary`
+  (bounded 5000, pure `summarizeFeedback`) into helpful-rates per intent/provider/model + complaint
+  categories. Read it with `npx tsx scripts/ai-feedback-report.ts [--days N]` and use it to drive
+  prompt-version/model-routing decisions. Pure aggregation lives in `backend/ai/feedback-summary.ts`
+  (no `server-only`, CLI-safe).
 
 ## Response Rendering & Formatting
 
