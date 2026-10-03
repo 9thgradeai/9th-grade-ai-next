@@ -281,7 +281,16 @@ export async function seedBanglaLitQuestions(prisma: PrismaClient): Promise<numb
                 seen.add(k);
                 return true;
               });
-              await prisma.question.createMany({ data: deduped as never });
+              try {
+                await prisma.question.createMany({ data: deduped as never });
+              } catch {
+                for (const c of deduped) {
+                  try {
+                    await prisma.question.create({ data: c as never });
+                  } catch {
+                  }
+                }
+              }
             } else {
               throw e;
             }
