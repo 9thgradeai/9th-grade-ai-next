@@ -1,0 +1,13 @@
+সন্ধি MCQ — IMPORT COMPLETE
+Source: Questions(সন্ধি).txt (303 rows) + Corrected_MCQs(সন্ধি).txt (77 blocks)
+Status: ALL 303 unique questions live for BCS + Bank under ভাষা/সন্ধি.
+Final DB: BCS 370 + Bank 293 rows on the সন্ধি path (includes pre-existing main-bank rows adopted by question identity), 0 answer mismatches, 0 missing explanations, 0 duplicate questions.
+
+Corrections applied to Corrected_MCQs(সন্ধি).txt (backup: /tmp/Corrected_MCQs-backup.txt):
+- 47x: X্ স্থানে -> X্স্থানে (standard conjunct spelling)
+- 24x: ত্ বা -> ত্/ | 1x: ত্ ও -> ত্/ | 1x: দ্ ও -> দ্/
+- 1x: (গ) -> গ, 1x: (চ) -> চ (option-marker false positive)
+- 1x: Devanagari दर्शन -> Bangla দর্শন (Q ১৮৯.১)
+- 1x: চ্ সন্ধিবদ্ধ -> চ-এর সন্ধি (Q ১৮৯.৭)
+- 1x: দ্/হ্ যুক্ত হয়ে -> দ আর হ মিলে (Q ১৪৭.৮)
+Re-run: npx tsx scripts/seed-shondhi.ts --corrected  =>  accepted=77 rejected=0

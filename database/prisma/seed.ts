@@ -37,6 +37,7 @@ import { seedQuestions } from "../../scripts/seed-questions";
 import { BB_SUBJECT_META, BB_ARCHIVE_SUBJECT_META } from "../../scripts/taxonomy";
 import { seedBcsQuestions } from "../../scripts/seed-bcs";
 import { seedBanglaLitQuestions } from "../../scripts/seed-bangla-lit";
+import { seedShondhiQuestions } from "../../scripts/seed-shondhi";
 import { seedVocabWords } from "../../backend/services/vocab-seed-run";
 import { sourceKey } from "../../scripts/seed-keys";
 
@@ -177,6 +178,10 @@ async function main() {
   // Bangla Literature MCQs for both BCS and Bank ecosystems.
   const banglaLitCount = await seedBanglaLitQuestions(prisma);
   console.log(`  ✓ ${banglaLitCount} Bangla Literature questions (from database/data/ques/বাংলা ভাষা ও সাহিত্য)`);
+
+  // Bangla Grammar (সন্ধি) MCQs for both BCS and Bank ecosystems.
+  const shondhiCount = await seedShondhiQuestions(prisma);
+  console.log(`  ✓ ${shondhiCount} Shondhi questions (সন্ধি)`);
 
   // Vocab words (AI-powered mastery)
   const vocabCount = await seedVocabWords(prisma);
