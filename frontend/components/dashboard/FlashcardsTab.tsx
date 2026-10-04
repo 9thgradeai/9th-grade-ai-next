@@ -3,7 +3,6 @@
 import { useState, useSyncExternalStore, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CaretLeft, CaretRight, ArrowCounterClockwise, Lightbulb, ChartBar } from "@phosphor-icons/react";
-import { FLASHCARD_DECKS } from "@/lib/data/study";
 import { useToastSafe } from "@/lib/toast-ctx";
 import { api } from "@/lib/services/api";
 import type { Flashcard } from "@/lib/types";
@@ -54,82 +53,105 @@ const RATING_CONFIG: Record<ReviewRating, { label: string; color: string }> = {
   easy: { label: "Easy", color: "text-[var(--info)] bg-[var(--info)]/10 border-sky-500/30" },
 };
 
+type SessionKind = { kind: "deck"; name: string } | { kind: "mixed" };
+
+const MIXED_LABEL = "সব ডিউ কার্ড";
+
+function sessionTitle(session: SessionKind): string {
+  return session.kind === "mixed" ? MIXED_LABEL : session.name;
+}
+
 export default function FlashcardsTab() {
   const toast = useToastSafe();
   const syncFailureNotified = useRef(false);
-  const [selectedDeck, setSelectedDeck] = useState<string | null>(null);
+  const retriedAgains = useRef<Set<string>>(new Set());
+  const [session, setSession] = useState<SessionKind | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [showHint, setShowHint] = useState(false);
   const [sessionStats, setSessionStats] = useState({ reviewed: 0, correct: 0 });
+  const [sessionTotal, setSessionTotal] = useState(0);
+  const [sessionDone, setSessionDone] = useState(false);
   const [reviewQueue, setReviewQueue] = useState<Flashcard[]>([]);
-  const [decks, setDecks] = useState<Record<string, Flashcard[]>>(FLASHCARD_DECKS);
+  // Decks come exclusively from the database — there is no static fallback.
+  // Studying unauthenticated placeholder cards used to silently drop every
+  // review (their string ids never reach the server), so an empty/error
+  // state is shown instead of fake studyable decks.
+  const [decks, setDecks] = useState<Record<string, Flashcard[]>>({});
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
   const now = useNow();
 
-  // Load flashcard decks from the database (fallback to static data).
+  // Load flashcard decks from the database.
   useEffect(() => {
     let cancelled = false;
     void (async () => {
       try {
         const flashcards = await api.flashcards();
-        if (!cancelled && flashcards.length) {
-          const grouped: Record<string, Flashcard[]> = {};
-          for (const f of flashcards) {
-            const deck = f.subjectName || "General";
-            grouped[deck] = grouped[deck] ?? [];
-            // Honor the server-authoritative SRS schedule when the user has a
-            // prior review history; only brand-new cards (no srs) default to
-            // "due now" so they enter the review queue.
-            const nextReview = f.srs ? new Date(f.srs.nextReview).getTime() : now;
-            grouped[deck].push({
-              id: String(f.id),
-              subject: deck,
-              question: f.question,
-              answer: f.answer,
-              hint: f.hint,
-              difficulty: f.difficulty,
-              nextReview,
-              interval: f.srs?.intervalDays ?? 1,
-              repetitions: f.srs?.repetitions ?? 0,
-              easeFactor: f.srs?.easeFactor ?? 2.5,
-            });
-          }
-          setDecks(grouped);
+        if (cancelled) return;
+        const grouped: Record<string, Flashcard[]> = {};
+        for (const f of flashcards) {
+          const deck = f.subjectName || "General";
+          grouped[deck] = grouped[deck] ?? [];
+          // Honor the server-authoritative SRS schedule when the user has a
+          // prior review history; only brand-new cards (no srs) default to
+          // "due now" so they enter the review queue.
+          const nextReview = f.srs ? new Date(f.srs.nextReview).getTime() : now;
+          grouped[deck].push({
+            id: String(f.id),
+            subject: deck,
+            question: f.question,
+            answer: f.answer,
+            hint: f.hint,
+            difficulty: f.difficulty,
+            nextReview,
+            interval: f.srs?.intervalDays ?? 1,
+            repetitions: f.srs?.repetitions ?? 0,
+            easeFactor: f.srs?.easeFactor ?? 2.5,
+          });
         }
+        setDecks(grouped);
+        setIsLoading(false);
       } catch {
-        /* keep static fallback */
+        if (cancelled) return;
+        setLoadError("ফ্ল্যাশকার্ড লোড করা যায়নি — আবার চেষ্টা করুন");
+        setIsLoading(false);
       }
     })();
     return () => {
       cancelled = true;
     };
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reloadKey]);
 
   const currentCard = reviewQueue[currentIndex];
 
-  const startSession = (deckName: string) => {
-    const cards = decks[deckName] || [];
+  const buildQueue = (s: SessionKind): Flashcard[] => {
+    const cards = s.kind === "mixed" ? Object.values(decks).flat() : decks[s.name] || [];
     const due = cards.filter((c) => c.nextReview <= now);
-    setReviewQueue(due.length > 0 ? due : cards);
-    setSelectedDeck(deckName);
+    return due.length > 0 ? due : cards;
+  };
+
+  const beginSession = (s: SessionKind) => {
+    const queue = buildQueue(s);
+    retriedAgains.current = new Set();
+    syncFailureNotified.current = false;
+    setSession(s);
+    setReviewQueue(queue);
+    setSessionTotal(queue.length);
+    setSessionDone(false);
     setCurrentIndex(0);
     setIsFlipped(false);
     setShowHint(false);
     setSessionStats({ reviewed: 0, correct: 0 });
   };
 
+  const startSession = (deckName: string) => beginSession({ kind: "deck", name: deckName });
+
   // Mixed-deck review: pull every due card across all decks into one queue so
   // users aren't forced to sit through a single subject's backlog.
-  const startMixedSession = () => {
-    const all = Object.values(decks).flat();
-    const due = all.filter((c) => c.nextReview <= now);
-    setReviewQueue(due.length > 0 ? due : all);
-    setSelectedDeck("সব ডিউ কার্ড");
-    setCurrentIndex(0);
-    setIsFlipped(false);
-    setShowHint(false);
-    setSessionStats({ reviewed: 0, correct: 0 });
-  };
+  const startMixedSession = () => beginSession({ kind: "mixed" });
 
   const handleFlip = () => {
     if (!isFlipped) {
@@ -139,23 +161,34 @@ export default function FlashcardsTab() {
   };
 
   const handleRating = (rating: ReviewRating) => {
-    if (!currentCard) return;
-
-    // Do not fabricate an SRS schedule client-side — the server's SM-2 result
-    // is authoritative and is reconciled below. Keep the card's real loaded
-    // schedule until the server responds; if the call fails, the honest prior
-    // schedule stays (we notify the user rather than silently showing a fake).
-    const newQueue = reviewQueue;
+    if (!currentCard || sessionDone) return;
 
     setSessionStats((prev) => ({
       reviewed: prev.reviewed + 1,
       correct: prev.correct + (rating !== "again" ? 1 : 0),
     }));
 
-    setReviewQueue(newQueue);
+    // "Again" cards come back at the end of the queue once, so a lapse gets
+    // re-tested within the same session instead of looping forever.
+    const requeueAgain = rating === "again" && !retriedAgains.current.has(currentCard.id);
+    if (requeueAgain) {
+      retriedAgains.current.add(currentCard.id);
+      setSessionTotal((t) => t + 1);
+    }
+    const ratedId = currentCard.id;
+    const next = reviewQueue.filter((card) => card.id !== ratedId);
+    if (requeueAgain) next.push(currentCard);
+    setReviewQueue(next);
+    if (next.length === 0) {
+      setSessionDone(true);
+    } else if (currentIndex >= next.length) {
+      setCurrentIndex(0);
+    }
+    setIsFlipped(false);
+    setShowHint(false);
 
-    // Persist the review server-side (SM-2 is authoritative there). The UI
-    // schedule above is optimistic; reconcile on success, notify once on
+    // Persist the review server-side (SM-2 is authoritative there). Reconcile
+    // both the queue and the deck list so due counts stay correct; notify on
     // failure so progress loss isn't silent.
     const flashcardId = Number(currentCard.id);
     if (Number.isInteger(flashcardId) && flashcardId > 0) {
@@ -166,22 +199,25 @@ export default function FlashcardsTab() {
             | { nextReview?: string; interval?: number; easeFactor?: number; repetitions?: number }
             | undefined;
           if (!s || typeof s.interval !== "number") return;
-          setReviewQueue((prev) =>
-            prev.map((card) =>
-              card.id === currentCard.id
-                ? {
-                    ...card,
-                    interval: s.interval ?? card.interval,
-                    easeFactor: typeof s.easeFactor === "number" ? s.easeFactor : card.easeFactor,
-                    repetitions: typeof s.repetitions === "number" ? s.repetitions : card.repetitions,
-                    nextReview:
-                      typeof s.nextReview === "string"
-                        ? new Date(s.nextReview).getTime()
-                        : card.nextReview,
-                  }
-                : card,
-            ),
-          );
+          const patch = (card: Flashcard): Flashcard =>
+            card.id === currentCard.id
+              ? {
+                  ...card,
+                  interval: s.interval ?? card.interval,
+                  easeFactor: typeof s.easeFactor === "number" ? s.easeFactor : card.easeFactor,
+                  repetitions: typeof s.repetitions === "number" ? s.repetitions : card.repetitions,
+                  nextReview:
+                    typeof s.nextReview === "string"
+                      ? new Date(s.nextReview).getTime()
+                      : card.nextReview,
+                }
+              : card;
+          setReviewQueue((prev) => prev.map(patch));
+          setDecks((prev) => {
+            const out: Record<string, Flashcard[]> = {};
+            for (const [name, cards] of Object.entries(prev)) out[name] = cards.map(patch);
+            return out;
+          });
         })
         .catch(() => {
           if (!syncFailureNotified.current) {
@@ -189,36 +225,32 @@ export default function FlashcardsTab() {
             toast.error("রিভিউ সংরক্ষণ করা যায়নি — অগ্রগতি সীমিত হতে পারে");
           }
         });
-    }
-
-    if (currentIndex < newQueue.length - 1) {
-      setCurrentIndex((i) => i + 1);
-      setIsFlipped(false);
-      setShowHint(false);
-    } else {
-      setCurrentIndex(0);
-      setIsFlipped(false);
-      setShowHint(false);
+    } else if (!syncFailureNotified.current) {
+      syncFailureNotified.current = true;
+      toast.error("রিভিউ সংরক্ষণ করা যায়নি — অগ্রগতি সীমিত হতে পারে");
     }
   };
 
   const resetSession = () => {
-    if (selectedDeck) {
-      startSession(selectedDeck);
+    if (session) {
+      beginSession(session);
     }
   };
 
   const exitDeck = () => {
-    setSelectedDeck(null);
+    setSession(null);
     setCurrentIndex(0);
     setIsFlipped(false);
     setShowHint(false);
     setReviewQueue([]);
+    setSessionDone(false);
   };
+
+  const progress = sessionTotal > 0 ? (sessionTotal - reviewQueue.length) / sessionTotal : 0;
 
   return (
     <div className="space-y-6">
-      {!selectedDeck ? (
+      {!session ? (
         <>
           {/* Deck Selection */}
           <motion.div
@@ -241,39 +273,65 @@ export default function FlashcardsTab() {
               Select a deck to start your spaced repetition session. Cards you find hard will appear more frequently.
             </p>
 
-            <button
-              onClick={startMixedSession}
-              className="w-full mb-4 px-4 py-3 bg-[var(--dashboard-primary-subtle)] border border-[var(--primary)]/30 rounded-lg text-[var(--dashboard-primary)] font-mono text-sm hover:bg-[var(--dashboard-primary-subtle)] transition-colors flex items-center justify-center gap-2"
-            >
-              <ChartBar className="w-4 h-4" />
-              সব ডিউ কার্ড একসাথে রিভিউ করুন
-            </button>
+            {isLoading ? (
+              <p className="text-sm text-[var(--dashboard-text-muted)] font-mono mb-4" aria-live="polite">
+                ডেক লোড হচ্ছে…
+              </p>
+            ) : loadError ? (
+              <div className="mb-4 rounded-lg border border-[var(--danger)]/30 bg-[var(--dashboard-danger-subtle)] p-4">
+                <p className="text-sm text-[var(--dashboard-danger)] font-mono mb-3">{loadError}</p>
+                <button
+                  onClick={() => {
+                    setIsLoading(true);
+                    setLoadError(null);
+                    setReloadKey((k) => k + 1);
+                  }}
+                  className="px-4 py-2 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors"
+                >
+                  আবার চেষ্টা করুন
+                </button>
+              </div>
+            ) : Object.keys(decks).length === 0 ? (
+              <p className="text-sm text-[var(--dashboard-text-muted)] font-mono mb-4">
+                No flashcard decks yet — new cards appear here once they are added.
+              </p>
+            ) : (
+              <>
+                <button
+                  onClick={startMixedSession}
+                  className="w-full mb-4 px-4 py-3 bg-[var(--dashboard-primary-subtle)] border border-[var(--primary)]/30 rounded-lg text-[var(--dashboard-primary)] font-mono text-sm hover:bg-[var(--dashboard-primary-subtle)] transition-colors flex items-center justify-center gap-2"
+                >
+                  <ChartBar className="w-4 h-4" />
+                  সব ডিউ কার্ড একসাথে রিভিউ করুন
+                </button>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {Object.keys(decks).map((deckName, i) => {
-                const deck = decks[deckName];
-                const dueCount = deck.filter((c) => c.nextReview <= Date.now()).length;
-                return (
-                  <motion.button
-                    key={deckName}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.05 }}
-                    whileHover={{ y: -2 }}
-                    onClick={() => startSession(deckName)}
-                    className="glass-card rounded-2xl border border-terminal-border p-4 text-left hover:border-[var(--accent)]/40 transition-all"
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-sm font-medium text-[var(--text-primary)]">{deckName}</h3>
-                      <span className="px-2 py-0.5 bg-[var(--dashboard-primary-subtle)] border border-[var(--accent)]/20 rounded text-[10px] font-mono text-[var(--dashboard-primary)]">
-                        {dueCount} due
-                      </span>
-                    </div>
-                    <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">{deck.length} cards total</p>
-                  </motion.button>
-                );
-              })}
-            </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {Object.keys(decks).map((deckName, i) => {
+                    const deck = decks[deckName];
+                    const dueCount = deck.filter((c) => c.nextReview <= now).length;
+                    return (
+                      <motion.button
+                        key={deckName}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.05 }}
+                        whileHover={{ y: -2 }}
+                        onClick={() => startSession(deckName)}
+                        className="glass-card rounded-2xl border border-terminal-border p-4 text-left hover:border-[var(--accent)]/40 transition-all"
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <h3 className="text-sm font-medium text-[var(--text-primary)]">{deckName}</h3>
+                          <span className="px-2 py-0.5 bg-[var(--dashboard-primary-subtle)] border border-[var(--accent)]/20 rounded text-[10px] font-mono text-[var(--dashboard-primary)]">
+                            {dueCount} due
+                          </span>
+                        </div>
+                        <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">{deck.length} cards total</p>
+                      </motion.button>
+                    );
+                  })}
+                </div>
+              </>
+            )}
           </motion.div>
 
           {/* Stats Overview */}
@@ -294,14 +352,42 @@ export default function FlashcardsTab() {
             ))}
           </motion.div>
         </>
+      ) : sessionDone ? (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="glass-card rounded-2xl border border-terminal-border p-10 text-center"
+        >
+          <p className="text-sm text-[var(--dashboard-text-muted)] font-mono mb-1">$ session complete</p>
+          <h3 className="text-xl font-bold text-[var(--text-primary)] mb-4">{sessionTitle(session)} — শেষ!</h3>
+          <div className="flex items-center justify-center gap-6 text-sm font-mono text-[var(--dashboard-text-muted)] mb-6">
+            <span>Reviewed: {sessionStats.reviewed}</span>
+            <span>Correct: {sessionStats.correct}</span>
+            <span>Accuracy: {sessionStats.reviewed > 0 ? Math.round((sessionStats.correct / sessionStats.reviewed) * 100) : 0}%</span>
+          </div>
+          <div className="flex items-center justify-center gap-3">
+            <button
+              onClick={exitDeck}
+              className="px-4 py-2 bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] font-mono text-sm rounded-lg hover:bg-[var(--surface-overlay)] transition-colors"
+            >
+              Back to decks
+            </button>
+            <button
+              onClick={resetSession}
+              className="px-4 py-2 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors"
+            >
+              Review again
+            </button>
+          </div>
+        </motion.div>
       ) : (
         <>
           {/* Flashcard Session */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <h3 className="text-sm font-medium text-[var(--text-primary)]">{selectedDeck}</h3>
+              <h3 className="text-sm font-medium text-[var(--text-primary)]">{sessionTitle(session)}</h3>
               <span className="text-xs text-[var(--dashboard-text-muted)] font-mono">
-                {currentIndex + 1} / {reviewQueue.length}
+                {reviewQueue.length === 0 ? 0 : currentIndex + 1} / {sessionTotal}
               </span>
             </div>
             <button
@@ -316,7 +402,7 @@ export default function FlashcardsTab() {
           <div className="h-1.5 bg-[var(--surface-overlay)] rounded-full overflow-hidden">
             <motion.div
               initial={false}
-              animate={{ scaleX: reviewQueue.length > 0 ? currentIndex / reviewQueue.length : 0 }}
+              animate={{ scaleX: progress }}
               style={{ transformOrigin: "left" }}
               className="h-full w-full bg-[var(--success)] rounded-full"
             />
