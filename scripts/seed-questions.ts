@@ -284,8 +284,13 @@ async function buildTopicTree(
   const idsByPath = new Map<string, number>();
   let order = 0;
 
-  const createNode = async (node: TaxonomyNode, parentId: number | null, depth: number) => {
-    const path = contentPath(node);
+  const createNode = async (
+    node: TaxonomyNode,
+    parentId: number | null,
+    depth: number,
+    parentPath = "",
+  ) => {
+    const path = contentPath(node, parentPath);
     const row = await prisma.topic.upsert({
       where: { subjectId_path: { subjectId, path } },
       update: { name: node.name, slug: node.name, depth, sortOrder: order++, parentId },
@@ -305,12 +310,13 @@ async function buildTopicTree(
       leafIds.set(path, row.id);
     }
     for (const child of node.children) {
-      await createNode(child, row.id, depth + 1);
+      await createNode(child, row.id, depth + 1, path);
     }
   };
 
+  const subjectPath = contentPath(subjectNode);
   for (const child of subjectNode.children) {
-    await createNode(child, null, 1);
+    await createNode(child, null, 1, subjectPath);
   }
   return { leafIds, idsByPath };
 }

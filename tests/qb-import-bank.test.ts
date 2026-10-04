@@ -74,19 +74,19 @@ describe("Bank record parsing", () => {
 
 describe("Bank subject classification", () => {
   it("routes Bangla grammar questions to বাংলা ভাষা ও সাহিত্য", () => {
-    expect(classifyBankSubject("ব্যাকরণের আলোচ্য বিষয় কোনটি?", "ধ্বনি ও শব্দ")).toBe("বাংলা ভাষা ও সাহিত্য");
+    expect(classifyBankSubject("ব্যাকরণের আলোচ্য বিষয় কোনটি?", "ধ্বনি ও শব্দ")).toBe("০১_বাংলা_ভাষা_ও_সাহিত্য");
   });
   it("routes Latin-script vocab questions to English", () => {
-    expect(classifyBankSubject("The term DISINTER is same as -", "explanation")).toBe("English Language and Literature");
+    expect(classifyBankSubject("The term DISINTER is same as -", "explanation")).toBe("02_English_Language_and_Literature");
   });
   it("routes word problems with math keywords to গণিত", () => {
-    expect(classifyBankSubject("What is 20% of m if 8% of m is 40?", "percentage math")).toBe("গণিত");
+    expect(classifyBankSubject("What is 20% of m if 8% of m is 40?", "percentage math")).toBe("03_Mathematics");
   });
   it("routes current-affairs questions to সাধারণ জ্ঞান", () => {
     expect(classifyBankSubject("Bangladesh became a member of the United Nations in", "1974")).toBe("সাধারণ জ্ঞান");
     expect(classifyBankSubject("'মাটির ময়না' চলচ্চিত্রের নির্মাতা কে?", "তারেক মাসুদ")).toBe("সাধারণ জ্ঞান");
   });
   it("routes computer questions to ICT", () => {
-    expect(classifyBankSubject("How many types of recipients are there in an e-mail system?", "email")).toBe("তথ্য ও যোগাযোগ প্রযুক্তি");
+    expect(classifyBankSubject("How many types of recipients are there in an e-mail system?", "email")).toBe("05_ICT");
   });
 });

@@ -155,7 +155,17 @@ export function matchNodePath(node: TaxonomyNode, segments: string[]): TaxonomyN
 // (the repo root node is dropped), e.g. "04_আন্তর্জাতিক_বিষয়াবলি/০২_নিরাপ্তা_ও_ক্ষমতা/আন্তর্জাতিক_নিরাপ্তা".
 // This is the canonical value stored on Topic.path and Question.path, and the
 // value the dashboard sends in exam selections.
-export function contentPath(node: TaxonomyNode): string {
-  const segs = node.path.split("/").filter(Boolean);
-  return segs.slice(1).join("/");
+//
+// Defensive: hand-edited taxonomy nodes may lack `path` (see taxonomy.json).
+// In that case fall back to `parentPath/name` when supplied, else the bare
+// node name — never throw, so `prisma db seed` can't crash the Vercel build.
+export function contentPath(node: TaxonomyNode, parentPath = ""): string {
+  const raw: unknown = (node as { path?: unknown }).path;
+  if (typeof raw === "string" && raw.length > 0) {
+    const segs = raw.split("/").filter(Boolean);
+    return segs.slice(1).join("/");
+  }
+  const name = node.name ?? "";
+  if (!parentPath) return name;
+  return `${parentPath}/${name}`;
 }

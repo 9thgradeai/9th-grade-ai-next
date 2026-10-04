@@ -95,9 +95,9 @@ describe("quickNormalize — lightweight Unicode → LaTeX helper", () => {
   // ── Edge cases ──────────────────────────────────────────────────────────
   it("handles null/undefined gracefully via falsy check", () => {
     // TypeScript would catch null at compile time, but test the runtime guard
-    // @ts-expect-error — intentional runtime test
+    // @ts-expect-error intentional runtime test: null is not a valid input type
     expect(quickNormalize(null)).toBe("");
-    // @ts-expect-error
+    // @ts-expect-error intentional runtime test: undefined is not a valid input type
     expect(quickNormalize(undefined)).toBe("");
   });
 });
