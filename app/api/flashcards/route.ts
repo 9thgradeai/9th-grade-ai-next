@@ -11,10 +11,11 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const subject = searchParams.get("subject") ?? undefined;
+    const exam = searchParams.get("exam") ?? undefined;
     // Optional auth: authenticated callers additionally receive their own SRS
     // state overlay (`srs` field per card).
     const userId = await getUserIdFromRequest(request);
-    const flashcards = await getFlashcards(subject, userId);
+    const flashcards = await getFlashcards(subject, userId, exam);
 
     const res = NextResponse.json({ flashcards });
     res.headers.set("X-Request-Id", requestId);

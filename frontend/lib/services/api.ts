@@ -483,8 +483,11 @@ export const api = {
     return cachedGet<{ exams: Server.ExamCategoryDTO[] }>(`/api/question-bank/exams${qs}`).then((d) => d.exams);
   },
 
-  flashcards: (subject?: string): Promise<Server.FlashcardDTO[]> => {
-    const qs = subject ? `?subject=${encodeURIComponent(subject)}` : "";
+  flashcards: (subject?: string, exam?: string): Promise<Server.FlashcardDTO[]> => {
+    const params = new URLSearchParams();
+    if (subject) params.set("subject", subject);
+    if (exam) params.set("exam", exam);
+    const qs = params.size ? `?${params}` : "";
     return cachedGet<{ flashcards: Server.FlashcardDTO[] }>(`/api/flashcards${qs}`).then((d) => d.flashcards);
   },
 

@@ -549,6 +549,8 @@ export namespace Server {
     answer: string;
     hint: string;
     difficulty: "easy" | "medium" | "hard";
+    /** Which exam tracks this card serves, e.g. ["BCS","Bank"]. */
+    examRelevance?: string[] | null;
     /** Present only for authenticated callers with prior review history. */
     srs?: {
       nextReview: string;

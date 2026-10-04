@@ -61,6 +61,28 @@ function sessionTitle(session: SessionKind): string {
   return session.kind === "mixed" ? MIXED_LABEL : session.name;
 }
 
+// ── Learning phases ─────────────────────────────────────
+// learn: brand-new cards the student has never reviewed.
+// practice: seen cards still being acquired (due or low interval).
+// mastered: interval ≥ 21 days — the SM-2 "graduated" threshold.
+type Phase = "learn" | "practice" | "mastered";
+type ExamFilter = "ALL" | "BCS" | "Bank";
+type Card = Flashcard & { isNew: boolean; examRelevance?: string[] | null };
+
+const MASTERED_INTERVAL = 21;
+
+const PHASES: { id: Phase; label: string; hint: string }[] = [
+  { id: "learn", label: "শিখুন", hint: "নতুন কার্ড" },
+  { id: "practice", label: "অনুশীলন", hint: "ডিউ ও শেখার মধ্যে" },
+  { id: "mastered", label: "আয়ত্ত", hint: "আয়ত্তে আসা কার্ড" },
+];
+
+function phaseOf(card: Card): Phase {
+  if (card.isNew) return "learn";
+  if (card.interval >= MASTERED_INTERVAL) return "mastered";
+  return "practice";
+}
+
 export default function FlashcardsTab() {
   const toast = useToastSafe();
   const syncFailureNotified = useRef(false);
@@ -72,12 +94,14 @@ export default function FlashcardsTab() {
   const [sessionStats, setSessionStats] = useState({ reviewed: 0, correct: 0 });
   const [sessionTotal, setSessionTotal] = useState(0);
   const [sessionDone, setSessionDone] = useState(false);
-  const [reviewQueue, setReviewQueue] = useState<Flashcard[]>([]);
+  const [reviewQueue, setReviewQueue] = useState<Card[]>([]);
   // Decks come exclusively from the database — there is no static fallback.
   // Studying unauthenticated placeholder cards used to silently drop every
   // review (their string ids never reach the server), so an empty/error
   // state is shown instead of fake studyable decks.
-  const [decks, setDecks] = useState<Record<string, Flashcard[]>>({});
+  const [decks, setDecks] = useState<Record<string, Card[]>>({});
+  const [examFilter, setExamFilter] = useState<ExamFilter>("ALL");
+  const [phase, setPhase] = useState<Phase>("learn");
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
@@ -90,7 +114,7 @@ export default function FlashcardsTab() {
       try {
         const flashcards = await api.flashcards();
         if (cancelled) return;
-        const grouped: Record<string, Flashcard[]> = {};
+        const grouped: Record<string, Card[]> = {};
         for (const f of flashcards) {
           const deck = f.subjectName || "General";
           grouped[deck] = grouped[deck] ?? [];
@@ -109,9 +133,15 @@ export default function FlashcardsTab() {
             interval: f.srs?.intervalDays ?? 1,
             repetitions: f.srs?.repetitions ?? 0,
             easeFactor: f.srs?.easeFactor ?? 2.5,
+            isNew: !f.srs,
+            examRelevance: f.examRelevance ?? null,
           });
         }
         setDecks(grouped);
+        // Progressive default: brand-new learners start in Learn; returning
+        // learners with nothing new go straight to Practice.
+        const hasNew = Object.values(grouped).flat().some((c) => c.isNew);
+        setPhase(hasNew ? "learn" : "practice");
         setIsLoading(false);
       } catch {
         if (cancelled) return;
@@ -127,10 +157,31 @@ export default function FlashcardsTab() {
 
   const currentCard = reviewQueue[currentIndex];
 
-  const buildQueue = (s: SessionKind): Flashcard[] => {
-    const cards = s.kind === "mixed" ? Object.values(decks).flat() : decks[s.name] || [];
-    const due = cards.filter((c) => c.nextReview <= now);
-    return due.length > 0 ? due : cards;
+  // Cards visible under the current exam filter. Kept client-side (the
+  // library is small) so switching BCS/Bank/All is instant, no refetch.
+  const examCards = (cards: Card[]): Card[] =>
+    examFilter === "ALL"
+      ? cards
+      : cards.filter((c) => !c.examRelevance || c.examRelevance.length === 0 || c.examRelevance.includes(examFilter));
+
+  const scopedDecks = (): Record<string, Card[]> => {
+    const out: Record<string, Card[]> = {};
+    for (const [name, cards] of Object.entries(decks)) {
+      const visible = examCards(cards);
+      if (visible.length > 0) out[name] = visible;
+    }
+    return out;
+  };
+
+  const buildQueue = (s: SessionKind): Card[] => {
+    const scoped = scopedDecks();
+    const cards = s.kind === "mixed" ? Object.values(scoped).flat() : scoped[s.name] || [];
+    const inPhase = cards.filter((c) => phaseOf(c) === phase);
+    if (phase === "practice") {
+      const due = inPhase.filter((c) => c.nextReview <= now);
+      return due.length > 0 ? due : inPhase;
+    }
+    return inPhase;
   };
 
   const beginSession = (s: SessionKind) => {
@@ -199,7 +250,7 @@ export default function FlashcardsTab() {
             | { nextReview?: string; interval?: number; easeFactor?: number; repetitions?: number }
             | undefined;
           if (!s || typeof s.interval !== "number") return;
-          const patch = (card: Flashcard): Flashcard =>
+          const patch = (card: Card): Card =>
             card.id === currentCard.id
               ? {
                   ...card,
@@ -214,7 +265,7 @@ export default function FlashcardsTab() {
               : card;
           setReviewQueue((prev) => prev.map(patch));
           setDecks((prev) => {
-            const out: Record<string, Flashcard[]> = {};
+            const out: Record<string, Card[]> = {};
             for (const [name, cards] of Object.entries(prev)) out[name] = cards.map(patch);
             return out;
           });
@@ -260,7 +311,7 @@ export default function FlashcardsTab() {
           >
             <div className="terminal-window-bar mb-4 border-b border-terminal-border">
               <div className="dot close" /><div className="dot minimize" /><div className="dot maximize" />
-              <div className="flex-1 text-center text-xs text-[var(--dashboard-text-muted)] font-mono">{"// FLASHCARD_DECKS"}</div>
+              <div className="flex-1 text-center text-xs text-[var(--dashboard-text-muted)] font-mono">{"// FLASHCARDS"}</div>
             </div>
 
             <div className="flex items-center gap-2 mb-4">
@@ -270,7 +321,7 @@ export default function FlashcardsTab() {
             </div>
 
             <p className="text-sm text-[var(--dashboard-text-muted)] font-mono mb-4">
-              Select a deck to start your spaced repetition session. Cards you find hard will appear more frequently.
+              শিখুন → অনুশীলন → আয়ত্ত: pick a phase, choose a deck, and study one fact at a time.
             </p>
 
             {isLoading ? (
@@ -296,41 +347,16 @@ export default function FlashcardsTab() {
                 No flashcard decks yet — new cards appear here once they are added.
               </p>
             ) : (
-              <>
-                <button
-                  onClick={startMixedSession}
-                  className="w-full mb-4 px-4 py-3 bg-[var(--dashboard-primary-subtle)] border border-[var(--primary)]/30 rounded-lg text-[var(--dashboard-primary)] font-mono text-sm hover:bg-[var(--dashboard-primary-subtle)] transition-colors flex items-center justify-center gap-2"
-                >
-                  <ChartBar className="w-4 h-4" />
-                  সব ডিউ কার্ড একসাথে রিভিউ করুন
-                </button>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {Object.keys(decks).map((deckName, i) => {
-                    const deck = decks[deckName];
-                    const dueCount = deck.filter((c) => c.nextReview <= now).length;
-                    return (
-                      <motion.button
-                        key={deckName}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: i * 0.05 }}
-                        whileHover={{ y: -2 }}
-                        onClick={() => startSession(deckName)}
-                        className="glass-card rounded-2xl border border-terminal-border p-4 text-left hover:border-[var(--accent)]/40 transition-all"
-                      >
-                        <div className="flex items-center justify-between mb-2">
-                          <h3 className="text-sm font-medium text-[var(--text-primary)]">{deckName}</h3>
-                          <span className="px-2 py-0.5 bg-[var(--dashboard-primary-subtle)] border border-[var(--accent)]/20 rounded text-[10px] font-mono text-[var(--dashboard-primary)]">
-                            {dueCount} due
-                          </span>
-                        </div>
-                        <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">{deck.length} cards total</p>
-                      </motion.button>
-                    );
-                  })}
-                </div>
-              </>
+              <DeckPicker
+                decks={scopedDecks()}
+                phase={phase}
+                onPhaseChange={setPhase}
+                examFilter={examFilter}
+                onExamChange={setExamFilter}
+                now={now}
+                onStartDeck={startSession}
+                onStartMixed={startMixedSession}
+              />
             )}
           </motion.div>
 
@@ -340,16 +366,19 @@ export default function FlashcardsTab() {
             animate={{ opacity: 1, y: 0 }}
             className="grid grid-cols-2 sm:grid-cols-3 gap-3"
           >
-            {[
-              { label: "Total Cards", value: Object.values(decks).flat().length, color: "text-[var(--dashboard-primary)]" },
-              { label: "Due Today", value: Object.values(decks).flat().filter((c) => c.nextReview <= now).length, color: "text-[var(--dashboard-warning)]" },
-              { label: "Decks", value: Object.keys(decks).length, color: "text-[var(--info)]" },
-            ].map((stat) => (
-              <div key={stat.label} className="glass-card rounded-2xl border border-terminal-border p-4 text-center">
-                <div className={`text-2xl font-bold font-mono ${stat.color}`}>{stat.value}</div>
-                <div className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider">{stat.label}</div>
-              </div>
-            ))}
+            {(() => {
+              const all = Object.values(scopedDecks()).flat();
+              return [
+                { label: "Total Cards", value: all.length, color: "text-[var(--dashboard-primary)]" },
+                { label: "Due Today", value: all.filter((c) => phaseOf(c) !== "mastered" && c.nextReview <= now).length, color: "text-[var(--dashboard-warning)]" },
+                { label: "Mastered", value: all.filter((c) => phaseOf(c) === "mastered").length, color: "text-[var(--success)]" },
+              ].map((stat) => (
+                <div key={stat.label} className="glass-card rounded-2xl border border-terminal-border p-4 text-center">
+                  <div className={`text-2xl font-bold font-mono ${stat.color}`}>{stat.value}</div>
+                  <div className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider">{stat.label}</div>
+                </div>
+              ));
+            })()}
           </motion.div>
         </>
       ) : sessionDone ? (
@@ -549,5 +578,117 @@ export default function FlashcardsTab() {
         </>
       )}
     </div>
+  );
+}
+
+/* --------------------------------------------------------------------------
+   DeckPicker — exam filter + learning-phase tabs + per-deck progress.
+   -------------------------------------------------------------------------- */
+function DeckPicker({
+  decks,
+  phase,
+  onPhaseChange,
+  examFilter,
+  onExamChange,
+  now,
+  onStartDeck,
+  onStartMixed,
+}: {
+  decks: Record<string, Card[]>;
+  phase: Phase;
+  onPhaseChange: (p: Phase) => void;
+  examFilter: ExamFilter;
+  onExamChange: (e: ExamFilter) => void;
+  now: number;
+  onStartDeck: (name: string) => void;
+  onStartMixed: () => void;
+}) {
+  const all = Object.values(decks).flat();
+  const counts: Record<Phase, number> = { learn: 0, practice: 0, mastered: 0 };
+  for (const c of all) counts[phaseOf(c)] += 1;
+
+  return (
+    <>
+      {/* Exam filter */}
+      <div className="flex gap-2 mb-4" role="group" aria-label="Filter by exam">
+        {(["ALL", "BCS", "Bank"] as ExamFilter[]).map((e) => (
+          <button
+            key={e}
+            onClick={() => onExamChange(e)}
+            aria-pressed={examFilter === e}
+            className={`px-4 py-1.5 rounded-lg font-mono text-xs border transition-colors ${
+              examFilter === e
+                ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] border-transparent"
+                : "bg-[var(--surface-raised)] border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)]"
+            }`}
+          >
+            {e === "ALL" ? "All exams" : e}
+          </button>
+        ))}
+      </div>
+
+      {/* Phase tabs */}
+      <div className="grid grid-cols-3 gap-2 mb-4" role="tablist" aria-label="Learning phase">
+        {PHASES.map((p) => (
+          <button
+            key={p.id}
+            role="tab"
+            aria-selected={phase === p.id}
+            onClick={() => onPhaseChange(p.id)}
+            className={`rounded-lg border p-3 text-center transition-colors ${
+              phase === p.id
+                ? "bg-[var(--dashboard-primary-subtle)] border-[var(--primary)]/40"
+                : "bg-[var(--surface-raised)] border-[var(--dashboard-border-muted)]"
+            }`}
+          >
+            <div className={`text-xl font-bold font-mono ${phase === p.id ? "text-[var(--dashboard-primary)]" : "text-[var(--text-primary)]"}`}>
+              {counts[p.id]}
+            </div>
+            <div className="text-xs font-medium text-[var(--text-primary)]">{p.label}</div>
+            <div className="text-[10px] font-mono text-[var(--dashboard-text-muted)]">{p.hint}</div>
+          </button>
+        ))}
+      </div>
+
+      <button
+        onClick={onStartMixed}
+        className="w-full mb-4 px-4 py-3 bg-[var(--dashboard-primary-subtle)] border border-[var(--primary)]/30 rounded-lg text-[var(--dashboard-primary)] font-mono text-sm hover:bg-[var(--dashboard-primary-subtle)] transition-colors flex items-center justify-center gap-2"
+      >
+        <ChartBar className="w-4 h-4" />
+        {phase === "learn" ? "সব নতুন কার্ড একসাথে শিখুন" : phase === "mastered" ? "সব আয়ত্ত কার্ড রিভিউ করুন" : "সব ডিউ কার্ড একসাথে রিভিউ করুন"}
+      </button>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {Object.keys(decks).map((deckName, i) => {
+          const deck = decks[deckName];
+          const inPhase = deck.filter((c) => phaseOf(c) === phase).length;
+          const mastered = deck.filter((c) => phaseOf(c) === "mastered").length;
+          const pct = deck.length > 0 ? Math.round((mastered / deck.length) * 100) : 0;
+          const dueCount = deck.filter((c) => phaseOf(c) !== "mastered" && c.nextReview <= now).length;
+          return (
+            <motion.button
+              key={deckName}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.05 }}
+              whileHover={{ y: -2 }}
+              onClick={() => onStartDeck(deckName)}
+              className="glass-card rounded-2xl border border-terminal-border p-4 text-left hover:border-[var(--accent)]/40 transition-all"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-sm font-medium text-[var(--text-primary)]">{deckName}</h3>
+                <span className="px-2 py-0.5 bg-[var(--dashboard-primary-subtle)] border border-[var(--accent)]/20 rounded text-[10px] font-mono text-[var(--dashboard-primary)]">
+                  {phase === "practice" ? `${dueCount} due` : `${inPhase} cards`}
+                </span>
+              </div>
+              <div className="h-1 bg-[var(--surface-overlay)] rounded-full overflow-hidden mb-2">
+                <div className="h-full bg-[var(--success)] rounded-full" style={{ width: `${pct}%` }} />
+              </div>
+              <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">{mastered}/{deck.length} আয়ত্ত • {pct}%</p>
+            </motion.button>
+          );
+        })}
+      </div>
+    </>
   );
 }

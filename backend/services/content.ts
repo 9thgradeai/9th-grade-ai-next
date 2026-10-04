@@ -480,17 +480,25 @@ export async function getBadgeCatalog(userId?: string | null): Promise<BadgeDTO[
 export async function getFlashcards(
   subjectName?: string,
   userId?: string | null,
+  exam?: string,
 ): Promise<FlashcardDTO[]> {
   try {
     const rows = await prisma.flashcard.findMany({
       where: subjectName ? { subjectName } : undefined,
       orderBy: { id: "asc" },
     });
+    const examFilter = exam?.trim().toUpperCase();
+    const visible = examFilter
+      ? rows.filter((f) => {
+          const rel = f.examRelevance as string[] | null;
+          return !rel || rel.length === 0 || rel.map((r) => r.toUpperCase()).includes(examFilter);
+        })
+      : rows;
     const states = userId
       ? await prisma.flashcardUserState.findMany({ where: { userId } })
       : [];
     const stateByCard = new Map(states.map((s) => [s.flashcardId, s]));
-    return rows.map((f) => {
+    return visible.map((f) => {
       const s = stateByCard.get(f.id);
       return {
         id: f.id,
@@ -499,6 +507,7 @@ export async function getFlashcards(
         answer: f.answer,
         hint: f.hint,
         difficulty: f.difficulty as FlashcardDTO["difficulty"],
+        examRelevance: (f.examRelevance as string[] | null) ?? null,
         ...(s
           ? {
               srs: {

@@ -460,6 +460,7 @@ model Flashcard {
   answer       String
   hint         String   @default("")
   difficulty   Difficulty @default(MEDIUM)
+  examRelevance Json? // ["BCS","Bank"] — which exam tracks this card serves
   nextReview   DateTime @default(now())
   interval     Int      @default(1)
   easeFactor   Float    @default(2.5)

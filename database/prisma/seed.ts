@@ -25,7 +25,6 @@ import {
   ARCHIVE_CATEGORIES,
 } from "../../frontend/lib/data";
 import {
-  FLASHCARD_DECKS,
   MOCK_TEST_QUESTIONS,
   DAILY_QUIZZES,
   BADGES,
@@ -33,6 +32,7 @@ import {
   OFFLINE_PACKS,
   SOLVER_EXAMPLES,
 } from "../../frontend/lib/data/study";
+import { FLASHCARD_LIBRARY } from "../data/flashcard-library";
 import { seedQuestions } from "../../scripts/seed-questions";
 import { BB_SUBJECT_META, BB_ARCHIVE_SUBJECT_META } from "../../scripts/taxonomy";
 import { seedBcsQuestions } from "../../scripts/seed-bcs";
@@ -216,30 +216,42 @@ async function main() {
   console.log(`  ✓ ${ARCHIVE_CATEGORIES.length} exam archives`);
 
   // --- Flashcards (upsert by md5(subjectName|question) sourceKey) ---
+  // Curated exam-relevant library (database/data/flashcard-library.ts).
+  // Legacy placeholder cards (the old FLASHCARD_DECKS content, incl.
+  // corrupted/wrong rows) are removed — their keys are absent below, so the
+  // deleteMany drops exactly those stale rows and nothing else.
+  const flashKeys: string[] = [];
+  const libraryBySubject = new Map<string, typeof FLASHCARD_LIBRARY>();
+  for (const card of FLASHCARD_LIBRARY) {
+    const list = libraryBySubject.get(card.subject) ?? [];
+    list.push(card);
+    libraryBySubject.set(card.subject, list);
+  }
   let flashCount = 0;
-  for (const [subjectName, cards] of Object.entries(FLASHCARD_DECKS)) {
+  for (const [subjectName, cards] of libraryBySubject) {
     const subjId = subjMap.get(subjectName) ?? null;
     for (const c of cards) {
+      const key = sourceKey(subjectName, c.question);
+      flashKeys.push(key);
       const data = {
         subjectId: subjId,
         subjectName,
         answer: c.answer,
         hint: c.hint ?? "",
         difficulty: (c.difficulty ?? "medium").toUpperCase() as Difficulty,
+        examRelevance: c.examRelevance,
         nextReview: new Date(Date.now() + 86400000),
-        interval: c.interval ?? 1,
-        easeFactor: c.easeFactor ?? 2.5,
-        repetitions: c.repetitions ?? 0,
       };
       await prisma.flashcard.upsert({
-        where: { sourceKey: sourceKey(subjectName, c.question) },
+        where: { sourceKey: key },
         update: data,
-        create: { question: c.question, sourceKey: sourceKey(subjectName, c.question), ...data },
+        create: { question: c.question, sourceKey: key, ...data },
       });
       flashCount++;
     }
   }
-  console.log(`  ✓ ${flashCount} flashcards`);
+  const stale = await prisma.flashcard.deleteMany({ where: { sourceKey: { notIn: flashKeys } } });
+  console.log(`  ✓ ${flashCount} flashcards (${stale.count} stale removed)`);
 
   // --- Mock tests (upsert by unique title; questions refreshed in place —
   //     no user rows reference MockTestQuestion) ---

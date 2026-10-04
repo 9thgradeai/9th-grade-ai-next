@@ -349,6 +349,7 @@ Per-question mastery stage in the mistake-practice model (see `UserQuestionProgr
 - `subjectName` String — default `""` (denormalised for deck filtering)
 - `question`, `answer`, `hint`
 - `difficulty` Difficulty — default `MEDIUM`
+- `examRelevance` Json? — which exam tracks the card serves, e.g. `["BCS","Bank"]` (seeded from `database/data/flashcard-library.ts`; 96 cards / 8 subjects)
 - `nextReview` / `interval` / `easeFactor` / `repetitions` — **DEPRECATED (Phase 2B2)**: legacy shared defaults; authoritative scheduling is per-user in `FlashcardUserState`.
 - `sourceKey` String @unique — seed identity `md5(subjectName|question)`
 - Relations: `reviews` (FlashcardReview), `userStates` (FlashcardUserState)

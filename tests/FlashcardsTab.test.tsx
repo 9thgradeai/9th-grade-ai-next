@@ -12,6 +12,7 @@ const CARDS = {
       answer: "পরিত্যাগ করা",
       hint: "Think leaving",
       difficulty: "easy",
+      examRelevance: ["BCS", "Bank"],
     },
     {
       id: 2,
@@ -20,6 +21,7 @@ const CARDS = {
       answer: "দয়ালু",
       hint: "",
       difficulty: "medium",
+      examRelevance: ["BCS"],
     },
   ],
 };
@@ -64,7 +66,8 @@ describe("FlashcardsTab", () => {
     render(<FlashcardsTab />);
     // Deck from the API appears once loading resolves.
     expect(await screen.findByText("English")).toBeInTheDocument();
-    expect(screen.getByText("2 cards total")).toBeInTheDocument();
+    // New cards land in the Learn phase by default.
+    expect(screen.getByText("শিখুন")).toBeInTheDocument();
 
     fireEvent.click(screen.getByText("English"));
     expect(await screen.findByText("What does Abandon mean?")).toBeInTheDocument();
@@ -115,6 +118,17 @@ describe("FlashcardsTab", () => {
     fireEvent.click(screen.getByText("Good"));
 
     expect(await screen.findByText("$ session complete")).toBeInTheDocument();
+  });
+
+  it("filters decks by exam", async () => {
+    stubFetch();
+    render(<FlashcardsTab />);
+    expect(await screen.findByText("English")).toBeInTheDocument();
+
+    // Both cards are BCS-relevant; only the Bank-tagged one survives.
+    fireEvent.click(screen.getByText("Bank"));
+    expect(screen.getByText("English")).toBeInTheDocument();
+    expect(screen.getByText("0/1 আয়ত্ত • 0%")).toBeInTheDocument();
   });
 
   it("shows an error with retry when loading fails", async () => {
