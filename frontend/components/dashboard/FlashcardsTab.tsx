@@ -444,16 +444,18 @@ export default function FlashcardsTab() {
             <span>Accuracy: {sessionStats.reviewed > 0 ? Math.round((sessionStats.correct / sessionStats.reviewed) * 100) : 0}%</span>
           </div>
 
-          {/* Flashcard */}
+          {/* Flashcard — two faces with hidden backsides, so the answer
+              reads normally instead of mirrored after the flip. */}
           <AnimatePresence mode="wait">
             {currentCard && reviewQueue.length > 0 && (
               <motion.div
                 key={currentCard.id}
-                initial={{ opacity: 0, rotateY: 0 }}
-                animate={{ opacity: 1, rotateY: isFlipped ? 180 : 0 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 0.4 }}
-                className="relative h-80 perspective-1000"
+                transition={{ duration: 0.2 }}
+                className="relative h-80"
+                style={{ perspective: 1000 }}
               >
                 <div
                   role="button"
@@ -467,36 +469,61 @@ export default function FlashcardsTab() {
                     }
                   }}
                   onClick={handleFlip}
-                  className={`w-full h-full rounded-2xl border-2 cursor-pointer transition-all flex items-center justify-center p-6 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)] ${
-                    isFlipped
-                      ? "bg-[var(--dashboard-primary-subtle)] border-[var(--primary)]/30"
-                      : "bg-subtle border-[var(--dashboard-border-muted)] hover:border-[var(--accent)]/20"
-                  }`}
+                  className="relative w-full h-full cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)] rounded-2xl"
+                  style={{
+                    transformStyle: "preserve-3d",
+                    transform: `rotateY(${isFlipped ? 180 : 0}deg)`,
+                    transition: "transform 0.45s ease",
+                  }}
                 >
-                  <div className="text-center max-w-lg">
-                     <div className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider mb-3">
+                  {/* Front — question */}
+                  <div
+                    aria-hidden={isFlipped}
+                    className="absolute inset-0 rounded-2xl border-2 bg-subtle border-[var(--dashboard-border-muted)] flex items-center justify-center p-6"
+                    style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}
+                  >
+                    <div className="text-center max-w-lg">
+                      <div className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider mb-3">
                         {currentCard.subject} • {currentCard.difficulty}
-                     </div>
-                    <h4 className={`text-xl font-medium mb-4 ${isFlipped ? "text-[var(--dashboard-primary)]" : "text-[var(--text-primary)]"}`}>
-                      {isFlipped ? "Answer" : "Question"}
-                    </h4>
-                    <p className={`text-lg leading-relaxed ${isFlipped ? "text-[var(--success)] font-mono" : "text-[var(--dashboard-text-primary)]"}`}>
-                      {isFlipped ? currentCard.answer : currentCard.question}
-                    </p>
-
-                    {!isFlipped && currentCard.hint && (
-                      <AnimatePresence>
-                        {showHint && (
-                          <motion.p
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="mt-4 text-sm text-[var(--dashboard-warning)] font-mono"
-                          >
-                            💡 {currentCard.hint}
-                          </motion.p>
-                        )}
-                      </AnimatePresence>
-                    )}
+                      </div>
+                      <h4 className="text-xl font-medium mb-4 text-[var(--text-primary)]">Question</h4>
+                      <p className="text-lg leading-relaxed text-[var(--dashboard-text-primary)]">
+                        {currentCard.question}
+                      </p>
+                      {currentCard.hint && (
+                        <AnimatePresence>
+                          {showHint && (
+                            <motion.p
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              className="mt-4 text-sm text-[var(--dashboard-warning)] font-mono"
+                            >
+                              💡 {currentCard.hint}
+                            </motion.p>
+                          )}
+                        </AnimatePresence>
+                      )}
+                    </div>
+                  </div>
+                  {/* Back — answer (pre-rotated so it reads correctly) */}
+                  <div
+                    aria-hidden={!isFlipped}
+                    className="absolute inset-0 rounded-2xl border-2 bg-[var(--dashboard-primary-subtle)] border-[var(--primary)]/30 flex items-center justify-center p-6"
+                    style={{
+                      backfaceVisibility: "hidden",
+                      WebkitBackfaceVisibility: "hidden",
+                      transform: "rotateY(180deg)",
+                    }}
+                  >
+                    <div className="text-center max-w-lg">
+                      <div className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider mb-3">
+                        {currentCard.subject} • {currentCard.difficulty}
+                      </div>
+                      <h4 className="text-xl font-medium mb-4 text-[var(--dashboard-primary)]">Answer</h4>
+                      <p className="text-lg leading-relaxed text-[var(--success)] font-mono">
+                        {currentCard.answer}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </motion.div>

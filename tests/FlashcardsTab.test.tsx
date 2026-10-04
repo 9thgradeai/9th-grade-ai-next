@@ -73,6 +73,21 @@ describe("FlashcardsTab", () => {
     expect(await screen.findByText("What does Abandon mean?")).toBeInTheDocument();
   });
 
+  it("renders the answer on a pre-rotated back face so it reads normally", async () => {
+    stubFetch();
+    const { container } = render(<FlashcardsTab />);
+    fireEvent.click(await screen.findByText("English"));
+    await screen.findByText("What does Abandon mean?");
+
+    fireEvent.click(screen.getByText("Show Answer"));
+    // Both faces exist; the back face is pre-rotated 180° so the flip
+    // animation lands it readable instead of mirrored.
+    expect(await screen.findByText("পরিত্যাগ করা")).toBeInTheDocument();
+    const back = screen.getByText("পরিত্যাগ করা").closest("div[style]") as HTMLElement;
+    expect(back?.style.transform).toContain("rotateY(180deg)");
+    expect(container.querySelector('[aria-pressed="true"]')).not.toBeNull();
+  });
+
   it("persists a rating and completes the session after the last card", async () => {
     const calls = stubFetch();
     render(<FlashcardsTab />);
