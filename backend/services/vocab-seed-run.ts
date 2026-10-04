@@ -3,6 +3,7 @@
 
 import { PrismaClient } from "@prisma/client";
 import { VOCAB_SEED_DATA } from "../../database/data/vocab-seed";
+import { VOCAB_PDF_200_DATA } from "../../database/data/vocab-pdf-200";
 
 const ORIGINAL_SEED_WORDS = [
   { word: "Abandon", bengaliMeaning: "পরিত্যাগ করা", partOfSpeech: "Verb", verbForms: ["abandon", "abandoned", "abandoning", "abandonment"], synonyms: ["desert", "forsake", "leave"], antonyms: ["retain", "keep", "maintain"], exampleSentence: "The government decided to abandon the outdated policy after mass protests.", exampleSentenceBn: "গণবিক্ষোভের পর সরকার সেকেলে নীতিটি পরিত্যাগ করার সিদ্ধান্ত নেয়।", context: "Used for policies, plans, or places left completely.", mnemonic: "Ab + abandon = 'a band' leaves the stage.", examRelevance: ["BCS", "Bank", "9th Grade"], frequency: 95, difficulty: "EASY" },
@@ -54,7 +55,7 @@ export async function seedVocabWords(prisma: PrismaClient) {
     });
     count++;
   }
-  for (const w of VOCAB_SEED_DATA) {
+  for (const w of [...VOCAB_SEED_DATA, ...VOCAB_PDF_200_DATA]) {
     await prisma.vocabWord.upsert({
       where: { word: w.word },
       update: {

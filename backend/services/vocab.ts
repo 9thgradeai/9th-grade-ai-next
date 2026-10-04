@@ -5,6 +5,7 @@ import "server-only";
 
 import { prisma } from "~backend/db";
 import { VOCAB_SEED_DATA } from "~backend/../database/data/vocab-seed";
+import { VOCAB_PDF_200_DATA } from "~backend/../database/data/vocab-pdf-200";
 
 export type VocabWordDTO = {
   id: number;
@@ -215,7 +216,7 @@ export async function seedVocabWords() {
     count++;
   }
   // Seed expanded vocabulary (135 words)
-  for (const w of VOCAB_SEED_DATA) {
+  for (const w of [...VOCAB_SEED_DATA, ...VOCAB_PDF_200_DATA]) {
     await prisma.vocabWord.upsert({
       where: { word: w.word },
       update: {
