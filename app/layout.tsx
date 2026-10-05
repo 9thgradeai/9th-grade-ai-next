@@ -8,7 +8,6 @@ import { LANGUAGE_KEY } from "@/lib/lang-key";
 import ScrollProgress from "@/components/ui/ScrollProgress";
 import Toaster from "@/components/ui/ToasterLazy";
 import CommandPalette from "@/components/navigation/CommandPalette";
-import GlobalBootLoader from "@/components/ui/GlobalBootLoader";
 import { SentryClientProvider } from "@/lib/sentry";
 import "./globals.css";
 
@@ -119,7 +118,6 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: ANIMATION_FAILSAFE_SCRIPT }} />
       </head>
       <body className="min-h-full flex flex-col font-sans noise">
-        <GlobalBootLoader />
         <div className="cosmic-bg" aria-hidden="true" />
         <ScrollProgress />
         <ToastProvider>

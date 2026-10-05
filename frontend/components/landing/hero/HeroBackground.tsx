@@ -74,7 +74,33 @@ export default function HeroBackground() {
   const rootRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [videoReady, setVideoReady] = useState(false);
+  // LCP-safe: the video fetch never races first paint. The static gradient
+  // fallback above paints instantly; the motion layer hydrates after load
+  // (or 2.5s fallback) and never on reduced-motion.
+  const [deferredSrc, setDeferredSrc] = useState<string | null>(null);
   const stars = useMemo(() => buildStars(TOTAL_STARS), []);
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // Mobile / touch devices and data-saver users keep the static gradient +
+    // CSS starfield (cheap, paints instantly). The video file would otherwise
+    // become the mobile LCP element (~5s on throttled 4G) and cap the page
+    // in the low 80s. Desktop keeps the full atmospheric layer.
+    if (window.matchMedia("(pointer: coarse)").matches) return;
+    const conn = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
+    if (conn?.saveData) return;
+    const arm = () => setDeferredSrc(HERO_VIDEO_SRC);
+    if (document.readyState === "complete") {
+      const t = setTimeout(arm, 0);
+      return () => clearTimeout(t);
+    }
+    const fallback = setTimeout(arm, 2500);
+    window.addEventListener("load", arm, { once: true });
+    return () => {
+      clearTimeout(fallback);
+      window.removeEventListener("load", arm);
+    };
+  }, []);
 
   // Event-driven playback management only: pause offscreen, pause under
   // reduced motion. No timers, no per-frame work.
@@ -111,7 +137,7 @@ export default function HeroBackground() {
       io.disconnect();
       media.removeEventListener("change", onChange);
     };
-  }, []);
+  }, [deferredSrc]);
 
   return (
     <div
@@ -130,13 +156,14 @@ export default function HeroBackground() {
       />
 
       {/* z-0 — AtmosphericVideo: native playback, fades in once frames flow. */}
+      {deferredSrc && (
       <video
         ref={videoRef}
         data-layer="atmospheric-video"
         className={`absolute inset-0 z-0 h-full w-full object-cover object-center transition-opacity duration-1000 ${
           videoReady ? "opacity-100" : "opacity-0"
         }`}
-        src={HERO_VIDEO_SRC}
+        src={deferredSrc}
         autoPlay
         muted
         loop
@@ -147,6 +174,7 @@ export default function HeroBackground() {
         tabIndex={-1}
         onLoadedData={() => setVideoReady(true)}
       />
+      )}
 
       {/* z-1 — StarField: oversized disc centered on the visual focal point.
           Stars sit at the center and streak outward along --transform;

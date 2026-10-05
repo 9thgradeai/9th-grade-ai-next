@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom";
 
 import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import HeroSection from "@/components/landing/HeroSection";
@@ -60,27 +60,31 @@ describe("HeroSection", () => {
 });
 
 describe("HeroBackground", () => {
-  it("renders the video-first layered backdrop with correct video behavior", () => {
+  it("paints the static fallback instantly and hydrates video after load (LCP-safe)", async () => {
     const { container } = render(<HeroBackground />);
     const root = container.querySelector('[data-layer="hero-background"]');
     expect(root).toBeInTheDocument();
     expect(root).toHaveAttribute("aria-hidden", "true");
 
-    // Layer stack: fallback → video (z-0) → stars (z-1) → vignette (z-2). No canvas/WebGL.
-    for (const layer of ["video-fallback", "atmospheric-video", "star-field", "vignette"]) {
+    // Static layers paint with first paint — no waiting on the video fetch.
+    for (const layer of ["video-fallback", "star-field", "vignette"]) {
       expect(container.querySelector(`[data-layer="${layer}"]`)).toBeInTheDocument();
     }
     expect(container.querySelector("canvas")).not.toBeInTheDocument();
 
-    const video = container.querySelector("video");
-    expect(video).toBeInTheDocument();
-    expect(video).toHaveAttribute("src", "/asset/hero/9th-grade.webm");
-    expect(video).toHaveAttribute("autoplay");
-    expect(video).toHaveAttribute("loop");
-    expect(video).toHaveAttribute("playsinline");
-    expect(video?.muted || video?.hasAttribute("muted")).toBe(true);
-    expect(video).toHaveAttribute("aria-hidden", "true");
-    expect(video?.hasAttribute("controls")).toBe(false);
+    // Motion layer hydrates after load (deferred src never races LCP).
+    await waitFor(() => {
+      expect(container.querySelector('[data-layer="atmospheric-video"]')).toBeInTheDocument();
+    });
+    const v = container.querySelector("video");
+    expect(v).toBeInTheDocument();
+    expect(v).toHaveAttribute("src", "/asset/hero/9th-grade.webm");
+    expect(v).toHaveAttribute("autoplay");
+    expect(v).toHaveAttribute("loop");
+    expect(v).toHaveAttribute("playsinline");
+    expect(v?.muted || v?.hasAttribute("muted")).toBe(true);
+    expect(v).toHaveAttribute("aria-hidden", "true");
+    expect(v?.hasAttribute("controls")).toBe(false);
   });
 
   it("renders a restrained, deterministic, responsive star field", () => {

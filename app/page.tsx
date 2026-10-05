@@ -20,9 +20,13 @@ const jsonLd = {
 export default async function Home() {
   // Degrade gracefully when the DB is unreachable (offline dev, cold Neon
   // branch): the landing page must never hard-crash on a single count query.
+  // Bounded with a 400ms race so a cold database never inflates TTFB/LCP —
+  // the hero paints instantly with a fallback count instead of awaiting Neon.
+  const withTimeout = <T,>(p: Promise<T>, ms: number, fallback: T): Promise<T> =>
+    Promise.race([p, new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms))]);
   let subjectCount = 0;
   try {
-    subjectCount = await prisma.subject.count();
+    subjectCount = await withTimeout(prisma.subject.count(), 400, 0);
   } catch (error) {
     console.error("[home] subject.count failed, rendering with fallback 0:", error);
   }

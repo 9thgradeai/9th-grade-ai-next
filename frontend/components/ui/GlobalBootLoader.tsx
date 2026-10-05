@@ -3,17 +3,50 @@
 import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const MIN_SHOW_MS = 1400;
+const MIN_SHOW_MS = 600;
 const MAX_SHOW_MS = 2600;
+/** Grace period: fast loads never see the overlay (LCP-safe). Only slow
+ *  navigations (>SHOW_AFTER_MS without window load) get the theater. */
+const SHOW_AFTER_MS = 900;
 
 export default function GlobalBootLoader() {
-  const [visible, setVisible] = useState(true);
+  // Start hidden: the overlay only appears if the page is still loading
+  // after SHOW_AFTER_MS. Previously `true` + a 1400ms floor forced every
+  // hard navigation (incl. sub-second ones) behind a fake progress bar and
+  // capped mobile Lighthouse LCP at ~5s.
+  const [visible, setVisible] = useState(false);
   const [progress, setProgress] = useState(0);
   const startRef = useRef<number>(0);
   const allowedToDismissRef = useRef(false);
 
   // every hard navigation shows boot — no sessionStorage skip
   useEffect(() => {
+    if (typeof document !== "undefined" && document.readyState === "complete") return;
+    let shown = false;
+    const showTimer = setTimeout(() => {
+      if (document.readyState !== "complete") {
+        shown = true;
+        startRef.current = Date.now();
+        setVisible(true);
+      }
+    }, SHOW_AFTER_MS);
+    const onLoad = () => {
+      clearTimeout(showTimer);
+      if (shown) {
+        const elapsed = Date.now() - startRef.current;
+        if (elapsed >= MIN_SHOW_MS) setVisible(false);
+        else setTimeout(() => setVisible(false), MIN_SHOW_MS - elapsed);
+      }
+    };
+    window.addEventListener("load", onLoad);
+    return () => {
+      clearTimeout(showTimer);
+      window.removeEventListener("load", onLoad);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!visible) return;
     startRef.current = Date.now();
     const tick = setInterval(() => {
       const elapsed = Date.now() - startRef.current;
@@ -45,7 +78,7 @@ export default function GlobalBootLoader() {
       clearTimeout(hard);
       window.removeEventListener("keydown", onKey);
     };
-  }, []);
+  }, [visible]);
 
   // lock scroll while visible
   useEffect(() => {

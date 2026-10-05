@@ -1,7 +1,27 @@
 "use client";
 
-import { Fragment, useMemo } from "react";
+import { Fragment, useEffect, useMemo } from "react";
 import katex from "katex";
+
+const KATEX_CSS_HREF = "/vendor/katex.min.css";
+
+let katexCssRequested = false;
+
+/**
+ * Loads KaTeX's stylesheet on first math render only. Previously it was a
+ * global `@import` in globals.css — ~25KB render-blocking on every page
+ * including the landing, which renders zero math (mobile Lighthouse tax).
+ */
+export function ensureKatexCss() {
+  if (katexCssRequested || typeof document === "undefined") return;
+  katexCssRequested = true;
+  if (document.querySelector('link[data-katex-css]')) return;
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = KATEX_CSS_HREF;
+  link.dataset.katexCss = "true";
+  document.head.appendChild(link);
+}
 
 export type MathError = { latex: string; message: string };
 
@@ -87,6 +107,9 @@ export default function MathText({
   className?: string;
   onError?: (e: MathError) => void;
 }) {
+  useEffect(() => {
+    if (text.includes("$")) ensureKatexCss();
+  }, [text]);
   if (!text.includes("$")) return <span className={className}>{text}</span>;
   return (
     <span className={className}>

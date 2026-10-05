@@ -25,6 +25,7 @@ import { List, MagnifyingGlass, X } from "@phosphor-icons/react";
 import LogoutButton from "@/components/dashboard/LogoutButton";
 import NavRows from "@/components/dashboard/NavRows";
 import ShortcutList from "@/components/dashboard/ShortcutList";
+import GlobalBootLoader from "@/components/ui/GlobalBootLoader";
 import WorldMapBackdrop from "@/components/dashboard/WorldMapBackdrop";
 import { useT } from "@/lib/i18n";
 import { useLanguage, t as pickLang } from "@/lib/lang-ctx";
@@ -328,6 +329,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <BottomNav activeTab={activeTab} onChange={handleTabChange} />
 
             {/* Global Components */}
+            <GlobalBootLoader />
             <VoiceAITutor />
             <PracticeDrillOverlay />
             <CommandBar />

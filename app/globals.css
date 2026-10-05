@@ -1,5 +1,7 @@
 @import "tailwindcss";
-@import "katex/dist/katex.min.css";
+/* KaTeX intentionally NOT imported here: katex.min.css (~25KB render-blocking
+   on every page incl. the landing, which renders zero math) loads on demand
+   from /vendor via MathText.ensureKatexCss() on first math render. */
 @import "../frontend/styles/ai-workspace.css";
 
 /* ══════════════════════════════════════════════════════════════════════════════
