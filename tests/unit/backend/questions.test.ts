@@ -69,6 +69,35 @@ describe("getQuestions paths filter", () => {
   });
 });
 
+describe("getQuestions subject resolution (ecosystem-scoped)", () => {
+  it("scopes the subject lookup by ecosystemId when provided", async () => {
+    vi.mocked(prisma.subject.findFirst).mockResolvedValue({ id: 9, nameBn: "সাধারণ জ্ঞান" } as never);
+    vi.mocked(prisma.question.findMany).mockResolvedValue([]);
+    vi.mocked(prisma.question.count).mockResolvedValue(0);
+
+    await getQuestions({ subject: "সাধারণ জ্ঞান", ecosystemId: 2, limit: 21 });
+
+    expect(vi.mocked(prisma.subject.findFirst)).toHaveBeenCalledWith({
+      where: { nameBn: "সাধারণ জ্ঞান", ecosystemId: 2 },
+    });
+    const call = vi.mocked(prisma.question.findMany).mock.calls[0][0];
+    expect(call?.where).toEqual({
+      AND: [{ subjectId: 9 }, { ecosystemId: 2 }],
+    });
+  });
+
+  it("falls back to a name-only lookup when no ecosystemId is given", async () => {
+    vi.mocked(prisma.subject.findFirst).mockResolvedValue({ id: 3 } as never);
+    vi.mocked(prisma.question.findMany).mockResolvedValue([]);
+
+    await getQuestions({ subject: "বাংলা", paths: ["ভাষা/পরিভাষা"], limit: 51 });
+
+    expect(vi.mocked(prisma.subject.findFirst)).toHaveBeenCalledWith({
+      where: { nameBn: "বাংলা" },
+    });
+  });
+});
+
 describe("getQuestions paperId filter (exam library)", () => {
   it("adds the paperId equality condition when set", async () => {
     vi.mocked(prisma.question.findMany).mockResolvedValue([]);

@@ -59,7 +59,16 @@ async function buildQuestionWhere(opts?: QuestionFilters): Promise<Record<string
   // dropped (rows live in two ecosystems by design).
   let unionPaths: string[] | null = null;
   if (opts?.subject) {
-    const subject = await prisma.subject.findFirst({ where: { nameBn: opts.subject } });
+    // Scope the name lookup by ecosystem when the caller provides one.
+    // Subject names repeat across ecosystems (BCS vs Bank), and an unscoped
+    // findFirst could resolve to the OTHER ecosystem's subject — serving
+    // questions from subjects/topics the user never selected.
+    const subject = await prisma.subject.findFirst({
+      where:
+        opts.ecosystemId !== undefined
+          ? { nameBn: opts.subject, ecosystemId: opts.ecosystemId }
+          : { nameBn: opts.subject },
+    });
     if (subject) {
       const bangla = await getBanglaSubjects();
       if (bangla.names.has(subject.id) && bangla.ids.length > 1) {

@@ -58,11 +58,15 @@ export function clearBanglaSubjectsCache(): void {
   subjectsCache = null;
 }
 
-let leafPathsCache: { at: number; value: Map<number, string[]> } | null = null;
+let leafPathsCache: { at: number; key: string; value: Map<number, string[]> } | null = null;
 
-/** Absolute leaf paths per Bangla subject (one groupBy, cached 5 minutes). */
+/** Absolute leaf paths per Bangla subject (one groupBy, cached 5 minutes).
+ * The cache is keyed by the requested sibling-id set — a stale entry built
+ * for a different set must never be served, or the union would map (and
+ * serve) leaves from topics the user did not select. */
 export async function getBanglaLeafPaths(siblingIds: number[]): Promise<Map<number, string[]>> {
-  if (leafPathsCache && Date.now() - leafPathsCache.at < SUBJECTS_CACHE_MS) {
+  const key = [...siblingIds].sort((a, b) => a - b).join(",");
+  if (leafPathsCache && leafPathsCache.key === key && Date.now() - leafPathsCache.at < SUBJECTS_CACHE_MS) {
     return leafPathsCache.value;
   }
   const rows = (await prisma.question.groupBy({
@@ -75,7 +79,7 @@ export async function getBanglaLeafPaths(siblingIds: number[]): Promise<Map<numb
     list.push(row.path);
     map.set(row.subjectId, list);
   }
-  leafPathsCache = { at: Date.now(), value: map };
+  leafPathsCache = { at: Date.now(), key, value: map };
   return map;
 }
 

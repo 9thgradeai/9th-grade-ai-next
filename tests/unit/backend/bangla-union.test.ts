@@ -1,4 +1,5 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
+import { prisma } from "~backend/db";
 import {
   isBanglaSubjectName,
   pathSuffix,
@@ -98,5 +99,44 @@ describe("foldSiblingCounts", () => {
       { path: `${BCS_ROOT}/অজানা/বিষয়`, count: 9 },
     ]);
     expect(extra.size).toBe(0);
+  });
+});
+
+describe("getBanglaLeafPaths cache keying", () => {
+  it("refetches when the sibling-id set changes instead of serving a stale set", async () => {
+    const { getBanglaLeafPaths, clearBanglaLeafPathsCache } = await import(
+      "~backend/services/bangla-union"
+    );
+    clearBanglaLeafPathsCache();
+    vi.mocked(prisma.question.groupBy).mockResolvedValue([
+      { subjectId: 1, path: `${BCS_ROOT}/ভাষা/বানান` },
+    ] as never);
+    await getBanglaLeafPaths([1, 7]);
+
+    vi.mocked(prisma.question.groupBy).mockResolvedValue([
+      { subjectId: 2, path: "other/বিষয়/পাতা" },
+    ] as never);
+    const res = await getBanglaLeafPaths([2]);
+
+    expect(vi.mocked(prisma.question.groupBy)).toHaveBeenCalledTimes(2);
+    expect(res.get(2)).toEqual(["other/বিষয়/পাতা"]);
+    clearBanglaLeafPathsCache();
+  });
+
+  it("serves the cache for the same sibling-id set regardless of order", async () => {
+    const { getBanglaLeafPaths, clearBanglaLeafPathsCache } = await import(
+      "~backend/services/bangla-union"
+    );
+    clearBanglaLeafPathsCache();
+    vi.mocked(prisma.question.groupBy).mockResolvedValue([
+      { subjectId: 1, path: `${BCS_ROOT}/ভাষা/বানান` },
+    ] as never);
+    await getBanglaLeafPaths([1, 7]);
+    vi.clearAllMocks();
+    const res = await getBanglaLeafPaths([7, 1]);
+
+    expect(vi.mocked(prisma.question.groupBy)).not.toHaveBeenCalled();
+    expect(res.get(1)).toEqual([`${BCS_ROOT}/ভাষা/বানান`]);
+    clearBanglaLeafPathsCache();
   });
 });

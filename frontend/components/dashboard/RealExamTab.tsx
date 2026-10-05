@@ -186,7 +186,7 @@ export default function RealExamTab() {
           const allLeaves = flattenNodes(s.nodes).filter((n) => n.children.length === 0);
           const eligible = sel.paths.length === 0 ? allLeaves : allLeaves.filter((leaf) => sel.paths.some((p) => leaf.path === p || leaf.path.startsWith(p + "/")));
           if (eligible.length === 0) {
-            return api.questions({ subject: s.nameBn, paths: sel.paths.length > 0 ? sel.paths : undefined, limit: Math.min(requested, 200) });
+            return api.questions({ subject: s.nameBn, paths: sel.paths.length > 0 ? sel.paths : undefined, limit: Math.min(requested, 200), ecosystem });
           }
           const caps = eligible.map((l) => l.questionCount);
           const alloc = allocateEvenly(requested, caps);
@@ -194,12 +194,12 @@ export default function RealExamTab() {
             eligible.map((leaf, idx) => {
               const need = alloc[idx];
               if (need <= 0) return [] as Server.QuestionDTO[];
-              return api.questions({ subject: s.nameBn, paths: [leaf.path], limit: need });
+              return api.questions({ subject: s.nameBn, paths: [leaf.path], limit: need, ecosystem });
             }),
           );
           const mergedLeaf = perLeafPools.flat().filter(Boolean);
           if (mergedLeaf.length < requested) {
-            const fallback = await api.questions({ subject: s.nameBn, paths: sel.paths.length > 0 ? sel.paths : undefined, limit: requested });
+            const fallback = await api.questions({ subject: s.nameBn, paths: sel.paths.length > 0 ? sel.paths : undefined, limit: requested, ecosystem });
             const seen = new Set(mergedLeaf.map((q) => q.id));
             for (const q of fallback) if (!seen.has(q.id)) mergedLeaf.push(q);
           }
@@ -247,7 +247,7 @@ export default function RealExamTab() {
     } finally {
       setBuildLoading(false);
     }
-  }, [selectedSubjects, selection, totalCount, customDurationMin]);
+  }, [selectedSubjects, selection, totalCount, customDurationMin, ecosystem]);
 
   const openPaper = useCallback(async (paper: PaperMeta) => {
     try {
