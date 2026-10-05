@@ -122,13 +122,8 @@ export default function HomeCoach() {
     <motion.div
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      className="command-card command-card--glow p-5 sm:p-6 relative overflow-hidden"
+      className="command-card p-5 sm:p-6 relative overflow-hidden"
     >
-      <div
-        className="absolute inset-x-0 top-0 h-px"
-        style={{ background: "linear-gradient(90deg, transparent, var(--dashboard-primary), transparent)" }}
-        aria-hidden="true"
-      />
 
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { motion, useReducedMotion } from "framer-motion";
-import { Clock, ArrowRight, Flame, Trophy, CaretRight, ArrowCounterClockwise, Stack } from "@phosphor-icons/react";
+import { Clock, ArrowRight, Trophy, CaretRight, ArrowCounterClockwise, Stack } from "@phosphor-icons/react";
 import { useAuth } from "@/lib/auth-ctx";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 import { useMotionCapabilities } from "@/lib/motion/device";
@@ -11,11 +11,11 @@ import { useMotionTier } from "@/lib/motion/use-motion-tier";
 import { useLanguage, t } from "@/lib/lang-ctx";
 import { useToastSafe } from "@/lib/toast-ctx";
 import { api, invalidateCache } from "@/lib/services/api";
-import { freezeAvailable as hasFreezeAvailable } from "@/lib/gamification";
+import { rankAmbientCards } from "@/lib/gamification";
+import StreakEngine from "./command-center/StreakEngine";
 import { homePerf } from "@/lib/perf";
 import { EMPTY_INTELLIGENCE, mergeIntelligence } from "@/lib/intelligence";
 import type { Server, PrepIntelligenceRecommendation } from "@/lib/types";
-import StreakHeatmap from "./StreakHeatmap";
 import HomeCoach from "./ai/HomeCoach";
 import { useExamDaysLeft } from "./HomeTabHelpers";
 import TodayMission from "./command-center/TodayMission";
@@ -76,11 +76,11 @@ const SECTION_FADE = {
   },
 };
 
-function RevealSection({ children, className, id }: { children: React.ReactNode; className?: string; id?: string }) {
+function RevealSection({ children, className, id, style }: { children: React.ReactNode; className?: string; id?: string; style?: React.CSSProperties }) {
   const { fullMotion } = useMotionTier();
   if (!fullMotion) {
     return (
-      <div className={className} id={id}>
+      <div className={className} id={id} style={style}>
         {children}
       </div>
     );
@@ -89,6 +89,7 @@ function RevealSection({ children, className, id }: { children: React.ReactNode;
     <motion.div
       className={className}
       id={id}
+      style={style}
       initial="hidden"
       whileInView="show"
       viewport={{ once: true, margin: "-40px" }}
@@ -385,8 +386,35 @@ export default function HomeTab() {
     setReloadKey((k) => k + 1);
   };
 
+  // Sprint 1 ambient ranking — highest-need region first. Mission stays
+  // pinned (it is the primary CTA); analytics/actions/pulse reorder by live
+  // signals; everything else holds a fixed slot. Applied via CSS `order`
+  // (gap-based stack, so reordering never disturbs spacing).
+  const regionOrder = useMemo(() => {
+    const planDone = todaysTasks.filter((task) => task.completed).length;
+    const ranked = rankAmbientCards({
+      unmasteredMistakes: intelligence?.mistakes.unmastered,
+      flashcardsDue: intelligence?.flashcardsDue,
+      weakAccuracy: heroSignals.weakAccuracy,
+      streak: intelligence?.streak,
+      planCompletionPct: todaysTasks.length > 0 ? (planDone / todaysTasks.length) * 100 : 100,
+    });
+    const order: Record<string, number> = {};
+    let slot = 2;
+    for (const id of ranked) {
+      const key = id === "performance" || id === "plan" ? "analytics" : id === "mission" ? null : id;
+      if (key === null || key === "coach") continue;
+      if (!(key in order)) order[key] = slot++;
+    }
+    return {
+      analytics: order.analytics ?? 2,
+      actions: order.actions ?? 3,
+      pulse: order.pulse ?? 4,
+    };
+  }, [intelligence?.mistakes.unmastered, intelligence?.flashcardsDue, intelligence?.streak, heroSignals.weakAccuracy, todaysTasks]);
+
   return (
-    <div className="study-home space-y-5 pb-24 sm:pb-6">
+    <div className="study-home flex flex-col gap-5 pb-24 sm:pb-6">
       <motion.header
         initial={lowMotion ? false : "hidden"}
         whileInView={lowMotion ? undefined : "show"}
@@ -408,20 +436,13 @@ export default function HomeTab() {
               <Clock className="w-3.5 h-3.5 text-[var(--dashboard-primary)]" aria-hidden="true" /> {user?.examTarget ?? t(lang, "লক্ষ্য নির্ধারিত হয়নি", "Target not set")}
               {nextExam ? ` · ${t(lang, nextExam.titleBn, nextExam.titleEn)}` : ""}
             </span>
-            <span
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-bold"
-              style={{
-                background: "var(--dashboard-warning-subtle)",
-                borderColor: "color-mix(in srgb, var(--dashboard-warning) 20%, transparent)",
-                color: "var(--dashboard-warning)",
-              }}
-            >
-              <Flame className="w-3.5 h-3.5 fill-current" aria-hidden="true" />
-              {intelligence?.streak ?? 0} {t(lang, "দিনের স্ট্রিক", "day streak")}
-              <span className="inline-flex ml-1">
-                <StreakHeatmap activeDays={activityDays} labels={WEEKDAY_LABELS_7} freezeAvailable={hasFreezeAvailable(intelligence?.streak ?? 0, 0)} />
-              </span>
-            </span>
+            <StreakEngine
+              streak={intelligence?.streak ?? 0}
+              activeDays={activityDays}
+              labels={WEEKDAY_LABELS_7}
+              solved={intelligence?.overall?.questionsAttempted ?? 0}
+              accuracy={intelligence?.overall?.accuracy ?? 0}
+            />
           </div>
           )}
         </div>
@@ -469,14 +490,10 @@ export default function HomeTab() {
         </div>
       )}
 
-      {/* ── 1 · AI brief hero: the summary IS the hero. Auto-drafts once per
-             signals snapshot; the mission CTA below is the single action. ── */}
-      <RevealSection className="min-w-0">
-        <HomeHero signals={heroSignals} autoBrief={analyticsReady} />
-      </RevealSection>
-
-      {/* ── 2 · Hero Mission — the single primary CTA ── */}
-      <RevealSection className="min-w-0">
+      {/* ── 1 · One mission voice: the AI brief narrates, the mission acts.
+             HomeHero renders bare (no second hero card) as TodayMission's
+             narrative header. Auto-drafts once per signals snapshot. ── */}
+      <RevealSection className="min-w-0" style={{ order: 0 }}>
         {analyticsFailed && !analyticsReady ? (
           <ScopeError
             message={t(lang, "আজকের মিশন লোড করা যায়নি", "Could not load today's mission")}
@@ -492,13 +509,14 @@ export default function HomeTab() {
             onStartMistakes={() => mistakeSubject()}
             onReviewFlashcards={() => setActiveTab("flashcards")}
             onStartDailyQuiz={startDailyWarmup}
+            brief={<HomeHero signals={heroSignals} autoBrief={analyticsReady} bare />}
           />
         )}
       </RevealSection>
 
       {/* ── 1b · Revision due strip — SRS cards needing review today ── */}
       {analyticsReady && (intelligence?.flashcardsDue ?? 0) > 0 && (
-        <RevealSection className="min-w-0">
+        <RevealSection className="min-w-0" style={{ order: 1 }}>
           <button
             type="button"
             onClick={() => setActiveTab("flashcards")}
@@ -522,8 +540,8 @@ export default function HomeTab() {
         </RevealSection>
       )}
 
-      {/* ── 3 · Performance + today's plan (2-col, verification below the brief) ── */}
-      <div className="study-home-analytics grid gap-5 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+      {/* ── 3 · Performance + today's plan (ambient-ranked region) ── */}
+      <div className="study-home-analytics grid gap-5 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]" style={{ order: regionOrder.analytics }}>
         <RevealSection className="min-w-0">
           {!pulseReady ? (
             <ScopeSkeleton label={t(lang, "পারফরম্যান্স লোড হচ্ছে", "Loading performance")} />
@@ -556,8 +574,8 @@ export default function HomeTab() {
         </RevealSection>
       </div>
 
-      {/* ── 4 · Recommended actions (full width, min-h holds layout) ── */}
-      <RevealSection className="min-w-0 min-h-[220px]">
+      {/* ── 4 · Recommended actions (ambient-ranked region) ── */}
+      <RevealSection className="min-w-0 min-h-[220px]" style={{ order: regionOrder.actions }}>
         {analyticsFailed && !analyticsReady ? (
           <ScopeError
             message={t(lang, "প্রস্তাবনা লোড করা যায়নি", "Could not load recommendations")}
@@ -575,8 +593,8 @@ export default function HomeTab() {
         )}
       </RevealSection>
 
-      {/* ── 5 · Continue learning (min-h holds layout when empty) ── */}
-      <RevealSection className="min-h-[120px]">
+      {/* ── 5 · Continue learning (fixed slot) ── */}
+      <RevealSection className="min-h-[120px]" style={{ order: 5 }}>
         {!tasksReady && !tasksFailed ? (
           <ScopeSkeleton label={t(lang, "চলমান শেখা লোড হচ্ছে", "Loading continue learning")} />
         ) : (
@@ -592,14 +610,14 @@ export default function HomeTab() {
       </RevealSection>
 
       {/* ── 5b · Spotlight MCQ — random database question, rotates across
-             all subjects every ~3 minutes. Independent of the intelligence
-             scopes so it never blocks on (or blocks) the staged load. ── */}
-      <RevealSection className="min-w-0">
+              all subjects every ~3 minutes. Independent of the intelligence
+              scopes so it never blocks on (or blocks) the staged load. ── */}
+      <RevealSection className="min-w-0" style={{ order: 6 }}>
         <SpotlightQuiz onPracticeSubject={(subject) => practiceSubject(subject)} />
       </RevealSection>
 
-      {/* ── 6 · Secondary pulse — compact, muted, deferred ── */}
-      <RevealSection>
+      {/* ── 6 · Secondary pulse (ambient-ranked region) ── */}
+      <RevealSection style={{ order: regionOrder.pulse }}>
         {!pulseReady ? (
           pulseFailed ? (
             <ScopeError
@@ -617,7 +635,7 @@ export default function HomeTab() {
 
       {/* ── 7 · Recent mocks — collapsed by default (history, not action) ── */}
       {results.length > 0 && (
-        <RevealSection className="scroll-mt-6">
+        <RevealSection className="scroll-mt-6" style={{ order: 7 }}>
           <details className="group command-card">
             <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-5">
               <span className="command-eyebrow">{t(lang, "সাম্প্রতিক মক টেস্ট", "Recent mock tests")}</span>
@@ -679,7 +697,7 @@ export default function HomeTab() {
       )}
 
       {/* ── 8 · AI Study Coach — collapsed by default, icon-only chevron ── */}
-      <RevealSection id="dashboard-ai-coach" className="scroll-mt-6">
+      <RevealSection id="dashboard-ai-coach" className="scroll-mt-6" style={{ order: 8 }}>
         <details className="group command-card">
           <summary className="flex items-center justify-between gap-3 px-5 py-4 cursor-pointer list-none">
             <div className="flex items-center gap-3 min-w-0">

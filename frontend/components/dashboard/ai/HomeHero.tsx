@@ -53,7 +53,17 @@ function greeting(lang: "bn" | "en", name?: string | null): string {
  * signals snapshot (aborted on unmount / superseded by manual asks), so the
  * summary — not an empty input — is what returning users see first.
  */
-export default function HomeHero({ signals, autoBrief = false }: { signals: HomeHeroSignals; autoBrief?: boolean }) {
+export default function HomeHero({
+  signals,
+  autoBrief = false,
+  bare = false,
+}: {
+  signals: HomeHeroSignals;
+  autoBrief?: boolean;
+  /** Bare mode: no card chrome — embeds inside TodayMission so Home speaks
+   *  with one mission voice instead of two stacked hero cards. */
+  bare?: boolean;
+}) {
   const { user } = useAuth();
   const { lang } = useLanguage();
   const [input, setInput] = useState("");
@@ -185,13 +195,15 @@ export default function HomeHero({ signals, autoBrief = false }: { signals: Home
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       aria-label={t(lang, "AI কমান্ড", "AI command")}
-      className="command-card command-card--hero p-5 sm:p-6 relative overflow-hidden"
+      className={bare ? "relative" : "command-card command-card--hero p-5 sm:p-6 relative overflow-hidden"}
     >
-      <div
-        className="absolute inset-x-0 top-0 h-px"
-        style={{ background: "linear-gradient(90deg, transparent, var(--dashboard-primary), transparent)" }}
-        aria-hidden="true"
-      />
+      {!bare && (
+        <div
+          className="absolute inset-x-0 top-0 h-px"
+          style={{ background: "linear-gradient(90deg, transparent, var(--dashboard-primary), transparent)" }}
+          aria-hidden="true"
+        />
+      )}
       <div className="flex items-center gap-3">
         <span
           className="w-10 h-10 rounded-xl flex items-center justify-center border shrink-0"

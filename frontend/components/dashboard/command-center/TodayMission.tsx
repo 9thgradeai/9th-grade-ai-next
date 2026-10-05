@@ -14,6 +14,9 @@ type TodayMissionProps = {
   onStartMistakes: () => void;
   onReviewFlashcards: () => void;
   onStartDailyQuiz: () => void;
+  /** AI brief voice (HomeHero bare) rendered as the card's narrative header —
+   *  one mission voice per Home instead of two stacked hero cards. */
+  brief?: React.ReactNode;
 };
 
 export type MissionDescriptor = {
@@ -184,6 +187,7 @@ export default function TodayMission({
   onStartMistakes,
   onReviewFlashcards,
   onStartDailyQuiz,
+  brief,
 }: TodayMissionProps) {
   const { lang } = useLanguage();
   const mission = useMemo(() => selectMission(intelligence, lang), [intelligence, lang]);
@@ -256,6 +260,11 @@ export default function TodayMission({
       aria-labelledby="today-mission-title"
     >
       <div className="command-aurora opacity-60" aria-hidden="true" />
+      {brief && (
+        <div className="relative mb-6 border-b pb-5" style={{ borderColor: "var(--dashboard-border-muted)" }}>
+          {brief}
+        </div>
+      )}
       <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center">
         <div className="study-orbit relative shrink-0 self-start lg:self-center" aria-hidden="true">
           <svg viewBox="0 0 120 120" className="h-32 w-32 lg:h-40 lg:w-40">
