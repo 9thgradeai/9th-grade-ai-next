@@ -1005,3 +1005,12 @@ Grammar **সমাস** folder file (`database/data/ques/বাংলা ভা
 - **Decision**: Declare `playwright-core` (^1.62.1, version-matched to `playwright`) in `dependencies`. It is a small wrapper package (no browser binaries — browsers come from `@sparticuz/chromium` on Linux serverless and from the locally installed Playwright Chromium on dev machines).
 - **Rationale**: Directly-imported packages must be direct dependencies. No new runtime surface is added — the package was already being loaded at runtime.
 - **Consequences**: None behavioral; lockfile gains an explicit edge. Paired with the platform-aware launch (Linux → `@sparticuz/chromium`, other platforms → Playwright's installed Chromium) which fixes `spawn ENOEXEC` on macOS dev machines, and the `outputFileTracingIncludes` entry for `node_modules/katex/dist/**/*` which fixes the `ENOENT katex.min.css` 500 on Vercel.
+
+## ADR-060: Remove next-pwa, build with Turbopack (fix failing Vercel deploys)
+
+- **Date**: 2026-10-05
+- **Status**: Accepted
+- **Context**: `next-pwa@5` is webpack-only and crashes Next 16 builds — `next build --webpack` dies with an uncaught `TypeError: Cannot read properties of undefined (reading 'length')` inside its compiler hook. Vercel's `buildCommand` is `npm run build`, so every production deploy was failing and the live site (`9th-grade-ai.vercel.app`) was frozen on stale code while localhost (Turbopack builds) showed the latest work.
+- **Decision**: (1) Remove `next-pwa` + `@types/next-pwa`. (2) Change `build` from `next build --webpack` to `next build` (Turbopack, the Next 16 default — verified green locally). (3) Strip the `withPWA` wrapper from `next.config.ts`, keeping the bundle analyzer. No service worker ships until the offline strategy is re-designed for the App Router.
+- **Rationale**: No existing dependency can generate the SW under Turbopack, and patching next-pwa's webpack internals is out of scope. Per-user API routes were already `NetworkOnly`, and the in-memory gateway cache in `frontend/lib/services/api.ts` covers blip resilience — so nothing the app relies on is lost. Alternatives rejected: pinning Next 14 to keep next-pwa (forfeits the whole Next 16 stack); `@ducanh2912/next-pwa` fork (still webpack-based, same dead end under Turbopack).
+- **Consequences**: No offline support or SW precaching until a Turbopack-compatible PWA approach lands; the web-manifest route is unaffected. `npm run build` is now the exact command Vercel runs — local prod builds and deploys are the same artifact.

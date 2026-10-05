@@ -34,39 +34,12 @@ const securityHeaders = [
     : []),
 ];
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const withPWA = require("next-pwa")({
-  dest: "public",
-  register: true,
-  skipWaiting: true,
-  disable: process.env.NODE_ENV === "development",
-  runtimeCaching: [
-    { urlPattern: /^https:\/\/fonts\.(googleapis|gstatic)\.com\/.*/i, handler: "CacheFirst", options: { cacheName: "google-fonts", expiration: { maxEntries: 4, maxAgeSeconds: 365 * 24 * 60 * 60 } } },
-    { urlPattern: /^https:\/\/.*\.sentry\.io\/.*/i, handler: "NetworkFirst", options: { cacheName: "sentry", expiration: { maxEntries: 32, maxAgeSeconds: 24 * 60 * 60 }, networkTimeoutSeconds: 10 } },
-    { urlPattern: /^https:\/\/api\.(groq|anthropic)\.com\/.*/i, handler: "NetworkOnly", options: { cacheName: "ai-api" } },
-    // Cookie-authenticated, per-user payloads MUST be NetworkOnly. Caching
-    // them in SW CacheStorage persists User A's study-plan/badges on shared
-    // devices and can serve them to User B after logout (no reliable
-    // cross-user purge exists). The in-memory gateway cache in
-    // frontend/lib/services/api.ts already covers offline/blip resilience
-    // per-tab without persisting across sessions — so nothing is lost.
-    { urlPattern: /\/api\/questions/, handler: "NetworkOnly", options: { cacheName: "questions-api" } },
-    { urlPattern: /\/api\/flashcards/, handler: "NetworkOnly", options: { cacheName: "flashcards-api" } },
-    { urlPattern: /\/api\/exam\/config/, handler: "NetworkOnly", options: { cacheName: "exam-config-api" } },
-    { urlPattern: /\/api\/flash-news/, handler: "NetworkOnly", options: { cacheName: "flash-news-api" } },
-    { urlPattern: /\/api\/dashboard-stats/, handler: "NetworkOnly", options: { cacheName: "dashboard-stats-api" } },
-    { urlPattern: /\/api\/study-plan/, handler: "NetworkOnly", options: { cacheName: "study-plan-api" } },
-    { urlPattern: /\/api\/mistakes/, handler: "NetworkOnly", options: { cacheName: "mistakes-api" } },
-    { urlPattern: /\/api\/bookmarks/, handler: "NetworkOnly", options: { cacheName: "bookmarks-api" } },
-    { urlPattern: /\/api\/notifications/, handler: "NetworkOnly", options: { cacheName: "notifications-api" } },
-    { urlPattern: /\/api\/vocab\//, handler: "NetworkOnly", options: { cacheName: "vocab-api" } },
-    { urlPattern: /\/api\/exam-history/, handler: "NetworkOnly", options: { cacheName: "exam-history-api" } },
-    { urlPattern: /\.(?:png|jpg|jpeg|svg|webp|avif|ico)$/, handler: "CacheFirst", options: { cacheName: "images", expiration: { maxEntries: 128, maxAgeSeconds: 30 * 24 * 60 * 60 } } },
-    { urlPattern: /^https:\/\/.*\.(woff2?|ttf|otf)$/, handler: "CacheFirst", options: { cacheName: "fonts", expiration: { maxEntries: 16, maxAgeSeconds: 365 * 24 * 60 * 60 } } },
-  ],
-  navigateFallback: "/",
-  navigateFallbackDenylist: [/\/api\/auth\/.*/, /\/api\/ai\/.*/, /\/api\/exam\/build/, /\/api\/exam\/submit/, /\/dashboard/],
-});
+// PWA NOTE (2026-10): next-pwa@5 is webpack-only and crashes Next 16 builds
+// (`next build --webpack` dies with an uncaught TypeError inside its compiler
+// hook), which was silently failing Vercel production deploys and freezing the
+// live site on stale code. The build now uses the default Turbopack pipeline
+// and ships without a service worker until the offline strategy is migrated
+// (see docs/DECISIONS.md). The web-manifest route is unaffected.
 
 const baseConfig: NextConfig = {
   poweredByHeader: false,
@@ -119,13 +92,12 @@ const baseConfig: NextConfig = {
 } satisfies NextConfig;
 
 // Bundle analysis is opt-in via `ANALYZE=true npm run build` (the existing
-// `npm run analyze` script). Wrapping the withPWA output keeps the PWA and
-// analyzer orthogonal: normal builds are byte-identical, analysis builds emit
-// .next/analyze/*.html treemaps for chunk-profile work (see
-// docs/PERFORMANCE-OPTIMIZATION.md §3 Phase 0).
+// `npm run analyze` script). Wrapping the base config keeps normal builds
+// byte-identical; analysis builds emit .next/analyze/*.html treemaps for
+// chunk-profile work (see docs/PERFORMANCE-OPTIMIZATION.md §3 Phase 0).
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const withBundleAnalyzer = require("@next/bundle-analyzer")({
   enabled: process.env.ANALYZE === "true",
 });
 
-module.exports = withBundleAnalyzer(withPWA(baseConfig));
+module.exports = withBundleAnalyzer(baseConfig);
