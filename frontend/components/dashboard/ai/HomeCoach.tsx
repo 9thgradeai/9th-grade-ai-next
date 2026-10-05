@@ -7,6 +7,7 @@ import AiLogo from "@/components/ui/AiLogo";
 import { runAgentTurn, AIError } from "@/lib/services/ai";
 import type { AgentBlockDto } from "@/lib/types";
 import AgentBlocks from "./AgentBlocks";
+import AISourceFooter from "./AISourceFooter";
 
 const STRATEGY_PROMPTS = [
   {
@@ -115,7 +116,7 @@ export default function HomeCoach() {
     };
   }, [runWithPrompt]);
 
-  const isMock = result?.provider === "mock";
+  // Provenance renders via AISourceFooter (Phase 2 single disclosure).
 
   return (
     <motion.div
@@ -239,16 +240,7 @@ export default function HomeCoach() {
                 </p>
               )}
               {result.blocks.length > 0 && <AgentBlocks blocks={result.blocks} />}
-              <div className="pt-2 flex items-center justify-between font-mono text-[10px] text-[var(--dashboard-text-muted)]">
-                <span>
-                  {isMock
-                    ? "source: mock (AI API fallback active)"
-                    : `source: ${result.provider}${result.model ? ` • ${result.model}` : ""}`}
-                </span>
-                <span>
-                  {result.latencyMs !== undefined ? `latency ${Math.round(result.latencyMs)}ms` : "latency —"}
-                </span>
-              </div>
+              <AISourceFooter provider={result.provider} model={result.model} latencyMs={result.latencyMs} />
             </>
           )}
         </div>

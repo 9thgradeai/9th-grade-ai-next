@@ -98,7 +98,7 @@ export default function ThreadView({
             source: <span className="text-[var(--dashboard-primary)]">{meta.provider ?? "unset"}</span>
             {meta.model ? ` · ${meta.model}` : ""}
             {meta.latencyMs !== undefined && meta.latencyMs > 0 ? ` · ${Math.round(meta.latencyMs)}ms` : ""}
-            {mode === "agent"
+            {mode === "coach" || mode === "mock"
               ? ` · ${lastAi?.tools?.length ?? 0} tools`
               : ""}
             {meta.provider === "mock" ? "  (সেট করা API কী নেই — গণনা ও তথ্য যাচাই করুন)" : ""}

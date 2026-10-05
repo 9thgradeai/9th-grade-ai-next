@@ -11,6 +11,7 @@ import { useMotionTier } from "@/lib/motion/use-motion-tier";
 import { useLanguage, t } from "@/lib/lang-ctx";
 import { useToastSafe } from "@/lib/toast-ctx";
 import { api, invalidateCache } from "@/lib/services/api";
+import { freezeAvailable as hasFreezeAvailable } from "@/lib/gamification";
 import { homePerf } from "@/lib/perf";
 import { EMPTY_INTELLIGENCE, mergeIntelligence } from "@/lib/intelligence";
 import type { Server, PrepIntelligenceRecommendation } from "@/lib/types";
@@ -418,7 +419,7 @@ export default function HomeTab() {
               <Flame className="w-3.5 h-3.5 fill-current" aria-hidden="true" />
               {intelligence?.streak ?? 0} {t(lang, "দিনের স্ট্রিক", "day streak")}
               <span className="inline-flex ml-1">
-                <StreakHeatmap activeDays={activityDays} labels={WEEKDAY_LABELS_7} />
+                <StreakHeatmap activeDays={activityDays} labels={WEEKDAY_LABELS_7} freezeAvailable={hasFreezeAvailable(intelligence?.streak ?? 0, 0)} />
               </span>
             </span>
           </div>

@@ -23,7 +23,6 @@ import {
   listConversations,
   getConversation,
   tutorTurn,
-  askAssistant,
   runAgentTurn,
   renameConversation,
   pinConversation,
@@ -34,6 +33,7 @@ import {
 import type { AIConversationSummary, AIMessageDto } from "@/lib/services/ai/types";
 import type { AgentBlockDto } from "@/lib/types";
 import { subscribeToLaunch } from "@/lib/ai-launcher";
+import { normalizeLegacyMode } from "@/lib/ai-orchestrator";
 import { useAuth } from "@/lib/auth-ctx";
 import ModeSwitcher from "./ModeSwitcher";
 import ConversationRail from "./ConversationRail";
@@ -138,7 +138,7 @@ export default function AIWorkspace() {
   // Launch from other surfaces (Solver handoff, etc.).
   useEffect(() => {
     return subscribeToLaunch((ctx) => {
-      setMode(ctx.mode ?? "tutor");
+      setMode(normalizeLegacyMode(ctx.mode ?? "tutor"));
       setShowModal(true);
       setError(null);
       if (ctx.prompt) setInput(ctx.prompt);
@@ -294,7 +294,8 @@ export default function AIWorkspace() {
   const sendTurn = useCallback(
     async (rawText: string) => {
       const text = rawText.trim();
-      const hasImage = Boolean(imagePreview) && mode === "tutor";
+      const canAttach = mode === "tutor" || mode === "solve";
+      const hasImage = Boolean(imagePreview) && canAttach;
       if ((!text && !hasImage) || status === "generating" || !user) return;
 
       const userText = text || (hasImage ? "[ছবি সহ প্রশ্ন]" : "");
@@ -313,8 +314,10 @@ export default function AIWorkspace() {
 
       const ctx = pendingContext;
 
-      // AI study coach — bounded tool loop, streams tool activity + typed blocks.
-      if (mode === "agent") {
+      // AI study coach + mock generator — bounded tool loop, streams tool
+      // activity + typed blocks. Mock prompts ride the same agent surface
+      // with mock-test context; the endpoint split lives server-side.
+      if (mode === "coach" || mode === "mock") {
         const abortController = new AbortController();
         abortRef.current = abortController;
         const placeholderId = `stream-${Date.now()}`;
@@ -422,32 +425,9 @@ export default function AIWorkspace() {
         return;
       }
 
-      if (mode === "assistant") {
-        try {
-          const res = await askAssistant({
-            conversationId: activeConversationId ?? undefined,
-            content: text,
-            questionId: ctx.questionId,
-            intent: undefined,
-          });
-          setActiveConversationId(res.conversationId);
-          setMessages((prev) => [
-            ...prev,
-            { id: `a-${Date.now()}`, role: "ai", text: res.reply, actions: res.suggestedActions },
-          ]);
-          setPendingContext({});
-          setMeta({ provider: res.source });
-          speakText(res.reply);
-          void refreshConversations();
-          void syncFromServer(res.conversationId).catch(() => {});
-          setStatus("idle");
-        } catch (e) {
-          handleError(e);
-        }
-        return;
-      }
-
-      // Tutor streaming
+      // Solver / Tutor / Voice all stream through the tutor surface.
+      // Socratic + voice flags live in the orchestrator meta; the tutor
+      // route reads them server-side from the mode field.
       const abortController = new AbortController();
       abortRef.current = abortController;
       const placeholderId = `stream-${Date.now()}`;
@@ -867,7 +847,7 @@ export default function AIWorkspace() {
                     activity={activity}
                     tools={liveTools}
                     imagePreview={imagePreview}
-                    canAttachImage={mode === "tutor"}
+                    canAttachImage={mode === "tutor" || mode === "solve"}
                     speakOnReply={speakOnReply}
                     isSpeaking={voiceOut.speaking}
                     isListening={isListening}

@@ -1,12 +1,13 @@
 "use client";
 
-// Capability metadata for the AI workspace. Each mode is a genuine, distinct
-// backend surface (tutor / assistant / agent) — descriptions stay honest about
-// what the model can actually do for the learner.
+// Capability metadata for the AI workspace — now driven by the single
+// Phase-2 orchestrator (`frontend/lib/ai-orchestrator.ts`). Each mode is a
+// genuine, distinct backend surface; descriptions stay honest.
 
-import { GraduationCap, Brain, Target } from "@phosphor-icons/react";
+import { GraduationCap, Brain, Target, LightningA, Microphone, ClipboardText } from "@phosphor-icons/react";
+import { ORCHESTRATOR_MODES, type OrchestratorMode } from "@/lib/ai-orchestrator";
 
-export type Mode = "tutor" | "assistant" | "agent";
+export type Mode = OrchestratorMode;
 
 export type ModeMeta = {
   id: Mode;
@@ -17,30 +18,28 @@ export type ModeMeta = {
   icon: React.ComponentType<{ className?: string }>;
 };
 
-export const MODES: ModeMeta[] = [
-  {
-    id: "tutor",
-    labelBn: "টিউটর",
-    labelEn: "Tutor",
-    descBn: "যেকোনো বিষয় বা ধারণা ধাপে ধাপে বুঝিয়ে শেখায় — প্রশ্ন করলে উত্তর দেয়।",
-    icon: GraduationCap,
-  },
-  {
-    id: "assistant",
-    labelBn: "সহায়ক",
-    labelEn: "Assistant",
-    descBn: "আপনার অগ্রগতি, দুর্বলতা ও পড়ার পরিকল্পনা বিশ্লেষণ করে পরামর্শ দেয়।",
-    icon: Brain,
-  },
-  {
-    id: "agent",
-    labelBn: "কোচ",
-    labelEn: "Coach",
-    descBn: "আপনার পরীক্ষার ডেটা বিশ্লেষণ করে প্র্যাক্টিস, রিভিশন ও মক পরীক্ষার কাঠামোবদ্ধ পরামর্শ দেয়।",
-    icon: Target,
-  },
-];
+const ICONS: Record<Mode, ModeMeta["icon"]> = {
+  solve: LightningA,
+  tutor: GraduationCap,
+  mock: ClipboardText,
+  voice: Microphone,
+  coach: Target,
+};
+
+/** Back-compat alias: old "assistant"/"agent" ids resolve to coach. */
+export const LEGACY_MODE_ALIAS: Record<string, Mode> = {
+  assistant: "coach",
+  agent: "coach",
+};
+
+export const MODES: ModeMeta[] = ORCHESTRATOR_MODES.map((m) => ({
+  id: m.id,
+  labelBn: m.labelBn,
+  labelEn: m.labelEn,
+  descBn: m.descBn,
+  icon: ICONS[m.id] ?? Brain,
+}));
 
 export function modeMeta(mode: Mode): ModeMeta {
-  return MODES.find((m) => m.id === mode) ?? MODES[0];
+  return MODES.find((m) => m.id === mode) ?? MODES[1];
 }

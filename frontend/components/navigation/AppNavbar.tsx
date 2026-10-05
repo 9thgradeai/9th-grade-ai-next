@@ -37,6 +37,23 @@ export default function AppNavbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
   const [profileOpen, setProfileOpen] = useState(false);
+  // Phase 4 — contextual shrinking nav: toolbar dissolves into a compact
+  // micro-bar after scrolling past the hero (spring-free, transform/opacity).
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        setScrolled(window.scrollY > 24);
+        ticking = false;
+      });
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const headerRef = useRef<HTMLElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
@@ -97,11 +114,13 @@ export default function AppNavbar() {
     <>
       <header
         ref={headerRef}
-        style={{ ["--nav-h" as string]: "4rem" }}
-        className="fixed top-0 inset-x-0 z-[var(--z-sticky)] pt-safe border-b border-transparent bg-transparent backdrop-blur-xl"
+        style={{ ["--nav-h" as string]: scrolled ? "3.25rem" : "4rem" }}
+        className={`fixed top-0 inset-x-0 z-[var(--z-sticky)] pt-safe border-b backdrop-blur-xl transition-all duration-300 ${
+          scrolled ? "border-white/10 bg-black/70 shadow-lg" : "border-transparent bg-transparent"
+        }`}
       >
         <nav className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8" aria-label={t("nav.primaryNavigation")}>
-          <div className="flex h-14 sm:h-16 items-center gap-2">
+          <div className={`flex items-center gap-2 transition-all duration-300 ${scrolled ? "h-12 sm:h-[3.25rem]" : "h-14 sm:h-16"}`}>
             <Link href="/" className="flex shrink-0 items-center gap-2.5 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400" aria-label="9Th-Grade AI home">
               <BrandMark className="h-8 w-8 rounded-lg shadow-glow-sm" />
               <span className="hidden sm:inline font-display text-[15.5px] font-semibold tracking-tight text-white">9Th-Grade AI</span>

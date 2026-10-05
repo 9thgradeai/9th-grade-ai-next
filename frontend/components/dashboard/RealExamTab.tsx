@@ -8,6 +8,8 @@ import { useEcosystem } from "@/lib/ecosystem-ctx";
 import type { Server } from "@/lib/types";
 import SubjectTopicSelect from "./SubjectTopicSelect";
 import RichText from "@/components/ui/RichText";
+import CalmCountdown from "./practice/CalmCountdown";
+import QuestionPalette from "./practice/QuestionPalette";
 import {
   type Selection,
   flattenNodes,
@@ -81,6 +83,9 @@ export default function RealExamTab() {
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [checked, setChecked] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
+  // Phase 3 calm exam: familiarization (3 Q, no timer) + free backtracking.
+  const [familiarize, setFamiliarize] = useState(false);
+  const [currentId, setCurrentId] = useState<number | null>(null);
 
   const { ecosystem } = useEcosystem();
   // ── Custom paper builder state (subject → topic → subtopic picker) ──
@@ -305,23 +310,29 @@ export default function RealExamTab() {
   }, [phase, timeLeft, checked, questions.length]);
 
   const visibleQuestions = useMemo(() => {
-    if (shuffleSeed === null) return questions;
-    // Deterministic mulberry32 shuffle keyed by the seed state.
-    let a = shuffleSeed >>> 0;
-    const rand = () => {
-      a += 0x6d2b79f5;
-      let t = a;
-      t = Math.imul(t ^ (t >>> 15), t | 1);
-      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-    };
-    const arr = [...questions];
-    for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.floor(rand() * (i + 1));
-      [arr[i], arr[j]] = [arr[j], arr[i]];
+    let base: typeof questions;
+    if (shuffleSeed === null) {
+      base = questions;
+    } else {
+      // Deterministic mulberry32 shuffle keyed by the seed state.
+      let a = shuffleSeed >>> 0;
+      const rand = () => {
+        a += 0x6d2b79f5;
+        let t = a;
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+      const arr = [...questions];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(rand() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      base = arr;
     }
-    return arr;
-  }, [questions, shuffleSeed]);
+    // Familiarization mode: first 3 questions, no timer pressure.
+    return familiarize ? base.slice(0, 3) : base;
+  }, [questions, shuffleSeed, familiarize]);
 
   const score = useMemo(() => {
     let correct = 0;
@@ -417,6 +428,7 @@ export default function RealExamTab() {
 
   const selectAnswer = (questionId: number, option: string) => {
     if (checked) return;
+    setCurrentId(questionId);
     setAnswers((prev) => ({ ...prev, [questionId]: option }));
   };
 
@@ -777,25 +789,51 @@ export default function RealExamTab() {
               </p>
             </div>
 
-            {/* Offline exam header */}
+            {/* Offline exam header — Phase 3 calm: no pulse until ≤60s, palette for backtracking, familiarization mode */}
             {phase === "offline" && (
-              <div className="mt-4 glass-card rounded-2xl border border-[var(--primary)]/30 px-4 py-3 flex items-center justify-between gap-3 flex-wrap">
-                <div className="flex items-center gap-2">
-                  <Clock className={`w-4 h-4 ${timeLeft <= 60 ? "text-[var(--dashboard-danger)] animate-pulse motion-reduce:animate-none" : "text-[var(--dashboard-primary)]"}`} />
-                  <span className="font-mono text-lg font-bold text-[var(--dashboard-primary)]">{formatClock(timeLeft)}</span>
-                  <span className="text-xs text-[var(--dashboard-text-muted)] font-mono">উত্তর: {Object.keys(answers).length} / {questions.length}</span>
-                </div>
-                <div className="flex gap-2">
-                  {!checked ? (
-                    <button onClick={() => setChecked(true)} className="px-4 py-2 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-xs rounded-lg hover:bg-[var(--accent-hover)] transition-colors">
-                      উত্তর মিলিয়ে দেখুন
-                    </button>
+              <div className="mt-4 space-y-3">
+                <div className="glass-card rounded-2xl border border-[var(--primary)]/30 px-4 py-3 flex items-center justify-between gap-3 flex-wrap">
+                  {familiarize ? (
+                    <span className="text-xs font-mono text-[var(--dashboard-success)]">🌱 Familiarization — 3 questions, no timer. Feel the interface first.</span>
                   ) : (
-                    <span className="px-4 py-2 rounded-lg bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] font-mono text-xs">
-                      স্কোর: {score.correct}/{score.total} ({score.total > 0 ? Math.round((score.correct / score.total) * 100) : 0}%)
-                    </span>
+                    <CalmCountdown
+                      remainingSec={timeLeft}
+                      totalSec={(selectedPaper?.durationMin ?? customDurationMin ?? 60) * 60}
+                      answered={Object.keys(answers).length}
+                      total={questions.length}
+                    />
                   )}
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setFamiliarize((v) => !v)}
+                      aria-pressed={familiarize}
+                      className="px-3 py-2 rounded-lg border font-mono text-xs transition-colors hover:border-[var(--dashboard-primary)]"
+                      style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-secondary)", background: "var(--dashboard-surface-muted)" }}
+                      title="Try 3 questions with no timer before the real run"
+                    >
+                      {familiarize ? "Exit familiarize" : "Familiarize (3Q)"}
+                    </button>
+                    {!checked ? (
+                      <button onClick={() => setChecked(true)} className="px-4 py-2 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-xs rounded-lg hover:bg-[var(--accent-hover)] transition-colors">
+                        উত্তর মিলিয়ে দেখুন
+                      </button>
+                    ) : (
+                      <span className="px-4 py-2 rounded-lg bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] font-mono text-xs">
+                        স্কোর: {score.correct}/{score.total} ({score.total > 0 ? Math.round((score.correct / score.total) * 100) : 0}%)
+                      </span>
+                    )}
+                  </div>
                 </div>
+                <QuestionPalette
+                  questionIds={visibleQuestions.map((q) => q.id)}
+                  answers={answers}
+                  currentId={currentId}
+                  onJump={(id) => {
+                    setCurrentId(id);
+                    document.getElementById(`req-${id}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+                  }}
+                />
               </div>
             )}
             {phase === "offline" && checked && timeLeft === 0 && (
@@ -812,7 +850,7 @@ export default function RealExamTab() {
                 const isCorrect = checked && userAnswer && userAnswer.trim() === (q.correctAnswer ?? "").trim();
                 const isWrong = checked && userAnswer && !isCorrect;
                 return (
-                  <div key={q.id} className="glass-card rounded-2xl border border-terminal-border p-4 md:p-5">
+                  <div key={q.id} id={`req-${q.id}`} className="glass-card scroll-mt-24 rounded-2xl border border-terminal-border p-4 md:p-5">
                     <div className="flex flex-wrap items-center gap-2 mb-3">
                       <span className="px-2 py-0.5 rounded bg-[var(--surface-overlay)] text-[10px] font-mono text-[var(--dashboard-text-secondary)]">প্রশ্ন {index + 1}</span>
                       <span className="px-2 py-0.5 rounded bg-[var(--surface-overlay)] text-[10px] font-mono text-[var(--dashboard-text-muted)]">{q.subject}</span>

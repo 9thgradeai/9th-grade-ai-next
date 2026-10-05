@@ -1,6 +1,7 @@
 "use client";
 
-import { useLanguage, t } from "@/lib/lang-ctx";
+import { useContext } from "react";
+import { LanguageContext, t } from "@/lib/lang-ctx";
 
 type AISourceFooterProps = {
   provider?: string | null;
@@ -17,7 +18,9 @@ type AISourceFooterProps = {
  * one component instead of six bespoke meta lines.
  */
 export default function AISourceFooter({ provider, model, latencyMs, toolCount, className }: AISourceFooterProps) {
-  const { lang } = useLanguage();
+  // Resilient to missing provider (unit tests, prerender): fall back to "en"
+  // so the `source: mock` disclosure always renders in a stable language.
+  const lang = useContext(LanguageContext)?.lang ?? "en";
   const isMock = provider === "mock";
   return (
     <p className={`break-words font-mono text-[10px] leading-relaxed tracking-[0.12em] text-[var(--dashboard-text-muted)] ${className ?? ""}`}>

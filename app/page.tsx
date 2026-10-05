@@ -34,18 +34,13 @@ export default async function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <HeroSection subjectCount={subjectCount} />
-      <LazySection name="TrustStripSection" />
-      <LazySection name="ProblemSection" />
-      <LazySection name="IntelligenceSection" />
-      <LazySection name="SignalSection" />
-      <LazySection name="AdaptivePracticeSection" />
-      <LazySection name="TutorSection" />
-      <LazySection name="ExamEngineSection" />
-      <LazySection name="SubjectUniverseSection" />
-      <LazySection name="AnalyticsSection" />
-      <LazySection name="PlannerSection" />
-      <LazySection name="PhilosophySection" />
-      <LazySection name="FinalCtaSection" />
+      {/* Phase 4 — 5 narrative arcs (was 11 scattered sections). All original
+          components preserved inside the arcs; each lazy chunk = one story beat. */}
+      <LazySection name="ArcProblem" />
+      <LazySection name="ArcIntelligence" />
+      <LazySection name="ArcTutor" />
+      <LazySection name="ArcProof" />
+      <LazySection name="ArcCta" />
     </PublicShell>
   );
 }

@@ -17,6 +17,11 @@ import { useEffect, useRef, useState } from "react";
  */
 
 const REGISTRY = {
+  ArcProblem: dynamic(() => import("@/components/landing/LandingArcs"), { ssr: false }),
+  ArcIntelligence: dynamic(() => import("@/components/landing/LandingArcs").then((m) => m.ArcIntelligence), { ssr: false }),
+  ArcTutor: dynamic(() => import("@/components/landing/LandingArcs").then((m) => m.ArcTutor), { ssr: false }),
+  ArcProof: dynamic(() => import("@/components/landing/LandingArcs").then((m) => m.ArcProof), { ssr: false }),
+  ArcCta: dynamic(() => import("@/components/landing/LandingArcs").then((m) => m.ArcCta), { ssr: false }),
   TrustStripSection: dynamic(() => import("@/components/landing/TrustStripSection"), { ssr: false }),
   ProblemSection: dynamic(() => import("@/components/landing/ProblemSection"), { ssr: false }),
   IntelligenceSection: dynamic(() => import("@/components/landing/IntelligenceSection"), { ssr: false }),

@@ -3,8 +3,10 @@
 // Lightweight pub/sub used to launch the AI workspace with context from other
 // surfaces (Solver handoff, Exam review, etc.) without restructuring layouts.
 
+import type { OrchestratorMode } from "./ai-orchestrator";
+
 export type TutorLaunchContext = {
-  mode?: "tutor" | "assistant" | "agent";
+  mode?: OrchestratorMode | "assistant" | "agent";
   prompt?: string;
   questionId?: number;
   topicId?: number;

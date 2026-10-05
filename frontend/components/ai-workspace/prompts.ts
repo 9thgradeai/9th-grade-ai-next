@@ -16,47 +16,47 @@ export const QUICK_PROMPTS: QuickPrompt[] = [
   {
     labelBn: "আজ কী পড়ব?",
     prompt: "আজ কী পড়ব? আমার অগ্রগতি ও দুর্বল বিষয় দেখে পরামর্শ দাও।",
-    category: "assistant",
+    category: "coach",
   },
   {
     labelBn: "দুর্বল বিষয়গুলো",
     prompt: "আমার দুর্বল বিষয়গুলো কী কী? সেগুলো শুরুর জন্য কী করব?",
-    category: "assistant",
+    category: "coach",
   },
   {
     labelBn: "প্র্যাক্টিস শুরু করো",
     prompt: "আমাকে একটি প্র্যাক্টিস সেশন পরামর্শ দাও।",
-    category: "assistant",
+    category: "coach",
   },
   {
     labelBn: "কারেন্ট অ্যাফেয়ার্স",
     prompt: "সাম্প্রতিক কারেন্ট অ্যাফেয়ার্স কী কী?",
-    category: "assistant",
+    category: "coach",
   },
   {
     labelBn: "গত সেশনের বিশ্লেষণ",
     prompt: "আমার সাম্প্রতিক সেশনগুলো বিশ্লেষণ করো এবং তার পরের পরামর্শ দাও।",
-    category: "assistant",
+    category: "coach",
   },
   {
     labelBn: "পরের ধাপ কী?",
     prompt: "আমার পড়াশোনার পরবর্তী ধাপ কী হওয়া উচিত? অগ্রগতি ও দুর্বল বিষয় দেখে পরামর্শ দাও।",
-    category: "agent",
+    category: "coach",
   },
   {
     labelBn: "দুর্বল বিষয় + প্র্যাক্টিস",
     prompt: "আমার দুর্বল বিষয়গুলো চিহ্নিত করো এবং সেগুলোর জন্য প্র্যাক্টিস শুরু করার পরামর্শ দাও।",
-    category: "agent",
+    category: "coach",
   },
   {
     labelBn: "আজকের প্ল্যান",
     prompt: "আজকের দিনের জন্য একটি স্ট্রাকচার্ড স্টাডি প্ল্যান তৈরি করে দাও।",
-    category: "agent",
+    category: "coach",
   },
   {
     labelBn: "মক পরীক্ষা প্রস্তুতি",
     prompt: "মক পরীক্ষার জন্য আমার প্রস্তুতি কেমন এবং কী করা দরকার?",
-    category: "agent",
+    category: "mock",
   },
 ];
 

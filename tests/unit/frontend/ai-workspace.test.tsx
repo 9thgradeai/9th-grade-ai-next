@@ -70,7 +70,7 @@ describe("VoiceAITutor (AI workspace)", () => {
     expect(screen.getByRole("dialog")).toBeInTheDocument();
     expect(screen.getByText("9Th-Grade AI")).toBeInTheDocument();
     expect(screen.getByText("টিউটর")).toBeInTheDocument();
-    expect(screen.getByText("সহায়ক")).toBeInTheDocument();
+    expect(screen.getByText("কোচ")).toBeInTheDocument();
   });
 
   it("opens straight into chat with no greeting screen", () => {
@@ -86,7 +86,7 @@ describe("VoiceAITutor (AI workspace)", () => {
   it("switches modes without any greeting screen", () => {
     render(<VoiceAITutor />);
     fireEvent.click(screen.getByLabelText("Open AI Tutor and Assistant"));
-    fireEvent.click(screen.getByText("সহায়ক"));
+    fireEvent.click(screen.getByText("কোচ"));
     expect(screen.queryByText("আজ কী পড়ব?")).not.toBeInTheDocument();
     expect(screen.queryByText("কারেন্ট অ্যাফেয়ার্স")).not.toBeInTheDocument();
     expect(screen.getByLabelText("আপনার প্রশ্ন লিখুন")).toBeInTheDocument();

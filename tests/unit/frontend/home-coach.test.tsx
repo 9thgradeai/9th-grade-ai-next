@@ -63,7 +63,10 @@ describe("HomeCoach (home-tab AI coach)", () => {
       expect(components.runAgentTurn).toHaveBeenCalledTimes(1);
     });
     expect(screen.getByText("পরবর্তী ধাপ: অনুশীলন শুরু করুন।")).toBeInTheDocument();
-    expect(screen.getByText(/source: mock/)).toBeInTheDocument();
+    // Phase 2 shared disclosure footer (AISourceFooter): provider renders in
+    // its own accent span, so match the parts instead of one flat string.
+    expect(screen.getByText(/source|উৎস/)).toBeInTheDocument();
+    expect(screen.getByText("mock")).toBeInTheDocument();
     // Action chips from AgentBlocks are rendered too.
     await waitFor(() => {
       expect(screen.getByText("Practice 5 questions")).toBeInTheDocument();
@@ -87,10 +90,10 @@ describe("HomeCoach (home-tab AI coach)", () => {
     fireEvent.click(screen.getByText("বলো আমার কী করা উচিত"));
 
     await waitFor(() => {
-      expect(screen.getByText(/latency 812ms/)).toBeInTheDocument();
+      expect(screen.getByText(/812ms/)).toBeInTheDocument();
     });
     expect(screen.queryByText(/Latency ~240ms/)).not.toBeInTheDocument();
-    expect(screen.getByText(/source: groq/)).toBeInTheDocument();
+    expect(screen.getByText("groq")).toBeInTheDocument();
   });
 });
 

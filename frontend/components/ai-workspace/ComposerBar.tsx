@@ -13,6 +13,7 @@
 
 import { useRef, type ChangeEvent, type KeyboardEvent, type RefObject } from "react";
 import { Image, Microphone, MicrophoneSlash, ArrowUp, Square, Spinner, X, SpeakerHigh, SpeakerX } from "@phosphor-icons/react";
+import { ghostPrompt } from "@/lib/ai-orchestrator";
 import type { Mode, Status } from "./types";
 import type { AgentActivityStepDto } from "./types";
 
@@ -155,7 +156,8 @@ export default function ComposerBar({
             rows={1}
             value={input}
             aria-label="আপনার প্রশ্ন লিখুন"
-            placeholder={isListening ? "শুনছি..." : "9Th-Grade AI কে কিছু জিজ্ঞেস করুন…"}
+            placeholder={isListening ? "শুনছি..." : ghostPrompt(mode)}
+            title={ghostPrompt(mode)}
             onChange={onInputChange}
             onKeyDown={onKeyDown}
             className="max-h-40 min-h-[26px] flex-1 resize-none self-center bg-transparent px-0.5 py-2.5 text-base leading-6 text-[var(--dashboard-text-primary)] placeholder:text-[var(--dashboard-text-muted)] focus:outline-none disabled:opacity-60 sm:text-[15px]"

@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { TrendUp, Flame, Target, Trophy, Info, X, ShieldCheck } from "@phosphor-icons/react";
+import { TrendUp, Flame, Target, Trophy, Info, X, ShieldCheck, LightningA } from "@phosphor-icons/react";
+import { xpForSolved, levelForXp, leagueForScore, freezeEarned } from "@/lib/gamification";
 
 type Props = {
   score: number;
@@ -15,6 +16,11 @@ type Props = {
 
 export default function PreparationScoreCard({ score, accuracy, streak, solved, rank, delta = 6.4 }: Props) {
   const [showBreakdown, setShowBreakdown] = useState(false);
+  const gam = useMemo(() => {
+    const xp = xpForSolved(solved, accuracy);
+    const { level, intoLevel, forNext } = levelForXp(xp);
+    return { xp, level, intoLevel, forNext, league: leagueForScore(score), freezes: freezeEarned(streak) };
+  }, [solved, accuracy, score, streak]);
   const circ = 2 * Math.PI * 52;
   const clampedScore = Math.max(0, Math.min(100, score));
   const offset = circ * (1 - clampedScore / 100);
@@ -136,16 +142,20 @@ export default function PreparationScoreCard({ score, accuracy, streak, solved, 
           <div className="pt-1">
             <div className="flex items-center justify-between text-xs mb-1.5">
               <span className="text-[11px]" style={{ color: "var(--dashboard-text-muted)" }}>
+                <span className="inline-flex items-center gap-1 font-bold" style={{ color: "var(--dashboard-primary)" }}>
+                  <LightningA className="w-3 h-3" /> Lv {gam.level} · {gam.xp} XP
+                </span>
+                {" · "}
+                {gam.league} League
+                {gam.freezes > 0 ? ` · 🛡️×${gam.freezes}` : ""}
                 {rank != null && rank > 0 ? (
                   <>
-                    Rank <span className="font-bold font-mono" style={{ color: "var(--dashboard-text-primary)" }}>#{rank}</span> overall
+                    {" · "}Rank <span className="font-bold font-mono" style={{ color: "var(--dashboard-text-primary)" }}>#{rank}</span>
                   </>
-                ) : (
-                  "Competitive Readiness Target"
-                )}
+                ) : null}
               </span>
               <span className="font-mono text-[11px] font-bold" style={{ color: "var(--dashboard-primary)" }}>
-                {clampedScore}/100
+                {gam.intoLevel}/{gam.forNext} XP
               </span>
             </div>
             <div className="h-2 rounded-full overflow-hidden flex" style={{ background: "var(--dashboard-surface-muted)" }} aria-hidden="true">

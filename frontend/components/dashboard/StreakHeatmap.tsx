@@ -7,9 +7,10 @@ import { useLanguage, t } from "@/lib/lang-ctx";
 type StreakHeatmapProps = {
   activeDays: boolean[];
   labels: string[];
+  freezeAvailable?: boolean;
 };
 
-export default function StreakHeatmap({ activeDays, labels }: StreakHeatmapProps) {
+export default function StreakHeatmap({ activeDays, labels, freezeAvailable = false }: StreakHeatmapProps) {
   const { lang } = useLanguage();
   const { fullMotion } = useMotionTier();
   const days = activeDays.slice(-7);
@@ -62,6 +63,16 @@ export default function StreakHeatmap({ activeDays, labels }: StreakHeatmapProps
           <span className="text-[9px] text-[var(--dashboard-text-muted)] font-mono">{dayLabels[i]}</span>
         </motion.div>
       ))}
+      {freezeAvailable && (
+        <span
+          title="Streak Freeze available — protects one missed day"
+          aria-label="Streak Freeze available"
+          className="ml-1 inline-flex h-5 w-5 items-center justify-center rounded-md border text-[11px]"
+          style={{ borderColor: "var(--dashboard-info)", color: "var(--dashboard-info)", background: "var(--dashboard-info-subtle)" }}
+        >
+          🛡️
+        </span>
+      )}
     </motion.div>
   );
 }
