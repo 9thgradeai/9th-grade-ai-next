@@ -17,7 +17,7 @@ export default function HeroSection({ subjectCount }: { subjectCount: number }) 
 
   return (
     <section
-      className="hero-section-ref relative flex min-h-[92dvh] items-center overflow-hidden px-4 pb-24 pt-28 sm:px-6"
+      className="hero-section-ref relative flex min-h-[92dvh] items-center overflow-hidden px-4 pb-14 pt-24 sm:px-6"
       aria-labelledby="hero-heading"
     >
       <div className="absolute inset-0 z-0">

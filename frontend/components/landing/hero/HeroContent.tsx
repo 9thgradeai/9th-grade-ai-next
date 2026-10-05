@@ -133,7 +133,7 @@ export default function HeroContent({ subjectCount }: { subjectCount: number }) 
       <div className="max-w-3xl">
         {/* Reskin: eyebrow is now a glass status pill with a live pulse — the
             first thing the eye lands on, not a bare mono label. */}
-        <p className="hero-eyebrow mb-7 inline-flex items-center gap-2.5 rounded-full border border-white/12 bg-white/[0.06] py-2 pl-3 pr-4 text-[13px] font-medium text-white/90 shadow-[0_8px_32px_rgba(0,0,0,0.35)] backdrop-blur-xl">
+        <p className="hero-eyebrow mb-5 inline-flex items-center gap-2.5 rounded-full border border-white/12 bg-white/[0.06] py-2 pl-3 pr-4 text-[13px] font-medium text-white/90 shadow-[0_8px_32px_rgba(0,0,0,0.35)] backdrop-blur-xl">
           <span className="relative flex h-2 w-2" aria-hidden="true">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
@@ -159,10 +159,9 @@ export default function HeroContent({ subjectCount }: { subjectCount: number }) 
           {t("hero.eyebrow")}
         </p>
 
-        {/* Reskin: billboard-scale Bricolage display — solid ice-white claim
-            over an electric gradient payoff. Sized to dominate the viewport
-            and carry the product vision at a glance. */}
-        <h1 id="hero-heading" className="mb-7 font-hero text-[clamp(2.6rem,10vw,8rem)] font-extrabold leading-[1.02] tracking-[-0.02em] text-white text-balance">
+        {/* Billboard Bricolage display, sized so the whole hero (pill +
+            headline + sub + CTAs + proof-strip) fits one viewport. */}
+        <h1 id="hero-heading" className="mb-5 font-hero text-[clamp(2.25rem,6.5vw,4.25rem)] font-extrabold leading-[1.0] tracking-[-0.02em] text-white text-balance">
           <WordReveal text={t("hero.title1")} className="hero-title" />
           <br />
           <span className="relative inline-block pb-[0.08em]">
@@ -183,7 +182,7 @@ export default function HeroContent({ subjectCount }: { subjectCount: number }) 
           </span>
         </h1>
 
-        <p className="hero-sub mb-10 max-w-xl text-lg leading-relaxed text-white/70 md:text-xl">
+        <p className="hero-sub mb-8 max-w-xl text-lg leading-relaxed text-white/70 md:text-xl">
           {t("hero.subtitle")}
         </p>
 
@@ -207,7 +206,7 @@ export default function HeroContent({ subjectCount }: { subjectCount: number }) 
 
         {/* Reskin: stats graduate from a bare row to a glass proof-strip —
             one surface, hairline dividers, tabular numerals. */}
-        <dl className="hero-stats mt-12 flex max-w-2xl flex-wrap items-stretch gap-y-4 rounded-2xl border border-white/10 bg-white/[0.04] px-2 py-4 shadow-[0_16px_48px_rgba(0,0,0,0.35)] backdrop-blur-xl sm:gap-y-0">
+        <dl className="hero-stats mt-9 flex max-w-2xl flex-wrap items-stretch gap-y-4 rounded-2xl border border-white/10 bg-white/[0.04] px-2 py-4 shadow-[0_16px_48px_rgba(0,0,0,0.35)] backdrop-blur-xl sm:gap-y-0">
           {statItems.map((stat, i) => (
             <div key={stat.label} className={`flex flex-1 flex-col justify-center gap-1 px-5 sm:px-7 ${i > 0 ? "border-l border-white/10" : ""}`}>
               <dt className="sr-only">{t(`hero.stats.${stat.label}`)}</dt>
