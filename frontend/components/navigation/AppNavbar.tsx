@@ -49,6 +49,9 @@ export default function AppNavbar() {
         ticking = false;
       });
     };
+    // Sync once on mount: anchor restores and bfcache land scrolled
+    // without firing any scroll event the listener could observe.
+    setScrolled(window.scrollY > 24);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);

@@ -84,6 +84,16 @@ describe("auth validators (single source of truth)", () => {
     ).rejects.toMatchObject(VALIDATION_ERROR);
   });
 
+  it("register accepts the browser remember flag (Sprint 8: every browser signup sends it)", async () => {
+    const ok = await validateRegisterInput({
+      name: "Farhan",
+      email: "f@example.com",
+      password: "xK9!mP2@vQ7wZ#4t",
+      remember: false,
+    });
+    expect(ok.email).toBe("f@example.com");
+  });
+
   it("login validates email shape strictly", () => {
     expect(validateLoginInput({ email: "a@b.co", password: "x" }).email).toBe("a@b.co");
     expect(() => validateLoginInput({ email: "a@b", password: "x" })).toThrow(/Valid email/);

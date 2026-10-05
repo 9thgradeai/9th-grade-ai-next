@@ -472,7 +472,10 @@ export function validateLoginInput(body: unknown): LoginInput {
 }
 
 export async function validateRegisterInput(body: unknown): Promise<RegisterInput> {
-  assertNoUnknownFields(body, ["name", "email", "password"]);
+  // Sprint 8: "remember" is accepted (session-duration preference, currently
+  // fixed server-side) — the browser client always sends it, and strict mode
+  // was 400ing every signup. Parity with validateLoginInput.
+  assertNoUnknownFields(body, ["name", "email", "password", "remember"]);
   if (!isRecord(body)) {
     throw new ValidationError("Request body must be an object.");
   }
