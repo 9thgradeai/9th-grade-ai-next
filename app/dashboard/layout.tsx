@@ -163,10 +163,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   // Global shortcuts (Phase 5 unified map): 1-9/0 tabs, ? help, Esc close.
   // ⌘K lives in CommandBar. No single-letter hijacks anywhere.
   useEffect(() => {
+    // Sprint 2: typing targets include selects, content-editables and any
+    // element inside them — digits typed there must never switch tabs.
+    const isTypingTarget = (t: EventTarget | null) => {
+      if (t instanceof HTMLInputElement || t instanceof HTMLTextAreaElement || t instanceof HTMLSelectElement) return true;
+      if (t instanceof HTMLElement && (t.isContentEditable || t.closest?.("[contenteditable='true']"))) return true;
+      return false;
+    };
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "?" && !e.metaKey && !e.ctrlKey && !e.altKey) {
-        if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-        if (e.target instanceof HTMLElement && e.target.isContentEditable) return;
+        if (isTypingTarget(e.target)) return;
         // Don't hijack keys while a dialog (command palette, sheets) is open.
         if (e.target instanceof HTMLElement && e.target.closest('[role="dialog"]')) return;
         e.preventDefault();
@@ -178,7 +184,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         return;
       }
       // Don't trigger shortcuts when typing in inputs
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      if (isTypingTarget(e.target)) return;
       // Don't hijack keys while a dialog (command palette, sheets) is open
       if (e.target instanceof HTMLElement && e.target.closest('[role="dialog"]')) return;
 

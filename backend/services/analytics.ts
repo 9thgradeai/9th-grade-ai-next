@@ -8,6 +8,7 @@ import {
   aggregateAttemptsBySubject,
   aggregateAttemptsBySubjectTopic,
   fetchSubjectsOrdered,
+  type SubjectTopicAggregate,
 } from "~backend/repositories/analytics.repository";
 import { InternalServerError } from "~backend/errors";
 
@@ -57,6 +58,32 @@ export async function getSubjectReports(userId: string): Promise<SubjectReport[]
 }
 
 /**
+ * Pure weak-topic ranking over pre-fetched aggregate rows. Sprint 2: the
+ * preparation-intelligence builders already hold these rows for subject
+ * performance — pass them here instead of re-scanning QuestionAttempt
+ * (getWeakTopics runs its own duplicate scan).
+ */
+export function getWeakTopicsFromRows(
+  rows: SubjectTopicAggregate[],
+  opts?: { minAttempts?: number; limit?: number },
+): WeakTopic[] {
+  const minAttempts = opts?.minAttempts ?? 3;
+  const limit = Math.min(50, Math.max(1, opts?.limit ?? 8));
+
+  return rows
+    .filter((r) => r.attempted >= minAttempts && r.topic.length > 0)
+    .map((r) => ({
+      subject: r.subjectName || "অন্যান্য",
+      topic: r.topic,
+      attempted: r.attempted,
+      correct: r.correct,
+      score: Math.round((r.correct / r.attempted) * 100),
+    }))
+    .sort((a, b) => a.score - b.score)
+    .slice(0, limit);
+}
+
+/**
  * Topics the user struggles with most: lowest accuracy (descending), only
  * counting topics with enough attempts to be meaningful. Powers the weak-topic
  * report / "practice your weak spots" surfacing.
@@ -66,22 +93,8 @@ export async function getWeakTopics(
   opts?: { minAttempts?: number; limit?: number },
 ): Promise<WeakTopic[]> {
   try {
-    const minAttempts = opts?.minAttempts ?? 3;
-    const limit = Math.min(50, Math.max(1, opts?.limit ?? 8));
-
     const rows = await aggregateAttemptsBySubjectTopic(userId);
-
-    return rows
-      .filter((r) => r.attempted >= minAttempts && r.topic.length > 0)
-      .map((r) => ({
-        subject: r.subjectName || "অন্যান্য",
-        topic: r.topic,
-        attempted: r.attempted,
-        correct: r.correct,
-        score: Math.round((r.correct / r.attempted) * 100),
-      }))
-      .sort((a, b) => a.score - b.score)
-      .slice(0, limit);
+    return getWeakTopicsFromRows(rows, opts);
   } catch {
     throw new InternalServerError("Failed to build weak-topic report");
   }

@@ -160,6 +160,7 @@ export default function HomeTab() {
   const [analyticsFailed, setAnalyticsFailed] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
   const [perfRange, setPerfRange] = useState<PerfRange>("30D");
+  const [mocksOpen, setMocksOpen] = useState(false);
   const cancelledRef = useRef(false);
 
   const resetStages = () => {
@@ -258,11 +259,17 @@ export default function HomeTab() {
       setPracticeIntent({ mode: "quick" });
       setActiveTab("practice");
     };
+    // Long-open tabs go stale (no polling by design) — refresh on return.
+    const onVisible = () => {
+      if (document.visibilityState === "visible") revalidateAll();
+    };
     window.addEventListener("ai:refresh-home", onRefresh);
     window.addEventListener("dashboard:start-practice", onStartPractice);
+    document.addEventListener("visibilitychange", onVisible);
     return () => {
       window.removeEventListener("ai:refresh-home", onRefresh);
       window.removeEventListener("dashboard:start-practice", onStartPractice);
+      document.removeEventListener("visibilitychange", onVisible);
     };
   }, [setActiveTab, setPracticeIntent, revalidateAll]);
 
@@ -633,33 +640,37 @@ export default function HomeTab() {
         )}
       </RevealSection>
 
-      {/* ── 7 · Recent mocks — collapsed by default (history, not action) ── */}
+      {/* ── 7 · Recent mocks — real accordion button (details/summary with a
+             nested button is keyboard/hostile); collapsed by default. ── */}
       {results.length > 0 && (
         <RevealSection className="scroll-mt-6" style={{ order: 7 }}>
-          <details className="group command-card">
-            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-5">
+          <div className="command-card">
+            <div className="flex items-center justify-between gap-3 p-5">
               <span className="command-eyebrow">{t(lang, "সাম্প্রতিক মক টেস্ট", "Recent mock tests")}</span>
               <span className="flex shrink-0 items-center gap-2">
                 <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setActiveTab("progress");
-                  }}
-                  className="inline-flex items-center gap-1 text-xs font-bold"
+                  onClick={() => setActiveTab("progress")}
+                  className="inline-flex items-center gap-1 text-xs font-bold min-h-[44px]"
                   style={{ color: "var(--dashboard-primary)" }}
                 >
                   {t(lang, "পুরো টাইমলাইন", "Full timeline")} <ArrowRight className="w-3.5 h-3.5" />
                 </button>
-                <span
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-lg border"
+                <button
+                  onClick={() => setMocksOpen((v) => !v)}
+                  aria-expanded={mocksOpen}
+                  aria-controls="home-recent-mocks"
+                  aria-label={mocksOpen
+                    ? t(lang, "সাম্প্রতিক মক টেস্ট লুকান", "Hide recent mock tests")
+                    : t(lang, "সাম্প্রতিক মক টেস্ট দেখান", "Show recent mock tests")}
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-lg border min-h-[44px] min-w-[44px]"
                   style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-secondary)", background: "var(--dashboard-surface-muted)" }}
-                  aria-hidden="true"
                 >
-                  <CaretRight className="h-3.5 w-3.5 rotate-90 transition-transform group-open:rotate-[270deg]" />
-                </span>
+                  <CaretRight className={`h-3.5 w-3.5 rotate-90 transition-transform ${mocksOpen ? "rotate-[270deg]" : ""}`} aria-hidden="true" />
+                </button>
               </span>
-            </summary>
-            <div className="space-y-2 px-5 pb-5">
+            </div>
+            {mocksOpen && (
+            <div id="home-recent-mocks" className="space-y-2 px-5 pb-5">
               {results.slice(0, 4).map((r) => (
                 <button
                   key={r.id}
@@ -692,7 +703,8 @@ export default function HomeTab() {
                 </button>
               ))}
             </div>
-          </details>
+            )}
+          </div>
         </RevealSection>
       )}
 

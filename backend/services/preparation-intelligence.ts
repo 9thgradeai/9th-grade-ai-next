@@ -24,7 +24,7 @@ import {
   computeStreak,
   toAppDateKey,
 } from "~backend/repositories/analytics.repository";
-import { getWeakTopics } from "~backend/services/analytics";
+import { getWeakTopicsFromRows } from "~backend/services/analytics";
 import { getMockTestResults, getStudyPlan } from "~backend/services/content";
 import {
   getMistakeStatsForUser,
@@ -283,7 +283,6 @@ export async function getPreparationIntelligence(
       overall,
       streak,
       subjectTopicAgg,
-      weakTopicRows,
       flashcardDueCount,
       mistakeStats,
       mistakeSubjects,
@@ -301,7 +300,6 @@ export async function getPreparationIntelligence(
       getOverallStatsForUser(userId),
       computeStreak(userId),
       aggregateAttemptsBySubjectTopic(userId),
-      getWeakTopics(userId, { limit: 8 }),
       prisma.flashcardUserState.count({ where: { userId, nextReview: { lte: new Date() } } }),
       getMistakeStatsForUser(userId),
       getMistakesBySubjectForUser(userId),
@@ -337,6 +335,9 @@ export async function getPreparationIntelligence(
     const activity = buildActivityWindow(dailyActivityRaw, activityDays);
     const period = computePeriodComparison(activity, COMPARISON_WINDOW_DAYS);
     const subjectPerformance = buildSubjectPerformance(subjectTopicAgg);
+    // Sprint 2: rank weak topics from the same aggregate rows — previously a
+    // second full QuestionAttempt scan ran here via getWeakTopics().
+    const weakTopicRows = getWeakTopicsFromRows(subjectTopicAgg, { limit: 8 });
 
     const todayKey = toAppDateKey(Date.now());
     const studiedToday = activity.some(
@@ -454,12 +455,11 @@ export async function getIntelligencePulse(
     ]);
 
     const activity = buildActivityWindow(dailyActivityRaw, HOME_ACTIVITY_WINDOW_DAYS);
-    const rank =
-      progress && progress.points > 0
-        ? (await prisma.userProgress.count({ where: { points: { gt: progress.points } } })) + 1
-        : progress
-          ? 1
-          : 0;
+    // Sprint 2: pulse omits the leaderboard rank count. Nothing on Home reads
+    // overall.rank (rank surfaces live in the full scope + ProgressTab
+    // leaderboard); 0 renders as "—" downstream. Saves one userProgress
+    // table scan on every Home mount.
+    const rank = 0;
 
     return {
       overall: {
@@ -525,7 +525,6 @@ export async function getIntelligenceAnalytics(
   try {
     const [
       subjectTopicAgg,
-      weakTopicRows,
       mistakeStats,
       mistakeSubjects,
       recentResults,
@@ -537,7 +536,6 @@ export async function getIntelligenceAnalytics(
       todayActivity,
     ] = await Promise.all([
       aggregateAttemptsBySubjectTopic(userId),
-      getWeakTopics(userId, { limit: 8 }),
       getMistakeStatsForUser(userId),
       getMistakesBySubjectForUser(userId),
       getMockTestResults(userId),
@@ -559,6 +557,7 @@ export async function getIntelligenceAnalytics(
     ]);
 
     const subjectPerformance = buildSubjectPerformance(subjectTopicAgg);
+    const weakTopicRows = getWeakTopicsFromRows(subjectTopicAgg, { limit: 8 });
     const todayKey = toAppDateKey(Date.now());
     const studiedToday = todayActivity.some((d) => d.date === todayKey && d.answered > 0);
 

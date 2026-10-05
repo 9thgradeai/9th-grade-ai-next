@@ -57,3 +57,19 @@ describe("recomputeAndAward (atomic progress upsert)", () => {
     expect(args.slice(1)).toEqual(["u1", 30, 1, "u1"]);
   });
 });
+
+describe("getWeakTopicsFromRows (Sprint 2 — no duplicate DB scan)", () => {
+  it("ranks lowest accuracy first, skips thin topics, caps at limit", async () => {
+    const { getWeakTopicsFromRows } = await import("~backend/services/analytics");
+    const rows = [
+      { subjectName: "বাংলা", topic: "সন্ধি", attempted: 10, correct: 3, lastAttemptedAt: null },
+      { subjectName: "বাংলা", topic: "সমাস", attempted: 10, correct: 9, lastAttemptedAt: null },
+      { subjectName: "Math", topic: "", attempted: 20, correct: 1, lastAttemptedAt: null },
+      { subjectName: "Math", topic: "বীজগণিত", attempted: 2, correct: 0, lastAttemptedAt: null },
+    ];
+    expect(getWeakTopicsFromRows(rows, { limit: 8 })).toEqual([
+      { subject: "বাংলা", topic: "সন্ধি", attempted: 10, correct: 3, score: 30 },
+      { subject: "বাংলা", topic: "সমাস", attempted: 10, correct: 9, score: 90 },
+    ]);
+  });
+});
