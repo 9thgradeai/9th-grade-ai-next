@@ -154,16 +154,19 @@ export const QueryCache = {
     return queryCacheInvalidate('dashboard', userId);
   },
 
-  // Preparation intelligence - per user+scope, short TTL. The analytics scope
-  // fans out to ~11 parallel aggregates (~0.9s warm); caching makes repeat
-  // Home/Progress visits instant. Mutations that change the underlying data
-  // (practice/exam/daily-quiz submits, mistake exams, flashcard reviews,
-  // task toggles) call invalidateIntelligence — best-effort, never throws.
+  // Preparation intelligence - per user+scope. TTLs stagger by volatility
+  // (Sprint 3): pulse/tasks stay short (streak/due change fast), analytics
+  // and full carry the heavy aggregates (recommendations move slowly).
+  // Mutations that change the underlying data (practice/exam/daily-quiz
+  // submits, mistake exams, flashcard reviews, task toggles) call
+  // invalidateIntelligence — best-effort, never throws.
   async getIntelligence(userId: string, scope: string, window?: number): Promise<unknown | null> {
     return queryCacheGet('intelligence', `${userId}:${scope}:${window ?? ''}`);
   },
   async setIntelligence(userId: string, scope: string, data: unknown, window?: number): Promise<void> {
-    return queryCacheSet('intelligence', `${userId}:${scope}:${window ?? ''}`, data, 45_000); // 45 sec TTL
+    const ttlMs =
+      scope === "analytics" ? 90_000 : scope === "full" ? 120_000 : scope === "tasks" ? 30_000 : 45_000;
+    return queryCacheSet('intelligence', `${userId}:${scope}:${window ?? ''}`, data, ttlMs);
   },
   async invalidateIntelligence(userId: string): Promise<void> {
     return queryCacheInvalidate('intelligence', `${userId}:`);

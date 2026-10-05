@@ -495,8 +495,11 @@ export async function getIntelligenceTasks(
   userId: string,
 ): Promise<Partial<PreparationIntelligenceDTO>> {
   try {
+    // Sprint 3: only today's weekday leaves the server — Home filters to
+    // today client-side anyway (Dhaka tz, matching the repo's APP_TIMEZONE).
+    const today = new Date().toLocaleDateString("en-US", { weekday: "long", timeZone: "Asia/Dhaka" });
     const [studyTasks, unfinishedExams] = await Promise.all([
-      getStudyPlan(userId),
+      getStudyPlan(userId, { day: today }),
       prisma.examAttempt.findMany({
         where: { userId, status: { in: ["IN_PROGRESS", "SUBMITTING"] } },
         orderBy: { startedAt: "desc" },

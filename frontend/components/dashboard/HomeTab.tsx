@@ -137,6 +137,75 @@ function ScopeError({ message, retryLabel, onRetry }: { message: string; retryLa
   );
 }
 
+/**
+ * Sprint 3 — weekly coach disclosure. Inline (expanded) on first view each
+ * ISO week so fresh strategy is seen; collapsed after, toggleable anytime.
+ * State-driven button disclosure, never details/summary.
+ */
+function weekKey(d = new Date()): string {
+  const jan4 = new Date(d.getFullYear(), 0, 4);
+  const week = Math.ceil(((d.getTime() - jan4.getTime()) / 86400000 + jan4.getDay() + 1) / 7);
+  return `${d.getFullYear()}-W${week}`;
+}
+
+function CoachDisclosure() {
+  const { lang } = useLanguage();
+  const [open, setOpen] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem("home-coach-week") !== weekKey();
+    } catch {
+      return false;
+    }
+  });
+  const toggle = () => {
+    setOpen((v) => {
+      const next = !v;
+      try {
+        if (next) localStorage.setItem("home-coach-week", weekKey());
+      } catch {
+        /* storage unavailable — ignore */
+      }
+      return next;
+    });
+  };
+  return (
+    <div className="command-card">
+      <div className="flex items-center justify-between gap-3 px-5 py-4">
+        <div className="flex items-center gap-3 min-w-0">
+          <span className="w-9 h-9 rounded-xl flex items-center justify-center border shrink-0" style={{ background: "var(--dashboard-primary-subtle)", borderColor: "color-mix(in srgb, var(--dashboard-primary) 18%, transparent)", color: "var(--dashboard-primary)" }}>
+            <span className="text-sm" aria-hidden="true">✦</span>
+          </span>
+          <div className="min-w-0">
+            <p className="text-sm font-bold" style={{ color: "var(--dashboard-text-primary)" }}>{t(lang, "AI স্টাডি কোচ", "AI Study Coach")}</p>
+            <p className="text-xs truncate" style={{ color: "var(--dashboard-text-muted)" }}>{t(lang, "প্রয়োজনে খুলে দ্রুত কৌশল নিন", "Open when you need a quick strategy")}</p>
+          </div>
+        </div>
+        <button
+          onClick={toggle}
+          aria-expanded={open}
+          aria-controls="home-coach-body"
+          className="inline-flex shrink-0 items-center gap-2 min-h-[44px] text-xs font-bold"
+          style={{ color: "var(--dashboard-text-secondary)" }}
+        >
+          {open ? t(lang, "লুকান", "Hide") : t(lang, "খুলুন", "Open")}
+          <span
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border"
+            style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-secondary)", background: "var(--dashboard-surface-muted)" }}
+            aria-hidden="true"
+          >
+            <CaretRight className={`h-3.5 w-3.5 rotate-90 transition-transform ${open ? "rotate-[270deg]" : ""}`} />
+          </span>
+        </button>
+      </div>
+      {open && (
+        <div id="home-coach-body" className="px-5 pb-5 pt-1 border-t" style={{ borderColor: "var(--dashboard-border-muted)" }}>
+          <HomeCoach />
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function HomeTab() {
   const { user } = useAuth();
   const { setActiveTab, setPracticeIntent, setMistakeIntent, setQuestionBankFilters } = useDashboardStore();
@@ -708,34 +777,10 @@ export default function HomeTab() {
         </RevealSection>
       )}
 
-      {/* ── 8 · AI Study Coach — collapsed by default, icon-only chevron ── */}
+      {/* ── 8 · AI Study Coach — inline once per week when fresh, collapsed
+             after (state-driven disclosure, same pattern as recent mocks). ── */}
       <RevealSection id="dashboard-ai-coach" className="scroll-mt-6" style={{ order: 8 }}>
-        <details className="group command-card">
-          <summary className="flex items-center justify-between gap-3 px-5 py-4 cursor-pointer list-none">
-            <div className="flex items-center gap-3 min-w-0">
-              <span className="w-9 h-9 rounded-xl flex items-center justify-center border shrink-0" style={{ background: "var(--dashboard-primary-subtle)", borderColor: "color-mix(in srgb, var(--dashboard-primary) 18%, transparent)", color: "var(--dashboard-primary)" }}>
-                <span className="text-sm">✦</span>
-              </span>
-              <div className="min-w-0">
-                <p className="text-sm font-bold" style={{ color: "var(--dashboard-text-primary)" }}>{t(lang, "AI স্টাডি কোচ", "AI Study Coach")}</p>
-                <p className="text-xs truncate" style={{ color: "var(--dashboard-text-muted)" }}>{t(lang, "প্রয়োজনে খুলে দ্রুত কৌশল নিন", "Open when you need a quick strategy")}</p>
-              </div>
-            </div>
-            <span className="flex shrink-0 items-center gap-2">
-              <span className="text-xs font-bold" style={{ color: "var(--dashboard-text-secondary)" }}>{t(lang, "খুলুন", "Open")}</span>
-              <span
-                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border transition-transform group-open:rotate-180"
-                style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-secondary)", background: "var(--dashboard-surface-muted)" }}
-                aria-hidden="true"
-              >
-                <CaretRight className="h-3.5 w-3.5 rotate-90" />
-              </span>
-            </span>
-          </summary>
-          <div className="px-5 pb-5 pt-1 border-t" style={{ borderColor: "var(--dashboard-border-muted)" }}>
-            <HomeCoach />
-          </div>
-        </details>
+        <CoachDisclosure />
       </RevealSection>
     </div>
   );

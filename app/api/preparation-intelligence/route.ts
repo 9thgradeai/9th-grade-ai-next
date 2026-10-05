@@ -23,8 +23,9 @@ const SCOPES: IntelligenceScope[] = ["pulse", "tasks", "analytics", "full"];
 // the heavy mastery/mistake/recommendation aggregates. Omitting `scope`
 // returns the full DTO (Progress tab, WorldMap backdrop).
 // `?window=<days>` overrides the activity window for full loads (1–365).
-// Response is cached server-side per user+scope (45s TTL): the analytics
-// scope fans out to ~11 aggregates (~0.9s warm, 3s+ cold), and repeat
+// Response is cached server-side per user+scope with volatility-staggered
+// TTLs (pulse 45s, tasks 30s, analytics 90s, full 120s): the analytics scope
+// fans out to ~10 aggregates (~0.9s warm, 3s+ cold), and repeat
 // Home/Progress visits must not pay that on every mount. Mutations that
 // change the underlying data invalidate via invalidateIntelligence, so the
 // dashboard still reflects the very last action within seconds.

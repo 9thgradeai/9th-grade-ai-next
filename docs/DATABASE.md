@@ -586,7 +586,7 @@ Per-user record of every answered question (practice, mock test, daily quiz). Po
 - `confidence` Int? — optional learner-reported confidence 0–100
 - `errorType` MistakeErrorType? — server-classified mistake category (Phase 2 wrong-answer analytics; written by the AI classifier, never trust client-submitted values)
 - `createdAt` DateTime — default `now()`
-- Indexes: `[userId, createdAt]`, `[userId, subjectId]`, `[userId, subjectName]`, `[userId, topic]` (the last two back the raw-SQL analytics group-bys)
+- Indexes: `[ecosystemId, userId, createdAt]`, `[ecosystemId, userId, subjectId]`, `[ecosystemId, userId, subjectName]`, `[ecosystemId, userId, topic]`, `[questionId]`, plus `[userId, createdAt]` (Sprint 3: raw-SQL analytics filter on `userId` alone, which ecosystem-prefixed composites cannot serve)
 
 #### UserQuestionProgress
 One persistent row per `(userId, questionId)` recording mastery and mistake

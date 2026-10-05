@@ -619,10 +619,20 @@ export async function getFlashcards(
 // ── Study plan ───────────────────────────────────────────
 // Template tasks are visible to everyone; completion state comes from the
 // requesting user's StudyTaskCompletion rows (Phase 2B2).
-export async function getStudyPlan(userId: string): Promise<StudyTaskDTO[]> {
+export async function getStudyPlan(
+  userId: string,
+  opts?: { day?: string },
+): Promise<StudyTaskDTO[]> {
   try {
+    // Sprint 3: Home's tasks scope only renders today's weekday (it filtered
+    // the whole template client-side). Push the filter down so the global
+    // template + completions aren't shipped on every Home mount.
     const [days, completions] = await Promise.all([
-      prisma.studyPlanDay.findMany({ include: { tasks: true }, orderBy: { id: "asc" } }),
+      prisma.studyPlanDay.findMany({
+        where: opts?.day ? { day: opts.day } : undefined,
+        include: { tasks: true },
+        orderBy: { id: "asc" },
+      }),
       prisma.studyTaskCompletion.findMany({
         where: { userId },
         select: { taskId: true },

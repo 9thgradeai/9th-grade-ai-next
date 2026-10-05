@@ -839,6 +839,10 @@ model QuestionAttempt {
   @@index([questionId])
   @@index([ecosystemId, userId, subjectName])
   @@index([ecosystemId, userId, topic])
+  // Sprint 3: raw-SQL analytics (streak, daily activity, subject/topic
+  // group-bys) filter on userId alone — ecosystem-prefixed composites cannot
+  // serve them (leftmost-column rule). userId-first B-tree for those scans.
+  @@index([userId, createdAt])
 }
 
 // Mock-test attempts (graded results) for history + exam KPIs.

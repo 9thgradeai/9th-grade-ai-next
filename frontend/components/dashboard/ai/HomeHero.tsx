@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { motion } from "framer-motion";
 import { ArrowRight, Spinner, Stop, Sparkle } from "@phosphor-icons/react";
 import { useAuth } from "@/lib/auth-ctx";
 import { useLanguage, t } from "@/lib/lang-ctx";
@@ -190,10 +189,11 @@ export default function HomeHero({
 
   const chipList = chips();
 
+  // Sprint 3 calm motion: no own entrance animation — the parent
+  // RevealSection owns the single section fade. (Previously a second
+  // motion wrapper stacked on top of it.)
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
+    <section
       aria-label={t(lang, "AI কমান্ড", "AI command")}
       className={bare ? "relative" : "command-card command-card--hero p-5 sm:p-6 relative overflow-hidden"}
     >
@@ -327,6 +327,6 @@ export default function HomeHero({
           )}
         </div>
       )}
-    </motion.section>
+    </section>
   );
 }

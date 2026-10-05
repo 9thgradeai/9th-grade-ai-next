@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { motion } from "framer-motion";
 import { Brain, Spinner, ArrowCounterClockwise, Target, LightningA, Pulse } from "@phosphor-icons/react";
 import AiLogo from "@/components/ui/AiLogo";
 import { runAgentTurn, AIError } from "@/lib/services/ai";
@@ -118,10 +117,10 @@ export default function HomeCoach() {
 
   // Provenance renders via AISourceFooter (Phase 2 single disclosure).
 
+  // Sprint 3 calm motion: parent RevealSection owns the entrance; no
+  // second motion wrapper here.
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
+    <div
       className="command-card p-5 sm:p-6 relative overflow-hidden"
     >
 
@@ -240,6 +239,6 @@ export default function HomeCoach() {
           )}
         </div>
       )}
-    </motion.div>
+    </div>
   );
 }

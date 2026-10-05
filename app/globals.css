@@ -217,15 +217,15 @@
 
 .dashboard-theme-scope[data-dashboard-theme="light"] {
   /* ══════════════════════════════════════════════════════════════════════════
-     NEUTRAL GRAY LIGHT MODE
-     Clean white/gray surfaces with dark text — standard professional dashboard.
-     Surface hierarchy: #F8F9FC → #FFFFFF → #FFFFFF → #F1F3F6
+     RESKIN LIGHT — same deep-space dialect translated to daylight: tinted
+     (not neutral-gray) surfaces, electric indigo primary. Sprint 3.
+     Surface hierarchy: #EEF1FB → #FFFFFF → #F5F7FE
      ══════════════════════════════════════════════════════════════════════════ */
 
   /* ── Canonical Surfaces ────────────────────────────────────────────────────── */
-  --background: #F3F4F8;
+  --background: #EBEFFA;
   --surface: #FFFFFF;
-  --surface-soft: #F8F9FC;
+  --surface-soft: #F3F5FD;
   --surface-elevated: #FFFFFF;
   --surface-highest: #FFFFFF;
 
@@ -234,8 +234,8 @@
   --surface-raised: var(--surface-elevated);
   --surface-overlay: var(--surface-highest);
   --surface-muted: var(--surface-soft);
-  --surface-hover: #F1F3F6;
-  --surface-active: #E8EAF0;
+  --surface-hover: #E7EBFA;
+  --surface-active: #DCE2F7;
 
   /* ── Text (dark-on-white — WCAG AA compliant) ─────────────────────────────── */
   --text-primary: #111827;
@@ -245,18 +245,18 @@
   --text-inverse: #FFFFFF;
 
   /* ── Borders ───────────────────────────────────────────────────────────────── */
-  --border: #E5E7EB;
-  --border-strong: #D1D5DB;
+  --border: #DDE3F5;
+  --border-strong: #C3CDF0;
   --border-subtle: var(--border);
   --border-default: var(--border-strong);
-  --border-focus: rgb(99 102 241 / 0.5);
+  --border-focus: rgb(79 70 229 / 0.55);
 
-  /* ── Primary — Indigo ──────────────────────────────────────────────────────── */
-  --primary: #6366F1;
-  --primary-hover: #4F46E5;
-  --primary-active: #4338CA;
-  --primary-soft: rgb(99 102 241 / 0.08);
-  --primary-muted: rgb(99 102 241 / 0.05);
+  /* ── Primary — Electric Indigo (reskin: matches dark voice) ─────────────── */
+  --primary: #4F46E5;
+  --primary-hover: #4338CA;
+  --primary-active: #3730A3;
+  --primary-soft: rgb(79 70 229 / 0.10);
+  --primary-muted: rgb(79 70 229 / 0.06);
 
   /* ── Accent (legacy alias) ─────────────────────────────────────────────────── */
   --accent: var(--primary);
@@ -311,10 +311,10 @@
 
   /* ── Sidebar ───────────────────────────────────────────────────────────────── */
   --sidebar-bg: #FFFFFF;
-  --sidebar-border: #E5E7EB;
+  --sidebar-border: #DDE3F5;
   --sidebar-text: #4B5563;
-  --sidebar-text-active: #6366F1;
-  --sidebar-bg-active: rgb(99 102 241 / 0.08);
+  --sidebar-text-active: #4F46E5;
+  --sidebar-bg-active: rgb(79 70 229 / 0.10);
 
   /* ── Card ──────────────────────────────────────────────────────────────────── */
   --card-bg: #FFFFFF;

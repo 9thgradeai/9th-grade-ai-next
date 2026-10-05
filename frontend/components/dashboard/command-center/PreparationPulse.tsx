@@ -18,16 +18,39 @@ export function formatStudyTime(sec: number): string {
   return m > 0 ? `${h}h ${m}m` : `${h}h`;
 }
 
-function TrendBadge({ delta, suffix = "", duration = false }: { delta: number; suffix?: string; duration?: boolean }) {
+/**
+ * Sprint 3 directional trends: color follows meaning, not raw direction.
+ * `goodWhen="down"` metrics (less time for the same output = efficiency)
+ * render a down-tick in muted info instead of danger-red; accuracy and
+ * volume drops stay danger because they always signal disengagement.
+ */
+function TrendBadge({
+  delta,
+  suffix = "",
+  duration = false,
+  goodWhen = "up",
+}: {
+  delta: number;
+  suffix?: string;
+  duration?: boolean;
+  goodWhen?: "up" | "down";
+}) {
   const { lang } = useLanguage();
   const display = duration ? `${delta < 0 ? "−" : ""}${formatStudyTime(Math.abs(delta))}` : `${delta}${suffix}`;
   const dir = delta > 0 ? "up" : delta < 0 ? "down" : "flat";
+  // up-good (accuracy, volume): up = success, down = danger.
+  // down-good (study time): up = neutral info (more effort, fine), down =
+  // muted (less time can mean efficiency — never an alarm).
   const color =
-    dir === "up"
-      ? "var(--dashboard-success)"
-      : dir === "down"
-        ? "var(--dashboard-danger)"
-        : "var(--dashboard-text-muted)";
+    dir === "flat"
+      ? "var(--dashboard-text-muted)"
+      : goodWhen === "down"
+        ? dir === "up"
+          ? "var(--dashboard-info)"
+          : "var(--dashboard-text-muted)"
+        : dir === "up"
+          ? "var(--dashboard-success)"
+          : "var(--dashboard-danger)";
   const Icon = dir === "up" ? TrendUp : dir === "down" ? TrendDown : null;
   return (
     <span
@@ -50,6 +73,7 @@ function PulseItem({
   suffix,
   hint,
   duration,
+  goodWhen,
   samples = [],
   animateBars,
 }: {
@@ -60,6 +84,7 @@ function PulseItem({
   suffix?: string;
   hint: string;
   duration?: boolean;
+  goodWhen?: "up" | "down";
   samples?: { date: string; value: number }[];
   animateBars: boolean;
 }) {
@@ -94,7 +119,7 @@ function PulseItem({
           )}
       </div>
       <div className="mt-3 flex flex-wrap items-baseline gap-x-2 gap-y-1">
-        {delta != null && <TrendBadge delta={delta} suffix={suffix} duration={duration} />}
+        {delta != null && <TrendBadge delta={delta} suffix={suffix} duration={duration} goodWhen={goodWhen} />}
         <p className="text-xs text-[var(--dashboard-text-muted)]">{hint}</p>
       </div>
     </div>
@@ -161,6 +186,7 @@ export default function PreparationPulse({ intelligence }: PreparationPulseProps
         delta={period.studyTimeDeltaSec}
         hint={`${formatStudyTime(period.currentStudyTimeSec)} ${t(lang, "গত ৩০ দিনে", "last 30 days")}`}
         duration
+        goodWhen="down"
         animateBars={animateBars}
       />
       <PulseItem

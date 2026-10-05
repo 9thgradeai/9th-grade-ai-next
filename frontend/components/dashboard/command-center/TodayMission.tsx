@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { Crosshair, Target, ArrowRight, Clock, ShieldCheck } from "@phosphor-icons/react";
 import { useLanguage, t, type Language } from "@/lib/lang-ctx";
 import { api } from "@/lib/services/api";
+import EmptyState from "./EmptyState";
 import type { PreparationIntelligenceDTO, PrepIntelligenceRecommendation } from "@/lib/types";
 
 const WEEKDAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -298,30 +299,24 @@ export default function TodayMission({
         </div>
 
         <div className="min-w-0 flex-1">
-          <p className="command-eyebrow flex items-center gap-1.5">
-            <Crosshair className="w-3.5 h-3.5" style={{ color: "var(--dashboard-primary)" }} />
-            {t(lang, "আজকের মিশন", "Today's Mission")}
-          </p>
-
           {!hasMission ? (
-            <div className="mt-3">
-              <h2
-                id="today-mission-title"
-                className="font-display font-black text-xl sm:text-2xl tracking-tight"
-                style={{ color: "var(--dashboard-text-primary)" }}
-              >
-                {t(lang, "আপনার প্রস্তুতি যাত্রা শুরু হোক", "Your preparation journey starts here")}
-              </h2>
-              <p className="text-sm mt-1.5" style={{ color: "var(--dashboard-text-secondary)" }}>
-                {t(
-                  lang,
-                  "কয়েকটি প্রশ্ন সমাধান করলে আমরা আপনার শক্তি-দুর্বলতা চিহ্নিত করে প্রথম মিশন দেব।",
-                  "Solve a few questions and we'll build your first mission from real performance data.",
-                )}
-              </p>
-            </div>
+            <EmptyState
+              eyebrow={t(lang, "আজকের মিশন", "Today's Mission")}
+              titleId="today-mission-title"
+              title={t(lang, "আপনার প্রস্তুতি যাত্রা শুরু হোক", "Your preparation journey starts here")}
+              body={t(
+                lang,
+                "কয়েকটি প্রশ্ন সমাধান করলে আমরা আপনার শক্তি-দুর্বলতা চিহ্নিত করে প্রথম মিশন দেব।",
+                "Solve a few questions and we'll build your first mission from real performance data.",
+              )}
+            />
           ) : (
-            <div className="mt-3">
+            <>
+              <p className="command-eyebrow flex items-center gap-1.5">
+                <Crosshair className="w-3.5 h-3.5" style={{ color: "var(--dashboard-primary)" }} />
+                {t(lang, "আজকের মিশন", "Today's Mission")}
+              </p>
+              <div className="mt-3">
               <h2
                 id="today-mission-title"
                 className="font-display font-black text-xl sm:text-2xl tracking-tight"
@@ -348,7 +343,8 @@ export default function TodayMission({
                   {t(lang, `আনুমানিক ${mission!.estimateMin} মিনিট`, `Est. ${mission!.estimateMin} minutes`)}
                 </p>
               )}
-            </div>
+              </div>
+            </>
           )}
 
           <p className="mt-4 text-xs" role="status" aria-live="polite" style={{ color: "var(--dashboard-text-muted)" }}>
