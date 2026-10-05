@@ -73,16 +73,20 @@ activity dots (`role="img"`, Bengali day labels).
 
 ### Home — `HomeTab.tsx`
 
-Greeting header (time-based greeting, exam target, streak pill + heatmap,
-exam countdown with Final Sprint / Focused / Steady phase) → **Today's
-Mission** hero (dynamic CTA: Resume test, Start practice, Review mistakes…)
-→ **Preparation Pulse** (Accuracy, Questions, Study time, Streak + deltas) →
-**Continue Learning** (resume unfinished mock/quiz) + **Recommended
-Actions** → **Performance Velocity** chart (Solved/Accuracy/Time ×
-7D/30D/90D/ALL) + **Today's Plan** (checklist, progress, quick-add, Open AI
-Planner) → **AI Study Coach** (চips: আজকের স্ট্র্যাটেজি, দুর্বল বিষয়
-মেরামত, ১৫-মিনিট ড্রিল, পারফরম্যান্স অডিট; streaming answers labelled with
-provider/model/latency) → Recent mock tests → Full timeline.
+Greeting header (exam target, unified `StreakEngine` strip: streak + 7-day
+heat + freeze shield + Lv/XP progress, exam countdown with Final Sprint /
+Focused / Steady phase) → **Today's Mission** hero with the AI brief
+(`HomeHero` bare) as its narrative header — one mission voice → revision
+strip (flashcards due) → ambient-ranked regions (Performance + Today's
+Plan grid, Recommended Actions, Preparation Pulse reorder by live signals;
+mission stays pinned) → **Continue Learning** → **SpotlightQuiz** →
+collapsed recent-mocks accordion (`aria-expanded`, no nested buttons) →
+**AI Study Coach** (inline on first view each ISO week, state disclosure;
+calm card, `AISourceFooter` provenance). Staged scopes
+pulse → tasks+analytics merge into the zero baseline; `visibilitychange`
+revalidates long-open tabs; number-key shortcuts ignore
+inputs/selects/content-editables. Pulse scope omits `overall.rank`
+(nothing on Home reads it; rank lives in the full scope + leaderboard).
 
 ### Practice — `PracticeTab.tsx`
 

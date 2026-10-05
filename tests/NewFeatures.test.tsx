@@ -49,22 +49,33 @@ describe("StudyPlannerTab", () => {
 });
 
 describe("FlashcardsTab", () => {
-  it("renders deck selection when no deck is selected", () => {
+  beforeEach(() => {
+    stubFetch({
+      "/api/flashcards": {
+        flashcards: [
+          { id: 1, subjectName: "বাংলা ভাষা ও সাহিত্য", question: "সন্ধি কাকে বলে?", answer: "ধ্বনির মিলন", hint: "", difficulty: "EASY" },
+          { id: 2, subjectName: "English Language and Literature", question: "What is a noun?", answer: "Naming word", hint: "", difficulty: "EASY" },
+        ],
+      },
+    });
+  });
+
+  it("renders deck selection when no deck is selected", async () => {
     render(<EcosystemProvider><FlashcardsTab /></EcosystemProvider>);
     expect(screen.getByText("Flashcards")).toBeInTheDocument();
     expect(screen.getByText("Spaced Repetition System")).toBeInTheDocument();
   });
 
-  it("shows available decks", () => {
+  it("shows available decks", async () => {
     render(<EcosystemProvider><FlashcardsTab /></EcosystemProvider>);
-    expect(screen.getByText("বাংলা ভাষা ও সাহিত্য")).toBeInTheDocument();
+    expect(await screen.findByText("বাংলা ভাষা ও সাহিত্য")).toBeInTheDocument();
     expect(screen.getByText("English Language and Literature")).toBeInTheDocument();
   });
 
-  it("starts session when deck is clicked", () => {
+  it("starts session when deck is clicked", async () => {
     render(<EcosystemProvider><FlashcardsTab /></EcosystemProvider>);
-    fireEvent.click(screen.getByText("বাংলা ভাষা ও সাহিত্য"));
-    expect(screen.getByText(/1 \/ \d+/)).toBeInTheDocument();
+    fireEvent.click(await screen.findByText("বাংলা ভাষা ও সাহিত্য"));
+    expect(await screen.findByText(/1 \/ \d+/)).toBeInTheDocument();
   });
 });
 
