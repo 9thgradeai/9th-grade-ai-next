@@ -28,7 +28,7 @@ function WordReveal({
         <span
           key={`${word}-${i}`}
           aria-hidden="true"
-          className="inline-block overflow-hidden pb-[0.08em] -mb-[0.08em] align-bottom"
+          className="inline-block overflow-hidden pb-[0.14em] -mb-[0.14em] align-bottom"
         >
           <span
             className={`word-rise inline-block will-change-transform${
@@ -159,9 +159,10 @@ export default function HeroContent({ subjectCount }: { subjectCount: number }) 
           {t("hero.eyebrow")}
         </p>
 
-        {/* Reskin: oversized two-line display — solid ice-white claim over an
-            electric gradient payoff, tightened tracking for billboard scale. */}
-        <h1 id="hero-heading" className="mb-7 font-display text-[clamp(3rem,9vw,6.5rem)] font-bold leading-[0.98] tracking-[-0.035em] text-white text-balance">
+        {/* Reskin: billboard-scale Bricolage display — solid ice-white claim
+            over an electric gradient payoff. Sized to dominate the viewport
+            and carry the product vision at a glance. */}
+        <h1 id="hero-heading" className="mb-7 font-hero text-[clamp(2.6rem,10vw,8rem)] font-extrabold leading-[1.02] tracking-[-0.02em] text-white text-balance">
           <WordReveal text={t("hero.title1")} className="hero-title" />
           <br />
           <span className="relative inline-block pb-[0.08em]">

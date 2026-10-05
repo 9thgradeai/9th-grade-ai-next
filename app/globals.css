@@ -20,6 +20,7 @@
   /* ── Typography ─────────────────────────────────────────────────────────────── */
   --font-sans: var(--font-geist), var(--font-hind-siliguri), "Hind Siliguri", system-ui, sans-serif;
   --font-display: var(--font-space-grotesk), var(--font-geist), var(--font-hind-siliguri), system-ui, sans-serif;
+  --font-hero: var(--font-bricolage), var(--font-space-grotesk), var(--font-hind-siliguri), system-ui, sans-serif;
   --font-mono: "Fira Code", Menlo, Consolas, var(--font-hind-siliguri), monospace;
 
   /* ── Spacing Scale (4px base grid) ─────────────────────────────────────────── */

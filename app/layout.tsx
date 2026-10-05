@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Space_Grotesk, Hind_Siliguri } from "next/font/google";
+import { Geist, Space_Grotesk, Hind_Siliguri, Bricolage_Grotesque } from "next/font/google";
 import { AuthProvider } from "@/lib/auth-ctx";
 import { ThemeProvider } from "@/lib/theme-ctx";
 import { ToastProvider } from "@/lib/toast-ctx";
@@ -40,6 +40,17 @@ const hindSiliguri = Hind_Siliguri({
   subsets: ["bengali"],
   weight: ["400", "700"],
   variable: "--font-hind-siliguri",
+  display: "swap",
+  preload: false,
+});
+
+// Bricolage Grotesque — the hero/display voice: expressive, idiosyncratic,
+// unmistakably non-AI-default. Latin-only (Bengali headlines fall back to
+// Hind Siliguri via the stack). Swap + no preload so it never blocks LCP.
+const bricolage = Bricolage_Grotesque({
+  subsets: ["latin"],
+  weight: ["600", "700", "800"],
+  variable: "--font-bricolage",
   display: "swap",
   preload: false,
 });
@@ -104,7 +115,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geist.variable} ${spaceGrotesk.variable} ${hindSiliguri.variable} h-full antialiased`}
+      className={`${geist.variable} ${spaceGrotesk.variable} ${hindSiliguri.variable} ${bricolage.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <head>
