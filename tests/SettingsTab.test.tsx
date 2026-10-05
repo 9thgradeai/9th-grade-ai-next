@@ -34,10 +34,6 @@ vi.mock("@/lib/auth-ctx", () => ({
   }),
 }));
 
-vi.mock("@/lib/theme-ctx", () => ({
-  useTheme: () => ({ theme: "dark", toggleTheme: h.toggleTheme }),
-}));
-
 vi.mock("@/lib/store-ctx/dashboard", () => ({
   useDashboardStore: () => ({ lastSyncedAt: null, resetStore: h.resetStore }),
 }));

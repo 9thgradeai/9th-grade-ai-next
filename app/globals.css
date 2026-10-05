@@ -434,17 +434,10 @@
   color-scheme: dark;
 }
 
-html.light {
-  --background: #F4F6F9;
-  --foreground: #172033;
-  --surface: #FFFFFF;
-  --surface-solid: #FFFFFF;
-  --surface-raised: #FFFFFF;
-  --surface-muted: #F9FAFC;
-  --border-muted: #E1E6EE;
-  --border-strong: #D2D9E3;
-  --text-muted: #8994A5;
-}
+/* (Sprint 5: the legacy `html.light` override block lived here. Nothing ever
+   adds a `light` class — enforcement strips it pre-paint — so it was dead
+   CSS. Light mode lives exclusively in
+   `.dashboard-theme-scope[data-dashboard-theme="light"]`.) */
 
 /* ══════════════════════════════════════════════════════════════════════════════
    TAILWIND COLOR OVERRIDES
@@ -514,34 +507,8 @@ html.light {
   --color-blue-400: #2563EB;
 }
 
-html.light {
-  --color-white: #FFFFFF;
-  --color-zinc-50: #FFFFFF;
-  --color-zinc-100: #F9FAFC;
-  --color-zinc-200: #E1E6EE;
-  --color-zinc-300: #D2D9E3;
-  --color-zinc-400: #8994A5;
-  --color-zinc-500: #8994A5;
-  --color-zinc-600: #596579;
-  --color-zinc-700: #172033;
-  --color-zinc-800: #172033;
-  --color-zinc-900: #172033;
-  --color-black: #172033;
-  --color-emerald-400: #16803C;
-  --color-emerald-500: #16803C;
-  --color-cyan-400: #087EA4;
-  --color-indigo-400: #4F46E5;
-  --color-amber-400: #A86200;
-  --color-amber-500: #A86200;
-  --color-red-400: #C62828;
-  --color-red-500: #C62828;
-  --color-orange-400: #A86200;
-  --color-yellow-400: #A86200;
-  --color-violet-400: #4F46E5;
-  --color-purple-400: #4F46E5;
-  --color-rose-400: #C62828;
-  --color-blue-400: #087EA4;
-}
+/* (Sprint 5: the second legacy `html.light` color-override block lived here —
+   dead for the same reason as above. Removed.) */
 
 /* ══════════════════════════════════════════════════════════════════════════════
    BASE STYLES

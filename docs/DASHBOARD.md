@@ -157,10 +157,12 @@ local) → Danger zone (logout, delete + confirm) → About (v0.4.0, MIT).
 `TodayPlanCard`, `ContinueLearning`, `RecommendedActions`,
 `ProgressOverview` (9 KPIs + mastery bar), `SubjectMastery` /
 `SubjectMasteryMatrix`, `MistakeRecoveryCard` (Unmastered→Mastered funnel),
-`ReadinessIndicatorCard`, `PreparationScoreCard` (Accuracy 55% /
-Completion 35% / Streak 10%), `FocusAreasCard`, `ExamCountdownCard`,
-`AITutorCard`, `AIRecommendationCard`, `QuickActions` dock
-(`P/M/W/A/L/Q/F/K` hotkeys + due badges). AI overlays in `ai/`:
+`ReadinessIndicatorCard`, `FocusAreasCard`, `StreakEngine` (streak + heat +
+freeze + Lv/XP), `EmptyState` shell, `QuickActions` dock
+(`P/M/W/A/L/Q/F/K` hotkeys + due badges). Dead cards removed in Sprint 5
+(`PreparationScoreCard`, `ExamCountdownCard`, `AITutorCard`,
+`AIRecommendationCard` — unmounted, superseded by `StreakEngine` +
+`TodayMission`). AI overlays in `ai/`:
 `HomeCoach`, `PracticeDrillOverlay` (global `ai:start-practice` modal),
 `AgentBlocks`.
 

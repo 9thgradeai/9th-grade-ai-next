@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Space_Grotesk, Hind_Siliguri, Bricolage_Grotesque } from "next/font/google";
 import { AuthProvider } from "@/lib/auth-ctx";
-import { ThemeProvider } from "@/lib/theme-ctx";
 import { ToastProvider } from "@/lib/toast-ctx";
 import { LanguageProvider } from "@/lib/lang-ctx";
 import { LANGUAGE_KEY } from "@/lib/lang-key";
@@ -92,10 +91,13 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-// Public pages (landing, marketing, auth, navbar) ship a single unified dark
-// design — light/dark switching is restricted to the user dashboard. We still
-// migrate any legacy "light" preference out of localStorage so prior users
-// land on the dark public design on next visit.
+// Sprint 5 theme unification: ONE theme system. Public pages (landing,
+// marketing, auth) ship a single unified dark design — light/dark switching
+// lives only in the dashboard (`DashboardThemeProvider` +
+// `.dashboard-theme-scope[data-dashboard-theme]`). There is no React theme
+// provider here by design: the pre-paint script below is the entire public
+// enforcement (strips any legacy `light` class, migrates the legacy storage
+// key). The old no-op `ThemeProvider` (`frontend/lib/theme-ctx`) is deleted.
 const THEME_INIT_SCRIPT = `(function(){try{document.documentElement.classList.remove("light");localStorage.removeItem("9th-grade-ai-theme");}catch(e){}})()`;
 
 const LANG_INIT_SCRIPT = `(function(){try{var l=localStorage.getItem("${LANGUAGE_KEY}");document.documentElement.lang=(l==="bn")?"bn":"en";}catch(e){}})()`;
@@ -119,9 +121,8 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        {/* Apply the persisted theme before first paint to avoid a dark flash
-            for light-mode users. The class is re-synced after hydration by
-            ThemeProvider. */}
+        {/* Public dark enforcement (see THEME_INIT_SCRIPT above). The theme
+            class is owned by the dashboard provider after hydration. */}
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         {/* Sync <html lang> with the persisted UI language before paint. */}
         <script dangerouslySetInnerHTML={{ __html: LANG_INIT_SCRIPT }} />
@@ -134,10 +135,8 @@ export default function RootLayout({
         <ToastProvider>
           <LanguageProvider>
             <AuthProvider>
-              <ThemeProvider>
-                <SentryClientProvider>{children}</SentryClientProvider>
-                <CommandPalette />
-              </ThemeProvider>
+              <SentryClientProvider>{children}</SentryClientProvider>
+              <CommandPalette />
             </AuthProvider>
           </LanguageProvider>
           <Toaster />
