@@ -130,9 +130,15 @@ export default function HeroContent({ subjectCount }: { subjectCount: number }) 
 
   return (
     <div ref={copyRef} className="hero-copy relative z-10 mx-auto w-full max-w-7xl">
-      <div className="max-w-2xl">
-        <p className="hero-eyebrow section-eyebrow mb-6 text-[#A5B4FC]">
-          <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" aria-hidden="true">
+      <div className="max-w-3xl">
+        {/* Reskin: eyebrow is now a glass status pill with a live pulse — the
+            first thing the eye lands on, not a bare mono label. */}
+        <p className="hero-eyebrow mb-7 inline-flex items-center gap-2.5 rounded-full border border-white/12 bg-white/[0.06] py-2 pl-3 pr-4 text-[13px] font-medium text-white/90 shadow-[0_8px_32px_rgba(0,0,0,0.35)] backdrop-blur-xl">
+          <span className="relative flex h-2 w-2" aria-hidden="true">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+          </span>
+          <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 text-[#A9B8FF]" aria-hidden="true">
             <defs>
               <linearGradient id="hero-ai-cap" x1="0" y1="0" x2="1" y2="1">
                 <stop offset="0%" stopColor="#2dd4bf" />
@@ -153,12 +159,14 @@ export default function HeroContent({ subjectCount }: { subjectCount: number }) 
           {t("hero.eyebrow")}
         </p>
 
-        <h1 id="hero-heading" className="mb-6 font-display text-[clamp(2.75rem,8vw,5.25rem)] font-semibold leading-[1.02] tracking-tight text-white text-balance">
+        {/* Reskin: oversized two-line display — solid ice-white claim over an
+            electric gradient payoff, tightened tracking for billboard scale. */}
+        <h1 id="hero-heading" className="mb-7 font-display text-[clamp(3rem,9vw,6.5rem)] font-bold leading-[0.98] tracking-[-0.035em] text-white text-balance">
           <WordReveal text={t("hero.title1")} className="hero-title" />
           <br />
-          <span className="relative inline-block">
+          <span className="relative inline-block pb-[0.08em]">
             <WordReveal text={t("hero.title2")} className="hero-title" wordClassName="text-gradient" delay={0.15} />
-            <svg aria-hidden="true" viewBox="0 0 300 14" preserveAspectRatio="none" className="pen-draw absolute -bottom-[0.06em] left-0 h-[0.14em] w-full overflow-visible">
+            <svg aria-hidden="true" viewBox="0 0 300 14" preserveAspectRatio="none" className="pen-draw absolute -bottom-[0.02em] left-0 h-[0.12em] w-full overflow-visible">
               <defs>
                 <linearGradient id="pen-stroke" x1="0" y1="0" x2="1" y2="0">
                   <stop offset="0%" stopColor="#2dd4bf" />
@@ -174,13 +182,18 @@ export default function HeroContent({ subjectCount }: { subjectCount: number }) 
           </span>
         </h1>
 
-        <p className="hero-sub mb-9 max-w-xl text-lg leading-relaxed text-white/75 md:text-xl">
+        <p className="hero-sub mb-10 max-w-xl text-lg leading-relaxed text-white/70 md:text-xl">
           {t("hero.subtitle")}
         </p>
 
-        <div className="hero-cta flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-4">
+        <div className="hero-cta flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
           <span className="magnetic inline-block w-full sm:w-auto hero-magnetic-cta" data-magnetic>
-            <Button href="/login?register=true" size="lg" className="glow-border w-full font-semibold sm:w-auto" onClick={() => trackCtaClick("primary")}>
+            <Button
+              href="/login?register=true"
+              size="lg"
+              className="glow-border w-full font-semibold shadow-[0_8px_40px_rgba(139,156,255,0.35)] sm:w-auto"
+              onClick={() => trackCtaClick("primary")}
+            >
               {t("hero.cta.primary")}
               <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </Button>
@@ -191,14 +204,16 @@ export default function HeroContent({ subjectCount }: { subjectCount: number }) 
           </Button>
         </div>
 
-        <dl className="hero-stats mt-12 flex flex-wrap items-center gap-x-8 gap-y-4 sm:gap-x-12">
+        {/* Reskin: stats graduate from a bare row to a glass proof-strip —
+            one surface, hairline dividers, tabular numerals. */}
+        <dl className="hero-stats mt-12 flex max-w-2xl flex-wrap items-stretch gap-y-4 rounded-2xl border border-white/10 bg-white/[0.04] px-2 py-4 shadow-[0_16px_48px_rgba(0,0,0,0.35)] backdrop-blur-xl sm:gap-y-0">
           {statItems.map((stat, i) => (
-            <div key={stat.label} className={`flex items-baseline gap-8 sm:gap-12 ${i > 0 ? "sm:border-l sm:border-white/10 sm:pl-12" : ""}`}>
+            <div key={stat.label} className={`flex flex-1 flex-col justify-center gap-1 px-5 sm:px-7 ${i > 0 ? "border-l border-white/10" : ""}`}>
               <dt className="sr-only">{t(`hero.stats.${stat.label}`)}</dt>
-              <dd className="font-display text-2xl font-semibold text-emerald-300 tabular-nums sm:text-3xl">
+              <dd className="font-display text-2xl font-bold text-white tabular-nums sm:text-[1.7rem]">
                 {stat.value}
-                <span className="ml-2 align-middle text-sm font-normal text-white/60">{t(`hero.stats.${stat.label}`)}</span>
               </dd>
+              <dd className="text-[13px] font-normal text-white/55">{t(`hero.stats.${stat.label}`)}</dd>
             </div>
           ))}
         </dl>
