@@ -1500,6 +1500,23 @@ html.light body,
   animation-delay: 0.05s;
 }
 
+/* Sprint 6: navbar entrance without framer-motion — pure CSS so the motion
+   runtime stays out of the landing's initial JS bundle. */
+.nav-rise {
+  animation: navRise 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes navRise {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 .hero-sub {
   animation: heroRise 0.8s var(--ease-expo) both;
   animation-delay: 0.12s;
@@ -1570,7 +1587,8 @@ html.light body,
   .hero-cta,
   .hero-stats,
   .hero-scroll,
-  .word-rise {
+  .word-rise,
+  .nav-rise {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;

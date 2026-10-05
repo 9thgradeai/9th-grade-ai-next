@@ -3,7 +3,6 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { MagnifyingGlass, List, X, CaretDown, SignOut, Gear, User as UserIcon, Layout, Bell } from "@phosphor-icons/react";
-import { motion } from "framer-motion";
 import BrandMark from "@/components/ui/BrandMark";
 import AiLogo from "@/components/ui/AiLogo";
 import LanguageToggle from "@/components/ui/LanguageToggle";
@@ -127,16 +126,10 @@ export default function AppNavbar() {
             </Link>
 
             {/* Desktop nav — Tab to move, ←/→ between sections, Enter/Space opens, Esc closes + refocuses trigger */}
-            <motion.div ref={desktopNavRef} className="hidden lg:flex items-center gap-1 ml-5" role="navigation" aria-label="Sections"
-              initial={{ opacity: 0, y: -6 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], staggerChildren: 0.04 }}
+            <div ref={desktopNavRef} className="hidden lg:flex items-center gap-1 ml-5" role="navigation" aria-label="Sections"
             >
               {isAuthed && (
-                <motion.span
-                  initial={{ opacity: 0, y: -6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                <span className="nav-rise" style={{ animationDelay: "0.02s" }}
                 >
                   <Link
                     href="/dashboard"
@@ -145,23 +138,21 @@ export default function AppNavbar() {
                   >
                     {t("nav.dashboard")}
                   </Link>
-                </motion.span>
+                </span>
               )}
-              {menus.map(m => {
+              {menus.map((m, idx) => {
                 const expanded = openId === m.id;
                 const triggerId = `nav-trigger-${m.id}`;
                 const panelId = `nav-panel-${m.id}`;
                 return (
-                  <motion.button
+                  <button
                     key={m.id}
                     id={triggerId}
                     data-nav-trigger
                     aria-haspopup="menu"
                     aria-expanded={expanded}
                     aria-controls={panelId}
-                    initial={{ opacity: 0, y: -6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                    style={{ animationDelay: `${0.04 + idx * 0.03}s` }}
                     onClick={() => setOpenId(expanded ? null : m.id)}
                     onKeyDown={(e) => {
                       if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
@@ -171,13 +162,13 @@ export default function AppNavbar() {
                       const next = e.key === "ArrowRight" ? triggers[(i + 1) % triggers.length] : triggers[(i - 1 + triggers.length) % triggers.length];
                       next?.focus();
                     }}
-                    className={`inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 ${expanded ? "bg-white text-black" : "text-zinc-300 hover:bg-white/10 hover:text-white"}`}
+                    className={`nav-rise inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 ${expanded ? "bg-white text-black" : "text-zinc-300 hover:bg-white/10 hover:text-white"}`}
                   >
                     {(m.labelBn && lang==="bn" ? m.labelBn : m.label)} {m.id === "ai" && <AiLogo className="h-3.5 w-3.5" />} <CaretDown className={`h-3.5 w-3.5 transition-transform ${expanded ? "rotate-180" : ""}`} aria-hidden="true" />
-                  </motion.button>
+                  </button>
                 );
               })}
-            </motion.div>
+            </div>
 
             <div className="flex-1" />
 

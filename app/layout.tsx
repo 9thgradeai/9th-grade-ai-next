@@ -6,7 +6,7 @@ import { LanguageProvider } from "@/lib/lang-ctx";
 import { LANGUAGE_KEY } from "@/lib/lang-key";
 import ScrollProgress from "@/components/ui/ScrollProgress";
 import Toaster from "@/components/ui/ToasterLazy";
-import CommandPalette from "@/components/navigation/CommandPalette";
+import CommandPalette from "@/components/navigation/IdleCommandPalette";
 import { SentryClientProvider } from "@/lib/sentry";
 import "./globals.css";
 
