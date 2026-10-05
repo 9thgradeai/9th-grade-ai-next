@@ -7,6 +7,7 @@ import { LANGUAGE_KEY } from "@/lib/lang-key";
 import ScrollProgress from "@/components/ui/ScrollProgress";
 import Toaster from "@/components/ui/ToasterLazy";
 import CommandPalette from "@/components/navigation/IdleCommandPalette";
+import ServiceWorkerRegister from "@/components/pwa/ServiceWorkerRegister";
 import { SentryClientProvider } from "@/lib/sentry";
 import "./globals.css";
 
@@ -130,6 +131,7 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: ANIMATION_FAILSAFE_SCRIPT }} />
       </head>
       <body className="min-h-full flex flex-col font-sans noise">
+        <ServiceWorkerRegister />
         <div className="cosmic-bg" aria-hidden="true" />
         <ScrollProgress />
         <ToastProvider>

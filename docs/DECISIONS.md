@@ -1014,3 +1014,12 @@ Grammar **সমাস** folder file (`database/data/ques/বাংলা ভা
 - **Decision**: (1) Remove `next-pwa` + `@types/next-pwa`. (2) Change `build` from `next build --webpack` to `next build` (Turbopack, the Next 16 default — verified green locally). (3) Strip the `withPWA` wrapper from `next.config.ts`, keeping the bundle analyzer. No service worker ships until the offline strategy is re-designed for the App Router.
 - **Rationale**: No existing dependency can generate the SW under Turbopack, and patching next-pwa's webpack internals is out of scope. Per-user API routes were already `NetworkOnly`, and the in-memory gateway cache in `frontend/lib/services/api.ts` covers blip resilience — so nothing the app relies on is lost. Alternatives rejected: pinning Next 14 to keep next-pwa (forfeits the whole Next 16 stack); `@ducanh2912/next-pwa` fork (still webpack-based, same dead end under Turbopack).
 - **Consequences**: No offline support or SW precaching until a Turbopack-compatible PWA approach lands; the web-manifest route is unaffected. `npm run build` is now the exact command Vercel runs — local prod builds and deploys are the same artifact.
+
+## ADR-061: Hand-rolled service worker replaces next-pwa (Sprint 9)
+
+- **Date**: 2026-10-06
+- **Status**: Accepted
+- **Context**: ADR-060 removed next-pwa (webpack-only, crashed Next 16 builds and froze Vercel deploys), leaving no offline support. No dependency offers SW generation under Turbopack without a webpack plugin.
+- **Decision**: A dependency-free, hand-written worker (`assets/pwa/sw.js`, ~120 lines) copied to `public/sw.js` at build time (`scripts/copy-sw.mjs`; `public/sw.js` stays git-ignored as a build artifact). Policy: same-origin GET only; `/api/*` never cached (per-user cookie-auth payloads); `/_next/static`, `/vendor`, fonts, images cache-first; navigations network-first with cached `/` shell fallback. Registered production-only via `ServiceWorkerRegister` (dev registration would serve stale HMR chunks).
+- **Rationale**: Zero new dependencies (repo rule: justify additions — nothing to justify); full control over scope and cache policy; Turbopack-agnostic since it never touches the bundler.
+- **Consequences**: No precaching build manifest (Workbox-style revisioned precache would need a manifest step); static cache is purely runtime-populated. Version bumps via the `VERSION` constant.

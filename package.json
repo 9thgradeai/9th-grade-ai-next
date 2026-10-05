@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build && node scripts/copy-sw.mjs",
     "prebuild": "prisma generate --schema database/prisma/schema.prisma",
     "db:deploy-sync": "DATABASE_URL=\"${DIRECT_DATABASE_URL:-$DATABASE_URL}\" prisma db push --schema database/prisma/schema.prisma && DATABASE_URL=\"${DIRECT_DATABASE_URL:-$DATABASE_URL}\" npm run db:seed",
     "start": "next start",
