@@ -153,6 +153,10 @@ async function main(){
     "Questions(সূচক ও লগারিদম)_9Th-Grade AI.txt":["08_গাণিতিক_যুক্তি/Part_03_সূচক_ও_ধারা/সূচক","08_গাণিতিক_যুক্তি/Part_03_সূচক_ও_ধারা/লগারিদম"],
     "Questions(রেখা ও কোণ, ত্রিভুজ, চতুর্ভুজ, পিথাগোরাস এবং বৃত্ত ).txt":["ROUTED"],
     "Questions(সরল_সহসমীকরণ ).txt":["08_গাণিতিক_যুক্তি/Part_02_বীজগণিত/সরল_ও_দ্বিপদী_সমীকরণ"],
+    "Questions-(অনুপাত ও সমানুপাত)-(9Th-Grade AI).txt":["08_গাণিতিক_যুক্তি/Part_01_পাটিগণিত/অনুপাত_ও_সমানুপাত"],
+    "Questions-(সেট, ফাংশন ও ভেনচিত্র)-(9Th-Grade AI).txt":["08_গাণিতিক_যুক্তি/Part_05_সেট_ও_পরিসংখ্যান/সেট"],
+    "Questions-(আয়তক্ষেত্র ও বহুভুজ)-(9Th-Grade AI).txt":["ROUTED"],
+    "Questions-(ত্রিভুজ, পিথাগোরাস ও পরিকেন্দ্র)-(9Th-Grade AI).txt":["ROUTED"],
   };
   // Multi-line প্রশ্ন/A-D/উত্তর/ব্যাখ্যা block files (vs the legacy single-line কখগঘ format).
   // The geometry + equations files carry সংশোধিত correction blocks and parse
@@ -186,6 +190,9 @@ async function main(){
     // Normalize both source formats into parsed records before the gate.
     // Geometry blocks carry সংশোধিত-preference + per-block leaf routing.
     const isGeo = file.startsWith("Questions(রেখা");
+    // ROUTED single-line files keep the parseMathLine parser but route each
+    // record to a Part_04 leaf by keyword at insert time (see routeGeometryLeaf).
+    const routed = leaves.length===1 && leaves[0]==="ROUTED";
     const useCorrigendumParser = isGeo || CORRIGENDUM_FILES.has(file);
     const parsedRecs = useCorrigendumParser
       ? parseGeometryBlocks(raw).map((p)=>({question:p.question, options:p.options, correctAnswer:(resolveAnswerToOption(p.answerRaw, p.options) ?? p.answerRaw).trim(), explanation:p.explanation}))
@@ -209,7 +216,7 @@ async function main(){
       const norm=gate.normalized;
       const sig=mcaSignature({question:norm.question, options:norm.options, correctAnswer:norm.correctAnswer, explanation:norm.explanation});
       if(existingTexts.has(norm.question.normalize("NFC"))){ fr++; totalRejected++; rejects["DUPLICATE_GLOBAL"]=(rejects["DUPLICATE_GLOBAL"]||0)+1; continue;}
-      const path=isGeo?routeGeometryLeaf(norm.question, norm.explanation):leafPaths[i];
+      const path=isGeo||routed?routeGeometryLeaf(norm.question, norm.explanation):leafPaths[i];
       const key=sourceKey(subject.id, path, norm.question);
       if(seenKeys.has(key) || existingKeys.has(key)){ fr++; totalRejected++; rejects["DUPLICATE_SOURCEKEY"]=(rejects["DUPLICATE_SOURCEKEY"]||0)+1; continue;}
       const parts=path.split("/"); const topicName=parts[1]??""; const subtopicName=parts[2]??"";
