@@ -7,6 +7,7 @@ import { useEffect } from "react";
 // dev would serve stale chunks across hot reloads.
 export default function ServiceWorkerRegister() {
   useEffect(() => {
+    // eslint-disable-next-line no-restricted-globals -- NEXT_PUBLIC_* inlined by Next.js at build time
     if (process.env.NODE_ENV !== "production") return;
     if (!("serviceWorker" in navigator)) return;
     // Fire-and-forget by design: offline support is progressive enhancement.

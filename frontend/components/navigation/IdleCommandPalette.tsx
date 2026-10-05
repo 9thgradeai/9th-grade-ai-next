@@ -50,7 +50,7 @@ export default function IdleCommandPalette() {
     return () => {
       window.removeEventListener("keydown", onKey);
       window.removeEventListener("app:open-command", onOpenCommand);
-      if (idleId) window.cancelIdleCallback?.(idleId);
+      if (idleId) window.cancelIdleCallback(idleId);
       if (timer) window.clearTimeout(timer);
     };
   }, [ready]);
