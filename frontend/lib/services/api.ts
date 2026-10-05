@@ -429,6 +429,22 @@ export const api = {
     return cachedGet<{ questions: Server.QuestionDTO[] }>(`/api/questions${suffix}`).then((d) => d.questions);
   },
 
+  /** Spotlight (Home-tab rotating MCQ): random questions drawn strictly from
+   * the stored question bank, round-robin across subjects. ttl 0 = never
+   * served from the read cache, every call must be freshly random. */
+  spotlight: (params?: {
+    ecosystem?: string;
+    count?: number;
+    excludeIds?: number[];
+  }): Promise<Server.QuestionDTO[]> => {
+    const qs = new URLSearchParams();
+    if (params?.ecosystem) qs.set("ecosystem", params.ecosystem);
+    if (params?.count !== undefined) qs.set("count", String(params.count));
+    if (params?.excludeIds && params.excludeIds.length > 0) qs.set("exclude", params.excludeIds.join(","));
+    const suffix = qs.toString() ? `?${qs.toString()}` : "";
+    return cachedGet<{ questions: Server.QuestionDTO[] }>(`/api/spotlight${suffix}`, {}, 0).then((d) => d.questions);
+  },
+
   /** Wrong-Answer Notebook (ভুলের নোটবুক): questions whose latest attempt was wrong. */
   wrongAnswers: (params?: { page?: number; limit?: number }): Promise<{
     questions: Server.QuestionDTO[];

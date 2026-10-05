@@ -11,6 +11,7 @@ const components = vi.hoisted(() => ({
   setActiveTab: vi.fn(),
   setPracticeIntent: vi.fn(),
   recordRecAccepted: vi.fn(),
+  spotlight: vi.fn(),
 }));
 
 vi.mock("@/lib/services/api", () => ({
@@ -19,7 +20,12 @@ vi.mock("@/lib/services/api", () => ({
     preparationIntelligenceScope: components.preparationIntelligenceScope,
     toggleStudyTask: components.toggleStudyTask,
     recordRecAccepted: components.recordRecAccepted,
+    spotlight: (...args: unknown[]) => components.spotlight(...args),
   },
+}));
+
+vi.mock("@/lib/ecosystem-ctx", () => ({
+  useEcosystem: () => ({ ecosystem: "BCS", setEcosystem: vi.fn() }),
 }));
 
 vi.mock("@/lib/ai-launcher", () => ({
@@ -203,6 +209,9 @@ describe("HomeTab rearrangement", () => {
       ],
     };
     components.preparationIntelligence.mockResolvedValue(fixture);
+    // Spotlight section fetches independently — keep it empty here so section
+    // order assertions stay focused on the intelligence-driven sections.
+    components.spotlight.mockResolvedValue([]);
     // Staged HomeTab resolves each scope from the same fixture.
     components.preparationIntelligenceScope.mockImplementation(async (scope: string) => {
       if (scope === "pulse") {

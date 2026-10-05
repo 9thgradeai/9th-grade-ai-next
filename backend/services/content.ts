@@ -279,6 +279,86 @@ export async function getQuestionById(id: number): Promise<QuestionDTO | null> {
   }
 }
 
+// ── Spotlight (Home-tab rotating MCQ) ─────────────────────
+// Returns a small batch of RANDOM questions drawn strictly from the stored
+// question bank — no generation, no AI, no fabrication. Subjects are served
+// round-robin (one question per subject per round, starting at a random
+// subject offset) so the client cycles across ALL subjects instead of
+// camping on one. Each pick is a uniform random offset within its subject,
+// so repeated calls keep surfacing fresh questions. Pass already-shown ids
+// via `excludeIds` to keep the cycle free of repeats.
+export async function getSpotlightQuestions(
+  opts?: { ecosystemId?: number; count?: number; excludeIds?: number[] },
+): Promise<QuestionDTO[]> {
+  try {
+    const count = Math.min(30, Math.max(1, Math.floor(opts?.count ?? 12)));
+    const excluded = [...new Set((opts?.excludeIds ?? []).filter((n) => Number.isInteger(n) && n > 0))].slice(0, 200);
+    const notIn = excluded.length > 0 ? { id: { notIn: excluded } } : {};
+
+    const subjects = await prisma.subject.findMany({
+      where: opts?.ecosystemId !== undefined ? { ecosystemId: opts.ecosystemId } : {},
+      select: { id: true },
+      orderBy: [{ sortOrder: "asc" }, { id: "asc" }],
+    });
+    if (subjects.length === 0) return [];
+
+    // Per-subject available counts (single aggregate query).
+    const counts = await prisma.question.groupBy({
+      by: ["subjectId"],
+      _count: { _all: true },
+      where: { ...notIn, ...(opts?.ecosystemId !== undefined ? { ecosystemId: opts.ecosystemId } : {}) },
+    });
+    const availableBySubject = new Map(counts.map((c) => [c.subjectId, c._count._all]));
+    const live = subjects.filter((s) => (availableBySubject.get(s.id) ?? 0) > 0);
+    if (live.length === 0) return [];
+
+    // Random start offset → the subject cycle begins at a different subject
+    // on every call instead of always leading with the first subject.
+    const startAt = Math.floor(Math.random() * live.length);
+    const ordered = live.map((_, i) => live[(startAt + i) % live.length]);
+
+    const picked: QuestionDTO[] = [];
+    // Round-robin rounds until the batch is full or every subject is drained.
+    for (let round = 0; round < 30 && picked.length < count; round++) {
+      let drained = true;
+      for (const s of ordered) {
+        if (picked.length >= count) break;
+        // Live remaining count for this subject excluding already-picked ids
+        // in this batch (plus the caller's exclusions).
+        const pickedIds = picked.map((q) => q.id);
+        const total = await prisma.question.count({
+          where: {
+            subjectId: s.id,
+            ...(pickedIds.length > 0 || excluded.length > 0
+              ? { id: { notIn: [...excluded, ...pickedIds] } }
+              : {}),
+          },
+        });
+        if (total <= 0) continue;
+        drained = false;
+        const skip = Math.floor(Math.random() * total);
+        const rows = await prisma.question.findMany({
+          where: {
+            subjectId: s.id,
+            ...(pickedIds.length > 0 || excluded.length > 0
+              ? { id: { notIn: [...excluded, ...pickedIds] } }
+              : {}),
+          },
+          skip,
+          take: 1,
+          orderBy: { id: "asc" },
+          include: { subject: true },
+        });
+        if (rows[0]) picked.push(toQuestionDTO(rows[0]));
+      }
+      if (drained) break;
+    }
+    return picked;
+  } catch {
+    throw new InternalServerError("Failed to fetch spotlight questions");
+  }
+}
+
 // Counts are derived live from real Previous-Year Questions only
 // (paperId NOT NULL) grouped by subject — the Question Bank tab shows PYQ
 // exclusively; the subject-wise practice pool (paperId NULL) is excluded.

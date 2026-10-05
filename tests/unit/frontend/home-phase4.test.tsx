@@ -5,6 +5,7 @@ import HomeTab from "@/components/dashboard/HomeTab";
 const components = vi.hoisted(() => ({
   preparationIntelligenceScope: vi.fn(),
   toggleStudyTask: vi.fn(),
+  spotlight: vi.fn(),
 }));
 
 vi.mock("@/lib/services/api", () => ({
@@ -12,8 +13,13 @@ vi.mock("@/lib/services/api", () => ({
     preparationIntelligenceScope: (...args: unknown[]) =>
       components.preparationIntelligenceScope(...args),
     toggleStudyTask: components.toggleStudyTask,
+    spotlight: (...args: unknown[]) => components.spotlight(...args),
   },
   invalidateCache: vi.fn(),
+}));
+
+vi.mock("@/lib/ecosystem-ctx", () => ({
+  useEcosystem: () => ({ ecosystem: "BCS", setEcosystem: vi.fn() }),
 }));
 
 vi.mock("@/lib/ai-launcher", () => ({
@@ -81,6 +87,7 @@ const analytics = {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  components.spotlight.mockResolvedValue([]);
   components.preparationIntelligenceScope.mockImplementation(async (scope: string) => {
     if (scope === "pulse") return pulse;
     if (scope === "tasks") return tasks;

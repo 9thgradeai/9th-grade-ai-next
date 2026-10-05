@@ -44,6 +44,7 @@ All mutating endpoints (auth and non-auth) reject cross-origin requests via an O
 | GET | `/api/exam-schedule` | List published exam dates (public, no auth) |
 | GET | `/api/study-plan` | **Auth required** — List the caller's study plan tasks |
 | GET | `/api/daily-quiz` | Get today's quiz |
+| GET | `/api/spotlight` | Home-tab rotating MCQ: random questions drawn **strictly from the stored question bank** (round-robin across subjects, no generation/AI). Query: `?ecosystem=` (BCS/BANGLADESH_BANK), `?count=` (1–30, default 12), `?exclude=` (comma-separated already-shown ids, max 200 honored). Response: `{ questions: [Question] }`. `Cache-Control: no-store` — every call is freshly random |
 | GET | `/api/flash-news` | List flash news items |
 | GET | `/api/recommendations` | List AI recommendations |
 > Progress (`points`, `streak`, counters) is **server-derived only** from the attempt log — there is no client-writable progress endpoint by design.

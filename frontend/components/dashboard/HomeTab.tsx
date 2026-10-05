@@ -20,6 +20,7 @@ import { useExamDaysLeft } from "./HomeTabHelpers";
 import TodayMission from "./command-center/TodayMission";
 import PreparationPulse from "./command-center/PreparationPulse";
 import ContinueLearning from "./command-center/ContinueLearning";
+import SpotlightQuiz from "./SpotlightQuiz";
 import RecommendedActions from "./command-center/RecommendedActions";
 import type { PerfRange } from "./command-center/PerformanceCard";
 import TodayPlanCard from "./command-center/TodayPlanCard";
@@ -587,6 +588,13 @@ export default function HomeTab() {
             onStartDailyQuiz={startDailyWarmup}
           />
         )}
+      </RevealSection>
+
+      {/* ── 5b · Spotlight MCQ — random database question, rotates across
+             all subjects every ~3 minutes. Independent of the intelligence
+             scopes so it never blocks on (or blocks) the staged load. ── */}
+      <RevealSection className="min-w-0">
+        <SpotlightQuiz onPracticeSubject={(subject) => practiceSubject(subject)} />
       </RevealSection>
 
       {/* ── 6 · Secondary pulse — compact, muted, deferred ── */}

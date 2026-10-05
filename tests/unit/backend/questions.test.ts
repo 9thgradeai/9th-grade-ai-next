@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { prisma } from "~backend/db";
-import { getQuestions } from "~backend/services/content";
+import { getQuestions, getSpotlightQuestions } from "~backend/services/content";
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -193,5 +193,72 @@ describe("getQuestions Bangla union (BCS pool shared into Bank Bangla)", () => {
     expect(call?.where).toEqual({
       AND: [{ subjectId: 9 }, { ecosystemId: 2 }],
     });
+  });
+});
+
+describe("getSpotlightQuestions (Home rotating MCQ, DB-only)", () => {
+  function spotlightRow(id: number, subjectId: number) {
+    return {
+      id,
+      subjectId,
+      ecosystemId: 1,
+      subject: { nameBn: subjectId === 1 ? "বাংলা" : "English" },
+      topic: "টি",
+      subtopic: "",
+      question: `প্রশ্ন ${id}?`,
+      options: ["ক", "খ", "গ", "ঘ"],
+      correctAnswer: "ক",
+      explanation: "",
+      difficulty: "MEDIUM",
+      year: null,
+      sourceExam: "BCS",
+      bcsTerm: null,
+      questionType: "SINGLE_CHOICE",
+      correctAnswers: [],
+      statements: [],
+      media: [],
+      paperId: null,
+      examId: null,
+      questionNumber: null,
+      rawMath: false,
+    };
+  }
+
+  beforeEach(() => {
+    vi.mocked(prisma.subject.findMany).mockResolvedValue([{ id: 1 }, { id: 2 }] as never);
+    vi.mocked(prisma.question.groupBy).mockResolvedValue([
+      { subjectId: 1, _count: { _all: 10 } },
+      { subjectId: 2, _count: { _all: 10 } },
+    ] as never);
+    vi.mocked(prisma.question.count).mockResolvedValue(10);
+    let nextId = 1;
+    vi.mocked(prisma.question.findMany).mockImplementation(async (args) => {
+      const where = (args as { where?: { subjectId?: number } }).where;
+      const id = nextId++;
+      return [spotlightRow(id, where?.subjectId ?? 1)] as never;
+    });
+  });
+
+  it("cycles across all subjects (round-robin, no subject repeats back-to-back)", async () => {
+    const qs = await getSpotlightQuestions({ ecosystemId: 1, count: 4 });
+    expect(qs).toHaveLength(4);
+    const subjectIds = qs.map((q) => q.subjectId);
+    expect(new Set(subjectIds)).toEqual(new Set([1, 2]));
+    // Strict alternation: consecutive questions never share a subject.
+    for (let i = 1; i < subjectIds.length; i++) {
+      expect(subjectIds[i]).not.toBe(subjectIds[i - 1]);
+    }
+  });
+
+  it("excludes already-shown ids", async () => {
+    await getSpotlightQuestions({ ecosystemId: 1, count: 2, excludeIds: [5, 9] });
+    const countCall = vi.mocked(prisma.question.count).mock.calls[0][0];
+    expect(countCall?.where).toMatchObject({ id: { notIn: expect.arrayContaining([5, 9]) } });
+  });
+
+  it("returns [] when no subjects exist", async () => {
+    vi.mocked(prisma.subject.findMany).mockResolvedValue([]);
+    const qs = await getSpotlightQuestions({ ecosystemId: 99, count: 4 });
+    expect(qs).toEqual([]);
   });
 });
