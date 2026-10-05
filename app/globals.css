@@ -2529,16 +2529,15 @@ html.light .skeleton-shimmer {
   backdrop-filter: blur(14px) saturate(1.3);
 }
 
-/* ── Dashboard Home voice (Sprint 1.16): Bricolage display type so Home
-   speaks the reskin dialect, not the old Space Grotesk one. Bengali text
-   keeps Hind Siliguri via the stack fallback. Scoped to .study-home —
-   no other dashboard surface is affected. */
-.study-home .font-display {
+/* ── Dashboard voice (Sprint 7): Bricolage display type dashboard-wide so
+   every tab speaks the reskin dialect, not the old Space Grotesk one.
+   Bengali text keeps Hind Siliguri via the stack fallback. */
+#dashboard-content .font-display {
   font-family: var(--font-hero);
   letter-spacing: -0.01em;
 }
-.study-home .font-display:lang(bn),
-.study-home [lang="bn"] .font-display {
+#dashboard-content .font-display:lang(bn),
+#dashboard-content [lang="bn"] .font-display {
   letter-spacing: 0;
   line-height: 1.5;
 }

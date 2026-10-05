@@ -514,6 +514,13 @@ export default function PracticeTab() {
 
   return (
     <div className="space-y-6">
+      {/* Sprint 7: display-voice header — matches Home (eyebrow + Bricolage h1). */}
+      <div>
+        <p className="command-eyebrow">Practice</p>
+        <h1 className="font-display text-xl font-semibold tracking-tight mt-1" style={{ color: "var(--dashboard-text-primary)" }}>
+          প্র্যাকটিস
+        </h1>
+      </div>
       {/* Mode toggle */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
@@ -558,17 +565,16 @@ export default function PracticeTab() {
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="glass-card rounded-2xl border border-terminal-border overflow-hidden"
+                className="command-card command-card--hero overflow-hidden"
               >
-                <div className="terminal-window-bar border-b border-[var(--border-subtle)]">
-                  <div className="dot close" /><div className="dot minimize" /><div className="dot maximize" />
-                  <div className="flex-1 text-center text-xs text-[var(--dashboard-text-muted)] font-mono">{"// QUICK_PRACTICE"}</div>
+                <div className="border-b border-[var(--border-subtle)] pb-3 mb-5 flex items-center justify-between gap-2">
+                  <span className="command-eyebrow">{"// QUICK_PRACTICE"}</span>
                   <span className="text-[10px] font-mono px-2 py-0.5 rounded border" style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-muted)" }}>{ecosystem === "BCS" ? "BCS" : "ব্যাংক"} · {subjects.length} বিষয়</span>
                 </div>
-                <div className="p-5 md:p-6">
+                <div>
                   <div className="flex items-center gap-2 mb-1">
                     <Sun className="w-5 h-5 text-[var(--dashboard-primary)]" />
-                    <h2 className="text-lg font-bold" style={{ color: "var(--dashboard-text-primary)" }}>কুইক প্র্যাকটিস</h2>
+                    <h2 className="font-display text-lg font-bold" style={{ color: "var(--dashboard-text-primary)" }}>কুইক প্র্যাকটিস</h2>
                     <span className={`ml-2 text-[10px] font-mono px-2 py-0.5 rounded-full border ${ecosystem === "BCS" ? "bg-[var(--dashboard-primary-subtle)] border-[var(--dashboard-primary)]/20 text-[var(--dashboard-primary)]" : "bg-amber-500/10 border-amber-500/20 text-amber-600"}`}>{ecosystem === "BCS" ? "BCS" : "ব্যাংক"}</span>
                   </div>
                   <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">
@@ -578,14 +584,14 @@ export default function PracticeTab() {
               </motion.div>
 
               {configLoading && (
-                <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
+                <div className="command-card p-10 text-center">
                   <Spinner className="w-10 h-10 mx-auto mb-3 text-[var(--accent)] animate-spin" aria-hidden="true" />
                   <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">বিষয় লোড হচ্ছে...</p>
                 </div>
               )}
 
               {configError && (
-                <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
+                <div className="command-card p-10 text-center">
                   <Warning className="w-10 h-10 mx-auto mb-3 text-[var(--warning)]" aria-hidden="true" />
                   <p className="text-sm text-[var(--dashboard-text-muted)]">{configError}</p>
                   <button
@@ -688,7 +694,7 @@ export default function PracticeTab() {
 
           {/* Loading state */}
           {sessionActive && loading && (
-            <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
+            <div className="command-card p-10 text-center">
               <Spinner className="w-10 h-10 mx-auto mb-3 text-[var(--accent)] animate-spin" aria-hidden="true" />
               <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">প্রশ্ন লোড হচ্ছে...</p>
             </div>
@@ -696,7 +702,7 @@ export default function PracticeTab() {
 
           {/* Error state */}
           {sessionActive && !loading && loadError && (
-            <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
+            <div className="command-card p-10 text-center">
               <Warning className="w-10 h-10 mx-auto mb-3 text-[var(--warning)]" aria-hidden="true" />
               <p className="text-sm text-[var(--dashboard-text-muted)]">{loadError}</p>
               <button
@@ -716,7 +722,7 @@ export default function PracticeTab() {
 
           {/* Empty state */}
           {sessionActive && !loading && !loadError && questions.length === 0 && !result && (
-            <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
+            <div className="command-card p-10 text-center">
               <Package className="w-10 h-10 mx-auto mb-3 text-[var(--dashboard-text-secondary)]" aria-hidden="true" />
               <p className="text-sm text-[var(--dashboard-text-muted)]">কোনো প্রশ্ন পাওয়া যায়নি।</p>
               <button

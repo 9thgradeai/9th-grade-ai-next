@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, Clock, Target, Calendar, CaretRight, Lightbulb, Trophy } from "@phosphor-icons/react";
 import AiLogo from "@/components/ui/AiLogo";
+import EmptyState from "./command-center/EmptyState";
 import { STUDY_PLAN } from "@/lib/data/study";
 import { api } from "@/lib/services/api";
 
@@ -100,22 +101,28 @@ export default function StudyPlannerTab() {
 
   return (
     <div className="space-y-6">
+      {/* Sprint 7: display-voice page header — matches Home. */}
+      <div>
+        <p className="command-eyebrow">Planner</p>
+        <h1 className="font-display text-xl font-semibold tracking-tight mt-1" style={{ color: "var(--dashboard-text-primary)" }}>
+          প্ল্যানার
+        </h1>
+      </div>
       {/* AI Study Plan Header */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="glass-card rounded-2xl border border-terminal-border p-5 md:p-6"
+        className="command-card command-card--hero overflow-hidden"
       >
-        <div className="terminal-window-bar mb-4 border-b border-terminal-border">
-          <div className="dot close" /><div className="dot minimize" /><div className="dot maximize" />
-          <div className="flex-1 text-center text-xs text-[var(--dashboard-text-muted)] font-mono">{"// AI_STUDY_PLANNER"}</div>
+        <div className="border-b border-[var(--border-subtle)] pb-3 mb-5 flex items-center justify-between gap-2">
+          <span className="command-eyebrow">{"// AI_STUDY_PLANNER"}</span>
         </div>
 
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-2">
               <AiLogo solid={false} className="w-5 h-5 text-[var(--dashboard-primary)]" />
-              <h2 className="text-xl font-bold text-[var(--text-primary)]">AI Study Planner</h2>
+              <h2 className="font-display text-xl font-bold text-[var(--text-primary)]">AI Study Planner</h2>
             </div>
             <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">
               A structured study schedule — mark tasks complete as you progress.
@@ -191,9 +198,24 @@ export default function StudyPlannerTab() {
         </span>
       </motion.div>
 
-      {/* Tasks */}
+      {/* Tasks — shared EmptyState when the day has no plan (was silent blank). */}
       <div className="space-y-3">
         <AnimatePresence mode="popLayout">
+          {dayPlan.tasks.length === 0 && (
+            <motion.div
+              key="empty-day"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="command-card p-6"
+            >
+              <EmptyState
+                eyebrow="Planner"
+                title="আজকের কোনো কাজ নেই"
+                body="এই দিনের জন্য কোনো স্টাডি প্ল্যান নেই — বিশ্রাম নিন অথবা প্র্যাকটিস ট্যাব থেকে নিজে শুরু করুন।"
+              />
+            </motion.div>
+          )}
           {dayPlan.tasks.map((task, i) => {
             const isCompleted = completedSet.has(String(task.id));
             return (
@@ -203,8 +225,8 @@ export default function StudyPlannerTab() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
                 transition={{ delay: i * 0.05 }}
-                className={`glass-card rounded-2xl border p-4 transition-all ${
-                  isCompleted ? "border-[var(--accent)]/30 bg-[var(--dashboard-primary-subtle)]" : "border-terminal-border"
+                className={`command-card p-4 transition-all ${
+                  isCompleted ? "border-[var(--accent)]/30 bg-[var(--dashboard-primary-subtle)]" : ""
                 }`}
               >
                 <div className="flex items-start gap-4">

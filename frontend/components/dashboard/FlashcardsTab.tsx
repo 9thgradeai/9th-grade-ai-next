@@ -301,22 +301,28 @@ export default function FlashcardsTab() {
 
   return (
     <div className="space-y-6">
+      {/* Sprint 7: display-voice page header — matches Home. */}
+      <div>
+        <p className="command-eyebrow">Decks</p>
+        <h1 className="font-display text-xl font-semibold tracking-tight mt-1" style={{ color: "var(--dashboard-text-primary)" }}>
+          ফ্ল্যাশকার্ড
+        </h1>
+      </div>
       {!session ? (
         <>
           {/* Deck Selection */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="glass-card rounded-2xl border border-terminal-border p-5"
+            className="command-card command-card--hero overflow-hidden"
           >
-            <div className="terminal-window-bar mb-4 border-b border-terminal-border">
-              <div className="dot close" /><div className="dot minimize" /><div className="dot maximize" />
-              <div className="flex-1 text-center text-xs text-[var(--dashboard-text-muted)] font-mono">{"// FLASHCARDS"}</div>
+            <div className="border-b border-[var(--border-subtle)] pb-3 mb-4 flex items-center justify-between gap-2">
+              <span className="command-eyebrow">{"// FLASHCARDS"}</span>
             </div>
 
             <div className="flex items-center gap-2 mb-4">
               <ChartBar className="w-5 h-5 text-[var(--dashboard-primary)]" />
-              <h2 className="text-lg font-bold text-[var(--text-primary)]">Flashcards</h2>
+              <h2 className="font-display text-lg font-bold text-[var(--text-primary)]">Flashcards</h2>
               <span className="text-xs text-[var(--dashboard-text-muted)] font-mono">Spaced Repetition System</span>
             </div>
 
@@ -373,7 +379,7 @@ export default function FlashcardsTab() {
                 { label: "Due Today", value: all.filter((c) => phaseOf(c) !== "mastered" && c.nextReview <= now).length, color: "text-[var(--dashboard-warning)]" },
                 { label: "Mastered", value: all.filter((c) => phaseOf(c) === "mastered").length, color: "text-[var(--success)]" },
               ].map((stat) => (
-                <div key={stat.label} className="glass-card rounded-2xl border border-terminal-border p-4 text-center">
+                <div key={stat.label} className="command-card command-card--compact text-center">
                   <div className={`text-2xl font-bold font-mono ${stat.color}`}>{stat.value}</div>
                   <div className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider">{stat.label}</div>
                 </div>
@@ -385,10 +391,10 @@ export default function FlashcardsTab() {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass-card rounded-2xl border border-terminal-border p-10 text-center"
+          className="command-card p-10 text-center"
         >
-          <p className="text-sm text-[var(--dashboard-text-muted)] font-mono mb-1">$ session complete</p>
-          <h3 className="text-xl font-bold text-[var(--text-primary)] mb-4">{sessionTitle(session)} — শেষ!</h3>
+          <p className="command-eyebrow mb-2">$ session complete</p>
+          <h3 className="font-display text-xl font-bold text-[var(--text-primary)] mb-4">{sessionTitle(session)} — শেষ!</h3>
           <div className="flex items-center justify-center gap-6 text-sm font-mono text-[var(--dashboard-text-muted)] mb-6">
             <span>Reviewed: {sessionStats.reviewed}</span>
             <span>Correct: {sessionStats.correct}</span>

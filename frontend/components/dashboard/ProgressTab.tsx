@@ -89,6 +89,13 @@ export default function ProgressTab() {
 
   return (
     <div className="space-y-5 pb-24 sm:pb-6">
+      {/* Sprint 7: display-voice page header — matches Home. */}
+      <div>
+        <p className="command-eyebrow">{t(lang, "Progress", "Progress")}</p>
+        <h1 className="font-display text-xl font-semibold tracking-tight mt-1" style={{ color: "var(--dashboard-text-primary)" }}>
+          {t(lang, "প্রোগ্রেস", "Progress")}
+        </h1>
+      </div>
       {drillQuestions && (
         <QuestionDrill questions={drillQuestions} title={drillTitle} onExit={() => setDrillQuestions(null)} />
       )}
@@ -125,8 +132,7 @@ export default function ProgressTab() {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="rounded-2xl border p-5"
-        style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}
+        className="command-card p-5"
       >
         <div className="flex items-center gap-4">
           <div
@@ -184,7 +190,7 @@ export default function ProgressTab() {
           </div>
           <div className="grid md:grid-cols-2 gap-3">
             {weakTopics.map((wt) => (
-              <div key={`${wt.subject}-${wt.topic}`} className="rounded-2xl border p-4" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}>
+              <div key={`${wt.subject}-${wt.topic}`} className="command-card command-card--compact">
                 <div className="flex items-center justify-between gap-3 mb-2">
                   <div className="min-w-0">
                     <h4 className="text-sm font-medium truncate" style={{ color: "var(--dashboard-text-primary)" }}>{wt.topic}</h4>
@@ -236,8 +242,7 @@ export default function ProgressTab() {
 
       {/* ── AI Preparation Analysis ── */}
       <section
-        className="rounded-2xl border p-5"
-        style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}
+        className="command-card p-5"
         aria-label={t(lang, "AI প্রস্তুতি বিশ্লেষণ", "AI preparation analysis")}
         id="dashboard-ai-coach-progress"
       >
@@ -257,10 +262,13 @@ export default function ProgressTab() {
           )}
         </div>
         {!board || board.entries.length === 0 ? (
-          <div className="rounded-2xl border text-center py-10" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}>
-            <p className="text-3xl mb-3" aria-hidden="true">🏆</p>
-            <p className="text-sm" style={{ color: "var(--dashboard-text-secondary)" }}>
+          <div className="command-card p-10 text-center">
+            <p className="command-eyebrow mb-2">{t(lang, "লিডারবোর্ড", "Leaderboard")}</p>
+            <p className="font-display text-lg font-bold" style={{ color: "var(--dashboard-text-primary)" }}>
               {t(lang, "এখনো কোনো র‍্যাংকিং উপলব্ধ নয়।", "No rankings available yet.")}
+            </p>
+            <p className="text-xs mt-1" style={{ color: "var(--dashboard-text-muted)" }}>
+              {t(lang, "প্রশ্ন সমাধান করলেই র‍্যাংক তৈরি হবে।", "Solve questions and your rank will appear.")}
             </p>
           </div>
         ) : (

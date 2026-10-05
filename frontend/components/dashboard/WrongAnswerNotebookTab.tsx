@@ -179,12 +179,12 @@ export default function WrongAnswerNotebookTab() {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass-card rounded-2xl border border-terminal-border p-8 text-center"
+          className="command-card p-8 text-center"
         >
           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[var(--dashboard-primary-subtle)] flex items-center justify-center">
             <Medal className="w-8 h-8 text-[var(--dashboard-primary)]" />
           </div>
-          <h2 className="text-xl font-bold text-[var(--text-primary)] font-mono mb-2">You&apos;re doing great!</h2>
+          <h2 className="font-display text-xl font-bold text-[var(--text-primary)] mb-2">You&apos;re doing great!</h2>
           <p className="text-sm text-[var(--dashboard-text-muted)] font-mono mb-6 max-w-md mx-auto">
             You haven&apos;t made any mistakes yet. Start practicing questions and we&apos;ll keep track of the areas that need more attention.
           </p>
@@ -206,7 +206,7 @@ export default function WrongAnswerNotebookTab() {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass-card rounded-2xl border border-terminal-border p-5"
+          className="command-card p-5"
         >
           <div className="flex items-center gap-2 mb-1">
             <Target className="w-5 h-5 text-[var(--dashboard-primary)]" />
@@ -221,7 +221,7 @@ export default function WrongAnswerNotebookTab() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.05 }}
-          className="glass-card rounded-2xl border border-terminal-border p-5 space-y-5"
+          className="command-card p-5 space-y-5"
         >
           {/* Subject */}
           <div>
@@ -479,16 +479,23 @@ export default function WrongAnswerNotebookTab() {
 
   return (
     <div className="space-y-6">
+      {/* Sprint 7: display-voice header — matches Home. */}
+      <div>
+        <p className="command-eyebrow">Mistakes</p>
+        <h1 className="font-display text-xl font-semibold tracking-tight mt-1" style={{ color: "var(--dashboard-text-primary)" }}>
+          ভুল বিশ্লেষণ
+        </h1>
+      </div>
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="glass-card rounded-2xl border border-terminal-border p-5"
+        className="command-card p-5"
       >
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             <Book className="w-5 h-5 text-[var(--dashboard-danger)]" />
-            <h2 className="text-lg font-bold text-[var(--text-primary)] font-mono">Your Mistakes</h2>
+            <h2 className="font-display text-lg font-bold text-[var(--text-primary)]">Your Mistakes</h2>
           </div>
           <button
             onClick={() => { setLoading(true); void loadStats().then(() => loadMistakes()).then(() => setLoading(false)); }}
@@ -511,28 +518,28 @@ export default function WrongAnswerNotebookTab() {
           animate="show"
           className="grid grid-cols-2 sm:grid-cols-4 gap-3"
         >
-          <motion.div variants={STAGGER_ITEM} className="glass-card rounded-2xl border border-terminal-border p-4">
+          <motion.div variants={STAGGER_ITEM} className="command-card p-4">
             <div className="flex items-center gap-2 mb-1">
               <Warning className="w-4 h-4 text-[var(--dashboard-danger)]" />
               <span className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase">Total Mistakes</span>
             </div>
             <p className="text-2xl font-bold text-[var(--text-primary)] font-mono">{stats.totalMistakes}</p>
           </motion.div>
-          <motion.div variants={STAGGER_ITEM} className="glass-card rounded-2xl border border-terminal-border p-4">
+          <motion.div variants={STAGGER_ITEM} className="command-card p-4">
             <div className="flex items-center gap-2 mb-1">
               <Sun className="w-4 h-4 text-[var(--dashboard-warning)]" />
               <span className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase">Unmastered</span>
             </div>
             <p className="text-2xl font-bold text-[var(--text-primary)] font-mono">{unmastered}</p>
           </motion.div>
-          <motion.div variants={STAGGER_ITEM} className="glass-card rounded-2xl border border-terminal-border p-4">
+          <motion.div variants={STAGGER_ITEM} className="command-card p-4">
             <div className="flex items-center gap-2 mb-1">
               <TrendUp className="w-4 h-4 text-[var(--info)]" />
               <span className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase">Improving</span>
             </div>
             <p className="text-2xl font-bold text-[var(--text-primary)] font-mono">{stats.improving}</p>
           </motion.div>
-          <motion.div variants={STAGGER_ITEM} className="glass-card rounded-2xl border border-terminal-border p-4">
+          <motion.div variants={STAGGER_ITEM} className="command-card p-4">
             <div className="flex items-center gap-2 mb-1">
               <Medal className="w-4 h-4 text-[var(--dashboard-primary)]" />
               <span className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase">Mastered</span>
@@ -576,7 +583,7 @@ export default function WrongAnswerNotebookTab() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="glass-card rounded-2xl border border-terminal-border p-5"
+          className="command-card p-5"
         >
           <div className="flex items-center gap-2 mb-3">
             <ChartBar className="w-4 h-4 text-[var(--dashboard-text-muted)]" />
@@ -654,7 +661,7 @@ export default function WrongAnswerNotebookTab() {
               exit={{ height: 0, opacity: 0 }}
               className="overflow-hidden"
             >
-              <div className="glass-card rounded-2xl border border-terminal-border p-4 space-y-3">
+              <div className="command-card p-4 space-y-3">
                 {/* Status filter */}
                 <div>
                   <label className="block text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider mb-1.5">Status</label>
@@ -740,11 +747,11 @@ export default function WrongAnswerNotebookTab() {
 
       {/* Mistake list */}
       {loading ? (
-        <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
+        <div className="command-card p-10 text-center">
           <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">Loading mistakes…</p>
         </div>
       ) : mistakes.length === 0 ? (
-        <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
+        <div className="command-card p-10 text-center">
           {filterSubject || filterStatus || filterErrorType ? (
             <>
               <p className="text-sm text-[var(--dashboard-text-muted)] font-mono mb-1">Nothing to review here yet.</p>
@@ -777,7 +784,7 @@ export default function WrongAnswerNotebookTab() {
               <motion.div
                 key={m.id}
                 variants={STAGGER_ITEM}
-                className="glass-card rounded-2xl border border-terminal-border p-4"
+                className="command-card p-4"
               >
                 <div
                   className="flex items-start justify-between gap-3 cursor-pointer"
