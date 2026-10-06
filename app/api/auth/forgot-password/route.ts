@@ -27,9 +27,9 @@ export async function POST(request: Request) {
 
     // Belt-and-braces: the reset token link must never leave the server in
     // production, even if the service gate ever regresses.
-    const body =
+    const responseBody =
       devLink && process.env.NODE_ENV !== "production" ? { ok: true, devLink } : { ok: true };
-    const res = NextResponse.json(body);
+    const res = NextResponse.json(responseBody);
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");
     applySecurityHeaders(res);
