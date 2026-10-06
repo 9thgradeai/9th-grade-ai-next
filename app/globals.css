@@ -2574,3 +2574,65 @@ html.light .skeleton-shimmer {
     vertical-align: top;
   }
 }
+
+/* ════════════════════════════════════════════════════════════════════════════
+   PERFORMANCE HUB — trading-hub motion (chart draw, live ping, ticker tape)
+   All motion is transform/opacity-only and disabled under reduced motion.
+   ════════════════════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: no-preference) {
+  .perf-line-draw {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    animation: perf-draw 900ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+  @keyframes perf-draw {
+    to { stroke-dashoffset: 0; }
+  }
+  .perf-area-in {
+    opacity: 0;
+    animation: perf-area-in 700ms ease-out 250ms forwards;
+  }
+  @keyframes perf-area-in {
+    to { opacity: 1; }
+  }
+  .perf-last-ping {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: perf-ping 2.2s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  }
+  @keyframes perf-ping {
+    0% { transform: scale(1); opacity: 0.9; }
+    70% { transform: scale(2.6); opacity: 0; }
+    100% { transform: scale(2.6); opacity: 0; }
+  }
+  .perf-tape-track {
+    animation: perf-tape 28s linear infinite;
+  }
+  .perf-tape:hover .perf-tape-track {
+    animation-play-state: paused;
+  }
+  @keyframes perf-tape {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  .perf-kpi {
+    animation: perf-kpi-in 450ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  }
+  .perf-kpi:nth-child(2) { animation-delay: 70ms; }
+  .perf-kpi:nth-child(3) { animation-delay: 140ms; }
+  @keyframes perf-kpi-in {
+    from { opacity: 0; transform: translateY(8px); }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .perf-line-draw,
+  .perf-area-in,
+  .perf-last-ping,
+  .perf-tape-track,
+  .perf-kpi {
+    animation: none !important;
+  }
+  .perf-tape {
+    overflow-x: auto;
+  }
+}
