@@ -73,7 +73,7 @@ All under `/api/storage/*`, `getUserIdFromRequest` + `assertSameOrigin` + `asser
 - `POST /api/storage/disconnect` — delete `StorageConnection` (PG preserved, Drive files NOT deleted), mark pending `DEAD_LETTER`, UI explains semantics
 - `GET /api/storage/sync` — list last 10 jobs
 - `POST /api/storage/sync` — `enqueueSync` for `entityType` or `all`, then fire-and-forget `processPendingJobs(3)` (never blocks), rate-limited, idempotent
-- `POST /api/storage/worker` — cron `*/5 * * * *` via `vercel.json`, Bearer `CRON_SECRET` or `x-vercel-cron:1`, `processPendingJobs(10)`, bounded, `vercel.json` cron
+- `POST /api/storage/worker` — cron daily (`0 1 * * *` via `vercel.json`; Hobby plan allows daily only — raise to `*/5 * * * *` on Pro), Bearer `CRON_SECRET` (the `x-vercel-cron` header alone is not accepted), `processPendingJobs(10)`, bounded, `vercel.json` cron
 - `POST /api/storage/restore` — Drive→PG: `entityType` or `all`, ownership/file identity, JSON/schema, checksum, migration, version compare → `success`/`conflict` (409) / `no_file` (404) / `error` (400), transactional, audit `StorageRevision`, never blind import
 - `GET /api/storage/export` / `POST /api/storage/import` — manual envelope export (attachment) / import validation (checksum, schema, user isolation, no auto-apply)
 
