@@ -59,33 +59,45 @@
     0 2px 8px rgb(0 0 0 / 0.22);
 }
 
-/* Workspace panel surface — transparent glass so the dashboard world-map
-   backdrop stays visible through the gutters. No opaque layer may block
-   the map: panel/rail/composer are all translucent + blurred. */
+/* Workspace panel surface — TRUE glass: the world map (rendered inside the
+   modal by AIMapBackdrop) stays fully visible through it. Only a whisper of
+   surface tint + a light blur keeps chrome edges crisp. Readability lives on
+   the message cards themselves (.ai-response), never on the panel. */
 .ai-panel {
-  background: color-mix(in srgb, var(--ai-panel) 72%, transparent);
-  -webkit-backdrop-filter: blur(22px) saturate(1.2);
-  backdrop-filter: blur(22px) saturate(1.2);
+  background: color-mix(in srgb, var(--ai-panel) 14%, transparent);
+  -webkit-backdrop-filter: blur(10px) saturate(1.1);
+  backdrop-filter: blur(10px) saturate(1.1);
   border-color: var(--ai-border-strong);
   box-shadow: var(--shadow-xl);
 }
 
-/* Conversation rail — translucent, map bleeds through softly */
+/* Conversation rail — barely-there tint, map flows underneath */
 .ai-rail {
-  background: color-mix(in srgb, var(--ai-soft) 55%, transparent);
-  -webkit-backdrop-filter: blur(18px) saturate(1.15);
-  backdrop-filter: blur(18px) saturate(1.15);
+  background: color-mix(in srgb, var(--ai-soft) 22%, transparent);
+  -webkit-backdrop-filter: blur(10px) saturate(1.1);
+  backdrop-filter: blur(10px) saturate(1.1);
   border-right: 1px solid var(--ai-border);
 }
 
-/* Backdrop scrim — feathered, never a flat opaque wall. The world map
-   stays faintly visible instead of being fully dimmed out. */
+/* Modal backdrop — the map itself, edge-to-edge, on every viewport.
+   NO flat overlay and NO blur here: both would erase the map. A feathered
+   vignette keeps text zones calm while the continents stay visible. */
 .ai-backdrop {
+  background: transparent;
+}
+.ai-map .world-map-drift {
+  /* Fill the modal canvas edge-to-edge (the dashboard variant hugs right). */
+  top: -4%;
+  right: -22%;
+  width: min(1250px, 150vw);
+}
+.ai-backdrop-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
   background:
-    radial-gradient(120% 90% at 50% 0%, transparent 40%, var(--dashboard-overlay) 100%),
-    color-mix(in srgb, var(--dashboard-overlay) 55%, transparent);
-  -webkit-backdrop-filter: blur(3px);
-  backdrop-filter: blur(3px);
+    radial-gradient(110% 85% at 50% 0%, transparent 55%, color-mix(in srgb, var(--dashboard-overlay) 38%, transparent) 100%),
+    linear-gradient(180deg, color-mix(in srgb, var(--dashboard-overlay) 22%, transparent), transparent 22%, transparent 78%, color-mix(in srgb, var(--dashboard-overlay) 26%, transparent));
 }
 
 /* Thread + composer stay translucent so nothing visually blocks the map */
@@ -94,11 +106,30 @@
   background: transparent;
 }
 
+/* AI response surface — the ONE readable layer. Prose floats on a soft
+   frosted card so body text stays legible over the visible map, while the
+   map shows through everywhere around it. */
+.ai-workspace .ai-response {
+  background: color-mix(in srgb, var(--ai-surface) 62%, transparent);
+  -webkit-backdrop-filter: blur(10px) saturate(1.1);
+  backdrop-filter: blur(10px) saturate(1.1);
+  border: 1px solid var(--ai-border);
+  border-radius: 16px;
+  padding: 0.85rem 1rem;
+  box-shadow: var(--shadow-sm);
+}
+
+@media (forced-colors: active) {
+  .ai-map {
+    display: none;
+  }
+}
+
 /* Slim translucent header */
 .ai-header {
-  background: color-mix(in srgb, var(--ai-panel) 86%, transparent);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
+  background: color-mix(in srgb, var(--ai-panel) 32%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--ai-border);
 }
 
@@ -111,9 +142,9 @@
   display: flex;
   align-items: flex-end;
   gap: 0.5rem;
-  background: color-mix(in srgb, var(--ai-surface) 68%, transparent);
-  -webkit-backdrop-filter: blur(18px) saturate(1.15);
-  backdrop-filter: blur(18px) saturate(1.15);
+  background: color-mix(in srgb, var(--ai-surface) 52%, transparent);
+  -webkit-backdrop-filter: blur(12px) saturate(1.1);
+  backdrop-filter: blur(12px) saturate(1.1);
   border: 1px solid var(--ai-border-strong);
   border-radius: 22px;
   padding: 0.6rem 0.6rem 0.6rem 1rem;

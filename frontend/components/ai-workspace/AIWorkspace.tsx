@@ -39,6 +39,7 @@ import ModeSwitcher from "./ModeSwitcher";
 import ConversationRail from "./ConversationRail";
 import ComposerBar from "./ComposerBar";
 import ThreadView from "./ThreadView";
+import AIMapBackdrop from "./AIMapBackdrop";
 import { AGENT_FOLLOWUPS } from "./prompts";
 import {
   STATUS_LABEL,
@@ -691,16 +692,20 @@ export default function AIWorkspace() {
       <AnimatePresence>
         {showModal && (
           <div className="ai-workspace fixed inset-0 z-[var(--z-modal)] flex">
-            {/* Backdrop — feathered transparent scrim: dashboard world-map
-                stays visible, nothing visually blocks it */}
+            {/* Backdrop — the dashboard world map, rendered inside the
+                modal so it shows on every viewport with no opaque layer
+                over it; a feathered vignette keeps text zones calm */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={closeWorkspace}
-              className="ai-backdrop absolute inset-0"
+              className="ai-backdrop absolute inset-0 overflow-hidden"
               aria-hidden="true"
-            />
+            >
+              <AIMapBackdrop />
+              <div className="ai-backdrop-vignette" />
+            </motion.div>
 
             {/* Panel — full-viewport takeover on mobile, docked panel on desktop */}
             <motion.div
@@ -878,7 +883,8 @@ export default function AIWorkspace() {
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     onClick={() => setSidebarOpen(false)}
-                    className="absolute inset-0 z-20 bg-[var(--dashboard-overlay)] lg:hidden"
+                    className="absolute inset-0 lg:hidden"
+                    style={{ background: "color-mix(in srgb, var(--dashboard-overlay) 35%, transparent)" }}
                     aria-hidden="true"
                   />
                   <motion.aside

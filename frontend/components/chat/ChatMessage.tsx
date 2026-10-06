@@ -101,7 +101,7 @@ function ChatMessageInner({
   const showMeta = !message.error && message.text !== "";
 
   return (
-    <div className="flex items-start gap-3">
+    <div className="ai-response flex items-start gap-3">
       <div className="ai-avatar h-8 w-8">
         <AiLogo solid={false} className="h-4 w-4" />
       </div>
