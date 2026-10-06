@@ -613,27 +613,27 @@
 
 .dashboard-theme-scope[data-dashboard-theme="light"] {
   color-scheme: light;
-  --background: #F3F4F8;
-  --surface: oklch(1 0 0);
-  --surface-soft: oklch(0.977 0.007 255);
-  --surface-elevated: oklch(1 0 0);
+  --background: #E6EAF6;
+  --surface: oklch(0.972 0.008 260);
+  --surface-soft: oklch(0.945 0.012 260);
+  --surface-elevated: oklch(0.985 0.005 260);
   --surface-highest: oklch(0.985 0.005 260);
   --text-primary: oklch(0.17 0.02 260);
   --text-secondary: oklch(0.34 0.015 260);
   --text-muted: oklch(0.47 0.012 260);
   --text-disabled: oklch(0.62 0.01 260);
-  --border: oklch(0.88 0.012 260);
-  --border-strong: oklch(0.84 0.015 260);
+  --border: oklch(0.865 0.015 260);
+  --border-strong: oklch(0.795 0.020 260);
   --primary: #6366F1;
   --primary-hover: #4F46E5;
   --primary-active: #4338CA;
   --primary-soft: rgb(99 102 241 / 0.08);
   --primary-muted: rgb(99 102 241 / 0.05);
-  --sidebar-bg: #FFFFFF;
+  --sidebar-bg: #E9EDF8;
   --sidebar-bg-active: #6366F1;
   --sidebar-text-active: #FFFFFF;
   --sidebar-text: #4B5563;
-  --sidebar-border: #E5E7EB;
+  --sidebar-border: #D5DCEE;
   --input-focus: var(--primary);
   --chart-1: #6366F1;
   --focus-ring: rgb(99 102 241 / 0.4);

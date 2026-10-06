@@ -219,15 +219,16 @@
   /* ══════════════════════════════════════════════════════════════════════════
      RESKIN LIGHT — same deep-space dialect translated to daylight: tinted
      (not neutral-gray) surfaces, electric indigo primary. Sprint 3.
-     Surface hierarchy: #EEF1FB → #FFFFFF → #F5F7FE
+     Surface hierarchy: #E6EAF6 → #F3F5FC → #E8ECF7 (mist — signature
+     periwinkle-gray daylight, never stark white)
      ══════════════════════════════════════════════════════════════════════════ */
 
   /* ── Canonical Surfaces ────────────────────────────────────────────────────── */
-  --background: #EBEFFA;
-  --surface: #FFFFFF;
-  --surface-soft: #F3F5FD;
-  --surface-elevated: #FFFFFF;
-  --surface-highest: #FFFFFF;
+  --background: #E6EAF6;
+  --surface: #F3F5FC;
+  --surface-soft: #E8ECF7;
+  --surface-elevated: #F7F9FE;
+  --surface-highest: #F7F9FE;
 
   /* ── Legacy Surface Aliases ────────────────────────────────────────────────── */
   --surface-base: var(--background);
@@ -288,7 +289,7 @@
   --shadow-xl: 0 20px 25px rgb(0 0 0 / 0.1), 0 8px 10px rgb(0 0 0 / 0.04);
 
   /* ── Input ─────────────────────────────────────────────────────────────────── */
-  --input-bg: #FFFFFF;
+  --input-bg: #F7F9FE;
   --input-border: #D1D5DB;
   --input-focus: #6366F1;
   --input-placeholder: #9CA3AF;
@@ -310,15 +311,15 @@
   --focus-ring-offset: 2px;
 
   /* ── Sidebar ───────────────────────────────────────────────────────────────── */
-  --sidebar-bg: #FFFFFF;
-  --sidebar-border: #DDE3F5;
+  --sidebar-bg: #E9EDF8;
+  --sidebar-border: #D5DCEE;
   --sidebar-text: #4B5563;
   --sidebar-text-active: #4F46E5;
   --sidebar-bg-active: rgb(79 70 229 / 0.10);
 
   /* ── Card ──────────────────────────────────────────────────────────────────── */
-  --card-bg: #FFFFFF;
-  --card-border: #E5E7EB;
+  --card-bg: #F3F5FC;
+  --card-border: #D9DFF2;
   --card-radius: 16px;
 
   /* ── Global App Tokens (non-dashboard) ─────────────────────────────────────── */
@@ -1234,13 +1235,13 @@ hr {
   --primary-muted: oklch(0.97 0.02 278);
   --teal: oklch(0.44 0.11 190);
   --teal-soft: oklch(0.93 0.03 190);
-  --background: oklch(0.982 0.006 260);
-  --surface: oklch(1 0 0);
-  --surface-soft: oklch(0.962 0.010 260);
-  --surface-elevated: oklch(1 0 0);
-  --surface-sunken: oklch(0.935 0.012 260);
-  --border: oklch(0.90 0.012 260);
-  --border-strong: oklch(0.85 0.016 260);
+  --background: oklch(0.935 0.013 260);
+  --surface: oklch(0.972 0.008 260);
+  --surface-soft: oklch(0.945 0.012 260);
+  --surface-elevated: oklch(0.985 0.005 260);
+  --surface-sunken: oklch(0.910 0.015 260);
+  --border: oklch(0.865 0.015 260);
+  --border-strong: oklch(0.795 0.020 260);
   /* Light-mode chart colors run deeper than dark so series hold contrast on
      white without going neon. Pairs with the dark --viz-* set above. */
   --viz-violet: oklch(0.55 0.20 292);
@@ -1278,8 +1279,8 @@ hr {
 
 /* ── Light mode: glass-card — ensure minimum surface contrast ────────── */
 .dashboard-theme-scope[data-dashboard-theme="light"] .glass-card {
-  background: oklch(1 0 0);
-  border-color: oklch(0.90 0.012 260);
+  background: oklch(0.972 0.008 260);
+  border-color: oklch(0.865 0.015 260);
   box-shadow: 0 1px 3px oklch(0.2 0.02 260 / 0.06), 0 4px 16px oklch(0.2 0.02 260 / 0.04);
 }
 
@@ -1295,8 +1296,8 @@ hr {
 
 /* ── Light mode: command-card — stronger border + cleaner bg ─────────── */
 .dashboard-theme-scope[data-dashboard-theme="light"] .command-card {
-  background: oklch(1 0 0);
-  border-color: oklch(0.90 0.012 260);
+  background: oklch(0.972 0.008 260);
+  border-color: oklch(0.865 0.015 260);
   box-shadow:
     0 1px 2px oklch(0.2 0.02 260 / 0.05),
     0 4px 16px oklch(0.2 0.02 260 / 0.06),
