@@ -68,21 +68,17 @@ describe("SpotlightQuiz (Home rotating MCQ)", () => {
     );
   });
 
-  it("stages the answer, then locks on confidence with a calibration note", async () => {
+  it("shows an instant green verdict on the correct option", async () => {
     renderSpotlight();
     await screen.findByText("বাংলা প্রশ্ন?");
 
     // Fake timers only from here: the reveal delay becomes controllable while
     // the already-rendered content stays put.
     vi.useFakeTimers();
-    // Tapping an option stages it — verdict waits for the confidence rating.
+    // Tapping the right option locks at once with a green correct signal…
     fireEvent.click(screen.getByText("গ"));
-    expect(screen.queryByText(/✓ সঠিক!/)).not.toBeInTheDocument();
-    expect(screen.getByText(/কতটা নিশ্চিত/)).toBeInTheDocument();
-    // Confident + correct → matched-calibration note.
-    fireEvent.click(screen.getByText("100%"));
     expect(screen.getByText(/✓ সঠিক!/)).toBeInTheDocument();
-    expect(screen.getByText(/ক্যালিব্রেশন/)).toBeInTheDocument();
+    expect(screen.getAllByText(/সঠিক/).length).toBeGreaterThan(0);
     // …then the cycle moves on to the next subject.
     act(() => {
       vi.advanceTimersByTime(2_500);
@@ -91,14 +87,26 @@ describe("SpotlightQuiz (Home rotating MCQ)", () => {
     expect(screen.getByText("English")).toBeInTheDocument();
   });
 
-  it("locks immediately when confidence was rated before picking", async () => {
+  it("shows a red verdict on a wrong pick and calls out the right answer", async () => {
     renderSpotlight();
     await screen.findByText("বাংলা প্রশ্ন?");
 
     vi.useFakeTimers();
-    fireEvent.click(screen.getByText("75%"));
+    fireEvent.click(screen.getByText("ক"));
+    expect(screen.getByText(/✗ ভুল/)).toBeInTheDocument();
+    // The correct row carries the green badge even though another was picked.
+    expect(screen.getAllByText(/সঠিক/).length).toBeGreaterThan(0);
+  });
+
+  it("adds a calibration note when confidence was rated before picking", async () => {
+    renderSpotlight();
+    await screen.findByText("বাংলা প্রশ্ন?");
+
+    vi.useFakeTimers();
+    fireEvent.click(screen.getByText("100%"));
     fireEvent.click(screen.getByText("গ"));
     expect(screen.getByText(/✓ সঠিক!/)).toBeInTheDocument();
+    expect(screen.getByText(/ক্যালিব্রেশন/)).toBeInTheDocument();
   });
 
   it("skip button moves on without answering", async () => {

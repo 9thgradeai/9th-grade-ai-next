@@ -139,32 +139,24 @@ export default function SpotlightQuiz({
     revealTimeout.current = setTimeout(() => advance(), REVEAL_MS);
   }, [advance]);
 
-  const lockWith = useCallback((q: Server.QuestionDTO, selection: string[], conf: number | null) => {
-    setConfidence(conf);
-    setLocked(true);
-    gradeAndMoveOn(q, selection);
-  }, [gradeAndMoveOn]);
-
   const selectAnswer = useCallback((next: string[]) => {
     if (!question || isLocked || next.length === 0) return;
     setPicked(next);
-    // Confidence-first: tapping an option only stages it. It locks the
-    // moment a confidence is on record (chosen before or with this tap).
-    if (!isMulti && confidence !== null) {
+    // Instant verdict: tapping an option locks + grades at once so the
+    // green (right) / red (wrong) signal and the correct answer appear
+    // immediately. A pre-rated confidence adds a calibration note.
+    if (!isMulti) {
       setLocked(true);
       gradeAndMoveOn(question, next);
     }
-  }, [question, isLocked, isMulti, confidence, gradeAndMoveOn]);
+  }, [question, isLocked, isMulti, gradeAndMoveOn]);
 
   const chooseConfidence = useCallback((value: number) => {
+    // Pre-answer rating only — it never locks by itself. Tap an option
+    // afterwards for the instant verdict + calibration.
     if (!question || isLocked) return;
-    if (picked.length > 0) {
-      // Staged answer + confidence = commit immediately.
-      lockWith(question, picked, value);
-    } else {
-      setConfidence(value);
-    }
-  }, [question, isLocked, picked, lockWith]);
+    setConfidence((prev) => (prev === value ? null : value));
+  }, [question, isLocked]);
 
   const lockMultiAnswer = useCallback(() => {
     if (!question || picked.length === 0 || isLocked) return;
@@ -260,7 +252,7 @@ export default function SpotlightQuiz({
           {!isLocked && (
             <div className="mt-3 flex flex-wrap items-center gap-1.5" role="group" aria-label="উত্তরের আগে নিশ্চয়তা">
               <span className="text-[11px] font-mono" style={{ color: "var(--dashboard-text-muted)" }}>
-                কতটা নিশ্চিত?
+                আগে বলুন — কতটা নিশ্চিত?
               </span>
               {[25, 50, 75, 100].map((v) => (
                 <button
