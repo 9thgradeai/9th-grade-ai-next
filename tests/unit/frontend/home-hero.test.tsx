@@ -86,6 +86,20 @@ describe("HomeHero (AI command bar)", () => {
     await screen.findByText(/AI guidance/);
   });
 
+  it("offers an elicit-first quiz chip for the weakest topic", async () => {
+    components.runAgentTurn.mockResolvedValue({ text: "ok", blocks: [], provider: "mock", model: "" });
+    render(<HomeHero signals={{ weakSubject: "গণিত", weakTopic: "Algebra" }} />);
+    fireEvent.click(screen.getByRole("button", { name: "Quiz me with one question" }));
+    await waitFor(() => {
+      const call = components.runAgentTurn.mock.calls[0][0] as { prompt?: string; question?: string };
+      const sent = (call.question ?? call.prompt ?? "") as string;
+      expect(components.runAgentTurn).toHaveBeenCalledWith(
+        expect.objectContaining({ intent: "home_brief" }),
+      );
+      expect(sent).toMatch(/wait for my reply/i);
+    });
+  });
+
   it("sends chip prompts through the same intent", async () => {
     components.runAgentTurn.mockResolvedValue({ text: "ok", blocks: [], provider: "mock", model: "" });
     render(<HomeHero signals={{ dailyQuizAvailable: true }} />);

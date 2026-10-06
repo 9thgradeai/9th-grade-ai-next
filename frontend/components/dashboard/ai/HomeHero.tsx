@@ -165,6 +165,19 @@ export default function HomeHero({
 
   const chips = useCallback((): { label: string; prompt: string }[] => {
     const out: { label: string; prompt: string }[] = [];
+    // Elicit-first: research (ILAD 2026) shows asking the learner beats
+    // telling — this chip makes the coach quiz instead of lecture.
+    const quizTarget = signals.weakTopic ?? signals.weakSubject;
+    if (quizTarget) {
+      out.push({
+        label: t(lang, "আমাকে একটা প্রশ্ন করো", "Quiz me with one question"),
+        prompt: t(
+          lang,
+          `${quizTarget} থেকে আমাকে মাত্র একটা সংক্ষিপ্ত প্রশ্ন করো — উত্তর বা ব্যাখ্যা দিও না, আমার উত্তরের অপেক্ষা করো।`,
+          `Ask me exactly ONE short question on ${quizTarget} — give no answer or explanation, wait for my reply.`,
+        ),
+      });
+    }
     if (signals.weakSubject) {
       out.push({
         label: t(lang, `${signals.weakSubject}-এ ফোকাস`, `Fix ${signals.weakSubject}`),
@@ -237,12 +250,20 @@ export default function HomeHero({
           <AiLogo solid={false} className="w-5 h-5" />
         </span>
         <div className="min-w-0">
-          <p className="font-display text-base font-semibold tracking-tight" style={{ color: "var(--dashboard-text-primary)" }}>
-            {greeting(lang, user?.name.split(" ")[0])} ✦
-          </p>
-          <p className="text-xs truncate" style={{ color: "var(--dashboard-text-muted)" }}>
-            {t(lang, "জিজ্ঞেস করো — আজকের সেরা পরবর্তী ধাপ বলে দিচ্ছি", "Ask — I'll name your best next step today")}
-          </p>
+          {!bare ? (
+            <>
+              <p className="font-display text-base font-semibold tracking-tight" style={{ color: "var(--dashboard-text-primary)" }}>
+                {greeting(lang, user?.name.split(" ")[0])} ✦
+              </p>
+              <p className="text-xs truncate" style={{ color: "var(--dashboard-text-muted)" }}>
+                {t(lang, "জিজ্ঞেস করো — আজকের সেরা পরবর্তী ধাপ বলে দিচ্ছি", "Ask — I'll name your best next step today")}
+              </p>
+            </>
+          ) : (
+            <p className="text-xs truncate" style={{ color: "var(--dashboard-text-muted)" }}>
+              {t(lang, "জিজ্ঞেস করো — আজকের সেরা পরবর্তী ধাপ বলে দিচ্ছি", "Ask — I'll name your best next step today")}
+            </p>
+          )}
         </div>
       </div>
 

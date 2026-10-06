@@ -37,6 +37,10 @@ export default function SpotlightQuiz({
   const [picked, setPicked] = useState<string[]>([]);
   const [locked, setLocked] = useState(false);
   const [multiLocked, setMultiLocked] = useState(false);
+  // Judgement-of-Learning: the learner rates confidence BEFORE seeing the
+  // verdict, then gets a calibration note (confident + wrong, unsure + right…)
+  // instead of a bare ✓/✗. Optional — grading works without it.
+  const [confidence, setConfidence] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [stats, setStats] = useState<Stats>({ answered: 0, correct: 0 });
@@ -61,6 +65,7 @@ export default function SpotlightQuiz({
     setPicked([]);
     setLocked(false);
     setMultiLocked(false);
+    setConfidence(null);
     setTimerKey((k) => k + 1);
   }, []);
 
@@ -134,14 +139,32 @@ export default function SpotlightQuiz({
     revealTimeout.current = setTimeout(() => advance(), REVEAL_MS);
   }, [advance]);
 
+  const lockWith = useCallback((q: Server.QuestionDTO, selection: string[], conf: number | null) => {
+    setConfidence(conf);
+    setLocked(true);
+    gradeAndMoveOn(q, selection);
+  }, [gradeAndMoveOn]);
+
   const selectAnswer = useCallback((next: string[]) => {
     if (!question || isLocked || next.length === 0) return;
     setPicked(next);
-    if (!isMulti) {
+    // Confidence-first: tapping an option only stages it. It locks the
+    // moment a confidence is on record (chosen before or with this tap).
+    if (!isMulti && confidence !== null) {
       setLocked(true);
       gradeAndMoveOn(question, next);
     }
-  }, [question, isLocked, isMulti, gradeAndMoveOn]);
+  }, [question, isLocked, isMulti, confidence, gradeAndMoveOn]);
+
+  const chooseConfidence = useCallback((value: number) => {
+    if (!question || isLocked) return;
+    if (picked.length > 0) {
+      // Staged answer + confidence = commit immediately.
+      lockWith(question, picked, value);
+    } else {
+      setConfidence(value);
+    }
+  }, [question, isLocked, picked, lockWith]);
 
   const lockMultiAnswer = useCallback(() => {
     if (!question || picked.length === 0 || isLocked) return;
@@ -149,6 +172,16 @@ export default function SpotlightQuiz({
     setLocked(true);
     gradeAndMoveOn(question, picked);
   }, [question, picked, isLocked, gradeAndMoveOn]);
+
+  /** Calibration verdict comparing pre-answer confidence with the outcome. */
+  const calibrationNote = (q: Server.QuestionDTO, selection: string[], conf: number | null): string => {
+    if (conf === null) return "";
+    const ok = isAnswerCorrect(q, selection);
+    if (ok && conf >= 75) return " · 🎯 আত্মবিশ্বাস আর ফল মিলেছে — দারুণ ক্যালিব্রেশন";
+    if (ok) return " · 💪 কম আত্মবিশ্বাস, তবু সঠিক — এগিয়ে যান";
+    if (conf >= 75) return " · ⚠️ অতিরিক্ত আত্মবিশ্বাস ছিল — ধারণাটা ঝালিয়ে নিন";
+    return " · 📍 ঠিক ধরেছেন, এটা দুর্বল জায়গা — প্র্যাকটিস করুন";
+  };
 
   return (
     <div className="command-card p-5">
@@ -224,9 +257,32 @@ export default function SpotlightQuiz({
               <Check className="w-4 h-4" /> উত্তর লক করুন ({picked.length}টি নির্বাচিত)
             </button>
           )}
+          {!isLocked && (
+            <div className="mt-3 flex flex-wrap items-center gap-1.5" role="group" aria-label="উত্তরের আগে নিশ্চয়তা">
+              <span className="text-[11px] font-mono" style={{ color: "var(--dashboard-text-muted)" }}>
+                কতটা নিশ্চিত?
+              </span>
+              {[25, 50, 75, 100].map((v) => (
+                <button
+                  key={v}
+                  type="button"
+                  onClick={() => chooseConfidence(v)}
+                  aria-pressed={confidence === v}
+                  className="px-2.5 py-1 rounded-full border font-mono text-[11px] font-bold transition-colors min-h-[32px]"
+                  style={
+                    confidence === v
+                      ? { background: "var(--dashboard-primary)", color: "var(--dashboard-text-inverse)", borderColor: "transparent" }
+                      : { borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-secondary)", background: "transparent" }
+                  }
+                >
+                  {v}%
+                </button>
+              ))}
+            </div>
+          )}
           {isLocked && (
             <p role="status" className="text-xs font-mono mt-3" style={{ color: "var(--dashboard-text-muted)" }}>
-              {picked.length > 0 && isAnswerCorrect(question, picked) ? "✓ সঠিক!" : picked.length === 0 ? "" : "✗ ভুল — সঠিক উত্তর সবুজে দেখুন"} · পরের প্রশ্ন আসছে…
+              {picked.length > 0 && isAnswerCorrect(question, picked) ? "✓ সঠিক!" : picked.length === 0 ? "" : "✗ ভুল — সঠিক উত্তর সবুজে দেখুন"}{calibrationNote(question, picked, confidence)} · পরের প্রশ্ন আসছে…
             </p>
           )}
 

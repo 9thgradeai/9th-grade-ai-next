@@ -68,22 +68,37 @@ describe("SpotlightQuiz (Home rotating MCQ)", () => {
     );
   });
 
-  it("locks on answer and immediately moves to another subject's question", async () => {
+  it("stages the answer, then locks on confidence with a calibration note", async () => {
     renderSpotlight();
     await screen.findByText("বাংলা প্রশ্ন?");
 
     // Fake timers only from here: the reveal delay becomes controllable while
     // the already-rendered content stays put.
     vi.useFakeTimers();
+    // Tapping an option stages it — verdict waits for the confidence rating.
     fireEvent.click(screen.getByText("গ"));
-    // Feedback first (synchronous state update)…
+    expect(screen.queryByText(/✓ সঠিক!/)).not.toBeInTheDocument();
+    expect(screen.getByText(/কতটা নিশ্চিত/)).toBeInTheDocument();
+    // Confident + correct → matched-calibration note.
+    fireEvent.click(screen.getByText("100%"));
     expect(screen.getByText(/✓ সঠিক!/)).toBeInTheDocument();
+    expect(screen.getByText(/ক্যালিব্রেশন/)).toBeInTheDocument();
     // …then the cycle moves on to the next subject.
     act(() => {
       vi.advanceTimersByTime(2_500);
     });
     expect(screen.getByText("English question?")).toBeInTheDocument();
     expect(screen.getByText("English")).toBeInTheDocument();
+  });
+
+  it("locks immediately when confidence was rated before picking", async () => {
+    renderSpotlight();
+    await screen.findByText("বাংলা প্রশ্ন?");
+
+    vi.useFakeTimers();
+    fireEvent.click(screen.getByText("75%"));
+    fireEvent.click(screen.getByText("গ"));
+    expect(screen.getByText(/✓ সঠিক!/)).toBeInTheDocument();
   });
 
   it("skip button moves on without answering", async () => {

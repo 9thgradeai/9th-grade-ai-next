@@ -491,53 +491,7 @@ export default function HomeTab() {
 
   return (
     <div className="study-home flex flex-col gap-5 pb-24 sm:pb-6">
-      {/* ── 0 · Welcome + literary quote (Bangla & English writers) ── */}
-      <RevealSection className="min-w-0" style={{ order: -1 }}>
-        <HomeWelcome onStartPractice={startDailyWarmup} />
-      </RevealSection>
-
-      {/* ── 1 · Performance Velocity + today's plan — pinned directly under
-             the welcome card (explicit product order, never ambient-ranked). ── */}
-      <div className="study-home-analytics grid gap-5 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-        <RevealSection className="min-w-0">
-          {!pulseReady ? (
-            <ScopeSkeleton label={t(lang, "পারফরম্যান্স লোড হচ্ছে", "Loading performance")} />
-          ) : (
-            <PerformanceCard
-              activity={intelligence?.activity ?? []}
-              results={results}
-              range={perfRange}
-              onRangeChange={setPerfRange}
-              loading={false}
-            />
-          )}
-        </RevealSection>
-        <RevealSection className="min-w-0">
-          {tasksFailed && !tasksReady ? (
-            <ScopeError
-              message={t(lang, "আজকের পরিকল্পনা লোড করা যায়নি", "Could not load today's plan")}
-              retryLabel={t(lang, "আবার চেষ্টা করুন", "Try again")}
-              onRetry={() => retryScope("tasks")}
-            />
-          ) : !tasksReady ? (
-            <ScopeSkeleton label={t(lang, "আজকের পরিকল্পনা লোড হচ্ছে", "Loading today's plan")} />
-          ) : (
-            <TodayPlanCard
-              tasks={todaysTasks}
-              onToggle={toggleTask}
-              onTaskAdded={() => setReloadKey((k) => k + 1)}
-            />
-          )}
-        </RevealSection>
-      </div>
-
-      {/* ── 5b · Spotlight MCQ — random database question, rotates across
-              all subjects every ~3 minutes. Independent of the intelligence
-              scopes so it never blocks on (or blocks) the staged load. ── */}
-      <RevealSection className="min-w-0">
-        <SpotlightQuiz onPracticeSubject={(subject) => practiceSubject(subject)} />
-      </RevealSection>
-
+      {/* ── Page header — hierarchy first: title, target, streak, exam countdown. ── */}
       <motion.header
         initial={lowMotion ? false : "hidden"}
         whileInView={lowMotion ? undefined : "show"}
@@ -595,6 +549,53 @@ export default function HomeTab() {
           </div>
         )}
       </motion.header>
+
+      {/* ── 0 · Welcome + literary quote (Bangla & English writers) ── */}
+      <RevealSection className="min-w-0">
+        <HomeWelcome onStartPractice={startDailyWarmup} />
+      </RevealSection>
+
+      {/* ── 1 · Performance Velocity + today's plan — pinned directly under
+             the welcome card (explicit product order, never ambient-ranked). ── */}
+      <div className="study-home-analytics grid gap-5 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+        <RevealSection className="min-w-0">
+          {!pulseReady ? (
+            <ScopeSkeleton label={t(lang, "পারফরম্যান্স লোড হচ্ছে", "Loading performance")} />
+          ) : (
+            <PerformanceCard
+              activity={intelligence?.activity ?? []}
+              results={results}
+              range={perfRange}
+              onRangeChange={setPerfRange}
+              loading={false}
+            />
+          )}
+        </RevealSection>
+        <RevealSection className="min-w-0">
+          {tasksFailed && !tasksReady ? (
+            <ScopeError
+              message={t(lang, "আজকের পরিকল্পনা লোড করা যায়নি", "Could not load today's plan")}
+              retryLabel={t(lang, "আবার চেষ্টা করুন", "Try again")}
+              onRetry={() => retryScope("tasks")}
+            />
+          ) : !tasksReady ? (
+            <ScopeSkeleton label={t(lang, "আজকের পরিকল্পনা লোড হচ্ছে", "Loading today's plan")} />
+          ) : (
+            <TodayPlanCard
+              tasks={todaysTasks}
+              onToggle={toggleTask}
+              onTaskAdded={() => setReloadKey((k) => k + 1)}
+            />
+          )}
+        </RevealSection>
+      </div>
+
+      {/* ── 5b · Spotlight MCQ — random database question, rotates across
+              all subjects every ~3 minutes. Independent of the intelligence
+              scopes so it never blocks on (or blocks) the staged load. ── */}
+      <RevealSection className="min-w-0">
+        <SpotlightQuiz onPracticeSubject={(subject) => practiceSubject(subject)} />
+      </RevealSection>
 
       {/* ── Non-blocking pulse notice — header always paints; sections show
            their own skeletons/retries below (Phase 3: no full-page block). ── */}

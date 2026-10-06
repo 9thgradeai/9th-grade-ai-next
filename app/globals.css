@@ -1216,6 +1216,16 @@ hr {
   --warning: oklch(0.80 0.15 75);
   --danger: oklch(0.68 0.20 22);
   --teal: oklch(0.80 0.14 190);
+  --surface-sunken: oklch(0.16 0.02 260);
+  /* Dark-first data-viz palette — tuned for dark surfaces (lower saturation
+     than light-mode chart colors so series stay distinguishable without
+     screaming). Used by PerformanceCard metric themes. */
+  --viz-violet: oklch(0.72 0.17 292);
+  --viz-cyan: oklch(0.81 0.12 200);
+  --viz-emerald: oklch(0.75 0.17 155);
+  --viz-lime: oklch(0.86 0.15 130);
+  --viz-amber: oklch(0.81 0.14 75);
+  --viz-rose: oklch(0.73 0.17 15);
 }
 .dashboard-theme-scope[data-dashboard-theme="light"] {
   --primary: oklch(0.52 0.22 278);
@@ -1226,10 +1236,19 @@ hr {
   --teal-soft: oklch(0.93 0.03 190);
   --background: oklch(0.982 0.006 260);
   --surface: oklch(1 0 0);
-  --surface-soft: oklch(0.978 0.008 260);
+  --surface-soft: oklch(0.962 0.010 260);
   --surface-elevated: oklch(1 0 0);
+  --surface-sunken: oklch(0.935 0.012 260);
   --border: oklch(0.90 0.012 260);
   --border-strong: oklch(0.85 0.016 260);
+  /* Light-mode chart colors run deeper than dark so series hold contrast on
+     white without going neon. Pairs with the dark --viz-* set above. */
+  --viz-violet: oklch(0.55 0.20 292);
+  --viz-cyan: oklch(0.60 0.13 200);
+  --viz-emerald: oklch(0.55 0.15 155);
+  --viz-lime: oklch(0.60 0.14 130);
+  --viz-amber: oklch(0.62 0.15 75);
+  --viz-rose: oklch(0.55 0.18 15);
   /* Stronger text tokens for WCAG AA on white */
   --text-primary: oklch(0.18 0.022 260);
   --text-secondary: oklch(0.38 0.016 260);

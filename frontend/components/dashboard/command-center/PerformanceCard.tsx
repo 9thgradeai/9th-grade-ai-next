@@ -11,10 +11,12 @@ export const PERF_RANGES: PerfRange[] = ["7D", "30D", "90D", "ALL"];
 
 type MetricTheme = { from: string; to: string; glow: string };
 
+/* Token-driven metric accents (hex fallbacks for non-themed contexts).
+   Dark gets luminous series, light gets deeper ones — see --viz-* tokens. */
 const METRIC_THEMES: Record<MetricMode, MetricTheme> = {
-  solved: { from: "#8B5CF6", to: "#22D3EE", glow: "rgba(139,92,246,0.45)" },
-  accuracy: { from: "#10B981", to: "#A3E635", glow: "rgba(16,185,129,0.45)" },
-  time: { from: "#F59E0B", to: "#FB7185", glow: "rgba(245,158,11,0.45)" },
+  solved: { from: "var(--viz-violet, #8B5CF6)", to: "var(--viz-cyan, #22D3EE)", glow: "color-mix(in srgb, var(--viz-violet, #8B5CF6) 45%, transparent)" },
+  accuracy: { from: "var(--viz-emerald, #10B981)", to: "var(--viz-lime, #A3E635)", glow: "color-mix(in srgb, var(--viz-emerald, #10B981) 45%, transparent)" },
+  time: { from: "var(--viz-amber, #F59E0B)", to: "var(--viz-rose, #FB7185)", glow: "color-mix(in srgb, var(--viz-amber, #F59E0B) 45%, transparent)" },
 };
 
 function fmtTime(sec: number): string {
@@ -243,13 +245,6 @@ export default function PerformanceCard({
 
   return (
     <div className="command-card perf-hub relative overflow-hidden p-5 sm:p-6 flex flex-col h-full">
-      {/* Ambient multi-color wash — decorative, pointer-transparent */}
-      <div
-        aria-hidden="true"
-        className="perf-hub-wash pointer-events-none absolute inset-0"
-        style={{ background: `linear-gradient(135deg, ${theme.from}14, transparent 45%, ${theme.to}14)` }}
-      />
-
       <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <p className="command-eyebrow flex items-center gap-1.5">
@@ -267,9 +262,6 @@ export default function PerformanceCard({
               LIVE
             </span>
           </p>
-          <h3 className="font-display font-extrabold text-[16px] mt-0.5" style={{ color: "var(--dashboard-text-primary)" }}>
-            Preparation Overview
-          </h3>
           <p className="mt-0.5 font-mono text-xs tabular-nums" style={{ color: "var(--dashboard-text-muted)" }}>
             {totals.solved} questions · {totals.accuracy}% accuracy · {fmtTime(totals.time)}
             <span className="mx-1.5 opacity-40">|</span>
