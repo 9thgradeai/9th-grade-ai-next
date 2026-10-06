@@ -57,14 +57,34 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  const response = NextResponse.next();
-
   if (request.method === "OPTIONS") {
+    const response = NextResponse.json({}, { status: 204 });
+    const origin = request.headers.get("origin");
+    const allowlist = (process.env.ALLOWED_ORIGINS ?? "")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    const host =
+      request.headers.get("x-forwarded-host") ?? request.headers.get("host") ?? "";
+    let echo: string | null = null;
+    if (origin) {
+      try {
+        const originHost = new URL(origin).host;
+        if (originHost && (originHost === host || allowlist.includes(origin))) echo = origin;
+      } catch {
+        echo = null;
+      }
+    }
+    // Echo only allowlisted/same-origin — never "*" with credentials.
+    if (echo) response.headers.set("Access-Control-Allow-Origin", echo);
     response.headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
     response.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
     response.headers.set("Access-Control-Max-Age", "86400");
+    response.headers.set("Vary", "Origin");
     return response;
   }
+
+  const response = NextResponse.next();
 
   Object.entries(SECURITY_HEADERS).forEach(([key, value]) => {
     response.headers.set(key, value);

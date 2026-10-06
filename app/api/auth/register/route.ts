@@ -39,16 +39,15 @@ export async function POST(request: Request) {
       throw new AppError(500, "Failed to retrieve created user.", "INTERNAL_ERROR");
     }
     const token = await signSession({ email, ver: newUser.tokenVersion });
-    const { passwordHash: _passwordHash, ...safeUser } = newUser;
 
-    const res = NextResponse.json({ user: safeUser, expiresIn: SESSION_DURATION_MS }, { status: 201 });
+    const res = NextResponse.json({ user: newUser, expiresIn: SESSION_DURATION_MS }, { status: 201 });
     await setSessionCookie(token, res);
 
     log.info("auth.register.success", { requestId, userId: newUser.id });
 
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");
-    applyCorsHeaders(res);
+    applyCorsHeaders(res, request);
     applySecurityHeaders(res);
 
     return res;
@@ -56,7 +55,7 @@ export async function POST(request: Request) {
     const res = toHttpResponse(err);
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");
-    applyCorsHeaders(res);
+    applyCorsHeaders(res, request);
     applySecurityHeaders(res);
     return res;
   }

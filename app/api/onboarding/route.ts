@@ -22,19 +22,18 @@ export async function POST(request: Request) {
     const onboardingInput = await validateOnboardingInput(body);
 
     const user = await completeOnboarding(userId, onboardingInput);
-    const { passwordHash: _passwordHash, ...safeUser } = user;
 
-    const res = NextResponse.json({ ok: true, user: safeUser });
+    const res = NextResponse.json({ ok: true, user });
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");
-    applyCorsHeaders(res);
+    applyCorsHeaders(res, request);
     applySecurityHeaders(res);
     return res;
   } catch (err) {
     const res = toHttpResponse(err);
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");
-    applyCorsHeaders(res);
+    applyCorsHeaders(res, request);
     applySecurityHeaders(res);
     return res;
   }

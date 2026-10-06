@@ -38,11 +38,15 @@ export function startTiming() {
   return () => Date.now() - start;
 }
 
-export function applyCorsHeaders(res: Response, origin: string = getAllowedOrigin()) {
-  res.headers.set("Access-Control-Allow-Origin", origin);
+export function applyCorsHeaders(res: Response, request?: Request) {
+  const origin = resolveAllowedOrigin(request);
+  // Omit the header entirely when the origin is not allowlisted — never "*"
+  // on credentialed routes, never an empty string.
+  if (origin) res.headers.set("Access-Control-Allow-Origin", origin);
   res.headers.set("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS");
   res.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
   res.headers.set("Access-Control-Max-Age", "86400");
+  res.headers.set("Vary", "Origin");
 }
 
 export function applySecurityHeaders(res: Response) {
@@ -88,21 +92,29 @@ export function jsonResponse<T>(
   return NextResponse.json(data, init);
 }
 
-// Helper to get allowed origin based on environment
-function getAllowedOrigin(): string {
-  const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",") || [];
-  const requestOrigin = typeof window !== "undefined" ? window.location.origin : "";
-  
-  // In development, allow localhost
-  if (process.env.NODE_ENV === "development") {
-    return requestOrigin || "*";
+// Resolve the single origin to echo back, or null to send no CORS header.
+// Same-origin requests are always allowed; cross-origin requests only when
+// the origin is in ALLOWED_ORIGINS. Reads headers — never `window`, which
+// does not exist server-side.
+function resolveAllowedOrigin(request?: Request): string | null {
+  const allowlist = (process.env.ALLOWED_ORIGINS ?? "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const origin = request?.headers.get("origin") ?? null;
+  if (!origin) return allowlist[0] ?? null;
+  try {
+    const originHost = new URL(origin).host;
+    const host =
+      request?.headers.get("x-forwarded-host") ?? request?.headers.get("host") ?? "";
+    if (originHost && (originHost === host || allowlist.includes(origin))) return origin;
+    return null;
+  } catch {
+    return null;
   }
-  
-  // In production, check against allowed origins
-  if (allowedOrigins.length > 0 && requestOrigin && allowedOrigins.includes(requestOrigin)) {
-    return requestOrigin;
-  }
-  
-  // Fallback to first allowed origin or empty string (which will be replaced by frontend)
-  return allowedOrigins[0] || "";
+}
+
+// Legacy helper kept for compat — prefer resolveAllowedOrigin(request).
+export function getAllowedOrigin(): string {
+  return resolveAllowedOrigin() ?? "";
 }

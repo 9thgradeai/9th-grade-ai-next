@@ -255,8 +255,36 @@ async function main() {
       flashCount++;
     }
   }
-  const stale = await prisma.flashcard.deleteMany({ where: { sourceKey: { notIn: flashKeys } } });
-  console.log(`  ✓ ${flashCount} flashcards (${stale.count} stale removed)`);
+  // Stale seed cards are removed ONLY when no user data references them.
+  // Deleting a card cascades FlashcardReview + FlashcardUserState rows, so a
+  // blind `notIn` wipe would destroy learning history on every deploy.
+  const staleIds = (
+    await prisma.flashcard.findMany({
+      where: { sourceKey: { notIn: flashKeys } },
+      select: { id: true },
+    })
+  ).map((r) => r.id);
+  let staleRemoved = 0;
+  if (staleIds.length > 0) {
+    const [reviewed, stated] = await Promise.all([
+      prisma.flashcardReview.findMany({
+        where: { flashcardId: { in: staleIds } },
+        select: { flashcardId: true },
+        distinct: ["flashcardId"],
+      }),
+      prisma.flashcardUserState.findMany({
+        where: { flashcardId: { in: staleIds } },
+        select: { flashcardId: true },
+        distinct: ["flashcardId"],
+      }),
+    ]);
+    const touched = new Set([...reviewed, ...stated].map((r) => r.flashcardId));
+    const droppable = staleIds.filter((id) => !touched.has(id));
+    if (droppable.length > 0) {
+      staleRemoved = (await prisma.flashcard.deleteMany({ where: { id: { in: droppable } } })).count;
+    }
+  }
+  console.log(`  ✓ ${flashCount} flashcards (${staleRemoved} untouched stale removed; user-touched cards kept)`);
 
   // --- Mock tests (upsert by unique title; questions refreshed in place —
   //     no user rows reference MockTestQuestion) ---
@@ -294,7 +322,7 @@ async function main() {
   // No placeholder/fabricated dates are seeded. Real exam dates must come from
   // verified official circulars (BPSC etc.); until then the dashboard shows an
   // empty state instead of inventing a schedule.
-  await prisma.examSchedule.deleteMany({});
+  // NOTE: no deleteMany here — wiping would destroy real admin-entered rows.
   const examSchedule: {
     titleBn: string;
     titleEn: string;
@@ -367,9 +395,8 @@ async function main() {
   console.log(`  ✓ ${DAILY_QUIZZES.length} daily quizzes`);
 
   // --- Flash news (editorially curated from verified official sources) ---
-  // Clear any previously seeded placeholder items so none persist, and seed
-  // nothing fabricated. The dashboard hides the section when empty.
-  await prisma.flashNews.deleteMany({});
+  // Seed nothing fabricated; the dashboard hides the section when empty.
+  // NOTE: no deleteMany — previously this wiped real rows on every deploy.
   const news: Client.FlashNews[] = [];
   for (const n of news) {
     const titleBn = n.title?.bn ?? n.title ?? "";

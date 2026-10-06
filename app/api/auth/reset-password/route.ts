@@ -26,14 +26,14 @@ export async function POST(request: Request) {
     const res = NextResponse.json({ ok: true });
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");
-    applyCorsHeaders(res);
+    applyCorsHeaders(res, request);
     applySecurityHeaders(res);
     return res;
   } catch (err) {
     const res = toHttpResponse(err);
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");
-    applyCorsHeaders(res);
+    applyCorsHeaders(res, request);
     applySecurityHeaders(res);
     return res;
   }

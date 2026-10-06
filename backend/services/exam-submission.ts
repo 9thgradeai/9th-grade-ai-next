@@ -594,6 +594,17 @@ export async function submitExamAttempt(
               });
             }
           }
+          // Fail-loud contract (§4 above): a null mastery entry means that
+          // question's progress write failed. Abort so NOTHING commits and the
+          // client retries with the same idempotency key — never silently
+          // half-graded inside a committed transaction.
+          for (const item of masteryInputs) {
+            if (masteryResults.get(item.questionId) == null) {
+              throw new InternalServerError(
+                "Mastery update failed for a question; please retry submission.",
+              );
+            }
+          }
           for (const item of review) {
             const fb = feedbackByQid.get(item.questionId);
             if (fb) {

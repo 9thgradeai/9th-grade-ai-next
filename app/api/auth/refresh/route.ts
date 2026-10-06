@@ -78,8 +78,7 @@ export async function POST(request: Request) {
       { email: payload.email, origIat, ver: user.tokenVersion },
       new Date(Date.now() + lifetimeMs),
     );
-    const { passwordHash: _passwordHash, ...safeUser } = user;
-    const res = NextResponse.json({ expiresIn: lifetimeMs, user: safeUser });
+    const res = NextResponse.json({ expiresIn: lifetimeMs, user });
     await setSessionCookie(freshToken, res, Math.floor(lifetimeMs / 1000));
 
     res.headers.set("X-Request-Id", requestId);

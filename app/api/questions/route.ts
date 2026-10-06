@@ -19,7 +19,7 @@ export async function GET(request: Request) {
       const res = NextResponse.json({ questions, page: 1, pageSize: 1, total: questions.length });
       res.headers.set("X-Request-Id", requestId);
       res.headers.set("X-Response-Time", getTime() + "ms");
-      applyCorsHeaders(res);
+      applyCorsHeaders(res, request);
       applySecurityHeaders(res);
       return res;
     }
@@ -47,7 +47,7 @@ export async function GET(request: Request) {
     const res = NextResponse.json({ questions, page, pageSize: limit, total });
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");
-    applyCorsHeaders(res);
+    applyCorsHeaders(res, request);
     applySecurityHeaders(res);
     // Public reference content — cache briefly at the edge/browser.
     applyCacheHeaders(res, { public: true, maxAge: 60, staleWhileRevalidate: 300 });
@@ -56,7 +56,7 @@ export async function GET(request: Request) {
     const res = toHttpResponse(err);
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");
-    applyCorsHeaders(res);
+    applyCorsHeaders(res, request);
     applySecurityHeaders(res);
     return res;
   }

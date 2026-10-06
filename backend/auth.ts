@@ -318,7 +318,8 @@ export async function getSessionUser(req: Request): Promise<UserRecord | null> {
     name: u.name,
     email: u.email,
     handle: u.handle,
-    passwordHash: u.passwordHash,
+    // NOTE: passwordHash is deliberately absent — the session DTO must never
+    // carry credential material (Phase 0 hardening).
     tokenVersion: u.tokenVersion,
     role: u.role === "ADMIN" ? "admin" : u.role === "BANNED" ? "banned" : "student",
     emailVerified: u.emailVerified,

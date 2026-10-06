@@ -24,7 +24,7 @@ export type UserRecord = {
   name: string;
   email: string;
   handle: string;
-  passwordHash: string;
+  // NOTE: no passwordHash — the public record must never carry credentials.
   tokenVersion: number;
   role: "student" | "admin" | "banned";
   emailVerified: boolean;
@@ -94,7 +94,6 @@ export function toUserRecord(u: RawUser): UserRecord {
     name: u.name,
     email: u.email,
     handle: u.handle,
-    passwordHash: u.passwordHash,
     tokenVersion: u.tokenVersion,
     role: u.role === "ADMIN" ? "admin" : u.role === "BANNED" ? "banned" : "student",
     emailVerified: u.emailVerified,
@@ -117,6 +116,22 @@ export async function findUserByEmail(email: string): Promise<UserRecord | null>
     return toUserRecord(u);
   } catch (error) {
     throw new InternalServerError("Failed to fetch user by email", { cause: error });
+  }
+}
+
+/**
+ * Credential-bearing lookup for the password-login path ONLY. The hash must
+ * never leave the server — callers strip it before responding.
+ */
+export type UserCredentials = UserRecord & { passwordHash: string };
+
+export async function findUserCredentialsByEmail(email: string): Promise<UserCredentials | null> {
+  try {
+    const u = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
+    if (!u) return null;
+    return { ...toUserRecord(u), passwordHash: u.passwordHash };
+  } catch (error) {
+    throw new InternalServerError("Failed to fetch user credentials", { cause: error });
   }
 }
 
@@ -560,7 +575,7 @@ export async function resetPassword(token: string, newPassword: string): Promise
 
     const tokenHash = sha256(token);
     const passwordHash = await hash(newPassword, 10);
-    await prisma.user.updateMany({
+    const updated = await prisma.user.updateMany({
       where: {
         passwordResetToken: tokenHash,
         passwordResetExpires: { gt: new Date() },
@@ -572,6 +587,11 @@ export async function resetPassword(token: string, newPassword: string): Promise
         passwordResetExpires: null,
       },
     });
+    // updateMany succeeds with count 0 when the token is unknown or expired —
+    // without this check an invalid link would look like a success.
+    if (updated.count === 0) {
+      throw new ValidationError("Invalid or expired reset link.");
+    }
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new InternalServerError("Failed to reset password", { cause: error });
@@ -745,6 +765,13 @@ export async function validateResetToken(token: string): Promise<void> {
 
 /** GDPR Article 15/20: Collect all user data for export / portability. */
 export async function exportUserData(userId: string) {
+  // OOM guard: list sections are capped (newest-first) instead of unbounded.
+  // Sections that hit the cap are flagged in `truncated` — never silently cut.
+  const MAX_EXPORT_ROWS = 5000;
+  const capped = <T>(rows: T[]): { rows: T[]; hitCap: boolean } => ({
+    rows,
+    hitCap: rows.length >= MAX_EXPORT_ROWS,
+  });
   const [
     profile,
     progress,
@@ -789,68 +816,99 @@ export async function exportUserData(userId: string) {
     prisma.questionAttempt.findMany({
       where: { userId },
       orderBy: { createdAt: "desc" },
+      take: MAX_EXPORT_ROWS,
     }),
     prisma.mockTestResult.findMany({
       where: { userId },
       orderBy: { createdAt: "desc" },
+      take: MAX_EXPORT_ROWS,
     }),
     prisma.bookmark.findMany({
       where: { userId },
       include: { question: true },
       orderBy: { createdAt: "desc" },
+      take: MAX_EXPORT_ROWS,
     }),
     prisma.flashcardReview.findMany({
       where: { userId },
       include: { flashcard: true },
       orderBy: { createdAt: "desc" },
+      take: MAX_EXPORT_ROWS,
     }),
     prisma.studyTaskCompletion.findMany({
       where: { userId },
       include: { task: true },
       orderBy: { completedAt: "desc" },
+      take: MAX_EXPORT_ROWS,
     }),
     prisma.aIConversation.findMany({
       where: { userId },
       orderBy: { updatedAt: "desc" },
+      take: MAX_EXPORT_ROWS,
     }),
     prisma.aIMessage.findMany({
       where: { conversation: { userId } },
       orderBy: { createdAt: "desc" },
+      take: MAX_EXPORT_ROWS,
     }),
     prisma.aIMemory.findMany({
       where: { userId },
       orderBy: { updatedAt: "desc" },
+      take: MAX_EXPORT_ROWS,
     }),
     prisma.aIUsage.findMany({
       where: { userId },
       orderBy: { createdAt: "desc" },
+      take: MAX_EXPORT_ROWS,
     }),
     prisma.aIFeedback.findMany({
       where: { userId },
       orderBy: { createdAt: "desc" },
+      take: MAX_EXPORT_ROWS,
     }),
     prisma.dailyQuizParticipation.findMany({
       where: { userId },
       orderBy: { createdAt: "desc" },
+      take: MAX_EXPORT_ROWS,
     }),
     prisma.appNotification.findMany({
       where: { userId },
       orderBy: { timestamp: "desc" },
+      take: MAX_EXPORT_ROWS,
     }),
     prisma.notificationRead.findMany({
       where: { userId },
       orderBy: { readAt: "desc" },
+      take: MAX_EXPORT_ROWS,
     }),
     prisma.userBadge.findMany({
       where: { userId },
       include: { badge: true },
       orderBy: { unlockedAt: "desc" },
+      take: MAX_EXPORT_ROWS,
     }),
     prisma.user.findUnique({
       where: { id: userId },
       select: { sessions: true },
     }),
   ]);
+
+  const truncated: Record<string, boolean> = {
+    attempts: capped(attempts).hitCap,
+    mockResults: capped(mockResults).hitCap,
+    bookmarks: capped(bookmarks).hitCap,
+    flashcardReviews: capped(flashcardReviews).hitCap,
+    studyCompletions: capped(studyCompletions).hitCap,
+    aiConversations: capped(aiConversations).hitCap,
+    aiMessages: capped(aiMessages).hitCap,
+    aiMemories: capped(aiMemories).hitCap,
+    aiUsage: capped(aiUsage).hitCap,
+    aiFeedback: capped(aiFeedback).hitCap,
+    dailyQuizParticipations: capped(dailyQuizParticipations).hitCap,
+    notifications: capped(notifications).hitCap,
+    notificationReads: capped(notificationReads).hitCap,
+    userBadges: capped(userBadges).hitCap,
+  };
 
   return {
     exportedAt: new Date().toISOString(),
@@ -872,5 +930,7 @@ export async function exportUserData(userId: string) {
     notificationReads,
     userBadges,
     sessions: sessions?.sessions ?? [],
+    truncated,
+    maxRowsPerSection: MAX_EXPORT_ROWS,
   };
 }

@@ -23,7 +23,12 @@ export async function POST(request: Request) {
   return NextResponse.json({ processed: count });
 }
 
-// GET is status-only and MUST NOT trigger side effects.
-export async function GET() {
+// GET processes too when Bearer-authorized (Vercel Cron issues GET) —
+// otherwise it is a side-effect-free status probe.
+export async function GET(request: Request) {
+  if (isAuthorized(request)) {
+    const count = await processPendingJobs(10);
+    return NextResponse.json({ processed: count });
+  }
   return NextResponse.json({ ok: true, message: "Worker endpoint — POST to process" });
 }

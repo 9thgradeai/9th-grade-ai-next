@@ -318,40 +318,38 @@ export async function getSpotlightQuestions(
     const ordered = live.map((_, i) => live[(startAt + i) % live.length]);
 
     const picked: QuestionDTO[] = [];
-    // Round-robin rounds until the batch is full or every subject is drained.
-    for (let round = 0; round < 30 && picked.length < count; round++) {
-      let drained = true;
-      for (const s of ordered) {
-        if (picked.length >= count) break;
-        // Live remaining count for this subject excluding already-picked ids
-        // in this batch (plus the caller's exclusions).
-        const pickedIds = picked.map((q) => q.id);
-        const total = await prisma.question.count({
-          where: {
-            subjectId: s.id,
-            ...(pickedIds.length > 0 || excluded.length > 0
-              ? { id: { notIn: [...excluded, ...pickedIds] } }
-              : {}),
-          },
-        });
-        if (total <= 0) continue;
-        drained = false;
-        const skip = Math.floor(Math.random() * total);
-        const rows = await prisma.question.findMany({
-          where: {
-            subjectId: s.id,
-            ...(pickedIds.length > 0 || excluded.length > 0
-              ? { id: { notIn: [...excluded, ...pickedIds] } }
-              : {}),
-          },
+    // Batched round-robin: ONE query per live subject (not count+fetch per
+    // subject per round — the old loop issued up to ~60 queries for a batch
+    // of 12). Each subject contributes a small random-offset pool; pools are
+    // interleaved so the cycle still covers ALL subjects. Pools are
+    // per-subject disjoint, so no within-batch duplicates are possible.
+    const perSubject = Math.max(1, Math.ceil(count / live.length) + 1);
+    const ecoFilter = opts?.ecosystemId !== undefined ? { ecosystemId: opts.ecosystemId } : {};
+    const pools = await Promise.all(
+      ordered.map(async (s) => {
+        const avail = Math.max(0, (availableBySubject.get(s.id) ?? 0) - excluded.length);
+        if (avail <= 0) return [];
+        const skip = avail > perSubject ? Math.floor(Math.random() * (avail - perSubject + 1)) : 0;
+        return prisma.question.findMany({
+          where: { subjectId: s.id, ...notIn, ...ecoFilter },
           skip,
-          take: 1,
+          take: perSubject,
           orderBy: { id: "asc" },
           include: { subject: true },
         });
-        if (rows[0]) picked.push(toQuestionDTO(rows[0]));
+      }),
+    );
+    for (let i = 0; picked.length < count; i++) {
+      let progressed = false;
+      for (const pool of pools) {
+        if (picked.length >= count) break;
+        const row = pool[i];
+        if (row) {
+          picked.push(toQuestionDTO(row));
+          progressed = true;
+        }
       }
-      if (drained) break;
+      if (!progressed) break;
     }
     return picked;
   } catch {

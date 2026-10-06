@@ -13,8 +13,7 @@ export async function GET(request: Request) {
       throw new AppError(401, "Not authenticated", "AUTH_UNAUTHORIZED");
     }
 
-    const { passwordHash: _passwordHash, ...safeUser } = user;
-    const res = NextResponse.json({ user: safeUser });
+    const res = NextResponse.json({ user });
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");
     applySecurityHeaders(res);

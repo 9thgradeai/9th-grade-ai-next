@@ -233,9 +233,11 @@ describe("getSpotlightQuestions (Home rotating MCQ, DB-only)", () => {
     vi.mocked(prisma.question.count).mockResolvedValue(10);
     let nextId = 1;
     vi.mocked(prisma.question.findMany).mockImplementation(async (args) => {
-      const where = (args as { where?: { subjectId?: number } }).where;
-      const id = nextId++;
-      return [spotlightRow(id, where?.subjectId ?? 1)] as never;
+      const { where, take } = args as { where?: { subjectId?: number }; take?: number };
+      const n = Math.max(1, take ?? 1);
+      const rows = [];
+      for (let k = 0; k < n; k++) rows.push(spotlightRow(nextId++, where?.subjectId ?? 1));
+      return rows as never;
     });
   });
 
@@ -252,8 +254,12 @@ describe("getSpotlightQuestions (Home rotating MCQ, DB-only)", () => {
 
   it("excludes already-shown ids", async () => {
     await getSpotlightQuestions({ ecosystemId: 1, count: 2, excludeIds: [5, 9] });
-    const countCall = vi.mocked(prisma.question.count).mock.calls[0][0];
-    expect(countCall?.where).toMatchObject({ id: { notIn: expect.arrayContaining([5, 9]) } });
+    const calls = vi.mocked(prisma.question.findMany).mock.calls;
+    expect(calls.length).toBeGreaterThan(0);
+    for (const call of calls) {
+      const where = (call[0] as { where?: { id?: { notIn?: number[] } } }).where;
+      expect(where?.id?.notIn).toEqual(expect.arrayContaining([5, 9]));
+    }
   });
 
   it("returns [] when no subjects exist", async () => {

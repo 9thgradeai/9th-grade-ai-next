@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { validateLoginInput } from "~backend/validation";
 import { AppError, toHttpResponse } from "~backend/errors";
-import { findUserByEmail, verifyPassword, DUMMY_PASSWORD_HASH } from "~backend/services/user";
+import { findUserCredentialsByEmail, verifyPassword, DUMMY_PASSWORD_HASH } from "~backend/services/user";
 import { signSession, setSessionCookie, addUserSession, SESSION_DURATION_MS, REMEMBER_SESSION_MS } from "~backend/auth";
 import { assertLoginAllowed } from "~backend/rate-limit";
 import { getRequestId, startTiming, applySecurityHeaders, applyCorsHeaders, assertSameOrigin } from "../../_middleware";
@@ -23,7 +23,7 @@ export async function POST(request: Request) {
     // so rotating IPs cannot brute-force one mailbox.
     await assertLoginAllowed(request, email);
 
-    const user = await findUserByEmail(email);
+    const user = await findUserCredentialsByEmail(email);
 
     // Social-only accounts (Google) have no password; tell the user which
     // provider to use instead of a generic "invalid credentials" so they're not
@@ -73,7 +73,7 @@ export async function POST(request: Request) {
 
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");
-    applyCorsHeaders(res);
+    applyCorsHeaders(res, request);
     applySecurityHeaders(res);
 
     return res;
@@ -84,7 +84,7 @@ export async function POST(request: Request) {
     const res = toHttpResponse(err);
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");
-    applyCorsHeaders(res);
+    applyCorsHeaders(res, request);
     applySecurityHeaders(res);
     return res;
   }

@@ -7,6 +7,7 @@ import "server-only";
 
 import { prisma } from "~backend/db";
 import { InternalServerError } from "~backend/errors";
+import { log } from "~backend/infrastructure/observability/logger";
 import type { UserQuestionProgress } from "@prisma/client";
 import {
   upsertProgress,
@@ -178,8 +179,9 @@ export async function recordQuestionAttempt(
     const { feedback } = await applyProgress(tx, userId, questionId, existing, input, new Date());
     return feedback;
   } catch (error) {
-    // Never break the submission flow — log and swallow.
-    console.error("[question-progress] Failed to record attempt:", error);
+    // Fail-open by contract (practice must never hard-fail on a progress
+    // write) — but observable: structured log, never a bare console.error.
+    log.error("question-progress.record-failed", { userId: input.userId, questionId: input.questionId, error: String(error) });
     return null;
   }
 }
@@ -211,7 +213,7 @@ export async function recordQuestionAttempts(
     });
     preloaded = new Map(rows.map((r) => [r.questionId, r]));
   } catch (error) {
-    console.error("[question-progress] Bulk read failed, falling back per question:", error);
+    log.error("question-progress.bulk-read-failed", { userId, count: inputs.length, error: String(error) });
     for (const input of inputs) {
       out.set(input.questionId, await recordQuestionAttempt(tx, input));
     }
@@ -233,7 +235,7 @@ export async function recordQuestionAttempts(
       chained.set(input.questionId, updated);
       out.set(input.questionId, feedback);
     } catch (error) {
-      console.error("[question-progress] Failed to record attempt:", error);
+      log.error("question-progress.record-failed", { userId: input.userId, questionId: input.questionId, error: String(error) });
       out.set(input.questionId, null);
     }
   }

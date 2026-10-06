@@ -20,9 +20,8 @@ export async function PATCH(request: Request) {
     const input = validateUpdateProfileInput(body);
 
     const updated = await updateUserProfile(userId, input);
-    const { passwordHash: _passwordHash, ...safeUser } = updated;
 
-    const res = NextResponse.json({ user: safeUser });
+    const res = NextResponse.json({ user: updated });
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");
     applySecurityHeaders(res);

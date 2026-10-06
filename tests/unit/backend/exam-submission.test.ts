@@ -205,6 +205,48 @@ describe("submitExamAttempt — canonical, idempotent submission", () => {
     expect(result.outcome).toBe("submitted");
   });
 
+  it("fails loud when mastery writes fail — no silent partial grading", async () => {
+    vi.mocked(prisma.examAttempt.findUnique).mockResolvedValue(null);
+    vi.mocked(prisma.question.findMany).mockResolvedValue([
+      fullQuestion(1, "খ"),
+    ] as never);
+    vi.mocked(prisma.questionAttempt.createMany).mockResolvedValue({ count: 1 } as never);
+    vi.mocked(prisma.mockTestResult.create).mockResolvedValue({ id: 99 } as never);
+    vi.mocked(prisma.examAttempt.upsert).mockImplementation(async (args) => {
+      const a = args as { create: { questionSetHash: string }; update?: unknown };
+      return {
+        id: 1,
+        userId: "user-1",
+        idempotencyKey: ATTEMPT_ID,
+        questionSetHash: a.create.questionSetHash,
+        status: "SUBMITTING",
+        durationSec: 60,
+        startedAt: new Date(),
+        submittedAt: null,
+        summaryJson: null,
+        resultId: null,
+      } as never;
+    });
+    vi.mocked(prisma.$transaction).mockImplementation(
+      async (arg) =>
+        (arg as (tx: unknown) => Promise<unknown>)(prisma) as never,
+    );
+    vi.mocked(prisma.userQuestionProgress.findUnique).mockResolvedValue(null);
+    // Mastery write blows up → the whole submission must abort, not commit
+    // attempts+points with missing mastery feedback. Once-only so later
+    // tests are unaffected (clearAllMocks does not remove implementations).
+    vi.mocked(prisma.userQuestionProgress.upsert).mockRejectedValueOnce(new Error("db down"));
+
+    await expect(
+      submitExamAttempt("user-1", {
+        attemptId: ATTEMPT_ID,
+        questionIds: [1],
+        durationSec: 60,
+        answers: [{ questionId: 1, selected: "খ" }],
+      }),
+    ).rejects.toThrow(/Mastery update failed/);
+  });
+
   it("grades BCS-style (+1 / −0.5 / 0), persists atomically, returns summary", async () => {
     vi.mocked(prisma.examAttempt.findUnique).mockResolvedValue(null);
     vi.mocked(prisma.question.findMany).mockResolvedValue([
