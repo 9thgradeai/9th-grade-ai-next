@@ -371,7 +371,7 @@ export async function createTutorTurn(opts: {
   const parsed = validateChatRequest(raw);
   const request = parsed as TutorRequest;
   // Injection gate on the latest user message before any model/tool work.
-  assertPromptAllowed(parsed.messages.filter((m) => m.role === "user").at(-1)?.content ?? "");
+  assertPromptAllowed(parsed.messages.filter((m) => m.role === "user").at(-1)?.content ?? "", { userId });
   const intent = request.intent ?? detectIntent(parsed.messages[parsed.messages.length - 1]?.content ?? "");
   const hasImage = Boolean(request.imageBase64);
 
@@ -541,7 +541,7 @@ export async function solveQuestion(opts: {
   const { userId, request: raw } = opts;
   const parsed = validateSolverRequest(raw);
   const request = parsed as SolverRequest;
-  assertPromptAllowed(request.text ?? "");
+  assertPromptAllowed(request.text ?? "", { userId });
 
   const hasImage = Boolean(request.imageBase64);
   let subjectId = request.subjectId;
@@ -1081,7 +1081,7 @@ export async function createAgentTurn(opts: {
 }> {
   const { userId, request: raw } = opts;
   const parsed = validateAgentRequest(raw);
-  assertPromptAllowed(parsed.question);
+  assertPromptAllowed(parsed.question, { userId });
   const intent = parsed.intent ?? (detectIntent(parsed.question, "recommend") as AIIntent);
 
   // Tap the loop's live status stream to reconstruct the executed tool log
