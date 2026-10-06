@@ -242,15 +242,15 @@ describe("HomeTab rearrangement", () => {
     });
   });
 
-  it("places mission first, then analytics, recommendations, and a deferred pulse", async () => {
+  it("places performance directly under welcome, then mission, recommendations, and a deferred pulse", async () => {
     render(<HomeTab />);
+    const performance = await screen.findByText("Performance Velocity");
+    const plan = screen.getByText("Today's Adaptive Plan");
     const heading = await screen.findByRole("heading", { level: 1, name: "Preparation overview" });
     const mission = await screen.findByText("Today's Mission");
-    const performance = screen.getByText("Performance Velocity");
-    const plan = screen.getByText("Today's Adaptive Plan");
     const recommendations = screen.getByText("Recommended for you");
     const pulse = screen.getByRole("region", { name: "Preparation pulse" });
-    const ordered = [heading, mission, performance, plan, recommendations, pulse];
+    const ordered = [performance, plan, heading, mission, recommendations, pulse];
     ordered.slice(1).forEach((element, index) => {
       expect(ordered[index].compareDocumentPosition(element) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     });

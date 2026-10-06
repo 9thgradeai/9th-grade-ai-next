@@ -463,10 +463,11 @@ export default function HomeTab() {
     setReloadKey((k) => k + 1);
   };
 
-  // Sprint 1 ambient ranking — highest-need region first. Mission stays
-  // pinned (it is the primary CTA); analytics/actions/pulse reorder by live
-  // signals; everything else holds a fixed slot. Applied via CSS `order`
-  // (gap-based stack, so reordering never disturbs spacing).
+  // Sprint 1 ambient ranking — highest-need region first. Performance +
+  // today's plan stay pinned directly under the welcome card (explicit
+  // product order); actions/pulse reorder by live signals; everything else
+  // holds a fixed slot. Applied via CSS `order` (gap-based stack, so
+  // reordering never disturbs spacing).
   const regionOrder = useMemo(() => {
     const planDone = todaysTasks.filter((task) => task.completed).length;
     const ranked = rankAmbientCards({
@@ -479,14 +480,12 @@ export default function HomeTab() {
     const order: Record<string, number> = {};
     let slot = 2;
     for (const id of ranked) {
-      const key = id === "performance" || id === "plan" ? "analytics" : id === "mission" ? null : id;
-      if (key === null || key === "coach") continue;
-      if (!(key in order)) order[key] = slot++;
+      if (id === "performance" || id === "plan" || id === "mission" || id === "coach") continue;
+      if (!(id in order)) order[id] = slot++;
     }
     return {
-      analytics: order.analytics ?? 2,
-      actions: order.actions ?? 3,
-      pulse: order.pulse ?? 4,
+      actions: order.actions ?? 2,
+      pulse: order.pulse ?? 3,
     };
   }, [intelligence?.mistakes.unmastered, intelligence?.flashcardsDue, intelligence?.streak, heroSignals.weakAccuracy, todaysTasks]);
 
@@ -496,6 +495,41 @@ export default function HomeTab() {
       <RevealSection className="min-w-0" style={{ order: -1 }}>
         <HomeWelcome onStartPractice={startDailyWarmup} />
       </RevealSection>
+
+      {/* ── 1 · Performance Velocity + today's plan — pinned directly under
+             the welcome card (explicit product order, never ambient-ranked). ── */}
+      <div className="study-home-analytics grid gap-5 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+        <RevealSection className="min-w-0">
+          {!pulseReady ? (
+            <ScopeSkeleton label={t(lang, "পারফরম্যান্স লোড হচ্ছে", "Loading performance")} />
+          ) : (
+            <PerformanceCard
+              activity={intelligence?.activity ?? []}
+              results={results}
+              range={perfRange}
+              onRangeChange={setPerfRange}
+              loading={false}
+            />
+          )}
+        </RevealSection>
+        <RevealSection className="min-w-0">
+          {tasksFailed && !tasksReady ? (
+            <ScopeError
+              message={t(lang, "আজকের পরিকল্পনা লোড করা যায়নি", "Could not load today's plan")}
+              retryLabel={t(lang, "আবার চেষ্টা করুন", "Try again")}
+              onRetry={() => retryScope("tasks")}
+            />
+          ) : !tasksReady ? (
+            <ScopeSkeleton label={t(lang, "আজকের পরিকল্পনা লোড হচ্ছে", "Loading today's plan")} />
+          ) : (
+            <TodayPlanCard
+              tasks={todaysTasks}
+              onToggle={toggleTask}
+              onTaskAdded={() => setReloadKey((k) => k + 1)}
+            />
+          )}
+        </RevealSection>
+      </div>
 
       <motion.header
         initial={lowMotion ? false : "hidden"}
@@ -621,40 +655,6 @@ export default function HomeTab() {
           </button>
         </RevealSection>
       )}
-
-      {/* ── 3 · Performance + today's plan (ambient-ranked region) ── */}
-      <div className="study-home-analytics grid gap-5 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]" style={{ order: regionOrder.analytics }}>
-        <RevealSection className="min-w-0">
-          {!pulseReady ? (
-            <ScopeSkeleton label={t(lang, "পারফরম্যান্স লোড হচ্ছে", "Loading performance")} />
-          ) : (
-            <PerformanceCard
-              activity={intelligence?.activity ?? []}
-              results={results}
-              range={perfRange}
-              onRangeChange={setPerfRange}
-              loading={false}
-            />
-          )}
-        </RevealSection>
-        <RevealSection className="min-w-0">
-          {tasksFailed && !tasksReady ? (
-            <ScopeError
-              message={t(lang, "আজকের পরিকল্পনা লোড করা যায়নি", "Could not load today's plan")}
-              retryLabel={t(lang, "আবার চেষ্টা করুন", "Try again")}
-              onRetry={() => retryScope("tasks")}
-            />
-          ) : !tasksReady ? (
-            <ScopeSkeleton label={t(lang, "আজকের পরিকল্পনা লোড হচ্ছে", "Loading today's plan")} />
-          ) : (
-            <TodayPlanCard
-              tasks={todaysTasks}
-              onToggle={toggleTask}
-              onTaskAdded={() => setReloadKey((k) => k + 1)}
-            />
-          )}
-        </RevealSection>
-      </div>
 
       {/* ── 4 · Recommended actions (ambient-ranked region) ── */}
       <RevealSection className="min-w-0 min-h-[220px]" style={{ order: regionOrder.actions }}>
