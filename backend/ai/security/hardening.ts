@@ -92,10 +92,16 @@ export function detectPromptInjection(input: string): InjectionDetection {
  * medium/low only log (detection is heuristic — over-blocking would break
  * legitimate study questions like "ignore the previous chapter…").
  */
-export function assertPromptAllowed(input: string): void {
+export function assertPromptAllowed(input: string, meta?: { userId?: string }): void {
   if (typeof input !== "string" || !input.trim()) return;
   const result = detectPromptInjection(input);
   if (result.riskLevel === "high") {
+    auditLog({
+      userId: meta?.userId ?? "",
+      action: "prompt_injection_blocked",
+      resource: "ai",
+      details: { patterns: result.patterns, inputLength: input.length },
+    });
     throw new ValidationError(
       "That request looks like a prompt-injection attempt and was blocked. Please rephrase your study question.",
     );
@@ -216,7 +222,9 @@ export type AuditEntry = {
 };
 
 /**
- * Log an audit event for sensitive operations.
+ * Log an audit event for sensitive operations. Dual-sink: structured log
+ * (primary trail) + best-effort AuditLog row (indexed compliance queries).
+ * The DB write never throws — audit must not break the request it observes.
  */
 export function auditLog(entry: Omit<AuditEntry, "timestamp">): void {
   const fullEntry: AuditEntry = {
@@ -229,10 +237,20 @@ export function auditLog(entry: Omit<AuditEntry, "timestamp">): void {
     audit: fullEntry,
   });
 
-  // In production, also send to audit storage
-  if (process.env.NODE_ENV === "production") {
-    // TODO: Send to external audit storage (e.g., database, cloud logging)
-  }
+  // Best-effort persistence (fire-and-forget, errors swallowed by design).
+  void import("~backend/db").then(({ prisma }) =>
+    prisma.auditLog
+      .create({
+        data: {
+          userId: entry.userId || null,
+          action: entry.action,
+          resource: entry.resource,
+          details: (entry.details ?? {}) as never,
+          ip: entry.ip ?? "",
+        },
+      })
+      .catch(() => {}),
+  ).catch(() => {});
 }
 
 /**

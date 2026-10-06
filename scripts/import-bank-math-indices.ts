@@ -326,7 +326,7 @@ export async function importBankMathIndices(
   }
   // Refresh the leaf's denormalised count (Practice tree reads questionCount).
   const count = await prisma.question.count({ where: { subjectId: subject.id, path: LEAF_PATH } });
-  await prisma.topic.update({ where: { id: leaf.id }, data: { questionCount: String(count) } });
+  await prisma.topic.update({ where: { id: leaf.id }, data: { questionCount: count } });
   return report;
 }
 

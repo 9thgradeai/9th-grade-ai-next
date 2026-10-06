@@ -4,7 +4,7 @@
 // (pooled `-pooler.neon.tech` host for serverless function fan-out).
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["postgresqlExtensions"]
 }
 
@@ -185,62 +185,63 @@ enum MistakeErrorType {
 
 // ── Auth ──────────────────────────────────────────────────
 model User {
-  id           String         @id @default(cuid())
-  name         String
-  email        String         @unique
-  emailVerified Boolean       @default(false)
-  handle       String         @unique
-  passwordHash String         @default("")
+  id            String  @id @default(cuid())
+  name          String
+  email         String  @unique
+  emailVerified Boolean @default(false)
+  handle        String  @unique
+  passwordHash  String  @default("")
   // Bumped on password change / global revoke — JWTs carry the version they
   // were minted with; any token whose version is stale is rejected on verify.
-  tokenVersion Int            @default(0)
+  tokenVersion  Int     @default(0)
 
   // ── Social auth (Google OAuth 2.0 / OIDC) ──
   // googleId is the stable Google subject (`sub`). Null for password-only
   // accounts. `authProvider` records how the account was established so the UI
   // and login route can (a) show the right badge and (b) block password login
   // for Google-only accounts. `imageUrl` carries the Google avatar.
-  googleId      String?        @unique
-  authProvider  String         @default("password") // "password" | "google" | "both"
-  imageUrl      String?
-  role         UserRole       @default(STUDENT)
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
+  googleId     String?  @unique
+  authProvider String   @default("password") // "password" | "google" | "both"
+  imageUrl     String?
+  role         UserRole @default(STUDENT)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   // ── Onboarding (captured post-signup; powers the study planner) ──
-  examTarget         String?
-  examDate           DateTime?
-  prepLevel          String? // BEGINNER | INTERMEDIATE | ADVANCED
-  studyHoursPerDay   Int?
-  goal               String?
-  onboarded          Boolean  @default(false)
+  examTarget       String?
+  examDate         DateTime?
+  prepLevel        String? // BEGINNER | INTERMEDIATE | ADVANCED
+  studyHoursPerDay Int?
+  goal             String?
+  onboarded        Boolean   @default(false)
 
   // ── Email verification (raw token is emailed; only the SHA-256 hash is stored) ──
-  emailVerifyToken   String?
+  emailVerifyToken   String?   @unique
   emailVerifyExpires DateTime?
 
   // ── Password reset (raw token is emailed; only the SHA-256 hash is stored) ──
-  passwordResetToken   String?
+  passwordResetToken   String?   @unique
   passwordResetExpires DateTime?
 
   // ── Session tracking (for concurrency limits) ──
   // JSON array of { id: string, createdAt: string, userAgent?: string, ip?: string }
   // Max 5 concurrent sessions; oldest revoked on new login when at limit.
-  sessions        Json       @default("[]")
+  sessions Json @default("[]")
 
-  progress     UserProgress?
-  bookmarks    Bookmark[]
-  studyTasks   StudyTask[]
-  notifications AppNotification[]
-  attempts     QuestionAttempt[]
-  mockTestResults MockTestResult[]
-  examAttempts ExamAttempt[]
-  flashcardReviews FlashcardReview[]
-  notificationReads NotificationRead[]
-  aiConversations AIConversation[]
-  aiMemories    AIMemory[]
-  aiUsage       AIUsage[]
-  aiFeedback    AIFeedback[]
+  progress                UserProgress?
+  bookmarks               Bookmark[]
+  auditLogs               AuditLog[]
+  studyTasks              StudyTask[]
+  notifications           AppNotification[]
+  attempts                QuestionAttempt[]
+  mockTestResults         MockTestResult[]
+  examAttempts            ExamAttempt[]
+  flashcardReviews        FlashcardReview[]
+  notificationReads       NotificationRead[]
+  aiConversations         AIConversation[]
+  aiMemories              AIMemory[]
+  aiUsage                 AIUsage[]
+  aiFeedback              AIFeedback[]
   dailyQuizParticipations DailyQuizParticipation[]
   flashcardUserStates     FlashcardUserState[]
   studyTaskCompletions    StudyTaskCompletion[]
@@ -253,10 +254,10 @@ model User {
   createdDecks            VocabDeck[]
   currentAffairsNotes     UserCustomizedNote[]
 
-  storageConnection       StorageConnection?
-  storageFiles            StorageFile[]
-  syncJobs                SyncJob[]
-  storageRevisions        StorageRevision[]
+  storageConnection StorageConnection?
+  storageFiles      StorageFile[]
+  syncJobs          SyncJob[]
+  storageRevisions  StorageRevision[]
 
   // NOTE: `email` and `handle` are @unique — their backing indexes already
   // serve lookups; explicit duplicates were removed (write amplification).
@@ -264,21 +265,23 @@ model User {
 
 // ── Content taxonomy ──────────────────────────────────────
 model Subject {
-  id           Int           @id @default(autoincrement())
-  ecosystemId  Int           @default(1)
-  ecosystem    ExamEcosystem @relation(fields: [ecosystemId], references: [id], onDelete: Cascade)
-  nameBn       String
-  nameEn       String
-  icon         String        @default("📘")
-  color        String?       @default("text-emerald-400")
-  bg           String?       @default("bg-emerald-500/10")
-  sortOrder    Int           @default(0)
-  topics       Topic[]
-  questions    Question[]
-  flashcards   Flashcard[]
-  categories   QuestionBankCategory[]
-  attempts     QuestionAttempt[]
+  id              Int                    @id @default(autoincrement())
+  ecosystemId     Int                    @default(1)
+  ecosystem       ExamEcosystem          @relation(fields: [ecosystemId], references: [id], onDelete: Cascade)
+  nameBn          String
+  nameEn          String
+  icon            String                 @default("📘")
+  color           String?                @default("text-emerald-400")
+  bg              String?                @default("bg-emerald-500/10")
+  sortOrder       Int                    @default(0)
+  topics          Topic[]
+  questions       Question[]
+  flashcards      Flashcard[]
+  categories      QuestionBankCategory[]
+  attempts        QuestionAttempt[]
   aiConversations AIConversation[]
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @default(now()) @updatedAt
 
   @@unique([ecosystemId, nameBn])
   @@index([sortOrder])
@@ -286,20 +289,22 @@ model Subject {
 }
 
 model Topic {
-  id           Int     @id @default(autoincrement())
-  subjectId    Int
-  subject      Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
-  parentId     Int?
-  parent       Topic?  @relation("TopicTree", fields: [parentId], references: [id], onDelete: Cascade)
-  children     Topic[] @relation("TopicTree")
-  name         String // display name (taxonomy node name), e.g. "০২_নিরাপ্তা_ও_ক্ষমতা"
-  slug         String // path segment (defaults to name)
-  path         String // full content path from subject root, e.g. "04_আন্তর্জাতিক_বিষয়াবলি/০২_নিরাপ্তা_ও_ক্ষমতা/আন্তর্জাতিক_নিরাপ্তা"
-  depth        Int    @default(0)
-  sortOrder    Int    @default(0)
-  questionCount String @default("0")
-  questions    Question[]
+  id              Int              @id @default(autoincrement())
+  subjectId       Int
+  subject         Subject          @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  parentId        Int?
+  parent          Topic?           @relation("TopicTree", fields: [parentId], references: [id], onDelete: Cascade)
+  children        Topic[]          @relation("TopicTree")
+  name            String // display name (taxonomy node name), e.g. "০২_নিরাপ্তা_ও_ক্ষমতা"
+  slug            String // path segment (defaults to name)
+  path            String // full content path from subject root, e.g. "04_আন্তর্জাতিক_বিষয়াবলি/০২_নিরাপ্তা_ও_ক্ষমতা/আন্তর্জাতিক_নিরাপ্তা"
+  depth           Int              @default(0)
+  sortOrder       Int              @default(0)
+  questionCount   Int              @default(0)
+  questions       Question[]
   aiConversations AIConversation[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @default(now()) @updatedAt
 
   @@unique([subjectId, path])
   @@index([subjectId, parentId])
@@ -311,17 +316,17 @@ model Topic {
 // Metadata that is genuinely unknown is left NULL — never fabricated.
 
 model ExamCategory {
-  id           Int             @id @default(autoincrement())
-  ecosystemId  Int             @default(1)
-  ecosystem    ExamEcosystem   @relation(fields: [ecosystemId], references: [id], onDelete: Cascade)
-  slug         String
-  nameBn       String
-  nameEn       String
-  icon         String          @default("📘")
-  color        String          @default("text-emerald-400")
-  bg           String          @default("bg-emerald-500/10")
-  sortOrder    Int             @default(0)
-  exams        Exam[]
+  id          Int           @id @default(autoincrement())
+  ecosystemId Int           @default(1)
+  ecosystem   ExamEcosystem @relation(fields: [ecosystemId], references: [id], onDelete: Cascade)
+  slug        String
+  nameBn      String
+  nameEn      String
+  icon        String        @default("📘")
+  color       String        @default("text-emerald-400")
+  bg          String        @default("bg-emerald-500/10")
+  sortOrder   Int           @default(0)
+  exams       Exam[]
 
   @@unique([ecosystemId, slug])
   @@index([sortOrder])
@@ -329,45 +334,49 @@ model ExamCategory {
 }
 
 model Exam {
-  id             Int        @id @default(autoincrement())
+  id             Int          @id @default(autoincrement())
   categoryId     Int
   category       ExamCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  slug           String     @unique
+  slug           String       @unique
   nameBn         String
   nameEn         String
-  type           ExamStage  @default(PRELIMINARY)
+  type           ExamStage    @default(PRELIMINARY)
   durationMin    Int?
   totalQuestions Int?
   year           Int?
   heldOn         DateTime?
   sourceUrl      String?
-  verified       Boolean    @default(false)
-  sortOrder      Int        @default(0)
+  verified       Boolean      @default(false)
+  sortOrder      Int          @default(0)
   papers         ExamPaper[]
   questions      Question[]
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @default(now()) @updatedAt
 
   @@index([categoryId, sortOrder])
 }
 
 model ExamPaper {
-  id                Int        @id @default(autoincrement())
-  examId            Int
-  exam              Exam       @relation(fields: [examId], references: [id], onDelete: Cascade)
-  slug              String     @unique
-  titleBn           String
-  titleEn           String
-  bcsTerm           Int?       // ordinal number for BCS (50, 49, ...)
-  termLabel         String?    // "50th"
-  year              Int?
-  heldOn            DateTime?
-  durationMin       Int?
-  totalQuestions    Int?       // official paper total, if known
-  availableQuestions Int       @default(0) // validated questions actually held
-  source            String     @default("")
-  provenance        Provenance @default(UNKNOWN)
-  verified          Boolean    @default(false)
-  sortOrder         Int        @default(0)
-  questions         Question[]
+  id                 Int        @id @default(autoincrement())
+  examId             Int
+  exam               Exam       @relation(fields: [examId], references: [id], onDelete: Cascade)
+  slug               String     @unique
+  titleBn            String
+  titleEn            String
+  bcsTerm            Int? // ordinal number for BCS (50, 49, ...)
+  termLabel          String? // "50th"
+  year               Int?
+  heldOn             DateTime?
+  durationMin        Int?
+  totalQuestions     Int? // official paper total, if known
+  availableQuestions Int        @default(0) // validated questions actually held
+  source             String     @default("")
+  provenance         Provenance @default(UNKNOWN)
+  verified           Boolean    @default(false)
+  sortOrder          Int        @default(0)
+  questions          Question[]
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @default(now()) @updatedAt
 
   @@index([examId, bcsTerm])
   @@index([year])
@@ -375,49 +384,50 @@ model ExamPaper {
 
 // ── Questions ─────────────────────────────────────────────
 model Question {
-  id             Int             @id @default(autoincrement())
-  ecosystemId    Int             @default(1)
-  ecosystem      ExamEcosystem   @relation(fields: [ecosystemId], references: [id], onDelete: Cascade)
+  id             Int                    @id @default(autoincrement())
+  ecosystemId    Int                    @default(1)
+  ecosystem      ExamEcosystem          @relation(fields: [ecosystemId], references: [id], onDelete: Cascade)
   subjectId      Int
-  subject        Subject         @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  subject        Subject                @relation(fields: [subjectId], references: [id], onDelete: Cascade)
   topicId        Int?
-  leaf           Topic?          @relation(fields: [topicId], references: [id], onDelete: SetNull)
-  path           String          @default("")
-  topic          String          @default("")
-  subtopic       String          @default("")
+  leaf           Topic?                 @relation(fields: [topicId], references: [id], onDelete: SetNull)
+  path           String                 @default("")
+  topic          String                 @default("")
+  subtopic       String                 @default("")
   question       String
   options        Json // string[]
   correctAnswer  String
-  explanation    String          @default("")
+  explanation    String                 @default("")
   // When true, the stored text is authoritative book Unicode and the read
   // path must NOT run it through the LaTeX normalizer (see ADR-035 follow-up).
   // Used by the raw-Unicode import path under evaluation.
-  rawMath        Boolean         @default(false)
+  rawMath        Boolean                @default(false)
   // ── Multi-type answering (additive; legacy rows are SINGLE_CHOICE) ──
   // correctAnswer stays the source of truth for SINGLE_CHOICE.
   // correctAnswers is authoritative iff non-empty (MULTIPLE_CHOICE needs ≥2).
   // statements holds I/II/III stems for STATEMENT_COMBINATION.
   // media holds [{ kind: "image", url, alt }] — URLs only, files in public/.
-  questionType   QuestionType    @default(SINGLE_CHOICE)
-  correctAnswers Json            @default("[]")
-  statements     Json            @default("[]")
-  media          Json            @default("[]")
-  difficulty     Difficulty      @default(MEDIUM)
+  questionType   QuestionType           @default(SINGLE_CHOICE)
+  correctAnswers Json                   @default("[]")
+  statements     Json                   @default("[]")
+  media          Json                   @default("[]")
+  difficulty     Difficulty             @default(MEDIUM)
   year           Int?
-  sourceExam     String          @default("")
+  sourceExam     String                 @default("")
   bcsTerm        String?
   examId         Int?
-  exam           Exam?           @relation(fields: [examId], references: [id], onDelete: SetNull)
+  exam           Exam?                  @relation(fields: [examId], references: [id], onDelete: SetNull)
   paperId        Int?
-  paper          ExamPaper?      @relation(fields: [paperId], references: [id], onDelete: SetNull)
+  paper          ExamPaper?             @relation(fields: [paperId], references: [id], onDelete: SetNull)
   questionNumber Int?
-  sourceKey      String          @default("")
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
+  sourceKey      String                 @default("")
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt
   bookmarks      Bookmark[]
   attempts       QuestionAttempt[]
   userProgress   UserQuestionProgress[]
 
+  @@unique([subjectId, sourceKey])
   @@index([ecosystemId])
   @@index([ecosystemId, subjectId])
   @@index([ecosystemId, subjectId, difficulty])
@@ -426,7 +436,6 @@ model Question {
   @@index([topicId])
   @@index([examId])
   @@index([paperId, questionNumber])
-  @@unique([subjectId, sourceKey])
 }
 
 model QuestionBankCategory {
@@ -438,11 +447,11 @@ model QuestionBankCategory {
 }
 
 model ExamArchive {
-  id        Int     @id @default(autoincrement())
-  name      String  @unique
-  icon      String  @default("🎯")
-  count     Int     @default(0)
-  yearRange String  @default("")
+  id        Int        @id @default(autoincrement())
+  name      String     @unique
+  icon      String     @default("🎯")
+  count     Int        @default(0)
+  yearRange String     @default("")
   status    QuizStatus @default(ACTIVE)
   accent    String?
 }
@@ -452,23 +461,25 @@ model ExamArchive {
 // `repetitions` on this row are legacy shared defaults. Authoritative SRS
 // scheduling lives per-user in FlashcardUserState.
 model Flashcard {
-  id           Int      @id @default(autoincrement())
-  subjectId    Int?
-  subject      Subject? @relation(fields: [subjectId], references: [id], onDelete: SetNull)
-  subjectName  String   @default("")
-  question     String
-  answer       String
-  hint         String   @default("")
-  difficulty   Difficulty @default(MEDIUM)
+  id            Int                  @id @default(autoincrement())
+  subjectId     Int?
+  subject       Subject?             @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+  subjectName   String               @default("")
+  question      String
+  answer        String
+  hint          String               @default("")
+  difficulty    Difficulty           @default(MEDIUM)
   examRelevance Json? // ["BCS","Bank"] — which exam tracks this card serves
-  nextReview   DateTime @default(now())
-  interval     Int      @default(1)
-  easeFactor   Float    @default(2.5)
-  repetitions  Int      @default(0)
+  nextReview    DateTime             @default(now())
+  interval      Int                  @default(1)
+  easeFactor    Float                @default(2.5)
+  repetitions   Int                  @default(0)
   // Seed identity: md5(subjectName|question) — keeps card ids stable.
-  sourceKey    String   @default("") @unique
-  reviews      FlashcardReview[]
-  userStates   FlashcardUserState[]
+  sourceKey     String               @unique @default("")
+  reviews       FlashcardReview[]
+  userStates    FlashcardUserState[]
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @default(now()) @updatedAt
 
   @@index([subjectId])
   @@index([nextReview])
@@ -497,35 +508,35 @@ model FlashcardUserState {
 
 // ── Study planner ─────────────────────────────────────────
 model StudyPlanDay {
-  id           Int          @id @default(autoincrement())
+  id           Int         @id @default(autoincrement())
   day          String
   date         String
-  totalMinutes Int          @default(0)
+  totalMinutes Int         @default(0)
   focusAreas   Json // string[]
   // Seed identity: md5(day|date).
-  sourceKey    String       @default("") @unique
+  sourceKey    String      @unique @default("")
   tasks        StudyTask[]
 
   @@index([date])
 }
 
 model StudyTask {
-  id          Int           @id @default(autoincrement())
+  id          Int                   @id @default(autoincrement())
   dayId       Int
-  planDay     StudyPlanDay  @relation(fields: [dayId], references: [id], onDelete: Cascade)
+  planDay     StudyPlanDay          @relation(fields: [dayId], references: [id], onDelete: Cascade)
   // Nullable = shared template row seeded for everyone. User-created custom
   // tasks (userId set) remain possible; per-user completion of template rows
   // lives in StudyTaskCompletion.
   userId      String?
-  user        User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User?                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   title       String
-  subject     String        @default("")
-  duration    Int           @default(0)
-  priority    Priority      @default(MEDIUM)
-  description String        @default("")
+  subject     String                @default("")
+  duration    Int                   @default(0)
+  priority    Priority              @default(MEDIUM)
+  description String                @default("")
   // DEPRECATED (Phase 2B2): legacy column, superseded by StudyTaskCompletion.
-  completed   Boolean       @default(false)
-  createdAt   DateTime      @default(now())
+  completed   Boolean               @default(false)
+  createdAt   DateTime              @default(now())
   completions StudyTaskCompletion[]
 
   // FK-side index: user account deletion cascades here; composite below
@@ -537,12 +548,12 @@ model StudyTask {
 // Per-user completion marker for a (usually template) study task. Replaces
 // the shared `completed` boolean so one user's progress never affects another.
 model StudyTaskCompletion {
-  id          Int      @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   taskId      Int
   task        StudyTask @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  completedAt DateTime @default(now())
+  completedAt DateTime  @default(now())
 
   @@unique([userId, taskId])
   @@index([userId])
@@ -554,15 +565,15 @@ model StudyTaskCompletion {
 // dual-read transition; the authoritative per-user state now lives in
 // DailyQuizParticipation. Do not read these columns from new code.
 model DailyQuiz {
-  id           Int           @id @default(autoincrement())
-  ecosystemId  Int           @default(1)
-  ecosystem    ExamEcosystem @relation(fields: [ecosystemId], references: [id], onDelete: Cascade)
-  date         String
-  completed    Boolean       @default(false)
-  score        Int           @default(0)
-  claimed      Boolean       @default(false)
-  createdAt    DateTime      @default(now())
-  questions    QuizQuestion[]
+  id             Int                      @id @default(autoincrement())
+  ecosystemId    Int                      @default(1)
+  ecosystem      ExamEcosystem            @relation(fields: [ecosystemId], references: [id], onDelete: Cascade)
+  date           String
+  completed      Boolean                  @default(false)
+  score          Int                      @default(0)
+  claimed        Boolean                  @default(false)
+  createdAt      DateTime                 @default(now())
+  questions      QuizQuestion[]
   participations DailyQuizParticipation[]
 
   @@unique([ecosystemId, date])
@@ -574,23 +585,23 @@ model DailyQuiz {
 // ExamCategory → Exam → ExamPaper hierarchy. Shared infrastructure (User,
 // Bookmark, Flashcard, MockTest, AI, Progress) is NOT scoped by ecosystem.
 model ExamEcosystem {
-  id              Int                @id @default(autoincrement())
-  code            ExamEcosystemCode  @unique
-  slug            String             @unique
-  name            String             // English display name
-  nameBn          String             // Bengali display name
-  description     String             @default("")
-  descriptionBn   String             @default("")
-  isActive        Boolean            @default(true)
-  sortOrder       Int                @default(0)
-  createdAt       DateTime           @default(now())
-  updatedAt       DateTime           @updatedAt
+  id            Int               @id @default(autoincrement())
+  code          ExamEcosystemCode @unique
+  slug          String            @unique
+  name          String // English display name
+  nameBn        String // Bengali display name
+  description   String            @default("")
+  descriptionBn String            @default("")
+  isActive      Boolean           @default(true)
+  sortOrder     Int               @default(0)
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
 
-  subjects        Subject[]
-  examCategories  ExamCategory[]
-  dailyQuizzes    DailyQuiz[]
-  questions       Question[]
-  attempts        QuestionAttempt[]
+  subjects       Subject[]
+  examCategories ExamCategory[]
+  dailyQuizzes   DailyQuiz[]
+  questions      Question[]
+  attempts       QuestionAttempt[]
 
   @@index([sortOrder])
 }
@@ -598,19 +609,19 @@ model ExamEcosystem {
 // Per-user daily-quiz participation — one row per (user, quiz).
 // Replaces the accidental global completion flags on DailyQuiz.
 model DailyQuizParticipation {
-  id          Int                         @id @default(autoincrement())
-  userId      String
-  user        User                        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  quizId      Int
-  dailyQuiz   DailyQuiz                   @relation(fields: [quizId], references: [id], onDelete: Cascade)
-  status      DailyQuizParticipationStatus @default(IN_PROGRESS)
-  score       Int                         @default(0) // percentage 0–100
-  correct     Int                         @default(0)
-  total       Int                         @default(0)
-  pointsEarned Int                        @default(0)
-  completedAt DateTime?
-  createdAt   DateTime                    @default(now())
-  updatedAt   DateTime                    @updatedAt
+  id           Int                          @id @default(autoincrement())
+  userId       String
+  user         User                         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quizId       Int
+  dailyQuiz    DailyQuiz                    @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  status       DailyQuizParticipationStatus @default(IN_PROGRESS)
+  score        Int                          @default(0) // percentage 0–100
+  correct      Int                          @default(0)
+  total        Int                          @default(0)
+  pointsEarned Int                          @default(0)
+  completedAt  DateTime?
+  createdAt    DateTime                     @default(now())
+  updatedAt    DateTime                     @updatedAt
 
   @@unique([userId, quizId])
   @@index([quizId])
@@ -618,15 +629,15 @@ model DailyQuizParticipation {
 }
 
 model QuizQuestion {
-  id             Int        @id @default(autoincrement())
-  dailyQuizId    Int
-  dailyQuiz      DailyQuiz  @relation(fields: [dailyQuizId], references: [id], onDelete: Cascade)
-  subject        String     @default("")
-  topic          String     @default("")
-  question       String
-  options        Json
-  correctAnswer  String
-  explanation    String     @default("")
+  id            Int       @id @default(autoincrement())
+  dailyQuizId   Int
+  dailyQuiz     DailyQuiz @relation(fields: [dailyQuizId], references: [id], onDelete: Cascade)
+  subject       String    @default("")
+  topic         String    @default("")
+  question      String
+  options       Json
+  correctAnswer String
+  explanation   String    @default("")
 
   // FK-side index: seed's atomic replace deletes by dailyQuizId.
   @@index([dailyQuizId])
@@ -634,42 +645,48 @@ model QuizQuestion {
 
 // ── Mock tests ────────────────────────────────────────────
 model MockTest {
-  id              Int               @id @default(autoincrement())
-  title           String            @unique
-  subject         String            @default("")
-  totalQuestions  Int               @default(0)
-  duration        Int               @default(0)
-  questions       MockTestQuestion[]
-  results         MockTestResult[]
+  id             Int                @id @default(autoincrement())
+  title          String             @unique
+  subject        String             @default("")
+  totalQuestions Int                @default(0)
+  duration       Int                @default(0)
+  questions      MockTestQuestion[]
+  results        MockTestResult[]
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @default(now()) @updatedAt
 }
 
 model MockTestQuestion {
-  id             Int       @id @default(autoincrement())
-  mockTestId     Int
-  mockTest       MockTest  @relation(fields: [mockTestId], references: [id], onDelete: Cascade)
-  subject        String    @default("")
-  topic          String    @default("")
-  question       String
-  options        Json
-  correctAnswer  String
-  explanation    String    @default("")
+  id            Int      @id @default(autoincrement())
+  mockTestId    Int
+  mockTest      MockTest @relation(fields: [mockTestId], references: [id], onDelete: Cascade)
+  subject       String   @default("")
+  topic         String   @default("")
+  question      String
+  options       Json
+  correctAnswer String
+  explanation   String   @default("")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now()) @updatedAt
+
+  @@index([mockTestId])
 }
 
 // ── Exam schedule (real published exam dates) ─────────────
 model ExamSchedule {
-  id          Int      @id @default(autoincrement())
-  titleBn     String
-  titleEn     String   @default("")
-  type        String   @default("BCS") // BCS | BANK | TEACHER | OTHER
-  date        DateTime
-  year        String   @default("")
-  circularNo  String   @default("")
-  note        String   @default("")
-  sortOrder   Int      @default(0)
-  sourceUrl   String?  @default("") // Link to the verified official circular
-  verified    Boolean  @default(false) // Only verified entries are surfaced by the API
+  id         Int      @id @default(autoincrement())
+  titleBn    String
+  titleEn    String   @default("")
+  type       String   @default("BCS") // BCS | BANK | TEACHER | OTHER
+  date       DateTime
+  year       String   @default("")
+  circularNo String   @default("")
+  note       String   @default("")
+  sortOrder  Int      @default(0)
+  sourceUrl  String?  @default("") // Link to the verified official circular
+  verified   Boolean  @default(false) // Only verified entries are surfaced by the API
   // Seed identity: md5(circularNo|titleBn|year).
-  sourceKey   String   @default("") @unique
+  sourceKey  String   @unique @default("")
 
   @@index([date])
   @@index([type])
@@ -677,46 +694,49 @@ model ExamSchedule {
 
 // ── News / recommendations / gamification ────────────────
 model FlashNews {
-  id          Int     @id @default(autoincrement())
-  tag         String  @default("EXAM")
-  titleBn     String
-  titleEn     String? @default("")
-  text        String  @default("")
-  full        String  @default("")
-  date        String  @default("")
-  readTime    Int     @default(1)
-  categoryBn  String? @default("")
-  categoryEn  String? @default("")
-  sourceUrl   String? @default("") // Link to the verified official source
-  verified    Boolean  @default(false) // Only verified items are surfaced by the API
+  id         Int     @id @default(autoincrement())
+  tag        String  @default("EXAM")
+  titleBn    String
+  titleEn    String? @default("")
+  text       String  @default("")
+  full       String  @default("")
+  date       String  @default("")
+  readTime   Int     @default(1)
+  categoryBn String? @default("")
+  categoryEn String? @default("")
+  sourceUrl  String? @default("") // Link to the verified official source
+  verified   Boolean @default(false) // Only verified items are surfaced by the API
   // Seed identity: md5(titleBn|date).
-  sourceKey   String  @default("") @unique
+  sourceKey  String  @unique @default("")
+
+  @@index([date])
+  @@index([verified, date])
 }
 
 model Recommendation {
-  id             Int     @id @default(autoincrement())
-  subjectBn      String
-  subjectEn      String? @default("")
-  metric         String  @default("accuracy")
-  accuracy       Int     @default(0)
-  titleBn        String
-  titleEn        String? @default("")
-  descriptionBn  String
-  descriptionEn  String? @default("")
-  ctaBn          String
-  ctaEn          String? @default("")
+  id            Int     @id @default(autoincrement())
+  subjectBn     String
+  subjectEn     String? @default("")
+  metric        String  @default("accuracy")
+  accuracy      Int     @default(0)
+  titleBn       String
+  titleEn       String? @default("")
+  descriptionBn String
+  descriptionEn String? @default("")
+  ctaBn         String
+  ctaEn         String? @default("")
   // Seed identity: md5(subjectBn|titleBn).
-  sourceKey      String  @default("") @unique
+  sourceKey     String  @unique @default("")
 }
 
 model Badge {
-  id           Int        @id @default(autoincrement())
-  name         String     @unique
+  id           Int         @id @default(autoincrement())
+  name         String      @unique
   description  String
-  icon         String     @default("🏅")
+  icon         String      @default("🏅")
   rarity       BadgeRarity @default(COMMON)
   // DEPRECATED (Phase 2B2): seed-time catalog flag; real unlocks live in UserBadge.
-  unlockedSeed Boolean    @default(false)
+  unlockedSeed Boolean     @default(false)
   userBadges   UserBadge[]
 }
 
@@ -730,21 +750,22 @@ model UserBadge {
   unlockedAt DateTime @default(now())
 
   @@unique([userId, badgeId])
+  @@index([badgeId])
 }
 
 model AppNotification {
-  id        Int            @id @default(autoincrement())
+  id        Int                @id @default(autoincrement())
   userId    String?
-  user      User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user      User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
   title     String
   message   String
-  type      NotificationType @default(INFO)
-  timestamp DateTime       @default(now())
-  read      Boolean        @default(false)
+  type      NotificationType   @default(INFO)
+  timestamp DateTime           @default(now())
+  read      Boolean            @default(false)
   reads     NotificationRead[]
   // Seed identity: md5(title|message) — NotificationRead rows reference this
   // row, so ids must survive reseeds.
-  sourceKey String         @default("") @unique
+  sourceKey String             @unique @default("")
 
   @@index([userId])
   // Keyset pagination orders by (timestamp desc, id desc).
@@ -752,25 +773,27 @@ model AppNotification {
 }
 
 model OfflinePack {
-  id         Int    @id @default(autoincrement())
-  name       String @unique
-  size       String @default("")
+  id         Int     @id @default(autoincrement())
+  name       String  @unique
+  size       String  @default("")
   downloaded Boolean @default(false)
-  subject    String @default("")
+  subject    String  @default("")
 }
 
 // ── Documents (syllabus, circulars, guides) ──────────────
 model Document {
-  id          Int     @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   title       String
-  category    String  @default("Syllabus") // Syllabus | Circular | Guide
-  type        String  @default("md") // md | pdf
-  url         String  @default("")
-  description String  @default("")
-  year        String  @default("")
+  category    String   @default("Syllabus") // Syllabus | Circular | Guide
+  type        String   @default("md") // md | pdf
+  url         String   @default("")
+  description String   @default("")
+  year        String   @default("")
   createdAt   DateTime @default(now())
   // Seed identity: md5(title|category|year).
-  sourceKey   String  @default("") @unique
+  sourceKey   String   @unique @default("")
+
+  @@index([category, year])
 }
 
 // ── Sessions ──────────────────────────────────────────────
@@ -780,17 +803,17 @@ model Document {
 
 // ── Per-user state ────────────────────────────────────────
 model UserProgress {
-  id                 Int    @id @default(autoincrement())
-  userId             String @unique
-  user               User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  points             Int    @default(0)
-  streak             Int    @default(0)
-  accuracy           Int    @default(0)
-  questionsAnswered  Int    @default(0)
-  flashcardsReviewed Int    @default(0)
-  aiQuestionsAsked   Int    @default(0)
-  examsAttempted     Int    @default(0)
-  rank               Int    @default(0)
+  id                 Int      @id @default(autoincrement())
+  userId             String   @unique
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  points             Int      @default(0)
+  streak             Int      @default(0)
+  accuracy           Int      @default(0)
+  questionsAnswered  Int      @default(0)
+  flashcardsReviewed Int      @default(0)
+  aiQuestionsAsked   Int      @default(0)
+  examsAttempted     Int      @default(0)
+  rank               Int      @default(0)
   updatedAt          DateTime @updatedAt
 
   // Serves the leaderboard-rank computation: count of progress rows with
@@ -815,24 +838,24 @@ model Bookmark {
 // Every answered question (practice, mock test, daily quiz). Powers
 // accuracy, streaks, and per-subject reports.
 model QuestionAttempt {
-  id         Int       @id @default(autoincrement())
-  ecosystemId Int      @default(1)
-  ecosystem   ExamEcosystem @relation(fields: [ecosystemId], references: [id], onDelete: Cascade)
-  userId     String
-  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  questionId Int?
-  question   Question? @relation(fields: [questionId], references: [id], onDelete: SetNull)
-  subjectId  Int?
-  subject    Subject?  @relation(fields: [subjectId], references: [id], onDelete: SetNull)
-  subjectName String   @default("")
-  topic      String    @default("")
-  correct    Boolean
-  source     String    @default("practice") // practice | mock | daily
-  selectedAnswer String @default("")
-  durationSec    Int    @default(0)
+  id             Int               @id @default(autoincrement())
+  ecosystemId    Int               @default(1)
+  ecosystem      ExamEcosystem     @relation(fields: [ecosystemId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  questionId     Int?
+  question       Question?         @relation(fields: [questionId], references: [id], onDelete: SetNull)
+  subjectId      Int?
+  subject        Subject?          @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+  subjectName    String            @default("")
+  topic          String            @default("")
+  correct        Boolean
+  source         String            @default("practice") // practice | mock | daily
+  selectedAnswer String            @default("")
+  durationSec    Int               @default(0)
   confidence     Int?
   errorType      MistakeErrorType?
-  createdAt  DateTime  @default(now())
+  createdAt      DateTime          @default(now())
 
   @@index([ecosystemId, userId, createdAt])
   @@index([ecosystemId, userId, subjectId])
@@ -847,16 +870,16 @@ model QuestionAttempt {
 
 // Mock-test attempts (graded results) for history + exam KPIs.
 model MockTestResult {
-  id          Int      @id @default(autoincrement())
+  id          Int          @id @default(autoincrement())
   userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   mockTestId  Int?
-  mockTest    MockTest? @relation(fields: [mockTestId], references: [id], onDelete: SetNull)
-  score       Int      @default(0) // percentage 0-100
-  correct     Int      @default(0)
-  total       Int      @default(0)
-  durationSec Int      @default(0)
-  createdAt   DateTime @default(now())
+  mockTest    MockTest?    @relation(fields: [mockTestId], references: [id], onDelete: SetNull)
+  score       Int          @default(0) // percentage 0-100
+  correct     Int          @default(0)
+  total       Int          @default(0)
+  durationSec Int          @default(0)
+  createdAt   DateTime     @default(now())
   // Back-reference from ExamAttempt (one-to-one). Populated when a custom exam
   // submission creates this result row. Uniqueness ensures two attempts never
   // share the same result row.
@@ -879,9 +902,9 @@ model MockTestResult {
 //   • Without this table, network retries and double-clicks double-counted
 //     points and produced duplicate result rows.
 model ExamAttempt {
-  id              Int      @id @default(autoincrement())
+  id              Int               @id @default(autoincrement())
   userId          String
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   // Client-minted UUID minted at exam start, persisted with the exam state
   // and reused on every submission retry. Unique per (user, attempt) so a
   // duplicate submit is detected server-side without trusting the payload.
@@ -893,19 +916,19 @@ model ExamAttempt {
   status          ExamAttemptStatus @default(IN_PROGRESS)
   // Total wall-clock seconds the user spent on this attempt. Captured at
   // submit-time so we never record 0 (the legacy MockTestResult default).
-  durationSec     Int      @default(0)
-  startedAt       DateTime @default(now())
+  durationSec     Int               @default(0)
+  startedAt       DateTime          @default(now())
   submittedAt     DateTime?
   // Authoritative exam length (seconds) registered at /exam/start. 0 = unlimited.
   // The server enforces the timer deadline against this + grace, so the client
   // can never extend a timed exam by delaying the submit call.
-  examDurationSec Int      @default(0)
+  examDurationSec Int               @default(0)
   // Snapshot of the graded summary (matches ExamResultDTO.summary).
   summaryJson     Json?
   // FK to the MockTestResult row that represents this attempt, set at submit
   // time. Lets the existing history endpoint continue to work unchanged.
-  resultId        Int?     @unique
-  result          MockTestResult? @relation("ExamAttemptResult", fields: [resultId], references: [id], onDelete: SetNull)
+  resultId        Int?              @unique
+  result          MockTestResult?   @relation("ExamAttemptResult", fields: [resultId], references: [id], onDelete: SetNull)
 
   @@unique([userId, idempotencyKey])
   @@index([userId, status])
@@ -936,35 +959,36 @@ model FlashcardReview {
 
 // Per-user "read" marker for the global announcement feed.
 model NotificationRead {
-  id             Int            @id @default(autoincrement())
+  id             Int             @id @default(autoincrement())
   userId         String
-  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   notificationId Int
   notification   AppNotification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
-  readAt         DateTime       @default(now())
+  readAt         DateTime        @default(now())
 
   @@unique([userId, notificationId])
+  @@index([notificationId])
 }
 
 // ── AI: conversations, memory, usage, feedback ─────────────
 // AI is a first-class domain. Conversations reference the existing User,
 // Subject and Topic models — no isolated "AI database".
 model AIConversation {
-  id         String             @id @default(cuid())
-  userId     String
-  user       User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  kind       AIConversationKind @default(TUTOR)
-  title      String             @default("New conversation")
-  pinned     Boolean            @default(false)
-  subjectId  Int?
-  subject    Subject?           @relation(fields: [subjectId], references: [id], onDelete: SetNull)
-  topicId    Int?
-  topic      Topic?             @relation(fields: [topicId], references: [id], onDelete: SetNull)
-  topicPath  String             @default("") // path of the Topic when the conversation is topic-scoped
-  createdAt  DateTime           @default(now())
-  updatedAt  DateTime           @updatedAt
-  messages   AIMessage[]
-  agentRuns  AgentRun[]
+  id        String             @id @default(cuid())
+  userId    String
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kind      AIConversationKind @default(TUTOR)
+  title     String             @default("New conversation")
+  pinned    Boolean            @default(false)
+  subjectId Int?
+  subject   Subject?           @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+  topicId   Int?
+  topic     Topic?             @relation(fields: [topicId], references: [id], onDelete: SetNull)
+  topicPath String             @default("") // path of the Topic when the conversation is topic-scoped
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+  messages  AIMessage[]
+  agentRuns AgentRun[]
 
   @@index([userId, updatedAt])
   @@index([userId, kind, updatedAt])
@@ -980,7 +1004,7 @@ model AIMessage {
   intent         String?         @default("") // task intent, e.g. "tutor", "explain", "hint", "solve"
   provider       String?         @default("") // provider that generated this message
   model          String?         @default("") // model that generated this message
-  metadata       Json?           // non-sensitive context (subject/topic/question id); never system prompts
+  metadata       Json? // non-sensitive context (subject/topic/question id); never system prompts
   errorCode      String?         @default("")
   createdAt      DateTime        @default(now())
   feedback       AIFeedback[]
@@ -1009,21 +1033,21 @@ model AIMemory {
 
 // Usage/cost/observability ledger for every AI call. No prompt content stored.
 model AIUsage {
-  id              String       @id @default(cuid())
-  userId          String?
-  user            User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
-  task            AIUsageTask
-  intent          String?      @default("")
-  provider        String
-  model           String
-  inputTokens     Int          @default(0)
-  outputTokens    Int          @default(0)
-  totalTokens     Int          @default(0)
-  latencyMs       Int          @default(0)
-  success         Boolean      @default(true)
-  errorCode       String?      @default("")
+  id               String      @id @default(cuid())
+  userId           String?
+  user             User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+  task             AIUsageTask
+  intent           String?     @default("")
+  provider         String
+  model            String
+  inputTokens      Int         @default(0)
+  outputTokens     Int         @default(0)
+  totalTokens      Int         @default(0)
+  latencyMs        Int         @default(0)
+  success          Boolean     @default(true)
+  errorCode        String?     @default("")
   estimatedCostUsd Float       @default(0)
-  createdAt       DateTime     @default(now())
+  createdAt        DateTime    @default(now())
 
   @@index([userId, createdAt])
   // Daily quota backstop filters userId + createdAt + task.
@@ -1034,15 +1058,15 @@ model AIUsage {
 
 // Lightweight user feedback on AI responses — the seed of an evaluation set.
 model AIFeedback {
-  id        String            @id @default(cuid())
+  id        String           @id @default(cuid())
   userId    String
-  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   messageId String?
-  message   AIMessage?        @relation(fields: [messageId], references: [id], onDelete: SetNull)
+  message   AIMessage?       @relation(fields: [messageId], references: [id], onDelete: SetNull)
   rating    AIFeedbackRating
-  category  String?           @default("") // e.g. "hallucination", "wrong_language", "unhelpful"
-  comment   String?           @default("")
-  createdAt DateTime          @default(now())
+  category  String?          @default("") // e.g. "hallucination", "wrong_language", "unhelpful"
+  comment   String?          @default("")
+  createdAt DateTime         @default(now())
 
   @@index([userId, createdAt])
   @@index([messageId])
@@ -1052,43 +1076,43 @@ model AIFeedback {
 // One persistent row per (user, question). Updated atomically on every answer
 // submission across all practice modes. Powers the Mistake Practice system.
 model UserQuestionProgress {
-  id                 Int           @id @default(autoincrement())
-  userId             String
-  user               User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  questionId         Int
-  question           Question      @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  id         Int      @id @default(autoincrement())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  questionId Int
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
 
   // ── Performance counters ──
-  totalAttempts      Int           @default(0)
-  correctAttempts    Int           @default(0)
-  incorrectAttempts  Int           @default(0)
-  consecutiveCorrect Int           @default(0)
-  consecutiveIncorrect Int         @default(0)
-  mistakeCount       Int           @default(0) // times answered incorrectly (total history)
+  totalAttempts        Int @default(0)
+  correctAttempts      Int @default(0)
+  incorrectAttempts    Int @default(0)
+  consecutiveCorrect   Int @default(0)
+  consecutiveIncorrect Int @default(0)
+  mistakeCount         Int @default(0) // times answered incorrectly (total history)
 
   // ── Mastery scoring ──
-  masteryScore       Float         @default(0) // 0–100, computed from attempt history
-  masteryStatus      MasteryStatus @default(NEW)
-  masteredAt         DateTime?     // timestamp when status first reached MASTERED
+  masteryScore  Float         @default(0) // 0–100, computed from attempt history
+  masteryStatus MasteryStatus @default(NEW)
+  masteredAt    DateTime? // timestamp when status first reached MASTERED
 
   // ── Mistake tracking ──
-  isMistake          Boolean       @default(false) // true while the question needs practice
-  firstIncorrectAt   DateTime?     // when the user first got this wrong
-  lastIncorrectAt    DateTime?     // most recent incorrect attempt
-  lastCorrectAt      DateTime?     // most recent correct attempt
+  isMistake        Boolean   @default(false) // true while the question needs practice
+  firstIncorrectAt DateTime? // when the user first got this wrong
+  lastIncorrectAt  DateTime? // most recent incorrect attempt
+  lastCorrectAt    DateTime? // most recent correct attempt
 
   // ── Review scheduling ──
-  reviewCount        Int           @default(0) // times reviewed after initial mistake
-  lastReviewedAt     DateTime?
-  nextReviewAt       DateTime?     // spaced-repetition next review target
+  reviewCount    Int       @default(0) // times reviewed after initial mistake
+  lastReviewedAt DateTime?
+  nextReviewAt   DateTime? // spaced-repetition next review target
 
   // ── Context (last seen) ──
-  lastSubject        String        @default("")
-  lastTopic          String        @default("")
-  lastExam           String        @default("")
+  lastSubject String @default("")
+  lastTopic   String @default("")
+  lastExam    String @default("")
 
-  createdAt          DateTime      @default(now())
-  updatedAt          DateTime      @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([userId, questionId])
   // Mistake list: filter by (userId, isMistake) — the primary query pattern.
@@ -1124,7 +1148,7 @@ model AgentRun {
   outputTokens   Int             @default(0)
   latencyMs      Int             @default(0)
   errorCode      String?         @default("")
-  responseJson   Json?           // validated final AgentResponse blocks (never chain-of-thought)
+  responseJson   Json? // validated final AgentResponse blocks (never chain-of-thought)
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
   toolCalls      AgentToolCall[]
@@ -1156,7 +1180,7 @@ model LearningEvent {
   subjectId  Int?
   topicId    Int?
   questionId Int?
-  metadata   Json?             // replay payload: attempt state, score, session id, …
+  metadata   Json? // replay payload: attempt state, score, session id, …
   occurredAt DateTime          @default(now())
   createdAt  DateTime          @default(now())
 
@@ -1168,8 +1192,8 @@ model LearningEvent {
 
 // ── Vocab — AI-Powered Vocabulary Mastery ───────────────
 model VocabWord {
-  id                Int      @id @default(autoincrement())
-  word              String   @unique
+  id                Int             @id @default(autoincrement())
+  word              String          @unique
   bengaliMeaning    String
   partOfSpeech      String
   verbForms         Json?
@@ -1177,12 +1201,12 @@ model VocabWord {
   antonyms          Json?
   exampleSentence   String
   exampleSentenceBn String?
-  context           String   @db.Text
-  mnemonic          String   @db.Text
+  context           String          @db.Text
+  mnemonic          String          @db.Text
   examRelevance     Json? // ["BCS","Bank","9th Grade"]
-  frequency         Int      @default(0)
-  difficulty        String   @default("MEDIUM")
-  createdAt         DateTime @default(now())
+  frequency         Int             @default(0)
+  difficulty        String          @default("MEDIUM")
+  createdAt         DateTime        @default(now())
   progress          VocabProgress[]
   vocabDeckWords    VocabDeckWord[]
 
@@ -1214,33 +1238,34 @@ model VocabProgress {
 
 // ── Vocab Decks ───────────────────────────────────────
 model VocabDeck {
-  id          Int      @id @default(autoincrement())
+  id          Int             @id @default(autoincrement())
   name        String
   nameBn      String?
   description String?
-  icon        String?  // emoji or icon name
-  color       String?  // hex color
-  isDefault   Boolean  @default(false)
-  isPublic    Boolean  @default(false)
+  icon        String? // emoji or icon name
+  color       String? // hex color
+  isDefault   Boolean         @default(false)
+  isPublic    Boolean         @default(false)
   creatorId   String?
-  creator     User?    @relation(fields: [creatorId], references: [id], onDelete: SetNull)
+  creator     User?           @relation(fields: [creatorId], references: [id], onDelete: SetNull)
   words       VocabDeckWord[]
   userDecks   UserVocabDeck[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
 
   @@index([isDefault])
   @@index([isPublic])
+  @@index([creatorId])
 }
 
 model VocabDeckWord {
-  id       Int       @id @default(autoincrement())
-  deckId   Int
-  deck     VocabDeck @relation(fields: [deckId], references: [id], onDelete: Cascade)
-  wordId   Int
-  word     VocabWord @relation(fields: [wordId], references: [id], onDelete: Cascade)
-  sortOrder Int      @default(0)
-  addedAt  DateTime  @default(now())
+  id        Int       @id @default(autoincrement())
+  deckId    Int
+  deck      VocabDeck @relation(fields: [deckId], references: [id], onDelete: Cascade)
+  wordId    Int
+  word      VocabWord @relation(fields: [wordId], references: [id], onDelete: Cascade)
+  sortOrder Int       @default(0)
+  addedAt   DateTime  @default(now())
 
   @@unique([deckId, wordId])
   @@index([deckId])
@@ -1248,14 +1273,14 @@ model VocabDeckWord {
 }
 
 model UserVocabDeck {
-  id         Int       @id @default(autoincrement())
-  userId     String
-  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  deckId     Int
-  deck       VocabDeck @relation(fields: [deckId], references: [id], onDelete: Cascade)
-  isFavorite Boolean   @default(false)
+  id          Int       @id @default(autoincrement())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deckId      Int
+  deck        VocabDeck @relation(fields: [deckId], references: [id], onDelete: Cascade)
+  isFavorite  Boolean   @default(false)
   lastStudied DateTime?
-  createdAt  DateTime  @default(now())
+  createdAt   DateTime  @default(now())
 
   @@unique([userId, deckId])
   @@index([userId])
@@ -1291,50 +1316,50 @@ enum SyncEntityType {
 }
 
 model StorageConnection {
-  id                    String                   @id @default(cuid())
-  userId                String                   @unique
-  user                  User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  provider              StorageProviderType      @default(GOOGLE_DRIVE)
-  status                StorageConnectionStatus  @default(CONNECTED)
-  googleAccountId       String?
-  googleEmail           String?
-  googleName            String?
-  accessTokenEnc        String?                  @db.Text
-  refreshTokenEnc       String?                  @db.Text
-  tokenExpiresAt        DateTime?
-  scope                 String?
-  rootFolderId          String?
-  rootFolderName        String                   @default("9Th-Grade AI")
-  lastSyncAt            DateTime?
-  lastSyncSuccessAt     DateTime?
-  lastError             String?                  @db.Text
-  createdAt             DateTime                 @default(now())
-  updatedAt             DateTime                 @updatedAt
+  id                String                  @id @default(cuid())
+  userId            String                  @unique
+  user              User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider          StorageProviderType     @default(GOOGLE_DRIVE)
+  status            StorageConnectionStatus @default(CONNECTED)
+  googleAccountId   String?
+  googleEmail       String?
+  googleName        String?
+  accessTokenEnc    String?                 @db.Text
+  refreshTokenEnc   String?                 @db.Text
+  tokenExpiresAt    DateTime?
+  scope             String?
+  rootFolderId      String?
+  rootFolderName    String                  @default("9Th-Grade AI")
+  lastSyncAt        DateTime?
+  lastSyncSuccessAt DateTime?
+  lastError         String?                 @db.Text
+  createdAt         DateTime                @default(now())
+  updatedAt         DateTime                @updatedAt
 
-  files                 StorageFile[]
-  jobs                  SyncJob[]
+  files StorageFile[]
+  jobs  SyncJob[]
 
   @@index([provider, status])
 }
 
 model StorageFile {
-  id              String         @id @default(cuid())
-  userId          String
-  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  connectionId    String
-  connection      StorageConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
-  entityType      SyncEntityType
-  driveFileId     String?
-  path            String         // e.g. /9Th-Grade AI/bookmarks/v1.json
-  schemaVersion   Int            @default(1)
-  version         Int            @default(1)
-  checksum        String?
-  mimeType        String         @default("application/json")
-  sizeBytes       Int?
-  lastSyncedAt    DateTime?
-  lastVerifiedAt  DateTime?
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
+  id             String            @id @default(cuid())
+  userId         String
+  user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  connectionId   String
+  connection     StorageConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  entityType     SyncEntityType
+  driveFileId    String?
+  path           String // e.g. /9Th-Grade AI/bookmarks/v1.json
+  schemaVersion  Int               @default(1)
+  version        Int               @default(1)
+  checksum       String?
+  mimeType       String            @default("application/json")
+  sizeBytes      Int?
+  lastSyncedAt   DateTime?
+  lastVerifiedAt DateTime?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
 
   @@unique([userId, path])
   @@index([connectionId, entityType])
@@ -1342,28 +1367,28 @@ model StorageFile {
 }
 
 model SyncJob {
-  id              String          @id @default(cuid())
-  userId          String
-  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  connectionId    String?
-  connection      StorageConnection? @relation(fields: [connectionId], references: [id], onDelete: SetNull)
-  entityType      SyncEntityType
-  operation       String          @default("UPSERT") // UPSERT, DELETE, MIGRATE, RESTORE
-  idempotencyKey  String          @unique
-  payloadHash     String?
-  status          SyncJobStatus   @default(PENDING)
-  attempts        Int             @default(0)
-  maxAttempts     Int             @default(5)
-  nextRetryAt     DateTime?       @default(now())
-  lastError       String?         @db.Text
-  lastErrorCode   String?
-  driveFileId     String?
-  resultChecksum  String?
-  processingLock  String?         // worker lock token
-  lockedAt        DateTime?
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-  completedAt     DateTime?
+  id             String             @id @default(cuid())
+  userId         String
+  user           User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  connectionId   String?
+  connection     StorageConnection? @relation(fields: [connectionId], references: [id], onDelete: SetNull)
+  entityType     SyncEntityType
+  operation      String             @default("UPSERT") // UPSERT, DELETE, MIGRATE, RESTORE
+  idempotencyKey String             @unique
+  payloadHash    String?
+  status         SyncJobStatus      @default(PENDING)
+  attempts       Int                @default(0)
+  maxAttempts    Int                @default(5)
+  nextRetryAt    DateTime?          @default(now())
+  lastError      String?            @db.Text
+  lastErrorCode  String?
+  driveFileId    String?
+  resultChecksum String?
+  processingLock String? // worker lock token
+  lockedAt       DateTime?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  completedAt    DateTime?
 
   @@index([userId, status, nextRetryAt])
   @@index([connectionId, status])
@@ -1371,15 +1396,15 @@ model SyncJob {
 }
 
 model StorageRevision {
-  id            String   @id @default(cuid())
-  userId        String
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  entityType    SyncEntityType
-  version       Int
-  checksum      String
-  driveFileId   String?
-  path          String
-  createdAt     DateTime @default(now())
+  id          String         @id @default(cuid())
+  userId      String
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entityType  SyncEntityType
+  version     Int
+  checksum    String
+  driveFileId String?
+  path        String
+  createdAt   DateTime       @default(now())
 
   @@unique([userId, entityType, version])
   @@index([userId, entityType, createdAt])
@@ -1397,20 +1422,20 @@ enum NoteStatus {
 }
 
 model DailyCurrentAffairsNote {
-  id          String                  @id @default(cuid())
-  date        DateTime                @unique
+  id          String               @id @default(cuid())
+  date        DateTime             @unique
   title       String
-  summary     String?                 @db.Text
-  contentJson Json                    // TipTap JSON AST
-  status      NoteStatus              @default(PUBLISHED)
+  summary     String?              @db.Text
+  contentJson Json // TipTap JSON AST
+  status      NoteStatus           @default(PUBLISHED)
   // Provenance label (AI safety rule): "agent" = Groq+Tavily
   // pipeline output; never an unlabeled synthetic fallback.
-  source      String                  @default("agent")
+  source      String               @default("agent")
   citations   SourceCitation[]
   mcqs        ExamMcq[]
   userNotes   UserCustomizedNote[]
-  createdAt   DateTime                @default(now())
-  updatedAt   DateTime                @updatedAt
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
 
   @@index([date, status])
 }
@@ -1429,28 +1454,47 @@ model SourceCitation {
 }
 
 model ExamMcq {
-  id             String                  @id @default(cuid())
-  dailyNoteId    String
-  dailyNote      DailyCurrentAffairsNote @relation(fields: [dailyNoteId], references: [id], onDelete: Cascade)
-  question       String                  @db.Text
-  options        String[]
-  correctOption  Int                     // 0–3
-  explanation    String?                 @db.Text
-  explanationBn  String?                 @db.Text
-  relevantExam   String                  // "BCS" | "Bank" | "Both"
-  createdAt      DateTime                @default(now())
+  id            String                  @id @default(cuid())
+  dailyNoteId   String
+  dailyNote     DailyCurrentAffairsNote @relation(fields: [dailyNoteId], references: [id], onDelete: Cascade)
+  question      String                  @db.Text
+  options       String[]
+  correctOption Int // 0–3
+  explanation   String?                 @db.Text
+  explanationBn String?                 @db.Text
+  relevantExam  String // "BCS" | "Bank" | "Both"
+  createdAt     DateTime                @default(now())
 
   @@index([dailyNoteId])
 }
 
 model UserCustomizedNote {
-  id              String                  @id @default(cuid())
-  userId          String
-  user            User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  dailyNoteId     String
-  dailyNote       DailyCurrentAffairsNote @relation(fields: [dailyNoteId], references: [id], onDelete: Cascade)
-  customContentJson Json                  // User's edited TipTap JSON AST
-  updatedAt       DateTime                @updatedAt
+  id                String                  @id @default(cuid())
+  userId            String
+  user              User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dailyNoteId       String
+  dailyNote         DailyCurrentAffairsNote @relation(fields: [dailyNoteId], references: [id], onDelete: Cascade)
+  customContentJson Json // User's edited TipTap JSON AST
+  updatedAt         DateTime                @updatedAt
 
   @@unique([userId, dailyNoteId])
+}
+
+// ── Security audit trail ────────────────────────────────────
+// Persisted security events (prompt-injection blocks, auth anomalies).
+// Structured logs remain the primary trail; this table gives compliance
+// queries a cheap, indexed home. Best-effort writes — audit must never
+// break the request it observes.
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action    String
+  resource  String   @default("")
+  details   Json?
+  ip        String?  @default("")
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([action, createdAt])
 }

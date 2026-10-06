@@ -302,7 +302,7 @@ async function buildTopicTree(
         depth,
         sortOrder: order++,
         parentId,
-        questionCount: "0",
+        questionCount: 0,
       },
     });
     idsByPath.set(path, row.id);
@@ -751,7 +751,7 @@ export async function seedQuestions(prisma: PrismaClient): Promise<number> {
     for (const [path, count] of totals) {
       const id = index.get(path);
       if (id !== undefined) {
-        await prisma.topic.update({ where: { id }, data: { questionCount: String(count) } });
+        await prisma.topic.update({ where: { id }, data: { questionCount: count } });
       }
     }
   }

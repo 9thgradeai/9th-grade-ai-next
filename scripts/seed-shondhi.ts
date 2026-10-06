@@ -248,7 +248,7 @@ async function ensureLeafTopic(
       depth: parent.depth + 1,
       sortOrder: 0,
       parentId: parent.id,
-      questionCount: "0",
+      questionCount: 0,
     },
   });
   return row.id;

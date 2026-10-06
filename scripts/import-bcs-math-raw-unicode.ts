@@ -949,7 +949,7 @@ async function main() {
         depth: 2,
         sortOrder: sibs,
         parentId,
-        questionCount: "0",
+        questionCount: 0,
       },
     });
     byPath.set(row.path, row.id);
@@ -1013,7 +1013,7 @@ async function main() {
   for (const [leaf, id] of byPath) {
     if (!leaf.startsWith(P)) continue;
     const n = await prisma.question.count({ where: { topicId: id } });
-    await prisma.topic.update({ where: { id }, data: { questionCount: String(n) } });
+    await prisma.topic.update({ where: { id }, data: { questionCount: n } });
   }
 
   // 9. verify from the database

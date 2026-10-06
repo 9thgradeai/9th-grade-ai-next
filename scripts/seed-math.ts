@@ -136,7 +136,7 @@ async function main(){
   let order=0;
   const createNode=async(node:TaxonomyNode,parentId:number|null,depth:number)=>{
     const path=contentPath(node);
-    const row=await prisma.topic.upsert({where:{subjectId_path:{subjectId:subject.id, path}}, update:{name:node.name}, create:{subjectId:subject.id, name:node.name, slug:node.name, path, depth, sortOrder:order++, parentId, questionCount:"0"}});
+    const row=await prisma.topic.upsert({where:{subjectId_path:{subjectId:subject.id, path}}, update:{name:node.name}, create:{subjectId:subject.id, name:node.name, slug:node.name, path, depth, sortOrder:order++, parentId, questionCount:0}});
     if(node.children.length===0) leafIds.set(path,row.id);
     for(const c of node.children) await createNode(c,row.id,depth+1);
   };
@@ -237,7 +237,7 @@ async function main(){
   // refresh counts
   const counts=await prisma.question.groupBy({by:["path"], where:{subjectId:subject.id}, _count:{_all:true}});
   for(const row of counts){
-    const tid=leafIds.get(row.path); if(tid) await prisma.topic.update({where:{id:tid}, data:{questionCount:String(row._count._all)}});
+    const tid=leafIds.get(row.path); if(tid) await prisma.topic.update({where:{id:tid}, data:{questionCount:row._count._all}});
   }
   console.log("Done inserted",candidates.length);
 }

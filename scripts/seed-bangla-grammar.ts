@@ -245,7 +245,7 @@ async function main() {
           depth,
           sortOrder: order++,
           parentId,
-          questionCount: "0",
+          questionCount: 0,
         },
       });
       idsByPath.set(path, row.id);
@@ -450,7 +450,7 @@ async function main() {
       if (id !== undefined) {
         await prisma.topic.update({
           where: { id },
-          data: { questionCount: String(row._count._all) },
+          data: { questionCount: row._count._all },
         });
       }
     }

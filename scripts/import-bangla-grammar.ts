@@ -367,7 +367,7 @@ export async function importBanglaGrammar(
         }
         const id = topicIdBySubjectPath.get(t.subject.id)?.get(path);
         if (id !== undefined) {
-          await prisma.topic.update({ where: { id }, data: { questionCount: String(total) } });
+          await prisma.topic.update({ where: { id }, data: { questionCount: total } });
         }
       }
       console.log(`✓ questionCount refreshed (subject ${t.subject.id})`);

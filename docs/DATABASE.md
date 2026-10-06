@@ -48,6 +48,31 @@ ever rebuilt outside migrations:
   keep serial bigint PKs plus `(userId, createdAt)` composites — sufficient for future
   time-based partition attachment without changes today.
 
+## Audit hardening (Phase 3 pitfall sweep)
+
+- `Topic.questionCount` is `Int` (was String): aggregate arithmetic in `exam.ts`
+  previously risked string concatenation (`0 + "5" === "05"`). All prod values
+  verified numeric before the cast; seed/import scripts write numbers.
+- Auth token columns are `@unique` (`emailVerifyToken`, `passwordResetToken`;
+  NULLs never collide in Postgres) — lookups are index-backed, duplicates impossible.
+- `AuditLog` model: persisted security events (prompt-injection blocks, auth
+  anomalies), indexed `(userId, createdAt)` + `(action, createdAt)`. Writes are
+  best-effort (fire-and-forget) — audit never breaks the request it observes.
+- New FK-side/composite indexes: `MockTestQuestion(mockTestId)`,
+  `FlashNews(verified, date)` + `(date)`, `Document(category, year)`,
+  `NotificationRead(notificationId)`, `UserBadge(badgeId)`, `VocabDeck(creatorId)`.
+- `createdAt`/`updatedAt` added to Subject, Topic, Exam, ExamPaper, Flashcard,
+  MockTest, MockTestQuestion (defaults backfill existing rows) for cache
+  invalidation and audit.
+- Seed is strictly non-destructive: no `deleteMany` on `examSchedule` /
+  `flashNews`; stale flashcards are dropped only when zero user rows reference
+  them (reviews/userStates cascade otherwise).
+- Deliberately NOT changed (live-data risk, app layer already constrains):
+  `sourceKey ""` defaults (needs backfill before unique/required), free-String
+  `authProvider` / `prepLevel` / schedule `type` (validated in `backend/validation.ts`),
+  `ExamSchedule.year String` vs `ExamPaper.year Int` (documented date-label decision),
+  `SyncJob.connectionId SetNull` (no connection deleter exists today).
+
 ## Schema
 
 ### Enums
@@ -55,6 +80,7 @@ ever rebuilt outside migrations:
 #### UserRole
 - `STUDENT`
 - `ADMIN`
+- `BANNED` — revoked at login AND session-verify time (immediate lockout)
 
 #### Difficulty
 - `EASY`
@@ -137,13 +163,15 @@ ever rebuilt outside migrations:
   Feeds the acceptance-learning re-ranker (roadmap Phase 2).
 
 #### MistakeErrorType
-- `CONCEPTUAL` — misunderstanding of a concept
-- `CARELESS` — slip/reading error
-- `FORMULA` — formula misuse
-- `UNIT` — units/conversion errors
-- `TIMING` — time management on timed practice
-- `RECALL` — forgetfulness / inability to recall
-- `OTHER` — the classifier could not determine a category
+- `CONCEPTUAL_GAP` — misunderstanding of a concept
+- `CARELESS_MISTAKE` — slip/reading error
+- `MEMORY_FAILURE` — forgetfulness / inability to recall
+- `MISREADING` — misread the question or options
+- `CALCULATION_ERROR` — arithmetic/derivation slip
+- `CONFUSION` — mixed up related concepts
+- `GUESSING` — answered without working
+- `TIME_PRESSURE` — time management on timed practice
+- `UNKNOWN` — the classifier could not determine a category
 
 #### AIUsageTask
 - `TUTOR`

@@ -435,7 +435,7 @@ export namespace Server {
     path: string;
     depth: number;
     sortOrder: number;
-    questionCount: string;
+    questionCount: number;
   };
 
   export type QuestionDTO = {

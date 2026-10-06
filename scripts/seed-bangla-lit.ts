@@ -202,7 +202,7 @@ async function ensureLeafTopic(
       depth: parent.depth + 1,
       sortOrder: 0,
       parentId: parent.id,
-      questionCount: "0",
+      questionCount: 0,
     },
   });
   return row.id;
@@ -392,7 +392,7 @@ export async function seedBanglaLitQuestions(prisma: PrismaClient): Promise<numb
         where: { subjectId_path: { subjectId: eco.subjectId, path } },
       });
       if (leaf) {
-        await prisma.topic.update({ where: { id: leaf.id }, data: { questionCount: String(count) } });
+        await prisma.topic.update({ where: { id: leaf.id }, data: { questionCount: count } });
       }
     }
   }

@@ -476,7 +476,7 @@ async function importOneTopic(
 
   // Refresh questionCount denorm on the leaf topic node
   const count = await prisma.question.count({ where: { subjectId, path: config.leafPath } });
-  await prisma.topic.update({ where: { id: leaf.id }, data: { questionCount: String(count) } });
+  await prisma.topic.update({ where: { id: leaf.id }, data: { questionCount: count } });
 
   return report;
 }
