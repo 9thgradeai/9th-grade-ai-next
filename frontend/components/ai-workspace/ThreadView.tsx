@@ -32,7 +32,6 @@ export default function ThreadView({
   messages,
   status,
   meta,
-  mode,
   liveTools,
   copiedId,
   feedbackSent,
@@ -51,16 +50,35 @@ export default function ThreadView({
   const showMeta =
     meta && lastAiIndex === messages.length - 1 && status !== "generating" && last.text !== "";
 
+  // Production guard: structured coach turns stream as a raw JSON blocks
+  // array mid-flight. Never paint that payload as chat prose — collapse it
+  // to the typing indicator until the typed cards resolve.
+  const isBlocksPayload = (text: string): boolean => {
+    const trimmed = text.trim();
+    if (!trimmed) return false;
+    if (trimmed.startsWith("[") || trimmed.startsWith("{")) return true;
+    const start = trimmed.indexOf("[");
+    const end = trimmed.lastIndexOf("]");
+    if (start === -1 || end <= start) return false;
+    try {
+      JSON.parse(trimmed.slice(start, end + 1));
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
   return (
     <div ref={terminalRef} role="log" aria-live="polite" className="min-h-0 flex-1 overflow-y-auto">
       <div className="mx-auto max-w-3xl space-y-5 px-3 py-4 sm:px-6 sm:py-5">
         {messages.map((msg, i) => {
           const isLast = i === messages.length - 1;
           const isStreaming = status === "generating" && isLast && msg.role === "ai";
+          const visible = isStreaming && isBlocksPayload(msg.text) ? { ...msg, text: "" } : msg;
           return (
             <div key={msg.id} className={!isStreaming && isLast ? "ai-msg-enter" : undefined}>
               <ChatMessage
-                message={msg as ChatMessageData}
+                message={visible as ChatMessageData}
                 streaming={isStreaming}
                 copied={copiedId === msg.id}
                 feedbackSent={feedbackSent.has(msg.messageId ?? "")}
@@ -95,13 +113,9 @@ export default function ThreadView({
 
         {showMeta && (
           <p className="break-words px-1 font-mono text-[10px] leading-relaxed tracking-[0.12em] text-[var(--dashboard-text-muted)]">
-            source: <span className="text-[var(--dashboard-primary)]">{meta.provider ?? "unset"}</span>
-            {meta.model ? ` · ${meta.model}` : ""}
-            {meta.latencyMs !== undefined && meta.latencyMs > 0 ? ` · ${Math.round(meta.latencyMs)}ms` : ""}
-            {mode === "coach" || mode === "mock"
-              ? ` · ${lastAi?.tools?.length ?? 0} tools`
-              : ""}
-            {meta.provider === "mock" ? "  (সেট করা API কী নেই — গণনা ও তথ্য যাচাই করুন)" : ""}
+            {meta.provider === "mock"
+              ? "demo source — set an AI key to go live (verify counts)"
+              : `AI guidance · ${lastAi?.tools?.length ?? 0} tools · verify with the question bank`}
           </p>
         )}
       </div>

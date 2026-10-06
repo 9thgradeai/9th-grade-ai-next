@@ -40,6 +40,32 @@ describe("agent response validation", () => {
     expect(out.blocks[0].type).toBe("text");
   });
 
+  it("accepts a bare JSON array of blocks (the prompted shape)", () => {
+    const raw = [
+      { type: "text", text: "আজকের সংক্ষিপ্ত প্রতিবেদন: ৬৮৪টি প্রশ্ন, সঠিকতা ৭৩%।" },
+      { type: "progress", accuracy: 73, streak: 0, questionsAnswered: 684, actions: [] },
+      { type: "weakness", subject: "Bangla", topic: "সাহিত্য", accuracy: 68, attempts: 0, wrongCount: 0, advice: "পুনরায় পড়ুন।" },
+    ];
+    const out = validateAgentOutput(raw, "fallback");
+    expect(out.blocks[0].type).toBe("text");
+    expect(out.blocks).toHaveLength(3);
+    // The persisted/display prose must be human text, never raw JSON.
+    expect(agentResponseText(out)).toContain("৬৮৪টি প্রশ্ন");
+    expect(agentResponseText(out)).not.toContain('"type"');
+  });
+
+  it("recovers blocks from a JSON string with fences or surrounding prose", () => {
+    const fenced = '```json\n[{"type":"text","text":"হ্যালো"},{"type":"progress","accuracy":80,"streak":2,"questionsAnswered":10}]\n```';
+    const out = validateAgentOutput(fenced, "fallback");
+    expect(out.blocks[0].type).toBe("text");
+    if (out.blocks[0].type === "text") {
+      expect(out.blocks[0].text).toBe("হ্যালো");
+    }
+    const wrapped = `Here is your brief: [{"type":"text","text":"এগিয়ে যান"}] hope it helps.`;
+    const out2 = validateAgentOutput(wrapped, "fallback");
+    expect(out2.blocks[0].type).toBe("text");
+  });
+
   it("agentResponseText extracts only text blocks", () => {
     const out = validateAgentOutput({
       blocks: [

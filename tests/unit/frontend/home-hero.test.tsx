@@ -57,7 +57,33 @@ describe("HomeHero (AI command bar)", () => {
       );
     });
     await screen.findByText("Start with 10 mistakes.");
-    expect(screen.getByText(/source: mock/)).toBeInTheDocument();
+    // Production footer: mock runs are labelled demo, never raw provider internals.
+    expect(screen.getByText(/Demo source/)).toBeInTheDocument();
+  });
+
+  it("never renders a raw JSON blocks payload as prose", async () => {
+    const payload = JSON.stringify([
+      { type: "text", text: "Brief is ready." },
+      { type: "progress", accuracy: 73, streak: 0, questionsAnswered: 684 },
+    ]);
+    components.runAgentTurn.mockImplementation(async ({ onDelta }) => {
+      onDelta?.(payload);
+      return { text: payload, blocks: [], provider: "groq", model: "openai/gpt-oss-120b" };
+    });
+
+    const { container } = render(<HomeHero signals={{}} />);
+    fireEvent.change(screen.getByLabelText("Ask the AI"), { target: { value: "brief please" } });
+    fireEvent.click(screen.getByRole("button", { name: "Send" }));
+
+    await waitFor(() => {
+      expect(components.runAgentTurn).toHaveBeenCalledWith(
+        expect.objectContaining({ intent: "home_brief" }),
+      );
+    });
+    // No JSON payload text may appear anywhere; the live footer stays generic.
+    expect(container.textContent).not.toContain('"type"');
+    expect(container.textContent).not.toContain("gpt-oss");
+    await screen.findByText(/AI guidance/);
   });
 
   it("sends chip prompts through the same intent", async () => {

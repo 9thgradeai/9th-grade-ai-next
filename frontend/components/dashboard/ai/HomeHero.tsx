@@ -26,8 +26,29 @@ type HeroResult = {
   model: string;
 };
 
-function greeting(lang: "bn" | "en", name?: string | null): string {
-  const hour = new Date().getHours();
+/**
+ * Production guard: structured agent output streams as raw JSON mid-flight.
+ * Anything that parses/looks like a blocks payload must never render as
+ * prose — the typed cards below are the only rendering surface.
+ */
+function looksLikeBlocksPayload(text: string): boolean {
+  const trimmed = text.trim();
+  if (!trimmed) return false;
+  if (trimmed.startsWith("[") || trimmed.startsWith("{")) return true;
+  const start = trimmed.indexOf("[");
+  const end = trimmed.lastIndexOf("]");
+  if (start !== -1 && end > start) {
+    try {
+      JSON.parse(trimmed.slice(start, end + 1));
+      return true;
+    } catch {
+      return false;
+    }
+  }
+  return false;
+}
+
+function greeting(lang: "bn" | "en", name?: string | null): string {  const hour = new Date().getHours();
   const part =
     hour < 4
       ? t(lang, "গভীর রাত", "late night")
@@ -312,7 +333,7 @@ export default function HomeHero({
               {error}
             </p>
           )}
-          {(runText || result?.text) && (
+          {(runText || result?.text) && !looksLikeBlocksPayload(result?.text ?? runText) && (
             <p aria-live="polite" className="whitespace-pre-wrap text-sm leading-relaxed" style={{ color: "var(--dashboard-text-secondary)" }}>
               {result?.text ?? runText}
             </p>
@@ -321,8 +342,8 @@ export default function HomeHero({
           {result && (
             <p className="pt-1 font-mono text-[10px]" style={{ color: "var(--dashboard-text-muted)" }}>
               {result.provider === "mock"
-                ? t(lang, "source: mock (AI API fallback active)", "source: mock (AI API fallback active)")
-                : `source: ${result.provider}${result.model ? ` • ${result.model}` : ""}`}
+                ? t(lang, "ডেমো উৎস — AI কী সেট করলে লাইভ হবে", "Demo source — set an AI key to go live")
+                : t(lang, "এআই-নির্দেশনা — প্রশ্নব্যাংক দিয়ে যাচাই করুন", "AI guidance — verify with the question bank")}
             </p>
           )}
         </div>

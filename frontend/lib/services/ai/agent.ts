@@ -179,5 +179,15 @@ export async function runAgentTurn(opts: AgentTurnOptions): Promise<AgentTurnRes
     reader.releaseLock();
   }
 
+  // The streamed `text` is the raw model output — for structured turns that
+  // is a JSON blocks array, never user-facing prose. Derive the display text
+  // from the typed text blocks instead so no consumer can render raw JSON.
+  const blockText = blocks
+    .filter((b): b is Extract<AgentBlockDto, { type: "text" }> => b.type === "text")
+    .map((b) => b.text)
+    .filter(Boolean)
+    .join("\n\n");
+  if (blockText) text = blockText;
+
   return { conversationId, runId, provider, model, steps, latencyMs, text, blocks, source: provider };
 }

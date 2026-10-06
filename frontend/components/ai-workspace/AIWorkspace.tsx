@@ -385,7 +385,10 @@ export default function AIWorkspace() {
               m.id === placeholderId
                 ? {
                     ...m,
-                    text: assistantText,
+                    // result.text is derived from the typed text blocks (the
+                    // SSE client strips the raw JSON envelope), so completed
+                    // coach turns never display raw JSON payloads.
+                    text: result.text || assistantText,
                     blocks: [...blocks],
                     tools: toolSnapshot,
                     actions: [...AGENT_FOLLOWUPS],

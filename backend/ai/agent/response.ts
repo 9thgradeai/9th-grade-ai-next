@@ -101,6 +101,54 @@ function asActions(v: unknown): AgentAction[] {
     .slice(0, 4);
 }
 
+function normalizeBlocks(arr: unknown[]): AgentBlock[] {
+  return arr
+    .map(validateBlock)
+    .filter((b): b is AgentBlock => b !== null)
+    .slice(0, MAX_BLOCKS);
+}
+
+/**
+ * Try to recover typed blocks from model prose. The prompt asks for a bare
+ * JSON array, so accept (in order): an already-parsed bare array, a fully
+ * JSON string (array or {blocks}), or JSON embedded in surrounding prose /
+ * fences (first "[" … last "]"). Returns null when nothing parses.
+ */
+function tryParseBlocksJson(text: string): AgentBlock[] | null {
+  const clean = text
+    .trim()
+    .replace(/^```(?:json)?/i, "")
+    .replace(/```$/, "")
+    .trim();
+  const attempt = (candidate: string): AgentBlock[] | null => {
+    try {
+      const parsed: unknown = JSON.parse(candidate);
+      const arr = Array.isArray(parsed)
+        ? parsed
+        : parsed && typeof parsed === "object"
+          ? (parsed as Record<string, unknown>).blocks
+          : null;
+      if (Array.isArray(arr)) {
+        const blocks = normalizeBlocks(arr);
+        if (blocks.length > 0) return blocks;
+      }
+    } catch {
+      // not JSON — caller tries the next shape
+    }
+    return null;
+  };
+  const direct = attempt(clean);
+  if (direct) return direct;
+  // Embedded: slice from the first "[" to the last "]" (models sometimes add
+  // a lead-in sentence or trailing note around the array).
+  const start = clean.indexOf("[");
+  const end = clean.lastIndexOf("]");
+  if (start !== -1 && end > start) {
+    return attempt(clean.slice(start, end + 1));
+  }
+  return null;
+}
+
 function validateBlock(b: unknown): AgentBlock | null {
   if (!b || typeof b !== "object") return null;
   const raw = b as Record<string, unknown>;
@@ -156,21 +204,35 @@ function validateBlock(b: unknown): AgentBlock | null {
  * valid AgentResponse. Guarantees a leading text block.
  */
 export function validateAgentOutput(raw: unknown, fallback = ""): AgentResponse {
+  const withLeadingText = (blocks: AgentBlock[]): AgentResponse => {
+    if (blocks[0].type !== "text") {
+      blocks.unshift({ type: "text", text: asStr(fallback, "Here's what I found.") });
+    }
+    return { blocks };
+  };
   // Preferred: model returns { blocks: [...] }.
   if (typeof raw === "object" && raw !== null) {
     const o = raw as Record<string, unknown>;
     if (Array.isArray(o.blocks)) {
-      const blocks = (o.blocks as unknown[])
-        .map(validateBlock)
-        .filter((b): b is AgentBlock => b !== null)
-        .slice(0, MAX_BLOCKS);
-      if (blocks.length > 0) {
-        if (blocks[0].type !== "text") {
-          blocks.unshift({ type: "text", text: asStr(fallback, "Here's what I found.") });
-        }
-        return { blocks };
-      }
+      const blocks = normalizeBlocks(o.blocks as unknown[]);
+      if (blocks.length > 0) return withLeadingText(blocks);
     }
+    // The prompt asks for a bare JSON array — accept it directly.
+    if (Array.isArray(raw)) {
+      const blocks = normalizeBlocks(raw as unknown[]);
+      if (blocks.length > 0) return withLeadingText(blocks);
+    }
+  }
+  // String output (or fallback prose): recover embedded JSON before treating
+  // the whole thing as prose, so a model that wraps the array in a sentence
+  // or fences still renders as native cards instead of raw JSON.
+  if (typeof raw === "string" && raw.trim()) {
+    const recovered = tryParseBlocksJson(raw);
+    if (recovered) return withLeadingText(recovered);
+  }
+  if (typeof fallback === "string" && fallback.trim()) {
+    const recovered = tryParseBlocksJson(fallback);
+    if (recovered) return withLeadingText(recovered);
   }
   // Fallback: bare prose (e.g., mock provider text) wraps in a text block.
   const text = asStr(raw, fallback).slice(0, 4000);
