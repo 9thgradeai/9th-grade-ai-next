@@ -531,6 +531,13 @@ export default function HomeTab() {
         </RevealSection>
       </div>
 
+      {/* ── 5b · Spotlight MCQ — random database question, rotates across
+              all subjects every ~3 minutes. Independent of the intelligence
+              scopes so it never blocks on (or blocks) the staged load. ── */}
+      <RevealSection className="min-w-0">
+        <SpotlightQuiz onPracticeSubject={(subject) => practiceSubject(subject)} />
+      </RevealSection>
+
       <motion.header
         initial={lowMotion ? false : "hidden"}
         whileInView={lowMotion ? undefined : "show"}
@@ -689,13 +696,6 @@ export default function HomeTab() {
             onStartDailyQuiz={startDailyWarmup}
           />
         )}
-      </RevealSection>
-
-      {/* ── 5b · Spotlight MCQ — random database question, rotates across
-              all subjects every ~3 minutes. Independent of the intelligence
-              scopes so it never blocks on (or blocks) the staged load. ── */}
-      <RevealSection className="min-w-0" style={{ order: 6 }}>
-        <SpotlightQuiz onPracticeSubject={(subject) => practiceSubject(subject)} />
       </RevealSection>
 
       {/* ── 6 · Secondary pulse (ambient-ranked region) ── */}
