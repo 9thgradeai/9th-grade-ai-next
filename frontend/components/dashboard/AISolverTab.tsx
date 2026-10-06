@@ -133,13 +133,14 @@ export default function AISolverTab() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
+    <div className="space-y-6 bg-transparent">
+      {/* Header — transparent glass: dashboard world-map shows through */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ type: "spring" }}
-        className="glass-card rounded-2xl border border-border p-5"
+        className="rounded-2xl border border-border p-5 backdrop-blur-xl"
+        style={{ background: "color-mix(in srgb, var(--surface-raised) 62%, transparent)" }}
       >
         <div className="terminal-window-bar mb-4 border-b border-border">
           <div className="dot close" /><div className="dot minimize" /><div className="dot maximize" />
@@ -310,7 +311,8 @@ export default function AISolverTab() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ type: "spring" }}
-            className="glass-card rounded-2xl border border-primary/30 p-5"
+            className="rounded-2xl border border-primary/30 p-5 backdrop-blur-xl"
+            style={{ background: "color-mix(in srgb, var(--surface-raised) 62%, transparent)" }}
           >
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">

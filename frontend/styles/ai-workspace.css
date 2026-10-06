@@ -59,17 +59,39 @@
     0 2px 8px rgb(0 0 0 / 0.22);
 }
 
-/* Workspace panel surface */
+/* Workspace panel surface — transparent glass so the dashboard world-map
+   backdrop stays visible through the gutters. No opaque layer may block
+   the map: panel/rail/composer are all translucent + blurred. */
 .ai-panel {
-  background: var(--ai-panel);
+  background: color-mix(in srgb, var(--ai-panel) 72%, transparent);
+  -webkit-backdrop-filter: blur(22px) saturate(1.2);
+  backdrop-filter: blur(22px) saturate(1.2);
   border-color: var(--ai-border-strong);
   box-shadow: var(--shadow-xl);
 }
 
-/* Conversation rail */
+/* Conversation rail — translucent, map bleeds through softly */
 .ai-rail {
-  background: var(--ai-soft);
+  background: color-mix(in srgb, var(--ai-soft) 55%, transparent);
+  -webkit-backdrop-filter: blur(18px) saturate(1.15);
+  backdrop-filter: blur(18px) saturate(1.15);
   border-right: 1px solid var(--ai-border);
+}
+
+/* Backdrop scrim — feathered, never a flat opaque wall. The world map
+   stays faintly visible instead of being fully dimmed out. */
+.ai-backdrop {
+  background:
+    radial-gradient(120% 90% at 50% 0%, transparent 40%, var(--dashboard-overlay) 100%),
+    color-mix(in srgb, var(--dashboard-overlay) 55%, transparent);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+}
+
+/* Thread + composer stay translucent so nothing visually blocks the map */
+.ai-thread,
+.ai-thread-wrap {
+  background: transparent;
 }
 
 /* Slim translucent header */
@@ -89,7 +111,9 @@
   display: flex;
   align-items: flex-end;
   gap: 0.5rem;
-  background: var(--ai-surface);
+  background: color-mix(in srgb, var(--ai-surface) 68%, transparent);
+  -webkit-backdrop-filter: blur(18px) saturate(1.15);
+  backdrop-filter: blur(18px) saturate(1.15);
   border: 1px solid var(--ai-border-strong);
   border-radius: 22px;
   padding: 0.6rem 0.6rem 0.6rem 1rem;

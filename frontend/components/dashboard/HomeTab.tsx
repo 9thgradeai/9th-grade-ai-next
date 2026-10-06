@@ -17,6 +17,7 @@ import { homePerf } from "@/lib/perf";
 import { EMPTY_INTELLIGENCE, mergeIntelligence } from "@/lib/intelligence";
 import type { Server, PrepIntelligenceRecommendation } from "@/lib/types";
 import HomeCoach from "./ai/HomeCoach";
+import HomeWelcome from "./HomeWelcome";
 import { useExamDaysLeft } from "./HomeTabHelpers";
 import TodayMission from "./command-center/TodayMission";
 import PreparationPulse from "./command-center/PreparationPulse";
@@ -491,6 +492,11 @@ export default function HomeTab() {
 
   return (
     <div className="study-home flex flex-col gap-5 pb-24 sm:pb-6">
+      {/* ── 0 · Welcome + literary quote (Bangla & English writers) ── */}
+      <RevealSection className="min-w-0" style={{ order: -1 }}>
+        <HomeWelcome onStartPractice={startDailyWarmup} />
+      </RevealSection>
+
       <motion.header
         initial={lowMotion ? false : "hidden"}
         whileInView={lowMotion ? undefined : "show"}

@@ -688,13 +688,14 @@ export default function AIWorkspace() {
       <AnimatePresence>
         {showModal && (
           <div className="ai-workspace fixed inset-0 z-[var(--z-modal)] flex">
-            {/* Backdrop */}
+            {/* Backdrop — feathered transparent scrim: dashboard world-map
+                stays visible, nothing visually blocks it */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={closeWorkspace}
-              className="absolute inset-0 bg-[var(--dashboard-overlay)] backdrop-blur-sm"
+              className="ai-backdrop absolute inset-0"
               aria-hidden="true"
             />
 
@@ -708,7 +709,7 @@ export default function AIWorkspace() {
               role="dialog"
               aria-modal="true"
               aria-labelledby="ai-workspace-title"
-              className="ai-panel relative m-auto flex h-dvh w-full flex-col overflow-hidden border sm:h-[min(94dvh,940px)] sm:w-[min(1160px,96vw)] sm:rounded-2xl sm:shadow-2xl"
+              className="ai-panel relative m-auto flex h-dvh w-full flex-col overflow-hidden border border-[var(--ai-border-strong)] sm:h-[min(94dvh,940px)] sm:w-[min(1160px,96vw)] sm:rounded-2xl sm:shadow-2xl"
             >
               {/* Header — single flex-wrap row. On <md the mode switcher wraps
                   full-width onto its own line; on md+ it sits centered inline.
@@ -885,7 +886,7 @@ export default function AIWorkspace() {
                     className="absolute inset-y-0 left-0 z-30 w-72 max-w-[85vw] border-r border-[var(--dashboard-border-muted)] shadow-2xl lg:hidden"
                     aria-label="Conversation list"
                   >
-                    <div className="h-full bg-[var(--surface-elevated)]">{rail}</div>
+                    <div className="ai-rail h-full">{rail}</div>
                   </motion.aside>
                 </>
               )}
