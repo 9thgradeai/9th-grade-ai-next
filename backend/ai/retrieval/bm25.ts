@@ -178,10 +178,12 @@ export async function getBM25Index(): Promise<BM25Index> {
     // Import Prisma client dynamically to avoid circular deps
     const { prisma } = await import("~backend/db");
 
-      // Fetch questions in batches for indexing
-      const batchSize = 1000;
-      let offset = 0;
-      let totalIndexed = 0;
+    // Fetch questions in batches for indexing. Bounded: an unbounded
+    // full-table scan on a large bank would OOM the serverless function.
+    const batchSize = 1000;
+    const MAX_INDEX_DOCS = 50_000;
+    let offset = 0;
+    let totalIndexed = 0;
 
       while (true) {
         const questions = await prisma.question.findMany({
@@ -206,6 +208,10 @@ export async function getBM25Index(): Promise<BM25Index> {
       totalIndexed += questions.length;
       offset += batchSize;
 
+      if (totalIndexed >= MAX_INDEX_DOCS) {
+        log.warn("BM25 index capped", { totalIndexed, cap: MAX_INDEX_DOCS });
+        break;
+      }
       if (questions.length < batchSize) break;
     }
 

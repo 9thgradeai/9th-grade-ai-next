@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { log } from "~backend/infrastructure/observability/logger";
 
 export class AppError extends Error {
   public readonly statusCode: number;
@@ -75,9 +76,9 @@ export function toHttpResponse(error: unknown): NextResponse {
     // chain so on-call has query context; the client only ever sees the safe
     // generic message. `development` alone gets internals — staging uses
     // production-like data and must not leak Prisma/DB messages or stacks.
-    if (!error.isOperational) {
-      console.error(`[${error.code}] ${error.message}`, error.cause ?? error.stack);
-    }
+  if (!error.isOperational) {
+    log.error("http.unexpected", { code: error.code, message: error.message, stack: error.cause ?? error.stack });
+  }
     const isDev = process.env.NODE_ENV === "development";
     const payload: Record<string, unknown> = {
       // Operational errors (4xx, expected failures) carry safe messages.
@@ -97,7 +98,7 @@ export function toHttpResponse(error: unknown): NextResponse {
     // Unexpected (non-operational) errors: log the real cause server-side, but
     // never return internals like Prisma/DB messages to the client except in
     // local development.
-    console.error(`[unhandled] ${error.message}`, error.stack);
+    log.error("http.unhandled", { message: error.message, stack: error.stack });
     return NextResponse.json(
       {
         error:

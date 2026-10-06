@@ -12,26 +12,65 @@ import { NextResponse } from "next/server";
 import { prisma } from "~backend/db";
 import type { UserRecord } from "~backend/services/user";
 
-// Lazy secret initialization
+// Lazy secret initialization with rotation support. The env value is
+// re-read at most once per minute, so an AUTH_SECRET rotation propagates
+// without a redeploy — while verification still accepts the previous secret
+// during the grace window (old cookies stay valid, new cookies use new key).
 let JOSE_SECRET: Uint8Array | null = null;
+let JOSE_SECRET_PREV: Uint8Array | null = null;
+let SECRET_LOADED_AT = 0;
+const SECRET_TTL_MS = 60_000;
 
-function getJoseSecret(): Uint8Array {
-  if (JOSE_SECRET) return JOSE_SECRET;
-  let secret = process.env.AUTH_SECRET;
-  if (!secret) {
+function encodeSecret(value: string): Uint8Array {
+  return new TextEncoder().encode(value);
+}
+
+function loadSecrets(): { current: Uint8Array; previous: Uint8Array | null } {
+  const now = Date.now();
+  if (JOSE_SECRET && now - SECRET_LOADED_AT < SECRET_TTL_MS) {
+    return { current: JOSE_SECRET, previous: JOSE_SECRET_PREV };
+  }
+  const current = process.env.AUTH_SECRET;
+  if (!current) {
     if (process.env.NODE_ENV !== "production") {
       // In development, generate a temporary secret to avoid crashes.
-      secret = crypto.randomBytes(32).toString("base64");
+      const dev = crypto.randomBytes(32).toString("base64");
       console.warn("[auth] AUTH_SECRET not set – using temporary dev secret.");
-    } else {
-      throw new Error(
-        "AUTH_SECRET is not set. Create a .env.local with AUTH_SECRET=$(openssl rand -base64 32).",
-      );
+      JOSE_SECRET = encodeSecret(dev);
+      JOSE_SECRET_PREV = null;
+      SECRET_LOADED_AT = now;
+      return { current: JOSE_SECRET, previous: null };
     }
+    throw new Error(
+      "AUTH_SECRET is not set. Create a .env.local with AUTH_SECRET=$(openssl rand -base64 32).",
+    );
   }
-  const encoder = new TextEncoder();
-  JOSE_SECRET = encoder.encode(secret);
-  return JOSE_SECRET;
+  // Rotation: the outgoing value becomes the grace-window verifier.
+  if (JOSE_SECRET && !timingSafeEqualText(encodeSecret(current), JOSE_SECRET)) {
+    JOSE_SECRET_PREV = JOSE_SECRET;
+  }
+  JOSE_SECRET = encodeSecret(current);
+  // AUTH_SECRET_PREVIOUS extends the grace window across restarts (env-set).
+  const prevEnv = process.env.AUTH_SECRET_PREVIOUS;
+  if (prevEnv) JOSE_SECRET_PREV = encodeSecret(prevEnv);
+  SECRET_LOADED_AT = now;
+  return { current: JOSE_SECRET, previous: JOSE_SECRET_PREV };
+}
+
+function timingSafeEqualText(a: Uint8Array, b: Uint8Array): boolean {
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a[i] ^ b[i];
+  return diff === 0;
+}
+
+function getJoseSecret(): Uint8Array {
+  return loadSecrets().current;
+}
+
+/** Previous secret for the rotation grace window (null when none). */
+function getJoseSecretPrevious(): Uint8Array | null {
+  return loadSecrets().previous;
 }
 
 
@@ -223,7 +262,17 @@ export async function verifySession(token: string) {
     });
     return payload;
   } catch {
-    return null;
+    // Rotation grace window: tokens minted just before a rotation still verify.
+    const prev = getJoseSecretPrevious();
+    if (!prev) return null;
+    try {
+      const { payload } = await jwtVerify(token, prev, {
+        algorithms: ["HS256"],
+      });
+      return payload;
+    } catch {
+      return null;
+    }
   }
 }
 
@@ -242,6 +291,10 @@ export async function verifySession(token: string) {
  *   pass a longer value (e.g. 30 days) when the user opts to stay signed in.
  */
 export async function setSessionCookie(token: string, res: NextResponse, maxAgeSeconds?: number) {
+  // Deliberately SameSite=Lax (not Strict, not __Host-): the Google OAuth
+  // callback is a cross-site top-level navigation that must carry the
+  // session cookie, and __Host- would invalidate every existing session on
+  // rename. CSRF on state-changing routes is enforced by assertSameOrigin.
   const cookieOpts = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
@@ -279,7 +332,8 @@ export async function clearSessionCookie(res: NextResponse) {
 export async function getSessionUser(req: Request): Promise<UserRecord | null> {
   const token = extractSessionToken(req);
   if (!token) return null;
-
+  // NOTE: deliberately uncached. This is a single PK lookup (~1ms), while
+  // any cache would delay ban/tokenVersion revocation. Correctness wins.
   const payload = await verifySession(token);
   if (!payload?.email || typeof payload.email !== "string") return null;
 

@@ -205,11 +205,19 @@ export class LazyLoader<T> {
     }
 
     if (this.loading) {
-      // Wait for existing load to complete
+      // Wait for existing load to complete — bounded: a stuck factory must
+      // never park callers forever (serverless freeze + hung awaits).
+      const deadline = Date.now() + 10_000;
       while (this.loading) {
+        if (Date.now() > deadline) {
+          throw new Error("LazyLoader timed out waiting for an in-flight load.");
+        }
         await new Promise((r) => setTimeout(r, 10));
       }
-      return this.value!;
+      if (this.value === undefined) {
+        throw new Error("LazyLoader load failed without a value.");
+      }
+      return this.value;
     }
 
     this.loading = true;

@@ -127,7 +127,10 @@ export async function withRetryOrFallback<T>(
   try {
     const { result } = await withRetry(fn, config, labels);
     return result;
-  } catch {
+  } catch (err) {
+    // Fallback masks the outage by design — but the cause must be logged or
+    // on-call can never see the provider failing underneath.
+    log.error("ai.provider-fallback", { ...(labels ?? {}), error: err instanceof Error ? err.message : String(err) });
     return fallback;
   }
 }

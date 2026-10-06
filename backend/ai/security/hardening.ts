@@ -4,6 +4,7 @@
 import "server-only";
 
 import { log } from "~backend/infrastructure/observability/logger";
+import { ValidationError } from "~backend/errors";
 
 /** Prompt injection patterns to detect. */
 const INJECTION_PATTERNS = [
@@ -83,6 +84,22 @@ export function detectPromptInjection(input: string): InjectionDetection {
     patterns: detectedPatterns,
     riskLevel,
   };
+}
+
+/**
+ * Enforcement gate: call on every user-supplied prompt before it reaches a
+ * model. High-risk inputs (3+ injection patterns) are rejected outright;
+ * medium/low only log (detection is heuristic — over-blocking would break
+ * legitimate study questions like "ignore the previous chapter…").
+ */
+export function assertPromptAllowed(input: string): void {
+  if (typeof input !== "string" || !input.trim()) return;
+  const result = detectPromptInjection(input);
+  if (result.riskLevel === "high") {
+    throw new ValidationError(
+      "That request looks like a prompt-injection attempt and was blocked. Please rephrase your study question.",
+    );
+  }
 }
 
 /**

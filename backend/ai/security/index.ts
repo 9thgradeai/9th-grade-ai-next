@@ -2,6 +2,7 @@
 
 export {
   detectPromptInjection,
+  assertPromptAllowed,
   detectSuspiciousContent,
   sanitizeInput,
   checkWriteRateLimit,

@@ -3,6 +3,10 @@
 // deployments. Semantics are byte-compatible with the original limiter that
 // shipped in backend/rate-limit.ts (count after increment; allowed while
 // count <= max; lazy window reset).
+//
+// WARNING: counters die with the process (deploy/scale/reset = quota reset).
+// Production MUST set REDIS_URL (ADR-0009); the AI daily-cost path additionally
+// enforces the DB usage ledger precisely because this store is evictable.
 
 import "server-only";
 

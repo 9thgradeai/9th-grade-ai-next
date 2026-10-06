@@ -15,6 +15,7 @@ import "server-only";
 
 import { createHash } from "crypto";
 import { RateLimitError } from "~backend/errors";
+import { log } from "~backend/infrastructure/observability/logger";
 import { countUsageToday, getDailyCostUsd } from "~backend/ai/usage/usage";
 import { getRateLimitStore } from "~backend/infrastructure/cache";
 
@@ -116,7 +117,7 @@ async function checkDailyAuthority(
     // so allowing traffic would let cost run unbounded during a DB outage.
     // (The fast store still fails open per docs/SECURITY.md; the AI routes
     // need the DB for conversation persistence anyway.)
-    console.error(`[rate-limit] usage ledger unavailable for ${route}:${userId}`, error);
+    log.error("rate-limit.ledger-unavailable", { route, userId, error: String(error) });
     return false;
   }
   if (!Number.isFinite(used)) used = 0;

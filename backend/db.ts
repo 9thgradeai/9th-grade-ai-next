@@ -1,6 +1,7 @@
 // backend/db.ts — Prisma client singleton with retry logic, query logging, and graceful shutdown
 
 import { PrismaClient } from "@prisma/client";
+import { log } from "~backend/infrastructure/observability/logger";
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
@@ -10,21 +11,33 @@ const MAX_RETRIES = 3;
 const RETRY_DELAY_BASE = 1000;
 
 function createPrismaClient(): PrismaClient {
+  const isDev = process.env.NODE_ENV === "development";
   const client = new PrismaClient({
-    log:
-      process.env.NODE_ENV === "development"
-        ? (["query", "error", "warn"] as const)
-        : (["error"] as const),
+    log: isDev
+      ? (["query", "error", "warn"] as const)
+      : ([
+          // Query events (not stdout) so slow queries stay observable in
+          // production without spamming logs. No PII: params are truncated.
+          { emit: "event", level: "query" },
+          { emit: "stdout", level: "error" },
+        ] as const),
   });
 
-  if (process.env.NODE_ENV === "development") {
-    const SLOW_QUERY_THRESHOLD = 1000;
-    client.$on("query", (event: { query: string; duration: number }) => {
-      if (event.duration > SLOW_QUERY_THRESHOLD) {
-        console.warn(`[Slow Query] ${event.duration}ms — ${event.query}`);
-      }
-    });
-  }
+  const SLOW_QUERY_THRESHOLD = 1000;
+  client.$on("query", (event: { query: string; duration: number }) => {
+    if (event.duration <= SLOW_QUERY_THRESHOLD) return;
+    if (isDev) {
+      console.warn(`[Slow Query] ${event.duration}ms — ${event.query}`);
+      return;
+    }
+    // Sampled 1-in-10: Neon regressions surface without log flooding.
+    if (Math.random() < 0.1) {
+      log.warn("db.slow-query", {
+        durationMs: event.duration,
+        query: event.query.slice(0, 500),
+      });
+    }
+  });
 
   return client;
 }

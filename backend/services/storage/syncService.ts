@@ -141,11 +141,15 @@ export async function processOneJob(jobId: string): Promise<void> {
     const isIntegrity = ["CHECKSUM_MISMATCH", "VERIFY_FAILED", "CORRUPTED"].includes(code);
     const isDead = attempts >= MAX_ATTEMPTS || isAuth || isIntegrity;
 
-    // Observability (never log tokens)
+    // Observability (never log tokens). Last-resort console.error: if the
+    // observability module itself is broken, a structured log would throw
+    // too — the failure must still surface somewhere.
     try {
       const { logSyncFailure } = await import("./observability");
       logSyncFailure(job.userId, job.entityType, code, attempts);
-    } catch {}
+    } catch {
+      console.error(`[sync] observability outage: user=${job.userId} entity=${job.entityType} code=${code} attempts=${attempts}`);
+    }
 
     if (isAuth) {
       await prisma.syncJob.update({ where: { id: jobId }, data: { status: "FAILED", lastError: msg, lastErrorCode: code, nextRetryAt: new Date(Date.now() + 60_000), processingLock: null } });

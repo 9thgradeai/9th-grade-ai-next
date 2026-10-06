@@ -10,6 +10,8 @@
 import "server-only";
 
 import { prisma } from "~backend/db";
+import { AppError } from "~backend/errors";
+import { checkWriteRateLimit } from "./security/hardening";
 import { getOwnedMessage } from "./persistence/conversations";
 import type { AIFeedbackRating } from "@prisma/client";
 import { summarizeFeedback } from "./feedback-summary";
@@ -28,6 +30,12 @@ export async function submitFeedback(opts: {
   if (opts.messageId) {
     // Ownership check: message must belong to this user's conversation.
     await getOwnedMessage(opts.userId, opts.messageId);
+  }
+  // Write throttle (defense-in-depth alongside global quotas): a client
+  // spamming feedback rows gets a 429, not a silent accept.
+  const gate = checkWriteRateLimit(`feedback:${opts.userId}`);
+  if (!gate.allowed) {
+    throw new AppError(429, "Too much feedback too fast. Please slow down.", "RATE_LIMIT_EXCEEDED");
   }
   const row = await prisma.aIFeedback.create({
     data: {

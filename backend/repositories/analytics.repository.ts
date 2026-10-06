@@ -6,6 +6,7 @@
 
 import "server-only";
 
+import { Prisma } from "@prisma/client";
 import { prisma } from "~backend/db";
 
 /**
@@ -230,22 +231,30 @@ export function buildActivityWindow(
 }
 
 /**
- * Server-authoritative study streak: consecutive product-timezone days with at
- * least one attempt, ending today or yesterday. Derived from the attempt log
- * so it can never be inflated by the client. Bounded to a year of distinct days.
+ * Batched streaks: ONE query for many users instead of N per-user queries
+ * (leaderboard path). Same day-set logic as computeStreak, computed in JS.
  */
-export async function computeStreak(userId: string): Promise<number> {
-  const rows = await prisma.$queryRaw<{ day: string }[]>`
-    SELECT DISTINCT to_char(date_trunc('day', "createdAt" AT TIME ZONE '${APP_TIMEZONE}'), 'YYYY-MM-DD') AS "day"
+export async function computeStreaks(userIds: string[]): Promise<Map<string, number>> {
+  const out = new Map<string, number>();
+  const unique = [...new Set(userIds)];
+  if (unique.length === 0) return out;
+  const rows = await prisma.$queryRaw<{ userId: string; day: string }[]>`
+    SELECT DISTINCT "userId", to_char(date_trunc('day', "createdAt" AT TIME ZONE '${APP_TIMEZONE}'), 'YYYY-MM-DD') AS "day"
     FROM "QuestionAttempt"
-    WHERE "userId" = ${userId}
-      AND "createdAt" >= now() - interval '365 days'
-    ORDER BY "day" DESC
-    LIMIT 366`;
+    WHERE "userId" IN (${Prisma.join(unique)})
+      AND "createdAt" >= now() - interval '365 days'`;
+  const byUser = new Map<string, Set<string>>();
+  for (const r of rows) {
+    const set = byUser.get(r.userId) ?? new Set<string>();
+    set.add(String(r.day));
+    byUser.set(r.userId, set);
+  }
+  for (const id of unique) out.set(id, streakFromDays(byUser.get(id) ?? new Set()));
+  return out;
+}
 
-  if (rows.length === 0) return 0;
-
-  const activeDays = new Set(rows.map((r) => String(r.day)));
+function streakFromDays(activeDays: Set<string>): number {
+  if (activeDays.size === 0) return 0;
   let streak = 0;
   // Start from today; allow yesterday as the streak anchor so the counter
   // doesn't reset to 0 before the user has studied today.
@@ -259,4 +268,20 @@ export async function computeStreak(userId: string): Promise<number> {
     cursor = addDaysKey(cursor, -1);
   }
   return streak;
+}
+/**
+ * Server-authoritative study streak: consecutive product-timezone days with at
+ * least one attempt, ending today or yesterday. Derived from the attempt log
+ * so it can never be inflated by the client. Bounded to a year of distinct days.
+ */
+export async function computeStreak(userId: string): Promise<number> {
+  const rows = await prisma.$queryRaw<{ day: string }[]>`
+    SELECT DISTINCT to_char(date_trunc('day', "createdAt" AT TIME ZONE '${APP_TIMEZONE}'), 'YYYY-MM-DD') AS "day"
+    FROM "QuestionAttempt"
+    WHERE "userId" = ${userId}
+      AND "createdAt" >= now() - interval '365 days'
+    ORDER BY "day" DESC
+    LIMIT 366`;
+
+  return streakFromDays(new Set(rows.map((r) => String(r.day))));
 }

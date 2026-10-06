@@ -6,10 +6,12 @@ import "server-only";
 
 import { prisma } from "~backend/db";
 import { InternalServerError } from "~backend/errors";
+import { log } from "~backend/infrastructure/observability/logger";
 import {
   aggregateDailyActivity,
   buildActivityWindow,
   computeStreak,
+  computeStreaks,
   fetchWrongNotebookQuestionIds,
 } from "~backend/repositories/analytics.repository";
 import { QueryCache } from "~backend/infrastructure/cache/query-cache";
@@ -246,8 +248,12 @@ export async function getQuestionsPage(
       prisma.question.count({ where }),
     ]);
     const duration = Date.now() - start;
-    if (duration > 500 && process.env.NODE_ENV === "development") {
-      console.warn(`[Slow Query] ${duration}ms — getQuestions`);
+    if (duration > 500) {
+      if (process.env.NODE_ENV === "development") {
+        console.warn(`[Slow Query] ${duration}ms — getQuestions`);
+      } else if (Math.random() < 0.1) {
+        log.warn("db.slow-query", { durationMs: duration, op: "getQuestions" });
+      }
     }
 
     const result = {
@@ -502,14 +508,15 @@ export async function getLeaderboard(
     });
 
     // Streak is server-authoritative (derived from attempt days), never stored,
-    // so it can't be inflated client-side. Computed live per entry.
-    const streakResults = await Promise.all(rows.map((r) => computeStreak(r.userId)));
+    // so it can't be inflated client-side. Batched: ONE query for the whole
+    // board instead of N per-user queries.
+    const streakByUser = await computeStreaks(rows.map((r) => r.userId));
 
     const entries: LeaderboardEntryDTO[] = rows.map((r, i) => ({
       rank: i + 1,
       name: r.user?.name || r.user?.handle || "অজানা",
       points: r.points,
-      streak: streakResults[i],
+      streak: streakByUser.get(r.userId) ?? 0,
     }));
 
     const me = await leaderboardMe(userId);

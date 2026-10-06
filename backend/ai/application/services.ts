@@ -23,6 +23,7 @@ import { emit } from "~backend/events/bus";
 import { searchForIntent } from "../tools/search";
 import { retrieveQuestionBank } from "../retrieval";
 import { runAgentTurn, agentResponseText, type AgentStatus } from "../agent";
+import { assertPromptAllowed } from "../security/hardening";
 import { validateAgentRequest } from "../schemas";
 import { validateSolverOutput, validateEvaluationOutput, validateMockTestOutput, validateAdvisorOutput, validateExplainOutput, type EvaluationResult, type GeneratedMockTest, type AdvisorPlan, type AIExplanationResult, sanitizeReply, parseJsonObject } from "../validation/outputs";
 import { validateChatRequest, validateSolverRequest, validateExplainRequest } from "../schemas";
@@ -47,6 +48,41 @@ const TITLE_SNIPPET = 60;
 
 // Streaming timeout (ms) — serverless functions have limits (Vercel: 60s for Pro, 10s for Hobby)
 const STREAM_TIMEOUT_MS = 30_000;
+// Absolute byte ceiling per streamed turn: even a constantly-dripping provider
+// cannot exceed ~2MB into the response buffer (serverless memory + client).
+const MAX_STREAM_BYTES = 2 * 1024 * 1024;
+
+/** Cap a stream's total bytes: cancel + error once the ceiling is passed. */
+function withMaxBytes<T>(stream: ReadableStream<T>, maxBytes: number): ReadableStream<T> {
+  let total = 0;
+  const reader = stream.getReader();
+  return new ReadableStream<T>({
+    async start(controller) {
+      try {
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) {
+            controller.close();
+            break;
+          }
+          total += (value as Uint8Array).byteLength ?? 0;
+          if (total > maxBytes) {
+            controller.error(new Error(`Stream exceeded ${maxBytes} bytes`));
+            break;
+          }
+          controller.enqueue(value);
+        }
+      } catch (err) {
+        controller.error(err);
+      } finally {
+        reader.releaseLock();
+      }
+    },
+    cancel() {
+      reader.cancel().catch(() => {});
+    },
+  });
+}
 
 /** Forward a source stream: reader acquired once, pumped until done.
  * (Acquiring a new reader inside pull() truncates multi-chunk responses —
@@ -334,6 +370,8 @@ export async function createTutorTurn(opts: {
   const { userId, request: raw } = opts;
   const parsed = validateChatRequest(raw);
   const request = parsed as TutorRequest;
+  // Injection gate on the latest user message before any model/tool work.
+  assertPromptAllowed(parsed.messages.filter((m) => m.role === "user").at(-1)?.content ?? "");
   const intent = request.intent ?? detectIntent(parsed.messages[parsed.messages.length - 1]?.content ?? "");
   const hasImage = Boolean(request.imageBase64);
 
@@ -442,7 +480,7 @@ export async function createTutorTurn(opts: {
   const { stream, done, getFullText } = streamResult;
 
   // Apply streaming timeout guard
-  const timedStream = withStreamTimeout(stream, STREAM_TIMEOUT_MS);
+  const timedStream = withMaxBytes(withStreamTimeout(stream, STREAM_TIMEOUT_MS), MAX_STREAM_BYTES);
 
   const wrapped = forwardStream(timedStream);
 
@@ -503,6 +541,7 @@ export async function solveQuestion(opts: {
   const { userId, request: raw } = opts;
   const parsed = validateSolverRequest(raw);
   const request = parsed as SolverRequest;
+  assertPromptAllowed(request.text ?? "");
 
   const hasImage = Boolean(request.imageBase64);
   let subjectId = request.subjectId;
@@ -598,7 +637,7 @@ export async function solveQuestion(opts: {
 
   // ── Solver service: apply streaming timeout
   const { stream, done, getFullText } = streamResult;
-  const timedStream = withStreamTimeout(stream, STREAM_TIMEOUT_MS);
+  const timedStream = withMaxBytes(withStreamTimeout(stream, STREAM_TIMEOUT_MS), MAX_STREAM_BYTES);
 
   const wrapped = forwardStream(timedStream);
 
@@ -832,7 +871,7 @@ export async function explainQuestion(opts: {
   }
 
   const { stream, done, getFullText } = streamResult;
-  const timedStream = withStreamTimeout(stream, STREAM_TIMEOUT_MS);
+  const timedStream = withMaxBytes(withStreamTimeout(stream, STREAM_TIMEOUT_MS), MAX_STREAM_BYTES);
 
   const wrapped = forwardStream(timedStream);
 
@@ -970,7 +1009,7 @@ export async function assistantTurn(opts: {
   }
 
   const { stream, done, getFullText } = streamResult;
-  const wrapped = forwardStream(stream);
+  const wrapped = forwardStream(withMaxBytes(withStreamTimeout(stream, STREAM_TIMEOUT_MS), MAX_STREAM_BYTES));
 
   runAfterResponse(async () => {
     await done;
@@ -1042,6 +1081,7 @@ export async function createAgentTurn(opts: {
 }> {
   const { userId, request: raw } = opts;
   const parsed = validateAgentRequest(raw);
+  assertPromptAllowed(parsed.question);
   const intent = parsed.intent ?? (detectIntent(parsed.question, "recommend") as AIIntent);
 
   // Tap the loop's live status stream to reconstruct the executed tool log
