@@ -219,16 +219,16 @@
   /* ══════════════════════════════════════════════════════════════════════════
      RESKIN LIGHT — same deep-space dialect translated to daylight: tinted
      (not neutral-gray) surfaces, electric indigo primary. Sprint 3.
-     Surface hierarchy: #E6EAF6 → #F3F5FC → #E8ECF7 (mist — signature
-     periwinkle-gray daylight, never stark white)
+     Surface hierarchy: #E8DFC9 → #F4EDDD → #EEE3CC (warm sand editorial —
+     creamy paper daylight, firmly out of the white domain)
      ══════════════════════════════════════════════════════════════════════════ */
 
   /* ── Canonical Surfaces ────────────────────────────────────────────────────── */
-  --background: #E6EAF6;
-  --surface: #F3F5FC;
-  --surface-soft: #E8ECF7;
-  --surface-elevated: #F7F9FE;
-  --surface-highest: #F7F9FE;
+  --background: #E8DFC9;
+  --surface: #F4EDDD;
+  --surface-soft: #EEE3CC;
+  --surface-elevated: #FAF4E8;
+  --surface-highest: #FAF4E8;
 
   /* ── Legacy Surface Aliases ────────────────────────────────────────────────── */
   --surface-base: var(--background);
@@ -289,37 +289,40 @@
   --shadow-xl: 0 20px 25px rgb(0 0 0 / 0.1), 0 8px 10px rgb(0 0 0 / 0.04);
 
   /* ── Input ─────────────────────────────────────────────────────────────────── */
-  --input-bg: #F7F9FE;
+  --input-bg: #FAF4E8;
+  --input-border: #D8C9A8;
+  --input-focus: #6366F1;
+  --input-placeholder: #A89C86;
   --input-border: #D1D5DB;
   --input-focus: #6366F1;
   --input-placeholder: #9CA3AF;
 
   /* ── Disabled ──────────────────────────────────────────────────────────────── */
-  --disabled-bg: #F3F4F6;
-  --disabled-text: #9CA3AF;
+  --disabled-bg: #EDE4D2;
+  --disabled-text: #A89C86;
 
   /* ── Chart ─────────────────────────────────────────────────────────────────── */
   --chart-1: #6366F1;
   --chart-2: #2563EB;
   --chart-3: #059669;
   --chart-4: #D97706;
-  --chart-grid: #E5E7EB;
-  --chart-axis: #6B7280;
+  --chart-grid: #DDD2B8;
+  --chart-axis: #6B6257;
 
   /* ── Focus Ring ────────────────────────────────────────────────────────────── */
   --focus-ring: rgb(99 102 241 / 0.4);
   --focus-ring-offset: 2px;
 
   /* ── Sidebar ───────────────────────────────────────────────────────────────── */
-  --sidebar-bg: #E9EDF8;
-  --sidebar-border: #D5DCEE;
-  --sidebar-text: #4B5563;
+  --sidebar-bg: #E5D9BE;
+  --sidebar-border: #D5C8A4;
+  --sidebar-text: #5B5344;
   --sidebar-text-active: #4F46E5;
   --sidebar-bg-active: rgb(79 70 229 / 0.10);
 
   /* ── Card ──────────────────────────────────────────────────────────────────── */
-  --card-bg: #F3F5FC;
-  --card-border: #D9DFF2;
+  --card-bg: #F4EDDD;
+  --card-border: #DCCFAF;
   --card-radius: 16px;
 
   /* ── Global App Tokens (non-dashboard) ─────────────────────────────────────── */
@@ -1235,13 +1238,13 @@ hr {
   --primary-muted: oklch(0.97 0.02 278);
   --teal: oklch(0.44 0.11 190);
   --teal-soft: oklch(0.93 0.03 190);
-  --background: oklch(0.935 0.013 260);
-  --surface: oklch(0.972 0.008 260);
-  --surface-soft: oklch(0.945 0.012 260);
-  --surface-elevated: oklch(0.985 0.005 260);
-  --surface-sunken: oklch(0.910 0.015 260);
-  --border: oklch(0.865 0.015 260);
-  --border-strong: oklch(0.795 0.020 260);
+  --background: oklch(0.905 0.030 85);
+  --surface: oklch(0.955 0.022 85);
+  --surface-soft: oklch(0.925 0.028 85);
+  --surface-elevated: oklch(0.975 0.015 85);
+  --surface-sunken: oklch(0.875 0.035 85);
+  --border: oklch(0.815 0.032 80);
+  --border-strong: oklch(0.735 0.038 78);
   /* Light-mode chart colors run deeper than dark so series hold contrast on
      white without going neon. Pairs with the dark --viz-* set above. */
   --viz-violet: oklch(0.55 0.20 292);
@@ -1250,20 +1253,20 @@ hr {
   --viz-lime: oklch(0.60 0.14 130);
   --viz-amber: oklch(0.62 0.15 75);
   --viz-rose: oklch(0.55 0.18 15);
-  /* Stronger text tokens for WCAG AA on white */
-  --text-primary: oklch(0.18 0.022 260);
-  --text-secondary: oklch(0.38 0.016 260);
-  --text-muted: oklch(0.50 0.013 260);
-  --shadow-sm: 0 1px 2px oklch(0.2 0.02 260 / 0.06), 0 4px 12px oklch(0.2 0.02 260 / 0.05);
-  --shadow-md: 0 4px 16px oklch(0.2 0.02 260 / 0.08), 0 8px 24px oklch(0.2 0.02 260 / 0.06);
-  --shadow-lg: 0 12px 32px oklch(0.2 0.02 260 / 0.10), 0 4px 8px oklch(0.2 0.02 260 / 0.06);
+  /* Warm ink text — editorial contrast on the sand canvas (AA on cream) */
+  --text-primary: oklch(0.24 0.025 70);
+  --text-secondary: oklch(0.42 0.025 75);
+  --text-muted: oklch(0.55 0.025 80);
+  --shadow-sm: 0 1px 2px oklch(0.4 0.03 80 / 0.08), 0 4px 12px oklch(0.4 0.03 80 / 0.06);
+  --shadow-md: 0 4px 16px oklch(0.4 0.03 80 / 0.10), 0 8px 24px oklch(0.4 0.03 80 / 0.07);
+  --shadow-lg: 0 12px 32px oklch(0.4 0.03 80 / 0.12), 0 4px 8px oklch(0.4 0.03 80 / 0.07);
 }
 
 /* ── Light mode: command dock button — ensure text is always legible ─── */
 .dashboard-theme-scope[data-dashboard-theme="light"] .command-dock-btn {
   color: var(--text-secondary);
-  background: oklch(0.975 0.008 260);
-  border-color: oklch(0.88 0.014 260);
+  background: oklch(0.955 0.022 85);
+  border-color: oklch(0.815 0.032 80);
 }
 .dashboard-theme-scope[data-dashboard-theme="light"] .command-dock-btn svg {
   color: var(--text-secondary);
@@ -1274,14 +1277,14 @@ hr {
 .dashboard-theme-scope[data-dashboard-theme="light"] .command-dock-btn:hover {
   color: var(--primary);
   background: var(--primary-soft);
-  border-color: color-mix(in oklch, var(--primary) 35%, oklch(0.88 0.014 260));
+  border-color: color-mix(in oklch, var(--primary) 35%, oklch(0.815 0.032 80));
 }
 
 /* ── Light mode: glass-card — ensure minimum surface contrast ────────── */
 .dashboard-theme-scope[data-dashboard-theme="light"] .glass-card {
-  background: oklch(0.972 0.008 260);
-  border-color: oklch(0.865 0.015 260);
-  box-shadow: 0 1px 3px oklch(0.2 0.02 260 / 0.06), 0 4px 16px oklch(0.2 0.02 260 / 0.04);
+  background: oklch(0.955 0.022 85);
+  border-color: oklch(0.815 0.032 80);
+  box-shadow: 0 1px 3px oklch(0.4 0.03 80 / 0.06), 0 4px 16px oklch(0.4 0.03 80 / 0.04);
 }
 
 /* ── Light mode: topic tree picker rows — selected state readable ─────── */
@@ -1296,11 +1299,11 @@ hr {
 
 /* ── Light mode: command-card — stronger border + cleaner bg ─────────── */
 .dashboard-theme-scope[data-dashboard-theme="light"] .command-card {
-  background: oklch(0.972 0.008 260);
-  border-color: oklch(0.865 0.015 260);
+  background: oklch(0.955 0.022 85);
+  border-color: oklch(0.815 0.032 80);
   box-shadow:
-    0 1px 2px oklch(0.2 0.02 260 / 0.05),
-    0 4px 16px oklch(0.2 0.02 260 / 0.06),
+    0 1px 2px oklch(0.4 0.03 80 / 0.05),
+    0 4px 16px oklch(0.4 0.03 80 / 0.06),
     inset 0 1px 0 oklch(1 0 0 / 0.9);
 }
 
@@ -1311,7 +1314,7 @@ hr {
 
 /* ── Light mode: terminal window bar ─────────────────────────────────── */
 .dashboard-theme-scope[data-dashboard-theme="light"] .terminal-window-bar {
-  background: oklch(0.965 0.010 260);
+  background: oklch(0.925 0.028 85);
 }
 
 

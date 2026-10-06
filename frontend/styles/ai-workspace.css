@@ -613,34 +613,34 @@
 
 .dashboard-theme-scope[data-dashboard-theme="light"] {
   color-scheme: light;
-  --background: #E6EAF6;
-  --surface: oklch(0.972 0.008 260);
-  --surface-soft: oklch(0.945 0.012 260);
-  --surface-elevated: oklch(0.985 0.005 260);
-  --surface-highest: oklch(0.985 0.005 260);
-  --text-primary: oklch(0.17 0.02 260);
-  --text-secondary: oklch(0.34 0.015 260);
-  --text-muted: oklch(0.47 0.012 260);
-  --text-disabled: oklch(0.62 0.01 260);
-  --border: oklch(0.865 0.015 260);
-  --border-strong: oklch(0.795 0.020 260);
+  --background: #E8DFC9;
+  --surface: oklch(0.955 0.022 85);
+  --surface-soft: oklch(0.925 0.028 85);
+  --surface-elevated: oklch(0.975 0.015 85);
+  --surface-highest: oklch(0.975 0.015 85);
+  --text-primary: oklch(0.24 0.025 70);
+  --text-secondary: oklch(0.42 0.025 75);
+  --text-muted: oklch(0.55 0.025 80);
+  --text-disabled: oklch(0.68 0.02 80);
+  --border: oklch(0.815 0.032 80);
+  --border-strong: oklch(0.735 0.038 78);
   --primary: #6366F1;
   --primary-hover: #4F46E5;
   --primary-active: #4338CA;
   --primary-soft: rgb(99 102 241 / 0.08);
   --primary-muted: rgb(99 102 241 / 0.05);
-  --sidebar-bg: #E9EDF8;
+  --sidebar-bg: #E5D9BE;
   --sidebar-bg-active: #6366F1;
   --sidebar-text-active: #FFFFFF;
-  --sidebar-text: #4B5563;
-  --sidebar-border: #D5DCEE;
+  --sidebar-text: #5B5344;
+  --sidebar-border: #D5C8A4;
   --input-focus: var(--primary);
   --chart-1: #6366F1;
   --focus-ring: rgb(99 102 241 / 0.4);
   --border-focus: rgb(99 102 241 / 0.5);
-  --shadow-sm: 0 1px 2px oklch(0.2 0.02 260 / 0.06), 0 2px 8px oklch(0.2 0.02 260 / 0.05), inset 0 1px 0 oklch(1 0 0 / 0.9);
-  --shadow-md: 0 4px 16px oklch(0.2 0.02 260 / 0.08), 0 1px 3px oklch(0.2 0.02 260 / 0.06);
-  --shadow-lg: 0 12px 32px oklch(0.2 0.02 260 / 0.11), 0 4px 12px oklch(0.2 0.02 260 / 0.07);
+  --shadow-sm: 0 1px 2px oklch(0.4 0.03 80 / 0.06), 0 2px 8px oklch(0.4 0.03 80 / 0.05), inset 0 1px 0 oklch(1 0 0 / 0.9);
+  --shadow-md: 0 4px 16px oklch(0.4 0.03 80 / 0.08), 0 1px 3px oklch(0.4 0.03 80 / 0.06);
+  --shadow-lg: 0 12px 32px oklch(0.4 0.03 80 / 0.11), 0 4px 12px oklch(0.4 0.03 80 / 0.07);
 }
 
 .dashboard-theme-scope[data-dashboard-theme="dark"] {
