@@ -25,7 +25,11 @@ export async function POST(request: Request) {
     const origin = new URL(request.url).origin;
     const { devLink } = await requestPasswordReset(email, origin);
 
-    const res = NextResponse.json({ ok: true, ...(devLink ? { devLink } : {}) });
+    // Belt-and-braces: the reset token link must never leave the server in
+    // production, even if the service gate ever regresses.
+    const body =
+      devLink && process.env.NODE_ENV !== "production" ? { ok: true, devLink } : { ok: true };
+    const res = NextResponse.json(body);
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");
     applySecurityHeaders(res);
