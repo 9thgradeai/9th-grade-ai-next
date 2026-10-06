@@ -66,6 +66,9 @@ export const LIMITS = {
   get submitPerMin() {
     return envInt("RL_SUBMIT_PER_MIN", 30);
   },
+  get publicPerMin() {
+    return envInt("RL_PUBLIC_PER_MIN", 120);
+  },
 };
 
 const MINUTE_MS = 60_000;
@@ -253,4 +256,20 @@ export async function assertSubmitAllowed(userId: string): Promise<void> {
 /** Dev/test convenience: wipe in-memory counters. */
 export async function resetRateLimitStore(): Promise<void> {
   await getRateLimitStore().resetAll();
+}
+
+/**
+ * Anonymous-friendly read guard for heavy public GETs (question bank,
+ * documents, spotlight). Keyed on client IP when signed out, on the user id
+ * when signed in — scrapers share one small bucket, real users get their own.
+ */
+export async function assertReadAllowed(req: Request, route: string, userId?: string | null): Promise<void> {
+  const ok = await checkRateLimit(
+    getRateLimitKey(req, route, userId),
+    LIMITS.publicPerMin,
+    MINUTE_MS,
+  );
+  if (!ok) {
+    throw new RateLimitError("Too many requests. Please slow down.");
+  }
 }

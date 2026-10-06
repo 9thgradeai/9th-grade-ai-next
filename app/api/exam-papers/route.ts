@@ -20,6 +20,9 @@ export async function GET(request: Request) {
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");
     applySecurityHeaders(res);
+    // Public caching is safe here: the paper list is identical for every
+    // user (no userId flows into the query), so a shared cache key cannot
+    // leak one caller's data to another.
     applyCacheHeaders(res, { public: true, maxAge: 300, staleWhileRevalidate: 600 });
     return res;
   } catch (err) {

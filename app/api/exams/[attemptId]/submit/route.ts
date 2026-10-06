@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from "next/server";
 import { submitExamAttempt, type SubmitExamRequest } from "~backend/services/exam-submission";
 import { getUserIdFromRequest } from "~backend/services/user";
@@ -10,7 +9,13 @@ import {
   validateExamQuestionIds,
 } from "~backend/validation";
 import { QueryCache } from "~backend/infrastructure/cache/query-cache";
-import { getRequestId, startTiming, applySecurityHeaders, assertSameOrigin } from "../../../_middleware";
+import {
+  getRequestId,
+  startTiming,
+  applySecurityHeaders,
+  assertSameOrigin,
+  readJsonBody,
+} from "../../../_middleware";
 
 /**
  * POST /api/exams/:attemptId/submit  — canonical per spec
@@ -29,7 +34,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ att
 
     const { attemptId: pathAttemptId } = await params;
     const headerKey = request.headers.get("Idempotency-Key") || request.headers.get("idempotency-key") || "";
-    const body = (await request.json().catch(() => ({}))) as Partial<SubmitExamRequest> & { attemptId?: string };
+    const body = (await readJsonBody(request)) as Partial<SubmitExamRequest> & { attemptId?: string };
     // Path param is authoritative; header must match if provided
     let attemptId = pathAttemptId;
     if (headerKey && headerKey !== pathAttemptId) {
@@ -45,13 +50,15 @@ export async function POST(request: Request, { params }: { params: Promise<{ att
       attemptId,
       // Strict contract shared with /api/exam/submit (backend/validation.ts):
       // malformed input is REJECTED with 400, never silently stripped.
-      questionIds: validateExamQuestionIds((body as any).questionIds),
-      durationSec: validateExamDurationSec((body as any).durationSec),
-      answers: validateExamAnswers((body as any).answers),
+      questionIds: validateExamQuestionIds(body.questionIds),
+      durationSec: validateExamDurationSec(body.durationSec),
+      answers: validateExamAnswers(body.answers),
     });
 
     await QueryCache.invalidateIntelligence(userId);
-    const res = NextResponse.json({ result, success: true, attemptId: result.attemptId, status: "SUBMITTED", resultId: (result as any).resultId ?? result.attemptId, score: result.summary.percentage, submittedAt: result.submittedAt });
+    const resultId =
+      (result as unknown as { resultId?: string }).resultId ?? result.attemptId;
+    const res = NextResponse.json({ result, success: true, attemptId: result.attemptId, status: "SUBMITTED", resultId, score: result.summary.percentage, submittedAt: result.submittedAt });
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");
     applySecurityHeaders(res);

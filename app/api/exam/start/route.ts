@@ -8,6 +8,7 @@ import {
   startTiming,
   applySecurityHeaders,
   assertSameOrigin,
+  readJsonBody,
 } from "../../_middleware";
 
 /**
@@ -41,16 +42,26 @@ export async function POST(request: Request) {
     }
     await assertSubmitAllowed(userId);
 
-    const body = (await request.json().catch(() => ({}))) as {
+    const body = (await readJsonBody(request)) as {
       attemptId?: unknown;
       questionIds?: unknown;
       durationSec?: unknown;
     };
 
-    if (typeof body.attemptId !== "string") {
+    // Unknown fields are rejected — the client contract is exactly three keys.
+    for (const key of Object.keys(body)) {
+      if (key !== "attemptId" && key !== "questionIds" && key !== "durationSec") {
+        throw new AppError(400, `Unknown field: ${key}.`, "VALIDATION_ERROR");
+      }
+    }
+
+    if (
+      typeof body.attemptId !== "string" ||
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(body.attemptId)
+    ) {
       throw new AppError(
         400,
-        "attemptId (string) is required.",
+        "attemptId (UUID string) is required.",
         "VALIDATION_ERROR",
       );
     }

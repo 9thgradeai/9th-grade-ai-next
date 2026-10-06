@@ -8,7 +8,7 @@ import { UnauthorizedError, toHttpResponse } from "~backend/errors";
 import { getUserIdFromRequest } from "~backend/services/user";
 import { enforceAiQuotas } from "~backend/rate-limit";
 import { createAgentTurn, type AgentStatus, type AgentBlock } from "~backend/ai";
-import { getRequestId, startTiming, applySecurityHeaders, assertSameOrigin } from "../../_middleware";
+import { getRequestId, startTiming, applySecurityHeaders, assertSameOrigin, readJsonBody } from "../../_middleware";
 
 export const maxDuration = 60;
 
@@ -23,14 +23,26 @@ export async function POST(request: Request) {
   try {
     assertSameOrigin(request);
 
-    const userId = await getUserIdFromRequest(request);
-    if (!userId) {
-      throw new UnauthorizedError("Sign in to use the AI study coach.");
+    // Pre-stream gate: auth + quota failures return real HTTP statuses via
+    // toHttpResponse — never a 200 SSE envelope carrying agent.error, which
+    // clients and monitors cannot distinguish from success.
+    let userId: string;
+    try {
+      const authed = await getUserIdFromRequest(request);
+      if (!authed) {
+        throw new UnauthorizedError("Sign in to use the AI study coach.");
+      }
+      await enforceAiQuotas(request, "assistant", authed);
+      userId = authed;
+    } catch (gateErr) {
+      const res = toHttpResponse(gateErr);
+      res.headers.set("X-Request-Id", requestId);
+      res.headers.set("X-Response-Time", getTime() + "ms");
+      applySecurityHeaders(res);
+      return res;
     }
 
-    await enforceAiQuotas(request, "assistant", userId);
-
-    const body = await request.json().catch(() => ({}));
+    const body = await readJsonBody(request);
     const events: Uint8Array[] = [];
 
     const onStatus = (status: AgentStatus) => {

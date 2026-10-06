@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { getDocuments } from "~backend/services/content";
+import { getUserIdFromRequest } from "~backend/services/user";
+import { assertReadAllowed } from "~backend/rate-limit";
 import { toHttpResponse } from "~backend/errors";
 import { getRequestId, startTiming, applySecurityHeaders, applyCacheHeaders } from "../_middleware";
 
@@ -8,6 +10,7 @@ export async function GET(request: Request) {
   const getTime = startTiming();
 
   try {
+    await assertReadAllowed(request, "documents", await getUserIdFromRequest(request).catch(() => null));
     const documents = await getDocuments();
 
     const res = NextResponse.json({ documents });

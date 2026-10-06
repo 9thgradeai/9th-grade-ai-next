@@ -6,7 +6,7 @@ import { UnauthorizedError, toHttpResponse } from "~backend/errors";
 import { getUserIdFromRequest } from "~backend/services/user";
 import { enforceAiQuotas } from "~backend/rate-limit";
 import { solveQuestion } from "~backend/ai";
-import { getRequestId, startTiming, applySecurityHeaders, assertSameOrigin } from "../../_middleware";
+import { getRequestId, startTiming, applySecurityHeaders, assertSameOrigin, readJsonBody } from "../../_middleware";
 
 // Streaming/LLM latency can exceed serverless defaults; keep the invocation alive.
 export const maxDuration = 60;
@@ -27,8 +27,13 @@ export async function POST(request: Request) {
     // ledger as the authoritative daily backstop on single-instance stores.
     await enforceAiQuotas(request, "solver", userId);
 
-    const body = await request.json().catch(() => ({}));
+    const body = await readJsonBody(request, 6 * 1024 * 1024);
     const { stream, conversationId, provider, model } = await solveQuestion({ userId, request: body });
+
+    // Client disconnect stops the model stream — never burn tokens into the void.
+    request.signal.addEventListener("abort", () => {
+      stream.cancel().catch(() => {});
+    }, { once: true });
 
     const res = new Response(stream, {
       headers: {

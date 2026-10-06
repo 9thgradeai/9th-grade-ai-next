@@ -103,5 +103,9 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
+  // /api/* is matched so preflight OPTIONS gets CORS treatment here; the
+  // gate below only redirects PAGES (/dashboard, /login). API routes enforce
+  // their own auth (getUserIdFromRequest → 401) — the proxy never pretends
+  // to authorize them.
   matcher: ["/dashboard/:path*", "/login/:path*", "/api/:path*"],
 };

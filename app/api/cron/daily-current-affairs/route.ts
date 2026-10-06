@@ -24,7 +24,10 @@ function assertCronAuth(request: Request): void {
   const bearer = auth.startsWith("Bearer ") ? auth.slice("Bearer ".length).trim() : "";
   const querySecret = new URL(request.url).searchParams.get("secret") ?? "";
 
-  if (!bearer && !querySecret) {
+  // ?secret= exists for manual/external schedulers in dev only — in
+  // production it would leak CRON_SECRET into logs/CDNs, so Bearer-only.
+  const queryAllowed = process.env.NODE_ENV !== "production";
+  if (!bearer && !(queryAllowed && querySecret)) {
     throw new AppError(401, "Missing cron secret.", "CRON_UNAUTHORIZED");
   }
   if ((bearer && !safeEquals(bearer, secret)) || (querySecret && !safeEquals(querySecret, secret))) {

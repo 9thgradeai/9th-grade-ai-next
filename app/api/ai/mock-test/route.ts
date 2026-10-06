@@ -1,10 +1,11 @@
 /* POST /api/ai/mock-test — generate an AI mock test. Authenticated. */
 
+import { NextResponse } from "next/server";
 import { UnauthorizedError, toHttpResponse } from "~backend/errors";
 import { getUserIdFromRequest } from "~backend/services/user";
 import { enforceAiQuotas } from "~backend/rate-limit";
 import { generateMockTest } from "~backend/ai";
-import { getRequestId, startTiming, applySecurityHeaders, assertSameOrigin } from "../../_middleware";
+import { getRequestId, startTiming, applySecurityHeaders, assertSameOrigin, readJsonBody } from "../../_middleware";
 
 export const maxDuration = 60;
 
@@ -22,12 +23,11 @@ export async function POST(request: Request) {
 
     await enforceAiQuotas(request, "solver", userId);
 
-    const body = await request.json().catch(() => ({}));
+    const body = await readJsonBody(request);
     const { result, provider, model } = await generateMockTest({ userId, request: body });
 
-    const res = new Response(JSON.stringify(result), {
+    const res = NextResponse.json(result, {
       headers: {
-        "Content-Type": "application/json",
         "X-AI-Source": provider,
         "X-AI-Model": model,
         "X-Request-Id": requestId,

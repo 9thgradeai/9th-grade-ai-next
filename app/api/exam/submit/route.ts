@@ -18,10 +18,16 @@ import {
   startTiming,
   applySecurityHeaders,
   assertSameOrigin,
+  readJsonBody,
 } from "../../_middleware";
 
 /**
  * POST /api/exam/submit
+ *
+ * @deprecated — use POST /api/exams/:attemptId/submit (the live client path).
+ * Kept as a thin shim returning the SAME unified envelope. No live callers;
+ * do not extend. Removal target: next minor after confirming zero traffic
+ * (see X-Deprecation-Date).
  *
  * Canonical, idempotent exam submission. Requires an `attemptId` minted by
  * /api/exam/start. Re-submits for the same (userId, attemptId) resolve to the
@@ -31,8 +37,8 @@ import {
  * Body: SubmitExamRequest
  *   { attemptId, questionIds, durationSec, answers: [{ questionId, selected }] }
  *
- * Returns: ExamResultDTO
- *   { summary, review, attemptId, outcome, submittedAt }
+ * Returns (unified with /api/exams/:attemptId/submit):
+ *   { result, success, attemptId, status, resultId, score, submittedAt }
  */
 export async function POST(request: Request) {
   const requestId = getRequestId(request);
@@ -48,7 +54,7 @@ export async function POST(request: Request) {
     await assertSubmitAllowed(userId);
 
     const headerKey = request.headers.get("Idempotency-Key") || request.headers.get("idempotency-key") || "";
-    const body = (await request.json().catch(() => ({}))) as Partial<SubmitExamRequest>;
+    const body = (await readJsonBody(request)) as Partial<SubmitExamRequest>;
     if (!body || typeof body !== "object") {
       throw new AppError(400, "Request body must be an object.", "VALIDATION_ERROR");
     }
@@ -70,7 +76,21 @@ export async function POST(request: Request) {
     });
 
     await QueryCache.invalidateIntelligence(userId);
-    const res = NextResponse.json({ result });
+    // Unified envelope (same keys as /api/exams/:attemptId/submit).
+    // resultId is runtime-provided by the service but absent from the DTO
+    // type — access defensively, fall back to the attempt id.
+    const resultId =
+      (result as unknown as { resultId?: string }).resultId ?? result.attemptId;
+    const res = NextResponse.json({
+      result,
+      success: true,
+      attemptId: result.attemptId,
+      status: "SUBMITTED" as const,
+      resultId,
+      score: result.summary.percentage,
+      submittedAt: result.submittedAt,
+    });
+    res.headers.set("Deprecation", "true");
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");
     applySecurityHeaders(res);

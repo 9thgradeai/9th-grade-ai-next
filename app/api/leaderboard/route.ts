@@ -15,7 +15,10 @@ export async function GET(request: Request) {
     }
 
     const { searchParams } = new URL(request.url);
-    const limit = Math.min(100, Number(searchParams.get("limit") ?? "20") || 20);
+    const rawLimit = Number(searchParams.get("limit") ?? "20");
+    // Clamped integer in [1, 100] — negatives, NaN and Infinity all land on 20.
+    const limit =
+      Number.isInteger(rawLimit) && rawLimit >= 1 && rawLimit <= 100 ? rawLimit : 20;
     const board = await getLeaderboard(userId, limit);
 
     const res = NextResponse.json({ ...board });

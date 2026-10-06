@@ -17,7 +17,7 @@ export async function GET(request: Request) {
     }
 
     const tasks = await getStudyPlan(userId);
-    const res = NextResponse.json({ tasks, page: 1, pageSize: tasks.length });
+    const res = NextResponse.json({ tasks, page: 1, limit: tasks.length, total: tasks.length });
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");
     applyCacheHeaders(res, { public: false, maxAge: 0 });

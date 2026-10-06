@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { validateQuestionSearchParams } from "~backend/validation";
 import { getQuestionById, getQuestionsPage } from "~backend/services/content";
+import { getUserIdFromRequest } from "~backend/services/user";
+import { assertReadAllowed } from "~backend/rate-limit";
 import { toHttpResponse } from "~backend/errors";
 import { resolveEcosystemId } from "~backend/services/ecosystem";
 import { getRequestId, startTiming, applyCorsHeaders, applySecurityHeaders, applyCacheHeaders } from "../_middleware";
@@ -10,13 +12,14 @@ export async function GET(request: Request) {
   const getTime = startTiming();
 
   try {
+    await assertReadAllowed(request, "questions", await getUserIdFromRequest(request).catch(() => null));
     const { searchParams } = new URL(request.url);
     const params = validateQuestionSearchParams(searchParams);
 
     if (params.id) {
       const single = await getQuestionById(params.id);
       const questions = single ? [single] : [];
-      const res = NextResponse.json({ questions, page: 1, pageSize: 1, total: questions.length });
+      const res = NextResponse.json({ questions, page: 1, limit: 1, total: questions.length });
       res.headers.set("X-Request-Id", requestId);
       res.headers.set("X-Response-Time", getTime() + "ms");
       applyCorsHeaders(res, request);
@@ -44,7 +47,7 @@ export async function GET(request: Request) {
       ecosystemId,
     });
 
-    const res = NextResponse.json({ questions, page, pageSize: limit, total });
+    const res = NextResponse.json({ questions, page, limit, total });
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");
     applyCorsHeaders(res, request);

@@ -1,5 +1,6 @@
 /* GET /api/ai/usage/summary — the caller's own AI usage/observability. Authenticated. */
 
+import { NextResponse } from "next/server";
 import { UnauthorizedError, toHttpResponse } from "~backend/errors";
 import { getUserIdFromRequest } from "~backend/services/user";
 import { getUsageSummary } from "~backend/ai";
@@ -18,9 +19,8 @@ export async function GET(request: Request) {
     }
 
     const summary = await getUsageSummary(userId);
-    const res = new Response(JSON.stringify(summary), {
+    const res = NextResponse.json(summary, {
       headers: {
-        "Content-Type": "application/json",
         "X-Request-Id": requestId,
         "X-Response-Time": getTime() + "ms",
       },

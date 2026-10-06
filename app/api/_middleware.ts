@@ -62,7 +62,6 @@ export function applySecurityHeaders(res: Response) {
   res.headers.set("X-DNS-Prefetch-Control", "off");
   res.headers.set("X-Download-Options", "noopen");
   res.headers.set("X-Permitted-Cross-Domain-Policies", "none");
-  res.headers.set("X-YSS-Protection", "1; mode=block");
 }
 
 export function applyCacheHeaders(
@@ -90,6 +89,28 @@ export function jsonResponse<T>(
   init?: ResponseInit,
 ): NextResponse {
   return NextResponse.json(data, init);
+}
+
+/**
+ * Size-capped JSON body parse. Rejects oversized payloads with 413 before
+ * JSON.parse can burn memory/CPU, and malformed JSON with 400. Default cap
+ * fits prose endpoints; image-bearing routes (solver) pass a larger cap.
+ */
+export async function readJsonBody(
+  request: Request,
+  maxBytes = 256 * 1024,
+): Promise<Record<string, unknown>> {
+  const raw = await request.text().catch(() => "");
+  if (raw.length > maxBytes) {
+    throw new AppError(413, "Request body too large.", "BODY_TOO_LARGE");
+  }
+  if (!raw.trim()) return {};
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    return (parsed && typeof parsed === "object" ? parsed : {}) as Record<string, unknown>;
+  } catch {
+    throw new AppError(400, "Invalid JSON body.", "INVALID_BODY");
+  }
 }
 
 // Resolve the single origin to echo back, or null to send no CORS header.

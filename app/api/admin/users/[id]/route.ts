@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 import { requireRole } from "~backend/services/user";
 import { getUserDetail, adminAction } from "~backend/services/admin";
 import { AppError, toHttpResponse } from "~backend/errors";
-import { getRequestId, startTiming, applySecurityHeaders, assertSameOrigin } from "../../../_middleware";
+import { getRequestId, startTiming, applySecurityHeaders, assertSameOrigin, readJsonBody } from "../../../_middleware";
 
 export async function GET(
   request: Request,
@@ -17,6 +17,9 @@ export async function GET(
   try {
     await requireRole(request, ["admin"]);
     const { id } = await params;
+    if (typeof id !== "string" || !/^c[a-z0-9]{20,}$/i.test(id)) {
+      throw new AppError(400, "Invalid user id.", "VALIDATION_ERROR");
+    }
 
     const user = await getUserDetail(id);
     const { passwordHash: _, emailVerifyToken: __, passwordResetToken: ___, ...safeUser } = user;
@@ -47,11 +50,17 @@ export async function PATCH(
     await requireRole(request, ["admin"]);
     const { id } = await params;
 
-    const body = await request.json().catch(() => ({}));
-    const { action } = body as { action?: "ban" | "unban" | "revoke_sessions" };
+    // IDs are CUIDs (created by Prisma); reject path garbage before it
+    // reaches the service layer.
+    if (typeof id !== "string" || !/^c[a-z0-9]{20,}$/i.test(id)) {
+      throw new AppError(400, "Invalid user id.", "VALIDATION_ERROR");
+    }
 
-    if (!action) {
-      throw new AppError(400, "Action required", "VALIDATION_ERROR");
+    const body = await readJsonBody(request);
+    const { action } = body as { action?: unknown };
+
+    if (action !== "ban" && action !== "unban" && action !== "revoke_sessions") {
+      throw new AppError(400, "Action must be ban, unban or revoke_sessions.", "VALIDATION_ERROR");
     }
 
     const result = await adminAction(id, action);

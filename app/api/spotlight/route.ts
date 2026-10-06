@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSpotlightQuestions } from "~backend/services/content";
+import { getUserIdFromRequest } from "~backend/services/user";
+import { assertReadAllowed } from "~backend/rate-limit";
 import { toHttpResponse } from "~backend/errors";
 import { resolveEcosystemId } from "~backend/services/ecosystem";
 import { getRequestId, startTiming, applyCorsHeaders, applySecurityHeaders } from "../_middleware";
@@ -16,6 +18,10 @@ export async function GET(request: Request) {
 
   try {
     const { searchParams } = new URL(request.url);
+
+    // DB-heavy public endpoint — IP/user read bucket (scraper protection).
+    // Identity lookup must never break the request: fall back to IP bucket.
+    await assertReadAllowed(request, "spotlight", await getUserIdFromRequest(request).catch(() => null));
 
     const ecosystemCode = searchParams.get("ecosystem");
     const ecosystemId = ecosystemCode ? await resolveEcosystemId(ecosystemCode) : undefined;
