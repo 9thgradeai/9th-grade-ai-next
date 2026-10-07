@@ -6,28 +6,27 @@ import "server-only";
 // fail-open: a cache miss or error simply falls through to the LLM.
 // Now records cache hit/miss metrics for observability.
 
-import Redis from "ioredis";
+import type { Redis as RedisType } from "ioredis";
 import { recordCacheHit } from "./metrics";
+import { getSharedRedisClient } from "~backend/infrastructure/cache/redis-client";
 
 const TTL_MS = 1000 * 60 * 60 * 24; // 24h
 
 const mem = new Map<string, { value: string; exp: number }>();
 
-let redis: Redis | null = null;
-if (process.env.REDIS_URL) {
-  redis = new Redis(process.env.REDIS_URL, {
-    enableOfflineQueue: false,
-    maxRetriesPerRequest: 2,
-  });
-  redis.on("error", () => {
-    // swallow; caller treats cache as best-effort
-  });
+function redis(): RedisType | null {
+  try {
+    return getSharedRedisClient();
+  } catch {
+    return null;
+  }
 }
 
 export async function aiCacheGet(key: string): Promise<string | null> {
   try {
-    if (redis) {
-      const v = await redis.get(`ai:${key}`);
+    const client = redis();
+    if (client) {
+      const v = await client.get(`ai:${key}`);
       const hit = v !== null;
       recordCacheHit("response", hit);
       return v ?? null;
@@ -48,8 +47,9 @@ export async function aiCacheGet(key: string): Promise<string | null> {
 
 export async function aiCacheSet(key: string, value: string): Promise<void> {
   try {
-    if (redis) {
-      await redis.set(`ai:${key}`, value, "PX", TTL_MS);
+    const client = redis();
+    if (client) {
+      await client.set(`ai:${key}`, value, "PX", TTL_MS);
       return;
     }
     mem.set(key, { value, exp: Date.now() + TTL_MS });

@@ -55,9 +55,6 @@ export async function POST(request: Request) {
 
     const headerKey = request.headers.get("Idempotency-Key") || request.headers.get("idempotency-key") || "";
     const body = (await readJsonBody(request)) as Partial<SubmitExamRequest>;
-    if (!body || typeof body !== "object") {
-      throw new AppError(400, "Request body must be an object.", "VALIDATION_ERROR");
-    }
     assertNoUnknownFields(body, ["attemptId", "questionIds", "durationSec", "answers"]);
     // Idempotency-Key header is authoritative per spec; falls back to body for backward compat
     const attemptIdFromHeader = headerKey && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(headerKey) ? headerKey : "";
