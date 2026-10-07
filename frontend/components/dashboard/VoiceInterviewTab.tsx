@@ -19,6 +19,32 @@ export default function VoiceInterviewTab() {
   const sendRef = useRef<(text: string) => Promise<void>>(async () => {});
 
   const voiceOut = useVoiceOutput();
+  // Ref-mirrors for values the send callback reads: avoids recreating `send`
+  // on every keystroke (messages dep) while staying fresh.
+  const busyRef = useRef(false);
+  const autoSpeakRef = useRef(true);
+  const voiceOutRef = useRef(voiceOut);
+  const speakTimerRef = useRef<number | null>(null);
+  useEffect(() => {
+    busyRef.current = busy;
+  }, [busy]);
+  useEffect(() => {
+    autoSpeakRef.current = autoSpeak;
+  }, [autoSpeak]);
+  useEffect(() => {
+    voiceOutRef.current = voiceOut;
+  }, [voiceOut]);
+  useEffect(() => {
+    return () => {
+      if (speakTimerRef.current !== null) window.clearTimeout(speakTimerRef.current);
+      try {
+        voiceOutRef.current.cancel();
+      } catch {
+        /* ignore */
+      }
+    };
+  }, []);
+
   const voiceIn = useVoiceInput({
     lang: "bn-BD",
     interimResults: true,
@@ -30,11 +56,13 @@ export default function VoiceInterviewTab() {
   const { supported, listening } = voiceIn;
 
   const send = useCallback(
-    async (text: string) => {      const content = text.trim();
-      if (!content || busy) return;
+    async (text: string) => {
+      const content = text.trim();
+      if (!content || busyRef.current) return;
       setError(null);
-      const userMsg: Msg = { id: `u-${Date.now()}`, role: "user", text: content };
-      const aiId = `a-${Date.now()}`;
+      // Collision-safe ids: Date.now alone collides on rapid double-send.
+      const userMsg: Msg = { id: `u-${crypto.randomUUID()}`, role: "user", text: content };
+      const aiId = `a-${crypto.randomUUID()}`;
       setMessages((m) => [...m, userMsg, { id: aiId, role: "ai", text: "" }]);
       setInput("");
       setBusy(true);
@@ -49,12 +77,14 @@ export default function VoiceInterviewTab() {
             ),
         });
         if (meta.conversationId) conversationId.current = meta.conversationId;
-        if (autoSpeak) {
+        if (autoSpeakRef.current) {
           // Speak after the stream closes (text is fully assembled).
-          setTimeout(() => {
+          // Timer is tracked + cleared on unmount to avoid post-unmount TTS.
+          if (speakTimerRef.current !== null) window.clearTimeout(speakTimerRef.current);
+          speakTimerRef.current = window.setTimeout(() => {
             setMessages((m) => {
               const t = m.find((x) => x.id === aiId)?.text ?? "";
-              if (t) voiceOut.speak(t);
+              if (t) voiceOutRef.current.speak(t);
               return m;
             });
           }, 50);
@@ -66,7 +96,7 @@ export default function VoiceInterviewTab() {
         setBusy(false);
       }
     },
-    [busy, messages, voiceOut, autoSpeak],
+    [],
   );
   // Mirror latest send after render so the recognition callback (which
   // outlives any single render) always acts on fresh state.

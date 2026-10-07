@@ -4,6 +4,7 @@ import { useState } from "react";
 import { evaluateAnswer } from "@/lib/services/ai/evaluator";
 import type { EvaluationResultDto } from "@/lib/services/ai/types";
 import { launchAI } from "@/lib/ai-launcher";
+import { useToastSafe } from "@/lib/toast-ctx";
 import AISourceFooter from "./ai/AISourceFooter";
 
 const VERDICT_LABEL: Record<EvaluationResultDto["verdict"], { bn: string; color: string }> = {
@@ -18,6 +19,17 @@ export default function AnswerEvaluatorTab() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<EvaluationResultDto | null>(null);
+  const toast = useToastSafe();
+
+  const copyModelAnswer = async () => {
+    if (!result?.modelAnswer) return;
+    try {
+      await navigator.clipboard?.writeText(result.modelAnswer);
+      toast.success("মডেল উত্তর কপি হয়েছে");
+    } catch {
+      toast.error("কপি করা যায়নি — আবার চেষ্টা করো");
+    }
+  };
 
   const run = async () => {
     setError(null);
@@ -108,10 +120,15 @@ export default function AnswerEvaluatorTab() {
           {result.improvementTips.length > 0 && (
             <Section title="উন্নতির টিপস" items={result.improvementTips} />
           )}
+          {result.improvementTips.length === 0 && result.gaps.length === 0 && (
+            <p className="text-sm text-[var(--dashboard-text-muted)]">
+              আর কোনো পরামর্শ নেই — দারুণ উত্তর!
+            </p>
+          )}
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
-              onClick={() => void navigator.clipboard?.writeText(result.modelAnswer).catch(() => {})}
+              onClick={() => void copyModelAnswer()}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold transition-colors hover:border-[var(--dashboard-primary)]/40"
               style={{ background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-primary)" }}
             >

@@ -94,10 +94,48 @@ function setStore(updater: (prev: DashboardState) => DashboardState) {
   listeners.forEach((l) => l());
 }
 
+// Cross-tab sync: another tab writing the same key re-hydrates this instance
+// instead of diverging. URL still owns activeTab — only durable slices merge.
+if (typeof window !== "undefined") {
+  window.addEventListener("storage", (e) => {
+    if (e.key !== STORAGE_KEY) return;
+    try {
+      const raw = e.newValue;
+      if (!raw) return;
+      const parsed = JSON.parse(raw) as Partial<DashboardState>;
+      const next: DashboardState = {
+        ...storeState,
+        questionBankFilters: parsed.questionBankFilters ?? storeState.questionBankFilters,
+        examContext:
+          typeof parsed.examContext === "string" && parsed.examContext.length > 0
+            ? parsed.examContext
+            : null,
+        practiceIntent: parsed.practiceIntent ?? null,
+        mistakeIntent: parsed.mistakeIntent ?? null,
+      };
+      storeState = next;
+      listeners.forEach((l) => l());
+    } catch {
+      /* corrupt cross-tab payload — keep local state */
+    }
+  });
+}
+
 // ── Actions (module-stable references) ─────────────────────
 
-function setActiveTab(tab: TabId) {
-  setStore((prev) => (prev.activeTab === tab ? prev : { ...prev, activeTab: tab }));
+function setActiveTab(tab: TabId, opts?: { keepIntent?: boolean }) {
+  setStore((prev) => {
+    if (prev.activeTab === tab && (opts?.keepIntent || (!prev.practiceIntent && !prev.mistakeIntent))) return prev;
+    return {
+      ...prev,
+      activeTab: tab,
+      // Tab switches consume cross-tab intents by default so a stale
+      // practice/mistake intent can't replay on an unrelated visit.
+      // Pass { keepIntent: true } for URL-driven intent handoffs.
+      practiceIntent: opts?.keepIntent ? prev.practiceIntent : null,
+      mistakeIntent: opts?.keepIntent ? prev.mistakeIntent : null,
+    };
+  });
 }
 function setQuestionBankFilters(filters: Partial<{ query: string; category: string }>) {
   setStore((prev) => ({
@@ -163,14 +201,16 @@ function useDashboardStoreWithSelector<T>(
   const getSelection = useCallback(() => {
     const snap = getSnapshot();
     if (lastRef.current && lastRef.current.snap === snap) return lastRef.current.value;
-    const value = selector({ ...snap, ...actions });
+    // Use the live selector ref so inline selectors don't capture stale
+    // closures between renders; identity churn is absorbed by lastRef/isEqual.
+    const value = selRef.current({ ...snap, ...actions });
     if (lastRef.current && isEqual?.(lastRef.current.value, value)) {
       lastRef.current = { snap, value: lastRef.current.value };
       return lastRef.current.value;
     }
     lastRef.current = { snap, value };
     return value;
-  }, [selector, isEqual]);
+  }, [isEqual]);
   return useSyncExternalStore(subscribe, getSelection, getServerSelection);
 }
 

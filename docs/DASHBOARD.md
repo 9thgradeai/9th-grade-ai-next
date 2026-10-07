@@ -1,7 +1,7 @@
 # User Dashboard — Component & UX Inventory
 
 Canonical reference for the authenticated dashboard (`/dashboard`): shell,
-navigation, all 10 tabs, reusable cards, state, and design tokens. Labels are
+navigation, all 19 tabs, reusable cards, state, and design tokens. Labels are
 quoted literally from source (Bengali/English bilingual via `t(lang, …)`).
 
 Related docs: `DESIGN-SYSTEM.md` (tokens/primitives), `API.md` (endpoints),
@@ -19,14 +19,26 @@ Related docs: `DESIGN-SYSTEM.md` (tokens/primitives), `API.md` (endpoints),
   `CommandBar`.
 - **Tabs** (`frontend/lib/data/index.ts`): `home`, `practice`, `question-bank`,
   `mistakes`, `progress`, `flashcards`, `study-planner`, `exam-history`,
-  `real-exam`, `settings`.
+  `real-exam`, `vocab`, `current-affairs`, `settings`, plus the **AI Workspace**
+  group: `ai-solver`, `ai-mock`, `advisor`, `evaluator`, `voice-interview`,
+  `student-model`, `usage`. All 19 are code-split (`ssr: false`) and reachable
+  via SideNav groups, the mobile More sheet, `?tab=` deep-links and ⌘K.
+  `?tab=real-exam&paper=<id>` opens a specific paper (command palette).
+  `?tab=practice&mode=quick|mock|custom` selects the practice mode;
+  `?tab=question-bank&view=bookmarks` lands on saved questions.
 - **Icons**: single Phosphor system (`frontend/lib/exam-ui.ts` → `TAB_ICONS`).
   Difficulty: সহজ / মাঝারি / কঠিন.
 - **Store** (`frontend/lib/store-ctx/dashboard.tsx`, persisted
   `9th_grade_ai_store_v2`): `activeTab`, `questionBankFilters`,
-  `examContext` (null = all exams; switching clears cross-tab intents),
+  `examContext` (practice-scope only — feeds practice/mock/custom exam builds;
+  switching clears cross-tab intents and invalidates the read cache),
   `practiceIntent {subject, mode}`, `mistakeIntent {subject, status}`.
-  Metrics are never stored — always server-fetched per tab.
+  Tab switches consume intents by default (`setActiveTab(tab, { keepIntent })`
+  for URL handoffs); cross-tab `storage` events re-hydrate instead of
+  diverging. Metrics are never stored — always server-fetched per tab.
+- **Exam persistence** (`frontend/lib/exam-persist.ts`, single seam): one
+  validated snapshot per mode (`quick`/`mock`/`custom`), versioned writes,
+  corrupt payloads dropped, starting one mode cross-clears the others.
 - **Keyboard**: `1–9/0` jump tabs (suppressed in inputs/dialogs); `⌘K/Ctrl+K`
   toggles the command palette; Home adds `P/M/W/A/F/Q/L/R`.
 
@@ -51,17 +63,20 @@ Mobile bar: হোম, প্র্যাকটিস, ব্যাংক, ভ�
 
 Global command center: 7 **quick actions** (Start Practice, Mock Test,
 Review Mistakes, Flashcards, Question Bank, Planner, Ask AI Tutor) →
-**Go to** (all 10 tabs, bilingual + number hints) → **Your mistakes** +
+**Go to** (all 19 tabs, bilingual + number hints) → **Your mistakes** +
 **Exam papers** (live debounced search over real `/api/mistakes` and
-`/api/exam-papers`, 2+ chars) → footer hints. Full `combobox`/`listbox`
-ARIA, loading (`Searching your content…`) and empty (`No matches found`)
-states.
+`/api/exam-papers`, 2+ chars; paper results deep-link to the exact paper) →
+**Ask AI** inline (⇧↵, stable ref guard) → footer hints. Valid `combobox`/
+`listbox` ARIA (options are the buttons themselves), loading
+(`Searching your content…`), error and empty (`No matches found`) states.
 
 ### ExamSwitcher — `frontend/components/dashboard/ExamSwitcher.tsx`
 
-Exam-ecosystem context picker fed by real `/api/question-bank/exams`
+Practice-scope picker fed by real `/api/question-bank/exams`
 (falls back to the user's saved target offline; `সব পরীক্ষা` default).
-Full + compact rail modes; `Escape`/outside-click close.
+Labelled "Practice scope" — it does not filter Home/Progress/Bank tabs.
+Full + compact rail modes; `Escape`/outside-click/arrow-key nav with
+`aria-activedescendant`; switching invalidates the read cache.
 
 ### NotificationCenter / LogoutButton / StreakHeatmap
 

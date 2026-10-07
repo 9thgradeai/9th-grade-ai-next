@@ -97,6 +97,15 @@ function EmailVerificationGate({ children }: { children: React.ReactNode }) {
     }
   }, [authLoading, user, router]);
 
+  // Logged-out visits (expired session, direct URL) bounce to login instead
+  // of rendering a blank shell — the previous `return null` left users on an
+  // empty page with no recovery path.
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.replace("/login");
+    }
+  }, [authLoading, user, router]);
+
   if (authLoading) {
     return (
       <div className="dashboard-shell min-h-dvh flex items-center justify-center p-4">
@@ -106,7 +115,11 @@ function EmailVerificationGate({ children }: { children: React.ReactNode }) {
   }
 
   if (!user) {
-    return null;
+    return (
+      <div className="dashboard-shell min-h-dvh flex items-center justify-center p-4">
+        <LoadingShell title="REDIRECTING_LOGIN" progressLabel="redirect" className="w-full max-w-[560px]" />
+      </div>
+    );
   }
 
   if (!user.emailVerified) {
@@ -233,6 +246,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <div className="absolute inset-0 backdrop-blur-sm animate-fade-in" style={{ background: "var(--dashboard-overlay)" }} onClick={closeNavDrawer} />
                 <div
                   ref={drawerRef}
+                  id="dashboard-nav-drawer"
                   tabIndex={-1}
                   role="document"
                   className="absolute left-0 top-0 bottom-0 w-[300px] max-w-[86vw] border-r shadow-2xl flex flex-col overflow-hidden animate-slide-in-left"

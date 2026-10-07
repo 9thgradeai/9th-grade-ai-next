@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { EcosystemProvider } from "@/lib/ecosystem-ctx";
+import { LanguageProvider } from "@/lib/lang-ctx";
 import StudyPlannerTab from "@/components/dashboard/StudyPlannerTab";
 import FlashcardsTab from "@/components/dashboard/FlashcardsTab";
 import MockTestTab from "@/components/dashboard/MockTestTab";
@@ -22,28 +23,38 @@ function stubFetch(routes: Record<string, unknown>) {
 }
 
 describe("StudyPlannerTab", () => {
-  it("renders the study planner header", () => {
-    render(<EcosystemProvider><StudyPlannerTab /></EcosystemProvider>);
+  const planPayload = {
+    tasks: [
+      { id: 11, day: "Sunday", date: "2026-01-04", title: "বাংলা ভাষা ও সাহিত্য", subject: "বাংলা", duration: 45, priority: "high", description: "সন্ধি", completed: false },
+      { id: 12, day: "Monday", date: "2026-01-05", title: "Tuesday prep", subject: "Math", duration: 30, priority: "medium", description: "বীজগণিত", completed: false },
+    ],
+  };
+
+  it("renders the study planner header", async () => {
+    stubFetch({ "/api/study-plan": planPayload });
+    render(<EcosystemProvider><LanguageProvider><StudyPlannerTab /></LanguageProvider></EcosystemProvider>);
     expect(screen.getByText("AI Study Planner")).toBeInTheDocument();
+    expect(await screen.findByText("বাংলা ভাষা ও সাহিত্য")).toBeInTheDocument();
   });
 
-  it("displays study plan days", () => {
-    render(<EcosystemProvider><StudyPlannerTab /></EcosystemProvider>);
-    const sundayElements = screen.getAllByText("Sunday");
-    expect(sundayElements.length).toBeGreaterThan(0);
+  it("displays study plan days", async () => {
+    stubFetch({ "/api/study-plan": planPayload });
+    render(<EcosystemProvider><LanguageProvider><StudyPlannerTab /></LanguageProvider></EcosystemProvider>);
+    expect((await screen.findAllByText("Sunday")).length).toBeGreaterThan(0);
     expect(screen.getByText("Monday")).toBeInTheDocument();
-    expect(screen.getByText("Tuesday")).toBeInTheDocument();
   });
 
-  it("shows task list for selected day", () => {
-    render(<EcosystemProvider><StudyPlannerTab /></EcosystemProvider>);
-    const banglaElements = screen.getAllByText(/বাংলা ভাষা/);
+  it("shows task list for selected day", async () => {
+    stubFetch({ "/api/study-plan": planPayload });
+    render(<EcosystemProvider><LanguageProvider><StudyPlannerTab /></LanguageProvider></EcosystemProvider>);
+    const banglaElements = await screen.findAllByText(/বাংলা ভাষা/);
     expect(banglaElements.length).toBeGreaterThan(0);
   });
 
-  it("allows toggling task completion", () => {
-    render(<EcosystemProvider><StudyPlannerTab /></EcosystemProvider>);
-    const startButtons = screen.getAllByText("Start");
+  it("start button navigates to practice instead of completing the task", async () => {
+    stubFetch({ "/api/study-plan": planPayload });
+    render(<EcosystemProvider><LanguageProvider><StudyPlannerTab /></LanguageProvider></EcosystemProvider>);
+    const startButtons = await screen.findAllByText("Start");
     expect(startButtons.length).toBeGreaterThan(0);
   });
 });

@@ -140,10 +140,14 @@ export default function CommandBar() {
   const [mistakes, setMistakes] = useState<Server.MistakeItemDTO[]>([]);
   const [papers, setPapers] = useState<{ id: number; titleBn: string; titleEn: string }[]>([]);
   const [contentLoading, setContentLoading] = useState(false);
+  const [contentError, setContentError] = useState<string | null>(null);
   // Inline AI answer (⇧Enter): preview here, full thread via Tutor.
   const [aiReply, setAiReply] = useState<string | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
+  // Ref-mirror of aiLoading so askInline stays referentially stable and never
+  // captures a stale query/loading flag across renders.
+  const aiLoadingRef = useRef(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
 
@@ -195,17 +199,20 @@ export default function CommandBar() {
     if (!searchActive) return;
     const q = debouncedQuery.trim().toLowerCase();
     let cancelled = false;
-    // Deferred so the effect body itself never sets state synchronously
-    // (react-hooks/set-state-in-effect); runs before any fetch resolution.
-    queueMicrotask(() => {
-      if (!cancelled) setContentLoading(true);
-    });
+    setContentLoading(true);
+    setContentError(null);
     void Promise.all([
       api.mistakes({ limit: 30, sort: "recent" }).catch(() => null),
-      api.examPapers().catch(() => [] as { id: number; titleBn: string; titleEn: string }[]),
+      api.examPapers().catch(() => null as { id: number; titleBn: string; titleEn: string }[] | null),
     ])
       .then(([mistakeRes, paperList]) => {
         if (cancelled) return;
+        if (mistakeRes === null && paperList === null) {
+          setContentError("কনটেন্ট অনুসন্ধান করা যায়নি — আবার চেষ্টা করুন।");
+          setMistakes([]);
+          setPapers([]);
+          return;
+        }
         if (mistakeRes) {
           setMistakes(
             mistakeRes.data
@@ -217,11 +224,13 @@ export default function CommandBar() {
               .slice(0, 5),
           );
         }
-        setPapers(
-          paperList
-            .filter((p) => `${p.titleBn} ${p.titleEn}`.toLowerCase().includes(q))
-            .slice(0, 5),
-        );
+        if (paperList) {
+          setPapers(
+            paperList
+              .filter((p) => `${p.titleBn} ${p.titleEn}`.toLowerCase().includes(q))
+              .slice(0, 5),
+          );
+        }
       })
       .finally(() => {
         if (!cancelled) setContentLoading(false);
@@ -267,7 +276,10 @@ export default function CommandBar() {
             sub: p.titleEn && p.titleEn !== p.titleBn ? p.titleEn : undefined,
             keywords: "",
             icon: BookOpen,
-            run: () => go("real-exam"),
+            run: () => {
+              setActiveTab("real-exam");
+              router.push(`/dashboard?tab=real-exam&paper=${p.id}`);
+            },
           })),
         });
       }
@@ -285,16 +297,41 @@ export default function CommandBar() {
     setDebouncedQuery("");
     setMistakes([]);
     setPapers([]);
+    setContentError(null);
     setActive(0);
     setAiReply(null);
     setAiError(null);
+    aiLoadingRef.current = false;
     setAiLoading(false);
     setOpen(true);
   };
 
+  // Reset palette state whenever it opens (covers ⌘K toggle, which can't
+  // carry side effects inside the state updater under StrictMode).
+  const openedOnce = useRef(false);
+  useEffect(() => {
+    if (!open) {
+      openedOnce.current = false;
+      return;
+    }
+    if (openedOnce.current) return;
+    openedOnce.current = true;
+    setQuery("");
+    setDebouncedQuery("");
+    setMistakes([]);
+    setPapers([]);
+    setContentError(null);
+    setActive(0);
+    setAiReply(null);
+    setAiError(null);
+    aiLoadingRef.current = false;
+    setAiLoading(false);
+  }, [open ]);
+
   const askInline = useCallback(async (question: string) => {
     const q = question.trim();
-    if (q.length < 2 || aiLoading) return;
+    if (q.length < 2 || aiLoadingRef.current) return;
+    aiLoadingRef.current = true;
     setAiLoading(true);
     setAiError(null);
     setAiReply(null);
@@ -304,9 +341,10 @@ export default function CommandBar() {
     } catch {
       setAiError("AI উত্তর দিতে পারেনি — টিউটরে খুলে জিজ্ঞেস করুন।");
     } finally {
+      aiLoadingRef.current = false;
       setAiLoading(false);
     }
-  }, [aiLoading]);
+  }, []);
 
   const openInTutor = useCallback(() => {
     const q = query.trim();
@@ -318,11 +356,9 @@ export default function CommandBar() {
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
-        setOpen((o) => {
-          if (o) return false;
-          queueMicrotask(openBar);
-          return true;
-        });
+        // Pure toggle — palette reset happens in the [open] effect above,
+        // so no side effect lives inside a state updater (StrictMode-safe).
+        setOpen((o) => !o);
       }
     };
     const onOpen = () => openBar();
@@ -354,7 +390,7 @@ export default function CommandBar() {
 
   const showContentState = query.trim().length >= 2;
   const empty =
-    flat.length === 0 && !contentLoading;
+    flat.length === 0 && !contentLoading && !contentError;
 
   return (
     <div
@@ -496,16 +532,15 @@ export default function CommandBar() {
                 const idx = flat.indexOf(c);
                 const isActive = idx === safeActive;
                 const Icon = c.icon;
+                // Valid ARIA: the button itself carries role=option (no
+                // div[role=option] > button nesting). Wrapper is presentational.
                 return (
-                  <div
-                    key={c.key}
-                    id={`cmd-${c.key}`}
-                    role="option"
-                    aria-selected={isActive}
-                    data-idx={idx}
-                  >
+                  <div key={c.key} data-idx={idx}>
                     <button
                       type="button"
+                      id={`cmd-${c.key}`}
+                      role="option"
+                      aria-selected={isActive}
                       onMouseEnter={() => setActive(idx)}
                       onClick={() => choose(c)}
                       className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm transition-colors focus-visible:outline-none"
@@ -544,6 +579,13 @@ export default function CommandBar() {
           {showContentState && contentLoading && (
             <li className="flex items-center gap-2 px-4 py-3 text-xs text-[var(--dashboard-text-muted)]">
               <CircleNotch className="h-3.5 w-3.5 animate-spin" /> Searching your content…
+            </li>
+          )}
+          {showContentState && contentError && !contentLoading && (
+            <li className="px-4 py-3">
+              <p role="alert" className="text-xs font-mono" style={{ color: "var(--dashboard-danger)" }}>
+                {contentError}
+              </p>
             </li>
           )}
         </ul>

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { FileArrowDown, FileText, FilePlus, GridFour, Minus, Plus, Play, Check, Clock, Spinner, Warning, Download, Eye, EyeSlash, Shuffle, CheckCircle, XCircle,  } from "@phosphor-icons/react";
 import { api } from "@/lib/services/api";
@@ -271,6 +272,20 @@ export default function RealExamTab() {
       setQuestionsLoading(false);
     }
   }, []);
+
+  // Deep-link consumer for the command palette: ?tab=real-exam&paper=<id>
+  // opens that exact paper once the list has loaded (consumed once).
+  const searchParams = useSearchParams();
+  const paperIntentConsumed = useRef(false);
+  useEffect(() => {
+    if (paperIntentConsumed.current || papersLoading || papers.length === 0) return;
+    const paperId = searchParams.get("paper");
+    if (!paperId) return;
+    const target = papers.find((p) => String(p.id) === paperId);
+    if (!target) return;
+    paperIntentConsumed.current = true;
+    void openPaper(target);
+  }, [papersLoading, papers, searchParams, openPaper]);
 
   // Offline countdown — wall-clock based so background throttling / tab hidden doesn't slip,
   // and auto-submits (locks answers + shows score) when time runs out.

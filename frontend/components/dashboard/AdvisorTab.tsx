@@ -17,13 +17,24 @@ export default function AdvisorTab() {
 
   const run = async () => {
     setError(null);
+    // Validate weekly hours client-side: empty = unspecified, otherwise it
+    // must be a finite number in range (never send NaN to the API).
+    const trimmed = weeklyHours.trim();
+    let hours: number | undefined;
+    if (trimmed) {
+      hours = Number(trimmed);
+      if (!Number.isFinite(hours) || hours < 1 || hours > 80) {
+        setError("সপ্তাহে পড়ার সময় ১–৮০ ঘণ্টার মধ্যে দিন।");
+        return;
+      }
+    }
     setLoading(true);
     try {
       const res = await getCareerAdvice({
         education: education.trim() || undefined,
         interests: interests.trim() || undefined,
         targetExam: targetExam.trim() || undefined,
-        weeklyHours: weeklyHours ? Number(weeklyHours) : undefined,
+        weeklyHours: hours,
       });
       setPlan(res);
     } catch (e) {

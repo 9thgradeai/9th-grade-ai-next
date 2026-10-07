@@ -1,6 +1,6 @@
 "use client";
 
-import { House, Calendar, LightningA, Brain, BookOpen, TrendUp, Gear, Target, ClockCounterClockwise, Download, Newspaper } from "@phosphor-icons/react";
+import { House, Calendar, LightningA, Brain, BookOpen, TrendUp, Gear, Target, ClockCounterClockwise, Download, Newspaper, Sparkle, Robot, Compass, Checks, Microphone, User, ChartBar } from "@phosphor-icons/react";
 import type { ComponentType } from "react";
 import type { TabId } from "@/lib/data";
 
@@ -20,6 +20,13 @@ export const TAB_ICONS: Record<TabId, ComponentType<IconProps>> = {
   "real-exam": Download,
   vocab: BookOpen,
   "current-affairs": Newspaper,
+  "ai-solver": Robot,
+  "ai-mock": Sparkle,
+  advisor: Compass,
+  evaluator: Checks,
+  "voice-interview": Microphone,
+  "student-model": User,
+  usage: ChartBar,
 };
 
 /** Bangla labels for question difficulty tiers. */

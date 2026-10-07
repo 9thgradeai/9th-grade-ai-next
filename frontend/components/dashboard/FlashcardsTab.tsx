@@ -214,6 +214,27 @@ export default function FlashcardsTab() {
   const handleRating = (rating: ReviewRating) => {
     if (!currentCard || sessionDone) return;
 
+    // Snapshot for rollback: if the server save fails we restore the card,
+    // index and stats so client/server never diverge silently.
+    const rollback = {
+      queue: reviewQueue,
+      index: currentIndex,
+      stats: sessionStats,
+      total: sessionTotal,
+      agains: new Set(retriedAgains.current),
+    };
+    const restore = () => {
+      setReviewQueue(rollback.queue);
+      setCurrentIndex(rollback.index);
+      setSessionStats(rollback.stats);
+      setSessionTotal(rollback.total);
+      retriedAgains.current = rollback.agains;
+      setSessionDone(false);
+      if (!syncFailureNotified.current) {
+        syncFailureNotified.current = true;
+        toast.error("রিভিউ সংরক্ষণ করা যায়নি — আবার চেষ্টা করুন");
+      }
+    };
     setSessionStats((prev) => ({
       reviewed: prev.reviewed + 1,
       correct: prev.correct + (rating !== "again" ? 1 : 0),
@@ -271,10 +292,7 @@ export default function FlashcardsTab() {
           });
         })
         .catch(() => {
-          if (!syncFailureNotified.current) {
-            syncFailureNotified.current = true;
-            toast.error("রিভিউ সংরক্ষণ করা যায়নি — অগ্রগতি সীমিত হতে পারে");
-          }
+          restore();
         });
     } else if (!syncFailureNotified.current) {
       syncFailureNotified.current = true;
@@ -579,10 +597,10 @@ export default function FlashcardsTab() {
               )}
               {isFlipped ? (
                 <div className="flex gap-2" role="group" aria-label="Rate your recall">
-                  {Object.entries(RATING_CONFIG).map(([key, config]) => (
+                  {(Object.entries(RATING_CONFIG) as [ReviewRating, (typeof RATING_CONFIG)[ReviewRating]][]).map(([key, config]) => (
                     <button
                       key={key}
-                      onClick={() => handleRating(key as ReviewRating)}
+                      onClick={() => handleRating(key)}
                       className={`px-3 py-2 min-h-[44px] rounded-lg border font-mono text-xs transition-all hover:scale-105 ${config.color}`}
                     >
                       {config.label}

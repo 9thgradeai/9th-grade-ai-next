@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUp, Camera, X, Copy, Check, Spinner, Lightbulb, Chat, Target } from "@phosphor-icons/react";
 import { SOLVER_EXAMPLES } from "@/lib/data/study";
@@ -29,6 +29,14 @@ export default function AISolverTab() {
   const [fileError, setFileError] = useState<string | null>(null);
   const [selectedSubject, setSelectedSubject] = useState("General");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const copyTimerRef = useRef<number | null>(null);
+
+  // Timers must never fire after unmount (stale setState + Test double-fire).
+  useEffect(() => {
+    return () => {
+      if (copyTimerRef.current !== null) window.clearTimeout(copyTimerRef.current);
+    };
+  }, []);
 
   const subjects = ["General", "Physics", "Mathematics", "Biology", "Chemistry", "English", "বাংলা", "বাংলাদেশ বিষয়াবলি", "Computer"];
   const MAX_TEXT = 2000;
@@ -42,7 +50,15 @@ export default function AISolverTab() {
     if (file.size > 5 * 1024 * 1024) { setFileError("ছবি ৫MB-এর কম হতে হবে।"); return; }
       const reader = new FileReader();
       reader.onload = (event) => {
-        setImagePreview(event.target?.result as string);
+        const result = event.target?.result;
+        if (typeof result === "string") {
+          setImagePreview(result);
+        } else {
+          setFileError("ছবি পড়া যায়নি — অন্য ফাইল চেষ্টা করুন।");
+        }
+      };
+      reader.onerror = () => {
+        setFileError("ছবি পড়া যায়নি — অন্য ফাইল চেষ্টা করুন।");
       };
       reader.readAsDataURL(file);
   };
@@ -115,7 +131,8 @@ export default function AISolverTab() {
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      if (copyTimerRef.current !== null) window.clearTimeout(copyTimerRef.current);
+      copyTimerRef.current = window.setTimeout(() => setCopied(false), 2000);
     } catch {
       // ignore clipboard failures
     }

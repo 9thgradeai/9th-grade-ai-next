@@ -8,9 +8,12 @@ export default function UsageTab() {
   const [data, setData] = useState<UsageSummaryDto | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     let active = true;
+    setLoading(true);
+    setError(null);
     getUsageSummary()
       .then((d) => active && setData(d))
       .catch((e) => active && setError(e instanceof Error ? e.message : "ব্যবহার লোড করা যায়নি।"))
@@ -18,10 +21,29 @@ export default function UsageTab() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [reloadKey]);
 
-  if (loading) return <div className="px-4 py-6 text-sm text-[var(--dashboard-text-muted)]">লোড হচ্ছে…</div>;
-  if (error) return <div className="px-4 py-6 text-sm text-[var(--dashboard-danger)]">{error}</div>;
+  if (loading) {
+    return (
+      <div className="px-4 py-6" role="status" aria-label="ব্যবহার লোড হচ্ছে">
+        <p className="text-sm text-[var(--dashboard-text-muted)]">লোড হচ্ছে…</p>
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="px-4 py-6" role="alert">
+        <p className="text-sm text-[var(--dashboard-danger)]">{error}</p>
+        <button
+          type="button"
+          onClick={() => setReloadKey((k) => k + 1)}
+          className="mt-3 px-4 py-2 min-h-[44px] rounded-lg border border-[var(--dashboard-border-muted)] font-mono text-sm"
+        >
+          আবার চেষ্টা করুন
+        </button>
+      </div>
+    );
+  }
   if (!data) return null;
 
   const maxDay = Math.max(1, ...data.byDay.map((d) => d.calls));

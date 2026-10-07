@@ -27,13 +27,21 @@ import {
 import { allocateEvenly, shuffle } from "@/lib/balanced";
 import { shuffleSessionOptions } from "@/lib/shuffle-options";
 import { useDialogA11y } from "@/lib/use-dialog-a11y";
+import {
+  QUICK_EXAM_KEY,
+  loadExamSnapshot,
+  saveExamSnapshot,
+  dropExamSnapshot,
+  clearOtherExams,
+} from "@/lib/exam-persist";
 
 type PracticeMode = "custom" | "mock" | "quick";
 
 const QUESTION_TIME_LIMIT = SECONDS_PER_QUESTION;
 
 // Quick-practice sessions survive tab switches/remounts via localStorage.
-const QUICK_STORAGE_KEY = "ninth-grade-ai:practice:quick";
+// Key + validation live in @/lib/exam-persist (single seam for all exam modes).
+const QUICK_STORAGE_KEY = QUICK_EXAM_KEY;
 
 type PersistedQuickSession = {
   questions: Server.QuestionDTO[];
@@ -197,9 +205,10 @@ export default function PracticeTab() {
         });
       }
     } else if (practiceIntent?.mode && practiceIntent.subject) {
-      // subject + mode together
+      // subject + mode together — consume once, then clear like the others.
       queueMicrotask(() => {
         setMode(practiceIntent.mode as typeof mode);
+        setPracticeIntent(null);
       });
     }
   }, [practiceIntent, setPracticeIntent]);
@@ -244,9 +253,7 @@ export default function PracticeTab() {
   const allAnswered = totalQuestions > 0 && answeredCount === totalQuestions;
 
   const resetSession = () => {
-    try {
-      localStorage.removeItem(QUICK_STORAGE_KEY);
-    } catch { /* ignore */ }
+    dropExamSnapshot(QUICK_STORAGE_KEY);
     setSelection({});
     setQuestions([]);
     setSessionActive(false);
@@ -262,18 +269,15 @@ export default function PracticeTab() {
   };
 
   // Resume an interrupted quick-practice session so tab switches never
-  // destroy progress.
+  // destroy progress. Validated load via exam-persist (corrupt → null + dropped).
   useEffect(() => {
     let cancelled = false;
     void (async () => {
       await Promise.resolve();
       if (cancelled) return;
-      try {
-        const raw = localStorage.getItem(QUICK_STORAGE_KEY);
-        if (!raw) return;
-        const saved = JSON.parse(raw) as PersistedQuickSession;
-        if (!saved?.questions?.length) return;
-        setQuestions(saved.questions);
+      const saved = loadExamSnapshot<PersistedQuickSession>(QUICK_STORAGE_KEY);
+      if (!saved) return;
+      setQuestions(saved.questions);
         const normalized: Record<number, string[]> = {};
         for (const [k, v] of Object.entries(saved.answers ?? {})) {
           const arr = toAnswerArray(v);
@@ -283,9 +287,6 @@ export default function PracticeTab() {
         setMultiLocked(saved.multiLocked ?? {});
         setCurrentIndex(Math.min(saved.currentIndex ?? 0, saved.questions.length - 1));
         setSessionActive(true);
-      } catch {
-        /* corrupt storage — ignore */
-      }
     })();
     return () => {
       cancelled = true;
@@ -295,12 +296,8 @@ export default function PracticeTab() {
   // Keep the persisted snapshot in sync while a session is running.
   useEffect(() => {
     if (!sessionActive || result || questions.length === 0) return;
-    try {
-      const snapshot: PersistedQuickSession = { questions, answers, multiLocked, currentIndex };
-      localStorage.setItem(QUICK_STORAGE_KEY, JSON.stringify(snapshot));
-    } catch {
-      /* storage full/unavailable — resume just won't be available */
-    }
+    const snapshot: PersistedQuickSession = { questions, answers, multiLocked, currentIndex };
+    saveExamSnapshot(QUICK_STORAGE_KEY, snapshot);
   }, [sessionActive, result, questions, answers, multiLocked, currentIndex]);
 
   // When a quick-practice session starts or its result appears, always show the
@@ -374,6 +371,7 @@ export default function PracticeTab() {
         // AI explanations key off option text so they stay exact.
         const finalQuestions = shuffleSessionOptions(shuffle(merged), `practice-${Date.now()}`);
         setQuestions(finalQuestions);
+        clearOtherExams(QUICK_STORAGE_KEY);
         setSessionActive(true);
         requestAnimationFrame(() => scrollDashboardTop());
       }
@@ -438,9 +436,7 @@ export default function PracticeTab() {
         }),
         ecosystemRef.current,
       );
-      try {
-        localStorage.removeItem(QUICK_STORAGE_KEY);
-      } catch { /* ignore */ }
+      dropExamSnapshot(QUICK_STORAGE_KEY);
       setResult(summary);
       // Funnel: the session this rec started has now completed with an outcome.
       if (sessionRecRef.current) {
@@ -897,9 +893,7 @@ export default function PracticeTab() {
                 <div className="flex items-center justify-center gap-3 mt-5 flex-wrap">
                   <button
                     onClick={() => {
-                      try {
-                        localStorage.removeItem(QUICK_STORAGE_KEY);
-                      } catch { /* ignore */ }
+                      dropExamSnapshot(QUICK_STORAGE_KEY);
                     setSessionActive(false);
                     setResult(null);
                     setAnswers({});

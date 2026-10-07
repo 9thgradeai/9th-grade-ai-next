@@ -1,6 +1,6 @@
 // Centralized static data for the 9Th-Grade AI dashboard and seed.
 
-export type TabId = "home" | "study-planner" | "practice" | "flashcards" | "question-bank" | "progress" | "mistakes" | "settings" | "exam-history" | "real-exam" | "vocab" | "current-affairs";
+export type TabId = "home" | "study-planner" | "practice" | "flashcards" | "question-bank" | "progress" | "mistakes" | "settings" | "exam-history" | "real-exam" | "vocab" | "current-affairs" | "ai-solver" | "ai-mock" | "advisor" | "evaluator" | "voice-interview" | "student-model" | "usage";
 
 export const TABS: { id: TabId; label: string; short: string; bengali: string; icon: string }[] = [
   { id: "home", label: "HOME", short: "HOM", bengali: "হোম", icon: "🏠" },
@@ -15,6 +15,13 @@ export const TABS: { id: TabId; label: string; short: string; bengali: string; i
   { id: "vocab", label: "VOCAB", short: "VOC", bengali: "ভোকাব", icon: "📖" },
   { id: "current-affairs", label: "CURRENT AFFAIRS", short: "CAF", bengali: "সাম্প্রতিক সমাচার", icon: "📰" },
   { id: "settings", label: "SETTINGS", short: "SET", bengali: "সেটিংস", icon: "⚙️" },
+  { id: "ai-solver", label: "AI SOLVER", short: "SLV", bengali: "এআই সলভার", icon: "🤖" },
+  { id: "ai-mock", label: "AI MOCK", short: "AMK", bengali: "এআই মক", icon: "✨" },
+  { id: "advisor", label: "ADVISOR", short: "ADV", bengali: "পরামর্শক", icon: "🧭" },
+  { id: "evaluator", label: "EVALUATOR", short: "EVL", bengali: "মূল্যায়ন", icon: "✅" },
+  { id: "voice-interview", label: "VOICE INTERVIEW", short: "VOI", bengali: "ভয়েস ইন্টারভিউ", icon: "🎙️" },
+  { id: "student-model", label: "STUDENT MODEL", short: "STM", bengali: "শিক্ষার্থী মডেল", icon: "👤" },
+  { id: "usage", label: "USAGE", short: "USG", bengali: "ব্যবহার", icon: "📊" },
 ];
 
 // ── Single source of truth for dashboard navigation ────────────
@@ -23,6 +30,7 @@ export const TABS: { id: TabId; label: string; short: string; bengali: string; i
 export const NAV_GROUPS: { label: string; labelBn: string; ids: TabId[] }[] = [
   { label: "Primary", labelBn: "প্রধান", ids: ["home", "practice", "question-bank", "mistakes", "progress"] },
   { label: "Study", labelBn: "পড়াশোনা", ids: ["study-planner", "flashcards", "vocab", "current-affairs", "exam-history", "real-exam"] },
+  { label: "AI Workspace", labelBn: "এআই ওয়ার্কস্পেস", ids: ["ai-solver", "ai-mock", "advisor", "evaluator", "voice-interview", "student-model", "usage"] },
   { label: "Account", labelBn: "অ্যাকাউন্ট", ids: ["settings"] },
 ];
 

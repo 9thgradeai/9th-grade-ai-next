@@ -17,9 +17,16 @@ const SHORT_EN: Partial<Record<TabId, string>> = {
   "question-bank": "Bank",
   mistakes: "Mistakes",
   progress: "Progress",
+  "ai-solver": "Solver",
+  "ai-mock": "AI Mock",
+  advisor: "Advisor",
+  evaluator: "Eval",
+  "voice-interview": "Voice",
+  "student-model": "Model",
+  usage: "Usage",
 };
 const BOTTOM_TABS: { id: TabId; icon: ComponentType<IconProps>; label: string; labelEn: string; short: string; shortEn: string }[] = BOTTOM_TAB_IDS.map((id) => {
-  const meta = TABS.find((t) => t.id === id)!;
+  const meta = TABS.find((t) => t.id === id) ?? TABS[0];
   return {
     id,
     icon: TAB_ICONS[id],
@@ -161,9 +168,9 @@ export default function BottomNav({ activeTab, onChange }: BottomNavProps) {
                 })}
               </div>
               <div className="border-t mt-2 pt-3 px-4 pb-4" style={{ borderColor: "var(--dashboard-border-muted)" }}>
-                <div onClick={closeMore}>
-                  <LogoutButton aria-label="Log out" />
-                </div>
+                {/* No auto-close wrapper: the sheet stays open if logout fails
+                    so the user can retry; a successful logout navigates away. */}
+                <LogoutButton aria-label="Log out" />
               </div>
             </motion.div>
           </motion.div>

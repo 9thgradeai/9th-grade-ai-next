@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, Clock, Target, Calendar, CaretRight, Lightbulb, Trophy } from "@phosphor-icons/react";
+import { Check, Clock, Target, Calendar, CaretRight, Lightbulb, Trophy, ArrowCounterClockwise } from "@phosphor-icons/react";
 import AiLogo from "@/components/ui/AiLogo";
 import EmptyState from "./command-center/EmptyState";
-import { STUDY_PLAN } from "@/lib/data/study";
 import { api } from "@/lib/services/api";
+import { useToastSafe } from "@/lib/toast-ctx";
+import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 
 type TaskDTO = {
   id: number;
@@ -20,37 +22,33 @@ type TaskDTO = {
   completed: boolean;
 };
 
-// Build a fallback plan from the static data (used if the DB is unavailable).
-function staticPlan(): TaskDTO[] {
-  return STUDY_PLAN.flatMap((day, di) =>
-    day.tasks.map((t, ti) => ({
-      id: di * 100 + ti,
-      day: day.day,
-      date: day.date,
-      title: t.title,
-      subject: t.subject,
-      duration: t.duration,
-      priority: t.priority,
-      description: t.description,
-      completed: t.completed,
-    })),
-  );
-}
-
+// Server is the single source of truth — no static mock paint. `tasks`
+// starts null (loading), then holds the real plan (possibly empty) or an
+// error. Fake ids are never sent to the API.
 export default function StudyPlannerTab() {
+  const router = useRouter();
+  const toast = useToastSafe();
+  const { setPracticeIntent } = useDashboardStore();
   const [selectedDay, setSelectedDay] = useState(0);
-  const [tasks, setTasks] = useState<TaskDTO[]>(staticPlan());
-  const [, setLoading] = useState(true);
+  const [tasks, setTasks] = useState<TaskDTO[] | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [togglingId, setTogglingId] = useState<number | null>(null);
 
-  // Load the study plan from the database (fallback to static data).
+  // Load the study plan from the database.
   useEffect(() => {
     let cancelled = false;
     void (async () => {
+      setLoading(true);
+      setLoadError(null);
       try {
         const list = await api.studyPlan();
-        if (!cancelled && list.length) setTasks(list);
+        if (!cancelled) setTasks(list);
       } catch {
-        /* keep static fallback */
+        if (!cancelled) {
+          setTasks([]);
+          setLoadError("স্টাডি প্ল্যান লোড করা যায়নি। আবার চেষ্টা করুন।");
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -60,22 +58,51 @@ export default function StudyPlannerTab() {
     };
   }, []);
 
-  const days = useMemo(() => Array.from(new Set(tasks.map((t) => t.day))), [tasks]);
-  const selectedDayName = days[selectedDay] ?? days[0];
-  const dayPlan = {
-    day: selectedDayName ?? "",
-    tasks: tasks.filter((t) => t.day === selectedDayName),
+  const retry = () => {
+    setLoading(true);
+    setLoadError(null);
+    void (async () => {
+      try {
+        setTasks(await api.studyPlan());
+      } catch {
+        setTasks([]);
+        setLoadError("স্টাডি প্ল্যান লোড করা যায়নি। আবার চেষ্টা করুন।");
+      } finally {
+        setLoading(false);
+      }
+    })();
   };
 
+  const list = tasks ?? [];
+  const days = useMemo(() => Array.from(new Set(list.map((t) => t.day))), [list]);
+  const selectedDayName = days[Math.min(selectedDay, Math.max(days.length - 1, 0))] ?? days[0];
+  const dayPlan = {
+    day: selectedDayName ?? "",
+    tasks: list.filter((t) => t.day === selectedDayName),
+  };
+
+  // Optimistic toggle with rollback: revert + toast when the server rejects.
   const toggleTask = async (taskId: number) => {
-    setTasks((prev) =>
-      prev.map((t) => (t.id === taskId ? { ...t, completed: !t.completed } : t)),
-    );
+    const prev = tasks ?? [];
+    const target = prev.find((t) => t.id === taskId);
+    if (!target) return;
+    const next = !target.completed;
+    setTogglingId(taskId);
+    setTasks(prev.map((t) => (t.id === taskId ? { ...t, completed: next } : t)));
     try {
       await api.toggleStudyTask(taskId);
     } catch {
-      /* ignore — local state already updated */
+      setTasks(prev);
+      toast.error("কাজ আপডেট করা যায়নি — আবার চেষ্টা করুন");
+    } finally {
+      setTogglingId(null);
     }
+  };
+
+  // "Start" navigates into practice — it never marks the task complete.
+  const startTask = (task: TaskDTO) => {
+    setPracticeIntent({ subject: task.subject, mode: "quick" });
+    router.push("/dashboard?tab=practice&mode=quick");
   };
 
   const completedSet = new Set(
@@ -154,9 +181,34 @@ export default function StudyPlannerTab() {
       </motion.div>
 
       {/* Day Selector */}
+      {loading && (
+        <div className="command-card p-6" role="status" aria-label="প্ল্যান লোড হচ্ছে">
+          <p className="font-mono text-sm text-[var(--dashboard-text-muted)]">প্ল্যান লোড হচ্ছে…</p>
+        </div>
+      )}
+      {loadError && !loading && (
+        <div className="command-card p-6" role="alert">
+          <p className="font-mono text-sm text-[var(--dashboard-danger)]">{loadError}</p>
+          <button
+            onClick={retry}
+            className="mt-3 px-4 py-2 min-h-[44px] rounded-lg border border-[var(--dashboard-border-muted)] font-mono text-sm"
+          >
+            আবার চেষ্টা করুন <ArrowCounterClockwise className="inline w-3 h-3" />
+          </button>
+        </div>
+      )}
+      {!loading && !loadError && list.length === 0 && (
+        <div className="command-card p-6">
+          <EmptyState
+            eyebrow="Planner"
+            title="কোনো স্টাডি প্ল্যান নেই"
+            body="এখনো কোনো পরিকল্পনা তৈরি হয়নি — প্র্যাকটিস ট্যাব থেকে পড়া শুরু করুন।"
+          />
+        </div>
+      )}
       <div className="flex gap-2 overflow-x-auto pb-2">
         {days.map((dayName, i) => {
-          const dayTasks = tasks.filter((t) => t.day === dayName);
+          const dayTasks = list.filter((t) => t.day === dayName);
           const done = dayTasks.filter((t) => t.completed).length;
           const date = dayTasks[0]?.date ?? "";
           return (
@@ -234,6 +286,7 @@ export default function StudyPlannerTab() {
                     onClick={() => {
                       void toggleTask(task.id);
                     }}
+                    disabled={togglingId === task.id}
                     aria-label={`${task.title} — সম্পন্ন হিসেবে চিহ্নিত করুন`}
                     aria-pressed={isCompleted}
                     className={`mt-0.5 w-5 h-5 rounded border-2 flex items-center justify-center transition-all flex-shrink-0 ${
@@ -278,9 +331,8 @@ export default function StudyPlannerTab() {
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      onClick={() => {
-                        void toggleTask(task.id);
-                      }}
+                      onClick={() => startTask(task)}
+                      aria-label={`${task.title} — প্র্যাকটিস শুরু করুন`}
                       className="px-3 py-1.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-xs rounded hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-1"
                     >
                       Start <CaretRight className="w-3 h-3" />

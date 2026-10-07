@@ -103,7 +103,10 @@ export default function AIMockTestTab() {
           কঠিনতা
           <select
             value={difficulty}
-            onChange={(e) => setDifficulty(e.target.value as Difficulty | "")}
+            onChange={(e) => {
+              const v = e.target.value;
+              setDifficulty(v === "EASY" || v === "MEDIUM" || v === "HARD" ? v : "");
+            }}
             className="w-40 rounded-lg border border-border bg-surface-raised px-3 py-2 text-sm text-text-primary outline-none focus:border-primary/50"
           >
             <option value="">যেকোনো</option>

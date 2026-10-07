@@ -14,6 +14,13 @@ import {
   recoverPendingSubmission,
 } from "@/lib/services/exam-submission";
 import { useDialogA11y } from "@/lib/use-dialog-a11y";
+import {
+  MOCK_EXAM_KEY,
+  loadExamSnapshot,
+  saveExamSnapshot,
+  dropExamSnapshot,
+  clearOtherExams,
+} from "@/lib/exam-persist";
 import { DIFFICULTY_LABEL } from "@/lib/exam-ui";
 import type { Server } from "@/lib/types";
 import { shuffleSessionOptions } from "@/lib/shuffle-options";
@@ -32,7 +39,8 @@ const OPTION_LABELS = ["A", "B", "C", "D", "E", "F"];
 
 // An active attempt survives tab switches/remounts: questions, answers and a
 // wall-clock start time are persisted so navigation never destroys progress.
-const STORAGE_KEY = "ninth-grade-ai:mock-test:active";
+// Key + validation live in @/lib/exam-persist (single seam for all exam modes).
+const STORAGE_KEY = MOCK_EXAM_KEY;
 
 type PersistedMockTest = {
   /** Client-minted idempotency token. Reused for every submit retry so the
@@ -168,11 +176,7 @@ export default function MockTestTab() {
         if (cancelled) return;
         if (recovered) {
           clearAttemptId(STORAGE_KEY);
-          try {
-            localStorage.removeItem(STORAGE_KEY);
-          } catch {
-            /* ignore */
-          }
+          dropExamSnapshot(STORAGE_KEY);
           setResult(recovered.result);
           setTestState("completed");
           return;
@@ -182,31 +186,21 @@ export default function MockTestTab() {
       }
       if (cancelled) return;
       // 2) Resume an in-progress attempt from localStorage so tab switches or a
-      //    refresh never destroy an active test. The wall-clock timer below
-      //    auto-submits if time ran out while away.
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return;
-        const saved = JSON.parse(raw) as PersistedMockTest;
-        if (!saved?.questions?.length || !saved.startsAt || !saved.durationSec) return;
+      //    refresh never destroy an active test. Validated via exam-persist.
+      const saved = loadExamSnapshot<PersistedMockTest>(STORAGE_KEY);
+      if (!saved) return;
+      {
         const elapsedSec = Math.floor((Date.now() - saved.startsAt) / 1000);
         if (elapsedSec >= saved.durationSec + 5) {
           // Long expired — drop it rather than resurfacing a finished exam.
-          localStorage.removeItem(STORAGE_KEY);
+          dropExamSnapshot(STORAGE_KEY);
           return;
         }
         // Resume uses the persisted attemptId if present, otherwise mints a
         // fresh one and re-registers with the server (fire-and-forget).
         const attemptId = saved.attemptId ?? ensureAttemptId(STORAGE_KEY);
         if (!saved.attemptId) {
-          try {
-            localStorage.setItem(
-              STORAGE_KEY,
-              JSON.stringify({ ...saved, attemptId }),
-            );
-          } catch {
-            /* ignore */
-          }
+          saveExamSnapshot(STORAGE_KEY, { ...saved, attemptId });
         }
         startedAtRef.current = saved.startsAt;
         totalSecRef.current = saved.durationSec;
@@ -225,8 +219,6 @@ export default function MockTestTab() {
         }).catch(() => {
           /* non-fatal */
         });
-      } catch {
-        /* corrupt storage — ignore */
       }
     })();
     return () => {
@@ -244,19 +236,15 @@ export default function MockTestTab() {
   useEffect(() => {
     if (testState !== "active" || questions.length === 0 || startedAtRef.current === 0) return;
     const attemptId = ensureAttemptId(STORAGE_KEY);
-    try {
-      const snapshot: PersistedMockTest = {
-        attemptId,
-        questions,
-        answers,
-        currentQuestion,
-        startsAt: startedAtRef.current,
+    const snapshot: PersistedMockTest = {
+      attemptId,
+      questions,
+      answers,
+      currentQuestion,
+      startsAt: startedAtRef.current,
         durationSec: totalSecRef.current,
       };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot));
-    } catch {
-      /* storage full/unavailable — resume just won't be available */
-    }
+      saveExamSnapshot(STORAGE_KEY, snapshot);
   }, [testState, questions, answers, currentQuestion]);
 
   const selectedSubjects = useMemo(
@@ -308,6 +296,7 @@ export default function MockTestTab() {
       setQuestions(shuffleSessionOptions(built.questions, `exam-${attemptId}`));
       setAnswers({});
       setCurrentQuestion(0);
+      clearOtherExams(STORAGE_KEY);
       startedAtRef.current = Date.now();
       totalSecRef.current = built.durationSec;
       setTimeRemaining(built.durationSec);
@@ -388,7 +377,7 @@ export default function MockTestTab() {
           storageKey: STORAGE_KEY,
         });
         clearAttemptId(STORAGE_KEY);
-        localStorage.removeItem(STORAGE_KEY);
+        dropExamSnapshot(STORAGE_KEY);
         setResult(result);
         setTestState("completed");
       } catch (err) {
@@ -451,7 +440,7 @@ export default function MockTestTab() {
   }, [testState, scrollDashboardTop]);
 
   const resetTest = () => {
-    localStorage.removeItem(STORAGE_KEY);
+    dropExamSnapshot(STORAGE_KEY);
     setTestState("setup");
     setSelection({});
     setDurationMin(30);

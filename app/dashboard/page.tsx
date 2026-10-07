@@ -45,18 +45,25 @@ function TabChunkLoading() {
 // Tabs are code-split so the initial dashboard bundle only pays for the
 // active tab (CustomExamTab/VoiceAITutor alone account for ~1,800 LOC).
 const TAB_COMPONENTS: Record<TabId, React.ComponentType> = {
-  home: dynamic(() => import("@/components/dashboard/HomeTab"), { loading: TabChunkLoading }),
-  "study-planner": dynamic(() => import("@/components/dashboard/StudyPlannerTab"), { loading: TabChunkLoading }),
-  practice: dynamic(() => import("@/components/dashboard/PracticeTab"), { loading: TabChunkLoading }),
-  flashcards: dynamic(() => import("@/components/dashboard/FlashcardsTab"), { loading: TabChunkLoading }),
-  "question-bank": dynamic(() => import("@/components/dashboard/QuestionBankTab"), { loading: TabChunkLoading }),
-  progress: dynamic(() => import("@/components/dashboard/ProgressTab"), { loading: TabChunkLoading }),
-  mistakes: dynamic(() => import("@/components/dashboard/WrongAnswerNotebookTab"), { loading: TabChunkLoading }),
-  settings: dynamic(() => import("@/components/dashboard/SettingsTab"), { loading: TabChunkLoading }),
-  "exam-history": dynamic(() => import("@/components/dashboard/ExamHistoryTab"), { loading: TabChunkLoading }),
-   "real-exam": dynamic(() => import("@/components/dashboard/RealExamTab"), { loading: TabChunkLoading }),
-   vocab: dynamic(() => import("@/components/dashboard/VocabTab"), { loading: TabChunkLoading }),
-   "current-affairs": dynamic(() => import("@/components/dashboard/CurrentAffairsTab"), { loading: TabChunkLoading }),
+  home: dynamic(() => import("@/components/dashboard/HomeTab"), { loading: TabChunkLoading, ssr: false }),
+  "study-planner": dynamic(() => import("@/components/dashboard/StudyPlannerTab"), { loading: TabChunkLoading, ssr: false }),
+  practice: dynamic(() => import("@/components/dashboard/PracticeTab"), { loading: TabChunkLoading, ssr: false }),
+  flashcards: dynamic(() => import("@/components/dashboard/FlashcardsTab"), { loading: TabChunkLoading, ssr: false }),
+  "question-bank": dynamic(() => import("@/components/dashboard/QuestionBankTab"), { loading: TabChunkLoading, ssr: false }),
+  progress: dynamic(() => import("@/components/dashboard/ProgressTab"), { loading: TabChunkLoading, ssr: false }),
+  mistakes: dynamic(() => import("@/components/dashboard/WrongAnswerNotebookTab"), { loading: TabChunkLoading, ssr: false }),
+  settings: dynamic(() => import("@/components/dashboard/SettingsTab"), { loading: TabChunkLoading, ssr: false }),
+   "exam-history": dynamic(() => import("@/components/dashboard/ExamHistoryTab"), { loading: TabChunkLoading, ssr: false }),
+   "real-exam": dynamic(() => import("@/components/dashboard/RealExamTab"), { loading: TabChunkLoading, ssr: false }),
+   vocab: dynamic(() => import("@/components/dashboard/VocabTab"), { loading: TabChunkLoading, ssr: false }),
+   "current-affairs": dynamic(() => import("@/components/dashboard/CurrentAffairsTab"), { loading: TabChunkLoading, ssr: false }),
+  "ai-solver": dynamic(() => import("@/components/dashboard/AISolverTab"), { loading: TabChunkLoading, ssr: false }),
+  "ai-mock": dynamic(() => import("@/components/dashboard/AIMockTestTab"), { loading: TabChunkLoading, ssr: false }),
+  advisor: dynamic(() => import("@/components/dashboard/AdvisorTab"), { loading: TabChunkLoading, ssr: false }),
+  evaluator: dynamic(() => import("@/components/dashboard/AnswerEvaluatorTab"), { loading: TabChunkLoading, ssr: false }),
+  "voice-interview": dynamic(() => import("@/components/dashboard/VoiceInterviewTab"), { loading: TabChunkLoading, ssr: false }),
+  "student-model": dynamic(() => import("@/components/dashboard/StudentModelTab"), { loading: TabChunkLoading, ssr: false }),
+  usage: dynamic(() => import("@/components/dashboard/UsageTab"), { loading: TabChunkLoading, ssr: false }),
 };
 
 function TabSwitcher() {
@@ -64,7 +71,7 @@ function TabSwitcher() {
   const { activeTab, setActiveTab, setPracticeIntent, setQuestionBankFilters } = useDashboardStore();
   const shouldReduceMotion = useReducedMotion();
 
-  const ActiveComponent = TAB_COMPONENTS[activeTab];
+  const ActiveComponent = TAB_COMPONENTS[activeTab] ?? TAB_COMPONENTS.home;
 
   // Phase 4: warm the cheap pulse scope the moment the dashboard shell mounts
   // (right after login). By the time the Home chunk streams in, the 15s read

@@ -5,6 +5,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Check, Play, Timer, BookOpen, Trophy, ArrowCounterClockwise, Warning, CheckCircle, XCircle, Minus, Plus, GridFour, List, Clock, Flag, CircleDashed, Spinner,  } from "@phosphor-icons/react";
 import { api } from "@/lib/services/api";
 import { useDialogA11y } from "@/lib/use-dialog-a11y";
+import {
+  CUSTOM_EXAM_KEY,
+  loadExamSnapshot,
+  saveExamSnapshot,
+  dropExamSnapshot,
+  clearOtherExams,
+} from "@/lib/exam-persist";
 import { useEcosystem } from "@/lib/ecosystem-ctx";
 import { autoDurationMin, autoDurationSec, formatDurationShort, negativeLabelForEcosystem } from "@/lib/exam-scoring";
 import {
@@ -37,7 +44,7 @@ const DIFFICULTY_LABEL: Record<string, string> = {
 
 const OPTION_LABELS = ["A", "B", "C", "D", "E", "F"];
 
-const STORAGE_KEY = "ninth-grade-ai:exam:active";
+const STORAGE_KEY = CUSTOM_EXAM_KEY;
 
 type PersistedExam = {
   examId: string;
@@ -246,11 +253,7 @@ export default function CustomExamTab() {
         if (cancelled) return;
         if (recovered) {
           clearAttemptId(STORAGE_KEY);
-          try {
-            localStorage.removeItem(STORAGE_KEY);
-          } catch {
-            /* ignore */
-          }
+          dropExamSnapshot(STORAGE_KEY);
           setResult(recovered.result);
           setPhase("result");
           return;
@@ -259,11 +262,9 @@ export default function CustomExamTab() {
         /* network still unusable — fall through to resume; submit will retry */
       }
       if (cancelled) return;
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return;
-        const saved = JSON.parse(raw) as PersistedExam;
-        if (!saved?.questions?.length) return;
+      {
+        const saved = loadExamSnapshot<PersistedExam>(STORAGE_KEY);
+        if (!saved) return;
         // If the exam had a fixed duration and the wall-clock time has since
         // elapsed beyond the grace window, the server will reject the submit
         // (ATTEMPT_DEADLINE_EXCEEDED). Drop the stale resume instead of
@@ -271,11 +272,7 @@ export default function CustomExamTab() {
         if (saved.durationSec > 0) {
           const elapsedSec = Math.floor((Date.now() - saved.startsAt) / 1000);
           if (elapsedSec >= saved.durationSec + 15) {
-            try {
-              localStorage.removeItem(STORAGE_KEY);
-            } catch {
-              /* ignore */
-            }
+            dropExamSnapshot(STORAGE_KEY);
             return;
           }
         }
@@ -285,11 +282,7 @@ export default function CustomExamTab() {
         // forget the register call below.
         const attemptId = saved.attemptId ?? ensureAttemptId(STORAGE_KEY);
         const withAttempt: PersistedExam = { ...saved, attemptId };
-        try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(withAttempt));
-        } catch {
-          /* ignore */
-        }
+        saveExamSnapshot(STORAGE_KEY, withAttempt);
         setExam(withAttempt);
         setAnswers(saved.answers ?? {});
         setPhase("exam");
@@ -303,8 +296,6 @@ export default function CustomExamTab() {
         }).catch(() => {
           /* non-fatal */
         });
-      } catch {
-        /* corrupt storage — ignore */
       }
     })();
     return () => {
@@ -408,11 +399,8 @@ export default function CustomExamTab() {
         available: built.available,
         shortfall: built.shortfall,
       };
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(persisted));
-      } catch {
-        /* storage full/blocked — exam still works, just not resumable */
-      }
+      saveExamSnapshot(STORAGE_KEY, persisted);
+      clearOtherExams(STORAGE_KEY);
       setExam(persisted);
       setAnswers({});
       setShowConfirm(false);
@@ -441,14 +429,7 @@ export default function CustomExamTab() {
     setAnswers((prev) => {
       const next = { ...prev, [questionId]: option };
       if (exam) {
-        try {
-          localStorage.setItem(
-            STORAGE_KEY,
-            JSON.stringify({ ...exam, answers: next }),
-          );
-        } catch {
-          /* ignore */
-        }
+        saveExamSnapshot(STORAGE_KEY, { ...exam, answers: next });
       }
       return next;
     });
@@ -520,12 +501,8 @@ export default function CustomExamTab() {
         });
         setResult(result);
         setPhase("result");
-        try {
-          localStorage.removeItem(STORAGE_KEY);
-          clearAttemptId(STORAGE_KEY);
-        } catch {
-          /* ignore */
-        }
+        dropExamSnapshot(STORAGE_KEY);
+        clearAttemptId(STORAGE_KEY);
       } catch (err) {
         const msg = err instanceof Error && err.message ? err.message : "ফলাফল জমা দেওয়া যায়নি। আবার চেষ্টা করুন।";
         // If the error looks like a network/timeout, offer reconciliation state
@@ -576,11 +553,7 @@ export default function CustomExamTab() {
     setSelection({});
     setDurationMin(15);
     setDurationTouched(false);
-    try {
-      localStorage.removeItem(STORAGE_KEY);
-    } catch {
-      /* ignore */
-    }
+    dropExamSnapshot(STORAGE_KEY);
   };
 
   // ═══════════════ CONFIG PHASE ═══════════════

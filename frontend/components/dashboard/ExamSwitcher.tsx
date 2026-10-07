@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { CaretDown, Check, GraduationCap } from "@phosphor-icons/react";
-import { api } from "@/lib/services/api";
+import { api, invalidateCache } from "@/lib/services/api";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 import { useAuth } from "@/lib/auth-ctx";
 import { useToastSafe } from "@/lib/toast-ctx";
@@ -35,8 +35,11 @@ interface ExamSwitcherProps {
 /**
  * Exam-ecosystem switcher (BCS / Bank / NTRCA / …).
  *
- * Client-side preparation context stored in the dashboard store: switching
- * clears cross-tab intents so stale subjects never leak across ecosystems.
+ * Practice scope only: the selected ecosystem feeds practice / mock / custom
+ * exam builds (`api.examConfig(ecosystem)`). Home, progress, question-bank and
+ * other tabs always show all-ecosystem server data — the label says so to
+ * avoid implying a global filter. Switching clears cross-tab intents and
+ * invalidates the read cache so no stale ecosystem data is served.
  * Options come from the real exam library (`/api/question-bank/exams`); when
  * the backend has no categories yet it degrades to the user's saved target.
  */
@@ -47,7 +50,9 @@ export default function ExamSwitcher({ compact = false, id }: ExamSwitcherProps)
   const toast = useToastSafe();
   const [options, setOptions] = useState<ExamOption[]>([FALLBACK_ALL]);
   const [open, setOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
   const rootRef = useRef<HTMLDivElement>(null);
+  const optionRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   useEffect(() => {
     let cancelled = false;
@@ -75,11 +80,28 @@ export default function ExamSwitcher({ compact = false, id }: ExamSwitcherProps)
 
   useEffect(() => {
     if (!open) return;
+    // Focus the current ecosystem when the listbox opens for keyboard users.
+    const currentIdx = Math.max(0, options.findIndex((o) => o.slug === examContext));
+    setActiveIndex(currentIdx);
+    optionRefs.current[currentIdx]?.focus();
     const onPointer = (e: PointerEvent) => {
       if (rootRef.current && !rootRef.current.contains(e.target as Node)) setOpen(false);
     };
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") {
+        setOpen(false);
+        return;
+      }
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+        e.preventDefault();
+        setActiveIndex((prev) => {
+          const next = e.key === "ArrowDown"
+            ? Math.min(prev + 1, options.length - 1)
+            : Math.max(prev - 1, 0);
+          optionRefs.current[next]?.focus();
+          return next;
+        });
+      }
     };
     document.addEventListener("pointerdown", onPointer);
     document.addEventListener("keydown", onKey);
@@ -93,9 +115,12 @@ export default function ExamSwitcher({ compact = false, id }: ExamSwitcherProps)
 
   const select = (opt: ExamOption) => {
     setExamContext(opt.slug);
+    // Ecosystem feeds exam builds keyed by URL — drop cached reads so the
+    // next tab mount refetches under the new context instead of serving stale.
+    invalidateCache();
     setOpen(false);
     if (opt.slug) {
-      toast.success(`প্রস্তুতি প্রসঙ্গ: ${opt.nameBn}`);
+      toast.success(`প্র্যাকটিস প্রসঙ্গ: ${opt.nameBn}`);
     }
   };
 
@@ -126,10 +151,15 @@ export default function ExamSwitcher({ compact = false, id }: ExamSwitcherProps)
             }}
             role="listbox"
             aria-label="পরীক্ষা নির্বাচন"
+            aria-activedescendant={`exam-opt-${activeIndex}`}
           >
-            {options.map((opt) => (
+            {options.map((opt, i) => (
               <ExamOptionRow
                 key={opt.slug ?? "__all"}
+                id={`exam-opt-${i}`}
+                refFn={(el) => {
+                  optionRefs.current[i] = el;
+                }}
                 opt={opt}
                 selected={opt.slug === examContext}
                 onSelect={() => select(opt)}
@@ -148,7 +178,7 @@ export default function ExamSwitcher({ compact = false, id }: ExamSwitcherProps)
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
         aria-haspopup="listbox"
-        aria-label={`পরীক্ষা প্রসঙ্গ: ${current.nameBn}`}
+        aria-label={`প্র্যাকটিস প্রসঙ্গ (শুধু প্র্যাকটিস/মক/কাস্টম পরীক্ষায় প্রযোজ্য): ${current.nameBn}`}
         className="flex w-full items-center gap-2.5 rounded-xl border px-3 py-2 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
         style={{
           borderColor: "var(--dashboard-border-muted)",
@@ -170,7 +200,7 @@ export default function ExamSwitcher({ compact = false, id }: ExamSwitcherProps)
             className="block text-[10px] font-bold uppercase tracking-[0.12em]"
             style={{ color: "var(--dashboard-text-muted)" }}
           >
-            Current preparation
+            Practice scope
           </span>
           <span
             className="block truncate text-[13px] font-bold"
@@ -196,10 +226,15 @@ export default function ExamSwitcher({ compact = false, id }: ExamSwitcherProps)
           }}
           role="listbox"
           aria-label="পরীক্ষা নির্বাচন"
+          aria-activedescendant={`exam-opt-${activeIndex}`}
         >
-          {options.map((opt) => (
+          {options.map((opt, i) => (
             <ExamOptionRow
               key={opt.slug ?? "__all"}
+              id={`exam-opt-${i}`}
+              refFn={(el) => {
+                optionRefs.current[i] = el;
+              }}
               opt={opt}
               selected={opt.slug === examContext}
               onSelect={() => select(opt)}
@@ -212,7 +247,7 @@ export default function ExamSwitcher({ compact = false, id }: ExamSwitcherProps)
               color: "var(--dashboard-text-muted)",
             }}
           >
-            নতুন পরীক্ষা ইকোসিস্টেম শীঘ্রই আসছে
+            শুধু প্র্যাকটিস / মক / কাস্টম পরীক্ষায় প্রযোজ্য — প্রোগ্রেস ও অন্যান্য ট্যাবে সব পরীক্ষার ডেটা দেখায়
           </p>
         </div>
       )}
@@ -221,10 +256,14 @@ export default function ExamSwitcher({ compact = false, id }: ExamSwitcherProps)
 }
 
 function ExamOptionRow({
+  id,
+  refFn,
   opt,
   selected,
   onSelect,
 }: {
+  id: string;
+  refFn: (el: HTMLButtonElement | null) => void;
   opt: ExamOption;
   selected: boolean;
   onSelect: () => void;
@@ -232,6 +271,8 @@ function ExamOptionRow({
   return (
     <button
       type="button"
+      id={id}
+      ref={refFn}
       role="option"
       aria-selected={selected}
       onClick={onSelect}
