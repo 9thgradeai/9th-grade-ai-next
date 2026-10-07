@@ -238,6 +238,8 @@ model User {
   examAttempts            ExamAttempt[]
   flashcardReviews        FlashcardReview[]
   notificationReads       NotificationRead[]
+  notificationHiddens     NotificationHidden[]
+  notificationPreference  NotificationPreference?
   aiConversations         AIConversation[]
   aiMemories              AIMemory[]
   aiUsage                 AIUsage[]
@@ -763,6 +765,7 @@ model AppNotification {
   timestamp DateTime           @default(now())
   read      Boolean            @default(false)
   reads     NotificationRead[]
+  hiddens   NotificationHidden[]
   // Seed identity: md5(title|message) — NotificationRead rows reference this
   // row, so ids must survive reseeds.
   sourceKey String             @unique @default("")
@@ -968,6 +971,31 @@ model NotificationRead {
 
   @@unique([userId, notificationId])
   @@index([notificationId])
+}
+
+// Per-user "hidden" marker: dismissing a shared broadcast hides it for that
+// user only (the row itself is never deleted — other users still see it).
+model NotificationHidden {
+  id             Int             @id @default(autoincrement())
+  userId         String
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  notificationId Int
+  notification   AppNotification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+  hiddenAt       DateTime        @default(now())
+
+  @@unique([userId, notificationId])
+  @@index([notificationId])
+}
+
+// Per-user notification type preferences. Absent row = all types enabled.
+model NotificationPreference {
+  userId    String  @id
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  info      Boolean @default(true)
+  success   Boolean @default(true)
+  warning   Boolean @default(true)
+  reminder  Boolean @default(true)
+  updatedAt DateTime @updatedAt
 }
 
 // ── AI: conversations, memory, usage, feedback ─────────────

@@ -120,6 +120,31 @@ export default function NotificationCenter() {
     }
   }, [isOpen, fetchAll]);
 
+  // Badge liveness: the bell must show the real unread count from first
+  // paint — previously it stayed 0 until the panel was opened once. Light
+  // single-item fetch on mount + 60s poll while mounted (panel or not);
+  // the 30s poll below takes over with full lists while open.
+  useEffect(() => {
+    let cancelled = false;
+    const refreshBadge = async () => {
+      try {
+        const result = await api.notifications({ limit: 1 });
+        if (!cancelled) setUnreadCount(result.unreadCount);
+      } catch {
+        // badge keeps its last value offline
+      }
+    };
+    void refreshBadge();
+    const id = setInterval(() => void refreshBadge(), 60000);
+    const onFocus = () => void refreshBadge();
+    window.addEventListener("focus", onFocus);
+    return () => {
+      cancelled = true;
+      clearInterval(id);
+      window.removeEventListener("focus", onFocus);
+    };
+  }, []);
+
   // Poll for new notifications every 30s while open
   useEffect(() => {
     if (!isOpen) {
@@ -461,8 +486,9 @@ export default function NotificationCenter() {
                                             e.stopPropagation();
                                             void markAsRead(notif.id);
                                           }}
-                                          className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-[var(--surface-overlay)] transition-all"
+                                          className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100 p-1 rounded hover:bg-[var(--surface-overlay)] transition-all"
                                           title="পড়া হিসেবে চিহ্নিত করুন"
+                                          aria-label="পড়া হিসেবে চিহ্নিত করুন"
                                         >
                                           <CheckCircle className="w-3.5 h-3.5 text-[var(--accent)]" />
                                         </button>
@@ -472,8 +498,9 @@ export default function NotificationCenter() {
                                           e.stopPropagation();
                                           void deleteNotification(notif.id);
                                         }}
-                                        className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-red-500/10 transition-all"
+                                        className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100 p-1 rounded hover:bg-red-500/10 transition-all"
                                         title="মুছুন"
+                                        aria-label="মুছুন"
                                       >
                                         <Trash className="w-3.5 h-3.5 text-red-500" />
                                       </button>

@@ -8,6 +8,9 @@ import {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  // Notification visibility joins: default to "nothing hidden, no stored prefs".
+  vi.mocked(prisma.notificationHidden.findMany).mockResolvedValue([]);
+  vi.mocked(prisma.notificationPreference.findUnique).mockResolvedValue(null);
 });
 
 function notifRow(id: number) {

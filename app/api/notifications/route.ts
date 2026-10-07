@@ -23,12 +23,13 @@ export async function GET(request: Request) {
       : undefined;
     const type = searchParams.get("type") ?? undefined;
 
-    const { items, nextCursor, total } = await getNotifications(userId, { limit, cursorId: cursor });
-    const filtered = type ? items.filter((n) => n.type === type) : items;
+    const { items, nextCursor, total } = await getNotifications(userId, { limit, cursorId: cursor, type });
+    // Filtering happens server-side (type is part of the query), so the
+    // page, cursor and total are all consistent with the requested filter.
     const unreadCount = await getUnreadCount(userId);
 
     const res = NextResponse.json({
-      notifications: filtered,
+      notifications: items,
       total,
       nextCursor,
       unreadCount,

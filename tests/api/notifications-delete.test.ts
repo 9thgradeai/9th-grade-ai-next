@@ -86,7 +86,7 @@ describe("DELETE /api/notifications/[id]", () => {
     const del = vi.fn();
     vi.mocked(prisma.appNotification.delete).mockImplementation(del);
     const upsert = vi.fn().mockResolvedValue({});
-    vi.mocked(prisma.notificationRead.upsert).mockImplementation(upsert);
+    vi.mocked(prisma.notificationHidden.upsert).mockImplementation(upsert);
 
     const res = await notificationsDELETE(deleteRequest(9, { cookie }), paramsFor(9));
     expect(res.status).toBe(200);
@@ -98,7 +98,7 @@ describe("DELETE /api/notifications/[id]", () => {
     });
   });
 
-  it("never deletes a global broadcast — marks it read for the caller", async () => {
+  it("never deletes a global broadcast — hides it for the caller", async () => {
     const cookie = await sessionCookieFor("aspirant@example.com");
     vi.mocked(prisma.user.findUnique).mockResolvedValue(mockUser());
     vi.mocked(prisma.appNotification.findUnique).mockResolvedValue({
@@ -108,7 +108,7 @@ describe("DELETE /api/notifications/[id]", () => {
     const del = vi.fn();
     vi.mocked(prisma.appNotification.delete).mockImplementation(del);
     const upsert = vi.fn().mockResolvedValue({});
-    vi.mocked(prisma.notificationRead.upsert).mockImplementation(upsert);
+    vi.mocked(prisma.notificationHidden.upsert).mockImplementation(upsert);
 
     const res = await notificationsDELETE(deleteRequest(3, { cookie }), paramsFor(3));
     expect(res.status).toBe(200);

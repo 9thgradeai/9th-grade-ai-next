@@ -60,7 +60,8 @@ ever rebuilt outside migrations:
   best-effort (fire-and-forget) — audit never breaks the request it observes.
 - New FK-side/composite indexes: `MockTestQuestion(mockTestId)`,
   `FlashNews(verified, date)` + `(date)`, `Document(category, year)`,
-  `NotificationRead(notificationId)`, `UserBadge(badgeId)`, `VocabDeck(creatorId)`.
+  `NotificationRead(notificationId)`, `NotificationHidden(notificationId)`,
+  `UserBadge(badgeId)`, `VocabDeck(creatorId)`.
 - `createdAt`/`updatedAt` added to Subject, Topic, Exam, ExamPaper, Flashcard,
   MockTest, MockTestQuestion (defaults backfill existing rows) for cache
   invalidation and audit.
@@ -230,7 +231,7 @@ Per-question mastery stage in the mistake-practice model (see `UserQuestionProgr
  - `emailVerifyExpires` DateTime? — expiry for `emailVerifyToken`
  - `passwordResetToken` String? — SHA-256 hash of the password-reset token (raw token is emailed)
  - `passwordResetExpires` DateTime? — expiry for `passwordResetToken` (1 hour)
- - Relations: `progress`, `bookmarks`, `studyTasks`, `notifications`, `sessions`, `aiConversations`, `aiMemories`, `aiUsage`, `aiFeedback`, `agentRuns`, `learningEvents`, `currentAffairsNotes`
+ - Relations: `progress`, `bookmarks`, `studyTasks`, `notifications`, `notificationReads`, `notificationHiddens`, `notificationPreference`, `sessions`, `aiConversations`, `aiMemories`, `aiUsage`, `aiFeedback`, `agentRuns`, `learningEvents`, `currentAffairsNotes`
 
 #### Subject
 - `id` Int — PK, auto-increment
@@ -709,6 +710,25 @@ Per-user "read" marker for the global announcement feed.
 - `notification` AppNotification — relation
 - `readAt` DateTime — default `now()`
 - Unique constraint: `[userId, notificationId]`
+
+#### NotificationHidden
+Per-user "hidden" marker: dismissing a shared broadcast (`userId: null` row)
+hides it for that user only — the row itself is never deleted. List, unread
+count, and mark-all queries all exclude hidden ids.
+- `id` Int — PK, auto-increment
+- `userId` String — FK to User (cascade)
+- `notificationId` Int — FK to AppNotification (cascade)
+- `hiddenAt` DateTime — default `now()`
+- Unique constraint: `[userId, notificationId]`
+- Index: `[notificationId]`
+
+#### NotificationPreference
+Per-user notification type preferences. Absent row = all types enabled.
+`GET /api/notifications` applies the stored prefs server-side (explicit
+`?type=` narrows further); disabling every type yields an empty inbox.
+- `userId` String — PK + FK to User (cascade)
+- `info` / `success` / `warning` / `reminder` Boolean — default `true`
+- `updatedAt` DateTime — auto-updated
 
 #### AIConversation
 A persisted AI chat thread (Tutor, Assistant, or Solver), always owned by one user.

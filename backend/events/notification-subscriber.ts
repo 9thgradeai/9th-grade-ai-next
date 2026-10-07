@@ -1,5 +1,13 @@
 // backend/events/notification-subscriber.ts — creates notifications from domain events.
 // Subscribes to practice, exam, quiz, flashcard, and AI events.
+//
+// Rate-limit by construction: every sourceKey is scoped to (user, kind, UTC
+// day), so createNotification's findUnique dedupe collapses repeats into a
+// single row per day instead of inserting unbounded rows.
+
+function dayStamp(now = new Date()): string {
+  return now.toISOString().slice(0, 10);
+}
 
 import "server-only";
 
@@ -17,7 +25,7 @@ export async function createNotificationsForEvent(event: DomainEvent): Promise<v
             title: "Great Practice Score!",
             message: `You scored ${pct}% on your practice session (${event.correct}/${event.total}). Keep it up!`,
             type: "SUCCESS",
-            sourceKey: `practice-${event.userId}-${Date.now()}`,
+            sourceKey: `practice-high-${event.userId}-${dayStamp()}`,
           });
         } else if (pct < 40) {
           await createNotification({
@@ -25,7 +33,7 @@ export async function createNotificationsForEvent(event: DomainEvent): Promise<v
             title: "Keep Practicing!",
             message: `You scored ${pct}% on your practice session. Review your weak areas and try again.`,
             type: "REMINDER",
-            sourceKey: `practice-weak-${event.userId}-${Date.now()}`,
+            sourceKey: `practice-low-${event.userId}-${dayStamp()}`,
           });
         }
         break;
@@ -40,7 +48,7 @@ export async function createNotificationsForEvent(event: DomainEvent): Promise<v
           title: "Exam Completed!",
           message: `You scored ${pct}% on your mock exam (${event.correct} correct, ${event.wrong} wrong).`,
           type: pct >= 60 ? "SUCCESS" : "INFO",
-          sourceKey: `exam-${event.userId}-${Date.now()}`,
+          sourceKey: `exam-${event.userId}-${dayStamp()}`,
         });
         break;
       }
@@ -52,7 +60,7 @@ export async function createNotificationsForEvent(event: DomainEvent): Promise<v
           title: "Daily Quiz Complete!",
           message: `You scored ${pct}% on today's daily quiz. ${pct >= 70 ? "Excellent work!" : "Review the explanations to improve."}`,
           type: pct >= 70 ? "SUCCESS" : "INFO",
-          sourceKey: `daily-quiz-${event.userId}-${Date.now()}`,
+          sourceKey: `daily-quiz-${event.userId}-${dayStamp()}`,
         });
         break;
       }
@@ -65,7 +73,7 @@ export async function createNotificationsForEvent(event: DomainEvent): Promise<v
             title: "Flashcard Needs Review",
             message: "You have flashcards that need more practice. Review them again later.",
             type: "REMINDER",
-            sourceKey: `flashcard-again-${event.userId}-${Date.now()}`,
+            sourceKey: `flashcard-again-${event.userId}-${dayStamp()}`,
           });
         }
         break;
@@ -79,7 +87,7 @@ export async function createNotificationsForEvent(event: DomainEvent): Promise<v
             title: "AI Tutor Session",
             message: `You had a tutoring session on ${event.intent}. Keep exploring to strengthen your understanding.`,
             type: "INFO",
-            sourceKey: `ai-tutor-${event.userId}-${Date.now()}`,
+            sourceKey: `ai-tutor-${event.userId}-${dayStamp()}`,
           });
         }
         break;

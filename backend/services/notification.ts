@@ -23,6 +23,8 @@ export type NotificationDTO = {
   sourceKey: string;
 };
 
+export type NotificationTypeFilter = "INFO" | "SUCCESS" | "WARNING" | "REMINDER";
+
 export type NotificationPreferences = {
   info: boolean;
   success: boolean;
@@ -36,6 +38,36 @@ const DEFAULT_PREFS: NotificationPreferences = {
   warning: true,
   reminder: true,
 };
+
+const PREF_TO_TYPE: Record<keyof NotificationPreferences, NotificationTypeFilter> = {
+  info: "INFO",
+  success: "SUCCESS",
+  warning: "WARNING",
+  reminder: "REMINDER",
+};
+
+// ── Visibility ─────────────────────────────────────────────
+// A notification is visible to a user when it is theirs-or-broadcast, NOT
+// hidden by them, and its type is enabled in their preferences.
+
+async function hiddenIdsFor(userId: string): Promise<number[]> {
+  const rows = await prisma.notificationHidden.findMany({
+    where: { userId },
+    select: { notificationId: true },
+  });
+  return rows.map((r) => r.notificationId);
+}
+
+async function enabledTypesFor(userId: string): Promise<NotificationTypeFilter[]> {
+  const prefs = await getNotificationPreferences(userId);
+  return (Object.keys(DEFAULT_PREFS) as (keyof NotificationPreferences)[]).filter(
+    (k) => prefs[k],
+  ).map((k) => PREF_TO_TYPE[k]);
+}
+
+function audienceWhere(userId: string): { OR: ({ userId: null } | { userId: string })[] } {
+  return { OR: [{ userId: null }, { userId }] };
+}
 
 // ── Core CRUD ──
 
@@ -88,31 +120,45 @@ export async function createBulkNotifications(
 
 export async function getNotifications(
   userId: string,
-  opts: { limit?: number; cursorId?: number } = {},
+  opts: { limit?: number; cursorId?: number; type?: string } = {},
 ): Promise<{
   items: NotificationDTO[];
   nextCursor: number | null;
   total: number;
 }> {
   const limit = Math.min(Math.max(1, Math.floor(opts.limit ?? 20)), 50);
+  const requestedType =
+    opts.type === "INFO" || opts.type === "SUCCESS" || opts.type === "WARNING" || opts.type === "REMINDER"
+      ? (opts.type as NotificationTypeFilter)
+      : undefined;
   try {
-    const rows = await prisma.appNotification.findMany({
-      where: {
-        OR: [{ userId: null }, { userId }],
-      },
-      include: { reads: { where: { userId } } },
-      orderBy: [{ timestamp: "desc" }, { id: "desc" }],
-      ...(opts.cursorId
-        ? { cursor: { id: opts.cursorId }, skip: 1 }
-        : {}),
-      take: limit,
-    });
-
-    const total = await prisma.appNotification.count({
-      where: {
-        OR: [{ userId: null }, { userId }],
-      },
-    });
+    const [hiddenIds, enabledTypes] = await Promise.all([
+      hiddenIdsFor(userId),
+      enabledTypesFor(userId),
+    ]);
+    // Explicit ?type= narrows; otherwise the user's stored preferences apply.
+    const types = requestedType ? [requestedType] : enabledTypes;
+    const where = {
+      AND: [
+        audienceWhere(userId),
+        ...(hiddenIds.length > 0 ? [{ id: { notIn: hiddenIds } }] : []),
+        // `in: []` matches nothing — disabling every type yields an empty
+        // inbox rather than falling back to unfiltered.
+        { type: { in: types } },
+      ],
+    };
+    const [rows, total] = await Promise.all([
+      prisma.appNotification.findMany({
+        where,
+        include: { reads: { where: { userId } } },
+        orderBy: [{ timestamp: "desc" }, { id: "desc" }],
+        ...(opts.cursorId
+          ? { cursor: { id: opts.cursorId }, skip: 1 }
+          : {}),
+        take: limit,
+      }),
+      prisma.appNotification.count({ where }),
+    ]);
 
     const items = rows.map((n) => toDTO(n, n.reads.length > 0));
     const nextCursor = rows.length === limit ? rows[rows.length - 1].id : null;
@@ -124,38 +170,20 @@ export async function getNotifications(
   }
 }
 
-export async function markNotificationRead(
-  userId: string,
-  notificationId: number,
-): Promise<{ read: boolean }> {
-  try {
-    const notification = await prisma.appNotification.findUnique({
-      where: { id: notificationId },
-    });
-    if (!notification) {
-      throw new AppError(404, "Notification not found.", "NOT_FOUND");
-    }
-
-    await prisma.notificationRead.upsert({
-      where: { userId_notificationId: { userId, notificationId } },
-      update: {},
-      create: { userId, notificationId },
-    });
-
-    return { read: true };
-  } catch (error) {
-    if (error instanceof AppError) throw error;
-    throw new InternalServerError("Failed to mark notification read");
-  }
-}
+// NOTE: single-item read lives in activity.ts (used by [id]/read). Do not
+// re-add a duplicate here — it drifted before (two implementations).
 
 export async function markAllNotificationsRead(
   userId: string,
 ): Promise<{ count: number }> {
   try {
+    const hiddenIds = await hiddenIdsFor(userId);
     const unreadRows = await prisma.appNotification.findMany({
       where: {
-        OR: [{ userId: null }, { userId }],
+        AND: [
+          audienceWhere(userId),
+          ...(hiddenIds.length > 0 ? [{ id: { notIn: hiddenIds } }] : []),
+        ],
       },
       select: { id: true },
     });
@@ -205,7 +233,9 @@ export async function deleteUserNotification(
     if (notification.userId === userId) {
       await prisma.appNotification.delete({ where: { id: notificationId } });
     } else {
-      await prisma.notificationRead.upsert({
+      // Shared rows are never deleted — hide them for this user only, so a
+      // refetch can't resurrect what the user dismissed.
+      await prisma.notificationHidden.upsert({
         where: { userId_notificationId: { userId, notificationId } },
         update: {},
         create: { userId, notificationId },
@@ -221,15 +251,21 @@ export async function deleteUserNotification(
 
 export async function getUnreadCount(userId: string): Promise<number> {
   try {
+    const hiddenIds = await hiddenIdsFor(userId);
+    const audience = {
+      AND: [
+        audienceWhere(userId),
+        ...(hiddenIds.length > 0 ? [{ id: { notIn: hiddenIds } }] : []),
+      ],
+    };
     const totalMatching = await prisma.appNotification.count({
-      where: {
-        OR: [{ userId: null }, { userId }],
-      },
+      where: audience,
     });
 
     const alreadyRead = await prisma.notificationRead.count({
       where: {
         userId,
+        ...(hiddenIds.length > 0 ? { notificationId: { notIn: hiddenIds } } : {}),
         notification: {
           OR: [{ userId: null }, { userId }],
         },
@@ -243,44 +279,49 @@ export async function getUnreadCount(userId: string): Promise<number> {
   }
 }
 
-export async function getNotificationsByType(
-  userId: string,
-  type: string,
-): Promise<NotificationDTO[]> {
-  try {
-    const rows = await prisma.appNotification.findMany({
-      where: {
-        AND: [
-          {
-            OR: [{ userId: null }, { userId }],
-          },
-          { type: type as "INFO" | "SUCCESS" | "WARNING" | "REMINDER" },
-        ],
-      },
-      include: { reads: { where: { userId } } },
-      orderBy: [{ timestamp: "desc" }, { id: "desc" }],
-    });
+// ── Preferences (persisted per user; absent row = all enabled) ──
 
-    return rows.map((n) => toDTO(n, n.reads.length > 0));
+export async function getNotificationPreferences(
+  userId: string,
+): Promise<NotificationPreferences> {
+  try {
+    const row = await prisma.notificationPreference.findUnique({
+      where: { userId },
+    });
+    if (!row) return { ...DEFAULT_PREFS };
+    return { info: row.info, success: row.success, warning: row.warning, reminder: row.reminder };
   } catch (error) {
     if (error instanceof AppError) throw error;
-    throw new InternalServerError("Failed to fetch notifications by type");
+    throw new InternalServerError("Failed to fetch notification preferences");
   }
 }
 
-// ── Preferences (in-memory default, no DB migration) ──
-
-export async function getNotificationPreferences(
-  _userId: string,
-): Promise<NotificationPreferences> {
-  return { ...DEFAULT_PREFS };
-}
-
 export async function updateNotificationPreferences(
-  _userId: string,
-  _prefs: Partial<NotificationPreferences>,
+  userId: string,
+  prefs: Partial<NotificationPreferences>,
 ): Promise<NotificationPreferences> {
-  return { ...DEFAULT_PREFS };
+  try {
+    const row = await prisma.notificationPreference.upsert({
+      where: { userId },
+      update: {
+        ...(typeof prefs.info === "boolean" ? { info: prefs.info } : {}),
+        ...(typeof prefs.success === "boolean" ? { success: prefs.success } : {}),
+        ...(typeof prefs.warning === "boolean" ? { warning: prefs.warning } : {}),
+        ...(typeof prefs.reminder === "boolean" ? { reminder: prefs.reminder } : {}),
+      },
+      create: {
+        userId,
+        info: prefs.info ?? true,
+        success: prefs.success ?? true,
+        warning: prefs.warning ?? true,
+        reminder: prefs.reminder ?? true,
+      },
+    });
+    return { info: row.info, success: row.success, warning: row.warning, reminder: row.reminder };
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+    throw new InternalServerError("Failed to update notification preferences");
+  }
 }
 
 // ── Helpers ──
