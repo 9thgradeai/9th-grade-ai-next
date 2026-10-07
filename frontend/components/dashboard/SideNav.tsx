@@ -75,8 +75,11 @@ export default function SideNav({ activeTab, onChange }: SideNavProps) {
         <ExamSwitcher compact={collapsed} />
       </div>
 
-      {/* Grouped navigation — single shared NavRows source */}
-      <div className={`min-h-0 flex-1 overflow-y-auto py-3 ${collapsed ? "px-2" : "px-3"}`}>
+      {/* Grouped navigation — single shared NavRows source.
+          overscroll-contain: wheel events at the list boundaries must not
+          chain out to the document, or the whole shell slides up revealing
+          the body background. */}
+      <div className={`min-h-0 flex-1 overflow-y-auto overscroll-contain py-3 ${collapsed ? "px-2" : "px-3"}`}>
         <NavRows activeTab={activeTab} onChange={onChange} variant={collapsed ? "collapsed" : "full"} />
       </div>
 

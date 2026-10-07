@@ -176,6 +176,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     // stable across renders, so this callback identity never churns.
   }, [router, closeNavDrawer, setActiveTab]);
 
+  // The dashboard shell (h-dvh + internal scrollers) owns ALL scrolling —
+  // the document body must never scroll while mounted. Without this, wheel
+  // events over non-scrollable chrome (sidebar rails, headers) chain to the
+  // document and shift the entire shell upward, exposing the body background
+  // as a void below. Restores the previous value on unmount; overlay locks
+  // (useScrollLock) nest safely on top of this baseline.
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, []);
   // Global shortcuts (Phase 5 unified map): 1-9/0 tabs, ? help, Esc close.
   // ⌘K lives in CommandBar. No single-letter hijacks anywhere.
   useEffect(() => {
@@ -264,7 +278,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                       <X className="w-4 h-4" />
                     </button>
                   </div>
-                  <div className="flex-1 min-h-0 overflow-y-auto">
+                  <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
                     {/* Reuse same grouped nav inline for drawer — avoids duplicating SideNav hidden logic */}
                     <SideNavDrawerContent activeTab={activeTab} onChange={handleTabChange} />
                   </div>
