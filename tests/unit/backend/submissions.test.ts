@@ -53,7 +53,7 @@ describe("submitPracticeAnswers (atomic attempts + progress)", () => {
     });
     expect(prisma.$transaction).toHaveBeenCalledTimes(1);
 
-    const attempts = vi.mocked(prisma.questionAttempt.createMany).mock.calls[0][0];
+    const attempts = vi.mocked(prisma.questionAttempt.createMany).mock.calls[0]?.[0] as unknown as { data: Array<{ source: string; correct: boolean }> };
     expect(attempts.data).toHaveLength(2);
     expect(attempts.data.every((a: { source: string }) => a.source === "practice")).toBe(true);
     expect(attempts.data[0].correct).toBe(true);
@@ -105,7 +105,7 @@ describe("submitPracticeAnswers (multi-pick, all-or-nothing)", () => {
     const summary = await submitPracticeAnswers("userA", [{ questionId: 7, selected: ["C", "A"] }]);
     expect(summary.correct).toBe(1);
     expect(summary.total).toBe(1);
-    const data = vi.mocked(prisma.questionAttempt.createMany).mock.calls[0][0].data;
+    const data = (vi.mocked(prisma.questionAttempt.createMany).mock.calls[0]?.[0] as unknown as { data: Array<{ correct: boolean; selectedAnswer: string }> }).data;
     expect(data[0].correct).toBe(true);
     expect(data[0].selectedAnswer).toBe("C ‖ A");
   });

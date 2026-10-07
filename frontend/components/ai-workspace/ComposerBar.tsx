@@ -133,6 +133,8 @@ export default function ComposerBar({
               <img
                 src={imagePreview}
                 alt="Attached question image"
+                width={56}
+                height={40}
                 className="h-10 w-14 rounded-lg border border-[var(--dashboard-border-muted)] object-cover"
               />
               <span className="hidden font-mono text-[10px] text-[var(--dashboard-text-muted)] sm:inline">
@@ -178,7 +180,7 @@ export default function ComposerBar({
             >
               <Image className="h-4 w-4" />
             </button>
-            <input ref={attachRef} type="file" accept="image/*" hidden onChange={handleAttach} />
+            <input ref={attachRef} type="file" accept="image/*" hidden onChange={handleAttach} aria-label="Upload a question image" />
 
             <button
               type="button"

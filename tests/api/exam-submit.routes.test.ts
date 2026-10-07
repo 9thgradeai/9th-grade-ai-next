@@ -321,7 +321,7 @@ describe("POST /api/exam/submit", () => {
     ] as never);
     // Mock upsert to echo the hash that the service stored, so the hash check
     // inside the transaction passes.
-    vi.mocked(prisma.examAttempt.upsert).mockImplementation(async (args) => {
+    vi.mocked(prisma.examAttempt.upsert).mockImplementation((async (args: never) => {
       const a = args as { create: { questionSetHash: string }; update?: unknown };
       return {
         id: 1,
@@ -335,7 +335,7 @@ describe("POST /api/exam/submit", () => {
         summaryJson: null,
         resultId: null,
       } as never;
-    });
+    }) as never);
     vi.mocked(prisma.questionAttempt.createMany).mockResolvedValue({ count: 1 } as never);
     vi.mocked(prisma.mockTestResult.create).mockResolvedValue({ id: 42 } as never);
     vi.mocked(prisma.examAttempt.update).mockResolvedValue({} as never);

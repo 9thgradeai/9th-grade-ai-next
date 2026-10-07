@@ -35,13 +35,13 @@ describe("concurrency — 50 simultaneous submits produce exactly ONE submission
     vi.mocked(prisma.questionAttempt.createMany).mockResolvedValue({ count: 2 } as never);
     vi.mocked(prisma.mockTestResult.create).mockResolvedValue({ id: 999 } as never);
     vi.mocked(prisma.examAttempt.update).mockResolvedValue({} as never);
-    vi.mocked(prisma.examAttempt.upsert).mockImplementation(async (args: any) => {
+    vi.mocked(prisma.examAttempt.upsert).mockImplementation((async (args: never) => {
       if (!stored) {
         stored = { id: 1, userId: USER_ID, idempotencyKey: ATTEMPT_ID, questionSetHash: hash12, status: "SUBMITTING", durationSec: 60, startedAt: new Date(), submittedAt: null, summaryJson: null, resultId: null };
       }
       return stored as never;
-    });
-    vi.mocked(prisma.examAttempt.findUnique).mockImplementation(async () => stored as never);
+    }) as never);
+    vi.mocked(prisma.examAttempt.findUnique).mockImplementation((async () => stored) as never);
     vi.mocked(prisma.$transaction).mockImplementation(async (fn: any) => {
       const res = await (fn as any)(prisma);
       // After first transaction, mark as SUBMITTED so subsequent fast-path returns resumed

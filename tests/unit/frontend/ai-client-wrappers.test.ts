@@ -31,14 +31,14 @@ describe("AI service wrappers", () => {
       meta: { source: "mock", model: "mock" },
     });
     const res = await evaluateAnswer({
-      questionId: "q1",
+      question: "2+2?",
+      questionId: 1,
       learnerAnswer: "4",
-      blinkHistory: [],
     });
     expect(aiJsonWithMetaMock).toHaveBeenCalledWith("/api/ai/evaluate", "POST", {
-      questionId: "q1",
+      question: "2+2?",
+      questionId: 1,
       learnerAnswer: "4",
-      blinkHistory: [],
     });
     expect(res.source).toBe("mock");
   });
@@ -49,15 +49,14 @@ describe("AI service wrappers", () => {
       meta: { source: "mock", model: "mock" },
     });
     await generateMockTest({
-      subjectId: "s1",
+      subjectId: 1,
       count: 5,
       difficulty: "EASY",
-      language: "en",
     });
     expect(aiJsonWithMetaMock).toHaveBeenCalledWith(
       "/api/ai/mock-test",
       "POST",
-      expect.objectContaining({ subjectId: "s1", count: 5 }),
+      expect.objectContaining({ subjectId: 1, count: 5 }),
     );
   });
 
@@ -66,11 +65,11 @@ describe("AI service wrappers", () => {
       data: { summary: "s", source: "mock" },
       meta: { source: "mock", model: "mock" },
     });
-    await getCareerAdvice({ subjectId: "s1", background: "HSC", interests: [] });
+    await getCareerAdvice({ education: "HSC", interests: "math", targetExam: "BCS" });
     expect(aiJsonWithMetaMock).toHaveBeenCalledWith(
       "/api/ai/advisor",
       "POST",
-      expect.objectContaining({ subjectId: "s1" }),
+      expect.objectContaining({ interests: "math" }),
     );
   });
 

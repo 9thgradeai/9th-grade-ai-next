@@ -174,7 +174,7 @@ describe("submitExamAttempt — canonical, idempotent submission", () => {
     vi.mocked(prisma.mockTestResult.create).mockResolvedValue({ id: 500 } as never);
     vi.mocked(prisma.examAttempt.update).mockResolvedValue({} as never);
     vi.mocked(prisma.$executeRaw).mockResolvedValue(1 as never);
-    vi.mocked(prisma.examAttempt.upsert).mockImplementation(async (args) => {
+    vi.mocked(prisma.examAttempt.upsert).mockImplementation((async (args: never) => {
       const a = args as { create: { questionSetHash: string }; update?: unknown };
       return {
         id: 1,
@@ -188,7 +188,7 @@ describe("submitExamAttempt — canonical, idempotent submission", () => {
         summaryJson: null,
         resultId: null,
       } as never;
-    });
+    }) as never);
     vi.mocked(prisma.$transaction).mockImplementation(
       async (arg) =>
         (arg as (tx: unknown) => Promise<unknown>)(prisma) as never,
@@ -212,7 +212,7 @@ describe("submitExamAttempt — canonical, idempotent submission", () => {
     ] as never);
     vi.mocked(prisma.questionAttempt.createMany).mockResolvedValue({ count: 1 } as never);
     vi.mocked(prisma.mockTestResult.create).mockResolvedValue({ id: 99 } as never);
-    vi.mocked(prisma.examAttempt.upsert).mockImplementation(async (args) => {
+    vi.mocked(prisma.examAttempt.upsert).mockImplementation((async (args: never) => {
       const a = args as { create: { questionSetHash: string }; update?: unknown };
       return {
         id: 1,
@@ -226,7 +226,7 @@ describe("submitExamAttempt — canonical, idempotent submission", () => {
         summaryJson: null,
         resultId: null,
       } as never;
-    });
+    }) as never);
     vi.mocked(prisma.$transaction).mockImplementation(
       async (arg) =>
         (arg as (tx: unknown) => Promise<unknown>)(prisma) as never,
@@ -257,7 +257,7 @@ describe("submitExamAttempt — canonical, idempotent submission", () => {
     vi.mocked(prisma.questionAttempt.createMany).mockResolvedValue({ count: 2 } as never);
     vi.mocked(prisma.mockTestResult.create).mockResolvedValue({ id: 99 } as never);
     // Mock upsert to echo back whatever it stored so the hash check passes.
-    vi.mocked(prisma.examAttempt.upsert).mockImplementation(async (args) => {
+    vi.mocked(prisma.examAttempt.upsert).mockImplementation((async (args: never) => {
       const a = args as { create: { questionSetHash: string }; update?: unknown };
       return {
         id: 1,
@@ -271,7 +271,7 @@ describe("submitExamAttempt — canonical, idempotent submission", () => {
         summaryJson: null,
         resultId: null,
       } as never;
-    });
+    }) as never);
     vi.mocked(prisma.examAttempt.update).mockResolvedValue({} as never);
     vi.mocked(prisma.$executeRaw).mockResolvedValue(1 as never);
     vi.mocked(prisma.$transaction).mockImplementation(

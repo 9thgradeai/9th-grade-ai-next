@@ -889,6 +889,10 @@ export namespace Server {
   export type ExamResultDTO = {
     summary: ExamSummaryDTO;
     review: ExamReviewDTO[];
+    attemptId: string;
+    /** "submitted" on success, "resumed" when an earlier SUBMITTED row was returned. */
+    outcome: "submitted" | "resumed";
+    submittedAt: string;
   };
 
   export type DashboardStatsDTO = {

@@ -17,7 +17,7 @@ function reqWithIp(ip: string): Request {
 beforeEach(async () => {
   vi.unstubAllEnvs();
   await resetRateLimitStore();
-  vi.mocked(prisma.aIUsage.aggregate).mockResolvedValue({ _sum: { estimatedCostUsd: 0 } });
+  vi.mocked(prisma.aIUsage.aggregate).mockResolvedValue({ _sum: { estimatedCostUsd: 0 } } as never);
 });
 
 describe("store selection (Phase 8)", () => {

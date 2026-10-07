@@ -112,7 +112,7 @@ describe("conversation persistence", () => {
     const msgs = await listMessages("u1", conv.id);
     expect(msgs.length).toBe(1);
 
-    const updated = await updateMessage("u1", msg.id, { status: "EDITED", content: "3+3?" });
+    const updated = await updateMessage("u1", msg.id, { content: "3+3?" });
     expect(updated.content).toBe("3+3?");
 
     const owned = await getOwnedMessage("u1", msg.id);

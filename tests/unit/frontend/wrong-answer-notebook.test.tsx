@@ -25,7 +25,7 @@ vi.mock("@/components/dashboard/QuestionDrill", () => ({
   }: {
     title: string;
     questions: { correctAnswer: string; explanation: string }[];
-    onComplete?: (answered: { questionId: number; correct: boolean; justMastered?: boolean }[]) => void;
+    onComplete?: (answered: { questionId: number; correct: boolean; justMastered?: boolean; masteryStatus?: string }[]) => void;
   }) => (
     <div>
       <span>DRILL:{title}</span>

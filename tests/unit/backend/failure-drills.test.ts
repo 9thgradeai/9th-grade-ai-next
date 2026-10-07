@@ -77,7 +77,7 @@ describe("failure drill: subscriber isolation (events)", () => {
     });
     subscribe("PRACTICE_SUBMITTED", good);
 
-    emit({ name: "PRACTICE_SUBMITTED", userId: "u", correct: 1, total: 2, score: 50 });
+    emit({ name: "PRACTICE_SUBMITTED", userId: "u", correct: 1, total: 2, score: 50, attempts: [] });
 
     // Let the microtask queue drain.
     await new Promise((r) => setTimeout(r, 0));
@@ -86,7 +86,7 @@ describe("failure drill: subscriber isolation (events)", () => {
 
   it("unhandled emit with no subscribers is a no-op", () => {
     expect(() =>
-      emit({ name: "EXAM_COMPLETED", userId: "u", correct: 0, wrong: 0, finalScore: 0 }),
+      emit({ name: "EXAM_COMPLETED", userId: "u", correct: 0, wrong: 0, finalScore: 0, attempts: [] }),
     ).not.toThrow();
   });
 });

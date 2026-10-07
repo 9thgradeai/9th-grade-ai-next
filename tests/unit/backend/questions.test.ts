@@ -232,13 +232,13 @@ describe("getSpotlightQuestions (Home rotating MCQ, DB-only)", () => {
     ] as never);
     vi.mocked(prisma.question.count).mockResolvedValue(10);
     let nextId = 1;
-    vi.mocked(prisma.question.findMany).mockImplementation(async (args) => {
+    vi.mocked(prisma.question.findMany).mockImplementation((async (args: never) => {
       const { where, take } = args as { where?: { subjectId?: number }; take?: number };
       const n = Math.max(1, take ?? 1);
       const rows = [];
       for (let k = 0; k < n; k++) rows.push(spotlightRow(nextId++, where?.subjectId ?? 1));
       return rows as never;
-    });
+    }) as never);
   });
 
   it("cycles across all subjects (round-robin, no subject repeats back-to-back)", async () => {

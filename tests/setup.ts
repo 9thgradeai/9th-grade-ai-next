@@ -92,294 +92,63 @@ vi.mock("next/navigation", () => ({
   usePathname: vi.fn(() => "/"),
   useSegments: vi.fn(() => []),
 }));
-
-vi.mock("~backend/db", () => ({
-  prisma: {
-    user: {
-      findUnique: vi.fn(),
-      findFirst: vi.fn(),
-      create: vi.fn(),
-      update: vi.fn(),
-      updateMany: vi.fn(),
-      delete: vi.fn(),
-      count: vi.fn(),
-    },
-    userProgress: {
-      findUnique: vi.fn(),
-      findMany: vi.fn(),
-      findFirst: vi.fn(),
-      upsert: vi.fn(),
-      update: vi.fn(),
-      create: vi.fn(),
-      count: vi.fn(),
-    },
-    subject: {
-      findMany: vi.fn(),
-      findFirst: vi.fn(),
-      count: vi.fn(),
-    },
-    topic: {
-      findMany: vi.fn(),
-      findFirst: vi.fn(),
-      count: vi.fn(),
-    },
-    question: {
-      findMany: vi.fn(),
-      findFirst: vi.fn(),
-      count: vi.fn(),
-      groupBy: vi.fn(),
-    },
-    questionAttempt: {
-      findMany: vi.fn(),
-      count: vi.fn(),
-      createMany: vi.fn(),
-    },
-    questionBankCategory: {
-      findMany: vi.fn(),
-      count: vi.fn(),
-    },
-    examArchive: {
-      findMany: vi.fn(),
-      count: vi.fn(),
-    },
-    examCategory: {
-      findMany: vi.fn(),
-      findUnique: vi.fn(),
-      upsert: vi.fn(),
-      count: vi.fn(),
-    },
-    exam: {
-      findMany: vi.fn(),
-      findUnique: vi.fn(),
-      upsert: vi.fn(),
-      count: vi.fn(),
-    },
-    examPaper: {
-      findMany: vi.fn(),
-      findUnique: vi.fn(),
-      upsert: vi.fn(),
-      count: vi.fn(),
-    },
-    flashcard: {
-      findMany: vi.fn(),
-      findFirst: vi.fn(),
-      findUnique: vi.fn(),
-      count: vi.fn(),
-    },
-    flashcardUserState: {
-      findMany: vi.fn(),
-      findUnique: vi.fn(),
-      upsert: vi.fn(),
-      create: vi.fn(),
-      delete: vi.fn(),
-      count: vi.fn(),
-    },
-    flashcardReview: {
-      findMany: vi.fn(),
-      findFirst: vi.fn(),
-      create: vi.fn(),
-      createMany: vi.fn(),
-      delete: vi.fn(),
-      count: vi.fn(),
-    },
-    learningEvent: {
-      createMany: vi.fn(),
-      count: vi.fn(),
-    },
-    studyTaskCompletion: {
-      findMany: vi.fn(),
-      findUnique: vi.fn(),
-      create: vi.fn(),
-      delete: vi.fn(),
-      count: vi.fn(),
-    },
-    studyPlanDay: {
-      findMany: vi.fn(),
-      count: vi.fn(),
-    },
-    studyTask: {
-      findUnique: vi.fn(),
-      update: vi.fn(),
-      delete: vi.fn(),
-      create: vi.fn(),
-    },
-    dailyQuiz: {
-      findFirst: vi.fn(),
-      findUnique: vi.fn(),
-      update: vi.fn(),
-      count: vi.fn(),
-    },
-    dailyQuizParticipation: {
-      findUnique: vi.fn(),
-      findFirst: vi.fn(),
-      findMany: vi.fn(),
-      upsert: vi.fn(),
-      create: vi.fn(),
-      count: vi.fn(),
-    },
-    mockTest: {
-      findMany: vi.fn(),
-      findFirst: vi.fn(),
-      count: vi.fn(),
-    },
-    mockTestResult: {
-      findMany: vi.fn(),
-      findFirst: vi.fn(),
-      findUnique: vi.fn(),
-      create: vi.fn(),
-      count: vi.fn(),
-    },
-    flashNews: {
-      findMany: vi.fn(),
-      findFirst: vi.fn(),
-      count: vi.fn(),
-    },
-    recommendation: {
-      findMany: vi.fn(),
-      findFirst: vi.fn(),
-      count: vi.fn(),
-    },
-    badge: {
-      findMany: vi.fn(),
-      findFirst: vi.fn(),
-      findUnique: vi.fn(),
-      create: vi.fn(),
-      upsert: vi.fn(),
-      count: vi.fn(),
-    },
-    userBadge: {
-      findMany: vi.fn(),
-      findUnique: vi.fn(),
-      findFirst: vi.fn(),
-      create: vi.fn(),
-      delete: vi.fn(),
-      count: vi.fn(),
-    },
-    appNotification: {
-      findMany: vi.fn(),
-      findFirst: vi.fn(),
-      findUnique: vi.fn(),
-      count: vi.fn(),
-      create: vi.fn(),
-      delete: vi.fn(),
-      upsert: vi.fn(),
-    },
-    notificationRead: {
-      findMany: vi.fn(),
-      findFirst: vi.fn(),
-      count: vi.fn(),
-      create: vi.fn(),
-      createMany: vi.fn(),
-      upsert: vi.fn(),
-    },
-    offlinePack: {
-      findMany: vi.fn(),
-      findFirst: vi.fn(),
-      count: vi.fn(),
-    },
-    examSchedule: {
-      findMany: vi.fn(),
-      findFirst: vi.fn(),
-      count: vi.fn(),
-    },
-    document: {
-      findMany: vi.fn(),
-      findFirst: vi.fn(),
-      count: vi.fn(),
-    },
-    bookmark: {
-      findMany: vi.fn(),
-      findUnique: vi.fn(),
-      create: vi.fn(),
-      delete: vi.fn(),
-    },
-    aIConversation: {
-      findMany: vi.fn(),
-      findUnique: vi.fn(),
-      findFirst: vi.fn(),
-      create: vi.fn(),
-      update: vi.fn(),
-      delete: vi.fn(),
-      count: vi.fn(),
-    },
-    aIMessage: {
-      findMany: vi.fn(),
-      findFirst: vi.fn(),
-      create: vi.fn(),
-      createMany: vi.fn(),
-      count: vi.fn(),
-    },
-    aIMemory: {
-      findMany: vi.fn(),
-      findUnique: vi.fn(),
-      findFirst: vi.fn(),
-      upsert: vi.fn(),
-      create: vi.fn(),
-      update: vi.fn(),
-      delete: vi.fn(),
-      count: vi.fn(),
-    },
-    aIUsage: {
-      create: vi.fn(),
-      createMany: vi.fn(),
-      count: vi.fn(),
-      groupBy: vi.fn(),
-      aggregate: vi.fn(),
-    },
-    aIFeedback: {
-      create: vi.fn(),
-      findMany: vi.fn(),
-      count: vi.fn(),
-    },
-    userQuestionProgress: {
-      findUnique: vi.fn(),
-      findMany: vi.fn(),
-      findFirst: vi.fn(),
-      upsert: vi.fn(),
-      create: vi.fn(),
-      update: vi.fn(),
-      count: vi.fn(),
-    },
-    examAttempt: {
-      findUnique: vi.fn(),
-      findFirst: vi.fn(),
-      findMany: vi.fn(),
-      upsert: vi.fn(),
-      create: vi.fn(),
-      update: vi.fn(),
-      count: vi.fn(),
-    },
-    vocabWord: {
-      findMany: vi.fn(),
-      findUnique: vi.fn(),
-      count: vi.fn(),
-      upsert: vi.fn(),
-    },
-    vocabProgress: {
-      findMany: vi.fn(),
-      findUnique: vi.fn(),
-      create: vi.fn(),
-      update: vi.fn(),
-      count: vi.fn(),
-    },
-    vocabDeck: {
-      findMany: vi.fn(),
-      findUnique: vi.fn(),
-      create: vi.fn(),
-      update: vi.fn(),
-      delete: vi.fn(),
-      count: vi.fn(),
-    },
-    vocabDeckWord: {
-      findMany: vi.fn(),
-      create: vi.fn(),
-      delete: vi.fn(),
-      count: vi.fn(),
-    },
-    $disconnect: vi.fn(),
-    $connect: vi.fn(),
-    $transaction: vi.fn(),
-    $executeRaw: vi.fn(),
-    $queryRaw: vi.fn(),
-  },
-}));
+vi.mock("~backend/db", () => {
+  // Stable deep-mock: every model delegate resolves to the SAME cached
+  // vi.fn per path, so `vi.mocked(prisma.user.findUnique).mockResolvedValue`
+  // works in any test without hand-maintaining a 300-line method inventory.
+  // Unconfigured methods resolve undefined (await-safe). `$transaction` etc.
+  // are plain fns — tests override per-case via mockImplementation.
+  const cache = new Map<string, unknown>();
+  const atPath = (path: string): unknown => {
+    let node = cache.get(path);
+    if (!node) {
+      const fn = vi.fn((..._args: unknown[]) => undefined);
+      node = new Proxy(fn, {
+        get(t, prop) {
+          // Mock controls (mockResolvedValue, mock.calls, …) live on the
+          // underlying vi.fn — forward them so `vi.mocked(...)` works.
+          // Anything else (model delegates, methods) is a deeper mock node.
+          if (typeof prop === "string" && cache.has(`${path}.${prop}`)) {
+            return cache.get(`${path}.${prop}`);
+          }
+          if (prop in t) return (t as unknown as Record<string | symbol, unknown>)[prop];
+          return atPath(`${path}.${String(prop)}`);
+        },
+        apply(t, thisArg, args) {
+          // Call through to the underlying vi.fn so per-test
+          // mockResolvedValue/mockImplementation take effect (including
+          // tagged-template calls like prisma.$queryRaw`...`).
+          return Reflect.apply(t as unknown as (...a: unknown[]) => unknown, thisArg, args);
+        },
+        // Descriptor traps so `vi.spyOn(prisma, "$queryRaw")` sees and can
+        // replace mock nodes like on a plain object.
+        has(t, prop) {
+          if (typeof prop === "string") return true;
+          return prop in t;
+        },
+        getOwnPropertyDescriptor(t, prop) {
+          if (typeof prop === "string" && cache.has(`${path}.${prop}`)) {
+            return {
+              configurable: true,
+              enumerable: true,
+              writable: true,
+              value: cache.get(`${path}.${prop}`),
+            };
+          }
+          return Reflect.getOwnPropertyDescriptor(t, prop);
+        },
+        defineProperty(_t, prop, descriptor) {
+          cache.set(`${path}.${String(prop)}`, (descriptor as PropertyDescriptor).value);
+          return true;
+        },
+        set(_t, prop, value) {
+          cache.set(`${path}.${String(prop)}`, value);
+          return true;
+        },
+      });
+      cache.set(path, node);
+    }
+    return node;
+  };
+  return { prisma: atPath("prisma") };
+});

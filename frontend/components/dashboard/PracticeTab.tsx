@@ -14,6 +14,7 @@ import MockTestTab from "./MockTestTab";
 import CustomExamTab from "./CustomExamTab";
 import RichText from "@/components/ui/RichText";
 import QuestionRenderer from "./practice/QuestionRenderer";
+import { useCountdownSeconds } from "./practice/useCountdownSeconds";
 import { isAnswerCorrect, serializeAnswer, getCorrectSet } from "@/lib/question-type";
 import SubjectTopicSelect from "./SubjectTopicSelect";
 import PracticeStartDock from "./PracticeStartDock";
@@ -72,19 +73,7 @@ function PracticeTimer({
   remaining: number;
   onExpire: () => void;
 }) {
-  const onExpireRef = useRef(onExpire);
-  useEffect(() => { onExpireRef.current = onExpire; }, [onExpire]);
-  const [secs, setSecs] = useState(remaining);
-  useEffect(() => {
-    if (secs <= 0) { onExpireRef.current(); return; }
-    const id = setInterval(() => {
-      setSecs((s) => {
-        if (s <= 1) { onExpireRef.current(); return 0; }
-        return s - 1;
-      });
-    }, 1000);
-    return () => clearInterval(id);
-  }, [secs <= 0]);
+  const secs = useCountdownSeconds(remaining, onExpire);
   const timeLow = secs > 0 && secs <= 10;
   return (
     <span className={`font-mono text-xs ${timeLow ? "text-[var(--dashboard-danger)] animate-pulse" : "text-[var(--dashboard-text-muted)]"}`}>

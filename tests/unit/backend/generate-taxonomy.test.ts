@@ -89,8 +89,8 @@ describe("buildTaxonomyFromLines", () => {
     const root = buildTaxonomyFromLines(MINI_TREE.split("\n"));
     const collect = (n: { name: string; path: string; children: unknown[] }): string[] =>
       n.name === "BCS_Question_Bank_Detailed"
-        ? n.children.flatMap(collect)
-        : [n.path, ...n.children.flatMap(collect as never)];
+        ? (n.children.flatMap(collect as never) as string[])
+        : [n.path, ...(n.children.flatMap(collect as never) as string[])];
     const paths = collect(root);
     expect(paths).toEqual([
       "/BCS_Question_Bank_Detailed/01_subject",

@@ -38,7 +38,7 @@ describe("getGoogleRedirectUri", () => {
   });
 
   it("rejects non-https explicit URIs in production", () => {
-    process.env.NODE_ENV = "production";
+    (process.env as Record<string, string | undefined>).NODE_ENV = "production";
     process.env.GOOGLE_AUTH_REDIRECT_URI = "http://9th-grade-ai.vercel.app/api/auth/google/callback";
     expect(() => getGoogleRedirectUri(ORIGIN)).toThrow(/https/);
     delete (process.env as Record<string, string | undefined>).NODE_ENV;

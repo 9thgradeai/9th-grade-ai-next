@@ -6,6 +6,7 @@
 // environment: jose signing fails its cross-realm check inside jsdom.
 
 import { describe, it, expect, beforeEach, vi } from "vitest";
+import type { User as PrismaUser } from "@prisma/client";
 import { hash } from "bcryptjs";
 
 import { POST as loginPOST } from "~app/api/auth/login/route";
@@ -53,7 +54,7 @@ beforeEach(() => {
   void resetRateLimitStore();
 });
 
-function mockUser(overrides: Partial<Record<string, unknown>> = {}) {
+function mockUser(overrides: Partial<Record<string, unknown>> = {}) : PrismaUser {
   return {
     id: "usr_123",
     name: "Test Aspirant",
@@ -64,7 +65,7 @@ function mockUser(overrides: Partial<Record<string, unknown>> = {}) {
     role: "STUDENT",
     createdAt: new Date("2026-01-01T00:00:00Z"),
     ...overrides,
-  };
+  } as unknown as PrismaUser;
 }
 
 async function sessionCookieFor(email: string): Promise<string> {
@@ -217,7 +218,7 @@ function makeAnswers(n: number) {
 
 async function authedRequest(
   build: (cookie: string) => Request,
-): Promise<Response> {
+): Promise<Request> {
   const cookie = await sessionCookieFor("aspirant@example.com");
   vi.mocked(prisma.user.findUnique).mockResolvedValue(mockUser());
   return build(cookie);

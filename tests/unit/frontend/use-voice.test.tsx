@@ -28,7 +28,7 @@ describe("useVoiceInput", () => {
   });
 
   it("streams interim transcripts and stops on end", () => {
-    const listeners: Record<string, ((ev: any) => void) | null> = {
+    const listeners: Record<string, ((ev?: unknown) => void) | null> = {
       onresult: null,
       onerror: null,
       onend: null,

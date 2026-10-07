@@ -5,6 +5,7 @@
 // deletes the caller's own notification and hides (marks read) shared ones.
 
 import { describe, it, expect, beforeEach, vi } from "vitest";
+import type { User as PrismaUser } from "@prisma/client";
 
 import { DELETE as notificationsDELETE } from "~app/api/notifications/[id]/route";
 import { signSession } from "~backend/auth";
@@ -25,7 +26,7 @@ async function sessionCookieFor(email: string): Promise<string> {
   return `auth_token=${token}`;
 }
 
-function mockUser(overrides: Partial<Record<string, unknown>> = {}) {
+function mockUser(overrides: Partial<Record<string, unknown>> = {}): PrismaUser {
   return {
     id: "usr_123",
     name: "Test Aspirant",
@@ -37,7 +38,7 @@ function mockUser(overrides: Partial<Record<string, unknown>> = {}) {
     sessions: [],
     createdAt: new Date("2026-01-01T00:00:00Z"),
     ...overrides,
-  };
+  } as unknown as PrismaUser;
 }
 
 beforeEach(() => {

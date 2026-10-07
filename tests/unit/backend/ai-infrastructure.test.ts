@@ -38,7 +38,7 @@ describe("Metrics", () => {
     const { recordAiRequest, getAllMetrics, resetMetrics } = await import("~backend/ai/infrastructure/metrics");
     resetMetrics();
 
-    recordAiRequest("groq", "tutor", 200, 100, 50);
+    recordAiRequest("tutor", "groq", "openai/gpt-oss-120b", 200, true, 100, 50, 0);
 
     const metrics = getAllMetrics();
     expect(metrics.length).toBeGreaterThan(0);
@@ -174,7 +174,7 @@ describe("Token Budget", () => {
       content: `Message ${i} with some content `.repeat(10),
     }));
 
-    const truncated = truncateMessages(messages, TUTOR_BUDGET);
+    const truncated = truncateMessages(messages, TUTOR_BUDGET.maxMessageChars);
     expect(truncated.length).toBeLessThanOrEqual(messages.length);
   });
 });

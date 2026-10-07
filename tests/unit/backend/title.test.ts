@@ -9,8 +9,8 @@ vi.mock("../../../backend/ai/providers", () => ({
   resolveModel: vi.fn(),
 }));
 
-import { listMessages, renameConversation } from "../../../backend/ai/persistence/conversations";
-import { resolveModel } from "../../../backend/ai/providers";
+import { listMessages, renameConversation, type MessageRow, type ConversationSummary } from "../../../backend/ai/persistence/conversations";
+import { resolveModel, type ModelSelection } from "../../../backend/ai/providers";
 import {
   buildTranscript,
   sanitizeTitle,
@@ -18,7 +18,7 @@ import {
   DEFAULT_TITLE,
 } from "../../../backend/ai/application/title";
 
-const message = (role: string, content: string, status = "COMPLETE") => ({
+const message = (role: string, content: string, status = "COMPLETE"): MessageRow => ({
   id: `m-${Math.random()}`,
   conversationId: "c1",
   role,
@@ -30,9 +30,9 @@ const message = (role: string, content: string, status = "COMPLETE") => ({
   metadata: null,
   errorCode: null,
   createdAt: "2026-01-01T00:00:00Z",
-});
+} as unknown as MessageRow);
 
-const mockModel = (text: string) => ({
+const mockModel = (text: string): ModelSelection => ({
   provider: {
     name: "groq",
     model: "g",
@@ -41,7 +41,7 @@ const mockModel = (text: string) => ({
     stream: vi.fn(),
   },
   name: "groq",
-});
+} as unknown as ModelSelection);
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -49,7 +49,7 @@ beforeEach(() => {
   vi.mocked(renameConversation).mockResolvedValue({
     id: "c1", kind: "TUTOR", title: "x", subjectId: null, topicId: null,
     topicPath: "", messageCount: 0, createdAt: "", updatedAt: "",
-  });
+  } as unknown as ConversationSummary);
 });
 
 describe("title summarization", () => {

@@ -4,6 +4,7 @@
 // against the mocked Prisma client.
 
 import { describe, it, expect, beforeEach, vi } from "vitest";
+import type { User as PrismaUser, VocabWord as PrismaVocabWord, VocabProgress as PrismaVocabProgress } from "@prisma/client";
 import { hash } from "bcryptjs";
 
 import { GET as wordsGET } from "~app/api/vocab/words/route";
@@ -46,7 +47,7 @@ beforeEach(() => {
   vi.clearAllMocks();
 });
 
-function mockUser(overrides: Partial<Record<string, unknown>> = {}) {
+function mockUser(overrides: Partial<Record<string, unknown>> = {}): PrismaUser {
   return {
     id: "usr_123",
     name: "Test Aspirant",
@@ -57,7 +58,7 @@ function mockUser(overrides: Partial<Record<string, unknown>> = {}) {
     role: "STUDENT",
     createdAt: new Date("2026-01-01T00:00:00Z"),
     ...overrides,
-  };
+  } as unknown as PrismaUser;
 }
 
 async function sessionCookieFor(email: string): Promise<string> {
@@ -65,13 +66,13 @@ async function sessionCookieFor(email: string): Promise<string> {
   return `auth_token=${token}`;
 }
 
-async function authedRequest(build: (cookie: string) => Request): Promise<Response> {
+async function authedRequest(build: (cookie: string) => Request): Promise<Request> {
   const cookie = await sessionCookieFor("aspirant@example.com");
   vi.mocked(prisma.user.findUnique).mockResolvedValue(mockUser());
   return build(cookie);
 }
 
-function mockVocabWord(overrides: Record<string, unknown> = {}) {
+function mockVocabWord(overrides: Record<string, unknown> = {}): PrismaVocabWord {
   return {
     id: 1,
     word: "Abandon",
@@ -90,10 +91,10 @@ function mockVocabWord(overrides: Record<string, unknown> = {}) {
     createdAt: new Date(),
     updatedAt: new Date(),
     ...overrides,
-  };
+  } as unknown as PrismaVocabWord;
 }
 
-function mockVocabProgress(overrides: Record<string, unknown> = {}) {
+function mockVocabProgress(overrides: Record<string, unknown> = {}): PrismaVocabProgress {
   return {
     id: 1,
     userId: "usr_123",
@@ -109,7 +110,7 @@ function mockVocabProgress(overrides: Record<string, unknown> = {}) {
     createdAt: new Date(),
     updatedAt: new Date(),
     ...overrides,
-  };
+  } as unknown as PrismaVocabProgress;
 }
 
 // ── GET /api/vocab/words ──────────────────────────────────

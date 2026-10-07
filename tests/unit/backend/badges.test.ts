@@ -7,11 +7,11 @@ beforeEach(() => {
   // Streak evaluation queries distinct active days; default to none.
   vi.mocked(prisma.$queryRaw).mockResolvedValue([] as never);
   // Default: no badges unlocked yet.
-  vi.mocked(prisma.badge.findUnique).mockImplementation(async ({ where }: never) => {
+  vi.mocked(prisma.badge.findUnique).mockImplementation((async ({ where }: never) => {
     const names = ["Quiz Beginner", "3-Day Streak", "Week Warrior", "Mock Master", "Flashcard Pro"];
     const name = (where as { name: string }).name;
     return names.includes(name) ? { id: names.indexOf(name) + 1, name } : null;
-  });
+  }) as never);
   vi.mocked(prisma.userBadge.findUnique).mockResolvedValue(null);
   vi.mocked(prisma.userBadge.create).mockResolvedValue({} as never);
 });
@@ -23,6 +23,7 @@ describe("evaluateBadgesForEvent (achievement awarding)", () => {
       userId: "u1",
       quizId: 1,
       score: 10,
+      attempts: [],
     });
 
     expect(prisma.userBadge.create).toHaveBeenCalledWith(
@@ -38,6 +39,7 @@ describe("evaluateBadgesForEvent (achievement awarding)", () => {
       userId: "u1",
       correct: 8,
       wrong: 2,
+      attempts: [],
       finalScore: 7,
     });
 
@@ -53,6 +55,7 @@ describe("evaluateBadgesForEvent (achievement awarding)", () => {
       userId: "u1",
       correct: 6,
       wrong: 4,
+      attempts: [],
       finalScore: 4,
     });
 
@@ -65,6 +68,7 @@ describe("evaluateBadgesForEvent (achievement awarding)", () => {
       userId: "u1",
       correct: 2,
       wrong: 0,
+      attempts: [],
       finalScore: 2,
     });
 
@@ -79,6 +83,7 @@ describe("evaluateBadgesForEvent (achievement awarding)", () => {
       userId: "u1",
       quizId: 1,
       score: 10,
+      attempts: [],
     });
 
     expect(prisma.userBadge.create).not.toHaveBeenCalled();
@@ -109,6 +114,7 @@ describe("evaluateBadgesForEvent (achievement awarding)", () => {
         userId: "u1",
         quizId: 1,
         score: 10,
+      attempts: [],
       }),
     ).resolves.toBeUndefined();
 

@@ -18,9 +18,11 @@ export default function MediaAttachmentView({
   return (
     <div className="space-y-4">
       {images.map((m, i) => (
-        // eslint-disable-next-line @next/next/no-img-element
+        // eslint-disable-next-line @next/next/no-img-element -- question figures
+        // have no known intrinsic dimensions (next/image would need width/
+        // height or fill layout); native img + lazy keeps CLS minimal.
         <img
-          key={i}
+          key={m.url}
           src={m.url}
           alt={m.alt ?? `Figure ${i + 1}`}
           className="rounded-xl border border-terminal-border max-w-full h-auto mx-auto"

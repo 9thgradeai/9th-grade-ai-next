@@ -21,7 +21,9 @@
     "paths": {
       "@/*": ["./frontend/*"],
       "~backend/*": ["./backend/*"],
-      "~tests/*": ["./tests/*"]
+      "~tests/*": ["./tests/*"],
+      "~app/*": ["./app/*"],
+      "~scripts/*": ["./scripts/*"]
     }
   },
   "include": [

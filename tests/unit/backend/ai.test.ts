@@ -34,6 +34,7 @@ import {
 import type { AIContext } from "../../../backend/ai/types";
 
 const minimalContext: AIContext = {
+  userId: "u1",
   exam: "BCS",
   subject: undefined,
   topic: undefined,
@@ -41,7 +42,7 @@ const minimalContext: AIContext = {
   memories: [],
   learningProfile: undefined,
   retrievedKnowledge: undefined,
-  webResults: [],
+  webResults: 0,
 };
 
 describe("AI input schemas", () => {

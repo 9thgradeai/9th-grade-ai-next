@@ -19,6 +19,7 @@ import {
 } from "~backend/auth/google";
 import { findOrCreateGoogleUser } from "~backend/services/user";
 import { signSession, setSessionCookie, safeRedirect } from "~backend/auth";
+import { logOAuthSuccess, logOAuthFailure } from "~backend/services/storage/observability";
 import { AppError, toHttpResponse } from "~backend/errors";
 import { getRequestId, startTiming, applySecurityHeaders } from "../../../_middleware";
 
@@ -96,6 +97,7 @@ export async function GET(request: Request) {
 
     const user = await findOrCreateGoogleUser(profile);
     const token = await signSession({ email: user.email, ver: user.tokenVersion });
+    logOAuthSuccess(user.id, user.email);
 
     // Brand-new Google users (not yet onboarded) go to onboarding; everyone else
     // to their originally requested destination (default /dashboard).
@@ -110,6 +112,7 @@ export async function GET(request: Request) {
     return res;
   } catch (err) {
     // Surface a generic flag to the login page; log details server-side only.
+    logOAuthFailure("google_callback", err instanceof Error ? err.message : "unknown");
     if (err instanceof AppError) {
       return redirectToLogin("google_failed", origin);
     }

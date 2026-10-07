@@ -239,10 +239,12 @@ export default function AISolverTab() {
                     className="w-full max-h-64 object-contain rounded-2xl border border-primary/20"
                   />
                   <button
+                    type="button"
                     onClick={clearAll}
+                    aria-label="Remove uploaded image"
                     className="absolute top-3 right-3 p-1.5 bg-subtle border border-border rounded-lg text-text-muted hover:text-text-primary transition-colors"
                   >
-                    <X className="w-4 h-4" />
+                    <X className="w-4 h-4" aria-hidden="true" />
                   </button>
                 </div>
               ) : (
@@ -278,7 +280,7 @@ export default function AISolverTab() {
           {solverError && (
             <div role="alert" className="rounded-xl border border-red-500/30 bg-red-500/10 p-3 flex items-center justify-between gap-2">
               <p className="text-xs font-mono text-red-300">{solverError}</p>
-              <button onClick={() => void solveQuestion()} className="px-3 py-1.5 rounded-lg border border-red-500/30 text-xs font-mono">আবার চেষ্টা করুন</button>
+              <button type="button" onClick={() => void solveQuestion()} className="px-3 py-1.5 rounded-lg border border-red-500/30 text-xs font-mono">আবার চেষ্টা করুন</button>
             </div>
           )}
 

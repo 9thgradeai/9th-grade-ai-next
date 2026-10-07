@@ -53,4 +53,3 @@ export function migrateEnvelope<T>(env: VersionedEnvelope<T>): VersionedEnvelope
 export function normalizeBookmarks(rows: { questionId: number }[]): { bookmarks: number[] } {
   return { bookmarks: rows.map((r) => r.questionId).sort((a, b) => a - b) };
 }
-export function normalizeFlashcardState(rows: unknown[]): unknown { return rows; }

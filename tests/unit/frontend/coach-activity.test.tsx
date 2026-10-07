@@ -64,7 +64,7 @@ describe("ComposerBar (input law + image attach + auto-read)", () => {
     const { rerender } = render(<ComposerBar {...baseProps} mode="tutor" canAttachImage={false} />);
     const attach = screen.getByLabelText("Attach a question image");
     expect((attach as HTMLButtonElement).disabled).toBe(true);
-    rerender(<ComposerBar {...baseProps} mode="agent" canAttachImage={true} />);
+    rerender(<ComposerBar {...baseProps} mode="coach" canAttachImage={true} />);
     expect(screen.getByLabelText("Attach a question image").getAttribute("title")).toContain("Tutor mode");
   });
 

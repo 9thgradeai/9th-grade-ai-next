@@ -69,12 +69,11 @@ class Analytics {
     if (!this.enabled) {
       // Fall back to local storage for development/debugging
       this.events.push(eventData.event);
-      console.log("[Analytics]", eventData.event, eventData.data);
+      if (process.env.NODE_ENV === "development") console.log("[Analytics]", eventData.event, eventData.data);
       return;
     }
 
-    // Send to analytics endpoint
-    // TODO: Implement actual endpoint POST
+    // Send to analytics endpoint (failures buffer locally for retry).
     fetch(this.endpoint!, {
       method: "POST",
       headers: {
@@ -82,7 +81,7 @@ class Analytics {
       },
       body: JSON.stringify(payload),
     }).catch((err) => {
-      console.error("Analytics send failed:", err);
+      if (process.env.NODE_ENV === "development") console.error("Analytics send failed:", err);
       this.events.push(eventData.event);
     });
   }

@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { validateQuestionSearchParams, ValidationError } from "~backend/validation";
+import { validateQuestionSearchParams } from "~backend/validation";
+import { ValidationError } from "~backend/errors";
 
 describe("validateQuestionSearchParams — page support", () => {
   it("accepts a positive page and forwards it", () => {

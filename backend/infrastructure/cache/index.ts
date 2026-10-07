@@ -13,9 +13,9 @@
 
 import "server-only";
 
-import Redis from "ioredis";
 import { InMemoryRateLimitStore } from "./rate-limit-memory";
 import { RedisRateLimitStore } from "./rate-limit-redis";
+import { getSharedRedisClient } from "./redis-client";
 import type {
   RateLimitResult,
   RateLimitStore,
@@ -53,19 +53,9 @@ class FailOpenRateLimitStore implements RateLimitStore {
 export function getRateLimitStore(): RateLimitStore {
   if (store) return store;
 
-  const redisUrl = process.env.REDIS_URL;
-  if (redisUrl) {
-    const client = new Redis(redisUrl, {
-      // Fail fast instead of queueing commands while disconnected.
-      enableOfflineQueue: false,
-      maxRetriesPerRequest: 2,
-      retryStrategy: (times) => Math.min(times * 500, 5_000),
-    });
-    // Without an 'error' listener Node treats connection issues as
-    // unhandled events and crashes the process.
-    client.on("error", (error: Error) => {
-      log.error("rate_limit_redis_error", { error: error.message });
-    });
+  // Shared client (single pool for the whole backend) — never a second one.
+  const client = getSharedRedisClient();
+  if (client) {
     store = new FailOpenRateLimitStore(new RedisRateLimitStore(client));
   } else {
     store = new InMemoryRateLimitStore();

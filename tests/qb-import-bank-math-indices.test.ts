@@ -41,7 +41,7 @@ describe("parseMathText — bank math indices", () => {
       difficulty: "EASY",
     });
     // Canonical normalization (import loop, before the gate) migrates it:
-    const canon = canonFields(records[0]);
+    const canon = canonFields(records[0] as never);
     expect(canon.question).toBe("If $2^{0+3}$ + $2^{0+1}$ = 320, find the value of x.");
     expect(canon.explanation).toContain("x = 5");
   });
@@ -76,7 +76,7 @@ describe("parseMathText — bank math indices", () => {
       "Question 18. If 2ᵃ = 3 and 7⁺ = 8, find it.A. 1B. 2C. 3D. 4Answer: CExplanation: Chain rule.",
     );
     expect(records[0].question).toContain("7ᶠ = 8");
-    expect(canonFields(records[0]).question).toContain("$7^{f}$ = 8");
+    expect(canonFields(records[0] as never).question).toContain("$7^{f}$ = 8");
   });
 
   it("skips records with missing options", () => {

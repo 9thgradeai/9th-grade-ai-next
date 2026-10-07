@@ -5,6 +5,7 @@
 // exchange, find-or-create, session cookie, redirect) without network calls.
 
 import { describe, it, expect, beforeEach, vi } from "vitest";
+import type { User as PrismaUser } from "@prisma/client";
 
 // Mock the Google OAuth helpers. The route still calls the REAL user service
 // (findOrCreateGoogleUser) and the REAL session signer (jose) so we validate
@@ -36,7 +37,7 @@ import { resetRateLimitStore } from "~backend/rate-limit";
 
 const BASE = "https://app.example.com";
 
-function rawUser(overrides: Record<string, unknown> = {}) {
+function rawUser(overrides: Record<string, unknown> = {}): PrismaUser {
   return {
     id: "usr_google",
     name: "Google User",
@@ -57,7 +58,7 @@ function rawUser(overrides: Record<string, unknown> = {}) {
     authProvider: "google",
     imageUrl: "https://example.com/pic.jpg",
     ...overrides,
-  };
+  } as unknown as PrismaUser;
 }
 
 beforeEach(() => {

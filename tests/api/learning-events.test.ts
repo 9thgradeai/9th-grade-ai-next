@@ -3,6 +3,7 @@
 // POST /api/learning-events — strict-allowlist funnel endpoint tests.
 
 import { describe, it, expect, beforeEach, vi } from "vitest";
+import type { User as PrismaUser } from "@prisma/client";
 
 import { POST as learningEventsPOST } from "~app/api/learning-events/route";
 import { signSession } from "~backend/auth";
@@ -23,7 +24,7 @@ async function sessionCookieFor(email: string): Promise<string> {
   return `auth_token=${token}`;
 }
 
-function mockUser(overrides: Partial<Record<string, unknown>> = {}) {
+function mockUser(overrides: Partial<Record<string, unknown>> = {}): PrismaUser {
   return {
     id: "usr_123",
     name: "Test Aspirant",
@@ -35,7 +36,7 @@ function mockUser(overrides: Partial<Record<string, unknown>> = {}) {
     sessions: [],
     createdAt: new Date("2026-01-01T00:00:00Z"),
     ...overrides,
-  };
+  } as unknown as PrismaUser;
 }
 
 beforeEach(() => {

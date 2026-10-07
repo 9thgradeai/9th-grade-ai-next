@@ -4,7 +4,9 @@
 
 import "server-only";
 
-import Redis from "ioredis";
+import type Redis from "ioredis";
+import { getSharedRedisClient } from "./redis-client";
+import { log } from "~backend/infrastructure/observability/logger";
 
 const DEFAULT_TTL_MS = 60_000; // 1 minute default
 const MAX_MEM_ENTRIES = 500;
@@ -12,16 +14,13 @@ const MAX_MEM_ENTRIES = 500;
 const mem = new Map<string, { value: unknown; evictOrder: number; expiresAt: number }>();
 let evictCounter = 0;
 
-let redis: Redis | null = null;
-if (process.env.REDIS_URL) {
-  redis = new Redis(process.env.REDIS_URL, {
-    enableOfflineQueue: false,
-    maxRetriesPerRequest: 2,
-    retryStrategy: (times) => Math.min(times * 500, 5_000),
-  });
-  redis.on("error", (err) => {
-    console.warn('[query-cache] Redis error, falling back to memory:', err.message);
-  });
+function sharedClient(): Redis | null {
+  try {
+    return getSharedRedisClient();
+  } catch (err) {
+    log.error("query-cache.redis-unavailable", { error: err instanceof Error ? err.message : String(err) });
+    return null;
+  }
 }
 
 function getKey(prefix: string, key: string): string {
@@ -31,8 +30,9 @@ function getKey(prefix: string, key: string): string {
 export async function queryCacheGet<T>(prefix: string, key: string): Promise<T | null> {
   try {
     const fullKey = getKey(prefix, key);
-    if (redis) {
-      const v = await redis.get(fullKey);
+    const client = sharedClient();
+    if (client) {
+      const v = await client.get(fullKey);
       return v ? JSON.parse(v) : null;
     }
     const hit = mem.get(fullKey);
@@ -57,8 +57,9 @@ export async function queryCacheSet<T>(prefix: string, key: string, value: T, tt
   try {
     const fullKey = getKey(prefix, key);
     const serialized = JSON.stringify(value);
-    if (redis) {
-      await redis.set(fullKey, serialized, "PX", ttlMs);
+    const client = sharedClient();
+    if (client) {
+      await client.set(fullKey, serialized, "PX", ttlMs);
       return;
     }
     // Evict oldest entry if at capacity
@@ -82,16 +83,17 @@ export async function queryCacheSet<T>(prefix: string, key: string, value: T, tt
 export async function queryCacheInvalidate(prefix: string, pattern: string): Promise<void> {
   try {
     const fullPattern = getKey(prefix, pattern);
-    if (redis) {
+    const client = sharedClient();
+    if (client) {
       // SCAN MATCH is a glob — a bare prefix never matches suffixed keys.
       const glob = fullPattern.endsWith("*") ? fullPattern : `${fullPattern}*`;
       // Use SCAN to find matching keys
       let cursor = '0';
       do {
-        const [nextCursor, keys] = await redis.scan(cursor, 'MATCH', glob, 'COUNT', 100);
+        const [nextCursor, keys] = await client.scan(cursor, 'MATCH', glob, 'COUNT', 100);
         cursor = nextCursor;
         if (keys.length > 0) {
-          await redis.del(...keys);
+          await client.del(...keys);
         }
       } while (cursor !== '0');
       return;

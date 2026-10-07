@@ -59,10 +59,10 @@ describe("getNotifications (keyset pagination)", () => {
     vi.mocked(prisma.appNotification.count).mockResolvedValue(0);
 
     await getNotifications("userA", { limit: 99999 });
-    expect(vi.mocked(prisma.appNotification.findMany).mock.calls[0][0].take).toBe(50);
+    expect((vi.mocked(prisma.appNotification.findMany).mock.calls[0]?.[0] as { take?: number } | undefined)?.take).toBe(50);
 
     await getNotifications("userA", { limit: -5 });
-    expect(vi.mocked(prisma.appNotification.findMany).mock.calls[1][0].take).toBe(1);
+    expect((vi.mocked(prisma.appNotification.findMany).mock.calls[1]?.[0] as { take?: number } | undefined)?.take).toBe(1);
   });
 });
 

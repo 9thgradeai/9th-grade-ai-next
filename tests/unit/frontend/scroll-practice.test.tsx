@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import type { Server } from "@/lib/types";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import ScrollPractice from "@/components/dashboard/ScrollPractice";
 import { api } from "@/lib/services/api";
@@ -9,7 +10,7 @@ vi.mock("@/lib/services/api", () => ({
   },
 }));
 
-function makeQuestions() {
+function makeQuestions(): Server.QuestionDTO[] {
   return [
     {
       id: 1,
@@ -25,6 +26,10 @@ function makeQuestions() {
       year: null,
       sourceExam: "BCS",
       bcsTerm: null,
+      questionType: "SINGLE_CHOICE",
+      correctAnswers: ["A"],
+      statements: [],
+      media: [],
     },
     {
       id: 2,
@@ -40,6 +45,10 @@ function makeQuestions() {
       year: null,
       sourceExam: "BCS",
       bcsTerm: null,
+      questionType: "SINGLE_CHOICE",
+      correctAnswers: ["A"],
+      statements: [],
+      media: [],
     },
   ];
 }

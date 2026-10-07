@@ -19,7 +19,9 @@ const params = {
 };
 
 function submittedResult(outcome: "submitted" | "resumed" = "submitted") {
-  return { attemptId: ATTEMPT, outcome };
+  // Partial wire shape: the lock only reads attemptId/outcome; the service
+  // guarantees the full ExamResultDTO in production.
+  return { attemptId: ATTEMPT, outcome } as never;
 }
 
 describe("Exam submission — rendezvous, no-wedge, crash recovery", () => {

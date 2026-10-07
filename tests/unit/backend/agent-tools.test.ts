@@ -47,7 +47,6 @@ describe("agent tool registry", () => {
       description: "fails",
       inputShape: "{}",
       validateInput: () => ({}),
-      // @ts-expect-error minimal definition for the failure path test
       async execute() {
         throw new Error("database down");
       },
@@ -64,7 +63,6 @@ describe("agent tool registry", () => {
       inputShape: "{}",
       validateInput: () => ({}),
       timeoutMs: 20,
-      // @ts-expect-error minimal definition for the timeout path test
       async execute() {
         return new Promise(() => {});
       },

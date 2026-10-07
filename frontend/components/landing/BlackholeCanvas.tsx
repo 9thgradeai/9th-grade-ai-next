@@ -261,7 +261,7 @@ export default function BlackholeCanvas({ className = "" }: { className?: string
       gl.shaderSource(sh, src);
       gl.compileShader(sh);
       if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) {
-        console.warn("Blackhole shader compile failed:", gl.getShaderInfoLog(sh));
+        if (process.env.NODE_ENV === "development") console.warn("Blackhole shader compile failed:", gl.getShaderInfoLog(sh));
         gl.deleteShader(sh);
         return null;
       }
@@ -279,7 +279,7 @@ export default function BlackholeCanvas({ className = "" }: { className?: string
     gl.attachShader(program, fs);
     gl.linkProgram(program);
     if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-      console.warn("Blackhole program link failed:", gl.getProgramInfoLog(program));
+      if (process.env.NODE_ENV === "development") console.warn("Blackhole program link failed:", gl.getProgramInfoLog(program));
       setFailed(true);
       return;
     }

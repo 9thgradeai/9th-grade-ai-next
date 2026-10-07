@@ -50,16 +50,11 @@ const eslintConfig = defineConfig([
       "react-hooks/set-state-in-effect": "warn",
     },
   },
-  // No-secrets rule (uncomment when eslint-plugin-no-secrets is installed)
-  // {
-  //   plugins: { "no-secrets": noSecretsPlugin },
-  //   rules: {
-  //     "no-secrets": ["error", { excludePatterns: ["NEXT_PUBLIC_"] }],
-  //   },
-  // },
   {
     files: ["**/*.{ts,tsx}"],
     rules: {
+      // Inline secret-shape guard (no plugin needed — keep this instead of
+      // the removed eslint-plugin-no-secrets/eslint-plugin-security stubs).
       "no-restricted-syntax": [
         "warn",
         {
@@ -69,22 +64,6 @@ const eslintConfig = defineConfig([
       ],
     },
   },
-  // Security plugin rules (uncomment when eslint-plugin-security is installed)
-  // {
-  //   plugins: { security: securityPlugin },
-  //   rules: {
-  //     "security/detect-object-injection": "warn",
-  //     "security/detect-non-literal-regexp": "warn",
-  //     "security/detect-unsafe-regex": "error",
-  //     "security/detect-buffer-noassert": "error",
-  //     "security/detect-child-process": "warn",
-  //     "security/detect-disable-mustache-escape": "error",
-  //     "security/detect-eval-with-expression": "error",
-  //     "security/detect-non-literal-fs-filename": "warn",
-  //     "security/detect-non-literal-require": "warn",
-  //     "security/detect-pseudo-random-prng": "error",
-  //   },
-  // },
   globalIgnores([
     ".next/**",
     "out/**",

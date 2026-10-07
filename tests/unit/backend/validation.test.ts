@@ -17,7 +17,7 @@ const VALIDATION_ERROR = { statusCode: 400, code: "VALIDATION_ERROR" };
 
 describe("shared error contract (Phase 7)", () => {
   it("validation failures are 400 VALIDATION_ERROR — never 500", async () => {
-    const bad = [
+    const bad: Array<() => unknown> = [
       () => validateLoginInput({}),
       () => validateRegisterInput({ name: "ab", email: "nope", password: "longenough1" }),
       () => validatePositiveInteger("x", "id"),

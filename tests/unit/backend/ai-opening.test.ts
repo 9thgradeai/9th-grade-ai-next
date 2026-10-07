@@ -193,7 +193,7 @@ describe("composeOpening", () => {
   });
 
   it("guides new users toward a first step", () => {
-    const opening = composeOpening({ ...facts, hasHistory: false, questionsAnswered: 0 });
+    const opening = composeOpening({ ...facts, hasHistory: false });
     expect(opening.summary.length).toBeGreaterThan(0);
   });
 });
