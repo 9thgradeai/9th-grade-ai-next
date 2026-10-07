@@ -17,6 +17,7 @@ import {
 } from "@phosphor-icons/react";
 import { api } from "@/lib/services/api";
 import { useDialogA11y } from "@/lib/use-dialog-a11y";
+import { useScrollLock } from "@/lib/use-scroll-lock";
 import type { Server } from "@/lib/types";
 import { AnimatedList } from "@/components/ui/AnimatedList";
 
@@ -75,6 +76,7 @@ export default function NotificationCenter() {
   const [prefs, setPrefs] = useState({ info: true, success: true, warning: true, reminder: true });
   const closePanel = useCallback(() => setIsOpen(false), []);
   const panelRef = useDialogA11y<HTMLDivElement>(isOpen, closePanel);
+  useScrollLock(isOpen);
   const bellRef = useRef<HTMLButtonElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -420,7 +422,7 @@ export default function NotificationCenter() {
               )}
 
               {/* Content */}
-              <div ref={scrollRef} className="flex-1 overflow-y-auto p-3">
+              <div ref={scrollRef} className="flex-1 overflow-y-auto overscroll-contain p-3">
                 {loading ? (
                   <div className="space-y-3">
                     {[1, 2, 3].map((i) => (

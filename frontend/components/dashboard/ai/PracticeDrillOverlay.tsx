@@ -15,6 +15,7 @@ import { api } from "@/lib/services/api";
 import type { QuestionDTO } from "@/lib/types";
 import QuestionDrill from "../QuestionDrill";
 import { useDialogA11y } from "@/lib/use-dialog-a11y";
+import { useScrollLock } from "@/lib/use-scroll-lock";
 
 type StartPracticeDetail = {
   questionIds: number[];
@@ -39,6 +40,7 @@ export default function PracticeDrillOverlay() {
   };
 
   const panelRef = useDialogA11y<HTMLDivElement>(detail !== null, close);
+  useScrollLock(detail !== null);
 
   useEffect(() => {
     const startPractice = (questionIds: number[], title?: string) => {

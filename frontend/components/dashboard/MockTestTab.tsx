@@ -14,6 +14,7 @@ import {
   recoverPendingSubmission,
 } from "@/lib/services/exam-submission";
 import { useDialogA11y } from "@/lib/use-dialog-a11y";
+import { useScrollLock } from "@/lib/use-scroll-lock";
 import {
   MOCK_EXAM_KEY,
   loadExamSnapshot,
@@ -129,6 +130,7 @@ export default function MockTestTab() {
     showUnansweredConfirm,
     useCallback(() => setShowUnansweredConfirm(false), []),
   );
+  useScrollLock(showUnansweredConfirm);
 
   const [configReloadKey, setConfigReloadKey] = useState(0);
 

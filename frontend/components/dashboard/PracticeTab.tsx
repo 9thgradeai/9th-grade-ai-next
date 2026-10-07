@@ -27,6 +27,7 @@ import {
 import { allocateEvenly, shuffle } from "@/lib/balanced";
 import { shuffleSessionOptions } from "@/lib/shuffle-options";
 import { useDialogA11y } from "@/lib/use-dialog-a11y";
+import { useScrollLock } from "@/lib/use-scroll-lock";
 import {
   QUICK_EXAM_KEY,
   loadExamSnapshot,
@@ -119,6 +120,7 @@ export default function PracticeTab() {
   const [showUnansweredConfirm, setShowUnansweredConfirm] = useState(false);
   const closeUnansweredConfirm = useCallback(() => setShowUnansweredConfirm(false), []);
   const unansweredDialogRef = useDialogA11y<HTMLDivElement>(showUnansweredConfirm, closeUnansweredConfirm);
+  useScrollLock(showUnansweredConfirm);
   const [timerKey, setTimerKey] = useState(0);
   // Total session time (minutes, editable). Auto = 30s per selected MCQ.
   const [durationMin, setDurationMin] = useState(10);

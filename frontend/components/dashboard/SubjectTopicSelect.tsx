@@ -24,11 +24,12 @@
  * it centers as a maximized-height dialog.
  */
 
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { Check, MagnifyingGlass, Minus, Plus, X } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 import type { Server } from "@/lib/types";
 import { useDialogA11y } from "@/lib/use-dialog-a11y";
+import { useScrollLock } from "@/lib/use-scroll-lock";
 import {
   type Selection,
   subtreeHasSelected,
@@ -121,25 +122,8 @@ export default function SubjectTopicSelect({
 
   const closePopup = useCallback(() => setOpenSubject(null), []);
   const dialogRef = useDialogA11y<HTMLDivElement>(openSubject !== null, closePopup);
-
-  // Scroll-lock while the sheet is open. The sheet is `fixed`, but without a
-  // lock the dashboard scroller behind it (#dashboard-content) still receives
-  // chained scrolls — swiping the topic list slides the whole layout upward
-  // behind the sheet. Lock both the dashboard scroller and <body>, restoring
-  // previous values on close (nested popups can't occur here, so a simple
-  // save/restore is safe).
-  useEffect(() => {
-    if (openSubject === null || typeof document === "undefined") return;
-    const dash = document.getElementById("dashboard-content");
-    const prevDashOverflow = dash?.style.overflow ?? "";
-    const prevBodyOverflow = document.body.style.overflow;
-    if (dash) dash.style.overflow = "hidden";
-    document.body.style.overflow = "hidden";
-    return () => {
-      if (dash) dash.style.overflow = prevDashOverflow;
-      document.body.style.overflow = prevBodyOverflow;
-    };
-  }, [openSubject !== null]);
+  // Shared lock: swiping the sheet must not slide the dashboard behind it.
+  useScrollLock(openSubject !== null);
 
   // Live search across Bangla + English names — the subject list is long on
   // small screens, and thumb-typing a filter beats scrolling the grid.

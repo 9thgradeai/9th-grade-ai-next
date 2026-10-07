@@ -16,6 +16,7 @@ import {
 import { TABS, type TabId } from "@/lib/data";
 import { TAB_ICONS } from "@/lib/exam-ui";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
+import { useScrollLock } from "@/lib/use-scroll-lock";
 import { api } from "@/lib/services/api";
 import { launchAI } from "@/lib/ai-launcher";
 import { askAssistant } from "@/lib/services/ai/assistant";
@@ -150,6 +151,7 @@ export default function CommandBar() {
   const aiLoadingRef = useRef(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
+  useScrollLock(open);
 
   const go = useCallback(
     (tab: TabId) => {
@@ -456,7 +458,7 @@ export default function CommandBar() {
           id="command-results"
           role="listbox"
           aria-label="Results"
-          className="max-h-[46vh] overflow-y-auto py-2"
+          className="max-h-[46vh] overflow-y-auto overscroll-contain py-2"
         >
           {empty && (
             <li className="px-4 py-6 text-center">

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Check, Play, Timer, BookOpen, Trophy, ArrowCounterClockwise, Warning, CheckCircle, XCircle, Minus, Plus, GridFour, List, Clock, Flag, CircleDashed, Spinner,  } from "@phosphor-icons/react";
 import { api } from "@/lib/services/api";
 import { useDialogA11y } from "@/lib/use-dialog-a11y";
+import { useScrollLock } from "@/lib/use-scroll-lock";
 import {
   CUSTOM_EXAM_KEY,
   loadExamSnapshot,
@@ -145,6 +146,7 @@ export default function CustomExamTab() {
     if (!buildLoading) setShowConfirm(false);
   }, [buildLoading]);
   const buildConfirmDialogRef = useDialogA11y<HTMLDivElement>(showConfirm, closeBuildConfirm);
+  useScrollLock(showConfirm || showUnansweredConfirm);
   const [submitting, setSubmitting] = useState(false);
   const [reconciling, setReconciling] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);

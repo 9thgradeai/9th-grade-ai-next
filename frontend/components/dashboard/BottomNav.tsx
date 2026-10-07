@@ -6,6 +6,7 @@ import type { ComponentType } from "react";
 import { TABS, BOTTOM_TAB_IDS, type TabId } from "@/lib/data";
 import { TAB_ICONS, type IconProps } from "@/lib/exam-ui";
 import { useDialogA11y } from "@/lib/use-dialog-a11y";
+import { useScrollLock } from "@/lib/use-scroll-lock";
 import { useLanguage, t } from "@/lib/lang-ctx";
 import { DotsThreeVertical, X } from "@phosphor-icons/react";
 import LogoutButton from "./LogoutButton";
@@ -48,6 +49,7 @@ export default function BottomNav({ activeTab, onChange }: BottomNavProps) {
   const [moreOpen, setMoreOpen] = useState(false);
   const closeMore = useCallback(() => setMoreOpen(false), []);
   const sheetRef = useDialogA11y<HTMLDivElement>(moreOpen, closeMore);
+  useScrollLock(moreOpen);
   const isActive = (id: TabId) => activeTab === id;
   const extraTabs = TABS.filter((t) => !BOTTOM_TABS.find((bt) => bt.id === t.id));
 
@@ -127,7 +129,7 @@ export default function BottomNav({ activeTab, onChange }: BottomNavProps) {
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={shouldReduceMotion ? { duration: 0 } : { type: "spring", stiffness: 340, damping: 32 }}
-              className="absolute bottom-0 left-0 right-0 rounded-t-[20px] border-t shadow-2xl pb-safe max-h-[72vh] overflow-y-auto"
+              className="absolute bottom-0 left-0 right-0 rounded-t-[20px] border-t shadow-2xl pb-safe max-h-[72vh] overflow-y-auto overscroll-contain"
               style={{ background: "var(--dashboard-surface-solid)", borderColor: "var(--dashboard-border-muted)" }}
             >
               <div className="flex items-center justify-center pt-3 pb-2">

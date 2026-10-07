@@ -9,6 +9,7 @@ import { useAuth } from "@/lib/auth-ctx";
 import { useDashboardTheme } from "@/lib/dashboard-theme-ctx";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 import { useDialogA11y } from "@/lib/use-dialog-a11y";
+import { useScrollLock } from "@/lib/use-scroll-lock";
 import { account } from "@/lib/services/api";
 import { handleApiError } from "@/lib/errors";
 import LogoutButton from "./LogoutButton";
@@ -140,6 +141,7 @@ export default function SettingsTab() {
   // ── Delete account modal ──
   const [confirmDelete, setConfirmDelete] = useState(false);
   const deleteDialogRef = useDialogA11y<HTMLDivElement>(confirmDelete, () => setConfirmDelete(false));
+  useScrollLock(confirmDelete);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
 

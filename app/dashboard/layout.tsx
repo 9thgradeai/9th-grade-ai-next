@@ -21,6 +21,7 @@ import BrandMark from "@/components/ui/BrandMark";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 
 import { useDialogA11y } from "@/lib/use-dialog-a11y";
+import { useScrollLock } from "@/lib/use-scroll-lock";
 import { List, MagnifyingGlass, X } from "@phosphor-icons/react";
 import LogoutButton from "@/components/dashboard/LogoutButton";
 import NavRows from "@/components/dashboard/NavRows";
@@ -66,7 +67,7 @@ function SideNavDrawerContent({ activeTab, onChange }: { activeTab: TabId; onCha
         </p>
         <GlobalEcosystemToggle />
       </div>
-      <div className="flex-1 min-h-0 overflow-y-auto px-3 py-3">
+      <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 py-3">
         <NavRows activeTab={activeTab} onChange={onChange} variant="drawer" />
       </div>
       <div className="border-t px-3 py-4 space-y-3" style={{ borderColor: "var(--dashboard-sidebar-border)" }}>
@@ -135,6 +136,7 @@ function EmailVerificationGate({ children }: { children: React.ReactNode }) {
 
 function ShortcutsSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
   const ref = useDialogA11y<HTMLDivElement>(open, onClose);
+  useScrollLock(open);
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Keyboard shortcuts">
@@ -161,6 +163,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const closeNavDrawer = useCallback(() => setNavDrawerOpen(false), []);
   const drawerRef = useDialogA11y<HTMLDivElement>(navDrawerOpen, closeNavDrawer);
+  useScrollLock(navDrawerOpen);
 
   const activeMeta = TABS.find((t) => t.id === activeTab);
   const activeGroup = NAV_GROUPS.find((g) => g.ids.includes(activeTab));
