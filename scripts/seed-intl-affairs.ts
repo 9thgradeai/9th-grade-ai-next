@@ -29,6 +29,14 @@
  *   বৈশ্বিক_ইতিহাস_আঞ্চলিক_ও_আন্তর্জাতিক_ব্যবস্থা_ভূ-রাজনীতি/
  *     Questions(আঞ্চলিক_ও_আন্তর্জাতিক_ব্যবস্থা).txt        → ০১/আঞ্চলিক_ও_আন্তর্জাতিক_ব্যবস্থা
  *     Questions(যুদ্ধ_ও_বিপ্লবসমূহ).txt                    → ০১/যুদ্ধ_ও_বিপ্লবসমূহ
+ *     Questions[প্রণালি (Straits)].txt                    → ০২/আন্তর্জাতিক_গুরুত্বপূর্ণ_অঞ্চল_সীমারেখা
+ *       (straits = strategic maritime demarcations; sits in the ০১ folder
+ *       but belongs to the ০২ leaf — folder is not taxonomy)
+ *   ০২ batch-3:
+ *     Questions(অস্ত্র-সম্পর্কিত … ও অস্ত্র নিয়ন্ত্রণ).txt → ০২/আন্তর্জাতিক_চুক্তি_সংক্রান্ত_সনদ
+ *     Questions( শীতল যুদ্ধ … কৌশলভিত্তিক).txt             → ০১/বৈশ্বিক_ইতিহাস
+ *       (Cold War doctrines/policies are global-history content; no ০২ leaf
+ *       fits — folder is not taxonomy)
  *
  * Parsing mirrors seed-questions.ts (option/answer logic) + the block-join
  * approach of seed-math-comb-perm.ts. Gate REJECTs only for
@@ -72,6 +80,9 @@ const SPECS: Spec[] = [
   { dir: "বিশ্বের_সাম্প্রতিক_ও_চলমান_ঘটনাপ্রবাহ", file: "Questions(বিশ্বের সাম্প্রতিক ও চলমান ঘটনাপ্রবাহ).txt", path: `04_আন্তর্জাতিক_বিষয়াবলি/${SEC03}`, topic: SEC03, subtopic: "" },
   { dir: "বৈশ্বিক_ইতিহাস_আঞ্চলিক_ও_আন্তর্জাতিক_ব্যবস্থা_ভূ-রাজনীতি", file: "Questions(আঞ্চলিক_ও_আন্তর্জাতিক_ব্যবস্থা).txt", path: P(SEC01, "আঞ্চলিক_ও_আন্তর্জাতিক_ব্যবস্থা"), topic: SEC01, subtopic: "আঞ্চলিক_ও_আন্তর্জাতিক_ব্যবস্থা" },
   { dir: "বৈশ্বিক_ইতিহাস_আঞ্চলিক_ও_আন্তর্জাতিক_ব্যবস্থা_ভূ-রাজনীতি", file: "Questions(যুদ্ধ_ও_বিপ্লবসমূহ).txt", path: P(SEC01, "যুদ্ধ_ও_বিপ্লবসমূহ"), topic: SEC01, subtopic: "যুদ্ধ_ও_বিপ্লবসমূহ" },
+  { dir: "বৈশ্বিক_ইতিহাস_আঞ্চলিক_ও_আন্তর্জাতিক_ব্যবস্থা_ভূ-রাজনীতি", file: "Questions[প্রণালি (Straits)].txt", path: P(SEC02, "আন্তর্জাতিক_গুরুত্বপূর্ণ_অঞ্চল_সীমারেখা"), topic: SEC02, subtopic: "আন্তর্জাতিক_গুরুত্বপূর্ণ_অঞ্চল_সীমারেখা" },
+  { dir: SEC02, file: "Questions(অস্ত্র-সম্পর্কিত আন্তর্জাতিক চুক্তি, পারমাণবিক অস্ত্রধারী দেশ ও অস্ত্র নিয়ন্ত্রণ).txt", path: P(SEC02, "আন্তর্জাতিক_চুক্তি_সংক্রান্ত_সনদ"), topic: SEC02, subtopic: "আন্তর্জাতিক_চুক্তি_সংক্রান্ত_সনদ" },
+  { dir: SEC02, file: "Questions( শীতল যুদ্ধ (Cold War)_ মতবাদ, নীতি ও কৌশলভিত্তিক).txt", path: P(SEC01, "বৈশ্বিক_ইতিহাস"), topic: SEC01, subtopic: "বৈশ্বিক_ইতিহাস" },
 ];
 
 /** Resolve a file inside a directory by NFC-normalised name (Bengali file
