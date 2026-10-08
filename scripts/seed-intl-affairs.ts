@@ -19,6 +19,16 @@
  *     Questions(পরিবেশ চুক্তি _ প্রোটোকল).txt             → …/পরিবেশ_বিষয়ক_চুক্তি_ও_সম্মেলন
  *     Questions(পরিবেশ কনভেনশনসমূহ).txt                   → …/পরিবেশ_বিষয়ক_চুক্তি_ও_সম্মেলন
  *     Questions(আন্তর্জাতিক পরিবেশগত ইস্যু ও কূটনীতি ).txt → …/পরিবেশগত_বিভিন্ন_ইস্যু
+ *   ০৫_আন্তর্জাতিক_সংগঠনসমূহ_এবং_বৈশ্বিক_অর্থনৈতিক_প্রতিষ্ঠানাদি/
+ *     Questions(Economic Organizations).txt               → …/আন্তর্জাতিক_বিভিন্ন_অর্থনৈতিক_সংস্থাসমূহ
+ *     Questions(Regional Organizations).txt               → …/আঞ্চলিক_সহযোগিতা_সংগঠন_ও_জোট
+ *     Questions(আঞ্চলিক সহযোগিতা সংগঠন ও জোট).txt         → …/আঞ্চলিক_সহযোগিতা_সংগঠন_ও_জোট
+ *   বিশ্বের_সাম্প্রতিক_ও_চলমান_ঘটনাপ্রবাহ/
+ *     Questions(বিশ্বের সাম্প্রতিক ও চলমান ঘটনাপ্রবাহ).txt → ০৩ group path (no single
+ *       leaf fits mixed 2026 current-affairs; chapter-level tagging, subtopic "")
+ *   বৈশ্বিক_ইতিহাস_আঞ্চলিক_ও_আন্তর্জাতিক_ব্যবস্থা_ভূ-রাজনীতি/
+ *     Questions(আঞ্চলিক_ও_আন্তর্জাতিক_ব্যবস্থা).txt        → ০১/আঞ্চলিক_ও_আন্তর্জাতিক_ব্যবস্থা
+ *     Questions(যুদ্ধ_ও_বিপ্লবসমূহ).txt                    → ০১/যুদ্ধ_ও_বিপ্লবসমূহ
  *
  * Parsing mirrors seed-questions.ts (option/answer logic) + the block-join
  * approach of seed-math-comb-perm.ts. Gate REJECTs only for
@@ -38,6 +48,9 @@ const QUES_DIR = join(process.cwd(), "database", "data", "ques", "04_আন্�
 
 const SEC02 = "০২_আন্তর্জাতিক_নিরাপত্তা_ও_আন্তরাষ্ট্রীয়_ক্ষমতা_সম্পর্ক";
 const SEC04 = "০৪_আন্তর্জাতিক_পরিবেশগত_ইস্যু_ও_কূটনীতি";
+const SEC05 = "০৫_আন্তর্জাতিক_সংগঠনসমূহ_এবং_বৈশ্বিক_অর্থনৈতিক_প্রতিষ্ঠানাদি";
+const SEC03 = "০৩_বিশ্বের_সাম্প্রতিক_ও_চলমান_ঘটনাপ্রবাহ";
+const SEC01 = "০১_বৈশ্বিক_ইতিহাস_আঞ্চলিক_ও_আন্তর্জাতিক_ব্যবস্থা_ভূ-রাজনীতি";
 const P = (sec: string, leaf: string) => `04_আন্তর্জাতিক_বিষয়াবলি/${sec}/${leaf}`;
 
 type Spec = { dir: string; file: string; path: string; topic: string; subtopic: string };
@@ -53,6 +66,12 @@ const SPECS: Spec[] = [
   { dir: "আন্তর্জাতিক পরিবেশগত ইস্যু ও কূটনীতি", file: "Questions(পরিবেশ চুক্তি _ প্রোটোকল).txt", path: P(SEC04, "পরিবেশ_বিষয়ক_চুক্তি_ও_সম্মেলন"), topic: SEC04, subtopic: "পরিবেশ_বিষয়ক_চুক্তি_ও_সম্মেলন" },
   { dir: "আন্তর্জাতিক পরিবেশগত ইস্যু ও কূটনীতি", file: "Questions(পরিবেশ কনভেনশনসমূহ).txt", path: P(SEC04, "পরিবেশ_বিষয়ক_চুক্তি_ও_সম্মেলন"), topic: SEC04, subtopic: "পরিবেশ_বিষয়ক_চুক্তি_ও_সম্মেলন" },
   { dir: "আন্তর্জাতিক পরিবেশগত ইস্যু ও কূটনীতি", file: "Questions(আন্তর্জাতিক পরিবেশগত ইস্যু ও কূটনীতি ).txt", path: P(SEC04, "পরিবেশগত_বিভিন্ন_ইস্যু"), topic: SEC04, subtopic: "পরিবেশগত_বিভিন্ন_ইস্যু" },
+  { dir: SEC05, file: "Questions(Economic Organizations).txt", path: P(SEC05, "আন্তর্জাতিক_বিভিন্ন_অর্থনৈতিক_সংস্থাসমূহ"), topic: SEC05, subtopic: "আন্তর্জাতিক_বিভিন্ন_অর্থনৈতিক_সংস্থাসমূহ" },
+  { dir: SEC05, file: "Questions(Regional Organizations).txt", path: P(SEC05, "আঞ্চলিক_সহযোগিতা_সংগঠন_ও_জোট"), topic: SEC05, subtopic: "আঞ্চলিক_সহযোগিতা_সংগঠন_ও_জোট" },
+  { dir: SEC05, file: "Questions(আঞ্চলিক সহযোগিতা সংগঠন ও জোট).txt", path: P(SEC05, "আঞ্চলিক_সহযোগিতা_সংগঠন_ও_জোট"), topic: SEC05, subtopic: "আঞ্চলিক_সহযোগিতা_সংগঠন_ও_জোট" },
+  { dir: "বিশ্বের_সাম্প্রতিক_ও_চলমান_ঘটনাপ্রবাহ", file: "Questions(বিশ্বের সাম্প্রতিক ও চলমান ঘটনাপ্রবাহ).txt", path: `04_আন্তর্জাতিক_বিষয়াবলি/${SEC03}`, topic: SEC03, subtopic: "" },
+  { dir: "বৈশ্বিক_ইতিহাস_আঞ্চলিক_ও_আন্তর্জাতিক_ব্যবস্থা_ভূ-রাজনীতি", file: "Questions(আঞ্চলিক_ও_আন্তর্জাতিক_ব্যবস্থা).txt", path: P(SEC01, "আঞ্চলিক_ও_আন্তর্জাতিক_ব্যবস্থা"), topic: SEC01, subtopic: "আঞ্চলিক_ও_আন্তর্জাতিক_ব্যবস্থা" },
+  { dir: "বৈশ্বিক_ইতিহাস_আঞ্চলিক_ও_আন্তর্জাতিক_ব্যবস্থা_ভূ-রাজনীতি", file: "Questions(যুদ্ধ_ও_বিপ্লবসমূহ).txt", path: P(SEC01, "যুদ্ধ_ও_বিপ্লবসমূহ"), topic: SEC01, subtopic: "যুদ্ধ_ও_বিপ্লবসমূহ" },
 ];
 
 /** Resolve a file inside a directory by NFC-normalised name (Bengali file
@@ -237,7 +256,9 @@ async function main() {
         await prisma.question.createMany({ data: creates.slice(i, i + CHUNK) as never });
         ins += Math.min(CHUNK, creates.length - i);
       }
-      const UCHUNK = 25;
+      // Limited-concurrency updates: the DB is remote (high latency), so wide
+      // fan-out exhausts the connection pool (P2024). 5 at a time is safe.
+      const UCHUNK = 5;
       for (let i = 0; i < updates.length; i += UCHUNK) {
         await Promise.all(updates.slice(i, i + UCHUNK).map((u) => prisma.question.update({ where: { id: u.id }, data: u.data })));
         upd += Math.min(UCHUNK, updates.length - i);
