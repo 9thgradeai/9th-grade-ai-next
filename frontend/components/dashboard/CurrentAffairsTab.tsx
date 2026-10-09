@@ -50,7 +50,7 @@ function LoadingSkeleton() {
   );
 }
 
-function EmptyState({ onToday }: { onToday: () => void }) {
+function EmptyState({ onToday, onGenerate, generating }: { onToday: () => void; onGenerate: () => void; generating: boolean }) {
   const { lang } = useLanguage();
   return (
     <div
@@ -64,18 +64,31 @@ function EmptyState({ onToday }: { onToday: () => void }) {
       <p className="mt-1 max-w-sm text-sm" style={{ color: "var(--dashboard-text-muted)" }}>
         {t(
           lang,
-          "দৈনিক সমাচার এজেন্ট প্রতিদিন নতুন নোট তৈরি করে। আজকের দিনে ফিরে যান অথবা পরবর্তীতে চেক করুন।",
-          "The daily agent generates a fresh note each day. Head back to today or check later.",
+          "দৈনিক সমাচার এজেন্ট প্রতিদিন নতুন নোট তৈরি করে। আজকের নোট এখনই তৈরি করুন অথবা পরবর্তীতে চেক করুন।",
+          "The daily agent researches the web and writes a fresh note each day. Generate today's note now or check back later.",
         )}
       </p>
-      <button
-        type="button"
-        onClick={onToday}
-        className="mt-4 inline-flex min-h-[44px] items-center rounded-xl px-5 text-sm font-semibold text-white transition-colors hover:opacity-90"
-        style={{ background: "var(--dashboard-primary)" }}
-      >
-        {t(lang, "আজকের সমাচার", "Today's note")}
-      </button>
+      <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+        <button
+          type="button"
+          onClick={onGenerate}
+          disabled={generating}
+          className="inline-flex min-h-[44px] items-center rounded-xl px-5 text-sm font-semibold text-white transition-colors hover:opacity-90 disabled:opacity-50"
+          style={{ background: "var(--dashboard-primary)" }}
+        >
+          {generating
+            ? t(lang, "তৈরি হচ্ছে…", "Researching…")
+            : t(lang, "আজকের সমাচার তৈরি করুন", "Generate today's note")}
+        </button>
+        <button
+          type="button"
+          onClick={onToday}
+          className="inline-flex min-h-[44px] items-center rounded-xl border px-5 text-sm font-semibold transition-colors hover:bg-white/5"
+          style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-primary)" }}
+        >
+          {t(lang, "আজকের সমাচার", "Today's note")}
+        </button>
+      </div>
     </div>
   );
 }
@@ -91,6 +104,7 @@ export default function CurrentAffairsTab() {
   const [saving, setSaving] = useState(false);
   const [exportingPdf, setExportingPdf] = useState(false);
   const [exportingDocx, setExportingDocx] = useState(false);
+  const [generating, setGenerating] = useState(false);
 
   const load = useCallback(async (day: string) => {
     setLoading(true);
@@ -177,6 +191,25 @@ export default function CurrentAffairsTab() {
     );
   };
 
+  // Self-heal: when the cron missed a day, research + generate the note
+  // on demand instead of leaving the tab empty until tomorrow.
+  const generateToday = async () => {
+    setGenerating(true);
+    try {
+      const data = await api.generateCurrentAffairsNote(date);
+      setPayload({ note: data.note, userNote: null });
+      toast.success(
+        data.generated
+          ? t(lang, "আজকের সমাচার তৈরি হয়েছে", "Today's note is ready")
+          : t(lang, "নোট আগে থেকেই ছিল", "Note already existed"),
+      );
+    } catch {
+      toast.error(t(lang, "নোট তৈরি করা যায়নি", "Could not generate the note"));
+    } finally {
+      setGenerating(false);
+    }
+  };
+
   return (
     <ErrorBoundary>
       <div className="space-y-4">
@@ -236,7 +269,7 @@ export default function CurrentAffairsTab() {
             </button>
           </div>
         ) : !note ? (
-          <EmptyState onToday={() => setDate(todayString())} />
+          <EmptyState onToday={() => setDate(todayString())} onGenerate={() => void generateToday()} generating={generating} />
         ) : (
           <>
             {/* Note + export toolbar */}
@@ -295,6 +328,7 @@ export default function CurrentAffairsTab() {
                 mcqs={note.mcqs}
                 title={t(lang, "অনুশীলন MCQ", "Practice MCQs")}
                 subtitle={t(lang, "আজকের নোট থেকে", "From today's note")}
+                dailyNoteId={note.id}
               />
             </div>
           </>

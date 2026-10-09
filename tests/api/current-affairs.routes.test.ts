@@ -11,12 +11,15 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { GET as latestGET } from "~app/api/current-affairs/latest/route";
 import { POST as userNotePOST } from "~app/api/current-affairs/user-note/route";
 import { GET as exportGET } from "~app/api/current-affairs/export/route";
+import { POST as generatePOST } from "~app/api/current-affairs/generate/route";
+import { POST as mcqAttemptPOST } from "~app/api/current-affairs/mcq-attempt/route";
 import { GET as cronGET } from "~app/api/cron/daily-current-affairs/route";
 import {
   getLatestNote,
   getMostRecentNote,
   upsertUserNote,
   publishDailyNote,
+  submitMcqAttempts,
   buildNotePdf,
 } from "~backend/services/current-affairs";
 import { signSession } from "~backend/auth";
@@ -27,6 +30,7 @@ vi.mock("~backend/services/current-affairs", () => ({
   getMostRecentNote: vi.fn(),
   upsertUserNote: vi.fn(),
   publishDailyNote: vi.fn(),
+  submitMcqAttempts: vi.fn(),
   buildNotePdf: vi.fn(),
   normalizeDay: (d: Date | string) =>
     new Date(`${typeof d === "string" ? d : d.toISOString().slice(0, 10)}T00:00:00.000Z`),
@@ -187,6 +191,91 @@ describe("GET /api/current-affairs/export", () => {
 
     const res = await exportGET(getRequest("/api/current-affairs/export?date=2026-10-03", { cookie }));
     expect(res.status).toBe(404);
+  });
+});
+
+describe("POST /api/current-affairs/generate", () => {
+  it("requires a session", async () => {
+    const res = await generatePOST(postRequest("/api/current-affairs/generate", {}));
+    expect(res.status).toBe(401);
+  });
+
+  it("generates today's note on demand", async () => {
+    const cookie = await sessionCookieFor("ca@example.com");
+    vi.mocked(publishDailyNote).mockResolvedValue({ note: NOTE, generated: true } as never);
+
+    const res = await generatePOST(postRequest("/api/current-affairs/generate", {}, { cookie }));
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { date: string; generated: boolean };
+    expect(body.date).toBe("2026-10-03");
+    expect(body.generated).toBe(true);
+    expect(publishDailyNote).toHaveBeenCalled();
+  });
+
+  it("rejects a future date", async () => {
+    const cookie = await sessionCookieFor("ca@example.com");
+    const res = await generatePOST(
+      postRequest("/api/current-affairs/generate", { date: "2999-01-01" }, { cookie }),
+    );
+    expect(res.status).toBe(400);
+  });
+
+  it("rejects a malformed date", async () => {
+    const cookie = await sessionCookieFor("ca@example.com");
+    const res = await generatePOST(
+      postRequest("/api/current-affairs/generate", { date: "bogus" }, { cookie }),
+    );
+    expect(res.status).toBe(400);
+  });
+});
+
+describe("POST /api/current-affairs/mcq-attempt", () => {
+  it("requires a session", async () => {
+    const res = await mcqAttemptPOST(postRequest("/api/current-affairs/mcq-attempt", {}));
+    expect(res.status).toBe(401);
+  });
+
+  it("persists exam answers and returns the score", async () => {
+    const cookie = await sessionCookieFor("ca@example.com");
+    vi.mocked(submitMcqAttempts).mockResolvedValue({ correct: 1, total: 1, score: 100, pointsEarned: 10 });
+
+    const res = await mcqAttemptPOST(
+      postRequest(
+        "/api/current-affairs/mcq-attempt",
+        { dailyNoteId: "note_1", answers: [{ mcqId: "m1", selectedOption: 0, durationSec: 12 }] },
+        { cookie },
+      ),
+    );
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { summary: { correct: number; score: number } };
+    expect(body.summary.correct).toBe(1);
+    expect(body.summary.score).toBe(100);
+    expect(submitMcqAttempts).toHaveBeenCalledWith(
+      "usr_ca",
+      "note_1",
+      [{ mcqId: "m1", selectedOption: 0, durationSec: 12 }],
+      null,
+    );
+  });
+
+  it("rejects empty answers", async () => {
+    const cookie = await sessionCookieFor("ca@example.com");
+    const res = await mcqAttemptPOST(
+      postRequest("/api/current-affairs/mcq-attempt", { dailyNoteId: "note_1", answers: [] }, { cookie }),
+    );
+    expect(res.status).toBe(400);
+  });
+
+  it("rejects unknown fields", async () => {
+    const cookie = await sessionCookieFor("ca@example.com");
+    const res = await mcqAttemptPOST(
+      postRequest(
+        "/api/current-affairs/mcq-attempt",
+        { dailyNoteId: "note_1", answers: [{ mcqId: "m1", selectedOption: 0 }], extra: 1 },
+        { cookie },
+      ),
+    );
+    expect(res.status).toBe(400);
   });
 });
 

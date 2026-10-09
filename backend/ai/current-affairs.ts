@@ -49,6 +49,12 @@ export async function searchNews(query: string): Promise<SearchHit[]> {
         search_depth: "basic",
         max_results: MAX_RESULTS_PER_QUERY,
         include_answer: false,
+        // Recency matters for a daily note: without a time window Tavily
+        // happily returns months-old evergreen pages, and the agent would
+        // present stale news as today's affairs.
+        time_range: "week",
+        // Prefer fresh results; Tavily ranks recency higher with this topic.
+        topic: "news",
       }),
     });
     if (!res.ok) return [];
@@ -88,6 +94,79 @@ export async function searchNews(query: string): Promise<SearchHit[]> {
   }
 }
 
+// ── RSS fallback (keyless deep research) ─────────────────
+// When Tavily is unconfigured or returns nothing, the pipeline falls back
+// to freely available news RSS feeds — no API key required. Items are
+// filtered to Bangladesh/exam-relevant beats so the note stays on-syllabus.
+// Every fallback hit carries its real article URL, so the zero-hallucination
+// citation guardrail keeps working unchanged.
+const RSS_FEEDS: Array<{ publisher: string; url: string }> = [
+  { publisher: "The Daily Star", url: "https://www.thedailystar.net/frontpage/rss.xml" },
+  { publisher: "Dhaka Tribune", url: "https://www.dhakatribune.com/feed" },
+  { publisher: "Al Jazeera", url: "https://www.aljazeera.com/xml/rss/all.xml" },
+  { publisher: "BBC World Asia", url: "https://feeds.bbci.co.uk/news/world/asia/rss.xml" },
+];
+
+const RSS_RELEVANT =
+  /bangladesh|dhaka|bcs|bank|taka|padma|election|parliament|budget|gdp|remittance|appointment|award|sport|cricket|football|science|tech|india|china|us |un |saarc|myanmar|pakistan|climate|flood|exam|recruit|minister|president|chief adviser/i;
+
+function stripTags(s: string): string {
+  return s
+    .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;|&apos;/g, "'")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function parseRssItems(xml: string, publisher: string): SearchHit[] {
+  const items: SearchHit[] = [];
+  for (const m of xml.matchAll(/<item>([\s\S]*?)<\/item>/g)) {
+    const block = m[1];
+    const title = stripTags(block.match(/<title>([\s\S]*?)<\/title>/)?.[1] ?? "");
+    const link = stripTags(block.match(/<link>([\s\S]*?)<\/link>/)?.[1] ?? "");
+    const desc = stripTags(block.match(/<description>([\s\S]*?)<\/description>/)?.[1] ?? "");
+    const pubDate = stripTags(block.match(/<pubDate>([\s\S]*?)<\/pubDate>/)?.[1] ?? "");
+    if (!title || !link) continue;
+    if (!RSS_RELEVANT.test(`${title} ${desc}`)) continue;
+    items.push({
+      publisher,
+      articleTitle: title,
+      sourceUrl: link,
+      publishedAt: pubDate || null,
+      snippet: desc.slice(0, SNIPPET_CHARS),
+    });
+    if (items.length >= MAX_RESULTS_PER_QUERY) break;
+  }
+  return items;
+}
+
+export async function fetchRssHits(): Promise<SearchHit[]> {
+  const settled = await Promise.all(
+    RSS_FEEDS.map(async (f) => {
+      try {
+        const res = await fetch(f.url, {
+          signal: AbortSignal.timeout(SEARCH_TIMEOUT_MS),
+          headers: { "User-Agent": "9thGradeAI-CurrentAffairs/1.0" },
+        });
+        if (!res.ok) return [];
+        return parseRssItems(await res.text(), f.publisher);
+      } catch {
+        return [];
+      }
+    }),
+  );
+  const seen = new Set<string>();
+  return settled.flat().filter((h) => {
+    if (seen.has(h.sourceUrl)) return false;
+    seen.add(h.sourceUrl);
+    return true;
+  });
+}
 // ── Output schema ───────────────────────────────────────
 const CitationSchema = z.object({
   publisher: z.string().min(1),
@@ -240,15 +319,24 @@ export async function generateDailyCurrentAffairs(
     timeZone: "UTC",
   });
 
-  // Parallel searches across the exam-relevant beats.
+  // Parallel searches across the exam-relevant beats (English + Bangla
+  // queries so local-language coverage is not missed).
   const queries = [
     `Bangladesh current affairs ${dateLabel} news BCS exam`,
     `Bangladesh economy government policy project ${dateLabel}`,
     `Bangladesh appointments awards sports science tech ${dateLabel}`,
     `international affairs ${dateLabel} Bangladesh impact`,
+    `বাংলাদেশ সাম্প্রতিক খবর ${dateLabel} সরকারি চাকরি পরীক্ষা`,
+    `বাংলাদেশ অর্থনীতি সরকারি সিদ্ধান্ত প্রকল্প ${dateLabel}`,
   ];
   const results = await Promise.all(queries.map((q) => searchNews(q)));
-  const hits = results.flat();
+  let hits = results.flat();
+  // Keyless RSS fallback: when Tavily is unconfigured, rate-limited, or
+  // returns nothing, freely available news feeds keep the pipeline
+  // autonomous instead of 503ing the whole day.
+  if (hits.length === 0) {
+    hits = await fetchRssHits();
+  }
   // De-duplicate by URL, keep order.
   const seen = new Set<string>();
   const uniqueHits = hits.filter((h) => {
@@ -259,28 +347,39 @@ export async function generateDailyCurrentAffairs(
 
   if (uniqueHits.length === 0) {
     throw new Error(
-      "TAVILY_API_KEY is not configured or the search returned no results — cannot ground the daily note.",
+      "Web research returned no results (Tavily + RSS fallback both empty) — cannot ground the daily note.",
     );
   }
 
   const grounding = buildGroundingBlock(uniqueHits);
   const client = createGroq({ apiKey: groqKey });
 
-  const { object } = await generateObject({
-    model: client(MODEL),
-    schema: CurrentAffairsSchema,
-    schemaName: "DailyCurrentAffairs",
-    schemaDescription:
-      "Daily current-affairs note with source-bound facts and exam MCQs",
-    system: systemPrompt(dayName),
-    prompt: `Verified search results for ${dateLabel}:\n\n${grounding}\n\nCompose the daily current-affairs note for ${dateLabel}.`,
-    temperature: 0.3,
-    // Reasoning models (e.g. openai/gpt-oss-*) burn output tokens on
-    // hidden reasoning traces, so the budget needs headroom beyond the
-    // JSON itself; JSON mode keeps Groq compatibility broad.
-    maxTokens: 16_384,
-    mode: "json",
-  });
-
-  return enforceGrounding(object, uniqueHits);
+  // Model fallback chain: the pinned model may be retired server-side
+  // (Groq decommissions dated models). A retry with the fallback keeps the
+  // daily cron autonomous instead of failing the whole day.
+  const models = [MODEL, "llama-3.1-8b-instant"];
+  let lastErr: unknown = null;
+  for (const name of models) {
+    try {
+      const { object } = await generateObject({
+        model: client(name),
+        schema: CurrentAffairsSchema,
+        schemaName: "DailyCurrentAffairs",
+        schemaDescription:
+          "Daily current-affairs note with source-bound facts and exam MCQs",
+        system: systemPrompt(dayName),
+        prompt: `Verified search results for ${dateLabel}:\n\n${grounding}\n\nCompose the daily current-affairs note for ${dateLabel}.`,
+        temperature: 0.3,
+        // Reasoning models (e.g. openai/gpt-oss-*) burn output tokens on
+        // hidden reasoning traces, so the budget needs headroom beyond the
+        // JSON itself; JSON mode keeps Groq compatibility broad.
+        maxTokens: 16_384,
+        mode: "json",
+      });
+      return enforceGrounding(object, uniqueHits);
+    } catch (err) {
+      lastErr = err;
+    }
+  }
+  throw lastErr instanceof Error ? lastErr : new Error("Current-affairs generation failed on all models.");
 }

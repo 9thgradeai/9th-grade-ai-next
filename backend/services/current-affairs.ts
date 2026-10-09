@@ -5,6 +5,7 @@ import "server-only";
 
 import { Prisma } from "@prisma/client";
 import { prisma } from "~backend/db";
+import { recomputeAndAward } from "~backend/repositories/progress.repository";
 import {
   generateDailyCurrentAffairs,
   type CurrentAffairsOutput,
@@ -330,6 +331,70 @@ export async function upsertUserNote(
   return { updatedAt: saved.updatedAt.toISOString() };
 }
 
+// ── MCQ exam attempts (exam mode inside the tab) ──────
+// Persists one QuestionAttempt per answered MCQ so current-affairs practice
+// feeds the same progress/accuracy/streak/activity system as every other
+// mode (subjectName "Current Affairs", source "current-affairs",
+// topic = note date). Points are awarded at the standard practice rate.
+export type McqAttemptInput = {
+  mcqId: string;
+  selectedOption: number;
+  durationSec?: number;
+};
+
+export async function submitMcqAttempts(
+  userId: string,
+  dailyNoteId: string,
+  answers: McqAttemptInput[],
+  ecosystemId?: number | null,
+): Promise<{ correct: number; total: number; score: number; pointsEarned: number }> {
+  const note = await prisma.dailyCurrentAffairsNote.findUnique({
+    where: { id: dailyNoteId },
+    include: { mcqs: { select: { id: true, correctOption: true } } },
+  });
+  if (!note) throw new Error("DailyCurrentAffairsNote not found");
+  const correctById = new Map(note.mcqs.map((m) => [m.id, m.correctOption]));
+
+  const graded = answers
+    .filter((a) => correctById.has(a.mcqId) && Number.isInteger(a.selectedOption))
+    .map((a) => ({
+      mcqId: a.mcqId,
+      selected: a.selectedOption,
+      correct: a.selectedOption === correctById.get(a.mcqId),
+      durationSec: Math.max(0, Math.min(3600, Math.floor(a.durationSec ?? 0))),
+    }));
+  if (graded.length === 0) throw new Error("No valid answers submitted");
+
+  const correct = graded.filter((g) => g.correct).length;
+  const total = graded.length;
+  const pointsEarned = correct * 10; // standard practice rate
+  const dayStr = toDayString(note.date);
+
+  await prisma.$transaction(async (tx) => {
+    await tx.questionAttempt.createMany({
+      data: graded.map((g) => ({
+        ecosystemId: ecosystemId ?? 1,
+        userId,
+        questionId: null,
+        subjectId: null,
+        subjectName: "Current Affairs",
+        topic: dayStr,
+        correct: g.correct,
+        source: "current-affairs",
+        selectedAnswer: String(g.selected),
+        durationSec: g.durationSec,
+      })),
+    });
+    await recomputeAndAward(tx, userId, pointsEarned, 0);
+  });
+
+  return {
+    correct,
+    total,
+    score: Math.round((correct / total) * 100),
+    pointsEarned,
+  };
+}
 // ── PDF export (server-side, pdfkit — already a dependency) ──
 export function buildNoteMarkdown(note: CurrentAffairsNoteDTO): string {
   const lines: string[] = [

@@ -956,6 +956,22 @@ export const api = {
       `/api/current-affairs/export${date ? `?date=${encodeURIComponent(date)}` : ""}`,
       { ...AUTH_FETCH_INIT },
     ),
+
+  generateCurrentAffairsNote: (date?: string): Promise<Server.CurrentAffairsLatestDTO & { generated: boolean }> =>
+    mutate<Server.CurrentAffairsLatestDTO & { generated: boolean }>("/api/current-affairs/generate", "POST", {
+      ...(date ? { date } : {}),
+    }),
+
+  submitCurrentAffairsMcq: (
+    dailyNoteId: string,
+    answers: Array<{ mcqId: string; selectedOption: number; durationSec?: number }>,
+    ecosystemId?: number | null,
+  ): Promise<{ summary: { correct: number; total: number; score: number; pointsEarned: number } }> =>
+    mutate("/api/current-affairs/mcq-attempt", "POST", {
+      dailyNoteId,
+      answers,
+      ...(ecosystemId !== undefined ? { ecosystemId } : {}),
+    }),
 };
 
 // ── Account / settings methods (auth endpoints) ─────────────
