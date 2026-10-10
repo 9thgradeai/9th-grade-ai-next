@@ -4,8 +4,8 @@ Sentry.init({
   dsn: process.env.SENTRY_DSN,
   // Adjust this value in production, or use tracesSampler for greater control
   tracesSampleRate: 0.1,
-  // Setting this option to true will print useful information to the console while you're setting up Sentry.
-  debug: process.env.NODE_ENV !== "production",
+  // Debug off: without a DSN the SDK only logs "No DSN provided" noise.
+  debug: false,
   // Only send events in production
   enabled: process.env.NODE_ENV === "production" || process.env.VERCEL_ENV === "production",
   // Prevent OpenTelemetry version conflict

@@ -7,6 +7,7 @@ import { NextResponse } from "next/server";
 import { timingSafeEqual } from "crypto";
 import { publishDailyNote } from "~backend/services/current-affairs";
 import { AppError, toHttpResponse } from "~backend/errors";
+import { log } from "~backend/infrastructure/observability/logger";
 import { getRequestId, startTiming, applySecurityHeaders } from "../../_middleware";
 
 function safeEquals(a: string, b: string): boolean {
@@ -69,7 +70,24 @@ export async function GET(request: Request) {
     applySecurityHeaders(res);
     return res;
   } catch (err) {
-    const res = toHttpResponse(err);
+    // Agent outages must surface as 503 (retryable), never a bare 500 —
+    // schedulers treat 5xx-with-500 as a code bug, 503 as "try tomorrow".
+    const operational =
+      err instanceof AppError
+        ? err
+        : new AppError(
+            503,
+            "Daily current-affairs generation is temporarily unavailable.",
+            "CA_CRON_UNAVAILABLE",
+            true,
+            { cause: err },
+          );
+    if (!(err instanceof AppError)) {
+      log.error("current-affairs.cron-unexpected", {
+        message: err instanceof Error ? err.message : String(err),
+      });
+    }
+    const res = toHttpResponse(operational);
     res.headers.set("X-Request-Id", requestId);
     res.headers.set("X-Response-Time", getTime() + "ms");
     applySecurityHeaders(res);

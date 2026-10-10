@@ -340,10 +340,12 @@ function mutate<T>(
   url: string,
   method: string,
   body?: unknown,
+  options?: { timeoutMs?: number; retries?: number },
 ): Promise<T> {
   const p = request<T>(url, {
     method,
-    retries: 0,
+    retries: options?.retries ?? 0,
+    ...(options?.timeoutMs !== undefined ? { timeoutMs: options.timeoutMs } : {}),
     ...(body !== undefined
       ? { body: JSON.stringify(body), headers: { "Content-Type": "application/json" } }
       : {}),
@@ -958,9 +960,11 @@ export const api = {
     ),
 
   generateCurrentAffairsNote: (date?: string): Promise<Server.CurrentAffairsLatestDTO & { generated: boolean }> =>
+    // Research + LLM generation takes ~15–60s — the 15s default would abort
+    // healthy generations (and the abort looked like a server 500 in logs).
     mutate<Server.CurrentAffairsLatestDTO & { generated: boolean }>("/api/current-affairs/generate", "POST", {
       ...(date ? { date } : {}),
-    }),
+    }, { timeoutMs: 120_000 }),
 
   submitCurrentAffairsMcq: (
     dailyNoteId: string,

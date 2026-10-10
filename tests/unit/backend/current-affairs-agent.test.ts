@@ -4,8 +4,9 @@
 // guardrail (enforceGrounding): facts must bind to real,
 // search-returned citations — fabricated sources are stripped.
 
-import { describe, it, expect } from "vitest";
-import { enforceGrounding, CurrentAffairsSchema } from "~backend/ai/current-affairs";
+import { describe, it, expect, vi, afterEach } from "vitest";
+import { enforceGrounding, CurrentAffairsSchema, generateDailyCurrentAffairs } from "~backend/ai/current-affairs";
+import { AppError } from "~backend/errors";
 import type { SearchHit } from "~backend/ai/current-affairs";
 
 const HITS: SearchHit[] = [
@@ -176,5 +177,19 @@ describe("enforceGrounding (zero-hallucination guardrail)", () => {
     );
     expect(out.sections).toHaveLength(1);
     expect(out.sections[0].heading).toBe("Real");
+  });
+});
+
+describe("generateDailyCurrentAffairs failure contract", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it("throws an operational 503 (not a bare 500) when GROQ_API_KEY is missing", async () => {
+    vi.stubEnv("GROQ_API_KEY", "");
+    const err = await generateDailyCurrentAffairs(new Date("2026-10-10T00:00:00.000Z")).catch((e) => e);
+    expect(err).toBeInstanceOf(AppError);
+    expect((err as AppError).statusCode).toBe(503);
+    expect((err as AppError).code).toBe("CA_NO_PROVIDER");
   });
 });

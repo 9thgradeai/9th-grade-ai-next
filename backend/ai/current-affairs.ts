@@ -14,14 +14,25 @@ import "server-only";
 import { generateObject } from "ai";
 import { createGroq } from "@ai-sdk/groq";
 import { z } from "zod";
+import { AppError } from "~backend/errors";
+import { log } from "~backend/infrastructure/observability/logger";
 
 const TAVILY_URL = "https://api.tavily.com/search";
 const SEARCH_TIMEOUT_MS = 12_000;
-const MAX_RESULTS_PER_QUERY = 6;
-const SNIPPET_CHARS = 900;
+// Groq's free/on-demand tier caps throughput per minute (TPM) — 6 beats ×
+// 6 hits × 900-char snippets measured ~10.6k requested tokens and 413'd
+// every generation. Keep the grounding lean: 3 hits/beat, short snippets,
+// and a hard cap on total hits so input + output headroom stays in budget.
+const MAX_RESULTS_PER_QUERY = 3;
+const SNIPPET_CHARS = 500;
+const MAX_TOTAL_HITS = 12;
 
 // Override point: deployments can pin another Groq-hosted model.
-const MODEL = process.env.AI_CURRENT_AFFAIRS_MODEL ?? "llama-3.3-70b-versatile";
+const MODEL = process.env.AI_CURRENT_AFFAIRS_MODEL ?? "openai/gpt-oss-120b";
+// Fallback chain must only contain live models — llama-3.1-8b-instant was
+// decommissioned by Groq (404s), which used to sink every generation once
+// the primary hit a TPM 413. gpt-oss-20b is confirmed on the account.
+const FALLBACK_MODELS = ["openai/gpt-oss-20b"];
 
 export type SearchHit = {
   publisher: string;
@@ -307,7 +318,11 @@ export async function generateDailyCurrentAffairs(
 ): Promise<CurrentAffairsOutput> {
   const groqKey = process.env.GROQ_API_KEY;
   if (!groqKey) {
-    throw new Error("GROQ_API_KEY is not configured — the current-affairs agent cannot run.");
+    throw new AppError(
+      503,
+      "The AI provider is not configured on this deployment (GROQ_API_KEY). Ask the site owner to set it, then try again.",
+      "CA_NO_PROVIDER",
+    );
   }
 
   const dateLabel = date.toISOString().slice(0, 10);
@@ -337,17 +352,20 @@ export async function generateDailyCurrentAffairs(
   if (hits.length === 0) {
     hits = await fetchRssHits();
   }
-  // De-duplicate by URL, keep order.
+  // De-duplicate by URL, keep order, cap the total so the grounding
+  // block stays inside the provider's per-minute token budget.
   const seen = new Set<string>();
   const uniqueHits = hits.filter((h) => {
     if (seen.has(h.sourceUrl)) return false;
     seen.add(h.sourceUrl);
     return true;
-  });
+  }).slice(0, MAX_TOTAL_HITS);
 
   if (uniqueHits.length === 0) {
-    throw new Error(
-      "Web research returned no results (Tavily + RSS fallback both empty) — cannot ground the daily note.",
+    throw new AppError(
+      503,
+      "Web research returned no results — the news feeds are unreachable right now. Try again in a few minutes.",
+      "CA_NO_RESEARCH",
     );
   }
 
@@ -355,10 +373,11 @@ export async function generateDailyCurrentAffairs(
   const client = createGroq({ apiKey: groqKey });
 
   // Model fallback chain: the pinned model may be retired server-side
-  // (Groq decommissions dated models). A retry with the fallback keeps the
-  // daily cron autonomous instead of failing the whole day.
-  const models = [MODEL, "llama-3.1-8b-instant"];
-  let lastErr: unknown = null;
+  // or TPM-throttled (Groq decommissions dated models and caps free-tier
+  // throughput). A retry with a smaller live model keeps the daily cron
+  // autonomous instead of failing the whole day.
+  const models = [MODEL, ...FALLBACK_MODELS.filter((m) => m !== MODEL)];
+  const failures: string[] = [];
   for (const name of models) {
     try {
       const { object } = await generateObject({
@@ -370,16 +389,24 @@ export async function generateDailyCurrentAffairs(
         system: systemPrompt(dayName),
         prompt: `Verified search results for ${dateLabel}:\n\n${grounding}\n\nCompose the daily current-affairs note for ${dateLabel}.`,
         temperature: 0.3,
-        // Reasoning models (e.g. openai/gpt-oss-*) burn output tokens on
-        // hidden reasoning traces, so the budget needs headroom beyond the
-        // JSON itself; JSON mode keeps Groq compatibility broad.
-        maxTokens: 16_384,
+        // Output counts toward the TPM budget too — 16k maxTokens plus a
+        // ~25k-char grounding 413'd on the free tier. 6k is plenty for a
+        // 5–10 MCQ note and keeps input+output inside the limit.
+        maxTokens: 6_000,
         mode: "json",
       });
       return enforceGrounding(object, uniqueHits);
     } catch (err) {
-      lastErr = err;
+      const msg = err instanceof Error ? err.message : String(err);
+      failures.push(`${name}: ${msg.slice(0, 200)}`);
+      log.error("current-affairs.model-failed", { model: name, error: msg.slice(0, 500) });
     }
   }
-  throw lastErr instanceof Error ? lastErr : new Error("Current-affairs generation failed on all models.");
+  throw new AppError(
+    503,
+    "The AI provider is temporarily unavailable (all models failed). Your research quota may be exhausted — try again in a few minutes.",
+    "CA_GENERATION_FAILED",
+    true,
+    { cause: failures.join(" | ") },
+  );
 }

@@ -212,6 +212,18 @@ describe("POST /api/current-affairs/generate", () => {
     expect(publishDailyNote).toHaveBeenCalled();
   });
 
+  it("serves the existing note without regenerating (no rate-limit burn)", async () => {
+    const cookie = await sessionCookieFor("ca@example.com");
+    vi.mocked(getLatestNote).mockResolvedValue({ note: NOTE as never, userNote: null });
+
+    const res = await generatePOST(postRequest("/api/current-affairs/generate", {}, { cookie }));
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { date: string; generated: boolean };
+    expect(body.date).toBe("2026-10-03");
+    expect(body.generated).toBe(false);
+    expect(publishDailyNote).not.toHaveBeenCalled();
+  });
+
   it("rejects a future date", async () => {
     const cookie = await sessionCookieFor("ca@example.com");
     const res = await generatePOST(

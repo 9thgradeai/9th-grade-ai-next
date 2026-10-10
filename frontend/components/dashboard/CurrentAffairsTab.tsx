@@ -14,7 +14,7 @@ import {
   FileDoc,
   Copy,
 } from "@phosphor-icons/react";
-import { api } from "@/lib/services/api";
+import { api, ApiError } from "@/lib/services/api";
 import { useToastSafe } from "@/lib/toast-ctx";
 import { useLanguage, t } from "@/lib/lang-ctx";
 import { Skeleton, SkeletonCard } from "@/components/ui/Skeleton";
@@ -193,6 +193,9 @@ export default function CurrentAffairsTab() {
 
   // Self-heal: when the cron missed a day, research + generate the note
   // on demand instead of leaving the tab empty until tomorrow.
+  // Generation takes a while (web research + LLM) — the button shows
+  // progress, and failures surface the server's message (429 rate-limit
+  // vs 503 provider outage need different user actions).
   const generateToday = async () => {
     setGenerating(true);
     try {
@@ -203,8 +206,20 @@ export default function CurrentAffairsTab() {
           ? t(lang, "আজকের সমাচার তৈরি হয়েছে", "Today's note is ready")
           : t(lang, "নোট আগে থেকেই ছিল", "Note already existed"),
       );
-    } catch {
-      toast.error(t(lang, "নোট তৈরি করা যায়নি", "Could not generate the note"));
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 429) {
+        toast.error(
+          t(
+            lang,
+            "অনেকবার চেষ্টা করা হয়েছে — এক ঘণ্টা পর আবার চেষ্টা করুন",
+            "Too many tries — please wait an hour and try again",
+          ),
+        );
+      } else if (err instanceof ApiError && err.message) {
+        toast.error(err.message);
+      } else {
+        toast.error(t(lang, "নোট তৈরি করা যায়নি", "Could not generate the note"));
+      }
     } finally {
       setGenerating(false);
     }
