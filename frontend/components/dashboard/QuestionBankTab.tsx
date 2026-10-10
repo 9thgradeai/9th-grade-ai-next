@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Terminal, Clock, CheckCircle, XCircle, Bookmark, Play } from "@phosphor-icons/react";
+import { MagnifyingGlass, Clock, CheckCircle, XCircle, Bookmark, Play } from "@phosphor-icons/react";
 import { QUESTION_BANK_CATEGORIES } from "@/lib/data";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 import RichText from "@/components/ui/RichText";
@@ -278,30 +278,28 @@ export default function QuestionBankTab() {
   }
 
   return (    <div className="space-y-6">
-      {/* Live query terminal */}
+      {/* Search */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="glass-card rounded-2xl border border-terminal-border overflow-hidden"
+        className="glass-card rounded-2xl border border-terminal-border"
       >
-        <div className="terminal-window-bar">
-          <div className="dot close" /><div className="dot minimize" /><div className="dot maximize" />
-          <div className="flex-1 text-center text-xs text-[var(--dashboard-text-muted)] font-mono">           {"// QUESTION_BANK_SEARCH"}</div>
-        </div>
-        <div className="p-1 flex items-center gap-2">
-          <span className="text-[var(--accent)] font-mono pl-3">$</span>
-          <Terminal className="w-4 h-4 text-[var(--dashboard-text-muted)]" />
-          <input
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="grep -r 'মুক্তিযুদ্ধ' ./question_bank"
-            aria-label="Search question bank"
-            className="flex-1 bg-transparent px-2 py-3 font-mono text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none"
-          />
-          <span className="pr-3 text-xs text-[var(--dashboard-text-muted)] font-mono">
-            {visibleQuestions.length} hits
-          </span>
+        <div className="p-4 md:p-5">
+          <p className="command-eyebrow mb-3">Question Bank</p>
+          <div className="flex items-center gap-2">
+            <MagnifyingGlass className="w-4 h-4 shrink-0 text-[var(--dashboard-text-muted)]" aria-hidden="true" />
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="প্রশ্ন খুঁজুন, যেমন 'মুক্তিযুদ্ধ'…"
+              aria-label="Search question bank"
+              className="flex-1 bg-transparent px-2 py-3 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none"
+            />
+            <span className="pr-1 text-xs tabular-nums text-[var(--dashboard-text-muted)]" aria-live="polite">
+              {visibleQuestions.length} results
+            </span>
+          </div>
         </div>
       </motion.div>
 

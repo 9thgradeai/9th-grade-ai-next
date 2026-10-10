@@ -27,6 +27,7 @@ import { shuffleSessionOptions } from "@/lib/shuffle-options";
 import SubjectTopicSelect from "./SubjectTopicSelect";
 import AIExplanationButton from "./AIExplanationButton";
 import RichText from "@/components/ui/RichText";
+import Button from "@/components/ui/Button";
 import {
   type Selection,
   flattenNodes,
@@ -565,20 +566,15 @@ export default function CustomExamTab() {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass-card rounded-2xl border border-terminal-border overflow-hidden"
+          className="glass-card rounded-2xl border border-terminal-border"
         >
-          <div className="terminal-window-bar border-b border-terminal-border">
-            <div className="dot close" /><div className="dot minimize" /><div className="dot maximize" />
-            <div className="flex-1 text-center text-xs text-[var(--dashboard-text-muted)] font-mono">
-              {"// CUSTOM_BCS_EXAM_BUILDER"}
-            </div>
-          </div>
           <div className="p-5 md:p-6">
+            <p className="command-eyebrow mb-2">Custom Exam</p>
             <div className="flex items-center gap-2 mb-1">
               <GridFour className="w-5 h-5 text-[var(--dashboard-primary)]" />
               <h2 className="text-lg font-bold text-[var(--text-primary)]">কাস্টম বিসিএস পরীক্ষা</h2>
             </div>
-            <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">
+            <p className="text-xs text-[var(--dashboard-text-muted)]">
               বিষয়, টপিক ও সাবটপিক বেছে নিয়ে নিজের পছন্দের পরীক্ষা তৈরি করুন — নেগেটিভ মার্কিং সহ বাস্তব {ecosystem === "BCS" ? "বিসিএস" : "ব্যাংক"} ধাঁচে (ভুল {negativeLabel})।
             </p>
           </div>
@@ -587,7 +583,7 @@ export default function CustomExamTab() {
         {configLoading && (
           <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
             <Spinner className="w-10 h-10 mx-auto mb-3 text-[var(--accent)] animate-spin" aria-hidden="true" />
-            <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">বিষয় লোড হচ্ছে...</p>
+            <p className="text-sm text-[var(--dashboard-text-muted)]">বিষয় লোড হচ্ছে...</p>
           </div>
         )}
 
@@ -595,12 +591,9 @@ export default function CustomExamTab() {
           <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
             <Warning className="w-10 h-10 mx-auto mb-3 text-[var(--warning)]" aria-hidden="true" />
             <p className="text-sm text-[var(--dashboard-text-muted)]">{configError}</p>
-            <button
-              onClick={handleRetryConfig}
-              className="mt-4 px-4 py-2 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors"
-            >
+            <Button variant="primary" size="sm" className="mt-4" onClick={handleRetryConfig}>
               আবার চেষ্টা করুন
-            </button>
+            </Button>
           </div>
         )}
 

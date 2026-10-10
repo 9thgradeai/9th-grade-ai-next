@@ -555,7 +555,7 @@ export default function PracticeTab() {
                 className="command-card command-card--hero overflow-hidden"
               >
                 <div className="border-b border-[var(--border-subtle)] pb-3 mb-5 flex items-center justify-between gap-2">
-                  <span className="command-eyebrow">{"// QUICK_PRACTICE"}</span>
+                  <span className="command-eyebrow">Quick Practice</span>
                   <span className="text-[10px] font-mono px-2 py-0.5 rounded border" style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-muted)" }}>{ecosystem === "BCS" ? "BCS" : "ব্যাংক"} · {subjects.length} বিষয়</span>
                 </div>
                 <div>

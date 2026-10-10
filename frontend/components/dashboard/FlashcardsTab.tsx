@@ -335,7 +335,7 @@ export default function FlashcardsTab() {
             className="command-card command-card--hero overflow-hidden"
           >
             <div className="border-b border-[var(--border-subtle)] pb-3 mb-4 flex items-center justify-between gap-2">
-              <span className="command-eyebrow">{"// FLASHCARDS"}</span>
+              <span className="command-eyebrow">Spaced Repetition</span>
             </div>
 
             <div className="flex items-center gap-2 mb-4">
@@ -411,7 +411,7 @@ export default function FlashcardsTab() {
           animate={{ opacity: 1, y: 0 }}
           className="command-card p-10 text-center"
         >
-          <p className="command-eyebrow mb-2">$ session complete</p>
+          <p className="command-eyebrow mb-2">Session complete</p>
           <h3 className="font-display text-xl font-bold text-[var(--text-primary)] mb-4">{sessionTitle(session)} — শেষ!</h3>
           <div className="flex items-center justify-center gap-6 text-sm font-mono text-[var(--dashboard-text-muted)] mb-6">
             <span>Reviewed: {sessionStats.reviewed}</span>

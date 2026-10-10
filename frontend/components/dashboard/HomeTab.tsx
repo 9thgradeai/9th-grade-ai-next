@@ -540,10 +540,10 @@ export default function HomeTab() {
               </p>
               <p className="text-[11px] text-[var(--dashboard-text-muted)] mt-0.5">
                 {examDaysLeft <= 7
-                  ? t(lang, "⚡ চূড়ান্ত নিবিড় পর্ব", "⚡ Final Sprint Phase")
+                  ? t(lang, "চূড়ান্ত নিবিড় পর্ব", "Final Sprint Phase")
                   : examDaysLeft <= 30
-                    ? t(lang, "🎯 নিবিড় পুনর্বিবেচনা", "🎯 Focused Revision Window")
-                    : t(lang, "📚 নিয়মিত প্রস্তুতি", "📚 Steady Preparation Window")}
+                    ? t(lang, "নিবিড় পুনর্বিবেচনা", "Focused Revision Window")
+                    : t(lang, "নিয়মিত প্রস্তুতি", "Steady Preparation Window")}
               </p>
             </div>
           </div>

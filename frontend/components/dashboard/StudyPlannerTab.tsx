@@ -142,7 +142,7 @@ export default function StudyPlannerTab() {
         className="command-card command-card--hero overflow-hidden"
       >
         <div className="border-b border-[var(--border-subtle)] pb-3 mb-5 flex items-center justify-between gap-2">
-          <span className="command-eyebrow">{"// AI_STUDY_PLANNER"}</span>
+          <span className="command-eyebrow">Study Planner</span>
         </div>
 
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">

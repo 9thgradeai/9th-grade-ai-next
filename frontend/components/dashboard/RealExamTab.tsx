@@ -475,17 +475,14 @@ export default function RealExamTab() {
   if (phase === "papers") {
     return (
       <div className="space-y-6">
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-card rounded-2xl border border-terminal-border overflow-hidden">
-          <div className="terminal-window-bar border-b border-terminal-border">
-            <div className="dot close" /><div className="dot minimize" /><div className="dot maximize" />
-            <div className="flex-1 text-center text-xs text-[var(--dashboard-text-muted)] font-mono">{"// REAL_EXAM_OFFLINE_CENTER"}</div>
-          </div>
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-card rounded-2xl border border-terminal-border">
           <div className="p-5 md:p-6">
+            <p className="command-eyebrow mb-2">Exam Center</p>
             <div className="flex items-center gap-2 mb-1">
               <FileArrowDown className="w-5 h-5 text-[var(--dashboard-primary)]" />
               <h2 className="text-lg font-bold text-[var(--text-primary)]">রিয়েল এক্সাম (অফলাইন)</h2>
             </div>
-            <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">
+            <p className="text-xs text-[var(--dashboard-text-muted)]">
               আসল পরীক্ষার প্রশ্নপত্র PDF-এ ডাউনলোড করুন, প্রিন্ট করে অফলাইনে পরীক্ষা দিন — উত্তরসহ বা উত্তর ছাড়া।
             </p>
           </div>
@@ -586,18 +583,15 @@ export default function RealExamTab() {
   if (phase === "build") {
     return (
       <div className="space-y-6">
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-card rounded-2xl border border-terminal-border overflow-hidden">
-          <div className="terminal-window-bar border-b border-terminal-border">
-            <div className="dot close" /><div className="dot minimize" /><div className="dot maximize" />
-            <div className="flex-1 text-center text-xs text-[var(--dashboard-text-muted)] font-mono">{"// REAL_EXAM_PAPER_BUILDER"}</div>
-          </div>
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-card rounded-2xl border border-terminal-border">
           <div className="p-5 md:p-6">
-            <button onClick={backToPapers} className="text-xs font-mono text-[var(--dashboard-primary)] hover:underline mb-3">← সব প্রশ্নপত্রে ফিরুন</button>
+            <button onClick={backToPapers} className="text-xs text-[var(--dashboard-primary)] hover:underline mb-3">← সব প্রশ্নপত্রে ফিরুন</button>
+            <p className="command-eyebrow mb-2">Paper Builder</p>
             <div className="flex items-center gap-2 mb-1">
               <GridFour className="w-5 h-5 text-[var(--dashboard-primary)]" />
               <h2 className="text-lg font-bold text-[var(--text-primary)]">নতুন প্রশ্নপত্র তৈরি করুন</h2>
             </div>
-            <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">
+            <p className="text-xs text-[var(--dashboard-text-muted)]">
               যেকোনো বিষয়ের টপিক ও সাবটপিক বেছে নিয়ে নিজের রিয়েল এক্সাম প্রশ্নপত্র বানান — PDF-এ ডাউনলোড করে প্রিন্ট করে আসল পরীক্ষার মতো দিন।
             </p>
           </div>

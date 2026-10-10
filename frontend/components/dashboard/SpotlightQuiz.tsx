@@ -169,10 +169,10 @@ export default function SpotlightQuiz({
   const calibrationNote = (q: Server.QuestionDTO, selection: string[], conf: number | null): string => {
     if (conf === null) return "";
     const ok = isAnswerCorrect(q, selection);
-    if (ok && conf >= 75) return " · 🎯 আত্মবিশ্বাস আর ফল মিলেছে — দারুণ ক্যালিব্রেশন";
-    if (ok) return " · 💪 কম আত্মবিশ্বাস, তবু সঠিক — এগিয়ে যান";
-    if (conf >= 75) return " · ⚠️ অতিরিক্ত আত্মবিশ্বাস ছিল — ধারণাটা ঝালিয়ে নিন";
-    return " · 📍 ঠিক ধরেছেন, এটা দুর্বল জায়গা — প্র্যাকটিস করুন";
+    if (ok && conf >= 75) return " · আত্মবিশ্বাস আর ফল মিলেছে — দারুণ ক্যালিব্রেশন";
+    if (ok) return " · কম আত্মবিশ্বাস, তবু সঠিক — এগিয়ে যান";
+    if (conf >= 75) return " · অতিরিক্ত আত্মবিশ্বাস ছিল — ধারণাটা ঝালিয়ে নিন";
+    return " · ঠিক ধরেছেন, এটা দুর্বল জায়গা — প্র্যাকটিস করুন";
   };
 
   return (

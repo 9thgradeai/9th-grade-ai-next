@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Trophy, Clock, Calendar, Target, ArrowUpRight, ArrowDownRight, Funnel, CaretDown, Download, Eye, Spinner, Warning, ChartBar, FileText } from "@phosphor-icons/react";
 import { api } from "@/lib/services/api";
 import type { Server } from "@/lib/types";
+import Button from "@/components/ui/Button";
 
 type HistoryFilter = "all" | "custom" | "mock" | "daily";
 type SortOrder = "newest" | "oldest" | "score-high" | "score-low";
@@ -144,9 +145,9 @@ export default function ExamHistoryTab() {
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
           <Warning className="w-10 h-10 mx-auto mb-3 text-[var(--warning)]" aria-hidden="true" />
           <p className="text-sm text-[var(--dashboard-text-muted)]">{error}</p>
-          <button onClick={handleRetry} className="mt-4 px-4 py-2 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors">
+          <Button variant="primary" size="sm" className="mt-4" onClick={handleRetry}>
             আবার চেষ্টা করুন
-          </button>
+          </Button>
         </motion.div>
       </div>
     );
@@ -157,19 +158,14 @@ export default function ExamHistoryTab() {
   return (
     <div className="space-y-6">
       {/* Header & Stats */}
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-card rounded-2xl border border-terminal-border overflow-hidden">
-        <div className="terminal-window-bar border-b border-terminal-border">
-          <div className="dot close" /><div className="dot minimize" /><div className="dot maximize" />
-          <div className="flex-1 text-center text-xs text-[var(--dashboard-text-muted)] font-mono">
-            {"// EXAM_HISTORY_DASHBOARD"}
-          </div>
-        </div>
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-card rounded-2xl border border-terminal-border">
         <div className="p-5 md:p-6">
+          <p className="command-eyebrow mb-2">History</p>
           <div className="flex items-center gap-2 mb-1">
             <ChartBar className="w-5 h-5 text-[var(--dashboard-primary)]" />
             <h2 className="text-lg font-bold text-[var(--text-primary)]">পরীক্ষা ইতিহাস ও আপকামিং</h2>
           </div>
-          <p className="text-xs text-[var(--dashboard-text-muted)] font-mono mb-4">
+          <p className="text-xs text-[var(--dashboard-text-muted)] mb-4">
             গত পরীক্ষার ফলাফল, আপকামিং পরীক্ষার তালিকা ও পারফরম্যান্স ওভারভিউ
           </p>
 

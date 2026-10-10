@@ -91,7 +91,7 @@ export default function VoiceInterviewTab() {
         }
       } catch (e) {
         setError(e instanceof Error ? e.message : "কথোপকথন ব্যর্থ হয়েছে।");
-        setMessages((m) => m.map((msg) => (msg.id === aiId ? { ...msg, text: "⚠️ সমস্যা হয়েছে। আবার চেষ্টা করো।" } : msg)));
+        setMessages((m) => m.map((msg) => (msg.id === aiId ? { ...msg, text: "সমস্যা হয়েছে। আবার চেষ্টা করো।" } : msg)));
       } finally {
         setBusy(false);
       }

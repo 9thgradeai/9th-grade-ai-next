@@ -155,22 +155,17 @@ export default function AISolverTab() {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ type: "spring" }}
         className="rounded-2xl border border-border p-5 backdrop-blur-xl"
         style={{ background: "color-mix(in srgb, var(--surface-raised) 62%, transparent)" }}
       >
-        <div className="terminal-window-bar mb-4 border-b border-border">
-          <div className="dot close" /><div className="dot minimize" /><div className="dot maximize" />
-          <div className="flex-1 text-center text-xs text-text-muted font-mono">{`//_AI_QUESTION_SOLVER`}</div>
-        </div>
-
+        <p className="command-eyebrow mb-3">AI Solver</p>
         <div className="flex items-center gap-2 mb-4">
           <AiLogo className="w-5 h-5" />
           <h2 className="text-lg font-bold text-text-primary">AI Question Solver</h2>
-          <span className="text-xs text-text-muted font-mono">Text & Image Input</span>
+          <span className="text-xs text-text-muted">Text & Image Input</span>
         </div>
 
-        <p className="text-sm text-text-muted font-mono mb-4">
+        <p className="text-sm text-text-muted mb-4">
           Type or upload a photo of any question. Our AI will solve it step by step.
         </p>
 

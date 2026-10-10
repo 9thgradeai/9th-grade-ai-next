@@ -109,7 +109,7 @@ describe("FlashcardsTab", () => {
     fireEvent.click(screen.getByText("Show Answer"));
     fireEvent.click(screen.getByText("Easy"));
 
-    expect(await screen.findByText("$ session complete")).toBeInTheDocument();
+    expect(await screen.findByText("Session complete")).toBeInTheDocument();
     expect(screen.getByText("Reviewed: 2")).toBeInTheDocument();
   });
 
@@ -132,7 +132,7 @@ describe("FlashcardsTab", () => {
     fireEvent.click(screen.getByText("Show Answer"));
     fireEvent.click(screen.getByText("Good"));
 
-    expect(await screen.findByText("$ session complete")).toBeInTheDocument();
+    expect(await screen.findByText("Session complete")).toBeInTheDocument();
   });
 
   it("filters decks by exam", async () => {
