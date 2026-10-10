@@ -7,7 +7,23 @@ type AnalyticsEvent =
   | "cta_primary_click"
   | "cta_secondary_click"
   | "cta_tertiary_click"
-  | "feedback_submitted";
+  | "feedback_submitted"
+  | "exam_start"
+  | "exam_complete"
+  | "exam_export";
+
+interface ExamData {
+  examId: string;
+  durationMs?: number;
+  score?: number;
+  total?: number;
+}
+
+interface ExamExportData {
+  examId: string;
+  format: "pdf" | "png";
+  includeAnswers: boolean;
+}
 
 interface HeroViewData {
   duration_ms: number | undefined;
@@ -28,7 +44,10 @@ type AnalyticsData =
   | { event: "cta_primary_click"; data: CtaClickData }
   | { event: "cta_secondary_click"; data: CtaClickData }
   | { event: "cta_tertiary_click"; data: CtaClickData }
-  | { event: "feedback_submitted"; data: FeedbackData };
+  | { event: "feedback_submitted"; data: FeedbackData }
+  | { event: "exam_start"; data: { examId: string } }
+  | { event: "exam_complete"; data: { examId: string; durationMs: number; score: number; total: number } }
+  | { event: "exam_export"; data: { examId: string; format: "pdf" | "png"; includeAnswers: boolean } };
 
 class Analytics {
   private readonly enabled: boolean;
@@ -88,6 +107,18 @@ class Analytics {
     });
   }
 
+  trackExamStart(examId: string) {
+    this.track({ event: "exam_start", data: { examId } });
+  }
+
+  trackExamComplete(examId: string, durationMs: number, score: number, total: number) {
+    this.track({ event: "exam_complete", data: { examId, durationMs, score, total } });
+  }
+
+  trackExamExport(examId: string, format: "pdf" | "png", includeAnswers: boolean) {
+    this.track({ event: "exam_export", data: { examId, format, includeAnswers } });
+  }
+
   getEvents(): AnalyticsEvent[] {
     return this.events;
   }
@@ -110,6 +141,18 @@ export const trackHeroView = (durationMs: number) => {
 
 export const trackCtaClick = (ctaType: "primary" | "secondary" | "tertiary") => {
   analytics.track({ event: `cta_${ctaType}_click`, data: { cta_type: ctaType } });
+};
+
+export const trackExamStart = (examId: string) => {
+  analytics.trackExamStart(examId);
+};
+
+export const trackExamComplete = (examId: string, durationMs: number, score: number, total: number) => {
+  analytics.trackExamComplete(examId, durationMs, score, total);
+};
+
+export const trackExamExport = (examId: string, format: "pdf" | "png", includeAnswers: boolean) => {
+  analytics.trackExamExport(examId, format, includeAnswers);
 };
 
 export const trackFeedbackSubmission = (responses: {

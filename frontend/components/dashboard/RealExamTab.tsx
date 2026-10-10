@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { FileArrowDown, FileText, FilePlus, GridFour, Minus, Plus, Play, Check, Clock, Spinner, Warning, Download, Eye, EyeSlash, Shuffle, CheckCircle, XCircle,  } from "@phosphor-icons/react";
 import { api } from "@/lib/services/api";
+import { trackExamStart, trackExamComplete, trackExamExport } from "@/lib/analytics";
 import { useEcosystem } from "@/lib/ecosystem-ctx";
 import type { Server } from "@/lib/types";
 import SubjectTopicSelect from "./SubjectTopicSelect";
@@ -258,6 +259,7 @@ export default function RealExamTab() {
   const openPaper = useCallback(async (paper: PaperMeta) => {
     try {
       setSelectedPaper(paper);
+      trackExamStart(String(paper.id));
       setQuestionsLoading(true);
       setQuestionsError(null);
       setAnswers({});
@@ -300,6 +302,7 @@ export default function RealExamTab() {
       if (remaining <= 0 && !autoSubmitted) {
         autoSubmitted = true;
         setChecked(true);
+        trackExamComplete(selectedPaper?.id != null ? String(selectedPaper?.id) : "custom", (selectedPaper?.durationMin ?? 60) * 60 * 1000, Object.keys(answers).length, questions.length);
       }
     };
     tick();
@@ -411,6 +414,7 @@ export default function RealExamTab() {
         exportOptions: { includeAnswers, includeExplanations, shuffleQuestions: shuffleSeed !== null },
         durationMin,
       });
+      trackExamExport(selectedPaper?.id != null ? String(selectedPaper?.id) : "custom", includeAnswers ? "pdf" : "png", includeAnswers);
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
