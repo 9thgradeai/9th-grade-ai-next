@@ -68,7 +68,7 @@ export default function ProgressTab() {
     return (
       <div
         role="alert"
-        className="rounded-2xl border p-8 text-center command-card"
+        className="command-card rounded-2xl border p-8 text-center"
         style={{ borderColor: "var(--dashboard-danger)" }}
       >
         <p className="text-sm font-bold" style={{ color: "var(--dashboard-text-primary)" }}>
@@ -93,10 +93,11 @@ export default function ProgressTab() {
       {/* Sprint 7: display-voice page header — matches Home. */}
       <div>
         <p className="command-eyebrow">{t(lang, "Progress", "Progress")}</p>
-        <h1 className="font-display text-xl font-semibold tracking-tight mt-1" style={{ color: "var(--dashboard-text-primary)" }}>
-          {t(lang, "প্রোগ্রেস", "Progress")}
+        <h1 className="font-display text-xl font-semibold tracking-tight mt-1">
+          {t(lang, "прогресс", "Progress")}
         </h1>
       </div>
+
       {drillQuestions && (
         <QuestionDrill questions={drillQuestions} title={drillTitle} onExit={() => setDrillQuestions(null)} />
       )}
@@ -133,7 +134,7 @@ export default function ProgressTab() {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="command-card p-5"
+        className="command-card rounded-2xl border p-5"
       >
         <div className="flex items-center gap-4">
           <div
@@ -144,7 +145,7 @@ export default function ProgressTab() {
           </div>
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="text-lg font-semibold truncate" style={{ color: "var(--dashboard-text-primary)" }}>
+              <h3 className="text-lg font-semibold truncate">
                 {user?.name ?? "Student"}
               </h3>
               <span
@@ -154,7 +155,7 @@ export default function ProgressTab() {
                 @{user?.handle ?? "student"}
               </span>
             </div>
-            <p className="text-sm mt-0.5" style={{ color: "var(--dashboard-text-secondary)" }}>
+            <p className="text-sm mt-0.5">
               {t(lang, "বিসিএস / ব্যাংক / চাকরির প্রস্তুতি", "BCS / Bank / Job preparation")}
             </p>
           </div>
@@ -182,25 +183,25 @@ export default function ProgressTab() {
       {weakTopics.length > 0 && (
         <section aria-label={t(lang, "দুর্বলতা বিশ্লেষণ", "Weakness analysis")}>
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-base font-bold font-display flex items-center gap-2" style={{ color: "var(--dashboard-text-primary)" }}>
-              <Sword className="w-5 h-5" style={{ color: "var(--dashboard-danger)" }} /> {t(lang, "দুর্বল টপিক", "Weak topics")}
+            <h3 className="text-base font-bold font-display flex items-center gap-2">
+              <Sword className="w-5 h-5" /> {t(lang, "দুর্বল টপিক", "Weak topics")}
             </h3>
-            <span className="text-xs font-mono" style={{ color: "var(--dashboard-text-muted)" }}>
-              {t(lang, "ন্যূনতম ৩টি প্রচেষ্টার ভিত্তিতে", "based on ≥3 attempts")}
+            <span className="text-xs font-mono">
+              {t(lang, "ন্যূনতম ৩টি প্রচেষরের ভিত্তিতে", "based on ≥3 attempts")}
             </span>
           </div>
           <div className="grid md:grid-cols-2 gap-3">
             {weakTopics.map((wt) => (
-              <div key={`${wt.subject}-${wt.topic}`} className="command-card command-card--compact">
+              <div key={`${wt.subject}-${wt.topic}`} className="command-card rounded-2xl border">
                 <div className="flex items-center justify-between gap-3 mb-2">
                   <div className="min-w-0">
-                    <h4 className="text-sm font-medium truncate" style={{ color: "var(--dashboard-text-primary)" }}>{wt.topic}</h4>
-                    <p className="text-xs font-mono" style={{ color: "var(--dashboard-text-muted)" }}>
+                    <h4 className="text-sm font-medium truncate">{wt.topic}</h4>
+                    <p className="text-xs font-mono">
                       {wt.subject} · {wt.attempted} {t(lang, "টি সমাধান", "attempts")}
                     </p>
                   </div>
                   <div className="flex items-center gap-3 shrink-0">
-                    <span className="text-lg font-bold font-mono" style={{ color: "var(--dashboard-danger)" }}>{wt.score}%</span>
+                    <span className="text-lg font-bold font-mono">{wt.score}%</span>
                     <button
                       onClick={() => void startTopicDrill(wt.subject, wt.topic)}
                       className="px-3 py-1.5 rounded-lg text-xs font-mono transition-colors"
@@ -210,7 +211,7 @@ export default function ProgressTab() {
                     </button>
                   </div>
                 </div>
-                <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "var(--dashboard-surface-muted)" }}>
+                <div className="h-1.5 rounded-full overflow-hidden">
                   <div className="h-full" style={{ width: `${wt.score}%`, background: "var(--dashboard-danger)" }} />
                 </div>
               </div>
@@ -222,10 +223,10 @@ export default function ProgressTab() {
       {/* ── Subject Mastery + Topic Drilldown ── */}
       <section aria-label={t(lang, "বিষয়ভিত্তিক নিপুণতা", "Subject mastery")}>
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-base font-bold font-display" style={{ color: "var(--dashboard-text-primary)" }}>
+          <h3 className="text-base font-bold font-display">
             {t(lang, "বিষয়ভিত্তিক নিপুণতা", "Subject mastery")}
           </h3>
-          <span className="text-xs font-mono" style={{ color: "var(--dashboard-text-muted)" }}>
+          <span className="text-xs font-mono">
             {t(lang, "টপিক খুলতে ক্লিক করুন", "click to drill into topics")}
           </span>
         </div>
@@ -243,13 +244,13 @@ export default function ProgressTab() {
 
       {/* ── AI Preparation Analysis ── */}
       <section
-        className="command-card p-5"
+        className="command-card rounded-2xl border p-5"
         aria-label={t(lang, "AI প্রস্তুতি বিশ্লেষণ", "AI preparation analysis")}
         id="dashboard-ai-coach-progress"
       >
         <p className="command-eyebrow mb-2">{t(lang, "AI প্রস্তুতি বিশ্লেষণ", "AI preparation analysis")}</p>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm" style={{ color: "var(--dashboard-text-secondary)" }}>
+          <p className="text-sm">
             {t(
               lang,
               "আপনার দুর্বল টপিক ও পড়ার ধরন নিয়ে ব্যক্তিগত পরামর্শ পান।",
@@ -265,57 +266,56 @@ export default function ProgressTab() {
       {/* ── Leaderboard (real ranks) ── */}
       <section aria-label={t(lang, "লিডারবোর্ড", "Leaderboard")}>
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-base font-bold font-display flex items-center gap-2" style={{ color: "var(--dashboard-text-primary)" }}>
-            <Medal className="w-5 h-5" style={{ color: "var(--dashboard-warning)" }} /> {t(lang, "লিডারবোর্ড", "Leaderboard")}
+          <h3 className="text-base font-bold font-display flex items-center gap-2">
+            <Medal className="w-5 h-5" /> {t(lang, "লিডারবোর্ড", "Leaderboard")}
           </h3>
           {board?.me && (
-            <span className="text-xs font-mono" style={{ color: "var(--dashboard-warning)" }}>
-              {t(lang, `আপনার র‍্যাংক: #${board.me.rank} (${board.me.points} পয়েন্ট)`, `Your rank: #${board.me.rank} (${board.me.points} points)`)}
+            <span className="text-xs font-mono">
+              {t(lang, `আপনার র‍্যাংক: #${board.me.rank} (${board.me.points} পয়েন্ট`, `Your rank: #${board.me.rank} (${board.me.points} points)`)}
             </span>
           )}
         </div>
         {!board || board.entries.length === 0 ? (
-          <div className="command-card p-10 text-center">
+          <div className="command-card rounded-2xl border p-10 text-center">
             <p className="command-eyebrow mb-2">{t(lang, "লিডারবোর্ড", "Leaderboard")}</p>
-            <p className="font-display text-lg font-bold" style={{ color: "var(--dashboard-text-primary)" }}>
+            <p className="font-display text-lg font-bold">
               {t(lang, "এখনো কোনো র‍্যাংকিং উপলব্ধ নয়।", "No rankings available yet.")}
             </p>
-            <p className="text-xs mt-1" style={{ color: "var(--dashboard-text-muted)" }}>
-              {t(lang, "প্রশ্ন সমাধান করলেই র‍্যাংক তৈরি হবে।", "Solve questions and your rank will appear.")}
+            <p className="text-xs mt-1">
+              {t(lang, "প্রশ্ন সমাধান করলে র‍্যাংক তৈরি হবে।", "Solve questions and your rank will appear.")}
             </p>
           </div>
         ) : (
           <div className="space-y-2">
             {board.entries.map((e) => {
               const isMe = board.me?.rank === e.rank;
-              return (
-                <div
-                  key={e.rank}
-                  className={`flex items-center justify-between rounded-xl border p-3`}
-                  style={{
-                    background: isMe ? "var(--dashboard-primary-subtle)" : "var(--dashboard-surface-muted)",
-                    borderColor: isMe ? "color-mix(in srgb, var(--dashboard-primary) 40%, transparent)" : "var(--dashboard-border-muted)",
-                  }}
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <span
-                      className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold font-mono"
-                      style={{
-                        background: e.rank === 1 ? "var(--dashboard-warning-subtle)" : "var(--dashboard-surface)",
-                        color: e.rank === 1 ? "var(--dashboard-warning)" : "var(--dashboard-text-secondary)",
-                      }}
-                    >
-                      {e.rank}
-                    </span>
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium truncate" style={{ color: "var(--dashboard-text-primary)" }}>{e.name}</p>
-                      <p className="text-xs font-mono" style={{ color: "var(--dashboard-text-muted)" }}>
-                        {e.streak} {t(lang, "দিন স্ট্রিক", "day streak")}
-                      </p>
+                return (
+                  <div
+                    key={e.rank}
+                    className={`flex items-center justify-between rounded-xl border p-3`}
+                    style={{
+                      background: isMe ? "var(--dashboard-primary-subtle)" : "var(--dashboard-surface-muted)",
+                      borderColor: isMe ? "color-mix(in srgb, var(--dashboard-primary) 40%, transparent)" : "var(--dashboard-border-muted)",
+                    }}
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <span
+                        className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold font-mono"
+                        style={{
+                          background: e.rank === 1 ? "var(--dashboard-warning-subtle)" : "var(--dashboard-surface)",
+                          color: e.rank === 1 ? "var(--dashboard-warning)" : "var(--dashboard-text-secondary)",
+                        }}
+                      >
+                        {e.rank}
+                      </span>
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium truncate">{e.name}</p>
+                        <p className="text-xs font-mono">{e.streak} {t(lang, "দিন স্ট্রিক", "day streak")}</p>
+                      </div>
                     </div>
+                    <div className="text-sm font-bold font-mono">{e.points}</div>
                   </div>
-                  <div className="text-sm font-bold font-mono" style={{ color: "var(--dashboard-primary)" }}>{e.points}</div>
-                </div>
+                );
               );
             })}
           </div>

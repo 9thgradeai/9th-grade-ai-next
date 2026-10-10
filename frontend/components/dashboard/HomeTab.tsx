@@ -113,9 +113,9 @@ function ScopeSkeleton({ label }: { label: string }) {
       aria-label={label}
       className="command-card p-5"
     >
-      <div className="skeleton-shimmer h-3 w-1/3 rounded" />
-      <div className="skeleton-shimmer mt-3 h-8 rounded-xl" />
-      <div className="skeleton-shimmer mt-2 h-8 rounded-xl" />
+      <div className="skeleton-shimmer h-3 w-1/3 rounded" style={{ background: "var(--dashboard-surface-muted)" }} />
+      <div className="skeleton-shimmer mt-3 h-8 rounded-xl" style={{ background: "var(--dashboard-surface-muted)" }} />
+      <div className="skeleton-shimmer mt-2 h-8 rounded-xl" style={{ background: "var(--dashboard-surface-muted)" }} />
     </div>
   );
 }
@@ -130,8 +130,8 @@ function ScopeError({ message, retryLabel, onRetry }: { message: string; retryLa
       role="alert"
       className="command-card p-5 text-center"
     >
-      <p className="text-xs font-bold" style={{ color: "var(--dashboard-text-secondary)" }}>{message}</p>
-      <button onClick={onRetry} className="command-secondary-btn mt-3 !py-2 text-xs">
+      <p className="text-xs font-bold" style={{ color: "var(--dashboard-text-primary)" }}>{message}</p>
+      <button onClick={onRetry} className="btn-primary mt-3 !py-2 text-xs">
         <ArrowCounterClockwise className="w-3.5 h-3.5" /> {retryLabel}
       </button>
     </div>
@@ -500,7 +500,7 @@ export default function HomeTab() {
         className="study-home-header flex flex-wrap items-center justify-between gap-3"
       >
         <div className="min-w-0">
-          <h1 className="font-display text-xl font-semibold tracking-tight text-[var(--dashboard-text-primary)]">
+          <h1 className="font-display text-xl font-semibold tracking-tight text-[var(--dashboard-primary)]">
             {t(lang, "প্রস্তুতির সারাংশ", "Preparation overview")}
           </h1>
           {skeleton ? (
@@ -524,10 +524,11 @@ export default function HomeTab() {
           )}
         </div>
 
-        {pulseReady && nextExam && examDaysLeft != null && (
+{pulseReady && nextExam && examDaysLeft != null && (
           <div
-            className="command-card command-card--compact flex w-fit max-w-full items-center gap-4 px-5"
+            className="glass-card command-card command-card--compact flex w-fit max-w-full items-center gap-4 px-5"
             aria-label={t(lang, `পরীক্ষার বাকি ${examDaysLeft} দিন`, `${examDaysLeft} days left`)}
+            style={{ borderColor: "var(--dashboard-border-muted)" }}
           >
             <div className="text-center">
               <p className="font-display text-2xl font-extrabold tabular-nums leading-none text-[var(--dashboard-primary)]">{examDaysLeft}</p>
@@ -535,7 +536,7 @@ export default function HomeTab() {
             </div>
             <div className="w-px h-10 bg-[var(--dashboard-border-muted)]" aria-hidden="true" />
             <div>
-              <p className="text-[13px] font-bold leading-snug text-[var(--dashboard-text-primary)]">
+              <p className="text-[13px] font-bold leading-snug text-[var(--dashboard-primary)]">
                 {t(lang, nextExam.titleBn, nextExam.titleEn)}
               </p>
               <p className="text-[11px] text-[var(--dashboard-text-muted)] mt-0.5">
@@ -543,7 +544,7 @@ export default function HomeTab() {
                   ? t(lang, "চূড়ান্ত নিবিড় পর্ব", "Final Sprint Phase")
                   : examDaysLeft <= 30
                     ? t(lang, "নিবিড় পুনর্বিবেচনা", "Focused Revision Window")
-                    : t(lang, "নিয়মিত প্রস্তুতি", "Steady Preparation Window")}
+                    : t(lang, "ন regular প্রস্তুতি", "Steady Preparation Window")}
               </p>
             </div>
           </div>

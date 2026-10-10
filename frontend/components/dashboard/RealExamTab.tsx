@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { FileArrowDown, FileText, FilePlus, GridFour, Minus, Plus, Play, Check, Clock, Spinner, Warning, Download, Eye, EyeSlash, Shuffle, CheckCircle, XCircle,  } from "@phosphor-icons/react";
+import { FileArrowDown, FileText, FilePlus, GridFour, Minus, Plus, Play, Check, Clock, Spinner, Warning, Download, Eye, EyeSlash, Shuffle, CheckCircle, XCircle, } from "@phosphor-icons/react";
 import { api } from "@/lib/services/api";
 import { trackExamStart, trackExamComplete, trackExamExport } from "@/lib/analytics";
 import { useEcosystem } from "@/lib/ecosystem-ctx";
@@ -42,18 +42,7 @@ type RealExamPhase = "papers" | "build" | "preview" | "offline";
 
 const OPTION_LABELS = ["A", "B", "C", "D", "E", "F"];
 
-// Maximum questions the PDF exporter accepts (matches /api/real-exam/export).
 const MAX_PDF_QUESTIONS = 200;
-
-/** Unbiased Fisher-Yates shuffle — used to pick a random sample for a paper. */
-function shuffled<T>(items: T[]): T[] {
-  const out = [...items];
-  for (let i = out.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [out[i], out[j]] = [out[j], out[i]];
-  }
-  return out;
-}
 
 function formatMinutes(min: number | null): string {
   if (!min || min <= 0) return "সময় সীমাহীন";
@@ -63,10 +52,20 @@ function formatMinutes(min: number | null): string {
   return `${m} মিনিট`;
 }
 
+function shuffled<T>(items: T[]): T[] {
+  const out = [...items];
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
+}
+
 export default function RealExamTab() {
   const [papers, setPapers] = useState<PaperMeta[]>([]);
   const [papersLoading, setPapersLoading] = useState(true);
   const [papersError, setPapersError] = useState<string | null>(null);
+  const idRef = useRef<number | null>(null);
 
   const [selectedPaper, setSelectedPaper] = useState<PaperMeta | null>(null);
   const [questions, setQuestions] = useState<Server.RealExamQuestionDTO[]>([]);
@@ -75,8 +74,6 @@ export default function RealExamTab() {
 
   const [includeAnswers, setIncludeAnswers] = useState(false);
   const [includeExplanations, setIncludeExplanations] = useState(false);
-  // Null = original order; a timestamp seed = shuffled. Seeded shuffle keeps
-  // the render pure (no Math.random/Date.now during render).
   const [shuffleSeed, setShuffleSeed] = useState<number | null>(null);
   const [exporting, setExporting] = useState(false);
   const [exportError, setExportError] = useState<string | null>(null);
@@ -85,12 +82,12 @@ export default function RealExamTab() {
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [checked, setChecked] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
-  // Phase 3 calm exam: familiarization (3 Q, no timer) + free backtracking.
   const [familiarize, setFamiliarize] = useState(false);
   const [currentId, setCurrentId] = useState<number | null>(null);
 
   const { ecosystem } = useEcosystem();
-  // ── Custom paper builder state (subject → topic → subtopic picker) ──
+
+  // Custom paper builder state
   const [subjects, setSubjects] = useState<Server.ExamSubjectDTO[]>([]);
   const [configLoading, setConfigLoading] = useState(false);
   const [configError, setConfigError] = useState<string | null>(null);
@@ -123,7 +120,6 @@ export default function RealExamTab() {
     })();
   }, [fetchPapers]);
 
-  // ── Custom paper builder derived state ──
   const selectedSubjects = useMemo(
     () => subjects.filter((s) => Object.prototype.hasOwnProperty.call(selection, s.id)),
     [subjects, selection],
@@ -276,7 +272,6 @@ export default function RealExamTab() {
   }, []);
 
   // Deep-link consumer for the command palette: ?tab=real-exam&paper=<id>
-  // opens that exact paper once the list has loaded (consumed once).
   const searchParams = useSearchParams();
   const paperIntentConsumed = useRef(false);
   useEffect(() => {
@@ -306,13 +301,13 @@ export default function RealExamTab() {
       }
     };
     tick();
-    const id = setInterval(tick, 1000);
     const onVisible = () => {
       if (document.visibilityState === "visible") tick();
     };
     document.addEventListener("visibilitychange", onVisible);
+    idRef.current = setInterval(tick, 1000);
     return () => {
-      clearInterval(id);
+      clearInterval(idRef.current!);
       document.removeEventListener("visibilitychange", onVisible);
     };
     // timeLeft is intentionally not a dep — we snapshot the duration when entering offline
@@ -332,7 +327,6 @@ export default function RealExamTab() {
     if (shuffleSeed === null) {
       base = questions;
     } else {
-      // Deterministic mulberry32 shuffle keyed by the seed state.
       let a = shuffleSeed >>> 0;
       const rand = () => {
         a += 0x6d2b79f5;
@@ -367,9 +361,6 @@ export default function RealExamTab() {
 
   const doExport = useCallback(async () => {
     if (!generatedMeta && !selectedPaper) return;
-    // Official papers can use the slim protocol (server loads the questions),
-    // so an empty client preview doesn't block the export. Custom papers need
-    // their client-side rows.
     if (generatedMeta && questions.length === 0) return;
     const title = generatedMeta
       ? generatedMeta.title
@@ -380,9 +371,6 @@ export default function RealExamTab() {
     const durationMin = generatedMeta
       ? generatedMeta.durationMin
       : (selectedPaper?.durationMin ?? 120);
-    // Normalize defensively: DB-backed rows can carry null correctAnswer /
-    // explanation / option entries, and the PDF exporter must never receive
-    // them (a single null `.trim()` used to 500 the whole export).
     const safeQuestions: Server.RealExamQuestionDTO[] = questions.map((q) => ({
       ...q,
       question: q.question ?? "",
@@ -403,9 +391,6 @@ export default function RealExamTab() {
     setExporting(true);
     setExportError(null);
     try {
-      // Official papers use the slim protocol: the server loads the questions
-      // itself (tiny upload, no client/server DTO drift). Custom papers send
-      // the normalized rows — they only exist client-side.
       const useSlimProtocol = !generatedMeta && selectedPaper;
       const blob = await api.exportRealExam({
         ...(useSlimProtocol ? { paperId: selectedPaper!.id } : { questions: safeQuestions }),
@@ -427,14 +412,10 @@ export default function RealExamTab() {
       a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 5000);
     } catch (err) {
-      // Log the structured server error for debugging
       console.error("[real-exam-export] PDF export failed:", err);
-
-      // Show specific server error message when available, otherwise generic Bangla message
       let errorMsg = "PDF তৈরি করা যায়নি। আবার চেষ্টা করুন।";
       if (err && typeof err === "object" && "message" in err && typeof (err as { message: unknown }).message === "string") {
         const msg = (err as { message: string }).message;
-        // Only use server message if it's a safe user-facing string (not a raw HTML/error dump)
         if (msg.length > 0 && msg.length < 200 && !msg.includes("<")) {
           errorMsg = msg;
         }
@@ -456,7 +437,6 @@ export default function RealExamTab() {
     setSelectedPaper(null);
     setQuestions([]);
     setAnswers({});
-    setChecked(false);
     setGeneratedMeta(null);
     setSelection({});
   };
@@ -479,32 +459,29 @@ export default function RealExamTab() {
   if (phase === "papers") {
     return (
       <div className="space-y-6">
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-card rounded-2xl border border-terminal-border">
-          <div className="p-5 md:p-6">
-            <p className="command-eyebrow mb-2">Exam Center</p>
-            <div className="flex items-center gap-2 mb-1">
-              <FileArrowDown className="w-5 h-5 text-[var(--dashboard-primary)]" />
-              <h2 className="text-lg font-bold text-[var(--text-primary)]">রিয়েল এক্সাম (অফলাইন)</h2>
-            </div>
-            <p className="text-xs text-[var(--dashboard-text-muted)]">
-              আসল পরীক্ষার প্রশ্নপত্র PDF-এ ডাউনলোড করুন, প্রিন্ট করে অফলাইনে পরীক্ষা দিন — উত্তরসহ বা উত্তর ছাড়া।
-            </p>
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="command-card rounded-2xl border p-5 md:p-6">
+          <div className="flex items-center gap-2 mb-1">
+            <FileArrowDown className="w-5 h-5 text-[var(--dashboard-primary)]" />
+            <h2 className="text-lg font-bold">রিয়েল এক্সাম (অফলাইন)</h2>
           </div>
+          <p className="text-xs text-[var(--dashboard-text-muted)]">
+            আসল পরীক্ষার প্রশ্নপত্র PDF-এ ডাউনলোড করুন, প্রিন্ট করে অফলাইনে পরীক্ষা দিন — উত্তরসহ বা উত্তর ছাড়া।
+          </p>
         </motion.div>
 
-        {/* Custom paper builder CTA — selects subject → topic → subtopic like Practice */}
+        {/* Custom paper builder CTA */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.03 }}
-          className="glass-card rounded-2xl border border-[var(--primary)]/30 bg-gradient-to-br from-[var(--dashboard-primary-subtle)] via-transparent to-transparent p-4 md:p-5"
+          className="command-card rounded-2xl border p-4 md:p-5 bg-gradient-to-br from-[var(--dashboard-primary-subtle)] via-transparent to-transparent"
         >
           <div className="flex flex-col sm:flex-row sm:items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-[var(--accent)]/15 flex items-center justify-center flex-shrink-0">
               <FilePlus className="w-5 h-5 text-[var(--accent)]" />
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="text-sm font-bold text-[var(--text-primary)]">নিজের রিয়েল এক্সাম প্রশ্নপত্র বানান</h3>
+              <h3 className="text-sm font-bold">নিজের রিয়েল এক্সাম প্রশ্নপত্র বানান</h3>
               <p className="text-xs text-[var(--dashboard-text-muted)] font-mono mt-0.5">
                 সব বিষয়ের টপিক ও সাবটপিক থেকে নিজের প্রশ্নপত্র তৈরি করুন — PDF-এ ডাউনলোড করে প্রিন্ট করুন।
               </p>
@@ -519,14 +496,14 @@ export default function RealExamTab() {
         </motion.div>
 
         {papersLoading && (
-          <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
+          <div className="command-card rounded-2xl border p-10 text-center">
             <Spinner className="w-10 h-10 mx-auto mb-3 text-[var(--accent)] animate-spin" aria-hidden="true" />
             <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">পরীক্ষার তালিকা লোড হচ্ছে...</p>
           </div>
         )}
 
         {papersError && (
-          <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
+          <div className="command-card rounded-2xl border p-10 text-center">
             <Warning className="w-10 h-10 mx-auto mb-3 text-[var(--warning)]" aria-hidden="true" />
             <p className="text-sm text-[var(--dashboard-text-muted)]">{papersError}</p>
             <button onClick={() => void fetchPapers()} className="mt-4 px-4 py-2 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors">
@@ -539,45 +516,45 @@ export default function RealExamTab() {
           <>
             <div className="flex items-center gap-3">
               <div className="flex-1 h-px bg-[var(--border-subtle)]" />
-              <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-widest whitespace-nowrap">অথবা অফিসিয়াল প্রশ্নপত্র থেকে</p>
+              <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-widest">অথবা অফিসিয়াল প্রশ্নপত্র থেকে</p>
               <div className="flex-1 h-px bg-[var(--border-subtle)]" />
             </div>
             {papers.length === 0 ? (
-            <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
-              <FileText className="w-16 h-16 mx-auto mb-4 text-[var(--dashboard-text-muted)]/30" aria-hidden="true" />
-              <h4 className="text-lg font-semibold text-[var(--text-primary)] mb-2">কোনো প্রশ্নপত্র নেই</h4>
-              <p className="text-sm text-[var(--dashboard-text-muted)] max-w-xs mx-auto">যাচাইকৃত প্রশ্নপত্র এখনো যোগ করা হয়নি।</p>
-            </div>
-          ) : (
-            <div className="grid gap-3 sm:grid-cols-2">
-              {papers.map((p, i) => (
-                <motion.div key={p.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }} className="glass-card rounded-2xl border border-terminal-border p-4 hover:border-[var(--primary)]/40 transition-colors">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1 flex-wrap">
-                        <span className="px-2 py-0.5 rounded bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] text-[10px] font-mono">{p.examType}</span>
-                        {p.year && <span className="px-2 py-0.5 rounded bg-[var(--surface-overlay)] text-[10px] font-mono text-[var(--dashboard-text-muted)]">{p.year}</span>}
-                        <span className="px-2 py-0.5 rounded bg-[var(--surface-overlay)] text-[10px] font-mono text-[var(--dashboard-text-muted)]">{p.provenance}</span>
-                      </div>
-                      <h4 className="font-semibold text-[var(--text-primary)]">{p.titleBn}</h4>
-                      <p className="text-xs text-[var(--dashboard-text-muted)] truncate">{p.examNameBn} • {p.examNameEn}</p>
-                      <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-[var(--dashboard-text-muted)] font-mono">
-                        <span>{p.availableQuestions}টি প্রশ্ন</span>
-                        <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{formatMinutes(p.durationMin)}</span>
+              <div className="command-card rounded-2xl border p-10 text-center">
+                <FileText className="w-16 h-16 mx-auto mb-4 text-[var(--dashboard-text-muted)]/30" aria-hidden="true" />
+                <h4 className="text-lg font-semibold">কোনো প্রশ্নপत्र নেই</h4>
+                <p className="text-sm text-[var(--dashboard-text-muted)] max-w-xs mx-auto">যাচাইকৃত প্রশ্নপত্র এখনো যোগ করা হয়নি।</p>
+              </div>
+            ) : (
+              <div className="grid gap-3 sm:grid-cols-2">
+                {papers.map((p, i) => (
+                  <motion.div key={p.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }} className="command-card rounded-2xl border p-4 hover:border-[var(--dashboard-primary)]/40 transition-colors">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1 flex-wrap">
+                          <span className="px-2 py-0.5 rounded bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] text-[10px] font-mono">{p.examType}</span>
+                          {p.year && <span className="px-2 py-0.5 rounded bg-[var(--surface-overlay)] text-[10px] font-mono text-[var(--dashboard-text-muted)]">{p.year}</span>}
+                          <span className="px-2 py-0.5 rounded bg-[var(--surface-overlay)] text-[10px] font-mono text-[var(--dashboard-text-muted)]">{p.provenance}</span>
+                        </div>
+                        <h4 className="font-semibold">{p.titleBn}</h4>
+                        <p className="text-xs text-[var(--dashboard-text-muted)] truncate">{p.examNameBn} • {p.examNameEn}</p>
+                        <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-[var(--dashboard-text-muted)] font-mono">
+                          <span>{p.availableQuestions}টি প্রশ্ন</span>
+                          <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{formatMinutes(p.durationMin)}</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="flex gap-2 mt-3">
-                    <button onClick={() => void openPaper(p)} className="flex-1 py-2 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-xs rounded-lg hover:bg-[var(--accent-hover)] transition-colors flex items-center justify-center gap-1.5">
-                      <Eye className="w-3.5 h-3.5" /> খুলুন ও PDF নিন
-                    </button>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          )
-        }
-        </>
+                    <div className="flex gap-2 mt-3">
+                      <button onClick={() => void openPaper(p)} className="flex-1 py-2 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-xs rounded-lg hover:bg-[var(--accent-hover)] transition-colors flex items-center justify-center gap-1.5">
+                        <Eye className="w-3.5 h-3.5" /> খুলুন ও PDF নিন
+                      </button>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            )
+          }
+          </>
         )}
       </div>
     );
@@ -587,29 +564,27 @@ export default function RealExamTab() {
   if (phase === "build") {
     return (
       <div className="space-y-6">
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-card rounded-2xl border border-terminal-border">
-          <div className="p-5 md:p-6">
-            <button onClick={backToPapers} className="text-xs text-[var(--dashboard-primary)] hover:underline mb-3">← সব প্রশ্নপত্রে ফিরুন</button>
-            <p className="command-eyebrow mb-2">Paper Builder</p>
-            <div className="flex items-center gap-2 mb-1">
-              <GridFour className="w-5 h-5 text-[var(--dashboard-primary)]" />
-              <h2 className="text-lg font-bold text-[var(--text-primary)]">নতুন প্রশ্নপত্র তৈরি করুন</h2>
-            </div>
-            <p className="text-xs text-[var(--dashboard-text-muted)]">
-              যেকোনো বিষয়ের টপিক ও সাবটপিক বেছে নিয়ে নিজের রিয়েল এক্সাম প্রশ্নপত্র বানান — PDF-এ ডাউনলোড করে প্রিন্ট করে আসল পরীক্ষার মতো দিন।
-            </p>
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="command-card rounded-2xl border p-5 md:p-6">
+          <button onClick={backToPapers} className="text-xs text-[var(--dashboard-primary)] hover:underline mb-3">← সব প্রশ্নপত্রে ফিরুন</button>
+          <p className="command-eyebrow mb-2">Paper Builder</p>
+          <div className="flex items-center gap-2 mb-1">
+            <GridFour className="w-5 h-5 text-[var(--dashboard-primary)]" />
+            <h2 className="text-lg font-bold">নতুন প্রশ্নপত্র তৈরি করুন</h2>
           </div>
+          <p className="text-xs text-[var(--dashboard-text-muted)]">
+            যেকোনো বিষয়ের টপিক ও সাবটপিক বেছে নিয়ে নিজের রিয়েল এক্সাম প্রশ্নপত্র বানান — PDF-এ ডাউনলোড করে প্রিন্ট করে আসল পরীক্ষার মতো দিন।
+          </p>
         </motion.div>
 
         {configLoading && (
-          <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
+          <div className="command-card rounded-2xl border p-10 text-center">
             <Spinner className="w-10 h-10 mx-auto mb-3 text-[var(--accent)] animate-spin" aria-hidden="true" />
             <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">বিষয় লোড হচ্ছে...</p>
           </div>
         )}
 
         {configError && (
-          <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
+          <div className="command-card rounded-2xl border p-10 text-center">
             <Warning className="w-10 h-10 mx-auto mb-3 text-[var(--warning)]" aria-hidden="true" />
             <p className="text-sm text-[var(--dashboard-text-muted)]">{configError}</p>
             <button onClick={() => void enterBuild()} className="mt-4 px-4 py-2 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-lg hover:bg-[var(--accent-hover)] transition-colors">
@@ -628,7 +603,7 @@ export default function RealExamTab() {
 
             {/* Total questions + duration */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="glass-card rounded-xl border border-terminal-border p-4 flex items-center justify-between gap-3">
+              <div className="command-card rounded-xl border p-4 flex items-center justify-between gap-3">
                 <div className="min-w-0">
                   <p className="text-sm text-[var(--dashboard-text-secondary)] font-mono">মোট প্রশ্ন</p>
                   <p className="text-xs text-[var(--dashboard-text-muted)] mt-0.5">
@@ -644,7 +619,7 @@ export default function RealExamTab() {
                 </span>
               </div>
 
-              <div className="glass-card rounded-xl border border-terminal-border p-4 flex items-center justify-between gap-3">
+              <div className="command-card rounded-xl border p-4 flex items-center justify-between gap-3">
                 <div>
                   <p className="text-sm text-[var(--dashboard-text-secondary)] font-mono">সময়সীমা</p>
                   <p className="text-xs text-[var(--dashboard-text-muted)] mt-0.5">
@@ -685,7 +660,7 @@ export default function RealExamTab() {
               <div className="flex items-start gap-2 rounded-xl border border-[var(--warning)]/30 bg-[var(--dashboard-warning-subtle)] p-3 text-xs text-[var(--dashboard-warning)]">
                 <Warning className="w-4 h-4 flex-shrink-0 mt-0.5" />
                 <p>
-                  PDF-এ সর্বোচ্চ <span className="font-mono">200টি</span> প্রশ্ন যায় — সবার আগের ২০০টি অন্তর্ভুক্ত হবে।
+                  PDF-এ সর্বোচ্চ 200টি প্রশ্ন যায় — সবার আগের 200টি অন্তর্ভুক্ত হবে।
                 </p>
               </div>
             )}
@@ -698,7 +673,7 @@ export default function RealExamTab() {
             )}
 
             {/* Live config summary */}
-            <motion.div layout className="glass-card rounded-2xl border border-[var(--primary)]/30 p-4">
+            <motion.div layout className="command-card rounded-2xl border border-[var(--primary)]/30 p-4">
               <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-widest mb-2">লাইভ কনফিগারেশন সামারি</p>
               <div className="grid grid-cols-4 gap-3 text-center">
                 <div>
@@ -740,13 +715,13 @@ export default function RealExamTab() {
   // ═══════════ PREVIEW + EXPORT + OFFLINE ═══════════
   return (
     <div className="space-y-6">
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-card rounded-2xl border border-terminal-border p-5 md:p-6">
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="command-card rounded-2xl border p-5 md:p-6">
         <button onClick={generatedMeta ? backToBuild : backToPapers} className="text-xs font-mono text-[var(--dashboard-primary)] hover:underline mb-3">
           {generatedMeta ? "← কনফিগারেশনে ফিরুন" : "← সব প্রশ্নপত্রে ফিরুন"}
         </button>
         <div className="flex items-center gap-2 mb-1">
           <FileText className="w-5 h-5 text-[var(--dashboard-primary)]" />
-          <h2 className="text-lg font-bold text-[var(--text-primary)]">
+          <h2 className="text-lg font-bold">
             {generatedMeta ? generatedMeta.title : (selectedPaper?.titleBn ?? "প্রশ্নপত্র")}
           </h2>
         </div>
@@ -776,7 +751,7 @@ export default function RealExamTab() {
                 </label>
                 <label className="flex items-center gap-2 text-sm text-[var(--text-primary)] cursor-pointer">
                   <input type="checkbox" checked={includeExplanations} onChange={(e) => setIncludeExplanations(e.target.checked)} className="w-4 h-4 accent-emerald-500" />
-                  ব্যাখ্যাসহ
+                  ব্যাখyssহ
                 </label>
                 <label className="flex items-center gap-2 text-sm text-[var(--text-primary)] cursor-pointer">
                   <input type="checkbox" checked={shuffleSeed !== null} onChange={(e) => setShuffleSeed(e.target.checked ? Date.now() : null)} className="w-4 h-4 accent-emerald-500" />
@@ -805,7 +780,7 @@ export default function RealExamTab() {
             {/* Offline exam header — Phase 3 calm: no pulse until ≤60s, palette for backtracking, familiarization mode */}
             {phase === "offline" && (
               <div className="mt-4 space-y-3">
-                <div className="glass-card rounded-2xl border border-[var(--primary)]/30 px-4 py-3 flex items-center justify-between gap-3 flex-wrap">
+                <div className="command-card rounded-2xl border border-[var(--primary)]/30 px-4 py-3 flex items-center justify-between gap-3 flex-wrap">
                   {familiarize ? (
                     <span className="text-xs font-mono text-[var(--dashboard-success)]">🌱 Familiarization — 3 questions, no timer. Feel the interface first.</span>
                   ) : (
@@ -863,7 +838,7 @@ export default function RealExamTab() {
                 const isCorrect = checked && userAnswer && userAnswer.trim() === (q.correctAnswer ?? "").trim();
                 const isWrong = checked && userAnswer && !isCorrect;
                 return (
-                  <div key={q.id} id={`req-${q.id}`} className="glass-card scroll-mt-24 rounded-2xl border border-terminal-border p-4 md:p-5">
+                  <div key={q.id} id={`req-${q.id}`} className="command-card scroll-mt-24 rounded-2xl border p-4 md:p-5">
                     <div className="flex flex-wrap items-center gap-2 mb-3">
                       <span className="px-2 py-0.5 rounded bg-[var(--surface-overlay)] text-[10px] font-mono text-[var(--dashboard-text-secondary)]">প্রশ্ন {index + 1}</span>
                       <span className="px-2 py-0.5 rounded bg-[var(--surface-overlay)] text-[10px] font-mono text-[var(--dashboard-text-muted)]">{q.subject}</span>
@@ -871,7 +846,8 @@ export default function RealExamTab() {
                         isCorrect
                           ? <span className="ml-auto flex items-center gap-1 px-2 py-0.5 rounded bg-[var(--dashboard-primary-subtle)] text-[10px] font-mono text-[var(--dashboard-primary)]"><CheckCircle className="w-3 h-3" /> সঠিক</span>
                           : <span className="ml-auto flex items-center gap-1 px-2 py-0.5 rounded bg-[var(--dashboard-danger-subtle)] text-[10px] font-mono text-[var(--dashboard-danger)]"><XCircle className="w-3 h-3" /> ভুল</span>
-                      )}
+                        )
+                      }
                     </div>
                     <h3 className="text-sm md:text-[15px] font-semibold leading-relaxed text-[var(--dashboard-text-primary)] mb-4"><RichText text={q.question} /></h3>
                     <div className="space-y-2.5">
@@ -916,16 +892,16 @@ export default function RealExamTab() {
             </div>
           </>
         )}
-      </motion.div>
 
-      <AnimatePresence>
-        {exporting && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed bottom-6 right-6 z-[var(--z-toast)] glass-card rounded-xl border border-[var(--primary)]/30 px-4 py-3 flex items-center gap-2 shadow-2xl">
-            <Spinner className="w-4 h-4 animate-spin text-[var(--dashboard-primary)]" />
-            <span className="text-xs font-mono text-[var(--text-primary)]">PDF তৈরি হচ্ছে...</span>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        <AnimatePresence>
+          {exporting && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed bottom-6 right-6 z-[var(--z-toast)] command-card rounded-xl border border-[var(--primary)]/30 px-4 py-3 flex items-center gap-2 shadow-2xl">
+              <Spinner className="w-4 h-4 animate-spin text-[var(--dashboard-primary)]" />
+              <span className="text-xs font-mono text-[var(--text-primary)]">PDF তৈরি হচ্ছে...</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
     </div>
   );
 }

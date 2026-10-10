@@ -26,6 +26,7 @@ const SHORT_EN: Partial<Record<TabId, string>> = {
   "student-model": "Model",
   usage: "Usage",
 };
+
 const BOTTOM_TABS: { id: TabId; icon: ComponentType<IconProps>; label: string; labelEn: string; short: string; shortEn: string }[] = BOTTOM_TAB_IDS.map((id) => {
   const meta = TABS.find((t) => t.id === id) ?? TABS[0];
   return {
@@ -75,7 +76,7 @@ export default function BottomNav({ activeTab, onChange }: BottomNavProps) {
               <button
                 key={tab.id}
                 onClick={() => selectTab(tab.id)}
-                className="relative flex flex-col items-center justify-center gap-1 flex-1 min-h-[56px] rounded-2xl py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                className="relative flex flex-col items-center justify-center gap-1 flex-1 min-h-[56px] rounded-2xl py-2 transition-colors opacity-[0.7] hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
                 style={
                   active
                     ? { background: "var(--dashboard-primary-subtle)", color: "var(--dashboard-primary)" }
@@ -93,7 +94,7 @@ export default function BottomNav({ activeTab, onChange }: BottomNavProps) {
           })}
           <button
             onClick={() => setMoreOpen(true)}
-            className="relative flex flex-col items-center justify-center gap-1 flex-1 min-h-[56px] rounded-2xl py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+            className="relative flex flex-col items-center justify-center gap-1 flex-1 min-h-[56px] rounded-2xl py-2 transition-colors opacity-[0.7] hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
             aria-label={t(lang, "আরও বিকল্প", "More options")}
             aria-haspopup="dialog"
             aria-expanded={moreOpen}
