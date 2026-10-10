@@ -24,10 +24,10 @@ describe("AdvisorTab weekly-hours validation", () => {
 
   it("rejects out-of-range hours without calling the API", async () => {
     render(<AdvisorTab />);
-    const hours = screen.getByLabelText(/সপ্তাহে পড়ার সময়/);
+    const hours = screen.getByLabelText(/সপ্তাহে পড়ার সময়/);
     fireEvent.change(hours, { target: { value: "999" } });
     fireEvent.click(screen.getByRole("button", { name: "পরিকল্পনা নাও" }));
-    await waitFor(() => expect(screen.getByText(/১–৮০ ঘণ্টার মধ্যে/)).toBeDefined());
+    await waitFor(() => expect(screen.getByText("সপ্তাহে পড়ার সময় ১–৮০ ঘণ্টার মধ্যে দিন")).toBeDefined());
     expect(h.getCareerAdvice).not.toHaveBeenCalled();
   });
 });
