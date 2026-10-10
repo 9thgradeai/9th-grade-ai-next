@@ -315,7 +315,6 @@ export default function ProgressTab() {
                     </div>
                     <div className="text-sm font-bold font-mono">{e.points}</div>
                   </div>
-                }
               );
             })}
           </div>

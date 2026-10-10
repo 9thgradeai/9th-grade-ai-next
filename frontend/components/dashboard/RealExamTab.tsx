@@ -65,7 +65,7 @@ export default function RealExamTab() {
   const [papers, setPapers] = useState<PaperMeta[]>([]);
   const [papersLoading, setPapersLoading] = useState(true);
   const [papersError, setPapersError] = useState<string | null>(null);
-  const idRef = useRef<number | null>(null);
+  const idRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const [selectedPaper, setSelectedPaper] = useState<PaperMeta | null>(null);
   const [questions, setQuestions] = useState<Server.RealExamQuestionDTO[]>([]);

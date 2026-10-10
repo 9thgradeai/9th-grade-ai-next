@@ -219,7 +219,7 @@ export default function QuestionBankTab() {
         </button>
         <ScrollPractice
           questions={visibleQuestions}
-          title={`${activeCategory} — স্ক্রল প্র্যাকটিস (${ecosystem === "BANGLADEST_BANK" ? "ব্যাংক" : "BCS"})`}
+          title={`${activeCategory} — স্ক্রল প্র্যাকটিস (${ecosystem === "BANGLADESH_BANK" ? "ব্যাংক" : "BCS"})`}
           onExit={() => setPracticeMode("none")}
         />
       </div>
