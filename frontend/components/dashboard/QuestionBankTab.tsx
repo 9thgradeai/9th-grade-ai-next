@@ -12,40 +12,8 @@ import { useEcosystem } from "@/lib/ecosystem-ctx";
 import type { QuestionDTO } from "@/lib/types";
 import ScrollPractice from "./ScrollPractice";
 import ExamLibraryView from "./ExamLibraryView";
-
-// Static fallback sample questions (used if the DB/API is unavailable).
-const SAMPLE_QUESTIONS: Record<string, { q: string; a: string; difficulty: string }[]> = {
-  "বাংলা ভাষা ও সাহিত্য": [
-    { q: "'রক্তাক্ত প্রান্তর' নাটকের রচয়িতা কে?", a: "মুনীর চৌধুরী", difficulty: "EASY" },
-  ],
-  "English Language and Literature": [
-    { q: "Choose the correct synonym of 'Ephemeral':", a: "Transient", difficulty: "MEDIUM" },
-  ],
-  "বাংলাদেশ বিষয়াবলি": [
-    { q: "১৯৭১ সালে মুক্তিযুদ্ধের সময় স্বাধীনতার সংকেত দেওয়ার তারিখ কত?", a: "২৬ মার্চ ১৯৭১", difficulty: "EASY" },
-  ],
-  "আন্তর্জাতিক বিষয়াবলী": [
-    { q: "ইউরোপীয় ইউনিয়নের সদর দপ্তর কোথায়?", a: "ব্রাসেলস", difficulty: "MEDIUM" },
-  ],
-  "ভূগোল, পরিবেশ ও দুর্যোগ ব্যবস্থাপনা": [
-    { q: "বাংলাদেশের সর্বোচ্চ শিখর কোনটি?", a: "কেকরাডিও", difficulty: "EASY" },
-  ],
-  "সাধারণ বিজ্ঞান": [
-    { q: "DNA-এর পূর্ণরূপ কী?", a: "Deoxyribonucleic Acid", difficulty: "EASY" },
-  ],
-  "কম্পিউটার ও তথ্য প্রযুক্তি": [
-    { q: "CPU-এর পূর্ণরূপ কী?", a: "Central Processing Unit", difficulty: "EASY" },
-  ],
-  "গাণিতিক যুক্তি": [
-    { q: "If x² - 5x + 6 = 0, what is the sum of the roots?", a: "5", difficulty: "MEDIUM" },
-  ],
-  "মানসিক দক্ষতা": [
-    { q: "সিরিজটি সম্পূর্ণ করুন: 2, 6, 12, 20, 30, ?", a: "42", difficulty: "MEDIUM" },
-  ],
-  "নৈতিকতা, মূল্যবোধ ও সু-শাসন": [
-    { q: "সুশাসনের মূল উপাদান কোনটি?", a: "স্বচ্ছতা, জবাবদিহিতা, দায়িত্ব", difficulty: "MEDIUM" },
-  ],
-};
+import EmptyState from "@/components/ui/EmptyState";
+import Button from "@/components/ui/Button";
 
 export default function QuestionBankTab() {
   const toast = useToastSafe();
@@ -66,6 +34,11 @@ export default function QuestionBankTab() {
   const [savedQuestions, setSavedQuestions] = useState<QuestionDTO[]>([]);
   const [browseMode, setBrowseMode] = useState<"subject" | "exam">("subject");
   const [practiceMode, setPracticeMode] = useState<"none" | "scroll">("none");
+  // Honest outage signal — a failed fetch shows an error with retry instead
+  // of silently serving static sample questions (which masked outages and
+  // broke bookmarks with unpersistable negative ids).
+  const [loadFailed, setLoadFailed] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
   // Widened to `string` so comparisons in the toggle survive TS control-flow
   // narrowing after the exam-mode early return above.
   const mode: string = browseMode;
@@ -126,6 +99,7 @@ export default function QuestionBankTab() {
       await Promise.resolve();
       if (cancelled) return;
       setLoading(true);
+      setLoadFailed(false);
       try {
         const qs = await api.questions({
           subject: activeCategory,
@@ -139,27 +113,8 @@ export default function QuestionBankTab() {
         if (!cancelled) setQuestions(qs);
       } catch {
         if (!cancelled) {
-          setQuestions(
-            (SAMPLE_QUESTIONS[activeCategory] ?? []).map((s, i) => ({
-              id: -i - 1,
-              subjectId: 0,
-              subject: activeCategory,
-              topic: "",
-              subtopic: "",
-              question: s.q,
-              options: [],
-              correctAnswer: s.a,
-              explanation: "",
-              difficulty: s.difficulty as QuestionDTO["difficulty"],
-              year: null,
-              sourceExam: "",
-              bcsTerm: null,
-              questionType: "SINGLE_CHOICE",
-              correctAnswers: [],
-              statements: [],
-              media: [],
-            })),
-          );
+          setQuestions([]);
+          setLoadFailed(true);
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -168,7 +123,7 @@ export default function QuestionBankTab() {
     return () => {
       cancelled = true;
     };
-  }, [activeCategory, year, sourceExam, bcsTerm, view, ecosystem]);
+  }, [activeCategory, year, sourceExam, bcsTerm, view, ecosystem, reloadKey]);
 
   // Load saved (bookmarked) questions when that view is active.
   useEffect(() => {
@@ -193,7 +148,6 @@ export default function QuestionBankTab() {
   }, [view, bookmarks]);
 
   const toggleSave = async (id: number) => {
-    if (id < 0) return; // static fallback question — not persisted
     const wasSaved = bookmarks.includes(id);
     setBookmarks((prev) =>
       wasSaved ? prev.filter((x) => x !== id) : [...prev, id],
@@ -539,14 +493,29 @@ export default function QuestionBankTab() {
         )}
 
         {!loading && visibleQuestions.length === 0 && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center py-12 text-[var(--dashboard-text-muted)] font-mono"
-          >
-            <XCircle className="w-12 h-12 mx-auto mb-3 text-[var(--dashboard-text-secondary)]" />
-            <p>$ 0 results{query ? ` for "${query}"` : ""}{view === "saved" ? " in সংরক্ষিত" : ` in ${activeCategory}`}</p>
-          </motion.div>
+          loadFailed ? (
+            <div className="glass-card rounded-2xl border border-terminal-border">
+              <EmptyState
+                icon={XCircle}
+                title="প্রশ্ন লোড করা যায়নি"
+                hint="সার্ভারে সমস্যা হয়েছে। আবার চেষ্টা করুন।"
+                action={
+                  <Button variant="primary" size="sm" onClick={() => setReloadKey((k) => k + 1)}>
+                    আবার চেষ্টা করুন
+                  </Button>
+                }
+              />
+            </div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center py-12 text-[var(--dashboard-text-muted)]"
+            >
+              <XCircle className="w-12 h-12 mx-auto mb-3 text-[var(--dashboard-text-secondary)]" />
+              <p>0 results{query ? ` for "${query}"` : ""}{view === "saved" ? " in সংরক্ষিত" : ` in ${activeCategory}`}</p>
+            </motion.div>
+          )
         )}
       </div>
     </div>

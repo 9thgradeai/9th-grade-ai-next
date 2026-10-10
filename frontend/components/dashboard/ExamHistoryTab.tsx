@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Trophy, Clock, Calendar, Target, ArrowUpRight, ArrowDownRight, Funnel, CaretDown, Download, Eye, Spinner, Warning, ChartBar, FileText } from "@phosphor-icons/react";
+import { Trophy, Clock, Calendar, Target, ArrowUpRight, Funnel, CaretDown, Spinner, Warning, ChartBar, FileText } from "@phosphor-icons/react";
 import { api } from "@/lib/services/api";
 import type { Server } from "@/lib/types";
 import Button from "@/components/ui/Button";
@@ -408,21 +408,6 @@ export default function ExamHistoryTab() {
                           <p className="text-2xl font-bold font-mono text-[var(--dashboard-info)]">{formatTime(item.durationSec)}</p>
                           <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">সময় লেগেছে</p>
                         </div>
-                      </div>
-
-                      <div className="flex flex-wrap gap-2">
-                        <button className="px-3 py-1.5 rounded-lg border border-[var(--dashboard-border-muted)] bg-[var(--surface-raised)] text-xs font-mono text-[var(--dashboard-text-secondary)] hover:text-[var(--text-primary)] transition-colors flex items-center gap-1">
-                          <Eye className="w-3.5 h-3.5" />
-                          বিস্তারিত দেখুন
-                        </button>
-                        <button className="px-3 py-1.5 rounded-lg border border-[var(--dashboard-border-muted)] bg-[var(--surface-raised)] text-xs font-mono text-[var(--dashboard-text-secondary)] hover:text-[var(--text-primary)] transition-colors flex items-center gap-1">
-                          <Download className="w-3.5 h-3.5" />
-                          রিপোর্ট ডাউনলোড
-                        </button>
-                        <button className="px-3 py-1.5 rounded-lg bg-[var(--accent)] text-[var(--dashboard-text-inverse)] text-xs font-mono hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-1">
-                          <ArrowDownRight className="w-3.5 h-3.5" />
-                          রিভিশন শুরু করুন
-                        </button>
                       </div>
                     </motion.div>
                   )}

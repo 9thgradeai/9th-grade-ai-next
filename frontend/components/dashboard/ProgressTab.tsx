@@ -2,12 +2,13 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { Warning, Sword, Medal, ArrowCounterClockwise, House } from "@phosphor-icons/react";
+import { Warning, Sword, Medal, ArrowCounterClockwise } from "@phosphor-icons/react";
 import { useAuth } from "@/lib/auth-ctx";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
 import { useLanguage, t } from "@/lib/lang-ctx";
 import { api } from "@/lib/services/api";
 import type { Server } from "@/lib/types";
+import Button from "@/components/ui/Button";
 import QuestionDrill from "./QuestionDrill";
 import ProgressOverview from "./command-center/ProgressOverview";
 import PerformanceCard from "./command-center/PerformanceCard";
@@ -246,7 +247,19 @@ export default function ProgressTab() {
         aria-label={t(lang, "AI প্রস্তুতি বিশ্লেষণ", "AI preparation analysis")}
         id="dashboard-ai-coach-progress"
       >
-        <House />
+        <p className="command-eyebrow mb-2">{t(lang, "AI প্রস্তুতি বিশ্লেষণ", "AI preparation analysis")}</p>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm" style={{ color: "var(--dashboard-text-secondary)" }}>
+            {t(
+              lang,
+              "আপনার দুর্বল টপিক ও পড়ার ধরন নিয়ে ব্যক্তিগত পরামর্শ পান।",
+              "Get personal guidance on your weak topics and study habits.",
+            )}
+          </p>
+          <Button variant="secondary" size="sm" className="shrink-0" onClick={() => setActiveTab("advisor")}>
+            {t(lang, "পরামর্শ নিন", "Get advice")}
+          </Button>
+        </div>
       </section>
 
       {/* ── Leaderboard (real ranks) ── */}
