@@ -28,8 +28,8 @@ describe("BackToTop", () => {
 });
 
 describe("HeroSection", () => {
-  it("renders the spec copy and both CTAs", () => {
-    render(<HeroSection subjectCount={10} />);
+  it("renders the spec copy and all CTAs", () => {
+    render(<HeroSection questionCount={12400} />);
     expect(screen.getByText(/AI-Powered Application/i)).toBeInTheDocument();
     expect(screen.getByText(/Built for Job Aspirants/i)).toBeInTheDocument();
 
@@ -46,13 +46,16 @@ describe("HeroSection", () => {
 
     const secondary = screen.getByRole("link", { name: /See how it works/i });
     expect(secondary).toHaveAttribute("href", "#signal");
+
+    const tertiary = screen.getByRole("link", { name: /Explore the platform/i });
+    expect(tertiary).toHaveAttribute("href", "/tracks");
   });
 
-  it("renders the real subject count · 2 Languages · 100% Free stat row", () => {
-    render(<HeroSection subjectCount={10} />);
-    expect(screen.getAllByText("10").length).toBeGreaterThan(0);
+  it("renders the live question count · 2 Languages · 100% Free stat row", () => {
+    render(<HeroSection questionCount={12400} />);
+    expect(screen.getAllByText("12.4K").length).toBeGreaterThan(0);
     expect(screen.getAllByText("100%").length).toBeGreaterThan(0);
-    for (const label of ["Subjects", "Languages", "Free"]) {
+    for (const label of ["Practice questions", "Languages", "Free"]) {
       // Labels appear twice by design: visible span + sr-only <dt>.
       expect(screen.getAllByText(label).length).toBeGreaterThanOrEqual(1);
     }

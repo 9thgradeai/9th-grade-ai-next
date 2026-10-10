@@ -6,6 +6,7 @@ type AnalyticsEvent =
   | "hero_view_duration"
   | "cta_primary_click"
   | "cta_secondary_click"
+  | "cta_tertiary_click"
   | "feedback_submitted";
 
 interface HeroViewData {
@@ -13,7 +14,7 @@ interface HeroViewData {
 }
 
 interface CtaClickData {
-  cta_type: "primary" | "secondary";
+  cta_type: "primary" | "secondary" | "tertiary";
 }
 
 interface FeedbackData {
@@ -26,6 +27,7 @@ type AnalyticsData =
   | { event: "hero_view_duration"; data: HeroViewData }
   | { event: "cta_primary_click"; data: CtaClickData }
   | { event: "cta_secondary_click"; data: CtaClickData }
+  | { event: "cta_tertiary_click"; data: CtaClickData }
   | { event: "feedback_submitted"; data: FeedbackData };
 
 class Analytics {
@@ -106,7 +108,7 @@ export const trackHeroView = (durationMs: number) => {
   analytics.track({ event: "hero_view_duration", data: { duration_ms: durationMs } });
 };
 
-export const trackCtaClick = (ctaType: "primary" | "secondary") => {
+export const trackCtaClick = (ctaType: "primary" | "secondary" | "tertiary") => {
   analytics.track({ event: `cta_${ctaType}_click`, data: { cta_type: ctaType } });
 };
 

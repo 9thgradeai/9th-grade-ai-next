@@ -12,7 +12,7 @@ import { useT } from "@/lib/i18n";
  * choreography is pure CSS (word-rise / heroRise in globals.css) and paints
  * at first paint without hydration.
  */
-export default function HeroSection({ subjectCount }: { subjectCount: number }) {
+export default function HeroSection({ questionCount }: { questionCount: number }) {
   const t = useT();
 
   return (
@@ -25,7 +25,7 @@ export default function HeroSection({ subjectCount }: { subjectCount: number }) 
       </div>
 
       <div className="relative z-10 mx-auto w-full max-w-[1440px]">
-        <HeroContent subjectCount={subjectCount} />
+        <HeroContent questionCount={questionCount} />
       </div>
 
       <div

@@ -45,13 +45,18 @@ function WordReveal({
   );
 }
 
-const stats = (subjectCount: number) => [
-  { value: String(subjectCount), label: "subjects" },
+function formatCompact(n: number): string {
+  if (!Number.isFinite(n) || n <= 0) return "0";
+  return new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 }).format(n);
+}
+
+const stats = (questionCount: number) => [
+  { value: formatCompact(questionCount), label: "questions" },
   { value: "2", label: "languages" },
   { value: "100%", label: "free" },
 ];
 
-export default function HeroContent({ subjectCount }: { subjectCount: number }) {
+export default function HeroContent({ questionCount }: { questionCount: number }) {
   const t = useT();
   const copyRef = useRef<HTMLDivElement>(null);
   const { pointerEffects } = useMotionCapabilities();
@@ -126,7 +131,7 @@ export default function HeroContent({ subjectCount }: { subjectCount: number }) 
     };
   }, [pointerEffects]);
 
-  const statItems = stats(subjectCount);
+  const statItems = stats(questionCount);
 
   return (
     <div ref={copyRef} className="hero-copy relative z-10 mx-auto w-full max-w-7xl">
@@ -202,6 +207,14 @@ export default function HeroContent({ subjectCount }: { subjectCount: number }) 
             {t("hero.cta.secondary")}
             <CaretDown className="h-4 w-4" aria-hidden="true" />
           </Button>
+          <a
+            href="/tracks"
+            onClick={() => trackCtaClick("tertiary")}
+            className="inline-flex w-full items-center justify-center gap-1.5 px-2 py-3 text-sm font-medium text-white/60 underline decoration-white/25 underline-offset-4 transition-colors hover:text-white hover:decoration-white/60 sm:w-auto"
+          >
+            {t("hero.cta.tertiary")}
+            <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+          </a>
         </div>
 
         {/* Reskin: stats graduate from a bare row to a glass proof-strip —
