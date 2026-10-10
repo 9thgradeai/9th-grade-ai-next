@@ -1179,6 +1179,10 @@ export namespace Server {
     difficulty: string;
     examRelevance: string[];
     isCustom: boolean;
+    /** 10-minute rotation slot this word was picked for. */
+    slotIndex: number;
+    /** ISO timestamp when the next word rotates in. */
+    rotatesAt: string;
   };
 
   export type VocabAnalyticsDTO = {

@@ -13,7 +13,26 @@ export type WordOfDayDTO = {
   difficulty: string;
   examRelevance: string[];
   isCustom: boolean;
+  /** 10-minute rotation slot this word was picked for. */
+  slotIndex: number;
+  /** ISO timestamp when this slot ends and the next word rotates in. */
+  rotatesAt: string;
 };
+
+// ── 10-minute rotation ──────────────────────────────
+// Words circulate: every 10 minutes a new slot begins and every client
+// rotates to the next word. Slots are wall-clock aligned (epoch / slot
+// length), so all users see the same word within a slot and SSR/client
+// agree without extra coordination.
+export const WORD_SLOT_MS = 10 * 60 * 1000;
+
+export function getSlotIndex(now: Date = new Date()): number {
+  return Math.floor(now.getTime() / WORD_SLOT_MS);
+}
+
+export function getSlotEnd(slotIndex: number): Date {
+  return new Date((slotIndex + 1) * WORD_SLOT_MS);
+}
 
 function getDayOfYear(date: Date): number {
   const start = new Date(date.getFullYear(), 0, 0);
@@ -21,18 +40,21 @@ function getDayOfYear(date: Date): number {
   return Math.floor(diff / (1000 * 60 * 60 * 24));
 }
 
-function toDTO(word: {
-  word: string;
-  bengaliMeaning: string;
-  partOfSpeech: string;
-  exampleSentence: string;
-  exampleSentenceBn: string | null;
-  mnemonic: string;
-  synonyms: unknown;
-  antonyms: unknown;
-  difficulty: string;
-  examRelevance: unknown;
-}): WordOfDayDTO {
+function toDTO(
+  word: {
+    word: string;
+    bengaliMeaning: string;
+    partOfSpeech: string;
+    exampleSentence: string;
+    exampleSentenceBn: string | null;
+    mnemonic: string;
+    synonyms: unknown;
+    antonyms: unknown;
+    difficulty: string;
+    examRelevance: unknown;
+  },
+  slot: { slotIndex: number; rotatesAt: string },
+): WordOfDayDTO {
   return {
     word: word.word,
     bengaliMeaning: word.bengaliMeaning,
@@ -45,6 +67,8 @@ function toDTO(word: {
     difficulty: word.difficulty,
     examRelevance: Array.isArray(word.examRelevance) ? (word.examRelevance as string[]) : [],
     isCustom: false,
+    slotIndex: slot.slotIndex,
+    rotatesAt: slot.rotatesAt,
   };
 }
 
@@ -90,9 +114,9 @@ function pickWordForDay(
   return sorted[0];
 }
 
-export async function getWordOfDay(userId?: string): Promise<WordOfDayDTO> {
-  const today = new Date();
-  const dayOfYear = getDayOfYear(today);
+export async function getWordOfDay(userId?: string, now: Date = new Date()): Promise<WordOfDayDTO> {
+  const slotIndex = getSlotIndex(now);
+  const slot = { slotIndex, rotatesAt: getSlotEnd(slotIndex).toISOString() };
 
   const allWords = await prisma.vocabWord.findMany({
     orderBy: { id: "asc" },
@@ -113,8 +137,9 @@ export async function getWordOfDay(userId?: string): Promise<WordOfDayDTO> {
 
   const candidates = buildCandidatePool(allWords, progressMap);
 
-  // Deterministic starting index for today, then skip mastered words
-  const idx = dayOfYear % allWords.length;
+  // Deterministic starting index for this 10-minute slot, then skip
+  // mastered words — the same slot always yields the same word.
+  const idx = slotIndex % allWords.length;
   const seenPartsOfSpeech = new Set<string>();
 
   for (let attempt = 0; attempt < allWords.length; attempt++) {
@@ -131,21 +156,23 @@ export async function getWordOfDay(userId?: string): Promise<WordOfDayDTO> {
     if (!prog || prog.status === "MASTERED") {
       // Still acceptable if we've exhausted other options
       if (attempt >= allWords.length - 3) {
-        return toDTO(candidate.word);
+        return toDTO(candidate.word, slot);
       }
       continue;
     }
 
-    return toDTO(candidate.word);
+    return toDTO(candidate.word, slot);
   }
 
   // Fallback: return whatever the deterministic index landed on
-  return toDTO(allWords[idx]);
+  return toDTO(allWords[idx], slot);
 }
 
 export async function getWeeklyWords(userId?: string): Promise<WordOfDayDTO[]> {
   const today = new Date();
   const dayOfYear = getDayOfYear(today);
+  const slotIndex = getSlotIndex(today);
+  const slot = { slotIndex, rotatesAt: getSlotEnd(slotIndex).toISOString() };
 
   const allWords = await prisma.vocabWord.findMany({
     orderBy: { id: "asc" },
@@ -196,7 +223,7 @@ export async function getWeeklyWords(userId?: string): Promise<WordOfDayDTO[]> {
     if (best) {
       usedIds.add(best.word.id);
       usedPartsOfSpeech.add(best.word.partOfSpeech);
-      result.push(toDTO(best.word));
+      result.push(toDTO(best.word, slot));
     }
   }
 

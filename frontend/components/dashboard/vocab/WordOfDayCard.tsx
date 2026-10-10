@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   CalendarDots,
@@ -41,24 +41,59 @@ export default function WordOfDayCard() {
   const [error, setError] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [mnemonicOpen, setMnemonicOpen] = useState(false);
+  // Countdown (seconds) until the next 10-minute rotation.
+  const [secondsLeft, setSecondsLeft] = useState<number | null>(null);
+  const rotatingRef = useRef(false);
 
   const fetchWord = useCallback(async () => {
+    if (rotatingRef.current) return;
+    rotatingRef.current = true;
     try {
       setLoading(true);
       setError(false);
       const data = await api.vocabWordOfDay();
       setWord(data);
+      setExpanded(false);
+      setMnemonicOpen(false);
     } catch {
       setError(true);
       toast.error(t(lang, "শব্দ লোড করা যায়নি", "Failed to load word"));
     } finally {
       setLoading(false);
+      rotatingRef.current = false;
     }
   }, [lang, toast]);
 
   useEffect(() => {
     void fetchWord();
   }, [fetchWord]);
+
+  // Auto-rotate: refetch right after the server's slot ends, and tick a
+  // countdown so learners see the next word coming. Failed rotations back
+  // off 30s between attempts so a down endpoint isn't hammered.
+  useEffect(() => {
+    if (!word?.rotatesAt) {
+      setSecondsLeft(null);
+      return;
+    }
+    const target = new Date(word.rotatesAt).getTime();
+    if (Number.isNaN(target)) {
+      setSecondsLeft(null);
+      return;
+    }
+    let lastAttempt = 0;
+    const tick = () => {
+      const left = Math.max(0, Math.round((target - Date.now()) / 1000));
+      setSecondsLeft(left);
+      if (left <= 0 && Date.now() - lastAttempt > 30_000) {
+        lastAttempt = Date.now();
+        void fetchWord();
+      }
+    };
+    tick();
+    const timer = setInterval(tick, 1000);
+    return () => clearInterval(timer);
+  }, [word?.rotatesAt, word?.slotIndex, fetchWord]);
 
   if (loading) {
     return (
@@ -100,6 +135,11 @@ export default function WordOfDayCard() {
     day: "numeric",
   });
 
+  const countdown =
+    secondsLeft === null
+      ? null
+      : `${Math.floor(secondsLeft / 60)}:${String(secondsLeft % 60).padStart(2, "0")}`;
+
   return (
     <div className="glass-card rounded-2xl border border-terminal-border p-5 max-w-md w-full">
       {/* Terminal bar */}
@@ -107,13 +147,32 @@ export default function WordOfDayCard() {
         <div className="flex items-center gap-2">
           <CalendarDots size={16} className="text-[var(--dashboard-primary)]" />
           <span className="text-xs font-mono text-[var(--dashboard-text-muted)]">
-            {t(lang, "আজকের শব্দ", "Word of the Day")}
+            {t(lang, "ঘূর্ণায়মান শব্দ", "Rotating Word")}
           </span>
         </div>
-        <span className="text-xs font-mono text-[var(--dashboard-text-muted)]">{today}</span>
+        <div className="flex items-center gap-2">
+          {countdown !== null && (
+            <span
+              className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[var(--surface-raised)] border border-terminal-border text-[var(--dashboard-text-muted)]"
+              title={t(lang, "পরের শব্দ আসছে", "Next word in")}
+              aria-live="off"
+            >
+              {t(lang, "পরের শব্দ", "Next")}: {countdown}
+            </span>
+          )}
+          <span className="text-xs font-mono text-[var(--dashboard-text-muted)]">{today}</span>
+        </div>
       </div>
 
-      {/* Word + POS badge */}
+      {/* Word + POS badge (keyed so rotations animate) */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={word.word}
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -6 }}
+          transition={{ duration: 0.25 }}
+        >
       <div className="flex items-center gap-3 mb-1">
         <h3 className="text-2xl font-bold text-[var(--dashboard-text)]">{word.word}</h3>
         <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[var(--surface-raised)] border border-terminal-border text-[var(--dashboard-text-muted)] uppercase tracking-wider">
@@ -134,6 +193,8 @@ export default function WordOfDayCard() {
         <SpeakerSimpleHigh size={14} />
         <span className="font-mono">{t(lang, "উচ্চারণ", "Pronounce")}</span>
       </button>
+        </motion.div>
+      </AnimatePresence>
 
       {/* Mnemonic collapsible */}
       <div className="mb-3">

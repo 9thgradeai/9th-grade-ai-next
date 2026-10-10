@@ -218,6 +218,9 @@ describe("GET /api/vocab/word-of-the-day", () => {
     const body = await res.json();
     expect(body.word).toBeDefined();
     expect(body.word.word).toBeDefined();
+    // 10-minute rotation contract: clients auto-rotate on this boundary.
+    expect(typeof body.word.slotIndex).toBe("number");
+    expect(new Date(body.word.rotatesAt).getTime()).toBeGreaterThan(Date.now() - 60_000);
   });
 
   it("returns weekly words with ?weekly=true", async () => {

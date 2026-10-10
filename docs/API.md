@@ -41,6 +41,7 @@ All mutating endpoints (auth and non-auth) reject cross-origin requests via an O
 | GET | `/api/question-bank/exams` | List the exam-library taxonomy as a hierarchy: `category → [exam → [paper]]`. Papers carry `availableQuestions` (curated); used by the dashboard's BCS exam browser. Cached 5min (`stale-while-revalidate` 10min) |
 | GET | `/api/flashcards` | List flashcards, optionally filtered by `?subject=` and `?exam=` (BCS/Bank). Authenticated callers additionally receive a per-card `srs` overlay (their own SM-2 state) |
 | GET | `/api/vocab/words` | List vocabulary words, filterable by `?search=`, `?difficulty=`, `?exam=`, `?status=` (new/learning/due/mastered), `?due=true`, `?kind=` (`words` = regular words only, `idioms` = Idiom/Phrase entries only for the Idioms & Phrases tab; unset = all). Response: `{ words }` |
+| GET | `/api/vocab/word-of-the-day` | Rotating word (no auth required): a new word every 10 minutes on wall-clock-aligned slots (`WORD_SLOT_MS`), personalized by the caller's progress (unseen/struggling boosted, mastered skipped). Response: `{ word: { …, slotIndex, rotatesAt } }` — clients refetch at `rotatesAt`. `?weekly=true` returns the 7-day set (`{ words }`). |
 | GET | `/api/exam-schedule` | List published exam dates (public, no auth) |
 | GET | `/api/study-plan` | **Auth required** — List the caller's study plan tasks |
 | GET | `/api/daily-quiz` | Get today's quiz |
