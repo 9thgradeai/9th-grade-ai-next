@@ -13,12 +13,12 @@ export default function ShortcutList() {
   const { lang } = useLanguage();
   const rows: [string, string][] = [
     ["⌘K", t(lang, "কমান্ড প্যালেট", "Command palette")],
-    ["1 – 0", t(lang, "প্রথম ১০ ট্যাবে যান", "Jump to first 10 tabs")],
+    ["1 – 0", t(lang, "প্রথম ১০ ট্যাবে যান (টাইপ করার সময় নয়)", "Jump to first 10 tabs (not while typing)")],
     ["?", t(lang, "এই তালিকা", "This list")],
-    ["Esc", t(lang, "বন্ধ করুন", "Close dialogs")],
+    ["Esc", t(lang, "ডায়ালগ বন্ধ করুন", "Close dialogs")],
   ];
   return (
-    <ul className="space-y-1.5 text-xs" style={{ color: "var(--dashboard-text-secondary)" }}>
+    <ul className="space-y-1.5 text-xs" style={{ color: "var(--dashboard-text-secondary)" }} aria-label={t(lang, "কীবোর্ড শর্টকাট তালিকা", "Keyboard shortcut list")}>
       {rows.map(([key, label]) => (
         <li key={key} className="flex items-center justify-between gap-3">
           <span>{label}</span>

@@ -54,8 +54,9 @@ export default function HeaderActions({ onOpenShortcuts }: HeaderActionsProps) {
         type="button"
         onClick={onOpenShortcuts}
         aria-label={pickLang(lang, "কীবোর্ড শর্টকাট", "Keyboard shortcuts")}
-        className="hidden md:inline-flex items-center justify-center w-10 h-10 rounded-xl border"
-        style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-muted)", background: "var(--dashboard-surface-muted)" }}
+        title={pickLang(lang, "কীবোর্ড শর্টকাট (?)", "Keyboard shortcuts (?)")}
+        className="hidden md:inline-flex items-center justify-center w-11 h-11 min-h-[44px] min-w-[44px] rounded-xl border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+        style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-secondary)", background: "var(--dashboard-surface-muted)" }}
       >
         <Question className="w-4 h-4" />
       </button>

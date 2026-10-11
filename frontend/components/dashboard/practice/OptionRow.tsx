@@ -17,7 +17,7 @@ function rowStyle(selected: boolean, verdict: OptionRowState["verdict"]): React.
     return { background: "var(--dashboard-danger-subtle)", borderColor: "var(--dashboard-danger)", color: "var(--dashboard-danger)", borderWidth: 2 };
   }
   if (verdict === "dimmed") {
-    return { background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-strong)", color: "var(--dashboard-text-muted)", opacity: 0.7 };
+    return { background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-strong)", color: "var(--dashboard-text-secondary)" };
   }
   if (selected) {
     return { background: "var(--dashboard-primary-subtle)", borderColor: "var(--dashboard-primary)", color: "var(--dashboard-primary)" };

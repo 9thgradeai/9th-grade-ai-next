@@ -105,10 +105,13 @@ export default function SideNav({ activeTab, onChange }: SideNavProps) {
             <div
               className="flex h-9 w-9 items-center justify-center rounded-full border text-sm font-semibold"
               style={{ background: "var(--dashboard-primary-subtle)", color: "var(--dashboard-primary)", borderColor: "var(--dashboard-border-muted)" }}
+              role="img"
+              aria-label={`${displayName} — online`}
             >
               {displayInitial}
             </div>
             <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2" style={{ background: "var(--dashboard-success)", borderColor: "var(--dashboard-sidebar-bg)" }} aria-hidden="true" />
+            <span className="sr-only">Online</span>
           </div>
           {!collapsed && (
             <div className="min-w-0">

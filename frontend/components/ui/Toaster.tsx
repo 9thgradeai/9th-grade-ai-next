@@ -52,7 +52,8 @@ export default function Toaster() {
                 type="button"
                 onClick={() => dismiss(toast.id)}
                 aria-label="Dismiss notification"
-                className="shrink-0 rounded p-1 min-h-[24px] min-w-[24px] flex items-center justify-center text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)] transition-colors"
+                title="Dismiss notification"
+                className="shrink-0 rounded p-1 min-h-[44px] min-w-[44px] flex items-center justify-center text-[var(--dashboard-text-secondary)] hover:text-[var(--text-primary)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
               >
                 <X size={14} aria-hidden="true" />
               </button>

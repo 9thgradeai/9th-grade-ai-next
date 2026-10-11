@@ -114,7 +114,8 @@ export default function HomeWelcome({ onStartPractice }: { onStartPractice?: () 
             <button
               onClick={prev}
               aria-label={t(lang, "আগের উক্তি", "Previous quote")}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-lg border min-h-[36px] min-w-[36px]"
+              title={t(lang, "আগের উক্তি", "Previous quote")}
+              className="inline-flex h-11 w-11 items-center justify-center rounded-lg border min-h-[44px] min-w-[44px]"
               style={{
                 borderColor: "var(--dashboard-border-muted)",
                 color: "var(--dashboard-text-secondary)",
@@ -126,7 +127,8 @@ export default function HomeWelcome({ onStartPractice }: { onStartPractice?: () 
             <button
               onClick={next}
               aria-label={t(lang, "পরের উক্তি", "Next quote")}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-lg border min-h-[36px] min-w-[36px]"
+              title={t(lang, "পরের উক্তি", "Next quote")}
+              className="inline-flex h-11 w-11 items-center justify-center rounded-lg border min-h-[44px] min-w-[44px]"
               style={{
                 borderColor: "var(--dashboard-border-muted)",
                 color: "var(--dashboard-text-secondary)",
@@ -149,7 +151,7 @@ export default function HomeWelcome({ onStartPractice }: { onStartPractice?: () 
           <div className="shrink-0 sm:pt-8">
             <button
               onClick={onStartPractice}
-              className="command-primary-btn !py-2.5 text-sm"
+              className="command-secondary-btn !py-2.5 text-sm"
             >
               {t(lang, "পড়া শুরু করুন", "Start studying")}
               <ArrowRight className="h-4 w-4" aria-hidden="true" />

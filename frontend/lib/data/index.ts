@@ -27,11 +27,14 @@ export const TABS: { id: TabId; label: string; short: string; bengali: string; i
 // ── Single source of truth for dashboard navigation ────────────
 // SideNav, BottomNav, and the dashboard drawer must all import these —
 // never redeclare grouping literals locally (drift guarantee otherwise).
+// P1 IA: 5 intent-based groups (Learn / Revise / Assess / AI Studio /
+// Account) so 19 tabs scan as 5 tasks. Coverage stays exactly-once.
 export const NAV_GROUPS: { label: string; labelBn: string; ids: TabId[] }[] = [
-  { label: "Primary", labelBn: "প্রধান", ids: ["home", "practice", "question-bank", "mistakes", "progress"] },
-  { label: "Study", labelBn: "পড়াশোনা", ids: ["study-planner", "flashcards", "vocab", "current-affairs", "exam-history", "real-exam"] },
-  { label: "AI Workspace", labelBn: "এআই ওয়ার্কস্পেস", ids: ["ai-solver", "ai-mock", "advisor", "evaluator", "voice-interview", "student-model", "usage"] },
-  { label: "Account", labelBn: "অ্যাকাউন্ট", ids: ["settings"] },
+  { label: "Learn", labelBn: "শিখুন", ids: ["home", "practice", "question-bank", "study-planner"] },
+  { label: "Revise", labelBn: "রিভিশন", ids: ["flashcards", "mistakes", "vocab"] },
+  { label: "Assess", labelBn: "মূল্যায়ন", ids: ["progress", "exam-history", "real-exam", "current-affairs"] },
+  { label: "AI Studio", labelBn: "এআই স্টুডিও", ids: ["ai-solver", "ai-mock", "advisor", "evaluator", "voice-interview", "student-model"] },
+  { label: "Account", labelBn: "অ্যাকাউন্ট", ids: ["settings", "usage"] },
 ];
 
 export const BOTTOM_TAB_IDS: TabId[] = ["home", "practice", "question-bank", "mistakes", "progress"];

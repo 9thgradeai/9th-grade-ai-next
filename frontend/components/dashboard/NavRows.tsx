@@ -2,6 +2,7 @@
 
 import { NAV_GROUPS, TABS, type TabId } from "@/lib/data";
 import { TAB_ICONS } from "@/lib/exam-ui";
+import { useLanguage, t } from "@/lib/lang-ctx";
 
 export type NavRowsVariant = "full" | "collapsed" | "drawer";
 
@@ -19,6 +20,7 @@ interface NavRowsProps {
  */
 export default function NavRows({ activeTab, onChange, variant = "full" }: NavRowsProps) {
   const collapsed = variant === "collapsed";
+  const { lang } = useLanguage();
 
   return (
     <>
@@ -36,8 +38,8 @@ export default function NavRows({ activeTab, onChange, variant = "full" }: NavRo
             ) : (
               <>
                 <p
-                  className="px-3 pb-1.5 pt-5 text-[10px] font-bold uppercase tracking-[0.18em]"
-                  style={{ color: "var(--dashboard-text-secondary)", opacity: 0.82 }}
+                  className="px-3 pb-1.5 pt-5 text-[11px] font-bold uppercase tracking-[0.14em]"
+                  style={{ color: "var(--dashboard-text-secondary)", opacity: 0.9 }}
                 >
                   {group.label}
                 </p>
@@ -53,8 +55,8 @@ export default function NavRows({ activeTab, onChange, variant = "full" }: NavRo
                     key={tab.id}
                     onClick={() => onChange(tab.id)}
                     aria-current={isActive ? "page" : undefined}
-                    aria-label={`${tab.label} — ${tab.bengali}`}
-                    title={collapsed ? `${tab.label} · ${tab.bengali}` : undefined}
+                    aria-label={t(lang, tab.bengali, tab.label)}
+                    title={collapsed ? `${tab.label} · ${tab.bengali}` : t(lang, tab.bengali, tab.label)}
                     className={
                       collapsed
                         ? "relative mx-auto flex h-12 w-12 items-center justify-center rounded-2xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"

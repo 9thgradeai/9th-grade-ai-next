@@ -76,17 +76,17 @@ export default function BottomNav({ activeTab, onChange }: BottomNavProps) {
               <button
                 key={tab.id}
                 onClick={() => selectTab(tab.id)}
-                className="relative flex flex-col items-center justify-center gap-1 flex-1 min-h-[56px] rounded-2xl py-2 transition-colors opacity-[0.7] hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                className="relative flex flex-col items-center justify-center gap-1 flex-1 min-h-[56px] rounded-2xl py-2 transition-colors hover:bg-[var(--dashboard-surface-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
                 style={
                   active
-                    ? { background: "var(--dashboard-primary-subtle)", color: "var(--dashboard-primary)" }
-                    : { background: "transparent", color: "var(--dashboard-text-secondary)" }
+                    ? { background: "var(--dashboard-primary-subtle)", color: "var(--dashboard-primary)", fontWeight: 700 }
+                    : { background: "transparent", color: "var(--dashboard-text-secondary)", fontWeight: 600 }
                 }
                 aria-label={t(lang, tab.label, tab.labelEn)}
                 aria-current={active ? "page" : undefined}
               >
                 <Icon className="h-[22px] w-[22px]" strokeWidth={active ? 2.3 : 1.9} />
-                <span className="text-[10px] font-bold leading-none">
+                <span className="text-[11px] font-bold leading-none">
                   {t(lang, tab.short, tab.shortEn)}
                 </span>
               </button>
@@ -94,18 +94,18 @@ export default function BottomNav({ activeTab, onChange }: BottomNavProps) {
           })}
           <button
             onClick={() => setMoreOpen(true)}
-            className="relative flex flex-col items-center justify-center gap-1 flex-1 min-h-[56px] rounded-2xl py-2 transition-colors opacity-[0.7] hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+            className="relative flex flex-col items-center justify-center gap-1 flex-1 min-h-[56px] rounded-2xl py-2 transition-colors hover:bg-[var(--dashboard-surface-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
             aria-label={t(lang, "আরও বিকল্প", "More options")}
             aria-haspopup="dialog"
             aria-expanded={moreOpen}
             style={
               isMoreActive
-                ? { background: "var(--dashboard-primary-subtle)", color: "var(--dashboard-primary)" }
-                : { background: "transparent", color: "var(--dashboard-text-secondary)" }
+                ? { background: "var(--dashboard-primary-subtle)", color: "var(--dashboard-primary)", fontWeight: 700 }
+                : { background: "transparent", color: "var(--dashboard-text-secondary)", fontWeight: 600 }
             }
           >
             <DotsThreeVertical className="h-[22px] w-[22px]" strokeWidth={isMoreActive ? 2.2 : 1.9} />
-            <span className="text-[10px] font-bold leading-none">{t(lang, "আরও", "More")}</span>
+            <span className="text-[11px] font-bold leading-none">{t(lang, "আরও", "More")}</span>
           </button>
         </div>
       </nav>
@@ -138,7 +138,7 @@ export default function BottomNav({ activeTab, onChange }: BottomNavProps) {
               </div>
               <div className="flex items-center justify-between px-5 pb-3">
                 <h2 className="text-sm font-semibold" style={{ color: "var(--dashboard-text-primary)" }}>{t(lang, "সকল সুবিধা", "All features")}</h2>
-                <button onClick={closeMore} className="p-2 rounded-lg" style={{ color: "var(--dashboard-text-muted)" }} aria-label={t(lang, "বন্ধ করুন", "Close")}>
+                <button onClick={closeMore} className="inline-flex items-center justify-center min-h-[44px] min-w-[44px] p-2 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]" style={{ color: "var(--dashboard-text-secondary)" }} aria-label={t(lang, "বন্ধ করুন", "Close")}>
                   <X className="w-5 h-5" />
                 </button>
               </div>

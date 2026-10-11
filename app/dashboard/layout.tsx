@@ -60,8 +60,8 @@ function SideNavDrawerContent({ activeTab, onChange }: { activeTab: TabId; onCha
           phones. */}
       <div className="px-3 pt-3">
         <p
-          className="mb-1.5 px-1 text-[10px] font-bold uppercase tracking-[0.12em]"
-          style={{ color: "var(--dashboard-text-muted)" }}
+          className="mb-1.5 px-1 text-[11px] font-bold uppercase tracking-[0.12em]"
+          style={{ color: "var(--dashboard-text-secondary)" }}
         >
           {pickLang(lang, "ইকোসিস্টেম", "Ecosystem")}
         </p>
@@ -294,7 +294,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   {/* Hamburger — visible on tablet + mobile (<lg) to expose left tabs */}
                   <button
                     onClick={() => setNavDrawerOpen(true)}
-                    className="lg:hidden inline-flex items-center justify-center w-10 h-10 rounded-xl border shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                    className="lg:hidden inline-flex items-center justify-center w-11 h-11 min-h-[44px] min-w-[44px] rounded-xl border shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
                     style={{ borderColor: "var(--dashboard-border-muted)", background: "var(--dashboard-surface-muted)", color: "var(--dashboard-text-primary)" }}
                     aria-label="Open navigation"
                     aria-expanded={navDrawerOpen}

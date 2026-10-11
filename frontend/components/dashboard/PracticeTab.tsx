@@ -751,7 +751,16 @@ export default function PracticeTab() {
 
               <div className="p-5">
                 {/* Progress bar */}
-                <div className="h-1.5 rounded-full overflow-hidden mb-6" style={{ background: "var(--dashboard-surface-muted)" }}>
+                <div
+                  className="h-1.5 rounded-full overflow-hidden mb-6"
+                  style={{ background: "var(--dashboard-surface-muted)" }}
+                  role="progressbar"
+                  aria-label="Practice progress"
+                  aria-valuemin={0}
+                  aria-valuemax={totalQuestions}
+                  aria-valuenow={answeredCount}
+                  aria-valuetext={`${answeredCount} of ${totalQuestions} answered`}
+                >
                   <div
                     className="h-full w-full origin-left rounded-full transition-transform duration-300"
                     style={{ transform: `scaleX(${totalQuestions > 0 ? answeredCount / totalQuestions : 0})`, background: "var(--dashboard-primary)" }}
@@ -761,7 +770,7 @@ export default function PracticeTab() {
                 {currentQuestion && (
                   <div key={currentQuestion.id}>
                     <div className="flex flex-wrap items-center gap-2 mb-3">
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-mono ${
+                      <span className={`px-2 py-0.5 rounded text-[11px] font-mono ${
                         currentQuestion.difficulty === "EASY"
                           ? "bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
                           : currentQuestion.difficulty === "MEDIUM"
@@ -771,16 +780,16 @@ export default function PracticeTab() {
                         {DIFFICULTY_LABEL[currentQuestion.difficulty] ?? currentQuestion.difficulty}
                       </span>
                       {currentQuestion.topic && (
-                        <span className="px-2 py-0.5 rounded text-[10px] font-mono" style={{ background: "var(--dashboard-surface-muted)", color: "var(--dashboard-text-secondary)", border: "1px solid var(--dashboard-border-muted)" }}>
+                        <span className="px-2 py-0.5 rounded text-[11px] font-mono" style={{ background: "var(--dashboard-surface-muted)", color: "var(--dashboard-text-secondary)", border: "1px solid var(--dashboard-border-muted)" }}>
                           {currentQuestion.topic}
                         </span>
                       )}
                       {currentQuestion.subtopic && (
-                        <span className="px-2 py-0.5 rounded text-[10px] font-mono" style={{ background: "var(--dashboard-surface-muted)", color: "var(--dashboard-text-muted)", border: "1px solid var(--dashboard-border-muted)" }}>
+                        <span className="px-2 py-0.5 rounded text-[11px] font-mono" style={{ background: "var(--dashboard-surface-muted)", color: "var(--dashboard-text-secondary)", border: "1px solid var(--dashboard-border-muted)" }}>
                           {currentQuestion.subtopic}
                         </span>
                       )}
-                      <span className="text-[10px] text-[var(--dashboard-text-muted)] font-mono ml-auto">
+                      <span className="text-[11px] text-[var(--dashboard-text-secondary)] font-mono ml-auto" aria-live="polite">
                         {answeredCount}/{totalQuestions} উত্তর
                       </span>
                     </div>

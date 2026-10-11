@@ -11,7 +11,6 @@ import { useMotionTier } from "@/lib/motion/use-motion-tier";
 import { useLanguage, t } from "@/lib/lang-ctx";
 import { useToastSafe } from "@/lib/toast-ctx";
 import { api, invalidateCache } from "@/lib/services/api";
-import { rankAmbientCards } from "@/lib/gamification";
 import StreakEngine from "./command-center/StreakEngine";
 import { homePerf } from "@/lib/perf";
 import { EMPTY_INTELLIGENCE, mergeIntelligence } from "@/lib/intelligence";
@@ -463,31 +462,11 @@ export default function HomeTab() {
     setReloadKey((k) => k + 1);
   };
 
-  // Sprint 1 ambient ranking — highest-need region first. Performance +
-  // today's plan stay pinned directly under the welcome card (explicit
-  // product order); actions/pulse reorder by live signals; everything else
-  // holds a fixed slot. Applied via CSS `order` (gap-based stack, so
-  // reordering never disturbs spacing).
-  const regionOrder = useMemo(() => {
-    const planDone = todaysTasks.filter((task) => task.completed).length;
-    const ranked = rankAmbientCards({
-      unmasteredMistakes: intelligence?.mistakes.unmastered,
-      flashcardsDue: intelligence?.flashcardsDue,
-      weakAccuracy: heroSignals.weakAccuracy,
-      streak: intelligence?.streak,
-      planCompletionPct: todaysTasks.length > 0 ? (planDone / todaysTasks.length) * 100 : 100,
-    });
-    const order: Record<string, number> = {};
-    let slot = 2;
-    for (const id of ranked) {
-      if (id === "performance" || id === "plan" || id === "mission" || id === "coach") continue;
-      if (!(id in order)) order[id] = slot++;
-    }
-    return {
-      actions: order.actions ?? 2,
-      pulse: order.pulse ?? 3,
-    };
-  }, [intelligence?.mistakes.unmastered, intelligence?.flashcardsDue, intelligence?.streak, heroSignals.weakAccuracy, todaysTasks]);
+  // P1: fixed product order — Mission > Plan/Performance > Continue >
+  // Pulse > Actions > Mocks > Coach. No ambient CSS `order` ranking:
+  // visual order must match DOM/screen-reader order. Urgency is shown
+  // *inside* cards (badges), never by moving cards.
+  const regionOrder = { actions: 5, pulse: 4 };
 
   return (
     <div className="study-home flex flex-col gap-5 pb-24 sm:pb-6">
@@ -752,7 +731,8 @@ export default function HomeTab() {
                 <button
                   key={r.id}
                   onClick={() => setActiveTab("progress")}
-                  className="w-full flex items-center gap-3 rounded-xl border px-3 py-2.5 text-left hover:border-[var(--dashboard-primary)]/40 transition-colors"
+                  aria-label={`${r.title} — ${r.score}%${r.score >= 80 ? (lang === "bn" ? ", ভালো" : ", strong") : r.score >= 50 ? (lang === "bn" ? ", মাঝারি" : ", average") : (lang === "bn" ? ", উন্নতি দরকার" : ", needs work")}`}
+                  className="w-full flex items-center gap-3 rounded-xl border px-3 py-2.5 text-left hover:border-[var(--dashboard-primary)]/40 transition-colors min-h-[56px]"
                   style={{ background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-muted)" }}
                 >
                   <span

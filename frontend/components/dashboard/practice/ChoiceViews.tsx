@@ -23,7 +23,9 @@ function verdictFor(option: string, selected: string[], correctSet: string[] | n
 /** Standard one-answer question — radio semantics. */
 export function SingleChoiceView({ options, selected, locked, correctSet, onSelect }: ChoiceViewProps) {
   return (
-    <div className="space-y-2.5" role="radiogroup" aria-label="উত্তর নির্বাচন করুন">
+    <fieldset className="space-y-2.5 border-0 m-0 p-0">
+      <legend className="sr-only">উত্তর নির্বাচন করুন — একটি বেছে নিন</legend>
+      <div role="radiogroup" aria-label="উত্তর নির্বাচন করুন" className="space-y-2.5">
       {options.map((option, i) => (
         <OptionRow
           key={i}
@@ -34,7 +36,8 @@ export function SingleChoiceView({ options, selected, locked, correctSet, onSele
           onPick={() => onSelect([option])}
         />
       ))}
-    </div>
+      </div>
+    </fieldset>
   );
 }
 
@@ -45,7 +48,9 @@ export function MultipleChoiceView({ options, selected, locked, correctSet, onSe
     onSelect(selected.includes(option) ? selected.filter((s) => s !== option) : [...selected, option]);
   };
   return (
-    <div className="space-y-2.5" role="group" aria-label="একাধিক উত্তর নির্বাচন করুন">
+    <fieldset className="space-y-2.5 border-0 m-0 p-0">
+      <legend className="sr-only">একাধিক উত্তর নির্বাচন করুন — সব সঠিকটি বেছে নিন</legend>
+      <div role="group" aria-label="একাধিক উত্তর নির্বাচন করুন" className="space-y-2.5">
       {options.map((option, i) => (
         <OptionRow
           key={i}
@@ -56,6 +61,7 @@ export function MultipleChoiceView({ options, selected, locked, correctSet, onSe
           onPick={() => toggle(option)}
         />
       ))}
-    </div>
+      </div>
+    </fieldset>
   );
 }

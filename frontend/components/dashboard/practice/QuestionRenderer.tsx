@@ -26,7 +26,7 @@ export default function QuestionRenderer({ question, ...choice }: RendererProps)
         <RichText text={question.question} />
       </h3>
       {question.questionType === "MULTIPLE_CHOICE" && (
-        <p className="text-[11px] font-mono text-[var(--dashboard-text-muted)] mt-1.5">
+        <p role="note" className="text-xs font-medium text-[var(--dashboard-text-secondary)] mt-1.5">
           একাধিক উত্তর থাকতে পারে — সব সঠিকটি বেছে নিন
         </p>
       )}

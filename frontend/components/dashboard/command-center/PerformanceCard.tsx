@@ -226,7 +226,7 @@ export default function PerformanceCard({
     const flat = value === 0;
     return (
       <span
-        className="perf-delta inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 font-mono text-[10px] font-bold tabular-nums"
+        className="perf-delta inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 font-mono text-[11px] font-bold tabular-nums"
         style={{
           color: flat ? "var(--dashboard-text-muted)" : up ? "var(--dashboard-success)" : "var(--dashboard-danger)",
           background: flat
@@ -244,13 +244,13 @@ export default function PerformanceCard({
   };
 
   return (
-    <div className="command-card perf-hub relative overflow-hidden p-5 sm:p-6 flex flex-col h-full">
+    <figure className="command-card perf-hub relative overflow-hidden p-5 sm:p-6 flex flex-col h-full">
       <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <p className="command-eyebrow flex items-center gap-1.5">
-            <ChartBar className="w-3.5 h-3.5" /> Performance Velocity
+            <ChartBar className="w-3.5 h-3.5" aria-hidden="true" /> Performance Velocity
             <span
-              className="perf-live ml-1 inline-flex items-center gap-1 rounded-full border px-2 py-0.5 font-mono text-[10px] font-extrabold tracking-widest"
+              className="perf-live ml-1 inline-flex items-center gap-1 rounded-full border px-2 py-0.5 font-mono text-[11px] font-extrabold tracking-widest"
               style={{ borderColor: "color-mix(in srgb, var(--dashboard-success) 40%, transparent)", color: "var(--dashboard-success)" }}
               aria-label="Live session tracking"
               title="Live session tracking"
@@ -288,7 +288,8 @@ export default function PerformanceCard({
                 key={val}
                 onClick={() => setMetric(val)}
                 aria-pressed={metric === val}
-                className="flex items-center gap-1 px-2.5 py-1.5 text-[10px] font-bold rounded-lg transition-all min-h-[32px]"
+                title={label}
+                className="flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-bold rounded-lg transition-all min-h-[36px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
                 style={
                   metric === val
                     ? { background: `linear-gradient(135deg, ${METRIC_THEMES[val].from}, ${METRIC_THEMES[val].to})`, color: "#fff", boxShadow: `0 2px 12px ${METRIC_THEMES[val].glow}` }
@@ -307,7 +308,8 @@ export default function PerformanceCard({
                 key={r}
                 onClick={() => onRangeChange(r)}
                 aria-pressed={range === r}
-                className="px-2.5 py-0.5 rounded-full text-[11px] font-bold transition-colors min-h-[28px]"
+                title={`Last ${r}`}
+                className="px-2.5 py-0.5 rounded-full text-[11px] font-bold transition-colors min-h-[36px] min-w-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
                 style={
                   range === r
                     ? { background: "var(--dashboard-primary)", color: "var(--dashboard-text-inverse)" }
@@ -323,8 +325,8 @@ export default function PerformanceCard({
 
       {/* ── KPI ticker tiles with animated count-ups + period deltas ── */}
       <div className="relative mt-4 grid grid-cols-3 gap-2">
-        <div className="perf-kpi rounded-xl border px-3 py-2.5 text-center" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)", borderTop: `2px solid ${METRIC_THEMES.solved.from}` }}>
-          <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--dashboard-text-muted)" }}>
+        <div className="perf-kpi rounded-xl border px-3 py-2.5 text-center" style={{ background: "var(--dashboard-surface-solid, var(--dashboard-surface))", borderColor: "var(--dashboard-border-muted)", borderTop: `2px solid ${METRIC_THEMES.solved.from}` }}>
+          <p className="text-[11px] font-bold uppercase tracking-wider" style={{ color: "var(--dashboard-text-secondary)" }}>
             Total Solved
           </p>
           <p className="font-mono text-lg font-extrabold tabular-nums" style={{ color: METRIC_THEMES.solved.from }}>
@@ -332,8 +334,8 @@ export default function PerformanceCard({
           </p>
           <DeltaPill value={solvedDelta} format={(v) => `${v > 0 ? "+" : v < 0 ? "−" : ""}${Math.abs(v)}`} />
         </div>
-        <div className="perf-kpi rounded-xl border px-3 py-2.5 text-center" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)", borderTop: `2px solid ${METRIC_THEMES.accuracy.from}` }}>
-          <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--dashboard-text-muted)" }}>
+        <div className="perf-kpi rounded-xl border px-3 py-2.5 text-center" style={{ background: "var(--dashboard-surface-solid, var(--dashboard-surface))", borderColor: "var(--dashboard-border-muted)", borderTop: `2px solid ${METRIC_THEMES.accuracy.from}` }}>
+          <p className="text-[11px] font-bold uppercase tracking-wider" style={{ color: "var(--dashboard-text-secondary)" }}>
             Accuracy
           </p>
           <p className="font-mono text-lg font-extrabold tabular-nums" style={{ color: METRIC_THEMES.accuracy.from }}>
@@ -341,8 +343,8 @@ export default function PerformanceCard({
           </p>
           <DeltaPill value={accDelta} format={(v) => `${v > 0 ? "+" : v < 0 ? "−" : ""}${Math.abs(v)}pp`} />
         </div>
-        <div className="perf-kpi rounded-xl border px-3 py-2.5 text-center" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)", borderTop: `2px solid ${METRIC_THEMES.time.from}` }}>
-          <p className="text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-1" style={{ color: "var(--dashboard-text-muted)" }}>
+        <div className="perf-kpi rounded-xl border px-3 py-2.5 text-center" style={{ background: "var(--dashboard-surface-solid, var(--dashboard-surface))", borderColor: "var(--dashboard-border-muted)", borderTop: `2px solid ${METRIC_THEMES.time.from}` }}>
+          <p className="text-[11px] font-bold uppercase tracking-wider flex items-center justify-center gap-1" style={{ color: "var(--dashboard-text-secondary)" }}>
             <Pulse className="w-3 h-3" aria-hidden="true" /> {metric === "accuracy" ? "Best Day" : metric === "time" ? "Time" : "Last Score"}
           </p>
           <p className="font-mono text-lg font-extrabold tabular-nums" style={{ color: METRIC_THEMES.time.from }}>
@@ -478,13 +480,25 @@ export default function PerformanceCard({
               })}
             </svg>
 
-            <div className="flex justify-between text-[10px] font-mono font-semibold mt-2 border-t pt-1.5" style={{ color: "var(--dashboard-text-muted)", borderColor: "var(--dashboard-border-muted)" }}>
+            <div className="flex justify-between text-[11px] font-mono font-semibold mt-2 border-t pt-1.5" style={{ color: "var(--dashboard-text-secondary)", borderColor: "var(--dashboard-border-muted)" }} aria-hidden="true">
               {points.slice(-7).map((p, i) => (
                 <span key={i} className="truncate">
                   {new Date(p.date).toLocaleDateString("en-GB", { day: "2-digit", month: "short" })}
                 </span>
               ))}
             </div>
+            {/* Screen-reader data table fallback — color-independent access to the same trend. */}
+            <table className="sr-only">
+              <caption>{metricLabel} by day, last {range}</caption>
+              <tbody>
+                {coords.map((c) => (
+                  <tr key={c.date}>
+                    <th scope="row">{new Date(c.date).toLocaleDateString("en-GB", { day: "2-digit", month: "short" })}</th>
+                    <td>{tooltipText(c)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </>
         )}
       </div>
@@ -493,7 +507,7 @@ export default function PerformanceCard({
       {tape.length > 0 && (
         <div
           className="perf-tape relative mt-3 overflow-hidden rounded-lg border"
-          style={{ borderColor: "var(--dashboard-border-muted)", background: "var(--dashboard-surface)" }}
+          style={{ borderColor: "var(--dashboard-border-muted)", background: "var(--dashboard-surface-solid, var(--dashboard-surface))" }}
           aria-label="Recent daily performance tape"
         >
           <div className="perf-tape-track flex w-max items-center gap-2 px-2 py-1.5">
@@ -501,7 +515,7 @@ export default function PerformanceCard({
               <span
                 key={i}
                 aria-hidden={i >= tape.length / 2}
-                className="inline-flex shrink-0 items-center gap-1.5 rounded-md px-2 py-1 font-mono text-[10px] tabular-nums"
+                className="inline-flex shrink-0 items-center gap-1.5 rounded-md px-2 py-1 font-mono text-[11px] tabular-nums"
                 style={{
                   background: "var(--dashboard-surface-muted)",
                   color: "var(--dashboard-text-secondary)",
@@ -517,6 +531,9 @@ export default function PerformanceCard({
           </div>
         </div>
       )}
-    </div>
+      <figcaption className="sr-only">
+        {metricLabel} trend, {totals.solved} questions, {totals.accuracy}% accuracy, {fmtTime(totals.time)} total.
+      </figcaption>
+    </figure>
   );
 }
