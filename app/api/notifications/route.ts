@@ -1,14 +1,10 @@
-import { NextResponse } from "next/server";
 import { getNotifications, getUnreadCount } from "~backend/services/notification";
 import { getUserIdFromRequest } from "~backend/services/user";
-import { AppError, toHttpResponse } from "~backend/errors";
-import { getRequestId, startTiming, applySecurityHeaders, applyCacheHeaders } from "../_middleware";
+import { AppError } from "~backend/errors";
+import { withHandler } from "../_middleware";
 
-export async function GET(request: Request) {
-  const requestId = getRequestId(request);
-  const getTime = startTiming();
-
-  try {
+export const GET = withHandler(
+  async (request: Request) => {
     const userId = await getUserIdFromRequest(request);
     if (!userId) {
       throw new AppError(401, "Unauthorized", "AUTH_UNAUTHORIZED");
@@ -23,27 +19,20 @@ export async function GET(request: Request) {
       : undefined;
     const type = searchParams.get("type") ?? undefined;
 
-    const { items, nextCursor, total } = await getNotifications(userId, { limit, cursorId: cursor, type });
-    // Filtering happens server-side (type is part of the query), so the
-    // page, cursor and total are all consistent with the requested filter.
-    const unreadCount = await getUnreadCount(userId);
+    // Independent queries: fetch in parallel (async-parallel).
+    const [{ items, nextCursor, total }, unreadCount] = await Promise.all([
+      getNotifications(userId, { limit, cursorId: cursor, type }),
+      // Filtering happens server-side (type is part of the query), so the
+      // page, cursor and total are all consistent with the requested filter.
+      getUnreadCount(userId),
+    ]);
 
-    const res = NextResponse.json({
+    return {
       notifications: items,
       total,
       nextCursor,
       unreadCount,
-    });
-    res.headers.set("X-Request-Id", requestId);
-    res.headers.set("X-Response-Time", getTime() + "ms");
-    applyCacheHeaders(res, { public: false, maxAge: 0 });
-    applySecurityHeaders(res);
-    return res;
-  } catch (err) {
-    const res = toHttpResponse(err);
-    res.headers.set("X-Request-Id", requestId);
-    res.headers.set("X-Response-Time", getTime() + "ms");
-    applySecurityHeaders(res);
-    return res;
-  }
-}
+    };
+  },
+  { cache: { public: false, maxAge: 0 } },
+);

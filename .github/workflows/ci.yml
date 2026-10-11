@@ -49,6 +49,55 @@ jobs:
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/app_test
 
+  # End-to-end suite (Playwright, tests/e2e/*). Runs against `next dev`
+  # via the Playwright webServer, with a seeded Postgres (the login spec
+  # signs in as the seeded demo user). Runs in parallel with `test`.
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CI: true
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/app_test
+      AUTH_SECRET: ci-e2e-secret-not-for-production
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: app_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Prepare + seed e2e database
+        run: |
+          npx prisma db push --skip-generate --schema database/prisma/schema.prisma
+          npm run db:seed
+      - name: Run Playwright suite
+        run: npm run test:e2e
+      - name: Upload Playwright report (on failure, for triage)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
+          if-no-files-found: ignore
+
   # Client-JS perf-budget gate (docs/PERFORMANCE-OPTIMIZATION.md §3 Phase 0).
   # Builds with the bundle analyzer and fails if the initial-JS footprint
   # regresses against the committed baseline (docs/perf/client-baseline.json).

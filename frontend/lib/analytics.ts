@@ -95,12 +95,15 @@ class Analytics {
     }
 
     // Send to analytics endpoint (failures buffer locally for retry).
+    // keepalive: deliver even if the learner navigates away mid-request —
+    // without it, exam_complete events fired on teardown are silently lost.
     fetch(this.endpoint!, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(payload),
+      keepalive: true,
     }).catch((err) => {
       if (process.env.NODE_ENV === "development") console.error("Analytics send failed:", err);
       this.events.push(eventData.event);

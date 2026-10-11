@@ -1,7 +1,7 @@
 // tests/e2e/signup-mock-test.spec.ts
 // Critical user journey: Signup → Email verification → Onboarding → First mock test
 
-import { test, expect } from '@playwright/test';
+import { test, expect } from './browser-logs';
 
 test.describe('Critical User Journey', () => {
   test('signup → verify → onboarding → first mock test', async ({ page }) => {

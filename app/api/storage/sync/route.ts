@@ -8,8 +8,11 @@ import { assertSubmitAllowed } from "~backend/rate-limit";
 export async function GET(request: Request) {
   const userId = await getUserIdFromRequest(request);
   if (!userId) return NextResponse.json({ error: "Unauthorized", code: "AUTH_UNAUTHORIZED" }, { status: 401 });
-  const jobs = await prisma.syncJob.findMany({ where: { userId }, orderBy: { createdAt: "desc" }, take: 10, select: { id: true, entityType: true, status: true, attempts: true, nextRetryAt: true, lastError: true, createdAt: true } });
-  const pending = await prisma.syncJob.count({ where: { userId, status: { in: ["PENDING", "FAILED", "PROCESSING"] } } });
+  // Independent reads: fetch in parallel (async-parallel).
+  const [jobs, pending] = await Promise.all([
+    prisma.syncJob.findMany({ where: { userId }, orderBy: { createdAt: "desc" }, take: 10, select: { id: true, entityType: true, status: true, attempts: true, nextRetryAt: true, lastError: true, createdAt: true } }),
+    prisma.syncJob.count({ where: { userId, status: { in: ["PENDING", "FAILED", "PROCESSING"] } } }),
+  ]);
   return NextResponse.json({ jobs, pending });
 }
 

@@ -1,17 +1,14 @@
 import { NextResponse } from "next/server";
-import { AppError, toHttpResponse } from "~backend/errors";
+import { AppError } from "~backend/errors";
 import { validateRegisterInput } from "~backend/validation";
 import { findUserByEmail, createUser } from "~backend/services/user";
 import { signSession, setSessionCookie, SESSION_DURATION_MS } from "~backend/auth";
 import { checkRateLimit, getRateLimitKey, LIMITS } from "~backend/rate-limit";
-import { getRequestId, startTiming, applySecurityHeaders, applyCorsHeaders, assertSameOrigin } from "../../_middleware";
+import { assertSameOrigin, withHandler } from "../../_middleware";
 import { log } from "~backend/infrastructure/observability/logger";
 
-export async function POST(request: Request) {
-  const requestId = getRequestId(request);
-  const getTime = startTiming();
-
-  try {
+export const POST = withHandler(
+  async (request: Request, { requestId }) => {
     assertSameOrigin(request);
 
     if (!(await checkRateLimit(getRateLimitKey(request, "auth:register"), LIMITS.registerPerMin, 60_000))) {
@@ -32,12 +29,8 @@ export async function POST(request: Request) {
     }
 
     const origin = new URL(request.url).origin;
-    await createUser({ name, email, password, origin });
-
-    const newUser = await findUserByEmail(email);
-    if (!newUser) {
-      throw new AppError(500, "Failed to retrieve created user.", "INTERNAL_ERROR");
-    }
+    // createUser already returns the full UserRecord — no second lookup needed.
+    const newUser = await createUser({ name, email, password, origin });
     const token = await signSession({ email, ver: newUser.tokenVersion });
 
     const res = NextResponse.json({ user: newUser, expiresIn: SESSION_DURATION_MS }, { status: 201 });
@@ -45,18 +38,7 @@ export async function POST(request: Request) {
 
     log.info("auth.register.success", { requestId, userId: newUser.id });
 
-    res.headers.set("X-Request-Id", requestId);
-    res.headers.set("X-Response-Time", getTime() + "ms");
-    applyCorsHeaders(res, request);
-    applySecurityHeaders(res);
-
     return res;
-  } catch (err) {
-    const res = toHttpResponse(err);
-    res.headers.set("X-Request-Id", requestId);
-    res.headers.set("X-Response-Time", getTime() + "ms");
-    applyCorsHeaders(res, request);
-    applySecurityHeaders(res);
-    return res;
-  }
-}
+  },
+  { cors: true },
+);

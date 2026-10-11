@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { AppError } from "~backend/errors";
+import { AppError, toHttpResponse } from "~backend/errors";
 import { randomUUID } from "crypto";
 
 export function getRequestId(req: Request): string {
@@ -89,6 +89,58 @@ export function jsonResponse<T>(
   init?: ResponseInit,
 ): NextResponse {
   return NextResponse.json(data, init);
+}
+
+/** Context handed to wrapped handlers — request-scoped values computed once. */
+export type HandlerContext = {
+  requestId: string;
+};
+
+export type WithHandlerOptions = {
+  /** Apply CORS headers (auth routes that serve cross-origin clients). */
+  cors?: boolean;
+  /** Apply Cache-Control headers (see applyCacheHeaders). */
+  cache?: {
+    maxAge?: number;
+    public?: boolean;
+    etag?: string;
+    staleWhileRevalidate?: number;
+  };
+};
+
+/**
+ * Standard route-handler wrapper. Eliminates the repeated
+ * getRequestId → startTiming → try/catch → X-Request-Id/X-Response-Time →
+ * security-headers boilerplate (~100 routes) so a cross-cutting change
+ * (new header, error shape) edits one place instead of a shotgun diff.
+ *
+ * The inner handler returns either plain data (serialized as JSON 200) or a
+ * full Response/NextResponse (passed through untouched — custom statuses,
+ * cookies, PDFs, streams). AppErrors become their mapped HTTP responses;
+ * every response leaves with request-id, timing, and security headers.
+ */
+export function withHandler<T>(
+  handler: (request: Request, ctx: HandlerContext) => Promise<T | Response>,
+  options: WithHandlerOptions = {},
+): (request: Request) => Promise<Response> {
+  return async (request: Request): Promise<Response> => {
+    const requestId = getRequestId(request);
+    const getTime = startTiming();
+    const finish = (res: Response): Response => {
+      res.headers.set("X-Request-Id", requestId);
+      res.headers.set("X-Response-Time", getTime() + "ms");
+      if (options.cors) applyCorsHeaders(res, request);
+      if (options.cache) applyCacheHeaders(res, options.cache);
+      applySecurityHeaders(res);
+      return res;
+    };
+    try {
+      const out = await handler(request, { requestId });
+      return finish(out instanceof Response ? out : NextResponse.json(out));
+    } catch (err) {
+      return finish(toHttpResponse(err));
+    }
+  };
 }
 
 /**

@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { Cloud, Link, Plugs, ArrowsClockwise, HardDrives, Shield, CheckCircle, Warning, Spinner, Download, UploadSimple, ClockCounterClockwise, X } from "@phosphor-icons/react";
 import { useLanguage, t } from "@/lib/lang-ctx/index";
+import { useApiData } from "@/lib/hooks/useApiData";
 
 type StorageStatus = {
   connected: boolean;
@@ -20,25 +21,21 @@ type StorageStatus = {
 
 export default function DataStorageCard() {
   const { lang } = useLanguage();
-  const [status, setStatus] = useState<StorageStatus | null>(null);
-  const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
-  const fetchStatus = useCallback(async () => {
-    try {
-      const res = await fetch("/api/storage/status", { credentials: "include" });
-      if (!res.ok) throw new Error(await res.text());
-      const data = await res.json();
-      setStatus(data);
-    } catch {
-      setStatus(null);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => { void fetchStatus(); }, [fetchStatus]);
+  // Declarative status read: stale-while-revalidate + focus/reconnect
+  // refresh replace the hand-rolled fetch/useEffect below (which bypassed
+  // the api.ts timeout/retry layer entirely with a raw fetch).
+  const {
+    data: status,
+    isLoading: loading,
+    refresh: fetchStatus,
+  } = useApiData<StorageStatus>("storage-status", async () => {
+    const res = await fetch("/api/storage/status", { credentials: "include" });
+    if (!res.ok) throw new Error(await res.text());
+    return (await res.json()) as StorageStatus;
+  });
 
   // Poll sync status every 10s when pending
   useEffect(() => {

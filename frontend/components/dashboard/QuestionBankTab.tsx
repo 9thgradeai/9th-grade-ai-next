@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useDeferredValue } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MagnifyingGlass, Clock, CheckCircle, XCircle, Bookmark, Play } from "@phosphor-icons/react";
 import { QUESTION_BANK_CATEGORIES } from "@/lib/data";
@@ -187,15 +187,20 @@ export default function QuestionBankTab() {
   }, [questions]);
 
   const baseQuestions = view === "saved" ? savedQuestions : questions;
+  // Deferred search (rerender-use-deferred-value): the input stays bound to
+  // the live query so keystrokes never drop, while the expensive list filter
+  // + per-row highlight recompute only on the settled value.
+  const deferredQuery = useDeferredValue(query);
+  const isSearchStale = query !== deferredQuery;
   const visibleQuestions = useMemo(() => {
-    if (!query) return baseQuestions;
-    const lower = query.toLowerCase();
+    if (!deferredQuery) return baseQuestions;
+    const lower = deferredQuery.toLowerCase();
     return baseQuestions.filter(
       (item) =>
         item.question.toLowerCase().includes(lower) ||
         item.correctAnswer.toLowerCase().includes(lower),
     );
-  }, [baseQuestions, query]);
+  }, [baseQuestions, deferredQuery]);
 
   if (drilling && savedQuestions.length > 0) {
     return (
@@ -249,7 +254,7 @@ export default function QuestionBankTab() {
             aria-label="Search question bank"
             className="flex-1 bg-transparent px-2 py-3 text-sm text-[var(--dashboard-text-primary)] placeholder:text-[var(--dashboard-text-muted)] focus:outline-none"
           />
-          <span className="pr-1 text-xs tabular-nums text-[var(--dashboard-text-muted)]" aria-live="polite">
+          <span className="pr-1 text-xs tabular-nums text-[var(--dashboard-text-muted)]" aria-live="polite" style={{ opacity: isSearchStale ? 0.5 : 1 }}>
             {visibleQuestions.length} results
           </span>
         </div>
@@ -471,7 +476,7 @@ export default function QuestionBankTab() {
                     </button>
                   </div>
                   <p className="text-sm text-[var(--dashboard-text-primary)] mb-3">
-                    <RichText text={item.question} query={query} />
+                    <RichText text={item.question} query={deferredQuery} />
                   </p>
                   {(view === "saved" || item.options.length === 0) && (
                     <div className="flex items-center justify-between gap-3">
@@ -511,7 +516,7 @@ export default function QuestionBankTab() {
               className="text-center py-12 text-[var(--dashboard-text-muted)]"
             >
               <XCircle className="w-12 h-12 mx-auto mb-3 text-[var(--dashboard-text-secondary)]" />
-              <p>0 results{query ? ` for "${query}"` : ""}{view === "saved" ? " in সংরক্ষিত" : ` in ${activeCategory}`}</p>
+              <p>0 results{deferredQuery ? ` for "${deferredQuery}"` : ""}{view === "saved" ? " in সংরক্ষিত" : ` in ${activeCategory}`}</p>
             </motion.div>
           )
         )}

@@ -1023,3 +1023,12 @@ Grammar **সমাস** folder file (`database/data/ques/বাংলা ভা
 - **Decision**: A dependency-free, hand-written worker (`assets/pwa/sw.js`, ~120 lines) copied to `public/sw.js` at build time (`scripts/copy-sw.mjs`; `public/sw.js` stays git-ignored as a build artifact). Policy: same-origin GET only; `/api/*` never cached (per-user cookie-auth payloads); `/_next/static`, `/vendor`, fonts, images cache-first; navigations network-first with cached `/` shell fallback. Registered production-only via `ServiceWorkerRegister` (dev registration would serve stale HMR chunks).
 - **Rationale**: Zero new dependencies (repo rule: justify additions — nothing to justify); full control over scope and cache policy; Turbopack-agnostic since it never touches the bundler.
 - **Consequences**: No precaching build manifest (Workbox-style revisioned precache would need a manifest step); static cache is purely runtime-populated. Version bumps via the `VERSION` constant.
+
+## ADR-062: Declarative fetch hook instead of adding SWR
+
+- **Date**: 2026-10-11
+- **Status**: Accepted
+- **Context**: Client tabs hand-roll `useEffect + fetch/useState` for reads (duplicated loading/error/refresh logic), and some call sites use raw `fetch` that bypasses the `api.ts` timeout/retry layer entirely (`DataStorageCard`). The prescribed fix was SWR (`swr` dep) for request dedup + stale-while-revalidate + focus revalidation.
+- **Decision**: No new dependency. `frontend/lib/services/api.ts` already implements in-flight GET dedup, TTL + LRU caching, stale-fallback on network failure, and scoped mutation invalidation — i.e. most of SWR's core. The missing pieces were declarative ergonomics and revalidation triggers, so a ~100-line `useApiData` hook (`frontend/lib/hooks/useApiData.ts`) was added on top of the existing seam: `{ data, error, isLoading, isValidating, refresh }` with stale-while-revalidate semantics, revalidation on window focus/reconnect, and `key = null` to disable. `DataStorageCard` migrated as the first consumer (its raw fetch is now covered); behavior-rich tabs (QuestionBank, WordOfDay countdown, Home) migrate incrementally.
+- **Rationale**: Repo rule — no new dependency when existing machinery suffices. Adding `swr` would fork caching semantics (two TTL caches, two dedup maps) and require re-proving the offline/blip behavior the hand-rolled layer already encodes.
+- **Consequences**: One hook to maintain instead of a dep; tabs that need advanced SWR features (pagination helpers, optimistic mutation rollback) should re-evaluate this ADR at that point.

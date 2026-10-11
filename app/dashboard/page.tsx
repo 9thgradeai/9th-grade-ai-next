@@ -126,7 +126,10 @@ function TabSwitcher() {
             </div>
           )}
         >
-          <ActiveComponent />
+          {/* Stream the shell instantly; tab data suspends into the skeleton. */}
+          <Suspense key={`suspense-${activeTab}`} fallback={<TabChunkLoading />}>
+            <ActiveComponent />
+          </Suspense>
         </ErrorBoundary>
       </motion.div>
     </AnimatePresence>

@@ -326,14 +326,33 @@ export async function clearSessionCookie(res: NextResponse) {
  * Read the authenticated user from the request cookies.
  * Verifies the JWT, then loads the user from the database by email.
  * Sessions are stateless (JWT-only); no in-memory or DB session row is used.
+ *
+ * Per-request memoized (server-cache-react): repeated auth checks with the
+ * same Request object (handler + service helpers, layout + page composition)
+ * share one verify + lookup instead of stampeding the DB. Scope is strictly
+ * one Request identity — a new request (or test) always re-resolves, so bans
+ * and tokenVersion revocations still take effect immediately on the next
+ * request. Keyed by object identity (not React.cache()) so unit tests that
+ * build their own Request per case stay isolated with no shared-state leakage.
  * @param req - the incoming Request
  * @returns UserRecord if authenticated, null otherwise
  */
-export async function getSessionUser(req: Request): Promise<UserRecord | null> {
+const sessionUserMemo = new WeakMap<Request, Promise<UserRecord | null>>();
+
+export function getSessionUser(req: Request): Promise<UserRecord | null> {
+  const hit = sessionUserMemo.get(req);
+  if (hit) return hit;
+  const p = loadSessionUser(req);
+  sessionUserMemo.set(req, p);
+  return p;
+}
+
+async function loadSessionUser(req: Request): Promise<UserRecord | null> {
   const token = extractSessionToken(req);
   if (!token) return null;
-  // NOTE: deliberately uncached. This is a single PK lookup (~1ms), while
-  // any cache would delay ban/tokenVersion revocation. Correctness wins.
+  // NOTE: cached per-Request only (see getSessionUser). This stays a live
+  // lookup on every new request, so ban/tokenVersion revocation is never
+  // delayed across requests. Correctness wins.
   const payload = await verifySession(token);
   if (!payload?.email || typeof payload.email !== "string") return null;
 
