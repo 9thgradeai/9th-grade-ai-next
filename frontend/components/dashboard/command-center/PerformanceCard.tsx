@@ -33,6 +33,31 @@ function fmtDeltaTime(sec: number): string {
   return `${sign}${abs}m`;
 }
 
+// Module-level (never re-created during render): the previous-period delta
+// pill. `visible` replaces the old `hasPrev` closure.
+function DeltaPill({ value, format, visible }: { value: number; format: (v: number) => string; visible: boolean }) {
+  if (!visible) return null;
+  const up = value > 0;
+  const flat = value === 0;
+  return (
+    <span
+      className="perf-delta inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 font-mono text-[11px] font-bold tabular-nums"
+      style={{
+        color: flat ? "var(--dashboard-text-muted)" : up ? "var(--dashboard-success)" : "var(--dashboard-danger)",
+        background: flat
+          ? "var(--dashboard-surface-muted)"
+          : up
+            ? "var(--dashboard-success-subtle)"
+            : "var(--dashboard-danger-subtle)",
+      }}
+      aria-label={flat ? "no change vs previous period" : `${format(value)} vs previous period`}
+    >
+      {!flat && (up ? <TrendUp className="h-3 w-3" aria-hidden="true" /> : <TrendDown className="h-3 w-3" aria-hidden="true" />)}
+      {format(value)}
+    </span>
+  );
+}
+
 function usePrefersReducedMotion(): boolean {
   const [reduced, setReduced] = useState(false);
   useEffect(() => {
@@ -220,29 +245,6 @@ export default function PerformanceCard({
   const gradId = `perf-vel-grad-${metric}`;
   const animKey = `${metric}-${range}`;
 
-  const DeltaPill = ({ value, format }: { value: number; format: (v: number) => string }) => {
-    if (!hasPrev) return null;
-    const up = value > 0;
-    const flat = value === 0;
-    return (
-      <span
-        className="perf-delta inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 font-mono text-[11px] font-bold tabular-nums"
-        style={{
-          color: flat ? "var(--dashboard-text-muted)" : up ? "var(--dashboard-success)" : "var(--dashboard-danger)",
-          background: flat
-            ? "var(--dashboard-surface-muted)"
-            : up
-              ? "var(--dashboard-success-subtle)"
-              : "var(--dashboard-danger-subtle)",
-        }}
-        aria-label={flat ? "no change vs previous period" : `${format(value)} vs previous period`}
-      >
-        {!flat && (up ? <TrendUp className="h-3 w-3" aria-hidden="true" /> : <TrendDown className="h-3 w-3" aria-hidden="true" />)}
-        {format(value)}
-      </span>
-    );
-  };
-
   return (
     <figure className="command-card perf-hub relative overflow-hidden p-5 sm:p-6 flex flex-col h-full">
       <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -332,7 +334,7 @@ export default function PerformanceCard({
           <p className="font-mono text-lg font-extrabold tabular-nums" style={{ color: METRIC_THEMES.solved.from }}>
             {Math.round(animatedSolved).toLocaleString()}
           </p>
-          <DeltaPill value={solvedDelta} format={(v) => `${v > 0 ? "+" : v < 0 ? "−" : ""}${Math.abs(v)}`} />
+          <DeltaPill value={solvedDelta} format={(v) => `${v > 0 ? "+" : v < 0 ? "−" : ""}${Math.abs(v)}`} visible={hasPrev} />
         </div>
         <div className="perf-kpi rounded-xl border px-3 py-2.5 text-center" style={{ background: "var(--dashboard-surface-solid, var(--dashboard-surface))", borderColor: "var(--dashboard-border-muted)", borderTop: `2px solid ${METRIC_THEMES.accuracy.from}` }}>
           <p className="text-[11px] font-bold uppercase tracking-wider" style={{ color: "var(--dashboard-text-secondary)" }}>
@@ -341,7 +343,7 @@ export default function PerformanceCard({
           <p className="font-mono text-lg font-extrabold tabular-nums" style={{ color: METRIC_THEMES.accuracy.from }}>
             {Math.round(animatedAccuracy)}%
           </p>
-          <DeltaPill value={accDelta} format={(v) => `${v > 0 ? "+" : v < 0 ? "−" : ""}${Math.abs(v)}pp`} />
+          <DeltaPill value={accDelta} format={(v) => `${v > 0 ? "+" : v < 0 ? "−" : ""}${Math.abs(v)}pp`} visible={hasPrev} />
         </div>
         <div className="perf-kpi rounded-xl border px-3 py-2.5 text-center" style={{ background: "var(--dashboard-surface-solid, var(--dashboard-surface))", borderColor: "var(--dashboard-border-muted)", borderTop: `2px solid ${METRIC_THEMES.time.from}` }}>
           <p className="text-[11px] font-bold uppercase tracking-wider flex items-center justify-center gap-1" style={{ color: "var(--dashboard-text-secondary)" }}>
@@ -357,7 +359,7 @@ export default function PerformanceCard({
                   : "—"}
           </p>
           {metric === "time" ? (
-            <DeltaPill value={timeDelta} format={fmtDeltaTime} />
+            <DeltaPill value={timeDelta} format={fmtDeltaTime} visible={hasPrev} />
           ) : (
             <span className="font-mono text-[10px]" style={{ color: "var(--dashboard-text-muted)" }}>
               {metric === "accuracy" ? "peak" : fmtTime(Math.round(animatedTime))}

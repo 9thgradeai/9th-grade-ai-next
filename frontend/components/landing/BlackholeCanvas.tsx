@@ -261,6 +261,7 @@ export default function BlackholeCanvas({ className = "" }: { className?: string
       gl.shaderSource(sh, src);
       gl.compileShader(sh);
       if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) {
+        // eslint-disable-next-line no-restricted-globals -- NODE_ENV inlined by Next.js at build time
         if (process.env.NODE_ENV === "development") console.warn("Blackhole shader compile failed:", gl.getShaderInfoLog(sh));
         gl.deleteShader(sh);
         return null;
@@ -279,6 +280,7 @@ export default function BlackholeCanvas({ className = "" }: { className?: string
     gl.attachShader(program, fs);
     gl.linkProgram(program);
     if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+      // eslint-disable-next-line no-restricted-globals -- NODE_ENV inlined by Next.js at build time
       if (process.env.NODE_ENV === "development") console.warn("Blackhole program link failed:", gl.getProgramInfoLog(program));
       setFailed(true);
       return;

@@ -297,11 +297,11 @@ describe("SubjectTopicSelect (popup subject picker)", () => {
     );
 
     // Both cards reflect their own selected states (calm-density contract:
-    // accent border + primary-subtle surface, no glow).
+    // primary border + primary-subtle surface, no glow, no layout shift).
     const banglaCard = screen.getByText(subjects[0].nameBn).closest("button") as HTMLElement;
     const englishCard = screen.getByText(subjects[1].nameBn).closest("button") as HTMLElement;
-    expect(banglaCard.className).toContain("border-[var(--accent)]/40");
-    expect(englishCard.className).toContain("border-[var(--accent)]/40");
+    expect(banglaCard.className).toContain("border-[var(--dashboard-primary)]/40");
+    expect(englishCard.className).toContain("border-[var(--dashboard-primary)]/40");
     expect(banglaCard.className).not.toContain("shadow-neon-glow");
     expect(screen.getByText("নির্বাচিত: 10/30")).toBeTruthy();
     expect(screen.getByText("নির্বাচিত: 10/20")).toBeTruthy();

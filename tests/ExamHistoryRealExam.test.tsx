@@ -188,7 +188,7 @@ describe("RealExamTab", () => {
 
     expect(await screen.findByText("PDF এক্সপোর্ট অপশন")).toBeInTheDocument();
     expect(screen.getByText("উত্তরসহ")).toBeInTheDocument();
-    expect(screen.getByText("ব্যাখ্যাসহ")).toBeInTheDocument();
+    expect(screen.getByText(/ব্যাখ্যা থাকবে/)).toBeInTheDocument();
     expect(screen.getByText("শুদ্ধ বানান কোনটি?")).toBeInTheDocument();
   });
 

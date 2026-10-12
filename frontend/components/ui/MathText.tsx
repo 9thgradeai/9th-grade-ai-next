@@ -39,6 +39,7 @@ function renderLatex(latex: string, key: number, display: boolean, onError?: (e:
     const hasError = html.includes("katex-error");
     if (hasError && typeof window !== "undefined") {
       const msg = `KaTeX fallback for: ${latex.slice(0, 80)}`;
+      // eslint-disable-next-line no-restricted-globals -- NODE_ENV inlined by Next.js at build time
       if (process.env.NODE_ENV === "development") console.warn(`[MathText] ${msg}`);
       onError?.({ latex, message: msg });
     }
@@ -55,6 +56,7 @@ function renderLatex(latex: string, key: number, display: boolean, onError?: (e:
       />
     );
   } catch {
+    // eslint-disable-next-line no-restricted-globals -- NODE_ENV inlined by Next.js at build time
     if (process.env.NODE_ENV === "development") console.warn(`[MathText] KaTeX threw for: ${latex.slice(0, 80)}`);
     onError?.({ latex, message: "katex-throw" });
     return <Fragment key={key}>{display ? `$$${latex}$$` : `$${latex}$`}</Fragment>;

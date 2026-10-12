@@ -16,7 +16,6 @@ describe("AiTaskPanel", () => {
         error={null}
         onSubmit={handleSubmit}
         fields={<p>Form fields</p>}
-        onSubmit={() => {}}
       />
     );
     expect(screen.getByRole("heading", { name: "Test Title" })).toBeInTheDocument();

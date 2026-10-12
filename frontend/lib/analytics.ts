@@ -90,6 +90,7 @@ class Analytics {
     if (!this.enabled) {
       // Fall back to local storage for development/debugging
       this.events.push(eventData.event);
+      // eslint-disable-next-line no-restricted-globals -- NODE_ENV inlined by Next.js at build time
       if (process.env.NODE_ENV === "development") console.log("[Analytics]", eventData.event, eventData.data);
       return;
     }
@@ -105,6 +106,7 @@ class Analytics {
       body: JSON.stringify(payload),
       keepalive: true,
     }).catch((err) => {
+      // eslint-disable-next-line no-restricted-globals -- NODE_ENV inlined by Next.js at build time
       if (process.env.NODE_ENV === "development") console.error("Analytics send failed:", err);
       this.events.push(eventData.event);
     });

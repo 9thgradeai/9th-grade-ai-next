@@ -13,10 +13,11 @@ vi.mock("@/lib/toast-ctx", () => ({
 }));
 
 import SideNav from "@/components/dashboard/SideNav";
+import { LanguageProvider } from "@/lib/lang-ctx";
 
 describe("SideNav scroll containment", () => {
   it("renders the nav list with overscroll-contain so wheel events cannot escape to the document", () => {
-    const { container } = render(<SideNav activeTab="home" onChange={() => {}} />);
+    const { container } = render(<LanguageProvider><SideNav activeTab="home" onChange={() => {}} /></LanguageProvider>);
     const nav = container.querySelector('nav[aria-label="Desktop navigation"]');
     expect(nav).not.toBeNull();
     const scroller = nav!.querySelector(".overflow-y-auto");
