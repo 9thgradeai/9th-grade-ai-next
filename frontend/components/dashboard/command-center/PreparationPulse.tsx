@@ -90,13 +90,13 @@ function PulseItem({
 }) {
   const max = Math.max(1, ...samples.map((sample) => sample.value));
   return (
-    <div className="preparation-metric min-w-0 rounded-xl border p-4" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}>
+    <div role="group" aria-label={`${label}: ${value}`} className="preparation-metric min-w-0 rounded-xl border p-4 transition-[border-color,box-shadow] duration-150 hover:border-[var(--dashboard-primary)]/30 hover:shadow-sm" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}>
       <div className="flex items-center justify-between gap-2 text-[var(--dashboard-text-secondary)]">
         <span className="text-xs font-medium">{label}</span>
         <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
       </div>
       <div className="mt-4 flex items-end justify-between gap-3">
-        <span className="font-display text-2xl font-semibold tabular-nums tracking-tight text-[var(--dashboard-text-primary)]">
+        <span className="font-display text-2xl font-semibold tabular-nums tracking-tight text-[var(--dashboard-text-primary)]" aria-hidden="true">
           {value}
         </span>
           {samples.length > 0 && (
@@ -104,13 +104,13 @@ function PulseItem({
               {samples.map((sample) => (
                 <motion.span
                   key={sample.date}
-                  className="flex-1 rounded-t-sm bg-[var(--dashboard-primary)] hover:opacity-80 transition-opacity cursor-default origin-bottom"
+                  className="flex-1 rounded-t-sm bg-[var(--dashboard-primary)] origin-bottom"
                   style={{ height: `${(sample.value / max) * 100}%` }}
-                  // Bars spring up from 0 on first mount only (transform-only);
-                  // the final layout height is untouched.
-                  initial={animateBars ? { scaleY: 0 } : false}
-                  animate={{ scaleY: 1 }}
-                  transition={animateBars ? { type: "spring", stiffness: 400, damping: 14 } : undefined}
+                  // Bars fade-rise on first mount only (transform + opacity,
+                  // Frequency Gate: <220ms easeOut, never on revalidation).
+                  initial={animateBars ? { scaleY: 0, opacity: 0 } : false}
+                  animate={{ scaleY: 1, opacity: 1 }}
+                  transition={animateBars ? { duration: 0.22, ease: "easeOut" } : undefined}
                   title={`${sample.date}: ${sample.value}`}
                   aria-label={`${sample.date}: ${sample.value}`}
                 />

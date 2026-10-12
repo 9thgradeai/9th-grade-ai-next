@@ -76,7 +76,7 @@ export default function BottomNav({ activeTab, onChange }: BottomNavProps) {
               <button
                 key={tab.id}
                 onClick={() => selectTab(tab.id)}
-                className="relative flex flex-col items-center justify-center gap-1 flex-1 min-h-[56px] rounded-2xl py-2 transition-colors hover:bg-[var(--dashboard-surface-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                className="relative flex flex-col items-center justify-center gap-1 flex-1 min-h-[56px] rounded-2xl py-2 cursor-pointer transition-[background-color,color,opacity] duration-150 hover:bg-[var(--dashboard-surface-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
                 style={
                   active
                     ? { background: "var(--dashboard-primary-subtle)", color: "var(--dashboard-primary)", fontWeight: 700 }
@@ -85,6 +85,13 @@ export default function BottomNav({ activeTab, onChange }: BottomNavProps) {
                 aria-label={t(lang, tab.label, tab.labelEn)}
                 aria-current={active ? "page" : undefined}
               >
+                {active && (
+                  <span
+                    className="absolute top-1 h-1 w-8 rounded-full"
+                    style={{ background: "var(--dashboard-primary)" }}
+                    aria-hidden="true"
+                  />
+                )}
                 <Icon className="h-[22px] w-[22px]" strokeWidth={active ? 2.3 : 1.9} />
                 <span className="text-[11px] font-bold leading-none">
                   {t(lang, tab.short, tab.shortEn)}

@@ -328,12 +328,13 @@ export default function SubjectTopicSelect({
             role="dialog"
             aria-modal="true"
             aria-labelledby="subject-topic-popup-title"
+            aria-describedby="subject-topic-popup-desc"
             tabIndex={-1}
-            initial={{ y: 48, scale: 0.98 }}
-            animate={{ y: 0, scale: 1 }}
-            transition={{ type: "spring", damping: 28, stiffness: 320 }}
+            initial={{ y: 24, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.18, ease: "easeOut" }}
             onClick={(e) => e.stopPropagation()}
-            className="glass-card rounded-t-2xl sm:rounded-2xl border border-[var(--accent)]/30 w-full sm:max-w-md max-h-[88vh] flex flex-col overflow-hidden"
+            className="glass-card rounded-t-2xl sm:rounded-2xl border border-[var(--dashboard-primary)]/25 w-full sm:max-w-md max-h-[88vh] flex flex-col overflow-hidden"
           >
             {/* Header */}
             <div className="p-4 sm:p-5 border-b border-[var(--dashboard-border-muted)] flex items-start justify-between gap-3">
@@ -347,8 +348,8 @@ export default function SubjectTopicSelect({
                   >
                     {openSubject.nameBn}
                   </h3>
-                  <p className="text-[10px] font-mono" style={{ color: "var(--dashboard-text-muted)" }}>
-                    {openSubject.questionCount}টি প্রশ্ন উপলব্ধ
+                  <p id="subject-topic-popup-desc" className="text-[10px] font-mono" style={{ color: "var(--dashboard-text-muted)" }}>
+                    {openSubject.questionCount}টি প্রশ্ন উপলব্ধ · খালি নির্বাচন = পুরো বিষয়
                   </p>
                 </div>
               </div>
@@ -356,7 +357,7 @@ export default function SubjectTopicSelect({
                 type="button"
                 onClick={closePopup}
                 aria-label="বন্ধ করুন"
-                className="w-11 h-11 rounded-xl flex items-center justify-center text-[var(--dashboard-text-muted)] hover:text-[var(--dashboard-text-primary)] hover:bg-[var(--surface-hover)] flex-shrink-0 transition-colors"
+                className="w-11 h-11 rounded-xl flex items-center justify-center text-[var(--dashboard-text-muted)] hover:text-[var(--dashboard-text-primary)] hover:bg-[var(--surface-hover)] flex-shrink-0 cursor-pointer transition-[background-color,color] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -366,14 +367,15 @@ export default function SubjectTopicSelect({
                 the page behind at the list boundaries (defense in depth
                 alongside the scroll-lock above). */}
             <div className="flex-1 overflow-y-auto overscroll-contain p-4 sm:p-5 space-y-4">
-              {/* Whole-subject toggle */}
+              {/* Whole-subject toggle — empty paths = whole subject (server matches all leaves) */}
               <button
                 type="button"
                 onClick={toggleWholeSubject}
-                className={`w-full px-3 py-2.5 rounded-xl border text-xs font-mono transition-colors ${
+                aria-pressed={popupPaths.length === 0}
+                className={`w-full px-3 py-2.5 min-h-[44px] rounded-xl border text-xs font-mono cursor-pointer transition-[background-color,color,border-color] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] ${
                   popupPaths.length === 0
-                    ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] border-[var(--accent)]"
-                    : "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] hover:border-[var(--accent)]/40"
+                    ? "bg-[var(--dashboard-primary)] text-[var(--dashboard-text-inverse)] border-[var(--dashboard-primary)]"
+                    : "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] hover:border-[var(--dashboard-primary)]/40 hover:text-[var(--dashboard-text-primary)]"
                 }`}
               >
                 {popupPaths.length === 0 ? "পুরো বিষয় ✓" : "সম্পূর্ণ বিষয় নির্বাচন করুন"}
@@ -419,7 +421,7 @@ export default function SubjectTopicSelect({
                     onClick={() => setPopupCount((popupSel?.count ?? 0) - 1)}
                     aria-label="বিষয়ের প্রশ্ন কমান"
                     disabled={(popupSel?.count ?? 0) <= 0}
-                    className="w-11 h-11 rounded-xl bg-[var(--surface-raised)] border border-[var(--accent)]/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-[var(--accent)]/40 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                    className="w-11 h-11 rounded-xl bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] flex items-center justify-center text-[var(--dashboard-primary)] hover:border-[var(--dashboard-primary)]/40 active:opacity-70 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-[border-color,opacity] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
                   >
                     <Minus className="w-5 h-5" />
                   </button>
@@ -430,13 +432,13 @@ export default function SubjectTopicSelect({
                     value={popupSel?.count ?? 0}
                     onChange={(e) => setPopupCount(Number(e.target.value))}
                     aria-label={`${openSubject.nameBn} এর প্রশ্ন সংখ্যা`}
-                    className="w-20 text-center bg-[var(--surface-raised)] border border-[var(--accent)]/20 rounded-xl py-2.5 text-[var(--dashboard-primary)] font-mono text-base font-bold focus:outline-none focus:border-[var(--accent)]/50 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none tabular-nums"
+                    className="w-20 text-center bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] rounded-xl py-2.5 text-[var(--dashboard-primary)] font-mono text-base font-bold focus:outline-none focus:border-[var(--dashboard-primary)]/50 focus:ring-2 focus:ring-[var(--dashboard-focus-ring)] [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none tabular-nums"
                   />
                   <button
                     type="button"
                     onClick={() => setPopupCount((popupSel?.count ?? 0) + 1)}
                     aria-label="বিষয়ের প্রশ্ন বাড়ান"
-                    className="w-11 h-11 rounded-xl bg-[var(--surface-raised)] border border-[var(--accent)]/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-[var(--accent)]/40 active:scale-95 transition-all"
+                    className="w-11 h-11 rounded-xl bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] flex items-center justify-center text-[var(--dashboard-primary)] hover:border-[var(--dashboard-primary)]/40 active:opacity-70 cursor-pointer transition-[border-color,opacity] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
                   >
                     <Plus className="w-5 h-5" />
                   </button>
@@ -458,7 +460,7 @@ export default function SubjectTopicSelect({
               <button
                 type="button"
                 onClick={closePopup}
-                className="flex-1 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors"
+                className="flex-1 py-2.5 min-h-[44px] bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] active:opacity-90 cursor-pointer transition-[background-color,opacity] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
               >
                 সম্পন্ন
               </button>

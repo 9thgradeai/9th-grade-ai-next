@@ -59,8 +59,8 @@ export default function NavRows({ activeTab, onChange, variant = "full" }: NavRo
                     title={collapsed ? `${tab.label} · ${tab.bengali}` : t(lang, tab.bengali, tab.label)}
                     className={
                       collapsed
-                        ? "relative mx-auto flex h-12 w-12 items-center justify-center rounded-2xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
-                        : "relative flex min-h-[48px] w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                        ? "relative mx-auto flex h-12 w-12 items-center justify-center rounded-2xl cursor-pointer transition-[background-color,color,opacity] duration-150 hover:bg-[var(--dashboard-surface-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                        : "relative flex min-h-[48px] w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left cursor-pointer transition-[background-color,color,opacity] duration-150 hover:bg-[var(--dashboard-surface-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
                     }
                     style={
                       isActive

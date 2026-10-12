@@ -56,7 +56,7 @@ export default function HomeWelcome({ onStartPractice }: { onStartPractice?: () 
         <div className="min-w-0 flex-1">
           <p className="command-eyebrow">
             {t(lang, greet.bn, greet.en)}
-            {firstName ? `, ${firstName}` : ""} ✦
+            {firstName ? `, ${firstName}` : ""} <span aria-hidden="true">✦</span>
           </p>
           <h2
             className="font-display mt-1 text-lg sm:text-xl font-semibold tracking-tight"
@@ -115,7 +115,7 @@ export default function HomeWelcome({ onStartPractice }: { onStartPractice?: () 
               onClick={prev}
               aria-label={t(lang, "আগের উক্তি", "Previous quote")}
               title={t(lang, "আগের উক্তি", "Previous quote")}
-              className="inline-flex h-11 w-11 items-center justify-center rounded-lg border min-h-[44px] min-w-[44px]"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-lg border min-h-[44px] min-w-[44px] cursor-pointer transition-[background-color,color,border-color] duration-150 hover:border-[var(--dashboard-primary)]/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
               style={{
                 borderColor: "var(--dashboard-border-muted)",
                 color: "var(--dashboard-text-secondary)",
@@ -128,7 +128,7 @@ export default function HomeWelcome({ onStartPractice }: { onStartPractice?: () 
               onClick={next}
               aria-label={t(lang, "পরের উক্তি", "Next quote")}
               title={t(lang, "পরের উক্তি", "Next quote")}
-              className="inline-flex h-11 w-11 items-center justify-center rounded-lg border min-h-[44px] min-w-[44px]"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-lg border min-h-[44px] min-w-[44px] cursor-pointer transition-[background-color,color,border-color] duration-150 hover:border-[var(--dashboard-primary)]/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
               style={{
                 borderColor: "var(--dashboard-border-muted)",
                 color: "var(--dashboard-text-secondary)",
@@ -151,7 +151,7 @@ export default function HomeWelcome({ onStartPractice }: { onStartPractice?: () 
           <div className="shrink-0 sm:pt-8">
             <button
               onClick={onStartPractice}
-              className="command-secondary-btn !py-2.5 text-sm"
+              className="command-primary-btn !py-2.5 text-sm"
             >
               {t(lang, "পড়া শুরু করুন", "Start studying")}
               <ArrowRight className="h-4 w-4" aria-hidden="true" />

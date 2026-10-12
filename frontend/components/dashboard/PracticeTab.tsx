@@ -514,14 +514,15 @@ export default function PracticeTab() {
         animate={{ opacity: 1, y: 0 }}
         className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4"
       >
-        <div className="flex gap-2 bg-[var(--surface-muted)] border border-[var(--border-subtle)] rounded-xl p-1 w-fit">
+        <div className="flex gap-2 bg-[var(--surface-muted)] border border-[var(--border-subtle)] rounded-xl p-1 w-fit" role="group" aria-label="Practice mode">
           {MODES.map((m) => (
             <button
               key={m.id}
               onClick={() => setMode(m.id)}
-              className={`flex items-center gap-2 px-4 py-2 text-sm font-mono rounded-lg transition-all ${
+              aria-pressed={mode === m.id}
+              className={`flex items-center gap-2 px-4 py-2 min-h-[44px] text-sm font-mono rounded-lg transition-[background-color,color,border-color,opacity] duration-150 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] ${
                 mode === m.id
-                  ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)]"
+                  ? "bg-[var(--dashboard-primary)] text-[var(--dashboard-text-inverse)]"
                   : "text-[var(--dashboard-text-secondary)] hover:text-[var(--dashboard-text-primary)] hover:bg-[var(--surface-hover)]"
               }`}
             >
