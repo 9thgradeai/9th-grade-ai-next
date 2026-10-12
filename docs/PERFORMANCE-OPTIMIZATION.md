@@ -184,19 +184,23 @@ needs infra/budget decisions).
 
 ### Phase 0 — Instrumentation (do first, cheap)
 - [x] `@next/bundle-analyzer` installed (devDep **16.3.4**, matches Next 16.3.1) and
-      wired into `next.config.ts` (opt-in via `ANALYZE=true npm run build`, the
-      existing `npm run analyze` script). Generates `.next/analyze/{client,edge,nodejs}.html`
+      wired into `next.config.ts` (opt-in via `ANALYZE=true next build --webpack`,
+      the existing `npm run analyze` script — `--webpack` is required since
+      ADR-060 moved default builds to Turbopack and the analyzer is
+      webpack-only). Generates `.next/analyze/{client,edge,nodejs}.html`
       treemaps. Normal builds are byte-identical; analysis is opt-in. See ADR in `docs/DECISIONS.md`.
-- [x] **Baseline captured** (2026-09-01) from `.next/analyze/client.html` — see §5.
+- [x] **Baseline captured** (2026-09-01; **recaptured 2026-10-12**, see ADR-063)
+      from `.next/analyze/client.html` — see §5.
       Profiling verdict: the initial-JS floor is dominated by **Sentry client
-      (~285 KB parsed / 92 KB gzip)** and **Next runtime (~663 KB parsed / 198 KB
+      (~493 KB parsed / 160 KB gzip)** and **Next runtime (~663 KB parsed / 198 KB
       gzip)**; Framer Motion is correctly isolated (161 KB parsed / 56 KB gzip) and
       only loads on animating routes.
 - [x] **Perf-budget gate** shipped: `scripts/perf-budget.ts` +
       `npm run perf:baseline` / `npm run perf:check`. The gate reads the analyzer
       output and fails (exit 1) if (a) any namespace regresses >5% parsed vs its
       captured baseline, (b) any single asset exceeds the 180 KB gzip ceiling, or
-      (c) the aggregate Sentry client gzip exceeds its 92 KB ceiling. The per-asset
+      (c) the aggregate Sentry client gzip exceeds its 165 KB ceiling (raised from
+      92 KB in ADR-063 after six weeks of SDK drift). The per-asset
       ceiling was updated from 90 KB → 180 KB to accommodate the `hls.js` vendor
       chunk (~172.5 KB gzip), which is an intentional large dependency for hero-video
       HLS streaming — all other initial chunks are well under 80 KB gzip. Captured

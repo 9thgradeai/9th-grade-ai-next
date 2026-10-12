@@ -18,15 +18,8 @@
 import { PrismaClient } from "@prisma/client";
 import { loadBbTaxonomy, BB_SUBJECT_META, BB_ARCHIVE_SUBJECT_META, type TaxonomyNode } from "./taxonomy";
 
-const DATABASE_URL = process.env.DATABASE_URL;
-if (!DATABASE_URL) {
-  console.error("DATABASE_URL is required");
-  process.exit(1);
-}
-
-const prisma = new PrismaClient({ datasources: { db: { url: DATABASE_URL } } });
-
 async function createTopicTree(
+  prisma: PrismaClient,
   subjectId: number,
   nodes: TaxonomyNode[],
   parentId: number | null,
@@ -44,13 +37,19 @@ async function createTopicTree(
     });
     sort++;
     if (n.children.length > 0) {
-      sort = await createTopicTree(subjectId, n.children, topic.id, depth + 1, path, sort);
+      sort = await createTopicTree(prisma, subjectId, n.children, topic.id, depth + 1, path, sort);
     }
   }
   return sort;
 }
 
-async function main() {
+/**
+ * Build the Bangladesh Bank ecosystem subjects with their full recursive
+ * topic trees. Idempotent (upserts only) — safe to call from the main
+ * `prisma db seed` flow (`database/prisma/seed.ts`) before any importer
+ * that addresses Bank topic paths (e.g. seed-bangla-lit).
+ */
+export async function seedBbSubjects(prisma: PrismaClient): Promise<{ subjects: number; topics: number }> {
   const bb = await prisma.examEcosystem.upsert({
     where: { code: "BANGLADESH_BANK" },
     update: {},
@@ -90,7 +89,7 @@ async function main() {
     });
     // Paths are stored from the subject root (subject segment included),
     // matching the Topic.path contract in database/prisma/schema.prisma.
-    const nextSort = await createTopicTree(subject.id, node.children, null, 1, node.name, 1);
+    const nextSort = await createTopicTree(prisma, subject.id, node.children, null, 1, node.name, 1);
     totalTopics += nextSort - 1;
     console.log(`  ✓ ${meta.nameBn} (${meta.nameEn}): id=${subject.id}`);
     sortOrder++;
@@ -111,8 +110,29 @@ async function main() {
   const subjectCount = await prisma.subject.count({ where: { ecosystemId: bb.id } });
   const topicCount = await prisma.topic.count({ where: { subject: { ecosystemId: bb.id } } });
   console.log(`\n✓ Done. ${subjectCount} subjects, ${topicCount} topics in DB for BB ecosystem`);
+  return { subjects: subjectCount, topics: topicCount };
 }
 
-main()
-  .catch((e) => { console.error("Failed:", e); process.exit(1); })
-  .finally(() => prisma.$disconnect());
+async function main() {
+  const DATABASE_URL = process.env.DATABASE_URL;
+  if (!DATABASE_URL) {
+    console.error("DATABASE_URL is required");
+    process.exit(1);
+  }
+  const prisma = new PrismaClient({ datasources: { db: { url: DATABASE_URL } } });
+  try {
+    await seedBbSubjects(prisma);
+  } catch (e) {
+    console.error("Failed:", e);
+    process.exit(1);
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+
+// Standalone entry only — guarded so importing seedBbSubjects() from the
+// main seed flow (or tests) never fires a concurrent seeding run on import
+// (which would race ecosystem/subject id assignment).
+if (process.argv[1]?.endsWith("seed-bb-subjects.ts")) {
+  main();
+}

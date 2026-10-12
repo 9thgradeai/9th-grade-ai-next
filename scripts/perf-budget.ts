@@ -25,7 +25,9 @@
  * Absolute ceilings are fixed so a fresh baseline can never silently ratchet the
  * footprint up; the namespaced comparison additionally catches smaller relative
  * regressions. Requires an ANALYZE build first:
- *   ANALYZE=true next build   (the existing `npm run analyze`).
+ *   ANALYZE=true next build --webpack   (the existing `npm run analyze`).
+ * (--webpack: @next/bundle-analyzer is webpack-only and emits nothing under
+ * Next 16's default Turbopack build.)
  */
 
 /* eslint-disable no-console */
@@ -46,9 +48,12 @@ const BASELINE_FILE = resolve(process.cwd(), "docs/perf/client-baseline.json");
 // the known hls.js floor. All other initial chunks are well under 80 KB gzip.
 const ASSET_GZIP_BUDGET_BYTES = 180 * 1024;
 // @sentry/nextjs + its sibling packages are the largest controllable piece of
-// the base floor (~285 KB parsed / ~85 KB gzip). Ceiling it so new Sentry
-// integrations can't silently inflate the initial bundle.
-const SENTRY_GZIP_BUDGET_BYTES = 92 * 1024;
+// the base floor. Raised 92 KB → 165 KB on 2026-10-12 (ADR-031): the Sept 1
+// baseline predates six weeks of @sentry/nextjs 10.x SDK drift (51 KB → 160 KB
+// gzip with the import shape unchanged — still idle-deferred, never initial),
+// so the old ceiling no longer describes the dependency. 165 KB keeps ~3%
+// headroom over the measured 160.2 KB while still catching future SDK bloat.
+const SENTRY_GZIP_BUDGET_BYTES = 165 * 1024;
 // Relative parsed-size regression tolerance vs a captured baseline.
 const BASELINE_REGRESSION_PCT = 0.05;
 

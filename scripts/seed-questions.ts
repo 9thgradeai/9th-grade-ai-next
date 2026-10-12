@@ -248,12 +248,14 @@ class DuplicateRegistry {
 }
 
 // Finds or updates the Subject row for a canonical Bengali name (upsert by
-// the compound ecosystemId+nameBn key).
+// the compound ecosystemId+nameBn key). The ecosystem id is always resolved
+// from the BCS ecosystem row — never hardcode a numeric id (sequence
+// assignment depends on seed order and drifted databases).
 async function ensureSubject(
   prisma: PrismaClient,
   nameBn: string,
   sortOrder: number,
-  ecosystemId: number = 1,
+  ecosystemId: number,
 ): Promise<{ id: number }> {
   const meta = subjectMetaByNameBn(nameBn) ?? SUBJECT_META[0];
   const data = {
@@ -510,10 +512,16 @@ export async function seedQuestions(prisma: PrismaClient): Promise<number> {
 
   const taxonomy = loadTaxonomy();
 
+  // BCS ecosystem id resolved by code — content must land in the BCS
+  // ecosystem regardless of sequence assignment.
+  const bcsEcosystem = await prisma.examEcosystem.findUnique({ where: { code: "BCS" } });
+  if (!bcsEcosystem) throw new Error("BCS ecosystem not found — seed ecosystems before questions");
+  const bcsEcosystemId = bcsEcosystem.id;
+
   // Ensure all 10 canonical subjects exist in architecture order.
   const subjectIds: Record<string, number> = {};
   for (const [i, meta] of SUBJECT_META.entries()) {
-    const subject = await ensureSubject(prisma, meta.nameBn, i);
+    const subject = await ensureSubject(prisma, meta.nameBn, i, bcsEcosystemId);
     subjectIds[meta.nameBn.normalize("NFC")] = subject.id;
   }
 

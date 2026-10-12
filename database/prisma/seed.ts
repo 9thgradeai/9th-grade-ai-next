@@ -35,6 +35,7 @@ import {
 import { FLASHCARD_LIBRARY } from "../data/flashcard-library";
 import { seedQuestions } from "../../scripts/seed-questions";
 import { BB_SUBJECT_META, BB_ARCHIVE_SUBJECT_META } from "../../scripts/taxonomy";
+import { seedBbSubjects } from "../../scripts/seed-bb-subjects";
 import { seedBcsQuestions } from "../../scripts/seed-bcs";
 import { seedBanglaLitQuestions } from "../../scripts/seed-bangla-lit";
 import { seedShondhiQuestions } from "../../scripts/seed-shondhi";
@@ -164,6 +165,13 @@ async function main() {
     bbSortOrder++;
   }
   console.log(`  ✓ ${bbSubjectMeta.length} BB subjects (topics created by seed-bb-subjects.ts)`);
+  // Bank topic trees (bb-taxonomy.json) must exist before any importer that
+  // addresses Bank topic paths (seed-bangla-lit, folder imports). Previously
+  // this ran only as a standalone script, so `prisma db seed` left Bank
+  // subjects topic-less and the Bangla-Lit import threw on the missing era
+  // parent (e2e seed failure).
+  const bbTrees = await seedBbSubjects(prisma);
+  console.log(`  ✓ BB topic trees (${bbTrees.topics} topics across ${bbTrees.subjects} subjects)`);
 
   // --- Subjects + recursive topics + questions (content taxonomy) ---
   // seedQuestions owns the content taxonomy: it creates the 10 subjects, builds

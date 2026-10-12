@@ -91,8 +91,10 @@ const baseConfig: NextConfig = {
   },
 } satisfies NextConfig;
 
-// Bundle analysis is opt-in via `ANALYZE=true npm run build` (the existing
-// `npm run analyze` script). Wrapping the base config keeps normal builds
+// Bundle analysis is opt-in via `ANALYZE=true next build --webpack` (the
+// existing `npm run analyze` script). --webpack is required: @next/bundle-
+// analyzer is webpack-only and emits nothing under Next 16's default
+// Turbopack build. Wrapping the base config keeps normal builds
 // byte-identical; analysis builds emit .next/analyze/*.html treemaps for
 // chunk-profile work (see docs/PERFORMANCE-OPTIMIZATION.md §3 Phase 0).
 // eslint-disable-next-line @typescript-eslint/no-require-imports
