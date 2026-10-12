@@ -64,7 +64,8 @@ describe("PracticeStartDock (sticky one-handed start)", () => {
       />,
     );
     expect(screen.getByTestId("dock-total").textContent).toBe("60");
-    expect(screen.getByText("/ 50 উপলব্ধ")).toBeTruthy();
+    expect(screen.getByText(/\/ 50 উপলব্ধ/)).toBeTruthy();
+    expect(screen.getByRole("alert")).toBeTruthy();
   });
 });
 

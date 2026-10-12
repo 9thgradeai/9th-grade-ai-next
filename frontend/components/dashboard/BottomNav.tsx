@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { motion, AnimatePresence, useDragControls, useReducedMotion } from "framer-motion";
 import { useState, useCallback } from "react";
 import type { ComponentType } from "react";
 import { TABS, BOTTOM_TAB_IDS, type TabId } from "@/lib/data";
@@ -50,6 +50,8 @@ export default function BottomNav({ activeTab, onChange }: BottomNavProps) {
   const [moreOpen, setMoreOpen] = useState(false);
   const closeMore = useCallback(() => setMoreOpen(false), []);
   const sheetRef = useDialogA11y<HTMLDivElement>(moreOpen, closeMore);
+  // Sheet handle owns the dismiss drag so grid buttons keep native taps.
+  const moreSheetControls = useDragControls();
   useScrollLock(moreOpen);
   const isActive = (id: TabId) => activeTab === id;
   const extraTabs = TABS.filter((t) => !BOTTOM_TABS.find((bt) => bt.id === t.id));
@@ -137,10 +139,21 @@ export default function BottomNav({ activeTab, onChange }: BottomNavProps) {
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={shouldReduceMotion ? { duration: 0 } : { type: "spring", stiffness: 340, damping: 32 }}
+              drag={shouldReduceMotion ? false : "y"}
+              dragListener={false}
+              dragControls={moreSheetControls}
+              dragConstraints={{ top: 0 }}
+              dragElastic={0.2}
+              onDragEnd={(_, info) => {
+                if (info.offset.y > 100) closeMore();
+              }}
               className="absolute bottom-0 left-0 right-0 rounded-t-[20px] border-t shadow-2xl pb-safe max-h-[72vh] overflow-y-auto overscroll-contain"
               style={{ background: "var(--dashboard-surface-solid)", borderColor: "var(--dashboard-border-muted)" }}
             >
-              <div className="flex items-center justify-center pt-3 pb-2">
+              <div
+                className="flex items-center justify-center pt-3 pb-2 cursor-grab active:cursor-grabbing touch-none"
+                onPointerDown={(e) => moreSheetControls.start(e)}
+              >
                 <span className="w-9 h-1 rounded-full" style={{ background: "var(--dashboard-border-muted)" }} aria-hidden="true" />
               </div>
               <div className="flex items-center justify-between px-5 pb-3">

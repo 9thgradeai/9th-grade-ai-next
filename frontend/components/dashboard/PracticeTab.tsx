@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Check, BookOpen, Timer, CaretLeft, CaretRight, CircleDashed, Trophy, ArrowCounterClockwise, Target, CheckCircle, XCircle, Spinner, Warning, Package, Sun } from "@phosphor-icons/react";
 import { api } from "@/lib/services/api";
 import { useEcosystem } from "@/lib/ecosystem-ctx";
@@ -28,6 +28,7 @@ import { allocateEvenly, shuffle } from "@/lib/balanced";
 import { shuffleSessionOptions } from "@/lib/shuffle-options";
 import { useDialogA11y } from "@/lib/use-dialog-a11y";
 import { useScrollLock } from "@/lib/use-scroll-lock";
+import { useToastSafe } from "@/lib/toast-ctx";
 import {
   QUICK_EXAM_KEY,
   loadExamSnapshot,
@@ -122,6 +123,27 @@ export default function PracticeTab() {
   const unansweredDialogRef = useDialogA11y<HTMLDivElement>(showUnansweredConfirm, closeUnansweredConfirm);
   useScrollLock(showUnansweredConfirm);
   const [timerKey, setTimerKey] = useState(0);
+  // Swipe navigation (mobile-app feel): horizontal swipe on the question
+  // canvas moves prev/next. Ref-held so swipes never re-render.
+  const touchX = useRef<number | null>(null);
+  const toast = useToastSafe();
+  // Reduced-motion: entrances render in their final state (dashboard shell
+  // already wraps in MotionConfig reducedMotion="user" — this is the local
+  // gate for the per-section fade-ups).
+  const reduceMotion = useReducedMotion();
+  // Review filters + lazy expansion: the result list can be long on mobile,
+  // so wrong/unanswered auto-expand while correct stays collapsed, and the
+  // AI explanation button mounts only inside an expanded item.
+  type ReviewFilter = "all" | "correct" | "wrong" | "unanswered";
+  const [reviewFilter, setReviewFilter] = useState<ReviewFilter>("all");
+  const [expandedReview, setExpandedReview] = useState<Record<number, boolean>>({});
+  // Mis-tap undo: single-choice locks on first pick, so a 4s window lets
+  // users revert an accidental tap. Ref-held timeout, state-held target.
+  const [undoPick, setUndoPick] = useState<number | null>(null);
+  const undoTimer = useRef<number | null>(null);
+  useEffect(() => () => {
+    if (undoTimer.current != null) window.clearTimeout(undoTimer.current);
+  }, []);
   // Total session time (minutes, editable). Auto = 30s per selected MCQ.
   const [durationMin, setDurationMin] = useState(10);
   const [durationTouched, setDurationTouched] = useState(false);
@@ -262,6 +284,9 @@ export default function PracticeTab() {
     setCurrentIndex(0);
     setAnswers({});
     setMultiLocked({});
+    setUndoPick(null);
+    setReviewFilter("all");
+    setExpandedReview({});
     setResult(null);
     setLoadError(null);
     setSubmitError(null);
@@ -396,6 +421,27 @@ export default function PracticeTab() {
     if (!q || isLocked(q)) return;
     if (next.length === 0) return;
     setAnswers((prev) => ({ ...prev, [questionId]: next }));
+    // Single-choice mis-tap window: offer a 4s undo (multi has its own
+    // lock button, so no window needed there).
+    if (!isMulti(q)) {
+      setUndoPick(questionId);
+      if (undoTimer.current != null) window.clearTimeout(undoTimer.current);
+      undoTimer.current = window.setTimeout(() => setUndoPick(null), 4000);
+    }
+  };
+
+  const undoSinglePick = (questionId: number) => {
+    setAnswers((prev) => {
+      if (prev[questionId] === undefined) return prev;
+      const next = { ...prev };
+      delete next[questionId];
+      return next;
+    });
+    setUndoPick(null);
+    if (undoTimer.current != null) {
+      window.clearTimeout(undoTimer.current);
+      undoTimer.current = null;
+    }
   };
 
   const lockMultiAnswer = (questionId: number) => {
@@ -420,6 +466,18 @@ export default function PracticeTab() {
   useEffect(() => { answersRef.current = answers; }, [answers]);
   useEffect(() => { resultRef.current = result; }, [result]);
   useEffect(() => { ecosystemRef.current = ecosystem; }, [ecosystem]);
+  // Auto-expand wrong/unanswered when the result lands (correct stays
+  // collapsed); the AI button mounts only inside expanded items.
+  useEffect(() => {
+    if (!result) return;
+    const open: Record<number, boolean> = {};
+    for (const q of sessionQuestionsRef.current) {
+      const ua = answersRef.current[q.id] ?? [];
+      if (ua.length === 0 || !isAnswerCorrect(q, ua)) open[q.id] = true;
+    }
+    setExpandedReview(open);
+    setReviewFilter("all");
+  }, [result]);
 
   const submitAnswers = useCallback(async () => {
     if (practiceSubmitInFlight.current) return practiceSubmitInFlight.current;
@@ -483,9 +541,22 @@ export default function PracticeTab() {
     // Per-question timer expiry advances to the next question, it must never
     // auto-grade the whole session with mostly-blank answers.
     if (resultRef.current) return;
-    setCurrentIndex((i) => Math.min(i + 1, Math.max(0, sessionQuestionsRef.current.length - 1)));
+    const qs = sessionQuestionsRef.current;
+    setCurrentIndex((i) => {
+      const next = Math.min(i + 1, Math.max(0, qs.length - 1));
+      // Feedback only when actually advancing (not stuck on the last item).
+      if (next !== i) {
+        try {
+          navigator.vibrate?.(20);
+        } catch {
+          // haptics unavailable — ignore
+        }
+        toast.info("সময় শেষ → পরের প্রশ্ন");
+      }
+      return next;
+    });
     setTimerKey((k) => k + 1);
-  }, []);
+  }, [toast]);
 
   // Safe navigation: block route/tab close while a quick-practice submission is
   // in flight so a mobile browser kill can't abandon the request mid-flight.
@@ -510,7 +581,7 @@ export default function PracticeTab() {
       </div>
       {/* Mode toggle */}
       <motion.div
-        initial={{ opacity: 0, y: 10 }}
+        initial={reduceMotion ? false : { opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4"
       >
@@ -546,12 +617,12 @@ export default function PracticeTab() {
           {/* ── CONFIG: subject → topic → subtopic picker ── */}
           {!sessionActive && (
             <motion.div
-              initial={{ opacity: 0, y: 10 }}
+              initial={reduceMotion ? false : { opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               className="space-y-6"
             >
               <motion.div
-                initial={{ opacity: 0, y: 10 }}
+                initial={reduceMotion ? false : { opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="command-card command-card--hero overflow-hidden"
               >
@@ -725,35 +796,34 @@ export default function PracticeTab() {
           {/* Active quiz session */}
           {sessionActive && !loading && !loadError && !result && totalQuestions > 0 && (
             <motion.div
-              initial={{ opacity: 0, y: 10 }}
+              initial={reduceMotion ? false : { opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               className="rounded-2xl border overflow-hidden"
               style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)", boxShadow: "var(--dashboard-shadow-sm)" }}
             >
-              {/* Header */}
-              <div className="px-5 py-4 border-b flex items-center justify-between gap-2" style={{ borderColor: "var(--dashboard-border-muted)", background: "var(--dashboard-surface-muted)" }}>
-                <div className="flex items-center gap-2 min-w-0">
-                  <BookOpen className="w-4 h-4 flex-shrink-0" style={{ color: "var(--dashboard-primary)" }} />
-                  <span className="text-sm font-semibold truncate" style={{ color: "var(--dashboard-text-primary)" }}>{sessionTitle}</span>
+              {/* Sticky session bar — progress rail + palette + timer stay pinned
+                  while the stem/options scroll (overscroll-contain stops chain). */}
+              <div className="sticky top-0 z-[var(--z-sticky)] border-b backdrop-blur-md" style={{ borderColor: "var(--dashboard-border-muted)", background: "color-mix(in srgb, var(--dashboard-surface-muted) 88%, transparent)" }}>
+                <div className="px-4 sm:px-5 pt-3 pb-2 flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <BookOpen className="w-4 h-4 flex-shrink-0" style={{ color: "var(--dashboard-primary)" }} aria-hidden="true" />
+                    <span className="text-sm font-semibold truncate" style={{ color: "var(--dashboard-text-primary)" }}>{sessionTitle}</span>
+                  </div>
+                  <div className="flex items-center gap-3 flex-shrink-0">
+                    {!result && (
+                      <PracticeTimer
+                        key={`timer-${timerKey}`}
+                        remaining={QUESTION_TIME_LIMIT}
+                        onExpire={() => { void handleAutoSubmit(); }}
+                      />
+                    )}
+                    <span className="text-xs font-mono tabular-nums" style={{ color: "var(--dashboard-text-muted)" }} aria-live="polite">
+                      {currentIndex + 1}/{totalQuestions}
+                    </span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-3">
-                  {!result && (
-                    <PracticeTimer
-                      key={`timer-${timerKey}`}
-                      remaining={QUESTION_TIME_LIMIT}
-                      onExpire={() => { void handleAutoSubmit(); }}
-                    />
-                  )}
-                  <span className="text-xs font-mono flex-shrink-0" style={{ color: "var(--dashboard-text-muted)" }}>
-                    প্রশ্ন {currentIndex + 1}/{totalQuestions}
-                  </span>
-                </div>
-              </div>
-
-              <div className="p-5">
-                {/* Progress bar */}
                 <div
-                  className="h-1.5 rounded-full overflow-hidden mb-6"
+                  className="mx-4 sm:mx-5 h-1.5 rounded-full overflow-hidden"
                   style={{ background: "var(--dashboard-surface-muted)" }}
                   role="progressbar"
                   aria-label="Practice progress"
@@ -763,10 +833,52 @@ export default function PracticeTab() {
                   aria-valuetext={`${answeredCount} of ${totalQuestions} answered`}
                 >
                   <div
-                    className="h-full w-full origin-left rounded-full transition-transform duration-300"
+                    className="h-full w-full origin-left rounded-full transition-transform duration-200"
                     style={{ transform: `scaleX(${totalQuestions > 0 ? answeredCount / totalQuestions : 0})`, background: "var(--dashboard-primary)" }}
                   />
                 </div>
+                {/* Question palette — dots scroll horizontally, never wrap the bar taller */}
+                <div className="px-4 sm:px-5 py-2 flex items-center gap-1.5 overflow-x-auto overscroll-contain" role="group" aria-label="প্রশ্ন তালিকা">
+                  {sessionQuestions.map((q, i) => {
+                    const answered = answers[q.id] !== undefined;
+                    const current = i === currentIndex;
+                    return (
+                      <button
+                        key={q.id}
+                        type="button"
+                        onClick={() => setCurrentIndex(i)}
+                        aria-label={`প্রশ্ন ${i + 1}${answered ? " — উত্তর দেওয়া" : ""}${current ? " — বর্তমান" : ""}`}
+                        aria-current={current ? "true" : undefined}
+                        className={`flex-shrink-0 w-8 h-8 rounded-lg font-mono text-[11px] tabular-nums border cursor-pointer transition-[background-color,color,border-color] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] ${
+                          current ? "" : "hover:border-[var(--dashboard-primary)]/40"
+                        }`}
+                        style={
+                          current
+                            ? { background: "var(--dashboard-primary)", borderColor: "var(--dashboard-primary)", color: "var(--dashboard-text-inverse)", fontWeight: 700 }
+                            : answered
+                              ? { background: "var(--dashboard-primary-subtle)", borderColor: "color-mix(in srgb, var(--dashboard-primary) 30%, transparent)", color: "var(--dashboard-primary)", fontWeight: 600 }
+                              : { background: "transparent", borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-muted)" }
+                        }
+                      >
+                        {i + 1}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div
+                className="p-4 sm:p-5 overscroll-contain"
+                onTouchStart={(e) => { touchX.current = e.touches[0]?.clientX ?? null; }}
+                onTouchEnd={(e) => {
+                  if (touchX.current == null) return;
+                  const dx = (e.changedTouches[0]?.clientX ?? touchX.current) - touchX.current;
+                  touchX.current = null;
+                  if (Math.abs(dx) < 60) return;
+                  if (dx < 0) setCurrentIndex((i) => Math.min(totalQuestions - 1, i + 1));
+                  else setCurrentIndex((i) => Math.max(0, i - 1));
+                }}
+              >
 
                 {currentQuestion && (
                   <div key={currentQuestion.id}>
@@ -804,50 +916,68 @@ export default function PracticeTab() {
                     {isMulti(currentQuestion) && !isLocked(currentQuestion) && (answers[currentQuestion.id] ?? []).length > 0 && (
                       <button
                         onClick={() => lockMultiAnswer(currentQuestion.id)}
-                        className="w-full mt-3 py-3 rounded-xl bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm flex items-center justify-center gap-2"
+                        className="w-full mt-3 py-3 min-h-[48px] rounded-xl bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm font-bold cursor-pointer transition-[background-color,opacity] duration-150 hover:bg-[var(--accent-hover)] active:opacity-90 flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
                       >
-                        <Check className="w-4 h-4" /> উত্তর লক করুন ({(answers[currentQuestion.id] ?? []).length}টি নির্বাচিত)
+                        <Check className="w-4 h-4" aria-hidden="true" /> উত্তর লক করুন ({(answers[currentQuestion.id] ?? []).length}টি নির্বাচিত)
                       </button>
                     )}
                     {isLocked(currentQuestion) && (
-                      <p role="status" className="text-xs font-mono text-[var(--dashboard-text-muted)] mb-4 mt-3">
-                        ✓ উত্তর লক হয়েছে — পরিবর্তন করা যাবে না
-                      </p>
+                      <div className="flex flex-wrap items-center gap-2 mb-4 mt-3">
+                        <p role="status" className="inline-flex items-center gap-1.5 text-xs font-mono rounded-full border px-3 py-1.5" style={{ color: "var(--dashboard-text-muted)", borderColor: "var(--dashboard-border-muted)", background: "var(--dashboard-surface-muted)" }}>
+                          <Check className="w-3.5 h-3.5" aria-hidden="true" /> উত্তর লক হয়েছে
+                        </p>
+                        {undoPick === currentQuestion.id && !isMulti(currentQuestion) && (
+                          <button
+                            type="button"
+                            onClick={() => undoSinglePick(currentQuestion.id)}
+                            aria-label="ভুলে চাপ দেওয়া উত্তর ফিরিয়ে নিন"
+                            className="inline-flex items-center gap-1.5 min-h-[44px] px-4 rounded-full border font-mono text-xs font-bold cursor-pointer transition-[background-color,color,border-color,opacity] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                            style={{ color: "var(--dashboard-primary)", borderColor: "color-mix(in srgb, var(--dashboard-primary) 40%, transparent)", background: "var(--dashboard-primary-subtle)" }}
+                          >
+                            <ArrowCounterClockwise className="w-3.5 h-3.5" aria-hidden="true" /> ভুলে চাপ? ফিরিয়ে নিন
+                          </button>
+                        )}
+                      </div>
                     )}
 
-                    {/* Navigation */}
-                    <div className="flex items-center justify-between">
-                      <button
-                        onClick={() => setCurrentIndex((i) => Math.max(0, i - 1))}
-                        disabled={currentIndex === 0}
-                        className="px-4 py-2 border font-mono text-sm rounded-lg transition-colors disabled:opacity-40 flex items-center gap-1"
-                        style={{ background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-strong)", color: "var(--dashboard-text-secondary)" }}
-                      >
-                        <CaretLeft className="w-4 h-4" /> আগের
-                      </button>
-                      <span className="text-xs font-mono" style={{ color: "var(--dashboard-text-muted)" }}>
-                        {currentIndex + 1} / {totalQuestions}
-                      </span>
-                      {currentIndex < totalQuestions - 1 ? (
+                    {/* Sticky thumb nav — always in reach above the bottom nav */}
+                    <div className="sticky z-[var(--z-sticky)] bottom-[calc(var(--bottom-nav-h)+env(safe-area-inset-bottom,0px)+8px)] lg:bottom-2 -mx-1 px-1 pt-2 pb-1" style={{ background: "linear-gradient(to top, var(--dashboard-surface) 70%, transparent)" }}>
+                      <div className="flex items-center gap-2 rounded-2xl border p-2 backdrop-blur-md" style={{ background: "color-mix(in srgb, var(--dashboard-surface-muted) 92%, transparent)", borderColor: "var(--dashboard-border-muted)" }}>
                         <button
-                          onClick={() => setCurrentIndex((i) => Math.min(totalQuestions - 1, i + 1))}
-                          className="px-4 py-2 border font-mono text-sm rounded-lg transition-colors flex items-center gap-1"
-                          style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-strong)", color: "var(--dashboard-text-primary)" }}
+                          onClick={() => setCurrentIndex((i) => Math.max(0, i - 1))}
+                          disabled={currentIndex === 0}
+                          aria-label="আগের প্রশ্ন"
+                          className="flex-1 min-h-[48px] px-4 py-2.5 border font-mono text-sm rounded-xl cursor-pointer transition-[background-color,color,border-color,opacity] duration-150 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                          style={{ background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-strong)", color: "var(--dashboard-text-secondary)" }}
                         >
-                          পরের <CaretRight className="w-4 h-4" />
+                          <CaretLeft className="w-4 h-4" aria-hidden="true" /> আগের
                         </button>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={(e) => { e.preventDefault(); handleSubmitRequest(); }}
-                          disabled={submitting}
-                          aria-busy={submitting}
-                          className="px-5 py-2 min-h-11 font-mono text-sm rounded-lg transition-colors flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed relative z-10 pointer-events-auto"
-                          style={{ background: "var(--dashboard-primary)", color: "var(--dashboard-text-inverse)" }}
-                        >
-                          {submitting ? "জমা হচ্ছে..." : "ফলাফল জমা দিন"}
-                        </button>
-                      )}
+                        <span className="text-xs font-mono tabular-nums flex-shrink-0 px-1" style={{ color: "var(--dashboard-text-muted)" }} aria-live="polite">
+                          {currentIndex + 1}/{totalQuestions}
+                        </span>
+                        {currentIndex < totalQuestions - 1 ? (
+                          <button
+                            onClick={() => setCurrentIndex((i) => Math.min(totalQuestions - 1, i + 1))}
+                            aria-label="পরের প্রশ্ন"
+                            className="flex-1 min-h-[48px] px-4 py-2.5 border font-mono text-sm rounded-xl cursor-pointer transition-[background-color,color,border-color] duration-150 flex items-center justify-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                            style={{ background: "var(--dashboard-primary)", borderColor: "var(--dashboard-primary)", color: "var(--dashboard-text-inverse)" }}
+                          >
+                            পরের <CaretRight className="w-4 h-4" aria-hidden="true" />
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={(e) => { e.preventDefault(); handleSubmitRequest(); }}
+                            disabled={submitting}
+                            aria-busy={submitting}
+                            aria-label="ফলাফল জমা দিন"
+                            className="flex-1 px-5 py-2.5 min-h-[48px] font-mono text-sm rounded-xl cursor-pointer transition-[background-color,opacity] duration-150 flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                            style={{ background: "var(--accent)", color: "var(--dashboard-text-inverse)" }}
+                          >
+                            {submitting ? "জমা হচ্ছে..." : "ফলাফল জমা দিন"}
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 )}
@@ -877,7 +1007,7 @@ export default function PracticeTab() {
           {/* Result panel */}
           {result && (
             <motion.div
-              initial={{ opacity: 0, scale: 0.97 }}
+              initial={reduceMotion ? false : { opacity: 0, scale: 0.97 }}
               animate={{ opacity: 1, scale: 1 }}
               className="rounded-2xl border overflow-hidden"
               style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)", boxShadow: "var(--dashboard-shadow-sm)" }}
@@ -912,6 +1042,8 @@ export default function PracticeTab() {
                     setMultiLocked({});
                     setCurrentIndex(0);
                       setQuestions([]);
+                      setReviewFilter("all");
+                      setExpandedReview({});
                                         setTimerKey((k) => k + 1);
                     }}
                     className="px-5 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2"
@@ -945,59 +1077,126 @@ export default function PracticeTab() {
                 </div>
               </div>
 
-              {/* Review */}
-              <div className="p-5 max-h-96 overflow-y-auto space-y-2">
-                {sessionQuestions.map((q, i) => {
-                  const userAnswer = answers[q.id] ?? [];
-                  const isCorrect = userAnswer.length > 0 && isAnswerCorrect(q, userAnswer);
-                  const isUnanswered = userAnswer.length === 0;
+              {/* Review — filter tabs + lazy-expand disclosures (AI mounts on open) */}
+              <div className="p-4 sm:p-5">
+                {(() => {
+                  const verdictOf = (q: Server.QuestionDTO) => {
+                    const ua = answers[q.id] ?? [];
+                    if (ua.length === 0) return "unanswered" as const;
+                    return isAnswerCorrect(q, ua) ? "correct" as const : "wrong" as const;
+                  };
+                  const counts = { all: sessionQuestions.length, correct: 0, wrong: 0, unanswered: 0 };
+                  for (const q of sessionQuestions) counts[verdictOf(q)] += 1;
+                  const tabs: { id: ReviewFilter; label: string }[] = [
+                    { id: "all", label: `সব ${counts.all}` },
+                    { id: "correct", label: `সঠিক ${counts.correct}` },
+                    { id: "wrong", label: `ভুল ${counts.wrong}` },
+                    { id: "unanswered", label: `বাকি ${counts.unanswered}` },
+                  ];
+                  const visible = sessionQuestions
+                    .map((q, i) => ({ q, i, verdict: verdictOf(q) }))
+                    .filter(({ verdict }) => reviewFilter === "all" || verdict === reviewFilter);
                   return (
-                    <div key={q.id} className={`p-3.5 rounded-xl border ${
-                      isCorrect
-                        ? "border-[var(--success)]/20"
-                        : isUnanswered
-                          ? "border-[var(--dashboard-teal)]/25"
-                          : "border-[var(--danger)]/20"
-                    }`}>
-                      <div className="flex items-start gap-3">
-                        {isCorrect ? (
-                          <CheckCircle className="w-4 h-4 text-[var(--dashboard-success)] flex-shrink-0 mt-0.5" />
-                        ) : isUnanswered ? (
-                          <CircleDashed className="w-4 h-4 text-[var(--dashboard-teal)] flex-shrink-0 mt-0.5" />
-                        ) : (
-                          <XCircle className="w-4 h-4 text-[var(--dashboard-danger)] flex-shrink-0 mt-0.5" />
-                        )}
-                        <div className="min-w-0 flex-1">
-                          <p className="text-sm mb-1.5" style={{ color: "var(--dashboard-text-primary)" }}>{i + 1}. <RichText text={q.question} /></p>
-                          <p className="text-xs text-[var(--dashboard-text-muted)]" style={{ fontFamily: 'inherit' }}>
-                            আপনার উত্তর:{" "}
-                            <span className={isCorrect ? "text-[var(--dashboard-success)]" : isUnanswered ? "text-[var(--dashboard-teal)]" : "text-[var(--dashboard-danger)]"}>
-                              {isUnanswered ? "উত্তর দেওয়া হয়নি" : <RichText text={serializeAnswer(userAnswer)} />}
-                            </span>
-                          </p>
-                          {!isCorrect && (
-                            <p className="text-xs text-[var(--dashboard-success)] mt-0.5" style={{ fontFamily: 'inherit' }}>
-                              সঠিক উত্তর: <RichText text={serializeAnswer(getCorrectSet(q))} />
-                            </p>
-                          )}
-                          {q.explanation && (
-                            <p className="text-xs text-[var(--dashboard-text-muted)] mt-1.5" style={{ lineHeight: "1.7" }}><RichText text={q.explanation} /></p>
-                          )}
-
-                          <AIExplanationButton
-                            questionId={q.id}
-                            question={q.question}
-                            options={q.options}
-                            correctAnswer={q.correctAnswer}
-                            userAnswer={isUnanswered ? undefined : serializeAnswer(userAnswer)}
-                            subject={q.subject}
-                            topic={q.topic}
-                          />
-                        </div>
+                    <>
+                      <div className="flex gap-1.5 overflow-x-auto overscroll-contain pb-1 mb-3" role="group" aria-label="উত্তর ফিল্টার">
+                        {tabs.map((tab) => (
+                          <button
+                            key={tab.id}
+                            type="button"
+                            onClick={() => setReviewFilter(tab.id)}
+                            aria-pressed={reviewFilter === tab.id}
+                            className={`flex-shrink-0 min-h-[44px] px-4 rounded-xl border font-mono text-xs cursor-pointer transition-[background-color,color,border-color] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] ${
+                              reviewFilter === tab.id
+                                ? "bg-[var(--dashboard-primary)] text-[var(--dashboard-text-inverse)] border-[var(--dashboard-primary)]"
+                                : "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-secondary)] hover:border-[var(--dashboard-primary)]/40"
+                            }`}
+                          >
+                            {tab.label}
+                          </button>
+                        ))}
                       </div>
-                    </div>
+                      {visible.length === 0 ? (
+                        <p className="text-xs text-[var(--dashboard-text-muted)] font-mono text-center py-6">
+                          এই ফিল্টারে কোনো প্রশ্ন নেই।
+                        </p>
+                      ) : (
+                        <div className="max-h-96 overflow-y-auto overscroll-contain space-y-2">
+                          {visible.map(({ q, i }) => {
+                            const userAnswer = answers[q.id] ?? [];
+                            const verdict = verdictOf(q);
+                            const isCorrect = verdict === "correct";
+                            const isUnanswered = verdict === "unanswered";
+                            const open = expandedReview[q.id] === true;
+                            const verdictLabel = isCorrect ? "সঠিক" : isUnanswered ? "উত্তর বাকি" : "ভুল";
+                            return (
+                              <div key={q.id} className={`rounded-xl border overflow-hidden transition-[border-color] duration-150 ${
+                                isCorrect
+                                  ? "border-[var(--dashboard-success)]/25"
+                                  : isUnanswered
+                                    ? "border-[var(--dashboard-teal)]/30"
+                                    : "border-[var(--dashboard-danger)]/25"
+                              }`} style={{ background: "var(--dashboard-surface)" }}>
+                                <button
+                                  type="button"
+                                  onClick={() => setExpandedReview((prev) => ({ ...prev, [q.id]: !prev[q.id] }))}
+                                  aria-expanded={open}
+                                  aria-label={`প্রশ্ন ${i + 1} — ${verdictLabel} — ${open ? "সংকুচিত করুন" : "বিস্তারিত দেখুন"}`}
+                                  className="w-full flex items-center gap-3 p-3.5 min-h-[56px] text-left cursor-pointer transition-[background-color] duration-150 hover:bg-[var(--dashboard-surface-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--dashboard-focus-ring)]"
+                                >
+                                  {isCorrect ? (
+                                    <CheckCircle className="w-4 h-4 text-[var(--dashboard-success)] flex-shrink-0" aria-hidden="true" />
+                                  ) : isUnanswered ? (
+                                    <CircleDashed className="w-4 h-4 text-[var(--dashboard-teal)] flex-shrink-0" aria-hidden="true" />
+                                  ) : (
+                                    <XCircle className="w-4 h-4 text-[var(--dashboard-danger)] flex-shrink-0" aria-hidden="true" />
+                                  )}
+                                  <span className="min-w-0 flex-1">
+                                    <span className="block text-sm truncate" style={{ color: "var(--dashboard-text-primary)" }}>
+                                      {i + 1}. <RichText text={q.question} />
+                                    </span>
+                                    <span className={`block text-[11px] font-mono mt-0.5 ${isCorrect ? "text-[var(--dashboard-success)]" : isUnanswered ? "text-[var(--dashboard-teal)]" : "text-[var(--dashboard-danger)]"}`}>
+                                      {verdictLabel}
+                                    </span>
+                                  </span>
+                                  <CaretRight className={`w-4 h-4 flex-shrink-0 transition-transform duration-150 ${open ? "rotate-[270deg]" : "rotate-90"}`} style={{ color: "var(--dashboard-text-muted)" }} aria-hidden="true" />
+                                </button>
+                                {open && (
+                                  <div className="px-3.5 pb-3.5 pt-1 border-t" style={{ borderColor: "var(--dashboard-border-muted)" }}>
+                                    <div className="min-w-0 flex-1 pt-2">
+                                      <p className="text-xs text-[var(--dashboard-text-muted)]" style={{ fontFamily: 'inherit' }}>
+                                        আপনার উত্তর:{" "}
+                                        <span className={isCorrect ? "text-[var(--dashboard-success)]" : isUnanswered ? "text-[var(--dashboard-teal)]" : "text-[var(--dashboard-danger)]"}>
+                                          {isUnanswered ? "উত্তর দেওয়া হয়নি" : <RichText text={serializeAnswer(userAnswer)} />}
+                                        </span>
+                                      </p>
+                                      {!isCorrect && (
+                                        <p className="text-xs text-[var(--dashboard-success)] mt-0.5" style={{ fontFamily: 'inherit' }}>
+                                          সঠিক উত্তর: <RichText text={serializeAnswer(getCorrectSet(q))} />
+                                        </p>
+                                      )}
+                                      {q.explanation && (
+                                        <p className="text-xs text-[var(--dashboard-text-muted)] mt-1.5" style={{ lineHeight: "1.7" }}><RichText text={q.explanation} /></p>
+                                      )}
+                                      <AIExplanationButton
+                                        questionId={q.id}
+                                        question={q.question}
+                                        options={q.options}
+                                        correctAnswer={q.correctAnswer}
+                                        userAnswer={isUnanswered ? undefined : serializeAnswer(userAnswer)}
+                                        subject={q.subject}
+                                        topic={q.topic}
+                                      />
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </>
                   );
-                })}
+                })()}
               </div>
             </motion.div>
           )}

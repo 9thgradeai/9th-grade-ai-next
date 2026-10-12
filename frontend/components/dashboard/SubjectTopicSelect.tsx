@@ -26,7 +26,7 @@
 
 import { useState, useCallback, useMemo } from "react";
 import { Check, MagnifyingGlass, Minus, Plus, X } from "@phosphor-icons/react";
-import { motion } from "framer-motion";
+import { motion, useDragControls, useReducedMotion } from "framer-motion";
 import type { Server } from "@/lib/types";
 import { useDialogA11y } from "@/lib/use-dialog-a11y";
 import { useScrollLock } from "@/lib/use-scroll-lock";
@@ -119,6 +119,10 @@ export default function SubjectTopicSelect({
 }: Props) {
   const [openSubject, setOpenSubject] = useState<Server.ExamSubjectDTO | null>(null);
   const [query, setQuery] = useState("");
+  const shouldReduceMotion = useReducedMotion();
+  // Sheet drag handle controls — only the handle initiates the dismiss
+  // drag, so the topic list keeps native touch scrolling.
+  const sheetControls = useDragControls();
 
   const closePopup = useCallback(() => setOpenSubject(null), []);
   const dialogRef = useDialogA11y<HTMLDivElement>(openSubject !== null, closePopup);
@@ -261,16 +265,22 @@ export default function SubjectTopicSelect({
           {visibleSubjects.map((subject) => {
             const sel = selection[subject.id];
             const selected = sel !== undefined;
+            const scopeLabel =
+              !selected || sel.paths.length === 0
+                ? "পুরো বিষয়"
+                : `${sel.paths.length} টপিক`;
             return (
               <button
                 key={subject.id}
                 type="button"
                 onClick={() => handleCardClick(subject)}
                 aria-expanded={openSubject?.id === subject.id}
-                className={`glass-card rounded-2xl border p-3 text-left transition-all active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-primary)] ${
+                aria-pressed={selected}
+                aria-label={`${subject.nameBn} — ${subject.questionCount}টি প্রশ্ন${selected ? ` — নির্বাচিত: ${scopeLabel}` : ""}`}
+                className={`glass-card rounded-2xl border p-3 text-left cursor-pointer transition-[border-color,background-color,opacity] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] ${
                   selected
-                    ? "border-[var(--accent)]/40 bg-[var(--dashboard-primary-subtle)]"
-                    : "border-terminal-border hover:border-[var(--accent)]/20 hover:-translate-y-0.5"
+                    ? "border-[var(--dashboard-primary)]/40 bg-[var(--dashboard-primary-subtle)]"
+                    : "border-terminal-border hover:border-[var(--dashboard-primary)]/30"
                 }`}
               >
                 <div className="flex items-center gap-2">
@@ -287,22 +297,30 @@ export default function SubjectTopicSelect({
                   </span>
                   <span
                     className={`w-4 h-4 rounded border flex-shrink-0 flex items-center justify-center ${
-                      selected ? "bg-[var(--accent)] border-[var(--accent)]" : "border-[var(--border-default)]"
+                      selected ? "bg-[var(--dashboard-primary)] border-[var(--dashboard-primary)]" : "border-[var(--border-default)]"
                     }`}
                   >
-                    {selected && <Check className="w-3 h-3 text-[var(--dashboard-text-inverse)]" />}
+                    {selected && <Check className="w-3 h-3 text-[var(--dashboard-text-inverse)]" aria-hidden="true" />}
                   </span>
                 </div>
                 <p className="text-[10px] font-mono mt-1.5" style={{ color: "var(--dashboard-text-muted)" }}>
                   {subject.questionCount}টি প্রশ্ন
                 </p>
                 {selected && sel?.count !== undefined && (
-                  <p
-                    className="text-[10px] font-mono mt-0.5 tabular-nums"
-                    style={{ color: "var(--dashboard-primary)" }}
-                  >
-                    নির্বাচিত: {sel.count}/{subject.questionCount}
-                  </p>
+                  <>
+                    <p
+                      className="text-[10px] font-mono mt-0.5 tabular-nums"
+                      style={{ color: "var(--dashboard-primary)" }}
+                    >
+                      নির্বাচিত: {sel.count}/{subject.questionCount}
+                    </p>
+                    <p
+                      className="text-[10px] font-mono mt-0.5 truncate"
+                      style={{ color: "var(--dashboard-text-muted)" }}
+                    >
+                      {scopeLabel}
+                    </p>
+                  </>
                 )}
               </button>
             );
@@ -318,8 +336,9 @@ export default function SubjectTopicSelect({
       {/* ── Popup: multi-select topics / count for the clicked subject ── */}
       {openSubject && (
         <motion.div
-          initial={{ opacity: 0 }}
+          initial={shouldReduceMotion ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
+          transition={shouldReduceMotion ? { duration: 0 } : undefined}
           className="fixed inset-0 z-[var(--z-modal)] bg-[var(--overlay)] backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-6"
           onClick={closePopup}
         >
@@ -330,12 +349,31 @@ export default function SubjectTopicSelect({
             aria-labelledby="subject-topic-popup-title"
             aria-describedby="subject-topic-popup-desc"
             tabIndex={-1}
-            initial={{ y: 24, opacity: 0 }}
+            initial={shouldReduceMotion ? false : { y: 24, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.18, ease: "easeOut" }}
+            transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.18, ease: "easeOut" }}
+            // Bottom-sheet drag-to-dismiss (mobile): only the handle starts
+            // the drag so the topic list keeps native touch scrolling.
+            // Drag down past 100px closes; desktop ignores small drifts.
+            drag={shouldReduceMotion ? false : "y"}
+            dragListener={false}
+            dragControls={sheetControls}
+            dragConstraints={{ top: 0 }}
+            dragElastic={0.2}
+            onDragEnd={(_, info) => {
+              if (info.offset.y > 100) closePopup();
+            }}
             onClick={(e) => e.stopPropagation()}
             className="glass-card rounded-t-2xl sm:rounded-2xl border border-[var(--dashboard-primary)]/25 w-full sm:max-w-md max-h-[88vh] flex flex-col overflow-hidden"
           >
+            {/* Drag handle (mobile sheet affordance) — the only drag origin */}
+            <div
+              className="flex items-center justify-center pt-2.5 pb-1 sm:hidden cursor-grab active:cursor-grabbing touch-none"
+              aria-hidden="true"
+              onPointerDown={(e) => sheetControls.start(e)}
+            >
+              <span className="w-9 h-1 rounded-full" style={{ background: "var(--dashboard-border-muted)" }} />
+            </div>
             {/* Header */}
             <div className="p-4 sm:p-5 border-b border-[var(--dashboard-border-muted)] flex items-start justify-between gap-3">
               <div className="flex items-center gap-2.5 min-w-0">

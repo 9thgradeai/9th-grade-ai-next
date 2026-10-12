@@ -47,7 +47,18 @@ export default function PracticeStartDock({
       data-testid="practice-start-dock"
       className="sticky z-[var(--z-sticky)] bottom-[calc(var(--bottom-nav-h)+12px+env(safe-area-inset-bottom))] lg:bottom-4"
     >
-      <div className="glass-card rounded-2xl border border-[var(--accent)]/30 overflow-hidden">
+      <div
+        className={`glass-card rounded-2xl border overflow-hidden transition-[border-color] duration-150 ${
+          insufficient ? "border-[var(--dashboard-warning)]/50" : "border-[var(--accent)]/30"
+        }`}
+        role={insufficient ? "alert" : undefined}
+        aria-live={insufficient ? "polite" : undefined}
+      >
+        {insufficient && (
+          <p className="px-3 sm:px-4 pt-2.5 text-[11px] font-mono" style={{ color: "var(--dashboard-warning)" }}>
+            ⚠ মাত্র {availableTotal}টি পাওয়া যায় — {totalCount}টি চাওয়া হয়েছে; কম প্রশ্নে শুরু হবে
+          </p>
+        )}
         <div className="flex flex-col lg:flex-row lg:items-center gap-3 p-3 sm:p-4">
           {/* Stats: questions + time stepper */}
           <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -66,10 +77,10 @@ export default function PracticeStartDock({
                 </span>{" "}
                 <span
                   className={`text-[11px] font-mono tabular-nums ${
-                    insufficient ? "text-[var(--dashboard-danger)]" : "text-[var(--dashboard-text-muted)]"
+                    insufficient ? "text-[var(--dashboard-warning)] font-bold" : "text-[var(--dashboard-text-muted)]"
                   }`}
                 >
-                  / {availableTotal} উপলব্ধ
+                  / {availableTotal} উপলব্ধ{insufficient ? " — কম আছে" : ""}
                 </span>
               </p>
             </div>

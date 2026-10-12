@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, ArrowLeft, BookOpen } from "@phosphor-icons/react";
 import { useAuth } from "@/lib/auth-ctx";
 import { useLanguage, t } from "@/lib/lang-ctx";
@@ -33,6 +33,7 @@ export default function HomeWelcome({ onStartPractice }: { onStartPractice?: () 
   const hour = new Date().getHours();
   const greet = GREETINGS[greetingKey(hour)];
   const firstName = user?.name?.split(" ")[0] ?? "";
+  const reduceMotion = useReducedMotion();
 
   const prev = () => setIndex((i) => (i - 1 + LITERARY_QUOTES.length) % LITERARY_QUOTES.length);
   const next = () => setIndex((i) => (i + 1) % LITERARY_QUOTES.length);
@@ -72,9 +73,9 @@ export default function HomeWelcome({ onStartPractice }: { onStartPractice?: () 
           {/* Quote of the day — Bangla + English literature */}
           <motion.figure
             key={quote.id}
-            initial={{ opacity: 0, y: 6 }}
+            initial={reduceMotion ? false : { opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.22, ease: "easeOut" }}
+            transition={reduceMotion ? { duration: 0 } : { duration: 0.22, ease: "easeOut" }}
             className="mt-3 rounded-xl border px-4 py-3"
             style={{
               background: "var(--dashboard-surface-muted)",
