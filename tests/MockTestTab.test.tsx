@@ -96,7 +96,7 @@ describe("MockTestTab (subtopic selection + build)", () => {
     fireEvent.click(await screen.findByRole("checkbox", { name: /বানান ও শুদ্ধি/ }));
 
     // Start the mock.
-    fireEvent.click(screen.getByText("মক টেস্ট শুরু করুন"));
+    fireEvent.click(screen.getByText(/মক টেস্ট শুরু করুন/));
 
     // Active phase renders the built question with the timer.
     expect(await screen.findByText("নিচের কোনটি শুদ্ধ বানান?")).toBeInTheDocument();
@@ -118,7 +118,7 @@ describe("MockTestTab (subtopic selection + build)", () => {
     fireEvent.click(subjectElements[0]);
     fireEvent.click(await screen.findByRole("checkbox", { name: /ভাষা/ }));
     fireEvent.click(await screen.findByRole("checkbox", { name: /বানান ও শুদ্ধি/ }));
-    fireEvent.click(screen.getByText("মক টেস্ট শুরু করুন"));
+    fireEvent.click(screen.getByText(/মক টেস্ট শুরু করুন/));
     await screen.findByText("নিচের কোনটি শুদ্ধ বানান?");
 
     const group = screen.getByRole("radiogroup");
@@ -189,7 +189,7 @@ describe("MockTestTab — submit flow (regression: canonical submission)", () =>
     fireEvent.click(subjectElements[0]);
     fireEvent.click(await screen.findByRole("checkbox", { name: /ভাষা/ }));
     fireEvent.click(await screen.findByRole("checkbox", { name: /বানান ও শুদ্ধি/ }));
-    fireEvent.click(screen.getByText("মক টেস্ট শুরু করুন"));
+    fireEvent.click(screen.getByText(/মক টেস্ট শুরু করুন/));
 
     // Pick an answer so the submit button becomes enabled.
     const option = await screen.findByText("শুদ্ধ");
@@ -309,7 +309,7 @@ describe("MockTestTab — results review colors + jump tiles", () => {
     fireEvent.click(subjectElements[0]);
     fireEvent.click(await screen.findByRole("checkbox", { name: /ভাষা/ }));
     fireEvent.click(await screen.findByRole("checkbox", { name: /বানান ও শুদ্ধি/ }));
-    fireEvent.click(screen.getByText("মক টেস্ট শুরু করুন"));
+    fireEvent.click(screen.getByText(/মক টেস্ট শুরু করুন/));
 
     await screen.findByText("প্রশ্ন ১");
     fireEvent.click(screen.getByText("ক"));
@@ -337,9 +337,9 @@ describe("MockTestTab — results review colors + jump tiles", () => {
     expect(correctRow).not.toBeNull();
     expect(wrongRow).not.toBeNull();
     expect(unansweredRow).not.toBeNull();
-    expect(correctRow!.className).toContain("border-[var(--success)]/20");
-    expect(wrongRow!.className).toContain("border-[var(--danger)]/20");
-    expect(unansweredRow!.className).toContain("border-[var(--dashboard-teal)]/25");
+    expect(correctRow!.className).toContain("border-[var(--dashboard-success)]/25");
+    expect(wrongRow!.className).toContain("border-[var(--dashboard-danger)]/25");
+    expect(unansweredRow!.className).toContain("border-[var(--dashboard-teal)]/30");
   });
 
   it("clicking a result tile jumps to (scrolls + highlights) the matching review row", async () => {

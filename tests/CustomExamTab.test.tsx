@@ -105,7 +105,7 @@ describe("CustomExamTab (config phase)", () => {
     const subjectElements = await screen.findAllByText("বাংলা ভাষা ও সাহিত্য");
     fireEvent.click(subjectElements[0]);
 
-    const startButton = await screen.findByText("কনফিগারেশন রিভিউ করে শুরু করুন");
+    const startButton = await screen.findByText(/কনফিগারেশন রিভিউ করে শুরু করুন/);
     fireEvent.click(startButton);
 
     expect(await screen.findByText("পরীক্ষা নিশ্চিত করুন")).toBeInTheDocument();
@@ -216,7 +216,7 @@ describe("CustomExamTab — results review colors + jump tiles", () => {
     render(<EcosystemProvider><CustomExamTab /></EcosystemProvider>);
     const subjectElements = await screen.findAllByText("বাংলা ভাষা ও সাহিত্য");
     fireEvent.click(subjectElements[0]);
-    fireEvent.click(await screen.findByText("কনফিগারেশন রিভিউ করে শুরু করুন"));
+    fireEvent.click(await screen.findByText(/কনফিগারেশন রিভিউ করে শুরু করুন/));
     fireEvent.click(await screen.findByText("পরীক্ষা শুরু করুন"));
 
     const firstQuestion = await screen.findByText("প্রশ্ন ১");

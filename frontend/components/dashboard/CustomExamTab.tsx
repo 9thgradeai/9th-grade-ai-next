@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { X, Check, Play, Timer, BookOpen, Trophy, ArrowCounterClockwise, Warning, CheckCircle, XCircle, Minus, Plus, GridFour, List, Clock, Flag, CircleDashed, Spinner,  } from "@phosphor-icons/react";
+import { motion, AnimatePresence, useReducedMotion, useDragControls } from "framer-motion";
+import { X, Check, Play, Timer, BookOpen, Trophy, ArrowCounterClockwise, Warning, CheckCircle, XCircle, Minus, Plus, GridFour, List, Clock, Flag, CircleDashed, Spinner, CaretRight, } from "@phosphor-icons/react";
 import { api } from "@/lib/services/api";
 import { useDialogA11y } from "@/lib/use-dialog-a11y";
 import { useScrollLock } from "@/lib/use-scroll-lock";
@@ -148,6 +148,11 @@ export default function CustomExamTab() {
   }, [buildLoading]);
   const buildConfirmDialogRef = useDialogA11y<HTMLDivElement>(showConfirm, closeBuildConfirm);
   useScrollLock(showConfirm || showUnansweredConfirm);
+  // Mobile-app chrome: reduced-motion gates all sheet/modal entrances;
+  // drag controls power handle-only sheet dismissal (list keeps scrolling).
+  const reduceMotion = useReducedMotion();
+  const buildSheetControls = useDragControls();
+  const unansweredSheetControls = useDragControls();
   const [submitting, setSubmitting] = useState(false);
   const [reconciling, setReconciling] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -158,20 +163,35 @@ export default function CustomExamTab() {
   const [result, setResult] = useState<Server.ExamResultDTO | null>(null);
   const [highlightedReview, setHighlightedReview] = useState<string | null>(null);
   const highlightTimeoutRef = useRef<number | null>(null);
+  // Lazy review disclosures: wrong/unanswered auto-expand (AI mounts on open).
+  // Derived defaults (open unless correct) + explicit user toggles — no
+  // setState-in-effect, so the React compiler stays happy.
+  const [reviewToggles, setReviewToggles] = useState<Record<number, boolean>>({});
+  const isReviewOpen = useCallback((questionId: number, status: string) => {
+    const toggled = reviewToggles[questionId];
+    return toggled !== undefined ? toggled : status !== "correct";
+  }, [reviewToggles]);
 
   // Jump from the result summary tiles to the first review item in a state
-  // (correct/wrong/unanswered). Scrolls the row into view and flashes a ring.
-  const jumpToReview = useCallback((status: "correct" | "wrong" | "unanswered") => {
+  // (correct/wrong/unanswered). Opens the item, scrolls it into view, flashes a ring.
+  // Plain function (no manual useCallback): the React compiler memoizes it;
+  // a manual dep list here trips preserve-manual-memoization.
+  const jumpToReview = (status: "correct" | "wrong" | "unanswered") => {
     setHighlightedReview(status);
+    const first = result?.review.find((r) => r.status === status);
+    if (first) {
+      setReviewToggles((prev) => ({ ...prev, [first.questionId]: true }));
+    }
     if (highlightTimeoutRef.current !== null) window.clearTimeout(highlightTimeoutRef.current);
     highlightTimeoutRef.current = window.setTimeout(() => {
       setHighlightedReview((h) => (h === status ? null : h));
     }, 2000);
     const el = document.getElementById(`exam-review-${status}`);
     if (el && typeof el.scrollIntoView === "function") {
-      el.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
+      const prefersReduced = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      el.scrollIntoView({ behavior: prefersReduced ? "instant" as ScrollBehavior : "smooth", block: "start", inline: "nearest" });
     }
-  }, []);
+  };
 
   useEffect(() => {
     return () => {
@@ -556,6 +576,8 @@ export default function CustomExamTab() {
     setSelection({});
     setDurationMin(15);
     setDurationTouched(false);
+    setReviewToggles({});
+    setHighlightedReview(null);
     dropExamSnapshot(STORAGE_KEY);
   };
 
@@ -564,7 +586,7 @@ export default function CustomExamTab() {
     return (
       <div className="space-y-6">
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
+          initial={reduceMotion ? false : { opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           className="glass-card rounded-2xl border border-terminal-border"
         >
@@ -714,23 +736,28 @@ export default function CustomExamTab() {
               </div>
             </motion.div>
 
-            <button
-              onClick={() => setShowConfirm(true)}
-              disabled={selectedSubjects.length === 0 || totalCount === 0 || buildLoading}
-              className="mt-4 w-full py-3 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              <Play className="w-4 h-4" />
-              কনফিগারেশন রিভিউ করে শুরু করুন
-            </button>
+            {/* Sticky config dock — thumb-reachable above the bottom nav */}
+            <div className="sticky z-[var(--z-sticky)] bottom-[calc(var(--bottom-nav-h)+env(safe-area-inset-bottom,0px)+8px)] lg:bottom-2 mt-4">
+              <button
+                onClick={() => setShowConfirm(true)}
+                disabled={selectedSubjects.length === 0 || totalCount === 0 || buildLoading}
+                className="w-full py-3 min-h-[52px] bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm font-bold rounded-2xl hover:bg-[var(--accent-hover)] active:opacity-90 cursor-pointer transition-[background-color,opacity] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+                style={{ boxShadow: "var(--dashboard-shadow-md)" }}
+              >
+                <Play className="w-4 h-4" aria-hidden="true" />
+                কনফিগারেশন রিভিউ করে শুরু করুন{totalCount > 0 ? ` · ${totalCount}টি` : ""}
+              </button>
+            </div>
 
-            {/* Confirm modal */}
+            {/* Confirm sheet — bottom sheet on mobile, centered dialog on desktop */}
             <AnimatePresence>
               {showConfirm && (
                 <motion.div
-                  initial={{ opacity: 0 }}
+                  initial={reduceMotion ? false : { opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="fixed inset-0 z-[var(--z-modal)] bg-[var(--overlay)] backdrop-blur-sm flex items-center justify-center p-4"
+                  transition={reduceMotion ? { duration: 0 } : undefined}
+                  className="fixed inset-0 z-[var(--z-modal)] bg-[var(--overlay)] backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4"
                   onClick={closeBuildConfirm}
                 >
                   <motion.div
@@ -738,21 +765,38 @@ export default function CustomExamTab() {
                     role="dialog"
                     aria-modal="true"
                     aria-label="পরীক্ষা নিশ্চিত করুন"
-                    initial={{ scale: 0.95, y: 10 }}
-                    animate={{ scale: 1, y: 0 }}
-                    exit={{ scale: 0.95, y: 10 }}
+                    tabIndex={-1}
+                    initial={reduceMotion ? false : { y: 24, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={reduceMotion ? { opacity: 0 } : { y: 24, opacity: 0 }}
+                    transition={reduceMotion ? { duration: 0 } : { duration: 0.18, ease: "easeOut" }}
+                    drag={reduceMotion ? false : "y"}
+                    dragListener={false}
+                    dragControls={buildSheetControls}
+                    dragConstraints={{ top: 0 }}
+                    dragElastic={0.2}
+                    onDragEnd={(_, info) => {
+                      if (info.offset.y > 100) closeBuildConfirm();
+                    }}
                     onClick={(e) => e.stopPropagation()}
-                    className="glass-card rounded-2xl border border-[var(--primary)]/30 p-6 w-full max-w-md"
+                    className="glass-card rounded-t-2xl sm:rounded-2xl border border-[var(--dashboard-primary)]/25 p-5 sm:p-6 w-full sm:max-w-md max-h-[88vh] overflow-y-auto overscroll-contain"
                   >
+                    <div
+                      className="flex items-center justify-center pb-2 sm:hidden cursor-grab active:cursor-grabbing touch-none"
+                      aria-hidden="true"
+                      onPointerDown={(e) => buildSheetControls.start(e)}
+                    >
+                      <span className="w-9 h-1 rounded-full" style={{ background: "var(--dashboard-border-muted)" }} />
+                    </div>
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="text-base font-bold text-[var(--text-primary)]">পরীক্ষা নিশ্চিত করুন</h3>
                       <button
                         onClick={() => setShowConfirm(false)}
                         disabled={buildLoading}
-                        className="text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)] transition-colors"
+                        className="inline-flex items-center justify-center w-11 h-11 min-h-[44px] min-w-[44px] rounded-xl text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)] cursor-pointer transition-[background-color,color] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] disabled:opacity-40"
                         aria-label="বন্ধ করুন"
                       >
-                        <X className="w-5 h-5" />
+                        <X className="w-5 h-5" aria-hidden="true" />
                       </button>
                     </div>
 
@@ -789,7 +833,7 @@ export default function CustomExamTab() {
                     <button
                       onClick={() => void confirmAndStart()}
                       disabled={buildLoading}
-                      className="w-full py-3 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center justify-center gap-2 disabled:opacity-40"
+                      className="w-full py-3 min-h-[52px] bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm font-bold rounded-xl hover:bg-[var(--accent-hover)] active:opacity-90 cursor-pointer transition-[background-color,opacity] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
                     >
                       {buildLoading ? "তৈরি হচ্ছে..." : (
                         <>
@@ -814,8 +858,8 @@ export default function CustomExamTab() {
     return (
       <div className="space-y-4">
         {/* Sticky header: timer + progress + submit */}
-        <div className="sticky top-0 z-[var(--z-sticky)] -mx-1 px-1">
-          <div className="glass-card rounded-2xl border border-[var(--primary)]/30 px-4 py-3">
+        <div className="sticky top-0 z-[var(--z-sticky)] -mx-1 px-1 pt-1">
+          <div className="glass-card rounded-2xl border border-[var(--dashboard-primary)]/25 px-4 py-3 backdrop-blur-md" style={{ background: "color-mix(in srgb, var(--dashboard-surface) 88%, transparent)" }}>
             <div className="flex items-center justify-between gap-3 flex-wrap">
               <div className="flex items-center gap-2">
                 <ExamTimer
@@ -842,7 +886,7 @@ export default function CustomExamTab() {
               disabled={submitting || totalQuestions === 0}
               aria-busy={submitting}
               aria-label="পরীক্ষা জমা দিন"
-              className="px-4 py-2 min-h-11 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-xs rounded-lg hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-1.5 disabled:opacity-40 z-50 relative pointer-events-auto cursor-pointer"
+              className="px-4 py-2 min-h-[48px] bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-xs font-bold rounded-xl hover:bg-[var(--accent-hover)] active:opacity-90 cursor-pointer transition-[background-color,opacity] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed z-50 relative pointer-events-auto"
             >
               <Flag className="w-3.5 h-3.5" />
               {(submitting || reconciling) ? (reconciling ? "যাচাই করা হচ্ছে..." : "জমা হচ্ছে...") : "জমা দিন"}
@@ -850,9 +894,9 @@ export default function CustomExamTab() {
 
               </div>
             </div>
-            <div className="h-1.5 bg-[var(--surface-overlay)] rounded-full overflow-hidden mt-2">
+            <div className="h-1.5 bg-[var(--surface-overlay)] rounded-full overflow-hidden mt-2" role="progressbar" aria-label="Exam progress" aria-valuemin={0} aria-valuemax={totalQuestions} aria-valuenow={answeredCount}>
               <div
-                className="h-full w-full origin-left bg-[var(--success)] rounded-full transition-transform duration-300"
+                className="h-full w-full origin-left bg-[var(--dashboard-primary)] rounded-full transition-transform duration-200"
                 style={{ transform: `scaleX(${progressPct / 100})` }}
               />
             </div>
@@ -865,19 +909,19 @@ export default function CustomExamTab() {
             <CircleDashed className="w-3.5 h-3.5 text-[var(--dashboard-primary)]" />
             <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-widest">প্রশ্ন তালিকা</p>
           </div>
-          <div className="flex flex-wrap gap-1.5">
+          <div className="flex flex-wrap gap-1.5" role="group" aria-label="প্রশ্ন তালিকা">
             {exam.questions.map((q, i) => {
               const isAnswered = answers[q.id] !== undefined;
               return (
                 <button
                   key={q.id}
                   onClick={() => scrollToQuestion(q.id)}
-                  className={`min-w-11 min-h-11 rounded-lg border text-xs font-mono transition-all flex items-center justify-center ${
+                  className={`min-w-11 min-h-11 rounded-lg border text-xs font-mono cursor-pointer transition-[background-color,color,border-color] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] flex items-center justify-center ${
                     isAnswered
-                      ? "border-[var(--primary)]/40 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
-                      : "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] hover:border-[var(--border-strong)]"
+                      ? "border-[var(--dashboard-primary)]/40 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
+                      : "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] hover:border-[var(--dashboard-primary)]/40"
                   }`}
-                  aria-label={`প্রশ্ন ${i + 1}`}
+                  aria-label={`প্রশ্ন ${i + 1}${isAnswered ? " — উত্তর দেওয়া" : ""}`}
                 >
                   {i + 1}
                 </button>
@@ -938,7 +982,8 @@ export default function CustomExamTab() {
                         key={i}
                         onClick={() => selectAnswer(q.id, option)}
                         disabled={isLocked}
-                        className="w-full text-left p-3 rounded-xl border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] disabled:cursor-not-allowed"
+                        aria-pressed={isSelected}
+                        className="w-full text-left p-3 min-h-[52px] rounded-xl border cursor-pointer transition-[background-color,color,border-color] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] disabled:cursor-not-allowed"
                         style={
                           isSelected
                             ? { background: "var(--dashboard-primary-subtle)", borderColor: "var(--dashboard-primary)", color: "var(--dashboard-primary)" }
@@ -957,8 +1002,8 @@ export default function CustomExamTab() {
                   })}
                 </div>
                 {userAnswer !== undefined && (
-                  <p role="status" className="text-xs font-mono text-[var(--dashboard-text-muted)] mt-2">
-                    ✓ উত্তর লক হয়েছে — পরিবর্তন করা যাবে না
+                  <p role="status" className="inline-flex items-center gap-1.5 text-xs font-mono rounded-full border px-3 py-1.5 mt-2" style={{ color: "var(--dashboard-text-muted)", borderColor: "var(--dashboard-border-muted)", background: "var(--dashboard-surface-muted)" }}>
+                    <Check className="w-3.5 h-3.5" aria-hidden="true" /> উত্তর লক হয়েছে
                   </p>
                 )}
               </div>
@@ -966,9 +1011,9 @@ export default function CustomExamTab() {
           })}
         </div>
 
-        {/* Sticky submit bar */}
-        <div className="sticky bottom-0 z-40 -mx-1 px-1 pb-1">
-          <div className="glass-card rounded-2xl border border-[var(--primary)]/30 px-4 py-3 flex items-center justify-between gap-3 flex-wrap">
+        {/* Sticky submit bar — thumb-reachable above the bottom nav */}
+        <div className="sticky z-40 bottom-[calc(var(--bottom-nav-h)+env(safe-area-inset-bottom,0px)+8px)] lg:bottom-2 -mx-1 px-1 pt-2 pb-1" style={{ background: "linear-gradient(to top, var(--dashboard-surface) 70%, transparent)" }}>
+          <div className="glass-card rounded-2xl border border-[var(--dashboard-primary)]/25 px-4 py-3 flex items-center justify-between gap-3 flex-wrap backdrop-blur-md" style={{ background: "color-mix(in srgb, var(--dashboard-surface-muted) 92%, transparent)" }}>
             <div className="text-xs text-[var(--dashboard-text-muted)] font-mono">
               {unanswered > 0 ? (
                 <>
@@ -988,7 +1033,7 @@ export default function CustomExamTab() {
               disabled={submitting}
               aria-busy={submitting}
               aria-label="পরীক্ষা জমা দিন"
-              className="px-6 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2 disabled:opacity-40 z-50 relative pointer-events-auto cursor-pointer"
+              className="px-6 py-2.5 min-h-[48px] bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm font-bold rounded-xl hover:bg-[var(--accent-hover)] active:opacity-90 cursor-pointer transition-[background-color,opacity] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed z-50 relative pointer-events-auto"
             >
               {submitting ? "জমা হচ্ছে..." : (
                 <>
@@ -1003,27 +1048,45 @@ export default function CustomExamTab() {
           <p className="text-xs text-[var(--dashboard-danger)] text-center">{submitError}</p>
         )}
 
-        {/* Unanswered confirmation modal */}
+        {/* Unanswered confirmation sheet */}
         <AnimatePresence>
           {showUnansweredConfirm && (
             <motion.div
-              initial={{ opacity: 0 }}
+              initial={reduceMotion ? false : { opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-[var(--z-modal)] bg-[var(--overlay)] backdrop-blur-sm flex items-center justify-center p-4"
+              transition={reduceMotion ? { duration: 0 } : undefined}
+              className="fixed inset-0 z-[var(--z-modal)] bg-[var(--overlay)] backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4"
               onClick={() => setShowUnansweredConfirm(false)}
             >
               <motion.div
                 ref={unansweredDialogRef}
-                initial={{ scale: 0.95, y: 10 }}
-                animate={{ scale: 1, y: 0 }}
-                exit={{ scale: 0.95, y: 10 }}
+                tabIndex={-1}
+                initial={reduceMotion ? false : { y: 24, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={reduceMotion ? { opacity: 0 } : { y: 24, opacity: 0 }}
+                transition={reduceMotion ? { duration: 0 } : { duration: 0.18, ease: "easeOut" }}
+                drag={reduceMotion ? false : "y"}
+                dragListener={false}
+                dragControls={unansweredSheetControls}
+                dragConstraints={{ top: 0 }}
+                dragElastic={0.2}
+                onDragEnd={(_, info) => {
+                  if (info.offset.y > 100) setShowUnansweredConfirm(false);
+                }}
                 onClick={(e) => e.stopPropagation()}
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="custom-unanswered-confirm-title"
-                className="glass-card rounded-2xl border border-[var(--warning)]/30 p-6 w-full max-w-sm"
+                className="glass-card rounded-t-2xl sm:rounded-2xl border border-[var(--dashboard-warning)]/30 p-5 sm:p-6 w-full sm:max-w-sm max-h-[88vh] overflow-y-auto overscroll-contain"
               >
+                <div
+                  className="flex items-center justify-center pb-2 sm:hidden cursor-grab active:cursor-grabbing touch-none"
+                  aria-hidden="true"
+                  onPointerDown={(e) => unansweredSheetControls.start(e)}
+                >
+                  <span className="w-9 h-1 rounded-full" style={{ background: "var(--dashboard-border-muted)" }} />
+                </div>
                 <div className="flex items-center gap-2 mb-3">
                   <Warning className="w-5 h-5 text-[var(--dashboard-warning)]" />
                   <h3 id="custom-unanswered-confirm-title" className="text-base font-bold text-[var(--text-primary)]">উত্তর দেওয়া বাকি আছে</h3>
@@ -1035,7 +1098,7 @@ export default function CustomExamTab() {
                 <div className="flex gap-3">
                   <button
                     onClick={() => setShowUnansweredConfirm(false)}
-                    className="flex-1 py-2.5 bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-secondary)] font-mono text-sm rounded-xl hover:bg-[var(--surface-overlay)] transition-colors"
+                    className="flex-1 py-2.5 min-h-[48px] bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-secondary)] font-mono text-sm rounded-xl hover:bg-[var(--surface-overlay)] active:opacity-80 cursor-pointer transition-[background-color,opacity] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
                   >
                     ফিরে যান
                   </button>
@@ -1044,7 +1107,7 @@ export default function CustomExamTab() {
                     onClick={(e) => { e.preventDefault(); e.stopPropagation(); finalizeSubmit(); }}
                     disabled={submitting}
                     aria-busy={submitting}
-                    className="flex-1 py-2.5 min-h-11 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors disabled:opacity-40"
+                    className="flex-1 py-2.5 min-h-[48px] bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm font-bold rounded-xl hover:bg-[var(--accent-hover)] active:opacity-90 cursor-pointer transition-[background-color,opacity] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     {(submitting || reconciling) ? (reconciling ? "যাচাই করা হচ্ছে..." : "জমা হচ্ছে...") : "জমা দিন"}
                   </button>
@@ -1065,9 +1128,10 @@ export default function CustomExamTab() {
     return (
       <div className="space-y-6">
         <motion.div
-          initial={{ opacity: 0, scale: 0.97 }}
+          initial={reduceMotion ? false : { opacity: 0, scale: 0.97 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="glass-card rounded-2xl border border-[var(--primary)]/30 overflow-hidden"
+          transition={reduceMotion ? { duration: 0 } : undefined}
+          className="glass-card rounded-2xl border border-[var(--dashboard-primary)]/25 overflow-hidden"
         >
           <div className="p-6 text-center border-b border-terminal-border">
             <Trophy className={`w-12 h-12 mx-auto mb-3 ${summary.percentage >= 80 ? "text-[var(--dashboard-warning)]" : summary.percentage >= 50 ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-danger)]"}`} />
@@ -1085,7 +1149,7 @@ export default function CustomExamTab() {
                 onClick={() => jumpToReview("correct")}
                 disabled={summary.correct === 0}
                 aria-label={`সঠিক ${summary.correct}টি প্রশ্ন`}
-                className="rounded-xl bg-[var(--dashboard-success-subtle)] border border-[var(--success)]/20 p-3 text-left transition-all hover:scale-[1.02] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-success)] disabled:opacity-50 disabled:hover:scale-100 disabled:hover:shadow-none disabled:cursor-default cursor-pointer"
+                className="rounded-xl bg-[var(--dashboard-success-subtle)] border border-[var(--dashboard-success)]/25 p-3 min-h-[64px] text-left cursor-pointer transition-[border-color,opacity] duration-150 hover:border-[var(--dashboard-success)]/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-success)] disabled:opacity-50 disabled:cursor-default"
               >
                 <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">সঠিক</p>
                 <p className="text-lg font-bold text-[var(--dashboard-success)] font-mono">+{summary.correct}</p>
@@ -1095,7 +1159,7 @@ export default function CustomExamTab() {
                 onClick={() => jumpToReview("wrong")}
                 disabled={summary.wrong === 0}
                 aria-label={`ভুল ${summary.wrong}টি প্রশ্ন`}
-                className="rounded-xl bg-[var(--dashboard-danger-subtle)] border border-[var(--danger)]/20 p-3 text-left transition-all hover:scale-[1.02] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-danger)] disabled:opacity-50 disabled:hover:scale-100 disabled:hover:shadow-none disabled:cursor-default cursor-pointer"
+                className="rounded-xl bg-[var(--dashboard-danger-subtle)] border border-[var(--dashboard-danger)]/25 p-3 min-h-[64px] text-left cursor-pointer transition-[border-color,opacity] duration-150 hover:border-[var(--dashboard-danger)]/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-danger)] disabled:opacity-50 disabled:cursor-default"
               >
                 <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">ভুল</p>
                 <p className="text-lg font-bold text-[var(--dashboard-danger)] font-mono">−{summary.wrong}</p>
@@ -1105,7 +1169,7 @@ export default function CustomExamTab() {
                 onClick={() => jumpToReview("unanswered")}
                 disabled={summary.unanswered === 0}
                 aria-label={`উত্তর দেওয়া হয়নি ${summary.unanswered}টি প্রশ্ন`}
-                className="rounded-xl bg-[var(--dashboard-teal-subtle)] border border-[var(--dashboard-teal)]/25 p-3 text-left transition-all hover:scale-[1.02] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-teal)] disabled:opacity-50 disabled:hover:scale-100 disabled:hover:shadow-none disabled:cursor-default cursor-pointer"
+                className="rounded-xl bg-[var(--dashboard-teal-subtle)] border border-[var(--dashboard-teal)]/30 p-3 min-h-[64px] text-left cursor-pointer transition-[border-color,opacity] duration-150 hover:border-[var(--dashboard-teal)]/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-teal)] disabled:opacity-50 disabled:cursor-default"
               >
                 <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">উত্তর দেওয়া হয়নি</p>
                 <p className="text-lg font-bold text-[var(--dashboard-teal)] font-mono">{summary.unanswered}</p>
@@ -1124,10 +1188,10 @@ export default function CustomExamTab() {
               </div>
             </div>
 
-            <div className="mt-4 h-2 bg-[var(--surface-overlay)] rounded-full overflow-hidden max-w-md mx-auto">
+            <div className="mt-4 h-2 bg-[var(--surface-overlay)] rounded-full overflow-hidden max-w-md mx-auto" role="progressbar" aria-label="Exam score" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(summary.percentage)}>
               <div
-                className={`h-full w-full origin-left rounded-full transition-transform duration-700 ${
-                  summary.percentage >= 80 ? "bg-[var(--warning)]" : summary.percentage >= 50 ? "bg-[var(--success)]" : "bg-[var(--danger)]"
+                className={`h-full w-full origin-left rounded-full transition-transform duration-200 ${
+                  summary.percentage >= 80 ? "bg-[var(--dashboard-warning)]" : summary.percentage >= 50 ? "bg-[var(--dashboard-success)]" : "bg-[var(--dashboard-danger)]"
                 }`}
                 style={{ transform: `scaleX(${summary.percentage / 100})` }}
               />
@@ -1142,9 +1206,9 @@ export default function CustomExamTab() {
             <div className="flex items-center justify-center gap-3 mt-6">
               <button
                 onClick={resetAll}
-                className="px-5 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2"
+                className="px-5 py-2.5 min-h-[48px] bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm font-bold rounded-xl hover:bg-[var(--accent-hover)] active:opacity-90 cursor-pointer transition-[background-color,opacity] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] flex items-center gap-2"
               >
-                <ArrowCounterClockwise className="w-4 h-4" /> নতুন পরীক্ষা
+                <ArrowCounterClockwise className="w-4 h-4" aria-hidden="true" /> নতুন পরীক্ষা
               </button>
             </div>
           </div>
@@ -1168,32 +1232,39 @@ export default function CustomExamTab() {
               : isUnanswered
                 ? "ring-[var(--dashboard-teal)]"
                 : "ring-[var(--dashboard-danger)]";
+            const open = isReviewOpen(item.questionId, item.status);
+            const verdictLabel = isCorrect ? "সঠিক" : isUnanswered ? "উত্তর বাকি" : "ভুল";
             return (
-              <motion.div
+              <div
                 key={item.questionId}
                 id={`exam-review-${item.status}`}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: Math.min(i * 0.03, 0.5) }}
-                className={`glass-card rounded-2xl border p-4 transition-shadow ${
-                  isCorrect ? "border-[var(--success)]/20" : isUnanswered ? "border-[var(--dashboard-teal)]/25" : "border-[var(--danger)]/20"
+                className={`glass-card rounded-2xl border overflow-hidden transition-[border-color] duration-150 ${
+                  isCorrect ? "border-[var(--dashboard-success)]/25" : isUnanswered ? "border-[var(--dashboard-teal)]/30" : "border-[var(--dashboard-danger)]/25"
                 } ${highlightedReview === item.status ? `ring-2 ${ringColor}` : ""}`}
               >
-                <div className="flex items-start gap-3">
-                  <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                <button
+                  type="button"
+                  onClick={() => setReviewToggles((prev) => ({ ...prev, [item.questionId]: !isReviewOpen(item.questionId, item.status) }))}
+                  aria-expanded={open}
+                  aria-label={`প্রশ্ন ${i + 1} — ${verdictLabel} — ${open ? "সংকুচিত করুন" : "বিস্তারিত দেখুন"}`}
+                  className="w-full flex items-center gap-3 p-4 min-h-[60px] text-left cursor-pointer transition-[background-color] duration-150 hover:bg-[var(--dashboard-surface-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--dashboard-focus-ring)]"
+                >
+                  <span className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                     isCorrect ? "bg-[var(--dashboard-success-subtle)] text-[var(--dashboard-success)]" : isUnanswered ? "bg-[var(--dashboard-teal-subtle)] text-[var(--dashboard-teal)]" : "bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)]"
-                  }`}>
+                  }`} aria-hidden="true">
                     {isCorrect ? (
-                      <CheckCircle className="w-3.5 h-3.5" />
+                      <CheckCircle className="w-4 h-4" />
                     ) : isUnanswered ? (
-                      <CircleDashed className="w-3.5 h-3.5" />
+                      <CircleDashed className="w-4 h-4" />
                     ) : (
-                      <XCircle className="w-3.5 h-3.5" />
+                      <XCircle className="w-4 h-4" />
                     )}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                      <span className="text-[10px] font-mono text-[var(--dashboard-text-muted)]">প্রশ্ন {i + 1}</span>
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-sm truncate" style={{ color: "var(--dashboard-text-primary)" }}>
+                      {i + 1}. <RichText text={item.question} />
+                    </span>
+                    <span className="flex flex-wrap items-center gap-2 mt-1">
                       <span className={`px-1.5 py-0.5 rounded text-[10px] font-mono ${
                         isCorrect
                           ? "bg-[var(--dashboard-success-subtle)] text-[var(--dashboard-success)]"
@@ -1201,10 +1272,16 @@ export default function CustomExamTab() {
                             ? "bg-[var(--dashboard-teal-subtle)] text-[var(--dashboard-teal)]"
                             : "bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)]"
                       }`}>
-                        {isCorrect ? "+১" : isUnanswered ? "০" : "−০.৫"}
+                        {isCorrect ? "+১" : isUnanswered ? "০" : "−০.৫"} · {verdictLabel}
                       </span>
                       <span className="text-[10px] font-mono text-[var(--dashboard-text-muted)]">{item.subject}</span>
-                    </div>
+                    </span>
+                  </span>
+                  <CaretRight className={`w-4 h-4 flex-shrink-0 transition-transform duration-150 ${open ? "rotate-[270deg]" : "rotate-90"}`} style={{ color: "var(--dashboard-text-muted)" }} aria-hidden="true" />
+                </button>
+                {open && (
+                <div className="px-4 pb-4 pt-1 border-t" style={{ borderColor: "var(--dashboard-border-muted)" }}>
+                  <div className="min-w-0 flex-1 pt-2">
 
                     <p className="text-sm text-[var(--text-primary)] mb-2"><RichText text={item.question} /></p>
 
@@ -1214,8 +1291,8 @@ export default function CustomExamTab() {
                         const isUser = option === item.userAnswer;
                         const isRight = option === item.correctAnswer;
                         let cls = "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)]";
-                        if (isRight) cls = "border-[var(--success)]/40 bg-[var(--dashboard-success-subtle)] text-[var(--dashboard-success)]";
-                        else if (isUser) cls = "border-[var(--danger)]/40 bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)]";
+                        if (isRight) cls = "border-[var(--dashboard-success)]/40 bg-[var(--dashboard-success-subtle)] text-[var(--dashboard-success)]";
+                        else if (isUser) cls = "border-[var(--dashboard-danger)]/40 bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)]";
                         return (
                           <div key={oi} className={`rounded-lg border px-3 py-1.5 text-xs flex items-center gap-2 ${cls}`}>
                             <span className="font-mono">{OPTION_LABELS[oi] ?? oi + 1}</span>
@@ -1254,7 +1331,8 @@ export default function CustomExamTab() {
                     />
                   </div>
                 </div>
-              </motion.div>
+                )}
+              </div>
             );
           })}
         </div>
@@ -1262,9 +1340,9 @@ export default function CustomExamTab() {
         <div className="flex items-center justify-center gap-3">
           <button
             onClick={resetAll}
-            className="px-6 py-3 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2"
+            className="px-6 py-3 min-h-[52px] bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm font-bold rounded-xl hover:bg-[var(--accent-hover)] active:opacity-90 cursor-pointer transition-[background-color,opacity] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] flex items-center gap-2"
           >
-            <ArrowCounterClockwise className="w-4 h-4" /> নতুন পরীক্ষা শুরু করুন
+            <ArrowCounterClockwise className="w-4 h-4" aria-hidden="true" /> নতুন পরীক্ষা শুরু করুন
           </button>
         </div>
       </div>
