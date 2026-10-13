@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { SignOut, Spinner } from "@phosphor-icons/react";
 import { useAuth } from "@/lib/auth-ctx";
+import { useT } from "@/lib/i18n";
 
 interface LogoutButtonProps {
   variant?: "solid" | "ghost";
@@ -13,9 +14,11 @@ interface LogoutButtonProps {
 export default function LogoutButton({
   variant = "ghost",
   className = "",
-  "aria-label": ariaLabel = "Log out",
+  "aria-label": ariaLabel,
 }: LogoutButtonProps) {
+  const t = useT();
   const { logout } = useAuth();
+  const label = ariaLabel ?? t("auth.logoutLabel");
   const [pending, setPending] = useState(false);
 
   const handleLogout = async () => {
@@ -35,12 +38,12 @@ export default function LogoutButton({
   const content = pending ? (
     <>
       <Spinner className="w-4 h-4 animate-spin" aria-hidden="true" />
-      <span>Signing out...</span>
+      <span>{t("auth.signingOut")}</span>
     </>
   ) : (
     <>
       <SignOut className="w-5 h-5" aria-hidden="true" />
-      <span>Log out</span>
+      <span>{t("auth.logoutLabel")}</span>
     </>
   );
 
@@ -49,7 +52,7 @@ export default function LogoutButton({
       <button
         onClick={() => void handleLogout()}
         disabled={pending}
-        aria-label={ariaLabel}
+        aria-label={label}
         className={
           "rounded-xl bg-[var(--dashboard-danger-subtle)] border border-[var(--danger)]/25 text-[var(--dashboard-danger)] px-4 py-2 hover:bg-[var(--dashboard-danger-subtle)] " +
           base
@@ -60,7 +63,7 @@ export default function LogoutButton({
         ) : (
           <SignOut className="w-4 h-4" aria-hidden="true" />
         )}
-        {pending ? "Signing out..." : "Log out"}
+        {pending ? t("auth.signingOut") : t("auth.logoutLabel")}
       </button>
     );
   }
@@ -69,7 +72,7 @@ export default function LogoutButton({
     <button
       onClick={() => void handleLogout()}
       disabled={pending}
-      aria-label={ariaLabel}
+      aria-label={label}
       className={
         "w-full min-h-[44px] rounded-xl px-3 py-2 text-left text-[var(--dashboard-text-muted)] hover:text-[var(--dashboard-danger)] hover:bg-[var(--dashboard-danger-subtle)] " +
         base

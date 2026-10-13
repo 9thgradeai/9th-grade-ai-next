@@ -42,15 +42,21 @@ import { Prisma } from "@prisma/client";
 import type { MistakeErrorType } from "@prisma/client";
 import { prisma } from "~backend/db";
 import { AppError, InternalServerError } from "~backend/errors";
+import { log } from "~backend/infrastructure/observability/logger";
 import { recomputeAndAward } from "~backend/repositories/progress.repository";
 import { emit } from "~backend/events/bus";
 import type { AttemptFact } from "~backend/events/types";
 import { classifyErrorType } from "./error-classifier";
 import { recordQuestionAttempts } from "./question-progress";
+import {
+  validateExamDurationSec,
+  validateExamQuestionIds,
+} from "~backend/validation";
 import type { SubmittedAnswer } from "./activity";
 import type { ExamReviewDTO } from "@/lib/types";
 
-const POINTS_PER_CORRECT = 10;
+/** Points per correct answer. Exported for the progress-reconcile script. */
+export const POINTS_PER_CORRECT = 10;
 
 /** Negative marking per wrong MCQ: Bank −0.25, BCS (default) −0.50. */
 export function negativePenaltyForEcosystem(code?: string | null): number {
@@ -119,63 +125,15 @@ function validateAttemptId(value: unknown): string {
 }
 
 function validateDuration(value: unknown): number {
-  if (typeof value !== "number" || !Number.isFinite(value)) {
-    throw new AppError(
-      400,
-      "durationSec must be a finite number.",
-      "VALIDATION_ERROR",
-    );
-  }
-  if (value < 0) {
-    throw new AppError(
-      400,
-      "durationSec must be >= 0.",
-      "VALIDATION_ERROR",
-    );
-  }
-  // Hard ceiling — anything past 6h is either a client clock bug or abuse.
-  if (value > 6 * 60 * 60) {
-    throw new AppError(
-      400,
-      "durationSec exceeds the 6h ceiling.",
-      "VALIDATION_ERROR",
-    );
-  }
-  return Math.floor(value);
+  // Single contract shared with the API routes (backend/validation.ts) —
+  // ValidationError extends AppError(400, VALIDATION_ERROR), so the HTTP
+  // shape is identical to the previous local validator.
+  return validateExamDurationSec(value);
 }
 
 function validateQuestionIds(value: unknown): number[] {
-  if (!Array.isArray(value)) {
-    throw new AppError(
-      400,
-      "questionIds must be an array of question IDs.",
-      "VALIDATION_ERROR",
-    );
-  }
-  if (value.length === 0) {
-    throw new AppError(
-      400,
-      "questionIds must contain at least one question.",
-      "VALIDATION_ERROR",
-    );
-  }
-  if (value.length > 200) {
-    throw new AppError(
-      400,
-      "questionIds must contain at most 200 entries.",
-      "VALIDATION_ERROR",
-    );
-  }
-  if (value.some((id) => !Number.isInteger(id))) {
-    throw new AppError(
-      400,
-      "questionIds must be an array of integers.",
-      "VALIDATION_ERROR",
-    );
-  }
-  // The hash is computed over the deduplicated, sorted set — same canonical
-  // form the server used at /exam/start and the uniqueness the txn depends on.
-  return [...new Set(value as number[])];
+  // Single contract shared with the API routes (backend/validation.ts).
+  return validateExamQuestionIds(value);
 }
 
 function hashQuestionSet(ids: number[]): string {
@@ -552,7 +510,12 @@ export async function submitExamAttempt(
               durationSec,
             },
           });
-          await recomputeAndAward(tx, userId, pointsEarned, 1);
+          // Points/aggregate award runs POST-COMMIT (see below), not here:
+          // it touches the hot per-user UserProgress row and is not part of
+          // the graded response, so holding the Serializable txn open for it
+          // serializes all submits per user. Crash-window coverage comes from
+          // scripts/reconcile-progress.ts (points are exactly recomputable
+          // from SUBMITTED summaryJson).
 
           // Mastery loop — NO error swallowing. A failure here aborts the
           // entire transaction so attempts + result + progress stay
@@ -676,6 +639,22 @@ export async function submitExamAttempt(
       throw new InternalServerError("Failed to submit exam attempt.");
     }
 
+    // Points + aggregate award — AFTER commit, outside the Serializable txn.
+    // recomputeAndAward is a single atomic upsert statement (safe standalone)
+    // and its output is not part of the graded response. A failure here must
+    // not fail the submit (grading already committed); it logs loud and the
+    // reconcile script backfills from SUBMITTED summaryJson rows.
+    try {
+      await recomputeAndAward(prisma, userId, pointsEarned, 1);
+    } catch (awardError) {
+      log.error("exam-submit.award-failed", {
+        userId,
+        attemptId,
+        pointsEarned,
+        error: String(awardError),
+      });
+    }
+
     // Domain event — only after the transaction committed.
     emit({
       name: "EXAM_COMPLETED",
@@ -742,7 +721,9 @@ export async function registerExamAttempt(
   // caller explicitly (re)provides one — never silently zero it out.
   const deadlineProvided = typeof durationSec === "number";
   const deadlineSec = deadlineProvided && durationSec > 0
-    ? validateDuration(durationSec)
+    // Floor here (not in the shared validator): /exam/start accepts fractional
+    // seconds from client timers, while submit-time durations must be integers.
+    ? validateDuration(Math.floor(durationSec))
     : 0;
   try {
     await prisma.examAttempt.upsert({

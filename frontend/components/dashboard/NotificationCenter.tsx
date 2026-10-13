@@ -20,6 +20,8 @@ import { useDialogA11y } from "@/lib/use-dialog-a11y";
 import { useScrollLock } from "@/lib/use-scroll-lock";
 import type { Server } from "@/lib/types";
 import { AnimatedList } from "@/components/ui/AnimatedList";
+import { useT } from "@/lib/i18n";
+import { useToastSafe } from "@/lib/toast-ctx";
 
 type Tab = "notifications" | "badges";
 type FilterType = "ALL" | "INFO" | "SUCCESS" | "WARNING" | "REMINDER";
@@ -61,6 +63,8 @@ function relativeTime(iso: string) {
 }
 
 export default function NotificationCenter() {
+  const t = useT();
+  const toast = useToastSafe();
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<Tab>("notifications");
   const [notifications, setNotifications] = useState<Server.NotificationDTO[]>([]);
@@ -173,6 +177,7 @@ export default function NotificationCenter() {
     } catch {
       setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: false } : n)));
       setUnreadCount((prev) => prev + 1);
+      toast.error(t("notif.updateFailed"));
     }
   };
 
@@ -186,6 +191,7 @@ export default function NotificationCenter() {
     } catch {
       setNotifications(prev);
       setUnreadCount(prevUnread);
+      toast.error(t("notif.updateFailed"));
     }
   };
 
@@ -198,6 +204,7 @@ export default function NotificationCenter() {
     } catch {
       setNotifications(prev);
       setTotal((p) => p + 1);
+      toast.error(t("notif.deleteFailed"));
     }
   };
 
@@ -302,7 +309,7 @@ export default function NotificationCenter() {
                       <button
                         onClick={() => void markAllAsRead()}
                         className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-[var(--dashboard-primary)] hover:bg-[var(--dashboard-primary-subtle)] rounded-lg transition-colors"
-                        title="সব পড়া হিসেবে চিহ্নিত করুন"
+                        title={t("notif.markAllRead")}
                       >
                         <Checks className="w-3.5 h-3.5" />
                         <span className="hidden sm:inline">সব পড়া হয়েছে</span>
@@ -315,14 +322,14 @@ export default function NotificationCenter() {
                           ? "bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
                           : "text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-overlay)]"
                       }`}
-                      title="পছন্দসমূহ"
+                      title={t("notif.preferences")}
                     >
                       <Funnel className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => setIsOpen(false)}
                       className="w-9 h-9 flex items-center justify-center text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)] transition-colors rounded-lg hover:bg-[var(--surface-overlay)]"
-                      aria-label="বন্ধ করুন"
+                      aria-label={t("notif.close")}
                     >
                       <X className="w-5 h-5" />
                     </button>
@@ -332,8 +339,8 @@ export default function NotificationCenter() {
                 {/* Tabs */}
                 <div className="flex gap-1 bg-[var(--surface-overlay)] rounded-lg p-0.5">
                   {[
-                    { id: "notifications" as Tab, label: "আলার্ট", icon: Bell },
-                    { id: "badges" as Tab, label: "ব্যাজ", icon: Trophy },
+                    { id: "notifications" as Tab, label: t("notif.alerts"), icon: Bell },
+                    { id: "badges" as Tab, label: t("notif.badges"), icon: Trophy },
                   ].map((tab) => (
                     <button
                       key={tab.id}
@@ -489,8 +496,8 @@ export default function NotificationCenter() {
                                             void markAsRead(notif.id);
                                           }}
                                           className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100 p-1 rounded hover:bg-[var(--surface-overlay)] transition-all"
-                                          title="পড়া হিসেবে চিহ্নিত করুন"
-                                          aria-label="পড়া হিসেবে চিহ্নিত করুন"
+                                          title={t("notif.markRead")}
+                                          aria-label={t("notif.markRead")}
                                         >
                                           <CheckCircle className="w-3.5 h-3.5 text-[var(--accent)]" />
                                         </button>
@@ -501,8 +508,8 @@ export default function NotificationCenter() {
                                           void deleteNotification(notif.id);
                                         }}
                                         className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100 p-1 rounded hover:bg-red-500/10 transition-all"
-                                        title="মুছুন"
-                                        aria-label="মুছুন"
+                                        title={t("notif.delete")}
+                                        aria-label={t("notif.delete")}
                                       >
                                         <Trash className="w-3.5 h-3.5 text-red-500" />
                                       </button>
@@ -544,8 +551,8 @@ export default function NotificationCenter() {
                     <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[var(--surface-overlay)] flex items-center justify-center">
                       <Medal className="w-8 h-8 text-[var(--text-muted)]" />
                     </div>
-                    <p className="text-sm font-medium text-[var(--text-primary)] mb-1">কোনো ব্যাজ নেই</p>
-                    <p className="text-xs text-[var(--dashboard-text-muted)]">ব্যাজ অর্জন করলে এখানে দেখা যাবে</p>
+                    <p className="text-sm font-medium text-[var(--text-primary)] mb-1">{t("notif.emptyBadgesTitle")}</p>
+                    <p className="text-xs text-[var(--dashboard-text-muted)]">{t("notif.emptyBadgesBody")}</p>
                   </div>
                 ) : (
                   <div className="space-y-2">

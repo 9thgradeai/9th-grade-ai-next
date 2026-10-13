@@ -9,6 +9,7 @@ import EmptyState from "./command-center/EmptyState";
 import { api } from "@/lib/services/api";
 import { useToastSafe } from "@/lib/toast-ctx";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
+import { useT } from "@/lib/i18n";
 
 type TaskDTO = {
   id: number;
@@ -27,6 +28,7 @@ type TaskDTO = {
 // error. Fake ids are never sent to the API.
 export default function StudyPlannerTab() {
   const router = useRouter();
+  const t = useT();
   const toast = useToastSafe();
   const { setPracticeIntent } = useDashboardStore();
   const [selectedDay, setSelectedDay] = useState(0);
@@ -130,7 +132,7 @@ export default function StudyPlannerTab() {
     <div className="space-y-6">
       {/* Sprint 7: display-voice page header — matches Home. */}
       <div>
-        <p className="command-eyebrow">Planner</p>
+        <p className="command-eyebrow">{t("planner.eyebrow")}</p>
         <h1 className="font-display text-xl font-semibold tracking-tight mt-1" style={{ color: "var(--dashboard-text-primary)" }}>
           প্ল্যানার
         </h1>
@@ -142,28 +144,28 @@ export default function StudyPlannerTab() {
         className="command-card command-card--hero overflow-hidden"
       >
         <div className="border-b border-[var(--border-subtle)] pb-3 mb-5 flex items-center justify-between gap-2">
-          <span className="command-eyebrow">Study Planner</span>
+          <span className="command-eyebrow">{t("planner.title")}</span>
         </div>
 
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-2">
               <AiLogo solid={false} className="w-5 h-5 text-[var(--dashboard-primary)]" />
-              <h2 className="font-display text-xl font-bold text-[var(--text-primary)]">AI Study Planner</h2>
+              <h2 className="font-display text-xl font-bold text-[var(--text-primary)]">{t("planner.heading")}</h2>
             </div>
             <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">
-              A structured study schedule — mark tasks complete as you progress.
+              {t("planner.subheading")}
             </p>
           </div>
 
           <div className="flex items-center gap-4">
             <div className="text-center px-4 py-2 bg-subtle border border-[var(--accent)]/20 rounded-2xl">
               <div className="text-2xl font-bold text-[var(--dashboard-primary)] font-mono">{progress}%</div>
-              <div className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase">Progress</div>
+              <div className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase">{t("planner.statProgress")}</div>
             </div>
             <div className="text-center px-4 py-2 bg-subtle border border-[var(--accent)]/20 rounded-2xl">
               <div className="text-2xl font-bold text-[var(--dashboard-primary)] font-mono">{completedMinutes}m</div>
-              <div className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase">Studied</div>
+              <div className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase">{t("planner.statStudied")}</div>
             </div>
           </div>
         </div>
@@ -200,7 +202,7 @@ export default function StudyPlannerTab() {
       {!loading && !loadError && list.length === 0 && (
         <div className="command-card p-6">
           <EmptyState
-            eyebrow="Planner"
+            eyebrow={t("planner.eyebrow")}
             title="কোনো স্টাডি প্ল্যান নেই"
             body="এখনো কোনো পরিকল্পনা তৈরি হয়নি — প্র্যাকটিস ট্যাব থেকে পড়া শুরু করুন।"
           />
@@ -246,7 +248,7 @@ export default function StudyPlannerTab() {
           </span>
         ))}
         <span className="px-3 py-1 bg-subtle border border-[var(--dashboard-border-muted)] rounded-full text-xs font-mono text-[var(--dashboard-text-muted)]">
-          {dayPlan.tasks.reduce((sum, t) => sum + t.duration, 0)} min total
+          {t("planner.minTotal", { minutes: dayPlan.tasks.reduce((sum, t) => sum + t.duration, 0) })}
         </span>
       </motion.div>
 
@@ -262,7 +264,7 @@ export default function StudyPlannerTab() {
               className="command-card p-6"
             >
               <EmptyState
-                eyebrow="Planner"
+                eyebrow={t("planner.eyebrow")}
                 title="আজকের কোনো কাজ নেই"
                 body="এই দিনের জন্য কোনো স্টাডি প্ল্যান নেই — বিশ্রাম নিন অথবা প্র্যাকটিস ট্যাব থেকে নিজে শুরু করুন।"
               />
@@ -335,7 +337,7 @@ export default function StudyPlannerTab() {
                       aria-label={`${task.title} — প্র্যাকটিস শুরু করুন`}
                       className="px-3 py-1.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-xs rounded hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-1"
                     >
-                      Start <CaretRight className="w-3 h-3" />
+                      {t("planner.start")} <CaretRight className="w-3 h-3" />
                     </motion.button>
                   )}
                 </div>
@@ -368,8 +370,8 @@ export default function StudyPlannerTab() {
           className="p-6 bg-[var(--dashboard-warning-subtle)] border border-[var(--warning)]/30 rounded-2xl text-center"
         >
           <Trophy className="w-12 h-12 text-[var(--dashboard-warning)] mx-auto mb-2" />
-          <h3 className="text-lg font-bold text-[var(--dashboard-warning)] font-mono">DAY COMPLETE!</h3>
-          <p className="text-sm text-[var(--dashboard-text-muted)] mt-1">You&apos;ve completed all tasks for today. Keep it up!</p>
+          <h3 className="text-lg font-bold text-[var(--dashboard-warning)] font-mono">{t("planner.dayComplete")}</h3>
+          <p className="text-sm text-[var(--dashboard-text-muted)] mt-1">{t("planner.dayCompleteBody")}</p>
         </motion.div>
       )}
     </div>

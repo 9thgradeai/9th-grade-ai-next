@@ -3,11 +3,13 @@
 import { useState, useMemo } from "react";
 import { ArrowRight, MagnifyingGlass, GridFour, CheckCircle, Warning } from "@phosphor-icons/react";
 import { useDashboardStore } from "@/lib/store-ctx/dashboard";
+import { useT } from "@/lib/i18n";
 
 type Report = { name: string; score: number; attempted: number; correct: number };
 type FilterTab = "all" | "weak" | "mastered";
 
 export default function SubjectMastery({ reports, onPractice }: { reports: Report[]; onPractice: (subject: string) => void }) {
+  const t = useT();
   const { setActiveTab } = useDashboardStore();
   const [filter, setFilter] = useState<FilterTab>("all");
   const [search, setSearch] = useState("");
@@ -34,13 +36,13 @@ export default function SubjectMastery({ reports, onPractice }: { reports: Repor
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <p className="command-eyebrow flex items-center gap-1.5">
-            <GridFour className="w-3.5 h-3.5" /> Subject Knowledge Matrix
+            <GridFour className="w-3.5 h-3.5" /> {t("mastery.eyebrow")}
           </p>
           <h3 className="font-display font-extrabold text-[16px] mt-0.5" style={{ color: "var(--dashboard-text-primary)" }}>
-            Performance & Mastery by Topic
+            {t("mastery.title")}
           </h3>
           <p className="text-xs mt-0.5" style={{ color: "var(--dashboard-text-muted)" }}>
-            Tap any subject card to trigger a targeted AI practice session
+            {t("mastery.hint")}
           </p>
         </div>
 
@@ -51,7 +53,7 @@ export default function SubjectMastery({ reports, onPractice }: { reports: Repor
             <MagnifyingGlass className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--dashboard-text-muted)]" />
             <input
               type="text"
-              placeholder="Search topic..."
+              placeholder={t("mastery.searchPlaceholder")}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-8 pr-3 py-1 text-xs rounded-lg border focus:outline-none focus:border-[var(--dashboard-primary)]"
@@ -63,9 +65,9 @@ export default function SubjectMastery({ reports, onPractice }: { reports: Repor
           <div className="flex items-center rounded-lg border p-0.5" style={{ borderColor: "var(--dashboard-border-muted)", background: "var(--dashboard-surface-muted)" }}>
             {(
               [
-                { id: "all", label: "All" },
-                { id: "weak", label: "Weak <65%" },
-                { id: "mastered", label: "Mastered ≥80%" },
+                { id: "all", label: t("mastery.filterAll") },
+                { id: "weak", label: t("mastery.filterWeak") },
+                { id: "mastered", label: t("mastery.filterMastered") },
               ] as const
             ).map((tab) => (
               <button

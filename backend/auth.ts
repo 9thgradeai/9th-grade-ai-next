@@ -89,7 +89,7 @@ export const SESSION_DURATION_MS = 7 * 24 * 60 * 60 * 1000;
 export const REMEMBER_SESSION_MS = 30 * 24 * 60 * 60 * 1000;
 const SESSION_PRUNE_MS = REMEMBER_SESSION_MS;
 
-// Session metadata stored in JWT and user.sessions JSON
+// Session metadata stored in JWT and the Session table.
 type SessionMeta = {
   id: string;
   createdAt: string; // ISO timestamp
@@ -97,80 +97,80 @@ type SessionMeta = {
   ip?: string;
 };
 
-function parseSessions(json: unknown): SessionMeta[] {
-  if (!json) return [];
-  try {
-    // Prisma returns Json columns already parsed (array/object), not a string.
-    // Accept all three shapes; anything else resolves to [] (no sessions).
-    const arr: unknown =
-      typeof json === "string" ? JSON.parse(json) : json;
-    if (!Array.isArray(arr)) return [];
-    return arr.filter(
-      (s): s is SessionMeta =>
-        !!s && typeof s === "object" && typeof (s as SessionMeta).id === "string",
-    );
-  } catch {
-    return [];
-  }
-}
-
-function serializeSessions(sessions: SessionMeta[]): string {
-  return JSON.stringify(sessions);
-}
-
 /**
- * Add a new session to user's session list, enforcing max concurrency.
- * Returns the updated session list and the new session ID.
+ * Add a new session to the Session table, enforcing max concurrency.
+ * Lock-free (no User row transaction): expired rows are pruned, then the
+ * oldest rows past the cap are evicted. Concurrent logins converge on the
+ * cap on the next write instead of serializing on a row lock.
+ * Returns the updated active session list and the new session ID.
  */
 async function addUserSession(userId: string, session: SessionMeta): Promise<SessionMeta[]> {
-  // Atomic read-modify-write inside a transaction so concurrent logins
-  // cannot clobber each other's sessions or bypass the concurrency cap.
-  return prisma.$transaction(async (tx) => {
-    const user = await tx.user.findUnique({ where: { id: userId }, select: { sessions: true } });
-    const sessions = parseSessions(user?.sessions ?? "[]");
-
-    // Remove expired sessions (older than the longest supported lifetime)
-    const cutoff = Date.now() - SESSION_PRUNE_MS;
-    const active = sessions.filter((s) => new Date(s.createdAt).getTime() > cutoff);
-
-    // If at limit, remove oldest
-    if (active.length >= MAX_CONCURRENT_SESSIONS) {
-      active.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
-      active.shift(); // remove oldest
-    }
-
-    active.push(session);
-    await tx.user.update({
-      where: { id: userId },
-      data: { sessions: serializeSessions(active) },
-    });
-    return active;
+  const createdAt = new Date(session.createdAt);
+  const createdMs = createdAt.getTime();
+  const expiresAt = new Date(
+    (Number.isFinite(createdMs) ? createdMs : Date.now()) + SESSION_PRUNE_MS,
+  );
+  await prisma.session.deleteMany({
+    where: { userId, expiresAt: { lt: new Date() } },
   });
+  await prisma.session.create({
+    data: {
+      id: session.id,
+      userId,
+      createdAt: Number.isFinite(createdMs) ? createdAt : new Date(),
+      expiresAt,
+      userAgent: session.userAgent ?? null,
+      ip: session.ip ?? null,
+    },
+  });
+  // Evict oldest past the cap (keep newest MAX_CONCURRENT_SESSIONS).
+  const newest = await prisma.session.findMany({
+    where: { userId },
+    select: { id: true },
+    orderBy: { createdAt: "desc" },
+    take: MAX_CONCURRENT_SESSIONS,
+  });
+  const keep = new Set(newest.map((s) => s.id));
+  if (keep.size >= MAX_CONCURRENT_SESSIONS) {
+    await prisma.session.deleteMany({
+      where: { userId, id: { notIn: [...keep] } },
+    });
+  }
+  const active = await prisma.session.findMany({
+    where: { userId, expiresAt: { gt: new Date() } },
+    orderBy: { createdAt: "desc" },
+  });
+  return active.map(toSessionMeta);
+}
+
+function toSessionMeta(s: {
+  id: string;
+  createdAt: Date;
+  userAgent: string | null;
+  ip: string | null;
+}): SessionMeta {
+  return {
+    id: s.id,
+    createdAt: s.createdAt.toISOString(),
+    ...(s.userAgent ? { userAgent: s.userAgent } : {}),
+    ...(s.ip ? { ip: s.ip } : {}),
+  };
 }
 
 /**
- * Remove a session from user's session list (on logout).
+ * Remove a session (on logout).
  */
 async function removeUserSession(userId: string, sessionId: string): Promise<void> {
-  await prisma.$transaction(async (tx) => {
-    const user = await tx.user.findUnique({ where: { id: userId }, select: { sessions: true } });
-    const sessions = parseSessions(user?.sessions ?? "[]");
-    const filtered = sessions.filter((s) => s.id !== sessionId);
-    await tx.user.update({
-      where: { id: userId },
-      data: { sessions: serializeSessions(filtered) },
-    });
-  });
+  await prisma.session.deleteMany({ where: { userId, id: sessionId } });
 }
 
 /**
  * Get active session count for a user.
  */
 async function getActiveSessionCount(userId: string): Promise<number> {
-  const user = await prisma.user.findUnique({ where: { id: userId }, select: { sessions: true } });
-  const sessions = parseSessions(user?.sessions ?? "[]");
-  const cutoff = Date.now() - SESSION_PRUNE_MS;
-  return sessions.filter((s) => new Date(s.createdAt).getTime() > cutoff).length;
+  return prisma.session.count({
+    where: { userId, expiresAt: { gt: new Date() } },
+  });
 }
 
 /**
@@ -325,7 +325,7 @@ export async function clearSessionCookie(res: NextResponse) {
 /**
  * Read the authenticated user from the request cookies.
  * Verifies the JWT, then loads the user from the database by email.
- * Sessions are stateless (JWT-only); no in-memory or DB session row is used.
+ * Sid-bearing tokens are checked against the Session table.
  *
  * Per-request memoized (server-cache-react): repeated auth checks with the
  * same Request object (handler + service helpers, layout + page composition)
@@ -373,15 +373,16 @@ async function loadSessionUser(req: Request): Promise<UserRecord | null> {
     : 0;
   if (ver !== u.tokenVersion) return null;
 
-  // Session ID check: validate this session is still in user's active sessions
+  // Session ID check: the session must exist in the Session table and be
+  // unexpired. Anything else is revoked (concurrency limit or logout).
   const sid = typeof (payload as { sid?: unknown }).sid === "string"
     ? ((payload as { sid: string }).sid)
     : null;
   if (sid) {
-    const sessions = parseSessions(u.sessions ?? "[]");
-    const cutoff = Date.now() - SESSION_PRUNE_MS;
-    const active = sessions.filter((s) => new Date(s.createdAt).getTime() > cutoff);
-    if (!active.some((s) => s.id === sid)) {
+    const row = await prisma.session.findFirst({
+      where: { id: sid, userId: u.id, expiresAt: { gt: new Date() } },
+    });
+    if (!row) {
       return null; // Session revoked (concurrency limit or manual logout)
     }
   }

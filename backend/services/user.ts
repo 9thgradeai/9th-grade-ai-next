@@ -492,8 +492,11 @@ export async function revokeAllSessions(userId: string): Promise<void> {
     if (!existing) throw new NotFoundError("User not found");
     await prisma.user.update({
       where: { id: userId },
-      data: { tokenVersion: { increment: 1 }, sessions: "[]" },
+      data: { tokenVersion: { increment: 1 } },
     });
+    // Drop every session row: tokenVersion already kills the JWTs, this
+    // clears the device list immediately (no waiting for expiry).
+    await prisma.session.deleteMany({ where: { userId } });
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new InternalServerError("Failed to revoke sessions", { cause: error });
@@ -789,7 +792,6 @@ export async function exportUserData(userId: string) {
     notifications,
     notificationReads,
     userBadges,
-    sessions,
   ] = await Promise.all([
     prisma.user.findUnique({
       where: { id: userId },
@@ -810,6 +812,11 @@ export async function exportUserData(userId: string) {
         goal: true,
         createdAt: true,
         updatedAt: true,
+        userSessions: {
+          select: { id: true, createdAt: true, userAgent: true, ip: true },
+          orderBy: { createdAt: "desc" },
+          take: MAX_EXPORT_ROWS,
+        },
       },
     }),
     prisma.userProgress.findUnique({ where: { userId } }),
@@ -887,10 +894,6 @@ export async function exportUserData(userId: string) {
       orderBy: { unlockedAt: "desc" },
       take: MAX_EXPORT_ROWS,
     }),
-    prisma.user.findUnique({
-      where: { id: userId },
-      select: { sessions: true },
-    }),
   ]);
 
   const truncated: Record<string, boolean> = {
@@ -929,7 +932,13 @@ export async function exportUserData(userId: string) {
     notifications,
     notificationReads,
     userBadges,
-    sessions: sessions?.sessions ?? [],
+    sessions: (profile?.userSessions ?? []).map((s) => ({
+      id: s.id,
+      createdAt:
+        s.createdAt instanceof Date ? s.createdAt.toISOString() : String(s.createdAt),
+      ...(s.userAgent ? { userAgent: s.userAgent } : {}),
+      ...(s.ip ? { ip: s.ip } : {}),
+    })),
     truncated,
     maxRowsPerSection: MAX_EXPORT_ROWS,
   };

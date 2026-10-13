@@ -541,8 +541,8 @@ async function leaderboardMe(userId: string): Promise<LeaderboardDTO["me"]> {
 }
 
 // ── Badge catalog (moved out of the route handler — Phase 4) ──
-// Real unlock state lives in UserBadge; the seed-time `unlockedSeed` flag is
-// only a fallback for unauthenticated catalog views.
+// Unlock state lives in UserBadge. Anonymous callers see everything locked —
+// honest, since no one has earned anything yet.
 export async function getBadgeCatalog(userId?: string | null): Promise<BadgeDTO[]> {
   try {
     const [badges, userBadges] = await Promise.all([
@@ -561,7 +561,7 @@ export async function getBadgeCatalog(userId?: string | null): Promise<BadgeDTO[
       description: b.description,
       icon: b.icon,
       rarity: b.rarity,
-      unlocked: unlockedBy.has(b.id) || b.unlockedSeed,
+      unlocked: unlockedBy.has(b.id),
     }));
   } catch {
     throw new InternalServerError("Failed to fetch badges");

@@ -4,8 +4,10 @@ import { useState, useSyncExternalStore, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CaretLeft, CaretRight, ArrowCounterClockwise, Lightbulb, ChartBar } from "@phosphor-icons/react";
 import { useToastSafe } from "@/lib/toast-ctx";
+import { useT } from "@/lib/i18n";
 import { api } from "@/lib/services/api";
 import type { Flashcard } from "@/lib/types";
+import { SkeletonDeck } from "@/components/ui/Skeleton";
 
 /* --------------------------------------------------------------------------
    A shared "current time" clock backed by useSyncExternalStore. Reading the
@@ -85,6 +87,7 @@ function phaseOf(card: Card): Phase {
 
 export default function FlashcardsTab() {
   const toast = useToastSafe();
+  const t = useT();
   const syncFailureNotified = useRef(false);
   const retriedAgains = useRef<Set<string>>(new Set());
   const [session, setSession] = useState<SessionKind | null>(null);
@@ -340,8 +343,8 @@ export default function FlashcardsTab() {
 
             <div className="flex items-center gap-2 mb-4">
               <ChartBar className="w-5 h-5 text-[var(--dashboard-primary)]" />
-              <h2 className="font-display text-lg font-bold text-[var(--text-primary)]">Flashcards</h2>
-              <span className="text-xs text-[var(--dashboard-text-muted)] font-mono">Spaced Repetition System</span>
+              <h2 className="font-display text-lg font-bold text-[var(--text-primary)]">{t("flashcards.title")}</h2>
+              <span className="text-xs text-[var(--dashboard-text-muted)] font-mono">{t("flashcards.subtitle")}</span>
             </div>
 
             <p className="text-sm text-[var(--dashboard-text-muted)] font-mono mb-4">
@@ -349,9 +352,10 @@ export default function FlashcardsTab() {
             </p>
 
             {isLoading ? (
-              <p className="text-sm text-[var(--dashboard-text-muted)] font-mono mb-4" aria-live="polite">
-                ডেক লোড হচ্ছে…
-              </p>
+              <div role="status" aria-live="polite">
+                <span className="sr-only">{t("flashcards.deckLoading")}</span>
+                <SkeletonDeck tiles={4} />
+              </div>
             ) : loadError ? (
               <div className="mb-4 rounded-lg border border-[var(--danger)]/30 bg-[var(--dashboard-danger-subtle)] p-4">
                 <p className="text-sm text-[var(--dashboard-danger)] font-mono mb-3">{loadError}</p>
@@ -368,7 +372,7 @@ export default function FlashcardsTab() {
               </div>
             ) : Object.keys(decks).length === 0 ? (
               <p className="text-sm text-[var(--dashboard-text-muted)] font-mono mb-4">
-                No flashcard decks yet — new cards appear here once they are added.
+                {t("flashcards.noDecks")}
               </p>
             ) : (
               <DeckPicker
@@ -393,9 +397,9 @@ export default function FlashcardsTab() {
             {(() => {
               const all = Object.values(scopedDecks()).flat();
               return [
-                { label: "Total Cards", value: all.length, color: "text-[var(--dashboard-primary)]" },
-                { label: "Due Today", value: all.filter((c) => phaseOf(c) !== "mastered" && c.nextReview <= now).length, color: "text-[var(--dashboard-warning)]" },
-                { label: "Mastered", value: all.filter((c) => phaseOf(c) === "mastered").length, color: "text-[var(--success)]" },
+                { label: t("flashcards.statTotal"), value: all.length, color: "text-[var(--dashboard-primary)]" },
+                { label: t("flashcards.statDue"), value: all.filter((c) => phaseOf(c) !== "mastered" && c.nextReview <= now).length, color: "text-[var(--dashboard-warning)]" },
+                { label: t("flashcards.statMastered"), value: all.filter((c) => phaseOf(c) === "mastered").length, color: "text-[var(--success)]" },
               ].map((stat) => (
                 <div key={stat.label} className="command-card command-card--compact text-center">
                   <div className={`text-2xl font-bold font-mono ${stat.color}`}>{stat.value}</div>

@@ -8,6 +8,7 @@ import ScrollProgress from "@/components/ui/ScrollProgress";
 import Toaster from "@/components/ui/ToasterLazy";
 import CommandPalette from "@/components/navigation/IdleCommandPalette";
 import ServiceWorkerRegister from "@/components/pwa/ServiceWorkerRegister";
+import OfflineBanner from "@/components/pwa/OfflineBanner";
 import { SentryClientProvider } from "@/lib/sentry";
 import "./globals.css";
 
@@ -32,13 +33,14 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 // Hind Siliguri ships the bengali subset so UI copy renders in a proper
-// Bengali face. Latin is intentionally omitted (Geist covers Latin). We keep
-// only the two weights used for hierarchy (400 + 700; 600 is synthesized) and
-// disable font preloading so the render-blocking CSS — not the font files —
-// wins the throttled connection first. Total font payload is ~150KB.
+// Bengali face. Latin is intentionally omitted (Geist covers Latin). 400 +
+// 600 + 700: semibold Bengali is used across dashboard headings/labels, and
+// without the real 600 the browser synthesizes faux-bold (smeared strokes).
+// Disable font preloading so the render-blocking CSS — not the font files —
+// wins the throttled connection first.
 const hindSiliguri = Hind_Siliguri({
   subsets: ["bengali"],
-  weight: ["400", "700"],
+  weight: ["400", "600", "700"],
   variable: "--font-hind-siliguri",
   display: "swap",
   preload: false,
@@ -63,12 +65,17 @@ export const metadata: Metadata = {
   authors: [{ name: "9Th-Grade AI Team" }],
   alternates: {
     canonical: "/",
+    languages: {
+      en: "/",
+      bn: "/?lang=bn",
+    },
   },
   openGraph: {
     title: "9Th-Grade AI — Next-Gen Exam Intelligence",
     description: "Master competitive exams with AI-driven precision.",
     type: "website",
     locale: "en_US",
+    alternateLocale: ["bn_BD"],
     siteName: "9Th-Grade AI",
   },
   twitter: {
@@ -132,6 +139,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col font-sans noise">
         <ServiceWorkerRegister />
+        <OfflineBanner />
         <div className="cosmic-bg" aria-hidden="true" />
         <ScrollProgress />
         <ToastProvider>

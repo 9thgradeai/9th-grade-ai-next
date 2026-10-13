@@ -13,6 +13,7 @@ import { useScrollLock } from "@/lib/use-scroll-lock";
 import { account } from "@/lib/services/api";
 import { handleApiError } from "@/lib/errors";
 import LogoutButton from "./LogoutButton";
+import { useT } from "@/lib/i18n";
 
 const STORE_KEY = "9th_grade_ai_store_v2";
 const NOTIF_KEY = "9th_grade_ai_notif_pref";
@@ -102,6 +103,7 @@ function Field({
 }
 
 export default function SettingsTab() {
+  const t = useT();
   const router = useRouter();
   const shouldReduceMotion = useReducedMotion();
   const { user, updateProfile, logout, tokenExpiry, refreshToken } = useAuth();
@@ -157,14 +159,14 @@ export default function SettingsTab() {
   const saveName = async () => {
     const trimmed = nameDraft.trim();
     if (trimmed.length < 2) {
-      setNameMsg({ ok: false, text: "Name must be at least 2 characters." });
+      setNameMsg({ ok: false, text: t("settings.nameTooShort") });
       return;
     }
     setSavingName(true);
     setNameMsg(null);
     try {
       await updateProfile(trimmed);
-      setNameMsg({ ok: true, text: "Profile updated." });
+      setNameMsg({ ok: true, text: t("settings.profileUpdated") });
       setEditingName(false);
     } catch (error) {
       setNameMsg({ ok: false, text: handleApiError(error).message });
@@ -175,11 +177,11 @@ export default function SettingsTab() {
 
   const changePassword = async () => {
     if (pw.next.length < 8) {
-      setPwMsg({ ok: false, text: "New password must be at least 8 characters." });
+      setPwMsg({ ok: false, text: t("settings.pwTooShort") });
       return;
     }
     if (pw.next !== pw.confirm) {
-      setPwMsg({ ok: false, text: "Passwords do not match." });
+      setPwMsg({ ok: false, text: t("settings.pwMismatch") });
       return;
     }
     setChangingPw(true);
@@ -189,7 +191,7 @@ export default function SettingsTab() {
       // The server re-minted this device's cookie with a new tokenVersion —
       // resync the client's session timer so auto-refresh keeps working.
       await refreshToken();
-      setPwMsg({ ok: true, text: "Password changed. Other devices have been signed out." });
+      setPwMsg({ ok: true, text: t("settings.pwChanged") });
       setPw({ current: "", next: "", confirm: "" });
     } catch (error) {
       setPwMsg({ ok: false, text: handleApiError(error).message });
@@ -259,16 +261,16 @@ export default function SettingsTab() {
           <DeviceMobile className="w-5.5 h-5.5 text-[var(--dashboard-primary)]" aria-hidden="true" />
         </div>
         <div>
-          <h1 className="font-display text-xl font-semibold text-[var(--text-primary)]">Settings</h1>
-          <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">manage your account, security, and data</p>
+          <h1 className="font-display text-xl font-semibold text-[var(--text-primary)]">{t("settings.heading")}</h1>
+          <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">{t("settings.subheading")}</p>
         </div>
       </motion.div>
 
       {/* Profile */}
       <SectionCard
         icon={<User className="w-5 h-5 text-[var(--dashboard-primary)]" aria-hidden="true" />}
-        title="Profile"
-        description="Your public identity across the platform"
+        title={t("settings.profileTitle")}
+        description={t("settings.profileDesc")}
       >
         <div className="flex items-center gap-4 mb-5">
           <div className="relative">
@@ -288,7 +290,7 @@ export default function SettingsTab() {
                     if (e.key === "Escape") setEditingName(false);
                   }}
                   autoFocus
-                  aria-label="Edit display name"
+                  aria-label={t("settings.editNameLabel")}
                   className="px-3 py-1.5 rounded-lg bg-subtle border border-[var(--accent)]/40 text-sm text-[var(--text-primary)] outline-none"
                 />
                 <button
@@ -296,7 +298,7 @@ export default function SettingsTab() {
                   disabled={savingName}
                   className="px-3 py-1.5 rounded-lg bg-[var(--accent)] text-[var(--dashboard-text-inverse)] text-xs font-mono font-semibold hover:bg-[var(--accent-hover)] transition-colors disabled:opacity-60"
                 >
-                  {savingName ? "Saving..." : "Save"}
+                  {savingName ? t("settings.saving") : t("common.save")}
                 </button>
                 <button
                   onClick={() => {
@@ -304,9 +306,9 @@ export default function SettingsTab() {
                     setNameMsg(null);
                   }}
                   className="px-2.5 py-1.5 rounded-lg border border-[var(--border-strong)] text-xs font-mono text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)] transition-colors"
-                  aria-label="Cancel editing"
+                  aria-label={t("settings.cancelEditing")}
                 >
-                  Cancel
+                  {t("settings.cancel")}
                 </button>
               </div>
             ) : (
@@ -319,7 +321,7 @@ export default function SettingsTab() {
                     setEditingName(true);
                   }}
                   className="p-1.5 rounded-lg text-[var(--dashboard-text-muted)] hover:text-[var(--dashboard-primary)] hover:bg-[var(--dashboard-primary-subtle)] transition-colors"
-                  aria-label="Edit name"
+                  aria-label={t("settings.editName")}
                 >
                   <PencilSimple className="w-4 h-4" />
                 </button>
@@ -338,21 +340,21 @@ export default function SettingsTab() {
           <div className="flex items-center gap-2.5 p-3 rounded-xl bg-subtle border border-[var(--dashboard-border-muted)]">
             <Envelope className="w-4 h-4 text-[var(--dashboard-primary)] flex-shrink-0" aria-hidden="true" />
             <div className="min-w-0">
-              <dt className="text-[10px] font-mono uppercase tracking-wider text-[var(--dashboard-text-muted)]">Email</dt>
+              <dt className="text-[10px] font-mono uppercase tracking-wider text-[var(--dashboard-text-muted)]">{t("settings.email")}</dt>
               <dd className="text-sm text-[var(--dashboard-text-primary)] truncate">{user?.email ?? "—"}</dd>
             </div>
           </div>
           <div className="flex items-center gap-2.5 p-3 rounded-xl bg-subtle border border-[var(--dashboard-border-muted)]">
             <At className="w-4 h-4 text-[var(--dashboard-primary)] flex-shrink-0" aria-hidden="true" />
             <div className="min-w-0">
-              <dt className="text-[10px] font-mono uppercase tracking-wider text-[var(--dashboard-text-muted)]">Handle</dt>
+              <dt className="text-[10px] font-mono uppercase tracking-wider text-[var(--dashboard-text-muted)]">{t("settings.handle")}</dt>
               <dd className="text-sm text-[var(--dashboard-text-primary)] truncate">@{user?.handle ?? "student"}</dd>
             </div>
           </div>
           <div className="flex items-center gap-2.5 p-3 rounded-xl bg-subtle border border-[var(--dashboard-border-muted)] sm:col-span-2">
             <Calendar className="w-4 h-4 text-[var(--dashboard-primary)] flex-shrink-0" aria-hidden="true" />
             <div className="min-w-0">
-              <dt className="text-[10px] font-mono uppercase tracking-wider text-[var(--dashboard-text-muted)]">Member since</dt>
+              <dt className="text-[10px] font-mono uppercase tracking-wider text-[var(--dashboard-text-muted)]">{t("settings.memberSince")}</dt>
               <dd className="text-sm text-[var(--dashboard-text-primary)]">{formatDate(user?.createdAt)}</dd>
             </div>
           </div>
@@ -362,12 +364,12 @@ export default function SettingsTab() {
       {/* Security */}
       <SectionCard
         icon={<Key className="w-5 h-5 text-[var(--dashboard-primary)]" aria-hidden="true" />}
-        title="Security"
-        description="Keep your account safe"
+        title={t("settings.securityTitle")}
+        description={t("settings.securityDesc")}
       >
         <div className="grid sm:grid-cols-3 gap-3">
           <Field
-            label="Current password"
+            label={t("settings.currentPw")}
             id="current-password"
             type="password"
             autoComplete="current-password"
@@ -375,7 +377,7 @@ export default function SettingsTab() {
             onChange={(e) => setPw((p) => ({ ...p, current: e.target.value }))}
           />
           <Field
-            label="New password"
+            label={t("settings.newPw")}
             id="new-password"
             type="password"
             autoComplete="new-password"
@@ -383,7 +385,7 @@ export default function SettingsTab() {
             onChange={(e) => setPw((p) => ({ ...p, next: e.target.value }))}
           />
           <Field
-            label="Confirm new"
+            label={t("settings.confirmPw")}
             id="confirm-password"
             type="password"
             autoComplete="new-password"
@@ -403,11 +405,11 @@ export default function SettingsTab() {
           className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--accent)] text-[var(--dashboard-text-inverse)] text-sm font-mono font-semibold hover:bg-[var(--accent-hover)] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {changingPw ? <Spinner className="w-4 h-4 animate-spin" aria-hidden="true" /> : <Key className="w-4 h-4" aria-hidden="true" />}
-          {changingPw ? "Updating..." : "Change password"}
+          {changingPw ? t("settings.updating") : t("settings.changePw")}
         </button>
         <p className="mt-3 text-[11px] text-[var(--dashboard-text-muted)] font-mono flex items-center gap-1.5">
           <ShieldCheck className="w-3.5 h-3.5 text-[var(--dashboard-primary)]" aria-hidden="true" />
-          Passwords are hashed with bcrypt (cost 10) — never stored in plain text.
+          {t("settings.pwNote")}
         </p>
 
         {/* Revoke every active session across devices */}
@@ -415,9 +417,9 @@ export default function SettingsTab() {
           <div className="flex items-center gap-3 min-w-0">
             <DeviceMobile className="w-4 h-4 text-[var(--dashboard-primary)] flex-shrink-0" aria-hidden="true" />
             <div className="min-w-0">
-              <p className="text-sm text-[var(--dashboard-text-primary)] font-medium">Sign out of all devices</p>
+              <p className="text-sm text-[var(--dashboard-text-primary)] font-medium">{t("settings.revokeTitle")}</p>
               <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">
-                Invalidates every active session, including this one.
+                {t("settings.revokeDesc")}
               </p>
             </div>
           </div>
@@ -427,7 +429,7 @@ export default function SettingsTab() {
             className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-[var(--danger)]/40 bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)] text-sm font-mono font-semibold hover:bg-[var(--dashboard-danger-subtle)] transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex-shrink-0"
           >
             {revokingAll ? <Spinner className="w-4 h-4 animate-spin" aria-hidden="true" /> : <ArrowCounterClockwise className="w-4 h-4" aria-hidden="true" />}
-            {revokingAll ? "Signing out..." : "Revoke all"}
+            {revokingAll ? t("auth.signingOut") : t("settings.revokeAll")}
           </button>
         </div>
         {revokeMsg && !revokeMsg.ok ? (
@@ -441,30 +443,30 @@ export default function SettingsTab() {
       {/* Preferences */}
       <SectionCard
         icon={<Bell className="w-5 h-5 text-[var(--dashboard-primary)]" aria-hidden="true" />}
-        title="Preferences"
-        description="Tune how the app looks and notifies you"
+        title={t("settings.prefsTitle")}
+        description={t("settings.prefsDesc")}
       >
         <div className="space-y-3">
           <div className="flex items-center justify-between gap-4 p-3.5 rounded-xl bg-subtle border border-[var(--dashboard-border-muted)]">
             <div className="flex items-center gap-3">
               {theme === "dark" ? <Moon className="w-5 h-5 text-[var(--dashboard-primary)]" aria-hidden="true" /> : <Sun className="w-5 h-5 text-[var(--dashboard-warning)]" aria-hidden="true" />}
               <div>
-                <p className="text-sm text-[var(--dashboard-text-primary)] font-medium">Appearance</p>
+                <p className="text-sm text-[var(--dashboard-text-primary)] font-medium">{t("settings.appearance")}</p>
                 <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">
-                  {preference === "system" ? `System (${theme} active)` : `${theme} mode active`}
+                  {preference === "system" ? t("settings.systemActive", { theme }) : t("settings.modeActive", { theme })}
                 </p>
               </div>
             </div>
             <div
               className="flex items-center gap-1 rounded-xl border border-[var(--dashboard-border-muted)] bg-[var(--dashboard-surface-muted)] p-1"
               role="group"
-              aria-label="Appearance preference"
+              aria-label={t("settings.appearancePref")}
             >
               {(
                 [
-                  { id: "light", label: "Light" },
-                  { id: "dark", label: "Dark" },
-                  { id: "system", label: "Auto" },
+                  { id: "light", label: t("settings.light") },
+                  { id: "dark", label: t("settings.dark") },
+                  { id: "system", label: t("settings.auto") },
                 ] as const
               ).map((opt) => {
                 const active = preference === opt.id;
@@ -490,8 +492,8 @@ export default function SettingsTab() {
             <div className="flex items-center gap-3">
               <Bell className="w-5 h-5 text-[var(--dashboard-primary)]" aria-hidden="true" />
               <div>
-                <p className="text-sm text-[var(--dashboard-text-primary)] font-medium">Notifications</p>
-                <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">Announcements & reminders</p>
+                <p className="text-sm text-[var(--dashboard-text-primary)] font-medium">{t("settings.notifTitle")}</p>
+                <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">{t("settings.notifDesc")}</p>
               </div>
             </div>
             <button
@@ -499,7 +501,7 @@ export default function SettingsTab() {
               className="relative w-14 h-7 rounded-full bg-[var(--surface-overlay)] border border-[var(--border-strong)] transition-colors"
               role="switch"
               aria-checked={notifPref}
-              aria-label="Toggle notifications"
+              aria-label={t("settings.toggleNotif")}
             >
               <motion.span
                 layout
@@ -517,21 +519,21 @@ export default function SettingsTab() {
       {/* Session & data */}
       <SectionCard
         icon={<Database className="w-5 h-5 text-[var(--dashboard-primary)]" aria-hidden="true" />}
-        title="Session & data"
-        description="Your privacy is in your hands"
+        title={t("settings.sessionTitle")}
+        description={t("settings.sessionDesc")}
       >
         <dl className="grid sm:grid-cols-2 gap-3 mb-5">
           <div className="flex items-center gap-2.5 p-3 rounded-xl bg-subtle border border-[var(--dashboard-border-muted)]">
             <DeviceMobile className="w-4 h-4 text-[var(--dashboard-primary)] flex-shrink-0" aria-hidden="true" />
             <div className="min-w-0">
-              <dt className="text-[10px] font-mono uppercase tracking-wider text-[var(--dashboard-text-muted)]">Signed in as</dt>
+              <dt className="text-[10px] font-mono uppercase tracking-wider text-[var(--dashboard-text-muted)]">{t("settings.signedInAs")}</dt>
               <dd className="text-sm text-[var(--dashboard-text-primary)] truncate">{user?.email ?? "—"}</dd>
             </div>
           </div>
           <div className="flex items-center gap-2.5 p-3 rounded-xl bg-subtle border border-[var(--dashboard-border-muted)]">
             <ArrowCounterClockwise className="w-4 h-4 text-[var(--dashboard-primary)] flex-shrink-0" aria-hidden="true" />
             <div className="min-w-0">
-              <dt className="text-[10px] font-mono uppercase tracking-wider text-[var(--dashboard-text-muted)]">Session expiry</dt>
+              <dt className="text-[10px] font-mono uppercase tracking-wider text-[var(--dashboard-text-muted)]">{t("settings.sessionExpiry")}</dt>
               <dd className="text-sm text-[var(--dashboard-text-primary)] truncate">{sessionInfo?.expires ?? "—"}</dd>
             </div>
           </div>
@@ -543,7 +545,7 @@ export default function SettingsTab() {
             className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-[var(--accent)]/30 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] text-sm font-mono hover:bg-[var(--dashboard-primary-subtle)] transition-colors"
           >
             <Download className="w-4 h-4" aria-hidden="true" />
-            Export my data
+            {t("settings.exportData")}
           </button>
           <button
             onClick={() => {
@@ -552,7 +554,7 @@ export default function SettingsTab() {
             className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-[var(--border-strong)] bg-subtle text-[var(--dashboard-text-secondary)] text-sm font-mono hover:border-[var(--border-default)] hover:text-[var(--text-primary)] transition-colors"
           >
             <Database className="w-4 h-4" aria-hidden="true" />
-            Clear local data
+            {t("settings.clearLocal")}
           </button>
         </div>
       </SectionCard>
@@ -568,18 +570,18 @@ export default function SettingsTab() {
             <Warning className="w-5 h-5 text-[var(--dashboard-danger)]" aria-hidden="true" />
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-[var(--dashboard-danger)] uppercase tracking-wider">Danger zone</h3>
-            <p className="text-xs text-[var(--dashboard-text-muted)] mt-0.5">Irreversible actions for your account</p>
+            <h3 className="text-sm font-semibold text-[var(--dashboard-danger)] uppercase tracking-wider">{t("settings.dangerTitle")}</h3>
+            <p className="text-xs text-[var(--dashboard-text-muted)] mt-0.5">{t("settings.dangerDesc")}</p>
           </div>
         </header>
         <div className="flex flex-wrap items-center gap-3">
-          <LogoutButton variant="solid" aria-label="Log out of your account" />
+          <LogoutButton variant="solid" aria-label={t("settings.logoutAccount")} />
           <button
             onClick={() => setConfirmDelete(true)}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--dashboard-danger-subtle)] border border-[var(--danger)]/30 text-[var(--dashboard-danger)] text-sm font-mono hover:bg-[var(--dashboard-danger-subtle)] transition-colors"
           >
             <Trash className="w-4 h-4" aria-hidden="true" />
-            Delete account
+            {t("settings.deleteAccount")}
           </button>
         </div>
       </motion.section>
@@ -595,21 +597,21 @@ export default function SettingsTab() {
             <Info className="w-5 h-5 text-[var(--dashboard-primary)]" aria-hidden="true" />
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-[var(--text-primary)] uppercase tracking-wider">About</h3>
-            <p className="text-xs text-[var(--dashboard-text-muted)] mt-0.5">              9Th-Grade AI — free exam prep for Bangladesh</p>
+            <h3 className="text-sm font-semibold text-[var(--text-primary)] uppercase tracking-wider">{t("settings.aboutTitle")}</h3>
+            <p className="text-xs text-[var(--dashboard-text-muted)] mt-0.5">              {t("settings.aboutDesc")}</p>
           </div>
         </header>
         <dl className="flex flex-wrap gap-x-8 gap-y-2 text-xs font-mono">
           <div>
-            <dt className="text-[var(--dashboard-text-muted)] uppercase tracking-wider text-[10px]">Version</dt>
+            <dt className="text-[var(--dashboard-text-muted)] uppercase tracking-wider text-[10px]">{t("settings.version")}</dt>
             <dd className="text-[var(--dashboard-text-primary)] mt-0.5">v{APP_VERSION}</dd>
           </div>
           <div>
-            <dt className="text-[var(--dashboard-text-muted)] uppercase tracking-wider text-[10px]">Plan</dt>
-            <dd className="text-[var(--dashboard-text-primary)] mt-0.5">Free forever</dd>
+            <dt className="text-[var(--dashboard-text-muted)] uppercase tracking-wider text-[10px]">{t("settings.plan")}</dt>
+            <dd className="text-[var(--dashboard-text-primary)] mt-0.5">{t("settings.freeForever")}</dd>
           </div>
           <div>
-            <dt className="text-[var(--dashboard-text-muted)] uppercase tracking-wider text-[10px]">Open source</dt>
+            <dt className="text-[var(--dashboard-text-muted)] uppercase tracking-wider text-[10px]">{t("settings.oss")}</dt>
             <dd className="text-[var(--dashboard-text-primary)] mt-0.5">MIT License</dd>
           </div>
         </dl>
@@ -625,7 +627,7 @@ export default function SettingsTab() {
             className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4"
             role="dialog"
             aria-modal="true"
-            aria-label="Confirm account deletion"
+            aria-label={t("settings.confirmDeleteLabel")}
           >
             <button
               type="button"
@@ -647,19 +649,18 @@ export default function SettingsTab() {
                   <div className="w-10 h-10 rounded-xl bg-[var(--dashboard-danger-subtle)] border border-[var(--danger)]/25 flex items-center justify-center">
                     <Trash className="w-5 h-5 text-[var(--dashboard-danger)]" aria-hidden="true" />
                   </div>
-                  <h2 className="text-lg font-semibold text-[var(--text-primary)]">Delete account?</h2>
+                  <h2 className="text-lg font-semibold text-[var(--text-primary)]">{t("settings.deleteTitle")}</h2>
                 </div>
                 <button
                   onClick={() => setConfirmDelete(false)}
                   className="p-1.5 rounded-lg text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)] transition-colors"
-                  aria-label="Close"
+                  aria-label={t("common.close")}
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
               <p className="text-sm text-[var(--dashboard-text-muted)] leading-relaxed">
-                This permanently removes your profile, progress, bookmarks, and study history from our servers.
-                This action cannot be undone.
+                {t("settings.deleteBody")}
               </p>
               {deleteError ? (
                 <p className="mt-3 text-xs font-mono text-[var(--dashboard-danger)]">{deleteError}</p>
@@ -670,7 +671,7 @@ export default function SettingsTab() {
                   disabled={deleting}
                   className="px-4 py-2 rounded-xl border border-[var(--border-strong)] text-sm font-mono text-[var(--dashboard-text-secondary)] hover:text-[var(--text-primary)] transition-colors disabled:opacity-60"
                 >
-                  Cancel
+                  {t("settings.cancel")}
                 </button>
                 <button
                   onClick={() => void handleDelete()}
@@ -678,7 +679,7 @@ export default function SettingsTab() {
                   className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--danger)] text-[var(--dashboard-text-inverse)] text-sm font-mono font-semibold hover:bg-[var(--danger)] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {deleting ? <Spinner className="w-4 h-4 animate-spin" aria-hidden="true" /> : <Trash className="w-4 h-4" aria-hidden="true" />}
-                  {deleting ? "Deleting..." : "Delete forever"}
+                  {deleting ? t("settings.deleting") : t("settings.deleteForever")}
                 </button>
               </div>
             </motion.div>

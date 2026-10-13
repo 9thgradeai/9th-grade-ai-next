@@ -22,6 +22,7 @@ import WordOfDayCard from "./vocab/WordOfDayCard";
 import IdiomsTab from "./vocab/IdiomsTab";
 import AIMnemonicButton from "./vocab/AIMnemonicButton";
 import type { Server } from "@/lib/types";
+import { SkeletonCard } from "@/components/ui/Skeleton";
 
 type ReviewRating = "again" | "hard" | "good" | "easy";
 type StatusFilter = "all" | "new" | "learning" | "due" | "mastered";
@@ -287,10 +288,15 @@ export default function VocabTab() {
 
           {/* ─── Flashcard ─── */}
           {loading ? (
-            <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center" role="status">
-              <span className="sr-only">লোড হচ্ছে…</span>
-              <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">{t(lang, "ভোকাব লোড হচ্ছে...", "Loading vocabulary...")}</p>
-            </div>
+            <SkeletonCard>
+              <span className="sr-only">{t(lang, "ভোকাব লোড হচ্ছে...", "Loading vocabulary...")}</span>
+              <div aria-hidden="true" className="space-y-4">
+                <div className="skeleton-shimmer h-8 w-1/2 rounded-lg" />
+                <div className="skeleton-shimmer h-4 w-full rounded-lg" />
+                <div className="skeleton-shimmer h-4 w-5/6 rounded-lg" />
+                <div className="skeleton-shimmer h-24 w-full rounded-xl" />
+              </div>
+            </SkeletonCard>
           ) : !current ? (
             <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
               <BookOpen className="w-10 h-10 mx-auto text-[var(--dashboard-text-muted)]" />

@@ -260,6 +260,9 @@ export function validateExamQuestionIds(value: unknown): number[] {
   if (!Array.isArray(value)) {
     throw new ValidationError("questionIds must be an array.");
   }
+  if (value.length === 0) {
+    throw new ValidationError("questionIds must contain at least one question.");
+  }
   if (value.length > MAX_SUBMITTED_ANSWERS) {
     throw new ValidationError(
       `questionIds must contain at most ${MAX_SUBMITTED_ANSWERS} entries.`,
@@ -270,13 +273,20 @@ export function validateExamQuestionIds(value: unknown): number[] {
       throw new ValidationError("questionIds must all be integers.");
     }
   }
-  return value as number[];
+  // Canonical form: deduplicated set. The idempotency hash and the txn both
+  // depend on this, so every caller (routes and the submission service)
+  // shares this single contract.
+  return [...new Set(value as number[])];
 }
 
 /** durationSec is required context for scoring analytics; no silent fallback. */
 export function validateExamDurationSec(value: unknown): number {
   if (typeof value !== "number" || !Number.isInteger(value) || value < 0) {
     throw new ValidationError("durationSec must be a non-negative integer.");
+  }
+  // Hard ceiling — anything past 6h is either a client clock bug or abuse.
+  if (value > 6 * 60 * 60) {
+    throw new ValidationError("durationSec exceeds the 6h ceiling.");
   }
   return value;
 }

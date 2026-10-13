@@ -24,6 +24,7 @@ import {
 } from "@/lib/exam-persist";
 import { DIFFICULTY_LABEL } from "@/lib/exam-ui";
 import type { Server } from "@/lib/types";
+import { useT } from "@/lib/i18n";
 import { shuffleSessionOptions } from "@/lib/shuffle-options";
 import SubjectTopicSelect from "./SubjectTopicSelect";
 import AIExplanationButton from "./AIExplanationButton";
@@ -62,6 +63,7 @@ function formatTime(seconds: number): string {
 }
 
 export default function MockTestTab() {
+  const t = useT();
   const { ecosystem } = useEcosystem();
 
   // ── Config state ──
@@ -512,7 +514,7 @@ export default function MockTestTab() {
           className="glass-card rounded-2xl border border-terminal-border"
         >
           <div className="p-5 md:p-6">
-            <p className="command-eyebrow mb-2">Mock Test</p>
+            <p className="command-eyebrow mb-2">{t("mock.eyebrow")}</p>
             <div className="flex items-center gap-2 mb-1">
               <Timer className="w-5 h-5 text-[var(--dashboard-primary)]" />
               <h2 className="text-lg font-bold text-[var(--text-primary)]">মক টেস্ট</h2>
@@ -670,14 +672,14 @@ export default function MockTestTab() {
                     disabled={submitting || totalQuestions === 0}
                     aria-busy={submitting}
                     aria-label="মক টেস্ট জমা দিন"
-                    className="px-4 py-2 min-h-[48px] bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-xs font-bold rounded-xl hover:bg-[var(--accent-hover)] active:opacity-90 cursor-pointer transition-[background-color,opacity] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed z-50 relative"
+                    className="px-4 py-2 min-h-[48px] bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-xs font-bold rounded-xl hover:bg-[var(--accent-hover)] active:opacity-90 cursor-pointer transition-[background-color,opacity] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed z-[var(--z-sticky)] relative"
                   >
                     <Flag className="w-3.5 h-3.5" aria-hidden="true" />
                     {submitting ? "জমা হচ্ছে..." : "জমা দিন"}
                   </button>
                 </div>
               </div>
-              <div className="h-1.5 bg-[var(--surface-overlay)] rounded-full overflow-hidden mt-2" role="progressbar" aria-label="Mock test progress" aria-valuemin={0} aria-valuemax={totalQuestions} aria-valuenow={answeredCount}>
+              <div className="h-1.5 bg-[var(--surface-overlay)] rounded-full overflow-hidden mt-2" role="progressbar" aria-label={t("mock.progressLabel")} aria-valuemin={0} aria-valuemax={totalQuestions} aria-valuenow={answeredCount}>
                 <div
                   className="h-full w-full origin-left bg-[var(--dashboard-primary)] rounded-full transition-transform duration-200"
                   style={{ transform: `scaleX(${progressPct / 100})` }}
@@ -818,7 +820,7 @@ export default function MockTestTab() {
                 disabled={submitting}
                 aria-busy={submitting}
                 aria-label="মক টেস্ট জমা দিন"
-                className="flex-1 px-5 py-2.5 min-h-[48px] bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm font-bold rounded-xl hover:bg-[var(--accent-hover)] active:opacity-90 cursor-pointer transition-[background-color,opacity] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed z-50 relative"
+                className="flex-1 px-5 py-2.5 min-h-[48px] bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm font-bold rounded-xl hover:bg-[var(--accent-hover)] active:opacity-90 cursor-pointer transition-[background-color,opacity] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed z-[var(--z-sticky)] relative"
               >
                 <Flag className="w-4 h-4" aria-hidden="true" />
                 {submitting ? "জমা হচ্ছে..." : "জমা দিন"}

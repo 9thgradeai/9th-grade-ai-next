@@ -115,6 +115,29 @@ redis-cli FLUSHALL
 redis-cli --scan --pattern "qcache:*" | xargs redis-cli DEL
 ```
 
+### Reconcile UserProgress (points drift)
+```bash
+# The exam-submit path awards points post-commit. If a deploy crashes between
+# commit and award, the attempt is SUBMITTED but its points are missing.
+# Dry-run (report only):
+npx tsx scripts/reconcile-progress.ts
+# Or via npm script:
+npm run db:reconcile-progress -- --apply
+# Backfill a single user / everyone:
+npx tsx scripts/reconcile-progress.ts --apply --userId <id>
+npx tsx scripts/reconcile-progress.ts --apply
+# Run weekly via cron until the award path has an outbox worker.
+
+### Prune ephemeral activity rows
+```bash
+# Dry-run (report only):
+npm run db:prune-activity
+# Delete expired sessions, LearningEvent > 180d, AIUsage > 365d:
+npm run db:prune-activity -- --apply
+# QuestionAttempt / ExamAttempt / FlashcardReview are never pruned (stats record).
+```
+```
+
 ---
 
 ## 🚨 Incident Response

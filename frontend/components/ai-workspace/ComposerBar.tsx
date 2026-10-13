@@ -135,6 +135,7 @@ export default function ComposerBar({
                 alt="Attached question image"
                 width={56}
                 height={40}
+                decoding="async"
                 className="h-10 w-14 rounded-lg border border-[var(--dashboard-border-muted)] object-cover"
               />
               <span className="hidden font-mono text-[10px] text-[var(--dashboard-text-muted)] sm:inline">

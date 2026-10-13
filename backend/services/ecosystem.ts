@@ -50,6 +50,37 @@ export async function getEcosystemSummary(ecosystemId: number) {
 }
 
 /**
+ * Batched variant: one row fetch + two grouped counts (3 queries total)
+ * instead of 1 + 2N. Used by GET /api/ecosystems so a cold cache doesn't
+ * fan out per ecosystem.
+ */
+export async function getAllEcosystemSummaries() {
+  const [ecosystems, subjectCounts, questionCounts] = await Promise.all([
+    prisma.examEcosystem.findMany({
+      where: { isActive: true },
+      orderBy: { sortOrder: "asc" },
+    }),
+    prisma.subject.groupBy({
+      by: ["ecosystemId"],
+      where: { ecosystem: { isActive: true } },
+      _count: { _all: true },
+    }),
+    prisma.question.groupBy({
+      by: ["ecosystemId"],
+      where: { ecosystem: { isActive: true } },
+      _count: { _all: true },
+    }),
+  ]);
+  const subjectsByEco = new Map(subjectCounts.map((r) => [r.ecosystemId, r._count._all]));
+  const questionsByEco = new Map(questionCounts.map((r) => [r.ecosystemId, r._count._all]));
+  return ecosystems.map((e) => ({
+    ...e,
+    subjectCount: subjectsByEco.get(e.id) ?? 0,
+    questionCount: questionsByEco.get(e.id) ?? 0,
+  }));
+}
+
+/**
  * Validate that a subject belongs to the given ecosystem.
  * Throws ValidationError if the subject doesn't exist or belongs to a different ecosystem.
  */

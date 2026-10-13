@@ -16,7 +16,6 @@ async function main() {
       hint: c.hint ?? "",
       difficulty: c.difficulty.toUpperCase() as "EASY" | "MEDIUM" | "HARD",
       examRelevance: c.examRelevance,
-      nextReview: new Date(Date.now() + 86400000),
     };
     await prisma.flashcard.upsert({
       where: { sourceKey: key },

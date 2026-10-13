@@ -21,6 +21,7 @@ import { api } from "@/lib/services/api";
 import { launchAI } from "@/lib/ai-launcher";
 import { askAssistant } from "@/lib/services/ai/assistant";
 import type { Server } from "@/lib/types";
+import { useT } from "@/lib/i18n";
 
 type CommandItem = {
   key: string;
@@ -133,6 +134,7 @@ function truncate(text: string, max = 64) {
 
 export default function CommandBar() {
   const router = useRouter();
+  const t = useT();
   const { setActiveTab, setPracticeIntent, setMistakeIntent } = useDashboardStore();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -434,8 +436,8 @@ export default function CommandBar() {
                 setOpen(false);
               }
             }}
-            placeholder="Type a command, destination, mistake, or paper…"
-            aria-label="Command search"
+            placeholder={t("command.placeholder")}
+            aria-label={t("command.searchLabel")}
             aria-expanded="true"
             aria-controls="command-results"
             aria-activedescendant={flat[safeActive] ? `cmd-${flat[safeActive].key}` : undefined}
@@ -457,17 +459,16 @@ export default function CommandBar() {
           ref={listRef}
           id="command-results"
           role="listbox"
-          aria-label="Results"
+          aria-label={t("command.resultsLabel")}
           className="max-h-[46vh] overflow-y-auto overscroll-contain py-2"
         >
           {empty && (
             <li className="px-4 py-6 text-center">
               <p className="text-sm font-semibold text-[var(--dashboard-text-primary)]">
-                No matches found
+                {t("command.emptyTitle")}
               </p>
               <p className="mt-1 text-xs text-[var(--dashboard-text-muted)]">
-                Try a destination like “progress”, an action like “mock”, or at least 2
-                characters to search your mistakes and papers.
+                {t("command.emptyBody")}
               </p>
             </li>
           )}

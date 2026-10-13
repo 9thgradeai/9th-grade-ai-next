@@ -184,6 +184,22 @@ enum MistakeErrorType {
 }
 
 // ── Auth ──────────────────────────────────────────────────
+// One row per active login session (replaces the legacy User.sessions JSON
+// blob). Rows expire: the login path prunes on write, reads ignore expired
+// rows, and a periodic prune script deletes them. Max 5 per user — oldest
+// evicted on new login when at limit.
+model Session {
+  id        String   @id // sid minted at login (crypto.randomUUID)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  userAgent String?
+  ip        String?
+
+  @@index([userId, expiresAt])
+}
+
 model User {
   id            String  @id @default(cuid())
   name          String
@@ -224,9 +240,8 @@ model User {
   passwordResetExpires DateTime?
 
   // ── Session tracking (for concurrency limits) ──
-  // JSON array of { id: string, createdAt: string, userAgent?: string, ip?: string }
-  // Max 5 concurrent sessions; oldest revoked on new login when at limit.
-  sessions Json @default("[]")
+  // Active sessions live in the Session table (indexed, expiring rows).
+  userSessions      Session[]
 
   progress                UserProgress?
   bookmarks               Bookmark[]
@@ -459,9 +474,8 @@ model ExamArchive {
 }
 
 // ── Flashcards (SRS) ──────────────────────────────────────
-// DEPRECATED (Phase 2B2): `nextReview` / `interval` / `easeFactor` /
-// `repetitions` on this row are legacy shared defaults. Authoritative SRS
-// scheduling lives per-user in FlashcardUserState.
+// Scheduling state lives per-user in FlashcardUserState. The shared card row
+// carries content only (legacy per-card SRS columns were dropped in P2b).
 model Flashcard {
   id            Int                  @id @default(autoincrement())
   subjectId     Int?
@@ -472,10 +486,6 @@ model Flashcard {
   hint          String               @default("")
   difficulty    Difficulty           @default(MEDIUM)
   examRelevance Json? // ["BCS","Bank"] — which exam tracks this card serves
-  nextReview    DateTime             @default(now())
-  interval      Int                  @default(1)
-  easeFactor    Float                @default(2.5)
-  repetitions   Int                  @default(0)
   // Seed identity: md5(subjectName|question) — keeps card ids stable.
   sourceKey     String               @unique @default("")
   reviews       FlashcardReview[]
@@ -484,7 +494,6 @@ model Flashcard {
   updatedAt     DateTime             @default(now()) @updatedAt
 
   @@index([subjectId])
-  @@index([nextReview])
 }
 
 // Per-user SM-2 scheduling state. One row appears after the first review;
@@ -536,8 +545,6 @@ model StudyTask {
   duration    Int                   @default(0)
   priority    Priority              @default(MEDIUM)
   description String                @default("")
-  // DEPRECATED (Phase 2B2): legacy column, superseded by StudyTaskCompletion.
-  completed   Boolean               @default(false)
   createdAt   DateTime              @default(now())
   completions StudyTaskCompletion[]
 
@@ -562,18 +569,14 @@ model StudyTaskCompletion {
 }
 
 // ── Daily quizzes ─────────────────────────────────────────
-// DEPRECATED (Phase 2): `completed` / `score` / `claimed` on this row are
-// legacy GLOBAL state shared by every user. They are kept only for the
-// dual-read transition; the authoritative per-user state now lives in
-// DailyQuizParticipation. Do not read these columns from new code.
+// Per-user state lives in DailyQuizParticipation. This row is the shared
+// catalog entry (date + questions); legacy global completion columns were
+// dropped in P2b.
 model DailyQuiz {
   id             Int                      @id @default(autoincrement())
   ecosystemId    Int                      @default(1)
   ecosystem      ExamEcosystem            @relation(fields: [ecosystemId], references: [id], onDelete: Cascade)
   date           String
-  completed      Boolean                  @default(false)
-  score          Int                      @default(0)
-  claimed        Boolean                  @default(false)
   createdAt      DateTime                 @default(now())
   questions      QuizQuestion[]
   participations DailyQuizParticipation[]
@@ -737,8 +740,6 @@ model Badge {
   description  String
   icon         String      @default("🏅")
   rarity       BadgeRarity @default(COMMON)
-  // DEPRECATED (Phase 2B2): seed-time catalog flag; real unlocks live in UserBadge.
-  unlockedSeed Boolean     @default(false)
   userBadges   UserBadge[]
 }
 

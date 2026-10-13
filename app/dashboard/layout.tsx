@@ -79,7 +79,7 @@ function SideNavDrawerContent({ activeTab, onChange }: { activeTab: TabId; onCha
           </div>
         </div>
         <div className="pt-2 border-t" style={{ borderColor: "var(--dashboard-border-muted)" }}>
-          <LogoutButton aria-label="Log out" />
+          <LogoutButton />
         </div>
       </div>
     </div>
@@ -88,6 +88,7 @@ function SideNavDrawerContent({ activeTab, onChange }: { activeTab: TabId; onCha
 
 function EmailVerificationGate({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const t = useT();
   const { user, isLoading: authLoading } = useAuth();
 
   // Gate: require email verification before accessing dashboard. Carry the
@@ -110,7 +111,7 @@ function EmailVerificationGate({ children }: { children: React.ReactNode }) {
   if (authLoading) {
     return (
       <div className="dashboard-shell min-h-dvh flex items-center justify-center p-4">
-        <LoadingShell title="VERIFYING_CREDENTIALS" progressLabel="auth check" className="w-full max-w-[560px]" />
+        <LoadingShell title={t("dashboard.verifying")} progressLabel="auth check" className="w-full max-w-[560px]" />
       </div>
     );
   }
@@ -118,7 +119,7 @@ function EmailVerificationGate({ children }: { children: React.ReactNode }) {
   if (!user) {
     return (
       <div className="dashboard-shell min-h-dvh flex items-center justify-center p-4">
-        <LoadingShell title="REDIRECTING_LOGIN" progressLabel="redirect" className="w-full max-w-[560px]" />
+        <LoadingShell title={t("dashboard.redirectLogin")} progressLabel="redirect" className="w-full max-w-[560px]" />
       </div>
     );
   }
@@ -126,7 +127,7 @@ function EmailVerificationGate({ children }: { children: React.ReactNode }) {
   if (!user.emailVerified) {
     return (
       <div className="dashboard-shell min-h-dvh flex items-center justify-center p-4">
-        <LoadingShell title="REDIRECTING_VERIFICATION" progressLabel="redirect" className="w-full max-w-[560px]" />
+        <LoadingShell title={t("dashboard.redirectVerify")} progressLabel="redirect" className="w-full max-w-[560px]" />
       </div>
     );
   }
@@ -136,15 +137,16 @@ function EmailVerificationGate({ children }: { children: React.ReactNode }) {
 
 function ShortcutsSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
   const ref = useDialogA11y<HTMLDivElement>(open, onClose);
+  const t = useT();
   useScrollLock(open);
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Keyboard shortcuts">
+    <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label={t("shell.shortcuts")}>
       <div className="absolute inset-0 backdrop-blur-sm" style={{ background: "var(--dashboard-overlay)" }} onClick={onClose} />
       <div ref={ref} tabIndex={-1} className="relative w-full max-w-md rounded-2xl border shadow-xl p-5" style={{ background: "var(--dashboard-surface-solid)", borderColor: "var(--dashboard-border-muted)" }}>
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-bold" style={{ color: "var(--dashboard-text-primary)" }}>Keyboard shortcuts</h2>
-          <button onClick={onClose} className="inline-flex h-9 w-9 items-center justify-center rounded-lg" style={{ color: "var(--dashboard-text-muted)" }} aria-label="Close"><X className="w-4 h-4" /></button>
+          <h2 className="text-sm font-bold" style={{ color: "var(--dashboard-text-primary)" }}>{t("shell.shortcuts")}</h2>
+          <button onClick={onClose} className="inline-flex h-9 w-9 items-center justify-center rounded-lg" style={{ color: "var(--dashboard-text-muted)" }} aria-label={t("common.close")}><X className="w-4 h-4" /></button>
         </div>
         {/* Unified global keyboard-shortcut map (single cheat-sheet). */}
         <div className="mt-4">
@@ -258,7 +260,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 className="fixed inset-0 z-[var(--z-modal)] lg:hidden"
                 role="dialog"
                 aria-modal="true"
-                aria-label="Navigation menu"
+                aria-label={t("shell.navMenu")}
               >
                 <div className="absolute inset-0 backdrop-blur-sm animate-fade-in" style={{ background: "var(--dashboard-overlay)" }} onClick={closeNavDrawer} />
                 <div
@@ -274,7 +276,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                       <BrandMark className="h-8 w-8 rounded-lg ring-1 ring-black/5" />
                       <span className="font-display font-bold text-[15px]" style={{ color: "var(--dashboard-text-primary)" }}>9Th-Grade AI</span>
                     </div>
-                    <button onClick={closeNavDrawer} className="p-2 rounded-xl border" style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-secondary)", background: "var(--dashboard-surface-muted)" }} aria-label="Close navigation">
+                    <button onClick={closeNavDrawer} className="p-2 rounded-xl border" style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-secondary)", background: "var(--dashboard-surface-muted)" }} aria-label={t("shell.closeNav")}>
                       <X className="w-4 h-4" />
                     </button>
                   </div>
@@ -296,7 +298,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     onClick={() => setNavDrawerOpen(true)}
                     className="lg:hidden inline-flex items-center justify-center w-11 h-11 min-h-[44px] min-w-[44px] rounded-xl border shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
                     style={{ borderColor: "var(--dashboard-border-muted)", background: "var(--dashboard-surface-muted)", color: "var(--dashboard-text-primary)" }}
-                    aria-label="Open navigation"
+                    aria-label={t("shell.openNav")}
                     aria-expanded={navDrawerOpen}
                     aria-controls="dashboard-nav-drawer"
                   >
@@ -327,7 +329,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   <button
                     type="button"
                     onClick={() => window.dispatchEvent(new Event("app:open-command"))}
-                    aria-label="Search dashboard"
+                    aria-label={t("shell.searchDashboard")}
                     aria-haspopup="dialog"
                     className="hidden sm:flex h-10 flex-1 max-w-md items-center gap-3 rounded-xl border px-3 text-sm text-[var(--dashboard-text-secondary)] bg-[var(--dashboard-surface-muted)] border-[var(--dashboard-border-muted)] hover:border-[var(--dashboard-primary)] transition-colors"
                   >
@@ -338,7 +340,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   <button
                     type="button"
                     onClick={() => window.dispatchEvent(new Event("app:open-command"))}
-                    aria-label="Search dashboard"
+                    aria-label={t("shell.searchDashboard")}
                     aria-haspopup="dialog"
                     className="sm:hidden inline-flex h-10 w-10 items-center justify-center rounded-xl border shrink-0"
                     style={{ borderColor: "var(--dashboard-border-muted)", background: "var(--dashboard-surface-muted)", color: "var(--dashboard-text-secondary)" }}

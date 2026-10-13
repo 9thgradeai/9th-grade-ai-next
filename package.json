@@ -25,6 +25,8 @@
     "db:seed": "prisma db seed --schema database/prisma/schema.prisma",
     "db:sync": "npm run db:push && npm run db:seed",
     "db:clean": "tsx scripts/clear-content.ts",
+    "db:reconcile-progress": "tsx scripts/reconcile-progress.ts",
+    "db:prune-activity": "tsx scripts/prune-activity.ts",
     "db:seed-users": "SEED_RESET_USERS=1 prisma db seed --schema database/prisma/schema.prisma",
     "db:seed-questions": "tsx scripts/seed-questions.ts",
     "ai:eval": "tsx scripts/ai-eval-harness.ts",

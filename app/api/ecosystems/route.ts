@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getAllEcosystems, getEcosystemSummary } from "~backend/services/ecosystem";
+import { getAllEcosystemSummaries } from "~backend/services/ecosystem";
 import { toHttpResponse } from "~backend/errors";
 import { getRequestId, startTiming, applySecurityHeaders, applyCacheHeaders } from "../_middleware";
 
@@ -8,25 +8,21 @@ export async function GET(request: Request) {
   const getTime = startTiming();
 
   try {
-    const ecosystems = await getAllEcosystems();
-    const summary = await Promise.all(
-      ecosystems.map(async (e) => {
-        const { subjectCount, questionCount } = await getEcosystemSummary(e.id);
-        return {
-          id: e.id,
-          code: e.code,
-          slug: e.slug,
-          name: e.name,
-          nameBn: e.nameBn,
-          description: e.description,
-          descriptionBn: e.descriptionBn,
-          isActive: e.isActive,
-          sortOrder: e.sortOrder,
-          subjectCount,
-          questionCount,
-        };
-      }),
-    );
+    // Single batched read (1 row fetch + 2 grouped counts) — never 1 + 2N.
+    const rows = await getAllEcosystemSummaries();
+    const summary = rows.map((e) => ({
+      id: e.id,
+      code: e.code,
+      slug: e.slug,
+      name: e.name,
+      nameBn: e.nameBn,
+      description: e.description,
+      descriptionBn: e.descriptionBn,
+      isActive: e.isActive,
+      sortOrder: e.sortOrder,
+      subjectCount: e.subjectCount,
+      questionCount: e.questionCount,
+    }));
 
     const res = NextResponse.json({ ecosystems: summary });
     res.headers.set("X-Request-Id", requestId);

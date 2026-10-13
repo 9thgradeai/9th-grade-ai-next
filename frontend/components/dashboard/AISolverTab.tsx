@@ -248,6 +248,7 @@ export default function AISolverTab() {
                   <img
                     src={imagePreview}
                     alt="Uploaded question"
+                    decoding="async"
                     className="w-full max-h-64 object-contain rounded-2xl border border-primary/20"
                   />
                   <button

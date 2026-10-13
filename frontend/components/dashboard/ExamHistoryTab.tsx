@@ -2,10 +2,12 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Trophy, Clock, Calendar, Target, ArrowUpRight, Funnel, CaretDown, Spinner, Warning, ChartBar, FileText } from "@phosphor-icons/react";
+import { Trophy, Clock, Calendar, Target, ArrowUpRight, Funnel, CaretDown, Warning, ChartBar, FileText } from "@phosphor-icons/react";
 import { api } from "@/lib/services/api";
 import type { Server } from "@/lib/types";
 import Button from "@/components/ui/Button";
+import { SkeletonTable } from "@/components/ui/Skeleton";
+import { useT } from "@/lib/i18n";
 
 type HistoryFilter = "all" | "custom" | "mock" | "daily";
 type SortOrder = "newest" | "oldest" | "score-high" | "score-low";
@@ -61,6 +63,7 @@ function getScoreLabel(score: number): string {
 }
 
 export default function ExamHistoryTab() {
+  const t = useT();
   const [history, setHistory] = useState<Server.ExamHistoryDTO | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -130,11 +133,8 @@ export default function ExamHistoryTab() {
 
   if (loading) {
     return (
-      <div className="space-y-6">
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
-          <Spinner className="w-10 h-10 mx-auto mb-3 text-[var(--accent)] animate-spin" aria-hidden="true" />
-          <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">পরীক্ষা ইতিহাস লোড হচ্ছে...</p>
-        </motion.div>
+      <div className="space-y-6" aria-busy="true">
+        <SkeletonTable rows={6} />
       </div>
     );
   }
@@ -160,7 +160,7 @@ export default function ExamHistoryTab() {
       {/* Header & Stats */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-card rounded-2xl border border-terminal-border">
         <div className="p-5 md:p-6">
-          <p className="command-eyebrow mb-2">History</p>
+          <p className="command-eyebrow mb-2">{t("history.eyebrow")}</p>
           <div className="flex items-center gap-2 mb-1">
             <ChartBar className="w-5 h-5 text-[var(--dashboard-primary)]" />
             <h2 className="text-lg font-bold text-[var(--text-primary)]">পরীক্ষা ইতিহাস ও আপকামিং</h2>

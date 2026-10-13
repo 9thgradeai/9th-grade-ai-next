@@ -78,6 +78,9 @@ async function sessionCookieFor(email: string): Promise<string> {
 describe("POST /api/auth/login", () => {
   it("returns 200 + sets the session cookie on valid credentials", async () => {
     vi.mocked(prisma.user.findUnique).mockResolvedValue(mockUser());
+    vi.mocked(prisma.session.deleteMany).mockResolvedValue({ count: 0 } as never);
+    vi.mocked(prisma.session.create).mockResolvedValue({} as never);
+    vi.mocked(prisma.session.findMany).mockResolvedValue([] as never);
 
     const res = await loginPOST(
       jsonRequest("/api/auth/login", { email: "aspirant@example.com", password: TEST_PASSWORD }),

@@ -27,6 +27,7 @@ export default function MediaAttachmentView({
           alt={m.alt ?? `Figure ${i + 1}`}
           className="rounded-xl border border-terminal-border max-w-full h-auto mx-auto"
           loading="lazy"
+          decoding="async"
         />
       ))}
       {children}

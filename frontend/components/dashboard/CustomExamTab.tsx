@@ -886,7 +886,7 @@ export default function CustomExamTab() {
               disabled={submitting || totalQuestions === 0}
               aria-busy={submitting}
               aria-label="পরীক্ষা জমা দিন"
-              className="px-4 py-2 min-h-[48px] bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-xs font-bold rounded-xl hover:bg-[var(--accent-hover)] active:opacity-90 cursor-pointer transition-[background-color,opacity] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed z-50 relative pointer-events-auto"
+              className="px-4 py-2 min-h-[48px] bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-xs font-bold rounded-xl hover:bg-[var(--accent-hover)] active:opacity-90 cursor-pointer transition-[background-color,opacity] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed z-[var(--z-sticky)] relative pointer-events-auto"
             >
               <Flag className="w-3.5 h-3.5" />
               {(submitting || reconciling) ? (reconciling ? "যাচাই করা হচ্ছে..." : "জমা হচ্ছে...") : "জমা দিন"}
@@ -1033,7 +1033,7 @@ export default function CustomExamTab() {
               disabled={submitting}
               aria-busy={submitting}
               aria-label="পরীক্ষা জমা দিন"
-              className="px-6 py-2.5 min-h-[48px] bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm font-bold rounded-xl hover:bg-[var(--accent-hover)] active:opacity-90 cursor-pointer transition-[background-color,opacity] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed z-50 relative pointer-events-auto"
+              className="px-6 py-2.5 min-h-[48px] bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm font-bold rounded-xl hover:bg-[var(--accent-hover)] active:opacity-90 cursor-pointer transition-[background-color,opacity] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed z-[var(--z-sticky)] relative pointer-events-auto"
             >
               {submitting ? "জমা হচ্ছে..." : (
                 <>

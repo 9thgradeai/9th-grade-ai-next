@@ -210,29 +210,35 @@ export async function checkDailyCostBudget(userId: string): Promise<boolean> {
 /**
  * AI endpoint guard: per-user minute limit + per-user daily quota + cost budget,
  * with the usage ledger as the authoritative daily backstop on single-instance stores.
+ *
+ * The three checks are independent (store counter, store counter + ledger,
+ * ledger aggregate) so they run concurrently — one slow ledger query no
+ * longer blocks the fast in-memory verdicts. Error precedence is preserved:
+ * minute → daily → budget.
  */
 export async function enforceAiQuotas(
   req: Request,
   task: "tutor" | "solver" | "assistant",
   userId: string,
 ): Promise<void> {
-  const minuteOk = await checkRateLimit(
-    getRateLimitKey(req, `ai:${task}`, userId),
-    LIMITS.aiPerMin,
-    MINUTE_MS,
-  );
+  const [minuteOk, dayStoreOk, dayAuthorityOk, budgetOk] = await Promise.all([
+    checkRateLimit(
+      getRateLimitKey(req, `ai:${task}`, userId),
+      LIMITS.aiPerMin,
+      MINUTE_MS,
+    ),
+    checkDailyQuota(`ai:${task}:${userId}`, LIMITS.aiDaily),
+    checkDailyAuthority(task, userId, task, LIMITS.aiDaily),
+    checkDailyCostBudget(userId),
+  ]);
   if (!minuteOk) {
     throw new RateLimitError("Too many AI requests. Please wait a moment.");
   }
-
-  const dayStoreOk = await checkDailyQuota(`ai:${task}:${userId}`, LIMITS.aiDaily);
-  const dayAuthorityOk = await checkDailyAuthority(task, userId, task, LIMITS.aiDaily);
   if (!dayStoreOk || !dayAuthorityOk) {
     throw new RateLimitError(`Daily AI ${task} limit reached. Come back tomorrow!`);
   }
 
   // Check daily cost budget
-  const budgetOk = await checkDailyCostBudget(userId);
   if (!budgetOk) {
     throw new RateLimitError(`Daily AI cost budget exceeded ($${getDailyAiBudget().toFixed(2)}). Try again tomorrow.`);
   }

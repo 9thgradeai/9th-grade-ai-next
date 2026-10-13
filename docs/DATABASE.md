@@ -231,7 +231,8 @@ Per-question mastery stage in the mistake-practice model (see `UserQuestionProgr
  - `emailVerifyExpires` DateTime? — expiry for `emailVerifyToken`
  - `passwordResetToken` String? — SHA-256 hash of the password-reset token (raw token is emailed)
  - `passwordResetExpires` DateTime? — expiry for `passwordResetToken` (1 hour)
- - Relations: `progress`, `bookmarks`, `studyTasks`, `notifications`, `notificationReads`, `notificationHiddens`, `notificationPreference`, `sessions`, `aiConversations`, `aiMemories`, `aiUsage`, `aiFeedback`, `agentRuns`, `learningEvents`, `currentAffairsNotes`
+ - Relations: `progress`, `bookmarks`, `studyTasks`, `notifications`, `notificationReads`, `notificationHiddens`, `notificationPreference`, `userSessions`, `aiConversations`, `aiMemories`, `aiUsage`, `aiFeedback`, `agentRuns`, `learningEvents`, `currentAffairsNotes`
+ - Active sessions live in `Session` (below)
 
 #### Subject
 - `id` Int — PK, auto-increment
@@ -372,6 +373,20 @@ Per-question mastery stage in the mistake-practice model (see `UserQuestionProgr
 - `status` QuizStatus — default `ACTIVE`
 - `accent` String?
 
+#### Session (P2b)
+One row per active login (replaces the `User.sessions` JSON blob — no more
+read-modify-write on the User row, no row-lock serialization on concurrent
+logins). Max 5 per user; oldest evicted on new login past the cap.
+- `id` String — PK, the `sid` minted at login (`crypto.randomUUID`)
+- `userId` String — FK to User, `onDelete: Cascade`
+- `createdAt` DateTime, `expiresAt` DateTime (createdAt + 30d prune window)
+- `userAgent` String?, `ip` String? — informational device list
+- Index: `[userId, expiresAt]`
+- Migration: pre-P2b JSON sessions were backfilled into the table
+  (`scripts/backfill-sessions.ts`, since removed) before the column drop —
+  no user was logged out.
+- `POST /api/auth/sessions/revoke-all` bumps `tokenVersion` and deletes rows.
+
 #### Flashcard
 - `id` Int — PK, auto-increment
 - `subjectId` Int? — FK to Subject, `onDelete: SetNull`
@@ -379,7 +394,7 @@ Per-question mastery stage in the mistake-practice model (see `UserQuestionProgr
 - `question`, `answer`, `hint`
 - `difficulty` Difficulty — default `MEDIUM`
 - `examRelevance` Json? — which exam tracks the card serves, e.g. `["BCS","Bank"]` (seeded from `database/data/flashcard-library.ts`; 96 cards / 8 subjects)
-- `nextReview` / `interval` / `easeFactor` / `repetitions` — **DEPRECATED (Phase 2B2)**: legacy shared defaults; authoritative scheduling is per-user in `FlashcardUserState`.
+- Content only — scheduling state is per-user in `FlashcardUserState` (legacy shared SRS columns dropped in P2b).
 - `sourceKey` String @unique — seed identity `md5(subjectName|question)`
 - Relations: `reviews` (FlashcardReview), `userStates` (FlashcardUserState)
 
@@ -424,17 +439,15 @@ Per-user completion marker for a (usually template) study task; replaces the sha
 - `duration` Int — default `0`
 - `priority` Priority — default `MEDIUM`
 - `description` String — default `""`
-- `completed` Boolean — default `false` — **DEPRECATED (Phase 2B2)**: superseded by per-user `StudyTaskCompletion`; never written by new code
 - `createdAt` DateTime — default `now()`
 - Relations: `completions` (StudyTaskCompletion)
 - Indexes: `[dayId, userId]`
+- Note: legacy shared `completed` boolean dropped in P2b; per-user state is `StudyTaskCompletion` only.
 
 #### DailyQuiz
 - `id` Int — PK, auto-increment
 - `date` String, indexed
-- `completed` Boolean — default `false` — **DEPRECATED (Phase 2)**: legacy GLOBAL state shared by all users; kept only for the dual-read transition. Never read from new code.
-- `score` Int — default `0` — **DEPRECATED**: same as above
-- `claimed` Boolean — default `false` — **DEPRECATED**: same as above
+- Shared catalog entry only — per-user state is `DailyQuizParticipation` (legacy global `completed`/`score`/`claimed` dropped in P2b).
 - `createdAt` DateTime — default `now()`
 - Relations: `questions`, `participations`
 
@@ -539,7 +552,7 @@ dashboard countdown. Seeded from announced circulars — no fabricated entries.
 - `description` String
 - `icon` String — default `"🏅"`
 - `rarity` BadgeRarity — default `COMMON`
-- `unlockedSeed` Boolean — default `false`
+- Unlock state is per-user in `UserBadge` only (legacy seed-time `unlockedSeed` dropped in P2b; anonymous catalog shows all locked).
 
 #### AppNotification
 - `id` Int — PK, auto-increment
@@ -914,6 +927,20 @@ Migrations are not used. The schema is pushed directly:
 ```bash
 npm run db:push
 ```
+
+## Retention (P2b)
+
+Append-only tables are pruned by `scripts/prune-activity.ts` (dry-run by
+default; `--apply` deletes). Run weekly via cron:
+
+| Table | Window | Rationale |
+|-------|--------|-----------|
+| `Session` | expired rows | Login also prunes on write; catches abandoned rows |
+| `LearningEvent` | > 180 days | Pure telemetry; derived state lives in mastery/progress rows |
+| `AIUsage` | > 365 days | Quotas use the daily window; usage UI shows 14 days |
+
+Never pruned: `QuestionAttempt` (lifetime accuracy/streaks and
+`recomputeAndAward` derive from it), `FlashcardReview`, `ExamAttempt`.
 
 ## Seed
 

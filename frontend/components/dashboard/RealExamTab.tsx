@@ -9,6 +9,7 @@ import { trackExamStart, trackExamComplete, trackExamExport } from "@/lib/analyt
 import { useEcosystem } from "@/lib/ecosystem-ctx";
 import type { Server } from "@/lib/types";
 import SubjectTopicSelect from "./SubjectTopicSelect";
+import { useT } from "@/lib/i18n";
 import RichText from "@/components/ui/RichText";
 import CalmCountdown from "./practice/CalmCountdown";
 import QuestionPalette from "./practice/QuestionPalette";
@@ -62,6 +63,7 @@ function shuffled<T>(items: T[]): T[] {
 }
 
 export default function RealExamTab() {
+  const t = useT();
   const [papers, setPapers] = useState<PaperMeta[]>([]);
   const [papersLoading, setPapersLoading] = useState(true);
   const [papersError, setPapersError] = useState<string | null>(null);
@@ -621,15 +623,15 @@ export default function RealExamTab() {
 
               <div className="command-card rounded-xl border p-4 flex items-center justify-between gap-3">
                 <div>
-                  <p className="text-sm text-[var(--dashboard-text-secondary)] font-mono">সময়সীমা</p>
+                  <p className="text-sm text-[var(--dashboard-text-secondary)] font-mono">{t("realExam.duration")}</p>
                   <p className="text-xs text-[var(--dashboard-text-muted)] mt-0.5">
-                    {customDurationMin} মিনিট (PDF-এর হেডারে দেখানো হবে)
+                    {t("realExam.minutesNote", { minutes: customDurationMin })}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setCustomDurationMin((d) => Math.max(5, d - 5))}
-                    aria-label="সময় কমান"
+                    aria-label={t("realExam.decrease")}
                     className="w-8 h-8 rounded-lg bg-[var(--surface-raised)] border border-[var(--primary)]/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-[var(--primary)]/40"
                   >
                     <Minus className="w-4 h-4" />
@@ -637,7 +639,7 @@ export default function RealExamTab() {
                   <span className="text-2xl font-bold text-[var(--dashboard-primary)] font-mono w-8 text-center">{customDurationMin}</span>
                   <button
                     onClick={() => setCustomDurationMin((d) => Math.min(180, d + 5))}
-                    aria-label="সময় বাড়ান"
+                    aria-label={t("realExam.increase")}
                     className="w-8 h-8 rounded-lg bg-[var(--surface-raised)] border border-[var(--primary)]/20 flex items-center justify-center text-[var(--dashboard-primary)] hover:border-[var(--primary)]/40"
                   >
                     <Plus className="w-4 h-4" />

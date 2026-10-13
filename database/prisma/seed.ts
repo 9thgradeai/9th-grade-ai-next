@@ -258,7 +258,6 @@ async function main() {
         hint: c.hint ?? "",
         difficulty: (c.difficulty ?? "medium").toUpperCase() as Difficulty,
         examRelevance: c.examRelevance,
-        nextReview: new Date(Date.now() + 86400000),
       };
       await prisma.flashcard.upsert({
         where: { sourceKey: key },
@@ -384,9 +383,6 @@ async function main() {
       create: {
         ecosystemId: bcsEcosystem.id,
         date: quiz.date,
-        completed: quiz.completed ?? false,
-        score: quiz.score ?? 0,
-        claimed: quiz.claimed ?? false,
       },
     });
     // Atomic replace: readers never observe a half-emptied question set.
@@ -439,7 +435,6 @@ async function main() {
       description: b.description,
       icon: b.icon ?? "🏅",
       rarity: (b.rarity ?? "common").toUpperCase() as BadgeRarity,
-      unlockedSeed: b.unlocked ?? false,
     };
     await prisma.badge.upsert({
       where: { name: b.name },

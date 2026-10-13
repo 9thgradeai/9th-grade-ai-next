@@ -289,10 +289,9 @@
   --shadow-xl: 0 20px 25px rgb(0 0 0 / 0.1), 0 8px 10px rgb(0 0 0 / 0.04);
 
   /* ── Input ─────────────────────────────────────────────────────────────────── */
+  /* NOTE: --input-border/focus/placeholder were double-declared (warm palette
+     then gray); the gray block won. Winners kept, dead first block removed. */
   --input-bg: #FAF4E8;
-  --input-border: #D8C9A8;
-  --input-focus: #6366F1;
-  --input-placeholder: #A89C86;
   --input-border: #D1D5DB;
   --input-focus: #6366F1;
   --input-placeholder: #9CA3AF;

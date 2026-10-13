@@ -1,17 +1,25 @@
 import { NextResponse } from "next/server";
+import { timingSafeEqual } from "crypto";
 import { processPendingJobs } from "~backend/services/storage/syncService";
 import { toHttpResponse } from "~backend/errors";
 import { getRequestId, startTiming, applySecurityHeaders } from "../../_middleware";
 
 export const maxDuration = 60;
 
+function safeEquals(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  return timingSafeEqual(Buffer.from(a, "utf8"), Buffer.from(b, "utf8"));
+}
+
 function isAuthorized(request: Request): boolean {
   const secret = process.env.CRON_SECRET || process.env.WORKER_SECRET;
   // In production a secret is mandatory — never fail open.
   if (process.env.NODE_ENV === "production" && !secret) return false;
   if (!secret) return process.env.NODE_ENV !== "production";
-  const auth = request.headers.get("authorization");
-  return auth === `Bearer ${secret}`;
+  const auth = request.headers.get("authorization") ?? "";
+  const bearer = auth.startsWith("Bearer ") ? auth.slice("Bearer ".length).trim() : "";
+  // Constant-time compare (same as the cron route) — no prefix oracle.
+  return bearer.length > 0 && safeEquals(bearer, secret);
 }
 
 // POST triggers job processing. Requires Bearer CRON_SECRET/WORKER_SECRET
