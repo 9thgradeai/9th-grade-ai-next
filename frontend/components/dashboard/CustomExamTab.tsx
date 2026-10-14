@@ -913,14 +913,14 @@ export default function CustomExamTab() {
             <CircleDashed className="w-3.5 h-3.5 text-[var(--dashboard-primary)]" />
             <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-widest">প্রশ্ন তালিকা</p>
           </div>
-          <div className="flex flex-wrap gap-1.5 lg:grid lg:grid-cols-6" role="group" aria-label="প্রশ্ন তালিকা">
+          <div className="flex flex-wrap gap-1.5 md:grid md:grid-cols-8 lg:grid-cols-6" role="group" aria-label="প্রশ্ন তালিকা">
             {exam.questions.map((q, i) => {
               const isAnswered = answers[q.id] !== undefined;
               return (
                 <button
                   key={q.id}
                   onClick={() => scrollToQuestion(q.id)}
-                  className={`min-w-11 min-h-11 rounded-lg border text-xs font-mono cursor-pointer transition-[background-color,color,border-color] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] flex items-center justify-center ${
+                  className={`min-w-11 min-h-11 rounded-lg border text-xs font-mono cursor-pointer transition-[background-color,color,border-color] duration-150 [touch-action:manipulation] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] flex items-center justify-center ${
                     isAnswered
                       ? "border-[var(--dashboard-primary)]/40 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
                       : "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] hover:border-[var(--dashboard-primary)]/40"

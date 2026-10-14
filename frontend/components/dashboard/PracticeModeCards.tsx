@@ -61,7 +61,7 @@ export default function PracticeModeCards({ mode, onChange, quickTotal, ecosyste
             type="button"
             onClick={() => onChange(c.id)}
             aria-pressed={active}
-            className={`rounded-2xl border p-3.5 text-left cursor-pointer transition-all active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] ${
+            className={`rounded-2xl border p-3.5 text-left cursor-pointer transition-all active:scale-[0.99] [touch-action:manipulation] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] ${
               active
                 ? "border-[var(--dashboard-primary)]/50 bg-[var(--dashboard-primary-subtle)]"
                 : "border-[var(--border-subtle)] bg-[var(--dashboard-surface)] hover:border-[var(--dashboard-primary)]/30"

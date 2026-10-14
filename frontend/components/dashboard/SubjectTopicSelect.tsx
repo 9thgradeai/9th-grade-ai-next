@@ -63,7 +63,7 @@ function PopupTopicNode({
   return (
     <div>
       <div
-        className={`flex items-center gap-2 rounded-lg border px-2.5 py-2 transition-colors ${
+        className={`flex items-center gap-2 rounded-lg border pl-2 pr-2.5 py-2 min-h-[44px] transition-colors [touch-action:manipulation] ${
           selected
             ? "border-[var(--accent)]/30 bg-[var(--dashboard-primary-subtle)]"
             : "border-transparent hover:border-[var(--dashboard-border-muted)]"
@@ -75,17 +75,19 @@ function PopupTopicNode({
           role="checkbox"
           aria-checked={selected}
           aria-label={`${node.name} (${node.questionCount}টি প্রশ্ন)`}
-          className={`w-4 h-4 rounded border flex-shrink-0 flex items-center justify-center ${
+          className={`w-11 h-11 min-w-[44px] rounded-lg flex-shrink-0 flex items-center justify-center cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]`}
+        >
+          <span className={`w-5 h-5 rounded border flex items-center justify-center ${
             selected
               ? "bg-[var(--accent)] border-[var(--accent)]"
               : "border-[var(--border-default)]"
-          }`}
-        >
+          }`}>
           {selected && <Check className="w-3 h-3 text-[var(--dashboard-text-inverse)]" />}
+          </span>
         </button>
         <button
           onClick={() => onToggle(node)}
-          className="flex-1 text-left min-w-0"
+          className="flex-1 text-left min-w-0 min-h-[44px] flex flex-col justify-center py-1 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] rounded-lg"
         >
           <span className="text-xs font-medium text-[var(--text-primary)] break-words">
             {node.name}
@@ -254,7 +256,7 @@ export default function SubjectTopicSelect({
                 type="button"
                 onClick={() => setQuery("")}
                 aria-label="খোঁজা মুছুন"
-                className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-lg flex items-center justify-center text-[var(--dashboard-text-muted)] hover:text-[var(--dashboard-text-primary)] hover:bg-[var(--surface-hover)] transition-colors"
+                className="absolute right-1 top-1/2 -translate-y-1/2 w-11 h-11 min-w-[44px] rounded-lg flex items-center justify-center text-[var(--dashboard-text-muted)] hover:text-[var(--dashboard-text-primary)] hover:bg-[var(--surface-hover)] transition-colors [touch-action:manipulation] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
               >
                 <X className="w-4 h-4" />
               </button>

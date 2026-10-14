@@ -158,7 +158,7 @@ export default function PracticeStartDock({
             data-testid="dock-start"
             onClick={onStart}
             disabled={!canStart}
-            className="w-full lg:w-auto lg:min-w-56 min-h-12 px-6 py-3 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm font-bold rounded-xl hover:bg-[var(--accent-hover)] active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
+            className="w-full lg:w-auto lg:min-w-56 min-h-12 px-6 py-3 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm font-bold rounded-xl hover:bg-[var(--accent-hover)] active:scale-[0.98] [touch-action:manipulation] transition-all flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
           >
             <Play className="w-4 h-4" weight="fill" aria-hidden="true" />
             {loading ? "লোড হচ্ছে..." : `প্র্যাকটিস শুরু${totalCount > 0 ? ` · ${totalCount}টি` : ""}`}

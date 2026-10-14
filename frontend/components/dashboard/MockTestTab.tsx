@@ -739,7 +739,7 @@ export default function MockTestTab() {
               if (dx < 0) setCurrentQuestion((i) => Math.min(totalQuestions - 1, i + 1));
               else setCurrentQuestion((i) => Math.max(0, i - 1));
             }}
-            className="glass-card rounded-2xl border border-terminal-border p-4 md:p-6 overscroll-contain"
+            className="glass-card rounded-2xl border border-terminal-border p-4 md:p-6 overscroll-contain scroll-mt-28"
           >
             <div className="flex flex-wrap items-center gap-2 mb-3">
               <span className="px-2 py-0.5 rounded bg-[var(--surface-overlay)] text-[10px] font-mono text-[var(--dashboard-text-secondary)]">
@@ -767,7 +767,7 @@ export default function MockTestTab() {
                 onClick={() => toggleFlag(q.id)}
                 aria-pressed={flagged[q.id] === true}
                 aria-label="পরে দেখার জন্য ফ্ল্যাগ করুন"
-                className="inline-flex items-center gap-1 min-h-[44px] px-3 rounded-full border font-mono text-[10px] cursor-pointer transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                className="inline-flex items-center gap-1 min-h-[44px] px-3 rounded-full border font-mono text-[10px] cursor-pointer transition-all active:scale-95 [touch-action:manipulation] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
                 style={
                   flagged[q.id]
                     ? { color: "var(--dashboard-warning)", borderColor: "var(--dashboard-warning)", background: "var(--dashboard-warning-subtle)" }
@@ -844,7 +844,7 @@ export default function MockTestTab() {
               onClick={() => setCurrentQuestion((i) => Math.max(0, i - 1))}
               disabled={currentQuestion === 0}
               aria-label="আগের প্রশ্ন"
-              className="flex-1 min-h-[48px] px-4 py-2.5 bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] font-mono text-sm rounded-xl hover:bg-[var(--surface-overlay)] active:opacity-80 cursor-pointer transition-[background-color,opacity] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-1"
+              className="flex-1 min-h-[48px] px-4 py-2.5 bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] font-mono text-sm rounded-xl hover:bg-[var(--surface-overlay)] active:opacity-80 cursor-pointer transition-[background-color,opacity] duration-150 [touch-action:manipulation] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-1"
             >
               <CaretLeft className="w-4 h-4" aria-hidden="true" /> আগের
             </button>
@@ -855,7 +855,7 @@ export default function MockTestTab() {
               <button
                 onClick={() => setCurrentQuestion((i) => Math.min(totalQuestions - 1, i + 1))}
                 aria-label="পরের প্রশ্ন"
-                className="flex-1 min-h-[48px] px-4 py-2.5 font-mono text-sm rounded-xl cursor-pointer transition-[background-color,opacity] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] flex items-center justify-center gap-1"
+                className="flex-1 min-h-[48px] px-4 py-2.5 font-mono text-sm rounded-xl cursor-pointer transition-[background-color,opacity] duration-150 [touch-action:manipulation] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] flex items-center justify-center gap-1"
                 style={{ background: "var(--dashboard-primary)", border: "1px solid var(--dashboard-primary)", color: "var(--dashboard-text-inverse)" }}
               >
                 পরের <CaretRight className="w-4 h-4" aria-hidden="true" />
@@ -884,7 +884,7 @@ export default function MockTestTab() {
           <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-widest mb-2">
             প্রশ্ন তালিকা
           </p>
-          <div className="flex flex-wrap gap-1.5 lg:grid lg:grid-cols-5" role="group" aria-label="প্রশ্ন তালিকা">
+          <div className="flex flex-wrap gap-1.5 md:grid md:grid-cols-8 lg:grid-cols-5" role="group" aria-label="প্রশ্ন তালিকা">
             {questions.map((qq, i) => {
               const isAnswered = answers[qq.id] !== undefined;
               const isCurrent = i === currentQuestion;
@@ -893,7 +893,7 @@ export default function MockTestTab() {
                 <button
                   key={qq.id}
                   onClick={() => setCurrentQuestion(i)}
-                  className={`min-w-[44px] min-h-[44px] rounded-lg border text-xs font-mono tabular-nums cursor-pointer transition-[background-color,color,border-color] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] ${
+                  className={`min-w-[44px] min-h-[44px] rounded-lg border text-xs font-mono tabular-nums cursor-pointer transition-[background-color,color,border-color] duration-150 [touch-action:manipulation] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] ${
                     isCurrent
                       ? "bg-[var(--dashboard-primary)] border-[var(--dashboard-primary)] text-[var(--dashboard-text-inverse)] font-bold"
                       : isFlagged

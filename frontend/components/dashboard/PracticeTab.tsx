@@ -105,7 +105,7 @@ function PracticeTimer({
           style={{ transition: "stroke-dashoffset 1s linear, stroke 0.2s" }}
         />
       </svg>
-      <span className={`font-mono text-xs tabular-nums ${timeLow ? "text-[var(--dashboard-danger)] animate-pulse" : "text-[var(--dashboard-text-muted)]"}`}>
+      <span className={`font-mono text-xs tabular-nums ${timeLow ? "text-[var(--dashboard-danger)] animate-pulse motion-reduce:animate-none" : "text-[var(--dashboard-text-muted)]"}`}>
         {Math.floor(secs / 60)}:{(secs % 60).toString().padStart(2, "0")}
       </span>
     </span>
@@ -869,7 +869,7 @@ export default function PracticeTab() {
                         onClick={() => setCurrentIndex(i)}
                         aria-label={`প্রশ্ন ${i + 1}${answered ? " — উত্তর দেওয়া" : ""}${current ? " — বর্তমান" : ""}${isFlagged ? " — ফ্ল্যাগ করা" : ""}`}
                         aria-current={current ? "true" : undefined}
-                        className={`flex-shrink-0 w-8 h-8 rounded-lg font-mono text-[11px] tabular-nums border cursor-pointer transition-[background-color,color,border-color] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] ${
+                        className={`flex-shrink-0 w-11 h-11 min-w-[44px] rounded-lg font-mono text-[11px] tabular-nums border cursor-pointer transition-[background-color,color,border-color] duration-150 [touch-action:manipulation] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] focus-visible:ring-offset-1 focus-visible:ring-offset-[var(--dashboard-surface)] ${
                           current ? "" : "hover:border-[var(--dashboard-primary)]/40"
                         }`}
                         style={
@@ -903,7 +903,13 @@ export default function PracticeTab() {
               >
 
                 {currentQuestion && (
-                  <div key={currentQuestion.id}>
+                  <motion.div
+                    key={currentQuestion.id}
+                    initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={reduceMotion ? { duration: 0 } : { duration: 0.16, ease: "easeOut" }}
+                    className="scroll-mt-28"
+                  >
                     <div className="flex flex-wrap items-center gap-2 mb-3">
                       <span className={`px-2 py-0.5 rounded text-[11px] font-mono ${
                         currentQuestion.difficulty === "EASY"
@@ -984,7 +990,7 @@ export default function PracticeTab() {
                           onClick={() => setCurrentIndex((i) => Math.max(0, i - 1))}
                           disabled={currentIndex === 0}
                           aria-label="আগের প্রশ্ন"
-                          className="flex-1 min-h-[48px] px-4 py-2.5 border font-mono text-sm rounded-xl cursor-pointer transition-[background-color,color,border-color,opacity] duration-150 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                          className="flex-1 min-h-[48px] px-4 py-2.5 border font-mono text-sm rounded-xl cursor-pointer transition-[background-color,color,border-color,opacity] duration-150 [touch-action:manipulation] disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
                           style={{ background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-strong)", color: "var(--dashboard-text-secondary)" }}
                         >
                           <CaretLeft className="w-4 h-4" aria-hidden="true" /> আগের
@@ -996,7 +1002,7 @@ export default function PracticeTab() {
                           <button
                             onClick={() => setCurrentIndex((i) => Math.min(totalQuestions - 1, i + 1))}
                             aria-label="পরের প্রশ্ন"
-                            className="flex-1 min-h-[48px] px-4 py-2.5 border font-mono text-sm rounded-xl cursor-pointer transition-[background-color,color,border-color] duration-150 flex items-center justify-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                            className="flex-1 min-h-[48px] px-4 py-2.5 border font-mono text-sm rounded-xl cursor-pointer transition-[background-color,color,border-color] duration-150 [touch-action:manipulation] flex items-center justify-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
                             style={{ background: "var(--dashboard-primary)", borderColor: "var(--dashboard-primary)", color: "var(--dashboard-text-inverse)" }}
                           >
                             পরের <CaretRight className="w-4 h-4" aria-hidden="true" />
@@ -1008,7 +1014,7 @@ export default function PracticeTab() {
                             disabled={submitting}
                             aria-busy={submitting}
                             aria-label="ফলাফল জমা দিন"
-                            className="flex-1 px-5 py-2.5 min-h-[48px] font-mono text-sm rounded-xl cursor-pointer transition-[background-color,opacity] duration-150 flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                            className="flex-1 px-5 py-2.5 min-h-[48px] font-mono text-sm rounded-xl cursor-pointer transition-[background-color,opacity] duration-150 [touch-action:manipulation] flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
                             style={{ background: "var(--accent)", color: "var(--dashboard-text-inverse)" }}
                           >
                             {submitting ? "জমা হচ্ছে..." : "ফলাফল জমা দিন"}
@@ -1016,7 +1022,7 @@ export default function PracticeTab() {
                         )}
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
                 )}
               </div>
             </motion.div>

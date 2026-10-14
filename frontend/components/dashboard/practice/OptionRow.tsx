@@ -63,7 +63,7 @@ export default function OptionRow({
       disabled={state.locked}
       role={multi ? "checkbox" : "radio"}
       aria-checked={state.selected}
-      className="w-full text-left p-3.5 rounded-xl border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] disabled:cursor-not-allowed"
+      className="w-full text-left p-3.5 min-h-[52px] rounded-xl border transition-all active:scale-[0.99] [touch-action:manipulation] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--dashboard-surface)] disabled:cursor-not-allowed"
       style={rowStyle(state.selected, state.verdict)}
     >
       <div className="flex items-center gap-3">
