@@ -25,6 +25,9 @@ import {
 import type { Server } from "@/lib/types";
 import { shuffleSessionOptions } from "@/lib/shuffle-options";
 import SubjectTopicSelect from "./SubjectTopicSelect";
+import ScoreRing from "./practice/ScoreRing";
+import SmartMixButton from "./practice/SmartMixButton";
+import TopicBars from "./practice/TopicBars";
 import AIExplanationButton from "./AIExplanationButton";
 import RichText from "@/components/ui/RichText";
 import Button from "@/components/ui/Button";
@@ -621,6 +624,7 @@ export default function CustomExamTab() {
 
         {!configLoading && !configError && (
           <>
+            <SmartMixButton subjects={subjects} totalQuestions={20} onApply={setSelection} />
             <SubjectTopicSelect
               subjects={subjects}
               selection={selection}
@@ -856,7 +860,7 @@ export default function CustomExamTab() {
     const progressPct = totalQuestions > 0 ? (answeredCount / totalQuestions) * 100 : 0;
 
     return (
-      <div className="space-y-4">
+      <div className="space-y-4 lg:max-w-4xl lg:mx-auto">
         {/* Sticky header: timer + progress + submit */}
         <div className="sticky top-0 z-[var(--z-sticky)] -mx-1 px-1 pt-1">
           <div className="glass-card rounded-2xl border border-[var(--dashboard-primary)]/25 px-4 py-3 backdrop-blur-md" style={{ background: "color-mix(in srgb, var(--dashboard-surface) 88%, transparent)" }}>
@@ -903,13 +907,13 @@ export default function CustomExamTab() {
           </div>
         </div>
 
-        {/* Question palette (jump navigation) */}
-        <div className="glass-card rounded-2xl border border-terminal-border p-3">
+        {/* Question palette (jump navigation) — sticky grid sidebar on desktop */}
+        <div className="glass-card rounded-2xl border border-terminal-border p-3 lg:sticky lg:top-24">
           <div className="flex items-center gap-2 mb-2">
             <CircleDashed className="w-3.5 h-3.5 text-[var(--dashboard-primary)]" />
             <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-widest">প্রশ্ন তালিকা</p>
           </div>
-          <div className="flex flex-wrap gap-1.5" role="group" aria-label="প্রশ্ন তালিকা">
+          <div className="flex flex-wrap gap-1.5 lg:grid lg:grid-cols-6" role="group" aria-label="প্রশ্ন তালিকা">
             {exam.questions.map((q, i) => {
               const isAnswered = answers[q.id] !== undefined;
               return (
@@ -1138,10 +1142,7 @@ export default function CustomExamTab() {
             <h3 className="text-xl font-bold text-[var(--text-primary)] mb-1">পরীক্ষা সম্পন্ন!</h3>
             <p className={`text-sm font-mono mb-4 ${perf.tone}`}>{perf.label}</p>
 
-            <div className="inline-flex flex-col items-center mb-4">
-              <div className="text-5xl font-bold font-mono text-[var(--dashboard-primary)]">{summary.finalScore}</div>
-              <div className="text-xs text-[var(--dashboard-text-muted)] font-mono mt-1">মোট নম্বর: {summary.total}</div>
-            </div>
+            <ScoreRing percentage={summary.percentage} label="Exam score" />
 
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-w-md mx-auto text-left">
               <button
@@ -1203,13 +1204,61 @@ export default function CustomExamTab() {
               <p className="text-xs text-[var(--dashboard-primary)] font-mono mt-1">+{summary.pointsEarned} পয়েন্ট অর্জিত</p>
             )}
 
-            <div className="flex items-center justify-center gap-3 mt-6">
+            <div className="max-w-md mx-auto text-left mt-4">
+              <TopicBars items={result.review.map((r) => ({ subject: r.subject, topic: r.topic, status: r.status }))} />
+            </div>
+
+            <div className="flex items-center justify-center gap-3 mt-6 flex-wrap">
               <button
                 onClick={resetAll}
                 className="px-5 py-2.5 min-h-[48px] bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm font-bold rounded-xl hover:bg-[var(--accent-hover)] active:opacity-90 cursor-pointer transition-[background-color,opacity] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] flex items-center gap-2"
               >
                 <ArrowCounterClockwise className="w-4 h-4" aria-hidden="true" /> নতুন পরীক্ষা
               </button>
+              {(summary.wrong + summary.unanswered) > 0 && exam && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const retryQs = exam.questions.filter((qq) => {
+                      const rv = result.review.find((r) => r.questionId === qq.id);
+                      return !rv || rv.status !== "correct";
+                    });
+                    if (retryQs.length === 0) return;
+                    clearAttemptId(STORAGE_KEY);
+                    const attemptId = ensureAttemptId(STORAGE_KEY);
+                    const durationSec = Math.max(60, retryQs.length * 30);
+                    const retryExam: PersistedExam = {
+                      ...exam,
+                      examId: `${exam.examId}-retry-${Date.now()}`,
+                      attemptId,
+                      questions: retryQs,
+                      answers: {},
+                      startsAt: Date.now(),
+                      durationSec,
+                      requested: retryQs.length,
+                    };
+                    saveExamSnapshot(STORAGE_KEY, retryExam);
+                    setExam(retryExam);
+                    setAnswers({});
+                    setReviewToggles({});
+                    setHighlightedReview(null);
+                    setSubmitError(null);
+                    setResult(null);
+                    setPhase("exam");
+                    requestAnimationFrame(() => scrollDashboardTop());
+                    void registerExam({
+                      attemptId,
+                      questionIds: retryQs.map((qq) => qq.id),
+                      durationSec,
+                    }).catch(() => {
+                      /* non-fatal — submit upserts */
+                    });
+                  }}
+                  className="px-5 py-2.5 min-h-[48px] bg-[var(--dashboard-primary)] text-[var(--dashboard-text-inverse)] font-mono text-sm font-bold rounded-xl hover:brightness-110 active:opacity-90 cursor-pointer transition-all flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                >
+                  <ArrowCounterClockwise className="w-4 h-4" aria-hidden="true" /> ভুলগুলো আবার ({summary.wrong + summary.unanswered})
+                </button>
+              )}
             </div>
           </div>
         </motion.div>

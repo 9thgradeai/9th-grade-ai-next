@@ -14,6 +14,9 @@
  */
 
 import { Minus, Play, Plus, Timer } from "@phosphor-icons/react";
+import { DIFFICULTY_LABEL } from "@/lib/exam-ui";
+
+export type DockDifficulty = "ALL" | "EASY" | "MEDIUM" | "HARD";
 
 type Props = {
   totalCount: number;
@@ -25,6 +28,8 @@ type Props = {
   autoCaption: string;
   selectedCount: number;
   loading: boolean;
+  difficulty: DockDifficulty;
+  onDifficultyChange: (d: DockDifficulty) => void;
   onAdjustDuration: (delta: number) => void;
   onStart: () => void;
 };
@@ -38,6 +43,8 @@ export default function PracticeStartDock({
   autoCaption,
   selectedCount,
   loading,
+  difficulty,
+  onDifficultyChange,
   onAdjustDuration,
   onStart,
 }: Props) {
@@ -60,6 +67,27 @@ export default function PracticeStartDock({
           </p>
         )}
         <div className="flex flex-col lg:flex-row lg:items-center gap-3 p-3 sm:p-4">
+          {/* Difficulty — consolidated here so config needs no scrolling */}
+          <div className="flex items-center gap-1.5 flex-wrap" role="group" aria-label="প্রশ্নের কাঠিন্য">
+            <span className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-widest mr-1">
+              কাঠিন্য
+            </span>
+            {(["ALL", "EASY", "MEDIUM", "HARD"] as const).map((d) => (
+              <button
+                key={d}
+                type="button"
+                onClick={() => onDifficultyChange(d)}
+                aria-pressed={difficulty === d}
+                className={`min-h-[44px] px-3.5 rounded-xl border font-mono text-xs transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] ${
+                  difficulty === d
+                    ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] border-[var(--accent)]"
+                    : "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-secondary)] hover:border-[var(--accent)]/40"
+                }`}
+              >
+                {d === "ALL" ? "সব" : DIFFICULTY_LABEL[d]}
+              </button>
+            ))}
+          </div>
           {/* Stats: questions + time stepper */}
           <div className="flex items-center gap-3 flex-1 min-w-0">
             <div className="min-w-0">

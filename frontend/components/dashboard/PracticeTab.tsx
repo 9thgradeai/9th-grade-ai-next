@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
-import { Check, BookOpen, Timer, CaretLeft, CaretRight, CircleDashed, Trophy, ArrowCounterClockwise, Target, CheckCircle, XCircle, Spinner, Warning, Package, Sun } from "@phosphor-icons/react";
+import { Check, BookOpen, CaretLeft, CaretRight, CircleDashed, Trophy, ArrowCounterClockwise, Target, CheckCircle, XCircle, Spinner, Warning, Package, Sun, Flag } from "@phosphor-icons/react";
 import { api } from "@/lib/services/api";
 import { useEcosystem } from "@/lib/ecosystem-ctx";
 import { autoDurationMin, autoDurationSec, formatDurationShort, negativeLabelForEcosystem, negativePenaltyForEcosystem, SECONDS_PER_QUESTION } from "@/lib/exam-scoring";
@@ -18,6 +18,10 @@ import { useCountdownSeconds } from "./practice/useCountdownSeconds";
 import { isAnswerCorrect, serializeAnswer, getCorrectSet } from "@/lib/question-type";
 import SubjectTopicSelect from "./SubjectTopicSelect";
 import PracticeStartDock from "./PracticeStartDock";
+import PracticeModeCards from "./PracticeModeCards";
+import ScoreRing from "./practice/ScoreRing";
+import SmartMixButton from "./practice/SmartMixButton";
+import TopicBars from "./practice/TopicBars";
 import AIExplanationButton from "./AIExplanationButton";
 import {
   type Selection,
@@ -70,25 +74,40 @@ function shuffled<T>(items: T[]): T[] {
   return out;
 }
 
-const MODES: { id: PracticeMode; label: string; hint: string }[] = [
-  { id: "custom", label: "CUSTOM EXAM", hint: "বিষয়, টপিক, সাবটপিক মিশিয়ে নিজের বিসিএস পরীক্ষা তৈরি করুন" },
-  { id: "mock", label: "MOCK_TEST", hint: "বিষয়, টপিক, সাবটপিক থেকে সময়সীমা সহ মক পরীক্ষা" },
-  { id: "quick", label: "QUICK_PRACTICE", hint: "বিষয়, টপিক, সাবটপিক থেকে দ্রুত প্র্যাকটিস" },
-];
-
 function PracticeTimer({
   remaining,
+  total,
   onExpire,
 }: {
   remaining: number;
+  total: number;
   onExpire: () => void;
 }) {
   const secs = useCountdownSeconds(remaining, onExpire);
   const timeLow = secs > 0 && secs <= 10;
+  const frac = total > 0 ? Math.max(0, Math.min(1, secs / total)) : 0;
+  const R = 9;
+  const C = 2 * Math.PI * R;
   return (
-    <span className={`font-mono text-xs ${timeLow ? "text-[var(--dashboard-danger)] animate-pulse" : "text-[var(--dashboard-text-muted)]"}`}>
-      <Timer className="w-3 h-3 inline mr-1" />
-      {Math.floor(secs / 60)}:{(secs % 60).toString().padStart(2, "0")}
+    <span className="inline-flex items-center gap-1.5" aria-live="polite" aria-label={`বাকি সময় ${Math.floor(secs / 60)}:${(secs % 60).toString().padStart(2, "0")}`}>
+      <svg width="24" height="24" viewBox="0 0 24 24" className="-rotate-90" aria-hidden="true">
+        <circle cx="12" cy="12" r={R} fill="none" stroke="var(--dashboard-border-muted)" strokeWidth="3" />
+        <circle
+          cx="12"
+          cy="12"
+          r={R}
+          fill="none"
+          stroke={timeLow ? "var(--dashboard-danger)" : "var(--dashboard-primary)"}
+          strokeWidth="3"
+          strokeLinecap="round"
+          strokeDasharray={C}
+          strokeDashoffset={C * (1 - frac)}
+          style={{ transition: "stroke-dashoffset 1s linear, stroke 0.2s" }}
+        />
+      </svg>
+      <span className={`font-mono text-xs tabular-nums ${timeLow ? "text-[var(--dashboard-danger)] animate-pulse" : "text-[var(--dashboard-text-muted)]"}`}>
+        {Math.floor(secs / 60)}:{(secs % 60).toString().padStart(2, "0")}
+      </span>
     </span>
   );
 }
@@ -115,6 +134,15 @@ export default function PracticeTab() {
   // Explicit locks for MULTIPLE_CHOICE only — single-choice locks on first
   // pick (presence), but multi needs several toggles before locking.
   const [multiLocked, setMultiLocked] = useState<Record<number, true>>({});
+  const [flagged, setFlagged] = useState<Record<number, boolean>>({});
+  const toggleFlag = useCallback((questionId: number) => {
+    setFlagged((prev) => {
+      const next = { ...prev };
+      if (next[questionId]) delete next[questionId];
+      else next[questionId] = true;
+      return next;
+    });
+  }, []);
   const [result, setResult] = useState<{ correct: number; total: number; score: number; pointsEarned: number; wrong?: number; negativeMarks?: number; finalScore?: number; penaltyPerWrong?: number } | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -284,6 +312,7 @@ export default function PracticeTab() {
     setCurrentIndex(0);
     setAnswers({});
     setMultiLocked({});
+    setFlagged({});
     setUndoPick(null);
     setReviewFilter("all");
     setExpandedReview({});
@@ -351,6 +380,7 @@ export default function PracticeTab() {
     setSubmitError(null);
     setAnswers({});
     setMultiLocked({});
+    setFlagged({});
     setCurrentIndex(0);
     setTimerKey((k) => k + 1);
     try {
@@ -558,6 +588,36 @@ export default function PracticeTab() {
     setTimerKey((k) => k + 1);
   }, [toast]);
 
+  // Keyboard navigation (desktop): ←/→ move, 1-6/A-D pick, F flag.
+  useEffect(() => {
+    if (!sessionActive || result || questions.length === 0) return;
+    const handler = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA")) return;
+      const q = sessionQuestions[currentIndex];
+      if (e.key === "ArrowRight") setCurrentIndex((i) => Math.min(questions.length - 1, i + 1));
+      else if (e.key === "ArrowLeft") setCurrentIndex((i) => Math.max(0, i - 1));
+      else if ((e.key === "f" || e.key === "F") && q) toggleFlag(q.id);
+      else if (q && !isLocked(q)) {
+        const idx = ["1", "2", "3", "4", "5", "6"].indexOf(e.key) >= 0
+          ? ["1", "2", "3", "4", "5", "6"].indexOf(e.key)
+          : ["a", "b", "c", "d", "e", "f"].indexOf(e.key.toLowerCase());
+        if (idx >= 0 && q.options[idx] !== undefined) {
+          const opt = q.options[idx];
+          if (q.questionType === "MULTIPLE_CHOICE") {
+            const cur = answers[q.id] ?? [];
+            const next = cur.includes(opt) ? cur.filter((o) => o !== opt) : [...cur, opt];
+            if (next.length > 0) selectAnswer(q.id, next);
+          } else {
+            selectAnswer(q.id, [opt]);
+          }
+        }
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  });
+
   // Safe navigation: block route/tab close while a quick-practice submission is
   // in flight so a mobile browser kill can't abandon the request mid-flight.
   useEffect(() => {
@@ -579,33 +639,12 @@ export default function PracticeTab() {
           প্র্যাকটিস
         </h1>
       </div>
-      {/* Mode toggle */}
+      {/* Mode cards — visual picker (mobile stack, desktop 3-col) */}
       <motion.div
         initial={reduceMotion ? false : { opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4"
       >
-        <div className="flex gap-2 bg-[var(--surface-muted)] border border-[var(--border-subtle)] rounded-xl p-1 w-fit" role="group" aria-label="Practice mode">
-          {MODES.map((m) => (
-            <button
-              key={m.id}
-              onClick={() => setMode(m.id)}
-              aria-pressed={mode === m.id}
-              className={`flex items-center gap-2 px-4 py-2 min-h-[44px] text-sm font-mono rounded-lg transition-[background-color,color,border-color,opacity] duration-150 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] ${
-                mode === m.id
-                  ? "bg-[var(--dashboard-primary)] text-[var(--dashboard-text-inverse)]"
-                  : "text-[var(--dashboard-text-secondary)] hover:text-[var(--dashboard-text-primary)] hover:bg-[var(--surface-hover)]"
-              }`}
-            >
-              {m.id === "mock" ? <Timer className="w-4 h-4" /> : m.id === "custom" ? <BookOpen className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
-              [ {m.label} ]
-            </button>
-          ))}
-        </div>
-        <p className="text-xs font-medium" style={{ color: "var(--dashboard-text-secondary)" }}>
-          {MODES.find((m) => m.id === mode)?.hint}
-        </p>
-
+        <PracticeModeCards mode={mode} onChange={setMode} quickTotal={totalCount} ecosystem={ecosystem} />
       </motion.div>
 
       {mode === "custom" ? (
@@ -677,37 +716,14 @@ export default function PracticeTab() {
 
               {!configLoading && !configError && (
                 <>
+                  <SmartMixButton subjects={subjects} totalQuestions={20} onApply={setSelection} />
                   <SubjectTopicSelect
                     subjects={subjects}
                     selection={selection}
                     onSelectionChange={setSelection}
                   />
 
-                  {/* Difficulty filter — session-level, passed to /api/questions */}
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-xs text-[var(--dashboard-text-muted)] font-mono uppercase tracking-widest">
-                      কাঠিন্য
-                    </span>
-                    <div className="flex items-center gap-1.5" role="group" aria-label="প্রশ্নের কাঠিন্য">
-                      {(["ALL", "EASY", "MEDIUM", "HARD"] as const).map((d) => (
-                        <button
-                          key={d}
-                          type="button"
-                          onClick={() => setDifficulty(d)}
-                          aria-pressed={difficulty === d}
-                          className={`min-h-[44px] px-4 rounded-xl border font-mono text-xs transition-all active:scale-95 ${
-                            difficulty === d
-                              ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] border-[var(--accent)]"
-                              : "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-secondary)] hover:border-[var(--accent)]/40"
-                          }`}
-                        >
-                          {d === "ALL" ? "সব" : DIFFICULTY_LABEL[d]}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Sticky one-handed start dock: totals + time + start stay
+                  {/* Sticky one-handed start dock: totals + difficulty + time + start stay
                       pinned above the bottom nav — no scrolling to begin. */}
                   <PracticeStartDock
                     totalCount={totalCount}
@@ -715,6 +731,8 @@ export default function PracticeTab() {
                     insufficient={insufficient}
                     durationMin={durationMin}
                     durationTouched={durationTouched}
+                    difficulty={difficulty}
+                    onDifficultyChange={setDifficulty}
                     autoCaption={
                       durationTouched
                         ? " · নিজে নির্ধারিত"
@@ -814,6 +832,7 @@ export default function PracticeTab() {
                       <PracticeTimer
                         key={`timer-${timerKey}`}
                         remaining={QUESTION_TIME_LIMIT}
+                        total={QUESTION_TIME_LIMIT}
                         onExpire={() => { void handleAutoSubmit(); }}
                       />
                     )}
@@ -842,12 +861,13 @@ export default function PracticeTab() {
                   {sessionQuestions.map((q, i) => {
                     const answered = answers[q.id] !== undefined;
                     const current = i === currentIndex;
+                    const isFlagged = flagged[q.id] === true;
                     return (
                       <button
                         key={q.id}
                         type="button"
                         onClick={() => setCurrentIndex(i)}
-                        aria-label={`প্রশ্ন ${i + 1}${answered ? " — উত্তর দেওয়া" : ""}${current ? " — বর্তমান" : ""}`}
+                        aria-label={`প্রশ্ন ${i + 1}${answered ? " — উত্তর দেওয়া" : ""}${current ? " — বর্তমান" : ""}${isFlagged ? " — ফ্ল্যাগ করা" : ""}`}
                         aria-current={current ? "true" : undefined}
                         className={`flex-shrink-0 w-8 h-8 rounded-lg font-mono text-[11px] tabular-nums border cursor-pointer transition-[background-color,color,border-color] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] ${
                           current ? "" : "hover:border-[var(--dashboard-primary)]/40"
@@ -855,7 +875,9 @@ export default function PracticeTab() {
                         style={
                           current
                             ? { background: "var(--dashboard-primary)", borderColor: "var(--dashboard-primary)", color: "var(--dashboard-text-inverse)", fontWeight: 700 }
-                            : answered
+                            : isFlagged
+                              ? { background: "var(--dashboard-warning-subtle)", borderColor: "var(--dashboard-warning)", color: "var(--dashboard-warning)", fontWeight: 700 }
+                              : answered
                               ? { background: "var(--dashboard-primary-subtle)", borderColor: "color-mix(in srgb, var(--dashboard-primary) 30%, transparent)", color: "var(--dashboard-primary)", fontWeight: 600 }
                               : { background: "transparent", borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-muted)" }
                         }
@@ -902,6 +924,21 @@ export default function PracticeTab() {
                           {currentQuestion.subtopic}
                         </span>
                       )}
+                      <button
+                        type="button"
+                        onClick={() => currentQuestion && toggleFlag(currentQuestion.id)}
+                        aria-pressed={currentQuestion ? flagged[currentQuestion.id] === true : false}
+                        aria-label="পরে দেখার জন্য ফ্ল্যাগ করুন"
+                        className="inline-flex items-center gap-1 min-h-[44px] px-3 rounded-full border font-mono text-[11px] cursor-pointer transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                        style={
+                          currentQuestion && flagged[currentQuestion.id]
+                            ? { color: "var(--dashboard-warning)", borderColor: "var(--dashboard-warning)", background: "var(--dashboard-warning-subtle)" }
+                            : { color: "var(--dashboard-text-muted)", borderColor: "var(--dashboard-border-muted)", background: "transparent" }
+                        }
+                      >
+                        <Flag className="w-3.5 h-3.5" weight={currentQuestion && flagged[currentQuestion.id] ? "fill" : "regular"} aria-hidden="true" />
+                        ফ্ল্যাগ
+                      </button>
                       <span className="text-[11px] text-[var(--dashboard-text-secondary)] font-mono ml-auto" aria-live="polite">
                         {answeredCount}/{totalQuestions} উত্তর
                       </span>
@@ -1017,7 +1054,7 @@ export default function PracticeTab() {
                   result.score >= 80 ? "text-[var(--dashboard-warning)]" : result.score >= 50 ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-danger)]"
                 }`} />
                 <h3 className="text-xl font-bold mb-2" style={{ color: "var(--dashboard-text-primary)" }}>প্র্যাকটিস সম্পন্ন!</h3>
-                <div className="text-5xl font-bold font-mono text-[var(--dashboard-primary)] mb-2">{result.score}%</div>
+                <ScoreRing percentage={result.score} label="Practice score" />
                 <p className="text-sm text-[var(--dashboard-text-muted)] font-mono mb-1">
                   {result.correct} / {result.total} সঠিক
                 </p>
@@ -1058,6 +1095,33 @@ export default function PracticeTab() {
                   </button>
                   {sessionQuestions.some((q) => {
                     const ua = answers[q.id] ?? [];
+                    return ua.length === 0 || !isAnswerCorrect(q, ua);
+                  }) && (
+                    <button
+                      onClick={() => {
+                        const retryQs = sessionQuestions.filter((q) => {
+                          const ua = answers[q.id] ?? [];
+                          return ua.length === 0 || !isAnswerCorrect(q, ua);
+                        });
+                        if (retryQs.length === 0) return;
+                        setQuestions(retryQs);
+                        setAnswers({});
+                        setMultiLocked({});
+                        setFlagged({});
+                        setCurrentIndex(0);
+                        setResult(null);
+                        setReviewFilter("all");
+                        setExpandedReview({});
+                        setTimerKey((k) => k + 1);
+                        requestAnimationFrame(() => scrollDashboardTop());
+                      }}
+                      className="px-5 py-2.5 min-h-[48px] bg-[var(--dashboard-primary)] text-[var(--dashboard-text-inverse)] font-mono text-sm font-bold rounded-xl hover:brightness-110 active:opacity-90 cursor-pointer transition-all flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                    >
+                      <ArrowCounterClockwise className="w-4 h-4" /> ভুলগুলো আবার ({sessionQuestions.filter((q) => { const ua = answers[q.id] ?? []; return ua.length === 0 || !isAnswerCorrect(q, ua); }).length})
+                    </button>
+                  )}
+                  {sessionQuestions.some((q) => {
+                    const ua = answers[q.id] ?? [];
                     return ua.length > 0 && !isAnswerCorrect(q, ua);
                   }) && (
                     <button
@@ -1079,6 +1143,18 @@ export default function PracticeTab() {
 
               {/* Review — filter tabs + lazy-expand disclosures (AI mounts on open) */}
               <div className="p-4 sm:p-5">
+                <div className="mb-3">
+                  <TopicBars
+                    items={sessionQuestions.map((q) => {
+                      const ua = answers[q.id] ?? [];
+                      return {
+                        subject: q.subject,
+                        topic: q.topic,
+                        status: ua.length === 0 ? ("unanswered" as const) : isAnswerCorrect(q, ua) ? ("correct" as const) : ("wrong" as const),
+                      };
+                    })}
+                  />
+                </div>
                 {(() => {
                   const verdictOf = (q: Server.QuestionDTO) => {
                     const ua = answers[q.id] ?? [];

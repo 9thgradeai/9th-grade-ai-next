@@ -27,6 +27,9 @@ import type { Server } from "@/lib/types";
 import { useT } from "@/lib/i18n";
 import { shuffleSessionOptions } from "@/lib/shuffle-options";
 import SubjectTopicSelect from "./SubjectTopicSelect";
+import ScoreRing from "./practice/ScoreRing";
+import SmartMixButton from "./practice/SmartMixButton";
+import TopicBars from "./practice/TopicBars";
 import AIExplanationButton from "./AIExplanationButton";
 import RichText from "@/components/ui/RichText";
 import Button from "@/components/ui/Button";
@@ -98,6 +101,15 @@ export default function MockTestTab() {
   const touchX = useRef<number | null>(null);
   const [undoPick, setUndoPick] = useState<number | null>(null);
   const undoTimer = useRef<number | null>(null);
+  const [flagged, setFlagged] = useState<Record<number, boolean>>({});
+  const toggleFlag = useCallback((questionId: number) => {
+    setFlagged((prev) => {
+      const next = { ...prev };
+      if (next[questionId]) delete next[questionId];
+      else next[questionId] = true;
+      return next;
+    });
+  }, []);
   useEffect(() => () => {
     if (undoTimer.current != null) window.clearTimeout(undoTimer.current);
   }, []);
@@ -490,6 +502,7 @@ export default function MockTestTab() {
     dropExamSnapshot(STORAGE_KEY);
     setTestState("setup");
     setSelection({});
+    setFlagged({});
     setDurationMin(30);
     setDurationTouched(false);
     setQuestions([]);
@@ -503,6 +516,27 @@ export default function MockTestTab() {
     setSubmitError(null);
     setShowUnansweredConfirm(false);
   };
+
+  // Keyboard navigation (desktop): ←/→ move, A-D/1-4 pick, F flag.
+  useEffect(() => {
+    if (testState !== "active" || questions.length === 0) return;
+    const handler = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA")) return;
+      const qq = questions[currentQuestion];
+      if (e.key === "ArrowRight") setCurrentQuestion((i) => Math.min(questions.length - 1, i + 1));
+      else if (e.key === "ArrowLeft") setCurrentQuestion((i) => Math.max(0, i - 1));
+      else if ((e.key === "f" || e.key === "F") && qq) toggleFlag(qq.id);
+      else if (qq && answers[qq.id] === undefined) {
+        const idx = ["1", "2", "3", "4", "5", "6"].indexOf(e.key) >= 0
+          ? ["1", "2", "3", "4", "5", "6"].indexOf(e.key)
+          : ["a", "b", "c", "d", "e", "f"].indexOf(e.key.toLowerCase());
+        if (idx >= 0 && qq.options[idx] !== undefined) selectAnswer(qq.id, qq.options[idx]);
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  });
 
   // ═══════════════ SETUP ═══════════════
   if (testState === "setup") {
@@ -553,6 +587,7 @@ export default function MockTestTab() {
 
         {!configLoading && !configError && (
           <>
+            <SmartMixButton subjects={subjects} totalQuestions={Math.max(totalCount || 20, 20)} onApply={setSelection} />
             <SubjectTopicSelect
               subjects={subjects}
               selection={selection}
@@ -648,7 +683,7 @@ export default function MockTestTab() {
     const q = questions[currentQuestion];
 
     return (
-      <div className="space-y-4">
+      <div className="space-y-4 lg:max-w-4xl lg:mx-auto">
         {/* Sticky header: timer + progress + submit */}
           <div className="sticky top-0 z-[var(--z-sticky)] -mx-1 px-1 pt-1">
             <div className="glass-card rounded-2xl border border-[var(--dashboard-primary)]/25 px-4 py-3 backdrop-blur-md" style={{ background: "color-mix(in srgb, var(--dashboard-surface) 88%, transparent)" }}>
@@ -727,6 +762,21 @@ export default function MockTestTab() {
                   {q.topic}
                 </span>
               )}
+              <button
+                type="button"
+                onClick={() => toggleFlag(q.id)}
+                aria-pressed={flagged[q.id] === true}
+                aria-label="পরে দেখার জন্য ফ্ল্যাগ করুন"
+                className="inline-flex items-center gap-1 min-h-[44px] px-3 rounded-full border font-mono text-[10px] cursor-pointer transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                style={
+                  flagged[q.id]
+                    ? { color: "var(--dashboard-warning)", borderColor: "var(--dashboard-warning)", background: "var(--dashboard-warning-subtle)" }
+                    : { color: "var(--dashboard-text-muted)", borderColor: "var(--dashboard-border-muted)", background: "transparent" }
+                }
+              >
+                <Flag className="w-3 h-3" weight={flagged[q.id] ? "fill" : "regular"} aria-hidden="true" />
+                ফ্ল্যাগ
+              </button>
             </div>
 
             <div className="rounded-xl border p-4 mb-5" style={{ background: "var(--dashboard-surface-raised)", borderColor: "var(--dashboard-border-muted)", boxShadow: "var(--dashboard-shadow-sm)" }}>
@@ -829,15 +879,16 @@ export default function MockTestTab() {
           </div>
         </div>
 
-        {/* Question map */}
-        <div className="glass-card rounded-2xl border border-terminal-border p-3">
+        {/* Question map — horizontal scroll on mobile, sticky grid sidebar on desktop */}
+        <div className="glass-card rounded-2xl border border-terminal-border p-3 lg:sticky lg:top-24">
           <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-widest mb-2">
             প্রশ্ন তালিকা
           </p>
-          <div className="flex flex-wrap gap-1.5" role="group" aria-label="প্রশ্ন তালিকা">
+          <div className="flex flex-wrap gap-1.5 lg:grid lg:grid-cols-5" role="group" aria-label="প্রশ্ন তালিকা">
             {questions.map((qq, i) => {
               const isAnswered = answers[qq.id] !== undefined;
               const isCurrent = i === currentQuestion;
+              const isFlagged = flagged[qq.id] === true;
               return (
                 <button
                   key={qq.id}
@@ -845,11 +896,13 @@ export default function MockTestTab() {
                   className={`min-w-[44px] min-h-[44px] rounded-lg border text-xs font-mono tabular-nums cursor-pointer transition-[background-color,color,border-color] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] ${
                     isCurrent
                       ? "bg-[var(--dashboard-primary)] border-[var(--dashboard-primary)] text-[var(--dashboard-text-inverse)] font-bold"
-                      : isAnswered
+                      : isFlagged
+                        ? "border-[var(--dashboard-warning)] bg-[var(--dashboard-warning-subtle)] text-[var(--dashboard-warning)] font-bold hover:border-[var(--dashboard-warning)]"
+                        : isAnswered
                         ? "border-[var(--dashboard-primary)]/30 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] hover:border-[var(--dashboard-primary)]/50"
                         : "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] hover:border-[var(--dashboard-primary)]/40"
                   }`}
-                  aria-label={`প্রশ্ন ${i + 1}${isAnswered ? " — উত্তর দেওয়া হয়েছে" : ""}${isCurrent ? " — বর্তমান" : ""}`}
+                  aria-label={`প্রশ্ন ${i + 1}${isAnswered ? " — উত্তর দেওয়া হয়েছে" : ""}${isCurrent ? " — বর্তমান" : ""}${isFlagged ? " — ফ্ল্যাগ করা" : ""}`}
                   aria-current={isCurrent ? "true" : undefined}
                 >
                   {i + 1}
@@ -952,12 +1005,8 @@ export default function MockTestTab() {
               percentage >= 80 ? "text-[var(--dashboard-warning)]" : percentage >= 50 ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-danger)]"
             }`} />
             <h3 className="text-xl font-bold text-[var(--text-primary)] mb-1">মক টেস্ট সম্পন্ন!</h3>
+            <ScoreRing percentage={summary.percentage} label="Mock test score" />
             <p className="text-sm text-[var(--dashboard-text-muted)] font-mono mb-4">{summary.percentage}% স্কোর</p>
-
-            <div className="inline-flex flex-col items-center mb-4">
-              <div className="text-5xl font-bold font-mono text-[var(--dashboard-primary)]">{summary.finalScore}</div>
-              <div className="text-xs text-[var(--dashboard-text-muted)] font-mono mt-1">মোট নম্বর: {summary.total}</div>
-            </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-w-md mx-auto text-left">
               <button
@@ -992,13 +1041,55 @@ export default function MockTestTab() {
               </button>
             </div>
 
-            <div className="flex items-center justify-center gap-3 mt-5">
+            <div className="max-w-md mx-auto text-left mt-4">
+              <TopicBars items={result.review.map((r) => ({ subject: r.subject, topic: r.topic, status: r.status }))} />
+            </div>
+
+            <div className="flex items-center justify-center gap-3 mt-5 flex-wrap">
               <button
                 onClick={resetTest}
                 className="px-5 py-2.5 min-h-[48px] bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm font-bold rounded-xl hover:bg-[var(--accent-hover)] active:opacity-90 cursor-pointer transition-[background-color,opacity] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] flex items-center gap-2"
               >
                 <Play className="w-4 h-4" aria-hidden="true" /> আবার মক টেস্ট
               </button>
+              {(summary.wrong + summary.unanswered) > 0 && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const retryQs = questions.filter((qq) => {
+                      const rv = result.review.find((r) => r.questionId === qq.id);
+                      return !rv || rv.status !== "correct";
+                    });
+                    if (retryQs.length === 0) return;
+                    clearAttemptId(STORAGE_KEY);
+                    const attemptId = ensureAttemptId(STORAGE_KEY);
+                    const durationSec = Math.max(60, retryQs.length * 30);
+                    startedAtRef.current = Date.now();
+                    totalSecRef.current = durationSec;
+                    setQuestions(retryQs);
+                    setAnswers({});
+                    setCurrentQuestion(0);
+                    setTimeRemaining(durationSec);
+                    setFlagged({});
+                    setUndoPick(null);
+                    setReviewToggles({});
+                    setHighlightedReview(null);
+                    setResult(null);
+                    setTestState("active");
+                    requestAnimationFrame(() => scrollDashboardTop());
+                    void registerExam({
+                      attemptId,
+                      questionIds: retryQs.map((qq) => qq.id),
+                      durationSec,
+                    }).catch(() => {
+                      /* non-fatal — submit upserts */
+                    });
+                  }}
+                  className="px-5 py-2.5 min-h-[48px] bg-[var(--dashboard-primary)] text-[var(--dashboard-text-inverse)] font-mono text-sm font-bold rounded-xl hover:brightness-110 active:opacity-90 cursor-pointer transition-all flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                >
+                  <ArrowCounterClockwise className="w-4 h-4" aria-hidden="true" /> ভুলগুলো আবার ({summary.wrong + summary.unanswered})
+                </button>
+              )}
             </div>
           </div>
         </motion.div>
