@@ -27,6 +27,7 @@ import type { Server } from "@/lib/types";
 import { useT } from "@/lib/i18n";
 import { shuffleSessionOptions } from "@/lib/shuffle-options";
 import SubjectTopicSelect from "./SubjectTopicSelect";
+import MetaChip from "./practice/MetaChip";
 import ScoreRing from "./practice/ScoreRing";
 import SmartMixButton from "./practice/SmartMixButton";
 import TopicBars from "./practice/TopicBars";
@@ -518,25 +519,58 @@ export default function MockTestTab() {
   };
 
   // Keyboard navigation (desktop): ←/→ move, A-D/1-4 pick, F flag.
+  // Single stable subscription (see PracticeTab): ref-only reads + stable
+  // setters, so the empty dep array is correct and compiler-safe.
+  const currentQuestionRef = useRef(currentQuestion);
   useEffect(() => {
-    if (testState !== "active" || questions.length === 0) return;
+    currentQuestionRef.current = currentQuestion;
+  }, [currentQuestion]);
+  const mockStateRef = useRef(testState);
+  useEffect(() => {
+    mockStateRef.current = testState;
+  }, [testState]);
+  useEffect(() => {
     const handler = (e: KeyboardEvent) => {
+      if (mockStateRef.current !== "active") return;
       const target = e.target as HTMLElement | null;
-      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA")) return;
-      const qq = questions[currentQuestion];
-      if (e.key === "ArrowRight") setCurrentQuestion((i) => Math.min(questions.length - 1, i + 1));
-      else if (e.key === "ArrowLeft") setCurrentQuestion((i) => Math.max(0, i - 1));
-      else if ((e.key === "f" || e.key === "F") && qq) toggleFlag(qq.id);
-      else if (qq && answers[qq.id] === undefined) {
-        const idx = ["1", "2", "3", "4", "5", "6"].indexOf(e.key) >= 0
+      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable)) return;
+      const qs = questionsRef.current;
+      if (qs.length === 0) return;
+      const i = Math.max(0, Math.min(qs.length - 1, currentQuestionRef.current));
+      if (e.key === "ArrowRight") {
+        setCurrentQuestion(Math.min(qs.length - 1, i + 1));
+        return;
+      }
+      if (e.key === "ArrowLeft") {
+        setCurrentQuestion(Math.max(0, i - 1));
+        return;
+      }
+      const qq = qs[i];
+      if (!qq) return;
+      if (e.key === "f" || e.key === "F") {
+        toggleFlag(qq.id);
+        return;
+      }
+      if (answersRef.current[qq.id] !== undefined) return;
+      const idx =
+        ["1", "2", "3", "4", "5", "6"].indexOf(e.key) >= 0
           ? ["1", "2", "3", "4", "5", "6"].indexOf(e.key)
           : ["a", "b", "c", "d", "e", "f"].indexOf(e.key.toLowerCase());
-        if (idx >= 0 && qq.options[idx] !== undefined) selectAnswer(qq.id, qq.options[idx]);
-      }
+      if (idx < 0 || qq.options[idx] === undefined) return;
+      const opt = qq.options[idx];
+      setAnswers((prev) => {
+        if (prev[qq.id] !== undefined) return prev;
+        return { ...prev, [qq.id]: opt };
+      });
+      setUndoPick(qq.id);
+      if (undoTimer.current != null) window.clearTimeout(undoTimer.current);
+      undoTimer.current = window.setTimeout(() => setUndoPick(null), 4000);
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  });
+    // Empty deps are correct: refs + stable setters only.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // ═══════════════ SETUP ═══════════════
   if (testState === "setup") {
@@ -677,13 +711,15 @@ export default function MockTestTab() {
   }
 
   // ═══════════════ ACTIVE ═══════════════
+  // Live exam workspace — the root carries data-exam-session (see
+  // PracticeTab note) so shell digit→tab shortcuts stay inert here.
   if (testState === "active") {
     const timeLow = timeRemaining > 0 && timeRemaining <= 60;
     const progressPct = totalQuestions > 0 ? (answeredCount / totalQuestions) * 100 : 0;
     const q = questions[currentQuestion];
 
     return (
-      <div className="space-y-4 lg:max-w-4xl lg:mx-auto">
+      <div className="space-y-4 lg:max-w-4xl lg:mx-auto" data-exam-session="mock-test">
         {/* Sticky header: timer + progress + submit */}
           <div className="sticky top-0 z-[var(--z-sticky)] -mx-1 px-1 pt-1">
             <div className="glass-card rounded-2xl border border-[var(--dashboard-primary)]/25 px-4 py-3 backdrop-blur-md" style={{ background: "color-mix(in srgb, var(--dashboard-surface) 88%, transparent)" }}>
@@ -748,15 +784,12 @@ export default function MockTestTab() {
               <span className="px-2 py-0.5 rounded bg-[var(--surface-overlay)] text-[10px] font-mono text-[var(--dashboard-text-muted)]">
                 {q.subject}
               </span>
-              <span className={`px-2 py-0.5 rounded text-[10px] font-mono ${
-                q.difficulty === "EASY"
-                  ? "bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
-                  : q.difficulty === "MEDIUM"
-                    ? "bg-[var(--dashboard-warning-subtle)] text-[var(--dashboard-warning)]"
-                    : "bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)]"
-              }`}>
+              <MetaChip
+                tone={q.difficulty === "EASY" ? "primary" : q.difficulty === "MEDIUM" ? "warning" : "danger"}
+                label={`কাঠিন্য: ${DIFFICULTY_LABEL[q.difficulty] ?? q.difficulty}`}
+              >
                 {DIFFICULTY_LABEL[q.difficulty] ?? q.difficulty}
-              </span>
+              </MetaChip>
               {q.topic && (
                 <span className="px-2 py-0.5 rounded bg-[var(--surface-overlay)] text-[10px] font-mono text-[var(--dashboard-text-muted)]">
                   {q.topic}
@@ -910,6 +943,12 @@ export default function MockTestTab() {
               );
             })}
           </div>
+          <ul className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] font-mono" style={{ color: "var(--dashboard-text-muted)" }} aria-label="প্রশ্ন অবস্থার নির্দেশিকা">
+            <li className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full" style={{ background: "var(--dashboard-primary)" }} aria-hidden="true" /> বর্তমান</li>
+            <li className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full border" style={{ borderColor: "var(--dashboard-primary)", background: "var(--dashboard-primary-subtle)" }} aria-hidden="true" /> ✓ উত্তর দেওয়া</li>
+            <li className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full" style={{ background: "var(--dashboard-warning)" }} aria-hidden="true" /> ⚑ ফ্ল্যাগ</li>
+            <li className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full border" style={{ borderColor: "var(--dashboard-border-muted)" }} aria-hidden="true" /> ○ বাকি</li>
+          </ul>
         </div>
 
         {submitError && (
@@ -1145,14 +1184,10 @@ export default function MockTestTab() {
                     <span className="block text-sm truncate" style={{ color: "var(--dashboard-text-primary)" }}>
                       {i + 1}. <RichText text={r.question} />
                     </span>
-                    <span className={`block text-[11px] font-mono mt-0.5 ${
-                      isCorrect
-                        ? "text-[var(--dashboard-success)]"
-                        : isUnanswered
-                          ? "text-[var(--dashboard-teal)]"
-                          : "text-[var(--dashboard-danger)]"
-                    }`}>
-                      {verdictLabel}
+                    <span className="block mt-1">
+                      <MetaChip tone={isCorrect ? "success" : isUnanswered ? "teal" : "danger"}>
+                        {verdictLabel}
+                      </MetaChip>
                     </span>
                   </span>
                   <CaretRight className={`w-4 h-4 flex-shrink-0 transition-transform duration-150 ${open ? "rotate-[270deg]" : "rotate-90"}`} style={{ color: "var(--dashboard-text-muted)" }} aria-hidden="true" />
@@ -1160,25 +1195,19 @@ export default function MockTestTab() {
                 {open && (
                 <div className="px-3.5 pb-3.5 pt-1 border-t" style={{ borderColor: "var(--dashboard-border-muted)" }}>
                   <div className="min-w-0 flex-1 pt-2">
-                    <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">
+                    <p className="text-xs font-mono" style={{ color: "var(--dashboard-text-secondary)" }}>
                       আপনার উত্তর:{" "}
-                      <span className={
-                        isCorrect
-                          ? "text-[var(--dashboard-success)]"
-                          : isUnanswered
-                            ? "text-[var(--dashboard-teal)]"
-                            : "text-[var(--dashboard-danger)]"
-                      }>
+                      <span style={{ color: `color-mix(in srgb, var(${isCorrect ? "--dashboard-success" : isUnanswered ? "--dashboard-teal" : "--dashboard-danger"}) 60%, var(--dashboard-text-primary))`, fontWeight: 700 }}>
                         {r.userAnswer ? <RichText text={r.userAnswer} /> : "উত্তর দেওয়া হয়নি"}
                       </span>
                     </p>
                     {!isCorrect && (
-                      <p className="text-xs text-[var(--dashboard-success)] font-mono mt-0.5">
+                      <p className="text-xs font-mono mt-0.5" style={{ color: "color-mix(in srgb, var(--dashboard-success) 60%, var(--dashboard-text-primary))", fontWeight: 700 }}>
                         সঠিক উত্তর: <RichText text={r.correctAnswer} />
                       </p>
                     )}
                     {r.explanation && (
-                      <p className="text-xs text-[var(--dashboard-text-muted)] mt-1.5"><RichText text={r.explanation} /></p>
+                      <p className="text-xs mt-1.5" style={{ color: "var(--dashboard-text-secondary)" }}><RichText text={r.explanation} /></p>
                     )}
 
                     <AIExplanationButton

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect, useRef, useCallback } from "react";
+import { useState, useMemo, useEffect, useRef, useCallback, type CSSProperties } from "react";
 import { motion, AnimatePresence, useReducedMotion, useDragControls } from "framer-motion";
 import { X, Check, Play, Timer, BookOpen, Trophy, ArrowCounterClockwise, Warning, CheckCircle, XCircle, Minus, Plus, GridFour, List, Clock, Flag, CircleDashed, Spinner, CaretRight, } from "@phosphor-icons/react";
 import { api } from "@/lib/services/api";
@@ -25,6 +25,8 @@ import {
 import type { Server } from "@/lib/types";
 import { shuffleSessionOptions } from "@/lib/shuffle-options";
 import SubjectTopicSelect from "./SubjectTopicSelect";
+import MetaChip from "./practice/MetaChip";
+import SessionTimer from "./practice/SessionTimer";
 import ScoreRing from "./practice/ScoreRing";
 import SmartMixButton from "./practice/SmartMixButton";
 import TopicBars from "./practice/TopicBars";
@@ -63,17 +65,13 @@ type PersistedExam = {
   requested: number;
   available: number;
   shortfall: number;
+  /** Paginated position — persisted so refresh resumes on the same question. */
+  currentIndex: number;
 };
 
-function formatTime(seconds: number): string {
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
-  return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
-}
-
-// Isolated timer leaf: the 1-second tick only re-renders this node, not the
-// whole exam surface (which can hold many questions). The expiry callback is
-// held in a ref so selecting an answer doesn't reset the interval.
+// Shared wall-clock session countdown (single seam for all exam modes).
+// The deadline derives from startsAt + durationSec — the 1s interval only
+// re-renders this leaf, so answering never resets the clock.
 function ExamTimer({
   startsAt,
   durationSec,
@@ -83,37 +81,11 @@ function ExamTimer({
   durationSec: number;
   onExpire: () => void;
 }) {
-  const [remaining, setRemaining] = useState(() =>
-    Math.max(0, durationSec - Math.floor((Date.now() - startsAt) / 1000)),
-  );
-  const onExpireRef = useRef(onExpire);
-  useEffect(() => {
-    onExpireRef.current = onExpire;
-  }, [onExpire]);
-
-  useEffect(() => {
-    if (durationSec <= 0) return;
-    const tick = () => {
-      const rem = Math.max(0, durationSec - Math.floor((Date.now() - startsAt) / 1000));
-      setRemaining(rem);
-      if (rem <= 0) onExpireRef.current();
-    };
-    tick();
-    const id = setInterval(tick, 1000);
-    return () => clearInterval(id);
-  }, [startsAt, durationSec]);
-
-  const timeLow = remaining > 0 && remaining <= 60;
   return (
-    <>
-      <Timer className={`w-4 h-4 ${timeLow ? "text-[var(--dashboard-danger)] animate-pulse motion-reduce:animate-none" : "text-[var(--dashboard-primary)]"}`} />
-      <span className={`font-mono text-lg font-bold ${timeLow ? "text-[var(--dashboard-danger)]" : "text-[var(--dashboard-primary)]"}`}>
-        {formatTime(remaining)}
-      </span>
-      <span className="text-[10px] text-[var(--dashboard-text-muted)] font-mono hidden sm:inline">
-        {durationSec > 0 ? "" : "সময় সীমাহীন"}
-      </span>
-    </>
+    <span className="inline-flex items-center gap-2">
+      <Timer className="w-4 h-4 text-[var(--dashboard-primary)]" aria-hidden="true" />
+      <SessionTimer startsAt={startsAt} durationSec={durationSec} onExpire={onExpire} />
+    </span>
   );
 }
 
@@ -141,6 +113,11 @@ export default function CustomExamTab() {
   // ── Exam state ──
   const [exam, setExam] = useState<PersistedExam | null>(null);
   const [answers, setAnswers] = useState<Record<number, string>>({});
+  // Paginated workspace: one question at a time (default — only the active
+  // card mounts, so 100+ question exams stay fast) with an "all" fallback
+  // that keeps the legacy scroll-everything layout.
+  const [examView, setExamView] = useState<"one" | "all">("one");
+  const [examIndex, setExamIndex] = useState(0);
 
   const [phase, setPhase] = useState<ExamPhase>("config");
   const [showUnansweredConfirm, setShowUnansweredConfirm] = useState(false);
@@ -311,6 +288,7 @@ export default function CustomExamTab() {
         saveExamSnapshot(STORAGE_KEY, withAttempt);
         setExam(withAttempt);
         setAnswers(saved.answers ?? {});
+        setExamIndex(Math.min(saved.currentIndex ?? 0, Math.max(0, saved.questions.length - 1)));
         setPhase("exam");
         // Always re-register on resume: idempotent, and with server-side
         // IN_PROGRESS hash adoption it heals a token whose row still holds an
@@ -424,11 +402,14 @@ export default function CustomExamTab() {
         requested: built.requested,
         available: built.available,
         shortfall: built.shortfall,
+        currentIndex: 0,
       };
       saveExamSnapshot(STORAGE_KEY, persisted);
       clearOtherExams(STORAGE_KEY);
       setExam(persisted);
       setAnswers({});
+      setExamIndex(0);
+      setExamView("one");
       setShowConfirm(false);
       setPhase("exam");
       // Best-effort: register the attempt server-side so /api/exam/submit has
@@ -455,19 +436,37 @@ export default function CustomExamTab() {
     setAnswers((prev) => {
       const next = { ...prev, [questionId]: option };
       if (exam) {
-        saveExamSnapshot(STORAGE_KEY, { ...exam, answers: next });
+        saveExamSnapshot(STORAGE_KEY, { ...exam, answers: next, currentIndex: examIndex });
       }
       return next;
     });
   };
 
+  // Paginated jumps persist the position so refresh resumes mid-exam.
+  // Plain function (no manual useCallback): the React compiler memoizes it;
+  // a manual dep list here trips preserve-manual-memoization (see jumpToReview).
+  const gotoExamQuestion = (i: number) => {
+    const snap = examRef.current;
+    const total = snap?.questions.length ?? 0;
+    if (total === 0) return;
+    const next = Math.max(0, Math.min(total - 1, i));
+    setExamIndex(next);
+    if (snap) saveExamSnapshot(STORAGE_KEY, { ...snap, currentIndex: next });
+    requestAnimationFrame(() => scrollDashboardTop());
+  };
+
+  const scrollToQuestion = (questionId: number) => {
+    if (examView === "one") {
+      const idx = examRef.current?.questions.findIndex((q) => q.id === questionId) ?? -1;
+      if (idx >= 0) gotoExamQuestion(idx);
+      return;
+    }
+    questionRefs.current[questionId]?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   const answeredCount = Object.keys(answers).length;
   const totalQuestions = exam?.questions.length ?? 0;
   const unanswered = totalQuestions - answeredCount;
-
-  const scrollToQuestion = (questionId: number) => {
-    questionRefs.current[questionId]?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
 
   // Keep latest exam/answers in refs so timer expiry and rapid clicks never use a stale closure.
   const examRef = useRef(exam);
@@ -573,6 +572,8 @@ export default function CustomExamTab() {
     setPhase("config");
     setExam(null);
     setAnswers({});
+    setExamIndex(0);
+    setExamView("one");
     setResult(null);
     setSubmitError(null);
     setShowUnansweredConfirm(false);
@@ -597,7 +598,7 @@ export default function CustomExamTab() {
             <p className="command-eyebrow mb-2">Custom Exam</p>
             <div className="flex items-center gap-2 mb-1">
               <GridFour className="w-5 h-5 text-[var(--dashboard-primary)]" />
-              <h2 className="text-lg font-bold text-[var(--text-primary)]">কাস্টম বিসিএস পরীক্ষা</h2>
+              <h2 className="text-lg font-bold text-[var(--text-primary)]">{ecosystem === "BCS" ? "কাস্টম বিসিএস পরীক্ষা" : "Custom Bank Exam"}</h2>
             </div>
             <p className="text-xs text-[var(--dashboard-text-muted)]">
               বিষয়, টপিক ও সাবটপিক বেছে নিয়ে নিজের পছন্দের পরীক্ষা তৈরি করুন — নেগেটিভ মার্কিং সহ বাস্তব {ecosystem === "BCS" ? "বিসিএস" : "ব্যাংক"} ধাঁচে (ভুল {negativeLabel})।
@@ -856,11 +857,13 @@ export default function CustomExamTab() {
   }
 
   // ═══════════════ EXAM PHASE ═══════════════
+  // Live exam workspace — the root carries data-exam-session (see
+  // PracticeTab note) so shell digit→tab shortcuts stay inert here.
   if (phase === "exam" && exam) {
     const progressPct = totalQuestions > 0 ? (answeredCount / totalQuestions) * 100 : 0;
 
     return (
-      <div className="space-y-4 lg:max-w-4xl lg:mx-auto">
+      <div className="space-y-4 lg:max-w-4xl lg:mx-auto" data-exam-session="custom-exam">
         {/* Sticky header: timer + progress + submit */}
         <div className="sticky top-0 z-[var(--z-sticky)] -mx-1 px-1 pt-1">
           <div className="glass-card rounded-2xl border border-[var(--dashboard-primary)]/25 px-4 py-3 backdrop-blur-md" style={{ background: "color-mix(in srgb, var(--dashboard-surface) 88%, transparent)" }}>
@@ -907,33 +910,186 @@ export default function CustomExamTab() {
           </div>
         </div>
 
-        {/* Question palette (jump navigation) — sticky grid sidebar on desktop */}
+        {/* Question palette (jump navigation) — shared pattern with quick
+            practice: current/answered/unanswered distinguishable by label +
+            legend, never color alone. */}
         <div className="glass-card rounded-2xl border border-terminal-border p-3 lg:sticky lg:top-24">
-          <div className="flex items-center gap-2 mb-2">
-            <CircleDashed className="w-3.5 h-3.5 text-[var(--dashboard-primary)]" />
-            <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-widest">প্রশ্ন তালিকা</p>
+          <div className="flex items-center justify-between gap-2 mb-2 flex-wrap">
+            <div className="flex items-center gap-2">
+              <CircleDashed className="w-3.5 h-3.5 text-[var(--dashboard-primary)]" aria-hidden="true" />
+              <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-widest">প্রশ্ন তালিকা</p>
+            </div>
+            <div className="flex items-center gap-1 rounded-lg border p-0.5" style={{ borderColor: "var(--dashboard-border-muted)" }} role="group" aria-label="প্রশ্ন দেখার ধরন">
+              <button
+                type="button"
+                onClick={() => setExamView("one")}
+                aria-pressed={examView === "one"}
+                className={`min-h-[44px] px-3 rounded-md font-mono text-[11px] cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] ${examView === "one" ? "bg-[var(--dashboard-primary)] text-[var(--dashboard-text-inverse)] font-bold" : "text-[var(--dashboard-text-muted)]"}`}
+              >
+                একটি করে
+              </button>
+              <button
+                type="button"
+                onClick={() => setExamView("all")}
+                aria-pressed={examView === "all"}
+                className={`min-h-[44px] px-3 rounded-md font-mono text-[11px] cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] ${examView === "all" ? "bg-[var(--dashboard-primary)] text-[var(--dashboard-text-inverse)] font-bold" : "text-[var(--dashboard-text-muted)]"}`}
+              >
+                সবগুলো
+              </button>
+            </div>
           </div>
           <div className="flex flex-wrap gap-1.5 md:grid md:grid-cols-8 lg:grid-cols-6" role="group" aria-label="প্রশ্ন তালিকা">
             {exam.questions.map((q, i) => {
               const isAnswered = answers[q.id] !== undefined;
+              const isCurrent = examView === "one" && i === examIndex;
               return (
                 <button
                   key={q.id}
                   onClick={() => scrollToQuestion(q.id)}
                   className={`min-w-11 min-h-11 rounded-lg border text-xs font-mono cursor-pointer transition-[background-color,color,border-color] duration-150 [touch-action:manipulation] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] flex items-center justify-center ${
-                    isAnswered
+                    isCurrent
+                      ? "bg-[var(--dashboard-primary)] border-[var(--dashboard-primary)] text-[var(--dashboard-text-inverse)] font-bold"
+                      : isAnswered
                       ? "border-[var(--dashboard-primary)]/40 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
                       : "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] hover:border-[var(--dashboard-primary)]/40"
                   }`}
-                  aria-label={`প্রশ্ন ${i + 1}${isAnswered ? " — উত্তর দেওয়া" : ""}`}
+                  aria-label={`প্রশ্ন ${i + 1}${isAnswered ? " — উত্তর দেওয়া" : " — বাকি"}${isCurrent ? " — বর্তমান" : ""}`}
+                  aria-current={isCurrent ? "true" : undefined}
                 >
                   {i + 1}
                 </button>
               );
             })}
           </div>
+          <ul className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] font-mono" style={{ color: "var(--dashboard-text-muted)" }} aria-label="প্রশ্ন অবস্থার নির্দেশিকা">
+            <li className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full" style={{ background: "var(--dashboard-primary)" }} aria-hidden="true" /> বর্তমান</li>
+            <li className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full border" style={{ borderColor: "var(--dashboard-primary)", background: "var(--dashboard-primary-subtle)" }} aria-hidden="true" /> ✓ উত্তর দেওয়া</li>
+            <li className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full border" style={{ borderColor: "var(--dashboard-border-muted)" }} aria-hidden="true" /> ○ বাকি</li>
+          </ul>
         </div>
 
+        {examView === "one" ? (
+          (() => {
+            const q = exam.questions[examIndex];
+            if (!q) return null;
+            const userAnswer = answers[q.id];
+            return (
+              <div className="space-y-4">
+                <div
+                  key={q.id}
+                  id={`exam-q-${q.id}`}
+                  className="glass-card rounded-2xl border border-terminal-border p-4 md:p-5 scroll-mt-32"
+                >
+                  <p className="sr-only" aria-live="polite">প্রশ্ন {examIndex + 1} / {totalQuestions}</p>
+                  <div className="flex flex-wrap items-center gap-2 mb-3">
+                    <span className="px-2 py-0.5 rounded bg-[var(--surface-overlay)] text-[10px] font-mono text-[var(--dashboard-text-secondary)]">
+                      প্রশ্ন {examIndex + 1} / {totalQuestions}
+                    </span>
+                    <span className="px-2 py-0.5 rounded bg-[var(--surface-overlay)] text-[10px] font-mono text-[var(--dashboard-text-muted)]">
+                      {q.subject}
+                    </span>
+                    <MetaChip
+                      tone={q.difficulty === "EASY" ? "primary" : q.difficulty === "MEDIUM" ? "warning" : "danger"}
+                      label={`কাঠিন্য: ${DIFFICULTY_LABEL[q.difficulty] ?? q.difficulty}`}
+                    >
+                      {DIFFICULTY_LABEL[q.difficulty] ?? q.difficulty}
+                    </MetaChip>
+                    {q.topic && (
+                      <span className="px-2 py-0.5 rounded bg-[var(--surface-overlay)] text-[10px] font-mono text-[var(--dashboard-text-muted)]">
+                        {q.topic}
+                      </span>
+                    )}
+                    {userAnswer !== undefined && (
+                      <span className="ml-auto px-2 py-0.5 rounded bg-[var(--dashboard-primary-subtle)] border border-[var(--primary)]/20 text-[10px] font-mono text-[var(--dashboard-primary)]">
+                        ✓ উত্তর দেওয়া হয়েছে
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="rounded-xl border p-4 mb-4 min-w-0" style={{ background: "var(--dashboard-surface-raised)", borderColor: "var(--dashboard-border-muted)", boxShadow: "var(--dashboard-shadow-sm)" }}>
+                    <h3 className="text-sm md:text-[15px] font-semibold leading-relaxed break-words [overflow-wrap:anywhere]" style={{ color: "var(--dashboard-text-primary)", lineHeight: "1.7" }}><RichText text={q.question} /></h3>
+                  </div>
+
+                  <div className="space-y-2.5">
+                    {q.options.map((option, i) => {
+                      const isSelected = userAnswer === option;
+                      const isLocked = userAnswer !== undefined;
+                      return (
+                        <button
+                          key={i}
+                          onClick={() => selectAnswer(q.id, option)}
+                          disabled={isLocked}
+                          aria-pressed={isSelected}
+                          className="w-full text-left p-3 min-h-[52px] rounded-xl border cursor-pointer transition-[background-color,color,border-color] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] disabled:cursor-not-allowed"
+                          style={
+                            isSelected
+                              ? { background: "var(--dashboard-primary-subtle)", borderColor: "var(--dashboard-primary)", color: "var(--dashboard-primary)" }
+                              : { background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-strong)", color: "var(--dashboard-text-primary)" }
+                          }
+                        >
+                          <div className="flex items-center gap-3">
+                            <span className="w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-mono border" style={isSelected ? { background: "var(--dashboard-primary)", color: "var(--dashboard-text-inverse)", borderColor: "var(--dashboard-primary)" } : { background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-strong)", color: "var(--dashboard-text-secondary)" }}>
+                              {OPTION_LABELS[i] ?? i + 1}
+                            </span>
+                            <span className="text-sm font-medium min-w-0 break-words"><RichText text={option} /></span>
+                            {isSelected && <Check className="w-4 h-4 ml-auto flex-shrink-0" style={{ color: "var(--dashboard-primary)" }} />}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {userAnswer !== undefined && (
+                    <p role="status" className="inline-flex items-center gap-1.5 text-xs font-mono rounded-full border px-3 py-1.5 mt-2" style={{ color: "var(--dashboard-text-muted)", borderColor: "var(--dashboard-border-muted)", background: "var(--dashboard-surface-muted)" }}>
+                      <Check className="w-3.5 h-3.5" aria-hidden="true" /> উত্তর লক হয়েছে
+                    </p>
+                  )}
+                </div>
+
+                <div className="sticky z-[var(--z-sticky)] bottom-[calc(var(--bottom-nav-h)+env(safe-area-inset-bottom,0px)+8px)] lg:bottom-2 pt-2 pb-1" style={{ background: "linear-gradient(to top, var(--dashboard-surface) 70%, transparent)" }}>
+                  <div className="flex items-center gap-2 rounded-2xl border p-2 backdrop-blur-md" style={{ background: "color-mix(in srgb, var(--dashboard-surface-muted) 92%, transparent)", borderColor: "var(--dashboard-border-muted)" }}>
+                    <button
+                      type="button"
+                      onClick={() => gotoExamQuestion(examIndex - 1)}
+                      disabled={examIndex === 0}
+                      aria-label="আগের প্রশ্ন"
+                      className="flex-1 min-h-[48px] px-4 py-2.5 border font-mono text-sm rounded-xl cursor-pointer transition-[background-color,color,border-color,opacity] duration-150 [touch-action:manipulation] disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                      style={{ background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-strong)", color: "var(--dashboard-text-secondary)" }}
+                    >
+                      আগের
+                    </button>
+                    <span className="text-xs font-mono tabular-nums flex-shrink-0 px-1" style={{ color: "var(--dashboard-text-muted)" }} aria-live="polite">
+                      {examIndex + 1}/{totalQuestions}
+                    </span>
+                    {examIndex < totalQuestions - 1 ? (
+                      <button
+                        type="button"
+                        onClick={() => gotoExamQuestion(examIndex + 1)}
+                        aria-label="পরের প্রশ্ন"
+                        className="flex-1 min-h-[48px] px-4 py-2.5 border font-mono text-sm rounded-xl cursor-pointer transition-[background-color,opacity] duration-150 [touch-action:manipulation] flex items-center justify-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                        style={{ background: "var(--dashboard-primary)", borderColor: "var(--dashboard-primary)", color: "var(--dashboard-text-inverse)" }}
+                      >
+                        পরের
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={(e) => { e.preventDefault(); handleSubmitRequest(); }}
+                        disabled={submitting}
+                        aria-busy={submitting}
+                        aria-label="পরীক্ষা জমা দিন"
+                        className="flex-1 px-5 py-2.5 min-h-[48px] bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm font-bold rounded-xl hover:bg-[var(--accent-hover)] active:opacity-90 cursor-pointer transition-[background-color,opacity] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+                      >
+                        <Flag className="w-4 h-4" aria-hidden="true" />
+                        {submitting ? "জমা হচ্ছে..." : "জমা দিন"}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })()
+        ) : (
+        <>
         {/* All questions, vertically scrollable */}
         <div className="space-y-4">
           {exam.questions.map((q, index) => {
@@ -952,15 +1108,12 @@ export default function CustomExamTab() {
                   <span className="px-2 py-0.5 rounded bg-[var(--surface-overlay)] text-[10px] font-mono text-[var(--dashboard-text-muted)]">
                     {q.subject}
                   </span>
-                  <span className={`px-2 py-0.5 rounded text-[10px] font-mono ${
-                    q.difficulty === "EASY"
-                      ? "bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
-                      : q.difficulty === "MEDIUM"
-                        ? "bg-[var(--dashboard-warning-subtle)] text-[var(--dashboard-warning)]"
-                        : "bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)]"
-                  }`}>
+                  <MetaChip
+                    tone={q.difficulty === "EASY" ? "primary" : q.difficulty === "MEDIUM" ? "warning" : "danger"}
+                    label={`কাঠিন্য: ${DIFFICULTY_LABEL[q.difficulty] ?? q.difficulty}`}
+                  >
                     {DIFFICULTY_LABEL[q.difficulty] ?? q.difficulty}
-                  </span>
+                  </MetaChip>
                   {q.topic && (
                     <span className="px-2 py-0.5 rounded bg-[var(--surface-overlay)] text-[10px] font-mono text-[var(--dashboard-text-muted)]">
                       {q.topic}
@@ -1014,6 +1167,8 @@ export default function CustomExamTab() {
             );
           })}
         </div>
+        </>
+        )}
 
         {/* Sticky submit bar — thumb-reachable above the bottom nav */}
         <div className="sticky z-40 bottom-[calc(var(--bottom-nav-h)+env(safe-area-inset-bottom,0px)+8px)] lg:bottom-2 -mx-1 px-1 pt-2 pb-1" style={{ background: "linear-gradient(to top, var(--dashboard-surface) 70%, transparent)" }}>
@@ -1314,16 +1469,10 @@ export default function CustomExamTab() {
                       {i + 1}. <RichText text={item.question} />
                     </span>
                     <span className="flex flex-wrap items-center gap-2 mt-1">
-                      <span className={`px-1.5 py-0.5 rounded text-[10px] font-mono ${
-                        isCorrect
-                          ? "bg-[var(--dashboard-success-subtle)] text-[var(--dashboard-success)]"
-                          : isUnanswered
-                            ? "bg-[var(--dashboard-teal-subtle)] text-[var(--dashboard-teal)]"
-                            : "bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)]"
-                      }`}>
+                      <MetaChip tone={isCorrect ? "success" : isUnanswered ? "teal" : "danger"}>
                         {isCorrect ? "+১" : isUnanswered ? "০" : "−০.৫"} · {verdictLabel}
-                      </span>
-                      <span className="text-[10px] font-mono text-[var(--dashboard-text-muted)]">{item.subject}</span>
+                      </MetaChip>
+                      <span className="text-[10px] font-mono" style={{ color: "var(--dashboard-text-secondary)" }}>{item.subject}</span>
                     </span>
                   </span>
                   <CaretRight className={`w-4 h-4 flex-shrink-0 transition-transform duration-150 ${open ? "rotate-[270deg]" : "rotate-90"}`} style={{ color: "var(--dashboard-text-muted)" }} aria-hidden="true" />
@@ -1339,11 +1488,19 @@ export default function CustomExamTab() {
                       {displayOptions.map((option, oi) => {
                         const isUser = option === item.userAnswer;
                         const isRight = option === item.correctAnswer;
-                        let cls = "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)]";
-                        if (isRight) cls = "border-[var(--dashboard-success)]/40 bg-[var(--dashboard-success-subtle)] text-[var(--dashboard-success)]";
-                        else if (isUser) cls = "border-[var(--dashboard-danger)]/40 bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)]";
+                        let cls = "border-[var(--dashboard-border-muted)]";
+                        let rowStyle: CSSProperties | undefined;
+                        if (isRight) {
+                          cls = "border-[var(--dashboard-success)]/40 bg-[var(--dashboard-success-subtle)]";
+                          rowStyle = { color: "color-mix(in srgb, var(--dashboard-success) 60%, var(--dashboard-text-primary))", fontWeight: 600 };
+                        } else if (isUser) {
+                          cls = "border-[var(--dashboard-danger)]/40 bg-[var(--dashboard-danger-subtle)]";
+                          rowStyle = { color: "color-mix(in srgb, var(--dashboard-danger) 60%, var(--dashboard-text-primary))", fontWeight: 600 };
+                        } else {
+                          rowStyle = { color: "var(--dashboard-text-secondary)" };
+                        }
                         return (
-                          <div key={oi} className={`rounded-lg border px-3 py-1.5 text-xs flex items-center gap-2 ${cls}`}>
+                          <div key={oi} className={`rounded-lg border px-3 py-1.5 text-xs flex items-center gap-2 ${cls}`} style={rowStyle}>
                             <span className="font-mono">{OPTION_LABELS[oi] ?? oi + 1}</span>
                             <span className="flex-1"><RichText text={option} /></span>
                             {isRight && <Check className="w-3.5 h-3.5 text-[var(--dashboard-success)]" />}

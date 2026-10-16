@@ -13,7 +13,7 @@ export default function ShortcutList() {
   const { lang } = useLanguage();
   const rows: [string, string][] = [
     ["⌘K", t(lang, "কমান্ড প্যালেট", "Command palette")],
-    ["1 – 0", t(lang, "প্রথম ১০ ট্যাবে যান (টাইপ করার সময় নয়)", "Jump to first 10 tabs (not while typing)")],
+    ["1 – 0", t(lang, "প্রথম ১০ ট্যাবে যান (টাইপ বা পরীক্ষা চলাকালে নয়)", "Jump to first 10 tabs (not while typing or in an exam)")],
     ["?", t(lang, "এই তালিকা", "This list")],
     ["Esc", t(lang, "ডায়ালগ বন্ধ করুন", "Close dialogs")],
   ];

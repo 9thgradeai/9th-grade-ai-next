@@ -100,8 +100,12 @@ export default function NavRows({ activeTab, onChange, variant = "full" }: NavRo
                         <span
                           className="truncate text-[14px] font-semibold leading-none"
                           style={{
+                            // Active text stays at full UI contrast: the pill,
+                            // rail indicator, and primary icon already carry
+                            // the brand affordance (primary 11–14px text
+                            // fails 4.5:1 on these surfaces).
                             color: isActive
-                              ? "var(--sidebar-text-active, var(--dashboard-primary))"
+                              ? "var(--dashboard-text-primary)"
                               : "var(--sidebar-text, var(--dashboard-text-primary))",
                           }}
                         >
@@ -110,8 +114,7 @@ export default function NavRows({ activeTab, onChange, variant = "full" }: NavRo
                         <span
                           className="shrink-0 truncate text-[11px] font-medium uppercase leading-none tracking-wide"
                           style={{
-                            color: isActive ? "var(--dashboard-primary)" : "var(--dashboard-text-secondary)",
-                            opacity: isActive ? 0.9 : 0.75,
+                            color: isActive ? "var(--dashboard-text-primary)" : "var(--dashboard-text-secondary)",
                           }}
                         >
                           {tab.label}

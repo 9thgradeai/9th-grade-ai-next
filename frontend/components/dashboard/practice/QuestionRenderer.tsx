@@ -21,8 +21,8 @@ export type RendererProps = Omit<ChoiceViewProps, "options"> & {
  */
 export default function QuestionRenderer({ question, ...choice }: RendererProps) {
   const stem = (
-    <div className="rounded-xl border p-4 mb-5" style={{ background: "var(--dashboard-surface-raised)", borderColor: "var(--dashboard-border-muted)", boxShadow: "var(--dashboard-shadow-sm)" }}>
-      <h3 className="text-[16px] font-semibold leading-relaxed" style={{ color: "var(--dashboard-text-primary)", lineHeight: "1.6" }}>
+    <div className="rounded-xl border p-4 mb-5 min-w-0" style={{ background: "var(--dashboard-surface-raised)", borderColor: "var(--dashboard-border-muted)", boxShadow: "var(--dashboard-shadow-sm)" }}>
+      <h3 className="text-[16px] font-semibold leading-relaxed break-words [overflow-wrap:anywhere]" style={{ color: "var(--dashboard-text-primary)", lineHeight: "1.7" }}>
         <RichText text={question.question} />
       </h3>
       {question.questionType === "MULTIPLE_CHOICE" && (

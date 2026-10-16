@@ -81,7 +81,7 @@ export default function PracticeModeCards({ mode, onChange, quickTotal, ecosyste
               </span>
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-bold truncate" style={{ color: "var(--dashboard-text-primary)" }}>
-                  {c.title} <span className="font-medium text-[var(--dashboard-text-muted)]">· {c.titleBn}</span>
+                  {c.title} <span className="font-medium" style={{ color: active ? "var(--dashboard-text-secondary)" : "var(--dashboard-text-muted)" }}>· {c.titleBn}</span>
                 </p>
                 <p className="text-[11px] font-mono" style={{ color: "var(--dashboard-text-muted)" }}>
                   {c.meta}

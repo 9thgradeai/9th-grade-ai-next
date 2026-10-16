@@ -69,7 +69,7 @@ export default function PracticeStartDock({
         <div className="flex flex-col lg:flex-row lg:items-center gap-3 p-3 sm:p-4">
           {/* Difficulty — consolidated here so config needs no scrolling */}
           <div className="flex items-center gap-1.5 flex-wrap" role="group" aria-label="প্রশ্নের কাঠিন্য">
-            <span className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-widest mr-1">
+            <span className="text-[10px] font-mono uppercase tracking-widest mr-1" style={{ color: "var(--dashboard-text-secondary)" }}>
               কাঠিন্য
             </span>
             {(["ALL", "EASY", "MEDIUM", "HARD"] as const).map((d) => (
@@ -91,7 +91,7 @@ export default function PracticeStartDock({
           {/* Stats: questions + time stepper */}
           <div className="flex items-center gap-3 flex-1 min-w-0">
             <div className="min-w-0">
-              <p className="text-caption-mono">
+              <p className="text-caption-mono" style={{ color: "var(--dashboard-text-secondary)" }}>
                 মোট প্রশ্ন
               </p>
               <p className="leading-none">
@@ -105,8 +105,9 @@ export default function PracticeStartDock({
                 </span>{" "}
                 <span
                   className={`text-[11px] font-mono tabular-nums ${
-                    insufficient ? "text-[var(--dashboard-warning)] font-bold" : "text-[var(--dashboard-text-muted)]"
+                    insufficient ? "text-[var(--dashboard-warning)] font-bold" : ""
                   }`}
+                  style={insufficient ? undefined : { color: "var(--dashboard-text-secondary)" }}
                 >
                   / {availableTotal} উপলব্ধ{insufficient ? " — কম আছে" : ""}
                 </span>
@@ -116,7 +117,7 @@ export default function PracticeStartDock({
             <div className="w-px self-stretch bg-[var(--dashboard-border-muted)]" aria-hidden="true" />
 
             <div className="min-w-0">
-              <p className="text-caption-mono flex items-center gap-1">
+              <p className="text-caption-mono flex items-center gap-1" style={{ color: "var(--dashboard-text-secondary)" }}>
                 <Timer className="w-3 h-3" aria-hidden="true" /> সময়
                 {!durationTouched && totalCount > 0 && (
                   <span className="normal-case tracking-normal">· অটো</span>
@@ -145,7 +146,7 @@ export default function PracticeStartDock({
                 >
                   <Plus className="w-4 h-4" />
                 </button>
-                <span className="text-[10px] text-[var(--dashboard-text-muted)] font-mono hidden sm:inline">
+                <span className="text-[10px] font-mono hidden sm:inline" style={{ color: "var(--dashboard-text-secondary)" }}>
                   মিনিট{autoCaption}
                 </span>
               </div>

@@ -74,7 +74,9 @@ export default function LogoutButton({
       disabled={pending}
       aria-label={label}
       className={
-        "w-full min-h-[44px] rounded-xl px-3 py-2 text-left text-[var(--dashboard-text-muted)] hover:text-[var(--dashboard-danger)] hover:bg-[var(--dashboard-danger-subtle)] " +
+        // Muted-on-surface fails 4.5:1 for this small label; secondary meets
+        // it in both themes. Danger still applies on hover/focus.
+        "w-full min-h-[44px] rounded-xl px-3 py-2 text-left text-[var(--dashboard-text-secondary)] hover:text-[var(--dashboard-danger)] hover:bg-[var(--dashboard-danger-subtle)] " +
         base
       }
     >

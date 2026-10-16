@@ -783,8 +783,12 @@
   filter: none;
 }
 
+/* Active desktop-nav text stays at full UI contrast: the pill background,
+   rail indicator, and primary icon already carry the brand affordance.
+   (Primary 11px label text fails 4.5:1 on these surfaces, and !important
+   here overrides the components' own contrast-safe inline styles.) */
 .dashboard-theme-scope nav[aria-label="Desktop navigation"] [aria-current="page"] span {
-  color: var(--sidebar-text-active) !important;
+  color: var(--dashboard-text-primary) !important;
 }
 
 @media (max-width: 639px) {

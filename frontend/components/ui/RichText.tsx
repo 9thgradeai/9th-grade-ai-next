@@ -27,7 +27,7 @@ function Highlighted({ text, query }: { text: string; query: string }) {
             <Fragment key={i}>
               {part.split(new RegExp(`(${escapeRegExp(trimmed)})`, "ig")).map((p, j) =>
                 p.toLowerCase() === trimmed.toLowerCase() ? (
-                  <mark key={j} className="bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] rounded-sm px-0.5">
+                  <mark key={j} className="bg-[var(--dashboard-primary-subtle)] rounded-sm px-0.5" style={{ color: "var(--dashboard-text-primary)", fontWeight: 700 }}>
                     {p}
                   </mark>
                 ) : (
@@ -46,7 +46,7 @@ function Highlighted({ text, query }: { text: string; query: string }) {
     <>
       {parts.map((part, i) =>
         part.toLowerCase() === trimmed.toLowerCase() ? (
-          <mark key={i} className="bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] rounded-sm px-0.5">
+          <mark key={i} className="bg-[var(--dashboard-primary-subtle)] rounded-sm px-0.5" style={{ color: "var(--dashboard-text-primary)", fontWeight: 700 }}>
             {part}
           </mark>
         ) : (

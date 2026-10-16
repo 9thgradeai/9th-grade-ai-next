@@ -35,6 +35,9 @@ export default function ExamLibraryView() {
   const [questions, setQuestions] = useState<QuestionDTO[]>([]);
   const [loadingQuestions, setLoadingQuestions] = useState(false);
   const [drilling, setDrilling] = useState(false);
+  // Discovery controls — client-side search/filter/sort over real taxonomy.
+  const [paperQuery, setPaperQuery] = useState("");
+  const [paperSort, setPaperSort] = useState<"recent" | "questions" | "title">("recent");
 
   useEffect(() => {
     let cancelled = false;
@@ -262,6 +265,20 @@ export default function ExamLibraryView() {
 
   // ── Hierarchy browse (categories → exams → papers) -----
   const papersToShow = activeExam?.papers ?? [];
+  const q = paperQuery.trim().toLowerCase();
+  const filteredPapers = (q
+    ? papersToShow.filter((p) =>
+        [p.titleBn, p.titleEn ?? "", String(p.year ?? ""), p.termLabel ?? ""]
+          .join(" ")
+          .toLowerCase()
+          .includes(q),
+      )
+    : [...papersToShow]
+  ).sort((a, b) => {
+    if (paperSort === "questions") return (b.availableQuestions ?? 0) - (a.availableQuestions ?? 0);
+    if (paperSort === "title") return a.titleBn.localeCompare(b.titleBn, "bn");
+    return (b.year ?? 0) - (a.year ?? 0) || (b.availableQuestions ?? 0) - (a.availableQuestions ?? 0);
+  });
   return (
     <div className="space-y-5">
       {renderBreadcrumb()}
@@ -326,16 +343,54 @@ export default function ExamLibraryView() {
           {/* Papers panel */}
           {activeExam && (
             <div>
-              <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider mb-2">
-                {activeExam.nameBn} — সিলেক্ট করুন
-              </p>
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider">
+                  {activeExam.nameBn} — সিলেক্ট করুন
+                </p>
+                <div className="flex items-center gap-2">
+                  <label htmlFor="paper-search" className="sr-only">পেপার খুঁজুন</label>
+                  <input
+                    id="paper-search"
+                    type="search"
+                    value={paperQuery}
+                    onChange={(e) => setPaperQuery(e.target.value)}
+                    placeholder="পেপার খুঁজুন…"
+                    className="h-11 min-h-[44px] px-3 rounded-xl border text-xs font-mono bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                    style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-primary)" }}
+                  />
+                  <label htmlFor="paper-sort" className="sr-only">সাজান</label>
+                  <select
+                    id="paper-sort"
+                    value={paperSort}
+                    onChange={(e) => setPaperSort(e.target.value as typeof paperSort)}
+                    className="h-11 min-h-[44px] px-2 rounded-xl border text-xs font-mono bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                    style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-primary)" }}
+                  >
+                    <option value="recent">সাম্প্রতিক</option>
+                    <option value="questions">বেশি প্রশ্ন</option>
+                    <option value="title">নাম (অ-হ)</option>
+                  </select>
+                </div>
+              </div>
               {papersToShow.length === 0 ? (
                 <div className="glass-card rounded-2xl border border-terminal-border p-6 text-center">
                   <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">এই পরীক্ষার জন্য এখনো কোনো পেপার ইমপোর্ট হয়নি।</p>
                 </div>
+              ) : filteredPapers.length === 0 ? (
+                <div className="glass-card rounded-2xl border border-terminal-border p-6 text-center">
+                  <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">“{paperQuery.trim()}” এর সাথে মিলে এমন কোনো পেপার নেই।</p>
+                  <button
+                    type="button"
+                    onClick={() => setPaperQuery("")}
+                    className="mt-3 px-4 py-2 min-h-[44px] rounded-xl border text-xs font-mono focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                    style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-secondary)" }}
+                  >
+                    ফিল্টার মুছুন
+                  </button>
+                </div>
               ) : (
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {papersToShow.map((paper, i) => (
+                  {filteredPapers.map((paper, i) => (
                     <motion.button
                       key={paper.id}
                       initial={{ opacity: 0, y: 12 }}

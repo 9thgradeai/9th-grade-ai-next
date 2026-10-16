@@ -14,7 +14,8 @@ import MockTestTab from "./MockTestTab";
 import CustomExamTab from "./CustomExamTab";
 import RichText from "@/components/ui/RichText";
 import QuestionRenderer from "./practice/QuestionRenderer";
-import { useCountdownSeconds } from "./practice/useCountdownSeconds";
+import MetaChip from "./practice/MetaChip";
+import SessionTimer from "./practice/SessionTimer";
 import { isAnswerCorrect, serializeAnswer, getCorrectSet } from "@/lib/question-type";
 import SubjectTopicSelect from "./SubjectTopicSelect";
 import PracticeStartDock from "./PracticeStartDock";
@@ -40,6 +41,12 @@ import {
   dropExamSnapshot,
   clearOtherExams,
 } from "@/lib/exam-persist";
+import {
+  queuePracticeSubmit,
+  loadQueuedPracticeSubmit,
+  clearQueuedPracticeSubmit,
+  isNetworkFailure,
+} from "@/lib/practice-submit-queue";
 
 type PracticeMode = "custom" | "mock" | "quick";
 
@@ -56,6 +63,10 @@ type PersistedQuickSession = {
   answers: Record<number, string[] | string>;
   multiLocked?: Record<number, true>;
   currentIndex: number;
+  /** Wall-clock session deadline basis — the server has no attempt row for
+   * quick practice, so the persisted start + duration is authoritative. */
+  startsAt: number;
+  durationSec: number;
 };
 
 /** Normalize a persisted answer (string legacy or string[]) to string[]. */
@@ -75,41 +86,15 @@ function shuffled<T>(items: T[]): T[] {
 }
 
 function PracticeTimer({
-  remaining,
-  total,
+  startsAt,
+  durationSec,
   onExpire,
 }: {
-  remaining: number;
-  total: number;
+  startsAt: number;
+  durationSec: number;
   onExpire: () => void;
 }) {
-  const secs = useCountdownSeconds(remaining, onExpire);
-  const timeLow = secs > 0 && secs <= 10;
-  const frac = total > 0 ? Math.max(0, Math.min(1, secs / total)) : 0;
-  const R = 9;
-  const C = 2 * Math.PI * R;
-  return (
-    <span className="inline-flex items-center gap-1.5" aria-live="polite" aria-label={`বাকি সময় ${Math.floor(secs / 60)}:${(secs % 60).toString().padStart(2, "0")}`}>
-      <svg width="24" height="24" viewBox="0 0 24 24" className="-rotate-90" aria-hidden="true">
-        <circle cx="12" cy="12" r={R} fill="none" stroke="var(--dashboard-border-muted)" strokeWidth="3" />
-        <circle
-          cx="12"
-          cy="12"
-          r={R}
-          fill="none"
-          stroke={timeLow ? "var(--dashboard-danger)" : "var(--dashboard-primary)"}
-          strokeWidth="3"
-          strokeLinecap="round"
-          strokeDasharray={C}
-          strokeDashoffset={C * (1 - frac)}
-          style={{ transition: "stroke-dashoffset 1s linear, stroke 0.2s" }}
-        />
-      </svg>
-      <span className={`font-mono text-xs tabular-nums ${timeLow ? "text-[var(--dashboard-danger)] animate-pulse motion-reduce:animate-none" : "text-[var(--dashboard-text-muted)]"}`}>
-        {Math.floor(secs / 60)}:{(secs % 60).toString().padStart(2, "0")}
-      </span>
-    </span>
-  );
+  return <SessionTimer startsAt={startsAt} durationSec={durationSec} onExpire={onExpire} />;
 }
 
 export default function PracticeTab() {
@@ -146,11 +131,22 @@ export default function PracticeTab() {
   const [result, setResult] = useState<{ correct: number; total: number; score: number; pointsEarned: number; wrong?: number; negativeMarks?: number; finalScore?: number; penaltyPerWrong?: number } | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  // Offline outbox: a network-failed submit queues the payload for retry
+  // instead of dropping answers. Cleared on the first acknowledged success.
+  const [offlineQueued, setOfflineQueued] = useState(false);
   const [showUnansweredConfirm, setShowUnansweredConfirm] = useState(false);
   const closeUnansweredConfirm = useCallback(() => setShowUnansweredConfirm(false), []);
   const unansweredDialogRef = useDialogA11y<HTMLDivElement>(showUnansweredConfirm, closeUnansweredConfirm);
   useScrollLock(showUnansweredConfirm);
+  const [showQuickConfirm, setShowQuickConfirm] = useState(false);
+  const closeQuickConfirm = useCallback(() => setShowQuickConfirm(false), []);
+  const quickConfirmDialogRef = useDialogA11y<HTMLDivElement>(showQuickConfirm, closeQuickConfirm);
+  useScrollLock(showQuickConfirm);
   const [timerKey, setTimerKey] = useState(0);
+  // Wall-clock session basis (persisted + resumed). durationMin is the editable
+  // config; on start it freezes into sessionDurationSec + sessionStartsAt.
+  const [sessionStartsAt, setSessionStartsAt] = useState(0);
+  const [sessionDurationSec, setSessionDurationSec] = useState(0);
   // Swipe navigation (mobile-app feel): horizontal swipe on the question
   // canvas moves prev/next. Ref-held so swipes never re-render.
   const touchX = useRef<number | null>(null);
@@ -319,6 +315,9 @@ export default function PracticeTab() {
     setResult(null);
     setLoadError(null);
     setSubmitError(null);
+    setShowQuickConfirm(false);
+    setSessionStartsAt(0);
+    setSessionDurationSec(0);
     setTimerKey((k) => k + 1);
     setDurationTouched(false);
     setDifficulty("ALL");
@@ -333,6 +332,16 @@ export default function PracticeTab() {
       if (cancelled) return;
       const saved = loadExamSnapshot<PersistedQuickSession>(QUICK_STORAGE_KEY);
       if (!saved) return;
+      // Wall-clock expiry while away: a long-expired quick session can no
+      // longer be meaningfully resumed — drop it instead of reviving a dead
+      // timer. Legacy snapshots without timing fields resume with a fresh
+      // duration derived from the question count.
+      const resumedDuration = saved.durationSec > 0 ? saved.durationSec : saved.questions.length * QUESTION_TIME_LIMIT;
+      const resumedStartsAt = saved.startsAt > 0 ? saved.startsAt : Date.now();
+      if (resumedDuration > 0 && Math.floor((Date.now() - resumedStartsAt) / 1000) >= resumedDuration + 15) {
+        dropExamSnapshot(QUICK_STORAGE_KEY);
+        return;
+      }
       setQuestions(saved.questions);
         const normalized: Record<number, string[]> = {};
         for (const [k, v] of Object.entries(saved.answers ?? {})) {
@@ -342,6 +351,8 @@ export default function PracticeTab() {
         setAnswers(normalized);
         setMultiLocked(saved.multiLocked ?? {});
         setCurrentIndex(Math.min(saved.currentIndex ?? 0, saved.questions.length - 1));
+        setSessionStartsAt(resumedStartsAt);
+        setSessionDurationSec(resumedDuration);
         setSessionActive(true);
     })();
     return () => {
@@ -352,9 +363,16 @@ export default function PracticeTab() {
   // Keep the persisted snapshot in sync while a session is running.
   useEffect(() => {
     if (!sessionActive || result || questions.length === 0) return;
-    const snapshot: PersistedQuickSession = { questions, answers, multiLocked, currentIndex };
+    const snapshot: PersistedQuickSession = {
+      questions,
+      answers,
+      multiLocked,
+      currentIndex,
+      startsAt: sessionStartsAt,
+      durationSec: sessionDurationSec,
+    };
     saveExamSnapshot(QUICK_STORAGE_KEY, snapshot);
-  }, [sessionActive, result, questions, answers, multiLocked, currentIndex]);
+  }, [sessionActive, result, questions, answers, multiLocked, currentIndex, sessionStartsAt, sessionDurationSec]);
 
   // When a quick-practice session starts or its result appears, always show the
   // top (question 1 / score summary) — fix: previously kept previous scroll.
@@ -372,6 +390,7 @@ export default function PracticeTab() {
   }, [result]);
 
   // Fetch questions with whole-subject even distribution across topics.
+  // The editable durationMin freezes into the session wall-clock on start.
   const startSession = async () => {
     setLoading(true);
     sessionRecRef.current = practiceIntentRef.current?.recId ?? null;
@@ -382,6 +401,7 @@ export default function PracticeTab() {
     setMultiLocked({});
     setFlagged({});
     setCurrentIndex(0);
+    setShowQuickConfirm(false);
     setTimerKey((k) => k + 1);
     try {
       const pools = await Promise.all(
@@ -428,6 +448,20 @@ export default function PracticeTab() {
         // AI explanations key off option text so they stay exact.
         const finalQuestions = shuffleSessionOptions(shuffle(merged), `practice-${Date.now()}`);
         setQuestions(finalQuestions);
+        // Freeze the wall-clock session: durationMin (editable in config)
+        // becomes the authoritative deadline for this attempt.
+        const durationSec = Math.max(60, Math.round(durationMin * 60));
+        const startsAt = Date.now();
+        setSessionStartsAt(startsAt);
+        setSessionDurationSec(durationSec);
+        saveExamSnapshot(QUICK_STORAGE_KEY, {
+          questions: finalQuestions,
+          answers: {},
+          multiLocked: {},
+          currentIndex: 0,
+          startsAt,
+          durationSec,
+        });
         clearOtherExams(QUICK_STORAGE_KEY);
         setSessionActive(true);
         requestAnimationFrame(() => scrollDashboardTop());
@@ -519,32 +553,46 @@ export default function PracticeTab() {
     setSubmitting(true);
     setSubmitError(null);
     const p = (async () => {
-      const summary = await api.submitPractice(
-        qs.map((q) => {
-          const sel = answersRef.current[q.id];
-          return { questionId: q.id, selected: sel && sel.length > 0 ? sel : "" };
-        }),
-        ecosystemRef.current,
-      );
-      dropExamSnapshot(QUICK_STORAGE_KEY);
-      setResult(summary);
-      // Funnel: the session this rec started has now completed with an outcome.
-      if (sessionRecRef.current) {
-        api.recordRecCompleted({
-          recId: sessionRecRef.current,
-          target: "practice",
-          total: summary.total,
-          correct: summary.correct,
-        });
-        sessionRecRef.current = null;
+      const payload = qs.map((q) => {
+        const sel = answersRef.current[q.id];
+        return { questionId: q.id, selected: sel && sel.length > 0 ? sel : "" };
+      });
+      try {
+        const summary = await api.submitPractice(payload, ecosystemRef.current);
+        dropExamSnapshot(QUICK_STORAGE_KEY);
+        clearQueuedPracticeSubmit();
+        setOfflineQueued(false);
+        setResult(summary);
+        // Funnel: the session this rec started has now completed with an outcome.
+        if (sessionRecRef.current) {
+          api.recordRecCompleted({
+            recId: sessionRecRef.current,
+            target: "practice",
+            total: summary.total,
+            correct: summary.correct,
+          });
+          sessionRecRef.current = null;
+        }
+        requestAnimationFrame(() => scrollDashboardTop());
+      } catch (err) {
+        // Network failure ≠ lost answers: park the payload in the offline
+        // outbox so it can be retried when connectivity returns.
+        if (isNetworkFailure(err)) {
+          queuePracticeSubmit({ answers: payload, ecosystem: ecosystemRef.current, queuedAt: Date.now() });
+          setOfflineQueued(true);
+          setSubmitError("অফলাইনে আছেন — উত্তর সংরক্ষিত আছে, সংযোগ ফিরলে আবার জমা দিন।");
+        }
+        throw err;
       }
-      requestAnimationFrame(() => scrollDashboardTop());
     })();
     practiceSubmitInFlight.current = p;
     try {
       await p;
-    } catch {
-      setSubmitError("ফলাফল জমা দেওয়া যায়নি। আবার চেষ্টা করুন।");
+    } catch (err) {
+      // Offline path already set a specific message + queued flag above;
+      // only fall back to the generic message when none is set.
+      setSubmitError((prev) => prev ?? "ফলাফল জমা দেওয়া যায়নি। আবার চেষ্টা করুন।");
+      void err;
       throw new Error("practice submit failed");
     } finally {
       practiceSubmitInFlight.current = null;
@@ -567,56 +615,153 @@ export default function PracticeTab() {
     void submitAnswers().catch(() => {});
   }, [submitAnswers]);
 
-  const handleAutoSubmit = useCallback(async () => {
-    // Per-question timer expiry advances to the next question, it must never
-    // auto-grade the whole session with mostly-blank answers.
-    if (resultRef.current) return;
-    const qs = sessionQuestionsRef.current;
-    setCurrentIndex((i) => {
-      const next = Math.min(i + 1, Math.max(0, qs.length - 1));
-      // Feedback only when actually advancing (not stuck on the last item).
-      if (next !== i) {
-        try {
-          navigator.vibrate?.(20);
-        } catch {
-          // haptics unavailable — ignore
-        }
-        toast.info("সময় শেষ → পরের প্রশ্ন");
+  // Retry a payload parked in the offline outbox (manual retry button or
+  // automatic flush on `online`). Success clears the queue + shows results.
+  const retryQueuedSubmit = useCallback(async () => {
+    const queued = loadQueuedPracticeSubmit();
+    if (!queued) {
+      setOfflineQueued(false);
+      return;
+    }
+    if (practiceSubmitInFlight.current) return;
+    setSubmitting(true);
+    try {
+      const summary = await api.submitPractice(queued.answers, queued.ecosystem);
+      clearQueuedPracticeSubmit();
+      setOfflineQueued(false);
+      setSubmitError(null);
+      dropExamSnapshot(QUICK_STORAGE_KEY);
+      setResult(summary);
+      requestAnimationFrame(() => scrollDashboardTop());
+    } catch (err) {
+      if (!isNetworkFailure(err)) {
+        // Server rejected it (not a connectivity blip) — surface the error
+        // and drop the poison payload so it can't wedge future retries.
+        clearQueuedPracticeSubmit();
+        setOfflineQueued(false);
+        setSubmitError("ফলাফল জমা দেওয়া যায়নি। আবার চেষ্টা করুন।");
+      } else {
+        setSubmitError("এখনো অফলাইনে আছেন — সংযোগ ফিরলে আবার চেষ্টা করুন।");
       }
-      return next;
-    });
-    setTimerKey((k) => k + 1);
+    } finally {
+      setSubmitting(false);
+    }
+  }, []);
+
+  // On mount, surface a previously-queued payload; on reconnect, flush it.
+  useEffect(() => {
+    if (loadQueuedPracticeSubmit()) setOfflineQueued(true);
+    const onOnline = () => {
+      if (loadQueuedPracticeSubmit() && !resultRef.current) void retryQueuedSubmit().catch(() => {});
+    };
+    window.addEventListener("online", onOnline);
+    return () => window.removeEventListener("online", onOnline);
+  }, [retryQueuedSubmit]);
+
+  const handleAutoSubmit = useCallback(async () => {
+    // Session wall-clock expiry submits the whole attempt for grading —
+    // answers collected so far are preserved, nothing is silently discarded.
+    if (resultRef.current) return;
+    if (practiceSubmitInFlight.current) return;
+    toast.info("সময় শেষ — উত্তর জমা দেওয়া হচ্ছে");
+    try {
+      const qs = sessionQuestionsRef.current;
+      if (qs.length === 0) return;
+      setSubmitting(true);
+      setSubmitError(null);
+      const payload = qs.map((q) => {
+        const sel = answersRef.current[q.id];
+        return { questionId: q.id, selected: sel && sel.length > 0 ? sel : "" };
+      });
+      try {
+        const summary = await api.submitPractice(payload, ecosystemRef.current);
+        dropExamSnapshot(QUICK_STORAGE_KEY);
+        clearQueuedPracticeSubmit();
+        setOfflineQueued(false);
+        setResult(summary);
+        requestAnimationFrame(() => scrollDashboardTop());
+      } catch (err) {
+        if (isNetworkFailure(err)) {
+          queuePracticeSubmit({ answers: payload, ecosystem: ecosystemRef.current, queuedAt: Date.now() });
+          setOfflineQueued(true);
+        }
+        throw err;
+      }
+    } catch {
+      setSubmitError((prev) => prev ?? "সময় শেষে জমা দেওয়া যায়নি। আবার চেষ্টা করুন।");
+    } finally {
+      setSubmitting(false);
+    }
   }, [toast]);
 
   // Keyboard navigation (desktop): ←/→ move, 1-6/A-D pick, F flag.
+  // Single stable subscription: the handler reads ONLY refs and stable
+  // setters, so the dep array is legitimately empty. A dep-less effect would
+  // get compiler-inferred deps and resubscribe on every render; refs keep
+  // every read fresh with exactly one subscription for the tab lifetime.
+  const currentIndexRef = useRef(currentIndex);
   useEffect(() => {
-    if (!sessionActive || result || questions.length === 0) return;
+    currentIndexRef.current = currentIndex;
+  }, [currentIndex]);
+  const multiLockedRef = useRef(multiLocked);
+  useEffect(() => {
+    multiLockedRef.current = multiLocked;
+  }, [multiLocked]);
+  useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement | null;
-      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA")) return;
-      const q = sessionQuestions[currentIndex];
-      if (e.key === "ArrowRight") setCurrentIndex((i) => Math.min(questions.length - 1, i + 1));
-      else if (e.key === "ArrowLeft") setCurrentIndex((i) => Math.max(0, i - 1));
-      else if ((e.key === "f" || e.key === "F") && q) toggleFlag(q.id);
-      else if (q && !isLocked(q)) {
-        const idx = ["1", "2", "3", "4", "5", "6"].indexOf(e.key) >= 0
+      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable)) return;
+      const qs = sessionQuestionsRef.current;
+      if (qs.length === 0 || resultRef.current) return;
+      const i = Math.max(0, Math.min(qs.length - 1, currentIndexRef.current));
+      if (e.key === "ArrowRight") {
+        setCurrentIndex(Math.min(qs.length - 1, i + 1));
+        return;
+      }
+      if (e.key === "ArrowLeft") {
+        setCurrentIndex(Math.max(0, i - 1));
+        return;
+      }
+      const q = qs[i];
+      if (!q) return;
+      if (e.key === "f" || e.key === "F") {
+        toggleFlag(q.id);
+        return;
+      }
+      const picked = answersRef.current[q.id];
+      if (picked !== undefined && (q.questionType !== "MULTIPLE_CHOICE" || multiLockedRef.current[q.id] === true)) return;
+      const idx =
+        ["1", "2", "3", "4", "5", "6"].indexOf(e.key) >= 0
           ? ["1", "2", "3", "4", "5", "6"].indexOf(e.key)
           : ["a", "b", "c", "d", "e", "f"].indexOf(e.key.toLowerCase());
-        if (idx >= 0 && q.options[idx] !== undefined) {
-          const opt = q.options[idx];
-          if (q.questionType === "MULTIPLE_CHOICE") {
-            const cur = answers[q.id] ?? [];
-            const next = cur.includes(opt) ? cur.filter((o) => o !== opt) : [...cur, opt];
-            if (next.length > 0) selectAnswer(q.id, next);
-          } else {
-            selectAnswer(q.id, [opt]);
-          }
-        }
+      if (idx < 0 || q.options[idx] === undefined) return;
+      const opt = q.options[idx];
+      if (q.questionType === "MULTIPLE_CHOICE") {
+        const cur = answersRef.current[q.id] ?? [];
+        const next = cur.includes(opt) ? cur.filter((o) => o !== opt) : [...cur, opt];
+        if (next.length === 0) return;
+        setAnswers((prev) => ({ ...prev, [q.id]: next }));
+      } else {
+        setAnswers((prev) => {
+          if (prev[q.id] !== undefined) return prev;
+          return { ...prev, [q.id]: [opt] };
+        });
+        setUndoPick(q.id);
+        if (undoTimer.current != null) window.clearTimeout(undoTimer.current);
+        undoTimer.current = window.setTimeout(() => setUndoPick(null), 4000);
       }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  });
+    // Empty deps are correct: everything read here is ref-held or a stable
+    // setter (setCurrentIndex/setAnswers/toggleFlag), never render state.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Jump helper: clamps + moves; the sticky bar keeps timer visible.
+  const gotoQuestion = useCallback((i: number) => {    const total = sessionQuestionsRef.current.length;
+    setCurrentIndex(Math.max(0, Math.min(Math.max(0, total - 1), i)));
+  }, []);
 
   // Safe navigation: block route/tab close while a quick-practice submission is
   // in flight so a mobile browser kill can't abandon the request mid-flight.
@@ -675,7 +820,7 @@ export default function PracticeTab() {
                     <h2 className="font-display text-lg font-bold" style={{ color: "var(--dashboard-text-primary)" }}>কুইক প্র্যাকটিস</h2>
                     <span className={`ml-2 text-[10px] font-mono px-2 py-0.5 rounded-full border ${ecosystem === "BCS" ? "bg-[var(--dashboard-primary-subtle)] border-[var(--dashboard-primary)]/20 text-[var(--dashboard-primary)]" : "bg-amber-500/10 border-amber-500/20 text-amber-600"}`}>{ecosystem === "BCS" ? "BCS" : "ব্যাংক"}</span>
                   </div>
-                  <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">
+                  <p className="text-xs text-[var(--dashboard-text-secondary)] font-mono">
                     যেকোনো বিষয়ের নির্দিষ্ট টপিক ও সাবটপিক বেছে নিয়ে তৎক্ষণাৎ প্রশ্ন অনুশীলন করুন।
                   </p>
                 </div>
@@ -684,7 +829,7 @@ export default function PracticeTab() {
               {configLoading && (
                 <div className="command-card p-10 text-center">
                   <Spinner className="w-10 h-10 mx-auto mb-3 text-[var(--accent)] animate-spin" aria-hidden="true" />
-                  <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">বিষয় লোড হচ্ছে...</p>
+                  <p className="text-sm text-[var(--dashboard-text-secondary)] font-mono">বিষয় লোড হচ্ছে...</p>
                 </div>
               )}
 
@@ -743,7 +888,7 @@ export default function PracticeTab() {
                     selectedCount={selectedSubjects.length}
                     loading={loading}
                     onAdjustDuration={adjustDuration}
-                    onStart={() => void startSession()}
+                    onStart={() => setShowQuickConfirm(true)}
                   />
                   {!durationTouched && totalCount > 0 && durationMin !== autoMin && (
                     <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">
@@ -767,6 +912,26 @@ export default function PracticeTab() {
                 </>
               )}
             </motion.div>
+          )}
+
+          {/* Pre-exam confirmation — title, count, duration, scoring, finality */}
+          {showQuickConfirm && !sessionActive && (
+            <div className="fixed inset-0 z-[var(--z-modal)] bg-[var(--overlay)] backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" onClick={closeQuickConfirm}>
+              <div ref={quickConfirmDialogRef} role="dialog" aria-modal="true" aria-labelledby="quick-confirm-title" tabIndex={-1} onClick={(e) => e.stopPropagation()} className="rounded-t-2xl sm:rounded-2xl border p-5 sm:p-6 w-full sm:max-w-md max-h-[88vh] overflow-y-auto overscroll-contain" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)", boxShadow: "var(--dashboard-shadow-lg)" }}>
+                <h3 id="quick-confirm-title" className="text-base font-bold mb-4" style={{ color: "var(--dashboard-text-primary)" }}>প্র্যাকটিস শুরু করুন</h3>
+                <dl className="space-y-2 mb-5 text-xs font-mono">
+                  <div className="flex justify-between gap-3"><dt style={{ color: "var(--dashboard-text-muted)" }}>বিষয়</dt><dd className="text-right" style={{ color: "var(--dashboard-text-primary)" }}>{sessionTitle || "—"}</dd></div>
+                  <div className="flex justify-between gap-3"><dt style={{ color: "var(--dashboard-text-muted)" }}>প্রশ্ন</dt><dd style={{ color: "var(--dashboard-primary)" }}>{totalCount}টি</dd></div>
+                  <div className="flex justify-between gap-3"><dt style={{ color: "var(--dashboard-text-muted)" }}>সময়</dt><dd style={{ color: "var(--dashboard-primary)" }}>{durationMin} মিনিট</dd></div>
+                  <div className="flex justify-between gap-3"><dt style={{ color: "var(--dashboard-text-muted)" }}>স্কোরিং</dt><dd className="text-right" style={{ color: "var(--dashboard-text-primary)" }}>সঠিক +১ • ভুল {negativeLabel} • বাকি ০</dd></div>
+                </dl>
+                <p className="text-[11px] mb-5" style={{ color: "var(--dashboard-text-muted)" }}>সময় শেষ হলে উত্তরগুলো স্বয়ংক্রিয়ভাবে জমা হবে। মাঝপথে বেরিয়ে গেলেও অগ্রগতি সংরক্ষিত থাকবে।</p>
+                <div className="flex gap-3">
+                  <button type="button" onClick={closeQuickConfirm} className="flex-1 py-2.5 min-h-[48px] border rounded-xl text-sm font-mono" style={{ background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-strong)", color: "var(--dashboard-text-secondary)" }}>ফিরে যান</button>
+                  <button type="button" onClick={() => void startSession()} disabled={loading || totalCount === 0} aria-busy={loading} className="flex-1 py-2.5 min-h-[48px] rounded-xl text-sm font-mono font-bold disabled:opacity-40" style={{ background: "var(--dashboard-primary)", color: "var(--dashboard-text-inverse)" }}>{loading ? "তৈরি হচ্ছে..." : `শুরু করুন · ${totalCount}টি`}</button>
+                </div>
+              </div>
+            </div>
           )}
 
           {/* Loading state */}
@@ -816,6 +981,9 @@ export default function PracticeTab() {
             <motion.div
               initial={reduceMotion ? false : { opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
+              // Marks the live exam workspace: the dashboard shell's global
+              // digit→tab shortcuts stay inert inside it (see layout).
+              data-exam-session="quick-practice"
               className="rounded-2xl border overflow-hidden"
               style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)", boxShadow: "var(--dashboard-shadow-sm)" }}
             >
@@ -828,11 +996,11 @@ export default function PracticeTab() {
                     <span className="text-sm font-semibold truncate" style={{ color: "var(--dashboard-text-primary)" }}>{sessionTitle}</span>
                   </div>
                   <div className="flex items-center gap-3 flex-shrink-0">
-                    {!result && (
+                    {!result && sessionStartsAt > 0 && sessionDurationSec > 0 && (
                       <PracticeTimer
-                        key={`timer-${timerKey}`}
-                        remaining={QUESTION_TIME_LIMIT}
-                        total={QUESTION_TIME_LIMIT}
+                        key={`timer-${timerKey}-${sessionStartsAt}`}
+                        startsAt={sessionStartsAt}
+                        durationSec={sessionDurationSec}
                         onExpire={() => { void handleAutoSubmit(); }}
                       />
                     )}
@@ -856,8 +1024,9 @@ export default function PracticeTab() {
                     style={{ transform: `scaleX(${totalQuestions > 0 ? answeredCount / totalQuestions : 0})`, background: "var(--dashboard-primary)" }}
                   />
                 </div>
-                {/* Question palette — dots scroll horizontally, never wrap the bar taller */}
-                <div className="px-4 sm:px-5 py-2 flex items-center gap-1.5 overflow-x-auto overscroll-contain" role="group" aria-label="প্রশ্ন তালিকা">
+                {/* Question palette — dots scroll horizontally, never wrap the bar taller.
+                    Legend below uses icon + text so status never relies on color alone. */}
+                <div className="px-4 sm:px-5 pt-2 flex items-center gap-1.5 overflow-x-auto overscroll-contain" role="group" aria-label="প্রশ্ন তালিকা">
                   {sessionQuestions.map((q, i) => {
                     const answered = answers[q.id] !== undefined;
                     const current = i === currentIndex;
@@ -866,7 +1035,7 @@ export default function PracticeTab() {
                       <button
                         key={q.id}
                         type="button"
-                        onClick={() => setCurrentIndex(i)}
+                        onClick={() => gotoQuestion(i)}
                         aria-label={`প্রশ্ন ${i + 1}${answered ? " — উত্তর দেওয়া" : ""}${current ? " — বর্তমান" : ""}${isFlagged ? " — ফ্ল্যাগ করা" : ""}`}
                         aria-current={current ? "true" : undefined}
                         className={`flex-shrink-0 w-11 h-11 min-w-[44px] rounded-lg font-mono text-[11px] tabular-nums border cursor-pointer transition-[background-color,color,border-color] duration-150 [touch-action:manipulation] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] focus-visible:ring-offset-1 focus-visible:ring-offset-[var(--dashboard-surface)] ${
@@ -876,9 +1045,9 @@ export default function PracticeTab() {
                           current
                             ? { background: "var(--dashboard-primary)", borderColor: "var(--dashboard-primary)", color: "var(--dashboard-text-inverse)", fontWeight: 700 }
                             : isFlagged
-                              ? { background: "var(--dashboard-warning-subtle)", borderColor: "var(--dashboard-warning)", color: "var(--dashboard-warning)", fontWeight: 700 }
+                              ? { background: "var(--dashboard-warning-subtle)", borderColor: "var(--dashboard-warning)", color: "color-mix(in srgb, var(--dashboard-warning) 60%, var(--dashboard-text-primary))", fontWeight: 700 }
                               : answered
-                              ? { background: "var(--dashboard-primary-subtle)", borderColor: "color-mix(in srgb, var(--dashboard-primary) 30%, transparent)", color: "var(--dashboard-primary)", fontWeight: 600 }
+                              ? { background: "var(--dashboard-primary-subtle)", borderColor: "color-mix(in srgb, var(--dashboard-primary) 30%, transparent)", color: "color-mix(in srgb, var(--dashboard-primary) 60%, var(--dashboard-text-primary))", fontWeight: 600 }
                               : { background: "transparent", borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-muted)" }
                         }
                       >
@@ -887,6 +1056,12 @@ export default function PracticeTab() {
                     );
                   })}
                 </div>
+                <ul className="px-4 sm:px-5 pb-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] font-mono" style={{ color: "var(--dashboard-text-muted)" }} aria-label="প্রশ্ন অবস্থার নির্দেশিকা">
+                  <li className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full" style={{ background: "var(--dashboard-primary)" }} aria-hidden="true" /> বর্তমান</li>
+                  <li className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full border" style={{ borderColor: "var(--dashboard-primary)", background: "var(--dashboard-primary-subtle)" }} aria-hidden="true" /> ✓ উত্তর দেওয়া</li>
+                  <li className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full" style={{ background: "var(--dashboard-warning)" }} aria-hidden="true" /> ⚑ ফ্ল্যাগ</li>
+                  <li className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full border" style={{ borderColor: "var(--dashboard-border-muted)" }} aria-hidden="true" /> ○ বাকি</li>
+                </ul>
               </div>
 
               <div
@@ -897,8 +1072,8 @@ export default function PracticeTab() {
                   const dx = (e.changedTouches[0]?.clientX ?? touchX.current) - touchX.current;
                   touchX.current = null;
                   if (Math.abs(dx) < 60) return;
-                  if (dx < 0) setCurrentIndex((i) => Math.min(totalQuestions - 1, i + 1));
-                  else setCurrentIndex((i) => Math.max(0, i - 1));
+                  if (dx < 0) gotoQuestion(currentIndex + 1);
+                  else gotoQuestion(currentIndex - 1);
                 }}
               >
 
@@ -911,24 +1086,24 @@ export default function PracticeTab() {
                     className="scroll-mt-28"
                   >
                     <div className="flex flex-wrap items-center gap-2 mb-3">
-                      <span className={`px-2 py-0.5 rounded text-[11px] font-mono ${
-                        currentQuestion.difficulty === "EASY"
-                          ? "bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
-                          : currentQuestion.difficulty === "MEDIUM"
-                            ? "bg-[var(--dashboard-warning-subtle)] text-[var(--dashboard-warning)]"
-                            : "bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)]"
-                      }`}>
+                      <span className="sr-only" aria-live="polite">প্রশ্ন {currentIndex + 1} / {totalQuestions}</span>
+                      <MetaChip
+                        tone={
+                          currentQuestion.difficulty === "EASY"
+                            ? "primary"
+                            : currentQuestion.difficulty === "MEDIUM"
+                              ? "warning"
+                              : "danger"
+                        }
+                        label={`কাঠিন্য: ${DIFFICULTY_LABEL[currentQuestion.difficulty] ?? currentQuestion.difficulty}`}
+                      >
                         {DIFFICULTY_LABEL[currentQuestion.difficulty] ?? currentQuestion.difficulty}
-                      </span>
+                      </MetaChip>
                       {currentQuestion.topic && (
-                        <span className="px-2 py-0.5 rounded text-[11px] font-mono" style={{ background: "var(--dashboard-surface-muted)", color: "var(--dashboard-text-secondary)", border: "1px solid var(--dashboard-border-muted)" }}>
-                          {currentQuestion.topic}
-                        </span>
+                        <MetaChip tone="neutral">{currentQuestion.topic}</MetaChip>
                       )}
                       {currentQuestion.subtopic && (
-                        <span className="px-2 py-0.5 rounded text-[11px] font-mono" style={{ background: "var(--dashboard-surface-muted)", color: "var(--dashboard-text-secondary)", border: "1px solid var(--dashboard-border-muted)" }}>
-                          {currentQuestion.subtopic}
-                        </span>
+                        <MetaChip tone="neutral">{currentQuestion.subtopic}</MetaChip>
                       )}
                       <button
                         type="button"
@@ -938,7 +1113,7 @@ export default function PracticeTab() {
                         className="inline-flex items-center gap-1 min-h-[44px] px-3 rounded-full border font-mono text-[11px] cursor-pointer transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
                         style={
                           currentQuestion && flagged[currentQuestion.id]
-                            ? { color: "var(--dashboard-warning)", borderColor: "var(--dashboard-warning)", background: "var(--dashboard-warning-subtle)" }
+                            ? { color: "color-mix(in srgb, var(--dashboard-warning) 60%, var(--dashboard-text-primary))", borderColor: "var(--dashboard-warning)", background: "var(--dashboard-warning-subtle)" }
                             : { color: "var(--dashboard-text-muted)", borderColor: "var(--dashboard-border-muted)", background: "transparent" }
                         }
                       >
@@ -987,7 +1162,7 @@ export default function PracticeTab() {
                     <div className="sticky z-[var(--z-sticky)] bottom-[calc(var(--bottom-nav-h)+env(safe-area-inset-bottom,0px)+8px)] lg:bottom-2 -mx-1 px-1 pt-2 pb-1" style={{ background: "linear-gradient(to top, var(--dashboard-surface) 70%, transparent)" }}>
                       <div className="flex items-center gap-2 rounded-2xl border p-2 backdrop-blur-md" style={{ background: "color-mix(in srgb, var(--dashboard-surface-muted) 92%, transparent)", borderColor: "var(--dashboard-border-muted)" }}>
                         <button
-                          onClick={() => setCurrentIndex((i) => Math.max(0, i - 1))}
+                          onClick={() => gotoQuestion(currentIndex - 1)}
                           disabled={currentIndex === 0}
                           aria-label="আগের প্রশ্ন"
                           className="flex-1 min-h-[48px] px-4 py-2.5 border font-mono text-sm rounded-xl cursor-pointer transition-[background-color,color,border-color,opacity] duration-150 [touch-action:manipulation] disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
@@ -1000,7 +1175,7 @@ export default function PracticeTab() {
                         </span>
                         {currentIndex < totalQuestions - 1 ? (
                           <button
-                            onClick={() => setCurrentIndex((i) => Math.min(totalQuestions - 1, i + 1))}
+                            onClick={() => gotoQuestion(currentIndex + 1)}
                             aria-label="পরের প্রশ্ন"
                             className="flex-1 min-h-[48px] px-4 py-2.5 border font-mono text-sm rounded-xl cursor-pointer transition-[background-color,color,border-color] duration-150 [touch-action:manipulation] flex items-center justify-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
                             style={{ background: "var(--dashboard-primary)", borderColor: "var(--dashboard-primary)", color: "var(--dashboard-text-inverse)" }}
@@ -1026,6 +1201,39 @@ export default function PracticeTab() {
                 )}
               </div>
             </motion.div>
+          )}
+
+          {/* Submit error + offline outbox — visible in-session (the result
+              panel only mounts on success, so failures need their own slot). */}
+          {mode === "quick" && !loading && !result && (submitError || offlineQueued) && (
+            <div className="rounded-2xl border p-4 flex flex-wrap items-center gap-3" style={{ borderColor: "var(--dashboard-warning)", background: "var(--dashboard-warning-subtle)" }} role="alert">
+              <Warning className="w-5 h-5 flex-shrink-0" style={{ color: "var(--dashboard-warning)" }} aria-hidden="true" />
+              <p className="text-xs font-mono flex-1 min-w-[200px]" style={{ color: "var(--dashboard-text-primary)" }}>
+                {submitError ?? "উত্তর সংরক্ষিত আছে।"}
+              </p>
+              {offlineQueued && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => void retryQueuedSubmit().catch(() => {})}
+                    disabled={submitting}
+                    aria-busy={submitting}
+                    className="px-4 py-2 min-h-[44px] rounded-xl font-mono text-xs font-bold disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                    style={{ background: "var(--dashboard-primary)", color: "var(--dashboard-text-inverse)" }}
+                  >
+                    {submitting ? "জমা হচ্ছে..." : "আবার জমা দিন"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { clearQueuedPracticeSubmit(); setOfflineQueued(false); setSubmitError(null); }}
+                    className="px-4 py-2 min-h-[44px] rounded-xl border font-mono text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                    style={{ borderColor: "var(--dashboard-border-strong)", color: "var(--dashboard-text-secondary)" }}
+                  >
+                    বাতিল করুন
+                  </button>
+                </>
+              )}
+            </div>
           )}
 
           {/* Unanswered confirm for quick practice */}
@@ -1061,15 +1269,15 @@ export default function PracticeTab() {
                 }`} />
                 <h3 className="text-xl font-bold mb-2" style={{ color: "var(--dashboard-text-primary)" }}>প্র্যাকটিস সম্পন্ন!</h3>
                 <ScoreRing percentage={result.score} label="Practice score" />
-                <p className="text-sm text-[var(--dashboard-text-muted)] font-mono mb-1">
+                <p className="text-sm font-mono mb-1" style={{ color: "var(--dashboard-text-secondary)" }}>
                   {result.correct} / {result.total} সঠিক
                 </p>
                 {result.wrong !== undefined && (
-                  <p className="text-xs text-[var(--dashboard-text-muted)] font-mono mb-1">
+                  <p className="text-xs font-mono mb-1" style={{ color: "var(--dashboard-text-secondary)" }}>
                     ভুল {result.wrong}টি × {negativeLabelForEcosystem(ecosystem)} = −{result.negativeMarks ?? 0} • নিট {result.finalScore ?? result.correct}
                   </p>
                 )}
-                <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">
+                <p className="text-xs font-mono" style={{ color: "var(--dashboard-text-secondary)" }}>
                   +{result.pointsEarned} পয়েন্ট অর্জিত
                 </p>
                 {submitError && (
@@ -1088,6 +1296,8 @@ export default function PracticeTab() {
                       setReviewFilter("all");
                       setExpandedReview({});
                                         setTimerKey((k) => k + 1);
+                      setSessionStartsAt(0);
+                      setSessionDurationSec(0);
                     }}
                     className="px-5 py-2.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm rounded-xl hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-2"
                   >
@@ -1119,6 +1329,12 @@ export default function PracticeTab() {
                         setReviewFilter("all");
                         setExpandedReview({});
                         setTimerKey((k) => k + 1);
+                        // Fresh wall-clock for the retry round, persisted immediately.
+                        const retrySec = Math.max(60, retryQs.length * QUESTION_TIME_LIMIT);
+                        const retryStartsAt = Date.now();
+                        setSessionStartsAt(retryStartsAt);
+                        setSessionDurationSec(retrySec);
+                        saveExamSnapshot(QUICK_STORAGE_KEY, { questions: retryQs, answers: {}, multiLocked: {}, currentIndex: 0, startsAt: retryStartsAt, durationSec: retrySec });
                         requestAnimationFrame(() => scrollDashboardTop());
                       }}
                       className="px-5 py-2.5 min-h-[48px] bg-[var(--dashboard-primary)] text-[var(--dashboard-text-inverse)] font-mono text-sm font-bold rounded-xl hover:brightness-110 active:opacity-90 cursor-pointer transition-all flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
@@ -1139,7 +1355,8 @@ export default function PracticeTab() {
                         setMistakeIntent(wrongSubject ? { subject: wrongSubject } : null);
                         router.push("/dashboard?tab=mistakes");
                       }}
-                      className="px-5 py-2.5 bg-[var(--dashboard-warning-subtle)] border border-[var(--dashboard-warning)]/30 text-[var(--dashboard-warning)] font-mono text-sm rounded-xl hover:brightness-110 transition-all flex items-center gap-2"
+                      className="px-5 py-2.5 bg-[var(--dashboard-warning-subtle)] border border-[var(--dashboard-warning)]/30 font-mono text-sm rounded-xl hover:brightness-110 transition-all flex items-center gap-2"
+                      style={{ color: "color-mix(in srgb, var(--dashboard-warning) 60%, var(--dashboard-text-primary))" }}
                     >
                       <XCircle className="w-4 h-4" /> ভুলগুলো পর্যালোচনা করুন
                     </button>
@@ -1236,8 +1453,10 @@ export default function PracticeTab() {
                                     <span className="block text-sm truncate" style={{ color: "var(--dashboard-text-primary)" }}>
                                       {i + 1}. <RichText text={q.question} />
                                     </span>
-                                    <span className={`block text-[11px] font-mono mt-0.5 ${isCorrect ? "text-[var(--dashboard-success)]" : isUnanswered ? "text-[var(--dashboard-teal)]" : "text-[var(--dashboard-danger)]"}`}>
-                                      {verdictLabel}
+                                    <span className="block mt-1">
+                                      <MetaChip tone={isCorrect ? "success" : isUnanswered ? "teal" : "danger"}>
+                                        {verdictLabel}
+                                      </MetaChip>
                                     </span>
                                   </span>
                                   <CaretRight className={`w-4 h-4 flex-shrink-0 transition-transform duration-150 ${open ? "rotate-[270deg]" : "rotate-90"}`} style={{ color: "var(--dashboard-text-muted)" }} aria-hidden="true" />
@@ -1245,19 +1464,19 @@ export default function PracticeTab() {
                                 {open && (
                                   <div className="px-3.5 pb-3.5 pt-1 border-t" style={{ borderColor: "var(--dashboard-border-muted)" }}>
                                     <div className="min-w-0 flex-1 pt-2">
-                                      <p className="text-xs text-[var(--dashboard-text-muted)]" style={{ fontFamily: 'inherit' }}>
+                                      <p className="text-xs" style={{ color: "var(--dashboard-text-secondary)", fontFamily: 'inherit' }}>
                                         আপনার উত্তর:{" "}
-                                        <span className={isCorrect ? "text-[var(--dashboard-success)]" : isUnanswered ? "text-[var(--dashboard-teal)]" : "text-[var(--dashboard-danger)]"}>
+                                        <span style={{ color: `color-mix(in srgb, var(${isCorrect ? "--dashboard-success" : isUnanswered ? "--dashboard-teal" : "--dashboard-danger"}) 60%, var(--dashboard-text-primary))`, fontWeight: 700 }}>
                                           {isUnanswered ? "উত্তর দেওয়া হয়নি" : <RichText text={serializeAnswer(userAnswer)} />}
                                         </span>
                                       </p>
                                       {!isCorrect && (
-                                        <p className="text-xs text-[var(--dashboard-success)] mt-0.5" style={{ fontFamily: 'inherit' }}>
+                                        <p className="text-xs mt-0.5" style={{ color: "color-mix(in srgb, var(--dashboard-success) 60%, var(--dashboard-text-primary))", fontFamily: 'inherit', fontWeight: 700 }}>
                                           সঠিক উত্তর: <RichText text={serializeAnswer(getCorrectSet(q))} />
                                         </p>
                                       )}
                                       {q.explanation && (
-                                        <p className="text-xs text-[var(--dashboard-text-muted)] mt-1.5" style={{ lineHeight: "1.7" }}><RichText text={q.explanation} /></p>
+                                        <p className="text-xs mt-1.5" style={{ color: "var(--dashboard-text-secondary)", lineHeight: "1.7" }}><RichText text={q.explanation} /></p>
                                       )}
                                       <AIExplanationButton
                                         questionId={q.id}

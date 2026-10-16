@@ -224,7 +224,10 @@ describe("CustomExamTab — results review colors + jump tiles", () => {
     expect(card).not.toBeNull();
     fireEvent.click(within(card as HTMLElement).getByText("ক"));
 
-    fireEvent.click(screen.getByText("জমা দিন"));
+    // Header submit (single-question view keeps per-question nav at the
+    // bottom, so target the header action explicitly).
+    const submits = screen.getAllByRole("button", { name: "পরীক্ষা জমা দিন" });
+    fireEvent.click(submits[0]);
     const dialog = await screen.findByRole("dialog");
     fireEvent.click(within(dialog).getByText("জমা দিন"));
 
@@ -261,5 +264,43 @@ describe("CustomExamTab — results review colors + jump tiles", () => {
     } finally {
       Element.prototype.scrollIntoView = origScrollIntoView;
     }
+  });
+
+  it("paginated view mounts one question and navigates without full-list render", async () => {
+    stubFetch({
+      "/api/exam/config": { subjects },
+      "/api/exam/build": { exam: multiExam },
+      "/api/exam/start": { attemptId: "z", status: "IN_PROGRESS" },
+      "/api/exam/submit": submitResult,
+      "/api/exams": submitResult,
+    });
+    localStorage.clear();
+    render(<EcosystemProvider><CustomExamTab /></EcosystemProvider>);
+    const subjectElements = await screen.findAllByText("বাংলা ভাষা ও সাহিত্য");
+    fireEvent.click(subjectElements[0]);
+    fireEvent.click(await screen.findByText(/কনফিগারেশন রিভিউ করে শুরু করুন/));
+    fireEvent.click(await screen.findByText("পরীক্ষা শুরু করুন"));
+
+    // Single-question default: only Q1 mounted, Q2/Q3 absent from the DOM.
+    expect(await screen.findByText("প্রশ্ন ১")).toBeInTheDocument();
+    expect(screen.queryByText("প্রশ্ন ২")).toBeNull();
+    expect(screen.queryByText("প্রশ্ন ৩")).toBeNull();
+    // View toggle present with correct pressed state.
+    expect(screen.getByRole("button", { name: "একটি করে" })).toHaveAttribute("aria-pressed", "true");
+
+    // Palette jump mounts Q3 directly.
+    fireEvent.click(screen.getByRole("button", { name: "প্রশ্ন 3 — বাকি" }));
+    expect(await screen.findByText("প্রশ্ন ৩")).toBeInTheDocument();
+    expect(screen.queryByText("প্রশ্ন ১")).toBeNull();
+
+    // Position survives reload via the persisted snapshot.
+    const raw = localStorage.getItem("ninth-grade-ai:exam:active");
+    expect(raw).not.toBeNull();
+    expect((JSON.parse(raw as string) as { currentIndex: number }).currentIndex).toBe(2);
+
+    // "সবগুলো" fallback restores the legacy full-list layout.
+    fireEvent.click(screen.getByRole("button", { name: "সবগুলো" }));
+    expect(await screen.findByText("প্রশ্ন ২")).toBeInTheDocument();
+    expect(screen.getByText("প্রশ্ন ১")).toBeInTheDocument();
   });
 });

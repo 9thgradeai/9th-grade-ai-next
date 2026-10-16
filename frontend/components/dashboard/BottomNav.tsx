@@ -80,8 +80,11 @@ export default function BottomNav({ activeTab, onChange }: BottomNavProps) {
                 onClick={() => selectTab(tab.id)}
                 className="relative flex flex-col items-center justify-center gap-1 flex-1 min-h-[56px] rounded-2xl py-2 cursor-pointer transition-[background-color,color,opacity] duration-150 hover:bg-[var(--dashboard-surface-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
                 style={
+                  // Active label keeps full text contrast; the pill, top
+                  // indicator, and bolder icon carry the brand affordance
+                  // (primary 11px text fails 4.5:1 on these surfaces).
                   active
-                    ? { background: "var(--dashboard-primary-subtle)", color: "var(--dashboard-primary)", fontWeight: 700 }
+                    ? { background: "var(--dashboard-primary-subtle)", color: "var(--dashboard-text-primary)", fontWeight: 700 }
                     : { background: "transparent", color: "var(--dashboard-text-secondary)", fontWeight: 600 }
                 }
                 aria-label={t(lang, tab.label, tab.labelEn)}
@@ -108,8 +111,9 @@ export default function BottomNav({ activeTab, onChange }: BottomNavProps) {
             aria-haspopup="dialog"
             aria-expanded={moreOpen}
             style={
+              // Same contrast treatment as the tab buttons above.
               isMoreActive
-                ? { background: "var(--dashboard-primary-subtle)", color: "var(--dashboard-primary)", fontWeight: 700 }
+                ? { background: "var(--dashboard-primary-subtle)", color: "var(--dashboard-text-primary)", fontWeight: 700 }
                 : { background: "transparent", color: "var(--dashboard-text-secondary)", fontWeight: 600 }
             }
           >

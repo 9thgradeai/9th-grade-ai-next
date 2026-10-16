@@ -219,6 +219,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       if (isTypingTarget(e.target)) return;
       // Don't hijack keys while a dialog (command palette, sheets) is open
       if (e.target instanceof HTMLElement && e.target.closest('[role="dialog"]')) return;
+      // Don't hijack digits inside an active exam session — 1-6/A-D answer
+      // options there (PracticeTab, MockTestTab, CustomExamTab mark their
+      // live workspaces with data-exam-session). Navigating away would
+      // abandon the attempt; digits are inert until the exam ends.
+      // Presence (not e.target.closest) is deliberate: after a dialog
+      // closes, focus often rests on <body>, which has no session ancestor
+      // even though the exam is live and must keep its keys.
+      if (
+        typeof document !== "undefined" &&
+        document.querySelector("[data-exam-session]")
+      )
+        return;
 
       // Number keys 1-9 for the first nine tabs, 0 for the tenth
       const num = parseInt(e.key);
