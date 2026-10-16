@@ -12,6 +12,9 @@ import {
   CaretRight,
   Lightning,
   GameController,
+  Pause,
+  Play,
+  SkipForward,
 } from "@phosphor-icons/react";
 import { api } from "@/lib/services/api";
 import { useToastSafe } from "@/lib/toast-ctx";
@@ -51,6 +54,17 @@ function speak(word: string) {
   window.speechSynthesis.speak(u);
 }
 
+/** Auto-rotation period: hands-free word tour, one step per 10 minutes. */
+export const WORD_ROTATE_MS = 10 * 60 * 1000;
+
+/** "09:42" countdown text for the rotation chip. Clamped, never negative. */
+export function formatRotationCountdown(remainingMs: number): string {
+  const totalSec = Math.max(0, Math.ceil(remainingMs / 1000));
+  const m = Math.floor(totalSec / 60);
+  const s = totalSec % 60;
+  return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+}
+
 export default function VocabTab() {
   const toast = useToastSafe();
   const { lang } = useLanguage();
@@ -72,6 +86,21 @@ export default function VocabTab() {
   const [dailyProgress, setDailyProgress] = useState<{ wordsReviewed: number; streak: number } | null>(null);
 
   const [showQuiz, setShowQuiz] = useState(false);
+
+  // ── Hands-free rotation: advance one word every WORD_ROTATE_MS without
+  // any tap. The clock restarts on every word change (manual nav, rating,
+  // filter reload), pauses while the tab is hidden / quiz open / idioms
+  // section / paused by the user, and single-word lists never spin.
+  // A toggle satisfies WCAG 2.2.2 (pause) and a polite live region
+  // announces auto-advances to screen readers.
+  const [autoRotate, setAutoRotate] = useState(true);
+  const [remainingMs, setRemainingMs] = useState(WORD_ROTATE_MS);
+  const [autoAnnounce, setAutoAnnounce] = useState("");
+  const rotationStartRef = useRef<number>(0);
+  const pokeRotationClock = useCallback(() => {
+    rotationStartRef.current = Date.now();
+    setRemainingMs(WORD_ROTATE_MS);
+  }, []);
 
   const buildParams = useCallback((): { limit: number; search?: string; status?: string; due?: string; kind: "words" } => {
     const params: { limit: number; search?: string; status?: string; due?: string; kind: "words" } = { limit: 50, kind: "words" };
@@ -105,6 +134,55 @@ export default function VocabTab() {
   }, [words, searchQuery]);
 
   const current = filtered[idx] ?? filtered[0];
+
+  const filteredRef = useRef(filtered);
+  useEffect(() => {
+    filteredRef.current = filtered;
+  }, [filtered]);
+  const idxRef = useRef(idx);
+  useEffect(() => {
+    idxRef.current = idx;
+  }, [idx]);
+
+  // Restart the 10-minute clock whenever the visible word changes for any
+  // reason, when rotation is (un)paused, or when leaving quiz/idioms.
+  useEffect(() => {
+    pokeRotationClock();
+  }, [current?.id, autoRotate, section, showQuiz, pokeRotationClock]);
+
+  // 1s ticker: drives the countdown chip and advances one word when the
+  // full period elapses under eligible conditions. Hidden tabs never
+  // accumulate time — becoming visible restarts the clock instead.
+  // Only refs + stable setters are read, so the subscription is created
+  // once per config change (never per tick).
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const onVisible = () => {
+      if (document.visibilityState === "visible") pokeRotationClock();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    const id = window.setInterval(() => {
+      const remaining = Math.max(0, WORD_ROTATE_MS - (Date.now() - rotationStartRef.current));
+      setRemainingMs(remaining);
+      if (!autoRotate || section !== "words" || showQuiz) return;
+      if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
+      const list = filteredRef.current;
+      if (list.length <= 1) return;
+      if (remaining > 0) return;
+      const nextIdx = (idxRef.current + 1) % list.length;
+      const next = list[nextIdx] ?? list[0];
+      if (!next) return;
+      setRevealed(false);
+      setIdx(nextIdx);
+      setAutoAnnounce(`পরের শব্দ: ${next.word} — ${next.bengaliMeaning}`);
+      rotationStartRef.current = Date.now();
+    }, 1000);
+    return () => {
+      window.clearInterval(id);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoRotate, section, showQuiz]);
 
   const review = useCallback(async (rating: ReviewRating) => {
     if (!current) return;
@@ -306,17 +384,20 @@ export default function VocabTab() {
             </div>
           ) : (
             <div {...swipeHandlers}>
+              {/* Polite announcements of automatic advances only — manual
+                  navigation already has full button context. */}
+              <span className="sr-only" role="status" aria-live="polite">{autoAnnounce}</span>
               <motion.div
                 key={current.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="glass-card rounded-2xl border border-terminal-border p-6 space-y-4"
+                className="glass-card rounded-2xl border border-terminal-border p-4 sm:p-6 space-y-4"
                 style={{ touchAction: "pan-y" }}
               >
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <h3 className="text-3xl font-bold text-[var(--dashboard-primary)] tracking-tight">{current.word}</h3>
+                      <h3 className="text-2xl sm:text-3xl font-bold text-[var(--dashboard-primary)] tracking-tight break-words">{current.word}</h3>
                       <button
                         onClick={() => speak(current.word)}
                         className="p-1.5 rounded-lg hover:bg-[var(--surface-raised)] transition-colors text-[var(--dashboard-text-muted)] hover:text-[var(--accent)]"
@@ -373,7 +454,7 @@ export default function VocabTab() {
                         <button
                           key={r}
                           onClick={() => void review(r)}
-                          className={`flex-1 min-w-[70px] py-2.5 rounded-xl border font-mono text-sm flex items-center justify-center gap-2 transition-all hover:scale-105 ${RATING_CONFIG[r].color}`}
+                          className={`flex-1 min-w-[70px] min-h-[48px] py-2.5 rounded-xl border font-mono text-sm flex items-center justify-center gap-2 transition-all hover:scale-105 active:scale-95 ${RATING_CONFIG[r].color}`}
                         >
                           <span className="text-[10px] opacity-60">{RATING_CONFIG[r].keyHint}</span>
                           {RATING_CONFIG[r].label}
@@ -382,18 +463,48 @@ export default function VocabTab() {
                     </div>
                   </div>
                 ) : (
-                  <button onClick={() => setRevealed(true)} className="w-full py-3 rounded-xl bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm flex items-center justify-center gap-2">
+                  <button onClick={() => setRevealed(true)} className="w-full py-3 min-h-[48px] rounded-xl bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm flex items-center justify-center gap-2 active:opacity-90">
                     <Brain className="w-4 h-4" /> {t(lang, "রিভিল ও মনে করুন", "Reveal & Memorize")}
                   </button>
                 )}
 
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-[var(--dashboard-text-muted)] font-mono">{idx + 1} / {filtered.length}</span>
+                <div className="flex items-center justify-between gap-2 flex-wrap">
+                  <span className="text-xs text-[var(--dashboard-text-muted)] font-mono tabular-nums">{idx + 1} / {filtered.length}</span>
+                  {/* Hands-free rotation controls: countdown, pause/resume
+                      (WCAG 2.2.2), and skip-ahead. The clock restarts on any
+                      manual navigation or rating. */}
+                  <div
+                    className="flex items-center gap-1.5 rounded-full border border-terminal-border bg-[var(--surface-raised)] pl-1 pr-2 py-1"
+                    role="group"
+                    aria-label={t(lang, "স্বয়ংক্রিয় ঘূর্ণন", "Auto-rotation")}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setAutoRotate((v) => !v)}
+                      aria-pressed={autoRotate}
+                      aria-label={autoRotate ? t(lang, "স্বয়ংক্রিয় ঘূর্ণন বিরতি দিন", "Pause auto-rotation") : t(lang, "স্বয়ংক্রিয় ঘূর্ণন চালু করুন", "Resume auto-rotation")}
+                      className="w-9 h-9 min-w-[36px] rounded-full flex items-center justify-center text-[var(--dashboard-text-secondary)] hover:text-[var(--accent)] hover:bg-[var(--surface-muted)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                    >
+                      {autoRotate ? <Pause className="w-4 h-4" weight="fill" /> : <Play className="w-4 h-4" weight="fill" />}
+                    </button>
+                    <span className="text-[11px] font-mono tabular-nums text-[var(--dashboard-text-secondary)]" role="timer" aria-label={t(lang, "পরের শব্দ আসতে বাকি", "Next word in")}>
+                      {autoRotate ? formatRotationCountdown(remainingMs) : t(lang, "বিরতি", "Paused")}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => { setRevealed(false); setIdx((i) => (filteredRef.current.length > 0 ? (i + 1) % filteredRef.current.length : i)); }}
+                      disabled={filtered.length <= 1}
+                      aria-label={t(lang, "এখনই পরের শব্দ", "Next word now")}
+                      className="w-9 h-9 min-w-[36px] rounded-full flex items-center justify-center text-[var(--dashboard-text-secondary)] hover:text-[var(--accent)] hover:bg-[var(--surface-muted)] transition-colors disabled:opacity-30 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                    >
+                      <SkipForward className="w-4 h-4" weight="fill" />
+                    </button>
+                  </div>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => { setRevealed(false); setIdx((i) => Math.max(0, i - 1)); }}
                       disabled={idx === 0}
-                      className="px-3 py-1.5 rounded-lg border border-terminal-border text-xs text-[var(--dashboard-text-secondary)] disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1"
+                      className="px-3 py-1.5 min-h-[44px] rounded-lg border border-terminal-border text-xs text-[var(--dashboard-text-secondary)] disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1"
                       aria-label="Previous word"
                     >
                       <CaretLeft className="w-3.5 h-3.5" />
@@ -401,7 +512,7 @@ export default function VocabTab() {
                     <button
                       onClick={() => { setRevealed(false); setIdx((i) => (i + 1 < filtered.length ? i + 1 : i)); }}
                       disabled={idx >= filtered.length - 1}
-                      className="px-3 py-1.5 rounded-lg border border-terminal-border text-xs text-[var(--dashboard-text-secondary)] disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1"
+                      className="px-3 py-1.5 min-h-[44px] rounded-lg border border-terminal-border text-xs text-[var(--dashboard-text-secondary)] disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1"
                       aria-label="Next word"
                     >
                       <CaretRight className="w-3.5 h-3.5" />
