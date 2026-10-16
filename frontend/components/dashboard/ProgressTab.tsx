@@ -145,7 +145,7 @@ export default function ProgressTab() {
           </div>
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="text-lg font-semibold truncate">
+              <h3 className="text-lg font-semibold truncate" style={{ color: "var(--dashboard-text-primary)" }}>
                 {user?.name ?? "Student"}
               </h3>
               <span
@@ -155,7 +155,7 @@ export default function ProgressTab() {
                 @{user?.handle ?? "student"}
               </span>
             </div>
-            <p className="text-sm mt-0.5">
+            <p className="text-sm mt-0.5" style={{ color: "var(--dashboard-text-secondary)" }}>
               {t(lang, "বিসিএস / ব্যাংক / চাকরির প্রস্তুতি", "BCS / Bank / Job preparation")}
             </p>
           </div>

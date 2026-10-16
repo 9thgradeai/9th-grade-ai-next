@@ -25,6 +25,7 @@ import {
 import type { Server } from "@/lib/types";
 import { shuffleSessionOptions } from "@/lib/shuffle-options";
 import SubjectTopicSelect from "./SubjectTopicSelect";
+import ModalPortal from "@/components/ui/ModalPortal";
 import MetaChip from "./practice/MetaChip";
 import SessionTimer from "./practice/SessionTimer";
 import ScoreRing from "./practice/ScoreRing";
@@ -754,7 +755,10 @@ export default function CustomExamTab() {
               </button>
             </div>
 
-            {/* Confirm sheet — bottom sheet on mobile, centered dialog on desktop */}
+            {/* Confirm sheet — bottom sheet on mobile, centered dialog on desktop.
+                Portaled (see ModalPortal): inline sheets trap under the
+                mobile bottom nav. */}
+            <ModalPortal>
             <AnimatePresence>
               {showConfirm && (
                 <motion.div
@@ -850,6 +854,7 @@ export default function CustomExamTab() {
                 </motion.div>
               )}
             </AnimatePresence>
+            </ModalPortal>
           </>
         )}
       </div>
@@ -1207,7 +1212,8 @@ export default function CustomExamTab() {
           <p className="text-xs text-[var(--dashboard-danger)] text-center">{submitError}</p>
         )}
 
-        {/* Unanswered confirmation sheet */}
+        {/* Unanswered confirmation sheet (portaled: see note above) */}
+        <ModalPortal>
         <AnimatePresence>
           {showUnansweredConfirm && (
             <motion.div
@@ -1275,6 +1281,7 @@ export default function CustomExamTab() {
             </motion.div>
           )}
         </AnimatePresence>
+        </ModalPortal>
       </div>
     );
   }

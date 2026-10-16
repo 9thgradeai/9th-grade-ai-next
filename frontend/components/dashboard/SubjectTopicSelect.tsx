@@ -30,6 +30,7 @@ import { motion, useDragControls, useReducedMotion } from "framer-motion";
 import type { Server } from "@/lib/types";
 import { useDialogA11y } from "@/lib/use-dialog-a11y";
 import { useScrollLock } from "@/lib/use-scroll-lock";
+import ModalPortal from "@/components/ui/ModalPortal";
 import {
   type Selection,
   subtreeHasSelected,
@@ -335,8 +336,11 @@ export default function SubjectTopicSelect({
         )}
       </div>
 
-      {/* ── Popup: multi-select topics / count for the clicked subject ── */}
+      {/* ── Popup: multi-select topics / count for the clicked subject.
+          Portaled to document.body so the fixed bottom nav can never cover
+          its footer on phones (see ModalPortal). ── */}
       {openSubject && (
+        <ModalPortal>
         <motion.div
           initial={shouldReduceMotion ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -507,6 +511,7 @@ export default function SubjectTopicSelect({
             </div>
           </motion.div>
         </motion.div>
+        </ModalPortal>
       )}
     </div>
   );

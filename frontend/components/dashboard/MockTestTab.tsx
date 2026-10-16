@@ -27,6 +27,7 @@ import type { Server } from "@/lib/types";
 import { useT } from "@/lib/i18n";
 import { shuffleSessionOptions } from "@/lib/shuffle-options";
 import SubjectTopicSelect from "./SubjectTopicSelect";
+import ModalPortal from "@/components/ui/ModalPortal";
 import MetaChip from "./practice/MetaChip";
 import ScoreRing from "./practice/ScoreRing";
 import SmartMixButton from "./practice/SmartMixButton";
@@ -955,7 +956,8 @@ export default function MockTestTab() {
           <p className="text-xs text-[var(--dashboard-danger)] text-center">{submitError}</p>
         )}
 
-        {/* Unanswered confirmation sheet */}
+        {/* Unanswered confirmation sheet (portaled: see ModalPortal) */}
+        <ModalPortal>
         <AnimatePresence>
           {showUnansweredConfirm && (
             <motion.div
@@ -1022,6 +1024,7 @@ export default function MockTestTab() {
             </motion.div>
           )}
         </AnimatePresence>
+        </ModalPortal>
       </div>
     );
   }

@@ -246,7 +246,7 @@ export default function ExamHistoryTab() {
       </motion.div>
 
       {/* Upcoming Exams */}
-      {history?.upcoming.length && history.upcoming.length > 0 && (
+      {(history?.upcoming.length ?? 0) > 0 && (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -311,7 +311,7 @@ export default function ExamHistoryTab() {
             <FileText className="w-5 h-5 text-[var(--dashboard-primary)]" />
             <h3 className="text-lg font-bold text-[var(--text-primary)]">গত পরীক্ষার ফলাফল</h3>
           </div>
-          {history?.past.length && (
+          {typeof history?.past.length === "number" && history.past.length > 0 && (
             <span className="px-2 py-0.5 rounded bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] text-xs font-mono text-[var(--dashboard-text-muted)]">
               {filteredPast.length} / {history.past.length}টি ফলাফল
             </span>

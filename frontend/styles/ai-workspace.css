@@ -797,3 +797,15 @@
   }
 }
 
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   AI LAUNCHER DOCK — focus-mode hiding
+   A live exam is a focus surface: the floating launcher would cover answer
+   rows on phones (and AI help mid-exam is out of place). Likewise it never
+   floats above an open dialog/sheet. Pure CSS via :has (Safari 15.4+,
+   universal in 2026) — no JS subscription, no re-renders.
+   ══════════════════════════════════════════════════════════════════════════════ */
+body:has([data-exam-session]) .ai-launcher-dock,
+body:has([role="dialog"]) .ai-launcher-dock {
+  display: none;
+}

@@ -410,7 +410,7 @@ export default function QuestionBankTab() {
               className={`px-3 py-1.5 rounded-full text-xs font-mono border transition-all ${
                 activeCategory === cat.label
                   ? "bg-[var(--dashboard-primary)] text-[var(--dashboard-text-inverse)] border-[var(--dashboard-primary)]"
-                  : "border-transparent hover:bg-[var(--dashboard-primary-subtle)] hover:text-[var(--dashboard-primary)]"
+                  : "border-transparent text-[var(--dashboard-text-secondary)] hover:bg-[var(--dashboard-primary-subtle)] hover:text-[var(--dashboard-primary)]"
               }`}
             >
               {cat.label} ({cat.count?.toLocaleString?.() ?? cat.count})

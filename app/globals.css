@@ -581,6 +581,11 @@ label {
   /* Transparent: the ambient world map shows through the gutters. The shell
      behind it keeps the base background color. */
   background: transparent;
+  /* Themed default ink: body text resolves from :root (dark-theme) tokens,
+     so any element WITHOUT an explicit color renders near-white — invisible
+     on light surfaces. This makes unstyled descendants readable in both
+     themes; explicit colors are unaffected. */
+  color: var(--dashboard-text-primary);
 }
 
 .dashboard-theme-scope[data-dashboard-theme="dark"] .dashboard-shell {
@@ -589,6 +594,8 @@ label {
 .dashboard-theme-scope[data-dashboard-theme="dark"] #dashboard-content {
   /* Transparent: see light-theme note above. */
   background: transparent;
+  /* Same themed default ink as light (no-op while :root stays dark). */
+  color: var(--dashboard-text-primary);
 }
 
 /* ══════════════════════════════════════════════════════════════════════════════

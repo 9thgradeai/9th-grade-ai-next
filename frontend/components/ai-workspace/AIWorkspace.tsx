@@ -643,7 +643,7 @@ export default function AIWorkspace() {
           is bottom-anchored; the pulse pill stacks above it. */}
       {/* Floating AI launcher — clears the bottom nav + home indicator on
           phones (safe-area calc), docks low on lg where no bottom nav exists. */}
-      <div className="fixed bottom-[calc(76px+env(safe-area-inset-bottom,0px))] right-3 z-[var(--z-sticky)] flex flex-col items-end gap-2 sm:right-4 lg:bottom-6">
+      <div className="ai-launcher-dock fixed bottom-[calc(76px+env(safe-area-inset-bottom,0px))] right-3 z-[var(--z-sticky)] flex flex-col items-end gap-2 sm:right-4 lg:bottom-6">
         <AnimatePresence>
           {status === "generating" && !showModal && (
             <motion.div

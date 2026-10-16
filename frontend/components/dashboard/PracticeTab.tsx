@@ -13,6 +13,7 @@ import type { Server } from "@/lib/types";
 import MockTestTab from "./MockTestTab";
 import CustomExamTab from "./CustomExamTab";
 import RichText from "@/components/ui/RichText";
+import ModalPortal from "@/components/ui/ModalPortal";
 import QuestionRenderer from "./practice/QuestionRenderer";
 import MetaChip from "./practice/MetaChip";
 import SessionTimer from "./practice/SessionTimer";
@@ -914,8 +915,11 @@ export default function PracticeTab() {
             </motion.div>
           )}
 
-          {/* Pre-exam confirmation — title, count, duration, scoring, finality */}
+          {/* Pre-exam confirmation — title, count, duration, scoring, finality.
+              Portaled (see ModalPortal): inline sheets trap under the mobile
+              bottom nav. */}
           {showQuickConfirm && !sessionActive && (
+            <ModalPortal>
             <div className="fixed inset-0 z-[var(--z-modal)] bg-[var(--overlay)] backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" onClick={closeQuickConfirm}>
               <div ref={quickConfirmDialogRef} role="dialog" aria-modal="true" aria-labelledby="quick-confirm-title" tabIndex={-1} onClick={(e) => e.stopPropagation()} className="rounded-t-2xl sm:rounded-2xl border p-5 sm:p-6 w-full sm:max-w-md max-h-[88vh] overflow-y-auto overscroll-contain" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)", boxShadow: "var(--dashboard-shadow-lg)" }}>
                 <h3 id="quick-confirm-title" className="text-base font-bold mb-4" style={{ color: "var(--dashboard-text-primary)" }}>প্র্যাকটিস শুরু করুন</h3>
@@ -932,6 +936,7 @@ export default function PracticeTab() {
                 </div>
               </div>
             </div>
+            </ModalPortal>
           )}
 
           {/* Loading state */}
@@ -1236,8 +1241,9 @@ export default function PracticeTab() {
             </div>
           )}
 
-          {/* Unanswered confirm for quick practice */}
+          {/* Unanswered confirm for quick practice (portaled: see note above) */}
           {showUnansweredConfirm && (
+            <ModalPortal>
             <div className="fixed inset-0 z-[var(--z-modal)] bg-[var(--overlay)] backdrop-blur-sm flex items-center justify-center p-4" onClick={closeUnansweredConfirm}>
               <div ref={unansweredDialogRef} role="dialog" aria-modal="true" aria-label="উত্তর দেওয়া বাকি আছে" onClick={(e) => e.stopPropagation()} className="rounded-2xl border p-6 w-full max-w-sm" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)", boxShadow: "var(--dashboard-shadow-lg)" }}>
                 <div className="flex items-center gap-2 mb-3">
@@ -1253,6 +1259,7 @@ export default function PracticeTab() {
                 </div>
               </div>
             </div>
+            </ModalPortal>
           )}
 
           {/* Result panel */}
