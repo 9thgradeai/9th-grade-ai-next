@@ -246,7 +246,7 @@ export default function ExamHistoryTab() {
       </motion.div>
 
       {/* Upcoming Exams */}
-      {(history?.upcoming.length ?? 0) > 0 && (
+      {(history?.upcoming.length ?? 0) > 0 && history && (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
