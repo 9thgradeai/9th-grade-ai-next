@@ -10,14 +10,15 @@ import CommandPalette from "@/components/navigation/IdleCommandPalette";
 import ServiceWorkerRegister from "@/components/pwa/ServiceWorkerRegister";
 import OfflineBanner from "@/components/pwa/OfflineBanner";
 import { SentryClientProvider } from "@/lib/sentry";
+import SiteSchema from "@/components/public/SiteSchema";
 import "./globals.css";
 
-// Geist replaces Inter as the primary sans — Inter is an AI-default font
+// Geist replaces Inter as the primary sans, Inter is an AI-default font
 // banned by taste-skill, gpt-taste, high-end-visual-design, minimalist-ui,
 // and stitch-design-taste. Space Grotesk stays as the display face.
 // Bangla text is first-class across the product. Fonts use `swap` so the
 // real web face shows on first paint. LCP is no longer tied to font loading
-// because the hero text paints at FCP — the late swap re-paint cannot overtake LCP.
+// because the hero text paints at FCP, the late swap re-paint cannot overtake LCP.
 const geist = Geist({
   subsets: ["latin"],
   variable: "--font-geist",
@@ -36,7 +37,7 @@ const spaceGrotesk = Space_Grotesk({
 // Bengali face. Latin is intentionally omitted (Geist covers Latin). 400 +
 // 600 + 700: semibold Bengali is used across dashboard headings/labels, and
 // without the real 600 the browser synthesizes faux-bold (smeared strokes).
-// Disable font preloading so the render-blocking CSS — not the font files —
+// Disable font preloading so the render-blocking CSS, not the font files —
 // wins the throttled connection first.
 const hindSiliguri = Hind_Siliguri({
   subsets: ["bengali"],
@@ -46,7 +47,7 @@ const hindSiliguri = Hind_Siliguri({
   preload: false,
 });
 
-// Bricolage Grotesque — the hero/display voice: expressive, idiosyncratic,
+// Bricolage Grotesque, the hero/display voice: expressive, idiosyncratic,
 // unmistakably non-AI-default. Latin-only (Bengali headlines fall back to
 // Hind Siliguri via the stack). Swap + no preload so it never blocks LCP.
 const bricolage = Bricolage_Grotesque({
@@ -59,7 +60,7 @@ const bricolage = Bricolage_Grotesque({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://9thgrade.ai"),
-  title: "9Th-Grade AI — AI-Powered Study Planner & Exam Prep",
+  title: "9Th-Grade AI | AI-Powered Study Planner & Exam Prep",
   description: "Master competitive exams with AI-driven precision. Full-length mock tests, automated flashcards, daily streak tracking, and AI doubt solving for BCS, Bank, and Teacher recruitment exams.",
   keywords: ["BCS preparation", "exam prep", "AI study planner", "mock tests", "competitive exams Bangladesh"],
   authors: [{ name: "9Th-Grade AI Team" }],
@@ -71,17 +72,19 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "9Th-Grade AI — Next-Gen Exam Intelligence",
+    title: "9Th-Grade AI | Next-Gen Exam Intelligence",
     description: "Master competitive exams with AI-driven precision.",
     type: "website",
     locale: "en_US",
     alternateLocale: ["bn_BD"],
     siteName: "9Th-Grade AI",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "9Th-Grade AI share image" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "9Th-Grade AI",
     description: "AI-powered study planner for competitive exams",
+    images: ["/opengraph-image"],
   },
   robots: {
     index: true,
@@ -90,17 +93,16 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "#05070c" },
-    { media: "(prefers-color-scheme: light)", color: "#f5f9f7" },
-  ],
+  // The public site is dark-forced (THEME_INIT_SCRIPT); a light themeColor
+  // made light-OS browsers paint a white toolbar over a dark page.
+  themeColor: "#05070c",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
 };
 
 // Sprint 5 theme unification: ONE theme system. Public pages (landing,
-// marketing, auth) ship a single unified dark design — light/dark switching
+// marketing, auth) ship a single unified dark design, light/dark switching
 // lives only in the dashboard (`DashboardThemeProvider` +
 // `.dashboard-theme-scope[data-dashboard-theme]`). There is no React theme
 // provider here by design: the pre-paint script below is the entire public
@@ -134,6 +136,8 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         {/* Sync <html lang> with the persisted UI language before paint. */}
         <script dangerouslySetInnerHTML={{ __html: LANG_INIT_SCRIPT }} />
+        {/* Business schema: Organization + WebSite JSON-LD (server-rendered). */}
+        <SiteSchema />
         {/* Last-resort reveal of content if JS animations fail to run. */}
         <script dangerouslySetInnerHTML={{ __html: ANIMATION_FAILSAFE_SCRIPT }} />
       </head>

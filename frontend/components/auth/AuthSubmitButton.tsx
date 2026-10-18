@@ -4,7 +4,7 @@ import type { ReactNode } from "react"
 import { Spinner } from "@phosphor-icons/react"
 
 /**
- * AuthSubmitButton — the single primary CTA used across every auth form
+ * AuthSubmitButton, the single primary CTA used across every auth form
  * (sign in, sign up, reset, recovery). Owns the premium gradient, the
  * shine sweep, press compression, focus ring and an inline loading state
  * that never changes the button's footprint (no layout jump on submit).

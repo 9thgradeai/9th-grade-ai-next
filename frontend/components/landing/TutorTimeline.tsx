@@ -7,7 +7,7 @@ import { EASE_OUT_EXPO } from "@/lib/motion/variants";
 
 /**
  * AI-tutor reasoning timeline. The spine draws itself as the user scrolls
- * (scroll-linked transform — no rAF loop), and each stage lights up once as
+ * (scroll-linked transform, no rAF loop), and each stage lights up once as
  * it enters the viewport. Shows conceptual processing stages only.
  */
 
@@ -15,7 +15,7 @@ const STAGES = [
   {
     icon: FileText,
     title: "Candidate Question",
-    body: "A real exam-style question enters the tutor — typed, uploaded, or pulled straight from a mock test you just finished.",
+    body: "A real exam-style question enters the tutor, typed, uploaded, or pulled straight from a mock test you just finished.",
     accent: false,
   },
   {
@@ -35,7 +35,7 @@ const STAGES = [
   {
     icon: Lightbulb,
     title: "Explanation Path Forms",
-    body: "The explanation is assembled along your weakest connected concept first — in Bangla or English, your choice.",
+    body: "The explanation is assembled along your weakest connected concept first, in Bangla or English, your choice.",
     accent: false,
   },
   {
@@ -62,7 +62,7 @@ export default function TutorTimeline() {
       {!shouldReduceMotion && (
         <motion.span
           aria-hidden="true"
-          className="absolute bottom-4 left-[15px] top-4 w-px origin-top bg-gradient-to-b from-emerald-400 via-cyan-400 to-violet-400"
+          className="absolute bottom-4 left-[15px] top-4 w-px origin-top bg-gradient-to-b from-emerald-400 via-cyan-400 to-sky-400"
           style={{ scaleY: progress }}
         />
       )}
@@ -120,7 +120,7 @@ function Stage({
                 className={`rounded-full border px-3 py-1 font-mono text-xs transition-colors duration-500 ${
                   inView
                     ? stage.accent
-                      ? "border-violet-400/40 bg-violet-500/10 text-violet-300"
+                      ? "border-sky-400/40 bg-sky-500/10 text-sky-300"
                       : "border-emerald-400/30 bg-emerald-500/[0.07] text-emerald-300"
                     : "border-white/10 text-zinc-600"
                 }`}

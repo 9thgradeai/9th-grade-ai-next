@@ -59,7 +59,7 @@ export function useToast() {
   );
 }
 
-/** Optional access — lets components degrade to silent no-ops when no
+/** Optional access, lets components degrade to silent no-ops when no
  *  ToastProvider is mounted (e.g. standalone component tests). Production
  *  always mounts the provider at the root layout. */
 const noop = () => {};

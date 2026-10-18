@@ -58,5 +58,5 @@ export async function GET(request: Request) {
       return toHttpResponse(err);
     }
   }
-  return NextResponse.json({ ok: true, message: "Worker endpoint — POST to process" });
+  return NextResponse.json({ ok: true, message: "Worker endpoint, POST to process" });
 }

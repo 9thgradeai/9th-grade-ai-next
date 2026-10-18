@@ -6,7 +6,7 @@ export type ChoiceViewProps = {
   options: string[];
   selected: string[];
   locked: boolean;
-  /** Null until reveal — then rows color by membership in correctSet. */
+  /** Null until reveal, then rows color by membership in correctSet. */
   correctSet?: string[] | null;
   onSelect: (next: string[]) => void;
 };
@@ -20,11 +20,11 @@ function verdictFor(option: string, selected: string[], correctSet: string[] | n
   return "dimmed";
 }
 
-/** Standard one-answer question — radio semantics. */
+/** Standard one-answer question, radio semantics. */
 export function SingleChoiceView({ options, selected, locked, correctSet, onSelect }: ChoiceViewProps) {
   return (
     <fieldset className="border-0 m-0 p-0 min-w-0">
-      <legend className="sr-only">উত্তর নির্বাচন করুন — একটি বেছে নিন</legend>
+      <legend className="sr-only">উত্তর নির্বাচন করুন, একটি বেছে নিন</legend>
       <div className="space-y-2.5">
       {options.map((option, i) => (
         <OptionRow
@@ -41,7 +41,7 @@ export function SingleChoiceView({ options, selected, locked, correctSet, onSele
   );
 }
 
-/** Multi-answer question — checkbox toggle semantics, locked on submit. */
+/** Multi-answer question, checkbox toggle semantics, locked on submit. */
 export function MultipleChoiceView({ options, selected, locked, correctSet, onSelect }: ChoiceViewProps) {
   const toggle = (option: string) => {
     if (locked) return;
@@ -49,7 +49,7 @@ export function MultipleChoiceView({ options, selected, locked, correctSet, onSe
   };
   return (
     <fieldset className="border-0 m-0 p-0 min-w-0">
-      <legend className="sr-only">একাধিক উত্তর নির্বাচন করুন — সব সঠিকটি বেছে নিন</legend>
+      <legend className="sr-only">একাধিক উত্তর নির্বাচন করুন, সব সঠিকটি বেছে নিন</legend>
       <div className="space-y-2.5">
       {options.map((option, i) => (
         <OptionRow

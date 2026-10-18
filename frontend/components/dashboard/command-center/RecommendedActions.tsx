@@ -69,18 +69,18 @@ function recDescription(rec: PrepIntelligenceRecommendation, lang: Language): st
         : bn("ভিত্তি শক্ত করতে টার্গেটেড প্র্যাকটিস করুন।", "Targeted practice to build a stronger foundation.");
     case "practice-weak-subject":
       return rec.accuracy != null
-        ? bn(`নির্ভুলতা ${rec.accuracy}% — ধীরে ধীরে বাড়ান।`, `Accuracy ${rec.accuracy}% — improve it gradually.`)
+        ? bn(`নির্ভুলতা ${rec.accuracy}%, ধীরে ধীরে বাড়ান।`, `Accuracy ${rec.accuracy}%, improve it gradually.`)
         : bn("সবচেয়ে দুর্বল বিষয়ে ফোকাস করুন।", "Focus on your weakest subject.");
     case "review-mistakes":
       return bn("ভুল প্রশ্ন পুনরায় সমাধান করলে সবচেয়ে দ্রুত উন্নতি হয়।", "Re-solving missed questions is the fastest improvement lever.");
     case "review-flashcards":
       return bn("স্পেসড রিপিটিশন শিডিউল অনুযায়ী পর্যালোচনা করুন।", "Keep pace with your spaced-repetition schedule.");
     case "daily-quiz":
-      return bn("ছোট ওয়ার্ম-আপ — স্ট্রিক সুরক্ষায় দারুণ।", "A short warm-up that keeps your streak alive.");
+      return bn("ছোট ওয়ার্ম-আপ, স্ট্রিক সুরক্ষায় দারুণ।", "A short warm-up that keeps your streak alive.");
     case "exam-near":
       return bn("মক টেস্ট দিয়ে দুর্বল এলাকা চিহ্নিত করুন।", "Use full mock tests to find remaining bottlenecks.");
     case "daily-warmup":
-      return bn("আজ এখনো কোনো প্রশ্ন নেই — ১০টি দিয়ে শুরু করুন।", "Nothing solved today — start with a quick set.");
+      return bn("আজ এখনো কোনো প্রশ্ন নেই, ১০টি দিয়ে শুরু করুন।", "Nothing solved today, start with a quick set.");
     default:
       return bn("নিয়মিত অভ্যাসই চাবিকাঠি।", "Consistency is the key.");
   }
@@ -90,7 +90,7 @@ export default function RecommendedActions({ intelligence, onAction, onOpenPlann
   const { lang } = useLanguage();
   const { fullMotion } = useMotionTier();
   const recs = (intelligence?.recommendations ?? []).slice(0, 3);
-  // Cards cascade in on first mount only — revalidations paint instantly.
+  // Cards cascade in on first mount only, revalidations paint instantly.
   const animateOnce = useFirstMountAnimate(fullMotion && recs.length > 0);
 
   // No recommendations yet → the single onboarding checklist (never blank).

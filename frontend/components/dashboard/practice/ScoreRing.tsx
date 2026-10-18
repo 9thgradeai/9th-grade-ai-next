@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useReducedMotion } from "framer-motion";
 
 /**
- * ScoreRing — animated SVG score ring for result panels.
+ * ScoreRing, animated SVG score ring for result panels.
  * Counts up unless the user prefers reduced motion.
  */
 export default function ScoreRing({

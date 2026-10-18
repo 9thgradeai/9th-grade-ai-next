@@ -6,7 +6,7 @@ import { CaretDown } from "@phosphor-icons/react";
 import { useT } from "@/lib/i18n";
 
 /**
- * Static hero shell — deliberately no framer-motion here. The scroll-linked
+ * Static hero shell, deliberately no framer-motion here. The scroll-linked
  * parallax previously pulled the motion runtime into the landing's initial
  * JS bundle and delayed mobile LCP under CPU throttling; the entrance
  * choreography is pure CSS (word-rise / heroRise in globals.css) and paints

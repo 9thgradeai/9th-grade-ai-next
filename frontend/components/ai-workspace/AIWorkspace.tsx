@@ -1,6 +1,6 @@
 "use client";
 
-// AI Workspace — the real, streaming AI Tutor + Assistant + Study Coach.
+// AI Workspace, the real, streaming AI Tutor + Assistant + Study Coach.
 // Replaces the old hardcoded keyword mock. Persists conversations, streams
 // genuine model output, supports voice (STT/TTS) and feedback, and surfaces
 // only real coach tool activity while an agent turn is running.
@@ -315,7 +315,7 @@ export default function AIWorkspace() {
 
       const ctx = pendingContext;
 
-      // AI study coach + mock generator — bounded tool loop, streams tool
+      // AI study coach + mock generator, bounded tool loop, streams tool
       // activity + typed blocks. Mock prompts ride the same agent surface
       // with mock-test context; the endpoint split lives server-side.
       if (mode === "coach" || mode === "mock") {
@@ -638,10 +638,10 @@ export default function AIWorkspace() {
 
   return (
     <>
-      {/* Floating AI launcher — with a live pulse while a background
+      {/* Floating AI launcher, with a live pulse while a background
           generation is running with the panel dismissed. The launcher itself
           is bottom-anchored; the pulse pill stacks above it. */}
-      {/* Floating AI launcher — clears the bottom nav + home indicator on
+      {/* Floating AI launcher, clears the bottom nav + home indicator on
           phones (safe-area calc), docks low on lg where no bottom nav exists. */}
       <div className="ai-launcher-dock fixed bottom-[calc(76px+env(safe-area-inset-bottom,0px))] right-3 z-[var(--z-sticky)] flex flex-col items-end gap-2 sm:right-4 lg:bottom-6">
         <AnimatePresence>
@@ -692,7 +692,7 @@ export default function AIWorkspace() {
       <AnimatePresence>
         {showModal && (
           <div className="ai-workspace fixed inset-0 z-[var(--z-modal)] flex">
-            {/* Backdrop — the dashboard world map, rendered inside the
+            {/* Backdrop, the dashboard world map, rendered inside the
                 modal so it shows on every viewport with no opaque layer
                 over it; a feathered vignette keeps text zones calm */}
             <motion.div
@@ -707,7 +707,7 @@ export default function AIWorkspace() {
               <div className="ai-backdrop-vignette" />
             </motion.div>
 
-            {/* Panel — full-viewport takeover on mobile, docked panel on desktop */}
+            {/* Panel, full-viewport takeover on mobile, docked panel on desktop */}
             <motion.div
               ref={dialogRef}
               initial={{ opacity: 0, y: 12, scale: 0.995 }}
@@ -719,9 +719,9 @@ export default function AIWorkspace() {
               aria-labelledby="ai-workspace-title"
               className="ai-panel relative m-auto flex h-dvh w-full flex-col overflow-hidden border border-[var(--ai-border-strong)] sm:h-[min(94dvh,940px)] sm:w-[min(1160px,96vw)] sm:rounded-2xl sm:shadow-2xl"
             >
-              {/* Header — single flex-wrap row. On <md the mode switcher wraps
+              {/* Header, single flex-wrap row. On <md the mode switcher wraps
                   full-width onto its own line; on md+ it sits centered inline.
-                  Rendered once, repositioned with order — never duplicated. */}
+                  Rendered once, repositioned with order, never duplicated. */}
               <div className="ai-header shrink-0">
                 <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-2 px-3 py-2 sm:px-4 sm:py-3">
                   <div className="order-1 flex min-w-0 items-center gap-2">

@@ -112,7 +112,7 @@ export function LedEye({
       />
       <circle cx={cx + dx} cy={cy + dy} r={5.4} fill={color} />
       <circle cx={cx + dx + 1.8} cy={cy + dy - 1.8} r={1.6} fill="#eafffb" opacity={0.95} />
-      {/* Privacy shutter — slides partway over the socket */}
+      {/* Privacy shutter, slides partway over the socket */}
       {kind === "lid" && (
         <motion.rect
           x={cx - 12}
@@ -169,7 +169,7 @@ export function LedBrow({
   return <rect x={cx - w} y={cy} width={w * 2} height={3} rx={1.5} fill={color} opacity={0.6} />
 }
 
-/** LED mouth. While loading it becomes a live equalizer — the unit is thinking. */
+/** LED mouth. While loading it becomes a live equalizer, the unit is thinking. */
 export function LedMouth({
   kind,
   color,

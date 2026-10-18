@@ -50,7 +50,7 @@ function initSentryIdle() {
 
 export function SentryClientProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    // No DSN configured (local dev, self-hosted) — skip the SDK entirely.
+    // No DSN configured (local dev, self-hosted), skip the SDK entirely.
     // Initializing without a DSN only logs "No DSN provided" noise to the
     // console and never sends events.
     if (!dsn) return;

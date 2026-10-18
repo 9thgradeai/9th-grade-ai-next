@@ -6,7 +6,7 @@
 // timeline survives a reload.
 //
 // The visual language leans on the Ninth-Signal Aurora tokens (`.text-aurora-iris`)
-// so the coach reads as distinct from the tutor/assistant modes — but the rows
+// so the coach reads as distinct from the tutor/assistant modes, but the rows
 // themselves never fake motion: a step spins only while it is actually running.
 
 import { CheckCircle, XCircle, Spinner } from "@phosphor-icons/react";

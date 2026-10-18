@@ -15,7 +15,7 @@ const trackKeys = [
 ];
 
 /**
- * Supported exam ecosystems — a single CSS-driven marquee (GPU transform
+ * Supported exam ecosystems, a single CSS-driven marquee (GPU transform
  * only, pauses on hover, frozen to a wrapped row under reduced motion).
  * Server-rendered; no client JS ships for this section.
  */
@@ -38,7 +38,7 @@ export default function TrustStripSection() {
             {tracks.map((label) => (
               <TrackChip key={label} label={label} />
             ))}
-            {/* Duplicated set drives the seamless loop — hidden from AT */}
+            {/* Duplicated set drives the seamless loop, hidden from AT */}
             <div aria-hidden="true" className="marquee-dup contents">
               {tracks.map((label) => (
                 <TrackChip key={`${label}-dup`} label={label} />

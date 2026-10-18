@@ -33,7 +33,7 @@ export default function Sparkline({
 
   const trend = values[values.length - 1] >= values[0] ? "বেড়েছে" : "কমেছে";
   const descriptiveLabel =
-    ariaLabel ?? `স্কোর ট্রেন্ড — শেষ ${values.length}টি মান, ${trend}`;
+    ariaLabel ?? `স্কোর ট্রেন্ড, শেষ ${values.length}টি মান, ${trend}`;
 
   return (
     <svg

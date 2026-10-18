@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import { Target, Heart, Shield, Users, ArrowRight } from "@phosphor-icons/react/dist/ssr";
 import PublicShell from "@/components/public/PublicShell";
@@ -6,12 +7,12 @@ import PageHero from "@/components/public/PageHero";
 import SectionHeading from "@/components/ui/SectionHeading";
 // import { prisma } from "~backend/db"; // Removed DB call for static build
 
-export const metadata: Metadata = {
-  alternates: { canonical: "/about" },
-  title: "About Us — 9Th-Grade AI",
+export const metadata: Metadata = pageMeta({
+  path: "/about",
+  title: "About Us | 9Th-Grade AI",
   description:
     "9Th-Grade AI is a free, open-source AI-powered exam preparation platform for Bangladeshi government job aspirants.",
-};
+});
 
 export default async function AboutPage() {
   // Static stats – avoid DB during build
@@ -55,8 +56,8 @@ export default async function AboutPage() {
         eyebrow="ABOUT US"
         title="Democratizing Exam"
         highlight="Preparation in Bangladesh"
-        description="9Th-Grade AI exists to give every government job aspirant a free, intelligent, and complete preparation system — from the first syllabus page to the final mock test."
-        actions={[{ href: "/login?register=true", label: "Join Free Today" }]}
+        description="9Th-Grade AI exists to give every government job aspirant a free, intelligent, and complete preparation system, from the first syllabus page to the final mock test."
+        actions={[{ href: "/register", label: "Join Free Today" }]}
       />
 
       {/* Stats */}
@@ -86,13 +87,13 @@ export default async function AboutPage() {
             <p>
               Every year, hundreds of thousands of aspirants sit for BCS, Bank, and Teacher
               recruitment exams. Most prepare with scattered PDFs, outdated question banks,
-              and no real feedback loop — and the gap between preparation and the actual
+              and no real feedback loop, and the gap between preparation and the actual
               paper closes on exam day, not before.
             </p>
             <p>
               We set out to change that with an open platform that combines a complete
               syllabus map, a syllabus-aligned question bank, full-length mock tests, spaced
-              repetition, and an AI tutor — all free, all in one place, and all in both
+              repetition, and an AI tutor, all free, all in one place, and all in both
               Bangla and English.
             </p>
             <p>

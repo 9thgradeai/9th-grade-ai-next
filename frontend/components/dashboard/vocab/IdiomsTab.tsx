@@ -23,11 +23,11 @@ function speak(text: string) {
 }
 
 /**
- * Idioms & Phrases — exam-focused phrase browser.
+ * Idioms & Phrases, exam-focused phrase browser.
  *
  * Reads from the same VocabWord store filtered to partOfSpeech
  * Idiom/Phrase (`?kind=idioms`), so future imports only need to seed
- * rows — no UI or API changes required.
+ * rows, no UI or API changes required.
  */
 export default function IdiomsTab() {
   const toast = useToastSafe();
@@ -105,8 +105,8 @@ export default function IdiomsTab() {
           <p className="text-xs text-[var(--dashboard-text-muted)] font-mono mt-1 max-w-md mx-auto">
             {t(
               lang,
-              "ইডিয়ম ও ফ্রেজের সংগ্রহ শীঘ্রই যোগ হবে — BCS ও ব্যাংক পরীক্ষার জন্য বাছাই করা তালিকা।",
-              "The idioms & phrases collection is on its way — a curated list for BCS & Bank exams.",
+              "ইডিয়ম ও ফ্রেজের সংগ্রহ শীঘ্রই যোগ হবে, BCS ও ব্যাংক পরীক্ষার জন্য বাছাই করা তালিকা।",
+              "The idioms & phrases collection is on its way, a curated list for BCS & Bank exams.",
             )}
           </p>
         </div>

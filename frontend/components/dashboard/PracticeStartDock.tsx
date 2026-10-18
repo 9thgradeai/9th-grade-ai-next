@@ -5,12 +5,12 @@
  * ─────────────────────────────────────────────────────────────────────────────
  * One-handed start dock for the quick-practice config phase. It sticks to the
  * bottom of the scroll viewport (above the mobile bottom nav, safe-area aware)
- * so the live total + time + start button are ALWAYS reachable — no scrolling
+ * so the live total + time + start button are ALWAYS reachable, no scrolling
  * to start the exam on any device.
  *
- *   Mobile  (<lg): compact two-row dock — stats row (questions + time stepper),
+ *   Mobile  (<lg): compact two-row dock, stats row (questions + time stepper),
  *             then a full-width thumb-sized start button.
- *   Desktop (lg+): single-row dock — stats left, start button right.
+ *   Desktop (lg+): single-row dock, stats left, start button right.
  */
 
 import { Minus, Play, Plus, Timer } from "@phosphor-icons/react";
@@ -24,7 +24,7 @@ type Props = {
   insufficient: boolean;
   durationMin: number;
   durationTouched: boolean;
-  /** e.g. "(অটো: ২০×৩০সে = ১০ মিনিট)" — countdown of the auto estimate line. */
+  /** e.g. "(অটো: ২০×৩০সে = ১০ মিনিট)", countdown of the auto estimate line. */
   autoCaption: string;
   selectedCount: number;
   loading: boolean;
@@ -63,11 +63,11 @@ export default function PracticeStartDock({
       >
         {insufficient && (
           <p className="px-3 sm:px-4 pt-2.5 text-[11px] font-mono" style={{ color: "var(--dashboard-warning)" }}>
-            ⚠ মাত্র {availableTotal}টি পাওয়া যায় — {totalCount}টি চাওয়া হয়েছে; কম প্রশ্নে শুরু হবে
+            ⚠ মাত্র {availableTotal}টি পাওয়া যায়, {totalCount}টি চাওয়া হয়েছে; কম প্রশ্নে শুরু হবে
           </p>
         )}
         <div className="flex flex-col lg:flex-row lg:items-center gap-3 p-3 sm:p-4">
-          {/* Difficulty — consolidated here so config needs no scrolling */}
+          {/* Difficulty, consolidated here so config needs no scrolling */}
           <div className="flex items-center gap-1.5 flex-wrap" role="group" aria-label="প্রশ্নের কাঠিন্য">
             <span className="text-[10px] font-mono uppercase tracking-widest mr-1" style={{ color: "var(--dashboard-text-secondary)" }}>
               কাঠিন্য
@@ -109,7 +109,7 @@ export default function PracticeStartDock({
                   }`}
                   style={insufficient ? undefined : { color: "var(--dashboard-text-secondary)" }}
                 >
-                  / {availableTotal} উপলব্ধ{insufficient ? " — কম আছে" : ""}
+                  / {availableTotal} উপলব্ধ{insufficient ? ", কম আছে" : ""}
                 </span>
               </p>
             </div>
@@ -153,7 +153,7 @@ export default function PracticeStartDock({
             </div>
           </div>
 
-          {/* Start — thumb-sized, always in reach */}
+          {/* Start, thumb-sized, always in reach */}
           <button
             type="button"
             data-testid="dock-start"

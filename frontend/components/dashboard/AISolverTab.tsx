@@ -54,11 +54,11 @@ export default function AISolverTab() {
         if (typeof result === "string") {
           setImagePreview(result);
         } else {
-          setFileError("ছবি পড়া যায়নি — অন্য ফাইল চেষ্টা করুন।");
+          setFileError("ছবি পড়া যায়নি, অন্য ফাইল চেষ্টা করুন।");
         }
       };
       reader.onerror = () => {
-        setFileError("ছবি পড়া যায়নি — অন্য ফাইল চেষ্টা করুন।");
+        setFileError("ছবি পড়া যায়নি, অন্য ফাইল চেষ্টা করুন।");
       };
       reader.readAsDataURL(file);
   };
@@ -121,7 +121,7 @@ export default function AISolverTab() {
         }),
       );
     } catch {
-      setDrillError("ড্রিল লোড করা যায়নি — আবার চেষ্টা করুন।");
+      setDrillError("ড্রিল লোড করা যায়নি, আবার চেষ্টা করুন।");
     } finally {
       setDrilling(false);
     }
@@ -151,7 +151,7 @@ export default function AISolverTab() {
 
   return (
     <div className="space-y-6 bg-transparent">
-      {/* Header — transparent glass: dashboard world-map shows through */}
+      {/* Header, transparent glass: dashboard world-map shows through */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -383,7 +383,7 @@ export default function AISolverTab() {
                 {relatedConcept && (
                   <p>
                     <span className="text-primary font-mono text-xs">NEXT: </span>
-                    Study related concept — {relatedConcept}
+                    Study related concept, {relatedConcept}
                   </p>
                 )}
               </div>

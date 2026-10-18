@@ -1,5 +1,5 @@
 // Rotating literary quotes for the Home welcome section.
-// Bangla + English literature — prominent writers only.
+// Bangla + English literature, prominent writers only.
 
 export type LiteraryQuote = {
   id: string;
@@ -25,8 +25,8 @@ export const LITERARY_QUOTES: LiteraryQuote[] = [
   },
   {
     id: "nazrul-arise",
-    textBn: "বল বীর — বল উন্নত মম শির!",
-    textEn: "Speak, O hero — speak: my head is held ever high!",
+    textBn: "বল বীর, বল উন্নত মম শির!",
+    textEn: "Speak, O hero, speak: my head is held ever high!",
     authorBn: "কাজী নজরুল ইসলাম",
     authorEn: "Kazi Nazrul Islam",
     workBn: "বিদ্রোহী",

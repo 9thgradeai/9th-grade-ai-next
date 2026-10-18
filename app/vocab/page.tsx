@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import { BookOpenText, ArrowUpRight, StackSimple } from "@phosphor-icons/react/dist/ssr";
 import PublicShell from "@/components/public/PublicShell";
 import PageHero from "@/components/public/PageHero";
 import SectionHeading from "@/components/ui/SectionHeading";
 
-export const metadata: Metadata = {
-  alternates: { canonical: "/vocab" },
-  title: "Vocabulary Builder — 9Th-Grade AI",
+export const metadata: Metadata = pageMeta({
+  path: "/vocab",
+  title: "Vocabulary Builder | 9Th-Grade AI",
   description:
-    "AI-powered English vocabulary mastery — Bengali meaning, part of speech, verb forms, synonyms/antonyms, example sentence, context and mnemonic — prioritized for BCS, Bank and 9th Grade exams with spaced repetition.",
-};
+    "AI-powered English vocabulary mastery, Bengali meaning, part of speech, verb forms, synonyms/antonyms, example sentence, context and mnemonic, prioritized for BCS, Bank and 9th Grade exams with spaced repetition.",
+});
 
 const decks = [
   {
@@ -58,7 +59,7 @@ export default function VocabPage() {
         eyebrow="VOCABULARY BUILDER"
         title="Words That Win"
         highlight="Exam Marks"
-        description="AI-powered vocabulary — each lesson shows word, Bengali meaning, part of speech, verb forms, synonyms/antonyms, exam-relevant example, context and mnemonic — intelligently prioritized for BCS, Bank & 9th Grade and reinforced via spaced repetition."
+        description="AI-powered vocabulary, each lesson shows word, Bengali meaning, part of speech, verb forms, synonyms/antonyms, exam-relevant example, context and mnemonic, intelligently prioritized for BCS, Bank & 9th Grade and reinforced via spaced repetition."
         actions={[{ href: "/dashboard?tab=vocab", label: "Start Vocab Mastery" }]}
       />
 

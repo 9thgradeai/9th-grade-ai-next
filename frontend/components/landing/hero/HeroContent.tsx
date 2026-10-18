@@ -9,7 +9,7 @@ import { useT } from "@/lib/i18n";
 
 /** Lightweight word-reveal that mirrors the previous Framer Motion entrance
  *  but runs as a pure CSS animation, so the heading is visible at first paint
- *  (no waiting on JS hydration) — critical for mobile LCP. */
+ *  (no waiting on JS hydration), critical for mobile LCP. */
 function WordReveal({
   text,
   className = "",
@@ -66,7 +66,7 @@ export default function HeroContent({ questionCount }: { questionCount: number }
     return () => trackHeroView(Date.now() - start);
   }, []);
 
-  // Vanilla pointer parallax on the copy layer — no animation library needed.
+  // Vanilla pointer parallax on the copy layer, no animation library needed.
   useEffect(() => {
     if (!pointerEffects) return;
     const section = document.querySelector(".hero-section-ref");
@@ -99,7 +99,7 @@ export default function HeroContent({ questionCount }: { questionCount: number }
     };
   }, [pointerEffects]);
 
-  // Lightweight magnetic pull on the primary CTA — vanilla, no animation lib.
+  // Lightweight magnetic pull on the primary CTA, vanilla, no animation lib.
   useEffect(() => {
     if (!pointerEffects) return;
     const el = document.querySelector<HTMLElement>(".hero-magnetic-cta");
@@ -136,7 +136,7 @@ export default function HeroContent({ questionCount }: { questionCount: number }
   return (
     <div ref={copyRef} className="hero-copy relative z-10 mx-auto w-full max-w-7xl">
       <div className="max-w-3xl">
-        {/* Reskin: eyebrow is now a glass status pill with a live pulse — the
+        {/* Reskin: eyebrow is now a glass status pill with a live pulse, the
             first thing the eye lands on, not a bare mono label. */}
         <p className="hero-eyebrow mb-5 inline-flex items-center gap-2.5 rounded-full border border-white/12 bg-white/[0.06] py-2 pl-3 pr-4 text-[13px] font-medium text-white/90 shadow-[0_8px_32px_rgba(0,0,0,0.35)] backdrop-blur-xl">
           <span className="relative flex h-2 w-2" aria-hidden="true">
@@ -151,7 +151,7 @@ export default function HeroContent({ questionCount }: { questionCount: number }
                 <stop offset="100%" stopColor="#a78bfa" />
               </linearGradient>
             </defs>
-            {/* mortarboard — study / exam prep for job aspirants */}
+            {/* mortarboard, study / exam prep for job aspirants */}
             <path d="M12 3 21 7.5 12 12 3 7.5Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
             <path d="M6 8.6c0 1.4 2.7 2.6 6 2.6s6-1.2 6-2.6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
             {/* tassel */}
@@ -194,7 +194,7 @@ export default function HeroContent({ questionCount }: { questionCount: number }
         <div className="hero-cta flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
           <span className="magnetic inline-block w-full sm:w-auto hero-magnetic-cta" data-magnetic>
             <Button
-              href="/login?register=true"
+              href="/register"
               size="lg"
               className="glow-border w-full font-semibold shadow-[0_8px_40px_rgba(139,156,255,0.35)] sm:w-auto"
               onClick={() => trackCtaClick("primary")}

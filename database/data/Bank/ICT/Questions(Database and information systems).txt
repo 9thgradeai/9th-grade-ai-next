@@ -1,0 +1,805 @@
+﻿Section 1: Database Fundamentals, DBMS and RDBMS (Questions 1–40)
+1. Which of the following best defines a database?
+A. A collection of unrelated computer programs B. An organized collection of related data C. A device used exclusively for data transmission D. A program used only for mathematical calculations
+Correct Answer: B. An organized collection of related data
+Explanation: A database stores related data in an organized manner so that it can be accessed, managed, and updated efficiently. A database may contain customer details, account records, transactions, or employee information.
+2. What is the primary purpose of a Database Management System (DBMS)?
+A. To manufacture computer hardware B. To replace the operating system C. To manage, retrieve, update, and control access to data D. To convert all data into images
+Correct Answer: C. To manage, retrieve, update, and control access to data
+Explanation: A DBMS provides software tools for creating, storing, retrieving, modifying, and securing databases. Examples include MySQL, PostgreSQL, Oracle Database, and Microsoft SQL Server.
+3. Which of the following is an example of a DBMS?
+A. MySQL B. Microsoft Word C. Adobe Photoshop D. Google Chrome
+Correct Answer: A. MySQL
+Explanation: MySQL is a relational database management system. Word is a word processor, Photoshop is a graphics application, and Chrome is a web browser.
+4. What does RDBMS stand for?
+A. Remote Data Backup Management System B. Rapid Database Building Management Software C. Relational Data Binary Management System D. Relational Database Management System
+Correct Answer: D. Relational Database Management System
+Explanation: An RDBMS organizes data primarily into tables consisting of rows and columns. Relationships between tables can be represented through keys and enforced through constraints.
+5. Which feature most clearly distinguishes a relational database from a simple collection of unrelated files?
+A. It can store only numerical data. B. It organizes data into related tables. C. It cannot retrieve individual records. D. It requires every record to contain identical values.
+Correct Answer: B. It organizes data into related tables.
+Explanation: A relational database represents data in tables and uses relationships, commonly implemented through primary and foreign keys, to connect related information. Individual tables can represent entities such as customers, accounts, and transactions.
+6. Which of the following is a widely used relational database management system?
+A. Linux B. PowerPoint C. PostgreSQL D. VLC Media Player
+Correct Answer: C. PostgreSQL
+Explanation: PostgreSQL is an open-source RDBMS that supports SQL, transactions, constraints, and relational data structures. Linux is an operating system, while PowerPoint and VLC are application programs.
+7. In a banking database, which arrangement is most appropriate for storing customer information?
+A. A structured table containing customer identifiers and related attributes B. A single image containing all customer names C. A collection of executable files without defined fields D. A separate operating system for every customer
+Correct Answer: A. A structured table containing customer identifiers and related attributes
+Explanation: Structured tables make customer records easier to search, update, validate, and relate to other information. A unique customer identifier can help distinguish customers who have similar names.
+8. Which of the following is generally considered a principal advantage of using a DBMS?
+A. It guarantees that hardware will never fail. B. It eliminates the need for all security controls. C. It prevents every possible human error. D. It facilitates controlled data sharing and reduces unnecessary duplication.
+Correct Answer: D. It facilitates controlled data sharing and reduces unnecessary duplication.
+Explanation: A DBMS supports centralized control, access permissions, data integrity, and coordinated sharing. It can reduce redundancy, although it does not automatically eliminate all duplication or guarantee perfect security.
+9. What is data redundancy?
+A. The complete deletion of a database B. The unnecessary duplication of the same data C. The conversion of data into information D. The restriction of database access
+Correct Answer: B. The unnecessary duplication of the same data
+Explanation: Redundancy occurs when the same information is stored repeatedly without a sufficient reason. Excessive redundancy can waste storage and create inconsistencies when different copies are updated differently.
+10. Which problem can arise when the same customer's address is stored independently in several files?
+A. Faster CPU execution in every case B. Automatic elimination of all errors C. Data inconsistency D. Guaranteed referential integrity
+Correct Answer: C. Data inconsistency
+Explanation: If the address is updated in one file but not the others, conflicting versions may exist. A properly designed database can reduce this risk by managing customer information centrally.
+11. Which database property refers to the correctness and consistency of stored data?
+A. Data integrity B. Data compression C. Data visualization D. Data transmission
+Correct Answer: A. Data integrity
+Explanation: Data integrity means that data remains accurate, valid, and consistent according to defined rules. Constraints, validation, transactions, and access controls help maintain integrity.
+12. What is metadata?
+A. Data that has been permanently deleted B. Data that can only be stored in images C. Data that has no identifiable meaning D. Data describing other data
+Correct Answer: D. Data describing other data
+Explanation: Metadata describes characteristics such as a column's name, data type, permitted length, or constraints. For example, the definition that Account_ID is an integer and a primary key is metadata.
+13. Which of the following best describes a database schema?
+A. The physical keyboard used to enter records B. The logical structure or design of a database C. A backup copy of every transaction D. A report generated from a database
+Correct Answer: B. The logical structure or design of a database
+Explanation: A schema defines structures such as tables, columns, relationships, and constraints. It describes how a database is organized rather than simply listing its current records.
+14. What is a database instance?
+A. The design of a database without any data B. A database programming language C. The actual data stored in a database at a particular time D. A type of network cable
+Correct Answer: C. The actual data stored in a database at a particular time
+Explanation: The schema describes the database structure, while the instance refers to the data present at a given moment. The instance can change frequently as records are inserted, updated, or deleted.
+15. Which language is most commonly associated with relational database querying?
+A. SQL B. HTML C. CSS D. XML
+Correct Answer: A. SQL
+Explanation: Structured Query Language (SQL) is used to define, retrieve, manipulate, and control data in relational databases. HTML structures web content, CSS styles it, and XML represents structured data.
+16. Which of the following is an example of a non-relational database system?
+A. Microsoft Access in its relational database role B. MySQL C. PostgreSQL D. MongoDB
+Correct Answer: D. MongoDB
+Explanation: MongoDB is a document-oriented NoSQL database that stores records as BSON documents. Unlike a traditional relational model, its data model does not require all records to follow one fixed table structure.
+17. Which statement about NoSQL databases is correct?
+A. All NoSQL databases are relational databases. B. NoSQL databases support only numerical values. C. NoSQL databases encompass several non-relational data models. D. NoSQL databases cannot store structured information.
+Correct Answer: C. NoSQL databases encompass several non-relational data models.
+Explanation: NoSQL systems include document, key-value, wide-column, and graph databases. They may support flexible schemas and large-scale distributed workloads, but their capabilities vary by system.
+18. What is the main function of a database query?
+A. To physically repair a damaged hard drive B. To request, retrieve, or manipulate specified data C. To increase monitor resolution D. To replace database security policies
+Correct Answer: B. To request, retrieve, or manipulate specified data
+Explanation: A query specifies an operation on database data, such as retrieving customers from a particular district or updating an account record. SQL is commonly used to express relational database queries.
+19. Which database model organizes data primarily as a hierarchy of parent-child relationships?
+A. Hierarchical model B. Relational model C. Network-free model D. Spreadsheet model
+Correct Answer: A. Hierarchical model
+Explanation: The hierarchical database model organizes records in a tree-like structure. A parent can have multiple children, while each child generally has one parent in the basic model.
+20. Which database model represents data and relationships using nodes and edges?
+A. Hierarchical model B. Relational model C. Flat-file model D. Graph model
+Correct Answer: D. Graph model
+Explanation: A graph database represents entities as nodes and relationships as edges. It is useful for connected data such as social networks, fraud networks, and relationship-heavy applications.
+21. Which of the following is a typical responsibility of a Database Administrator (DBA)?
+A. Writing every document produced by an organization B. Designing computer processors C. Managing database security, backup, recovery, and performance D. Replacing all application users
+Correct Answer: C. Managing database security, backup, recovery, and performance
+Explanation: A DBA oversees database availability, permissions, performance, backup, and recovery. The exact division of responsibilities varies by organization and database platform.
+22. What does data independence mean in database systems?
+A. Every user must maintain a separate database. B. Changes at one level of the database architecture can be made without necessarily requiring changes at another level. C. Database data must never be shared. D. A database must operate without software.
+Correct Answer: B. Changes at one level of the database architecture can be made without necessarily requiring changes at another level.
+Explanation: Data independence reduces the impact of certain structural changes on applications. Physical data independence concerns storage-level changes, while logical data independence concerns changes to the logical schema.
+23. In the three-schema database architecture, which level describes how individual users or applications view the data?
+A. External level B. Physical storage level C. Hardware level D. Transmission level
+Correct Answer: A. External level
+Explanation: The external level represents user-specific views of the database. The conceptual level describes the overall logical structure, while the internal level describes physical storage organization.
+24. Which level of the three-schema architecture describes the overall logical structure of the database?
+A. External level B. Presentation level C. Conceptual level D. Network level
+Correct Answer: C. Conceptual level
+Explanation: The conceptual schema describes the database's entities, relationships, and constraints at the overall logical level. It does not focus on the details of physical file placement.
+25. What is the primary purpose of a database transaction?
+A. To change the computer's operating system B. To display a website C. To compress every database file D. To treat a logical unit of database work as a single controlled operation
+Correct Answer: D. To treat a logical unit of database work as a single controlled operation
+Explanation: A transaction groups related operations so that they can be committed together or rolled back when appropriate. A bank transfer, for example, should not debit one account without correctly completing the corresponding credit.
+26. Which ACID property ensures that a transaction is completed entirely or not at all?
+A. Consistency B. Atomicity C. Isolation D. Durability
+Correct Answer: B. Atomicity
+Explanation: Atomicity means that a transaction's operations are treated as one indivisible unit. If a required part fails, the transaction can be rolled back rather than leaving a partially completed result.
+27. Which ACID property requires a transaction to preserve defined database rules and constraints?
+A. Atomicity B. Isolation C. Consistency D. Durability
+Correct Answer: C. Consistency
+Explanation: Consistency means that a correctly executed transaction takes the database from one valid state to another. Constraints and application rules help define what constitutes a valid state.
+28. Which ACID property concerns the apparent separation of concurrently executing transactions?
+A. Isolation B. Atomicity C. Durability D. Redundancy
+Correct Answer: A. Isolation
+Explanation: Isolation controls how concurrent transactions interact and what intermediate results they can observe. The exact guarantees depend on the transaction isolation level implemented by the database.
+29. Which ACID property ensures that committed changes survive a subsequent system failure, subject to the database's durability guarantees?
+A. Consistency B. Isolation C. Atomicity D. Durability
+Correct Answer: D. Durability
+Explanation: Durability means that committed transaction results persist despite relevant failures. Database recovery mechanisms and persistent storage help provide this guarantee.
+30. What is the purpose of a database backup?
+A. To increase the number of duplicate records B. To provide a copy of data for restoration after loss or damage C. To remove all user permissions D. To replace database queries
+Correct Answer: B. To provide a copy of data for restoration after loss or damage
+Explanation: Backups support recovery after accidental deletion, corruption, hardware failure, or certain cyberattacks. Effective backup planning also considers restoration testing, retention, and protection from unauthorized modification.
+31. Which database operation typically restores data from a backup?
+A. Sorting B. Indexing C. Recovery or restoration D. Normalization
+Correct Answer: C. Recovery or restoration
+Explanation: Restoration uses backup data to rebuild or recover a database. Recovery may also use transaction logs to bring the database to an appropriate consistent state.
+32. What is database normalization primarily intended to achieve?
+A. Reduce unnecessary redundancy and undesirable modification anomalies B. Increase the physical size of every table C. Eliminate all relationships between tables D. Convert every database into a graph database
+Correct Answer: A. Reduce unnecessary redundancy and undesirable modification anomalies
+Explanation: Normalization organizes relational tables according to defined dependencies. It helps reduce insertion, update, and deletion anomalies, although some systems deliberately denormalize for performance.
+33. Which of the following is a common consequence of a poorly designed database?
+A. Every query becomes automatically secure. B. Every record becomes unique without constraints. C. All data redundancy disappears. D. Update anomalies and inconsistent data may occur.
+Correct Answer: D. Update anomalies and inconsistent data may occur.
+Explanation: Poorly structured tables may store the same fact in multiple places or mix unrelated entities. Such designs make it harder to maintain consistent information when records change.
+34. Which statement best describes a distributed database?
+A. A database that contains only one record B. A database whose data is stored across multiple networked locations or sites C. A database that cannot communicate over a network D. A database used only for personal calculations
+Correct Answer: B. A database whose data is stored across multiple networked locations or sites
+Explanation: A distributed database manages data located at more than one site while presenting a coordinated data service. Distribution can improve availability or locality but introduces synchronization and consistency challenges.
+35. What is a database index mainly used for?
+A. To increase the number of columns automatically B. To encrypt all database records by default C. To speed up data retrieval for suitable queries D. To eliminate the need for storage
+Correct Answer: C. To speed up data retrieval for suitable queries
+Explanation: An index provides an additional data structure that helps the database locate records more efficiently. Indexes consume storage and may slow some insertions, updates, and deletions because they must also be maintained.
+36. Which statement about a relational database table is correct?
+A. It organizes related data into rows and columns. B. It can contain only text values. C. It must contain exactly one row. D. It cannot contain numeric data.
+Correct Answer: A. It organizes related data into rows and columns.
+Explanation: A relational table represents data about a particular entity or relationship. Its columns define attributes, while its rows represent individual records or tuples.
+37. Which type of database is particularly suitable for storing highly connected relationship data, such as links among accounts suspected of fraud?
+A. Flat-file database only B. Word-processing database C. Hierarchical database in every case D. Graph database
+Correct Answer: D. Graph database
+Explanation: Graph databases are designed to represent and traverse relationships between entities. They can help investigate patterns involving customers, accounts, devices, and transactions connected through multiple links.
+38. What is the main purpose of a database constraint?
+A. To prevent all queries from executing B. To enforce rules on acceptable data C. To increase screen brightness D. To convert SQL into machine hardware
+Correct Answer: B. To enforce rules on acceptable data
+Explanation: Constraints restrict data to valid states, for example by requiring unique identifiers or preventing a foreign key from referring to a nonexistent parent record. They help preserve integrity at the database level.
+39. Which statement best describes a centralized database?
+A. It is always stored on every user's personal computer. B. It has no central point of management. C. Its database is managed primarily at a central location or system. D. It cannot be accessed by multiple users.
+Correct Answer: C. Its database is managed primarily at a central location or system.
+Explanation: A centralized database concentrates database management and storage at a central system, although users may access it remotely. Centralization simplifies some administration but may introduce availability or scalability considerations.
+40. A bank wants several authorized departments to use the same customer records while restricting access to sensitive fields. Which DBMS capability is most directly relevant?
+A. Access control and user-specific views B. Screen resolution management C. Automatic document formatting D. Audio compression
+Correct Answer: A. Access control and user-specific views
+Explanation: Access controls restrict operations according to users' permissions, while database views can expose selected data to particular users or applications. These mechanisms support controlled sharing and the principle of least privilege.
+Section 2: Tables, Records, Fields, Primary Keys and Foreign Keys (Questions 41–80)
+41. In a relational database, a row of a table is commonly called a —
+A. Field B. Domain C. Schema D. Record
+Correct Answer: D. Record
+Explanation: A record, also called a row or tuple, contains the values describing one table entry. In a customer table, one row may represent one customer.
+42. In a database table, a column is commonly referred to as a —
+A. Transaction B. Field or attribute C. Record D. Database instance
+Correct Answer: B. Field or attribute
+Explanation: A field or attribute represents a particular property, such as customer name, date of birth, or account balance. A column defines the attribute, while each row contains its value for a particular record.
+43. Consider a table with the columns Customer_ID, Name, and Address. Which is a field?
+A. The entire database B. A complete customer row C. Address D. All customer records together
+Correct Answer: C. Address
+Explanation: Address is a column representing an attribute of each customer. A particular customer's address value is stored in the corresponding cell of that customer's row.
+44. What is the primary purpose of a primary key?
+A. To uniquely identify each row in a table B. To encrypt the entire database C. To sort every column alphabetically D. To create backup files automatically
+Correct Answer: A. To uniquely identify each row in a table
+Explanation: A primary key must uniquely identify records and cannot contain NULL values. A customer number or account identifier can serve as a primary key when its values meet these requirements.
+45. Which property is required of a primary key in a relational table?
+A. It must always contain a person's name. B. It must contain duplicate values. C. It must be a date field. D. Its values must be unique and non-NULL.
+Correct Answer: D. Its values must be unique and non-NULL.
+Explanation: Uniqueness prevents two rows from sharing the same primary-key value, and the key cannot be missing. A primary key may consist of one column or a combination of columns.
+46. A bank maintains a table in which every customer has a unique Customer_ID. What is the most appropriate role for this field?
+A. Foreign key only B. Primary key C. Database view D. SQL command
+Correct Answer: B. Primary key
+Explanation: A unique customer identifier can distinguish each customer independently of names or addresses. It is a suitable primary key if it is non-NULL and remains unique across the table.
+47. What is a foreign key?
+A. A key used only in overseas databases B. A key that must contain encrypted text C. A column or set of columns that references a candidate key, commonly a primary key, in another or the same table D. A password used to open a database
+Correct Answer: C. A column or set of columns that references a candidate key, commonly a primary key, in another or the same table
+Explanation: A foreign key represents a relationship between rows and helps enforce referential integrity. For example, Customer_ID in an account table may reference Customer_ID in a customer table.
+48. Which database constraint prevents a foreign key from referring to a nonexistent parent record, when the foreign key is non-NULL and the constraint is enforced?
+A. Referential integrity B. Data compression C. Sorting D. Index fragmentation
+Correct Answer: A. Referential integrity
+Explanation: Referential integrity requires foreign-key values to match an eligible referenced key value, subject to the database's rules for nullable foreign keys. This prevents orphaned relationships.
+49. A table contains Account_ID, Customer_ID, and Balance. Account_ID uniquely identifies each account, while Customer_ID references the customer table. Which statement is correct?
+A. Both columns must be foreign keys. B. Balance must be the primary key. C. Customer_ID cannot contain repeated values. D. Account_ID can be the primary key, while Customer_ID can be a foreign key.
+Correct Answer: D. Account_ID can be the primary key, while Customer_ID can be a foreign key.
+Explanation: One customer may own multiple accounts, so the same customer identifier can legitimately occur in multiple account rows. The account identifier distinguishes each account, while the foreign key links it to its owner.
+50. What is a composite primary key?
+A. A key that is always generated from a password B. A key formed from two or more columns that jointly identify a row C. A key that permits duplicate combinations D. A key that can be used only in a non-relational database
+Correct Answer: B. A key formed from two or more columns that jointly identify a row
+Explanation: A composite key uses multiple attributes together to ensure uniqueness. For example, (Student_ID, Course_ID) may identify an enrollment when each student can enroll in a course only once.
+51. Which of the following is a valid reason to use a composite key?
+A. A single field cannot uniquely identify the records, but a combination can. B. The database must not contain relationships. C. Every table must have at least five primary keys. D. All columns must have identical data types.
+Correct Answer: A. A single field cannot uniquely identify the records, but a combination can.
+Explanation: Some entities are uniquely identified only by combining attributes. The combination, rather than either individual field, must satisfy the required uniqueness and non-NULL rules for a primary key.
+52. What is a candidate key?
+A. Any field containing duplicate values B. A column that must always be a foreign key C. A minimal set of attributes capable of uniquely identifying each row D. A key that exists only in backup files
+Correct Answer: C. A minimal set of attributes capable of uniquely identifying each row
+Explanation: A candidate key uniquely identifies records and contains no unnecessary attribute that can be removed while preserving uniqueness. One candidate key is selected as the primary key; other candidate keys remain alternative keys.
+53. Which statement correctly distinguishes a candidate key from a primary key?
+A. A candidate key cannot identify records uniquely. B. A primary key may contain NULL values. C. Every candidate key must be a foreign key. D. A primary key is one selected candidate key.
+Correct Answer: D. A primary key is one selected candidate key.
+Explanation: A table may have several candidate keys, but one is designated as its primary key. The remaining candidate keys can be enforced through unique constraints or other appropriate mechanisms.
+54. Which of the following is a superkey?
+A. A field that necessarily contains duplicate values B. Any set of attributes that uniquely identifies every row C. A field that is always allowed to be NULL as a primary key D. A field used exclusively for sorting
+Correct Answer: B. Any set of attributes that uniquely identifies every row
+Explanation: A superkey uniquely identifies records but may contain unnecessary attributes. A candidate key is a minimal superkey, so every candidate key is a superkey, but not every superkey is a candidate key.
+55. What is an alternate key?
+A. A candidate key not selected as the primary key B. A key that always replaces every foreign key C. A key containing only duplicate values D. A password used as a database backup
+Correct Answer: A. A candidate key not selected as the primary key
+Explanation: When a table has multiple candidate keys, one is selected as the primary key. The others are commonly called alternate keys and can also uniquely identify rows.
+56. Which of the following is the best example of a natural key?
+A. An arbitrary number generated solely to identify a row B. A randomly assigned internal sequence number C. A meaningful real-world attribute, such as a verified unique national identifier D. A temporary row position in a query result
+Correct Answer: C. A meaningful real-world attribute, such as a verified unique national identifier
+Explanation: A natural key uses an attribute that has meaning outside the database and is suitable for unique identification. A surrogate key, by contrast, is introduced primarily for database identification.
+57. What is a surrogate key?
+A. A key that must have a real-world meaning B. A field that allows all rows to be identical C. A foreign key that points to multiple unrelated databases D. An artificial identifier created to identify records
+Correct Answer: D. An artificial identifier created to identify records
+Explanation: A surrogate key is often a generated integer or UUID used as an identifier. It can provide stable identification without relying on business attributes that may change.
+58. Which statement about foreign keys is correct?
+A. A foreign key must always be unique in the referencing table. B. A foreign key may contain repeated values. C. A foreign key can never be NULL under any database design. D. A foreign key always identifies every row uniquely.
+Correct Answer: B. A foreign key may contain repeated values.
+Explanation: Multiple child records may reference the same parent record. For example, several accounts can reference one customer, so Customer_ID can repeat in the account table.
+59. What is a one-to-many relationship?
+A. One customer may be associated with several accounts, while each account belongs to one customer under the chosen model. B. Each customer must have several different primary keys. C. One row can contain only one column. D. Every table must be related to exactly one other table.
+Correct Answer: A. One customer may be associated with several accounts, while each account belongs to one customer under the chosen model.
+Explanation: In a one-to-many relationship, one parent record can be associated with multiple child records. The foreign key is typically placed in the child table, referencing the parent.
+60. Which database relationship generally requires an associative or junction table in a relational design?
+A. One-to-one in every case B. One-to-many in every case C. Many-to-many D. No relationship
+Correct Answer: C. Many-to-many
+Explanation: A junction table represents the combinations between two entities. For example, an Enrollment table can connect students and courses using foreign keys to both tables.
+61. Which statement about a table's primary key is correct?
+A. It must be the first column displayed in every query. B. It must always be a numeric field. C. It must have the same name in every database table. D. It may consist of a single attribute or multiple attributes.
+Correct Answer: D. It may consist of a single attribute or multiple attributes.
+Explanation: A primary key can be a single column, such as Employee_ID, or a composite key consisting of several columns. The key's purpose is unique identification, not adherence to a particular data type or column position.
+62. Which SQL constraint is specifically intended to prevent duplicate values in a column or combination of columns?
+A. DEFAULT B. UNIQUE C. CHECK only D. NOT NULL only
+Correct Answer: B. UNIQUE
+Explanation: A UNIQUE constraint prevents duplicate key values according to the database's rules. Its treatment of NULL values can differ between database systems, whereas a primary key explicitly requires uniqueness and non-NULL values.
+63. What does the NOT NULL constraint ensure?
+A. A column cannot store a NULL value. B. A column cannot store numbers. C. A column must contain duplicate values. D. A column becomes a foreign key automatically.
+Correct Answer: A. A column cannot store a NULL value.
+Explanation: NOT NULL requires a value to be present in that column for each row. It does not by itself guarantee uniqueness or ensure that the value is otherwise valid.
+64. What does the CHECK constraint generally do?
+A. Automatically encrypts a column B. Deletes every row containing text C. Restricts values according to a specified condition D. Creates a backup of the database
+Correct Answer: C. Restricts values according to a specified condition
+Explanation: A CHECK constraint validates whether a condition holds for inserted or updated data. For example, CHECK (Balance >= 0) can prohibit negative balances where that business rule is appropriate.
+65. What is the purpose of a DEFAULT constraint or default value?
+A. To make every value unique B. To create a new database automatically C. To prevent all updates D. To provide a value when an insert omits the column or requests the default
+Correct Answer: D. To provide a value when an insert omits the column or requests the default
+Explanation: A default value supplies a predefined value when one is not explicitly provided in the relevant insert operation. It does not necessarily prevent users from supplying another permitted value.
+66. What is a NULL value generally used to represent in a database?
+A. Always the numeric value zero B. A missing, unknown, or inapplicable value C. An empty string in every SQL implementation D. A duplicate primary key
+Correct Answer: B. A missing, unknown, or inapplicable value
+Explanation: NULL is not the same as zero or an empty string. SQL uses three-valued logic involving TRUE, FALSE, and UNKNOWN, so NULL values require special handling in comparisons.
+67. Which SQL condition is appropriate for finding rows where Phone has no value stored as NULL?
+A. Phone = NULL B. Phone == NULL C. Phone IS NULL D. Phone EQUALS NULL
+Correct Answer: C. Phone IS NULL
+Explanation: SQL uses IS NULL to test whether a value is NULL. A comparison such as Phone = NULL evaluates to UNKNOWN rather than TRUE under standard SQL semantics.
+68. A student table uses (Student_ID, Course_ID) as its primary key. Which statement is correct?
+A. The same student-course combination cannot occur twice. B. Student_ID must be unique across all courses. C. Course_ID must be unique across all students. D. Neither column can be used to reference another table.
+Correct Answer: A. The same student-course combination cannot occur twice.
+Explanation: The composite key makes the combination unique, but either component can repeat individually. This is a common design for enrollment and other many-to-many relationship tables.
+69. What is an orphan record in a relational database?
+A. A record with the longest text field B. A record that has been sorted alphabetically C. A record that contains a primary key D. A child record whose required referenced parent record does not exist
+Correct Answer: D. A child record whose required referenced parent record does not exist
+Explanation: An orphan record has a broken relationship with its intended parent. Enforced referential integrity prevents such invalid non-NULL foreign-key references from being created.
+70. Which operation changes the values of existing rows in a table?
+A. SELECT B. UPDATE C. CREATE D. GRANT
+Correct Answer: B. UPDATE
+Explanation: The SQL UPDATE statement modifies existing records. A WHERE clause is essential when only selected rows should be changed; without it, the statement can update every row in the table.
+71. Which operation removes selected rows from a table without necessarily removing the table itself?
+A. DROP TABLE B. CREATE TABLE C. DELETE D. ALTER TABLE
+Correct Answer: C. DELETE
+Explanation: DELETE removes rows and can use a WHERE clause to select which ones. DROP TABLE, in contrast, removes the table object itself, including its structure.
+72. Which SQL command removes a table definition and its data from the database, subject to applicable dependencies and permissions?
+A. DROP TABLE B. SELECT C. ORDER BY D. INSERT
+Correct Answer: A. DROP TABLE
+Explanation: DROP TABLE removes the table object, unlike DELETE, which removes rows while retaining the table. The effects on dependent objects and constraints depend on the database system and the command's options.
+73. Which statement correctly describes the difference between a primary key and a unique constraint?
+A. A primary key must be text, while a unique constraint must be numeric. B. A unique constraint always allows duplicate non-NULL values. C. A primary key cannot identify records. D. A table has one primary-key constraint, but it can have multiple unique constraints.
+Correct Answer: D. A table has one primary-key constraint, but it can have multiple unique constraints.
+Explanation: A table design selects one primary-key constraint, although that key can contain multiple columns. Multiple unique constraints can enforce additional candidate keys; NULL handling for unique constraints varies by DBMS.
+74. A table contains 500 customer records. Each record has one Customer_ID, and the primary key is a single column. How many distinct primary-key values must the table have?
+A. 250 B. 500 C. 1,000 D. It must have zero
+Correct Answer: B. 500
+Explanation: Each of the 500 rows must have a unique, non-NULL primary-key value. Therefore, the table contains exactly 500 distinct values for that primary-key column.
+75. Which is the most appropriate primary key for a transaction table containing millions of banking transactions?
+A. Branch_Name B. Transaction_Date alone C. A unique Transaction_ID D. Transaction_Amount alone
+Correct Answer: C. A unique Transaction_ID
+Explanation: Many transactions may share the same branch, date, or amount, so those fields alone are generally unsuitable as unique identifiers. A unique transaction identifier allows each transaction to be referenced independently.
+76. Which statement about a foreign key referencing the same table is correct?
+A. A self-referencing foreign key can represent relationships such as employees and their managers. B. A foreign key cannot reference any primary key. C. A table cannot have more than one row if it has a self-reference. D. A self-referencing foreign key converts the table into a spreadsheet.
+Correct Answer: A. A self-referencing foreign key can represent relationships such as employees and their managers.
+Explanation: A self-referencing foreign key points to a key in the same table. For example, Manager_ID in an employee table can reference another employee's Employee_ID.
+77. Which of the following best describes a database domain?
+A. The physical building containing a server B. The name of the database administrator C. A query that deletes records D. The set of permitted values for an attribute
+Correct Answer: D. The set of permitted values for an attribute
+Explanation: A domain defines the allowable values for an attribute, such as valid dates or a specified range of integers. Data types and constraints can help enforce domain restrictions.
+78. Which database design principle is most useful for preventing a customer's address from being inconsistently stored in multiple account rows?
+A. Store every customer attribute in every transaction row. B. Separate customer data into an appropriately keyed customer table and reference it from related tables. C. Remove all identifiers from the database. D. Store all data as unstructured images.
+Correct Answer: B. Separate customer data into an appropriately keyed customer table and reference it from related tables.
+Explanation: Separating customer details from account details reduces unnecessary repetition. A foreign key links each account to the relevant customer record, helping maintain consistency.
+79. A table contains Employee_ID, Employee_Name, and Department_ID. Several employees may belong to the same department. Which field is the most suitable foreign key to a department table?
+A. Employee_Name B. Employee_ID C. Department_ID D. Employee_Name and Employee_ID must always be combined
+Correct Answer: C. Department_ID
+Explanation: Department_ID can reference the department table's primary key. Multiple employees can share the same department identifier, which naturally represents a one-to-many relationship.
+80. Which statement about records in a relational table is most accurate?
+A. A relational table may contain duplicate rows unless its schema or constraints prevent them. B. Every relational table automatically has a primary key. C. Every column must contain unique values. D. Every row must have the same value in each column.
+Correct Answer: A. A relational table may contain duplicate rows unless its schema or constraints prevent them.
+Explanation: A well-designed table commonly has a primary key or another uniqueness constraint, but SQL does not require every table to define a primary key. Without suitable constraints, duplicate rows may be possible.
+Section 3: SQL and Basic Query Concepts (Questions 81–125)
+81. What is the full form of SQL?
+A. Standard Question Language B. Sequential Query Logic C. System Quality Language D. Structured Query Language
+Correct Answer: D. Structured Query Language
+Explanation: SQL is the standard language family used to work with relational databases. It supports data retrieval, modification, definition, permissions, and transaction-related operations.
+82. Which SQL statement retrieves data from a database?
+A. INSERT B. SELECT C. UPDATE D. DELETE
+Correct Answer: B. SELECT
+Explanation: SELECT retrieves data from one or more tables or other queryable objects. It can use clauses such as WHERE, GROUP BY, HAVING, and ORDER BY to shape the result.
+83. Which SQL statement inserts a new row into a table?
+A. UPDATE B. ALTER C. INSERT D. SELECT
+Correct Answer: C. INSERT
+Explanation: INSERT INTO adds new rows to a table. The values supplied must comply with applicable data types, constraints, and required-column rules.
+84. Which SQL clause filters individual rows before grouping or aggregation?
+A. WHERE B. ORDER BY C. HAVING D. GROUP BY
+Correct Answer: A. WHERE
+Explanation: WHERE selects rows that satisfy a condition before grouping and aggregation are performed. HAVING is used to filter groups after grouping.
+85. Which clause sorts the result of a SQL query?
+A. FILTER BY B. SORT TABLE C. GROUP BY D. ORDER BY
+Correct Answer: D. ORDER BY
+Explanation: ORDER BY sorts query results by one or more expressions. ASC specifies ascending order and is the default in standard SQL, while DESC specifies descending order.
+86. Which query retrieves every column from a table named Customer?
+A. SELECT ALL FROM Customer; B. SELECT * FROM Customer; C. GET * FROM Customer; D. SHOW COLUMNS Customer;
+Correct Answer: B. SELECT * FROM Customer;
+Explanation: The asterisk selects all columns in the result. In production queries, explicitly naming required columns is often preferable for clarity and to avoid unintended dependence on schema changes.
+87. Which SQL clause is used to eliminate duplicate result rows?
+A. UNIQUE ROWS B. REMOVE DUPLICATES C. DISTINCT D. PRIMARY KEY
+Correct Answer: C. DISTINCT
+Explanation: SELECT DISTINCT returns unique combinations of the selected expressions. It does not necessarily eliminate duplicate records from the underlying table; it removes duplicates from the query result.
+88. Which query selects customers whose balance is greater than 10,000?
+A. SELECT * FROM Customer WHERE Balance > 10000; B. SELECT * FROM Customer ORDER BY Balance > 10000; C. SELECT * FROM Customer HAVING Balance = 10000; D. SELECT Balance > 10000 FROM Customer;
+Correct Answer: A. SELECT * FROM Customer WHERE Balance > 10000;
+Explanation: The WHERE clause filters rows according to the condition Balance > 10000. The query returns all columns for customers whose balance satisfies that condition.
+89. Which operator checks whether a value falls within an inclusive range?
+A. LIKE B. EXISTS C. UNION D. BETWEEN
+Correct Answer: D. BETWEEN
+Explanation: BETWEEN lower AND upper checks an inclusive range, including both endpoints. For example, Salary BETWEEN 30000 AND 50000 includes salaries equal to 30,000 and 50,000.
+90. Which SQL operator is commonly used to match a text pattern?
+A. RANGE B. LIKE C. MATCHES ALL D. ORDER
+Correct Answer: B. LIKE
+Explanation: LIKE matches text against a pattern, commonly using % for any sequence of characters and _ for one character. Case sensitivity can depend on the database system and collation.
+91. In a SQL LIKE pattern, what does % generally represent?
+A. Exactly one character B. A numeric value only C. Zero or more characters D. The end of a database transaction
+Correct Answer: C. Zero or more characters
+Explanation: % matches any sequence of zero or more characters. For example, Name LIKE 'A%' matches names beginning with A, subject to the system's pattern-matching rules.
+92. In a SQL LIKE pattern, what does _ generally represent?
+A. Exactly one character B. Any number of tables C. A primary key D. A NULL value
+Correct Answer: A. Exactly one character
+Explanation: The underscore wildcard matches one character. For example, Code LIKE 'A_1' matches patterns such as AB1, where the middle position contains exactly one character.
+93. Which query returns employees with a salary greater than 50,000 in descending salary order?
+A. SELECT * FROM Employee WHERE Salary DESC 50000; B. SELECT * FROM Employee GROUP BY Salary DESC; C. SELECT * FROM Employee ORDER BY Salary > 50000; D. SELECT * FROM Employee WHERE Salary > 50000 ORDER BY Salary DESC;
+Correct Answer: D. SELECT * FROM Employee WHERE Salary > 50000 ORDER BY Salary DESC;
+Explanation: WHERE selects employees whose salary exceeds 50,000, and ORDER BY Salary DESC sorts those results from highest to lowest salary. Filtering and sorting serve different purposes.
+94. Which SQL aggregate function counts rows or non-NULL values, depending on its argument?
+A. SUM() B. COUNT() C. ORDER() D. SORT()
+Correct Answer: B. COUNT()
+Explanation: COUNT(*) counts rows, while COUNT(column) counts non-NULL values in that column. This distinction is important when a column contains missing values.
+95. Which aggregate function calculates the arithmetic mean of numeric values?
+A. TOTAL() B. COUNT() C. AVG() D. MEAN()
+Correct Answer: C. AVG()
+Explanation: AVG() calculates the average of non-NULL numeric values in its input set. NULL values are excluded from the average rather than treated as zero.
+96. Which SQL function returns the largest value in a set of values?
+A. MAX() B. MIN() C. COUNT() D. AVG()
+Correct Answer: A. MAX()
+Explanation: MAX() returns the maximum value among the applicable non-NULL values. It can be used with numeric, date, and comparable character values, depending on the database system.
+97. Which SQL function calculates the total of numeric values?
+A. AVG() B. COUNT() C. MAX() D. SUM()
+Correct Answer: D. SUM()
+Explanation: SUM() adds non-NULL numeric values in the selected set. It is frequently used to calculate total balances, transaction amounts, or departmental expenditure.
+98. What is the primary purpose of the GROUP BY clause?
+A. To encrypt records by category B. To group rows sharing specified values, often for aggregate calculations C. To delete duplicate rows from a table permanently D. To define a primary key automatically
+Correct Answer: B. To group rows sharing specified values, often for aggregate calculations
+Explanation: GROUP BY forms groups based on one or more expressions. Aggregate functions such as COUNT(), SUM(), and AVG() can then calculate results for each group.
+99. Which clause filters groups after aggregate calculations are formed?
+A. WHERE B. ORDER BY C. HAVING D. INSERT INTO
+Correct Answer: C. HAVING
+Explanation: HAVING filters groups, such as departments with more than 20 employees. WHERE filters individual rows before grouping, so the two clauses are not interchangeable in all queries.
+100. Which query lists each department and the number of employees in it?
+A. SELECT Department_ID, COUNT(*) FROM Employee GROUP BY Department_ID; B. SELECT Department_ID, COUNT(*) FROM Employee ORDER BY COUNT(*); C. SELECT COUNT(Department_ID) FROM Employee WHERE GROUP BY; D. SELECT Department_ID FROM Employee COUNT(*);
+Correct Answer: A. SELECT Department_ID, COUNT(*) FROM Employee GROUP BY Department_ID;
+Explanation: The query groups employees by Department_ID and counts the rows in each group. This is a standard use of grouping and aggregation.
+101. Which SQL command creates a new table?
+A. INSERT TABLE B. ADD TABLE C. BUILD TABLE D. CREATE TABLE
+Correct Answer: D. CREATE TABLE
+Explanation: CREATE TABLE defines a table's columns, data types, and optional constraints. It creates the database object rather than inserting records into an existing table.
+102. Which SQL command changes the structure of an existing table?
+A. SELECT B. ALTER TABLE C. UPDATE ROW D. FETCH TABLE
+Correct Answer: B. ALTER TABLE
+Explanation: ALTER TABLE can add, remove, or modify columns and constraints, subject to DBMS support and restrictions. UPDATE changes row values rather than the table definition.
+103. Which SQL command changes existing data in a table?
+A. CREATE B. GRANT C. UPDATE D. DESCRIBE
+Correct Answer: C. UPDATE
+Explanation: UPDATE modifies values in existing rows. Using an appropriate WHERE clause prevents unintentionally changing rows that should remain unchanged.
+104. Which SQL command removes selected records from a table?
+A. DELETE B. ALTER C. CREATE D. GRANT
+Correct Answer: A. DELETE
+Explanation: DELETE FROM TableName WHERE condition removes rows that satisfy the condition. If the WHERE clause is omitted, the statement generally deletes all rows while retaining the table structure.
+105. Which SQL command removes a database object such as a table?
+A. SELECT B. UPDATE C. INSERT D. DROP
+Correct Answer: D. DROP
+Explanation: DROP removes a specified database object, such as a table or view. It differs from DELETE, which removes rows, and from TRUNCATE, which removes all rows using a separate table-clearing operation.
+106. Which SQL statement correctly adds a customer named Rahim to a table with columns Customer_ID and Name, assuming the identifier is 101?
+A. ADD Customer VALUES (101, 'Rahim'); B. INSERT INTO Customer (Customer_ID, Name) VALUES (101, 'Rahim'); C. UPDATE Customer VALUES (101, 'Rahim'); D. SELECT INTO Customer VALUES (101, 'Rahim');
+Correct Answer: B. INSERT INTO Customer (Customer_ID, Name) VALUES (101, 'Rahim');
+Explanation: INSERT INTO specifies the target table and, optionally, the columns to populate. The VALUES clause supplies corresponding values in the same order.
+107. Which SQL statement changes the balance to 5,000 for the account whose Account_ID is 101?
+A. SELECT Balance = 5000 FROM Account WHERE Account_ID = 101; B. INSERT INTO Account SET Balance = 5000; C. UPDATE Account SET Balance = 5000 WHERE Account_ID = 101; D. DELETE Account WHERE Account_ID = 101;
+Correct Answer: C. UPDATE Account SET Balance = 5000 WHERE Account_ID = 101;
+Explanation: SET specifies the new column value, and WHERE identifies the target account. Without the condition, the update could modify the balance of every account.
+108. Which SQL statement retrieves customers whose names begin with the letter S?
+A. SELECT * FROM Customer WHERE Name LIKE 'S%'; B. SELECT * FROM Customer WHERE Name = '%S'; C. SELECT * FROM Customer WHERE Name BETWEEN 'S' AND '%'; D. SELECT * FROM Customer ORDER BY Name LIKE 'S';
+Correct Answer: A. SELECT * FROM Customer WHERE Name LIKE 'S%';
+Explanation: The pattern S% matches text beginning with S followed by zero or more characters. The pattern %S instead matches strings ending with S.
+109. Which operator tests whether a value matches any value in a specified list?
+A. BETWEEN B. LIKE C. EXISTS D. IN
+Correct Answer: D. IN
+Explanation: IN checks whether an expression matches one of the listed values or values returned by a subquery. For example, WHERE City IN ('Dhaka', 'Rajshahi') selects rows for either city.
+110. Which SQL operator combines the results of two compatible queries and removes duplicate rows by default?
+A. JOIN B. UNION C. UPDATE D. INTERSECT ALL
+Correct Answer: B. UNION
+Explanation: UNION combines the results of compatible SELECT statements and removes duplicates by default. UNION ALL retains duplicate rows and may be more efficient when duplicate elimination is unnecessary.
+111. What is the purpose of a SQL JOIN?
+A. To permanently merge two database servers into one B. To encrypt related columns C. To combine related rows from two or more tables D. To delete records from every participating table
+Correct Answer: C. To combine related rows from two or more tables
+Explanation: JOIN operations retrieve related information from multiple tables using specified join conditions. For example, a customer table can be joined with an account table to display customer names alongside their accounts.
+112. Which JOIN returns rows with matching join conditions in both tables?
+A. INNER JOIN B. CROSS JOIN C. FULL OUTER JOIN D. LEFT JOIN in every case
+Correct Answer: A. INNER JOIN
+Explanation: An INNER JOIN returns rows for which the join condition matches between the participating tables. Rows without a match are excluded from the result.
+113. Which JOIN returns all rows from the left table and matching rows from the right table, with NULLs for unmatched right-side columns?
+A. INNER JOIN B. CROSS JOIN C. RIGHT JOIN D. LEFT JOIN
+Correct Answer: D. LEFT JOIN
+Explanation: A LEFT JOIN preserves every row from the left table, even when no corresponding right-side row exists. The right-side columns are NULL for unmatched rows.
+114. What does a CROSS JOIN produce?
+A. Only matching rows based on a primary key B. The Cartesian product of the participating tables C. Only rows containing NULL values D. A list of database permissions
+Correct Answer: B. The Cartesian product of the participating tables
+Explanation: A cross join combines every row from one table with every row from the other. If the tables contain  and  rows, the result contains  rows.
+115. Table A contains 4 rows and Table B contains 6 rows. How many rows will their Cartesian product contain?
+A. 10 B. 24 C. 2 D. 12
+Correct Answer: B. 24
+Explanation: A Cartesian product contains every possible pair of rows, so . A CROSS JOIN produces this result unless additional filtering is applied.
+116. Which SQL statement retrieves customers whose balance is greater than the average balance of all customers?
+A. SELECT * FROM Customer WHERE Balance > (SELECT AVG(Balance) FROM Customer); B. SELECT * FROM Customer WHERE Balance > AVG(Balance); C. SELECT AVG(*) FROM Customer WHERE Balance; D. SELECT * FROM Customer GROUP BY Balance > AVG(Balance);
+Correct Answer: A. SELECT * FROM Customer WHERE Balance > (SELECT AVG(Balance) FROM Customer);
+Explanation: The subquery calculates the average balance, and the outer query selects customers whose balance exceeds that result. A subquery allows the result of one query to be used by another.
+117. What is a subquery?
+A. A query that can never return data B. A command that permanently deletes a database C. A query nested inside another SQL statement D. A synonym for a primary key
+Correct Answer: C. A query nested inside another SQL statement
+Explanation: A subquery is enclosed within another query or statement and supplies a result used by the outer operation. Subqueries can appear in places such as WHERE, FROM, and SELECT, depending on the query and DBMS.
+118. Which clause is generally evaluated logically before ORDER BY in a simple SQL SELECT query?
+A. ORDER BY B. LIMIT in all DBMS implementations C. The final output formatting stage only D. WHERE
+Correct Answer: D. WHERE
+Explanation: In the logical processing order of a typical query, row filtering with WHERE occurs before final ordering with ORDER BY. The textual order of SQL clauses differs from the logical order in which the query is evaluated.
+119. Which SQL statement grants privileges to a database user?
+A. REVOKE B. GRANT C. ROLLBACK D. COMMIT
+Correct Answer: B. GRANT
+Explanation: GRANT assigns specified privileges or roles to users or other database principals. REVOKE removes applicable privileges, while COMMIT and ROLLBACK control transaction outcomes.
+120. Which SQL command is used to remove previously granted privileges?
+A. REVOKE B. INSERT C. SAVEPOINT D. SELECT
+Correct Answer: A. REVOKE
+Explanation: REVOKE withdraws specified permissions according to the DBMS's authorization model. It is a database security command, not a data retrieval or row modification command.
+121. Which command permanently confirms the changes of a transaction?
+A. ROLLBACK B. DELETE C. COMMIT D. GRANT
+Correct Answer: C. COMMIT
+Explanation: COMMIT makes the transaction's changes permanent according to the DBMS's transaction guarantees. After a successful commit, ordinary rollback of that completed transaction is no longer available.
+122. Which SQL command cancels uncommitted changes in a transaction, subject to the transaction and DBMS rules?
+A. COMMIT B. GRANT C. CREATE D. ROLLBACK
+Correct Answer: D. ROLLBACK
+Explanation: ROLLBACK undoes eligible uncommitted transaction changes. It is particularly important when a multi-step operation fails and the database must return to a consistent state.
+123. What is the purpose of a database view?
+A. To create a physical monitor display B. To present a query-defined representation of data, often for simplification or access control C. To guarantee that all database queries are faster D. To replace all base tables permanently
+Correct Answer: B. To present a query-defined representation of data, often for simplification or access control
+Explanation: A view presents data derived from a query without necessarily storing a separate copy of the underlying rows. Views can simplify reporting and restrict which columns or rows particular users see, but they do not automatically guarantee security or performance.
+124. Which statement about SQL is correct?
+A. SQL is used only to format text documents. B. SQL cannot retrieve data from multiple tables. C. SQL supports both data retrieval and data definition. D. SQL is an operating system.
+Correct Answer: C. SQL supports both data retrieval and data definition.
+Explanation: SQL includes commands for retrieving and manipulating data as well as defining database objects. Its capabilities also include permissions and transaction control, with some implementation differences across database systems.
+125. A bank employee wants to see the total transaction amount for each branch, but only for branches whose total exceeds 10 million. Which SQL features are most appropriate?
+A. GROUP BY and HAVING B. ORDER BY and INSERT C. DROP and UPDATE D. CREATE and GRANT
+Correct Answer: A. GROUP BY and HAVING
+Explanation: GROUP BY calculates a total for each branch, while HAVING filters the resulting groups according to their aggregate totals. A typical query would group by branch and use HAVING SUM(Amount) > 10000000.
+Section 4: Data, Information and Information Systems (Questions 126–160)
+126. What is the fundamental difference between data and information?
+A. Data is always accurate, whereas information is always inaccurate. B. Data consists only of numbers, whereas information consists only of text. C. Data represents raw facts, while information is data processed or interpreted to provide meaning. D. Data requires a database, whereas information cannot be stored electronically.
+Correct Answer: C. Data represents raw facts, while information is data processed or interpreted to provide meaning.
+Explanation: Data may consist of raw transaction amounts, dates, or customer identifiers. When these facts are organized and interpreted—for example, to calculate total daily deposits—they become useful information.
+127. Which of the following is the best example of raw data in a bank?
+A. A list of individual deposit transaction amounts before summarization B. A report showing the monthly growth rate of deposits C. An analysis identifying the most profitable branch D. A forecast of next year's loan demand
+Correct Answer: A. A list of individual deposit transaction amounts before summarization
+Explanation: Individual transaction amounts are raw facts that can be processed further. A growth report, profitability analysis, or forecast represents information derived through analysis or interpretation.
+128. A bank processes its daily transactions and calculates total deposits, total withdrawals, and the net change in balances. The calculated results are best described as —
+A. Hardware B. Raw input devices C. Operating-system instructions D. Information
+Correct Answer: D. Information
+Explanation: The bank has transformed individual transaction data into meaningful summaries. These results help managers understand financial activity and make decisions.
+129. Which of the following is NOT generally a characteristic of high-quality information?
+A. Accuracy B. Deliberate inconsistency C. Relevance D. Timeliness
+Correct Answer: B. Deliberate inconsistency
+Explanation: Useful information should be accurate, relevant, timely, and sufficiently complete for its purpose. Deliberate inconsistency reduces reliability and may lead to poor decisions.
+130. Which characteristic indicates that information is available when it is needed?
+A. Redundancy B. Complexity C. Timeliness D. Duplication
+Correct Answer: C. Timeliness
+Explanation: Timely information is available within the period in which it remains useful. For banking operations, delayed fraud alerts may be less effective than alerts delivered promptly.
+131. Information that directly supports a particular decision is described as —
+A. Relevant B. Redundant C. Obsolete D. Unstructured
+Correct Answer: A. Relevant
+Explanation: Relevant information helps address the problem or decision under consideration. A branch manager assessing staffing needs, for example, benefits from workload and transaction-volume data rather than unrelated information.
+132. What is an Information System (IS)?
+A. A device used exclusively to store passwords B. A collection of computer monitors connected together C. A database table without users or procedures D. An organized combination of people, processes, data, and technology used to collect, process, store, and distribute information
+Correct Answer: D. An organized combination of people, processes, data, and technology used to collect, process, store, and distribute information
+Explanation: An information system combines technological and organizational components to support operations, coordination, and decision-making. It is broader than a database or an individual computer program.
+133. Which of the following is a major component of an information system?
+A. Only the computer's keyboard B. People, procedures, data, software, and hardware C. Only the database server D. Only the organization's printed reports
+Correct Answer: B. People, procedures, data, software, and hardware
+Explanation: Information systems depend on people and processes as well as technical resources. Networks and other supporting infrastructure are also commonly included in broader descriptions of information-system components.
+134. What is the primary purpose of a Transaction Processing System (TPS)?
+A. To develop national economic policies independently B. To create only multimedia presentations C. To process routine, recurring business transactions D. To replace every management decision
+Correct Answer: C. To process routine, recurring business transactions
+Explanation: A TPS records and processes operational events such as deposits, withdrawals, purchases, and payments. Banking transaction systems require reliable processing, validation, and appropriate transaction controls.
+135. Which information system primarily supports routine operational activities such as recording customer deposits and withdrawals?
+A. Transaction Processing System (TPS) B. Executive Support System (ESS) only C. Computer-Aided Design system D. Word-processing system
+Correct Answer: A. Transaction Processing System (TPS)
+Explanation: A TPS handles high-volume, repetitive transactions generated by day-to-day operations. Management information systems can subsequently use transaction data to produce summaries and reports.
+136. What is the principal function of a Management Information System (MIS)?
+A. To manufacture computer chips B. To replace all transaction-processing systems C. To provide entertainment to employees D. To provide organized information and reports that support managerial planning, monitoring, and control
+Correct Answer: D. To provide organized information and reports that support managerial planning, monitoring, and control
+Explanation: An MIS transforms organizational data into useful management reports. For example, a banking MIS may provide branch-wise deposit, loan, recovery, and operational performance summaries.
+137. Which information system is most directly associated with supporting complex, partly unstructured managerial decisions through models and analytical tools?
+A. Word Processing System B. Decision Support System (DSS) C. Basic file-compression utility D. Device driver
+Correct Answer: B. Decision Support System (DSS)
+Explanation: A DSS helps decision-makers analyze alternatives using data, models, and analytical techniques. It supports human judgment rather than necessarily making every decision automatically.
+138. Which system is designed primarily to provide senior executives with summarized strategic information and indicators?
+A. Simple text editor B. Device driver C. Executive Support System (ESS) D. Compiler
+Correct Answer: C. Executive Support System (ESS)
+Explanation: An ESS presents high-level information for strategic planning and monitoring. It may combine internal performance indicators with relevant external information.
+139. What is the primary role of an Office Automation System (OAS)?
+A. To support routine office activities such as document preparation, communication, and scheduling B. To manage only database transaction logs C. To replace the organization's entire accounting system D. To control the physical manufacturing of processors
+Correct Answer: A. To support routine office activities such as document preparation, communication, and scheduling
+Explanation: Office automation tools include word processors, email, spreadsheets, calendars, and collaboration software. They improve the efficiency of routine administrative and communication tasks.
+140. Which information system is most closely associated with integrating business processes such as finance, procurement, inventory, and human resources?
+A. Antivirus software B. A standalone calculator C. A simple text editor D. Enterprise Resource Planning (ERP) system
+Correct Answer: D. Enterprise Resource Planning (ERP) system
+Explanation: An ERP system integrates major organizational processes, often using shared data and coordinated workflows. This can reduce fragmented information across departments and improve operational visibility.
+141. Which system is specifically designed to manage an organization's interactions with customers, including sales and service history?
+A. Operating System B. Customer Relationship Management (CRM) system C. Compiler D. Disk defragmentation utility
+Correct Answer: B. Customer Relationship Management (CRM) system
+Explanation: CRM systems help organizations manage customer information, communication, sales activities, and service relationships. Banks can use CRM tools to track customer inquiries and improve service coordination.
+142. What is the main purpose of a Supply Chain Management (SCM) information system?
+A. To manage only employee passwords B. To create computer-generated artwork C. To coordinate activities involving sourcing, production, inventory, and distribution D. To replace all accounting principles
+Correct Answer: C. To coordinate activities involving sourcing, production, inventory, and distribution
+Explanation: SCM systems support the movement of goods, materials, and related information across a supply chain. Their goal is to improve coordination, visibility, and operational efficiency.
+143. Which of the following best distinguishes an MIS from a TPS?
+A. An MIS typically provides summarized management information, whereas a TPS records and processes routine transactions. B. An MIS is always hardware, whereas a TPS is always a person. C. An MIS cannot use transaction data. D. A TPS is designed only for strategic forecasting.
+Correct Answer: A. An MIS typically provides summarized management information, whereas a TPS records and processes routine transactions.
+Explanation: TPS handles operational events such as payments and deposits, while MIS uses organizational data to produce useful reports. The systems are complementary rather than mutually exclusive.
+144. A bank manager compares monthly deposit growth across branches to identify underperforming branches. Which information-system function is being demonstrated?
+A. Hardware manufacturing B. Data encryption alone C. Operating-system booting D. Management reporting and performance monitoring
+Correct Answer: D. Management reporting and performance monitoring
+Explanation: Comparing branch performance is a managerial activity supported by reports and analytical summaries. An MIS or a suitable business-intelligence system can provide these comparisons.
+145. What is the main purpose of a Human Resource Information System (HRIS)?
+A. To manage internet routing tables B. To maintain and process human-resource information C. To execute machine instructions D. To encrypt every network packet
+Correct Answer: B. To maintain and process human-resource information
+Explanation: An HRIS can manage employee records, attendance, payroll-related information, leave, and recruitment data. It supports administrative efficiency and human-resource reporting.
+146. Which phase of the information-processing cycle converts input data into a useful form?
+A. Data destruction B. Device installation C. Processing D. Physical transportation
+Correct Answer: C. Processing
+Explanation: Processing includes activities such as sorting, calculating, classifying, validating, and summarizing data. The resulting information can then be stored, communicated, or used in decisions.
+147. Which of the following is an example of information output from a banking information system?
+A. A daily report showing total deposits and withdrawals by branch B. An unprocessed list of individual transaction messages C. A blank data-entry form D. A disconnected keyboard
+Correct Answer: A. A daily report showing total deposits and withdrawals by branch
+Explanation: The report presents processed transaction data in a form useful for monitoring and decisions. The underlying individual transactions are input data for the reporting process.
+148. What is feedback in an information system?
+A. The permanent removal of every record B. The replacement of all system users C. A physical connection between two keyboards D. Information about system performance or output used to adjust or improve subsequent operations
+Correct Answer: D. Information about system performance or output used to adjust or improve subsequent operations
+Explanation: Feedback allows a system to compare actual performance with intended results and make adjustments. For example, failed transaction reports may prompt improvements in validation or operational procedures.
+149. Which of the following best describes an online transaction processing system (OLTP)?
+A. A system used exclusively for historical research B. A system designed for interactive, routine transaction processing C. A system that cannot modify records D. A system used only to create static images
+Correct Answer: B. A system designed for interactive, routine transaction processing
+Explanation: OLTP systems support operational transactions such as account transfers, payments, and sales. They typically emphasize rapid response, concurrency control, and transaction correctness.
+150. Which workload is most characteristic of Online Analytical Processing (OLAP)?
+A. Recording a single deposit as it occurs B. Updating one customer's phone number C. Analyzing several years of transactions by region, product, and time D. Printing one receipt without further analysis
+Correct Answer: C. Analyzing several years of transactions by region, product, and time
+Explanation: OLAP supports multidimensional analysis and complex queries over substantial datasets. OLTP focuses on routine transactions, while OLAP focuses on analysis and decision support.
+151. Which statement correctly distinguishes OLTP from OLAP?
+A. OLTP typically handles operational transactions, whereas OLAP emphasizes analytical queries and summaries. B. OLTP is exclusively for spreadsheets, whereas OLAP is exclusively for email. C. OLTP never modifies data, whereas OLAP always modifies every record. D. OLTP and OLAP are different names for a keyboard.
+Correct Answer: A. OLTP typically handles operational transactions, whereas OLAP emphasizes analytical queries and summaries.
+Explanation: OLTP systems are optimized for many short, operational transactions. OLAP systems are designed for analytical workloads that examine trends, aggregates, and relationships across data.
+152. What is the principal purpose of a business intelligence (BI) system?
+A. To replace all database security controls B. To manufacture networking hardware C. To execute only operating-system commands D. To transform organizational data into analytical insights for decision-making
+Correct Answer: D. To transform organizational data into analytical insights for decision-making
+Explanation: BI tools support reporting, dashboards, analysis, and performance monitoring. They help decision-makers understand business conditions using collected and processed data.
+153. Which of the following is an example of a Key Performance Indicator (KPI) in banking?
+A. The color of a database server B. The number of completed transactions within a specified period C. The brand of an employee's keyboard D. The file extension of a report
+Correct Answer: B. The number of completed transactions within a specified period
+Explanation: A KPI measures performance against an operational or strategic objective. Other banking KPIs may include processing time, loan recovery rate, service availability, or customer satisfaction.
+154. Which information-system characteristic is especially important when processing sensitive banking information?
+A. Unrestricted access for all employees B. Permanent use of shared passwords C. Confidentiality, integrity, and availability D. Elimination of all audit records
+Correct Answer: C. Confidentiality, integrity, and availability
+Explanation: The CIA triad describes three core information-security objectives. Confidentiality limits unauthorized disclosure, integrity protects correctness and completeness, and availability ensures authorized access when needed.
+155. Which principle means that users should receive only the permissions necessary to perform their assigned duties?
+A. Principle of least privilege B. Unlimited access principle C. Data duplication principle D. Open-password principle
+Correct Answer: A. Principle of least privilege
+Explanation: Least privilege limits the potential damage from compromised accounts or mistakes. A bank employee responsible for viewing account information need not automatically receive permission to modify all customer records.
+156. What is an audit trail in an information system?
+A. A physical path between office buildings B. A list of available keyboard shortcuts C. A database table containing only empty fields D. A record of relevant activities, events, or changes that supports traceability and review
+Correct Answer: D. A record of relevant activities, events, or changes that supports traceability and review
+Explanation: Audit trails can record who performed an action, what happened, and when it occurred. Properly protected logs support accountability, investigations, and compliance.
+157. Why is access logging important in a banking information system?
+A. It guarantees that no employee can ever make a mistake. B. It helps trace and investigate access to sensitive resources. C. It automatically makes every password unbreakable. D. It removes the need for authorization controls.
+Correct Answer: B. It helps trace and investigate access to sensitive resources.
+Explanation: Access logs support monitoring and incident investigation by recording relevant events. Logging complements authentication and authorization; it does not replace them.
+158. What is the principal purpose of a Management Information System's periodic report?
+A. To make data inaccessible to managers B. To destroy historical information automatically C. To provide regularly prepared information for monitoring and control D. To replace the organization's transaction database
+Correct Answer: C. To provide regularly prepared information for monitoring and control
+Explanation: Periodic reports summarize organizational activity over defined intervals, such as daily, weekly, or monthly. Managers use them to monitor performance, identify deviations, and take corrective action.
+159. Which system is best suited to support a bank's automated processing of salary payments for thousands of employees?
+A. A Transaction Processing System B. A presentation-design application C. A standalone image editor D. A desktop wallpaper utility
+Correct Answer: A. A Transaction Processing System
+Explanation: Salary disbursement involves numerous operational transactions that require accurate processing and reliable records. A TPS can handle the routine transactions, while reporting systems may summarize the results afterward.
+160. A bank combines customer data, transaction history, and credit information to evaluate loan applicants. What is the main information-system benefit?
+A. It eliminates the need for human judgment in every case. B. It guarantees that every applicant will repay a loan. C. It makes all customer information public. D. It supports more informed decisions by integrating relevant data.
+Correct Answer: D. It supports more informed decisions by integrating relevant data.
+Explanation: Combining relevant data can give authorized decision-makers a more complete view of an applicant's circumstances. The quality of the decision still depends on data accuracy, appropriate models, controls, and human oversight.
+Section 5: Data Warehousing, Data Mining and Analytical Concepts (Questions 161–200)
+161. What is a data warehouse?
+A. A physical room used only to store computer hardware B. A system designed exclusively for processing one transaction at a time C. A centralized analytical repository that integrates data for reporting and analysis D. A program used only to format documents
+Correct Answer: C. A centralized analytical repository that integrates data for reporting and analysis
+Explanation: A data warehouse combines data from relevant sources to support reporting, historical analysis, and decision-making. It is generally designed for analytical workloads rather than routine transaction processing.
+162. Which characteristic is traditionally associated with a data warehouse?
+A. It stores only temporary keyboard input. B. It is organized around subject areas and supports historical analysis. C. It must contain only unprocessed data from one source. D. It is intended solely for editing photographs.
+Correct Answer: B. It is organized around subject areas and supports historical analysis.
+Explanation: Traditional data warehouses are commonly described as subject-oriented, integrated, time-variant, and non-volatile. These characteristics support consistent historical analysis across organizational functions.
+163. In the traditional data-warehouse definition, what does “subject-oriented” mean?
+A. Data is organized around important subjects such as customers, sales, or accounts. B. Every record must contain a student's examination subject. C. Data is arranged only by file extension. D. The warehouse is used only by one individual.
+Correct Answer: A. Data is organized around important subjects such as customers, sales, or accounts.
+Explanation: Subject orientation organizes data around analytical topics relevant to the organization. A bank's warehouse might organize information around customers, loans, deposits, and transactions.
+164. What does “integrated” mean as a characteristic of a traditional data warehouse?
+A. The data can never be queried. B. Every source must use exactly the same original file format. C. The warehouse must contain only one database table. D. Data from different sources is reconciled into a consistent representation.
+Correct Answer: D. Data from different sources is reconciled into a consistent representation.
+Explanation: Integration resolves differences in naming, formats, codes, and other representations across sources. For example, separate systems may use different customer or branch codes that need to be standardized for meaningful analysis.
+165. What does “time-variant” mean in a traditional data warehouse?
+A. Its clock changes randomly. B. It contains only data from the current minute. C. It maintains historical data associated with different time periods. D. It cannot compare results across years.
+Correct Answer: C. It maintains historical data associated with different time periods.
+Explanation: Historical time information enables analysis of trends and changes over time. For example, a bank can compare annual deposit growth or loan defaults across multiple years.
+166. What does “non-volatile” generally mean in the traditional data-warehouse context?
+A. The system contains no stored data. B. Data is primarily loaded and queried rather than routinely overwritten through operational transactions. C. The warehouse cannot be backed up. D. The warehouse is physically disconnected from all networks.
+Correct Answer: B. Data is primarily loaded and queried rather than routinely overwritten through operational transactions.
+Explanation: Traditional warehouses emphasize stable analytical data that is periodically loaded and queried. This does not mean that warehouse data can never be corrected, refreshed, or deleted.
+167. Which system is generally better suited to analyzing five years of banking transactions across hundreds of branches?
+A. A data warehouse B. A keyboard driver C. A basic text editor D. A single transaction receipt printer
+Correct Answer: A. A data warehouse
+Explanation: A warehouse can integrate historical data and support complex analytical queries across branches and time periods. The operational transaction system remains essential for recording current transactions.
+168. What is the primary difference between a data warehouse and an operational database?
+A. An operational database can never store numeric data. B. A warehouse is always smaller than an operational database. C. A warehouse contains only text documents. D. An operational database typically supports current transactions, whereas a warehouse is optimized for analytical queries.
+Correct Answer: D. An operational database typically supports current transactions, whereas a warehouse is optimized for analytical queries.
+Explanation: Operational databases commonly support frequent inserts, updates, and short transactions. Warehouses are designed to support analysis of integrated data, often including historical information.
+169. What is a data mart?
+A. A type of computer monitor B. A database backup stored on paper C. A smaller, subject- or department-focused analytical data repository D. A programming language used exclusively for operating systems
+Correct Answer: C. A smaller, subject- or department-focused analytical data repository
+Explanation: A data mart focuses on a specific business area, such as finance, marketing, or risk. It may be supplied from an enterprise warehouse or developed through another controlled data-integration process.
+170. Which department-specific data mart would be most appropriate for analyzing a bank's loan portfolio and credit risk?
+A. A wallpaper-management repository B. A credit-risk or lending data mart C. A multimedia editing folder D. A printer configuration database
+Correct Answer: B. A credit-risk or lending data mart
+Explanation: A subject-focused data mart can provide relevant loan, repayment, collateral, and default information for risk analysis. Its usefulness depends on appropriate integration, data quality, and governance.
+171. What does ETL stand for in data warehousing?
+A. Extract, Transform, Load B. Evaluate, Transfer, Link C. Enter, Test, Launch D. Encrypt, Transmit, Log
+Correct Answer: A. Extract, Transform, Load
+Explanation: ETL extracts data from source systems, transforms it into a suitable format, and loads it into a target repository. Transformation can include cleaning, standardization, validation, and reconciliation.
+172. In an ETL process, which activity normally occurs during extraction?
+A. Creating a final executive decision automatically B. Deleting every historical record C. Designing a new computer processor D. Collecting data from source systems
+Correct Answer: D. Collecting data from source systems
+Explanation: Extraction obtains data from relevant source databases, files, or other systems. Transformation and loading then prepare the data and place it into the target warehouse.
+173. During ETL, a bank converts dates from different source formats into a consistent standard. Which stage is this?
+A. Extraction B. Loading C. Transformation D. Presentation
+Correct Answer: C. Transformation
+Explanation: Transformation modifies or standardizes extracted data so that it can be used consistently. Examples include normalizing date formats, reconciling codes, and validating values before loading.
+174. Which operation represents the loading stage of ETL?
+A. Collecting records from source applications B. Writing transformed data into the target warehouse C. Defining a new business strategy D. Designing a physical network cable
+Correct Answer: B. Writing transformed data into the target warehouse
+Explanation: Loading places prepared data into the target repository. Depending on the design, the load may be initial, incremental, or a refresh of selected data.
+175. What is the main purpose of data cleansing?
+A. To identify and correct or handle inaccurate, incomplete, inconsistent, or duplicate data B. To increase the number of incorrect records C. To convert all databases into word-processing files D. To eliminate the need for data validation
+Correct Answer: A. To identify and correct or handle inaccurate, incomplete, inconsistent, or duplicate data
+Explanation: Data cleansing improves the reliability of analytical results by addressing quality problems. Depending on the situation, the correct response may be to correct, standardize, flag, or remove problematic records.
+176. What is data mining?
+A. The physical extraction of minerals from computer hardware B. The routine printing of transaction statements C. The deletion of every record older than one day D. The discovery of useful patterns, relationships, or trends in data
+Correct Answer: D. The discovery of useful patterns, relationships, or trends in data
+Explanation: Data mining uses statistical, computational, and machine-learning techniques to discover patterns in datasets. Applications include customer segmentation, fraud detection, and identifying factors associated with loan default.
+177. Which of the following is an example of data mining in banking?
+A. Printing a blank deposit slip B. Changing the font of a transaction report C. Detecting unusual transaction patterns that may indicate fraud D. Replacing the bank's keyboard
+Correct Answer: C. Detecting unusual transaction patterns that may indicate fraud
+Explanation: Data mining can identify patterns or anomalies associated with potentially fraudulent activity. A suspicious pattern is an indicator for further assessment, not proof of fraud by itself.
+178. Which data-mining technique is commonly used to predict whether a loan applicant belongs to a default-risk category based on historical labeled examples?
+A. File compression B. Classification C. Text formatting D. Disk partitioning
+Correct Answer: B. Classification
+Explanation: Classification assigns observations to predefined categories using a model trained on labeled examples. A credit-risk model might classify applicants into risk categories, subject to appropriate validation and governance.
+179. Which data-mining technique groups customers according to similarity without requiring predefined category labels?
+A. Clustering B. Classification C. Transaction logging D. File indexing
+Correct Answer: A. Clustering
+Explanation: Clustering identifies groups of similar observations without requiring a predefined target label. Banks may use it to explore customer segments based on behavior or product usage.
+180. A bank wants to estimate next month's total transaction volume using historical monthly figures. Which analytical task is most appropriate?
+A. Database normalization B. Password hashing C. File compression D. Forecasting
+Correct Answer: D. Forecasting
+Explanation: Forecasting estimates future values using historical observations and potentially other relevant variables. Its accuracy depends on data quality, the model, changing conditions, and the time horizon.
+181. What is association-rule mining commonly used to discover?
+A. The physical location of every computer B. The exact password of each user C. Items or events that frequently occur together D. The color of a database interface
+Correct Answer: C. Items or events that frequently occur together
+Explanation: Association-rule mining identifies co-occurrence patterns, such as products often purchased together. In banking, similar techniques can explore relationships among product holdings or transaction behaviors, while avoiding unsupported causal conclusions.
+182. In association-rule mining, what does support generally measure?
+A. The number of computer processors in a system B. The proportion of transactions containing a specified itemset C. The physical weight of stored data D. The time required to open a spreadsheet
+Correct Answer: B. The proportion of transactions containing a specified itemset
+Explanation: Support measures how frequently an itemset appears in the transaction dataset. If 20 out of 100 transactions contain both A and B, the support for {A, B} is \(20/100 = 20\%\).
+183. In association-rule mining, what does confidence measure for the rule ?
+A. The proportion of transactions containing A that also contain B B. The proportion of all transactions containing neither A nor B C. The physical size of the database D. The number of columns in the source table
+Correct Answer: A. The proportion of transactions containing A that also contain B
+Explanation: Confidence is calculated as , provided the support of A is nonzero. A high confidence value indicates an observed association, not necessarily causation.
+184. Suppose 100 transactions are analyzed. Twenty contain both products A and B, while 40 contain A. What is the confidence of the rule ?
+A. 10% B. 20% C. 40% D. 50%
+Correct Answer: D. 50%
+Explanation: Confidence is the number of transactions containing both A and B divided by the number containing A. Therefore, \(20/40 \times 100 = 50\%\).
+185. Which data-mining technique is commonly used to identify unusual observations that differ substantially from normal patterns?
+A. Normalization B. Sorting C. Anomaly detection D. Page formatting
+Correct Answer: C. Anomaly detection
+Explanation: Anomaly detection identifies observations that deviate from expected patterns. It is useful for flagging potentially fraudulent transactions, unusual account activity, or system irregularities.
+186. What is predictive analytics primarily concerned with?
+A. Formatting previously printed reports B. Using historical data and analytical models to estimate future outcomes or unknown events C. Replacing all databases with text files D. Guaranteeing that every future event can be predicted exactly
+Correct Answer: B. Using historical data and analytical models to estimate future outcomes or unknown events
+Explanation: Predictive analytics uses methods such as regression, classification, and forecasting. Its results are estimates subject to uncertainty rather than guarantees of future events.
+187. Which statement best describes descriptive analytics?
+A. It summarizes historical or current data to explain what has happened or what is happening. B. It guarantees the best possible future decision. C. It automatically eliminates all data-quality issues. D. It exclusively creates artificial intelligence hardware.
+Correct Answer: A. It summarizes historical or current data to explain what has happened or what is happening.
+Explanation: Descriptive analytics includes summaries, dashboards, and reports showing patterns in existing data. Predictive analytics estimates future outcomes, while prescriptive analytics explores possible actions or recommendations.
+188. Which type of analytics focuses on recommending possible actions based on data, objectives, and constraints?
+A. Descriptive analytics B. File analytics C. Data-entry analytics D. Prescriptive analytics
+Correct Answer: D. Prescriptive analytics
+Explanation: Prescriptive analytics seeks to recommend or evaluate actions using methods such as optimization, simulation, or decision models. Its recommendations still require suitable objectives, assumptions, and governance.
+189. What is a data cube commonly associated with in data warehousing?
+A. Physical storage of data in a three-dimensional plastic object B. Encryption of database passwords C. Multidimensional analysis of measures across dimensions D. A network topology consisting of exactly eight computers
+Correct Answer: C. Multidimensional analysis of measures across dimensions
+Explanation: A data cube represents measures such as sales or transaction amounts across dimensions such as time, region, and product. It supports analytical operations that examine data at different levels of detail.
+190. In OLAP, which operation summarizes detailed data into a higher-level view, such as daily figures into monthly totals?
+A. Drill-down B. Roll-up C. Insert D. Delete
+Correct Answer: B. Roll-up
+Explanation: Roll-up aggregates data to a higher level in a dimension hierarchy. Drill-down does the opposite by moving from summarized information to greater detail.
+191. Which OLAP operation moves from a summarized view to more detailed data?
+A. Drill-down B. Roll-up C. Drop D. Revoke
+Correct Answer: A. Drill-down
+Explanation: Drill-down moves from a higher aggregation level to a more detailed level, such as from annual totals to quarterly or monthly figures. It helps analysts investigate the sources of a broader trend.
+192. What does the OLAP operation “slice” generally do?
+A. Deletes all data from a warehouse B. Splits a database server into physical pieces C. Removes the primary key from every table D. Fixes one dimension to a particular value to examine a subset of a multidimensional dataset
+Correct Answer: D. Fixes one dimension to a particular value to examine a subset of a multidimensional dataset
+Explanation: A slice selects a particular value of one dimension, such as analyzing transactions for one year. The resulting view focuses on a subset of the data cube.
+193. Which OLAP operation selects values across multiple dimensions to form a smaller analytical subcube?
+A. Roll-up B. Commit C. Dice D. Revoke
+Correct Answer: C. Dice
+Explanation: Dice selects a range or set of values across multiple dimensions. For example, an analyst might examine selected branches, products, and months within a larger warehouse.
+194. What is a fact table in a typical dimensional data-warehouse design?
+A. A table containing only employee passwords B. A table storing measurable business events and references to related dimensions C. A table that cannot contain numeric values D. A table used only for storing software licenses
+Correct Answer: B. A table storing measurable business events and references to related dimensions
+Explanation: A fact table commonly stores measures such as transaction amount, quantity, or cost alongside foreign keys to dimension tables. Its grain defines the level of detail represented by each row.
+195. What is the main purpose of a dimension table in a dimensional data warehouse?
+A. To provide descriptive context for facts, such as customer, branch, product, or time B. To replace all measures with passwords C. To record only failed operating-system boot attempts D. To remove every relationship from the warehouse
+Correct Answer: A. To provide descriptive context for facts, such as customer, branch, product, or time
+Explanation: Dimension tables contain descriptive attributes used to group, filter, and interpret measures. For example, a branch dimension may include branch name, location, and region.
+196. Which schema is characterized by a central fact table connected directly to denormalized dimension tables?
+A. Hierarchical schema B. Network schema C. Flat-file schema D. Star schema
+Correct Answer: D. Star schema
+Explanation: A star schema places the fact table at the center, with dimension tables connected around it. Its relatively simple structure is commonly used for reporting and analytical queries.
+197. Which data-warehouse schema commonly uses normalized dimension tables arranged across multiple related tables?
+A. Star schema only B. Flat-file schema C. Snowflake schema D. Document schema only
+Correct Answer: C. Snowflake schema
+Explanation: A snowflake schema normalizes dimension structures into additional related tables. This can reduce repeated dimension attributes but may require more joins than a typical star schema.
+198. What is a major purpose of data governance in an organization?
+A. To allow anyone to modify every database record B. To establish responsibilities, policies, standards, and controls for managing data C. To eliminate all data documentation D. To ensure that every department uses unrelated definitions
+Correct Answer: B. To establish responsibilities, policies, standards, and controls for managing data
+Explanation: Data governance establishes accountability for data quality, access, definitions, privacy, and lifecycle management. It helps ensure that data is managed consistently and responsibly across the organization.
+199. A bank discovers that two source systems represent the same branch using different codes. Why must this issue be addressed before combining the records in a data warehouse?
+A. To improve data integration and avoid incorrect analytical results B. To increase the number of duplicate branches C. To prevent every query from running D. To convert the warehouse into an operating system
+Correct Answer: A. To improve data integration and avoid incorrect analytical results
+Explanation: Inconsistent identifiers can cause records to be incorrectly separated or combined. Standardizing and mapping branch codes during data integration helps produce accurate reports and comparisons.
+200. A bank wants to combine historical transactions from multiple branches, analyze customer behavior, identify unusual activity, and prepare management reports. Which combination of technologies is most appropriate?
+A. Word processing, image editing, and presentation software alone B. A keyboard driver and a standalone calculator C. A file compressor and a desktop wallpaper utility D. A data warehouse, analytical tools, and data-mining techniques
+Correct Answer: D. A data warehouse, analytical tools, and data-mining techniques
+Explanation: A data warehouse integrates historical data from multiple sources, analytical tools support reporting and trend analysis, and data mining helps discover patterns or anomalies. Together, these capabilities support evidence-based management and fraud-risk investigation.

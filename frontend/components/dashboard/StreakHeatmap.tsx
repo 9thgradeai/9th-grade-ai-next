@@ -16,7 +16,7 @@ export default function StreakHeatmap({ activeDays, labels, freezeAvailable = fa
   const days = activeDays.slice(-7);
   const dayLabels = labels.slice(-7);
   const activeCount = days.filter(Boolean).length;
-  // Day cells pop in with a stagger on first mount only — silent
+  // Day cells pop in with a stagger on first mount only, silent
   // revalidations render the final state with no re-animation.
   const animateOnce = useFirstMountAnimate(fullMotion && days.length > 0);
 
@@ -37,7 +37,7 @@ export default function StreakHeatmap({ activeDays, labels, freezeAvailable = fa
         <motion.div
           key={i}
           className="flex flex-col items-center gap-1"
-          title={`${dayLabels[i]} — ${active ? t(lang, "পড়া হয়েছে", "studied") : t(lang, "পড়া হয়নি", "missed")}${i === days.length - 1 ? ` (${t(lang, "আজ", "today")})` : ""}`}
+          title={`${dayLabels[i]}, ${active ? t(lang, "পড়া হয়েছে", "studied") : t(lang, "পড়া হয়নি", "missed")}${i === days.length - 1 ? ` (${t(lang, "আজ", "today")})` : ""}`}
           variants={
             animateOnce
               ? {
@@ -65,7 +65,7 @@ export default function StreakHeatmap({ activeDays, labels, freezeAvailable = fa
       ))}
       {freezeAvailable && (
         <span
-          title="Streak Freeze available — protects one missed day"
+          title="Streak Freeze available, protects one missed day"
           aria-label="Streak Freeze available"
           className="ml-1 inline-flex h-5 w-5 items-center justify-center rounded-md border text-[11px]"
           style={{ borderColor: "var(--dashboard-info)", color: "var(--dashboard-info)", background: "var(--dashboard-info-subtle)" }}

@@ -4,7 +4,7 @@ import { Clock } from "@phosphor-icons/react";
 import { calmTimerLevel, formatClock } from "@/lib/exam-calm";
 
 /**
- * Phase 3 calm countdown — tabular numerals, progress bar, pulse ONLY at
+ * Phase 3 calm countdown, tabular numerals, progress bar, pulse ONLY at
  * ≤60s (motion-reduce safe). aria-live polite so screen readers aren't
  * spammed every second.
  */

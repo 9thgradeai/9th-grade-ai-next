@@ -93,7 +93,7 @@ export default function AuthExperience({
   )
 
   // Redirect already-authenticated AND email-verified visitors straight to the
-  // hall — the entry ceremony is only for people who still need to sign in.
+  // hall, the entry ceremony is only for people who still need to sign in.
   // Unverified accounts are deliberately NOT redirected away: doing so created
   // a redirect loop (/login -> /dashboard -> /verify-email -> /login) that
   // made it impossible to reach the sign-in form or log out. An unverified
@@ -216,7 +216,7 @@ export default function AuthExperience({
         await login(values.email, values.password, { redirect: false, remember: values.remember })
         setAccount({ name: deriveDisplayName(values.email), email: values.email })
         setSuccessKind("login")
-        // Skip verification ceremony on login — go straight to admit card
+        // Skip verification ceremony on login, go straight to admit card
         setStage("success")
       } catch (err) {
         const { message, code } = describeError(err)
@@ -280,7 +280,7 @@ export default function AuthExperience({
         await accountApi.resendVerification("demo@9thgrade.ai").catch(() => {})
         setAccount({ name: "Demo Examinee", email: "demo@9thgrade.ai" })
         setSuccessKind("login")
-        // Skip verification ceremony on demo — go straight to admit card
+        // Skip verification ceremony on demo, go straight to admit card
         setStage("success")
       } catch (err) {
         const { message } = describeError(err)
@@ -310,7 +310,7 @@ export default function AuthExperience({
     document.getElementById("auth-form-error")?.focus({ preventScroll: true })
   }, [error, stage])
 
-  // Avatar column — sits centered pre-light (hidden), then drops in once the
+  // Avatar column, sits centered pre-light (hidden), then drops in once the
   // lamp is turned on. Mobile stacks it above the content (vertical flow);
   // desktop places it to the LEFT of the content (split layout).
   const avatarColumn = (
@@ -331,7 +331,7 @@ export default function AuthExperience({
     </motion.div>
   )
 
-  // Content column — starts centered with the lamp, then opens with a subtle
+  // Content column, starts centered with the lamp, then opens with a subtle
   // slide as each step (choice / login / signup / success) mounts. It may
   // scroll internally on small screens so the page itself never scrolls.
   const contentColumn = (
@@ -342,7 +342,7 @@ export default function AuthExperience({
       <div className="my-auto flex w-full flex-col items-center justify-center">
       {stage === "lamp" && (
         <div className="flex w-full flex-col items-center gap-4 sm:gap-5">
-          {/* The dark scene — dissolves as the room fills with light */}
+          {/* The dark scene, dissolves as the room fills with light */}
           <AnimatePresence>
             {!lit && (
               <motion.div
@@ -367,7 +367,7 @@ export default function AuthExperience({
             )}
           </AnimatePresence>
 
-          {/* Unit-9 waits in the darkness — two LEDs and an antenna tip */}
+          {/* Unit-9 waits in the darkness, two LEDs and an antenna tip */}
           <AnimatePresence>
             {!lit && (
               <motion.div
@@ -415,7 +415,7 @@ export default function AuthExperience({
                 Turn on the light
               </button>
               <p className="text-center text-xs text-[var(--text-muted)]">
-                Pull the cord — your desk is ready, a million questions are waiting.
+                Pull the cord, your desk is ready, a million questions are waiting.
               </p>
             </motion.div>
           )}
@@ -536,7 +536,7 @@ export default function AuthExperience({
             <p className="mt-1 text-sm text-[var(--text-muted)]">
               {successKind === "signup"
                 ? "Your preparation starts the moment you step in."
-                : "The hall kept your place — let's keep going."}
+                : "The hall kept your place, let's keep going."}
             </p>
           </div>
           <button
@@ -621,7 +621,7 @@ export default function AuthExperience({
 
 /**
  * Live local time for the midnight-study scene. Renders a stable placeholder
- * on the server and first paint, then ticks every 15s — hydration-safe.
+ * on the server and first paint, then ticks every 15s, hydration-safe.
  */
 function LocalTime() {
   const [time, setTime] = useState<string | null>(null)
@@ -642,7 +642,7 @@ function LocalTime() {
   return <span className="tabular-nums">{time ?? "--:--"}</span>
 }
 
-/** "Entry pass" header strip — serial + live status dot. */
+/** "Entry pass" header strip, serial + live status dot. */
 function CardHeader({ serial }: { serial: string }) {
   return (
     <div className="mb-5">

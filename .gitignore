@@ -51,3 +51,9 @@ backups/
 .claude/
 skills-lock.json
 public/sw.js
+
+# Test / tooling artifacts (machine-local, reproducible)
+playwright-report/
+test-results/
+*.bak
+.console-check.mjs

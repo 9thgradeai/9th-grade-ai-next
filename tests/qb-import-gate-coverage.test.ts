@@ -41,6 +41,12 @@ const ALLOWLIST: Record<
     reason: "rewrites stored options order only (permutation of already-gated text, no new text)",
     allowedTextFields: ["options"],
   },
+  "scripts/import-bank-ict-docx-4.ts": {
+    reason:
+      "verbatim Bank ICT .docx importer (unicode-optimized source). Deliberately does NOT normalise: rawMath=true so the read path bypasses the LaTeX normalizer; source text stored byte-identical to the scanned book.",
+    allowedTextFields: ["question", "options", "correctAnswer", "explanation"],
+    markers: [/rawMath: true/],
+  },
   "scripts/migrate-bank-subjects.ts": {
     reason: "subjectId/topicId moves + dupe drops only (no text writes)",
     allowedTextFields: [],
@@ -63,6 +69,11 @@ const ALLOWLIST: Record<
     reason:
       "verbatim bank-math Unicode importer (.docx → Question). Sets rawMath=true for all imported rows, validates options/answer before any write, and does not attempt to canonicalize math text.",
     markers: [/rawMath: true/, /answer not in options/, /validation problems/],
+  },
+  "scripts/import-bank-math-updated-ii.ts": {
+    reason:
+      "verbatim bank-math updated-II importer (.docx → Question, OMML linearized to book-Unicode by scripts/docx-math-to-text.py). Sets rawMath=true on every row so the read path bypasses the LaTeX normalizer; dry-run by default (--apply required to write); never guesses broken items — incomplete records, doc-declared-unanswerable items and stemless fragments are skipped, and post-write verification asserts rawMath + answer∈options + numbering + per-leaf counts before reporting.",
+    markers: [/rawMath: true/, /answer not among options/, /DRY RUN/],
   },
 };
 
@@ -109,8 +120,10 @@ describe("import-gate coverage — all question-text writers are gated", () => {
       }
       if (entry.allowedTextFields) {
         // Every static `data:{...}` payload may only carry whitelisted text
-        // columns; anything else means the script grew a text write.
-        const payloads = src.match(/data:\s*\{([^{}]*)\}/g) ?? [];
+        // columns; anything else means the script grew a text write. The
+        // pattern tolerates template-literal ${...} interpolations, which
+        // contain a bare `{` (e.g. `sourceExam: \`Exam · ${slug}\``).
+        const payloads = src.match(/data:\s*\{((?:[^{}]|\$\{[^{}]*\})*)\}/g) ?? [];
         expect(payloads.length).toBeGreaterThan(0);
         for (const p of payloads) {
           const fields = [...p.matchAll(/(\w+)\s*:/g)].map((m) => m[1]);

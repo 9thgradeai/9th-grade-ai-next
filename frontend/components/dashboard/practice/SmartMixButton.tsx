@@ -7,7 +7,7 @@ import type { Server } from "@/lib/types";
 import { flattenNodes, type Selection } from "../TopicTreePicker";
 
 /**
- * SmartMixButton — "AI weak-topic mix" preset.
+ * SmartMixButton, "AI weak-topic mix" preset.
  * Pulls /api/weak-topics, maps the weakest entries onto the exam
  * subject tree, and hands a ready Selection back to the parent.
  */
@@ -30,7 +30,7 @@ export default function SmartMixButton({
     try {
       const weak = await api.weakTopics();
       if (!weak || weak.length === 0) {
-        setError("দুর্বল টপিক পাওয়া যায়নি — আগে কিছু প্র্যাকটিস করুন।");
+        setError("দুর্বল টপিক পাওয়া যায়নি, আগে কিছু প্র্যাকটিস করুন।");
         return;
       }
       const top = weak.slice(0, 3);

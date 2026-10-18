@@ -12,7 +12,7 @@ const jsonLd = {
   applicationCategory: "EducationalApplication",
   operatingSystem: "Web",
   description:
-    "Free AI-powered exam preparation for Bangladeshi government job aspirants — BCS, Bank, and Teacher recruitment. Full-length mock tests, spaced-repetition flashcards, study planner, and a bilingual AI tutor.",
+    "Free AI-powered exam preparation for Bangladeshi government job aspirants, BCS, Bank, and Teacher recruitment. Full-length mock tests, spaced-repetition flashcards, study planner, and a bilingual AI tutor.",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://9thgrade.ai",
   offers: { "@type": "Offer", price: "0", priceCurrency: "BDT" },
 };
@@ -39,7 +39,7 @@ export default async function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <HeroSection questionCount={questionCount} />
-      {/* Phase 4 — 5 narrative arcs (was 11 scattered sections). All original
+      {/* Phase 4, 5 narrative arcs (was 11 scattered sections). All original
           components preserved inside the arcs; each lazy chunk = one story beat. */}
       <LazySection name="ArcProblem" />
       <LazySection name="ArcIntelligence" />

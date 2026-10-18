@@ -1,15 +1,12 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
-
 /**
- * Shared ambient aurora orb — the product's signature depth accent.
+ * Shared ambient aurora orb, the product's signature depth accent.
  * Replaces the copy-pasted blurred-circle recipe used across the hero,
  * page heroes, and CTA sections.
  *
- * GPU-cheap: animates scale only, static under reduced motion.
- * Positioning (absolute/fixed + offsets) is owned by the caller via
- * `className`; wrap in a `motion.div` for scroll parallax.
+ * GPU-cheap: animates scale only via a pure CSS keyframe (`.aurora-breathe`),
+ * static under reduced motion. No framer-motion runtime required.
  */
 export default function AuroraOrb({
   className = "",
@@ -29,18 +26,21 @@ export default function AuroraOrb({
   breatheTo?: number;
   delay?: number;
 }) {
-  const shouldReduceMotion = useReducedMotion();
-
   return (
     <div
       aria-hidden="true"
       style={{ width: size, height: size, filter: `blur(${blur})` }}
       className={`rounded-full ${colorClass} pointer-events-none ${className}`}
     >
-      <motion.div
-        className="h-full w-full rounded-full"
-        animate={shouldReduceMotion ? undefined : { scale: [1, breatheTo, 1] }}
-        transition={{ duration, repeat: Infinity, ease: "easeInOut", delay }}
+      <div
+        className="aurora-breathe h-full w-full rounded-full"
+        style={
+          {
+            "--aurora-duration": `${duration}s`,
+            "--aurora-breathe-to": breatheTo,
+            "--aurora-delay": `${delay}s`,
+          } as React.CSSProperties
+        }
       />
     </div>
   );

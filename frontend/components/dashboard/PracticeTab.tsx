@@ -60,11 +60,11 @@ const QUICK_STORAGE_KEY = QUICK_EXAM_KEY;
 type PersistedQuickSession = {
   questions: Server.QuestionDTO[];
   // Selection is always string[] (single = 1-element). Legacy snapshots
-  // stored plain strings — normalized to arrays on resume below.
+  // stored plain strings, normalized to arrays on resume below.
   answers: Record<number, string[] | string>;
   multiLocked?: Record<number, true>;
   currentIndex: number;
-  /** Wall-clock session deadline basis — the server has no attempt row for
+  /** Wall-clock session deadline basis, the server has no attempt row for
    * quick practice, so the persisted start + duration is authoritative. */
   startsAt: number;
   durationSec: number;
@@ -117,7 +117,7 @@ export default function PracticeTab() {
   const [sessionActive, setSessionActive] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string[]>>({});
-  // Explicit locks for MULTIPLE_CHOICE only — single-choice locks on first
+  // Explicit locks for MULTIPLE_CHOICE only, single-choice locks on first
   // pick (presence), but multi needs several toggles before locking.
   const [multiLocked, setMultiLocked] = useState<Record<number, true>>({});
   const [flagged, setFlagged] = useState<Record<number, boolean>>({});
@@ -153,7 +153,7 @@ export default function PracticeTab() {
   const touchX = useRef<number | null>(null);
   const toast = useToastSafe();
   // Reduced-motion: entrances render in their final state (dashboard shell
-  // already wraps in MotionConfig reducedMotion="user" — this is the local
+  // already wraps in MotionConfig reducedMotion="user", this is the local
   // gate for the per-section fade-ups).
   const reduceMotion = useReducedMotion();
   // Review filters + lazy expansion: the result list can be long on mobile,
@@ -173,7 +173,7 @@ export default function PracticeTab() {
   const [durationMin, setDurationMin] = useState(10);
   const [durationTouched, setDurationTouched] = useState(false);
   // Session difficulty filter (ALL = mixed). Passed to /api/questions, which
-  // already validates it — the leaf counts stay difficulty-agnostic, so a
+  // already validates it, the leaf counts stay difficulty-agnostic, so a
   // narrow filter may yield fewer than requested (existing fallback applies).
   const [difficulty, setDifficulty] = useState<"ALL" | "EASY" | "MEDIUM" | "HARD">("ALL");
   const difficultyParam = difficulty === "ALL" ? undefined : difficulty;
@@ -192,7 +192,7 @@ export default function PracticeTab() {
     }
   };
 
-  // Load the selection tree — re-fetches on ecosystem toggle.
+  // Load the selection tree, re-fetches on ecosystem toggle.
   useEffect(() => {
     let cancelled = false;
     setConfigLoading(true);
@@ -214,7 +214,7 @@ export default function PracticeTab() {
     };
   }, [ecosystem]);
 
-  // Consume cross-tab practice intent (from Command Center) — pre-select subject and open quick practice.
+  // Consume cross-tab practice intent (from Command Center), pre-select subject and open quick practice.
   useEffect(() => {
     if (!practiceIntent?.subject || subjects.length === 0) return;
     if (mode !== "quick") {
@@ -243,7 +243,7 @@ export default function PracticeTab() {
       }
     }
   }, [practiceIntent, subjects, selection, setPracticeIntent]);
-  // Mode-only intent (Mock Exam vs Practice) — no subject
+  // Mode-only intent (Mock Exam vs Practice), no subject
   useEffect(() => {
     if (practiceIntent?.mode && !practiceIntent.subject) {
       const m = practiceIntent.mode;
@@ -254,7 +254,7 @@ export default function PracticeTab() {
         });
       }
     } else if (practiceIntent?.mode && practiceIntent.subject) {
-      // subject + mode together — consume once, then clear like the others.
+      // subject + mode together, consume once, then clear like the others.
       queueMicrotask(() => {
         setMode(practiceIntent.mode as typeof mode);
         setPracticeIntent(null);
@@ -334,7 +334,7 @@ export default function PracticeTab() {
       const saved = loadExamSnapshot<PersistedQuickSession>(QUICK_STORAGE_KEY);
       if (!saved) return;
       // Wall-clock expiry while away: a long-expired quick session can no
-      // longer be meaningfully resumed — drop it instead of reviving a dead
+      // longer be meaningfully resumed, drop it instead of reviving a dead
       // timer. Legacy snapshots without timing fields resume with a fresh
       // duration derived from the question count.
       const resumedDuration = saved.durationSec > 0 ? saved.durationSec : saved.questions.length * QUESTION_TIME_LIMIT;
@@ -376,7 +376,7 @@ export default function PracticeTab() {
   }, [sessionActive, result, questions, answers, multiLocked, currentIndex, sessionStartsAt, sessionDurationSec]);
 
   // When a quick-practice session starts or its result appears, always show the
-  // top (question 1 / score summary) — fix: previously kept previous scroll.
+  // top (question 1 / score summary), fix: previously kept previous scroll.
   useEffect(() => {
     if (sessionActive && questions.length > 0) {
       const id = requestAnimationFrame(() => scrollDashboardTop());
@@ -581,7 +581,7 @@ export default function PracticeTab() {
         if (isNetworkFailure(err)) {
           queuePracticeSubmit({ answers: payload, ecosystem: ecosystemRef.current, queuedAt: Date.now() });
           setOfflineQueued(true);
-          setSubmitError("অফলাইনে আছেন — উত্তর সংরক্ষিত আছে, সংযোগ ফিরলে আবার জমা দিন।");
+          setSubmitError("অফলাইনে আছেন, উত্তর সংরক্ষিত আছে, সংযোগ ফিরলে আবার জমা দিন।");
         }
         throw err;
       }
@@ -636,13 +636,13 @@ export default function PracticeTab() {
       requestAnimationFrame(() => scrollDashboardTop());
     } catch (err) {
       if (!isNetworkFailure(err)) {
-        // Server rejected it (not a connectivity blip) — surface the error
+        // Server rejected it (not a connectivity blip), surface the error
         // and drop the poison payload so it can't wedge future retries.
         clearQueuedPracticeSubmit();
         setOfflineQueued(false);
         setSubmitError("ফলাফল জমা দেওয়া যায়নি। আবার চেষ্টা করুন।");
       } else {
-        setSubmitError("এখনো অফলাইনে আছেন — সংযোগ ফিরলে আবার চেষ্টা করুন।");
+        setSubmitError("এখনো অফলাইনে আছেন, সংযোগ ফিরলে আবার চেষ্টা করুন।");
       }
     } finally {
       setSubmitting(false);
@@ -664,7 +664,7 @@ export default function PracticeTab() {
     // answers collected so far are preserved, nothing is silently discarded.
     if (resultRef.current) return;
     if (practiceSubmitInFlight.current) return;
-    toast.info("সময় শেষ — উত্তর জমা দেওয়া হচ্ছে");
+    toast.info("সময় শেষ, উত্তর জমা দেওয়া হচ্ছে");
     try {
       const qs = sessionQuestionsRef.current;
       if (qs.length === 0) return;
@@ -778,14 +778,14 @@ export default function PracticeTab() {
 
   return (
     <div className="space-y-6">
-      {/* Sprint 7: display-voice header — matches Home (eyebrow + Bricolage h1). */}
+      {/* Sprint 7: display-voice header, matches Home (eyebrow + Bricolage h1). */}
       <div>
         <p className="command-eyebrow">Practice</p>
         <h1 className="font-display text-xl font-semibold tracking-tight mt-1" style={{ color: "var(--dashboard-text-primary)" }}>
           প্র্যাকটিস
         </h1>
       </div>
-      {/* Mode cards — visual picker (mobile stack, desktop 3-col) */}
+      {/* Mode cards, visual picker (mobile stack, desktop 3-col) */}
       <motion.div
         initial={reduceMotion ? false : { opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -870,7 +870,7 @@ export default function PracticeTab() {
                   />
 
                   {/* Sticky one-handed start dock: totals + difficulty + time + start stay
-                      pinned above the bottom nav — no scrolling to begin. */}
+                      pinned above the bottom nav, no scrolling to begin. */}
                   <PracticeStartDock
                     totalCount={totalCount}
                     availableTotal={availableTotal}
@@ -893,7 +893,7 @@ export default function PracticeTab() {
                   />
                   {!durationTouched && totalCount > 0 && durationMin !== autoMin && (
                     <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">
-                      অটো সময় {autoMin} মিনিট ({formatDurationShort(autoSec)}) — প্রয়োজনে +/− দিয়ে বদলাতে পারেন।
+                      অটো সময় {autoMin} মিনিট ({formatDurationShort(autoSec)}), প্রয়োজনে +/− দিয়ে বদলাতে পারেন।
                     </p>
                   )}
 
@@ -906,7 +906,7 @@ export default function PracticeTab() {
                       <Warning className="w-4 h-4 flex-shrink-0 mt-0.5" />
                       <p>
                         নির্বাচিত টপিক থেকে শুধু <span className="font-mono">{availableTotal}টি</span> প্রশ্ন
-                        পাওয়া যায় — মোট <span className="font-mono">{totalCount}টি</span> চাওয়া হয়েছে।
+                        পাওয়া যায়, মোট <span className="font-mono">{totalCount}টি</span> চাওয়া হয়েছে।
                       </p>
                     </div>
                   )}
@@ -915,7 +915,7 @@ export default function PracticeTab() {
             </motion.div>
           )}
 
-          {/* Pre-exam confirmation — title, count, duration, scoring, finality.
+          {/* Pre-exam confirmation, title, count, duration, scoring, finality.
               Portaled (see ModalPortal): inline sheets trap under the mobile
               bottom nav. */}
           {showQuickConfirm && !sessionActive && (
@@ -992,7 +992,7 @@ export default function PracticeTab() {
               className="rounded-2xl border overflow-hidden"
               style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)", boxShadow: "var(--dashboard-shadow-sm)" }}
             >
-              {/* Sticky session bar — progress rail + palette + timer stay pinned
+              {/* Sticky session bar, progress rail + palette + timer stay pinned
                   while the stem/options scroll (overscroll-contain stops chain). */}
               <div className="sticky top-0 z-[var(--z-sticky)] border-b backdrop-blur-md" style={{ borderColor: "var(--dashboard-border-muted)", background: "color-mix(in srgb, var(--dashboard-surface-muted) 88%, transparent)" }}>
                 <div className="px-4 sm:px-5 pt-3 pb-2 flex items-center justify-between gap-2">
@@ -1029,7 +1029,7 @@ export default function PracticeTab() {
                     style={{ transform: `scaleX(${totalQuestions > 0 ? answeredCount / totalQuestions : 0})`, background: "var(--dashboard-primary)" }}
                   />
                 </div>
-                {/* Question palette — dots scroll horizontally, never wrap the bar taller.
+                {/* Question palette, dots scroll horizontally, never wrap the bar taller.
                     Legend below uses icon + text so status never relies on color alone. */}
                 <div className="px-4 sm:px-5 pt-2 flex items-center gap-1.5 overflow-x-auto overscroll-contain" role="group" aria-label="প্রশ্ন তালিকা">
                   {sessionQuestions.map((q, i) => {
@@ -1041,7 +1041,7 @@ export default function PracticeTab() {
                         key={q.id}
                         type="button"
                         onClick={() => gotoQuestion(i)}
-                        aria-label={`প্রশ্ন ${i + 1}${answered ? " — উত্তর দেওয়া" : ""}${current ? " — বর্তমান" : ""}${isFlagged ? " — ফ্ল্যাগ করা" : ""}`}
+                        aria-label={`প্রশ্ন ${i + 1}${answered ? ", উত্তর দেওয়া" : ""}${current ? ", বর্তমান" : ""}${isFlagged ? ", ফ্ল্যাগ করা" : ""}`}
                         aria-current={current ? "true" : undefined}
                         className={`flex-shrink-0 w-11 h-11 min-w-[44px] rounded-lg font-mono text-[11px] tabular-nums border cursor-pointer transition-[background-color,color,border-color] duration-150 [touch-action:manipulation] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] focus-visible:ring-offset-1 focus-visible:ring-offset-[var(--dashboard-surface)] ${
                           current ? "" : "hover:border-[var(--dashboard-primary)]/40"
@@ -1163,7 +1163,7 @@ export default function PracticeTab() {
                       </div>
                     )}
 
-                    {/* Sticky thumb nav — always in reach above the bottom nav */}
+                    {/* Sticky thumb nav, always in reach above the bottom nav */}
                     <div className="sticky z-[var(--z-sticky)] bottom-[calc(var(--bottom-nav-h)+env(safe-area-inset-bottom,0px)+8px)] lg:bottom-2 -mx-1 px-1 pt-2 pb-1" style={{ background: "linear-gradient(to top, var(--dashboard-surface) 70%, transparent)" }}>
                       <div className="flex items-center gap-2 rounded-2xl border p-2 backdrop-blur-md" style={{ background: "color-mix(in srgb, var(--dashboard-surface-muted) 92%, transparent)", borderColor: "var(--dashboard-border-muted)" }}>
                         <button
@@ -1208,7 +1208,7 @@ export default function PracticeTab() {
             </motion.div>
           )}
 
-          {/* Submit error + offline outbox — visible in-session (the result
+          {/* Submit error + offline outbox, visible in-session (the result
               panel only mounts on success, so failures need their own slot). */}
           {mode === "quick" && !loading && !result && (submitError || offlineQueued) && (
             <div className="rounded-2xl border p-4 flex flex-wrap items-center gap-3" style={{ borderColor: "var(--dashboard-warning)", background: "var(--dashboard-warning-subtle)" }} role="alert">
@@ -1360,7 +1360,7 @@ export default function PracticeTab() {
                           return ua.length > 0 && !isAnswerCorrect(q, ua);
                         })?.subject;
                         setMistakeIntent(wrongSubject ? { subject: wrongSubject } : null);
-                        router.push("/dashboard?tab=mistakes");
+                        router.push("/dashboard/mistakes");
                       }}
                       className="px-5 py-2.5 bg-[var(--dashboard-warning-subtle)] border border-[var(--dashboard-warning)]/30 font-mono text-sm rounded-xl hover:brightness-110 transition-all flex items-center gap-2"
                       style={{ color: "color-mix(in srgb, var(--dashboard-warning) 60%, var(--dashboard-text-primary))" }}
@@ -1371,7 +1371,7 @@ export default function PracticeTab() {
                 </div>
               </div>
 
-              {/* Review — filter tabs + lazy-expand disclosures (AI mounts on open) */}
+              {/* Review, filter tabs + lazy-expand disclosures (AI mounts on open) */}
               <div className="p-4 sm:p-5">
                 <div className="mb-3">
                   <TopicBars
@@ -1446,7 +1446,7 @@ export default function PracticeTab() {
                                   type="button"
                                   onClick={() => setExpandedReview((prev) => ({ ...prev, [q.id]: !prev[q.id] }))}
                                   aria-expanded={open}
-                                  aria-label={`প্রশ্ন ${i + 1} — ${verdictLabel} — ${open ? "সংকুচিত করুন" : "বিস্তারিত দেখুন"}`}
+                                  aria-label={`প্রশ্ন ${i + 1}, ${verdictLabel}, ${open ? "সংকুচিত করুন" : "বিস্তারিত দেখুন"}`}
                                   className="w-full flex items-center gap-3 p-3.5 min-h-[56px] text-left cursor-pointer transition-[background-color] duration-150 hover:bg-[var(--dashboard-surface-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--dashboard-focus-ring)]"
                                 >
                                   {isCorrect ? (

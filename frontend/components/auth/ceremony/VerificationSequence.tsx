@@ -7,7 +7,7 @@ import { Check } from "@phosphor-icons/react"
 /**
  * Post-authentication verification ceremony.
  *
- * Runs AFTER the real API has resolved — it never gates or fakes backend
+ * Runs AFTER the real API has resolved, it never gates or fakes backend
  * progress. If the network was slow, Unit-9's processing state already told
  * that story; this is the short, satisfying confirmation beat.
  */

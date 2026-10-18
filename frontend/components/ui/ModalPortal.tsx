@@ -12,13 +12,13 @@ import { createPortal } from "react-dom";
  * <main>, backdrop-blur sticky headers). Any `fixed inset-0` overlay
  * rendered inline is trapped inside that context, so the root-level
  * mobile bottom nav (z-sticky) paints ABOVE the sheet and swallows taps
- * on its footer — on phones the sheet's primary action becomes
+ * on its footer, on phones the sheet's primary action becomes
  * unreachable. Portaling escapes the trap; the --z-modal scale then
  * applies globally as designed.
  *
  * SSR-safe: renders nothing until mounted (no portal target on server).
  * Focus trapping (useDialogA11y), scroll locking (useScrollLock), and
- * AnimatePresence exit animations all keep working — they operate on
+ * AnimatePresence exit animations all keep working, they operate on
  * document/body level, independent of DOM location.
  */
 export default function ModalPortal({ children }: { children: ReactNode }) {

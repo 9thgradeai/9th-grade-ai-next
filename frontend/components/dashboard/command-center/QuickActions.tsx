@@ -22,7 +22,7 @@ type Action = {
   badge?: number | string;
 };
 
-// Bespoke 9Th-Grade AI emblem as a dock glyph — inherits the button colour.
+// Bespoke 9Th-Grade AI emblem as a dock glyph, inherits the button colour.
 const AiGlyph = ({ className }: { className?: string }) => <AiLogo solid={false} className={className} />;
 
 type Props = {
@@ -59,7 +59,7 @@ export default function QuickActions({ pendingMistakes = 0, flashcardsDue = null
 
   const navigate = useCallback((tab: TabId) => {
     setActiveTab(tab);
-    router.push(`/dashboard?tab=${tab}`);
+    router.push(`/dashboard/${tab}`);
   }, [setActiveTab, router]);
 
   const handle = useCallback((a: Action) => {

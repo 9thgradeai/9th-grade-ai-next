@@ -46,9 +46,9 @@ export function staggerParent(stagger = 0.08, delayChildren = 0): Variants {
 /** Purpose registry — every motion primitive documents what it communicates. */
 export const MOTION_PURPOSE = {
   fadeRise: "Reveals scroll-triggered content with a gentle fade-up",
-  heroItem: "Hero entrance — first impression, slow cinematic reveal",
-  staggerParent: "Cascading child reveals — creates rhythm in groups",
-  springMagnetic: "Magnetic cursor tracking — physical pull toward cursor",
-  springNav: "Navigation open/close — tactile panel expansion",
-  springTabSwitch: "Tab bar transitions — smooth content swaps",
+  heroItem: "Hero entrance, first impression, slow cinematic reveal",
+  staggerParent: "Cascading child reveals, creates rhythm in groups",
+  springMagnetic: "Magnetic cursor tracking, physical pull toward cursor",
+  springNav: "Navigation open/close, tactile panel expansion",
+  springTabSwitch: "Tab bar transitions, smooth content swaps",
 } as const;

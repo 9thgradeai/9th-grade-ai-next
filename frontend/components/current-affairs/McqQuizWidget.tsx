@@ -94,9 +94,9 @@ export default function McqQuizWidget({ mcqs, title, subtitle, dailyNoteId }: Mc
     try {
       const { summary } = await api.submitCurrentAffairsMcq(dailyNoteId, payload);
       setResult(summary);
-      toast.success(`Exam submitted — ${summary.correct}/${summary.total} correct (+${summary.pointsEarned} pts)`);
+      toast.success(`Exam submitted, ${summary.correct}/${summary.total} correct (+${summary.pointsEarned} pts)`);
     } catch {
-      toast.error("Could not submit your exam — try again.");
+      toast.error("Could not submit your exam, try again.");
     } finally {
       setSubmitting(false);
     }
@@ -153,7 +153,7 @@ export default function McqQuizWidget({ mcqs, title, subtitle, dailyNoteId }: Mc
           </button>
         ) : result ? (
           <p className="text-xs font-bold" style={{ color: "var(--dashboard-primary)" }}>
-            {result.correct}/{result.total} correct — {result.score}% · +{result.pointsEarned} pts saved to your progress
+            {result.correct}/{result.total} correct, {result.score}% · +{result.pointsEarned} pts saved to your progress
           </p>
         ) : (
           <>
@@ -176,7 +176,7 @@ export default function McqQuizWidget({ mcqs, title, subtitle, dailyNoteId }: Mc
       {answered === mcqs.length && (
         <div className="flex items-center justify-between border-b px-4 py-2" style={{ borderColor: "var(--dashboard-border-muted)", background: "var(--dashboard-primary-subtle)" }}>
           <p className="text-xs font-semibold" style={{ color: "var(--dashboard-primary)" }}>
-            {correct}/{mcqs.length} correct — {Math.round((correct / mcqs.length) * 100)}%
+            {correct}/{mcqs.length} correct, {Math.round((correct / mcqs.length) * 100)}%
           </p>
           <button
             type="button"

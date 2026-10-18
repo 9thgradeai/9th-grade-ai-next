@@ -1,21 +1,21 @@
-// 9Th-Grade AI assistant logo — "The Ninth Signal" (নব-তারা / Navotara).
+// 9Th-Grade AI assistant logo, "The Ninth Signal" (নব-তারা / Navotara).
 //
 // A bespoke mark drawn from the product's own identity instead of a generic
 // bot / brain / bubble / sparkle:
-//   · An open orbit ring — the loop of a "9", standing for the 9Th-Grade
+//   · An open orbit ring, the loop of a "9", standing for the 9Th-Grade
 //     brand and the 9th-pay-scale government posts the product serves.
-//   · An Aurora Iris spark nested inside the loop — the AI core that lights
+//   · An Aurora Iris spark nested inside the loop, the AI core that lights
 //     the knowledge orbit (teal → cyan → iris → magenta).
-//   · A tapering signal beam dropping from the loop — the "9"'s stem, drawn
+//   · A tapering signal beam dropping from the loop, the "9"'s stem, drawn
 //     as a shooting streak that guides aspirants up the career ladder.
-//   · A distant constellation node + spoke — kin to the BrandMark's knowledge
+//   · A distant constellation node + spoke, kin to the BrandMark's knowledge
 //     cosmos, so the AI emblem and the product mark read as one family.
 //
 // Two tones:
-//  - solid (default): deep-space tile + white glyph + gradient spark — used
+//  - solid (default): deep-space tile + white glyph + gradient spark, used
 //    as the launcher, the header mark and the navbar/bottom-nav AI chip. The
 //    dark tile mirrors BrandMark so both sit together without clashing.
-//  - soft: monochrome glyph in `currentColor` with a white spark — used inside
+//  - soft: monochrome glyph in `currentColor` with a white spark, used inside
 //    tinted avatar boxes so it inherits the surrounding accent colour.
 
 import { useId } from "react";
@@ -28,7 +28,7 @@ export type AiLogoProps = {
   solid?: boolean;
 };
 
-// Aurora Iris spectrum — the product's fixed brand gradient (DESIGN-SYSTEM.md).
+// Aurora Iris spectrum, the product's fixed brand gradient (DESIGN-SYSTEM.md).
 const AURORA_IRIS = [
   { offset: "0%", color: "#14b8a6" },
   { offset: "40%", color: "#22d3ee" },
@@ -38,10 +38,10 @@ const AURORA_IRIS = [
 
 // Open orbit ring = the loop ball of a "9", gap broken on the left where a
 // handwritten nine begins. The stem below exits the lower-right, so the whole
-// glyph reads as a numeral 9 — the 9Th-Grade pay scale the product serves.
+// glyph reads as a numeral 9, the 9Th-Grade pay scale the product serves.
 const RING = "M7.28 12.23 A4.1 4.1 0 1 0 7.28 8.77";
 
-// Tapered signal beam — the "9" stem drawn as a falling shooting streak that
+// Tapered signal beam, the "9" stem drawn as a falling shooting streak that
 // guides aspirants down to the answer line.
 const TAIL = "M14.4 12.6 C15.1 15 14.9 17.6 13.5 19.9 C12.9 17.2 12.6 14.7 12.4 12.9 Z";
 
@@ -49,7 +49,7 @@ const TAIL = "M14.4 12.6 C15.1 15 14.9 17.6 13.5 19.9 C12.9 17.2 12.6 14.7 12.4 
 // at every scale; verified by tests as the gradient-filled core.
 const SPARK = "M12 8.7l.95 2.2 2.2.95-2.2.95-.95 2.2-.95-2.2-2.2-.95 2.2-.95z";
 
-// Constellation spoke + node — one knowledge point bound to the orbit, kin to
+// Constellation spoke + node, one knowledge point bound to the orbit, kin to
 // BrandMark's cosmology, so the AI emblem and product mark share a family.
 const SPOKE = "M14 6.3 L17.1 6.5";
 
@@ -84,9 +84,9 @@ export default function AiLogo({ className, solid = true }: AiLogoProps) {
         <rect x="0.6" y="0.6" width="22.8" height="22.8" rx="6.5" fill="none" stroke={`url(#${gid}-g)`} strokeOpacity="0.35" strokeWidth="0.9" />
       )}
 
-      {/* signal beam — behind the ring so the junction reads as connected */}
+      {/* signal beam, behind the ring so the junction reads as connected */}
       <path d={TAIL} fill={solid ? `url(#${gid}-g)` : "currentColor"} opacity={solid ? 0.95 : 0.9} />
-      {/* orbit ring — the loop ball of the "9" */}
+      {/* orbit ring, the loop ball of the "9" */}
       <path
         d={RING}
         fill="none"

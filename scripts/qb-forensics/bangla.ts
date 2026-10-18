@@ -20,41 +20,53 @@
  * ----------------------------------------------------------------------------
  */
 
-export const BANGLA_ASSAMESE = "অআইঈউঊঋএঐওঔ";
-export const BANGLA_CONSONANTS = "কখগঘঙচছজঝঞটঠডঢণতথদধনপফবভমযরলশষসহয়ড়ঢ়";
-export const BANGLA_DIGITS = "০১২৩৪৫৬৭৮৯";
+export const BANGLA_ASSAMESE = "অআইঈউঊঋএঐওঔ"
+export const BANGLA_CONSONANTS = "কখগঘঙচছজঝঞটঠডঢণতথদধনপফবভমযরলশষসহয়ড়ঢ়"
+export const BANGLA_DIGITS = "০১২৩৪৫৬৭৮৯"
 /** Codes of dependent vowel signs stored AFTER the base in logical order. */
-export const DEPENDENT_VOWELS = "ািীুূৃেৈোৌৗ";
+export const DEPENDENT_VOWELS = "ািীুূৃেৈোৌৗ"
 /** Signs that PRE-base in the visual layout (rendered left of the stem). */
-export const PREBASE_MARKS = "িেৈোৌ";
+export const PREBASE_MARKS = "িেৈোৌ"
 /** Signs that render POST-base. */
-export const POSTBASE_MARKS = "ািীুূৃৗ";
+export const POSTBASE_MARKS = "ািীুূৃৗ"
 /** Everything that can legally follow a base letter in Bangla. */
-export const ATTACHING_MARKS = "ািীুূৃেৈোৌ্ৗংঃঁ";
+export const ATTACHING_MARKS = "ািীুূৃেৈোৌ্ৗংঃঁ"
 
-const IS_BASE = new Set<string>([...BANGLA_ASSAMESE, ...BANGLA_CONSONANTS]);
-const IS_PREBASE = new Set<string>([...PREBASE_MARKS]);
-const IS_MARK = new Set<string>([...ATTACHING_MARKS]);
+const IS_BASE = new Set<string>([...BANGLA_ASSAMESE, ...BANGLA_CONSONANTS])
+const IS_PREBASE = new Set<string>([...PREBASE_MARKS])
+const IS_MARK = new Set<string>([...ATTACHING_MARKS])
+
+export type MangleSignals = {
+  prebaseAtWordStart: boolean
+  loosenedRa: boolean
+  looseHasanta: boolean
+  invertedVowelOrder: boolean
+}
+
+/** Individual visual-order sub-signals (see hasMangleSignature). Exported so
+ * the import gate can tell corroborated corruption apart from a lone
+ * loose-hasanta, which is AMBIGUOUS evidence: explicit word-final হসন্ত is
+ * standard Bangla orthography (interrogative কোন্, ধাতু citations কহ্/পঠ্,
+ * transliterations জেমস্, loanwords ওয়ালীউল্লাহ্). */
+export function mangleSignals(s: string): MangleSignals {
+  const prebaseAtWordStart = new RegExp(`(^|[\\s(:{])[${PREBASE_MARKS}]`).test(s)
+  const loosenedRa = /[ক-হয়ড়ঢ়]\sর্/.test(s) || /\sর্\s/.test(s)
+  const looseHasanta = /্\s(?=[ক-হয়ড়ঢ়অ-ঔ])/.test(s)
+  const invertedVowelOrder =
+    /[\u09BE\u09BF\u09C0\u09C1\u09C2\u09C3][\u09C7\u09C8\u09CB\u09CC]/.test(s)
+  return { prebaseAtWordStart, loosenedRa, looseHasanta, invertedVowelOrder }
+}
 
 /** Detect whether `text` exhibits the visual-order / cluster-break corruption signature. */
 export function hasMangleSignature(s: string): boolean {
-  if (!/[ক-হয়ড়ঢ়অ-ঔ]/.test(s)) return false;
-  // A pre-base mark at a word boundary can never follow a base letter there,
-  // so it is unmistakably a visual-order artifact.
-  const prebaseAtWordStart = new RegExp(`(^|[\\s(:{])[${PREBASE_MARKS}]`).test(s);
-  // A hung (space-separated) ra-phala or hasanta-split conjunct.
-  const loosenedRa = /[ক-হয়ড়ঢ়]\sর্/.test(s) || /\sর্\s/.test(s);
-  const looseHasanta = /্\s(?=[ক-হয়ড়ঢ়অ-ঔ])/.test(s);
-  // A post-base mark immediately followed by a pre-base mark. This sequence is
-  // invalid in correct Bangla (they would NFC-compose, e.g. ে+া -> ো), so a
-  // raw "াে"/"িে"/"ুে"... indicates visual-order corruption such as "এখােন".
-  const invertedVowelOrder = /[\u09BE\u09BF\u09C0\u09C1\u09C2\u09C3][\u09C7\u09C8\u09CB\u09CC]/.test(s);
-  return prebaseAtWordStart || loosenedRa || looseHasanta || invertedVowelOrder;
+  if (!/[ক-হয়ড়ঢ়অ-ঔ]/.test(s)) return false
+  const t = mangleSignals(s)
+  return t.prebaseAtWordStart || t.loosenedRa || t.looseHasanta || t.invertedVowelOrder
 }
 
 /** Detect the unmistakable mangled "ব্যাখ্যা" header (বয্াখয্া and friends). */
 export function hasMangledHeader(s: string): boolean {
-  return /বযাখ্যা|বয্াখয্া|বযাখয্া/.test(s);
+  return /বযাখ্যা|বয্াখয্া|বযাখয্া/.test(s)
 }
 
 /**
@@ -79,7 +91,7 @@ const FOREIGN_INDIC_RANGES: Array<[number, number]> = [
   [0x0d05, 0x0d4f], // Malayalam
   [0x0d82, 0x0df3], // Sinhala
   [0x0f00, 0x0fcf], // Tibetan
-];
+]
 
 /**
  * True when the string contains any glyph from a sibling Indic script other
@@ -88,17 +100,17 @@ const FOREIGN_INDIC_RANGES: Array<[number, number]> = [
  */
 export function hasForeignIndicScript(s: string): boolean {
   for (const ch of s) {
-    const c = ch.codePointAt(0)!;
+    const c = ch.codePointAt(0)!
     for (const [lo, hi] of FOREIGN_INDIC_RANGES) {
-      if (c >= lo && c <= hi) return true;
+      if (c >= lo && c <= hi) return true
     }
   }
-  return false;
+  return false
 }
 
 /** Detect any stray multi-question scaffold leaking into a single field. */
 export function hasOptionMarkers(s: string): boolean {
-  return /\((ক|খ|গ|ঘ|ঙ|চ)\)/.test(s);
+  return /\((ক|খ|গ|ঘ|ঙ|চ)\)/.test(s)
 }
 
 /**
@@ -112,19 +124,21 @@ export function hasOptionMarkers(s: string): boolean {
  *     its common OCR-mangled spelling "প্রশ্ন ব্যাক ও সমাধান")
  */
 export function hasQuestionScaffold(s: string): boolean {
-  if (hasOptionMarkers(s)) return true;
-  const latinLines = s.match(/(^|\n)\s*[A-D][.)]\s+\S/g);
-  if (latinLines && latinLines.length >= 2) return true;
-  return hasSourceWatermark(s);
+  if (hasOptionMarkers(s)) return true
+  const latinLines = s.match(/(^|\n)\s*[A-D][.)]\s+\S/g)
+  if (latinLines && latinLines.length >= 2) return true
+  return hasSourceWatermark(s)
 }
 
 /** Detect a question-bank source-book watermark bleeding into content. */
 export function hasSourceWatermark(s: string): boolean {
-  return /বিসিএস\s*প্রশ্ন\s*ব্যাক\s*ও\s*সমাধান|বিসিএস\s*প্রশ্ন\s*ব্যাংক\s*ও\s*সমাধান|প্রশ্ন\s*ব্যাক\s*ও\s*সমাধান|প্রশ্ন\s*ব্যাংক\s*ও\s*সমাধান/.test(s);
+  return /বিসিএস\s*প্রশ্ন\s*ব্যাক\s*ও\s*সমাধান|বিসিএস\s*প্রশ্ন\s*ব্যাংক\s*ও\s*সমাধান|প্রশ্ন\s*ব্যাক\s*ও\s*সমাধান|প্রশ্ন\s*ব্যাংক\s*ও\s*সমাধান/.test(
+    s
+  )
 }
 
 export function hasExplicationMarker(s: string): boolean {
-  return /উত্তর|ব্যাখ্যা|বযাখ্যা/.test(s);
+  return /উত্তর|ব্যাখ্যা|বযাখ্যা/.test(s)
 }
 
 /**
@@ -138,7 +152,7 @@ export function stripSpuriousSpaces(s: string): string {
     .replace(new RegExp(`\\s(?=[${ATTACHING_MARKS}])`, "g"), "")
     .replace(/\s(?=র্)/g, "")
     .replace(/র্\s/g, "র্")
-    .replace(new RegExp(`[${ATTACHING_MARKS}]\\s`, "g"), (m) => m[0]);
+    .replace(new RegExp(`[${ATTACHING_MARKS}]\\s`, "g"), (m) => m[0])
 }
 
 /**
@@ -148,48 +162,48 @@ export function stripSpuriousSpaces(s: string): string {
  * `ে` + `া` NFC-compose to `ো`.
  */
 export function reorderToken(token: string): string {
-  const chars = [...token];
-  const pending: string[] = []; // pre-base marks seen before their base cluster
-  let out = "";
+  const chars = [...token]
+  const pending: string[] = [] // pre-base marks seen before their base cluster
+  let out = ""
 
   for (let i = 0; i < chars.length; i++) {
-    const ch = chars[i];
+    const ch = chars[i]
 
     if (IS_PREBASE.has(ch)) {
-      pending.push(ch);
-      continue;
+      pending.push(ch)
+      continue
     }
     if (IS_MARK.has(ch)) {
-      out += pending.join("") + ch;
-      pending.length = 0;
-      continue;
+      out += pending.join("") + ch
+      pending.length = 0
+      continue
     }
 
     // Base consonant: consume a conjunct (base ্ base) chain.
     if (IS_BASE.has(ch)) {
-      let j = i;
-      let cluster = ch;
+      let j = i
+      let cluster = ch
       // swallow ্ + base pairs
       while (j + 2 < chars.length && chars[j + 1] === "\u09CD" && IS_BASE.has(chars[j + 2])) {
-        cluster += "\u09CD" + chars[j + 2];
-        j += 2;
+        cluster += "\u09CD" + chars[j + 2]
+        j += 2
       }
       // trailing attaches (post-base marks / ্ / anusvara / candra)
-      let k = j + 1;
+      let k = j + 1
       while (k < chars.length && IS_MARK.has(chars[k]) && !IS_PREBASE.has(chars[k])) {
-        cluster += chars[k];
-        k++;
+        cluster += chars[k]
+        k++
       }
-      i = k - 1;
-      out += cluster + pending.join("");
-      pending.length = 0;
-      continue;
+      i = k - 1
+      out += cluster + pending.join("")
+      pending.length = 0
+      continue
     }
 
-    out += pending.join("") + ch;
-    pending.length = 0;
+    out += pending.join("") + ch
+    pending.length = 0
   }
-  return out + pending.join("");
+  return out + pending.join("")
 }
 
 /**
@@ -200,18 +214,21 @@ export function reorderToken(token: string): string {
  * 3. reorder each token
  */
 export function deshapeCandidate(s: string): string {
-  const deSpaced = stripSpuriousSpaces(s);
-  const tokens = deSpaced.split(/\s+/).filter(Boolean);
-  return tokens.map((t) => reorderToken(t)).join(" ").normalize("NFC");
+  const deSpaced = stripSpuriousSpaces(s)
+  const tokens = deSpaced.split(/\s+/).filter(Boolean)
+  return tokens
+    .map((t) => reorderToken(t))
+    .join(" ")
+    .normalize("NFC")
 }
 
 /** True when a field looks like run-of-the-mill OCR garbage (mismatched Latin / control mix). */
 export function looksLikeGarbage(s: string): boolean {
-  return hasReplacementChars(s) || /[ÃÂ]*â€[™"˜\u0093\u0094]/.test(s);
+  return hasReplacementChars(s) || /[ÃÂ]*â€[™"˜\u0093\u0094]/.test(s)
 }
 
-import { hasReplacementChar } from "./unicode";
+import { hasReplacementChar } from "./unicode"
 
 function hasReplacementChars(s: string): boolean {
-  return hasReplacementChar(s);
+  return hasReplacementChar(s)
 }

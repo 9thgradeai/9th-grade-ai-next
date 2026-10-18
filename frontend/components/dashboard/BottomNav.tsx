@@ -11,7 +11,7 @@ import { useLanguage, t } from "@/lib/lang-ctx";
 import { DotsThreeVertical, X } from "@phosphor-icons/react";
 import LogoutButton from "./LogoutButton";
 
-// Primary tabs come from @/lib/data BOTTOM_TAB_IDS — do not hardcode a separate list.
+// Primary tabs come from @/lib/data BOTTOM_TAB_IDS, do not hardcode a separate list.
 const SHORT_EN: Partial<Record<TabId, string>> = {
   home: "Home",
   practice: "Practice",
@@ -181,7 +181,7 @@ export default function BottomNav({ activeTab, onChange }: BottomNavProps) {
                           : { background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-primary)" }
                       }
                       aria-current={active ? "page" : undefined}
-                      aria-label={`${tab.label} — ${tab.bengali}`}
+                      aria-label={`${tab.label}, ${tab.bengali}`}
                     >
                       <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border" style={{ background: active ? "var(--dashboard-primary-subtle)" : "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}>
                         <Icon className="h-5 w-5" />

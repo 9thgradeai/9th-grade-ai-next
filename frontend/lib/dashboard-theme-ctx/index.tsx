@@ -9,7 +9,7 @@ type ThemePreference = "light" | "dark" | "system";
 type DashboardThemeContextValue = {
   /** Resolved theme actually applied to the scope (never "system"). */
   theme: ResolvedTheme;
-  /** Stored user preference — "system" follows the OS. */
+  /** Stored user preference, "system" follows the OS. */
   preference: ThemePreference;
   setPreference: (p: ThemePreference) => void;
   /** Back-compat: set an explicit theme. */
@@ -28,7 +28,7 @@ function readStoredPreference(): ThemePreference {
     const stored = localStorage.getItem(DASHBOARD_THEME_KEY);
     if (stored === "light" || stored === "dark" || stored === "system") return stored;
   } catch {
-    /* storage unavailable — ignore */
+    /* storage unavailable, ignore */
   }
   return "system";
 }
@@ -85,7 +85,7 @@ export function DashboardThemeProvider({ children }: { children: React.ReactNode
     try {
       localStorage.setItem(DASHBOARD_THEME_KEY, p);
     } catch {
-      /* storage unavailable — ignore */
+      /* storage unavailable, ignore */
     }
   }, []);
 
@@ -112,6 +112,25 @@ export function DashboardThemeProvider({ children }: { children: React.ReactNode
       value={{ theme: resolved, preference, setPreference, setTheme, toggleTheme }}
     >
       <div ref={scopeRef} className="dashboard-theme-scope" data-dashboard-theme={resolved}>
+        {/* Pre-paint theme resolver: the SSR markup carries the build-time
+            default ("light"), so without this the dark-themed dashboard first
+            paints the light sand shell and flips after hydration, the
+            reported "white flash on load". This script runs during body parse,
+            before the browser paints the subtree below it, reads the same
+            localStorage key + system preference the provider uses, and sets
+            the attribute in place. Hydration then matches the provider's own
+            synchronous read (localStorage is available at that point), so
+            React keeps the DOM value with no warning or repaint. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var p=null;try{p=localStorage.getItem("${DASHBOARD_THEME_KEY}");}catch(e){}
+var s=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";
+var t=(p==="light"||p==="dark")?p:s;
+var el=document.currentScript&&document.currentScript.closest(".dashboard-theme-scope");
+if(el){el.setAttribute("data-dashboard-theme",t);el.style.colorScheme=t;}
+}catch(e){}})();`,
+          }}
+        />
         {children}
       </div>
     </DashboardThemeContext.Provider>
@@ -146,7 +165,7 @@ export function ThemeToggle() {
         className="relative flex h-10 w-10 items-center justify-center rounded-xl border text-[var(--dashboard-text-muted)] transition-colors hover:text-[var(--dashboard-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
         style={{ borderColor: "var(--dashboard-border-muted)", background: "var(--dashboard-surface-muted)" }}
         aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} dashboard mode`}
-        title={cycling ? "Following system — click to set explicit mode" : undefined}
+        title={cycling ? "Following system, click to set explicit mode" : undefined}
       >
         {theme === "dark" ? <Moon className="h-[18px] w-[18px]" /> : <Sun className="h-[18px] w-[18px]" />}
       </button>

@@ -34,7 +34,7 @@ export type MissionDescriptor = {
 
 /**
  * Picks the single highest-value mission for "what should I do now?" from REAL
- * server-side analytics. Deterministic — never invented. Falls back to an
+ * server-side analytics. Deterministic, never invented. Falls back to an
  * honest onboarding mission when the candidate has no data yet.
  */
 export function selectMission(
@@ -59,7 +59,7 @@ function missionFromRecommendation(
         id: rec.id,
         title: bn("প্রথম ডায়াগনস্টিক দিন", "Take your first diagnostic"),
         sub: bn("১০টি প্রশ্ন · ~৫ মিনিট", "10 questions · ~5 minutes"),
-        detail: bn("আপনার লেভেল মেপে প্রথম মিশন তৈরি করা হবে — এটাই শুরু।", "We'll measure your level and build your first mission from it."),
+        detail: bn("আপনার লেভেল মেপে প্রথম মিশন তৈরি করা হবে, এটাই শুরু।", "We'll measure your level and build your first mission from it."),
         estimateMin: 5,
         cta: bn("ডায়াগনস্টিক শুরু করুন", "Start diagnostic"),
         action: "practice",
@@ -70,7 +70,7 @@ function missionFromRecommendation(
         id: rec.id,
         title: bn("অসমাপ্ত মক টেস্ট শেষ করুন", "Finish your mock test"),
         sub: null,
-        detail: bn("একটি মক টেস্ট চলছে — শেষ করলে আপনার প্রস্তুতি হিসাব হালনাগাদ হবে।", "An in-progress mock test — finishing it refreshes your preparation snapshot."),
+        detail: bn("একটি মক টেস্ট চলছে, শেষ করলে আপনার প্রস্তুতি হিসাব হালনাগাদ হবে।", "An in-progress mock test, finishing it refreshes your preparation snapshot."),
         estimateMin: null,
         cta: bn("পরীক্ষা আবার শুরু করুন", "Resume test"),
         action: "quiz",
@@ -129,7 +129,7 @@ function missionFromRecommendation(
         id: rec.id,
         title: bn("আজকের চ্যালেঞ্জটি সম্পন্ন করুন", "Take today's challenge"),
         sub: bn("দৈনিক কুইজ", "Daily quiz"),
-        detail: bn("ছোট, দ্রুত ওয়ার্ম-আপ — স্ট্রিক সুরক্ষিত করুন।", "Short high-value warm-up that protects your streak."),
+        detail: bn("ছোট, দ্রুত ওয়ার্ম-আপ, স্ট্রিক সুরক্ষিত করুন।", "Short high-value warm-up that protects your streak."),
         estimateMin: 5,
         cta: bn("কুইজ শুরু করুন", "Start quiz"),
         action: "quiz",
@@ -151,7 +151,7 @@ function missionFromRecommendation(
         id: rec.id,
         title: bn("আজকের ওয়ার্ম-আপ সম্পন্ন করুন", "Complete today's warm-up"),
         sub: null,
-        detail: bn("আজ এখনো কোনো প্রশ্ন সমাধান হয়নি — ১০টি প্রশ্ন দিয়ে শুরু করুন।", "Nothing solved today — a quick set keeps your momentum."),
+        detail: bn("আজ এখনো কোনো প্রশ্ন সমাধান হয়নি, ১০টি প্রশ্ন দিয়ে শুরু করুন।", "Nothing solved today, a quick set keeps your momentum."),
         estimateMin: 10,
         cta: bn("ওয়ার্ম-আপ শুরু করুন", "Start warm-up"),
         action: "practice",
@@ -247,7 +247,7 @@ export default function TodayMission({
   const progressSentence = hasPlan
     ? t(lang, `${planDone} / ${planTotal} টি কাজ সম্পন্ন`, `${planDone} of ${planTotal} tasks done`)
     : hasOverall
-      ? t(lang, `${accuracy}% নির্ভুলতা — সব সময়ের গড়`, `${accuracy}% accuracy — all-time average`)
+      ? t(lang, `${accuracy}% নির্ভুলতা, সব সময়ের গড়`, `${accuracy}% accuracy, all-time average`)
       : t(lang, "প্রথম প্রশ্ন সমাধান করলে এখানে অগ্রগতি দেখা যাবে", "Solve your first question and progress appears here");
 
   const ORBIT_CIRCUMFERENCE = 2 * Math.PI * 44;
@@ -366,8 +366,8 @@ export default function TodayMission({
             <ShieldCheck className="w-3 h-3 shrink-0" aria-hidden="true" />
             {t(
               lang,
-              "মিশনটি আপনার সর্বশেষ ডেটা থেকে তৈরি — প্রতিটি সংখ্যা বাস্তব।",
-              "This mission is derived from your latest data — every figure is real.",
+              "মিশনটি আপনার সর্বশেষ ডেটা থেকে তৈরি, প্রতিটি সংখ্যা বাস্তব।",
+              "This mission is derived from your latest data, every figure is real.",
             )}
           </p>
         </div>

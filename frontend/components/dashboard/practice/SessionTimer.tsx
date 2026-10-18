@@ -12,7 +12,7 @@ function formatClock(totalSec: number): string {
 /**
  * Wall-clock session countdown. The deadline is derived from
  * `startsAt + durationSec` (authoritative, survives remounts and tab
- * switches) — the 1s interval only re-renders this leaf. Expiry fires once.
+ * switches), the 1s interval only re-renders this leaf. Expiry fires once.
  */
 export default function SessionTimer({
   startsAt,

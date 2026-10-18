@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import PublicShell from "@/components/public/PublicShell";
 import PageHero from "@/components/public/PageHero";
 import StatusPill from "@/components/ui/StatusPill";
 
-export const metadata: Metadata = {
-  alternates: { canonical: "/terms" },
-  title: "Terms of Service — 9Th-Grade AI",
+export const metadata: Metadata = pageMeta({
+  path: "/terms",
+  title: "Terms of Service | 9Th-Grade AI",
   description:
     "The terms governing your use of the 9Th-Grade AI platform. Last updated August 2026.",
-};
+});
 
 const sections = [
   {
@@ -43,7 +44,7 @@ const sections = [
     title: "5. AI-Generated Content",
     body: [
       "AI-generated answers are provided as-is for study assistance. They may be inaccurate, and they are clearly labelled as AI or mock output when no API key is configured.",
-      "AI output is never authoritative for exam answers or official decisions — always cross-check with official syllabi and sources.",
+      "AI output is never authoritative for exam answers or official decisions, always cross-check with official syllabi and sources.",
     ],
   },
   {

@@ -65,7 +65,7 @@ export function AuroraRing({
           />
         ))}
       </div>
-      {/* centered glyph — the animated subject sits on top */}
+      {/* centered glyph, the animated subject sits on top */}
       <div className="relative z-10" aria-hidden="true">
         <span className="text-gradient font-display font-bold" style={{ fontSize: size * 0.3 }}>
           9G

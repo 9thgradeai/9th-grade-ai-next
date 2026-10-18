@@ -44,7 +44,7 @@ export function deriveNextAction(input: RecommendInput): NextAction {
     return {
       id: "revise-before-exam",
       title: `${weakest.name} রিভিশন করুন`,
-      description: `${examTitle} এর মাত্র ${examDaysLeft} দিন বাকি — দুর্বল বিষয় ${weakest.name} (${weakest.score}%) এখন পড়ুন।`,
+      description: `${examTitle} এর মাত্র ${examDaysLeft} দিন বাকি, দুর্বল বিষয় ${weakest.name} (${weakest.score}%) এখন পড়ুন।`,
       cta: "অভ্যাস শুরু করুন",
       tab: "practice",
       intensity: "high",
@@ -56,7 +56,7 @@ export function deriveNextAction(input: RecommendInput): NextAction {
     return {
       id: "practice-weak",
       title: `${weakest.name} অভ্যাস করুন`,
-      description: `এই বিষয়ে আপনার সঠিকতা ${weakest.score}% — প্র্যাকটিস করে তা বাড়ান।`,
+      description: `এই বিষয়ে আপনার সঠিকতা ${weakest.score}%, প্র্যাকটিস করে তা বাড়ান।`,
       cta: "প্র্যাকটিস করুন",
       tab: "practice",
       intensity: "high",

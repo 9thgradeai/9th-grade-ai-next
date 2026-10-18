@@ -42,7 +42,9 @@ describe("HeroSection", () => {
     expect(screen.getByText(/AI that learns your weak spots/i)).toBeInTheDocument();
 
     const primary = screen.getByRole("link", { name: /Start for free/i });
-    expect(primary).toHaveAttribute("href", "/login?register=true");
+    // /register has its own URL (see app/register); ?register=true on /login
+    // is the legacy sibling that the login page still honours.
+    expect(primary).toHaveAttribute("href", "/register");
 
     const secondary = screen.getByRole("link", { name: /See how it works/i });
     expect(secondary).toHaveAttribute("href", "#signal");

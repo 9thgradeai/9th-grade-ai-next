@@ -52,7 +52,7 @@ export default function SideNav({ activeTab, onChange }: SideNavProps) {
       }}
       aria-label="Desktop navigation"
     >
-      {/* Brand — clean white with subtle border, premium minimal */}
+      {/* Brand, clean white with subtle border, premium minimal */}
       <div
         className={`flex items-center border-b ${collapsed ? "justify-center px-2 py-[18px]" : "gap-3.5 px-5 py-[18px]"}`}
         style={{ borderColor: "var(--sidebar-border, var(--dashboard-sidebar-border))", background: "var(--sidebar-bg, var(--dashboard-sidebar-bg))" }}
@@ -75,7 +75,7 @@ export default function SideNav({ activeTab, onChange }: SideNavProps) {
         <ExamSwitcher compact={collapsed} />
       </div>
 
-      {/* Grouped navigation — single shared NavRows source.
+      {/* Grouped navigation, single shared NavRows source.
           overscroll-contain: wheel events at the list boundaries must not
           chain out to the document, or the whole shell slides up revealing
           the body background. */}
@@ -106,7 +106,7 @@ export default function SideNav({ activeTab, onChange }: SideNavProps) {
               className="flex h-9 w-9 items-center justify-center rounded-full border text-sm font-semibold"
               style={{ background: "var(--dashboard-primary-subtle)", color: "var(--dashboard-primary)", borderColor: "var(--dashboard-border-muted)" }}
               role="img"
-              aria-label={`${displayName} — online`}
+              aria-label={`${displayName}, online`}
             >
               {displayInitial}
             </div>

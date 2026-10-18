@@ -1,0 +1,604 @@
+﻿Section A: Parts of Speech (Questions 1–70)
+1. Identify the part of speech of the word “fast” in: “He drives fast.”
+A. Adjective B. Adverb C. Noun D. Preposition
+Correct Answer: B. Adverb Explanation: “Fast” modifies the verb “drives,” explaining how he drives. A word that modifies a verb, adjective, or another adverb is an adverb.
+2. Which of the following is an abstract noun?
+A. Honesty B. Chair C. River D. Soldier
+Correct Answer: A. Honesty Explanation: An abstract noun names a quality, state, or idea that cannot be physically touched. “Honesty” is a quality, whereas the other options name concrete things or people.
+3. Identify the adjective in the sentence: “She bought an expensive watch.”
+A. She B. Bought C. Expensive D. Watch
+Correct Answer: C. Expensive Explanation: “Expensive” describes the noun “watch.” Adjectives commonly modify nouns or pronouns.
+4. Which word is a pronoun in the sentence “They invited us to the ceremony”?
+A. Invited B. Ceremony C. To D. They
+Correct Answer: D. They Explanation: “They” is a personal pronoun referring to people. “Us” is also a pronoun in the sentence.
+5. Identify the conjunction in: “He was tired, but he continued working.”
+A. Tired B. But C. Continued D. Working
+Correct Answer: B. But Explanation: “But” is a coordinating conjunction expressing contrast. It connects two clauses of equal grammatical status.
+6. Which of the following is an interjection?
+A. Alas! B. Slowly C. Beneath D. Honest
+Correct Answer: A. Alas! Explanation: An interjection expresses a sudden feeling or emotion. “Alas!” commonly expresses sorrow or regret.
+7. Identify the preposition in: “The documents are inside the drawer.”
+A. Documents B. Are C. Inside D. Drawer
+Correct Answer: C. Inside Explanation: “Inside” indicates the spatial relationship between the documents and the drawer. It functions as a preposition because it takes the noun phrase “the drawer” as its complement.
+8. Which word is an adverb in “The manager spoke politely”?
+A. Manager B. Spoke C. The D. Politely
+Correct Answer: D. Politely Explanation: “Politely” modifies the verb “spoke” and tells us how the manager spoke. Many adverbs are formed by adding -ly to adjectives, although this is not a universal rule.
+9. In “Swimming is good exercise,” the word “Swimming” functions as a—
+A. Finite verb B. Gerund C. Adjective D. Preposition
+Correct Answer: B. Gerund Explanation: “Swimming” is an -ing verb form functioning as a noun and serving as the subject. Such a form is called a gerund.
+10. Identify the noun in “The poor deserve our sympathy.”
+A. The B. Deserve C. Poor D. Our
+Correct Answer: C. Poor Explanation: “Poor” is an adjective used substantively to mean poor people. In this construction, it functions as a plural noun phrase and takes the plural verb “deserve.”
+11. Which word is an adjective in “The proposal seems reasonable”?
+A. Proposal B. Seems C. The D. Reasonable
+Correct Answer: D. Reasonable Explanation: “Reasonable” describes the subject through the linking verb “seems.” Adjectives can function as subject complements after linking verbs such as seem, become, and appear.
+12. In “He arrived after the meeting,” the word “after” is a—
+A. Preposition B. Adjective C. Pronoun D. Interjection
+Correct Answer: A. Preposition Explanation: “After” expresses a time relationship and takes “the meeting” as its complement. Compare “We left after the meeting” with “We left after the meeting ended,” where “after” introduces a clause and functions as a subordinating conjunction.
+13. Identify the adverb in “She is extremely intelligent.”
+A. She B. Extremely C. Intelligent D. Is
+Correct Answer: B. Extremely Explanation: “Extremely” modifies the adjective “intelligent” by indicating degree. Adverbs can modify adjectives as well as verbs.
+14. Which of the following is a collective noun?
+A. Wisdom B. Gold C. Committee D. Childhood
+Correct Answer: C. Committee Explanation: A collective noun denotes a group considered as a unit. Other examples include team, jury, audience, and fleet.
+15. In “This is my book,” the word “my” is a—
+A. Possessive determiner B. Personal pronoun C. Adverb D. Conjunction
+Correct Answer: A. Possessive determiner Explanation: “My” indicates possession and determines the noun “book.” In traditional school grammar, it is often called a possessive adjective.
+16. Identify the finite verb in “She has completed the assignment.”
+A. She B. Completed C. Assignment D. Has
+Correct Answer: D. Has Explanation: “Has” is the finite auxiliary verb, marked for the third-person singular present tense. “Completed” is a past participle; together, they form the present perfect verb phrase.
+17. Which word is a conjunction in “Although it rained, we went out”?
+A. Rained B. Although C. Went D. Out
+Correct Answer: B. Although Explanation: “Although” is a subordinating conjunction introducing a concessive subordinate clause. It shows that the rain did not prevent the action in the main clause.
+18. Identify the noun form of “decide.”
+A. Decisive B. Decided C. Decision D. Decidingly
+Correct Answer: C. Decision Explanation: “Decision” is the noun corresponding to the verb “decide.” “Decisive” is an adjective, while “decided” is commonly a past-tense or past-participle form.
+19. In “The train moved slowly,” “slowly” is formed from an adjective by adding—
+A. -ness B. -ment C. -ful D. -ly
+Correct Answer: D. -ly Explanation: “Slowly” is the adverb derived from the adjective “slow.” The suffix -ly frequently forms adverbs of manner.
+20. Which of the following is a material noun?
+A. Copper B. Freedom C. Army D. Student
+Correct Answer: A. Copper Explanation: A material noun names a substance from which things may be made. “Copper” is a metal, while “freedom” is abstract and “army” is collective.
+21. Identify the pronoun in “Everyone must submit the form.”
+A. Must B. Everyone C. Submit D. Form
+Correct Answer: B. Everyone Explanation: “Everyone” is an indefinite pronoun referring to every person in a group. Although it refers to multiple people conceptually, it normally takes a singular verb.
+22. In “The child looks happy,” the word “happy” is a—
+A. Noun B. Adverb C. Adjective D. Preposition
+Correct Answer: C. Adjective Explanation: “Happy” describes the child and functions as a subject complement after the linking verb “looks.” Here, “looks” means “appears,” not “directs one's eyes.”
+23. Which word is an adverb of frequency?
+A. Often B. Beautiful C. Below D. Honest
+Correct Answer: A. Often Explanation: “Often” indicates how frequently an action occurs. Other common adverbs of frequency include always, usually, sometimes, and rarely.
+24. In “Neither answer is correct,” “Neither” functions as a—
+A. Main verb B. Adverb C. Interjection D. Determiner
+Correct Answer: D. Determiner Explanation: “Neither” determines the singular noun “answer” by indicating that not one of two alternatives is correct. When used alone, as in “Neither is correct,” it functions as a pronoun.
+25. Identify the infinitive in “He wants to learn English.”
+A. Wants B. To learn C. English D. He
+Correct Answer: B. To learn Explanation: “To learn” is a to-infinitive consisting of “to” and the base form of the verb. It functions as the complement of “wants.”
+26. In “The broken window was repaired,” “broken” functions as a—
+A. Conjunction B. Preposition C. Participial adjective D. Personal pronoun
+Correct Answer: C. Participial adjective Explanation: “Broken” is a past participle used to describe the noun “window.” Participles can function as adjectives or form parts of verb phrases.
+27. Which sentence contains a transitive verb?
+A. The baby slept. B. The sun shines. C. The guests arrived. D. She opened the door.
+Correct Answer: D. She opened the door. Explanation: “Opened” is transitive because it takes the direct object “the door.” The other verbs in these sentences are used without direct objects.
+28. In “He is a man of courage,” the word “courage” is a—
+A. Abstract noun B. Proper noun C. Collective noun D. Countable noun
+Correct Answer: A. Abstract noun Explanation: “Courage” names a quality rather than a physical object. It is normally uncountable in this meaning.
+29. Identify the linking verb in “The soup tastes delicious.”
+A. Soup B. Tastes C. Delicious D. The
+Correct Answer: B. Tastes Explanation: “Tastes” links the subject “soup” to the adjective “delicious.” Verbs such as taste, smell, feel, and seem can function as linking verbs.
+30. In “He ran across the field,” “across” is a—
+A. Pronoun B. Conjunction C. Preposition D. Determiner
+Correct Answer: C. Preposition Explanation: “Across” expresses movement in relation to “the field,” which is its complement. It can also function as an adverb when used without a complement, as in “Come across.”
+31. Which word is an adjective formed from the noun “danger”?
+A. Dangerously B. Endanger C. Dangerousness D. Dangerous
+Correct Answer: D. Dangerous Explanation: “Dangerous” is an adjective meaning likely to cause harm. “Dangerously” is the corresponding adverb, and “endanger” is a verb.
+32. In “What a beautiful day!”, “What” is a—
+A. Exclamative determiner B. Personal pronoun C. Preposition D. Main verb
+Correct Answer: A. Exclamative determiner Explanation: “What” determines the noun phrase “a beautiful day” in an exclamative construction. In “What did you buy?”, however, “what” functions as an interrogative pronoun.
+33. Identify the conjunction in “You may stay here or leave now.”
+A. May B. Or C. Here D. Now
+Correct Answer: B. Or Explanation: “Or” is a coordinating conjunction expressing an alternative. It joins the two coordinated verb phrases “stay here” and “leave now.”
+34. Which word is an adverb in “The answer is quite simple”?
+A. Answer B. Is C. Quite D. Simple
+Correct Answer: C. Quite Explanation: “Quite” modifies the adjective “simple” and expresses degree. Degree adverbs include very, rather, fairly, and extremely.
+35. In “The rich should help the poor,” “the rich” refers to—
+A. A single abstract quality B. A verb phrase C. A prepositional phrase D. A group of people
+Correct Answer: D. A group of people Explanation: “The rich” is an adjective used substantively, meaning rich people as a group. Such expressions generally take plural agreement: “The rich are not always happy.”
+36. Which of the following is a proper noun?
+A. Dhaka B. City C. Country D. River
+Correct Answer: A. Dhaka Explanation: “Dhaka” is the specific name of a city and therefore a proper noun. “City,” “country,” and “river” are common nouns.
+37. In “He speaks English fluently,” the word “English” is a—
+A. Verb B. Noun C. Adverb D. Preposition
+Correct Answer: B. Noun Explanation: “English” names a language and functions as the direct object of “speaks.” Words that name languages are nouns even though the same words may also function as adjectives, as in “English literature.”
+38. Which sentence contains a reflexive pronoun?
+A. They helped us. B. This is mine. C. She blamed herself. D. Who came yesterday?
+Correct Answer: C. She blamed herself. Explanation: “Herself” is a reflexive pronoun referring back to the subject “she.” Reflexive pronouns include myself, yourself, himself, herself, itself, ourselves, yourselves, and themselves.
+39. In “The match was postponed because of rain,” “because of” is a—
+A. Conjunction introducing a finite clause B. Coordinating conjunction C. Verb phrase D. Complex preposition
+Correct Answer: D. Complex preposition Explanation: “Because of” is a multiword preposition followed by the noun “rain.” Compare “because it rained,” where “because” introduces a finite subordinate clause.
+40. Identify the participle in “The crying baby needs attention.”
+A. Crying B. Baby C. Needs D. Attention
+Correct Answer: A. Crying Explanation: “Crying” is a present participle modifying the noun “baby.” Present participles often describe an action associated with the noun.
+41. Which of the following is an uncountable noun?
+A. Chair B. Furniture C. Coin D. Employee
+Correct Answer: B. Furniture Explanation: “Furniture” is an uncountable noun in standard English and normally takes a singular verb. Say “a piece of furniture,” not “a furniture.”
+42. In “He works hard,” the word “hard” is a—
+A. Noun B. Adjective C. Adverb D. Conjunction
+Correct Answer: C. Adverb Explanation: “Hard” modifies the verb “works” and means with great effort. Compare “a hard task,” where “hard” is an adjective.
+43. Which sentence uses “well” as an adjective?
+A. She sings well. B. He performed well. C. They work well together. D. She is well today.
+Correct Answer: D. She is well today. Explanation: In this sentence, “well” means healthy and functions as an adjective after the linking verb “is.” In the other examples, it is an adverb of manner.
+44. In “I know that he is honest,” the word “that” introduces a—
+A. Noun clause B. Prepositional phrase C. Participial phrase D. Conditional clause
+Correct Answer: A. Noun clause Explanation: “That he is honest” is a subordinate content clause functioning as the object of “know.” Here, “that” is a subordinating conjunction or complementizer, not a demonstrative pronoun.
+45. Which word is a modal auxiliary?
+A. Writes B. Should C. Written D. Writing
+Correct Answer: B. Should Explanation: “Should” is a modal auxiliary expressing advice, obligation, expectation, or probability, depending on context. Modal auxiliaries are followed by the base form of a verb: “should go.”
+46. In “The committee has reached its decision,” “its” is a—
+A. Relative pronoun B. Adverb C. Possessive determiner D. Conjunction
+Correct Answer: C. Possessive determiner Explanation: “Its” indicates possession and determines the noun “decision.” It should not be confused with “it's,” the contraction of “it is” or “it has.”
+47. Which word is a phrasal-verb particle in “Please turn off the light”?
+A. Please B. The C. Light D. Off
+Correct Answer: D. Off Explanation: “Off” combines with the verb “turn” to form the phrasal verb “turn off,” meaning switch off. In this sentence, the direct object can occur between the verb and particle: “turn the light off.”
+48. In “Walking along the road, he found a wallet,” “Walking along the road” is a—
+A. Participial phrase B. Noun clause C. Finite verb phrase D. Prepositional clause
+Correct Answer: A. Participial phrase Explanation: The phrase begins with the present participle “walking” and describes the circumstances in which he found the wallet. Its understood subject is the subject of the main clause, “he.”
+49. Which word is an indefinite pronoun?
+A. This B. Someone C. Mine D. Himself
+Correct Answer: B. Someone Explanation: “Someone” refers to an unspecified person. “This” is demonstrative, “mine” is a possessive pronoun, and “himself” is reflexive or intensive.
+50. In “She is too tired to work,” “too” is an—
+A. Adjective B. Noun C. Adverb D. Preposition
+Correct Answer: C. Adverb Explanation: “Too” modifies the adjective “tired” and indicates an excessive degree. The construction “too + adjective + to-infinitive” often expresses that something prevents an action.
+51. Identify the word functioning as a noun in “The accused was brought before the court.”
+A. Was B. Brought C. Before D. Accused
+Correct Answer: D. Accused Explanation: “The accused” refers to a person charged with an offence and functions as a noun phrase. “Accused” is historically a past participle but is used substantively here.
+52. Which of the following is a demonstrative pronoun?
+A. Those B. Whom C. Myself D. Someone
+Correct Answer: A. Those Explanation: “Those” is a demonstrative pronoun when it stands alone, as in “Those are expensive.” Before a noun, as in “those books,” it functions as a demonstrative determiner.
+53. In “The more you read, the better you write,” “better” is a—
+A. Noun B. Adverb C. Preposition D. Conjunction
+Correct Answer: B. Adverb Explanation: “Better” modifies the verb “write” and is the comparative form of “well.” The sentence uses the correlative comparative construction “the more …, the better ….”
+54. Which word is a conjunction in “Unless you hurry, you will miss the train”?
+A. Hurry B. Will C. Unless D. Train
+Correct Answer: C. Unless Explanation: “Unless” introduces a conditional subordinate clause and means “if not.” The sentence indicates that failing to hurry will result in missing the train.
+55. In “He gave me a little advice,” “little” is a—
+A. Personal pronoun B. Verb C. Adverb D. Determiner
+Correct Answer: D. Determiner Explanation: “Little” quantifies the uncountable noun “advice” and means a small amount, often suggesting insufficiency. “A little advice” is positive in tone and means some advice.
+56. Which sentence contains an adjective used predicatively?
+A. The flowers are beautiful. B. The beautiful flowers bloomed. C. She bought a red dress. D. It was a difficult examination.
+Correct Answer: A. The flowers are beautiful. Explanation: “Beautiful” follows the linking verb “are” and functions as a subject complement. An adjective placed before a noun, as in the other examples, is used attributively.
+57. In “He arrived early,” “early” is a—
+A. Noun B. Adverb C. Preposition D. Conjunction
+Correct Answer: B. Adverb Explanation: “Early” modifies the verb “arrived” by indicating when the action occurred. Unlike many adverbs, “early” does not require the suffix -ly.
+58. Which word is a relative pronoun in “The man who came yesterday is my uncle”?
+A. Man B. Yesterday C. Who D. Uncle
+Correct Answer: C. Who Explanation: “Who” introduces the relative clause “who came yesterday” and refers to “the man.” It functions as the subject of the relative clause.
+59. In “Having finished the work, she went home,” “Having finished” is a—
+A. Present-tense finite verb B. To-infinitive C. Gerund phrase D. Perfect participle construction
+Correct Answer: D. Perfect participle construction Explanation: “Having finished” is the perfect participle form, indicating that the work was completed before she went home. It consists of “having” plus the past participle “finished.”
+60. Which of the following is a compound preposition?
+A. In front of B. Quickly C. Although D. Herself
+Correct Answer: A. In front of Explanation: “In front of” is a multiword preposition expressing spatial position. It takes a complement, as in “in front of the building.”
+61. Identify the noun clause in the sentence “What he said surprised everyone.”
+A. Surprised everyone B. What he said C. He said D. Everyone
+Correct Answer: B. What he said Explanation: “What he said” functions as the subject of the sentence. It is a fused relative construction functioning as a noun phrase, often taught as a noun clause in traditional grammar.
+62. Which sentence uses “fast” as an adjective?
+A. He runs fast. B. She can type fast. C. It is a fast train. D. Time passes fast.
+Correct Answer: C. It is a fast train. Explanation: “Fast” modifies the noun “train,” so it is an adjective. In the other examples, it modifies verbs and functions as an adverb.
+63. In “The teacher made the students rewrite the answers,” “rewrite” is a—
+A. Past participle B. Gerund C. Finite verb D. Bare infinitive
+Correct Answer: D. Bare infinitive Explanation: “Rewrite” is the base form of the verb without “to.” The causative verb “make” is followed by an object and a bare infinitive in active constructions: “made the students rewrite.”
+64. Which of the following is a possessive pronoun?
+A. Theirs B. Their C. Them D. They
+Correct Answer: A. Theirs Explanation: “Theirs” expresses possession and stands independently, as in “The house is theirs.” “Their” is a possessive determiner used before a noun.
+65. In “He is neither intelligent nor hardworking,” the words “neither … nor” form a—
+A. Subordinating pair B. Correlative conjunction C. Relative construction D. Prepositional phrase
+Correct Answer: B. Correlative conjunction Explanation: “Neither … nor” connects two alternatives and expresses that both are negative. Parallel grammatical structures should follow both parts of the pair.
+66. Which word is a noun formed from the adjective “strong”?
+A. Strongly B. Strengthen C. Strength D. Stronger
+Correct Answer: C. Strength Explanation: “Strength” is the noun corresponding to “strong.” “Strongly” is an adverb, “strengthen” is a verb, and “stronger” is a comparative adjective.
+67. In “The book lying on the table is mine,” “lying on the table” functions as a—
+A. Main clause B. Noun clause C. Finite adverbial clause D. Participial phrase modifying “book”
+Correct Answer: D. Participial phrase modifying “book” Explanation: “Lying on the table” is a non-finite participial phrase that identifies which book is meant. It has no finite verb of its own.
+68. Which sentence contains an adverb of degree?
+A. The water is almost boiling. B. She arrived yesterday. C. He waited outside. D. They walked slowly.
+Correct Answer: A. The water is almost boiling. Explanation: “Almost” modifies “boiling” and indicates the extent to which the process has progressed. “Yesterday” indicates time, “outside” indicates place, and “slowly” indicates manner.
+69. In “One should do one's duty,” the word “one” is a—
+A. Relative pronoun B. Indefinite pronoun C. Reflexive pronoun D. Interrogative pronoun
+Correct Answer: B. Indefinite pronoun Explanation: “One” refers to people in general and functions as an indefinite pronoun. Formal English often uses “one's” as its corresponding possessive determiner.
+70. Which sentence contains a noun functioning as an adjective?
+A. Honesty is the best policy. B. He is honest. C. She bought a school bag. D. They spoke honestly.
+Correct Answer: C. She bought a school bag. Explanation: “School” is a noun used attributively to modify the noun “bag.” Such noun modifiers are common in English, as in “bank account,” “office building,” and “exam paper.”
+Section B: Tense (Questions 71–140)
+71. Choose the correct form: “He usually _____ to work by bus.”
+A. Go B. Is going C. Has gone D. Goes
+Correct Answer: D. Goes Explanation: The simple present is used for habits and routines. With a third-person singular subject, the verb normally takes -s or -es.
+72. “Look! The children _____ in the garden.”
+A. Play B. Are playing C. Have played D. Played
+Correct Answer: B. Are playing Explanation: The present continuous describes an action in progress at the time of speaking. “Look!” signals that the action is happening now.
+73. “She _____ in Dhaka since 2020.”
+A. Lives B. Lived C. Has lived D. Is living
+Correct Answer: C. Has lived Explanation: The present perfect can describe a state that began in the past and continues into the present. “Since 2020” identifies the starting point.
+74. “By the time we arrived, the meeting _____.”
+A. Had begun B. Has begun C. Begins D. Will begin
+Correct Answer: A. Had begun Explanation: The past perfect describes an event completed before another past event. The meeting began before “we arrived.”
+75. “I _____ for the examination all morning, and I am still studying.”
+A. Study B. Studied C. Have studied D. Have been studying
+Correct Answer: D. Have been studying Explanation: The present perfect continuous emphasizes an activity that began in the past and continues into the present. “All morning” and “still studying” support this interpretation.
+76. “When I entered the room, they _____ television.”
+A. Watched B. Were watching C. Have watched D. Had watched
+Correct Answer: B. Were watching Explanation: The past continuous describes an action in progress when another past event occurred. “Entered” is the shorter interrupting event.
+77. “Water _____ at 100°C at standard atmospheric pressure.”
+A. Is boiling B. Has boiled C. Boils D. Boiled
+Correct Answer: C. Boils Explanation: The simple present expresses general scientific facts. The stated boiling point assumes standard atmospheric pressure.
+78. “I _____ him yesterday at the station.”
+A. Met B. Have met C. Had met D. Meet
+Correct Answer: A. Met Explanation: The simple past is used for a completed event at a definite past time. “Yesterday” normally requires a past-tense form in this context.
+79. “By next June, she _____ here for ten years.”
+A. Works B. Has worked C. Will work D. Will have worked
+Correct Answer: D. Will have worked Explanation: The future perfect expresses completion or duration up to a specified future point. “By next June” provides that future reference point.
+80. “They _____ the project before the deadline last week.”
+A. Complete B. Completed C. Have completed D. Will complete
+Correct Answer: B. Completed Explanation: The simple past is appropriate because the action was completed at a definite past time, “last week.” The past perfect would be used if the sentence emphasized completion before another past event.
+81. “She _____ English for three hours, and she has not finished yet.”
+A. Studies B. Studied C. Has been studying D. Is studied
+Correct Answer: C. Has been studying Explanation: The present perfect continuous emphasizes the ongoing duration of an activity. The phrase “has not finished yet” confirms that the activity continues.
+82. “Listen! Someone _____ at the door.”
+A. Is knocking B. Knocks C. Knocked D. Has knocked
+Correct Answer: A. Is knocking Explanation: The present continuous describes an action happening now. “Listen!” directs attention to an ongoing sound.
+83. “He _____ the report before the manager arrived.”
+A. Finishes B. Has finished C. Was finishing D. Had finished
+Correct Answer: D. Had finished Explanation: The past perfect shows that the report was completed before the manager arrived. Both events are in the past, but one occurred earlier than the other.
+84. “I _____ this book twice.”
+A. Read yesterday B. Have read C. Had read yesterday D. Am reading yesterday
+Correct Answer: B. Have read Explanation: The present perfect describes life experience or an event count up to the present when no finished past time is specified. “Twice” indicates the number of completed readings.
+85. “At 8 p.m. yesterday, I _____ for the interview.”
+A. Prepare B. Have prepared C. Was preparing D. Had prepared tomorrow
+Correct Answer: C. Was preparing Explanation: The past continuous describes an action in progress at a specific past time. “At 8 p.m. yesterday” identifies that time.
+86. “The train _____ before we reached the station.”
+A. Had left B. Has left C. Leaves D. Will leave
+Correct Answer: A. Had left Explanation: The past perfect marks the train's departure as earlier than our arrival. The sentence contrasts two completed past events.
+87. “She _____ her homework every evening.”
+A. Is doing B. Has done C. Did D. Does
+Correct Answer: D. Does Explanation: The simple present expresses a regular habit. “Every evening” is a frequency expression commonly used with this tense.
+88. “They _____ to Chattogram tomorrow morning.”
+A. Travelled B. Are travelling C. Have travelled yesterday D. Had travelled
+Correct Answer: B. Are travelling Explanation: The present continuous can express a definite future arrangement. A planned trip with a specified time is a natural use.
+89. “I _____ him since he left the country.”
+A. Didn't see B. Don't see C. Haven't seen D. Hadn't seen tomorrow
+Correct Answer: C. Haven't seen Explanation: The present perfect is used with “since” when the period continues to the present. “Since he left” identifies the starting point of the period.
+90. “By the time you arrive, we _____ dinner.”
+A. Will have finished B. Finished C. Have finished yesterday D. Had finished
+Correct Answer: A. Will have finished Explanation: The future perfect describes an action that will be completed before a future event. “By the time you arrive” establishes the deadline.
+91. “While the teacher _____, the students were taking notes.”
+A. Speaks B. Has spoken C. Is speaking D. Was speaking
+Correct Answer: D. Was speaking Explanation: The past continuous describes the background action occurring simultaneously with another past action. “Were taking” is also past continuous.
+92. “He _____ his keys, so he cannot enter the house.”
+A. Lost yesterday B. Has lost C. Had lost last year D. Loses yesterday
+Correct Answer: B. Has lost Explanation: The present perfect links a past event to a present result: he does not have the keys now. A definite finished-time expression such as “yesterday” would normally require the simple past.
+93. “The sun _____ in the east.”
+A. Is rising B. Rose yesterday C. Rises D. Has risen every day at 6
+Correct Answer: C. Rises Explanation: The simple present expresses established facts and regular natural phenomena. The sentence describes a general truth, not a single event.
+94. “At this time next week, we _____ for Cox's Bazar.”
+A. Will be travelling B. Travelled C. Have travelled D. Had travelled
+Correct Answer: A. Will be travelling Explanation: The future continuous describes an action that will be in progress at a particular future time. “At this time next week” is a typical signal.
+95. “He _____ the letter before he posted it.”
+A. Signs B. Has signed C. Was signing tomorrow D. Had signed
+Correct Answer: D. Had signed Explanation: The past perfect emphasizes that signing was completed before posting. The sequence of events is signing first, posting second.
+96. “She _____ in this bank since January.”
+A. Works yesterday B. Has been working C. Worked tomorrow D. Is worked
+Correct Answer: B. Has been working Explanation: The present perfect continuous emphasizes the ongoing activity from January until now. The present perfect simple, “has worked,” is also possible, especially when emphasizing the employment fact rather than the activity's continuity.
+97. “I _____ breakfast when the telephone rang.”
+A. Have B. Had C. Was having D. Have had tomorrow
+Correct Answer: C. Was having Explanation: The past continuous describes breakfast as an activity in progress when the telephone rang. The ringing is the shorter event.
+98. “The patient _____ before the doctor arrived.”
+A. Had died B. Has died C. Dies D. Will die
+Correct Answer: A. Had died Explanation: The past perfect shows that the patient's death preceded the doctor's arrival. It clarifies the chronological relationship between the two past events.
+99. “She usually _____ coffee, but today she is drinking tea.”
+A. Is drinking B. Drank C. Has drunk D. Drinks
+Correct Answer: D. Drinks Explanation: The simple present expresses her usual habit, while the present continuous describes today's temporary situation. The contrast between “usually” and “today” is important.
+100. “By 2030, scientists _____ new solutions to this problem.”
+A. Discovered in 2020 B. Will have discovered C. Have discovered yesterday D. Had discovered tomorrow
+Correct Answer: B. Will have discovered Explanation: The future perfect expresses an anticipated achievement by a specified future time. “By 2030” indicates the deadline.
+101. “It _____ heavily when we left the office.”
+A. Rains B. Has rained C. Was raining D. Will rain yesterday
+Correct Answer: C. Was raining Explanation: The past continuous describes the weather in progress at the time of departure. Weather conditions are often expressed with continuous forms when emphasizing ongoing activity.
+102. “I _____ my assignment already.”
+A. Have submitted B. Submit yesterday C. Had submitted tomorrow D. Am submit
+Correct Answer: A. Have submitted Explanation: The present perfect with “already” indicates that the submission has occurred before now. It emphasizes the present relevance of the completed action.
+103. “He _____ for two hours before the bus finally arrived.”
+A. Waits B. Has waited C. Is waiting D. Had been waiting
+Correct Answer: D. Had been waiting Explanation: The past perfect continuous emphasizes the duration of waiting before another past event. “For two hours” highlights how long the activity had continued.
+104. “We _____ the results tomorrow.”
+A. Received yesterday B. Will receive C. Have received yesterday D. Had received tomorrow
+Correct Answer: B. Will receive Explanation: The simple future is appropriate for a prediction or expected future event. “Tomorrow” establishes the future time.
+105. “She _____ French before she moved to Paris.”
+A. Learns B. Has learned C. Had learned D. Will learn
+Correct Answer: C. Had learned Explanation: The past perfect indicates that her learning occurred before her move to Paris. It establishes the earlier of two past events.
+106. “This is the first time I _____ such a difficult question.”
+A. Have faced B. Faced yesterday C. Had faced tomorrow D. Am face
+Correct Answer: A. Have faced Explanation: The construction “This is the first time” is commonly followed by the present perfect. It describes an experience up to the present moment.
+107. “When he was young, he _____ football every afternoon.”
+A. Plays B. Has played C. Is playing D. Played
+Correct Answer: D. Played Explanation: The simple past describes a repeated habit in a finished period of life. “When he was young” places the habit in the past.
+108. “At 10 a.m. tomorrow, the board _____ the applications.”
+A. Reviewed yesterday B. Will be reviewing C. Has reviewed yesterday D. Had reviewed tomorrow
+Correct Answer: B. Will be reviewing Explanation: The future continuous describes an activity that will be in progress at a specified future time. The board's review is expected to be underway at 10 a.m.
+109. “He _____ the same mistake several times this month.”
+A. Made last year B. Makes yesterday C. Has made D. Had made tomorrow
+Correct Answer: C. Has made Explanation: The present perfect is appropriate for repeated events within a time period that includes the present. “This month” is interpreted as an ongoing period.
+110. “By the end of this year, they _____ the bridge for five years.”
+A. Will have been building B. Built yesterday C. Have built yesterday D. Are building yesterday
+Correct Answer: A. Will have been building Explanation: The future perfect continuous emphasizes the duration of an activity up to a future point. It is particularly appropriate when the activity is expected to continue through that period.
+111. “The earth _____ around the sun.”
+A. Is revolving right now only B. Revolved in ancient times only C. Has revolved yesterday D. Revolves
+Correct Answer: D. Revolves Explanation: The simple present describes a scientific fact. The earth's revolution around the sun is a regular astronomical phenomenon.
+112. “She _____ dinner when her guests arrived.”
+A. Cooks B. Was cooking C. Has cooked D. Will cook
+Correct Answer: B. Was cooking Explanation: The past continuous describes an action in progress when another past event occurred. The guests arrived during the preparation of dinner.
+113. “I _____ him three times since Monday.”
+A. Saw yesterday B. See tomorrow C. Have seen D. Had seen tomorrow
+Correct Answer: C. Have seen Explanation: The present perfect expresses repeated encounters during a period extending from Monday to the present. “Since Monday” marks the beginning of that period.
+114. “The train _____ at 6 a.m. every day.”
+A. Leaves B. Is leaving yesterday C. Has left tomorrow D. Left every day next week
+Correct Answer: A. Leaves Explanation: The simple present is used for fixed schedules and timetables. Scheduled transport commonly uses the present simple even when referring to the future.
+115. “By the time the police arrived, the thief _____.”
+A. Escapes B. Has escaped C. Will escape D. Had escaped
+Correct Answer: D. Had escaped Explanation: The past perfect marks the escape as earlier than the police's arrival. This tense is useful for showing the order of past events.
+116. “I _____ to call you all day, but I was too busy.”
+A. Am wanting B. Have been wanting C. Want yesterday D. Will want yesterday
+Correct Answer: B. Have been wanting Explanation: The present perfect continuous can express a continuing desire over a period extending to the present. In many contexts, “I have wanted to call you all day” is also acceptable, emphasizing the state rather than its duration.
+117. “The students _____ the examination at the moment.”
+A. Took yesterday B. Have taken yesterday C. Are taking D. Had taken tomorrow
+Correct Answer: C. Are taking Explanation: The present continuous describes an action happening at the present time. “At the moment” is a strong contextual clue.
+118. “He _____ the office before I could speak to him.”
+A. Had left B. Has left tomorrow C. Leaves yesterday D. Will leave yesterday
+Correct Answer: A. Had left Explanation: The past perfect indicates that his departure occurred before the speaker could speak to him. The sentence establishes a sequence of past events.
+119. “I _____ in this city for ten years, and I still live here.”
+A. Lived only in the past B. Am living since ten years C. Had lived tomorrow D. Have lived
+Correct Answer: D. Have lived Explanation: The present perfect expresses a state that began in the past and continues now. “For ten years” gives the duration, and “still live here” confirms continuity.
+120. “This time yesterday, they _____ across the river.”
+A. Cross B. Were crossing C. Have crossed D. Will cross
+Correct Answer: B. Were crossing Explanation: The past continuous describes an action in progress at a particular time in the past. “This time yesterday” identifies that reference point.
+121. “The manager _____ the proposal before the meeting began.”
+A. Approves B. Has approved C. Had approved D. Will approve
+Correct Answer: C. Had approved Explanation: The past perfect marks the approval as completed before the meeting began. It clarifies the chronological order.
+122. “By next month, she _____ her training.”
+A. Will have completed B. Completes yesterday C. Has completed yesterday D. Was completing tomorrow
+Correct Answer: A. Will have completed Explanation: The future perfect indicates that training will be completed before a future deadline. “By next month” signals the expected completion point.
+123. “He _____ his car every Sunday.”
+A. Is washing yesterday B. Has washed tomorrow C. Was washing every Sunday next year D. Washes
+Correct Answer: D. Washes Explanation: The simple present expresses a regular habit. “Every Sunday” signals repeated action.
+124. “While I _____ home, I met an old friend.”
+A. Walk B. Was walking C. Have walked D. Had walked tomorrow
+Correct Answer: B. Was walking Explanation: The past continuous describes an action in progress when another event occurred. Meeting the friend happened during the walk.
+125. “He _____ here for two hours before the doctor examined him.”
+A. Waits B. Has waited C. Had been waiting D. Will be waiting
+Correct Answer: C. Had been waiting Explanation: The past perfect continuous emphasizes how long he had waited before the examination. The waiting began earlier and continued up to that past event.
+126. “I _____ the answer now.”
+A. Know B. Am knowing C. Have been knowing D. Knew tomorrow
+Correct Answer: A. Know Explanation: “Know” is a stative verb and is not normally used in the continuous form when expressing possession of knowledge. The simple present describes the current state.
+127. “She _____ her work yet.”
+A. Doesn't finish yesterday B. Didn't finish yet tomorrow C. Hadn't finish D. Hasn't finished
+Correct Answer: D. Hasn't finished Explanation: The present perfect negative with “yet” indicates that an expected action has not been completed up to now. “Yet” commonly appears in questions and negative statements.
+128. “They _____ for the bus when it started to rain.”
+A. Wait B. Were waiting C. Have waited D. Will wait
+Correct Answer: B. Were waiting Explanation: The past continuous presents waiting as an ongoing action interrupted by the start of the rain. The verb “started” is in the simple past.
+129. “He _____ three books this week.”
+A. Reads yesterday B. Read last year C. Has read D. Had read tomorrow
+Correct Answer: C. Has read Explanation: The present perfect is appropriate when “this week” refers to a period that has not yet ended. It counts completed actions within the current period.
+130. “By 5 p.m., the workers _____ the road for eight hours.”
+A. Will have been repairing B. Repaired yesterday C. Have repaired yesterday D. Repair last week
+Correct Answer: A. Will have been repairing Explanation: The future perfect continuous emphasizes the duration of repair work up to 5 p.m. The phrase “for eight hours” highlights the length of the activity.
+131. “She _____ to the office before the storm began.”
+A. Goes B. Has gone C. Will go D. Had gone
+Correct Answer: D. Had gone Explanation: The past perfect indicates that her departure or journey to the office occurred before the storm began. The earlier past event takes the past perfect.
+132. “I _____ my grandparents every Eid.”
+A. Am visiting yesterday B. Visit C. Have visited tomorrow D. Had visited every Eid next year
+Correct Answer: B. Visit Explanation: The simple present expresses a recurring custom or habit. “Every Eid” signals repetition.
+133. “The baby _____ for an hour, and the mother is exhausted.”
+A. Cries yesterday B. Cried last week C. Has been crying D. Had cried tomorrow
+Correct Answer: C. Has been crying Explanation: The present perfect continuous emphasizes the duration of an activity that has continued until now or has just stopped with a present result. The mother's exhaustion supports this interpretation.
+134. “At midnight, the workers _____ the factory.”
+A. Were leaving B. Leave every day C. Have left tomorrow D. Had leave
+Correct Answer: A. Were leaving Explanation: The past continuous is suitable if midnight refers to a particular past time and the departure was in progress then. Without a past context, the time reference would need clarification.
+135. “The committee _____ its decision tomorrow.”
+A. Announced yesterday B. Has announced yesterday C. Had announced tomorrow D. Will announce
+Correct Answer: D. Will announce Explanation: The simple future indicates an expected future action. “Tomorrow” establishes the future reference time.
+136. “We _____ lunch before the guests arrived.”
+A. Have eaten tomorrow B. Had eaten C. Eat tomorrow D. Are eating yesterday
+Correct Answer: B. Had eaten Explanation: The past perfect shows that lunch was finished before the guests arrived. It is the earlier of the two past events.
+137. “She _____ the piano since she was six.”
+A. Plays yesterday B. Is playing since six C. Has been playing D. Played tomorrow
+Correct Answer: C. Has been playing Explanation: The present perfect continuous expresses an activity that began in the past and continues to the present. “Since she was six” identifies the starting point.
+138. “By the time the examination starts, the candidates _____ their seats.”
+A. Will have taken B. Took yesterday C. Have taken yesterday D. Had taken tomorrow
+Correct Answer: A. Will have taken Explanation: The future perfect indicates that taking seats will be completed before the examination starts. “By the time” establishes the future deadline.
+139. “He _____ TV when the electricity went out.”
+A. Watches B. Has watched C. Had watched tomorrow D. Was watching
+Correct Answer: D. Was watching Explanation: The past continuous describes the activity in progress when the electricity went out. The interruption is expressed in the simple past.
+140. “I _____ this movie before, so I know the ending.”
+A. Saw yesterday B. Have seen C. See tomorrow D. Am seeing last year
+Correct Answer: B. Have seen Explanation: The present perfect indicates prior experience with present relevance. The speaker knows the ending because of having watched the movie previously.
+Section C: Sequence of Tenses (Questions 141–180)
+141. He said that he _____ ill.
+A. Is B. Has been C. Was D. Will be
+Correct Answer: C. Was Explanation: In traditional reported speech, a present-tense verb commonly shifts to the past when the reporting verb is in the past. Thus, “He said, ‘I am ill’” becomes “He said that he was ill.”
+142. She told me that she _____ the work the previous day.
+A. Had completed B. Has completed C. Completes D. Will complete
+Correct Answer: A. Had completed Explanation: The past perfect indicates that the work was completed before the past reporting event. “The previous day” also signals a past reference.
+143. He said that the earth _____ around the sun.
+A. Revolved only in the past B. Is revolving C. Had revolved yesterday D. Revolves
+Correct Answer: D. Revolves Explanation: A universal truth normally remains in the simple present in reported speech. Therefore, “He said that the earth revolves around the sun” is correct.
+144. The teacher said that honesty _____ the best policy.
+A. Was always being B. Is C. Has been yesterday D. Will be yesterday
+Correct Answer: B. Is Explanation: A general truth may remain in the present tense even when the reporting verb is in the past. “Honesty is the best policy” expresses a general principle.
+145. He told me that he _____ the book the previous week.
+A. Reads B. Has read C. Had read D. Will read
+Correct Answer: C. Had read Explanation: The past perfect is appropriate for an action completed before the past reporting time. In indirect speech, “last week” commonly changes to “the previous week.”
+146. She said that she _____ busy then.
+A. Was B. Is C. Has been D. Will be
+Correct Answer: A. Was Explanation: “Am busy” in direct speech normally becomes “was busy” in reported speech when the reporting verb is past. “Then” replaces “now” when the time reference changes.
+147. He said that he _____ the following day.
+A. Arrives yesterday B. Had arrived C. Arrived last week D. Would arrive
+Correct Answer: D. Would arrive Explanation: In traditional reported speech, “will” usually changes to “would” after a past reporting verb. “Tomorrow” commonly changes to “the following day.”
+148. The teacher asked me whether I _____ the answer.
+A. Know B. Knew C. Will know yesterday D. Have knowing
+Correct Answer: B. Knew Explanation: In reported questions, “Do you know?” normally becomes “whether I knew” when the reporting verb is past. The indirect question uses statement word order rather than question word order.
+149. He said that he _____ in Dhaka for five years before moving abroad.
+A. Lives B. Has lived C. Had lived D. Will live
+Correct Answer: C. Had lived Explanation: The past perfect indicates a period of residence completed before another past event, his move abroad. It clarifies the earlier time frame.
+150. She said that she _____ when I called her.
+A. Was sleeping B. Is sleeping C. Has slept D. Will sleep
+Correct Answer: A. Was sleeping Explanation: The past continuous describes an action that was in progress when another past event occurred. In direct speech, she might have said, “I was sleeping when you called.”
+151. He said, “I am tired.” Choose the correct reported form.
+A. He said that I was tired. B. He said that he is tired yesterday. C. He said that he had tired. D. He said that he was tired.
+Correct Answer: D. He said that he was tired. Explanation: The first-person pronoun “I” changes to “he” because it refers to the speaker, and “am” normally backshifts to “was.” Pronoun changes depend on the actual speaker and listener.
+152. She said, “I have finished my work.” The correct reported speech is—
+A. She said that she has finish her work. B. She said that she had finished her work. C. She said that she finished her work tomorrow. D. She said that I had finished my work.
+Correct Answer: B. She said that she had finished her work. Explanation: The present perfect normally backshifts to the past perfect in traditional reported speech. “My” changes to “her” because the speaker is female and is referred to as “she.”
+153. He said that he _____ there the day before.
+A. Goes B. Has gone C. Had gone D. Will go
+Correct Answer: C. Had gone Explanation: The past perfect is appropriate for an action occurring before the reporting event. “The day before” commonly corresponds to “yesterday” in direct speech.
+154. The officer said that the applicants _____ submit their forms by Monday.
+A. Had to B. Has to C. Will had to D. Is to yesterday
+Correct Answer: A. Had to Explanation: In traditional reported speech, “must” expressing obligation often changes to “had to.” However, “must” may remain unchanged when the obligation is still current.
+155. He asked me where I _____.
+A. Do live B. Did I live C. Am living yesterday D. Lived
+Correct Answer: D. Lived Explanation: A reported wh-question uses statement word order and often backshifts the tense. The correct form is “He asked me where I lived,” not “where did I live.”
+156. She said that she _____ the movie before.
+A. Sees B. Had seen C. Has see D. Will see
+Correct Answer: B. Had seen Explanation: The past perfect describes an experience that had occurred before the past reporting time. “Had seen” is the correct past perfect form of “see.”
+157. He said that he _____ come if he were invited.
+A. Will B. Can C. Would D. Has
+Correct Answer: C. Would Explanation: In reported speech, “will” commonly changes to “would.” The conditional structure “would come if he were invited” expresses a hypothetical situation.
+158. The teacher said that the examination _____ the next week.
+A. Would begin B. Begins yesterday C. Has begun tomorrow D. Had begin
+Correct Answer: A. Would begin Explanation: “Will begin” commonly becomes “would begin” in reported speech. “Next week” may change to “the following week” depending on the reporting context.
+159. He said that he _____ his homework before dinner.
+A. Finishes tomorrow B. Has finished yesterday C. Will finished D. Had finished
+Correct Answer: D. Had finished Explanation: The past perfect is used when the homework was completed before a past reference point. The form “had finished” is past perfect, not past simple.
+160. She said that she _____ the truth.
+A. Knows yesterday B. Knew C. Had know D. Will knew
+Correct Answer: B. Knew Explanation: In traditional reported speech, “know” in the simple present normally shifts to “knew.” However, the present may be retained if the knowledge is still current and the speaker wishes to emphasize that fact.
+161. He said, “The sun rises in the east.” The correct reported form is—
+A. He said that the sun rose only in the past. B. He said that the sun had risen yesterday. C. He said that the sun rises in the east. D. He said that the sun will rise in the east yesterday.
+Correct Answer: C. He said that the sun rises in the east. Explanation: Universal truths generally retain the simple present in reported speech. Backshifting is not obligatory when it would misrepresent a continuing scientific fact.
+162. She asked me why I _____ late.
+A. Was B. Am C. Have been tomorrow D. Will be
+Correct Answer: A. Was Explanation: A direct question such as “Why are you late?” normally becomes “She asked me why I was late.” The indirect question follows statement word order.
+163. He told me that he _____ the letter the previous night.
+A. Writes B. Has written C. Will write D. Had written
+Correct Answer: D. Had written Explanation: The past perfect marks the writing as completed before the past reporting time. “The previous night” indicates an earlier time.
+164. The doctor said that the patient _____ better.
+A. Feel B. Was feeling C. Has feel D. Will felt
+Correct Answer: B. Was feeling Explanation: The present continuous in direct speech commonly changes to the past continuous in reported speech. For example, “The patient is feeling better” becomes “The doctor said that the patient was feeling better.”
+165. He said that if he _____ rich, he would help the poor.
+A. Is B. Will be C. Were D. Has been
+Correct Answer: C. Were Explanation: The second conditional uses a past-form verb in the if-clause to express an unreal or hypothetical present situation. “Were” is conventionally used with all subjects in formal hypothetical constructions.
+166. She said that she _____ never seen such a beautiful place before.
+A. Had B. Has C. Is D. Will
+Correct Answer: A. Had Explanation: The past perfect is formed with “had” plus the past participle. The sentence reports an experience that had not occurred before the past reporting time.
+167. He asked whether I _____ the instructions.
+A. Understand B. Will understood C. Am understand D. Had understood
+Correct Answer: D. Had understood Explanation: The past perfect can be used to report a question about understanding that was expected before or by the past reporting time. “Whether” introduces the indirect yes/no question.
+168. The manager said that the office _____ at nine every morning.
+A. Opened yesterday only B. Opens C. Had open tomorrow D. Is opening yesterday
+Correct Answer: B. Opens Explanation: The simple present may be retained in reported speech when describing a regular schedule or continuing fact. “Every morning” signals a routine that remains valid.
+169. He said that he _____ working when the power failed.
+A. Is B. Has been C. Had been D. Will be
+Correct Answer: C. Had been Explanation: “Was working” commonly becomes “had been working” when backshifted in reported speech. The power failure is the past event during which the work was in progress.
+170. She said that she would call me when she _____ home.
+A. Reached B. Will reach C. Has reached tomorrow D. Had reach
+Correct Answer: A. Reached Explanation: In a future-time clause introduced by “when,” English normally uses a present form rather than “will” in direct future constructions. After a past reporting verb, “when she reaches home” may backshift to “when she reached home” in traditional reported speech.
+171. He said that he _____ to London the following month.
+A. Travels yesterday B. Has travelled C. Had travelled tomorrow D. Would travel
+Correct Answer: D. Would travel Explanation: “Will travel” normally becomes “would travel” in reported speech. “The following month” corresponds to a future time relative to the original statement.
+172. The teacher told us that the earth _____ round.
+A. Moved only in the past B. Is C. Had been yesterday D. Will be yesterday
+Correct Answer: B. Is Explanation: The simple present is retained because the sentence expresses a scientific truth: the earth is round. Universal facts do not normally require backshifting.
+173. He said that he _____ the work by the next day.
+A. Completes yesterday B. Has completed C. Would have completed D. Will completed
+Correct Answer: C. Would have completed Explanation: “Will have completed” commonly becomes “would have completed” in reported speech. The future perfect viewed from a past reporting point becomes the future perfect in the past.
+174. She asked me whether I _____ the letter.
+A. Had received B. Have receive C. Will received D. Am receive
+Correct Answer: A. Had received Explanation: The past perfect is appropriate when reporting a question about whether a letter had arrived before the past questioning time. Indirect yes/no questions use “whether” or “if” and statement word order.
+175. He said that he _____ there for two hours before the meeting started.
+A. Waits B. Has waited C. Will wait D. Had been waiting
+Correct Answer: D. Had been waiting Explanation: The past perfect continuous emphasizes duration before a past event. “For two hours” focuses on the length of the waiting.
+176. The teacher said that two and two _____ four.
+A. Made yesterday B. Make C. Had make D. Will make yesterday
+Correct Answer: B. Make Explanation: The simple present is retained because the statement expresses a mathematical truth. Reported speech does not require backshifting in such cases.
+177. He told me that he _____ his keys and could not open the door.
+A. Loses tomorrow B. Has lose C. Had lost D. Will lost
+Correct Answer: C. Had lost Explanation: The past perfect indicates that losing the keys occurred before the past situation in which he could not open the door. It explains the cause of the problem.
+178. She said that she _____ the answer if she had known it.
+A. Would have given B. Will give C. Would give tomorrow D. Has given
+Correct Answer: A. Would have given Explanation: The third conditional describes an unreal past situation. The standard structure is “if + past perfect, would have + past participle.”
+179. He said that he _____ a new job the previous month.
+A. Gets B. Has got tomorrow C. Will get D. Had got
+Correct Answer: D. Had got Explanation: The past perfect reports an event that occurred before the reporting time. “The previous month” indicates the earlier period; “had got” is the standard British English form, while “had gotten” is common in American English.
+180. She asked me what I _____ doing at that time.
+A. Am B. Was C. Have D. Will
+Correct Answer: B. Was Explanation: “What are you doing?” commonly becomes “what I was doing” in reported speech. The tense backshifts from present continuous to past continuous, and the pronoun changes according to the reporting context.
+Section D: Mixed Advanced Practice (Questions 181–200)
+181. Choose the grammatically correct sentence.
+A. Neither of the boys have completed his work. B. Neither of the boys has completed their works yesterday. C. Neither of the boys have complete his work. D. Neither of the boys has completed his work.
+Correct Answer: D. Neither of the boys has completed his work. Explanation: In formal examination grammar, “neither” is traditionally treated as singular and takes “has.” The present perfect is appropriate when the completion time is unspecified and the result is relevant now.
+182. Identify the part of speech of the underlined word: “He arrived before the meeting.”
+A. Conjunction B. Preposition C. Adverb D. Adjective
+Correct Answer: B. Preposition Explanation: “Before” takes the noun phrase “the meeting” as its complement and indicates time. In “He arrived before the meeting began,” it introduces a subordinate clause and functions as a subordinating conjunction.
+183. Choose the correct tense: “No sooner _____ the station than the train left.”
+A. Had we reached B. We had reached C. Did we reached D. Have we reached
+Correct Answer: A. Had we reached Explanation: The conventional structure is “No sooner had + subject + past participle + than + simple past.” Inversion occurs after “no sooner” when it begins the sentence.
+184. Identify the word functioning as an adverb: “She works hard, but her brother is hardly ever punctual.”
+A. Brother B. Punctual C. Hardly D. Her
+Correct Answer: C. Hardly Explanation: “Hardly” is an adverb meaning “almost not.” Do not confuse it with “hard,” which can mean “with great effort”; “hardly” does not mean “with great effort.”
+185. Choose the correct form: “If he _____ harder, he would have passed the examination.”
+A. Studied B. Studies C. Would study D. Had studied
+Correct Answer: D. Had studied Explanation: This is a third conditional sentence describing an unreal past situation. The standard structure is “if + past perfect, would have + past participle.”
+186. In the sentence “Having completed the assignment, Rina submitted it,” the expression “Having completed the assignment” is a—
+A. Finite subordinate clause B. Perfect participial phrase C. Gerund functioning as subject D. Present-tense verb phrase
+Correct Answer: B. Perfect participial phrase Explanation: “Having completed” is a perfect participle construction showing that one action preceded another. The understood subject of the phrase is Rina, the subject of the main clause.
+187. Choose the correct sentence.
+A. He said that he will come the next day. B. He said that he comes tomorrow. C. He said that he would come the following day. D. He said that he would came the following day.
+Correct Answer: C. He said that he would come the following day. Explanation: In traditional reported speech, “will come tomorrow” changes to “would come the following day.” A modal such as “would” must be followed by the base form “come,” not “came.”
+188. Identify the part of speech of “fast” in: “The fast runner finished the race fast.”
+A. Adjective in the first use; adverb in the second B. Adverb in both uses C. Adjective in both uses D. Noun in the first use; adjective in the second
+Correct Answer: A. Adjective in the first use; adverb in the second Explanation: The first “fast” modifies the noun “runner,” so it is an adjective. The second modifies “finished” and indicates how the race was completed, so it is an adverb.
+189. Choose the correct tense: “It is high time we _____ action against corruption.”
+A. Take B. Will take C. Have taken D. Took
+Correct Answer: D. Took Explanation: “It is high time” is conventionally followed by a subject and a past-form verb to express that something should happen now. The past form here does not indicate past time; it conveys urgency.
+190. Which sentence correctly uses the present perfect?
+A. I have seen him yesterday. B. I have known her for ten years. C. I am knowing her for ten years. D. I had seen him tomorrow.
+Correct Answer: B. I have known her for ten years. Explanation: The present perfect is appropriate for a state that began in the past and continues now. “Know” is normally a stative verb, and “for ten years” expresses duration.
+191. Identify the function of “that” in: “The book that you gave me is interesting.”
+A. Demonstrative determiner B. Coordinating conjunction C. Relative pronoun D. Interjection
+Correct Answer: C. Relative pronoun Explanation: In traditional grammar, “that” introduces the relative clause “that you gave me” and refers to “the book.” It functions as the object of “gave.”
+192. Choose the correct sequence of tenses: “She explained that the earth _____ around the sun.”
+A. Revolves B. Revolved only in the past C. Had revolved yesterday D. Will revolve tomorrow
+Correct Answer: A. Revolves Explanation: A universal scientific truth normally remains in the simple present in reported speech. The fact that “explained” is in the past does not require the tense of the general truth to change.
+193. Choose the correct form: “By the time the results are published, the candidates _____ the examination for two months.”
+A. Waited B. Have waited yesterday C. Had waited D. Will have been waiting
+Correct Answer: D. Will have been waiting Explanation: The future perfect continuous emphasizes the duration of waiting up to a future point. “By the time the results are published” establishes that future reference point.
+194. Which sentence contains a gerund functioning as the subject?
+A. The running water is cold. B. Reading improves vocabulary. C. She is reading a novel. D. The book was read yesterday.
+Correct Answer: B. Reading improves vocabulary. Explanation: “Reading” functions as a noun and serves as the subject of “improves.” In “The running water,” the -ing form modifies a noun, while “is reading” is part of a verb phrase.
+195. Choose the correct reported question.
+A. He asked me where did I live. B. He asked me where do I live. C. He asked me where I lived. D. He asked me where was I living yesterday tomorrow.
+Correct Answer: C. He asked me where I lived. Explanation: An indirect question uses statement word order: subject before verb. The inversion found in direct questions, such as “Where do you live?”, is not used after “He asked me where.”
+196. Select the correct sentence.
+A. She has been working here since 2022. B. She is working here since 2022. C. She works here since 2022. D. She had been working here since 2022 and still works here now.
+Correct Answer: A. She has been working here since 2022. Explanation: The present perfect continuous describes an activity that began in the past and continues into the present. “Since 2022” marks the starting point. Option D is possible in a suitable narrative context but does not express the intended continuing present state as directly.
+197. Identify the adverbial clause of time.
+A. Because he was ill B. Who lives next door C. That he was honest D. When the bell rang
+Correct Answer: D. When the bell rang Explanation: “When the bell rang” is a finite subordinate clause indicating the time of an event. “Because he was ill” is an adverbial clause of reason, while the other options are relative or content clauses.
+198. Choose the correct form: “If I _____ you, I would accept the offer.”
+A. Am B. Were C. Had been D. Will be
+Correct Answer: B. Were Explanation: The second conditional expresses a hypothetical present situation. “If I were you” is the conventional formal expression, followed by “would + base verb” in the main clause.
+199. Which sentence correctly uses the past perfect continuous?
+A. He has been waiting before the bus arrived yesterday. B. He is waiting for two hours before the bus arrived. C. He had been waiting for two hours when the bus finally arrived. D. He will have been waiting when the bus arrived yesterday.
+Correct Answer: C. He had been waiting for two hours when the bus finally arrived. Explanation: The past perfect continuous emphasizes an activity's duration before a past event. “For two hours” indicates duration, and “when the bus finally arrived” supplies the later event.
+200. Choose the grammatically correct sentence.
+A. Having finished his work, he went home. B. Having finished his work, the television was switched off. C. Having finished his work, the rain started. D. Having finish his work, he went home.
+Correct Answer: A. Having finished his work, he went home. Explanation: The perfect participial phrase “Having finished his work” correctly refers to the subject “he.” Options B and C contain dangling modifiers because the opening phrase does not logically describe the grammatical subject of the main clause. Option D uses the wrong verb form; “having” requires the past participle “finished.”

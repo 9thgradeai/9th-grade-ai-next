@@ -3,7 +3,7 @@
 import { useLanguage, t } from "@/lib/lang-ctx";
 
 /**
- * Phase 5 unified shortcut map — the ONLY global keys in the dashboard.
+ * Phase 5 unified shortcut map, the ONLY global keys in the dashboard.
  * Single-letter hijacks (P/M/W/A/F/Q/L/R/K) were removed: HomeTab and
  * QuickActions both bound them, so one press fired two handlers, stole
  * keystrokes from search inputs, and was undiscoverable. Rendered by both

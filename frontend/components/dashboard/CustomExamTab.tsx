@@ -66,12 +66,12 @@ type PersistedExam = {
   requested: number;
   available: number;
   shortfall: number;
-  /** Paginated position — persisted so refresh resumes on the same question. */
+  /** Paginated position, persisted so refresh resumes on the same question. */
   currentIndex: number;
 };
 
 // Shared wall-clock session countdown (single seam for all exam modes).
-// The deadline derives from startsAt + durationSec — the 1s interval only
+// The deadline derives from startsAt + durationSec, the 1s interval only
 // re-renders this leaf, so answering never resets the clock.
 function ExamTimer({
   startsAt,
@@ -114,7 +114,7 @@ export default function CustomExamTab() {
   // ── Exam state ──
   const [exam, setExam] = useState<PersistedExam | null>(null);
   const [answers, setAnswers] = useState<Record<number, string>>({});
-  // Paginated workspace: one question at a time (default — only the active
+  // Paginated workspace: one question at a time (default, only the active
   // card mounts, so 100+ question exams stay fast) with an "all" fallback
   // that keeps the legacy scroll-everything layout.
   const [examView, setExamView] = useState<"one" | "all">("one");
@@ -145,7 +145,7 @@ export default function CustomExamTab() {
   const [highlightedReview, setHighlightedReview] = useState<string | null>(null);
   const highlightTimeoutRef = useRef<number | null>(null);
   // Lazy review disclosures: wrong/unanswered auto-expand (AI mounts on open).
-  // Derived defaults (open unless correct) + explicit user toggles — no
+  // Derived defaults (open unless correct) + explicit user toggles, no
   // setState-in-effect, so the React compiler stays happy.
   const [reviewToggles, setReviewToggles] = useState<Record<number, boolean>>({});
   const isReviewOpen = useCallback((questionId: number, status: string) => {
@@ -180,7 +180,7 @@ export default function CustomExamTab() {
     };
   }, []);
 
-  // Always start at the top when entering exam or showing results — otherwise
+  // Always start at the top when entering exam or showing results, otherwise
   // the dashboard's scrollable container (#dashboard-content) keeps its previous
   // offset and the user lands in the middle of the questions or review.
   const scrollDashboardTop = useCallback(() => {
@@ -263,7 +263,7 @@ export default function CustomExamTab() {
           return;
         }
       } catch {
-        /* network still unusable — fall through to resume; submit will retry */
+        /* network still unusable, fall through to resume; submit will retry */
       }
       if (cancelled) return;
       {
@@ -281,7 +281,7 @@ export default function CustomExamTab() {
           }
         }
         // Resume uses the persisted attemptId if present, otherwise mints a
-        // new one — but in that case a server-side re-register is required.
+        // new one, but in that case a server-side re-register is required.
         // For simplicity we always mint on resume if missing, then fire-and-
         // forget the register call below.
         const attemptId = saved.attemptId ?? ensureAttemptId(STORAGE_KEY);
@@ -414,14 +414,14 @@ export default function CustomExamTab() {
       setShowConfirm(false);
       setPhase("exam");
       // Best-effort: register the attempt server-side so /api/exam/submit has
-      // a row to upsert. A failure here is non-fatal — submit will retry the
+      // a row to upsert. A failure here is non-fatal, submit will retry the
       // upsert path itself.
       void registerExam({
         attemptId,
         questionIds: built.questions.map((q) => q.id),
         durationSec: built.durationSec,
       }).catch(() => {
-        /* ignore — submit will surface a real error if it actually fails */
+        /* ignore, submit will surface a real error if it actually fails */
       });
     } catch {
       setBuildError("পরীক্ষা তৈরি করা যায়নি। আবার চেষ্টা করুন।");
@@ -488,7 +488,7 @@ export default function CustomExamTab() {
 
   const submit = useCallback(
     async (qs: Server.ExamQuestionDTO[], ans: Record<number, string>) => {
-      // Deterministic snapshot — captured synchronously at call time, never read
+      // Deterministic snapshot, captured synchronously at call time, never read
       // from async React state after the click.
       const snapshotQs = [...qs];
       const snapshotAns = { ...ans };
@@ -502,10 +502,10 @@ export default function CustomExamTab() {
         setSubmitError("পরীক্ষার সেশন শনাক্ত করা যায়নি। পৃষ্ঠা রিফ্রেশ করে আবার চেষ্টা করুন।");
         return;
       }
-      // Immediate ref guard — React state `submitting` is async; the ref prevents wedging on rapid hits
+      // Immediate ref guard, React state `submitting` is async; the ref prevents wedging on rapid hits
       // while the canonical `submitExamAttempt` rendezvous ensures duplicate hits JOIN instead of being dropped.
       if (submittingRef.current) {
-        // A submission is already in flight — the canonical layer will join it; just surface busy state.
+        // A submission is already in flight, the canonical layer will join it; just surface busy state.
         setSubmitting(true);
         return;
       }
@@ -534,7 +534,7 @@ export default function CustomExamTab() {
         // If the error looks like a network/timeout, offer reconciliation state
         if (msg.includes("TIMEOUT") || msg.includes("NETWORK_ERROR") || msg.includes("timed out")) {
           setReconciling(true);
-          setSubmitError("সংযোগ বিচ্ছিন্ন হয়েছে — অবস্থা যাচাই করা হচ্ছে...");
+          setSubmitError("সংযোগ বিচ্ছিন্ন হয়েছে, অবস্থা যাচাই করা হচ্ছে...");
           // Auto-reconcile once: if server already committed, we will recover on next mount via pending
         }
         setSubmitError(msg);
@@ -602,7 +602,7 @@ export default function CustomExamTab() {
               <h2 className="text-lg font-bold text-[var(--text-primary)]">{ecosystem === "BCS" ? "কাস্টম বিসিএস পরীক্ষা" : "Custom Bank Exam"}</h2>
             </div>
             <p className="text-xs text-[var(--dashboard-text-muted)]">
-              বিষয়, টপিক ও সাবটপিক বেছে নিয়ে নিজের পছন্দের পরীক্ষা তৈরি করুন — নেগেটিভ মার্কিং সহ বাস্তব {ecosystem === "BCS" ? "বিসিএস" : "ব্যাংক"} ধাঁচে (ভুল {negativeLabel})।
+              বিষয়, টপিক ও সাবটপিক বেছে নিয়ে নিজের পছন্দের পরীক্ষা তৈরি করুন, নেগেটিভ মার্কিং সহ বাস্তব {ecosystem === "BCS" ? "বিসিএস" : "ব্যাংক"} ধাঁচে (ভুল {negativeLabel})।
             </p>
           </div>
         </motion.div>
@@ -687,7 +687,7 @@ export default function CustomExamTab() {
                 <Warning className="w-4 h-4 flex-shrink-0 mt-0.5" />
                 <p>
                   নির্বাচিত টপিক থেকে শুধু <span className="font-mono">{availableTotal}টি</span> প্রশ্ন
-                  পাওয়া যায় — মোট <span className="font-mono">{totalCount}টি</span> চাওয়া হয়েছে।
+                  পাওয়া যায়, মোট <span className="font-mono">{totalCount}টি</span> চাওয়া হয়েছে।
                 </p>
               </div>
             )}
@@ -696,7 +696,7 @@ export default function CustomExamTab() {
               <div className="flex items-start gap-2 rounded-xl border border-[var(--warning)]/30 bg-[var(--dashboard-warning-subtle)] p-3 text-xs text-[var(--dashboard-warning)]">
                 <Warning className="w-4 h-4 flex-shrink-0 mt-0.5" />
                 <p>
-                  {overageSubjects.map((s) => s.nameBn).join(", ")} এ চাওয়া প্রশ্ন সংখ্যা উপলব্ধের বেশি —
+                  {overageSubjects.map((s) => s.nameBn).join(", ")} এ চাওয়া প্রশ্ন সংখ্যা উপলব্ধের বেশি,
                   সর্বোচ্চ <span className="font-mono">{availableForSubject(overageSubjects[0], selection)}টি</span> হবে।
                 </p>
               </div>
@@ -742,7 +742,7 @@ export default function CustomExamTab() {
               </div>
             </motion.div>
 
-            {/* Sticky config dock — thumb-reachable above the bottom nav */}
+            {/* Sticky config dock, thumb-reachable above the bottom nav */}
             <div className="sticky z-[var(--z-sticky)] bottom-[calc(var(--bottom-nav-h)+env(safe-area-inset-bottom,0px)+8px)] lg:bottom-2 mt-4">
               <button
                 onClick={() => setShowConfirm(true)}
@@ -755,7 +755,7 @@ export default function CustomExamTab() {
               </button>
             </div>
 
-            {/* Confirm sheet — bottom sheet on mobile, centered dialog on desktop.
+            {/* Confirm sheet, bottom sheet on mobile, centered dialog on desktop.
                 Portaled (see ModalPortal): inline sheets trap under the
                 mobile bottom nav. */}
             <ModalPortal>
@@ -835,7 +835,7 @@ export default function CustomExamTab() {
                     {insufficient && (
                       <p className="text-[11px] text-[var(--dashboard-warning)] mb-4 flex items-center gap-1.5">
                         <Warning className="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true" />
-                        শুধু {availableTotal}টি প্রশ্ন উপলব্ধ — {totalCount}টি চাওয়া হয়েছে।
+                        শুধু {availableTotal}টি প্রশ্ন উপলব্ধ, {totalCount}টি চাওয়া হয়েছে।
                       </p>
                     )}
 
@@ -862,7 +862,7 @@ export default function CustomExamTab() {
   }
 
   // ═══════════════ EXAM PHASE ═══════════════
-  // Live exam workspace — the root carries data-exam-session (see
+  // Live exam workspace, the root carries data-exam-session (see
   // PracticeTab note) so shell digit→tab shortcuts stay inert here.
   if (phase === "exam" && exam) {
     const progressPct = totalQuestions > 0 ? (answeredCount / totalQuestions) * 100 : 0;
@@ -915,7 +915,7 @@ export default function CustomExamTab() {
           </div>
         </div>
 
-        {/* Question palette (jump navigation) — shared pattern with quick
+        {/* Question palette (jump navigation), shared pattern with quick
             practice: current/answered/unanswered distinguishable by label +
             legend, never color alone. */}
         <div className="glass-card rounded-2xl border border-terminal-border p-3 lg:sticky lg:top-24">
@@ -958,7 +958,7 @@ export default function CustomExamTab() {
                       ? "border-[var(--dashboard-primary)]/40 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]"
                       : "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] hover:border-[var(--dashboard-primary)]/40"
                   }`}
-                  aria-label={`প্রশ্ন ${i + 1}${isAnswered ? " — উত্তর দেওয়া" : " — বাকি"}${isCurrent ? " — বর্তমান" : ""}`}
+                  aria-label={`প্রশ্ন ${i + 1}${isAnswered ? ", উত্তর দেওয়া" : ", বাকি"}${isCurrent ? ", বর্তমান" : ""}`}
                   aria-current={isCurrent ? "true" : undefined}
                 >
                   {i + 1}
@@ -1175,7 +1175,7 @@ export default function CustomExamTab() {
         </>
         )}
 
-        {/* Sticky submit bar — thumb-reachable above the bottom nav */}
+        {/* Sticky submit bar, thumb-reachable above the bottom nav */}
         <div className="sticky z-40 bottom-[calc(var(--bottom-nav-h)+env(safe-area-inset-bottom,0px)+8px)] lg:bottom-2 -mx-1 px-1 pt-2 pb-1" style={{ background: "linear-gradient(to top, var(--dashboard-surface) 70%, transparent)" }}>
           <div className="glass-card rounded-2xl border border-[var(--dashboard-primary)]/25 px-4 py-3 flex items-center justify-between gap-3 flex-wrap backdrop-blur-md" style={{ background: "color-mix(in srgb, var(--dashboard-surface-muted) 92%, transparent)" }}>
             <div className="text-xs text-[var(--dashboard-text-muted)] font-mono">
@@ -1413,7 +1413,7 @@ export default function CustomExamTab() {
                       questionIds: retryQs.map((qq) => qq.id),
                       durationSec,
                     }).catch(() => {
-                      /* non-fatal — submit upserts */
+                      /* non-fatal, submit upserts */
                     });
                   }}
                   className="px-5 py-2.5 min-h-[48px] bg-[var(--dashboard-primary)] text-[var(--dashboard-text-inverse)] font-mono text-sm font-bold rounded-xl hover:brightness-110 active:opacity-90 cursor-pointer transition-all flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
@@ -1457,7 +1457,7 @@ export default function CustomExamTab() {
                   type="button"
                   onClick={() => setReviewToggles((prev) => ({ ...prev, [item.questionId]: !isReviewOpen(item.questionId, item.status) }))}
                   aria-expanded={open}
-                  aria-label={`প্রশ্ন ${i + 1} — ${verdictLabel} — ${open ? "সংকুচিত করুন" : "বিস্তারিত দেখুন"}`}
+                  aria-label={`প্রশ্ন ${i + 1}, ${verdictLabel}, ${open ? "সংকুচিত করুন" : "বিস্তারিত দেখুন"}`}
                   className="w-full flex items-center gap-3 p-4 min-h-[60px] text-left cursor-pointer transition-[background-color] duration-150 hover:bg-[var(--dashboard-surface-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--dashboard-focus-ring)]"
                 >
                   <span className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${

@@ -9,9 +9,9 @@
  * Every subject is visible up-front as a clickable card. Tapping a card opens
  * a responsive popup for that subject with a multi-select topic tree and a
  * per-subject question-count stepper:
- *   • "সম্পূর্ণ বিষয়" — whole subject (empty path list)
- *   • টপিক — top-level topic rows with checkboxes
- *   • সাবটপিক — any deepening descendant under an expanded topic, selectable
+ *   • "সম্পূর্ণ বিষয়", whole subject (empty path list)
+ *   • টপিক, top-level topic rows with checkboxes
+ *   • সাবটপিক, any deepening descendant under an expanded topic, selectable
  *     alongside other topics/subtopics (multiple paths per subject supported)
  *
  * Each selection is committed live into the parent-owned `selection` as a list
@@ -123,7 +123,7 @@ export default function SubjectTopicSelect({
   const [openSubject, setOpenSubject] = useState<Server.ExamSubjectDTO | null>(null);
   const [query, setQuery] = useState("");
   const shouldReduceMotion = useReducedMotion();
-  // Sheet drag handle controls — only the handle initiates the dismiss
+  // Sheet drag handle controls, only the handle initiates the dismiss
   // drag, so the topic list keeps native touch scrolling.
   const sheetControls = useDragControls();
 
@@ -132,7 +132,7 @@ export default function SubjectTopicSelect({
   // Shared lock: swiping the sheet must not slide the dashboard behind it.
   useScrollLock(openSubject !== null);
 
-  // Live search across Bangla + English names — the subject list is long on
+  // Live search across Bangla + English names, the subject list is long on
   // small screens, and thumb-typing a filter beats scrolling the grid.
   const visibleSubjects = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -279,7 +279,7 @@ export default function SubjectTopicSelect({
                 onClick={() => handleCardClick(subject)}
                 aria-expanded={openSubject?.id === subject.id}
                 aria-pressed={selected}
-                aria-label={`${subject.nameBn} — ${subject.questionCount}টি প্রশ্ন${selected ? ` — নির্বাচিত: ${scopeLabel}` : ""}`}
+                aria-label={`${subject.nameBn}, ${subject.questionCount}টি প্রশ্ন${selected ? `, নির্বাচিত: ${scopeLabel}` : ""}`}
                 className={`glass-card rounded-2xl border p-3 text-left cursor-pointer transition-[border-color,background-color,opacity] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] ${
                   selected
                     ? "border-[var(--dashboard-primary)]/40 bg-[var(--dashboard-primary-subtle)]"
@@ -372,7 +372,7 @@ export default function SubjectTopicSelect({
             onClick={(e) => e.stopPropagation()}
             className="glass-card rounded-t-2xl sm:rounded-2xl border border-[var(--dashboard-primary)]/25 w-full sm:max-w-md max-h-[88vh] flex flex-col overflow-hidden"
           >
-            {/* Drag handle (mobile sheet affordance) — the only drag origin */}
+            {/* Drag handle (mobile sheet affordance), the only drag origin */}
             <div
               className="flex items-center justify-center pt-2.5 pb-1 sm:hidden cursor-grab active:cursor-grabbing touch-none"
               aria-hidden="true"
@@ -407,11 +407,11 @@ export default function SubjectTopicSelect({
               </button>
             </div>
 
-            {/* Scrollable body — overscroll-contain stops scroll chaining to
+            {/* Scrollable body, overscroll-contain stops scroll chaining to
                 the page behind at the list boundaries (defense in depth
                 alongside the scroll-lock above). */}
             <div className="flex-1 overflow-y-auto overscroll-contain p-4 sm:p-5 space-y-4">
-              {/* Whole-subject toggle — empty paths = whole subject (server matches all leaves) */}
+              {/* Whole-subject toggle, empty paths = whole subject (server matches all leaves) */}
               <button
                 type="button"
                 onClick={toggleWholeSubject}

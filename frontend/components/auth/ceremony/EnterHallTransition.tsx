@@ -4,7 +4,7 @@ import { useEffect } from "react"
 import { motion, useReducedMotion } from "framer-motion"
 
 /**
- * "Enter the hall" — the departure transition.
+ * "Enter the hall", the departure transition.
  *
  * A short forward push: warm light expands from the center of the room,
  * the authentication world dissolves, then navigation happens. Total dwell

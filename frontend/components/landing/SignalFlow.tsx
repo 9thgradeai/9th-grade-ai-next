@@ -235,8 +235,8 @@ function DesktopPipeline({ mode, cycle, animate }: { mode: SignalMode; cycle: nu
         {mode === "idle"
           ? "SIMULATE AN ANSWER TO TRACE ITS SIGNAL"
           : correct
-            ? "PATHWAY STRENGTHENED — CONCEPT NODE REINFORCED"
-            : "SIGNAL REDIRECTED — WEAKNESS QUEUED FOR REVIEW"}
+            ? "PATHWAY STRENGTHENED, CONCEPT NODE REINFORCED"
+            : "SIGNAL REDIRECTED, WEAKNESS QUEUED FOR REVIEW"}
       </text>
     </svg>
   );
@@ -271,7 +271,7 @@ function MobilePipeline({ mode }: { mode: SignalMode }) {
       {mode === "wrong" && (
         <li className="flex justify-center pt-2">
           <span className="rounded-full border border-amber-400/60 bg-amber-500/10 px-4 py-1.5 font-mono text-xs text-amber-400">
-            WEAK CONCEPT — QUEUED FOR REVIEW
+            WEAK CONCEPT, QUEUED FOR REVIEW
           </span>
         </li>
       )}

@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 
-// Sprint 6: the command palette is interaction-only — nobody presses ⌘K in
+// Sprint 6: the command palette is interaction-only, nobody presses ⌘K in
 // the first seconds. Mounting it on idle (or on first ⌘K/Ctrl+K, whichever
 // comes first) keeps its chunk out of the hydration critical path. A missed
 // early ⌘K still works: the key listener mounts the palette on demand.
@@ -17,7 +17,7 @@ export default function IdleCommandPalette() {
 
   useEffect(() => {
     if (ready) {
-      // A Search click may have arrived before the chunk loaded — replay it
+      // A Search click may have arrived before the chunk loaded, replay it
       // once the palette is listening.
       if (pendingOpen.current) {
         pendingOpen.current = false;
@@ -37,7 +37,7 @@ export default function IdleCommandPalette() {
     };
     const onOpenCommand = () => mount(true);
     // The navbar Search button fires this even when the palette chunk
-    // hasn't loaded — mount on demand so the click is never swallowed.
+    // hasn't loaded, mount on demand so the click is never swallowed.
     window.addEventListener("keydown", onKey);
     window.addEventListener("app:open-command", onOpenCommand);
     let idleId = 0;

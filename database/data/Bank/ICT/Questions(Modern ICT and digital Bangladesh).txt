@@ -1,0 +1,635 @@
+﻿Section A: Artificial Intelligence, Machine Learning and Generative AI
+1. What is Artificial Intelligence (AI)?
+A. A method of storing files permanently B. The ability of machines to perform tasks associated with human intelligence C. A type of computer network D. A system used exclusively for numerical calculations
+Correct Answer: B. The ability of machines to perform tasks associated with human intelligence Explanation: AI enables machines to perform tasks such as reasoning, language understanding, pattern recognition, and decision-making. It is a broad field that includes machine learning and natural language processing.
+2. Which statement best describes Machine Learning (ML)?
+A. Computers execute only explicitly programmed rules B. Computers learn patterns from data to make predictions or decisions C. Computers operate without algorithms D. Computers convert all data into printed documents
+Correct Answer: B. Computers learn patterns from data to make predictions or decisions Explanation: Machine learning is a subset of AI in which models learn statistical patterns from data. For example, a bank can train a model to identify potentially fraudulent transactions.
+3. Which of the following is a generative AI application?
+A. A calculator that performs addition B. A conventional file-compression utility C. A tool that creates a new image from a text prompt D. A switch that forwards network packets
+Correct Answer: C. A tool that creates a new image from a text prompt Explanation: Generative AI produces new content, including text, images, audio, video, and code. It differs from systems designed only to classify or retrieve existing information.
+4. Which relationship among AI, ML, and deep learning is correct?
+A. AI is a subset of ML, which is a subset of deep learning B. ML and AI are unrelated fields C. Deep learning includes all forms of AI D. Deep learning is a subset of ML, which is a subset of AI
+Correct Answer: D. Deep learning is a subset of ML, which is a subset of AI Explanation: AI is the broadest field. Machine learning is a subset of AI, and deep learning uses multilayer neural networks as a specialized approach to machine learning.
+5. A bank trains a system using historical transactions labelled “fraudulent” or “legitimate.” Which learning approach is being used?
+A. Supervised learning B. Unsupervised learning C. Reinforcement learning D. Manual data entry
+Correct Answer: A. Supervised learning Explanation: Supervised learning uses labelled training examples containing inputs and known target outputs. The labels allow the model to learn how to classify new transactions.
+6. Which machine-learning approach is most suitable for grouping customers according to purchasing patterns when no group labels are provided?
+A. Supervised classification B. Unsupervised learning C. Reinforcement learning D. Rule-based encryption
+Correct Answer: B. Unsupervised learning Explanation: Unsupervised learning discovers structures or patterns in unlabelled data. Clustering is commonly used for customer segmentation.
+7. In reinforcement learning, an agent primarily learns through:
+A. Memorising a fixed list of answers B. Receiving only labelled examples C. Interacting with an environment and receiving rewards or penalties D. Converting source code into machine code
+Correct Answer: C. Interacting with an environment and receiving rewards or penalties Explanation: Reinforcement learning improves an agent's behaviour through actions and feedback. Its objective is generally to maximise cumulative reward over time.
+8. Which technology is most closely associated with understanding and generating human language?
+A. Optical disc technology B. DNS C. RAID D. Natural Language Processing (NLP)
+Correct Answer: D. Natural Language Processing (NLP) Explanation: NLP enables computers to process human language in text or speech. Applications include chatbots, translation, sentiment analysis, and document summarisation.
+9. A bank uses AI to estimate whether a loan applicant may default. This is an example of:
+A. Predictive analytics B. Disk defragmentation C. Data encryption alone D. Optical character printing
+Correct Answer: A. Predictive analytics Explanation: Predictive analytics uses historical data and statistical or machine-learning models to estimate future outcomes. Such predictions support credit-risk assessment but should not replace appropriate governance and human oversight.
+10. What is a major function of a large language model (LLM)?
+A. Physically repairing computer hardware B. Predicting and generating language sequences from learned patterns C. Regulating mobile network spectrum D. Replacing every database with a spreadsheet
+Correct Answer: B. Predicting and generating language sequences from learned patterns Explanation: LLMs are trained on large collections of data to model language and generate contextually relevant outputs. They can perform tasks such as drafting, summarisation, translation, and question answering.
+11. What is a common limitation of generative AI systems?
+A. They can process only printed documents B. They cannot generate text C. They may produce plausible-sounding but factually incorrect information D. They always retrieve verified facts from official databases
+Correct Answer: C. They may produce plausible-sounding but factually incorrect information Explanation: This behaviour is commonly called a hallucination. Important outputs, especially legal, financial, and factual claims, should be verified against reliable sources.
+12. What does a prompt mean in generative AI?
+A. A physical component of the CPU B. A permanent backup copy of a model C. A network cable connecting two computers D. An instruction or input provided to guide the model's response
+Correct Answer: D. An instruction or input provided to guide the model's response Explanation: A prompt can contain a question, task, context, examples, or output-format requirements. Clear prompts generally help guide the system toward more relevant responses.
+13. Which technology is commonly used to extract printed or handwritten text from images or scanned documents?
+A. Optical Character Recognition (OCR) B. File Transfer Protocol (FTP) C. Simple Mail Transfer Protocol (SMTP) D. Dynamic Host Configuration Protocol (DHCP)
+Correct Answer: A. Optical Character Recognition (OCR) Explanation: OCR converts text images into machine-readable text. AI-enhanced OCR can help banks digitise forms, invoices, and identity documents, although results require quality checks.
+14. Which of the following is an example of computer vision?
+A. Assigning an IP address automatically B. Detecting a person's face in an image C. Compressing a database backup D. Translating a domain name into an IP address
+Correct Answer: B. Detecting a person's face in an image Explanation: Computer vision enables machines to interpret visual information from images and videos. Applications include image classification, object detection, and facial recognition.
+15. A model performs extremely well on training data but poorly on new data. What is this problem called?
+A. Normalisation B. Encryption C. Overfitting D. Data transmission
+Correct Answer: C. Overfitting Explanation: Overfitting occurs when a model learns training-specific details, including noise, rather than patterns that generalise well. Proper validation, regularisation, and suitable training data can reduce the problem.
+16. In machine learning, what is the purpose of a test dataset?
+A. To replace all training data B. To store the model's source code C. To provide labels only after deployment D. To evaluate performance on data withheld from model training
+Correct Answer: D. To evaluate performance on data withheld from model training Explanation: A test set estimates how well a model performs on unseen examples. It should not be repeatedly used to tune the model, as this can undermine an unbiased evaluation.
+17. Which metric measures the proportion of all predictions that are correct?
+A. Accuracy B. Latency C. Bandwidth D. Throughput
+Correct Answer: A. Accuracy Explanation: Accuracy is the number of correct predictions divided by the total number of predictions. In highly imbalanced fraud datasets, accuracy alone can be misleading because fraudulent cases may be rare.
+18. Which term describes unfair or systematically skewed outcomes produced by an AI system?
+A. Data compression B. Algorithmic bias C. Load balancing D. Packet switching
+Correct Answer: B. Algorithmic bias Explanation: AI bias can result from unrepresentative training data, historical inequalities, or flawed model design. Banks should test models for fairness and monitor their effects on different groups.
+19. Which AI capability is most directly used by a chatbot that answers customers' banking questions in conversational language?
+A. Disk partitioning B. Network routing C. Natural Language Processing D. Data deduplication
+Correct Answer: C. Natural Language Processing Explanation: NLP supports understanding user queries and producing language-based responses. Modern conversational assistants may combine NLP with large language models and information retrieval.
+20. What is a deepfake?
+A. A database that contains duplicated records B. A method for encrypting a hard drive C. A type of optical fibre D. Synthetic or manipulated media created using AI or other digital techniques to imitate real people or events
+Correct Answer: D. Synthetic or manipulated media created using AI or other digital techniques to imitate real people or events Explanation: Deepfakes can imitate voices, faces, or movements and may be used in fraud or misinformation. Banks should not rely solely on voice or video appearance to authenticate high-risk transactions.
+21. Which statement best distinguishes generative AI from traditional discriminative AI?
+A. Generative AI can create new content, while discriminative models commonly classify or predict labels B. Generative AI can only store data, while discriminative AI can only delete it C. Discriminative AI never uses training data D. Generative AI cannot use neural networks
+Correct Answer: A. Generative AI can create new content, while discriminative models commonly classify or predict labels Explanation: A generative model may create text or images, whereas a discriminative model may determine whether a transaction is fraudulent. This is a useful conceptual distinction, although some modern models can perform both kinds of tasks.
+22. What is the primary purpose of a recommendation system used by an e-commerce website?
+A. To allocate IP addresses B. To suggest products based on relevant user or item information C. To issue digital certificates D. To replace the payment gateway
+Correct Answer: B. To suggest products based on relevant user or item information Explanation: Recommendation systems may use collaborative filtering, content-based methods, or hybrid approaches. They help personalise product suggestions based on preferences and behaviour.
+23. Which of the following is an example of predictive maintenance using AI?
+A. Printing a monthly salary sheet B. Manually switching off a computer C. Analysing sensor data to predict when equipment may fail D. Formatting a word-processing document
+Correct Answer: C. Analysing sensor data to predict when equipment may fail Explanation: Predictive maintenance uses data and analytical models to estimate equipment failure before it occurs. This can reduce unexpected downtime and maintenance costs.
+24. What does the term “training data” refer to in machine learning?
+A. Data created only after a model has been retired B. A computer's electrical power supply C. A list of internet domain names D. Data used by a learning algorithm to fit a model
+Correct Answer: D. Data used by a learning algorithm to fit a model Explanation: Training data provides examples from which the model learns patterns or relationships. The quality, relevance, and representativeness of this data strongly influence model performance.
+25. Which is the most appropriate practice when using a public generative AI service for banking work?
+A. Avoid submitting confidential customer information unless the service is explicitly approved and appropriate safeguards are in place B. Upload customer passwords to improve response quality C. Treat every generated answer as an official bank decision D. Disable all verification of generated financial information
+Correct Answer: A. Avoid submitting confidential customer information unless the service is explicitly approved and appropriate safeguards are in place Explanation: Sensitive information can create privacy, confidentiality, and compliance risks when submitted to external systems. Approved tools, access controls, data minimisation, and human verification are essential.
+26. Which technique allows an AI application to retrieve relevant external documents before generating a response?
+A. RAID B. Retrieval-Augmented Generation (RAG) C. Packet fragmentation D. Disk mirroring
+Correct Answer: B. Retrieval-Augmented Generation (RAG) Explanation: RAG combines information retrieval with generative AI. It can help a model answer questions using relevant documents, although retrieval quality and source verification remain important.
+27. Which of the following best describes a neural network?
+A. A physical arrangement of internet cables B. A database containing only numerical values C. A computational model consisting of interconnected processing units arranged in layers D. A protocol for sending email
+Correct Answer: C. A computational model consisting of interconnected processing units arranged in layers Explanation: Artificial neural networks contain connected units that transform input data using learned parameters. Deep neural networks contain multiple processing layers.
+28. What is an AI model's inference stage?
+A. Constructing the physical computer B. Collecting electricity for the server C. Deleting all training examples D. Using a trained model to produce a prediction or output
+Correct Answer: D. Using a trained model to produce a prediction or output Explanation: Training adjusts model parameters using data. Inference occurs when the trained model is applied to new inputs, such as estimating transaction risk or generating text.
+29. A bank uses a model to flag suspicious transactions for further review. Which approach is most appropriate?
+A. Combine model outputs with risk-based controls and suitable human review B. Automatically assume every flagged transaction is criminal C. Remove all audit records D. Ignore false positives and false negatives
+Correct Answer: A. Combine model outputs with risk-based controls and suitable human review Explanation: Fraud-detection systems can make errors in both directions. Appropriate review, auditability, monitoring, and escalation help reduce the consequences of incorrect predictions.
+30. Which statement about Artificial General Intelligence (AGI) is most accurate?
+A. It is another name for a spreadsheet B. It refers to a hypothetical or debated form of AI with broad, general-purpose cognitive capabilities C. It is a standard banking payment protocol D. It is a device used only to connect printers
+Correct Answer: B. It refers to a hypothetical or debated form of AI with broad, general-purpose cognitive capabilities Explanation: AGI is generally used for AI that can perform a broad range of intellectual tasks rather than a narrow set of specialised tasks. It should not be confused with today's task-specific AI applications.
+31. Which technology enables a system to convert spoken language into written text?
+A. Image segmentation B. Data warehousing C. Automatic Speech Recognition (ASR) D. Blockchain mining
+Correct Answer: C. Automatic Speech Recognition (ASR) Explanation: ASR converts audio speech into text. It can support voice assistants, call-centre transcription, and accessibility features, but accuracy varies with accent, noise, and language.
+32. Which of the following is an example of unsupervised anomaly detection?
+A. Teaching a system using only labelled examples of known fraud B. Sorting files alphabetically C. Encrypting every database record D. Identifying unusual transaction patterns without relying entirely on pre-labelled fraud examples
+Correct Answer: D. Identifying unusual transaction patterns without relying entirely on pre-labelled fraud examples Explanation: Unsupervised anomaly detection identifies observations that differ substantially from learned patterns. Unusual transactions may warrant review, but an anomaly is not necessarily fraudulent.
+33. In an AI system, what is a feature?
+A. An input variable used by a model to make predictions B. A physical keyboard key C. A completed paper report D. A type of cloud subscription
+Correct Answer: A. An input variable used by a model to make predictions Explanation: Features may include transaction amount, time, location, or other relevant attributes. Poorly selected or inappropriate features can reduce accuracy and introduce bias.
+34. What is the main purpose of validation data during model development?
+A. To replace the operating system B. To help select models and tune their settings C. To act as the bank's payment network D. To store only encrypted passwords
+Correct Answer: B. To help select models and tune their settings Explanation: Validation data supports model selection and hyperparameter tuning. Training data fits the model, while a separate test dataset is used for final performance evaluation.
+35. A text-generating AI produces different responses to the same prompt on different attempts. What is the best explanation?
+A. Every AI response must be retrieved from a fixed webpage B. The computer's MAC address has necessarily changed C. Generation may involve probabilistic sampling and configurable decoding settings D. The system has stopped using algorithms
+Correct Answer: C. Generation may involve probabilistic sampling and configurable decoding settings Explanation: Some generative models sample from possible next tokens, so their outputs can vary. Even with deterministic settings, differences in context or system implementation can affect results.
+36. Which of the following is the strongest example of responsible AI governance in a bank?
+A. Deploying a model without testing B. Allowing any employee to change its parameters C. Hiding all automated decisions from auditors D. Establishing accountability, risk assessment, testing, monitoring, and appropriate oversight
+Correct Answer: D. Establishing accountability, risk assessment, testing, monitoring, and appropriate oversight Explanation: AI governance addresses reliability, fairness, privacy, accountability, and operational risks throughout the model lifecycle. Governance is especially important when automated outputs influence lending or customer access to financial services.
+37. Which AI application is most suitable for translating a Bangla document into English?
+A. Machine translation using NLP B. Network address translation alone C. Data deduplication D. Disk encryption
+Correct Answer: A. Machine translation using NLP Explanation: Machine translation applies computational language models to translate between languages. Human review may be necessary for legal, technical, or financial documents where subtle errors matter.
+38. What is a major risk of relying on biased historical data to train a recruitment or lending model?
+A. It automatically increases internet bandwidth B. It may reproduce or amplify existing discriminatory patterns C. It guarantees equal treatment D. It eliminates the need for data quality checks
+Correct Answer: B. It may reproduce or amplify existing discriminatory patterns Explanation: Historical data can reflect unequal treatment or underrepresentation. Testing for disparate outcomes and evaluating data quality are important safeguards.
+39. Which statement correctly describes the relationship between an AI algorithm and an AI model?
+A. They always mean exactly the same thing B. A model is a physical network cable C. An algorithm specifies a computational procedure, while a trained model contains learned parameters or a fitted representation D. An algorithm can never process data
+Correct Answer: C. An algorithm specifies a computational procedure, while a trained model contains learned parameters or a fitted representation Explanation: A learning algorithm is used to fit a model from data. Once trained, the model can be applied to new inputs during inference.
+40. A bank wants to use AI to summarise long internal policy documents. Which safeguard is especially important?
+A. Permit the system to invent missing policy clauses B. Remove document dates and version numbers C. Assume summaries are always legally authoritative D. Check the summary against the original, current policy and protect confidential information
+Correct Answer: D. Check the summary against the original, current policy and protect confidential information Explanation: AI summaries can omit qualifications or introduce inaccuracies. Source checking and version control help ensure that employees rely on the correct policy.
+Section B: Cloud Computing — IaaS, PaaS and SaaS
+41. What is cloud computing?
+A. Delivering computing resources and services over a network, usually the internet B. Storing all files exclusively on paper C. Using a computer without any software D. Connecting computers only through Bluetooth
+Correct Answer: A. Delivering computing resources and services over a network, usually the internet Explanation: Cloud computing provides resources such as servers, storage, databases, and applications on demand. It can reduce the need to purchase and maintain all infrastructure locally.
+42. What does IaaS stand for?
+A. Internet as an Application Service B. Infrastructure as a Service C. Information as a Security Standard D. Integration as a Software System
+Correct Answer: B. Infrastructure as a Service Explanation: IaaS provides virtualised computing infrastructure, such as virtual machines, storage, and networking. Customers generally manage the operating systems and applications they deploy.
+43. Which cloud service model typically provides a ready-to-use application accessed through a web browser?
+A. IaaS B. PaaS C. SaaS D. On-premises hardware
+Correct Answer: C. SaaS Explanation: Software as a Service delivers applications managed by a provider. Users typically access the application without managing its underlying servers or operating system.
+44. A developer wants a managed environment for building, testing, and deploying applications without managing the underlying server infrastructure. Which model is most suitable?
+A. SaaS B. IaaS only C. Personal computer hosting D. PaaS
+Correct Answer: D. PaaS Explanation: Platform as a Service provides application-development and deployment environments. The provider manages much of the underlying infrastructure and platform, allowing developers to focus on application code.
+45. Which of the following is the clearest example of SaaS?
+A. A web-based email application managed by a provider B. A raw virtual machine rented from a cloud provider C. A physical server owned and operated entirely by a bank D. A processor installed on a motherboard
+Correct Answer: A. A web-based email application managed by a provider Explanation: SaaS supplies a complete application as a service. A user generally does not manage its operating system, runtime, or server infrastructure.
+46. Under a typical IaaS arrangement, which responsibility usually remains primarily with the customer?
+A. Maintaining the provider's physical data-centre building B. Configuring the guest operating system and deployed applications C. Replacing the provider's physical network switches D. Repairing the cloud provider's power generators
+Correct Answer: B. Configuring the guest operating system and deployed applications Explanation: IaaS customers normally control virtual machines and software running inside them. The provider manages physical infrastructure, although exact responsibilities depend on the service agreement.
+47. What is a public cloud?
+A. A network that must be disconnected from the internet B. A computer accessible only to one employee C. Cloud infrastructure offered for use by multiple customers through a provider D. A paper-based filing system
+Correct Answer: C. Cloud infrastructure offered for use by multiple customers through a provider Explanation: Public-cloud services are provided by organisations that operate shared infrastructure for many customers. Logical isolation and security controls separate customer environments.
+48. What best describes a private cloud?
+A. A free public website B. A social media account C. A shared computer without access controls D. Cloud infrastructure dedicated to a single organisation's use
+Correct Answer: D. Cloud infrastructure dedicated to a single organisation's use Explanation: A private cloud is dedicated to one organisation and may be hosted internally or by a third party. It can offer greater control, but it still requires appropriate management and security.
+49. What is a hybrid cloud?
+A. An arrangement combining private-cloud infrastructure with public-cloud services B. A computer containing both RAM and ROM C. A network that uses only wired connections D. A system that cannot exchange data
+Correct Answer: A. An arrangement combining private-cloud infrastructure with public-cloud services Explanation: Hybrid cloud integrates distinct cloud environments, often to balance control, flexibility, and scalability. Workloads and data can be placed according to operational and regulatory needs.
+50. What is a major advantage of cloud elasticity?
+A. It permanently fixes computing capacity at one level B. Resources can expand or contract as demand changes C. It removes the need for authentication D. It guarantees that outages never occur
+Correct Answer: B. Resources can expand or contract as demand changes Explanation: Elasticity allows computing resources to adjust to changing workloads. It can improve resource utilisation, but costs still require monitoring.
+51. What does the term “scalability” mean in cloud computing?
+A. Encrypting a file with a password B. Printing documents from a server C. Increasing or decreasing capacity to meet workload requirements D. Removing all application users
+Correct Answer: C. Increasing or decreasing capacity to meet workload requirements Explanation: Scalability is the ability to accommodate changes in workload. Vertical scaling increases the resources of an existing system, while horizontal scaling adds more instances or machines.
+52. Which cloud deployment model is generally most appropriate when an organisation needs a dedicated environment and extensive control over infrastructure?
+A. Public social networking B. Open guest Wi-Fi C. Consumer email D. Private cloud
+Correct Answer: D. Private cloud Explanation: A private cloud can provide dedicated resources and more control over configuration. However, the organisation must still assess costs, security, compliance, and operational capability.
+53. Which of the following is an example of cloud storage?
+A. Saving files to a remotely hosted storage service accessed over the internet B. Printing a document on paper C. Saving a file only in a computer's CPU register D. Writing data on a classroom whiteboard
+Correct Answer: A. Saving files to a remotely hosted storage service accessed over the internet Explanation: Cloud storage keeps data on provider-managed remote infrastructure. Availability, privacy, backup, access control, and data-retention arrangements should be reviewed.
+54. What is a Service Level Agreement (SLA) in cloud computing?
+A. A programming language B. An agreement defining service expectations and measurable commitments C. A device for encrypting a keyboard D. A type of database key
+Correct Answer: B. An agreement defining service expectations and measurable commitments Explanation: An SLA may specify availability targets, support response times, and remedies for service failures. An availability commitment does not guarantee that outages will never occur.
+55. Which cloud feature allows a customer to be charged according to measured resource consumption?
+A. Fixed manual filing B. Permanent offline storage C. Metered, pay-as-you-go usage D. Unrestricted free hardware replacement
+Correct Answer: C. Metered, pay-as-you-go usage Explanation: Cloud providers often measure usage such as storage, processing time, or data transfer. This can make costs more flexible, but poorly controlled workloads can produce unexpected bills.
+56. What is serverless computing?
+A. Computing without any physical servers anywhere B. A service that never executes code C. A computer with its processor removed D. A model in which the provider manages server infrastructure and executes code or services on demand
+Correct Answer: D. A model in which the provider manages server infrastructure and executes code or services on demand Explanation: Serverless computing hides much of the infrastructure management from developers. Servers still exist, but the provider manages provisioning and much of the scaling.
+57. Which statement about cloud security is correct?
+A. Security responsibilities are shared between the provider and the customer, depending on the service model B. The provider is always responsible for every customer security setting C. Cloud data cannot be stolen D. Moving to the cloud automatically guarantees regulatory compliance
+Correct Answer: A. Security responsibilities are shared between the provider and the customer, depending on the service model Explanation: Providers typically secure the underlying infrastructure, while customers remain responsible for areas such as identities, data, and configurations. The precise division depends on the service and agreement.
+58. What is a major purpose of a cloud backup?
+A. To increase the physical size of a monitor B. To help restore data after deletion, corruption, or other loss C. To eliminate the need for access controls D. To prevent all network delays
+Correct Answer: B. To help restore data after deletion, corruption, or other loss Explanation: Backups preserve recoverable copies of data. Organisations should test restoration procedures and protect backups against unauthorised access and ransomware.
+59. A bank wants to move an existing operating system and custom application to a virtual machine while retaining considerable control over the software environment. Which model is most appropriate?
+A. SaaS B. PaaS exclusively C. IaaS D. A search engine
+Correct Answer: C. IaaS Explanation: IaaS offers virtualised infrastructure on which customers can install and manage operating systems and applications. PaaS usually abstracts more of the underlying system.
+60. What is a cloud region?
+A. A user's password B. A spreadsheet worksheet C. A single software function D. A geographic area containing cloud-provider infrastructure
+Correct Answer: D. A geographic area containing cloud-provider infrastructure Explanation: Providers organise infrastructure into geographic regions, often with multiple availability zones. Region selection can affect latency, resilience, and data-residency obligations.
+61. What is an availability zone in many cloud platforms?
+A. An isolated location or group of data-centre facilities within a region B. A public internet search result C. A user-account password D. A software licence number
+Correct Answer: A. An isolated location or group of data-centre facilities within a region Explanation: Availability zones are designed to reduce the effect of certain local failures. Deploying across zones can improve resilience when configured appropriately.
+62. Which of the following is a potential disadvantage of cloud computing?
+A. It always requires no internet connection B. Dependence on connectivity and possible provider lock-in C. It cannot store digital files D. It cannot support remote access
+Correct Answer: B. Dependence on connectivity and possible provider lock-in Explanation: Cloud applications may be difficult to access during network disruptions, and moving between providers can be costly. Portability planning and contingency arrangements help manage these risks.
+63. What is vendor lock-in?
+A. A method of locking a physical office door B. A form of data compression C. Difficulty moving from one provider because of technical, contractual, or cost barriers D. A technique for generating random passwords
+Correct Answer: C. Difficulty moving from one provider because of technical, contractual, or cost barriers Explanation: Proprietary interfaces, data formats, and dependencies can make migration difficult. Open standards and exit planning can reduce lock-in risk.
+64. Which is the best example of PaaS?
+A. Purchasing a desktop monitor B. Using a finished online word processor C. Renting a physical office D. Using a managed application platform to deploy code without managing the underlying operating system
+Correct Answer: D. Using a managed application platform to deploy code without managing the underlying operating system Explanation: PaaS provides a managed environment for application development and deployment. A finished online word processor is more characteristic of SaaS.
+65. What does “multi-tenancy” commonly mean in public-cloud services?
+A. Multiple customers use shared underlying resources while their environments are logically separated B. Each customer must own a separate data centre C. A single person operates multiple keyboards D. Data is always stored in plain text
+Correct Answer: A. Multiple customers use shared underlying resources while their environments are logically separated Explanation: Multi-tenancy improves resource utilisation, but isolation and access controls are essential. Shared infrastructure does not mean that one customer should be able to access another's data.
+66. Which cloud-related technology provides a packaged application with its dependencies in an isolated, portable environment?
+A. Optical character recognition B. Containerisation C. Domain registration D. Analog transmission
+Correct Answer: B. Containerisation Explanation: Containers package applications and their dependencies while sharing the host operating-system kernel. They can improve consistency across development and deployment environments.
+67. What is the primary purpose of a virtual machine?
+A. To convert every website into a printed book B. To replace all data with images C. To emulate a computing environment that can run its own operating system D. To regulate national telecommunications tariffs
+Correct Answer: C. To emulate a computing environment that can run its own operating system Explanation: Virtual machines allow multiple isolated computing environments to run on physical hardware. A hypervisor manages their execution and resource allocation.
+68. Which practice is most important before migrating a bank's critical application to the cloud?
+A. Deleting all audit logs B. Ignoring data-residency requirements C. Assuming migration automatically reduces every cost D. Assessing security, compliance, availability, dependencies, costs, and recovery requirements
+Correct Answer: D. Assessing security, compliance, availability, dependencies, costs, and recovery requirements Explanation: A structured migration assessment identifies operational and regulatory risks before deployment. Critical banking systems also require testing, rollback planning, and appropriate business continuity measures.
+69. What is the main difference between vertical and horizontal scaling?
+A. Vertical scaling increases the resources of one machine; horizontal scaling adds more machines or instances B. Vertical scaling means deleting all servers C. Horizontal scaling means increasing screen brightness D. They are two names for data encryption
+Correct Answer: A. Vertical scaling increases the resources of one machine; horizontal scaling adds more machines or instances Explanation: Vertical scaling may increase CPU or RAM on an instance. Horizontal scaling distributes workloads across additional instances and can improve resilience when properly designed.
+70. Which is the most appropriate approach to protect cloud-hosted banking data?
+A. Share administrator passwords with all employees B. Apply least-privilege access, strong authentication, encryption, monitoring, and tested recovery controls C. Disable security logs D. Make every storage bucket publicly accessible
+Correct Answer: B. Apply least-privilege access, strong authentication, encryption, monitoring, and tested recovery controls Explanation: Cloud security depends on layered controls rather than a single feature. Access should be limited to authorised users and monitored for suspicious activity.
+Section C: Internet of Things (IoT), Big Data and Blockchain
+71. What is the Internet of Things (IoT)?
+A. A system used exclusively for browsing websites B. A collection of offline word-processing applications C. A network of physical objects equipped with sensors, software, and connectivity D. A method of printing digital documents
+Correct Answer: C. A network of physical objects equipped with sensors, software, and connectivity Explanation: IoT connects physical devices so they can collect, exchange, and sometimes act on data. Examples include smart electricity meters, connected vehicles, and industrial sensors.
+72. Which component of an IoT device detects physical conditions such as temperature or humidity?
+A. Search engine B. Firewall rule C. Database index D. Sensor
+Correct Answer: D. Sensor Explanation: Sensors measure physical conditions and convert them into data that a system can process. Actuators perform actions, such as opening a valve or switching a motor on.
+73. In an IoT system, what is the primary function of an actuator?
+A. To perform a physical action in response to a control signal B. To translate a domain name into an IP address C. To generate a digital certificate D. To store website bookmarks
+Correct Answer: A. To perform a physical action in response to a control signal Explanation: An actuator converts a control signal into a physical effect, such as movement or switching. Sensors measure conditions; actuators act on them.
+74. A smart electricity meter sends usage readings automatically to a utility company. Which technology is most directly involved?
+A. Desktop publishing B. Internet of Things C. Optical disc burning D. Spreadsheet formatting
+Correct Answer: B. Internet of Things Explanation: A connected smart meter measures consumption and transmits readings electronically. Automated metering can reduce manual reading and help detect unusual usage patterns.
+75. What does M2M stand for in connected-device systems?
+A. Memory-to-Memory B. Machine-to-Monitor C. Machine-to-Machine D. Manual-to-Manual
+Correct Answer: C. Machine-to-Machine Explanation: M2M refers to communication between devices with limited or no direct human intervention. IoT commonly incorporates M2M communication along with internet connectivity and data services.
+76. What is edge computing?
+A. Storing every file on the edge of a computer screen B. Computing exclusively in a central government office C. A method of physically cutting network cables D. Processing data near its source instead of sending everything to a distant central system
+Correct Answer: D. Processing data near its source instead of sending everything to a distant central system Explanation: Edge computing can reduce latency and bandwidth usage. For example, an industrial sensor system may detect a dangerous condition locally without waiting for a remote cloud response.
+77. Which is a major security risk associated with IoT devices?
+A. Devices with weak passwords or unpatched firmware may be compromised B. Sensors cannot collect information C. Every IoT device is automatically immune to malware D. Connected devices never communicate over networks
+Correct Answer: A. Devices with weak passwords or unpatched firmware may be compromised Explanation: Poorly secured IoT devices can be used to steal data or participate in botnets. Strong authentication, updates, network segmentation, and secure configuration help reduce these risks.
+78. What is big data?
+A. Any document with a large font size B. Data whose volume, velocity, variety, or other characteristics challenge conventional processing methods C. A single large computer monitor D. A database containing only handwritten records
+Correct Answer: B. Data whose volume, velocity, variety, or other characteristics challenge conventional processing methods Explanation: Big data commonly involves large quantities of data, rapid generation, and diverse formats. Distributed storage and processing may be needed to analyse it efficiently.
+79. Which of the following is commonly included among the traditional “3 Vs” of big data?
+A. Voltage, Visibility, Verification B. Value, Virus, Virtualisation C. Volume, Velocity, Variety D. Video, Voice, Vibration
+Correct Answer: C. Volume, Velocity, Variety Explanation: Volume refers to data quantity, velocity to the speed of generation and processing, and variety to different data forms. Other frameworks add characteristics such as veracity and value.
+80. In big data, what does velocity refer to?
+A. The physical speed of a hard drive's casing B. The number of letters in a database field C. The size of a computer monitor D. The rate at which data is generated, transmitted, or processed
+Correct Answer: D. The rate at which data is generated, transmitted, or processed Explanation: Velocity is important in real-time applications such as fraud detection and sensor monitoring. Systems may need to process streams continuously rather than only in periodic batches.
+81. Which is an example of unstructured data?
+A. Free-form customer call recordings and photographs B. A table containing fixed columns for account number and balance C. A database field defined as an integer D. A spreadsheet containing only standardised numeric entries
+Correct Answer: A. Free-form customer call recordings and photographs Explanation: Unstructured data does not follow a rigid tabular schema. Text documents, images, audio, and video are common examples, although metadata can make them easier to organise.
+82. Which technology is commonly used to process large datasets across multiple computers?
+A. A standalone calculator only B. Distributed computing C. A mechanical typewriter D. A paper filing cabinet
+Correct Answer: B. Distributed computing Explanation: Distributed computing divides work across multiple networked machines. This approach can improve scalability and processing capacity for large analytical workloads.
+83. What is real-time data processing?
+A. Processing data only once every ten years B. Printing data before it is collected C. Processing incoming data with sufficiently low delay for the intended application D. Keeping all data permanently offline
+Correct Answer: C. Processing incoming data with sufficiently low delay for the intended application Explanation: Real-time processing is useful when decisions must be made quickly, such as detecting suspicious banking transactions. Acceptable latency depends on the specific application.
+84. Which technology is most directly associated with storing records in linked blocks secured using cryptographic techniques?
+A. Spreadsheet software B. Optical character recognition C. File compression D. Blockchain
+Correct Answer: D. Blockchain Explanation: A blockchain is a distributed ledger that records transactions in blocks linked through cryptographic hashes. Its architecture can make unauthorised alterations detectable and, under appropriate consensus rules, difficult to carry out.
+85. What is a distributed ledger?
+A. A ledger whose records are shared and synchronised across multiple participants or nodes B. A notebook maintained by only one cashier C. A printed book with no digital records D. A file that can only contain images
+Correct Answer: A. A ledger whose records are shared and synchronised across multiple participants or nodes Explanation: A distributed ledger maintains a shared record across multiple network participants. Blockchain is one type of distributed ledger, but not every distributed ledger uses a blockchain.
+86. What is the main role of a cryptographic hash function in a blockchain?
+A. To increase a monitor's resolution B. To produce a fixed-length digest from input data C. To assign a postal address to a building D. To translate speech into text
+Correct Answer: B. To produce a fixed-length digest from input data Explanation: A cryptographic hash maps input data to a fixed-length output. A small change in input typically produces a different digest, helping detect changes to recorded data.
+87. What is a consensus mechanism in blockchain?
+A. A method for increasing screen brightness B. A technique for compressing photographs C. A process by which network participants agree on the ledger's valid state D. A system for formatting electronic mail
+Correct Answer: C. A process by which network participants agree on the ledger's valid state Explanation: Consensus mechanisms coordinate agreement among participating nodes. Different blockchains use different methods, including proof of work and proof of stake.
+88. Which statement about blockchain immutability is most accurate?
+A. Blockchain data can never be accessed by anyone B. Blockchain guarantees that every recorded statement is true C. Blockchain prevents all software bugs D. Altering accepted records can be difficult or detectable, but immutability is not an absolute guarantee
+Correct Answer: D. Altering accepted records can be difficult or detectable, but immutability is not an absolute guarantee Explanation: Blockchain security depends on the protocol, consensus, implementation, and network conditions. An immutable record can still contain false information entered initially.
+89. What is a smart contract?
+A. Code that executes predefined rules or actions on a blockchain platform B. A paper agreement signed only by hand C. A computer's physical power cable D. A conventional search engine
+Correct Answer: A. Code that executes predefined rules or actions on a blockchain platform Explanation: Smart contracts can automate actions when specified conditions are met. They still require secure code, reliable inputs, and appropriate legal and operational arrangements.
+90. Which statement best describes a permissionless blockchain?
+A. Only one appointed employee can view it B. Participation is generally open without requiring approval from a central administrator C. It must be stored on a single offline computer D. It cannot record transactions
+Correct Answer: B. Participation is generally open without requiring approval from a central administrator Explanation: Permissionless networks generally allow participants to join under publicly defined protocol rules. Permissioned blockchains restrict participation or particular activities to authorised entities.
+91. Which statement best describes a permissioned blockchain?
+A. It contains no cryptographic mechanisms B. It is necessarily identical to a public cryptocurrency C. Access or participation is restricted to authorised participants D. It cannot be used by organisations
+Correct Answer: C. Access or participation is restricted to authorised participants Explanation: Permissioned blockchains are often considered for enterprise applications where participants are known or approved. Access controls do not eliminate the need for security and governance.
+92. Which is a potential advantage of blockchain in supply-chain management?
+A. It automatically makes every supplier honest B. It eliminates the need to inspect physical goods C. It guarantees that all sensors provide accurate readings D. It can provide a shared, traceable record of transactions and product movements
+Correct Answer: D. It can provide a shared, traceable record of transactions and product movements Explanation: A shared ledger can improve traceability and coordination among participants. However, reliable links between physical goods and digital records remain essential.
+93. Which statement about cryptocurrency and blockchain is correct?
+A. Cryptocurrency is one possible application of blockchain; blockchain has other applications too B. Every blockchain must issue a cryptocurrency C. Cryptocurrency and blockchain are exactly the same concept D. Blockchain is exclusively a banking password system
+Correct Answer: A. Cryptocurrency is one possible application of blockchain; blockchain has other applications too Explanation: Blockchain can support digital assets, supply-chain tracking, and other recordkeeping applications. A blockchain-based system does not necessarily require a publicly traded cryptocurrency.
+94. What is a major challenge when using blockchain for confidential banking information?
+A. It cannot represent digital records B. Balancing transparency and auditability with privacy and confidentiality C. It always requires handwritten entries D. It cannot link transaction records
+Correct Answer: B. Balancing transparency and auditability with privacy and confidentiality Explanation: Shared ledgers may expose transaction metadata or create difficulties when sensitive data must be removed or corrected. Privacy-preserving designs and careful data placement are therefore important.
+95. Which statement about the energy consumption of blockchain is correct?
+A. All blockchains consume exactly the same amount of energy B. Blockchain networks never consume electricity C. Energy consumption varies significantly by consensus mechanism and network design D. Every blockchain must use proof of work
+Correct Answer: C. Energy consumption varies significantly by consensus mechanism and network design Explanation: Proof-of-work systems can require substantial computational resources. Other consensus mechanisms may use considerably less energy, depending on their implementation.
+96. A bank analyses millions of transactions to identify spending patterns and suspicious activity. Which concept is most directly relevant?
+A. Desktop publishing B. Analog photography C. Word processing D. Big data analytics
+Correct Answer: D. Big data analytics Explanation: Big data analytics extracts patterns, trends, and anomalies from large or complex datasets. Results can support fraud detection, customer insights, and risk management.
+97. What is the primary role of a gateway in many IoT architectures?
+A. To connect devices or networks using different communication technologies or protocols B. To print every sensor reading automatically C. To eliminate all data collection D. To replace all sensors with keyboards
+Correct Answer: A. To connect devices or networks using different communication technologies or protocols Explanation: An IoT gateway can aggregate data, translate protocols, and forward information to other systems. Some gateways also perform filtering and local security checks.
+98. Which technology is especially suitable for recording a sequence of transactions shared among several organisations that do not want to rely entirely on one central recordkeeper?
+A. A single-user word processor B. A distributed ledger C. A standalone calculator D. A local image editor
+Correct Answer: B. A distributed ledger Explanation: A distributed ledger can provide a shared record across participating organisations. Whether blockchain is the best solution depends on trust relationships, performance needs, governance, and privacy requirements.
+99. What is data veracity in the context of big data?
+A. The physical size of a server rack B. The speed of a computer fan C. The reliability, accuracy, and trustworthiness of data D. The number of colours on a display
+Correct Answer: C. The reliability, accuracy, and trustworthiness of data Explanation: Veracity concerns data quality and uncertainty. Large volumes of inaccurate or biased data can lead to misleading analytical results.
+100. A city uses connected sensors to monitor traffic and adjust signal timings. Which combination best describes the system?
+A. Only desktop publishing B. Only optical disc storage C. Only manual recordkeeping D. IoT data collection combined with analytics and automated control
+Correct Answer: D. IoT data collection combined with analytics and automated control Explanation: Sensors collect traffic information, analytics help interpret it, and control systems adjust signals. The system may also use edge computing to reduce response delays.
+Section D: E-commerce and E-governance
+101. What is e-commerce?
+A. Buying and selling goods or services through electronic networks B. Producing electricity for computers C. Repairing hardware without software D. Printing government circulars
+Correct Answer: A. Buying and selling goods or services through electronic networks Explanation: E-commerce includes online ordering, digital marketplaces, and electronic payment arrangements. It can involve both physical goods and digitally delivered services.
+102. Which business model describes a company selling products directly to individual consumers online?
+A. C2C B. B2C C. G2G D. B2G
+Correct Answer: B. B2C Explanation: Business-to-Consumer (B2C) transactions occur between businesses and individual consumers. An online retailer selling a product to a household customer is a typical example.
+103. A manufacturer sells products to another company through an online wholesale portal. This is an example of:
+A. C2C B. G2C C. B2B D. C2G
+Correct Answer: C. B2B Explanation: Business-to-Business (B2B) commerce involves transactions between businesses. Online procurement and wholesale marketplaces are common examples.
+104. An individual sells a used mobile phone to another individual through an online marketplace. Which model is this?
+A. B2G B. G2G C. B2B D. C2C
+Correct Answer: D. C2C Explanation: Consumer-to-Consumer (C2C) commerce involves individuals trading with other individuals, often using a marketplace platform as an intermediary.
+105. What is an e-commerce payment gateway?
+A. A service that securely facilitates the transmission and processing of online payment information B. A device used only to print receipts C. A type of office chair D. A system that replaces all inventory records
+Correct Answer: A. A service that securely facilitates the transmission and processing of online payment information Explanation: Payment gateways help connect merchants, payment processors, and relevant financial networks. They do not necessarily perform every stage of payment authorisation and settlement themselves.
+106. What is a major advantage of e-commerce for businesses?
+A. It guarantees that every transaction is profitable B. It can reach customers beyond a business's physical location C. It eliminates the need for cybersecurity D. It prevents all customer complaints
+Correct Answer: B. It can reach customers beyond a business's physical location Explanation: Online platforms can extend market reach and operate beyond conventional shop hours. Businesses must still manage logistics, customer service, fraud, and competition.
+107. Which of the following is an example of e-governance?
+A. A handwritten diary kept by a private individual B. A disconnected calculator C. Citizens applying for a government certificate through an online portal D. A privately owned television remote control
+Correct Answer: C. Citizens applying for a government certificate through an online portal Explanation: E-governance uses ICT to support government administration and public-service delivery. Online applications can reduce paperwork and improve accessibility when implemented effectively.
+108. What is the primary objective of citizen-centric e-governance?
+A. To make every service available only in person B. To remove all public information C. To increase unnecessary paperwork D. To make public services more accessible, efficient, transparent, and responsive
+Correct Answer: D. To make public services more accessible, efficient, transparent, and responsive Explanation: Citizen-centric e-governance focuses on users' needs and service quality. Digital services should also account for accessibility, privacy, and citizens who have limited internet access.
+109. Which term describes electronic interaction between government agencies and citizens?
+A. G2C (Government-to-Citizen) B. C2C (Consumer-to-Consumer) C. B2B (Business-to-Business) D. P2P (Peer-to-Peer)
+Correct Answer: A. G2C (Government-to-Citizen) Explanation: G2C includes services such as online applications, digital certificates, and electronic payment of government fees by citizens.
+110. Electronic sharing of records and services between two government departments is best described as:
+A. B2C B. G2G C. C2C D. B2B
+Correct Answer: B. G2G Explanation: Government-to-Government (G2G) services enable public agencies to exchange information and coordinate operations. Interoperability can reduce duplicated data collection and processing.
+111. Which of the following is a potential barrier to e-governance?
+A. Improved accessibility B. Faster information retrieval C. The digital divide D. Reduced paperwork
+Correct Answer: C. The digital divide Explanation: The digital divide refers to inequalities in access to digital technology, connectivity, and digital skills. Public services may need assisted or offline alternatives to remain inclusive.
+112. What is interoperability in e-governance?
+A. Requiring every department to use handwritten records B. Making all government databases publicly accessible C. Preventing systems from exchanging information D. Enabling different systems or organisations to exchange and use information effectively
+Correct Answer: D. Enabling different systems or organisations to exchange and use information effectively Explanation: Interoperability requires compatible technical interfaces, formats, and processes. Appropriate legal and privacy safeguards must govern information sharing.
+113. What is a digital divide?
+A. The gap between people or groups in access to, use of, or benefits from digital technologies B. A physical cut in a computer circuit C. A method of compressing databases D. A technique for producing digital signatures
+Correct Answer: A. The gap between people or groups in access to, use of, or benefits from digital technologies Explanation: The digital divide may arise from differences in income, geography, connectivity, disability access, or digital literacy. Inclusive policy must address more than simply providing websites.
+114. Which is a major concern in online commerce involving payment cards?
+A. The physical colour of the customer's monitor B. Payment fraud and unauthorised disclosure of sensitive information C. The font used in a product description D. The length of a printed shopping list
+Correct Answer: B. Payment fraud and unauthorised disclosure of sensitive information Explanation: Online merchants must protect payment data and use suitable authentication and fraud controls. Customers should use trusted services and avoid disclosing credentials through suspicious links.
+115. What is a digital marketplace?
+A. A physical warehouse with no electronic systems B. A government paper archive C. An online platform connecting buyers and sellers D. A type of computer processor
+Correct Answer: C. An online platform connecting buyers and sellers Explanation: Digital marketplaces facilitate product discovery and transactions between participants. The platform may provide listings, payments, ratings, and dispute-resolution mechanisms.
+116. Which statement best distinguishes e-business from e-commerce?
+A. E-commerce always includes every internal business process B. E-business refers only to cash transactions C. E-business excludes digital technologies D. E-business is broader and may include internal digital operations as well as online commercial transactions
+Correct Answer: D. E-business is broader and may include internal digital operations as well as online commercial transactions Explanation: E-commerce focuses on electronically conducted commercial transactions. E-business can additionally include digital procurement, customer relationship management, inventory systems, and internal workflows.
+117. What is the main function of an online shopping cart?
+A. To collect selected items before checkout B. To allocate national IP addresses C. To issue government identity cards D. To create blockchain consensus
+Correct Answer: A. To collect selected items before checkout Explanation: A shopping cart lets customers review products, quantities, and prices before ordering. The order is generally finalised through checkout and payment or another agreed payment method.
+118. Which is the clearest example of Government-to-Business (G2B) electronic service?
+A. A consumer selling a used book B. An online government portal through which businesses submit tax returns C. A family exchanging messages D. A company selling groceries to a household
+Correct Answer: B. An online government portal through which businesses submit tax returns Explanation: G2B covers digital interactions between government and businesses. Examples include tax filing, licences, permits, and electronic procurement services.
+119. What is electronic procurement (e-procurement)?
+A. Buying only physical computers for personal use B. Storing paper receipts in a cabinet C. Conducting procurement activities through electronic systems D. Sending printed catalogues by post
+Correct Answer: C. Conducting procurement activities through electronic systems Explanation: E-procurement may cover tender publication, bid submission, evaluation workflows, and purchase orders. Proper audit trails and access controls support transparency and accountability.
+120. Which is a key feature of a well-designed online government service?
+A. It requires citizens to submit the same information repeatedly without reason B. It hides all application status information C. It has no method for reporting errors D. It provides clear instructions, secure access, accessible design, and status tracking where appropriate
+Correct Answer: D. It provides clear instructions, secure access, accessible design, and status tracking where appropriate Explanation: Good digital services reduce uncertainty and unnecessary effort. Security, usability, accessibility, and clear communication are important to public trust.
+121. What is the purpose of a digital payment confirmation in e-commerce?
+A. To communicate the status of a payment attempt or transaction B. To guarantee that the goods have physically arrived C. To replace all accounting records D. To provide a customer's private key to the seller
+Correct Answer: A. To communicate the status of a payment attempt or transaction Explanation: Payment confirmation indicates the status reported by the payment system. It is distinct from proof of physical delivery and should be reconciled with merchant and payment records.
+122. A government agency publishes budget documents and procurement notices online. Which e-governance benefit does this most directly support?
+A. Reduced network connectivity B. Transparency and public access to information C. Elimination of all public oversight D. Automatic prevention of corruption
+Correct Answer: B. Transparency and public access to information Explanation: Online publication can make official information easier to access and scrutinise. Transparency can support accountability, but it does not by itself eliminate corruption or guarantee that published information is complete.
+123. What is the purpose of a CAPTCHA on an online form?
+A. To encrypt every stored database field B. To create a digital certificate C. To help distinguish human users from automated submissions D. To calculate income tax automatically
+Correct Answer: C. To help distinguish human users from automated submissions Explanation: CAPTCHA systems are intended to reduce automated abuse, such as mass form submissions. They are not infallible and should be designed with accessibility in mind.
+124. Which is an example of digital inclusion?
+A. Restricting all online services to urban residents B. Requiring advanced technical knowledge for every public application C. Removing accessibility support D. Providing accessible services, connectivity, and digital-literacy support to underserved groups
+Correct Answer: D. Providing accessible services, connectivity, and digital-literacy support to underserved groups Explanation: Digital inclusion seeks to ensure that people can meaningfully access and benefit from digital services. Connectivity, affordability, accessibility, and skills all matter.
+125. Which business model describes a company selling products or services directly to a government agency?
+A. B2G B. C2C C. C2B D. G2C
+Correct Answer: A. B2G Explanation: Business-to-Government transactions include supplying equipment, software, or services to public agencies. Electronic tendering platforms can support such transactions.
+126. A person submits a form online, but the application is processed manually at the office. Which statement is most accurate?
+A. The process is necessarily fully automated B. The submission channel is digital, but the overall workflow may remain partly manual C. The process is not an example of ICT use D. The service automatically qualifies as artificial intelligence
+Correct Answer: B. The submission channel is digital, but the overall workflow may remain partly manual Explanation: Digitising one step does not automatically transform an entire service. Effective digital transformation often requires redesigning processes, integrating systems, and reducing unnecessary manual work.
+127. Which feature is particularly important for building trust in an online government portal?
+A. Sharing user passwords publicly B. Removing contact information C. Protecting personal data and clearly identifying the official service D. Accepting unlimited unauthenticated changes to official records
+Correct Answer: C. Protecting personal data and clearly identifying the official service Explanation: Users need confidence that a portal is authentic and that their information is handled appropriately. Secure access, privacy safeguards, clear ownership, and reliable service information all contribute to trust.
+128. Which statement about electronic commerce and consumer protection is correct?
+A. Online sellers never need to provide accurate product information B. Digital payments eliminate every form of consumer dispute C. Buyers have no reason to keep order records D. Clear terms, truthful product descriptions, secure payment processes, and appropriate dispute handling support consumer protection
+Correct Answer: D. Clear terms, truthful product descriptions, secure payment processes, and appropriate dispute handling support consumer protection Explanation: Online commerce introduces risks involving misleading listings, fraud, delivery, and refunds. Transparent terms and appropriate legal protections help consumers make informed decisions.
+129. Which is an example of m-commerce?
+A. Purchasing a product through a smartphone application B. Buying a product only through a printed catalogue C. Recording stock in a paper notebook D. Repairing a desktop computer without internet access
+Correct Answer: A. Purchasing a product through a smartphone application Explanation: Mobile commerce is a form of electronic commerce conducted through mobile devices. It includes mobile shopping, banking, ticketing, and digital payments.
+130. What is a major purpose of digital public-service integration?
+A. To force every citizen to maintain separate records for each department B. To enable related services and systems to work together more efficiently C. To eliminate data-security requirements D. To prevent government agencies from exchanging authorised information
+Correct Answer: B. To enable related services and systems to work together more efficiently Explanation: Integration can reduce repeated data entry and improve service delivery. It should be implemented with suitable access controls, privacy safeguards, and clear responsibilities.
+Section E: Digital Signatures and Electronic Transactions
+131. What is a digital signature?
+A. A scanned image of a handwritten signature in every case B. A password typed at the end of an email C. A cryptographic mechanism used to help verify authenticity and integrity D. A method of compressing electronic documents
+Correct Answer: C. A cryptographic mechanism used to help verify authenticity and integrity Explanation: A digital signature commonly uses public-key cryptography and a hash of the signed data. It helps detect changes and verify that the signature corresponds to a particular signing key.
+132. Which key is normally used to create a digital signature in a public-key cryptography system?
+A. The recipient's public key B. A shared database key available to everyone C. The recipient's password D. The signer's private key
+Correct Answer: D. The signer's private key Explanation: The signing operation uses the signer's private key, while verification generally uses the corresponding public key. The private key must remain protected from unauthorised use.
+133. Which key is normally used to verify a digital signature?
+A. The signer's corresponding public key B. Any unrelated private key C. The recipient's ATM PIN D. A randomly selected encryption key
+Correct Answer: A. The signer's corresponding public key Explanation: A verifier uses the public key associated with the signing key to validate the signature. A valid signature supports integrity and key-based authenticity, but identity assurance also depends on how the public key is associated with the signer.
+134. What is the principal purpose of a cryptographic hash in a digital-signature system?
+A. To increase the file's physical size B. To create a fixed-length digest representing the signed data C. To reveal the signer's private key D. To convert the document into a paper copy
+Correct Answer: B. To create a fixed-length digest representing the signed data Explanation: The signing process typically incorporates a hash of the document. If the document changes, its hash will ordinarily change, causing signature verification to fail.
+135. Which statement best distinguishes an electronic signature from a digital signature?
+A. An electronic signature must always be handwritten B. A digital signature has no connection to cryptography C. An electronic signature is a broad category, while a digital signature generally refers to a cryptographic technique D. The terms are identical under every legal and technical framework
+Correct Answer: C. An electronic signature is a broad category, while a digital signature generally refers to a cryptographic technique Explanation: Electronic signatures may include typed names, click-to-sign actions, or other electronic methods, depending on the applicable legal framework. Digital signatures use cryptographic mechanisms and are one technical approach to electronic signing.
+136. What is the role of a digital certificate in a public-key infrastructure (PKI)?
+A. To store every user's banking PIN B. To replace the internet connection C. To encrypt all data using one universal key D. To bind a public key to an identified subject through a trusted certification process
+Correct Answer: D. To bind a public key to an identified subject through a trusted certification process Explanation: A digital certificate typically contains a public key and identity information and is digitally signed by a certification authority. Certificate validation includes checking its trust chain, validity period, and revocation status where applicable.
+137. What does PKI stand for?
+A. Public Key Infrastructure B. Private Knowledge Interface C. Personal Keyboard Integration D. Programmed Key Installation
+Correct Answer: A. Public Key Infrastructure Explanation: PKI comprises technologies, policies, roles, and processes used to manage public-key cryptography and digital certificates. It supports applications such as digital signatures and secure authentication.
+138. What is the main function of a Certification Authority (CA)?
+A. To repair computer processors B. To issue and manage digital certificates under defined trust procedures C. To provide electricity to a data centre D. To operate every bank's core banking system
+Correct Answer: B. To issue and manage digital certificates under defined trust procedures Explanation: A CA verifies information according to its certificate policies and signs certificates. A certificate's trustworthiness depends on the CA's procedures and the verifier's trust configuration.
+139. Which of the following best describes non-repudiation in electronic transactions?
+A. A guarantee that a network never fails B. A method of deleting transaction records C. Evidence that can help prevent a party from credibly denying an action, subject to the system and legal context D. A process that allows anyone to alter a signed document
+Correct Answer: C. Evidence that can help prevent a party from credibly denying an action, subject to the system and legal context Explanation: Digital signatures and audit records can support non-repudiation. They do not provide an absolute guarantee if, for example, a private key is compromised or the identity-binding process is unreliable.
+140. What is the purpose of encryption in electronic transactions?
+A. To make every transaction publicly readable B. To eliminate the need for authentication C. To ensure that every payment is successful D. To protect information against unauthorised disclosure
+Correct Answer: D. To protect information against unauthorised disclosure Explanation: Encryption transforms readable information into ciphertext that requires the appropriate key to recover. It primarily supports confidentiality, while integrity and authenticity require suitable additional mechanisms.
+141. Which technique generally uses the same secret key for encryption and decryption?
+A. Symmetric-key cryptography B. Public-key certificate issuance C. Digital watermarking only D. Hashing with no secret key
+Correct Answer: A. Symmetric-key cryptography Explanation: Symmetric encryption uses a shared secret key for both encryption and decryption. It is often efficient for large amounts of data, but securely sharing and managing the key is essential.
+142. Which statement correctly describes asymmetric cryptography?
+A. It always uses the same key for all users B. It uses a related public-key and private-key pair C. It cannot support digital signatures D. It requires every message to be printed first
+Correct Answer: B. It uses a related public-key and private-key pair Explanation: Asymmetric cryptography uses mathematically related keys with different roles. It can support digital signatures and key establishment, while the precise encryption or signing operation depends on the algorithm.
+143. Which security property means that information has not been altered in an unauthorised manner?
+A. Availability B. Scalability C. Integrity D. Portability
+Correct Answer: C. Integrity Explanation: Integrity protects information against unauthorised or undetected modification. Hashes, message authentication codes, and digital signatures can help detect changes when appropriately implemented.
+144. Which security property ensures that information is accessible to authorised users when required?
+A. Confidentiality B. Obfuscation C. Compression D. Availability
+Correct Answer: D. Availability Explanation: Availability concerns reliable access to systems and information. Redundancy, disaster recovery, resilient infrastructure, and protection against denial-of-service attacks can support it.
+145. What is the primary purpose of multifactor authentication (MFA)?
+A. To require two or more distinct authentication factors B. To permit access without checking identity C. To replace all access logs D. To allow multiple people to share one password
+Correct Answer: A. To require two or more distinct authentication factors Explanation: MFA combines different factor categories, such as something the user knows, possesses, or is. Two passwords alone are generally not two distinct factors because both are knowledge factors.
+146. Which of the following is an example of a possession factor in authentication?
+A. A memorised PIN B. A registered security token C. A fingerprint D. A mother's maiden name
+Correct Answer: B. A registered security token Explanation: Possession factors involve something the user has, such as an authenticator device or security token. A PIN is a knowledge factor, while a fingerprint is a biometric inherence factor.
+147. What is a one-time password (OTP)?
+A. A password intended to be used forever B. A public document identifier C. A code intended for a single authentication or transaction-related use, often within a limited period D. A cryptographic certificate that never expires
+Correct Answer: C. A code intended for a single authentication or transaction-related use, often within a limited period Explanation: OTPs reduce the risks associated with reusing a static password. However, criminals can still steal or manipulate OTPs through phishing, social engineering, or real-time relay attacks.
+148. What is a digital timestamp used for?
+A. To increase the number of database columns B. To replace all cryptographic keys C. To guarantee that a document's contents are truthful D. To provide evidence that data existed at or before a particular time, under a trusted timestamping process
+Correct Answer: D. To provide evidence that data existed at or before a particular time, under a trusted timestamping process Explanation: Trusted timestamping can support the chronology and integrity of electronic records. It does not independently prove that the underlying statements are true.
+149. Which action is most appropriate when a digital-signature private key is suspected to be compromised?
+A. Follow the key-compromise response procedure, including revocation where applicable and issuance of replacement credentials B. Publish the private key online C. Continue trusting every signature indefinitely D. Delete the organisation's entire network
+Correct Answer: A. Follow the key-compromise response procedure, including revocation where applicable and issuance of replacement credentials Explanation: A compromised private key may allow an attacker to impersonate the legitimate signer. Prompt incident handling, certificate revocation where applicable, and key replacement help reduce further risk.
+150. What is the principal role of TLS in secure web transactions?
+A. To store customer records permanently B. To help establish an encrypted and authenticated communication channel C. To generate physical banknotes D. To replace the domain name system
+Correct Answer: B. To help establish an encrypted and authenticated communication channel Explanation: Transport Layer Security (TLS) protects data exchanged between communicating endpoints. Correct certificate validation is important to prevent attackers from impersonating a legitimate server.
+151. What does HTTPS indicate?
+A. That a website must be government-owned B. That the website cannot contain malicious content C. That HTTP communication is protected using TLS D. That every statement on the website is legally verified
+Correct Answer: C. That HTTP communication is protected using TLS Explanation: HTTPS helps protect data in transit and authenticate the server's domain through certificate validation. It does not guarantee that a website is honest, free from malware, or operated by a trustworthy business.
+152. What is a replay attack in electronic transactions?
+A. Replacing a computer's monitor B. Improving an application's screen design C. Compressing the same file twice D. Capturing and retransmitting a previously valid message or transaction request
+Correct Answer: D. Capturing and retransmitting a previously valid message or transaction request Explanation: Replay attacks exploit messages that remain usable when resent. Nonces, timestamps, sequence numbers, expiry checks, and transaction-specific identifiers can help prevent them.
+153. Which practice best protects a customer's private key used for digital signing?
+A. Keep it securely controlled and prevent unauthorised access or disclosure B. Send it to every transaction recipient C. Store it in a public website directory D. Print it on every bank statement
+Correct Answer: A. Keep it securely controlled and prevent unauthorised access or disclosure Explanation: The private key must remain under the control of the authorised signer or approved signing system. Hardware security modules and secure key-management procedures may help protect high-value keys.
+154. Which is a major purpose of maintaining an electronic audit trail?
+A. To prevent all users from accessing legitimate services B. To record relevant events so transactions and activities can be traced and reviewed C. To eliminate the need for backups D. To make transaction histories editable without detection
+Correct Answer: B. To record relevant events so transactions and activities can be traced and reviewed Explanation: Audit trails support accountability, investigation, and compliance. Their usefulness depends on appropriate access controls, reliable timestamps, retention, and protection against tampering.
+155. Which statement about electronic records is correct?
+A. Every electronic record is automatically authentic B. Electronic records cannot be used in business transactions C. Electronic records can support transactions, subject to applicable legal requirements and evidence rules D. An electronic record is always invalid if it is not printed
+Correct Answer: C. Electronic records can support transactions, subject to applicable legal requirements and evidence rules Explanation: Electronic records can be important evidence and business documents. Their legal treatment depends on the applicable law, record integrity, authenticity, and the circumstances of the transaction.
+Section F: Bangladesh ICT Institutions, Digital Initiatives and Relevant Laws
+156. Which ministry is responsible for Bangladesh's Information and Communication Technology Division?
+A. Ministry of Agriculture B. Ministry of Education C. Ministry of Posts, Telecommunications and Information Technology D. Ministry of Foreign Affairs
+Correct Answer: C. Ministry of Posts, Telecommunications and Information Technology Explanation: The ICT Division operates under the Ministry of Posts, Telecommunications and Information Technology. It plays a central role in government ICT policy, digital transformation, and related initiatives.
+157. What does BCC stand for in Bangladesh's ICT sector?
+A. Bangladesh Communications Committee B. Banking Control Council C. Bureau of Cyber Compliance D. Bangladesh Computer Council
+Correct Answer: D. Bangladesh Computer Council Explanation: The Bangladesh Computer Council (BCC) is a government ICT institution involved in developing ICT capabilities and supporting related initiatives. Its work includes ICT infrastructure, capacity development, and digital-government support.
+158. What is the principal regulatory role of the Bangladesh Telecommunication Regulatory Commission (BTRC)?
+A. Regulating the telecommunications sector under the applicable legal framework B. Conducting all national bank recruitment examinations C. Issuing every citizen's national identity card D. Managing all commercial bank deposits
+Correct Answer: A. Regulating the telecommunications sector under the applicable legal framework Explanation: BTRC is the telecommunications regulator established under the Bangladesh Telecommunication Act, 2001. Its responsibilities include regulatory oversight of telecommunications services and related matters.
+
+
+159. Which institution is responsible for developing and managing high-tech parks in Bangladesh?
+A. Bangladesh Bank B. Bangladesh Hi-Tech Park Authority (BHTPA) C. Bangladesh Public Service Commission D. National Board of Revenue
+Correct Answer: B. Bangladesh Hi-Tech Park Authority (BHTPA) Explanation: BHTPA was established under the Bangladesh Hi-Tech Park Authority Act, 2010. Its functions include developing high-tech and software technology parks, encouraging investment, and supporting skilled human-resource development.
+
+
+160. What does a2i stand for in Bangladesh's digital-government initiatives?
+A. Access to Industry B. Application to Internet C. Aspire to Innovate D. Advanced Artificial Intelligence
+Correct Answer: C. Aspire to Innovate Explanation: Aspire to Innovate (a2i) supports public-service innovation and digital transformation. It evolved from a flagship programme associated with the Digital Bangladesh agenda.
+
+
+161. Which institution's name is abbreviated as DoICT in Bangladesh?
+A. Department of International Commercial Trade B. Directorate of Industrial Computer Technology C. Division of Internet and Communication Transmission D. Department of Information and Communication Technology
+Correct Answer: D. Department of Information and Communication Technology Explanation: DoICT is a government department associated with the implementation of ICT activities and digital initiatives. It is distinct from the ICT Division, which is the higher-level government division.
+162. What was the central idea of the Digital Bangladesh vision associated with 2021?
+A. Using ICT to improve public services, governance, and socioeconomic development B. Replacing every government service with handwritten applications C. Eliminating internet access from rural areas D. Restricting ICT to the private banking sector
+Correct Answer: A. Using ICT to improve public services, governance, and socioeconomic development Explanation: Digital Bangladesh was a broad national development vision centred on using ICT to improve service delivery, connectivity, and digital capabilities. It was not limited to computerising government offices.
+163. Which vision is associated with Bangladesh's longer-term digital transformation agenda towards 2041?
+A. Vision 2010 B. Smart Bangladesh Vision 2041 C. Paperless Banking Vision 2030 only D. Global Internet Vision 2050
+Correct Answer: B. Smart Bangladesh Vision 2041 Explanation: Smart Bangladesh Vision 2041 is associated with a longer-term national aspiration for technology-enabled development. The concept is commonly discussed through dimensions such as smart citizens, government, economy, and society.
+164. What does the term “e-governance” primarily mean in the context of Bangladesh?
+A. Replacing all public institutions with private companies B. Restricting government services to physical offices C. Applying ICT to government administration, information access, and public-service delivery D. Using computers only for entertainment
+Correct Answer: C. Applying ICT to government administration, information access, and public-service delivery Explanation: E-governance uses digital systems to improve government processes and interactions with citizens, businesses, and other agencies. Examples include online applications, electronic records, and digital service portals.
+165. Which Bangladeshi institution is directly associated with the development of national ICT infrastructure and computer-related capacity?
+A. Bangladesh Cricket Board B. Bangladesh Film Censor Board C. Bangladesh Railway Museum D. Bangladesh Computer Council
+Correct Answer: D. Bangladesh Computer Council Explanation: BCC is a government ICT institution with responsibilities related to computer technology, ICT capacity, and relevant infrastructure or services. It should not be confused with BTRC, which regulates telecommunications.
+166. What is the role of the Office of the Controller of Certifying Authorities (CCA) in Bangladesh's digital-signature framework?
+A. Regulating or overseeing the certification-authority framework under the applicable electronic-signature rules B. Setting all commercial bank interest rates C. Issuing physical passports to every citizen D. Managing the country's entire electricity grid
+Correct Answer: A. Regulating or overseeing the certification-authority framework under the applicable electronic-signature rules Explanation: The CCA is associated with the regulatory framework for electronic-signature certificates. Certification and trust arrangements help support the verification of electronic identities and digital signatures.
+167. Which Bangladeshi institution is primarily responsible for monetary policy and central banking?
+A. BTRC B. Bangladesh Bank C. BHTPA D. BCC
+Correct Answer: B. Bangladesh Bank Explanation: Bangladesh Bank is the country's central bank. It is responsible for central banking functions, including monetary policy and relevant oversight of the financial system, rather than general telecommunications regulation.
+168. Which institution regulates telecommunications rather than monetary policy in Bangladesh?
+A. Bangladesh Bank B. Bangladesh Computer Council C. Bangladesh Telecommunication Regulatory Commission D. Bangladesh Hi-Tech Park Authority
+Correct Answer: C. Bangladesh Telecommunication Regulatory Commission Explanation: BTRC regulates the telecommunications sector. Bangladesh Bank performs central-banking functions, while BCC and BHTPA have different ICT-related responsibilities.
+169. Which law originally established a principal legal framework for information and communication technology in Bangladesh in 2006?
+A. Bangladesh Labour Act, 2006 B. Bangladesh Environment Conservation Act, 1995 C. Bangladesh Telecommunication Act, 2001 D. Information and Communication Technology Act, 2006
+Correct Answer: D. Information and Communication Technology Act, 2006 Explanation: The ICT Act, 2006 established a legal framework concerning ICT and related matters, including electronic records and signatures. It was subsequently amended, and its provisions must be read alongside later legislation.
+
+
+170. Which of the following is a major function of the Bangladesh Hi-Tech Park Authority?
+A. Developing high-tech parks and supporting investment in the ICT sector B. Issuing all national currency notes C. Conducting all criminal trials D. Managing national school examinations
+Correct Answer: A. Developing high-tech parks and supporting investment in the ICT sector Explanation: BHTPA promotes infrastructure for high-tech industries, investment, and employment. It also supports the development of skilled ICT human resources and innovation ecosystems.
+
+
+171. Which initiative is most closely associated with improving government service delivery through innovation and digital transformation in Bangladesh?
+A. A private film distribution programme B. Aspire to Innovate (a2i) C. A paper-only accounting scheme D. A sports league management system
+Correct Answer: B. Aspire to Innovate (a2i) Explanation: a2i is associated with innovation in public services and inclusive digital transformation. Its work has been linked to the government's broader Digital Bangladesh agenda and subsequent digital-development aspirations.
+
+এসপায়ার টু ইনোভেট (এটুআই)
++1
+172. What is the main purpose of the Bangladesh government's ICT Division?
+A. To regulate only commercial bank lending rates B. To administer every court in the country C. To formulate and support ICT-related policies, programmes, and digital development initiatives D. To manage all agricultural exports
+Correct Answer: C. To formulate and support ICT-related policies, programmes, and digital development initiatives Explanation: The ICT Division coordinates government activities related to ICT policy and digital development. It works with relevant departments and institutions on technology-enabled initiatives.
+173. Which of the following is an example of digital public infrastructure supporting financial inclusion in Bangladesh?
+A. A handwritten ledger with no electronic processing B. A paper-only noticeboard C. A disconnected office typewriter D. Digital payment and account-access systems that enable people to use formal financial services
+Correct Answer: D. Digital payment and account-access systems that enable people to use formal financial services Explanation: Digital financial infrastructure can make payments and other services more accessible. Its effectiveness depends on connectivity, affordability, consumer protection, security, and suitable regulation.
+174. Which law is specifically associated with the regulation of telecommunications in Bangladesh?
+A. Bangladesh Telecommunication Act, 2001 B. Copyright Act, 2000 only C. Bangladesh Hi-Tech Park Authority Act, 2010 D. Public Procurement Act, 2006 only
+Correct Answer: A. Bangladesh Telecommunication Act, 2001 Explanation: The Bangladesh Telecommunication Act, 2001 provides the legal framework for telecommunications regulation and established the basis for BTRC. It is distinct from the ICT Act, 2006.
+175. Which institution is associated with Bangladesh's national cyber-security agency functions in the current ICT institutional framework?
+A. Bangladesh Cricket Board B. National Cyber Security Agency (NCSA) C. Bangladesh Railway D. Bangladesh Public Service Commission
+Correct Answer: B. National Cyber Security Agency (NCSA) Explanation: The NCSA is associated with national cyber-security functions and related legal and policy frameworks. Its role is distinct from that of BTRC, which regulates telecommunications.
+
+
+176. What is a principal objective of government-supported ICT training and incubation centres?
+A. Reducing all technology education B. Restricting entrepreneurship to large foreign firms C. Developing digital skills and supporting technology-oriented employment and entrepreneurship D. Preventing the use of software in business
+Correct Answer: C. Developing digital skills and supporting technology-oriented employment and entrepreneurship Explanation: Training and incubation facilities can help people acquire ICT skills and support new businesses. Such initiatives contribute to workforce development and the growth of the technology sector.
+177. Which of the following is the most appropriate description of a digital government service portal?
+A. A private gaming application B. A physical filing cabinet C. A computer's internal memory D. An online interface through which users can access government information or services
+Correct Answer: D. An online interface through which users can access government information or services Explanation: A government portal may provide applications, status tracking, official notices, and links to public services. An effective portal should use clear instructions and appropriate security controls.
+178. Why is interoperability important for Bangladesh's digital-government systems?
+A. It allows authorised systems to exchange and use information more effectively B. It forces all systems to use paper records C. It makes personal information automatically public D. It prevents government agencies from coordinating
+Correct Answer: A. It allows authorised systems to exchange and use information more effectively Explanation: Interoperability can reduce duplicated data entry and help agencies coordinate services. Information sharing should remain subject to legal authority, privacy, and access-control requirements.
+179. Which statement best distinguishes the ICT Division from BTRC?
+A. Both exclusively conduct bank recruitment examinations B. The ICT Division handles government ICT policy and programmes, while BTRC regulates telecommunications C. BTRC is the central bank, while the ICT Division issues currency D. The ICT Division manages only television broadcasting, while BTRC manages agricultural policy
+Correct Answer: B. The ICT Division handles government ICT policy and programmes, while BTRC regulates telecommunications Explanation: The institutions have different mandates. The ICT Division coordinates ICT-related government initiatives, whereas BTRC exercises telecommunications regulatory functions under the applicable law.
+180. What is the principal purpose of digital inclusion in Bangladesh's national development?
+A. To make digital services available only to people in major cities B. To restrict access to technology by income group C. To expand meaningful access to digital technology, services, and skills across different population groups D. To eliminate all offline public services immediately
+Correct Answer: C. To expand meaningful access to digital technology, services, and skills across different population groups Explanation: Digital inclusion seeks to reduce barriers related to connectivity, affordability, accessibility, and skills. It is important to ensure that digital transformation benefits rural and underserved communities as well as urban users.
+181. Which of the following best describes the relationship between Digital Bangladesh and Smart Bangladesh?
+A. Both are names for the Bangladesh central bank B. Smart Bangladesh is the name of a telecommunications protocol C. Digital Bangladesh concerned only online shopping D. Smart Bangladesh represents a longer-term digital-development aspiration following the Digital Bangladesh agenda
+Correct Answer: D. Smart Bangladesh represents a longer-term digital-development aspiration following the Digital Bangladesh agenda Explanation: Digital Bangladesh was associated with the 2021 development vision, while Smart Bangladesh Vision 2041 expresses a longer-term aspiration. Both emphasise technology's contribution to development, although their policy frameworks and implementation details differ.
+182. As of October 2026, which law is listed by Bangladesh's ICT Division as the Cyber Security Act, 2026?
+A. Digital Security Act, 2018 B. Cyber Security Act, 2026 C. Information Technology Act, 1995 D. Bangladesh Computer Council Act, 2001
+Correct Answer: B. Cyber Security Act, 2026 Explanation: Bangladesh's ICT Division lists the Cyber Security Act, 2026, published on 15 April 2026, and a subsequent amendment dated 13 September 2026. When answering questions about current law, candidates should distinguish the latest enacted legislation from earlier laws and ordinances.
+183. Which law did the Cyber Security Act, 2023 repeal when it was enacted?
+A. Bangladesh Telecommunication Act, 2001 B. Information and Communication Technology Act, 2006 C. Digital Security Act, 2018 D. Bangladesh Hi-Tech Park Authority Act, 2010
+Correct Answer: C. Digital Security Act, 2018 Explanation: The Cyber Security Act, 2023 expressly repealed the Digital Security Act, 2018. However, the 2023 Act was itself subsequently repealed, so it should not automatically be described as the law currently in force in October 2026.
+
+
+184. Which statement correctly describes the current-law status of Bangladesh's Cyber Security Act, 2023?
+A. It remains the only cyber-security law in force without any subsequent legislation B. It replaced the Bangladesh Telecommunication Act, 2001 C. It was enacted in 2006 D. It was subsequently repealed by the Cyber Security Ordinance, 2025
+Correct Answer: D. It was subsequently repealed by the Cyber Security Ordinance, 2025 Explanation: Bangladesh's official legal record identifies the Cyber Security Ordinance, 2025, as repealing the 2023 Act. Later legislation includes the Cyber Security Act, 2026 and its amendment, so current-law questions must be answered using the applicable later instruments.
+
+
+185. Which of the following laws is listed in Bangladesh's ICT Division's 2026 legal register as a personal-data protection law?
+A. Personal Data Protection Act, 2026 B. Bangladesh Telecommunication Act, 2001 C. Bangladesh Hi-Tech Park Authority Act, 2010 D. Copyright Act, 2000
+Correct Answer: A. Personal Data Protection Act, 2026 Explanation: The ICT Division's legal register lists the Personal Data Protection Act, 2026, dated 15 April 2026. Candidates should distinguish this later Act from the Personal Data Protection Ordinance, 2025, which appears in earlier legal records.
+
+
+186. Which law is listed by Bangladesh's ICT Division as the National Data Management Act, 2026?
+A. Bangladesh Bank Order, 1972 B. National Data Management Act, 2026 C. Digital Security Act, 2018 D. Bangladesh Telecommunication Act, 2001
+Correct Answer: B. National Data Management Act, 2026 Explanation: The ICT Division lists the National Data Management Act, 2026, dated 15 April 2026. It is important to distinguish legislation specifically concerned with data management from cyber-security and telecommunications laws.
+
+
+187. Which law is most directly associated with Bangladesh's legal framework for electronic records and electronic signatures?
+A. Bangladesh Labour Act, 2006 B. Bangladesh Environment Conservation Act, 1995 C. Information and Communication Technology Act, 2006, as applicable alongside subsequent legislation D. Bangladesh Telecommunication Act, 2001, exclusively
+Correct Answer: C. Information and Communication Technology Act, 2006, as applicable alongside subsequent legislation Explanation: The ICT Act, 2006 established an important legal framework for electronic records and electronic signatures in Bangladesh. Its provisions must be considered alongside subsequent amendments and any applicable later laws or rules.
+
+
+188. What is the principal purpose of personal-data protection legislation?
+A. To require all private data to be published online B. To eliminate every electronic database C. To make personal information freely available to advertisers D. To establish rules and safeguards for the handling and protection of personal data
+Correct Answer: D. To establish rules and safeguards for the handling and protection of personal data Explanation: Personal-data protection frameworks generally address matters such as lawful processing, security, individual rights, and accountability. The exact obligations depend on the applicable legislation and its scope.
+189. Which of the following is the best example of a cybercrime involving identity misuse?
+A. Using another person's credentials without authorisation to access an account B. Installing an authorised software update C. Creating a backup of an official document D. Using a licensed spreadsheet application
+Correct Answer: A. Using another person's credentials without authorisation to access an account Explanation: Unauthorised use of another person's credentials can enable identity misuse, fraud, or unlawful access. The applicable legal consequences depend on the relevant facts and the law in force.
+190. What is phishing?
+A. A legitimate method of compressing data B. A deceptive attempt to obtain sensitive information by impersonating a trusted source C. A process of creating a digital certificate D. A technique for increasing internet bandwidth
+Correct Answer: B. A deceptive attempt to obtain sensitive information by impersonating a trusted source Explanation: Phishing commonly uses fraudulent emails, messages, or websites to steal passwords, payment information, or authentication codes. Users should independently verify requests and avoid following suspicious links.
+191. Which government institution is most directly associated with Bangladesh's national cyber-security coordination and related initiatives?
+A. Bangladesh Cricket Board B. Bangladesh Public Service Commission C. National Cyber Security Agency (NCSA) D. Bangladesh Railway
+Correct Answer: C. National Cyber Security Agency (NCSA) Explanation: NCSA is part of Bangladesh's national cyber-security institutional framework. Its legal and institutional responsibilities should be distinguished from those of BTRC and other ICT-related organisations.
+
+
+192. A bank employee receives an email claiming to be from the ICT administrator and requesting the employee's password. What is the safest response?
+A. Reply with the password immediately B. Forward the password to all colleagues C. Disable the bank's authentication system D. Verify the request through an independently established channel and report the suspicious email
+Correct Answer: D. Verify the request through an independently established channel and report the suspicious email Explanation: Legitimate administrators should not need an employee to disclose their password through email. Independent verification and prompt reporting help prevent credential theft and social-engineering attacks.
+193. Which statement best distinguishes cybersecurity from data privacy?
+A. Cybersecurity protects systems and information against threats, while data privacy concerns appropriate collection, use, and disclosure of personal information B. Cybersecurity and privacy are unrelated to ICT C. Privacy means that data must never be processed D. Cybersecurity applies only to physical buildings
+Correct Answer: A. Cybersecurity protects systems and information against threats, while data privacy concerns appropriate collection, use, and disclosure of personal information Explanation: The two fields overlap but address different concerns. A system can be technically secure while still collecting or using personal information inappropriately.
+194. What is the most appropriate way to handle a suspected personal-data breach in a bank?
+A. Delete all evidence immediately B. Activate the incident-response process, contain the breach, preserve evidence, and follow applicable notification requirements C. Publish all affected customers' details on social media D. Ignore the incident unless the media reports it
+Correct Answer: B. Activate the incident-response process, contain the breach, preserve evidence, and follow applicable notification requirements Explanation: Effective incident response limits harm and supports investigation. Notification and reporting duties depend on the applicable law, regulatory requirements, and the nature of the incident.
+195. Which of the following best describes the purpose of the Bangladesh Hi-Tech Park Authority Act, 2010?
+A. Establishing Bangladesh's central bank B. Regulating all criminal courts C. Providing the legal basis for establishing the Bangladesh Hi-Tech Park Authority and supporting high-tech industrial development D. Replacing all electronic communications with paper correspondence
+Correct Answer: C. Providing the legal basis for establishing the Bangladesh Hi-Tech Park Authority and supporting high-tech industrial development Explanation: The Act established the legal basis for BHTPA, which supports high-tech infrastructure, investment, and employment. It is distinct from legislation governing telecommunications or electronic records.
+
+
+196. Which is the strongest example of using digital technology to improve financial inclusion in Bangladesh?
+A. Requiring every payment to be made in cash at a distant branch B. Removing access to digital payment channels C. Restricting financial services to people with desktop computers D. Enabling eligible users to access financial services through secure digital channels and mobile devices
+Correct Answer: D. Enabling eligible users to access financial services through secure digital channels and mobile devices Explanation: Digital channels can reduce geographical barriers to financial services. Inclusion also requires affordable access, usable interfaces, consumer protection, and effective security controls.
+197. Which of the following best describes a digital identity system?
+A. An electronic mechanism for representing or verifying a person's identity B. A physical banknote C. A computer's cooling fan D. A public website's background image
+Correct Answer: A. An electronic mechanism for representing or verifying a person's identity Explanation: Digital identity systems may use credentials, identity attributes, and authentication mechanisms to establish who a user is. Strong privacy, security, and appropriate identity-verification procedures are essential.
+198. What is the most important consideration when deploying AI for decisions affecting banking customers?
+A. Maximising automation regardless of errors B. Ensuring appropriate accuracy, fairness, privacy, security, accountability, and human oversight C. Keeping the model permanently untested D. Allowing the system to use any available personal information without restriction
+Correct Answer: B. Ensuring appropriate accuracy, fairness, privacy, security, accountability, and human oversight Explanation: AI systems can introduce bias, privacy risks, and incorrect decisions. Banks should establish appropriate governance, validate models, monitor performance, and ensure that decisions can be reviewed where necessary.
+199. A government agency wants to make an online service accessible to people with disabilities and users with limited digital skills. Which approach is most appropriate?
+A. Use complex technical terminology throughout the interface B. Require every user to own a high-end computer C. Provide accessible design, clear instructions, mobile compatibility, and suitable assisted-service alternatives D. Remove all help and support features
+Correct Answer: C. Provide accessible design, clear instructions, mobile compatibility, and suitable assisted-service alternatives Explanation: Inclusive digital services accommodate different abilities, devices, and levels of digital literacy. Accessible design and alternative support channels help ensure that digital transformation does not exclude vulnerable users.
+200. Which statement best summarises the relationship between modern ICT and Bangladesh's digital development?
+A. Digital development depends exclusively on purchasing computer hardware B. AI and cloud computing eliminate every cybersecurity risk C. E-governance is useful only for private companies D. Effective digital development combines technology, infrastructure, skills, institutional capacity, cybersecurity, and appropriate legal safeguards
+Correct Answer: D. Effective digital development combines technology, infrastructure, skills, institutional capacity, cybersecurity, and appropriate legal safeguards Explanation: Technology alone does not guarantee successful digital transformation. Sustainable results require reliable infrastructure, capable institutions, inclusive services, skilled people, secure systems, and laws suited to the relevant digital activities.

@@ -152,7 +152,7 @@ export default function VocabTab() {
 
   // 1s ticker: drives the countdown chip and advances one word when the
   // full period elapses under eligible conditions. Hidden tabs never
-  // accumulate time — becoming visible restarts the clock instead.
+  // accumulate time, becoming visible restarts the clock instead.
   // Only refs + stable setters are read, so the subscription is created
   // once per config change (never per tick).
   useEffect(() => {
@@ -174,7 +174,7 @@ export default function VocabTab() {
       if (!next) return;
       setRevealed(false);
       setIdx(nextIdx);
-      setAutoAnnounce(`পরের শব্দ: ${next.word} — ${next.bengaliMeaning}`);
+      setAutoAnnounce(`পরের শব্দ: ${next.word}, ${next.bengaliMeaning}`);
       rotationStartRef.current = Date.now();
     }, 1000);
     return () => {
@@ -384,7 +384,7 @@ export default function VocabTab() {
             </div>
           ) : (
             <div {...swipeHandlers}>
-              {/* Polite announcements of automatic advances only — manual
+              {/* Polite announcements of automatic advances only, manual
                   navigation already has full button context. */}
               <span className="sr-only" role="status" aria-live="polite">{autoAnnounce}</span>
               <motion.div

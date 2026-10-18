@@ -52,7 +52,7 @@ export async function POST(request: Request) {
 
     const allowed = await checkRateLimit(`ca-generate:${userId}`, 3, 3_600_000);
     if (!allowed) {
-      throw new AppError(429, "Too many generation requests — try again later.", "RATE_LIMITED");
+      throw new AppError(429, "Too many generation requests, try again later.", "RATE_LIMITED");
     }
 
     const { note, generated } = await publishDailyNote(day);
@@ -71,7 +71,7 @@ export async function POST(request: Request) {
         ? err
         : new AppError(
             503,
-            "Could not generate today's note — the research service is unavailable right now. Try again in a few minutes.",
+            "Could not generate today's note, the research service is unavailable right now. Try again in a few minutes.",
             "CA_GENERATE_UNAVAILABLE",
             true,
             { cause: err },

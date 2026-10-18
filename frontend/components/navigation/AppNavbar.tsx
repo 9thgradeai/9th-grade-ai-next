@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
-import { usePathname, useSearchParams, useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { MagnifyingGlass, List, X, CaretDown, SignOut, Gear, User as UserIcon, Layout, Bell } from "@phosphor-icons/react";
 import BrandMark from "@/components/ui/BrandMark";
 import AiLogo from "@/components/ui/AiLogo";
@@ -12,12 +12,13 @@ import { useT } from "@/lib/i18n";
 import { LanguageContext, t as pickLang } from "@/lib/lang-ctx";
 import { useContext } from "react";
 
-function isActiveLink(href: string, pathname: string, tab: string | null): boolean {
-  if (href.startsWith("/dashboard?tab=")) {
-    const t = href.split("tab=")[1];
-    return pathname === "/dashboard" && tab === t;
+function isActiveLink(href: string, pathname: string): boolean {
+  if (href.startsWith("/dashboard")) {
+    if (!pathname.startsWith("/dashboard")) return false;
+    // Highlight the exact tab route (/dashboard/practice), not the whole app.
+    const hrefPath = href.split("?")[0];
+    return hrefPath === pathname || (hrefPath === "/dashboard" && pathname === "/dashboard");
   }
-  if (href.startsWith("/dashboard")) return pathname.startsWith("/dashboard");
   if (href.startsWith("/#")) return false;
   return pathname === href || pathname.startsWith(href + "/");
 }
@@ -28,15 +29,13 @@ export default function AppNavbar() {
   const lang = useContext(LanguageContext)?.lang ?? "en";
   const router = useRouter();
   const pathname = usePathname() ?? "/";
-  const searchParams = useSearchParams();
-  const tab = searchParams?.get("tab") ?? null;
   const isAuthed = !!user;
 
   const [openId, setOpenId] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
   const [profileOpen, setProfileOpen] = useState(false);
-  // Phase 4 — contextual shrinking nav: toolbar dissolves into a compact
+  // Phase 4, contextual shrinking nav: toolbar dissolves into a compact
   // micro-bar after scrolling past the hero (spring-free, transform/opacity).
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
@@ -64,13 +63,13 @@ export default function AppNavbar() {
 
   const closeAll = useCallback(() => { setOpenId(null); setProfileOpen(false); }, []);
 
-  // Close on route change — deferred to avoid react-hooks/set-state-in-effect
+  // Close on route change, deferred to avoid react-hooks/set-state-in-effect
   useEffect(() => {
     queueMicrotask(() => {
       closeAll();
       setMobileOpen(false);
     });
-  }, [pathname, tab, closeAll]);
+  }, [pathname, closeAll]);
   // Body lock for mobile
   useEffect(() => {
     if (!mobileOpen) return;
@@ -123,12 +122,12 @@ export default function AppNavbar() {
       >
         <nav className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8" aria-label={t("nav.primaryNavigation")}>
           <div className={`flex items-center gap-2 transition-all duration-300 ${scrolled ? "h-12 sm:h-[3.25rem]" : "h-14 sm:h-16"}`}>
-            <Link href="/" className="flex shrink-0 items-center gap-2.5 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400" aria-label="9Th-Grade AI home">
+            <Link href="/" className="flex shrink-0 items-center gap-2.5 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400" aria-label="9Th-Grade AI home">
               <BrandMark className="h-8 w-8 rounded-lg shadow-glow-sm" />
               <span className="hidden sm:inline font-display text-[15.5px] font-semibold tracking-tight text-white">9Th-Grade AI</span>
             </Link>
 
-            {/* Desktop nav — Tab to move, ←/→ between sections, Enter/Space opens, Esc closes + refocuses trigger */}
+            {/* Desktop nav, Tab to move, ←/→ between sections, Enter/Space opens, Esc closes + refocuses trigger */}
             <div ref={desktopNavRef} className="hidden lg:flex items-center gap-1 ml-5" role="navigation" aria-label="Sections"
             >
               {isAuthed && (
@@ -137,7 +136,7 @@ export default function AppNavbar() {
                   <Link
                     href="/dashboard"
                     aria-current={pathname === "/dashboard" ? "page" : undefined}
-                    className={`rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 ${pathname.startsWith("/dashboard") ? "bg-white text-black" : "text-zinc-300 hover:bg-white/10 hover:text-white"}`}
+                    className={`rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 ${pathname.startsWith("/dashboard") ? "bg-white text-black" : "text-zinc-300 hover:bg-white/10 hover:text-white"}`}
                   >
                     {t("nav.dashboard")}
                   </Link>
@@ -165,7 +164,7 @@ export default function AppNavbar() {
                       const next = e.key === "ArrowRight" ? triggers[(i + 1) % triggers.length] : triggers[(i - 1 + triggers.length) % triggers.length];
                       next?.focus();
                     }}
-                    className={`nav-rise inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 ${expanded ? "bg-white text-black" : "text-zinc-300 hover:bg-white/10 hover:text-white"}`}
+                    className={`nav-rise inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 ${expanded ? "bg-white text-black" : "text-zinc-300 hover:bg-white/10 hover:text-white"}`}
                   >
                     {(m.labelBn && lang==="bn" ? m.labelBn : m.label)} {m.id === "ai" && <AiLogo className="h-3.5 w-3.5" />} <CaretDown className={`h-3.5 w-3.5 transition-transform ${expanded ? "rotate-180" : ""}`} aria-hidden="true" />
                   </button>
@@ -180,7 +179,7 @@ export default function AppNavbar() {
                 type="button"
                 onClick={() => window.dispatchEvent(new Event("app:open-command"))}
                 aria-label={t("nav.search")}
-                className="hidden sm:inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-3 py-1.5 text-xs font-medium text-zinc-300 hover:border-white/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
+                className="hidden sm:inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-3 py-1.5 text-xs font-medium text-zinc-300 hover:border-white/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
               >
                 <MagnifyingGlass className="h-3.5 w-3.5" aria-hidden="true" /> <span className="hidden xl:inline">Search</span> <span className="hidden lg:inline-flex items-center gap-1 rounded bg-white/10 px-1.5 py-0.5 font-mono text-[10px]">⌘K</span>
               </button>
@@ -189,7 +188,7 @@ export default function AppNavbar() {
                 onClick={() => window.dispatchEvent(new Event("app:open-command"))}
                 aria-label={t("nav.search")}
                 aria-haspopup="dialog"
-                className="inline-flex sm:hidden min-h-[40px] min-w-[40px] items-center justify-center p-2 rounded-full border border-white/10 text-zinc-300 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
+                className="inline-flex sm:hidden min-h-[40px] min-w-[40px] items-center justify-center p-2 rounded-full border border-white/10 text-zinc-300 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
               >
                 <MagnifyingGlass className="h-4 w-4" aria-hidden="true" />
               </button>
@@ -200,17 +199,17 @@ export default function AppNavbar() {
 
               {!isAuthed ? (
                 <>
-                  <Link href="/login" className="hidden sm:inline-flex min-h-[44px] items-center rounded-full border border-white/15 px-4 py-1.5 text-sm font-medium text-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400">{t("nav.login")}</Link>
-                  <Link href="/login?register=true" className="inline-flex min-h-[44px] items-center rounded-full bg-white px-4 py-1.5 text-sm font-semibold text-black hover:bg-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400">{t("nav.getStarted")}</Link>
+                  <Link href="/login" className="hidden sm:inline-flex min-h-[44px] items-center rounded-full border border-white/15 px-4 py-1.5 text-sm font-medium text-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400">{t("nav.login")}</Link>
+                  <Link href="/register" className="inline-flex min-h-[44px] items-center rounded-full bg-white px-4 py-1.5 text-sm font-semibold text-black hover:bg-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400">{t("nav.getStarted")}</Link>
                 </>
               ) : (
                 <>
                   <button
                     type="button"
-                    onClick={() => router.push("/dashboard?tab=home")}
+                    onClick={() => router.push("/dashboard/home")}
                     aria-label={t("nav.notifications")}
                     title={t("nav.notifications")}
-                    className="hidden sm:inline-flex min-h-[40px] min-w-[40px] items-center justify-center p-2 rounded-full border border-white/10 text-zinc-300 hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
+                    className="hidden sm:inline-flex min-h-[40px] min-w-[40px] items-center justify-center p-2 rounded-full border border-white/10 text-zinc-300 hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
                   >
                     <Bell className="h-4 w-4" aria-hidden="true" />
                   </button>
@@ -221,25 +220,25 @@ export default function AppNavbar() {
                       aria-expanded={profileOpen}
                       aria-haspopup="menu"
                       aria-controls="profile-menu"
-                      className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 py-1 pl-1 pr-2.5 text-sm font-medium text-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
+                      className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 py-1 pl-1 pr-2.5 text-sm font-medium text-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
                     >
-                      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-500 text-xs font-bold text-white" aria-hidden="true">{user?.name?.trim()?.charAt(0)?.toUpperCase() ?? "U"}</span>
+                      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-cyan-500 text-xs font-bold text-white" aria-hidden="true">{user?.name?.trim()?.charAt(0)?.toUpperCase() ?? "U"}</span>
                       <span className="hidden sm:inline max-w-[108px] truncate">{user?.name ?? "Account"}</span>
                       <CaretDown className={`hidden sm:block h-3.5 w-3.5 text-zinc-400 transition-transform ${profileOpen ? "rotate-180" : ""}`} aria-hidden="true" />
                     </button>
                     {profileOpen && (
                       <div id="profile-menu" role="menu" aria-label={t("nav.account")} className="absolute right-0 mt-2 w-64 overflow-hidden rounded-2xl border border-white/10 bg-transparent backdrop-blur-2xl p-1.5 shadow-xl">
                         <div className="flex items-center gap-3 px-3 py-3">
-                          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-500 text-sm font-bold text-white" aria-hidden="true">{user?.name?.trim()?.charAt(0)?.toUpperCase() ?? "U"}</span>
+                          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-cyan-500 text-sm font-bold text-white" aria-hidden="true">{user?.name?.trim()?.charAt(0)?.toUpperCase() ?? "U"}</span>
                           <div className="min-w-0">
                             <p className="truncate text-sm font-semibold text-white">{user?.name}</p>
                             <p className="truncate text-xs text-zinc-400">{user?.email}</p>
                           </div>
                         </div>
                         <div className="my-1 h-px bg-white/10" />
-                        <Link href="/dashboard" role="menuitem" onClick={closeAll} className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-zinc-300 hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"><Layout className="h-4 w-4" aria-hidden="true" /> {t("nav.dashboard")}</Link>
-                        <Link href="/dashboard?tab=settings" role="menuitem" onClick={closeAll} className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-zinc-300 hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"><Gear className="h-4 w-4" aria-hidden="true" /> {t("auth.settings")}</Link>
-                        <Link href="/about" role="menuitem" onClick={closeAll} className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-zinc-300 hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"><UserIcon className="h-4 w-4" aria-hidden="true" /> {t("nav.about")}</Link>
+                        <Link href="/dashboard" role="menuitem" onClick={closeAll} className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-zinc-300 hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"><Layout className="h-4 w-4" aria-hidden="true" /> {t("nav.dashboard")}</Link>
+                        <Link href="/dashboard/settings" role="menuitem" onClick={closeAll} className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-zinc-300 hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"><Gear className="h-4 w-4" aria-hidden="true" /> {t("auth.settings")}</Link>
+                        <Link href="/about" role="menuitem" onClick={closeAll} className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm text-zinc-300 hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"><UserIcon className="h-4 w-4" aria-hidden="true" /> {t("nav.about")}</Link>
                         <div className="my-1 h-px bg-white/10" />
                         <button role="menuitem" onClick={() => { closeAll(); void logout(); }} className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm text-red-400 hover:bg-red-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"><SignOut className="h-4 w-4" aria-hidden="true" /> {t("auth.logout")}</button>
                       </div>
@@ -254,7 +253,7 @@ export default function AppNavbar() {
                 aria-label={mobileOpen ? "Close menu" : "Open menu"}
                 aria-expanded={mobileOpen}
                 aria-controls="mobile-drawer"
-                className="inline-flex lg:hidden p-2 rounded-xl border border-white/10 text-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
+                className="inline-flex lg:hidden p-2 rounded-xl border border-white/10 text-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
               >
                 {mobileOpen ? <X className="h-5 w-5" aria-hidden="true" /> : <List className="h-5 w-5" aria-hidden="true" />}
               </button>
@@ -262,7 +261,7 @@ export default function AppNavbar() {
           </div>
         </nav>
 
-        {/* Desktop mega panel — navigation links, not menu actions, so it
+        {/* Desktop mega panel, navigation links, not menu actions, so it
             uses nav/list semantics (role="menu" is for action menus and
             confuses SR navigation shortcuts). */}
         {activeMenu && (
@@ -274,12 +273,12 @@ export default function AppNavbar() {
             <div className="mx-auto max-w-[1440px] px-6 lg:px-8 py-6">
               <div className="grid grid-cols-12 gap-6">
                 <div className="col-span-3">
-                  <p className="text-xs font-bold tracking-[0.14em] uppercase text-violet-300">{(activeMenu.labelBn && lang==="bn" ? activeMenu.labelBn : activeMenu.label)}</p>
+                  <p className="text-xs font-bold tracking-[0.14em] uppercase text-sky-300">{(activeMenu.labelBn && lang==="bn" ? activeMenu.labelBn : activeMenu.label)}</p>
                   {activeMenu.highlight && (
-                    <div className="mt-4 rounded-2xl border border-white/10 bg-gradient-to-br from-violet-500/15 via-indigo-500/10 to-transparent p-4">
+                    <div className="mt-4 rounded-2xl border border-white/10 bg-gradient-to-br from-sky-500/15 via-cyan-500/10 to-transparent p-4">
                       <p className="text-sm font-semibold text-white">{pickLang(lang, activeMenu.highlight.titleBn, activeMenu.highlight.title)}</p>
                       <p className="mt-1 text-xs leading-relaxed text-zinc-400">{pickLang(lang, activeMenu.highlight.descBn, activeMenu.highlight.desc)}</p>
-                      <Link href={activeMenu.highlight.href} onClick={closeAll} className="mt-3 inline-flex items-center gap-1 rounded-full bg-white px-3.5 py-1.5 text-xs font-semibold text-black hover:bg-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400">{pickLang(lang, activeMenu.highlight.ctaBn, activeMenu.highlight.cta)} →</Link>
+                      <Link href={activeMenu.highlight.href} onClick={closeAll} className="mt-3 inline-flex items-center gap-1 rounded-full bg-white px-3.5 py-1.5 text-xs font-semibold text-black hover:bg-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400">{pickLang(lang, activeMenu.highlight.ctaBn, activeMenu.highlight.cta)} →</Link>
                     </div>
                   )}
                 </div>
@@ -290,7 +289,7 @@ export default function AppNavbar() {
                       <ul className="space-y-1">
                         {g.items.map(it => {
                           const Icon = it.icon;
-                          const active = isActiveLink(it.href, pathname, tab);
+                          const active = isActiveLink(it.href, pathname);
                           return (
                             <li key={it.label}>
                               <Link
@@ -299,7 +298,7 @@ export default function AppNavbar() {
                                 rel={it.external ? "noopener noreferrer" : undefined}
                                 aria-current={active ? "page" : undefined}
                                 onClick={closeAll}
-                                className={`group flex items-start gap-3 rounded-xl px-3 py-2.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 ${active ? "bg-white text-black" : "hover:bg-white/5 text-white"}`}
+                                className={`group flex items-start gap-3 rounded-xl px-3 py-2.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 ${active ? "bg-white text-black" : "hover:bg-white/5 text-white"}`}
                               >
                                 {Icon && (
                                   <span className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border transition-colors ${active ? "bg-black/5 border-black/10 text-black" : "bg-white/5 border-white/10 text-zinc-300 group-hover:bg-white group-hover:text-black"}`} aria-hidden="true">
@@ -324,14 +323,14 @@ export default function AppNavbar() {
         )}
       </header>
 
-      {/* Mobile drawer — independent design, not shrunken desktop */}
+      {/* Mobile drawer, independent design, not shrunken desktop */}
       {mobileOpen && (
         <div className="fixed inset-0 z-[var(--z-modal)] lg:hidden" role="dialog" aria-modal="true" aria-label="Navigation">
           <div aria-hidden="true" className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
           <div id="mobile-drawer" ref={(el) => { if (el) el.focus({ preventScroll: true }); }} tabIndex={-1} className="absolute right-0 top-0 bottom-0 flex w-[88%] max-w-[380px] flex-col overflow-hidden border-l border-white/10 bg-[#0B0B0F] pt-safe outline-none">
             <div className="flex h-14 shrink-0 items-center justify-between border-b border-white/10 px-4">
               <span className="flex items-center gap-2 font-display font-semibold text-white"><BrandMark className="h-7 w-7 rounded-lg" aria-hidden="true" /> 9Th-Grade AI</span>
-              <button type="button" onClick={() => setMobileOpen(false)} aria-label="Close navigation" className="p-2 rounded-xl border border-white/10 text-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"><X className="h-4 w-4" aria-hidden="true" /></button>
+              <button type="button" onClick={() => setMobileOpen(false)} aria-label="Close navigation" className="p-2 rounded-xl border border-white/10 text-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"><X className="h-4 w-4" aria-hidden="true" /></button>
             </div>
             <div className="flex-1 overflow-y-auto overscroll-contain px-3 py-3 space-y-1 pb-safe">
               {isAuthed && (
@@ -346,21 +345,21 @@ export default function AppNavbar() {
                       onClick={() => setMobileExpanded(expanded ? null : m.id)}
                       aria-expanded={expanded}
                       aria-controls={`mob-${m.id}`}
-                      className="flex w-full items-center justify-between px-3 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 rounded-xl"
+                      className="flex w-full items-center justify-between px-3 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 rounded-xl"
                     >
                       <span className="flex items-center gap-2 text-sm font-semibold text-white">{(m.labelBn && lang==="bn" ? m.labelBn : m.label)}{m.id === "ai" && <AiLogo className="h-4 w-4" />}</span>
                       <CaretDown className={`h-4 w-4 text-zinc-400 transition-transform ${expanded ? "rotate-180" : ""}`} aria-hidden="true" />
                     </button>
                     {expanded && (
                       <div id={`mob-${m.id}`} className="px-2 pb-3 space-y-3">
-                        {m.highlight && <Link href={m.highlight.href} onClick={() => setMobileOpen(false)} className="block rounded-xl border border-violet-500/20 bg-violet-500/10 px-3 py-2.5 text-sm font-medium text-white">{pickLang(lang, m.highlight.ctaBn, m.highlight.cta)} — {pickLang(lang, m.highlight.titleBn, m.highlight.title)}</Link>}
+                        {m.highlight && <Link href={m.highlight.href} onClick={() => setMobileOpen(false)} className="block rounded-xl border border-sky-500/20 bg-sky-500/10 px-3 py-2.5 text-sm font-medium text-white">{pickLang(lang, m.highlight.ctaBn, m.highlight.cta)}, {pickLang(lang, m.highlight.titleBn, m.highlight.title)}</Link>}
                         {m.groups.map(g => (
                           <div key={g.label}>
                             <p className="px-2 py-1 text-[11px] font-bold tracking-widest uppercase text-zinc-400">{pickLang(lang, g.labelBn, g.label)}</p>
                             {g.items.map(it => {
-                              const active = isActiveLink(it.href, pathname, tab);
+                              const active = isActiveLink(it.href, pathname);
                               return (
-                                <Link key={it.label} href={it.href} target={it.external ? "_blank" : undefined} rel={it.external ? "noopener noreferrer" : undefined} aria-current={active ? "page" : undefined} onClick={() => setMobileOpen(false)} className={`flex min-h-[44px] items-center gap-2.5 rounded-lg px-2 py-2.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 ${active ? "bg-white text-black" : "text-zinc-300 hover:bg-white/5 hover:text-white"}`}>
+                                <Link key={it.label} href={it.href} target={it.external ? "_blank" : undefined} rel={it.external ? "noopener noreferrer" : undefined} aria-current={active ? "page" : undefined} onClick={() => setMobileOpen(false)} className={`flex min-h-[44px] items-center gap-2.5 rounded-lg px-2 py-2.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 ${active ? "bg-white text-black" : "text-zinc-300 hover:bg-white/5 hover:text-white"}`}>
                                   {it.icon && <it.icon className="h-4 w-4 shrink-0 opacity-70" aria-hidden="true" />}{pickLang(lang, it.labelBn, it.label)}
                                 </Link>
                               );
@@ -377,12 +376,12 @@ export default function AppNavbar() {
               <div className="flex justify-center"><LanguageToggle className="rounded-full border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:text-white" /></div>
               {!isAuthed ? (
                 <div className="grid grid-cols-2 gap-2">
-                  <Link href="/login" onClick={() => setMobileOpen(false)} className="rounded-full border border-white/15 py-3 text-center text-sm font-medium text-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400">{t("nav.login")}</Link>
-                  <Link href="/login?register=true" onClick={() => setMobileOpen(false)} className="rounded-full bg-white py-3 text-center text-sm font-semibold text-black hover:bg-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400">{t("nav.getStarted")}</Link>
+                  <Link href="/login" onClick={() => setMobileOpen(false)} className="rounded-full border border-white/15 py-3 text-center text-sm font-medium text-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400">{t("nav.login")}</Link>
+                  <Link href="/register" onClick={() => setMobileOpen(false)} className="rounded-full bg-white py-3 text-center text-sm font-semibold text-black hover:bg-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400">{t("nav.getStarted")}</Link>
                 </div>
               ) : (
                 <div className="flex items-center gap-3 px-2 py-1">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-500 text-xs font-bold text-white" aria-hidden="true">{user?.name?.trim()?.charAt(0)?.toUpperCase() ?? "U"}</span>
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-cyan-500 text-xs font-bold text-white" aria-hidden="true">{user?.name?.trim()?.charAt(0)?.toUpperCase() ?? "U"}</span>
                   <span className="truncate text-sm font-medium text-white">{user?.name}</span>
                   <button type="button" onClick={() => { setMobileOpen(false); void logout(); }} className="ml-auto rounded-full border border-white/10 px-3 py-1.5 text-xs font-medium text-zinc-300 hover:text-white">{t("auth.logout")}</button>
                 </div>

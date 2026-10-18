@@ -1,21 +1,22 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import PublicShell from "@/components/public/PublicShell";
 import PageHero from "@/components/public/PageHero";
 import StatusPill from "@/components/ui/StatusPill";
 
-export const metadata: Metadata = {
-  alternates: { canonical: "/privacy" },
-  title: "Privacy Policy — 9Th-Grade AI",
+export const metadata: Metadata = pageMeta({
+  path: "/privacy",
+  title: "Privacy Policy | 9Th-Grade AI",
   description:
     "How 9Th-Grade AI collects, uses, and protects your data. Last updated August 2026.",
-};
+});
 
 const sections = [
   {
     title: "1. Information We Collect",
     body: [
       "Account data: your name, email address, and a password hashed with bcrypt (cost 10).",
-      "Learning data: practice attempts, quiz results, flashcards reviewed, study plans, bookmarks, and progress metrics — stored to power your analytics and recommendations.",
+      "Learning data: practice attempts, quiz results, flashcards reviewed, study plans, bookmarks, and progress metrics, stored to power your analytics and recommendations.",
       "Device & usage data: anonymous technical data such as browser type and page interactions, used to keep the platform fast and reliable.",
     ],
   },
@@ -31,7 +32,7 @@ const sections = [
     title: "3. AI Processing",
     body: [
       "When you use the AI solver or tutor, your query is sent to the configured AI provider. AI responses are clearly labelled and are never used to authorize, validate, or make security decisions.",
-      "If no AI API key is configured, the system returns clearly-labelled mock responses — your query is not sent to any third party.",
+      "If no AI API key is configured, the system returns clearly-labelled mock responses, your query is not sent to any third party.",
     ],
   },
   {

@@ -1,0 +1,806 @@
+﻿Section 1: Malware Fundamentals — Virus, Worm, Trojan Horse, Spyware, Ransomware and Adware (1–40)
+1. Which of the following best describes a computer virus?
+A. A program that replicates independently across networks without a host file B. Malicious code that attaches itself to a host file or program and replicates when executed C. A security program that detects suspicious network traffic D. A program that encrypts data exclusively for backup purposes
+Correct Answer: B. Malicious code that attaches itself to a host file or program and replicates when executed.
+Explanation: A computer virus typically attaches itself to a host file or program and spreads when the infected host is executed or shared. Unlike a worm, a traditional virus generally depends on a host.
+2. What is the most important characteristic distinguishing a computer worm from a traditional virus?
+A. A worm is always harmless B. A worm cannot use network connections C. A worm can self-replicate and spread without attaching to a host file D. A worm only infects removable storage devices
+Correct Answer: C. A worm can self-replicate and spread without attaching to a host file.
+Explanation: Worms can spread independently, often by exploiting vulnerabilities or weak security configurations. Viruses typically rely on a host file or program and its execution.
+3. A malicious program disguises itself as a legitimate banking application to trick a customer into installing it. What type of malware is this most likely to be?
+A. Trojan horse B. Worm C. Firewall D. Antivirus
+Correct Answer: A. Trojan horse.
+Explanation: A Trojan horse masquerades as legitimate or desirable software while performing malicious activities. Its defining feature is deception; it does not necessarily self-replicate.
+4. Which type of malware is primarily designed to secretly monitor a user's activities and collect information?
+A. Boot-sector virus B. Firewall C. File compressor D. Spyware
+Correct Answer: D. Spyware.
+Explanation: Spyware covertly collects information such as browsing activity, credentials, or other sensitive data. Some spyware includes keylogging or tracking capabilities.
+5. A victim's files become inaccessible after malicious software encrypts them, and the attacker demands payment for restoration. This is an example of:
+A. Adware B. Ransomware C. Shareware D. Firmware
+Correct Answer: B. Ransomware.
+Explanation: Ransomware commonly encrypts files or otherwise blocks access and demands a ransom. Paying does not guarantee recovery and may encourage further attacks.
+6. Which of the following is the primary purpose of adware?
+A. To create encrypted backups automatically B. To authenticate users through biometrics C. To display or deliver advertisements, sometimes through intrusive or deceptive methods D. To prevent all unauthorized network connections
+Correct Answer: C. To display or deliver advertisements, sometimes through intrusive or deceptive methods.
+Explanation: Adware delivers advertisements, often through applications or browsers. Not all adware is malicious, but deceptive adware may track users, redirect browsers, or install unwanted software.
+7. Which statement about a Trojan horse is correct?
+A. It must always replicate itself across a network B. It is a hardware device used to filter packets C. It is a legitimate encryption algorithm D. It relies on disguising malicious functionality as legitimate software or content
+Correct Answer: D. It relies on disguising malicious functionality as legitimate software or content.
+Explanation: Trojans exploit trust by appearing legitimate. Unlike worms, they are not defined by independent self-replication.
+8. Which malware is most directly associated with recording keystrokes to capture login credentials?
+A. Keylogger B. Ad blocker C. Firewall D. Disk defragmenter
+Correct Answer: A. Keylogger.
+Explanation: A keylogger records keystrokes and may capture usernames, passwords, or other sensitive information. It can be implemented through malicious software or, less commonly, a hardware device.
+9. A malicious program encrypts a user's documents and also threatens to publish stolen copies unless payment is made. This attack is best described as:
+A. Simple adware delivery B. A denial-of-service attack only C. Double-extortion ransomware D. Ordinary file compression
+Correct Answer: C. Double-extortion ransomware.
+Explanation: Double extortion combines data encryption or access disruption with threats to leak stolen data. The attacker therefore applies pressure through both loss of access and risk of disclosure.
+10. Which of the following is NOT a defining characteristic of a traditional computer virus?
+A. It may infect files or programs B. It can spread when infected content is executed or shared C. It may damage or modify data D. It must always spread independently without a host
+Correct Answer: D. It must always spread independently without a host.
+Explanation: Independent network propagation is characteristic of worms, not a requirement for viruses. A virus typically uses a host file, program, or other host structure.
+11. Which type of malware is particularly associated with exploiting software vulnerabilities to spread rapidly across connected computers?
+A. Adware B. Worm C. Cookie D. Screen saver
+Correct Answer: B. Worm.
+Explanation: Worms can exploit vulnerable services or systems to propagate automatically. Their ability to spread without requiring users to transfer an infected host file can make outbreaks rapid.
+12. A computer continues displaying unwanted advertisements and redirecting the browser to unfamiliar websites. Which threat is most directly suggested?
+A. Digital signature B. Firewall C. Adware or browser hijacking D. Data encryption
+Correct Answer: C. Adware or browser hijacking.
+Explanation: Adware may deliver intrusive advertisements, while browser hijackers alter settings or redirect searches. Both can occur together, although the symptoms alone do not conclusively identify the malware.
+13. What is a botnet?
+A. A collection of compromised devices controlled remotely by an attacker B. A group of computers used exclusively for legal backups C. A collection of encrypted passwords D. A network protected by multiple firewalls
+Correct Answer: A. A collection of compromised devices controlled remotely by an attacker.
+Explanation: Botnets consist of infected or compromised devices, often called bots or zombies. Attackers may use them for distributed denial-of-service attacks, spam distribution, credential attacks, or other malicious activities.
+14. Malware that remains hidden while obtaining privileged access to a computer is most closely associated with which term?
+A. Cookie B. Patch C. Sandbox D. Rootkit
+Correct Answer: D. Rootkit.
+Explanation: A rootkit is designed to conceal malicious activity and may help an attacker maintain privileged access. Rootkits can operate at different system levels, including the operating system kernel.
+15. Which malware category is specifically associated with infecting the startup information or boot process of a computer?
+A. Adware B. Boot-sector virus C. Spam D. Firewall
+Correct Answer: B. Boot-sector virus.
+Explanation: A boot-sector virus targets boot-related storage structures or startup code. Modern systems use additional protections, such as Secure Boot, to help defend against certain boot-level threats.
+16. What is a polymorphic virus designed to do?
+A. Operate only on mobile devices B. Prevent all file modifications C. Change its code or appearance across infections to make signature-based detection more difficult D. Convert every infected file into a PDF
+Correct Answer: C. Change its code or appearance across infections to make signature-based detection more difficult.
+Explanation: Polymorphic malware changes aspects of its code or encryption pattern while retaining its malicious function. This complicates detection based solely on fixed signatures.
+17. Which statement best describes a logic bomb?
+A. Malicious code triggered by a particular event or condition B. A device that blocks unauthorized network traffic C. A tool that generates secure random passwords D. A program that only displays advertisements
+Correct Answer: A. Malicious code triggered by a particular event or condition.
+Explanation: A logic bomb activates when a specified condition occurs, such as a date, event, or system state. It may be embedded within otherwise legitimate software.
+18. An employee unknowingly runs a malicious attachment, allowing an attacker to control the computer remotely. Which capability has most likely been installed?
+A. Spreadsheet macro formatting B. Disk cleanup utility C. Public-key certificate D. Remote-access Trojan (RAT)
+Correct Answer: D. Remote-access Trojan (RAT).
+Explanation: A RAT can provide an attacker with remote control of a compromised device. Depending on its capabilities, it may enable surveillance, file theft, command execution, or credential theft.
+19. Which statement about malware is correct?
+A. All malware requires an internet connection to operate B. Malware is an umbrella term for software or code intended to perform malicious activities C. All malware encrypts the victim's files D. Malware and antivirus software mean the same thing
+Correct Answer: B. Malware is an umbrella term for software or code intended to perform malicious activities.
+Explanation: Malware includes viruses, worms, Trojans, spyware, ransomware, and other malicious programs. Some malware operates offline, and not all malware encrypts data.
+20. Which practice provides the strongest general defense against known software vulnerabilities exploited by malware?
+A. Reusing one password everywhere B. Disabling security updates C. Applying security patches promptly D. Opening attachments before scanning them
+Correct Answer: C. Applying security patches promptly.
+Explanation: Security patches correct known vulnerabilities that attackers may exploit to install or spread malware. Patching should be combined with least privilege, endpoint protection, and safe user practices.
+21. Which of the following best distinguishes a potentially unwanted program (PUP) from clearly malicious malware?
+A. A PUP may be unwanted or intrusive without necessarily meeting the definition of malware B. A PUP is always a computer virus C. A PUP cannot be installed on a computer D. A PUP is necessarily a hardware component
+Correct Answer: A. A PUP may be unwanted or intrusive without necessarily meeting the definition of malware.
+Explanation: PUPs may bundle unwanted software, change browser settings, or display intrusive advertisements. Their classification depends on behavior and security policy; not every PUP is definitively malicious.
+22. Which malware may use a legitimate-looking email attachment to persuade a user to execute malicious code?
+A. Firewall B. Digital certificate C. Backup utility D. Trojan horse
+Correct Answer: D. Trojan horse.
+Explanation: A Trojan may be delivered through a deceptive email attachment or download. The user is tricked into running it because it appears trustworthy or useful.
+23. Which of the following is an example of fileless malware behavior?
+A. A physical hard disk storing ordinary documents B. Malicious code operating primarily in memory and abusing legitimate system tools C. A printed list of passwords D. A firewall logging a blocked connection
+Correct Answer: B. Malicious code operating primarily in memory and abusing legitimate system tools.
+Explanation: Fileless attacks can use memory, scripts, or legitimate administrative tools to reduce reliance on conventional executable files. They may still leave forensic traces, such as logs or altered system settings.
+24. A bank employee receives a document containing a malicious macro. Opening the document and enabling the macro launches an attack. What is the most relevant initial security lesson?
+A. Macros always make documents safe B. All document attachments are harmless C. Do not enable macros or active content from untrusted sources D. Passwords prevent every macro-based attack
+Correct Answer: C. Do not enable macros or active content from untrusted sources.
+Explanation: Malicious macros can execute commands or download further payloads. Organizations should restrict macros from untrusted sources and apply security controls to attachments.
+25. Which statement about ransomware backups is most accurate?
+A. Offline or otherwise isolated backups can help recovery if ransomware compromises production systems B. Backups eliminate the need for access controls C. A backup stored on an always-writable connected drive is guaranteed to survive ransomware D. Paying a ransom guarantees complete data recovery
+Correct Answer: A. Offline or otherwise isolated backups can help recovery if ransomware compromises production systems.
+Explanation: Offline, immutable, or properly isolated backups reduce the risk that attackers can encrypt or delete recovery copies. Backups should be tested regularly, and ransom payment does not guarantee restoration.
+26. Which malware type is most directly intended to steal saved browser passwords or session information?
+A. Ad blocker B. Disk defragmenter C. Screen reader D. Infostealer
+Correct Answer: D. Infostealer.
+Explanation: Infostealers are designed to collect sensitive information, including credentials, browser data, and authentication tokens. Stolen session tokens may allow account access without the attacker knowing the original password.
+27. Which of the following is a common indicator of a possible malware infection?
+A. A properly installed security update B. Unexpected system behavior, suspicious processes, or unusual network activity C. A documented and authorized backup D. A correctly configured firewall rule
+Correct Answer: B. Unexpected system behavior, suspicious processes, or unusual network activity.
+Explanation: Unusual slowdowns, unknown processes, unexplained changes, and suspicious outbound traffic can indicate compromise. These signs are not conclusive by themselves, so investigation is necessary.
+28. What is the main purpose of a sandbox in malware analysis?
+A. To publish passwords publicly B. To disable all operating systems permanently C. To execute suspicious code in an isolated environment and observe its behavior D. To replace encryption with plain text
+Correct Answer: C. To execute suspicious code in an isolated environment and observe its behavior.
+Explanation: Sandboxing limits a program's access to the host system and helps analysts study its behavior. Advanced malware may detect or attempt to evade sandbox environments.
+29. Which of the following best describes a zero-day vulnerability?
+A. A software vulnerability for which an effective patch is not yet available or has not yet been deployed when exploited B. A password that expires after one day C. A virus that operates only at midnight D. A computer with no storage capacity
+Correct Answer: A. A software vulnerability for which an effective patch is not yet available or has not yet been deployed when exploited.
+Explanation: A zero-day exploit targets a vulnerability before an effective fix is available or widely applied. The term concerns the vulnerability and its exploitation, not a specific malware family.
+30. Which security measure most directly reduces the damage malware can cause after compromising an ordinary employee account?
+A. Giving every employee administrator privileges B. Sharing one administrator password C. Disabling all access logs D. Applying the principle of least privilege
+Correct Answer: D. Applying the principle of least privilege.
+Explanation: Least privilege grants users and processes only the permissions needed for their tasks. This limits unauthorized installation, system changes, and access to sensitive resources.
+31. Which type of malware is most commonly associated with secretly mining cryptocurrency using a victim's computing resources?
+A. Firewall B. Cryptominer malware C. Password manager D. Digital certificate
+Correct Answer: B. Cryptominer malware.
+Explanation: Malicious cryptominers exploit a device's processor or graphics hardware to mine cryptocurrency for an attacker. High resource consumption, overheating, and unusual power use can be warning signs.
+32. Which statement about antivirus software is correct?
+A. It guarantees protection against every future cyberattack B. It makes operating-system updates unnecessary C. It can detect and help remove many threats, but cannot guarantee detection of all malware D. It prevents users from ever being deceived by phishing
+Correct Answer: C. It can detect and help remove many threats, but cannot guarantee detection of all malware.
+Explanation: Antivirus tools use signatures, heuristics, behavior monitoring, and other techniques. New or sophisticated threats may evade detection, so defense in depth is essential.
+33. What is a macro virus?
+A. A virus that uses application macro functionality to infect documents or templates B. A hardware firewall C. A form of symmetric encryption D. A tool for securely deleting temporary files
+Correct Answer: A. A virus that uses application macro functionality to infect documents or templates.
+Explanation: Macro viruses exploit macro-enabled applications, often by embedding malicious instructions in documents or templates. Restricting untrusted macros reduces this risk.
+34. Which statement about a computer worm is most accurate?
+A. It cannot spread between computers B. It is always delivered through USB drives only C. It must attach itself to a document before every infection D. It can spread across networks by exploiting vulnerable systems or services
+Correct Answer: D. It can spread across networks by exploiting vulnerable systems or services.
+Explanation: Worms commonly propagate over networks and may exploit unpatched vulnerabilities or weak credentials. Network segmentation and timely patching can limit their spread.
+35. What is the primary difference between a virus and a Trojan horse?
+A. A virus is always legitimate software, while a Trojan is always hardware B. A virus is characterized by infection and replication through a host, while a Trojan is characterized by deceptive presentation C. A Trojan must self-replicate, while a virus cannot replicate D. There is no conceptual difference between them
+Correct Answer: B. A virus is characterized by infection and replication through a host, while a Trojan is characterized by deceptive presentation.
+Explanation: Virus describes a method of infection and replication; Trojan describes deception used to deliver or conceal malicious functionality. A single malicious campaign can combine multiple techniques.
+36. Which of the following is most directly associated with browser tracking and covert collection of user information?
+A. Monitor stand B. Firewall cable C. Spyware D. File extension
+Correct Answer: C. Spyware.
+Explanation: Spyware collects information without appropriate user awareness or consent. Tracking cookies can also collect browsing information, but cookies themselves are not automatically spyware or malware.
+37. Which statement about a computer virus is correct?
+A. Every virus immediately destroys the computer's hardware B. A virus cannot modify or corrupt files C. A virus is a security protocol D. A virus may remain dormant until a trigger or particular execution condition occurs
+Correct Answer: D. A virus may remain dormant until a trigger or particular execution condition occurs.
+Explanation: Some viruses activate only when a condition is met, while others act immediately upon execution. Delayed activation can make malicious behavior harder to detect.
+38. Which of the following best describes scareware?
+A. Software that uses alarming or deceptive warnings to pressure users into paying or installing something B. A hardware device that encrypts storage C. A legitimate backup protocol D. A type of network cable
+Correct Answer: A. Software that uses alarming or deceptive warnings to pressure users into paying or installing something.
+Explanation: Scareware often displays fake infection alerts or security warnings to frighten users into purchasing fraudulent software or installing additional malware.
+39. Which is the most appropriate first response when a bank workstation is suspected of being infected with ransomware?
+A. Immediately pay the ransom B. Follow incident-response procedures, isolate the affected device from networks, and notify the security team C. Delete all logs to protect confidentiality D. Connect every backup drive to the workstation
+Correct Answer: B. Follow incident-response procedures, isolate the affected device from networks, and notify the security team.
+Explanation: Prompt isolation can help contain the spread, while incident-response procedures preserve evidence and guide recovery. Staff should not independently destroy evidence or connect vulnerable backup media.
+40. Which combination offers the strongest general approach to reducing malware risk in a banking environment?
+A. One shared password and no software updates B. Disabling endpoint security to improve performance C. Timely patching, endpoint protection, least privilege, tested backups, and user awareness D. Relying exclusively on a single perimeter firewall
+Correct Answer: C. Timely patching, endpoint protection, least privilege, tested backups, and user awareness.
+Explanation: Effective cybersecurity uses multiple complementary layers. No single tool can prevent every infection, so technical controls, recovery capabilities, and trained staff must work together.
+Section 2: Antivirus, Firewalls and Security Controls (41–65)
+41. What is the primary function of a firewall?
+A. To create copies of infected files B. To encrypt every file stored on a computer C. To replace the operating system D. To monitor and control network traffic according to security rules
+Correct Answer: D. To monitor and control network traffic according to security rules.
+Explanation: A firewall filters network traffic based on defined policies, helping prevent unauthorized communications. It does not automatically detect or eliminate every form of malware.
+42. Which antivirus detection technique identifies malware by comparing files with known malicious patterns?
+A. Signature-based detection B. Biometric detection C. Data compression D. Packet routing
+Correct Answer: A. Signature-based detection.
+Explanation: Signature-based detection compares file characteristics against known malware signatures. It is effective against recognized threats but may miss previously unknown or substantially modified malware.
+43. Which antivirus technique examines suspicious program behavior rather than relying exclusively on known malware signatures?
+A. File renaming B. Disk partitioning C. Heuristic or behavior-based detection D. Screen resolution analysis
+Correct Answer: C. Heuristic or behavior-based detection.
+Explanation: Heuristic detection identifies suspicious characteristics, while behavior-based detection monitors actions such as unauthorized file encryption or suspicious process activity. These techniques can detect some previously unknown threats, although false positives are possible.
+44. Which type of firewall tracks the state of active network connections when deciding whether to permit packets?
+A. Stateless packet filter B. Stateful inspection firewall C. File compressor D. Password vault
+Correct Answer: B. Stateful inspection firewall.
+Explanation: A stateful firewall maintains information about active connections and evaluates packets in that context. A basic stateless packet filter generally evaluates packets against rules without maintaining equivalent connection-state information.
+45. What is the principal difference between a network firewall and antivirus software?
+A. Antivirus software routes internet packets B. A firewall is exclusively a password manager C. Both always perform identical functions D. A firewall controls network traffic, while antivirus software focuses on detecting and handling malicious software
+Correct Answer: D. A firewall controls network traffic, while antivirus software focuses on detecting and handling malicious software.
+Explanation: Firewalls and antivirus tools address different security risks. A firewall may block malicious connections, but that does not mean it can identify every infected file on an endpoint.
+46. What is a host-based firewall?
+A. A firewall that runs on an individual computer or server B. A firewall that can only operate inside a bank vault C. A device that stores passwords without encryption D. A program that automatically decrypts ransomware files
+Correct Answer: A. A firewall that runs on an individual computer or server.
+Explanation: A host-based firewall protects an individual endpoint by filtering its incoming or outgoing connections. A network firewall generally enforces policies at a network boundary or between network segments.
+47. Which security approach assumes that no user or device should automatically be trusted merely because it is inside the organizational network?
+A. Open access B. Single-factor security C. Zero Trust D. Anonymous file sharing
+Correct Answer: C. Zero Trust.
+Explanation: Zero Trust emphasizes explicit verification, least-privilege access, and continuous assessment of access requests. Being inside a corporate network is not, by itself, sufficient evidence of trustworthiness.
+48. What is the main purpose of an intrusion detection system (IDS)?
+A. To guarantee that no attack can occur B. To detect suspicious activities or possible security violations and generate alerts C. To create stronger passwords automatically for every website D. To replace all network switches
+Correct Answer: B. To detect suspicious activities or possible security violations and generate alerts.
+Explanation: An IDS monitors systems or network traffic for signs of suspicious activity. An intrusion prevention system (IPS) can additionally take actions to block or stop detected activity.
+49. Which statement best describes an intrusion prevention system (IPS)?
+A. It is used exclusively to compress files B. It can only monitor keyboard input C. It provides no security monitoring D. It can detect suspicious activity and automatically block or prevent certain attacks
+Correct Answer: D. It can detect suspicious activity and automatically block or prevent certain attacks.
+Explanation: An IPS is designed to intervene against detected threats, such as blocking malicious traffic. An IDS is primarily designed to detect and alert, although integrations may enable automated responses.
+50. What is the primary security benefit of regularly updating antivirus definitions or threat intelligence?
+A. It helps the software recognize newly identified threats B. It removes the need for all backups C. It guarantees that users cannot be phished D. It automatically makes every password unique
+Correct Answer: A. It helps the software recognize newly identified threats.
+Explanation: Updated signatures and threat intelligence help security software recognize more known threats. Updates should be combined with behavior monitoring and other controls.
+51. Which of the following is an example of defense in depth?
+A. Using only one password for every system B. Disabling security logs to reduce storage costs C. Combining firewalls, endpoint protection, MFA, patching, and backups D. Allowing every employee unrestricted administrator access
+Correct Answer: C. Combining firewalls, endpoint protection, MFA, patching, and backups.
+Explanation: Defense in depth uses multiple independent or complementary security layers. If one control fails, other controls may still prevent, detect, or limit an attack.
+52. What is the primary purpose of network segmentation in cybersecurity?
+A. To make every device publicly accessible B. To divide a network into separate zones and limit unauthorized movement between them C. To eliminate the need for authentication D. To disable all internal communications permanently
+Correct Answer: B. To divide a network into separate zones and limit unauthorized movement between them.
+Explanation: Segmentation limits the spread of attacks and restricts access between systems. In a bank, payment systems, employee workstations, guest Wi-Fi, and critical servers may require different security zones.
+53. A bank deploys an email security gateway that checks incoming messages for malicious attachments and suspicious links. This is an example of:
+A. Physical access control only B. Disk defragmentation C. Data deduplication D. Email security filtering
+Correct Answer: D. Email security filtering.
+Explanation: Email gateways can detect spam, malicious attachments, phishing indicators, and dangerous URLs. However, sophisticated or newly developed attacks may still evade filtering.
+54. Which principle requires that users receive only the permissions necessary to perform their assigned duties?
+A. Principle of least privilege B. Principle of unlimited access C. Principle of public disclosure D. Principle of shared credentials
+Correct Answer: A. Principle of least privilege.
+Explanation: Least privilege reduces the damage that can result from compromised accounts or accidental misuse. Permissions should be reviewed and removed when no longer needed.
+55. What is the main function of a security information and event management (SIEM) system?
+A. To serve as a physical lock for server rooms B. To replace every network protocol C. To collect and correlate security logs and events to support monitoring and incident detection D. To generate OTPs for every customer automatically
+Correct Answer: C. To collect and correlate security logs and events to support monitoring and incident detection.
+Explanation: SIEM systems aggregate logs from multiple sources and correlate events to identify suspicious patterns. They support investigation and alerting but do not automatically eliminate every threat.
+56. What does endpoint detection and response (EDR) primarily provide?
+A. A method for printing confidential records B. Endpoint monitoring, threat detection, investigation, and response capabilities C. A system for increasing monitor brightness D. A replacement for all identity controls
+Correct Answer: B. Endpoint monitoring, threat detection, investigation, and response capabilities.
+Explanation: EDR tools collect endpoint telemetry and help security teams investigate and respond to suspicious activity. Some can isolate a compromised device or terminate malicious processes.
+57. Which security measure is most appropriate for protecting a bank's internal systems from unauthorized connections originating from guest Wi-Fi?
+A. Give guest users the same privileges as administrators B. Disable all network access controls C. Use one shared password for all internal servers D. Segregate guest Wi-Fi from sensitive internal networks and enforce firewall rules
+Correct Answer: D. Segregate guest Wi-Fi from sensitive internal networks and enforce firewall rules.
+Explanation: Network isolation and restrictive access rules help prevent guest devices from reaching sensitive banking resources. Authentication alone does not justify unrestricted network access.
+58. Which of the following best describes a false positive in security monitoring?
+A. A legitimate activity is incorrectly identified as malicious B. A real attack is correctly detected C. A malicious activity is completely missed D. A backup is successfully restored
+Correct Answer: A. A legitimate activity is incorrectly identified as malicious.
+Explanation: A false positive produces an alert for benign activity. A false negative occurs when a genuine threat is not detected.
+59. What is the main purpose of a honeypot in cybersecurity?
+A. To store all customer passwords in plain text B. To prevent every form of malware automatically C. To act as a decoy system that attracts and helps study potentially malicious activity D. To serve as the primary payment-processing database
+Correct Answer: C. To act as a decoy system that attracts and helps study potentially malicious activity.
+Explanation: Honeypots imitate vulnerable or valuable systems to observe attackers and gather intelligence. They must be carefully isolated so that they do not become a pathway into production systems.
+60. Which statement about firewalls is correct?
+A. Every firewall can decrypt every encrypted connection without additional configuration B. A firewall can reduce unauthorized network access but cannot guarantee complete security C. A firewall makes software patching unnecessary D. A firewall guarantees that an authorized user cannot commit fraud
+Correct Answer: B. A firewall can reduce unauthorized network access but cannot guarantee complete security.
+Explanation: Firewalls enforce network access policies, but attacks may use permitted connections, compromised credentials, or other weaknesses. They are one component of a broader security strategy.
+61. Which of the following is the strongest example of an administrative security control?
+A. Installing a network switch B. Replacing a hard disk C. Increasing screen resolution D. Establishing and enforcing an organizational information-security policy
+Correct Answer: D. Establishing and enforcing an organizational information-security policy.
+Explanation: Administrative controls include policies, procedures, staff training, and governance. Technical controls include firewalls and access-control systems, while physical controls include locks and barriers.
+62. A bank uses a web application firewall (WAF). What does it primarily protect?
+A. Web applications by filtering and monitoring HTTP/HTTPS requests according to configured security rules B. Paper files stored in a cabinet C. The physical casing of a server D. Every application against all possible attacks without configuration
+Correct Answer: A. Web applications by filtering and monitoring HTTP/HTTPS requests according to configured security rules.
+Explanation: A WAF helps protect web applications from certain application-layer attacks, such as malicious request patterns. It complements rather than replaces secure coding, patching, and broader network security.
+63. What is the primary purpose of a vulnerability assessment?
+A. To guarantee that no vulnerability exists B. To calculate employee salaries C. To identify and evaluate security weaknesses in systems or applications D. To issue bank payment cards
+Correct Answer: C. To identify and evaluate security weaknesses in systems or applications.
+Explanation: Vulnerability assessments identify weaknesses so organizations can prioritize remediation. A penetration test goes further by attempting controlled exploitation to assess whether weaknesses can be used to compromise systems.
+64. Which statement correctly distinguishes a security patch from a firewall rule?
+A. Both are necessarily physical security devices B. A patch modifies or updates software to correct issues, while a firewall rule controls permitted or denied traffic C. A firewall rule always fixes the vulnerable program's source code D. A patch is only used to encrypt email
+Correct Answer: B. A patch modifies or updates software to correct issues, while a firewall rule controls permitted or denied traffic.
+Explanation: Patching can eliminate a known software vulnerability. Firewall rules may restrict exposure to the vulnerable service but do not necessarily fix the underlying software defect.
+65. Which approach is most appropriate for responding to a confirmed cybersecurity incident at a bank?
+A. Delete all evidence immediately B. Conceal the incident from the authorized security team C. Continue all affected systems without evaluating risk D. Follow the incident-response plan, contain the threat, preserve evidence, and coordinate recovery and required reporting
+Correct Answer: D. Follow the incident-response plan, contain the threat, preserve evidence, and coordinate recovery and required reporting.
+Explanation: Incident response includes preparation, detection, containment, eradication, recovery, and lessons learned. Banking incidents may also trigger internal escalation and regulatory or legal reporting obligations, depending on the circumstances.
+Section 3: Phishing, Spoofing, Spam and Social Engineering (66–100)
+66. What is phishing?
+A. A method of increasing internet bandwidth B. A technique for compressing files C. A fraudulent attempt to obtain sensitive information by impersonating a trustworthy entity D. A legitimate method of encrypting databases
+Correct Answer: C. A fraudulent attempt to obtain sensitive information by impersonating a trustworthy entity.
+Explanation: Phishing commonly uses deceptive emails, messages, or websites to steal credentials, financial information, or other sensitive data. Attackers frequently impersonate banks, payment providers, or trusted organizations.
+67. A customer receives an email claiming that their bank account will be blocked unless they verify their credentials through a supplied link. What is the most likely attack?
+A. Phishing B. Defragmentation C. Data deduplication D. Load balancing
+Correct Answer: A. Phishing.
+Explanation: Urgent threats combined with requests to verify credentials through an unexpected link are common phishing indicators. The customer should access the bank through its independently verified official channel instead.
+68. What is spear phishing?
+A. Sending identical advertisements to all internet users B. Flooding a network with packets C. Encrypting every file on a server D. A targeted phishing attack tailored to a particular person or organization
+Correct Answer: D. A targeted phishing attack tailored to a particular person or organization.
+Explanation: Spear phishing uses information about a specific target to make a fraudulent message more convincing. Unlike generic phishing, it is customized to the intended victim or organization.
+69. What is whaling in cybersecurity?
+A. An attack against underwater communication cables exclusively B. A targeted phishing attack aimed at senior executives or other high-profile individuals C. A method for compressing large files D. A technique for generating public keys
+Correct Answer: B. A targeted phishing attack aimed at senior executives or other high-profile individuals.
+Explanation: Whaling targets senior or high-value individuals, such as executives or senior financial officers. Attackers may exploit their authority to request confidential information or authorize fraudulent payments.
+70. An attacker sends a fraudulent email to a bank employee pretending to be the bank's managing director and requesting an urgent transfer. This is an example of:
+A. Data encryption B. Network segmentation C. Business email compromise or executive impersonation D. Routine software patching
+Correct Answer: C. Business email compromise or executive impersonation.
+Explanation: Business email compromise (BEC) involves deception through business communications to induce fraudulent payments or disclose sensitive information. Attackers may use compromised accounts or spoofed identities and do not always need malicious attachments.
+71. What is email spoofing?
+A. Forging email sender information to make a message appear to come from another source B. Encrypting an email using a public key C. Automatically filtering unwanted messages D. Digitally signing a file to verify its integrity
+Correct Answer: A. Forging email sender information to make a message appear to come from another source.
+Explanation: Email spoofing manipulates apparent sender details. SPF, DKIM, and DMARC help receiving systems assess sender authorization, message integrity, and domain-alignment policies, but no single mechanism eliminates all email deception.
+72. What is the primary purpose of spam filtering?
+A. To create stronger encryption keys B. To provide physical security to servers C. To convert all emails into PDF files D. To identify and reduce unwanted or potentially harmful messages
+Correct Answer: D. To identify and reduce unwanted or potentially harmful messages.
+Explanation: Spam filters use rules, reputation data, content analysis, and other methods to classify unwanted email. Phishing messages may be classified as spam, but spam and phishing are not synonymous.
+73. Which statement correctly distinguishes spam from phishing?
+A. Spam is always encrypted, while phishing is never encrypted B. Spam refers to unsolicited bulk messages, whereas phishing aims to deceive victims into disclosing information or taking harmful actions C. Spam can only occur through postal mail D. Phishing is a legitimate password-management technique
+Correct Answer: B. Spam refers to unsolicited bulk messages, whereas phishing aims to deceive victims into disclosing information or taking harmful actions.
+Explanation: Spam is defined primarily by unsolicited messaging, while phishing is defined by fraudulent intent and deception. A message may be both spam and phishing, but not all spam is phishing.
+74. What is vishing?
+A. Phishing through printed documents only B. An attack that exploits a computer's graphics card C. Voice-based phishing using telephone calls or voice messages D. A method of securing wireless networks
+Correct Answer: C. Voice-based phishing using telephone calls or voice messages.
+Explanation: Vishing uses voice communication to impersonate trusted organizations or individuals. Attackers may request OTPs, passwords, payment information, or remote access to a victim's device.
+75. What is smishing?
+A. Phishing conducted through SMS or text messages B. Encrypting files with a symmetric key C. Blocking unauthorized packets D. A method for securely deleting a hard drive
+Correct Answer: A. Phishing conducted through SMS or text messages.
+Explanation: Smishing uses deceptive text messages, often containing malicious links or urgent requests. A fraudulent message claiming a bank account is frozen or a payment has failed is a common example.
+76. A person receives a fake bank message through a messaging application that directs them to a fraudulent login page. What is the attack best classified as?
+A. A firewall misconfiguration only B. A legitimate software update C. A digital signature verification process D. Phishing delivered through an instant-messaging channel
+Correct Answer: D. Phishing delivered through an instant-messaging channel.
+Explanation: Phishing is not limited to email; it can occur through SMS, social media, or instant messaging. The delivery channel may vary, but the objective remains deception.
+77. What is pretexting in social engineering?
+A. Using encryption to conceal a database B. Inventing a plausible story or identity to persuade someone to disclose information or perform an action C. Updating antivirus signatures D. Automatically blocking suspicious network packets
+Correct Answer: B. Inventing a plausible story or identity to persuade someone to disclose information or perform an action.
+Explanation: Pretexting involves creating a believable scenario, such as pretending to be an auditor, technician, or bank official. The attacker uses the fabricated context to manipulate the victim.
+78. An attacker telephones a bank employee, pretends to be an IT support officer, and asks for the employee's OTP to resolve a technical problem. This is primarily:
+A. Data compression B. Network routing C. Social engineering D. File encryption
+Correct Answer: C. Social engineering.
+Explanation: Social engineering manipulates human trust, authority, urgency, or fear to bypass security procedures. A legitimate support employee should not need the user's OTP to request access on their behalf.
+79. What is baiting in social engineering?
+A. Offering something attractive, such as a free download or a USB drive, to entice a victim into a risky action B. Encrypting a backup with a secure algorithm C. Checking a digital certificate's validity D. Restricting a user to minimum permissions
+Correct Answer: A. Offering something attractive, such as a free download or a USB drive, to entice a victim into a risky action.
+Explanation: Baiting exploits curiosity or the desire for a reward. For example, a malicious USB device left in a workplace may tempt an employee to connect it to a computer.
+80. What is tailgating in physical security?
+A. Sending bulk advertising emails B. Capturing a password through a fake website C. Encrypting a building's access-control database D. Entering a restricted area by following an authorized person without independently obtaining authorization
+Correct Answer: D. Entering a restricted area by following an authorized person without independently obtaining authorization.
+Explanation: Tailgating exploits physical access procedures, often by following someone through a secured door. Badge checks and a refusal to admit unverified visitors help prevent this attack.
+81. Which social-engineering principle is most directly exploited when a fraudulent message claims that a bank account will be suspended within ten minutes?
+A. Data redundancy B. Urgency and fear C. Network segmentation D. Key rotation
+Correct Answer: B. Urgency and fear.
+Explanation: Attackers use time pressure and fear to prevent victims from verifying requests. A suspicious urgent message should be checked through a separate, trusted communication channel.
+82. What is shoulder surfing?
+A. Intercepting encrypted packets through a firewall B. Sending unsolicited email advertisements C. Observing someone's screen or keyboard to obtain confidential information D. Generating a public-private key pair
+Correct Answer: C. Observing someone's screen or keyboard to obtain confidential information.
+Explanation: Shoulder surfing is a physical or visual information-gathering technique. Privacy screens, careful positioning, and shielding the keypad when entering a PIN can reduce the risk.
+83. Which statement about caller ID is most accurate?
+A. Caller ID can be spoofed and should not be treated as conclusive proof of identity B. Caller ID always proves that a call originates from the displayed organization C. Caller ID encrypts every conversation D. Caller ID prevents social engineering automatically
+Correct Answer: A. Caller ID can be spoofed and should not be treated as conclusive proof of identity.
+Explanation: Attackers can manipulate the number or identity displayed on a recipient's phone. Sensitive requests should be verified using a known official number or another trusted channel.
+84. What is the main purpose of the email authentication mechanism SPF?
+A. To encrypt the contents of every email B. To create unique passwords for recipients C. To guarantee that every email is free from malware D. To let a domain publish which mail servers are authorized to send email on its behalf
+Correct Answer: D. To let a domain publish which mail servers are authorized to send email on its behalf.
+Explanation: Sender Policy Framework (SPF) allows a domain owner to publish authorized sending hosts in DNS. SPF alone does not prove that the visible sender name is genuine or that the message content is safe.
+85. What does DKIM primarily provide for email?
+A. Automatic deletion of all spam B. A cryptographic signature that allows receiving systems to verify signed message components and domain-associated signing C. Encryption of all email content by default D. Physical protection of email servers
+Correct Answer: B. A cryptographic signature that allows receiving systems to verify signed message components and domain-associated signing.
+Explanation: DomainKeys Identified Mail (DKIM) uses a cryptographic signature that can be verified with a public key published in DNS. It supports message integrity and domain-associated authentication, but does not itself encrypt the message.
+86. What is the primary role of DMARC in email security?
+A. To replace the internet's DNS system B. To encrypt attachments using the recipient's public key C. To publish a domain's policy for handling messages that fail aligned SPF or DKIM checks and provide reporting mechanisms D. To guarantee that all fraudulent messages are blocked
+Correct Answer: C. To publish a domain's policy for handling messages that fail aligned SPF or DKIM checks and provide reporting mechanisms.
+Explanation: Domain-based Message Authentication, Reporting, and Conformance (DMARC) builds on SPF and DKIM and requires alignment with the visible From domain. Its effectiveness depends on correct configuration and enforcement; it does not eliminate all phishing.
+87. Which action is safest when an unexpected email requests a bank employee's confidential customer database?
+A. Verify the request independently through an authorized channel and follow data-access policies B. Send the database immediately because the email uses a senior officer's name C. Forward the database to a personal email account D. Disable the organization's security monitoring
+Correct Answer: A. Verify the request independently through an authorized channel and follow data-access policies.
+Explanation: Names and apparent sender details can be forged or accounts compromised. Confidential data should only be shared with properly authorized recipients through approved channels.
+88. What is a watering-hole attack?
+A. A physical attack on a water-treatment facility B. A routine data backup procedure C. An attack that only targets email passwords D. Compromising a website frequently visited by the intended targets to infect or deceive them
+Correct Answer: D. Compromising a website frequently visited by the intended targets to infect or deceive them.
+Explanation: In a watering-hole attack, the attacker targets a website likely to be visited by a particular group. The goal is to compromise or exploit visitors rather than directly attacking every target individually.
+89. Which statement best describes pharming?
+A. A process for making agricultural software B. Redirecting users to fraudulent websites, potentially through DNS manipulation or compromised host settings C. Sending legitimate security alerts to customers D. Encrypting a message using a private key
+Correct Answer: B. Redirecting users to fraudulent websites, potentially through DNS manipulation or compromised host settings.
+Explanation: Pharming redirects victims to fraudulent destinations, sometimes without requiring them to click a suspicious link. Users should verify the domain and use trusted security mechanisms, although HTTPS alone does not prove a site is legitimate.
+90. What is a common objective of a credential-stuffing attack?
+A. Discovering new encryption algorithms B. Installing operating-system patches C. Using previously stolen username-password pairs to access other accounts D. Creating secure backups of customer records
+Correct Answer: C. Using previously stolen username-password pairs to access other accounts.
+Explanation: Credential stuffing exploits password reuse across websites and services. Unique passwords and MFA significantly reduce the likelihood that one breached service will lead to other account compromises.
+91. Which of the following best describes a brute-force password attack?
+A. Systematically trying possible password combinations until the correct one is found B. Sending a legitimate password-reset email C. Encrypting a backup file D. Verifying a digital signature
+Correct Answer: A. Systematically trying possible password combinations until the correct one is found.
+Explanation: Brute-force attacks attempt possible combinations rather than relying exclusively on previously stolen passwords. Rate limits, account protections, and long, unique passwords can make such attacks harder.
+92. What is a dictionary attack?
+A. A method of compressing text documents B. A secure way to store encryption keys C. A technique for preventing unauthorized entry into buildings D. An attack that tries passwords drawn from a wordlist or predictable patterns
+Correct Answer: D. An attack that tries passwords drawn from a wordlist or predictable patterns.
+Explanation: Dictionary attacks exploit common words, phrases, and known password patterns. Randomly generated or otherwise unpredictable passwords are generally harder to guess than common words with simple substitutions.
+93. A caller claims to be from a bank's fraud department and asks a customer to reveal the OTP sent to their phone. What should the customer do?
+A. Reveal the OTP if the caller knows the account holder's name B. Refuse to disclose the OTP and contact the bank through a verified channel if necessary C. Share the OTP only after reading the caller ID D. Send both the OTP and PIN to confirm ownership
+Correct Answer: B. Refuse to disclose the OTP and contact the bank through a verified channel if necessary.
+Explanation: OTPs can authorize logins or transactions and should not be disclosed to callers or message senders. A genuine-looking identity or caller ID is not sufficient proof of legitimacy.
+94. Which of the following best describes a watering-hole attack's defining strategy?
+A. Stealing data exclusively through physical theft B. Generating random encryption keys C. Targeting a website likely to be used by the intended victims D. Preventing a computer from connecting to any network
+Correct Answer: C. Targeting a website likely to be used by the intended victims.
+Explanation: The attacker compromises or manipulates a site frequented by the target group. This exploits the victims' existing browsing habits rather than relying solely on direct messages.
+95. What is the main purpose of security awareness training?
+A. To help users recognize threats and follow secure procedures B. To replace all security technology C. To guarantee that no employee will ever make a mistake D. To give all employees administrator access
+Correct Answer: A. To help users recognize threats and follow secure procedures.
+Explanation: Training helps staff recognize phishing, social engineering, unsafe attachments, and suspicious requests. It is most effective when supported by usable reporting processes and technical safeguards.
+96. A fraudulent website uses a domain name differing from a bank's real domain by one letter. What technique is being used?
+A. Data normalization B. Disk mirroring C. Network load balancing D. Typosquatting
+Correct Answer: D. Typosquatting.
+Explanation: Typosquatting uses misspelled or deceptively similar domain names to capture users who mistype a legitimate address or fail to notice subtle differences. Users should carefully verify the full domain.
+97. What is QR-code phishing commonly called?
+A. Vishing B. Quishing C. Tailgating D. Key stretching
+Correct Answer: B. Quishing.
+Explanation: Quishing uses malicious QR codes to direct victims to fraudulent websites or other dangerous destinations. Users should verify the destination displayed by their device before opening it.
+98. Which of the following is an example of pretexting rather than baiting?
+A. Leaving a USB drive in a corridor to tempt someone to use it B. Offering a free software download containing malware C. Pretending to be an authorized auditor to persuade an employee to reveal confidential records D. Sending a mass advertisement to a mailing list
+Correct Answer: C. Pretending to be an authorized auditor to persuade an employee to reveal confidential records.
+Explanation: Pretexting relies on a fabricated identity or scenario. Baiting relies on an enticing object, offer, or reward to lure a victim into an unsafe action.
+99. Which statement about HTTPS and phishing is correct?
+A. A phishing website can also use HTTPS and obtain a valid TLS certificate B. HTTPS guarantees that a website's owner is trustworthy C. HTTPS prevents users from entering credentials into fraudulent websites D. HTTPS and antivirus software are identical
+Correct Answer: A. A phishing website can also use HTTPS and obtain a valid TLS certificate.
+Explanation: HTTPS protects data in transit and helps authenticate the domain to which the connection is made. It does not establish that the domain itself belongs to a trustworthy bank or business.
+100. Which is the best organizational defense against fraudulent requests to transfer bank funds?
+A. Trusting every message from a familiar display name B. Allowing one employee to initiate and approve every high-value payment without review C. Disabling transaction logs D. Independent verification, segregation of duties, transaction limits, and approved authorization procedures
+Correct Answer: D. Independent verification, segregation of duties, transaction limits, and approved authorization procedures.
+Explanation: Financial fraud often exploits trust, urgency, or compromised business communications. Independent verification and separation of initiation from approval make unauthorized transfers more difficult.
+Section 4: Strong Passwords, Multifactor Authentication and OTP (101–130)
+101. Which of the following is generally the strongest password choice?
+A. Bangladesh123 B. 1234567890 C. A long, unique, randomly generated password D. The user's date of birth
+Correct Answer: C. A long, unique, randomly generated password.
+Explanation: Length, unpredictability, and uniqueness make passwords harder to guess or reuse in credential attacks. A reputable password manager can generate and store unique passwords.
+102. What is the main security problem with reusing the same password across multiple websites?
+A. It automatically encrypts every account B. A breach at one service may allow attackers to access other accounts using the same credentials C. It prevents the use of multifactor authentication D. It makes password hashing impossible
+Correct Answer: B. A breach at one service may allow attackers to access other accounts using the same credentials.
+Explanation: Password reuse creates a cascading risk known as credential stuffing. Unique passwords limit the damage caused by a breach at an individual service.
+103. Which of the following is an example of a knowledge-based authentication factor?
+A. A fingerprint B. A hardware security key C. A registered phone receiving a code D. A password
+Correct Answer: D. A password.
+Explanation: Knowledge factors are things a user knows, such as a password or PIN. Possession factors are things a user has, while inherence factors are biometric characteristics.
+104. Which option is an example of a possession-based authentication factor?
+A. A registered hardware security key B. A secret question's answer C. A fingerprint D. A memorized password
+Correct Answer: A. A registered hardware security key.
+Explanation: Possession factors depend on something the user has, such as a registered security key or authenticator device. A password is a knowledge factor, while a fingerprint is an inherence factor.
+105. Which of the following is an inherence-based authentication factor?
+A. A PIN B. A security token C. A fingerprint D. A password
+Correct Answer: C. A fingerprint.
+Explanation: Inherence factors rely on characteristics of the person, including fingerprints, facial features, or iris patterns. Biometric systems still require safeguards against spoofing, compromise, and false matches.
+106. What does multifactor authentication (MFA) require?
+A. Two passwords of the same type B. Two or more distinct authentication factors C. A username without a password D. A password changed twice a day
+Correct Answer: B. Two or more distinct authentication factors.
+Explanation: MFA combines different factor categories, such as something known and something possessed. Two passwords alone are two instances of the same factor type, not true MFA.
+107. Which of the following is a valid example of two-factor authentication?
+A. A password and a second password B. A username and an email address C. A password and a security question answer, both knowledge factors D. A password and a fingerprint
+Correct Answer: D. A password and a fingerprint.
+Explanation: A password is a knowledge factor and a fingerprint is an inherence factor. Combining distinct categories satisfies the basic principle of two-factor authentication.
+108. What does OTP stand for in information security?
+A. One-Time Password B. Online Transfer Protocol C. Open Transaction Program D. Original Text Protection
+Correct Answer: A. One-Time Password.
+Explanation: An OTP is a code intended for one-time use or a limited validity period. It is commonly used for authentication or transaction verification, depending on the system.
+109. Which statement about an OTP is correct?
+A. It should be shared with bank employees whenever requested B. It remains valid forever C. It is typically valid for a limited period or a single use D. It replaces the need for all other security controls
+Correct Answer: C. It is typically valid for a limited period or a single use.
+Explanation: OTPs are designed to reduce risks associated with reusable secrets. Their exact lifetime and reuse rules depend on the implementation, and an attacker may still exploit a code before it expires.
+110. Which authentication method is generally more resistant to phishing than SMS-based OTP?
+A. A password reused across websites B. A properly implemented FIDO2/WebAuthn security key or passkey C. A security question based on publicly available information D. A code sent in an ordinary email
+Correct Answer: B. A properly implemented FIDO2/WebAuthn security key or passkey.
+Explanation: FIDO2/WebAuthn credentials are bound to the legitimate website's origin, helping prevent their use on lookalike phishing sites. SMS codes can be intercepted or relayed by attackers.
+111. What is a major weakness of SMS-based OTP authentication?
+A. SMS codes are always longer than passwords B. SMS cannot deliver numerical codes C. SMS authentication never works on mobile phones D. Codes may be exposed through SIM swapping, interception, or real-time phishing
+Correct Answer: D. Codes may be exposed through SIM swapping, interception, or real-time phishing.
+Explanation: SMS OTP is generally better than password-only authentication but has important limitations. Attackers may persuade a mobile operator to transfer a number or relay a code through a phishing site.
+112. What is SIM swapping?
+A. Fraudulently transferring a victim's phone number to a SIM or eSIM controlled by an attacker B. Changing a computer's network cable C. Replacing an encryption algorithm D. Moving files between two hard drives
+Correct Answer: A. Fraudulently transferring a victim's phone number to a SIM or eSIM controlled by an attacker.
+Explanation: SIM swapping can let an attacker receive calls and SMS messages intended for the victim. This may enable account recovery abuse or interception of SMS-based verification codes.
+113. Which of the following is the best way to store user passwords in a database?
+A. In plain text B. Encrypted with one shared key that every employee can access C. As salted password hashes produced by a suitable password-hashing algorithm D. In a publicly accessible spreadsheet
+Correct Answer: C. As salted password hashes produced by a suitable password-hashing algorithm.
+Explanation: Passwords should generally be stored using a password-specific hashing scheme such as Argon2id, scrypt, or appropriately configured bcrypt. A unique salt prevents identical passwords from producing identical stored hashes and helps defeat precomputed attacks.
+114. Which statement correctly distinguishes hashing from encryption?
+A. Both are always reversible using the same secret key B. Hashing is designed to be one-way, whereas encryption is designed to be reversible with the appropriate key C. Hashing requires a public key and a private key D. Encryption cannot protect data confidentiality
+Correct Answer: B. Hashing is designed to be one-way, whereas encryption is designed to be reversible with the appropriate key.
+Explanation: Encryption allows authorized decryption using the appropriate key. Cryptographic hashing produces a fixed-length digest and is not designed to recover the original input.
+115. Why should a password manager itself be protected by a strong master password and MFA where available?
+A. To make stored passwords publicly accessible B. To remove the need for unique passwords C. To ensure that every website has the same password D. Because compromising the password manager could expose many stored credentials
+Correct Answer: D. Because compromising the password manager could expose many stored credentials.
+Explanation: A password manager centralizes credential storage, making protection of its master account especially important. A unique master password, MFA, and a reputable manager reduce the risk of a single compromise.
+116. Which practice is generally recommended for ordinary user passwords?
+A. Use long, unique passwords and change them when compromise is suspected or policy requires it B. Use the same short password for every account C. Write passwords on publicly visible notes D. Share passwords with coworkers to ensure continuity
+Correct Answer: A. Use long, unique passwords and change them when compromise is suspected or policy requires it.
+Explanation: Long, unique passwords reduce guessing and credential-reuse risks. Routine forced changes without evidence of compromise may encourage predictable modifications, so password policy should follow current security guidance.
+117. What is the purpose of account lockout or rate limiting during password authentication?
+A. To guarantee that every password is correct B. To encrypt every file on the server C. To slow or restrict repeated authentication attempts D. To disable legitimate users permanently after one error
+Correct Answer: C. To slow or restrict repeated authentication attempts.
+Explanation: Rate limits and carefully designed lockout controls reduce automated guessing. Implementations must balance security against denial-of-service risks and should not allow attackers to lock out victims too easily.
+118. Which of the following is an example of adaptive authentication?
+A. Requiring no authentication under any circumstances B. Adjusting verification requirements based on risk signals such as device, location, or transaction behavior C. Using the same verification process regardless of risk D. Storing all passwords in plain text
+Correct Answer: B. Adjusting verification requirements based on risk signals such as device, location, or transaction behavior.
+Explanation: Adaptive authentication uses contextual signals to estimate risk and may request additional verification for unusual activity. Risk signals should be evaluated carefully because legitimate users can also behave unusually.
+119. In a time-based OTP (TOTP) system, what primarily determines the generated code?
+A. The user's postal address alone B. The length of the computer's monitor C. The number of files on the device D. A shared secret and the current time interval
+Correct Answer: D. A shared secret and the current time interval.
+Explanation: TOTP derives codes from a shared secret and a time-based counter, using a cryptographic algorithm. The authenticator and verifying server must have sufficiently synchronized time and compatible settings.
+120. What is the primary distinction between TOTP and HOTP?
+A. TOTP is time-based, while HOTP is counter-based B. TOTP uses no secret, while HOTP always uses a public key C. HOTP is exclusively biometric D. There is no distinction between them
+Correct Answer: A. TOTP is time-based, while HOTP is counter-based.
+Explanation: Time-Based One-Time Password (TOTP) uses a time-step value, while HMAC-Based One-Time Password (HOTP) uses a counter. Both rely on a shared secret and a cryptographic construction.
+121. Which of the following is the strongest example of phishing-resistant authentication?
+A. A password sent over ordinary email B. An SMS code entered into any website that requests it C. A correctly implemented FIDO2/WebAuthn passkey D. A reusable PIN shared with customer support
+Correct Answer: C. A correctly implemented FIDO2/WebAuthn passkey.
+Explanation: Passkeys use public-key cryptography and are bound to the legitimate relying party, which helps resist credential theft through lookalike websites. Their security still depends on device protection and secure account-recovery procedures.
+122. What is an authentication factor?
+A. Any application installed on a phone B. A category of evidence used to verify a user's identity C. A type of database backup D. A rule for compressing files
+Correct Answer: B. A category of evidence used to verify a user's identity.
+Explanation: Common factor categories are knowledge, possession, and inherence. MFA requires evidence from at least two distinct categories, rather than merely multiple pieces of evidence of one type.
+123. Which of the following is an example of single sign-on (SSO)?
+A. Entering a different password for every page of the same application B. Sharing one account among all employees C. Disabling authentication for all applications D. Signing in through a central identity provider to access multiple authorized applications
+Correct Answer: D. Signing in through a central identity provider to access multiple authorized applications.
+Explanation: SSO lets users authenticate through a central identity system and access multiple connected services. It improves usability but makes strong protection of the central account especially important.
+124. A bank employee receives an unexpected MFA push notification despite not attempting to log in. What is the safest response?
+A. Deny the request and report it through the bank's approved security process B. Approve it to stop repeated notifications C. Share the notification with an unknown caller D. Disable the employee's password permanently without notifying anyone
+Correct Answer: A. Deny the request and report it through the bank's approved security process.
+Explanation: Repeated unsolicited prompts may indicate password compromise or MFA fatigue attacks. The employee should not approve an uninitiated request and should report the suspicious activity promptly.
+125. What is an MFA fatigue attack?
+A. A technique for increasing battery life B. A method of generating stronger encryption keys C. Repeatedly sending authentication prompts in an attempt to pressure a victim into approving one D. A technique for compressing database records
+Correct Answer: C. Repeatedly sending authentication prompts in an attempt to pressure a victim into approving one.
+Explanation: Attackers bombard a target with authentication requests until the target mistakenly or deliberately approves one. Number matching, rate limits, user training, and phishing-resistant authentication can reduce the risk.
+126. Which of the following best describes authentication?
+A. Deciding which files to back up B. Verifying that a claimed user or system identity is genuine C. Determining how quickly a CPU operates D. Compressing confidential data
+Correct Answer: B. Verifying that a claimed user or system identity is genuine.
+Explanation: Authentication verifies identity. Authorization determines what an authenticated identity is permitted to access or do.
+127. A bank customer successfully logs in but is prevented from viewing another customer's account. Which security concept primarily enforces this restriction?
+A. Authentication alone B. Data compression C. Spam filtering D. Authorization and access control
+Correct Answer: D. Authorization and access control.
+Explanation: Authentication establishes who the customer is; authorization determines which resources that customer may access. Proper access controls prevent one customer from viewing another customer's confidential information.
+128. Which practice best protects an OTP-based banking transaction from social engineering?
+A. Never disclose the OTP to another person and verify the transaction details before approving it B. Share the OTP with anyone claiming to be from the bank C. Reuse an expired OTP D. Store all OTPs in a public document
+Correct Answer: A. Never disclose the OTP to another person and verify the transaction details before approving it.
+Explanation: OTPs can be used to authorize sensitive actions. Customers should reject unsolicited requests for codes and verify the transaction or login they are actually approving.
+129. What is the main security risk of using publicly available personal information as a password-reset security answer?
+A. It makes the computer run faster B. It encrypts the user's account C. An attacker may guess or discover the answer using public information D. It guarantees that the account cannot be compromised
+Correct Answer: C. An attacker may guess or discover the answer using public information.
+Explanation: Details such as a school name, birth city, or relative's name may be available online. Strong recovery procedures should not rely solely on easily researched personal facts.
+130. Which combination is most appropriate for securing a bank employee's high-privilege account?
+A. A shared password and unrestricted access B. A unique strong password, phishing-resistant MFA, least privilege, and monitoring C. A password written on the workstation D. SMS forwarding to an unknown number
+Correct Answer: B. A unique strong password, phishing-resistant MFA, least privilege, and monitoring.
+Explanation: Privileged accounts can cause extensive damage if compromised. Strong authentication, restricted permissions, and monitoring reduce both the likelihood and potential impact of misuse.
+Section 5: Encryption, Symmetric and Asymmetric Cryptography, Public and Private Keys (131–170)
+131. What is encryption?
+A. Converting encrypted data into its original form without a key B. Removing all information from a storage device C. Converting data into a compressed file D. Transforming readable data into a protected form using a cryptographic algorithm and key
+Correct Answer: D. Transforming readable data into a protected form using a cryptographic algorithm and key.
+Explanation: Encryption transforms plaintext into ciphertext to protect confidentiality. Decryption reverses the transformation using the appropriate key or cryptographic mechanism.
+132. What is plaintext in cryptography?
+A. Data in its original readable or usable form before encryption B. Data that has already been encrypted C. A public-key certificate only D. A cryptographic hash that cannot be reversed
+Correct Answer: A. Data in its original readable or usable form before encryption.
+Explanation: Plaintext is the input data before encryption, while ciphertext is the encrypted output. Plaintext does not necessarily mean that the information is publicly available.
+133. What is ciphertext?
+A. A password stored in plain text B. An unencrypted database table C. Data produced by an encryption process D. A physical firewall device
+Correct Answer: C. Data produced by an encryption process.
+Explanation: Ciphertext is the transformed form of plaintext resulting from encryption. Without the appropriate decryption capability, a secure encryption scheme should make the original data computationally infeasible to recover.
+134. Which statement correctly describes symmetric-key encryption?
+A. It always requires two unrelated keys for encryption and decryption B. It uses the same secret key, or equivalent shared secret key material, for encryption and decryption C. It does not use cryptographic keys D. It is only used to create digital signatures
+Correct Answer: B. It uses the same secret key, or equivalent shared secret key material, for encryption and decryption.
+Explanation: Symmetric encryption uses shared secret key material and is generally efficient for protecting large amounts of data. The key must be securely distributed and protected.
+135. Which of the following is a widely used symmetric encryption algorithm?
+A. RSA B. DSA C. Diffie–Hellman D. AES
+Correct Answer: D. AES.
+Explanation: Advanced Encryption Standard (AES) is a symmetric block cipher standardized by NIST. RSA is an asymmetric cryptographic algorithm, while Diffie–Hellman is a key-agreement method.
+136. Which of the following is an asymmetric cryptographic algorithm commonly used for public-key encryption or digital signatures?
+A. RSA B. AES C. ChaCha20 D. DES
+Correct Answer: A. RSA.
+Explanation: RSA is an asymmetric algorithm that uses mathematically related public and private keys. AES, ChaCha20, and DES are symmetric ciphers; DES is considered insecure for modern protection.
+137. What is the most important key-management challenge in symmetric encryption?
+A. The algorithm cannot process digital information B. The ciphertext is always larger than the plaintext C. The communicating parties must securely obtain and protect the shared secret key D. It cannot be used for confidential data
+Correct Answer: C. The communicating parties must securely obtain and protect the shared secret key.
+Explanation: Anyone who obtains the shared key may be able to decrypt protected information. Secure key exchange, storage, access control, and rotation are therefore essential.
+138. In a typical public-key encryption scheme, which key should a sender use to encrypt a message intended confidentially for a recipient?
+A. The sender's private key B. The recipient's public key C. The recipient's password only D. An arbitrary unrelated key
+Correct Answer: B. The recipient's public key.
+Explanation: The recipient's public key is used to encrypt data intended for that recipient, who can decrypt it with the corresponding private key. Practical protocols often use hybrid encryption to protect large messages efficiently.
+139. In the usual public-key encryption model, which key is used by the recipient to decrypt a message encrypted with the recipient's public key?
+A. The sender's public key B. A randomly selected public key C. The recipient's username D. The recipient's corresponding private key
+Correct Answer: D. The recipient's corresponding private key.
+Explanation: The public and private keys form a mathematically related pair. The private key must remain secret because unauthorized access may compromise confidentiality.
+140. Which statement about a public key is correct?
+A. It may be shared publicly, provided its authenticity can be established B. It must always be kept secret in exactly the same way as a private key C. It is the same as a user's password D. It is never used in digital signatures
+Correct Answer: A. It may be shared publicly, provided its authenticity can be established.
+Explanation: Public keys are intended to be distributed. However, an attacker could substitute a fraudulent public key, so certificates or other trusted verification mechanisms may be necessary.
+141. What is the main responsibility of the owner of a private key?
+A. Publish it in a public directory B. Send it to every person who emails them C. Protect it against unauthorized disclosure or use D. Store it unencrypted in a shared spreadsheet
+Correct Answer: C. Protect it against unauthorized disclosure or use.
+Explanation: A private key may enable decryption, digital signing, or authentication, depending on its purpose. Its compromise can undermine the security services that depend on it.
+142. Which cryptographic technique is generally more suitable for encrypting a very large database efficiently?
+A. Repeatedly applying a password-reset question B. Symmetric encryption C. Using only a digital signature D. Sending every database record as a separate SMS OTP
+Correct Answer: B. Symmetric encryption.
+Explanation: Symmetric algorithms such as AES are generally efficient for bulk data encryption. Asymmetric cryptography is often used to establish or protect symmetric keys rather than directly encrypting large volumes of data.
+143. What is the primary purpose of hybrid encryption?
+A. To eliminate all cryptographic keys B. To convert all ciphertext into a password hash C. To make private keys publicly available D. To combine asymmetric techniques for key establishment or protection with symmetric encryption for data
+Correct Answer: D. To combine asymmetric techniques for key establishment or protection with symmetric encryption for data.
+Explanation: Hybrid systems combine the convenience of public-key cryptography with the efficiency of symmetric encryption. For example, a random symmetric session key may protect a message while public-key techniques establish or protect that key.
+144. Which of the following is an example of symmetric encryption in use?
+A. A system uses AES with a secret key shared securely between authorized parties B. A user publishes a public key and never uses a secret key C. A system calculates an ordinary checksum D. A user creates a username without authentication
+Correct Answer: A. A system uses AES with a secret key shared securely between authorized parties.
+Explanation: AES uses symmetric secret-key cryptography. The parties must protect the key and use a secure operating mode and appropriate authentication mechanism.
+145. What is the principal purpose of a digital signature?
+A. To guarantee that a signed file contains no malware B. To make all data unreadable permanently C. To support verification of origin and integrity and provide evidence relevant to signer authentication D. To replace all forms of access control
+Correct Answer: C. To support verification of origin and integrity and provide evidence relevant to signer authentication.
+Explanation: A digital signature can help verify that data has not changed since signing and that the signature corresponds to a particular private key. Trusting the identity of the signer also depends on how the public key is authenticated.
+146. In a conventional digital-signature scheme, which key creates the signature?
+A. The verifier's private key B. The signer's private key C. A public key selected by the recipient D. A symmetric key that is necessarily shared with everyone
+Correct Answer: B. The signer's private key.
+Explanation: The signer uses their private signing key to create the signature. Verifiers use the corresponding public key to check it.
+147. Which key is normally used to verify a digital signature?
+A. The verifier's private key B. An unrelated symmetric key C. The signer's password D. The signer's corresponding public key
+Correct Answer: D. The signer's corresponding public key.
+Explanation: A verifier checks the signature using the public key corresponding to the signer's private key. A successful mathematical verification alone does not establish identity unless the public key is trusted and correctly associated with the signer.
+148. Which statement about digital signatures is correct?
+A. They can support integrity and origin authentication, but do not inherently provide confidentiality B. They always encrypt the entire document C. They guarantee that the signer is honest D. They eliminate the need to verify public keys
+Correct Answer: A. They can support integrity and origin authentication, but do not inherently provide confidentiality.
+Explanation: A digital signature helps detect modification and verify that the signature corresponds to a signing key. To keep a message secret, encryption is needed separately.
+149. What is a cryptographic hash function designed to do?
+A. Convert ciphertext back into plaintext using a public key B. Generate unlimited password guesses C. Produce a fixed-length digest from input data D. Physically prevent access to a server room
+Correct Answer: C. Produce a fixed-length digest from input data.
+Explanation: A cryptographic hash function maps input data of varying lengths to a fixed-length digest. Secure hash functions are designed to resist properties such as collision-finding and recovery of the input from the digest.
+150. Which of the following is a widely used cryptographic hash function?
+A. AES B. SHA-256 C. RSA D. Diffie–Hellman
+Correct Answer: B. SHA-256.
+Explanation: SHA-256 belongs to the SHA-2 family of cryptographic hash functions and produces a 256-bit digest. AES is an encryption cipher, RSA is an asymmetric algorithm, and Diffie–Hellman is used for key agreement.
+151. Which property should a secure cryptographic hash function ideally provide?
+A. The ability to reveal the original message instantly B. The same output length as every possible input C. The ability to reverse any digest using a public key D. Strong resistance to finding distinct inputs with the same digest
+Correct Answer: D. Strong resistance to finding distinct inputs with the same digest.
+Explanation: Collision resistance means it should be computationally infeasible to find two different inputs with the same hash. A secure hash is also designed to resist preimage attacks.
+152. What is a digital certificate primarily used for in a public-key infrastructure (PKI)?
+A. To bind an identity or subject to a public key through a trusted issuer's signed statement B. To store every user's password in plaintext C. To replace all network routing tables D. To guarantee that a website has no security vulnerabilities
+Correct Answer: A. To bind an identity or subject to a public key through a trusted issuer's signed statement.
+Explanation: A digital certificate associates a public key with a subject or identity according to the certificate's contents and validation rules. It does not guarantee that the associated website or organization is free from vulnerabilities or malicious behavior.
+153. What is the role of a Certificate Authority (CA)?
+A. To generate every user's password B. To decrypt all HTTPS traffic by default C. To issue and sign digital certificates according to its policies and validation procedures D. To act as a replacement for antivirus software
+Correct Answer: C. To issue and sign digital certificates according to its policies and validation procedures.
+Explanation: A CA issues certificates that can be validated through a trust chain. A relying party must still check certificate validity, the intended domain or identity, and other relevant requirements.
+154. What does PKI stand for?
+A. Private Keyboard Interface B. Public Key Infrastructure C. Personal Knowledge Index D. Protected Kernel Internet
+Correct Answer: B. Public Key Infrastructure.
+Explanation: PKI comprises the technologies, policies, roles, and procedures used to manage public keys and digital certificates. It supports services such as authentication, secure communication, and digital signatures.
+155. Which protocol is commonly used to establish a secure connection for HTTPS?
+A. FTP without encryption B. Telnet C. POP3 without TLS D. TLS
+Correct Answer: D. TLS.
+Explanation: HTTPS uses HTTP over Transport Layer Security (TLS). TLS helps provide confidentiality, integrity, and authentication of the server, with client authentication also possible in certain configurations.
+156. What does the padlock or secure-connection indicator in a browser primarily indicate?
+A. The connection uses HTTPS with a certificate accepted by the browser, subject to its validation rules B. The website is guaranteed to be operated by an honest organization C. The website cannot contain malicious downloads D. The user has no need to check the website's domain
+Correct Answer: A. The connection uses HTTPS with a certificate accepted by the browser, subject to its validation rules.
+Explanation: HTTPS protects the connection to the authenticated domain. Criminals can also obtain valid certificates for domains they control, so users must still verify the destination and its legitimacy.
+157. What is the main purpose of key exchange or key agreement?
+A. To publish private keys for public access B. To compress encrypted files C. To allow parties to establish shared cryptographic key material over a communication channel D. To eliminate the need for secure protocols
+Correct Answer: C. To allow parties to establish shared cryptographic key material over a communication channel.
+Explanation: Key-agreement mechanisms, such as Diffie–Hellman, allow parties to derive shared secret material without directly transmitting that secret in plaintext. Authentication is also needed to prevent a man-in-the-middle attack.
+158. Which statement correctly describes Diffie–Hellman?
+A. It is primarily a file-compression algorithm B. It is a key-agreement method that can help two parties establish shared secret material C. It is identical to AES D. It is a password database format
+Correct Answer: B. It is a key-agreement method that can help two parties establish shared secret material.
+Explanation: Diffie–Hellman allows two parties to derive shared secret material over a public channel. Without appropriate authentication, an attacker may conduct a man-in-the-middle attack against the exchange.
+159. What is the purpose of a cryptographic nonce?
+A. To disclose a private key publicly B. To compress a password C. To replace every authentication factor D. To provide a value intended for use once within a particular protocol or cryptographic operation
+Correct Answer: D. To provide a value intended for use once within a particular protocol or cryptographic operation.
+Explanation: A nonce helps prevent certain replay or reuse problems, depending on the protocol. Its required uniqueness or unpredictability depends on the cryptographic construction.
+160. What is a replay attack?
+A. Capturing a valid authentication message or transaction and retransmitting it to try to gain unauthorized access or repeat an action B. Encrypting data with a fresh key C. Applying a security patch D. Checking a digital certificate's expiration date
+Correct Answer: A. Capturing a valid authentication message or transaction and retransmitting it to try to gain unauthorized access or repeat an action.
+Explanation: Replay attacks reuse previously valid communications. Nonces, timestamps, counters, and transaction-specific cryptographic protections can help prevent replay when correctly implemented.
+161. Which statement about AES key sizes is correct?
+A. AES supports only a 64-bit key B. AES supports only a 128-bit key C. AES supports 128-bit, 192-bit, and 256-bit keys D. AES uses no secret key
+Correct Answer: C. AES supports 128-bit, 192-bit, and 256-bit keys.
+Explanation: AES has a fixed 128-bit block size and three standardized key sizes: 128, 192, and 256 bits. The block size should not be confused with the key size.
+162. Which of the following is a legacy symmetric encryption algorithm that is no longer considered secure for modern general-purpose protection because of its short key length?
+A. AES-256 B. DES C. SHA-256 D. RSA-3072
+Correct Answer: B. DES.
+Explanation: Data Encryption Standard (DES) uses an effective key length of 56 bits, which is too short against modern brute-force capabilities. Triple DES improved on DES historically but is also being phased out in modern systems.
+163. Which statement about RSA is correct?
+A. It is a symmetric block cipher with a shared secret key B. It is a cryptographic hash function C. It is a physical authentication token D. It is an asymmetric algorithm whose security is related to the difficulty of factoring large integers
+Correct Answer: D. It is an asymmetric algorithm whose security is related to the difficulty of factoring large integers.
+Explanation: RSA uses public and private keys and is based on number-theoretic properties associated with factoring large integers. Secure use requires appropriate key sizes, padding schemes, and implementation practices.
+164. Which statement about elliptic-curve cryptography (ECC) is correct?
+A. It can provide comparable security to certain traditional public-key systems with smaller key sizes B. It is always a form of symmetric encryption C. It does not use mathematical keys D. It is identical to a password hash
+Correct Answer: A. It can provide comparable security to certain traditional public-key systems with smaller key sizes.
+Explanation: ECC supports public-key cryptographic operations and can achieve strong security with relatively compact keys. Specific curves, protocols, and implementations must still be selected and configured securely.
+165. What is the principal purpose of a message authentication code (MAC)?
+A. To encrypt all files with a public key B. To establish a user's physical location C. To provide message integrity and authenticity using a shared secret key D. To guarantee that the sender's computer is malware-free
+Correct Answer: C. To provide message integrity and authenticity using a shared secret key.
+Explanation: A MAC allows a party holding the shared secret to generate a tag that another authorized party can verify. Unlike a public-key digital signature, a conventional MAC does not provide public verification or non-repudiation.
+166. Which statement correctly distinguishes a digital signature from a message authentication code (MAC)?
+A. Both always use only public keys B. A digital signature uses a private signing key and can be verified with the corresponding public key; a MAC uses shared secret key material C. A MAC always encrypts the entire message D. A digital signature is simply a password stored in a database
+Correct Answer: B. A digital signature uses a private signing key and can be verified with the corresponding public key; a MAC uses shared secret key material.
+Explanation: Digital signatures support public verification and can provide evidence linking signed data to a signing key. A MAC is generally more efficient but requires verifiers to possess the shared secret, so they can also generate valid tags.
+167. What is end-to-end encryption (E2EE)?
+A. Encryption that only protects a file while it is stored on one disk B. Encryption that every intermediary can decrypt by design C. A method that removes the need for endpoint security D. Encryption designed so that only the communicating endpoints hold the keys needed to read the protected content
+Correct Answer: D. Encryption designed so that only the communicating endpoints hold the keys needed to read the protected content.
+Explanation: Proper E2EE prevents service intermediaries from reading message contents under the intended key-management model. Metadata, compromised endpoints, backups, and account-recovery arrangements may still create privacy or security risks.
+168. Which statement best describes encryption at rest?
+A. Protecting stored data on media such as disks, databases, or backups B. Protecting data only while it travels across a network C. Encrypting a screen's brightness settings D. Verifying a user's fingerprint
+Correct Answer: A. Protecting stored data on media such as disks, databases, or backups.
+Explanation: Encryption at rest protects stored information against certain forms of unauthorized access to storage media. Access control and key management remain necessary because authorized decryption may expose the data.
+169. Which statement best describes encryption in transit?
+A. Encrypting a file that is never transmitted B. Hashing a password for database storage C. Protecting data while it moves between systems over a communication channel D. Storing a public key on a certificate
+Correct Answer: C. Protecting data while it moves between systems over a communication channel.
+Explanation: TLS is a common mechanism for protecting data in transit. Secure transport does not automatically protect data once it is decrypted at the receiving endpoint.
+170. Why should a bank protect cryptographic keys separately from the data they encrypt?
+A. So that every employee can access every key B. To reduce the chance that an attacker who obtains the data can also obtain the key needed to decrypt it C. To make encryption algorithms unnecessary D. So that the keys can be published publicly without restrictions
+Correct Answer: B. To reduce the chance that an attacker who obtains the data can also obtain the key needed to decrypt it.
+Explanation: Separating keys from encrypted data reduces the risk of a single compromise exposing both. Hardware security modules (HSMs), strict access controls, key rotation, and audited key-management procedures can provide additional protection.
+Section 6: Applied Cybersecurity, Cryptographic Distinctions and Banking Scenarios (171–200)
+171. A bank wants to ensure that confidential customer information remains unreadable if a stolen hard drive is examined by an unauthorized person. Which measure is most directly appropriate?
+A. Spam filtering B. Email spoofing detection C. Network load balancing D. Full-disk encryption
+Correct Answer: D. Full-disk encryption.
+Explanation: Full-disk encryption protects stored data when the device is powered off or otherwise locked under the relevant security configuration. It does not necessarily protect data from malware or an attacker who gains access to an already unlocked system.
+172. A customer receives an encrypted banking message. Which condition is essential for the customer to recover its plaintext in a conventional encryption system?
+A. Access to the appropriate decryption key and algorithm B. Knowledge of the sender's screen resolution C. A copy of the bank's antivirus signature database D. The sender's email display name
+Correct Answer: A. Access to the appropriate decryption key and algorithm.
+Explanation: Decryption requires the appropriate key and compatible cryptographic procedure. For symmetric encryption, the recipient needs the shared secret; for public-key encryption, the recipient ordinarily uses the corresponding private key.
+173. Which security property ensures that data has not been altered without authorization?
+A. Availability B. Compression C. Integrity D. Redundancy
+Correct Answer: C. Integrity.
+Explanation: Integrity concerns the accuracy and completeness of data and whether unauthorized modifications can be detected. Cryptographic hashes, MACs, and digital signatures can support integrity verification in different contexts.
+174. Which of the following best describes confidentiality?
+A. Ensuring that every system remains operational continuously B. Preventing unauthorized disclosure of information C. Ensuring that every employee has administrator access D. Guaranteeing that data can never be modified
+Correct Answer: B. Preventing unauthorized disclosure of information.
+Explanation: Confidentiality restricts information access to authorized parties. Encryption and access controls are important confidentiality mechanisms, whereas availability concerns timely access to information and services.
+175. In the CIA triad of information security, what does the letter A represent?
+A. Authentication B. Authorization C. Accounting D. Availability
+Correct Answer: D. Availability.
+Explanation: The CIA triad stands for Confidentiality, Integrity, and Availability. Availability means authorized users can access systems and information when needed.
+176. A bank digitally signs an electronic document using an authorized officer's private signing key. What is the primary purpose of the signature?
+A. To support verification of the document's integrity and association with the corresponding signing key B. To guarantee that the document contains no errors C. To hide the document's contents from everyone D. To replace the bank's authorization procedures
+Correct Answer: A. To support verification of the document's integrity and association with the corresponding signing key.
+Explanation: A digital signature helps detect unauthorized changes and verify the relationship between the signature and a signing key. Establishing that the key belongs to the authorized officer requires reliable identity and key-management controls.
+177. Which of the following best describes non-repudiation in digital communications?
+A. The inability to encrypt a document B. The guarantee that a computer cannot be hacked C. Providing evidence that can help prevent a party from credibly denying an action, subject to the applicable technical and legal framework D. Preventing all users from accessing the internet
+Correct Answer: C. Providing evidence that can help prevent a party from credibly denying an action, subject to the applicable technical and legal framework.
+Explanation: Digital signatures and reliable audit trails can support non-repudiation. However, their evidentiary value depends on private-key control, identity verification, system integrity, and applicable legal rules.
+178. Which situation most clearly represents a man-in-the-middle attack?
+A. A user creates a strong password B. An attacker secretly intercepts and potentially alters communications between two parties C. An antivirus program updates its definitions D. A bank creates an offline backup
+Correct Answer: B. An attacker secretly intercepts and potentially alters communications between two parties.
+Explanation: A man-in-the-middle (MITM) attack places an attacker between communicating parties. Proper certificate validation, authenticated key exchange, and secure protocols help prevent interception and impersonation.
+179. Which of the following is the best defense against an attacker substituting a fraudulent public key during communication?
+A. Using shorter passwords B. Disabling certificate validation C. Sharing private keys over public email D. Authenticating public keys through trusted certificates or another reliable verification mechanism
+Correct Answer: D. Authenticating public keys through trusted certificates or another reliable verification mechanism.
+Explanation: Public-key cryptography depends on knowing that the public key belongs to the intended party. Certificate validation or another trusted authentication mechanism helps prevent an attacker from substituting their own key.
+180. A bank wants to verify that a downloaded software update has not been altered. Which method is most appropriate when the vendor provides a trusted digital signature?
+A. Verify the signature using the vendor's authenticated public key B. Check only the filename C. Assume the download is safe because it is large D. Disable all endpoint security before installation
+Correct Answer: A. Verify the signature using the vendor's authenticated public key.
+Explanation: A valid digital signature can verify that the signed content has not changed and that the signature corresponds to the vendor's signing key. The public key must be authenticated, and the vendor's signing key must remain trustworthy.
+181. What is the primary purpose of a cryptographic salt when storing passwords?
+A. To decrypt a password without authentication B. To replace the password-hashing algorithm C. To make identical passwords produce different stored hash values when different salts are used D. To make passwords publicly available
+Correct Answer: C. To make identical passwords produce different stored hash values when different salts are used.
+Explanation: A unique salt for each password makes precomputed hash attacks less effective and prevents direct identification of matching passwords merely by comparing stored hashes. The salt is not required to be secret.
+182. Which algorithm is specifically designed for password hashing rather than general-purpose fast data hashing?
+A. AES B. Argon2id C. RSA D. Diffie–Hellman
+Correct Answer: B. Argon2id.
+Explanation: Argon2id is a password-hashing scheme designed to make password guessing more expensive through configurable computational and memory costs. AES is an encryption algorithm, while RSA and Diffie–Hellman serve different public-key cryptographic purposes.
+183. Which statement about a hash digest is correct?
+A. It can always be decrypted using the sender's private key B. It must have the same length as the original message C. It guarantees that two different messages can never have the same digest D. It has a fixed output length for a given hash function, regardless of input length
+Correct Answer: D. It has a fixed output length for a given hash function, regardless of input length.
+Explanation: SHA-256, for example, produces a 256-bit digest whether the input is short or very large. Because the possible inputs vastly outnumber the possible digests, collisions must exist mathematically, although secure hash functions make finding them computationally difficult.
+184. Which security measure helps ensure that an attacker cannot easily reuse an old, valid banking transaction message?
+A. A properly designed replay-protection mechanism using transaction identifiers, nonces, counters, or equivalent controls B. Reusing the same transaction identifier indefinitely C. Disabling transaction authentication D. Storing transaction approvals in plain text without access controls
+Correct Answer: A. A properly designed replay-protection mechanism using transaction identifiers, nonces, counters, or equivalent controls.
+Explanation: Replay protection allows systems to recognize previously used or expired transaction messages. Its effectiveness depends on correct validation and enforcement of uniqueness, freshness, or transaction state.
+185. A bank encrypts a file with AES but stores the encryption key in the same unprotected folder as the ciphertext. What is the primary security weakness?
+A. AES is an asymmetric algorithm B. Encryption cannot protect files C. An attacker who obtains the folder may obtain both the encrypted data and its decryption key D. A symmetric key cannot decrypt AES ciphertext
+Correct Answer: C. An attacker who obtains the folder may obtain both the encrypted data and its decryption key.
+Explanation: Encryption provides limited protection if an attacker can obtain the corresponding key just as easily as the ciphertext. Keys should be protected through separation, access control, secure storage, and appropriate key-management procedures.
+186. Which of the following is the best description of a brute-force-resistant authentication policy?
+A. Unlimited login attempts with no monitoring B. Rate limiting, appropriate attempt controls, and strong unique passwords C. One password shared by every employee D. Disabling alerts for failed logins
+Correct Answer: B. Rate limiting, appropriate attempt controls, and strong unique passwords.
+Explanation: These measures reduce the effectiveness of automated guessing. Monitoring and carefully designed lockout policies can provide additional protection without making denial-of-service attacks against user accounts too easy.
+187. Which combination best protects a bank's web-based customer login against credential theft and unauthorized access?
+A. A shared password with no access restrictions B. Plain-text password storage and unrestricted login attempts C. Disabling HTTPS to simplify access D. HTTPS, strong password storage, phishing-resistant MFA, and effective access controls
+Correct Answer: D. HTTPS, strong password storage, phishing-resistant MFA, and effective access controls.
+Explanation: HTTPS protects data in transit, secure password hashing protects stored credentials, MFA adds authentication protection, and access controls enforce permissions. Each addresses a different part of the security problem.
+188. Which of the following correctly distinguishes identification from authentication?
+A. Identification claims an identity; authentication verifies the claim B. Identification always encrypts data; authentication always compresses it C. They both mean authorization exclusively D. Authentication is performed only by physical locks
+Correct Answer: A. Identification claims an identity; authentication verifies the claim.
+Explanation: Entering a username is commonly an identification step. Supplying a password, using a security key, or presenting a valid biometric is an authentication step that helps verify the claimed identity.
+189. Which of the following correctly distinguishes authentication from authorization?
+A. Authentication defines file sizes, while authorization compresses data B. Authentication and authorization are unrelated to security C. Authentication verifies identity, while authorization determines permitted actions and resources D. Authorization always occurs without an identity
+Correct Answer: C. Authentication verifies identity, while authorization determines permitted actions and resources.
+Explanation: A successful login does not grant unrestricted access. An authenticated bank employee should only access accounts and functions permitted by their role and assigned privileges.
+190. Which control is most directly designed to prevent a single employee from independently initiating and approving a high-value fund transfer?
+A. Antivirus signature updating B. Segregation of duties C. File compression D. Disk defragmentation
+Correct Answer: B. Segregation of duties.
+Explanation: Segregation of duties separates sensitive responsibilities among different authorized individuals. It reduces opportunities for fraud and error, especially when combined with transaction limits and audit logs.
+191. A bank wants to protect communications between a customer and its online banking server against interception and tampering. Which is the most appropriate choice?
+A. Plain HTTP without additional protection B. Sending the password through an ordinary email C. Using only a password hash in the browser D. HTTPS using properly configured TLS
+Correct Answer: D. HTTPS using properly configured TLS.
+Explanation: TLS protects the confidentiality and integrity of data in transit and supports authentication of the server. Proper certificate validation and secure configuration are essential.
+192. Which statement about OTPs and digital signatures is correct?
+A. An OTP is a one-time verification code, whereas a digital signature is a cryptographic mechanism for verifying signed data B. An OTP and a digital signature are identical C. Every OTP provides public verification of a document D. A digital signature is necessarily a six-digit code
+Correct Answer: A. An OTP is a one-time verification code, whereas a digital signature is a cryptographic mechanism for verifying signed data.
+Explanation: OTPs are used in authentication or transaction-verification workflows. Digital signatures use cryptographic keys to support verification of integrity and origin; they are not simply short-lived numeric codes.
+193. Which statement about symmetric and asymmetric encryption is correct?
+A. Asymmetric encryption always uses less computation than symmetric encryption for bulk data B. Symmetric encryption uses no keys C. Symmetric encryption is generally faster for bulk data, while asymmetric cryptography helps with public-key operations such as key establishment D. Both approaches require that all private keys be published
+Correct Answer: C. Symmetric encryption is generally faster for bulk data, while asymmetric cryptography helps with public-key operations such as key establishment.
+Explanation: Symmetric algorithms are efficient for large amounts of data. Asymmetric cryptography can help establish or protect session keys and support digital signatures, so real-world protocols often combine the two.
+194. A bank's website has a valid TLS certificate, but the domain is a deceptive lookalike of the real bank's domain. Which conclusion is correct?
+A. The certificate proves the site is the genuine bank in every respect B. The encrypted connection may be valid for the lookalike domain, but the site may still be fraudulent C. TLS certificates automatically detect all phishing D. The website cannot collect credentials
+Correct Answer: B. The encrypted connection may be valid for the lookalike domain, but the site may still be fraudulent.
+Explanation: TLS can establish a secure connection to the domain named in the certificate. Users must independently verify that the domain is the bank's genuine address.
+195. Which security technique is most directly useful for detecting whether a downloaded file has changed, assuming the expected hash was obtained through a trusted channel?
+A. Comparing the file's icon B. Checking the filename alone C. Restarting the computer D. Computing the file's cryptographic hash and comparing it with the trusted expected hash
+Correct Answer: D. Computing the file's cryptographic hash and comparing it with the trusted expected hash.
+Explanation: A matching cryptographic hash provides strong evidence that the file's contents match the expected file, assuming a suitable hash function and trusted reference. A hash downloaded from the same compromised source as the file may not provide reliable assurance.
+196. Which statement about public-key cryptography and digital certificates is correct?
+A. A certificate can help establish the association between a public key and an identity, subject to validation B. A certificate is the same as the user's password C. A certificate automatically encrypts every file on a computer D. A public key must never be distributed
+Correct Answer: A. A certificate can help establish the association between a public key and an identity, subject to validation.
+Explanation: Certificates bind a public key to a subject under a defined trust model. Verification includes checking the signature chain, validity period, intended identity, and other applicable constraints.
+197. Which is the most appropriate action if a bank employee suspects that their private digital-signing key has been compromised?
+A. Continue signing transactions without reporting the incident B. Publish the key so others can inspect it C. Promptly report the compromise, follow key-revocation and replacement procedures, and investigate potentially affected signatures D. Send the private key to all customers
+Correct Answer: C. Promptly report the compromise, follow key-revocation and replacement procedures, and investigate potentially affected signatures.
+Explanation: A compromised private key may allow an attacker to create fraudulent signatures or perform other unauthorized cryptographic operations. Incident response should protect the key infrastructure and assess the validity of affected transactions or documents.
+198. A customer receives an unexpected request to approve a banking transaction through an authentication app. The customer did not initiate any transaction. What should the customer do?
+A. Approve the request because the bank's logo is displayed B. Reject the request and contact the bank through a verified channel if suspicious activity continues C. Share the approval code with the caller D. Disable all security notifications without investigation
+Correct Answer: B. Reject the request and contact the bank through a verified channel if suspicious activity continues.
+Explanation: Unexpected authentication prompts may indicate an attempted account compromise or MFA fatigue attack. Customers should only approve transactions they initiated and have verified.
+199. Which of the following best represents a layered defense against phishing-related banking fraud?
+A. Relying entirely on customers to identify every fraudulent message B. Using only an antivirus program and ignoring authentication C. Reusing passwords to simplify account management D. Combining email filtering, user awareness, phishing-resistant MFA, transaction verification, and monitoring
+Correct Answer: D. Combining email filtering, user awareness, phishing-resistant MFA, transaction verification, and monitoring.
+Explanation: Phishing attacks target both technical weaknesses and human judgment. Multiple controls help prevent credential theft, detect suspicious access, and limit fraudulent transactions when one safeguard fails.
+200. Which statement best summarizes the relationship between cybersecurity controls and information security?
+A. Effective security requires complementary preventive, detective, and recovery controls rather than reliance on a single technology B. Installing antivirus guarantees complete security C. Encryption removes the need for authentication and authorization D. A firewall makes employee awareness and incident response unnecessary
+Correct Answer: A. Effective security requires complementary preventive, detective, and recovery controls rather than reliance on a single technology.
+Explanation: Preventive controls reduce the likelihood of attacks, detective controls help identify suspicious activity, and recovery controls restore operations after incidents. In banking, these layers work together to protect confidentiality, integrity, availability, and the trustworthiness of financial transactions.

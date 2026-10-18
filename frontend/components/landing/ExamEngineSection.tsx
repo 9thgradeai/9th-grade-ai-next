@@ -6,7 +6,7 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import Reveal from "@/components/ui/Reveal";
 
 /**
- * Exam Engine — The coordinated card interaction
+ * Exam Engine, The coordinated card interaction
  * (rise, border, icon illumination, arrow slide) is CSS-only via group-hover,
  * so no client JS ships for this section.
  */
@@ -55,10 +55,10 @@ export default function ExamEngineSection() {
                 href={track.href}
                 className="group glass-card relative flex h-full flex-col overflow-hidden rounded-2xl p-6 transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-1 hover:border-emerald-400/40 hover:shadow-card-hover"
               >
-                {/* Gradient shift on hover — single coordinated surface change */}
+                {/* Gradient shift on hover, single coordinated surface change */}
                 <span
                   aria-hidden="true"
-                  className="pointer-events-none absolute inset-0 bg-gradient-to-br from-emerald-500/[0.07] via-transparent to-violet-500/[0.07] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                  className="pointer-events-none absolute inset-0 bg-gradient-to-br from-emerald-500/[0.07] via-transparent to-sky-500/[0.07] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
                 />
                 <span
                   aria-hidden="true"
@@ -81,7 +81,7 @@ export default function ExamEngineSection() {
           ))}
         </div>
 
-        {/* Proof row — evidence, not metaphor: a real bank question and the
+        {/* Proof row, evidence, not metaphor: a real bank question and the
             open-source guarantee, CSS-only like the rest of the section. */}
         <div className="mt-5 grid gap-5 lg:grid-cols-2">
           <Reveal className="h-full">
@@ -122,7 +122,7 @@ export default function ExamEngineSection() {
             >
               <span
                 aria-hidden="true"
-                className="pointer-events-none absolute inset-0 bg-gradient-to-br from-emerald-500/[0.07] via-transparent to-violet-500/[0.07] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                className="pointer-events-none absolute inset-0 bg-gradient-to-br from-emerald-500/[0.07] via-transparent to-sky-500/[0.07] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
               />
               <p className="relative mb-4 font-mono text-[11px] uppercase tracking-[0.18em] text-zinc-500">
                 {t("landing.proof.oss.eyebrow")}

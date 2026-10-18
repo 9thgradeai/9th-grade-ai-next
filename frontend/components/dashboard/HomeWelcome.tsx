@@ -43,7 +43,7 @@ export default function HomeWelcome({ onStartPractice }: { onStartPractice?: () 
       aria-label={t(lang, "স্বাগতম", "Welcome")}
       className="command-card relative overflow-hidden p-5 sm:p-6"
     >
-      {/* Decorative ink-wash band — pointer-events none, never blocks content */}
+      {/* Decorative ink-wash band, pointer-events none, never blocks content */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-x-0 top-0 h-1"
@@ -70,7 +70,7 @@ export default function HomeWelcome({ onStartPractice }: { onStartPractice?: () 
             )}
           </h2>
 
-          {/* Quote of the day — Bangla + English literature */}
+          {/* Quote of the day, Bangla + English literature */}
           <motion.figure
             key={quote.id}
             initial={reduceMotion ? false : { opacity: 0, y: 6 }}
@@ -99,7 +99,7 @@ export default function HomeWelcome({ onStartPractice }: { onStartPractice?: () 
                   className="mt-1.5 text-xs"
                   style={{ color: "var(--dashboard-text-muted)" }}
                 >
-                  — {t(lang, quote.authorBn, quote.authorEn)}
+                 , {t(lang, quote.authorBn, quote.authorEn)}
                   {quote.workBn && (
                     <span> · {t(lang, quote.workBn, quote.workEn ?? "")}</span>
                   )}

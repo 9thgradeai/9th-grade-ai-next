@@ -11,7 +11,7 @@ export type RendererProps = Omit<ChoiceViewProps, "options"> & {
 };
 
 /**
- * Dynamic question renderer — inspects `questionType` and switches views:
+ * Dynamic question renderer, inspects `questionType` and switches views:
  *   SINGLE_CHOICE / SCENARIO_BASED → SingleChoiceView (radio)
  *   MULTIPLE_CHOICE               → MultipleChoiceView (checkbox)
  *   STATEMENT_COMBINATION         → StatementCombinationView (I/II/III + combos)
@@ -27,7 +27,7 @@ export default function QuestionRenderer({ question, ...choice }: RendererProps)
       </h3>
       {question.questionType === "MULTIPLE_CHOICE" && (
         <p role="note" className="text-xs font-medium text-[var(--dashboard-text-secondary)] mt-1.5">
-          একাধিক উত্তর থাকতে পারে — সব সঠিকটি বেছে নিন
+          একাধিক উত্তর থাকতে পারে, সব সঠিকটি বেছে নিন
         </p>
       )}
     </div>

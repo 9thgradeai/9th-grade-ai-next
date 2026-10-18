@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import { Terminal, ShieldCheck, Key, GitBranch, Lock, BookOpen } from "@phosphor-icons/react/dist/ssr";
 import PublicShell from "@/components/public/PublicShell";
 import PageHero from "@/components/public/PageHero";
 import SectionHeading from "@/components/ui/SectionHeading";
 
-export const metadata: Metadata = {
-  alternates: { canonical: "/docs" },
-  title: "API Documentation — 9Th-Grade AI",
+export const metadata: Metadata = pageMeta({
+  path: "/docs",
+  title: "API Documentation | 9Th-Grade AI",
   description:
-    "Public API reference for the 9Th-Grade AI platform — auth, questions, exams, study plans, progress, content, and AI endpoints.",
-};
+    "Public API reference for the 9Th-Grade AI platform, auth, questions, exams, study plans, progress, content, and AI endpoints.",
+});
 
 type Endpoint = {
   method: "GET" | "POST";

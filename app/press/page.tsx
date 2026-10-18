@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { Megaphone, Image, FileText, EnvelopeSimple, ArrowUpRight } from "@phosphor-icons/react/dist/ssr";
 import { prisma } from "~backend/db";
 import PublicShell from "@/components/public/PublicShell";
@@ -7,12 +8,12 @@ import SectionHeading from "@/components/ui/SectionHeading";
 
 export const revalidate = 3600;
 
-export const metadata: Metadata = {
-  alternates: { canonical: "/press" },
-  title: "Press Kit — 9Th-Grade AI",
+export const metadata: Metadata = pageMeta({
+  path: "/press",
+  title: "Press Kit | 9Th-Grade AI",
   description:
     "Brand assets, product facts, and media contacts for journalists and content creators covering 9Th-Grade AI.",
-};
+});
 
 const facts = (subjectCount: number, questionCount: number) => [
   { label: "Launched", value: "2025" },
@@ -32,7 +33,7 @@ const assets = [
   {
     icon: Image,
     title: "Logo & Brand",
-    text: "The brand mark is a knowledge constellation — four connected nodes orbiting a luminous core inside a deep-space tile, ringed in blue→cyan→violet. Fonts: Space Grotesk for display, Inter for body, JetBrains Mono for code.",
+    text: "The brand mark is a knowledge constellation, four connected nodes orbiting a luminous core inside a deep-space tile, ringed in blue→cyan→sky. Fonts: Space Grotesk for display, Inter for body, JetBrains Mono for code.",
   },
   {
     icon: FileText,

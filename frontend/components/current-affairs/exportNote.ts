@@ -1,6 +1,6 @@
 // Client-side export helpers for the daily current-affairs note.
 // Markdown conversion (Notion/Obsidian) and DOCX generation
-// (docx + file-saver). PDF is server-side — see
+// (docx + file-saver). PDF is server-side, see
 // /api/current-affairs/export.
 
 import {
@@ -71,7 +71,7 @@ export function docToMarkdown(
   if (citations.length > 0) {
     lines.push(`## Sources`, ``);
     citations.forEach((c, i) => {
-      lines.push(`${i + 1}. ${c.publisher} — "${c.articleTitle}" (${c.sourceUrl})`);
+      lines.push(`${i + 1}. ${c.publisher}, "${c.articleTitle}" (${c.sourceUrl})`);
     });
     lines.push(``);
   }
@@ -134,7 +134,7 @@ export async function exportNoteDocx(
       heading: HeadingLevel.HEADING_1,
     }),
     new Paragraph({
-      children: [new TextRun({ text: `${date} · 9Th-Grade AI — Daily Current Affairs`, italics: true, size: 16 })],
+      children: [new TextRun({ text: `${date} · 9Th-Grade AI, Daily Current Affairs`, italics: true, size: 16 })],
     }),
     new Paragraph({ text: "" }),
   ];
@@ -155,7 +155,7 @@ export async function exportNoteDocx(
       children.push(
         new Paragraph({
           children: [
-            new TextRun({ text: `${i + 1}. ${c.publisher} — "${c.articleTitle}" ` }),
+            new TextRun({ text: `${i + 1}. ${c.publisher}, "${c.articleTitle}" ` }),
             new TextRun({ text: c.sourceUrl, color: "10B981", underline: {} }),
           ],
         }),
@@ -176,7 +176,7 @@ export async function exportNoteDocx(
         );
       });
       if (m.explanation) {
-        children.push(new Paragraph({ text: `   Answer: ${String.fromCharCode(65 + m.correctOption)} — ${m.explanation}` }));
+        children.push(new Paragraph({ text: `   Answer: ${String.fromCharCode(65 + m.correctOption)}, ${m.explanation}` }));
       }
     });
   }

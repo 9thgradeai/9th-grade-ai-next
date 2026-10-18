@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import { Bank, FileText, GraduationCap, Buildings, Scales, CheckCircle, ArrowUpRight, Target } from "@phosphor-icons/react/dist/ssr";
 import PublicShell from "@/components/public/PublicShell";
@@ -8,12 +9,12 @@ import { prisma } from "~backend/db";
 
 export const revalidate = 3600;
 
-export const metadata: Metadata = {
-  alternates: { canonical: "/tracks" },
-  title: "Exam Tracks — 9Th-Grade AI",
+export const metadata: Metadata = pageMeta({
+  path: "/tracks",
+  title: "Exam Tracks | 9Th-Grade AI",
   description:
     "Structured preparation tracks for BCS Preliminary, BCS Written, Teacher Recruitment, Bank Jobs, and PSC & other competitive exams in Bangladesh.",
-};
+});
 
 const trackNav = [
   { id: "bcs-preliminary", label: "BCS Preliminary" },
@@ -30,7 +31,7 @@ const tracks = (questionCount: number) => [
     title: "BCS Preliminary",
     badge: "200 MARKS · 100 MCQ · 2 HRS",
     description:
-      "The first gate to the Bangladesh Civil Service. Master all 10 syllabus subjects — Bangla, English, Bangladesh & International Affairs, Geography, Science, Computer, Math, Mental Ability, and Ethics — with syllabus-aligned practice and full-length mock tests.",
+      "The first gate to the Bangladesh Civil Service. Master all 10 syllabus subjects, Bangla, English, Bangladesh & International Affairs, Geography, Science, Computer, Math, Mental Ability, and Ethics, with syllabus-aligned practice and full-length mock tests.",
     points: [
       `Full BCS syllabus coverage with ${questionCount.toLocaleString()}+ practice questions`,
       "Mock tests with real exam interface, timer & negative marking",
@@ -72,7 +73,7 @@ const tracks = (questionCount: number) => [
     title: "Bank Jobs",
     badge: "AD · PO · CASH · GENERAL",
     description:
-      "Conquer bank officer recruitment — Assistant Director, Probationary Officer, Cash, and General posts. Focused practice on math, reasoning, English, and current affairs with bank-level speed drills.",
+      "Conquer bank officer recruitment, Assistant Director, Probationary Officer, Cash, and General posts. Focused practice on math, reasoning, English, and current affairs with bank-level speed drills.",
     points: [
       "Numerical & reasoning drills tuned to bank exam difficulty",
       "Current-affairs tracker refreshed daily",
@@ -86,7 +87,7 @@ const tracks = (questionCount: number) => [
     title: "PSC & Other Exams",
     badge: "GOVT. JOBS · 9TH-GRADE PAY SCALE",
     description:
-      "A unified track for PSC, departmental, and other public-sector recruitment — including 9th-grade pay-scale posts. One syllabus map, endless practice.",
+      "A unified track for PSC, departmental, and other public-sector recruitment, including 9th-grade pay-scale posts. One syllabus map, endless practice.",
     points: [
       "Generic-to-departmental question coverage",
       "Topic-wise practice across Bangla, GK, math & English",
@@ -110,9 +111,9 @@ export default async function TracksPage() {
         eyebrow="EXAM TRACKS"
         title="Structured Tracks for Every"
         highlight="Competitive Exam"
-        description="Pick a track, follow the syllabus map, and let syllabus-aligned practice close your weak areas — from your first question to the final mock test."
+        description="Pick a track, follow the syllabus map, and let syllabus-aligned practice close your weak areas, from your first question to the final mock test."
         actions={[
-          { href: "/login?register=true", label: "Start Free Preparation" },
+          { href: "/register", label: "Start Free Preparation" },
           { href: "/dashboard?tab=practice", label: "Open Practice", variant: "ghost" },
         ]}
       />
@@ -184,7 +185,7 @@ export default async function TracksPage() {
 
                     <div className="lg:w-56 flex flex-col gap-3 lg:items-end lg:pt-14">
                       <Link
-                        href="/login?register=true"
+                        href="/register"
                         className="inline-flex items-center justify-center gap-2 w-full px-6 py-3 rounded-full text-sm font-semibold text-zinc-950 bg-emerald-500 hover:bg-emerald-400 transition-colors shadow-[0_0_20px_rgba(16,185,129,0.25)]"
                       >
                         {track.cta}

@@ -37,7 +37,7 @@ interface ExamSwitcherProps {
  *
  * Practice scope only: the selected ecosystem feeds practice / mock / custom
  * exam builds (`api.examConfig(ecosystem)`). Home, progress, question-bank and
- * other tabs always show all-ecosystem server data — the label says so to
+ * other tabs always show all-ecosystem server data, the label says so to
  * avoid implying a global filter. Switching clears cross-tab intents and
  * invalidates the read cache so no stale ecosystem data is served.
  * Options come from the real exam library (`/api/question-bank/exams`); when
@@ -115,7 +115,7 @@ export default function ExamSwitcher({ compact = false, id }: ExamSwitcherProps)
 
   const select = (opt: ExamOption) => {
     setExamContext(opt.slug);
-    // Ecosystem feeds exam builds keyed by URL — drop cached reads so the
+    // Ecosystem feeds exam builds keyed by URL, drop cached reads so the
     // next tab mount refetches under the new context instead of serving stale.
     invalidateCache();
     setOpen(false);
@@ -247,7 +247,7 @@ export default function ExamSwitcher({ compact = false, id }: ExamSwitcherProps)
               color: "var(--dashboard-text-muted)",
             }}
           >
-            শুধু প্র্যাকটিস / মক / কাস্টম পরীক্ষায় প্রযোজ্য — প্রোগ্রেস ও অন্যান্য ট্যাবে সব পরীক্ষার ডেটা দেখায়
+            শুধু প্র্যাকটিস / মক / কাস্টম পরীক্ষায় প্রযোজ্য, প্রোগ্রেস ও অন্যান্য ট্যাবে সব পরীক্ষার ডেটা দেখায়
           </p>
         </div>
       )}

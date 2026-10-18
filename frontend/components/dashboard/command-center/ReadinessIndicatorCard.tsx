@@ -10,7 +10,7 @@ type ReadinessIndicatorCardProps = {
 
 /**
  * Honest, deterministic exam-readiness estimate built exclusively from real
- * server data. Never invented — when inputs are missing we show an empty state.
+ * server data. Never invented, when inputs are missing we show an empty state.
  */
 function computeReadiness(intel: PreparationIntelligenceDTO | null): { value: number; basedOn: string } | null {
   if (!intel) return null;
@@ -43,7 +43,7 @@ export type ReadinessDriver = {
   detailBn: string;
   detailEn: string;
   status: DriverStatus;
-  /** Rank for "biggest lever" selection — higher = more room to improve. */
+  /** Rank for "biggest lever" selection, higher = more room to improve. */
   leverage: number;
 };
 
@@ -134,7 +134,7 @@ export function computeDrivers(intel: PreparationIntelligenceDTO | null): Readin
   ];
 }
 
-/** The weakest actionable driver — "what improves most if I do it". */
+/** The weakest actionable driver, "what improves most if I do it". */
 export function biggestLever(drivers: ReadinessDriver[]): ReadinessDriver | null {
   const actionable = drivers.filter((d) => d.status === "warn" || d.status === "bad");
   if (actionable.length === 0) return null;
@@ -143,7 +143,7 @@ export function biggestLever(drivers: ReadinessDriver[]): ReadinessDriver | null
 
 /**
  * Bespoke readiness trajectory: mock scores as SVG polyline points
- * (chronological). Pure + tested — the chart library never sees this shape.
+ * (chronological). Pure + tested, the chart library never sees this shape.
  * Flat guard keeps a constant series on a midline instead of dividing by zero.
  */
 export function mockScorePoints(scores: number[], width = 120, height = 36, pad = 4): string {
@@ -208,8 +208,8 @@ export default function ReadinessIndicatorCard({ intelligence }: ReadinessIndica
           <p className="text-xs mt-1 max-w-xs" style={{ color: "var(--dashboard-text-muted)" }}>
             {t(
               lang,
-              "কিছু প্রশ্ন সমাধান করুন — সূচকটি বাস্তব নির্ভুলতা ও মক টেস্ট স্কোর থেকে তৈরি হয়।",
-              "Solve some questions first — the indicator is built from real accuracy and mock-test scores.",
+              "কিছু প্রশ্ন সমাধান করুন, সূচকটি বাস্তব নির্ভুলতা ও মক টেস্ট স্কোর থেকে তৈরি হয়।",
+              "Solve some questions first, the indicator is built from real accuracy and mock-test scores.",
             )}
           </p>
         </div>
@@ -258,8 +258,8 @@ export default function ReadinessIndicatorCard({ intelligence }: ReadinessIndica
             <Info className="w-3 h-3 shrink-0 mt-0.5" aria-hidden="true" />
             {t(
               lang,
-              "এটি একটি নিয়মতান্ত্রিক অনুমান — অফিসিয়াল ফলের পূর্বাভাস নয়।",
-              "A deterministic estimate — not a prediction of the official result.",
+              "এটি একটি নিয়মতান্ত্রিক অনুমান, অফিসিয়াল ফলের পূর্বাভাস নয়।",
+              "A deterministic estimate, not a prediction of the official result.",
             )}
           </p>
 

@@ -2,7 +2,7 @@ import type { CSSProperties, ReactNode } from "react";
 
 const SKELETON = "skeleton-shimmer rounded-lg";
 
-/** Base skeleton block. Decorative — hidden from assistive tech. */
+/** Base skeleton block. Decorative, hidden from assistive tech. */
 export function Skeleton({ className = "", style }: { className?: string; style?: CSSProperties }) {
   return <div aria-hidden="true" className={`${SKELETON} ${className}`} style={style} />;
 }

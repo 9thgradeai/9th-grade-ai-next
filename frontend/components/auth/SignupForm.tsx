@@ -50,7 +50,7 @@ export function SignupForm({
   onClearError: () => void
   onTyping?: () => void
   onStrengthChange?: (strength: number) => void
-  /** Increments after each rejected submit — secrets are never preserved. */
+  /** Increments after each rejected submit, secrets are never preserved. */
   failedAttempt?: number
   /** Epoch ms until which submission is blocked (rate-limit backoff). */
   lockoutUntil?: number | null
@@ -68,7 +68,7 @@ export function SignupForm({
     confirm?: string
   }>({})
 
-  // Rate-limit backoff countdown — ticks every 500ms while locked.
+  // Rate-limit backoff countdown, ticks every 500ms while locked.
   const [now, setNow] = useState(() => Date.now())
   useEffect(() => {
     if (!lockoutUntil) return
@@ -246,7 +246,7 @@ export function SignupForm({
           aria-live="polite"
           className="rounded-xl border border-amber-400/30 bg-amber-500/10 px-4 py-2.5 text-center text-sm text-amber-300"
         >
-          Too many attempts — try again in {secondsLeft}s.
+          Too many attempts, try again in {secondsLeft}s.
         </p>
       )}
 

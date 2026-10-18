@@ -1,9 +1,9 @@
 "use client";
 
 /**
- * Phase 4 — Landing narrative arcs. 11 scattered sections collapse into 5
+ * Phase 4, Landing narrative arcs. 11 scattered sections collapse into 5
  * story beats (Problem → Intelligence → Tutor → Proof → CTA). All original
- * components are preserved inside the arcs — nothing deleted, just grouped
+ * components are preserved inside the arcs, nothing deleted, just grouped
  * so each lazy chunk is one narrative unit instead of one widget.
  */
 

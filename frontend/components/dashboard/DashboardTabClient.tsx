@@ -1,0 +1,152 @@
+"use client";
+
+/* DashboardTabClient, mounts the active dashboard tab component.
+ *
+ * The tab now comes from the URL path (/dashboard/practice) via a server
+ * component instead of the ?tab= query param, so each tab has a real URL.
+ * Intent params (?mode=, ?view=, ?paper=) stay as query strings on top of
+ * the path. The store stays in sync for nav highlighting (SideNav/BottomNav
+ * read `activeTab` from the store, not the URL). */
+
+import { useSearchParams } from "next/navigation";
+import { Suspense, useEffect } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import dynamic from "next/dynamic";
+import { useDashboardStore } from "@/lib/store-ctx/dashboard";
+import { api, invalidateCache } from "@/lib/services/api";
+import { TABS, type TabId } from "@/lib/data";
+import { Skeleton, SkeletonCard } from "@/components/ui/Skeleton";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
+import { LoadingShell } from "@/components/ui/LoadingShell";
+import { useT } from "@/lib/i18n";
+
+// Shown while a lazily-imported tab chunk streams in, never a blank pane.
+function TabChunkLoading() {
+  const t = useT();
+  return (
+    <div className="space-y-4" role="status" aria-label={t("dashboard.loadingModule")}>
+      <span className="sr-only">{t("common.loading")}</span>
+      <LoadingShell title={t("dashboard.loadingModule")} progressLabel={t("dashboard.loadingModule")} />
+
+      <SkeletonCard className="p-6">
+        <div className="space-y-4">
+          <Skeleton className="h-5 w-40" />
+          <div className="space-y-2.5">
+            <Skeleton className="h-4 w-[88%]" />
+            <Skeleton className="h-4 w-[76%]" />
+            <Skeleton className="h-4 w-[64%]" />
+          </div>
+        </div>
+      </SkeletonCard>
+      <SkeletonCard>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <Skeleton className="h-16 rounded-xl" />
+          <Skeleton className="h-16 rounded-xl" />
+          <Skeleton className="hidden sm:block h-16 rounded-xl" />
+        </div>
+      </SkeletonCard>
+    </div>
+  );
+}
+
+// Tabs are code-split so the initial dashboard bundle only pays for the
+// active tab (CustomExamTab/VoiceAITutor alone account for ~1,800 LOC).
+const TAB_COMPONENTS: Record<TabId, React.ComponentType> = {
+  home: dynamic(() => import("@/components/dashboard/HomeTab"), { loading: TabChunkLoading, ssr: false }),
+  "study-planner": dynamic(() => import("@/components/dashboard/StudyPlannerTab"), { loading: TabChunkLoading, ssr: false }),
+  practice: dynamic(() => import("@/components/dashboard/PracticeTab"), { loading: TabChunkLoading, ssr: false }),
+  flashcards: dynamic(() => import("@/components/dashboard/FlashcardsTab"), { loading: TabChunkLoading, ssr: false }),
+  "question-bank": dynamic(() => import("@/components/dashboard/QuestionBankTab"), { loading: TabChunkLoading, ssr: false }),
+  progress: dynamic(() => import("@/components/dashboard/ProgressTab"), { loading: TabChunkLoading, ssr: false }),
+  mistakes: dynamic(() => import("@/components/dashboard/WrongAnswerNotebookTab"), { loading: TabChunkLoading, ssr: false }),
+  settings: dynamic(() => import("@/components/dashboard/SettingsTab"), { loading: TabChunkLoading, ssr: false }),
+  "exam-history": dynamic(() => import("@/components/dashboard/ExamHistoryTab"), { loading: TabChunkLoading, ssr: false }),
+  "real-exam": dynamic(() => import("@/components/dashboard/RealExamTab"), { loading: TabChunkLoading, ssr: false }),
+  vocab: dynamic(() => import("@/components/dashboard/VocabTab"), { loading: TabChunkLoading, ssr: false }),
+  "current-affairs": dynamic(() => import("@/components/dashboard/CurrentAffairsTab"), { loading: TabChunkLoading, ssr: false }),
+  "ai-solver": dynamic(() => import("@/components/dashboard/AISolverTab"), { loading: TabChunkLoading, ssr: false }),
+  "ai-mock": dynamic(() => import("@/components/dashboard/AIMockTestTab"), { loading: TabChunkLoading, ssr: false }),
+  advisor: dynamic(() => import("@/components/dashboard/AdvisorTab"), { loading: TabChunkLoading, ssr: false }),
+  evaluator: dynamic(() => import("@/components/dashboard/AnswerEvaluatorTab"), { loading: TabChunkLoading, ssr: false }),
+  "voice-interview": dynamic(() => import("@/components/dashboard/VoiceInterviewTab"), { loading: TabChunkLoading, ssr: false }),
+  "student-model": dynamic(() => import("@/components/dashboard/StudentModelTab"), { loading: TabChunkLoading, ssr: false }),
+  usage: dynamic(() => import("@/components/dashboard/UsageTab"), { loading: TabChunkLoading, ssr: false }),
+};
+
+function TabSwitcher({ tab }: { tab: TabId }) {
+  const searchParams = useSearchParams();
+  const { activeTab, setActiveTab, setPracticeIntent, setQuestionBankFilters } = useDashboardStore();
+  const shouldReduceMotion = useReducedMotion();
+
+  const ActiveComponent = TAB_COMPONENTS[tab] ?? TAB_COMPONENTS.home;
+
+  // Phase 4: warm the cheap pulse scope the moment the dashboard shell mounts
+  // (right after login). By the time the Home chunk streams in, the 15s read
+  // cache usually serves pulse instantly, header paints with zero network.
+  useEffect(() => {
+    void api.preparationIntelligenceScope("pulse").catch(() => undefined);
+  }, []);
+
+  const mode = searchParams.get("mode");
+  const view = searchParams.get("view");
+  // URL is the source of truth: the path segment wins over store state,
+  // including on first load (fixes stale-localStorage-wins deep-link bug).
+  useEffect(() => {
+    if (TABS.some((t) => t.id === tab) && tab !== activeTab) {
+      setActiveTab(tab);
+    }
+  }, [tab, activeTab, setActiveTab]);
+  // Distinct nav hrefs carry intent: ?mode= selects the practice mode,
+  // ?view=bookmarks lands on the saved-questions view (not the generic bank).
+  useEffect(() => {
+    if (tab === "practice" && (mode === "quick" || mode === "mock" || mode === "custom")) {
+      setPracticeIntent({ mode });
+    } else if (tab === "question-bank" && view === "bookmarks") {
+      setQuestionBankFilters({ query: "", category: "__saved__" });
+    }
+  }, [tab, mode, view, setPracticeIntent, setQuestionBankFilters]);
+
+  return (
+    <AnimatePresence mode="wait" initial={false}>
+      <motion.div
+        key={activeTab}
+        initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: shouldReduceMotion ? 0 : -12 }}
+        transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.2, ease: "easeOut" }}
+        className="flex flex-1 flex-col"
+      >
+        <ErrorBoundary
+          key={`eb-${activeTab}`}
+          resetKeys={[activeTab]}
+          // A crash may have been caused by a poisoned cache entry, drop it
+          // so "try again" refetches instead of re-rendering the same stale
+          // data into the same crash.
+          onReset={() => invalidateCache()}
+          fallback={(_error, reset) => (
+            <div className="glass-card rounded-2xl border border-red-500/20 p-8 text-center" role="alert">
+              <p className="font-mono text-sm text-[var(--dashboard-danger)]">এই ট্যাব লোড করতে সমস্যা হয়েছে।</p>
+              <button onClick={reset} className="mt-3 px-4 py-2 min-h-[44px] rounded-lg border border-[var(--dashboard-border-muted)] font-mono text-sm">
+                আবার চেষ্টা করুন
+              </button>
+            </div>
+          )}
+        >
+          {/* Stream the shell instantly; tab data suspends into the skeleton. */}
+          <Suspense key={`suspense-${activeTab}`} fallback={<TabChunkLoading />}>
+            <ActiveComponent />
+          </Suspense>
+        </ErrorBoundary>
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
+export default function DashboardTabClient({ tab }: { tab: TabId }) {
+  // useSearchParams requires a Suspense boundary for static prerendering.
+  return (
+    <Suspense fallback={<div className="flex-1 min-h-[40vh]" aria-hidden="true" />}>
+      <TabSwitcher tab={tab} />
+    </Suspense>
+  );
+}

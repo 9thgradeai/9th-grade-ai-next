@@ -69,7 +69,7 @@ export default function DataStorageCard() {
     try {
       const res = await fetch("/api/storage/sync", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ all }) });
       if (!res.ok) throw new Error(await res.text());
-      setMsg({ ok: true, text: t(lang, "সিঙ্ক শুরু হয়েছে — ব্যাকগ্রাউন্ডে চলছে", "Sync started — running in background") });
+      setMsg({ ok: true, text: t(lang, "সিঙ্ক শুরু হয়েছে, ব্যাকগ্রাউন্ডে চলছে", "Sync started, running in background") });
       await fetchStatus();
     } catch (e) {
       setMsg({ ok: false, text: (e as Error).message });
@@ -139,8 +139,8 @@ export default function DataStorageCard() {
           {status.pendingJobs > 0 ? <ArrowsClockwise className="w-4 h-4 animate-spin" /> : <Warning className="w-4 h-4" />}
           <span>
             {status.pendingJobs > 0
-              ? t(lang, `${status.pendingJobs}টি পরিবর্তন সিঙ্ক হচ্ছে — অ্যাপ স্বাভাবিকভাবে ব্যবহার করুন`, `${status.pendingJobs} changes syncing — continue using the app`)
-              : t(lang, `${status.failedJobs}টি সিঙ্ক ব্যর্থ — পুনরায় চেষ্টা হবে`, `${status.failedJobs} syncs failed — will retry`)}
+              ? t(lang, `${status.pendingJobs}টি পরিবর্তন সিঙ্ক হচ্ছে, অ্যাপ স্বাভাবিকভাবে ব্যবহার করুন`, `${status.pendingJobs} changes syncing, continue using the app`)
+              : t(lang, `${status.failedJobs}টি সিঙ্ক ব্যর্থ, পুনরায় চেষ্টা হবে`, `${status.failedJobs} syncs failed, will retry`)}
           </span>
         </div>
       )}

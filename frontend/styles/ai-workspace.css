@@ -515,7 +515,7 @@
 }
 
 /* ── Ninth-Signal Aurora Iris (coach identity tokens) ─────────────
-   The AI coach reads in Aurora Iris — teal → sky → indigo → fuchsia —
+   The AI coach reads in Aurora Iris — teal → sky → blue → mint —
    while tutor/assistant stay in the neutral accent. `.text-aurora-iris` is a
    self-animated sheen; `.aurora-glow` casts the aurora as an outer aura for
    running states. Both respect prefers-reduced-motion for the shine. */
@@ -527,8 +527,8 @@
     90deg,
     #14b8a6,
     #22d3ee,
-    #818cf8,
-    #e879f9,
+    #3b82f6,
+    #6ee7b7,
     #14b8a6
   );
   background-size: 200% auto;
@@ -539,7 +539,7 @@
 }
 .aurora-glow {
   box-shadow:
-    0 0 0 1px color-mix(in srgb, #818cf8 22%, transparent),
+    0 0 0 1px color-mix(in srgb, #3b82f6 22%, transparent),
     0 0 24px color-mix(in srgb, #22d3ee 16%, transparent);
 }
 @media (prefers-reduced-motion: reduce) {
@@ -550,7 +550,7 @@
 
 /* Streaming caret during an AI coach (agent) turn — tinted Aurora Iris. */
 .ai-stream-caret--aurora::after {
-  background: linear-gradient(180deg, #22d3ee, #818cf8, #e879f9);
+  background: linear-gradient(180deg, #22d3ee, #3b82f6, #6ee7b7);
   animation: aurora-caret-blink 1s steps(2) infinite;
 }
 @keyframes aurora-caret-blink {

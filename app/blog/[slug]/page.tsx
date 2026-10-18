@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { CalendarDots, Clock, ArrowLeft } from "@phosphor-icons/react/dist/ssr";
 import PublicShell from "@/components/public/PublicShell";
 import StatusPill from "@/components/ui/StatusPill";
+import Breadcrumbs from "@/components/ui/Breadcrumbs";
+import { pageMeta } from "@/lib/seo";
 import { BLOG_POSTS } from "@/lib/data/blog";
 
 type BlogArticlePageProps = {
@@ -19,19 +21,22 @@ export async function generateMetadata({
 }: BlogArticlePageProps): Promise<Metadata> {
   const { slug } = await params;
   const post = BLOG_POSTS.find((p) => p.slug === slug);
-  if (!post) return { title: "Article — 9Th-Grade AI" };
-  return {
-    title: `${post.title} — 9Th-Grade AI`,
+  if (!post) return { title: "Article | 9Th-Grade AI", robots: { index: false } };
+  return pageMeta({
+    path: `/blog/${slug}`,
+    title: `${post.title} | 9Th-Grade AI`,
     description: post.excerpt,
-    alternates: { canonical: `/blog/${slug}` },
-    openGraph: {
-      title: post.title,
-      description: post.excerpt,
-      type: "article",
-      publishedTime: post.date,
-      images: [{ url: `/blog/${slug}/opengraph-image`, width: 1200, height: 630 }],
-    },
-  };
+    type: "article",
+    publishedTime: post.date,
+    images: [
+      {
+        url: `/blog/${slug}/opengraph-image`,
+        width: 1200,
+        height: 630,
+        alt: `${post.title} | 9Th-Grade AI share image`,
+      },
+    ],
+  });
 }
 
 export default async function BlogArticlePage({
@@ -44,6 +49,14 @@ export default async function BlogArticlePage({
   return (
     <PublicShell>
       <article className="max-w-3xl mx-auto px-4 sm:px-6 py-16 md:py-24">
+        <Breadcrumbs
+          items={[
+            { label: "Home", href: "/" },
+            { label: "Blog", href: "/blog" },
+            { label: post.title },
+          ]}
+          className="mb-8 text-left"
+        />
         <Link
           href="/blog"
           className="inline-flex items-center gap-2 text-sm text-zinc-400 font-mono hover:text-emerald-400 transition-colors mb-8"
@@ -82,7 +95,7 @@ export default async function BlogArticlePage({
 
         <div className="mt-10 text-center">
           <Link
-            href="/login?register=true"
+            href="/register"
             className="glow-border inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-emerald-500 text-zinc-950 font-mono font-semibold text-sm tracking-wide hover:bg-emerald-400 transition-colors shadow-[0_0_24px_rgba(16,185,129,0.3)]"
           >
             Put These Tips Into Practice

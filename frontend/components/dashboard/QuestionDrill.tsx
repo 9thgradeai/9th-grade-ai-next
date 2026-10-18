@@ -21,7 +21,7 @@ export type DrillAnswered = {
  * answer is persisted via /api/practice/submit so progress (and the notebook
  * itself) stays authoritative on the server.
  *
- * The question set is treated as immutable for the component's lifetime — the
+ * The question set is treated as immutable for the component's lifetime, the
  * caller should pass a `key` to remount when a different set is drilled.
  */
 
@@ -79,7 +79,7 @@ export default function QuestionDrill({
   const [timerKey, setTimerKey] = useState(0);
 
   const reportedRef = useRef(false);
-  // Synchronous guard shared by the manual and timer-auto submit paths — both
+  // Synchronous guard shared by the manual and timer-auto submit paths, both
   // hit the non-idempotent /api/practice/submit, so a timer expiry racing a
   // tap (or a mobile double-tap) must never fire the request twice.
   const submitInFlightRef = useRef(false);
@@ -189,7 +189,7 @@ export default function QuestionDrill({
     const score = Math.round((correctCount / questions.length) * 100);
     return (
       <div className="glass-card rounded-2xl border border-terminal-border p-8 text-center space-y-4">
-        <h3 className="text-lg font-bold text-[var(--text-primary)] font-mono">{title} — শেষ</h3>
+        <h3 className="text-lg font-bold text-[var(--text-primary)] font-mono">{title}, শেষ</h3>
         <div className={`text-3xl font-bold font-mono ${score >= 60 ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-warning)]"}`}>
           {score}%
         </div>
@@ -197,7 +197,7 @@ export default function QuestionDrill({
           {correctCount}/{questions.length} ঠিক
         </p>
         {syncFailed && (
-          <p role="status" className="text-xs font-mono text-[var(--dashboard-warning)]">অফলাইন — কিছু অগ্রগতি সংরক্ষণ হয়নি (unsynced)।</p>
+          <p role="status" className="text-xs font-mono text-[var(--dashboard-warning)]">অফলাইন, কিছু অগ্রগতি সংরক্ষণ হয়নি (unsynced)।</p>
         )}
         <div className="text-left space-y-2 max-h-64 overflow-y-auto">
           {answered.map((a, i) => (
@@ -321,7 +321,7 @@ export default function QuestionDrill({
               <TrendUp className="w-5 h-5 text-[var(--dashboard-primary)]" />
               <div>
                 <p className="text-sm font-mono font-bold text-[var(--dashboard-primary)]">Mastered!</p>
-                <p className="text-xs font-mono text-[var(--accent)]/80">এই প্রশ্নটি এখন আয়ত্ত — চমৎকার!</p>
+                <p className="text-xs font-mono text-[var(--accent)]/80">এই প্রশ্নটি এখন আয়ত্ত, চমৎকার!</p>
               </div>
             </>
           ) : isCorrect ? (
@@ -329,7 +329,7 @@ export default function QuestionDrill({
               <TrendUp className="w-5 h-5 text-[var(--dashboard-primary)]" />
               <div>
                 <p className="text-sm font-mono font-bold text-[var(--dashboard-primary)]">Improved!</p>
-                <p className="text-xs font-mono text-[var(--accent)]/80">সঠিক উত্তর — অগ্রগতি হয়েছে।</p>
+                <p className="text-xs font-mono text-[var(--accent)]/80">সঠিক উত্তর, অগ্রগতি হয়েছে।</p>
               </div>
             </>
           ) : (
@@ -337,7 +337,7 @@ export default function QuestionDrill({
               <XCircle className="w-5 h-5 text-[var(--dashboard-warning)]" />
               <div>
                 <p className="text-sm font-mono font-bold text-[var(--dashboard-warning)]">Keep Working On It</p>
-                <p className="text-xs font-mono text-[var(--warning)]/80">ভুল হয়েছে — ব্যাখ্যা পড়ে আবার চেষ্টা করুন।</p>
+                <p className="text-xs font-mono text-[var(--warning)]/80">ভুল হয়েছে, ব্যাখ্যা পড়ে আবার চেষ্টা করুন।</p>
               </div>
             </>
           )}

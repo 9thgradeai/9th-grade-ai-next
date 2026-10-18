@@ -8,7 +8,7 @@ import { ThemeToggle } from "@/lib/dashboard-theme-ctx";
 import LanguageToggle from "@/components/ui/LanguageToggle";
 
 /** BCS / Bangladesh Bank quick switch. Lives in the dashboard
- *  header on ≥sm and in the mobile nav drawer below that — never
+ *  header on ≥sm and in the mobile nav drawer below that, never
  *  both, so the header row cannot overflow phone widths. */
 export function GlobalEcosystemToggle() {
   const { ecosystem, setEcosystem } = useEcosystem();
@@ -39,7 +39,7 @@ interface HeaderActionsProps {
 }
 
 /** Right-side action cluster of the dashboard top header. The
- *  ecosystem toggle (~116px) drops below `sm` — on 320–375px
+ *  ecosystem toggle (~116px) drops below `sm`, on 320–375px
  *  phones the row only has room for hamburger, logo, search,
  *  notifications, theme and language; without this the language
  *  button was pushed off the right edge. */

@@ -28,7 +28,7 @@ export default function SubjectUniverseSection() {
         <p className="sr-only">
           Subjects covered: Bangla, English, Mathematics, Bangladesh Affairs,
           International Affairs, General Science, ICT, Mental Ability, and Current
-          Affairs — all connected to a shared performance model.
+          Affairs, all connected to a shared performance model.
         </p>
       </div>
     </section>

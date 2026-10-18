@@ -43,7 +43,7 @@ export default function TodayPlanCard({ tasks, onToggle, onTaskAdded }: Props) {
       if (onTaskAdded) onTaskAdded();
       else window.dispatchEvent(new CustomEvent("ai:refresh-home"));
     } catch {
-      toast.error(t(lang, "কাজ যোগ করা যায়নি — আবার চেষ্টা করুন", "Could not add task — please try again"));
+      toast.error(t(lang, "কাজ যোগ করা যায়নি, আবার চেষ্টা করুন", "Could not add task, please try again"));
     } finally {
       setAdding(false);
     }

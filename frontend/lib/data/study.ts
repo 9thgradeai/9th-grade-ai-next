@@ -13,7 +13,7 @@ export const STUDY_PLAN: StudyPlanDay[] = [
     tasks: [
       {
         id: "task-1",
-        title: "বাংলা ভাষা — Vocabulary Drill",
+        title: "বাংলা ভাষা, Vocabulary Drill",
         subject: "বাংলা ভাষা ও সাহিত্য",
         duration: 45,
         completed: false,
@@ -22,7 +22,7 @@ export const STUDY_PLAN: StudyPlanDay[] = [
       },
       {
         id: "task-2",
-        title: "English — Reading Comprehension",
+        title: "English, Reading Comprehension",
         subject: "English Language and Literature",
         duration: 40,
         completed: false,
@@ -31,7 +31,7 @@ export const STUDY_PLAN: StudyPlanDay[] = [
       },
       {
         id: "task-3",
-        title: "গাণিতিক যুক্তি — Algebra Drill",
+        title: "গাণিতিক যুক্তি, Algebra Drill",
         subject: "গাণিতিক যুক্তি",
         duration: 50,
         completed: false,
@@ -40,7 +40,7 @@ export const STUDY_PLAN: StudyPlanDay[] = [
       },
       {
         id: "task-4",
-        title: "Quick Revision — Flashcards",
+        title: "Quick Revision, Flashcards",
         subject: "সাধারণ বিজ্ঞান",
         duration: 25,
         completed: false,
@@ -66,7 +66,7 @@ export const STUDY_PLAN: StudyPlanDay[] = [
     tasks: [
       {
         id: "task-6",
-        title: "বাংলাদেশ বিষয়াবলি — Liberation War",
+        title: "বাংলাদেশ বিষয়াবলি, Liberation War",
         subject: "বাংলাদেশ বিষয়াবলি",
         duration: 50,
         completed: false,
@@ -75,7 +75,7 @@ export const STUDY_PLAN: StudyPlanDay[] = [
       },
       {
         id: "task-7",
-        title: "আন্তর্জাতিক — UN & Global Organizations",
+        title: "আন্তর্জাতিক, UN & Global Organizations",
         subject: "আন্তর্জাতিক বিষয়াবলী",
         duration: 45,
         completed: false,
@@ -84,7 +84,7 @@ export const STUDY_PLAN: StudyPlanDay[] = [
       },
       {
         id: "task-8",
-        title: "Computer — Networking Basics",
+        title: "Computer, Networking Basics",
         subject: "কম্পিউটার ও তথ্য প্রযুক্তি",
         duration: 40,
         completed: false,
@@ -93,7 +93,7 @@ export const STUDY_PLAN: StudyPlanDay[] = [
       },
       {
         id: "task-9",
-        title: "Mock Test — Full Length",
+        title: "Mock Test, Full Length",
         subject: "Mixed",
         duration: 60,
         completed: false,
@@ -110,7 +110,7 @@ export const STUDY_PLAN: StudyPlanDay[] = [
     tasks: [
       {
         id: "task-10",
-        title: "Physics — Motion & Forces",
+        title: "Physics, Motion & Forces",
         subject: "সাধারণ বিজ্ঞান",
         duration: 50,
         completed: false,
@@ -119,7 +119,7 @@ export const STUDY_PLAN: StudyPlanDay[] = [
       },
       {
         id: "task-11",
-        title: "Biology — Cell Structure",
+        title: "Biology, Cell Structure",
         subject: "সাধারণ বিজ্ঞান",
         duration: 40,
         completed: false,
@@ -128,7 +128,7 @@ export const STUDY_PLAN: StudyPlanDay[] = [
       },
       {
         id: "task-12",
-        title: "Chemistry — Periodic Table",
+        title: "Chemistry, Periodic Table",
         subject: "সাধারণ বিজ্ঞান",
         duration: 40,
         completed: false,
@@ -158,7 +158,7 @@ export const MOCK_TEST_QUESTIONS: Record<string, MockQuestion[]> = {
       question: "নিচের কোনটি শুদ্ধ বাক্য?",
       options: ["আমি ক্রিকেট খেলছি।", "আমি খেলছি ক্রিকেট।", "আমি ক্রিকেট খেলে।", "আমি খেলছি ক্রিকেট।"],
       correctAnswer: "আমি ক্রিকেট খেলছি।",
-      explanation: "ক্রিকেট খেলছি — correct verb form.",
+      explanation: "ক্রিকেট খেলছি, correct verb form.",
     },
     {
       id: "mock-bn-2",
@@ -398,28 +398,28 @@ export const SOLVER_EXAMPLES = [
 export const OFFLINE_PACKS = [
   {
     id: "pack-1",
-    name: "বাংলা ভাষা — Chapter 1-5",
+    name: "বাংলা ভাষা, Chapter 1-5",
     size: "12 MB",
     downloaded: true,
     subject: "বাংলা ভাষা ও সাহিত্য",
   },
   {
     id: "pack-2",
-    name: "English — Grammar Essentials",
+    name: "English, Grammar Essentials",
     size: "8 MB",
     downloaded: false,
     subject: "English Language and Literature",
   },
   {
     id: "pack-3",
-    name: "বাংলাদেশ বিষয়াবলি — Liberation War",
+    name: "বাংলাদেশ বিষয়াবলি, Liberation War",
     size: "15 MB",
     downloaded: true,
     subject: "বাংলাদেশ বিষয়াবলি",
   },
   {
     id: "pack-4",
-    name: "সাধারণ বিজ্ঞান — Physics",
+    name: "সাধারণ বিজ্ঞান, Physics",
     size: "20 MB",
     downloaded: false,
     subject: "সাধারণ বিজ্ঞান",

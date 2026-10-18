@@ -10,7 +10,7 @@ import AiLogo from "@/components/ui/AiLogo";
 
 export type NavIcon = ComponentType<{ className?: string }>;
 
-// Bespoke 9Th-Grade AI emblem as a menu glyph — inherits the tile colour via
+// Bespoke 9Th-Grade AI emblem as a menu glyph, inherits the tile colour via
 // currentColor so it renders like the other Phosphor nav icons.
 const AiGlyph = ({ className }: { className?: string }) =>
   createElement(AiLogo, { solid: false, className });
@@ -22,14 +22,14 @@ export type MegaMenu = {
   show?: "always" | "auth" | "guest";
 };
 
-// VALIDATED against app/**/page.tsx and /dashboard?tab=* (TABS ids: home,study-planner,practice,flashcards,question-bank,progress,mistakes,settings)
+// VALIDATED against app/**/page.tsx and /dashboard/* (TABS ids: home,study-planner,practice,flashcards,question-bank,progress,mistakes,settings)
 export const NAVIGATION: MegaMenu[] = [
   {
     id: "learn", label: "Learn", labelBn: "শিখুন", show: "always",
     groups: [
       { label: "Library", labelBn: "লাইব্রেরি", items: [
-        { label: "Question Bank", labelBn: "প্রশ্নব্যাংক", href: "/dashboard?tab=question-bank", icon: Books, desc: "10k+ syllabus-aligned questions", descBn: "১০ হাজার+ সিলেবাসভিত্তিক প্রশ্ন", auth: "any" },
-        { label: "Flashcards", labelBn: "ফ্ল্যাশকার্ড", href: "/dashboard?tab=flashcards", icon: Brain, desc: "Spaced repetition", descBn: "বিরতিমূলক পুনরাবৃত্তি", auth: "any" },
+        { label: "Question Bank", labelBn: "প্রশ্নব্যাংক", href: "/dashboard/question-bank", icon: Books, desc: "10k+ syllabus-aligned questions", descBn: "১০ হাজার+ সিলেবাসভিত্তিক প্রশ্ন", auth: "any" },
+        { label: "Flashcards", labelBn: "ফ্ল্যাশকার্ড", href: "/dashboard/flashcards", icon: Brain, desc: "Spaced repetition", descBn: "বিরতিমূলক পুনরাবৃত্তি", auth: "any" },
         { label: "Subjects", labelBn: "বিষয়সমূহ", href: "/#syllabus", icon: GridFour, desc: "BCS syllabus map", descBn: "বিসিএস সিলেবাস ম্যাপ" },
         { label: "Archive", labelBn: "আর্কাইভ", href: "/archive", icon: FileText, desc: "Previous year papers (1982–2026)", descBn: "বিগত বছরের প্রশ্ন (১৯৮২–২০২৬)" },
       ]},
@@ -40,63 +40,63 @@ export const NAVIGATION: MegaMenu[] = [
         { label: "Blog & Tips", labelBn: "ব্লগ ও টিপস", href: "/blog", icon: Newspaper, desc: "Strategy & motivation", descBn: "কৌশল ও অনুপ্রেরণা" },
       ]},
     ],
-    highlight: { title: "Learn smarter", titleBn: "স্মার্টভাবে শিখুন", desc: "Syllabus-aligned for BCS, Bank & Teacher recruitment — Bangla + English.", descBn: "বিসিএস, ব্যাংক ও শিক্ষক নিয়োগের সিলেবাসভিত্তিক — বাংলা + ইংরেজি।", href: "/dashboard?tab=question-bank", cta: "Open Question Bank", ctaBn: "প্রশ্নব্যাংক খুলুন" },
+    highlight: { title: "Learn smarter", titleBn: "স্মার্টভাবে শিখুন", desc: "Syllabus-aligned for BCS, Bank & Teacher recruitment, Bangla + English.", descBn: "বিসিএস, ব্যাংক ও শিক্ষক নিয়োগের সিলেবাসভিত্তিক, বাংলা + ইংরেজি।", href: "/dashboard/question-bank", cta: "Open Question Bank", ctaBn: "প্রশ্নব্যাংক খুলুন" },
   },
   {
     id: "practice", label: "Practice", labelBn: "প্র্যাকটিস", show: "always",
     groups: [
       { label: "Practice", labelBn: "অনুশীলন", items: [
-        { label: "Quick Practice", labelBn: "দ্রুত অনুশীলন", href: "/dashboard?tab=practice&mode=quick", icon: LightningA, desc: "Start instantly", descBn: "এখনই শুরু করুন" },
-        { label: "Question Drill", labelBn: "প্রশ্ন ড্রিল", href: "/dashboard?tab=question-bank&view=drill", icon: BookOpen, desc: "Topic-wise drill", descBn: "টপিকভিত্তিক ড্রিল" },
-        { label: "Study Planner", labelBn: "স্টাডি প্ল্যানার", href: "/dashboard?tab=study-planner", icon: Calendar, desc: "Personalized schedule", descBn: "ব্যক্তিগত রুটিন" },
+        { label: "Quick Practice", labelBn: "দ্রুত অনুশীলন", href: "/dashboard/practice?mode=quick", icon: LightningA, desc: "Start instantly", descBn: "এখনই শুরু করুন" },
+        { label: "Question Drill", labelBn: "প্রশ্ন ড্রিল", href: "/dashboard/question-bank?view=drill", icon: BookOpen, desc: "Topic-wise drill", descBn: "টপিকভিত্তিক ড্রিল" },
+        { label: "Study Planner", labelBn: "স্টাডি প্ল্যানার", href: "/dashboard/study-planner", icon: Calendar, desc: "Personalized schedule", descBn: "ব্যক্তিগত রুটিন" },
       ]},
       { label: "Review", labelBn: "রিভিউ", items: [
-        { label: "Mistakes", labelBn: "ভুলসমূহ", href: "/dashboard?tab=mistakes", icon: Target, desc: "Wrong-answer notebook", descBn: "ভুলের নোটবুক" },
-        { label: "Progress", labelBn: "অগ্রগতি", href: "/dashboard?tab=progress", icon: ChartBar, desc: "Accuracy & weak areas", descBn: "নির্ভুলতা ও দুর্বল টপিক" },
+        { label: "Mistakes", labelBn: "ভুলসমূহ", href: "/dashboard/mistakes", icon: Target, desc: "Wrong-answer notebook", descBn: "ভুলের নোটবুক" },
+        { label: "Progress", labelBn: "অগ্রগতি", href: "/dashboard/progress", icon: ChartBar, desc: "Accuracy & weak areas", descBn: "নির্ভুলতা ও দুর্বল টপিক" },
       ]},
     ],
-    highlight: { title: "Adaptive practice", titleBn: "অভিযোজিত অনুশীলন", desc: "AI prioritizes your weak topics so every minute counts.", descBn: "এআই আপনার দুর্বল টপিককে অগ্রাধিকার দেয়।", href: "/dashboard?tab=practice", cta: "Start Practice", ctaBn: "অনুশীলন শুরু করুন" },
+    highlight: { title: "Adaptive practice", titleBn: "অভিযোজিত অনুশীলন", desc: "AI prioritizes your weak topics so every minute counts.", descBn: "এআই আপনার দুর্বল টপিককে অগ্রাধিকার দেয়।", href: "/dashboard/practice", cta: "Start Practice", ctaBn: "অনুশীলন শুরু করুন" },
   },
   {
     id: "exams", label: "Exams", labelBn: "পরীক্ষা", show: "always",
     groups: [
       { label: "Exams", labelBn: "পরীক্ষা", items: [
-        { label: "Mock Tests", labelBn: "মক টেস্ট", href: "/dashboard?tab=practice&mode=mock", icon: Trophy, desc: "Full-length timed exams", descBn: "পূর্ণাঙ্গ সময় পরীক্ষা" },
+        { label: "Mock Tests", labelBn: "মক টেস্ট", href: "/dashboard/practice?mode=mock", icon: Trophy, desc: "Full-length timed exams", descBn: "পূর্ণাঙ্গ সময় পরীক্ষা" },
         { label: "Exam Tracks", labelBn: "পরীক্ষার ট্র্যাক", href: "/tracks", icon: GraduationCap, desc: "BCS / Bank / Teacher", descBn: "বিসিএস / ব্যাংক / শিক্ষক" },
         { label: "Archive Papers", labelBn: "আর্কাইভ প্রশ্ন", href: "/archive", icon: FileText, desc: "1982 – 2026 collection", descBn: "১৯৮২–২০২৬ সংগ্রহ" },
       ]},
       { label: "Results", labelBn: "ফলাফল", items: [
-        { label: "Analytics", labelBn: "বিশ্লেষণ", href: "/dashboard?tab=progress", icon: TrendUp, desc: "Scores & analytics", descBn: "স্কোর ও বিশ্লেষণ" },
+        { label: "Analytics", labelBn: "বিশ্লেষণ", href: "/dashboard/progress", icon: TrendUp, desc: "Scores & analytics", descBn: "স্কোর ও বিশ্লেষণ" },
       ]},
     ],
-    highlight: { title: "Exam command center", titleBn: "পরীক্ষা কমান্ড সেন্টার", desc: "Real pressure — timer, negative marking, instant review.", descBn: "আসল চাপ — টাইমার, নেগেটিভ মার্কিং, তাৎক্ষণিক রিভিউ।", href: "/tracks", cta: "Browse Tracks", ctaBn: "ট্র্যাক দেখুন" },
+    highlight: { title: "Exam command center", titleBn: "পরীক্ষা কমান্ড সেন্টার", desc: "Real pressure, timer, negative marking, instant review.", descBn: "আসল চাপ, টাইমার, নেগেটিভ মার্কিং, তাৎক্ষণিক রিভিউ।", href: "/tracks", cta: "Browse Tracks", ctaBn: "ট্র্যাক দেখুন" },
   },
   {
     id: "ai", label: "AI", labelBn: "এআই", show: "always",
     groups: [
       { label: "AI Tools", labelBn: "এআই টুলস", items: [
-        { label: "AI Tutor", labelBn: "এআই টিউটর", href: "/dashboard?tab=practice&mode=tutor", icon: AiGlyph, desc: "Bilingual doubt solving", descBn: "দ্বিভাষিক সমস্যা সমাধান" },
-        { label: "AI Solver", labelBn: "এআই সলভার", href: "/dashboard?tab=practice&mode=solver", icon: Pen, desc: "Explain any question", descBn: "যেকোনো প্রশ্নের ব্যাখ্যা" },
-        { label: "Voice Tutor", labelBn: "ভয়েস টিউটর", href: "/dashboard?tab=practice&mode=voice", icon: Question, desc: "Speak & learn", descBn: "বলে শিখুন" },
+        { label: "AI Tutor", labelBn: "এআই টিউটর", href: "/dashboard/practice?mode=tutor", icon: AiGlyph, desc: "Bilingual doubt solving", descBn: "দ্বিভাষিক সমস্যা সমাধান" },
+        { label: "AI Solver", labelBn: "এআই সলভার", href: "/dashboard/practice?mode=solver", icon: Pen, desc: "Explain any question", descBn: "যেকোনো প্রশ্নের ব্যাখ্যা" },
+        { label: "Voice Tutor", labelBn: "ভয়েস টিউটর", href: "/dashboard/practice?mode=voice", icon: Question, desc: "Speak & learn", descBn: "বলে শিখুন" },
       ]},
       { label: "Workspace", labelBn: "ওয়ার্কস্পেস", items: [
-        { label: "Dashboard Home", labelBn: "ড্যাশবোর্ড", href: "/dashboard?tab=home", icon: House, desc: "AI coaching & insights", descBn: "এআই কোচিং ও ইনসাইট" },
-        { label: "Planner", labelBn: "প্ল্যানার", href: "/dashboard?tab=study-planner", icon: Calendar, desc: "AI study plan", descBn: "এআই স্টাডি প্ল্যান" },
+        { label: "Dashboard Home", labelBn: "ড্যাশবোর্ড", href: "/dashboard/home", icon: House, desc: "AI coaching & insights", descBn: "এআই কোচিং ও ইনসাইট" },
+        { label: "Planner", labelBn: "প্ল্যানার", href: "/dashboard/study-planner", icon: Calendar, desc: "AI study plan", descBn: "এআই স্টাডি প্ল্যান" },
       ]},
     ],
-    highlight: { title: "AI Learning Engine", titleBn: "এআই লার্নিং ইঞ্জিন", desc: "Explanations, solving, tutoring & personalized guidance — in Bangla + English.", descBn: "ব্যাখ্যা, সমাধান, টিউটরিং ও ব্যক্তিগত গাইডলাইন — বাংলা + ইংরেজিতে।", href: "/dashboard?tab=home", cta: "Open AI Coach", ctaBn: "এআই কোচ খুলুন" },
+    highlight: { title: "AI Learning Engine", titleBn: "এআই লার্নিং ইঞ্জিন", desc: "Explanations, solving, tutoring & personalized guidance, in Bangla + English.", descBn: "ব্যাখ্যা, সমাধান, টিউটরিং ও ব্যক্তিগত গাইডলাইন, বাংলা + ইংরেজিতে।", href: "/dashboard/home", cta: "Open AI Coach", ctaBn: "এআই কোচ খুলুন" },
   },
   {
     id: "progress", label: "Progress", labelBn: "অগ্রগতি", show: "auth",
     groups: [
       { label: "Analytics", labelBn: "বিশ্লেষণ", items: [
-        { label: "Overview", labelBn: "সারসংক্ষেপ", href: "/dashboard?tab=progress", icon: ChartBar, desc: "Performance overview", descBn: "পারফরম্যান্স সারসংক্ষেপ" },
-        { label: "Planner", labelBn: "প্ল্যানার", href: "/dashboard?tab=study-planner", icon: Calendar, desc: "Streaks & schedule", descBn: "স্ট্রিক ও রুটিন" },
-        { label: "Mistakes", labelBn: "ভুলসমূহ", href: "/dashboard?tab=mistakes", icon: TrendUp, desc: "Weak-area analysis", descBn: "দুর্বলতা বিশ্লেষণ" },
-        { label: "Bookmarks", labelBn: "বুকমার্ক", href: "/dashboard?tab=question-bank&view=bookmarks", icon: Bookmark, desc: "Saved questions", descBn: "সংরক্ষিত প্রশ্ন" },
+        { label: "Overview", labelBn: "সারসংক্ষেপ", href: "/dashboard/progress", icon: ChartBar, desc: "Performance overview", descBn: "পারফরম্যান্স সারসংক্ষেপ" },
+        { label: "Planner", labelBn: "প্ল্যানার", href: "/dashboard/study-planner", icon: Calendar, desc: "Streaks & schedule", descBn: "স্ট্রিক ও রুটিন" },
+        { label: "Mistakes", labelBn: "ভুলসমূহ", href: "/dashboard/mistakes", icon: TrendUp, desc: "Weak-area analysis", descBn: "দুর্বলতা বিশ্লেষণ" },
+        { label: "Bookmarks", labelBn: "বুকমার্ক", href: "/dashboard/question-bank?view=bookmarks", icon: Bookmark, desc: "Saved questions", descBn: "সংরক্ষিত প্রশ্ন" },
       ]},
     ],
-    highlight: { title: "Know your edge", titleBn: "আপনার অবস্থান জানুন", desc: "Accuracy, subject mastery & weak topics — all in one view.", descBn: "নির্ভুলতা, বিষয় দক্ষতা ও দুর্বল টপিক — এক নজরে।", href: "/dashboard?tab=progress", cta: "View Progress", ctaBn: "অগ্রগতি দেখুন" },
+    highlight: { title: "Know your edge", titleBn: "আপনার অবস্থান জানুন", desc: "Accuracy, subject mastery & weak topics, all in one view.", descBn: "নির্ভুলতা, বিষয় দক্ষতা ও দুর্বল টপিক, এক নজরে।", href: "/dashboard/progress", cta: "View Progress", ctaBn: "অগ্রগতি দেখুন" },
   },
   {
     id: "more", label: "More", labelBn: "আরও", show: "always",
@@ -122,7 +122,7 @@ export const NAVIGATION: MegaMenu[] = [
         { label: "GitHub", labelBn: "গিটহাব", href: "https://github.com/9thgradeai/9th-grade-ai-next", icon: FileText, desc: "Open source", descBn: "ওপেন সোর্স", external: true },
       ]},
     ],
-    highlight: { title: "Explore 9Th-Grade AI", titleBn: "9Th-Grade AI ঘুরে দেখুন", desc: "Free & open-source exam prep for Bangladesh — built with aspirants.", descBn: "বাংলাদেশের জন্য ফ্রি ও ওপেন-সোর্স পরীক্ষা প্রস্তুতি।", href: "/about", cta: "About us", ctaBn: "আমাদের সম্পর্কে" },
+    highlight: { title: "Explore 9Th-Grade AI", titleBn: "9Th-Grade AI ঘুরে দেখুন", desc: "Free & open-source exam prep for Bangladesh, built with aspirants.", descBn: "বাংলাদেশের জন্য ফ্রি ও ওপেন-সোর্স পরীক্ষা প্রস্তুতি।", href: "/about", cta: "About us", ctaBn: "আমাদের সম্পর্কে" },
   },
 ];
 
@@ -134,10 +134,10 @@ export function getCommands(): Command[] {
   }
   cmds.push(
     { label: "Dashboard", href: "/dashboard", keywords: "dashboard home", group: "Go" },
-    { label: "Dashboard — Home", href: "/dashboard?tab=home", keywords: "home dashboard", group: "Go" },
+    { label: "Dashboard, Home", href: "/dashboard/home", keywords: "home dashboard", group: "Go" },
     { label: "Login", href: "/login", keywords: "login sign in", group: "Go" },
-    { label: "Get Started", href: "/login?register=true", keywords: "register signup", group: "Go" },
-    { label: "Settings", href: "/dashboard?tab=settings", keywords: "settings preferences", group: "Go" },
+    { label: "Get Started", href: "/register", keywords: "register signup", group: "Go" },
+    { label: "Settings", href: "/dashboard/settings", keywords: "settings preferences", group: "Go" },
   );
   const seen = new Set<string>();
   return cmds.filter(c => { const k = c.label + c.href; if (seen.has(k)) return false; seen.add(k); return true; });

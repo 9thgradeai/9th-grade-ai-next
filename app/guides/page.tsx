@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import { BookmarkSimple, ArrowUpRight, StackSimple, FileText, GraduationCap, Calculator, Globe } from "@phosphor-icons/react/dist/ssr";
 import PublicShell from "@/components/public/PublicShell";
@@ -6,12 +7,12 @@ import PageHero from "@/components/public/PageHero";
 import SectionHeading from "@/components/ui/SectionHeading";
 import StatusPill from "@/components/ui/StatusPill";
 
-export const metadata: Metadata = {
-  alternates: { canonical: "/guides" },
-  title: "Study Guides — 9Th-Grade AI",
+export const metadata: Metadata = pageMeta({
+  path: "/guides",
+  title: "Study Guides | 9Th-Grade AI",
   description:
     "Complete study guides and roadmaps for BCS, Bank, Teacher Recruitment, and other competitive exams in Bangladesh.",
-};
+});
 
 const guides = [
   {
@@ -27,7 +28,7 @@ const guides = [
     title: "Bank Officer Exam Blueprint",
     level: "INTERMEDIATE",
     description:
-      "AD, PO, Cash, and General officer papers decoded — section-wise marks, negative-marking strategy, and a speed-building math plan.",
+      "AD, PO, Cash, and General officer papers decoded, section-wise marks, negative-marking strategy, and a speed-building math plan.",
     sections: ["Paper pattern breakdown", "Speed-math drills", "Time management tactics"],
   },
   {
@@ -43,7 +44,7 @@ const guides = [
     title: "English for Govt Exams",
     level: "ALL LEVELS",
     description:
-      "Grammar, vocabulary, and literature essentials for BCS and bank papers — from parts of speech to literary periods, with spaced-repetition decks.",
+      "Grammar, vocabulary, and literature essentials for BCS and bank papers, from parts of speech to literary periods, with spaced-repetition decks.",
     sections: ["Grammar mastery path", "Vocabulary building", "Literature timeline"],
   },
   {
@@ -51,7 +52,7 @@ const guides = [
     title: "Math & Mental Ability Formula Sheet",
     level: "ALL LEVELS",
     description:
-      "The complete formula reference for mathematical reasoning and mental ability — from ratio and percentage to set theory and probability.",
+      "The complete formula reference for mathematical reasoning and mental ability, from ratio and percentage to set theory and probability.",
     sections: ["Topic-wise formulas", "Worked examples", "Shortcut techniques"],
   },
   {
@@ -59,7 +60,7 @@ const guides = [
     title: "Mock Test Strategy Playbook",
     level: "ADVANCED",
     description:
-      "How to design a mock-test schedule that compounds — the three-pass review system, difficulty scaling, and how to convert analytics into action.",
+      "How to design a mock-test schedule that compounds, the three-pass review system, difficulty scaling, and how to convert analytics into action.",
     sections: ["Test scheduling", "Review system", "Analytics to action"],
   },
 ];
@@ -71,7 +72,7 @@ export default function GuidesPage() {
         eyebrow="STUDY GUIDES"
         title="Roadmaps That"
         highlight="Remove the Guesswork"
-        description="Every guide turns an overwhelming syllabus into a clear, ordered plan — what to study, in what order, and how to measure progress."
+        description="Every guide turns an overwhelming syllabus into a clear, ordered plan, what to study, in what order, and how to measure progress."
         actions={[{ href: "/dashboard?tab=study-planner", label: "Open Study Planner" }]}
       />
 

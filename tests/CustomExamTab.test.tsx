@@ -289,7 +289,7 @@ describe("CustomExamTab — results review colors + jump tiles", () => {
     expect(screen.getByRole("button", { name: "একটি করে" })).toHaveAttribute("aria-pressed", "true");
 
     // Palette jump mounts Q3 directly.
-    fireEvent.click(screen.getByRole("button", { name: "প্রশ্ন 3 — বাকি" }));
+    fireEvent.click(screen.getByRole("button", { name: "প্রশ্ন 3, বাকি" }));
     expect(await screen.findByText("প্রশ্ন ৩")).toBeInTheDocument();
     expect(screen.queryByText("প্রশ্ন ১")).toBeNull();
 

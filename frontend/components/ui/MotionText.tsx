@@ -21,7 +21,7 @@ const wordVariants: Variants = {
 
 /**
  * Cinematic word-reveal heading. Words rise out of individual overflow
- * masks with a shared ease curve — one idea, executed quietly.
+ * masks with a shared ease curve, one idea, executed quietly.
  * Reduced motion renders the plain text immediately.
  * `wordClassName` is applied to each word span (and the plain fallback),
  * so per-word paint styles like gradient text survive the transform.

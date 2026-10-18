@@ -5,7 +5,7 @@ import RichText from "@/components/ui/RichText";
 export type OptionRowState = {
   selected: boolean;
   locked: boolean;
-  /** Null until answers are revealed — then colors the row. */
+  /** Null until answers are revealed, then colors the row. */
   verdict: "correct" | "wrong" | "dimmed" | null;
 };
 

@@ -40,7 +40,7 @@ function TrendBadge({
   const dir = delta > 0 ? "up" : delta < 0 ? "down" : "flat";
   // up-good (accuracy, volume): up = success, down = danger.
   // down-good (study time): up = neutral info (more effort, fine), down =
-  // muted (less time can mean efficiency — never an alarm).
+  // muted (less time can mean efficiency, never an alarm).
   const color =
     dir === "flat"
       ? "var(--dashboard-text-muted)"
@@ -132,7 +132,7 @@ export default function PreparationPulse({ intelligence }: PreparationPulseProps
   const overall = intelligence?.overall;
   const period = intelligence?.period;
   const hasData = (overall?.totalAttempts ?? 0) > 0;
-  // Bar height-in runs on first mount only — never on revalidation.
+  // Bar height-in runs on first mount only, never on revalidation.
   const animateBars = useFirstMountAnimate(fullMotion && hasData);
 
   if (!hasData || !overall || !period) {
@@ -144,8 +144,8 @@ export default function PreparationPulse({ intelligence }: PreparationPulseProps
         <p className="text-xs mt-1 max-w-md mx-auto" style={{ color: "var(--dashboard-text-muted)" }}>
           {t(
             lang,
-            "১০টি প্রশ্ন দিয়ে শুরু করুন — প্রথম ওয়ার্ম-আপেই আপনার পালস তৈরি হবে।",
-            "Start with 10 questions — your pulse appears after the first warm-up.",
+            "১০টি প্রশ্ন দিয়ে শুরু করুন, প্রথম ওয়ার্ম-আপেই আপনার পালস তৈরি হবে।",
+            "Start with 10 questions, your pulse appears after the first warm-up.",
           )}
         </p>
         <button

@@ -1,0 +1,808 @@
+﻿Section 1: Network Fundamentals — LAN, MAN, WAN, PAN, Intranet and Internet (1–25)
+1. Which of the following best describes a computer network?
+A. A collection of computers that operate independently B. A group of interconnected devices that communicate and share resources C. A single computer with multiple processors D. A collection of software applications installed on one computer
+Correct Answer: B. A group of interconnected devices that communicate and share resources
+Explanation: A computer network connects devices to exchange data and share resources such as files, printers, applications, and internet connections. A network may be wired, wireless, or a combination of both.
+2. Which type of network is generally used within a small geographical area, such as an office or computer laboratory?
+A. WAN B. MAN C. LAN D. PAN
+Correct Answer: C. LAN
+Explanation: A Local Area Network (LAN) connects devices within a limited area, such as a home, office, school, or bank branch. LANs are commonly used for sharing files, printers, and local applications.
+3. A network connecting multiple branches of a commercial bank across different divisions of Bangladesh is most likely a:
+A. PAN B. WAN C. LAN D. SAN
+Correct Answer: B. WAN
+Explanation: A Wide Area Network (WAN) spans large geographical areas and connects networks in different cities, regions, or countries. Banks commonly use WANs to connect geographically dispersed branches to centralized banking systems.
+4. Which network type is typically designed to cover a city or metropolitan area?
+A. PAN B. LAN C. MAN D. SAN
+Correct Answer: C. MAN
+Explanation: A Metropolitan Area Network (MAN) connects networks across a city or metropolitan region. Its coverage is generally larger than that of a LAN but smaller than that of a WAN.
+5. Which of the following is the best example of a Personal Area Network (PAN)?
+A. A nationwide banking network B. A city's municipal network C. A university's campus-wide network D. A smartphone connected to a smartwatch through Bluetooth
+Correct Answer: D. A smartphone connected to a smartwatch through Bluetooth
+Explanation: A PAN connects personal devices over a relatively short distance. Bluetooth connections between smartphones, smartwatches, wireless earbuds, and similar devices are common examples.
+6. What is the primary purpose of an intranet?
+A. To provide unrestricted access to all internet users B. To enable an organization to share information privately among authorized users C. To replace all computer operating systems D. To connect only computers located in different countries
+Correct Answer: B. To enable an organization to share information privately among authorized users
+Explanation: An intranet is a private network that uses internet technologies to share internal information and services. A bank may use an intranet for internal notices, employee resources, policies, and operational applications.
+7. Which statement correctly distinguishes the internet from an intranet?
+A. The internet is a global network of networks, while an intranet is restricted to an organization or authorized users. B. An intranet must always use wireless connections, whereas the internet must use cables. C. The internet is limited to one organization, whereas an intranet is global. D. An intranet cannot use web browsers.
+Correct Answer: A. The internet is a global network of networks, while an intranet is restricted to an organization or authorized users.
+Explanation: The internet is a worldwide system of interconnected networks. An intranet is a private organizational environment, although it may use the same technologies and protocols as public websites.
+8. An organization allows its approved suppliers to access selected internal business applications. This type of controlled extension of an intranet is commonly called a:
+A. PAN B. Public cloud C. Extranet D. MAN
+Correct Answer: C. Extranet
+Explanation: An extranet gives authorized external parties, such as suppliers, customers, or business partners, controlled access to selected organizational resources. Unlike a public website, access is restricted.
+9. Which of the following is NOT a defining characteristic of a LAN?
+A. It commonly covers a limited geographical area. B. It may connect computers through Ethernet or Wi-Fi. C. It can support local resource sharing. D. It must connect computers located on different continents.
+Correct Answer: D. It must connect computers located on different continents.
+Explanation: A LAN is intended for a limited area and does not require international connectivity. Connecting distant geographical locations is a typical WAN function.
+10. Which network is generally the smallest in geographical scope among the following?
+A. WAN B. MAN C. LAN D. PAN
+Correct Answer: D. PAN
+Explanation: A PAN typically connects devices around an individual, often within a few metres. LANs, MANs, and WANs generally cover progressively larger areas, although actual coverage depends on the implementation.
+11. Which of the following is a typical application of a LAN in a bank branch?
+A. Sharing a local printer among authorized employees B. Broadcasting a television signal worldwide C. Connecting every bank in the world directly without intermediate networks D. Replacing the bank's database with a search engine
+Correct Answer: A. Sharing a local printer among authorized employees
+Explanation: A LAN allows computers and other devices within a branch to share resources efficiently. Access controls and security policies can restrict which employees may use particular resources.
+12. Which statement about the internet is correct?
+A. It is owned and operated entirely by one government. B. It consists exclusively of websites. C. It is a global network of interconnected networks using common communication protocols. D. It can operate only through satellite links.
+Correct Answer: C. It is a global network of interconnected networks using common communication protocols.
+Explanation: The internet links independently operated networks through standardized protocols, particularly the TCP/IP suite. It supports services such as the web, email, file transfer, and online communication.
+13. A company connects its offices within Dhaka through a network spanning much of the metropolitan area. Which network category is most appropriate?
+A. PAN B. MAN C. LAN D. SAN
+Correct Answer: B. MAN
+Explanation: A MAN is designed to interconnect networks across a metropolitan area. A LAN would usually describe each individual office network rather than the wider city-spanning arrangement.
+14. Which of the following is an example of an extranet rather than a purely internal intranet?
+A. An employee-only notice board B. A private staff attendance system accessible only to employees C. A public news website D. A supplier portal granting approved vendors access to purchase orders
+Correct Answer: D. A supplier portal granting approved vendors access to purchase orders
+Explanation: An extranet extends limited access to selected external parties. An internal staff portal is an intranet, whereas a publicly accessible news website is part of the public web.
+15. Which of the following statements about LANs and WANs is most accurate?
+A. Every LAN is wireless, and every WAN is wired. B. A LAN cannot use switches. C. A WAN can interconnect multiple geographically separated LANs. D. A WAN cannot use routers.
+Correct Answer: C. A WAN can interconnect multiple geographically separated LANs.
+Explanation: WANs commonly connect separate LANs through routers and service-provider infrastructure. Both LANs and WANs may use various wired and wireless technologies.
+16. A student connects a laptop to a mobile phone's hotspot to access the internet. The resulting network may be classified as a:
+A. WAN only, regardless of its configuration B. LAN or small local wireless network, with internet access supplied through the phone C. MAN because the mobile network covers a city D. SAN because two electronic devices are connected
+Correct Answer: B. LAN or small local wireless network, with internet access supplied through the phone
+Explanation: The laptop and phone form a local connection, while the phone may use a cellular WAN to reach the internet. Network classification depends on which portion of the connection is being considered.
+17. Which network type is particularly suitable for connecting a computer to nearby personal accessories?
+A. WAN B. MAN C. PAN D. Backbone network
+Correct Answer: C. PAN
+Explanation: A PAN is intended for short-range connections among personal devices. Bluetooth is a widely used technology for such connections.
+18. Which statement best describes a public Wi-Fi network at an airport?
+A. It is necessarily an intranet. B. It can provide internet access through a local wireless network. C. It is always a WAN by itself. D. It cannot connect smartphones.
+Correct Answer: B. It can provide internet access through a local wireless network.
+Explanation: Public Wi-Fi usually provides a local wireless access network connected to an internet service provider. Public availability does not itself determine whether the underlying network is a LAN or part of a larger infrastructure.
+19. Which of the following is a key advantage of networking computers in an organization?
+A. It eliminates the need for data security. B. It prevents all hardware failures. C. It makes every computer independent of operating systems. D. It facilitates communication and resource sharing.
+Correct Answer: D. It facilitates communication and resource sharing.
+Explanation: Networks allow users to share data, printers, applications, and connectivity. Security, maintenance, and access controls are still necessary.
+20. Which statement about the geographical scope of network categories is correct?
+A. A LAN normally covers a smaller area than a WAN. B. A PAN always covers a larger area than a MAN. C. A MAN is necessarily confined to one desk. D. A WAN is limited to one room.
+Correct Answer: A. A LAN normally covers a smaller area than a WAN.
+Explanation: LANs usually serve homes, offices, or campuses, while WANs connect geographically separated networks. PAN, LAN, MAN, and WAN are useful broad categories, not rigid measurements of distance.
+21. An organization wants employees to access internal policy documents without making them publicly available. Which solution is most appropriate?
+A. A public search engine B. An intranet C. An unrestricted public FTP server D. A public social-media page
+Correct Answer: B. An intranet
+Explanation: An intranet provides internal information and services to authorized organizational users. Authentication and authorization help prevent unauthorized access.
+22. Which of the following best explains why the internet is called a network of networks?
+A. Every website is a separate physical computer. B. Every user must own a router. C. Multiple independently operated networks interconnect and exchange data. D. It contains only local networks with no external links.
+Correct Answer: C. Multiple independently operated networks interconnect and exchange data.
+Explanation: The internet is formed by interconnected networks using standardized protocols and routing. Individual networks remain independently administered while exchanging traffic.
+23. A wearable fitness tracker communicates with a smartphone over a short-range wireless link. Which classification best describes that link?
+A. PAN B. MAN C. WAN D. Enterprise backbone
+Correct Answer: A. PAN
+Explanation: A personal-area connection links devices associated with an individual over a short distance. The phone's separate connection to a cellular network does not change the nature of the tracker-to-phone link.
+24. Which network is generally most appropriate for connecting computers across several countries?
+A. PAN B. LAN C. MAN D. WAN
+Correct Answer: D. WAN
+Explanation: WANs connect networks over large geographical distances, including between countries. They may rely on leased lines, fibre-optic links, service-provider networks, or other communication technologies.
+25. Which statement correctly distinguishes a website on the public web from an intranet?
+A. Every website must be hosted on a personal laptop. B. A public website is generally intended for public access, whereas an intranet is restricted to authorized users. C. An intranet cannot contain webpages. D. A public website cannot use HTTPS.
+Correct Answer: B. A public website is generally intended for public access, whereas an intranet is restricted to authorized users.
+Explanation: Websites can be publicly accessible or privately restricted. An intranet can use ordinary web pages, browsers, and HTTPS while enforcing organizational access policies.
+Section 2: Network Topologies — Star, Bus, Ring and Mesh (26–45)
+26. In which network topology are all devices connected to a central switch or hub?
+A. Ring B. Mesh C. Star D. Bus
+Correct Answer: C. Star
+Explanation: In a star topology, each device connects to a central device. A failure of one endpoint link generally affects that endpoint, while failure of the central device can disrupt the entire star.
+27. Which topology uses a single shared backbone cable to which devices are attached?
+A. Bus B. Star C. Mesh D. Ring
+Correct Answer: A. Bus
+Explanation: A bus topology uses a shared communication backbone. In traditional bus Ethernet, terminators were used at the ends to prevent signal reflections.
+28. In a traditional ring topology, each device is connected to:
+A. Every other device directly B. A single central hub only C. A separate internet connection D. Two neighbouring devices in a closed loop
+Correct Answer: D. Two neighbouring devices in a closed loop
+Explanation: A ring topology forms a closed path through interconnected nodes. A single link or node failure can disrupt a basic ring unless redundancy or bypass mechanisms are provided.
+29. Which topology provides a direct link between every pair of devices in a full mesh network?
+A. Bus B. Full mesh C. Star D. Ring
+Correct Answer: B. Full mesh
+Explanation: A full mesh connects each node directly to every other node. It offers extensive path redundancy but requires many links as the number of nodes increases.
+30. A network administrator wants easy addition of new computers and straightforward fault isolation. Which common topology is generally the most suitable for a modern office LAN?
+A. Bus B. Ring C. Star D. Linear chain
+Correct Answer: C. Star
+Explanation: Star networks are commonly built using switches and are relatively easy to expand and troubleshoot. Adding a device generally requires a new connection to the central switch rather than modifying a shared backbone.
+31. Which is a major disadvantage of a traditional bus topology?
+A. It always requires a separate cable between every pair of computers. B. It cannot connect more than two devices. C. It requires a central switch for every device. D. A fault in the main backbone can disrupt communication for the entire network segment.
+Correct Answer: D. A fault in the main backbone can disrupt communication for the entire network segment.
+Explanation: All devices share the backbone in a bus topology, making that cable a critical point of failure. Troubleshooting a shared backbone can also be difficult.
+32. Which topology generally requires the greatest number of direct links for a given number of nodes?
+A. Full mesh B. Bus C. Star D. Ring
+Correct Answer: A. Full mesh
+Explanation: A full mesh of  nodes requires  direct links. This provides high redundancy but increases cabling, port requirements, and cost.
+33. How many direct links are required in a full mesh network containing 6 nodes?
+A. 6 B. 12 C. 15 D. 30
+Correct Answer: C. 15
+Explanation: The formula is . For six nodes,  links.
+34. A star network contains 12 computers, each connected individually to one central switch. How many endpoint-to-switch links are required?
+A. 6 B. 12 C. 24 D. 66
+Correct Answer: B. 12
+Explanation: In a basic star arrangement, each endpoint has one link to the central device. Therefore, 12 computers require 12 endpoint-to-switch links, excluding uplinks or redundant connections.
+35. Which topology is most directly associated with a closed-loop arrangement?
+A. Bus B. Star C. Tree D. Ring
+Correct Answer: D. Ring
+Explanation: In a ring, nodes form a closed loop. Data transmission mechanisms differ among ring technologies, so a ring does not necessarily imply that all modern systems transmit data in the same direction.
+36. Which statement about a star topology is correct?
+A. Every computer must connect directly to every other computer. B. A single cable must pass through every computer. C. Failure of one endpoint cable usually isolates that endpoint rather than all other endpoints. D. It cannot use Ethernet switches.
+Correct Answer: C. Failure of one endpoint cable usually isolates that endpoint rather than all other endpoints.
+Explanation: Each device has a separate link to the central device. A single endpoint-link failure generally affects only that device, although a switch failure may affect many or all connected devices.
+37. A full mesh network has 8 nodes. How many direct links does it require?
+A. 28 B. 16 C. 32 D. 56
+Correct Answer: A. 28
+Explanation: Using , the link count is . This quadratic growth explains why full mesh is expensive for large numbers of nodes.
+38. Which topology commonly makes use of a central switch in modern wired Ethernet LANs?
+A. Bus B. Ring C. Full mesh D. Star
+Correct Answer: D. Star
+Explanation: Modern switched Ethernet commonly connects each endpoint to a switch in a physical star. Multiple switches can then be interconnected to form a larger hierarchical network.
+39. What is a key advantage of a mesh topology?
+A. It always uses the least cabling. B. It can provide multiple communication paths between nodes. C. It requires every node to share one backbone cable. D. It never needs network configuration.
+Correct Answer: B. It can provide multiple communication paths between nodes.
+Explanation: Mesh connections can improve resilience because traffic may be rerouted if a link fails. The degree of redundancy depends on whether the mesh is full or partial and how routing is configured.
+40. Which topology traditionally uses terminators at both ends of a shared cable?
+A. Star B. Full mesh C. Bus D. Ring
+Correct Answer: C. Bus
+Explanation: Terminators absorb signals at the ends of a traditional bus cable, reducing reflections that can interfere with communication. This is a characteristic of classic coaxial Ethernet bus arrangements.
+41. A network must continue operating even if one of several communication links fails. Which topology offers the strongest inherent path redundancy among these choices?
+A. Full mesh B. Bus C. Simple star with one central switch D. Simple ring without bypass protection
+Correct Answer: A. Full mesh
+Explanation: A full mesh provides direct links between every pair of nodes, allowing alternative paths when links fail. Real-world resilience also depends on routing, power, equipment, and physical diversity.
+42. Which of the following is a disadvantage of a full mesh topology?
+A. It cannot provide alternative paths. B. It necessarily requires a central hub. C. It cannot connect more than four nodes. D. It can be costly and complex to install as the number of nodes increases.
+Correct Answer: D. It can be costly and complex to install as the number of nodes increases.
+Explanation: A full mesh requires  links, so link count rises rapidly. Partial mesh designs often balance redundancy with cost.
+43. In a star network, which component is typically a central connection point?
+A. DNS server only B. Switch C. Search engine D. File extension
+Correct Answer: B. Switch
+Explanation: A switch commonly connects endpoint devices in a star-shaped Ethernet LAN. A hub can also serve as a central point in older Ethernet designs, but switches are standard in modern LANs.
+44. Which statement about physical and logical topology is correct?
+A. Physical and logical topology must always be identical. B. Logical topology describes only the colour of network cables. C. Physical topology describes the actual connection arrangement, while logical topology describes how data flows. D. Logical topology applies only to wireless networks.
+Correct Answer: C. Physical topology describes the actual connection arrangement, while logical topology describes how data flows.
+Explanation: Physical topology concerns the layout of links and devices; logical topology concerns communication paths and access behaviour. The two may differ, as in switched Ethernet networks.
+45. A network designer wants a system that is easier to expand than a traditional bus and can isolate individual cable failures. Which design is usually preferable?
+A. Star topology B. Bus topology C. Single-path ring without redundancy D. One shared coaxial backbone for every device
+Correct Answer: A. Star topology
+Explanation: A star permits endpoints to be added by connecting them to the central switch. Individual endpoint-link faults are also easier to isolate than faults on a shared bus.
+Section 3: Network Devices — Router, Switch, Hub, Modem, Repeater and Gateway (46–75)
+46. Which device primarily forwards Ethernet frames within a LAN using MAC addresses?
+A. Modem B. Switch C. Repeater D. Printer
+Correct Answer: B. Switch
+Explanation: A Layer 2 Ethernet switch learns source MAC addresses and uses its forwarding table to direct frames to the appropriate ports. It normally reduces unnecessary traffic compared with a traditional hub.
+47. Which device primarily forwards packets between different IP networks?
+A. Hub B. Repeater C. Router D. Ethernet cable
+Correct Answer: C. Router
+Explanation: A router uses IP addressing and routing information to forward packets between networks. A home router often also provides functions such as NAT, firewalling, and DHCP, depending on its configuration.
+48. What is the primary function of a traditional Ethernet hub?
+A. To broadcast incoming signals to its other ports B. To assign domain names to websites C. To translate private IP addresses into public IP addresses in every case D. To encrypt all application data
+Correct Answer: A. To broadcast incoming signals to its other ports
+Explanation: A hub operates at the physical layer and repeats incoming signals to other ports. Unlike a switch, it does not intelligently forward frames according to destination MAC addresses.
+49. Which device regenerates or repeats a signal to extend the distance over which it can travel?
+A. Router B. Gateway C. Switch D. Repeater
+Correct Answer: D. Repeater
+Explanation: A repeater regenerates or reshapes a signal to overcome attenuation and extend transmission distance. It does not ordinarily perform IP routing or application-level protocol conversion.
+50. Which device is commonly associated with modulation and demodulation in traditional communication systems?
+A. Switch B. Modem C. Hub D. Repeater
+Correct Answer: B. Modem
+Explanation: The term modem comes from modulator-demodulator. A modem adapts data to the signalling method used by a communication medium; modern modem designs vary by technology.
+51. Which device is most appropriate for connecting a bank's local IP network to a service-provider network?
+A. Hub B. Keyboard C. Router D. Scanner
+Correct Answer: C. Router
+Explanation: A router connects different IP networks and forwards packets based on routing information. The service-provider connection may also require a modem or an optical network terminal, depending on the access technology.
+52. A device forwards frames only to the port associated with the destination MAC address, when that destination is known. Which device is being described?
+A. Switch B. Hub C. Repeater D. Analog modem
+Correct Answer: A. Switch
+Explanation: An Ethernet switch learns MAC-to-port associations and forwards known unicast frames selectively. Broadcast and certain unknown-destination frames may still be flooded within the relevant VLAN.
+53. Which device is generally least efficient for a busy Ethernet LAN because it sends received traffic to all other ports?
+A. Router B. Layer 3 switch C. Managed switch D. Hub
+Correct Answer: D. Hub
+Explanation: A hub shares bandwidth among its ports and forwards signals to all connected devices. Switches reduce unnecessary traffic and generally provide separate collision domains per port.
+54. What is a gateway in networking?
+A. A device used exclusively to print network documents B. A device or system that connects networks or translates between different protocols or architectures C. A type of computer memory D. A device that can only amplify analogue radio signals
+Correct Answer: B. A device or system that connects networks or translates between different protocols or architectures
+Explanation: Gateway is a broad term for a system that connects dissimilar networks or provides a route out of a local network. In everyday IP networking, the default gateway is commonly the router used to reach destinations outside the local subnet.
+55. Which device is commonly used to divide a LAN into separate IP networks and route traffic between them?
+A. Hub B. Repeater C. Router D. Passive connector
+Correct Answer: C. Router
+Explanation: Routers forward packets between IP networks using routing tables. A Layer 3 switch can also perform inter-VLAN routing in many enterprise LANs.
+56. Which of the following is a Layer 1 device in the traditional OSI model?
+A. Hub B. Router C. Application proxy D. Layer 3 switch operating as a router
+Correct Answer: A. Hub
+Explanation: A traditional hub operates at the physical layer by repeating signals. Routers generally operate at Layer 3, while ordinary Ethernet switches primarily operate at Layer 2.
+57. Which networking device normally learns MAC addresses from incoming Ethernet frames?
+A. Repeater B. Hub C. Modem D. Switch
+Correct Answer: D. Switch
+Explanation: A switch examines source MAC addresses to learn which devices are reachable through which ports. It then uses the destination MAC address to decide where to forward eligible frames.
+58. What is the main difference between a router and a switch in their common roles?
+A. A router always operates without addresses. B. A router forwards between IP networks, whereas a Layer 2 switch forwards frames within a LAN using MAC addresses. C. A switch can connect only one computer. D. A switch converts all digital data into analogue signals.
+Correct Answer: B. A router forwards between IP networks, whereas a Layer 2 switch forwards frames within a LAN using MAC addresses.
+Explanation: The common Layer 2 switch role is MAC-based frame forwarding; the router role is IP packet forwarding between networks. Multilayer switches can perform both functions, so the distinction describes typical roles rather than an absolute hardware limitation.
+59. A home internet connection uses fibre-optic service. Which device may terminate the optical fibre and provide an Ethernet connection?
+A. Traditional Ethernet hub only B. Keyboard controller C. Optical network terminal (ONT) D. DNS resolver
+Correct Answer: C. Optical network terminal (ONT)
+Explanation: An ONT terminates a fibre access connection and converts optical signalling into an interface usable by customer equipment. Depending on the provider, the ONT may be integrated with a residential gateway or router.
+60. Which device is used to connect two network segments by regenerating a signal without making routing decisions?
+A. Repeater B. Router C. Application gateway D. Firewall proxy
+Correct Answer: A. Repeater
+Explanation: A repeater extends a physical transmission segment by regenerating signals. It does not examine IP routes or choose a destination network.
+61. A computer can communicate with other computers on its local subnet but cannot reach external IP addresses. Which configuration should be checked first, assuming the local link works?
+A. Screen resolution B. Keyboard layout C. Printer driver D. Default gateway
+Correct Answer: D. Default gateway
+Explanation: Traffic destined for another IP network is normally sent to the default gateway. A missing or incorrect gateway can prevent off-subnet communication even when local communication works.
+62. Which device traditionally connects a digital computer to a communication service that uses a different signalling method?
+A. Hub B. Modem C. Switch D. Repeater only
+Correct Answer: B. Modem
+Explanation: A modem adapts data to the signalling used by an access technology, such as cable or DSL. Fibre systems may instead use an ONT, although product terminology varies.
+63. Which device is most suitable for connecting several wired computers in the same Ethernet LAN?
+A. DNS server B. Repeater alone C. Ethernet switch D. Search engine
+Correct Answer: C. Ethernet switch
+Explanation: An Ethernet switch provides multiple ports and forwards frames between connected devices. A router may be needed to connect that LAN to other IP networks.
+64. What happens when a conventional hub receives an Ethernet signal on one port?
+A. It repeats the signal through its other ports. B. It forwards only to the port matching a learned destination MAC address. C. It chooses a route based on the destination IP network. D. It converts the website name into an IP address.
+Correct Answer: A. It repeats the signal through its other ports.
+Explanation: A hub does not maintain a MAC forwarding table. A switch, in contrast, can selectively forward known unicast frames.
+65. Which statement about a default gateway is correct?
+A. It must always be a public DNS server. B. It is the same thing as a computer's MAC address. C. It is a protocol used only for sending email. D. It is the next-hop device commonly used to reach destinations outside the local IP network.
+Correct Answer: D. It is the next-hop device commonly used to reach destinations outside the local IP network.
+Explanation: A default gateway commonly refers to a router interface on the local network. It handles traffic for destinations for which the host has no more specific route.
+66. Which device is most likely to translate between two application-level or otherwise incompatible protocols?
+A. Hub B. Gateway C. Passive Ethernet connector D. Repeater
+Correct Answer: B. Gateway
+Explanation: A gateway may perform protocol translation or mediate between different systems. A simple router usually forwards IP packets without translating the application protocols they carry.
+67. Which statement about switches and collision domains is correct for a typical modern switched Ethernet LAN?
+A. Every port belongs to one unavoidable collision domain shared by the entire LAN. B. Switches do not use MAC addresses. C. Each switch port generally forms a separate collision domain. D. A switch is identical to a passive cable splitter.
+Correct Answer: C. Each switch port generally forms a separate collision domain.
+Explanation: In full-duplex switched Ethernet, collisions do not occur on the link in the traditional half-duplex sense. Each port is an independent collision domain, unlike a hub's shared collision domain.
+68. Which device is most directly associated with forwarding packets according to an IP routing table?
+A. Router B. Hub C. Repeater D. Passive splitter
+Correct Answer: A. Router
+Explanation: Routers consult routing tables to select a next hop or outgoing interface for IP packets. They may also apply access-control rules and other configured services.
+69. A small office wants one device that provides Wi-Fi, Ethernet ports, DHCP, NAT and a route to the internet. Which device is commonly sold for this purpose?
+A. Standalone hub B. Repeater alone C. Passive modem cable D. Wireless router or residential gateway
+Correct Answer: D. Wireless router or residential gateway
+Explanation: Consumer wireless routers commonly integrate routing, Wi-Fi access, Ethernet switching, DHCP and NAT. The exact functions depend on the model and operating mode.
+70. Which of the following is NOT a typical primary function of a basic Ethernet switch?
+A. Learning MAC addresses B. Resolving domain names through DNS C. Forwarding Ethernet frames D. Filtering frames using Layer 2 information
+Correct Answer: B. Resolving domain names through DNS
+Explanation: DNS translates domain names into records such as IP addresses; it is not the basic function of an Ethernet switch. Some advanced network equipment may offer DNS-related services, but ordinary Layer 2 forwarding does not require them.
+71. A technician wants to extend a signal across a longer physical link. Which device is designed for signal regeneration rather than IP routing?
+A. Router B. DNS resolver C. Repeater D. Search engine
+Correct Answer: C. Repeater
+Explanation: Repeaters regenerate or reshape signals to extend transmission distance. They do not select IP routes or resolve domain names.
+72. Which device is often required to connect a local IP network to a different IP network, even if both use Ethernet internally?
+A. Router B. Hub C. Repeater D. Keyboard
+Correct Answer: A. Router
+Explanation: Ethernet describes a link-layer technology, while IP networking uses logical network addresses. A router forwards packets between IP networks even when the physical interfaces on both sides use Ethernet.
+73. Which statement best describes the relationship between a modem and a router?
+A. They are always the same device and cannot be separate. B. A modem stores domain names, whereas a router stores webpages. C. A router performs no networking functions when a modem is present. D. A modem handles access-medium signalling, while a router forwards traffic between networks; a product may combine both.
+Correct Answer: D. A modem handles access-medium signalling, while a router forwards traffic between networks; a product may combine both.
+Explanation: Modems adapt data to the provider's access technology, whereas routers select paths between IP networks. Some home devices combine modem, router, switch, and Wi-Fi access-point functions in one enclosure.
+74. Which device would be the least appropriate choice for separating traffic into different IP subnets?
+A. Router B. Basic hub C. Layer 3 switch D. Router with multiple interfaces
+Correct Answer: B. Basic hub
+Explanation: A basic hub repeats signals and does not make IP routing decisions. Routers and Layer 3 switches can forward traffic between configured IP subnets.
+75. In a typical Ethernet LAN, which device reduces unnecessary frame transmission by forwarding known unicast frames selectively?
+A. Traditional hub B. Repeater C. Switch D. Passive splitter
+Correct Answer: C. Switch
+Explanation: A switch uses its MAC address table to send known unicast frames to the appropriate port. Broadcast frames and unknown unicast frames may still be flooded within the relevant broadcast domain.
+Section 4: IP Address, MAC Address, DNS, DHCP and URL (76–105)
+76. What is the primary purpose of an IP address?
+A. To identify a network interface for communication at the IP layer B. To store a computer's files permanently C. To encrypt every transmitted packet automatically D. To identify the make of a keyboard
+Correct Answer: A. To identify a network interface for communication at the IP layer
+Explanation: IP addresses support logical addressing and packet delivery across interconnected networks. They can be assigned manually or automatically and may change over time.
+77. How many bits are there in an IPv4 address?
+A. 16 B. 32 C. 48 D. 128
+Correct Answer: B. 32
+Explanation: IPv4 uses 32-bit addresses, usually written as four decimal octets, such as 192.168.1.10. IPv6 uses 128-bit addresses.
+78. How many bits are there in an IPv6 address?
+A. 32 B. 48 C. 64 D. 128
+Correct Answer: D. 128
+Explanation: IPv6 uses 128-bit addresses, providing a vastly larger address space than IPv4. IPv6 addresses are commonly written in hexadecimal groups separated by colons.
+79. Which protocol automatically assigns IP configuration to hosts on a network?
+A. FTP B. SMTP C. DHCP D. HTTP
+Correct Answer: C. DHCP
+Explanation: Dynamic Host Configuration Protocol (DHCP) can automatically provide an IP address, subnet mask or prefix, default gateway, and DNS server information. This reduces manual configuration errors.
+80. What is the primary function of DNS?
+A. To convert a domain name into the appropriate DNS records, often including an IP address B. To encrypt all files stored on a computer C. To allocate RAM to running applications D. To transfer email attachments exclusively
+Correct Answer: A. To convert a domain name into the appropriate DNS records, often including an IP address
+Explanation: The Domain Name System maps names such as example.com to records used by network applications, including A and AAAA address records. DNS can also provide mail-routing and other information.
+81. Which of the following is a valid IPv4 address?
+A. 192.168.1.300 B. 192.168.1.25 C. 256.10.1.2 D. 192.168.1
+Correct Answer: B. 192.168.1.25
+Explanation: A conventional dotted-decimal IPv4 address contains four octets, each ranging from 0 to 255. The other choices contain an out-of-range octet or an incomplete address.
+82. Which address is reserved for IPv4 loopback testing?
+A. 8.8.8.8 B. 192.168.0.1 C. 255.255.255.255 D. 127.0.0.1
+Correct Answer: D. 127.0.0.1
+Explanation: The IPv4 loopback range is 127.0.0.0/8, with 127.0.0.1 commonly used to refer to the local host. It is useful for testing local network software without sending traffic to another machine.
+83. Which of the following is a private IPv4 address?
+A. 172.20.5.10 B. 8.8.8.8 C. 1.1.1.1 D. 203.0.113.10
+Correct Answer: A. 172.20.5.10
+Explanation: Private IPv4 ranges include 10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16. The address 172.20.5.10 lies within the second range; public routability is a separate consideration from address syntax.
+84. What is a MAC address commonly used for?
+A. Identifying a website's domain name B. Selecting the fastest internet subscription C. Identifying a network interface at the link layer D. Encrypting an email message
+Correct Answer: C. Identifying a network interface at the link layer
+Explanation: Ethernet and Wi-Fi commonly use MAC addresses for local link-layer frame delivery. MAC addresses are not substitutes for IP addresses, which support logical addressing and routing.
+85. A conventional 48-bit Ethernet MAC address is how many bits long?
+A. 24 B. 48 C. 64 D. 128
+Correct Answer: B. 48
+Explanation: A conventional Ethernet MAC address is 48 bits, commonly displayed as six hexadecimal octets. Other link technologies and newer addressing arrangements can have different details, but 48 bits is the standard exam answer for Ethernet MAC addresses.
+86. Which of the following best describes a URL?
+A. A type of network cable B. A device's physical MAC address C. A method for compressing files D. An address identifying a resource and how it can be accessed
+Correct Answer: D. An address identifying a resource and how it can be accessed
+Explanation: A Uniform Resource Locator (URL) commonly includes a scheme, host, and optional path, query, or fragment. For example, https://example.com/news identifies a resource accessed using HTTPS.
+87. In the URL https://www.example.com/page, which part specifies the scheme?
+A. https B. www C. example.com D. /page
+Correct Answer: A. https
+Explanation: The scheme indicates the access method or protocol, such as HTTP or HTTPS. The hostname identifies the server, while the path identifies a resource location on that server.
+88. What is the role of DHCP in a typical home network?
+A. It creates website content. B. It automatically assigns network configuration to devices. C. It encrypts all Wi-Fi traffic independently of security settings. D. It replaces the need for an IP address.
+Correct Answer: B. It automatically assigns network configuration to devices.
+Explanation: DHCP commonly assigns IP addresses and supplies related settings to clients. A DHCP lease usually has a validity period and may be renewed.
+89. Which DNS record type is used to map a hostname to an IPv4 address?
+A. MX B. PTR C. A D. AAAA
+Correct Answer: C. A
+Explanation: An A record maps a hostname to an IPv4 address. An AAAA record maps a hostname to an IPv6 address, while MX records identify mail-exchange servers.
+90. Which DNS record type is used to map a hostname to an IPv6 address?
+A. MX B. TXT C. A D. AAAA
+Correct Answer: D. AAAA
+Explanation: AAAA records publish IPv6 addresses for hostnames. The corresponding A record type is used for IPv4 addresses.
+91. Which DNS record identifies mail servers responsible for receiving email for a domain?
+A. MX B. A C. AAAA D. CNAME only
+Correct Answer: A. MX
+Explanation: A Mail Exchange (MX) record specifies mail servers for a domain, along with priority information. Email systems use these records to locate destinations for domain-based email delivery.
+92. Which statement about a MAC address is correct?
+A. It is always identical to the device's public IPv4 address. B. It is commonly used for local link-layer delivery and is not normally routed end-to-end across the internet. C. It is assigned by DNS every time a website loads. D. It always contains 128 bits.
+Correct Answer: B. It is commonly used for local link-layer delivery and is not normally routed end-to-end across the internet.
+Explanation: MAC addresses are used within a local link or Layer 2 segment. Routers replace link-layer framing as packets cross networks, while the IP packet is forwarded according to IP routing rules.
+93. Which of the following is the correct expansion of DNS?
+A. Digital Network Service B. Data Naming Standard C. Domain Name System D. Dynamic Node Security
+Correct Answer: C. Domain Name System
+Explanation: DNS is the distributed naming system that supplies records associated with domain names. It is fundamental to locating many internet services by name.
+94. Which of the following is the correct expansion of DHCP?
+A. Digital Host Control Protocol B. Domain Hosting Communication Process C. Data Handling Configuration Program D. Dynamic Host Configuration Protocol
+Correct Answer: D. Dynamic Host Configuration Protocol
+Explanation: DHCP automates the assignment of IP configuration to network clients. It is commonly used in home, office, and enterprise networks.
+95. Which statement about public and private IPv4 addresses is correct?
+A. Private IPv4 addresses are not globally routable on the public internet by default. B. Every private IPv4 address is a loopback address. C. Public IPv4 addresses cannot be used by servers. D. Private IPv4 addresses are always 128 bits long.
+Correct Answer: A. Private IPv4 addresses are not globally routable on the public internet by default.
+Explanation: Private addresses are intended for use within private networks and commonly access the internet through NAT. Public IP addresses can be globally routed, subject to routing policy and filtering.
+96. A user enters a domain name into a browser. Which service commonly helps the browser find the server's IP address?
+A. DHCP B. DNS C. FTP D. POP3
+Correct Answer: B. DNS
+Explanation: DNS resolution obtains relevant records for the hostname. The browser then uses the resulting address and the URL's scheme to establish communication with the server.
+97. Which portion of https://bank.example.com/accounts?id=15 is the query string?
+A. https B. bank.example.com C. ?id=15 D. /accounts
+Correct Answer: C. ?id=15
+Explanation: The query component begins with ? and commonly carries parameters such as id=15. The path is /accounts, while https is the scheme.
+98. What does the subnet mask 255.255.255.0 correspond to in CIDR notation?
+A. /8 B. /16 C. /24 D. /32
+Correct Answer: C. /24
+Explanation: The mask has 24 leading one-bits followed by eight zero-bits, so its CIDR notation is /24. In a conventional IPv4 subnet, those eight host bits provide 256 address values, typically 254 usable host addresses in a standard /24 subnet.
+99. How many total IPv4 addresses are present in a /24 block?
+A. 128 B. 254 C. 512 D. 256
+Correct Answer: D. 256
+Explanation: A /24 leaves  host bits, giving  total addresses. In a conventional IPv4 subnet, the network and broadcast addresses are generally not assigned to ordinary hosts, leaving 254 usable host addresses.
+100. Which IP address is commonly used as the IPv4 loopback address?
+A. 127.0.0.1 B. 169.254.1.1 C. 224.0.0.1 D. 192.0.2.1
+Correct Answer: A. 127.0.0.1
+Explanation: The loopback address directs traffic back to the local host. By contrast, 169.254.0.0/16 is reserved for IPv4 link-local addressing, and 224.0.0.0/4 is the IPv4 multicast range.
+101. A computer receives an IPv4 address beginning with 169.254 after failing to obtain a DHCP lease. What is the most likely explanation?
+A. It has successfully received a globally routable address. B. It has self-assigned a link-local IPv4 address. C. It has obtained an IPv6 address. D. It has been assigned a DNS MX record.
+Correct Answer: B. It has self-assigned a link-local IPv4 address.
+Explanation: IPv4 link-local addresses occupy 169.254.0.0/16 and may be self-assigned when normal configuration is unavailable. Such an address does not ordinarily provide internet connectivity through a router.
+102. What is the main function of a URL fragment, such as #section2?
+A. To specify the server's MAC address B. To select the DNS resolver C. To identify a particular section or location within a resource D. To assign an IP address automatically
+Correct Answer: C. To identify a particular section or location within a resource
+Explanation: The fragment follows # and commonly identifies a section of a webpage or another resource. It is generally processed by the client and is not sent as part of the HTTP request target to the server.
+103. Which of the following is a correct distinction between an IP address and a MAC address?
+A. Both are always assigned by DHCP. B. IP addresses are used only for printers. C. MAC addresses are domain names. D. IP addresses provide logical network-layer addressing, while MAC addresses support link-layer delivery.
+Correct Answer: D. IP addresses provide logical network-layer addressing, while MAC addresses support link-layer delivery.
+Explanation: IP addresses are used to route packets between networks. MAC addresses are used to deliver frames over local links, and a device may have both an IP address and a MAC address for the same interface.
+104. What is the usual purpose of a CNAME record in DNS?
+A. To create an alias from one domain name to another canonical domain name B. To allocate a DHCP lease C. To encrypt a network packet D. To assign a MAC address to a switch port
+Correct Answer: A. To create an alias from one domain name to another canonical domain name
+Explanation: A CNAME record makes one name an alias of another name. It does not directly serve as an IPv4 or IPv6 address record, although the canonical name may resolve to such an address.
+105. Which statement about DNS caching is correct?
+A. Cached DNS data can never expire. B. Caching can reduce lookup time and network traffic, subject to record TTLs. C. DNS caching automatically encrypts web sessions. D. DNS caching replaces IP routing.
+Correct Answer: B. Caching can reduce lookup time and network traffic, subject to record TTLs.
+Explanation: DNS resolvers and clients may cache records according to their time-to-live (TTL) values. Caching improves efficiency, but stale or expired information must be handled according to DNS rules.
+Section 5: HTTP vs HTTPS, TCP vs UDP, FTP, SMTP, POP3 and IMAP (106–140)
+106. Which protocol is primarily used to transfer webpages between a web server and a browser?
+A. FTP B. SMTP C. HTTP D. DHCP
+Correct Answer: C. HTTP
+Explanation: Hypertext Transfer Protocol (HTTP) defines request-and-response communication used by web applications. HTTPS is HTTP carried over a secure connection using TLS.
+107. What is the main security advantage of HTTPS over ordinary HTTP?
+A. It automatically makes every website trustworthy. B. It provides encryption and integrity protection, with server authentication through TLS certificates. C. It prevents all malware infections. D. It eliminates the need for passwords.
+Correct Answer: B. It provides encryption and integrity protection, with server authentication through TLS certificates.
+Explanation: HTTPS protects data exchanged between a client and server against many forms of interception and modification. A valid HTTPS connection does not guarantee that a website is honest or free of malicious content.
+108. Which protocol provides reliable, ordered delivery of a byte stream?
+A. UDP B. IP alone C. DNS D. TCP
+Correct Answer: D. TCP
+Explanation: Transmission Control Protocol (TCP) uses acknowledgments, sequence numbers, retransmissions, and flow control to provide reliable, ordered byte-stream delivery. UDP does not provide these reliability guarantees by itself.
+109. Which transport-layer protocol is connectionless and does not guarantee delivery or ordering?
+A. UDP B. TCP C. HTTPS D. SMTP
+Correct Answer: A. UDP
+Explanation: User Datagram Protocol (UDP) sends datagrams without establishing a TCP-style connection. It is useful for applications such as real-time media and certain DNS exchanges, where low overhead or application-controlled recovery is valuable.
+110. Which protocol is commonly associated with sending email from a client to a mail server or between mail servers?
+A. POP3 B. SMTP C. IMAP D. DHCP
+Correct Answer: B. SMTP
+Explanation: Simple Mail Transfer Protocol (SMTP) is used for email submission and relay. POP3 and IMAP are primarily used by clients to retrieve or access received messages.
+111. Which protocol is commonly used to retrieve email while keeping messages and folders synchronized across multiple devices?
+A. FTP B. SMTP C. IMAP D. ARP
+Correct Answer: C. IMAP
+Explanation: Internet Message Access Protocol (IMAP) allows clients to access and manage messages stored on a mail server. Synchronization of folders and message states makes it suitable for users who access email from several devices.
+112. Which email protocol is traditionally associated with downloading messages from a server to a client, often for local storage?
+A. HTTP B. SMTP C. IMAP D. POP3
+Correct Answer: D. POP3
+Explanation: Post Office Protocol version 3 (POP3) retrieves email from a mail server and is often associated with downloading messages. Whether messages remain on the server depends on the client's configuration and server behaviour.
+113. Which port is the default for HTTP in conventional web-server configurations?
+A. 80 B. 21 C. 25 D. 443
+Correct Answer: A. 80
+Explanation: HTTP commonly uses TCP port 80. HTTPS conventionally uses TCP port 443, although protocols can be configured to use other ports.
+114. Which port is conventionally associated with HTTPS over TCP?
+A. 21 B. 443 C. 110 D. 53
+Correct Answer: B. 443
+Explanation: TCP port 443 is the standard port for HTTPS over TCP. HTTP/3 uses QUIC over UDP and conventionally uses UDP port 443.
+115. Which port is traditionally associated with FTP control connections?
+A. 25 B. 110 C. 21 D. 143
+Correct Answer: C. 21
+Explanation: Traditional FTP uses TCP port 21 for its control connection. Data connections use additional ports or connections depending on active or passive mode.
+116. Which port is conventionally used by SMTP for server-to-server email transfer without implicit TLS?
+A. 110 B. 143 C. 443 D. 25
+Correct Answer: D. 25
+Explanation: TCP port 25 is the traditional SMTP relay port. Mail submission by clients commonly uses port 587 with STARTTLS or port 465 for implicit TLS.
+117. Which port is conventionally used by POP3 without implicit TLS?
+A. 110 B. 143 C. 993 D. 53
+Correct Answer: A. 110
+Explanation: POP3 traditionally uses TCP port 110. POP3 over implicit TLS commonly uses port 995.
+118. Which port is conventionally used by IMAP without implicit TLS?
+A. 995 B. 143 C. 80 D. 21
+Correct Answer: B. 143
+Explanation: IMAP traditionally uses TCP port 143. IMAP over implicit TLS commonly uses port 993.
+119. Which protocol is most suitable when an application needs to minimize transport overhead and can tolerate occasional packet loss?
+A. SMTP B. TCP exclusively C. UDP D. POP3
+Correct Answer: C. UDP
+Explanation: UDP has a simpler transport mechanism than TCP and does not automatically retransmit lost datagrams. Real-time applications may prefer timeliness over waiting for every lost packet, although application-level reliability can still be implemented.
+120. A banking web application must protect login credentials while they travel between a browser and the server. Which should it use?
+A. FTP without encryption B. HTTP without TLS C. Telnet D. HTTPS
+Correct Answer: D. HTTPS
+Explanation: HTTPS uses TLS to protect data in transit and authenticate the server. Banks should also use strong authentication, secure session management, and other controls rather than relying on HTTPS alone.
+121. Which statement correctly compares TCP and UDP?
+A. TCP provides reliable ordered byte-stream delivery, whereas UDP provides datagram delivery without TCP's built-in reliability guarantees. B. UDP always guarantees delivery faster than TCP. C. TCP is used only for email, while UDP is used only for websites. D. TCP and UDP are application-layer web browsers.
+Correct Answer: A. TCP provides reliable ordered byte-stream delivery, whereas UDP provides datagram delivery without TCP's built-in reliability guarantees.
+Explanation: TCP includes mechanisms for sequencing, acknowledgments, and retransmission. UDP offers lower protocol overhead but leaves delivery, ordering, and recovery to the application when needed.
+122. Which protocol is used to transfer files between systems in its traditional form?
+A. SMTP B. FTP C. DHCP D. ARP
+Correct Answer: B. FTP
+Explanation: File Transfer Protocol (FTP) supports file transfer and directory operations. Traditional FTP does not encrypt credentials or data, so secure alternatives such as SFTP or FTPS are often preferred.
+123. Which statement about SFTP is correct?
+A. It is simply FTP using TCP port 25. B. It is an email-retrieval protocol. C. It is the SSH File Transfer Protocol, which operates over SSH. D. It is a type of DNS record.
+Correct Answer: C. It is the SSH File Transfer Protocol, which operates over SSH.
+Explanation: SFTP is a file-transfer protocol provided through SSH. It is distinct from FTPS, which adds TLS protection to FTP.
+124. Which protocol is responsible for translating a domain name into an IP address, rather than transferring email?
+A. SMTP B. IMAP C. POP3 D. DNS
+Correct Answer: D. DNS
+Explanation: DNS resolves names to records such as IP addresses. SMTP, IMAP, and POP3 serve different roles in email transmission and access.
+125. Which protocol is commonly used by a web browser to request a webpage?
+A. HTTP B. DHCP C. POP3 D. SMTP
+Correct Answer: A. HTTP
+Explanation: Browsers use HTTP or HTTPS to request web resources. DNS resolution may occur first to determine the server's address.
+126. What does TLS provide when used with HTTPS?
+A. Automatic removal of all malicious software B. Cryptographic protection of data in transit and authentication of the server C. Automatic allocation of private IP addresses D. A replacement for the DNS hierarchy
+Correct Answer: B. Cryptographic protection of data in transit and authentication of the server
+Explanation: Transport Layer Security helps protect confidentiality and integrity and supports certificate-based authentication. It does not verify every business claim made by a website or guarantee that the endpoint itself is uncompromised.
+127. Which protocol is connection-oriented?
+A. UDP B. DNS in every configuration C. TCP D. DHCP in every configuration
+Correct Answer: C. TCP
+Explanation: TCP establishes a logical connection before exchanging application data. UDP sends datagrams without a TCP-style connection establishment process.
+128. Which protocol is particularly suitable for interactive real-time voice or video applications that can manage packet loss themselves?
+A. POP3 B. SMTP C. FTP D. UDP
+Correct Answer: D. UDP
+Explanation: UDP avoids TCP's built-in retransmission and ordered-delivery requirements, which can help minimize delay. Real-time systems may use application protocols to manage timing, congestion, and loss.
+129. Which protocol is most directly associated with retrieving email folders and synchronizing message status?
+A. IMAP B. SMTP C. FTP D. DHCP
+Correct Answer: A. IMAP
+Explanation: IMAP supports server-based message access and folder management. SMTP sends or relays email, while IMAP allows users to access received messages.
+130. Which statement about traditional FTP is correct?
+A. It is inherently encrypted in all modes. B. It may transmit usernames, passwords, and file data without encryption. C. It is used only to resolve hostnames. D. It automatically creates digital certificates.
+Correct Answer: B. It may transmit usernames, passwords, and file data without encryption.
+Explanation: Traditional FTP does not provide encryption by default. FTPS and SFTP are different secure file-transfer approaches and should not be confused with ordinary FTP.
+131. Which protocol is used for outgoing email in a conventional email system?
+A. IMAP B. POP3 C. SMTP D. DHCP
+Correct Answer: C. SMTP
+Explanation: SMTP handles email submission and relay. IMAP and POP3 are used primarily for retrieving or accessing received mail.
+132. A browser loads a website securely, and its URL begins with https://. What does this most directly indicate?
+A. The website is guaranteed to be government-owned. B. The website contains no advertisements. C. The server cannot be compromised. D. The browser is using HTTPS, which protects the connection when TLS is correctly established.
+Correct Answer: D. The browser is using HTTPS, which protects the connection when TLS is correctly established.
+Explanation: HTTPS indicates HTTP over a TLS-protected connection. It does not by itself prove that the site is legitimate, safe, or operated by a trusted organization.
+133. Which protocol is traditionally associated with DNS queries?
+A. DNS B. FTP C. SMTP D. IMAP
+Correct Answer: A. DNS
+Explanation: DNS queries commonly use UDP port 53, while TCP port 53 is also used in cases such as zone transfers and some larger responses. DNS over TLS and DNS over HTTPS are additional encrypted options.
+134. Which port is the standard port for DNS over ordinary UDP or TCP?
+A. 23 B. 53 C. 67 D. 443
+Correct Answer: B. 53
+Explanation: DNS traditionally uses port 53 for both UDP and TCP. Other DNS transport methods, such as DNS over HTTPS, use different ports and protocols.
+135. Which of the following is NOT a transport-layer protocol?
+A. TCP B. UDP C. HTTP D. Both TCP and UDP are transport-layer protocols
+Correct Answer: C. HTTP
+Explanation: HTTP is an application-layer protocol, whereas TCP and UDP are transport-layer protocols. HTTP/1.1 and HTTP/2 commonly use TCP, while HTTP/3 uses QUIC over UDP.
+136. Which statement about TCP acknowledgments is correct?
+A. They are used only to assign domain names. B. They convert IPv4 addresses into MAC addresses. C. They replace application-layer encryption. D. They help TCP detect successfully received data and support reliable delivery.
+Correct Answer: D. They help TCP detect successfully received data and support reliable delivery.
+Explanation: TCP acknowledgments indicate received data, enabling retransmission when required. They are part of TCP's reliability mechanism and do not provide encryption.
+137. Which protocol is conventionally used for secure web browsing, rather than basic file transfer or email retrieval?
+A. HTTPS B. POP3 C. FTP D. DHCP
+Correct Answer: A. HTTPS
+Explanation: HTTPS is used for secure web communication. POP3 retrieves email, FTP transfers files, and DHCP supplies network configuration.
+138. A mail application must send a message and then access the recipient's inbox. Which protocol pairing correctly represents these two functions?
+A. POP3 for sending; SMTP for retrieving B. SMTP for sending; IMAP for accessing received mail C. DHCP for sending; DNS for retrieving D. FTP for sending; UDP for retrieving
+Correct Answer: B. SMTP for sending; IMAP for accessing received mail
+Explanation: SMTP handles message submission and relay, while IMAP provides access to received mail stored on a server. POP3 is another retrieval option, but it does not replace SMTP for sending.
+139. Which statement about UDP is correct?
+A. It always retransmits every lost packet. B. It guarantees that packets arrive in order. C. It does not provide TCP-style built-in acknowledgments and retransmissions for reliable delivery. D. It is an email attachment format.
+Correct Answer: C. It does not provide TCP-style built-in acknowledgments and retransmissions for reliable delivery.
+Explanation: UDP provides lightweight datagram transport without TCP's built-in reliability mechanisms. Applications that need reliability over UDP must implement suitable mechanisms themselves.
+140. Which protocol is most appropriate for secure remote file transfer using an SSH connection?
+A. POP3 B. SMTP C. HTTP D. SFTP
+Correct Answer: D. SFTP
+Explanation: SFTP transfers files over SSH and can protect credentials and file data in transit. It is distinct from FTP and from FTPS, which uses TLS.
+Section 6: Web Browser, Search Engine, Website and Webpage (141–160)
+141. Which of the following is a web browser?
+A. Google Chrome B. Google Search C. Bing Search D. DuckDuckGo Search
+Correct Answer: A. Google Chrome
+Explanation: A web browser retrieves and displays web resources. Search engines help users discover resources and are typically accessed through a browser.
+142. Which of the following is a search engine?
+A. Microsoft Word B. Google Search C. Mozilla Firefox D. Windows Explorer
+Correct Answer: B. Google Search
+Explanation: Google Search indexes and retrieves information to help users find web resources. Chrome and Firefox are browsers, not search engines.
+143. What is the primary function of a web browser?
+A. To manufacture network cables B. To assign IP addresses to every device on the internet C. To retrieve, interpret and display web content D. To replace the operating system
+Correct Answer: C. To retrieve, interpret and display web content
+Explanation: Browsers process web resources, including HTML, CSS, and JavaScript, to present webpages and support user interaction. They also handle navigation, caching, and web security features.
+144. What is a website?
+A. A single IP packet B. A physical network connector C. A computer's MAC address D. A collection of related web resources commonly organized under a domain or web address
+Correct Answer: D. A collection of related web resources commonly organized under a domain or web address
+Explanation: A website typically contains multiple webpages and other resources. A webpage is an individual document or resource that may form part of that website.
+145. Which statement correctly distinguishes a webpage from a website?
+A. A webpage is an individual web resource, while a website is a collection of related resources. B. A webpage must always contain a video. C. A website is necessarily a search engine. D. A webpage cannot be accessed using a browser.
+Correct Answer: A. A webpage is an individual web resource, while a website is a collection of related resources.
+Explanation: A webpage is usually one document displayed in a browser. A website commonly groups many pages under a common domain, navigation system, or purpose.
+146. Which language primarily defines the structure and content of a conventional webpage?
+A. SQL B. HTML C. TCP D. DHCP
+Correct Answer: B. HTML
+Explanation: HyperText Markup Language (HTML) defines the structure and semantic content of webpages. CSS controls presentation, while JavaScript commonly provides interactive behaviour.
+147. Which technology is primarily used to control the visual presentation of HTML webpages?
+A. DNS B. SMTP C. CSS D. DHCP
+Correct Answer: C. CSS
+Explanation: Cascading Style Sheets (CSS) control properties such as colour, typography, spacing, and layout. HTML defines structure, while JavaScript can modify behaviour and content dynamically.
+148. Which technology commonly adds interactive behaviour to webpages?
+A. FTP B. POP3 C. Ethernet D. JavaScript
+Correct Answer: D. JavaScript
+Explanation: JavaScript can respond to user actions, update webpage content, validate forms, and communicate with servers. It is distinct from HTML's structural role and CSS's presentation role.
+149. Which of the following is NOT a web browser?
+A. Microsoft Excel B. Mozilla Firefox C. Safari D. Microsoft Edge
+Correct Answer: A. Microsoft Excel
+Explanation: Excel is a spreadsheet application. Firefox, Safari, and Edge are web browsers used to access web resources.
+150. A user types “best computer networking books” into Google Search. Google Search is acting as a:
+A. Router B. Search engine C. Modem D. Network repeater
+Correct Answer: B. Search engine
+Explanation: A search engine helps retrieve relevant indexed web resources based on a query. The browser is the software through which the user commonly accesses that service.
+151. Which statement about a URL is correct?
+A. Every URL consists only of an IP address. B. URLs are used exclusively for email attachments. C. A URL may include a scheme, hostname, path and query parameters. D. A URL is the same thing as a MAC address.
+Correct Answer: C. A URL may include a scheme, hostname, path and query parameters.
+Explanation: A URL can identify a resource through components such as https, example.com, /search, and ?q=network. Not every URL contains every possible component.
+152. Which HTTP status code generally means that a requested resource was not found?
+A. 200 B. 301 C. 500 D. 404
+Correct Answer: D. 404
+Explanation: HTTP status 404 Not Found indicates that the server cannot find the requested resource or is unwilling to disclose that it exists. 200 OK indicates success, while 500 signals a server-side error.
+153. Which HTTP status code usually indicates a successful request?
+A. 200 B. 403 C. 404 D. 503
+Correct Answer: A. 200
+Explanation: 200 OK indicates successful handling of a request. Other successful response codes exist, including 201 Created and 204 No Content.
+154. Which status code indicates that access to a resource is forbidden?
+A. 301 B. 403 C. 404 D. 200
+Correct Answer: B. 403
+Explanation: 403 Forbidden indicates that the server refuses to fulfil the request. A 401 Unauthorized response is associated with missing or invalid authentication credentials, although implementations may vary.
+155. Which of the following best describes a web server?
+A. A program that only searches for information in printed books B. A physical cable used for Ethernet C. Software or a system that responds to requests for web resources D. A protocol for downloading email exclusively
+Correct Answer: C. Software or a system that responds to requests for web resources
+Explanation: Web-server software handles HTTP requests and delivers web content or forwards requests to application components. The term can also refer informally to the computer hosting that software.
+156. What does a browser cache commonly store?
+A. Only the user's bank PIN B. The internet's entire global routing table C. Every website's private database D. Copies of selected resources to reduce repeated downloads and improve performance
+Correct Answer: D. Copies of selected resources to reduce repeated downloads and improve performance
+Explanation: Browser caching stores eligible resources such as images, stylesheets, and scripts. Cache behaviour depends on HTTP headers, browser policies, and user settings.
+157. Which of the following is an example of a search engine rather than a browser?
+A. Bing Search B. Safari C. Firefox D. Opera
+Correct Answer: A. Bing Search
+Explanation: Bing Search is a search service, whereas Safari, Firefox, and Opera are browsers. A browser can access many different search engines.
+158. What does responsive web design aim to achieve?
+A. It forces every website to use one fixed screen size. B. It allows a webpage layout to adapt to different screen sizes and devices. C. It replaces all HTML with email protocols. D. It prevents websites from working on smartphones.
+Correct Answer: B. It allows a webpage layout to adapt to different screen sizes and devices.
+Explanation: Responsive design uses flexible layouts, images, and CSS media queries to accommodate different viewports. It improves usability across phones, tablets, laptops, and desktops.
+159. Which of the following is generally a client-side technology in conventional web development?
+A. A physical Ethernet cable B. A bank's central database server hardware C. JavaScript executed in a browser D. A router's power supply
+Correct Answer: C. JavaScript executed in a browser
+Explanation: JavaScript often executes in the browser to provide interactive behaviour. JavaScript can also run on servers, so its classification depends on where it executes.
+160. Which statement about a website's domain name is correct?
+A. It is always the same as the site's MAC address. B. It must contain exactly four decimal numbers. C. It is assigned automatically by a web browser every time a page loads. D. It is a human-readable name that DNS can resolve to relevant records.
+Correct Answer: D. It is a human-readable name that DNS can resolve to relevant records.
+Explanation: Domain names such as example.com provide readable identifiers for internet resources. DNS resolves them to records used by applications, including IP address records.
+Section 7: Upload, Download, Bandwidth, Wi-Fi, Bluetooth and Hotspot (161–185)
+161. What does uploading mean in computer networking?
+A. Transferring data from a local device to a remote system B. Receiving data from a remote system to a local device C. Deleting a file permanently D. Compressing a file without transferring it
+Correct Answer: A. Transferring data from a local device to a remote system
+Explanation: Uploading sends data from a local device to a remote destination, such as a cloud server or website. Downloading is the reverse direction from the user's perspective.
+162. What does downloading mean?
+A. Sending a file from a local computer to a server B. Receiving data from a remote system onto a local device C. Connecting two computers using Bluetooth D. Converting an IP address into a MAC address
+Correct Answer: B. Receiving data from a remote system onto a local device
+Explanation: Downloading transfers data from a remote source to a local device. Download speed depends on factors including available bandwidth, server performance, congestion, and protocol overhead.
+163. What is bandwidth in digital networking commonly used to describe?
+A. The physical weight of a router B. The number of files stored on a computer C. The data-carrying capacity of a communication link per unit of time D. The number of characters in a URL
+Correct Answer: C. The data-carrying capacity of a communication link per unit of time
+Explanation: Network bandwidth is commonly expressed in bits per second, such as Mbps or Gbps. It represents a link's capacity, not necessarily the actual throughput experienced by a user.
+164. Which unit is most commonly used to express network data transmission rates?
+A. Byte only B. Hertz only C. Metre per second D. Bits per second
+Correct Answer: D. Bits per second
+Explanation: Network rates are commonly expressed as bps, Kbps, Mbps, or Gbps. File sizes are often expressed in bytes, so confusing bits and bytes can produce incorrect download-time estimates.
+165. A connection is rated at 80 Mbps. Ignoring overhead and other limitations, what is its maximum theoretical data rate in megabytes per second?
+A. 10 MB/s B. 8 MB/s C. 40 MB/s D. 80 MB/s
+Correct Answer: A. 10 MB/s
+Explanation: There are 8 bits in a byte, so  MB/s. Actual download rates are often lower because of protocol overhead, congestion, and other limitations.
+166. Which technology is commonly used for wireless local area networking?
+A. SMTP B. Wi-Fi C. FTP D. SQL
+Correct Answer: B. Wi-Fi
+Explanation: Wi-Fi is based on IEEE 802.11 wireless networking standards. It allows compatible devices to connect to a local network without Ethernet cables.
+167. Which technology is commonly used for short-range wireless communication between personal devices?
+A. DNS B. WAN routing C. Bluetooth D. SMTP
+Correct Answer: C. Bluetooth
+Explanation: Bluetooth is commonly used for short-range connections such as wireless headphones, keyboards, mice, and wearable devices. It is distinct from Wi-Fi, which is generally used for wireless LAN connectivity.
+168. What is a mobile hotspot?
+A. A type of network printer B. A DNS record used for email C. A physical cable connecting two routers D. A feature or device that shares an internet connection with other devices
+Correct Answer: D. A feature or device that shares an internet connection with other devices
+Explanation: A mobile hotspot commonly shares a phone's cellular internet connection through Wi-Fi. Some hotspots can share connectivity through USB or other supported methods.
+169. Which statement correctly distinguishes Wi-Fi from Bluetooth?
+A. Wi-Fi is commonly used for local network and internet access, while Bluetooth is commonly used for short-range device-to-device connections. B. Bluetooth is a search engine, while Wi-Fi is an email protocol. C. Wi-Fi always requires a satellite connection. D. Bluetooth can operate only through Ethernet cables.
+Correct Answer: A. Wi-Fi is commonly used for local network and internet access, while Bluetooth is commonly used for short-range device-to-device connections.
+Explanation: Wi-Fi typically connects devices to a wireless LAN, which may provide internet access. Bluetooth commonly supports peripherals and personal-device connections, though the technologies have overlapping use cases.
+170. Which of the following most directly affects the time required to download a large file?
+A. The colour of the browser window B. Available throughput and the size of the file C. The number of keyboard keys D. The file's name alone
+Correct Answer: B. Available throughput and the size of the file
+Explanation: Larger files require more data transfer, while higher throughput can reduce transfer time. Server speed, network congestion, latency, and protocol overhead can also affect the result.
+171. A 100 MB file is downloaded at a steady rate of 10 MB/s. Ignoring overhead, approximately how long will the download take?
+A. 1 second B. 5 seconds C. 10 seconds D. 100 seconds
+Correct Answer: C. 10 seconds
+Explanation: Time equals file size divided by transfer rate: . This assumes the rate remains constant and that the units use the same convention.
+172. Which statement about bandwidth and latency is correct?
+A. They are exactly the same measurement. B. Latency is always measured in megabytes. C. Bandwidth measures only physical cable length. D. Bandwidth describes data-carrying capacity, while latency measures delay.
+Correct Answer: D. Bandwidth describes data-carrying capacity, while latency measures delay.
+Explanation: Bandwidth is typically measured in bits per second, while latency is measured in units of time, such as milliseconds. A connection may have high bandwidth but still experience noticeable delay.
+173. Which wireless technology is generally the most appropriate for connecting a smartphone to wireless earbuds?
+A. Bluetooth B. FTP C. SMTP D. DHCP
+Correct Answer: A. Bluetooth
+Explanation: Wireless earbuds commonly use Bluetooth for audio communication with smartphones and computers. Wi-Fi is more commonly used for general local network connectivity.
+174. Which statement about a Wi-Fi access point is correct?
+A. It is always a search engine. B. It allows wireless devices to connect to a network. C. It converts every webpage into an email. D. It can operate only with IPv6.
+Correct Answer: B. It allows wireless devices to connect to a network.
+Explanation: A wireless access point provides Wi-Fi connectivity to compatible devices. It is often connected to a wired LAN, while a wireless router commonly integrates access-point and routing functions.
+175. Which factor can reduce the effective speed of a Wi-Fi connection?
+A. The use of a human-readable domain name B. The existence of a website homepage C. Wireless interference and physical obstacles D. The use of a keyboard shortcut
+Correct Answer: C. Wireless interference and physical obstacles
+Explanation: Radio interference, walls, distance, congestion, and equipment limitations can reduce Wi-Fi throughput. The subscribed internet speed does not guarantee the same speed over every wireless connection.
+176. Which statement about hotspot security is most appropriate?
+A. A hotspot is automatically safe because it is wireless. B. A public hotspot always encrypts every application session end-to-end. C. Sharing a hotspot never requires a password. D. A hotspot should use appropriate security settings, and sensitive services should use HTTPS or other secure connections.
+Correct Answer: D. A hotspot should use appropriate security settings, and sensitive services should use HTTPS or other secure connections.
+Explanation: Hotspot security depends on configuration and the security of the devices and applications involved. HTTPS protects the connection to the relevant website, but users must still verify the site and maintain good security practices.
+177. Which term refers to the amount of useful data successfully delivered over a network per unit of time?
+A. Throughput B. Domain name C. MAC address D. Topology
+Correct Answer: A. Throughput
+Explanation: Throughput measures actual data transfer achieved over time. It is often lower than the theoretical bandwidth because of congestion, overhead, errors, and other constraints.
+178. A user can browse websites but experiences a long delay before a remote server begins responding. Which metric is most directly relevant to this delay?
+A. File extension B. Latency C. Screen resolution D. MAC address length
+Correct Answer: B. Latency
+Explanation: Latency measures the time taken for data to travel or for a response to be received. High latency can make interactive applications feel slow even when bandwidth is high.
+179. Which of the following is an advantage of using Wi-Fi instead of a wired Ethernet connection for a laptop?
+A. It guarantees higher speed in every environment. B. It eliminates all cybersecurity risks. C. It provides mobility without requiring a physical network cable. D. It removes the need for an IP address.
+Correct Answer: C. It provides mobility without requiring a physical network cable.
+Explanation: Wi-Fi lets users move within the coverage area without maintaining a wired connection. Wired Ethernet may still provide greater stability or predictable performance in some environments.
+180. Which statement about Bluetooth range is correct?
+A. All Bluetooth devices have exactly the same range. B. Bluetooth always works across entire countries. C. Bluetooth requires a dedicated public IP address for every device. D. Effective range depends on the Bluetooth class, radio conditions, device design, and obstacles.
+Correct Answer: D. Effective range depends on the Bluetooth class, radio conditions, device design, and obstacles.
+Explanation: Bluetooth range varies with transmit power, receiver sensitivity, antenna design, environment, and interference. It should not be assumed that every Bluetooth device has the same operating distance.
+181. Which of the following best describes a metered internet connection?
+A. A connection whose usage may be limited or charged according to data consumption B. A connection that cannot use IP addresses C. A connection restricted to sending email only D. A connection that must use a hub
+Correct Answer: A. A connection whose usage may be limited or charged according to data consumption
+Explanation: Metered connections commonly impose a data allowance or usage-based cost. Mobile cellular data plans are a common example.
+182. Which statement correctly distinguishes bits per second from bytes per second?
+A. One bit equals eight bytes. B. One byte contains eight bits. C. Both units always represent the same quantity. D. A megabit is always one million megabytes.
+Correct Answer: B. One byte contains eight bits.
+Explanation: One byte is conventionally eight bits. Therefore, a rate of 40 Mbps corresponds to a theoretical maximum of 5 MB/s before overhead and other limitations.
+183. A user connects a laptop to a phone's hotspot using Wi-Fi. Which component typically provides the internet connection if the phone uses mobile data?
+A. The laptop's keyboard B. A DNS record alone C. The phone's cellular network connection D. Bluetooth audio
+Correct Answer: C. The phone's cellular network connection
+Explanation: The phone shares its cellular internet connection with the laptop through the hotspot. Wi-Fi supplies the local connection, while the cellular network supplies the wider internet access.
+184. Which statement about download speed is correct?
+A. It is always identical to upload speed. B. It depends only on the browser's name. C. It cannot be affected by network congestion. D. It can differ from upload speed depending on the connection and service plan.
+Correct Answer: D. It can differ from upload speed depending on the connection and service plan.
+Explanation: Many internet services provide different upload and download capacities. Symmetric services offer equal nominal rates, but actual throughput may still differ.
+185. Which technology is commonly used to connect a wireless keyboard to a computer without a traditional network access point?
+A. Bluetooth B. SMTP C. DNS D. HTTP
+Correct Answer: A. Bluetooth
+Explanation: Bluetooth supports short-range peripheral connections, including many wireless keyboards and mice. Some peripherals instead use proprietary wireless USB receivers.
+Section 8: Integrated Networking Concepts and Exam-Level Applications (186–200)
+186. A bank branch has 25 computers connected to a switch. The switch connects to a router, which provides access to the bank's central network. Which statement is correct?
+A. The switch resolves every domain name, while the router stores all webpages. B. The switch forwards local Ethernet frames, while the router forwards IP packets between networks. C. The router can operate only as a signal repeater. D. The switch automatically encrypts all application data.
+Correct Answer: B. The switch forwards local Ethernet frames, while the router forwards IP packets between networks.
+Explanation: The switch primarily provides Layer 2 connectivity within the branch LAN, while the router connects the LAN to other IP networks. Banking applications also require appropriate authentication, encryption, and access controls.
+187. A user can access a website using its IP address but cannot access it using its domain name. Which service should be investigated first?
+A. Bluetooth B. POP3 C. DNS D. FTP
+Correct Answer: C. DNS
+Explanation: DNS resolves domain names to relevant records, including IP addresses. If direct IP access works but name-based access fails, DNS configuration or resolution is a logical place to investigate, although virtual hosting and HTTPS certificates can complicate this test.
+188. Which protocol and port combination is correctly matched?
+A. HTTP — TCP port 25 B. FTP control — TCP port 443 C. SMTP relay — TCP port 110 D. HTTPS over TCP — TCP port 443
+Correct Answer: D. HTTPS over TCP — TCP port 443
+Explanation: HTTPS conventionally uses TCP port 443, while HTTP traditionally uses TCP port 80. SMTP relay normally uses TCP port 25, FTP control uses TCP port 21, and POP3 traditionally uses TCP port 110.
+189. A network administrator wants to prevent a failed endpoint cable from disconnecting other computers. Which topology is generally most appropriate?
+A. Star B. Bus C. Single-path ring without bypass D. Shared backbone with no alternative path
+Correct Answer: A. Star
+Explanation: In a star topology, each endpoint normally has its own link to a central switch. A single endpoint-link failure usually isolates only that endpoint, although central-switch failure can affect the whole connected group.
+190. Which statement correctly describes the relationship between DNS and DHCP?
+A. Both are exclusively email protocols. B. DNS resolves names to records, while DHCP supplies network configuration to clients. C. DHCP translates HTML into CSS, while DNS transfers files. D. DNS assigns every computer a permanent MAC address.
+Correct Answer: B. DNS resolves names to records, while DHCP supplies network configuration to clients.
+Explanation: DNS helps applications locate services by name, while DHCP automates configuration such as IP addresses and default gateways. They are separate services but are commonly used together in the same network.
+191. A user sends a large file over a connection rated at 64 Mbps. Ignoring overhead, approximately how many megabytes per second does this represent?
+A. 64 MB/s B. 16 MB/s C. 8 MB/s D. 4 MB/s
+Correct Answer: C. 8 MB/s
+Explanation: Divide the rate in megabits per second by 8 to obtain megabytes per second:  MB/s. Actual throughput may be lower due to overhead and network conditions.
+192. Which of the following best describes the function of a subnet mask in IPv4?
+A. It encrypts the IP address. B. It translates domain names into URLs. C. It identifies the network's physical cable type. D. It helps determine which bits of an IP address represent the network prefix and which represent host addresses.
+Correct Answer: D. It helps determine which bits of an IP address represent the network prefix and which represent host addresses.
+Explanation: A subnet mask identifies the network portion of an IPv4 address through its bit pattern. Devices use this information to determine whether a destination is local or should be reached through a router.
+193. Which of the following is the most appropriate protocol for accessing a secured website that handles online banking transactions?
+A. HTTPS B. FTP without encryption C. Telnet D. HTTP without TLS
+Correct Answer: A. HTTPS
+Explanation: HTTPS protects web traffic through TLS encryption and integrity protection, and it supports server authentication. It is essential for secure online banking but must be combined with secure application design and appropriate authentication.
+194. A device has the IP address 192.168.10.25/24. Which address is in the same IPv4 subnet, assuming the conventional /24 network?
+A. 192.168.11.25 B. 192.168.10.200 C. 192.168.20.25 D. 192.168.9.25
+Correct Answer: B. 192.168.10.200
+Explanation: A /24 subnet uses the first three octets as the network prefix. Both 192.168.10.25 and 192.168.10.200 belong to 192.168.10.0/24.
+195. Which statement about an IP packet travelling across multiple routers is correct?
+A. Its Ethernet source and destination MAC addresses must remain unchanged throughout the entire journey. B. Its IP address must be replaced by a domain name at every router. C. The link-layer frame is generally replaced at each routed hop, while the source and destination IP addresses usually remain the same unless translation occurs. D. Every router converts the packet into an email message.
+Correct Answer: C. The link-layer frame is generally replaced at each routed hop, while the source and destination IP addresses usually remain the same unless translation occurs.
+Explanation: Routers remove the incoming link-layer framing and encapsulate the forwarded IP packet in a new frame for the next link. Network Address Translation (NAT), tunnelling, and other mechanisms can modify or encapsulate IP addressing under specific circumstances.
+196. Which technology allows multiple private IPv4 devices to share a public IPv4 address for internet access?
+A. SMTP B. DNS caching C. Bluetooth pairing D. Network Address Translation (NAT), commonly with port translation
+Correct Answer: D. Network Address Translation (NAT), commonly with port translation
+Explanation: NAT translates IP addresses between private and external networks. Network Address Port Translation (NAPT/PAT) also uses transport-layer port numbers to distinguish multiple connections sharing an external address.
+197. Which statement about the OSI model is correct?
+A. Routing is primarily associated with the network layer, Layer 3. B. The physical layer is responsible for DNS name resolution. C. The application layer is Layer 1. D. Ethernet MAC addressing belongs exclusively to the transport layer.
+Correct Answer: A. Routing is primarily associated with the network layer, Layer 3.
+Explanation: The OSI network layer handles logical addressing and routing, while the data-link layer handles technologies such as Ethernet framing and MAC addressing. DNS is an application-layer protocol.
+198. A user connects to a public Wi-Fi network and enters banking credentials on a website using correctly configured HTTPS. Which statement is most accurate?
+A. Public Wi-Fi makes HTTPS ineffective in every case. B. HTTPS helps protect credentials in transit, but users must still verify the website and remain alert to other threats. C. HTTPS guarantees that the user's device contains no malware. D. HTTPS prevents every form of phishing.
+Correct Answer: B. HTTPS helps protect credentials in transit, but users must still verify the website and remain alert to other threats.
+Explanation: HTTPS protects the connection to the authenticated server and reduces the risk of interception or modification in transit. It does not prevent users from entering credentials on a fraudulent website or protect a compromised device.
+199. Which combination correctly matches the technologies with their typical uses?
+A. DNS — sending email; SMTP — assigning IP addresses; DHCP — displaying webpages B. TCP — resolving domain names; UDP — formatting webpages; HTTP — assigning IP addresses C. DNS — resolving domain names; SMTP — sending email; DHCP — assigning network configuration D. FTP — routing IP packets; HTTP — assigning MAC addresses; IMAP — encrypting all disk files
+Correct Answer: C. DNS — resolving domain names; SMTP — sending email; DHCP — assigning network configuration
+Explanation: DNS provides name-resolution services, SMTP handles email submission and relay, and DHCP supplies IP configuration to clients. TCP, UDP, HTTP, FTP, and IMAP each have distinct roles in network communication.
+200. A bank wants to connect geographically dispersed branches, allow employees to access internal applications securely, and provide reliable access to centralized systems. Which design principle is most appropriate?
+A. Use a single Ethernet hub for all branches and rely on MAC addresses for internet-wide routing. B. Use public Wi-Fi without authentication for all internal applications. C. Replace IP addressing with domain names and eliminate routers. D. Use a WAN to interconnect branch networks, routers to forward IP traffic, and appropriate security controls for internal applications.
+Correct Answer: D. Use a WAN to interconnect branch networks, routers to forward IP traffic, and appropriate security controls for internal applications.
+Explanation: A WAN connects geographically separated branch networks, while routers forward traffic between IP networks. Secure banking infrastructure should also use appropriate authentication, access controls, encryption, monitoring, and resilience measures.

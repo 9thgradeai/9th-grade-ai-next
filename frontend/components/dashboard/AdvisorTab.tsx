@@ -69,7 +69,7 @@ export default function AdvisorTab() {
   return (
     <AiTaskPanel
       title="ক্যারিয়ার ও পরীক্ষা উপদেশক"
-      description="তোমার ব্যাকগ্রাউন্ড দাও — AI তোমার উপযুক্ত পরীক্ষা এবং ব্যক্তিগতকৃত প্রস্তুতির পরিকল্পনা দেবে।"
+      description="তোমার ব্যাকগ্রাউন্ড দাও, AI তোমার উপযুক্ত পরীক্ষা এবং ব্যক্তিগতকৃত প্রস্তুতির পরিকল্পনা দেবে।"
       submitLabel="পরিকল্পনা নাও"
       loadingLabel="তৈরি হচ্ছে…"
       loading={loading}

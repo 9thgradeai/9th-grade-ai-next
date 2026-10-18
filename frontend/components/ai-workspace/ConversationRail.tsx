@@ -1,6 +1,6 @@
 "use client";
 
-// Workspace conversation rail — brand mark, real client-side search over the
+// Workspace conversation rail, brand mark, real client-side search over the
 // loaded conversation list, then the grouped history. Used as the desktop
 // sidebar and inside the mobile slide-over drawer.
 

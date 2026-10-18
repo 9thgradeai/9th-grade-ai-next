@@ -31,7 +31,7 @@ export default function AnswerEvaluatorTab() {
       await navigator.clipboard?.writeText(result.modelAnswer);
       toast.success("মডেল উত্তর কপি হয়েছে");
     } catch {
-      toast.error("কপি করা যায়নি — আবার চেষ্টা করো");
+      toast.error("কপি করা যায়নি, আবার চেষ্টা করো");
     }
   };
 
@@ -61,7 +61,7 @@ export default function AnswerEvaluatorTab() {
   return (
     <AiTaskPanel
       title="উত্তর মূল্যায়ন"
-      description="তোমার লেখা উত্তর দাও — AI বুঝবে কতটা সঠিক, কোথায় ঘাটতি আছে এবং কীভাবে ভালো করবে।"
+      description="তোমার লেখা উত্তর দাও, AI বুঝবে কতটা সঠিক, কোথায় ঘাটতি আছে এবং কীভাবে ভালো করবে।"
       submitLabel="মূল্যায়ন করো"
       loadingLabel="মূল্যায়ন হচ্ছে…"
       loading={loading}
@@ -144,7 +144,7 @@ export default function AnswerEvaluatorTab() {
             )}
             {result.improvementTips.length === 0 && result.gaps.length === 0 && (
               <p className="text-sm text-[var(--dashboard-text-muted)]">
-                আর কোনো পরামর্শ নেই — দারুণ উত্তর!
+                আর কোনো পরামর্শ নেই, দারুণ উত্তর!
               </p>
             )}
           </>

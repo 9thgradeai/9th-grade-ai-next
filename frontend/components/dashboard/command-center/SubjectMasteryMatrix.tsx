@@ -116,7 +116,7 @@ function SubjectRow({
                           <span
                             className="ml-1 inline-block align-middle text-[10px] font-mono font-bold px-1.5 py-px rounded-full border"
                             style={{ color: "var(--dashboard-warning)", borderColor: "color-mix(in srgb, var(--dashboard-warning) 35%, transparent)", background: "var(--dashboard-warning-subtle)" }}
-                            title={t(lang, "১৪+ দিন ধরা হয়নি — ভুলে যাওয়ার ঝুঁকি", "Untouched for 14+ days — forgetting risk")}
+                            title={t(lang, "১৪+ দিন ধরা হয়নি, ভুলে যাওয়ার ঝুঁকি", "Untouched for 14+ days, forgetting risk")}
                           >
                             {t(lang, "ঝিমন্ত", "stale")}
                           </span>
@@ -161,7 +161,7 @@ export default function SubjectMasteryMatrix({ intelligence, onDrill }: SubjectM
       >
         <p className="text-3xl mb-3">📚</p>
         <p className="text-sm" style={{ color: "var(--dashboard-text-secondary)" }}>
-          {t(lang, "এখনো কোনো বিষয়ে প্রশ্ন সমাধান করা হয়নি।", "No subject attempts yet — start practicing to unlock subject analytics.")}
+          {t(lang, "এখনো কোনো বিষয়ে প্রশ্ন সমাধান করা হয়নি।", "No subject attempts yet, start practicing to unlock subject analytics.")}
         </p>
       </div>
     );

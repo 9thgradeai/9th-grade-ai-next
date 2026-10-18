@@ -10,7 +10,7 @@ import { EASE_OUT_EXPO } from "@/lib/motion/variants";
 
 /**
  * Sample dashboard visualization. Metrics animate exactly once on entering
- * the viewport, then hold still — no continuous loops. Values are clearly
+ * the viewport, then hold still, no continuous loops. Values are clearly
  * labelled as a sample preview by the section shell (data honesty).
  */
 
@@ -89,7 +89,7 @@ export default function AnalyticsVisualization() {
           </div>
         </div>
         <p className="text-sm leading-relaxed text-zinc-400">
-          Rolling accuracy across your last 200 attempts — trend-adjusted, not a lifetime average.
+          Rolling accuracy across your last 200 attempts, trend-adjusted, not a lifetime average.
         </p>
       </Card>
 
@@ -177,7 +177,7 @@ export default function AnalyticsVisualization() {
           <WeaknessCount />
         </p>
         <ul className="mt-4 space-y-1.5" aria-hidden="true">
-          {["সমাস — compound forms", "Percentage shortcuts", "Map-based geography"].map((item, i) => (
+          {["সমাস, compound forms", "Percentage shortcuts", "Map-based geography"].map((item, i) => (
             <motion.li
               key={item}
               className="flex items-center gap-2 font-mono text-xs text-zinc-400"

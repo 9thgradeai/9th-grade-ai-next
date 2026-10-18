@@ -517,6 +517,13 @@
    BASE STYLES
    ══════════════════════════════════════════════════════════════════════════════ */
 
+/* Belt-and-braces against the white flash: the canvas itself is dark from the
+   very first paint, so no gap (overscroll rubber-band, early paint before
+   body rules apply) can ever surface the browser-default white. */
+html {
+  background: #04050b;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
@@ -1230,7 +1237,7 @@ hr {
   /* Dark-first data-viz palette — tuned for dark surfaces (lower saturation
      than light-mode chart colors so series stay distinguishable without
      screaming). Used by PerformanceCard metric themes. */
-  --viz-violet: oklch(0.72 0.17 292);
+  --viz-violet: oklch(0.72 0.17 230);
   --viz-cyan: oklch(0.81 0.12 200);
   --viz-emerald: oklch(0.75 0.17 155);
   --viz-lime: oklch(0.86 0.15 130);
@@ -1253,7 +1260,7 @@ hr {
   --border-strong: oklch(0.735 0.038 78);
   /* Light-mode chart colors run deeper than dark so series hold contrast on
      white without going neon. Pairs with the dark --viz-* set above. */
-  --viz-violet: oklch(0.55 0.20 292);
+  --viz-violet: oklch(0.55 0.20 230);
   --viz-cyan: oklch(0.60 0.13 200);
   --viz-emerald: oklch(0.55 0.15 155);
   --viz-lime: oklch(0.60 0.14 130);
@@ -1544,6 +1551,26 @@ html.light body,
     opacity: 1;
     transform: none;
   }
+}
+
+/* PageHero + AuroraOrb run on pure CSS (no framer-motion) so the motion
+   runtime stays out of every content page's initial bundle. */
+.page-hero-rise {
+  animation: heroRise 0.55s var(--ease-expo) both;
+}
+
+@keyframes aurora-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(var(--aurora-breathe-to, 1.07));
+  }
+}
+
+.aurora-breathe {
+  animation: aurora-breathe var(--aurora-duration, 12s) ease-in-out var(--aurora-delay, 0s) infinite;
 }
 
 .hero-sub {

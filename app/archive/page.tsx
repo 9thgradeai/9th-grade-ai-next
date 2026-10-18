@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import { Archive, CalendarDots, CaretRight } from "@phosphor-icons/react/dist/ssr";
 import PublicShell from "@/components/public/PublicShell";
@@ -9,25 +10,25 @@ import { prisma } from "~backend/db";
 
 export const revalidate = 3600;
 
-export const metadata: Metadata = {
-  alternates: { canonical: "/archive" },
-  title: "Practice by Exam Track — 9Th-Grade AI",
+export const metadata: Metadata = pageMeta({
+  path: "/archive",
+  title: "Practice by Exam Track | 9Th-Grade AI",
   description:
-    "Practice questions organized by exam track — BCS, Bank, Teacher Recruitment, and other competitive exams — with solutions and full-length practice mode.",
-};
+    "Practice questions organized by exam track, BCS, Bank, Teacher Recruitment, and other competitive exams, with solutions and full-length practice mode.",
+});
 
 const accentStyles: Record<string, string> = {
   emerald: "from-emerald-500/15 to-emerald-500/5 border-emerald-500/25 text-emerald-400",
   sky: "from-sky-500/15 to-sky-500/5 border-sky-400/25 text-sky-400",
   yellow: "from-yellow-500/15 to-yellow-500/5 border-yellow-400/25 text-yellow-400",
-  purple: "from-purple-500/15 to-purple-500/5 border-purple-400/25 text-purple-400",
+  cyan: "from-cyan-500/15 to-cyan-500/5 border-cyan-400/25 text-cyan-400",
 };
 
 const tracks = [
   { name: "BCS Preliminary", icon: "🎯", accent: "emerald", status: "ACTIVE" },
   { name: "BCS Written", icon: "📄", accent: "sky", status: "AVAILABLE" },
   { name: "Teacher Recruitment", icon: "👨‍🏫", accent: "yellow", status: "ACTIVE" },
-  { name: "Bank Jobs", icon: "🏦", accent: "purple", status: "NEW" },
+  { name: "Bank Jobs", icon: "🏦", accent: "cyan", status: "NEW" },
 ];
 
 export default async function ArchivePage() {
@@ -44,10 +45,10 @@ export default async function ArchivePage() {
         eyebrow="PRACTICE BY TRACK"
         title="Questions Organized by"
         highlight="Your Exam Track"
-        description="Practice questions mapped to the major recruitment exams — with detailed solutions and full-length practice mode. Search, filter, and drill what matters."
+        description="Practice questions mapped to the major recruitment exams, with detailed solutions and full-length practice mode. Search, filter, and drill what matters."
         actions={[
           { href: "/dashboard?tab=question-bank", label: "Browse Question Bank" },
-          { href: "/login?register=true", label: "Start Free Preparation", variant: "ghost" },
+          { href: "/register", label: "Start Free Preparation", variant: "ghost" },
         ]}
       />
 

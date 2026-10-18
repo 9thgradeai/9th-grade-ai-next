@@ -158,7 +158,7 @@ export default function CommandBar() {
   const go = useCallback(
     (tab: TabId) => {
       setActiveTab(tab);
-      router.push(`/dashboard?tab=${tab}`);
+      router.push(`/dashboard/${tab}`);
     },
     [router, setActiveTab],
   );
@@ -212,7 +212,7 @@ export default function CommandBar() {
       .then(([mistakeRes, paperList]) => {
         if (cancelled) return;
         if (mistakeRes === null && paperList === null) {
-          setContentError("কনটেন্ট অনুসন্ধান করা যায়নি — আবার চেষ্টা করুন।");
+          setContentError("কনটেন্ট অনুসন্ধান করা যায়নি, আবার চেষ্টা করুন।");
           setMistakes([]);
           setPapers([]);
           return;
@@ -282,7 +282,7 @@ export default function CommandBar() {
             icon: BookOpen,
             run: () => {
               setActiveTab("real-exam");
-              router.push(`/dashboard?tab=real-exam&paper=${p.id}`);
+              router.push(`/dashboard/real-exam?paper=${p.id}`);
             },
           })),
         });
@@ -292,7 +292,7 @@ export default function CommandBar() {
   }, [query, searchActive, quickActions, destinations, mistakes, papers, go, setMistakeIntent]);
 
   const flat = useMemo(() => sections.flatMap((s) => s.items), [sections]);
-  // Clamp instead of resetting via effect — async content arrives without
+  // Clamp instead of resetting via effect, async content arrives without
   // stealing the user's arrow position.
   const safeActive = Math.min(active, Math.max(flat.length - 1, 0));
 
@@ -343,7 +343,7 @@ export default function CommandBar() {
       const res = await askAssistant({ content: q });
       setAiReply(res.reply.trim().slice(0, 600));
     } catch {
-      setAiError("AI উত্তর দিতে পারেনি — টিউটরে খুলে জিজ্ঞেস করুন।");
+      setAiError("AI উত্তর দিতে পারেনি, টিউটরে খুলে জিজ্ঞেস করুন।");
     } finally {
       aiLoadingRef.current = false;
       setAiLoading(false);
@@ -360,7 +360,7 @@ export default function CommandBar() {
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
-        // Pure toggle — palette reset happens in the [open] effect above,
+        // Pure toggle, palette reset happens in the [open] effect above,
         // so no side effect lives inside a state updater (StrictMode-safe).
         setOpen((o) => !o);
       }
@@ -495,7 +495,7 @@ export default function CommandBar() {
                       Ask: “{truncate(query, 48)}”
                     </span>
                     <span className="block text-[11px]" style={{ color: "var(--dashboard-text-muted)" }}>
-                      {aiLoading ? "উত্তর তৈরি হচ্ছে…" : "⇧↵ চাপুন — প্যালেটেই সংক্ষিপ্ত উত্তর"}
+                      {aiLoading ? "উত্তর তৈরি হচ্ছে…" : "⇧↵ চাপুন, প্যালেটেই সংক্ষিপ্ত উত্তর"}
                     </span>
                   </span>
                 </button>

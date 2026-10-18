@@ -2,7 +2,7 @@
    Authenticated. Streaming event protocol:
      agent.started, agent.status, tool.started, tool.completed,
      message.delta, block.created, agent.completed, agent.error
-   Chain-of-thought is never streamed or persisted — only typed blocks. */
+   Chain-of-thought is never streamed or persisted, only typed blocks. */
 
 import { UnauthorizedError, toHttpResponse } from "~backend/errors";
 import { getUserIdFromRequest } from "~backend/services/user";

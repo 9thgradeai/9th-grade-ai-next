@@ -6,9 +6,9 @@ import { captureException } from "@sentry/nextjs";
 interface ErrorBoundaryProps {
   children: ReactNode;
   fallback?: (error: Error, reset: () => void) => ReactNode;
-  /** Remount (clear the error) when any key changes — e.g. activeTab. */
+  /** Remount (clear the error) when any key changes, e.g. activeTab. */
   resetKeys?: unknown[];
-  /** Runs on retry (after the error clears) — use to refetch, otherwise the
+  /** Runs on retry (after the error clears), use to refetch, otherwise the
    * retry re-renders the same crashed tree against the same stale cache. */
   onReset?: () => void;
 }
@@ -31,7 +31,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   }
 
   componentDidCatch(error: Error, info: { componentStack: string }) {
-    // Client crashes previously vanished into console.error — forward to
+    // Client crashes previously vanished into console.error, forward to
     // Sentry so tab crashes are actually visible on-call.
     try {
       captureException(error, {

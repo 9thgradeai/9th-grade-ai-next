@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 /**
- * Shared terminal-window chrome — the product's signature card treatment.
+ * Shared terminal-window chrome, the product's signature card treatment.
  * Replaces the `.terminal-window-bar` + traffic-light dots markup repeated
  * across nine components. Dots are purely decorative.
  */

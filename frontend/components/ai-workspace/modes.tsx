@@ -1,6 +1,6 @@
 "use client";
 
-// Capability metadata for the AI workspace — now driven by the single
+// Capability metadata for the AI workspace, now driven by the single
 // Phase-2 orchestrator (`frontend/lib/ai-orchestrator.ts`). Each mode is a
 // genuine, distinct backend surface; descriptions stay honest.
 

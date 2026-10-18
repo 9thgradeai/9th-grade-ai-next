@@ -8,7 +8,7 @@ import Interactive3DCard from "@/components/landing/Interactive3DCard"
 
 /**
  * The product's own success ceremony: a stylized admit card that materializes
- * when authentication succeeds — the same ritual every Bangladeshi aspirant
+ * when authentication succeeds, the same ritual every Bangladeshi aspirant
  * knows from real exam form-fill-up.
  *
  * The serial/seat are deterministic decorations derived from the account
@@ -84,7 +84,7 @@ export function AdmitCard({
         }}
       />
 
-      {/* Verification stamp — physical, slightly rotated, pops in late */}
+      {/* Verification stamp, physical, slightly rotated, pops in late */}
       <motion.div
         aria-hidden="true"
         className="pointer-events-none absolute right-3 top-9 z-20 -rotate-[9deg]"

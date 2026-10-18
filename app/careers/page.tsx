@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { Briefcase, MapPin, ArrowUpRight, Coffee, Users, Lightning } from "@phosphor-icons/react/dist/ssr";
 import PublicShell from "@/components/public/PublicShell";
 import PageHero from "@/components/public/PageHero";
 import SectionHeading from "@/components/ui/SectionHeading";
 import StatusPill from "@/components/ui/StatusPill";
 
-export const metadata: Metadata = {
-  alternates: { canonical: "/careers" },
-  title: "Careers — 9Th-Grade AI",
+export const metadata: Metadata = pageMeta({
+  path: "/careers",
+  title: "Careers | 9Th-Grade AI",
   description:
     "Join the 9Th-Grade AI team. Open roles in engineering, content, and design for the open-source exam preparation platform.",
-};
+});
 
 const roles = [
   {
@@ -35,7 +36,7 @@ const roles = [
     location: "Remote",
     type: "CONTRACT",
     summary:
-      "Design and evaluate system prompts for the AI solver and tutor — accuracy first, hallucinations never.",
+      "Design and evaluate system prompts for the AI solver and tutor, accuracy first, hallucinations never.",
   },
   {
     title: "Product Designer",
@@ -43,7 +44,7 @@ const roles = [
     location: "Remote",
     type: "PART-TIME",
     summary:
-      "Refine the visual language of the platform — dark-first, glass, emerald-and-cyan — across web and mobile.",
+      "Refine the visual language of the platform, dark-first, glass, emerald-and-cyan, across web and mobile.",
   },
   {
     title: "Community & Growth Lead",

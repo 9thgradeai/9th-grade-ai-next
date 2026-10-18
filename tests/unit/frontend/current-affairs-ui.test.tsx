@@ -144,7 +144,7 @@ describe("export converters", () => {
     );
     expect(md).toContain("# Title");
     expect(md).toContain("Hello");
-    expect(md).toContain("1. Star — \"A\" (https://star.example/a)");
+    expect(md).toContain("1. Star, \"A\" (https://star.example/a)");
     expect(md).toContain("Q? [Bank]");
     expect(md).toContain("Answer: B");
     expect(md).toContain("Because.");

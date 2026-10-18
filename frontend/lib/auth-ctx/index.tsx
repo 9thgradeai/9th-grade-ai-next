@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const isRefreshingRef = useRef(false);
 
   // Expiry is always server-authoritative (`expiresIn` ms from login /
-  // register / refresh) — never a client-mirrored constant that can drift
+  // register / refresh), never a client-mirrored constant that can drift
   // from the cookie the server actually set.
   const applySession = (data: SessionResponse) => {
     if (data.user) setUser(data.user);
@@ -52,7 +52,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       try {
         // Refresh (not /me) on mount: it transparently renews a stale-but-
         // renewable session AND reports user + authoritative expiry in one
-        // round trip. 401 means no usable session — clear the dead cookie.
+        // round trip. 401 means no usable session, clear the dead cookie.
         const data = await authGateway<SessionResponse>("/api/auth/refresh", {
           method: "POST",
         });
@@ -60,7 +60,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       } catch (error) {
         if (error instanceof ApiError && error.status === 401) {
           // The cookie is missing OR stale (expired/revoked). It is HttpOnly,
-          // so only the server can remove it — ask /logout to clear it, then
+          // so only the server can remove it, ask /logout to clear it, then
           // drop local state. Without this a dead cookie lingers and the
           // login page's signed-in gate can fight the dashboard guard.
           await authGateway("/api/auth/logout", { method: "POST" }).catch(() => undefined);
@@ -84,7 +84,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       applySession(data);
     } catch (error) {
       if (error instanceof ApiError && error.status === 401) {
-        // Server explicitly rejected the session — clear local state.
+        // Server explicitly rejected the session, clear local state.
         setUser(null);
         setTokenExpiry(null);
       }
@@ -105,7 +105,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     checkIntervalRef.current = setInterval(() => {
       const remaining = tokenExpiry - Date.now();
       if (remaining <= 0) {
-        // Hard expiry — the refresh endpoint refused or was never reached.
+        // Hard expiry, the refresh endpoint refused or was never reached.
         setUser(null);
         setTokenExpiry(null);
         if (checkIntervalRef.current) {

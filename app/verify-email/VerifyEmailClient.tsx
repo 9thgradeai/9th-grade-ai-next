@@ -65,7 +65,7 @@ export default function VerifyEmailClient() {
   return (
     <div className="space-y-3">
       <p role="alert" className={`rounded-xl border px-4 py-3 text-sm ${hasToken ? "border-red-500/30 bg-red-500/10 text-red-400" : "border-amber-500/30 bg-amber-500/10 text-amber-300"}`}>
-        {hasToken ? "This verification link is invalid or has expired." : "Check your inbox — we sent you a verification link. If you haven't received one, request a fresh link below."}
+        {hasToken ? "This verification link is invalid or has expired." : "Check your inbox, we sent you a verification link. If you haven't received one, request a fresh link below."}
       </p>
       <div className="rounded-xl border border-white/10 bg-white/5 p-3">
         <p className="mb-2 text-sm text-[var(--text-muted)]">{hasToken ? "Resend a fresh link:" : "Resend the link to:"}</p>
@@ -97,7 +97,7 @@ export default function VerifyEmailClient() {
         {resendNote && <p className="mt-2 text-xs text-[var(--text-muted)]" role="status">{resendNote}</p>}
       </div>
       <Link href="/login" className="block text-center text-sm text-emerald-400/80 transition-colors hover:text-emerald-400">Back to sign in</Link>
-      <button type="button" onClick={() => void logout()} className="mx-auto block text-center text-xs text-zinc-500 transition-colors hover:text-zinc-300">Use a different account — log out</button>
+      <button type="button" onClick={() => void logout()} className="mx-auto block text-center text-xs text-zinc-500 transition-colors hover:text-zinc-300">Use a different account, log out</button>
     </div>
   )
 }

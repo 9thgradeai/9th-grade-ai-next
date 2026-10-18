@@ -12,8 +12,9 @@
  *      Papers are created ONLY for exam terms present in the source data.
  *      Nothing is invented.
  *
- *   2. Reading database/data/question_bank/bcs/bcs_questions.json and
- *      validating/normalizing each record. Only structurally VALID MCQs are
+ *   2. Reading database/data/question_bank/bcs/bcs_questions.json AND
+ *      bcs_docx_papers.json (parsed .docx Previous-Year papers, see
+ *      scripts/parse-bcs-docx.ts) and validating/normalizing each record. Only structurally VALID MCQs are
  *      imported (question text + ≥4 options + a resolvable correct answer).
  *      Every accepted record ALSO passes the shared import gate
  *      (scripts/qb-forensics/import-gate.ts): Unicode health (replacement
@@ -35,124 +36,172 @@
  *   npx tsx scripts/import-bcs-exams.ts --dry-run  (validate + report only)
  * ----------------------------------------------------------------------------
  */
-import { PrismaClient, type Difficulty, type Provenance } from "@prisma/client";
-import { readFileSync } from "fs";
-import { join } from "path";
-import { sourceKey } from "./seed-keys";
-import { scanMca, mcaSignature } from "./qb-forensics/import-gate";
-import { SUBJECT_META } from "./taxonomy";
+import { PrismaClient, type Difficulty, type Provenance } from "@prisma/client"
+import { readFileSync } from "fs"
+import { join } from "path"
+import { sourceKey } from "./seed-keys"
+import { scanMca, mcaSignature } from "./qb-forensics/import-gate"
+import { SUBJECT_META } from "./taxonomy"
 
 // ── Raw record shape as produced by the OCR/parse pipeline ──
 export type RawBcsRecord = {
-  examTerm?: string;
-  examNum?: number;
-  year?: number | null;
-  subject?: string;
-  qnum?: number;
-  question?: string;
-  options?: string[];
-  correctAnswer?: string;
-  explanation?: string;
-};
+  examTerm?: string
+  examNum?: number
+  year?: number | null
+  subject?: string
+  qnum?: number
+  question?: string
+  options?: string[]
+  correctAnswer?: string
+  explanation?: string
+}
 
 const BN_TO_EN: Record<string, string> = {
-  "০": "0", "১": "1", "২": "2", "৩": "3", "৪": "4", "৫": "5",
-  "৬": "6", "৭": "7", "৮": "8", "৯": "9",
-};
-const bnToEn = (s: string) => (s || "").replace(/[০-৯]/g, (d) => BN_TO_EN[d]);
-const enDigitsToBn = (n: number) =>
-  String(n).replace(/[0-9]/g, (d) => "০১২৩৪৫৬৭৮৯"[Number(d)]);
+  "০": "0",
+  "১": "1",
+  "২": "2",
+  "৩": "3",
+  "৪": "4",
+  "৫": "5",
+  "৬": "6",
+  "৭": "7",
+  "৮": "8",
+  "৯": "9",
+}
+const bnToEn = (s: string) => (s || "").replace(/[০-৯]/g, (d) => BN_TO_EN[d])
+const enDigitsToBn = (n: number) => String(n).replace(/[0-9]/g, (d) => "০১২৩৪৫৬৭৮৯"[Number(d)])
 
 const LETTER_TO_IDX: Record<string, number> = {
-  "ক": 0, "খ": 1, "গ": 2, "ঘ": 3,
-  "a": 0, "b": 1, "c": 2, "d": 3,
-};
+  ক: 0,
+  খ: 1,
+  গ: 2,
+  ঘ: 3,
+  a: 0,
+  b: 1,
+  c: 2,
+  d: 3,
+}
 
 // Patterns that mark a record as a preamble/note rather than a real MCQ.
+// "ভূমিকা" matches the header form only ("ভূমিকা: …") — the bare noun means
+// "role" and is ordinary question vocabulary ("অগ্রণী ভূমিকা পালন করেন").
 const PREAMBLE_RE =
-  /মোট প্রশ্ন|ভূমিকা|এই পরীক্ষায়|পরীক্ষায় \d+|প্রতিটি প্রশ্ন|সমাধান প্রদান|সলুশন|পরীক্ষার্থীদের|উপরের তথ্য/;
+  /মোট প্রশ্ন|ভূমিকা\s*[:।]|এই পরীক্ষায়|পরীক্ষায় \d+|প্রতিটি প্রশ্ন|সমাধান প্রদান|সলুশন|পরীক্ষার্থীদের|উপরের তথ্য/
 
-const normalizeText = (s: string | undefined) => (s ?? "").replace(/\s+/g, " ").trim();
+const normalizeText = (s: string | undefined) => (s ?? "").replace(/\s+/g, " ").trim()
 
 /** Resolve a stored answer to the OPTION TEXT (letter → option, or exact match). */
 export function resolveCorrectAnswer(raw: string | undefined, options: string[]): string {
-  const t = (raw ?? "").trim();
-  if (!t) return "";
+  const t = (raw ?? "").trim()
+  if (!t) return ""
   // A leading Bangla/Latin option letter ("গ. …", "গ)", bare "গ") maps
   // deterministically to its option — a 1:1 index mapping, NOT a guess. We
   // only treat it as a letter-answer when the letter is followed by a visible
   // separator (. ) or by end-of-string, so "গণিত…" (a word that merely starts
   // with গ) is never misread as an answer letter.
-  const letter = /^\(?\s*([কখগঘa-dA-D])\s*([\).]|$)/;
-  const lm = t.match(letter);
+  const letter = /^\(?\s*([কখগঘa-dA-D])\s*([\).]|$)/
+  const lm = t.match(letter)
   if (lm) {
-    const idx = LETTER_TO_IDX[lm[1].toLowerCase()];
-    if (idx !== undefined && options[idx]) return options[idx];
-    return "";
+    const idx = LETTER_TO_IDX[lm[1].toLowerCase()]
+    if (idx !== undefined && options[idx]) return options[idx]
+    return ""
   }
   // Whitespace-INSENSITIVE EXACT match against an option: recovers OCR
   // line-wrap, stray spaces, and spurious single spaces — but still a full-
   // string equality after stripping, so it never picks a fuzzy/partial answer.
-  const norm = (s: string) => s.replace(/\s+/g, "").normalize("NFC");
-  const target = norm(t);
+  const norm = (s: string) => s.replace(/\s+/g, "").normalize("NFC")
+  const target = norm(t)
   for (const o of options) {
-    if (norm(o) === target) return o;
+    if (norm(o) === target) return o
   }
-  return "";
+  return ""
 }
 
-export type NormalizedBcs = {
-  ok: true;
-  examNum: number;
-  paperTitleBn: string;
-  termLabel: string;
-  subject: string;
-  question: string;
-  options: string[];
-  correctAnswer: string;
-  explanation: string;
-  year: number | null;
-  questionNumber: number | null;
-  examTerm: string;
-} | {
-  ok: false;
-  reason: string;
-};
+export type NormalizedBcs =
+  | {
+      ok: true
+      examNum: number
+      paperTitleBn: string
+      termLabel: string
+      subject: string
+      question: string
+      options: string[]
+      correctAnswer: string
+      explanation: string
+      year: number | null
+      questionNumber: number | null
+      examTerm: string
+      /** Book-Unicode math kept verbatim (see below) — stored with rawMath=true. */
+      rawMath: boolean
+    }
+  | {
+      ok: false
+      reason: string
+    }
 
 /** Validate + clean one raw record. Importable only when ok. */
 export function normalizeBcsRecord(raw: RawBcsRecord): NormalizedBcs {
-  const examTerm = (raw.examTerm ?? "").trim();
-  const parsedNum = typeof raw.examNum === "number" && raw.examNum > 0
-    ? raw.examNum
-    : Number(bnToEn(examTerm).match(/\d+/)?.[0] ?? "");
-  const subject = normalizeText(raw.subject);
-  const question = normalizeText(raw.question);
-  const options = (raw.options ?? []).map(normalizeText).filter(Boolean);
-  const explanation = normalizeText(raw.explanation);
-  const year = typeof raw.year === "number" ? raw.year : raw.year == null ? null : Number(raw.year);
+  const examTerm = (raw.examTerm ?? "").trim()
+  const parsedNum =
+    typeof raw.examNum === "number" && raw.examNum > 0
+      ? raw.examNum
+      : Number(bnToEn(examTerm).match(/\d+/)?.[0] ?? "")
+  const subject = normalizeText(raw.subject)
+  const question = normalizeText(raw.question)
+  const options = (raw.options ?? []).map(normalizeText).filter(Boolean)
+  const explanation = normalizeText(raw.explanation)
+  const year = typeof raw.year === "number" ? raw.year : raw.year == null ? null : Number(raw.year)
 
   if (!Number.isFinite(parsedNum) || parsedNum < 1) {
-    return { ok: false, reason: `missing/invalid exam term (examTerm=${examTerm})` };
+    return { ok: false, reason: `missing/invalid exam term (examTerm=${examTerm})` }
   }
-  if (!subject) return { ok: false, reason: "missing subject" };
-  if (!question || question.length < 5) return { ok: false, reason: "question text missing/too short" };
-  if (PREAMBLE_RE.test(question)) return { ok: false, reason: "preamble/note record (not a usable MCQ)" };
-  if (options.length < 4) return { ok: false, reason: `only ${options.length} option(s) (need 4)` };
-  const correctAnswer = resolveCorrectAnswer(raw.correctAnswer, options);
+  if (!subject) return { ok: false, reason: "missing subject" }
+  if (!question || question.length < 5)
+    return { ok: false, reason: "question text missing/too short" }
+  if (PREAMBLE_RE.test(question))
+    return { ok: false, reason: "preamble/note record (not a usable MCQ)" }
+  if (options.length < 4) return { ok: false, reason: `only ${options.length} option(s) (need 4)` }
+  const correctAnswer = resolveCorrectAnswer(raw.correctAnswer, options)
   if (!correctAnswer) {
-    return { ok: false, reason: `correct answer unresolvable (correctAnswer=${raw.correctAnswer ?? ""})` };
+    return {
+      ok: false,
+      reason: `correct answer unresolvable (correctAnswer=${raw.correctAnswer ?? ""})`,
+    }
   }
 
   // Only preserve qnum when it is a plausible in-paper sequence number; OCR
   // qnum is frequently garbage (huge/zero) — treat implausible as unknown.
-  const qn = typeof raw.qnum === "number" && raw.qnum >= 1 && raw.qnum <= 1000 ? raw.qnum : null;
+  const qn = typeof raw.qnum === "number" && raw.qnum >= 1 && raw.qnum <= 1000 ? raw.qnum : null
 
   // ── Import gate (shared with the subject-wise seeder) ───────────────────
   // Unicode health + structure + mandatory-explanation policy + normalization.
-  // Rejected records are never fabricated into a usable MCQ.
-  const gate = scanMca({ question, options, correctAnswer, explanation });
+  // Rejected records are never fabricated into a usable MCQ — EXCEPT the
+  // established book-Unicode keep path (cf. scripts/seed-intl-affairs.ts):
+  // when the ONLY fatals are MATH_LITERAL_LATEX, the text is authoritative
+  // book Unicode (vulgar fractions, superscripts) that the LaTeX normalizer
+  // must not rewrite, so it is kept byte-identical with rawMath=true.
+  const gate = scanMca({ question, options, correctAnswer, explanation })
   if (gate.verdict === "REJECT") {
-    return { ok: false, reason: `failed import gate: ${gate.fatal.map((f) => f.code).join(", ")}` };
+    const codes = gate.fatal.map((f) => f.code)
+    const mathOnly = codes.length > 0 && codes.every((c) => c === "MATH_LITERAL_LATEX")
+    if (!mathOnly) {
+      return { ok: false, reason: `failed import gate: ${codes.join(", ")}` }
+    }
+    return {
+      ok: true,
+      examNum: parsedNum,
+      paperTitleBn: `${enDigitsToBn(parsedNum)}তম বিসিএস প্রিলিমিনারি`,
+      termLabel: `${parsedNum}th`,
+      subject,
+      question,
+      options,
+      correctAnswer,
+      explanation,
+      year,
+      questionNumber: qn,
+      examTerm: examTerm || `${parsedNum}th বিসিএস`,
+      rawMath: true,
+    }
   }
 
   return {
@@ -168,23 +217,24 @@ export function normalizeBcsRecord(raw: RawBcsRecord): NormalizedBcs {
     year,
     questionNumber: qn,
     examTerm: examTerm || `${parsedNum}th বিসিএস`,
-  };
+    rawMath: false,
+  }
 }
 
 export type ImportReport = {
-  totalFound: number;
-  valid: number;
-  imported: number;   // new rows written
-  updated: number;    // existing rows refreshed
-  duplicates: number; // collapsed within the batch by sourceKey
-  invalid: number;    // structurally invalid / unresolvable
-  unclassified: number; // valid but subject mapped to no Subject row
-  malformed: RawBcsRecord[];
-  byExam: Record<string, { found: number; imported: number; invalid: number }>;
-};
+  totalFound: number
+  valid: number
+  imported: number // new rows written
+  updated: number // existing rows refreshed
+  duplicates: number // collapsed within the batch by sourceKey
+  invalid: number // structurally invalid / unresolvable
+  unclassified: number // valid but subject mapped to no Subject row
+  malformed: RawBcsRecord[]
+  byExam: Record<string, { found: number; imported: number; invalid: number }>
+}
 
-const CATEGORY_SLUG = "bcs";
-const EXAM_SLUG = "bcs-preliminary";
+const CATEGORY_SLUG = "bcs"
+const EXAM_SLUG = "bcs-preliminary"
 
 /**
  * Bootstrap the exam taxonomy (category → exam → papers). Papers are created
@@ -193,33 +243,46 @@ const EXAM_SLUG = "bcs-preliminary";
 async function ensureExamTaxonomy(
   prisma: PrismaClient,
   terms: Map<number, { year: number | null; count: number }>,
-  ecosystemId: number,
+  ecosystemId: number
 ): Promise<Map<number, number>> {
   const category = await prisma.examCategory.upsert({
     where: { ecosystemId_slug: { ecosystemId, slug: CATEGORY_SLUG } },
     update: {},
     create: {
       ecosystemId,
-      slug: CATEGORY_SLUG, nameBn: "BCS", nameEn: "BCS",
-      icon: "📘", color: "text-sky-400", bg: "bg-sky-500/10", sortOrder: 1,
+      slug: CATEGORY_SLUG,
+      nameBn: "BCS",
+      nameEn: "BCS",
+      icon: "📘",
+      color: "text-sky-400",
+      bg: "bg-sky-500/10",
+      sortOrder: 1,
     },
-  });
+  })
   const exam = await prisma.exam.upsert({
     where: { slug: EXAM_SLUG },
-    update: { categoryId: category.id, nameBn: "BCS প্রিলিমিনারি", nameEn: "BCS Preliminary", type: "PRELIMINARY" },
-    create: {
-      categoryId: category.id, slug: EXAM_SLUG,
-      nameBn: "BCS প্রিলিমিনারি", nameEn: "BCS Preliminary",
-      type: "PRELIMINARY", sortOrder: 1,
+    update: {
+      categoryId: category.id,
+      nameBn: "BCS প্রিলিমিনারি",
+      nameEn: "BCS Preliminary",
+      type: "PRELIMINARY",
     },
-  });
+    create: {
+      categoryId: category.id,
+      slug: EXAM_SLUG,
+      nameBn: "BCS প্রিলিমিনারি",
+      nameEn: "BCS Preliminary",
+      type: "PRELIMINARY",
+      sortOrder: 1,
+    },
+  })
 
-  const paperIds = new Map<number, number>();
-  const sorted = [...terms.keys()].sort((a, b) => b - a);
-  let order = 1;
+  const paperIds = new Map<number, number>()
+  const sorted = [...terms.keys()].sort((a, b) => b - a)
+  let order = 1
   for (const n of sorted) {
-    const meta = terms.get(n)!;
-    const slug = `bcs-preliminary-${n}th`;
+    const meta = terms.get(n)!
+    const slug = `bcs-preliminary-${n}th`
     const paper = await prisma.examPaper.upsert({
       where: { slug },
       update: {
@@ -243,177 +306,291 @@ async function ensureExamTaxonomy(
         provenance: (meta.count > 0 ? "CURATED" : "UNKNOWN") as Provenance,
         sortOrder: order++,
       },
-    });
-    paperIds.set(n, paper.id);
+    })
+    paperIds.set(n, paper.id)
   }
-  return paperIds;
+  return paperIds
 }
 
 /** The real importer. Returns a report; respects dryRun by writing nothing. */
 export async function importBcsExams(
   prisma: PrismaClient,
-  opts: { dryRun?: boolean } = {},
+  opts: { dryRun?: boolean } = {}
 ): Promise<ImportReport> {
-  const dryRun = opts.dryRun ?? false;
-  const file = join(process.cwd(), "database", "data", "question_bank", "bcs", "bcs_questions.json");
-  const raw: RawBcsRecord[] = JSON.parse(readFileSync(file, "utf8"));
+  const dryRun = opts.dryRun ?? false
+  const dir = join(process.cwd(), "database", "data", "question_bank", "bcs")
+  const raw: RawBcsRecord[] = JSON.parse(readFileSync(join(dir, "bcs_questions.json"), "utf8"))
+  // Parsed .docx Previous-Year papers (44th/46th/48th/49th/50th). Optional so
+  // older checkouts without the generated file still seed.
+  try {
+    const docx: RawBcsRecord[] = JSON.parse(readFileSync(join(dir, "bcs_docx_papers.json"), "utf8"))
+    raw.push(...docx)
+  } catch {
+    /* no docx papers parsed yet — run scripts/parse-bcs-docx.ts first */
+  }
 
-  const ecosystem = await prisma.examEcosystem.findUnique({ where: { code: "BCS" } });
-  const ecosystemId = ecosystem?.id ?? 1;
+  const ecosystem = await prisma.examEcosystem.findUnique({ where: { code: "BCS" } })
+  const ecosystemId = ecosystem?.id ?? 1
 
   const report: ImportReport = {
-    totalFound: raw.length, valid: 0, imported: 0, updated: 0,
-    duplicates: 0, invalid: 0, unclassified: 0, malformed: [], byExam: {},
-  };
-
-  const candidates: Array<Extract<NormalizedBcs, { ok: true }>> = [];
-  const terms = new Map<number, { year: number | null; count: number }>();
-  for (const r of raw) {
-    const n = normalizeBcsRecord(r);
-    if (!n.ok) {
-      report.invalid++;
-      report.malformed.push(r);
-      continue;
-    }
-    candidates.push(n);
-    const t = terms.get(n.examNum) ?? { year: null, count: 0 };
-    if (n.year) t.year = n.year;
-    t.count += 1;
-    terms.set(n.examNum, t);
+    totalFound: raw.length,
+    valid: 0,
+    imported: 0,
+    updated: 0,
+    duplicates: 0,
+    invalid: 0,
+    unclassified: 0,
+    malformed: [],
+    byExam: {},
   }
-  report.valid = candidates.length;
 
-  for (const [n, t] of terms) report.byExam[String(n)] = { found: t.count, imported: 0, invalid: 0 };
+  const candidates: Array<Extract<NormalizedBcs, { ok: true }>> = []
+  const terms = new Map<number, { year: number | null; count: number }>()
+  for (const r of raw) {
+    const n = normalizeBcsRecord(r)
+    if (!n.ok) {
+      report.invalid++
+      report.malformed.push(r)
+      continue
+    }
+    candidates.push(n)
+    const t = terms.get(n.examNum) ?? { year: null, count: 0 }
+    if (n.year) t.year = n.year
+    t.count += 1
+    terms.set(n.examNum, t)
+  }
+  report.valid = candidates.length
+
+  for (const [n, t] of terms) report.byExam[String(n)] = { found: t.count, imported: 0, invalid: 0 }
 
   if (dryRun) {
-    candidates.forEach((c) => { report.byExam[String(c.examNum)].imported += 1; });
-    return report;
+    candidates.forEach((c) => {
+      report.byExam[String(c.examNum)].imported += 1
+    })
+    return report
   }
 
-  const paperIds = await ensureExamTaxonomy(prisma, terms, ecosystemId);
+  const paperIds = await ensureExamTaxonomy(prisma, terms, ecosystemId)
+  // Hoisted: examId per paper in ONE query (the loop below is latency-bound
+  // against remote Postgres — never look this up per question).
+  const paperExamId = new Map<number, number | null>()
+  {
+    const papers = await prisma.examPaper.findMany({
+      where: { id: { in: [...paperIds.values()] } },
+      select: { id: true, examId: true },
+    })
+    for (const p of papers) paperExamId.set(p.id, p.examId)
+  }
 
-  const subjectIdByNameBn = new Map<string, number>();
+  const subjectIdByNameBn = new Map<string, number>()
   for (const [i, meta] of SUBJECT_META.entries()) {
     const s = await prisma.subject.upsert({
       where: { ecosystemId_nameBn: { ecosystemId, nameBn: meta.nameBn } },
       update: {},
-      create: { ecosystemId, nameBn: meta.nameBn, nameEn: meta.nameEn, icon: meta.icon, color: meta.color, bg: meta.bg, sortOrder: i },
-    });
-    subjectIdByNameBn.set(meta.nameBn.normalize("NFC"), s.id);
+      create: {
+        ecosystemId,
+        nameBn: meta.nameBn,
+        nameEn: meta.nameEn,
+        icon: meta.icon,
+        color: meta.color,
+        bg: meta.bg,
+        sortOrder: i,
+      },
+    })
+    subjectIdByNameBn.set(meta.nameBn.normalize("NFC"), s.id)
   }
-
-  const seen = new Set<string>();
 
   // Global duplicate identity index: the same normalized MCQ (question +
   // correctAnswer + explanation) may exist only once across the whole database
   // (subject-wise corpus or exam-wise records alike). Would-be INSERTs that
   // collide are skipped; existing rows are refreshed in place instead.
-  const globalSigs = new Set<string>();
+  const globalSigs = new Set<string>()
   const existingForDedup = await prisma.question.findMany({
     select: { question: true, correctAnswer: true, explanation: true },
-  });
+  })
   for (const r of existingForDedup) {
-    globalSigs.add(mcaSignature({ question: r.question, options: [], correctAnswer: r.correctAnswer, explanation: r.explanation }));
+    globalSigs.add(
+      mcaSignature({
+        question: r.question,
+        options: [],
+        correctAnswer: r.correctAnswer,
+        explanation: r.explanation,
+      })
+    )
   }
 
-  for (const c of candidates) {
-    const subjectId = subjectIdByNameBn.get(c.subject.normalize("NFC"));
-    if (subjectId === undefined) {
-      report.unclassified++;
-      report.malformed.push({ examTerm: c.examTerm, examNum: c.examNum, subject: c.subject, question: c.question });
-      continue;
+  // ── Batched sync (Neon-friendly) ─────────────────────────────────────
+  // The old per-question findUnique/create loop held a serverless connection
+  // open across ~2.5k sequential round-trips until Neon dropped it (P1017).
+  // Now: resolve every row's fate with TWO bulk reads, then write with
+  // createMany chunks + limited-concurrency updates (cf. seed-intl-affairs).
+  type Row = {
+    c: Extract<NormalizedBcs, { ok: true }>
+    subjectId: number
+    key: string
+    sig: string
+    content: Record<string, unknown>
+  }
+  const rows: Row[] = []
+  {
+    const seen = new Set<string>()
+    for (const c of candidates) {
+      const subjectId = subjectIdByNameBn.get(c.subject.normalize("NFC"))
+      if (subjectId === undefined) {
+        report.unclassified++
+        report.malformed.push({
+          examTerm: c.examTerm,
+          examNum: c.examNum,
+          subject: c.subject,
+          question: c.question,
+        })
+        continue
+      }
+      const paperId = paperIds.get(c.examNum)!
+      const key = sourceKey(subjectId, `exam:${c.examNum}`, c.question)
+      if (seen.has(key)) {
+        report.duplicates++
+        continue
+      }
+      seen.add(key)
+      rows.push({
+        c,
+        subjectId,
+        key,
+        sig: mcaSignature({
+          question: c.question,
+          options: c.options,
+          correctAnswer: c.correctAnswer,
+          explanation: c.explanation,
+        }),
+        content: {
+          ecosystemId,
+          subjectId,
+          topic: "",
+          subtopic: "",
+          path: "",
+          topicId: null,
+          question: c.question,
+          options: c.options,
+          correctAnswer: c.correctAnswer,
+          explanation: c.explanation,
+          rawMath: c.rawMath,
+          difficulty: "MEDIUM" as Difficulty,
+          year: c.year,
+          sourceExam: c.examTerm,
+          bcsTerm: c.examTerm,
+          examId: paperExamId.get(paperId) ?? null,
+          paperId,
+          questionNumber: c.questionNumber,
+        },
+      })
     }
-    const paperId = paperIds.get(c.examNum)!;
-    const key = sourceKey(subjectId, `exam:${c.examNum}`, c.question);
-    if (seen.has(key)) {
-      report.duplicates++;
-      continue;
+  }
+
+  // ONE bulk read per subject for existing exam-wise rows.
+  const keysBySubject = new Map<number, string[]>()
+  for (const r of rows) {
+    if (!keysBySubject.has(r.subjectId)) keysBySubject.set(r.subjectId, [])
+    keysBySubject.get(r.subjectId)!.push(r.key)
+  }
+  const idByKey = new Map<string, number>()
+  for (const [subjectId, keys] of keysBySubject) {
+    const CHUNK = 500
+    for (let i = 0; i < keys.length; i += CHUNK) {
+      const found = await prisma.question.findMany({
+        where: { subjectId, sourceKey: { in: keys.slice(i, i + CHUNK) } },
+        select: { id: true, sourceKey: true },
+      })
+      for (const f of found) idByKey.set(`${subjectId}\u0000${f.sourceKey}`, f.id)
     }
-    seen.add(key);
+  }
 
-    const content = {
-      ecosystemId,
-      subjectId,
-      topic: "", subtopic: "", path: "", topicId: null,
-      question: c.question,
-      options: c.options,
-      correctAnswer: c.correctAnswer,
-      explanation: c.explanation,
-      difficulty: "MEDIUM" as Difficulty,
-      year: c.year,
-      sourceExam: c.examTerm,
-      bcsTerm: c.examTerm,
-      examId: paperId === undefined ? null : (await prisma.examPaper.findUnique({ where: { id: paperId }, select: { examId: true } }))?.examId ?? null,
-      paperId,
-      questionNumber: c.questionNumber,
-    };
-
-    const existing = await prisma.question.findUnique({
-      where: { subjectId_sourceKey: { subjectId, sourceKey: key } },
-      select: { id: true },
-    });
-    if (existing) {
-      await prisma.question.update({ where: { subjectId_sourceKey: { subjectId, sourceKey: key } }, data: content });
-      report.updated++;
+  const creates: Array<Record<string, unknown>> = []
+  const updates: Array<{ id: number; data: Record<string, unknown> }> = []
+  for (const r of rows) {
+    const id = idByKey.get(`${r.subjectId}\u0000${r.key}`)
+    if (id !== undefined) {
+      updates.push({ id, data: r.content })
+      report.updated++
     } else {
       // Import gate duplicate guard: an identical MCQ already lives somewhere
       // in the database (any subject). Skipped — never duplicated.
-      const sig = mcaSignature({ question: c.question, options: c.options, correctAnswer: c.correctAnswer, explanation: c.explanation });
-      if (globalSigs.has(sig)) {
-        report.duplicates++;
-        continue;
+      if (globalSigs.has(r.sig)) {
+        report.duplicates++
+        continue
       }
-      globalSigs.add(sig);
-      await prisma.question.create({ data: { sourceKey: key, ...content } });
-      report.imported++;
+      globalSigs.add(r.sig)
+      creates.push({ subjectId: r.subjectId, sourceKey: r.key, ...r.content })
+      report.imported++
     }
-    report.byExam[String(c.examNum)].imported += 1;
+    report.byExam[String(r.c.examNum)].imported += 1
   }
 
-  return report;
+  {
+    const CHUNK = 200
+    for (let i = 0; i < creates.length; i += CHUNK) {
+      await prisma.question.createMany({ data: creates.slice(i, i + CHUNK) as never })
+      console.log(`  … created ${Math.min(i + CHUNK, creates.length)}/${creates.length}`)
+    }
+    // Limited concurrency: remote pool exhausts on wide fan-out (P2024).
+    const UCHUNK = 5
+    for (let i = 0; i < updates.length; i += UCHUNK) {
+      await Promise.all(
+        updates
+          .slice(i, i + UCHUNK)
+          .map((u) => prisma.question.update({ where: { id: u.id }, data: u.data }))
+      )
+      if (updates.length > 20)
+        console.log(`  … updated ${Math.min(i + UCHUNK, updates.length)}/${updates.length}`)
+    }
+  }
+
+  return report
 }
 
 function printReport(r: ImportReport, dryRun: boolean): void {
-  console.log("BCS Import");
-  console.log("──────────");
-  const terms = Object.keys(r.byExam).sort((a, b) => Number(b) - Number(a));
+  console.log("BCS Import")
+  console.log("──────────")
+  const terms = Object.keys(r.byExam).sort((a, b) => Number(b) - Number(a))
   for (const t of terms) {
-    const b = r.byExam[t];
-    console.log(`${t}th BCS:  ${b.found} found / ${b.imported} imported / ${b.invalid} invalid`);
+    const b = r.byExam[t]
+    console.log(`${t}th BCS:  ${b.found} found / ${b.imported} imported / ${b.invalid} invalid`)
   }
-  console.log(`\nFound:         ${r.totalFound}`);
-  console.log(`Valid:         ${r.valid}`);
-  console.log(`Imported:      ${r.imported}`);
-  console.log(`Updated:       ${r.updated}`);
-  console.log(`Duplicates:    ${r.duplicates}`);
-  console.log(`Invalid:       ${r.invalid}`);
-  console.log(`Unclassified:  ${r.unclassified}`);
+  console.log(`\nFound:         ${r.totalFound}`)
+  console.log(`Valid:         ${r.valid}`)
+  console.log(`Imported:      ${r.imported}`)
+  console.log(`Updated:       ${r.updated}`)
+  console.log(`Duplicates:    ${r.duplicates}`)
+  console.log(`Invalid:       ${r.invalid}`)
+  console.log(`Unclassified:  ${r.unclassified}`)
   if (r.malformed.length > 0) {
-    console.log(`\nMalformed/invalid records: ${r.malformed.length}`);
+    console.log(`\nMalformed/invalid records: ${r.malformed.length}`)
     r.malformed.slice(0, 12).forEach((m, i) => {
-      console.log(`  ${i + 1}. [${m.examTerm ?? "?"}] ${m.subject ?? "?"} — ${String(m.question ?? m.correctAnswer ?? "").slice(0, 64)}`);
-    });
+      console.log(
+        `  ${i + 1}. [${m.examTerm ?? "?"}] ${m.subject ?? "?"} — ${String(m.question ?? m.correctAnswer ?? "").slice(0, 64)}`
+      )
+    })
   }
-  console.log(dryRun ? "(DRY RUN — no changes written)" : "Done.");
+  console.log(dryRun ? "(DRY RUN — no changes written)" : "Done.")
 }
 
 async function main() {
-  const prisma = new PrismaClient();
-  const dryRun = process.argv.includes("--dry-run");
+  const prisma = new PrismaClient()
+  const dryRun = process.argv.includes("--dry-run")
   try {
-    const report = await importBcsExams(prisma, { dryRun });
-    printReport(report, dryRun);
+    const report = await importBcsExams(prisma, { dryRun })
+    printReport(report, dryRun)
   } catch (e) {
-    console.error("BCS import failed:", e);
-    process.exitCode = 1;
+    console.error("BCS import failed:", e)
+    process.exitCode = 1
   } finally {
-    await prisma.$disconnect();
+    await prisma.$disconnect()
   }
 }
 
 if (process.argv[1]?.endsWith("import-bcs-exams.ts")) {
   main().catch((e) => {
-    console.error("BCS import failed:", e);
-    process.exit(1);
-  });
+    console.error("BCS import failed:", e)
+    process.exit(1)
+  })
 }

@@ -55,7 +55,7 @@ export const SUBJECTS: Subject[] = [
     name: "Current Affairs",
     questions: null,
     estimatedHours: null,
-    blurb: "Living feed — updated daily, not frozen in a bank.",
+    blurb: "Living feed, updated daily, not frozen in a bank.",
   },
 ];
 

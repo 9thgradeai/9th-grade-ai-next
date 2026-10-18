@@ -20,7 +20,7 @@ const NOTIF_KEY = "9th_grade_ai_notif_pref";
 
 const APP_VERSION = "0.4.0";
 
-// Notification preference lives in localStorage — sourced via an external
+// Notification preference lives in localStorage, sourced via an external
 // store (same pattern as theme-ctx) to stay hydration-safe and lint-clean.
 function readNotifPref(): boolean {
   if (typeof window === "undefined") return true;
@@ -513,7 +513,7 @@ export default function SettingsTab() {
         </div>
       </SectionCard>
 
-      {/* BYOS: Data & Storage — User-Owned Google Drive */}
+      {/* BYOS: Data & Storage, User-Owned Google Drive */}
       <DataStorageCard />
 
       {/* Session & data */}

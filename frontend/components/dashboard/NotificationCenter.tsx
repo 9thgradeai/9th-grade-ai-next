@@ -33,7 +33,7 @@ const TYPE_ICONS: Record<string, typeof CheckCircle> = {
   REMINDER: Bell,
 };
 
-// Theme-coupled semantic tokens (never `dark:` — that follows the OS, not
+// Theme-coupled semantic tokens (never `dark:`, that follows the OS, not
 // the dashboard theme, so light-dashboard + dark-OS rendered wrong colors).
 const TYPE_COLORS: Record<string, { bg: string; text: string; border: string }> = {
   SUCCESS: { bg: "bg-[var(--dashboard-success-subtle)]", text: "text-[var(--dashboard-success)]", border: "border-l-[var(--dashboard-success)]" },
@@ -127,7 +127,7 @@ export default function NotificationCenter() {
   }, [isOpen, fetchAll]);
 
   // Badge liveness: the bell must show the real unread count from first
-  // paint — previously it stayed 0 until the panel was opened once. Light
+  // paint, previously it stayed 0 until the panel was opened once. Light
   // single-item fetch on mount + 60s poll while mounted (panel or not);
   // the 30s poll below takes over with full lists while open.
   useEffect(() => {

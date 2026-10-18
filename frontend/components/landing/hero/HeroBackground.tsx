@@ -6,9 +6,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
  * Reflect-inspired atmospheric hero background.
  *
  * Layer stack (video is the PRIMARY motion source):
- *   z-0  AtmosphericVideo — /asset/hero/9th-grade.webm, native playback only
- *   z-1  StarField       — oversized CSS-rotated field (70s) + per-star twinkle (8–10s)
- *   z-2  Vignette        — restrained readability/integration overlay
+ *   z-0  AtmosphericVideo, /asset/hero/9th-grade.webm, native playback only
+ *   z-1  StarField      , oversized CSS-rotated field (70s) + per-star twinkle (8–10s)
+ *   z-2  Vignette       , restrained readability/integration overlay
  *   z-10 Existing hero content (untouched, always dominant)
  *
  * No canvas, no WebGL, no requestAnimationFrame, no per-frame React state.
@@ -146,7 +146,7 @@ export default function HeroBackground() {
       data-layer="hero-background"
       className="pointer-events-none absolute inset-0 z-0 overflow-hidden bg-black"
     >
-      {/* Static brand-tinted fallback — visible while the video buffers. */}
+      {/* Static brand-tinted fallback, visible while the video buffers. */}
       <div
         data-layer="video-fallback"
         className="absolute inset-0"
@@ -155,7 +155,7 @@ export default function HeroBackground() {
         }}
       />
 
-      {/* z-0 — AtmosphericVideo: native playback, fades in once frames flow. */}
+      {/* z-0, AtmosphericVideo: native playback, fades in once frames flow. */}
       {deferredSrc && (
       <video
         ref={videoRef}
@@ -176,7 +176,7 @@ export default function HeroBackground() {
       />
       )}
 
-      {/* z-1 — StarField: oversized disc centered on the visual focal point.
+      {/* z-1, StarField: oversized disc centered on the visual focal point.
           Stars sit at the center and streak outward along --transform;
           the ring mask keeps the core and the edges clean. */}
       <div data-layer="star-field" className="absolute inset-0 z-[1] overflow-hidden">
@@ -202,7 +202,7 @@ export default function HeroBackground() {
         </div>
       </div>
 
-      {/* z-2 — Vignette: restrained integration + readability, video stays visible. */}
+      {/* z-2, Vignette: restrained integration + readability, video stays visible. */}
       <div data-layer="vignette" className="absolute inset-0 z-[2]">
         <div
           className="absolute inset-0"

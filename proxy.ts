@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { isValidSessionToken, readSessionCookie } from "~backend/session-verify";
 
 const PROTECTED_PREFIXES = ["/dashboard"];
-const AUTH_ROUTES = ["/login"];
+const AUTH_ROUTES = ["/login", "/register"];
 
 function generateRequestId(): string {
   return `req_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`;

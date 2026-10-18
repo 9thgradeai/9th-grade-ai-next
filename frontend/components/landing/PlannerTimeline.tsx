@@ -15,7 +15,7 @@ import { BookOpen, WarningCircle, GraduationCap, Repeat, Target } from "@phospho
 /**
  * Study-planner path: Weak Topic → Concept Review → Practice → Revision →
  * Mastery. The route draws itself as the user scrolls (scroll-linked
- * transforms only — no animation loop) and each stop activates in sequence.
+ * transforms only, no animation loop) and each stop activates in sequence.
  */
 
 const STEPS = [
@@ -46,7 +46,7 @@ const STEPS = [
   {
     icon: GraduationCap,
     title: "Mastery",
-    body: "Locked in — tracked, maintained, exam-ready.",
+    body: "Locked in, tracked, maintained, exam-ready.",
     x: 0.95, y: 0.44, labelSide: "below" as const,
   },
 ];
@@ -107,7 +107,7 @@ export default function PlannerTimeline() {
         {!shouldReduceMotion && (
           <motion.span
             aria-hidden="true"
-            className="absolute bottom-4 left-[15px] top-4 w-px origin-top bg-gradient-to-b from-orange-400 via-emerald-400 to-violet-400"
+            className="absolute bottom-4 left-[15px] top-4 w-px origin-top bg-gradient-to-b from-orange-400 via-emerald-400 to-sky-400"
             style={{ scaleY: scrollYProgress }}
           />
         )}
@@ -145,7 +145,7 @@ function PlannerStop({
   return (
     <motion.div
       // clamp() keeps the 160px-wide label inside the container at every
-      // breakpoint — edge stops (x=0.03 / x=0.95) used to spill past the
+      // breakpoint, edge stops (x=0.03 / x=0.95) used to spill past the
       // viewport on tablet widths.
       style={{
         left: `clamp(5rem, ${step.x * 100}%, calc(100% - 5rem))`,
@@ -159,7 +159,7 @@ function PlannerStop({
       <span
         className={`flex h-11 w-11 items-center justify-center rounded-xl border transition-colors duration-500 ${
           isLast
-            ? "border-violet-400/50 bg-violet-500/10 text-violet-300"
+            ? "border-sky-400/50 bg-sky-500/10 text-sky-300"
             : "border-emerald-500/30 bg-[#071019] text-emerald-400"
         }`}
       >

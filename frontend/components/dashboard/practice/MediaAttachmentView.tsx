@@ -3,7 +3,7 @@
 import type { Server } from "@/lib/types";
 
 /**
- * Figure/diagram attachment wrapper. Renders `media[]` (URLs only — files
+ * Figure/diagram attachment wrapper. Renders `media[]` (URLs only, files
  * live in `public/`) above the choice UI. Math stays unicode-linearized text
  * through RichText (no KaTeX); unknown kinds are ignored, never crash.
  */

@@ -172,7 +172,7 @@ export default function AdminPage() {
           />
         </div>
 
-        {/* Users — Desktop Table / Mobile Cards */}
+        {/* Users, Desktop Table / Mobile Cards */}
         <div className="overflow-x-auto rounded-xl border border-white/10">
           {/* Desktop Table (hidden on mobile) */}
           <table className="w-full text-sm hidden md:table">

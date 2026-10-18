@@ -38,7 +38,7 @@ export default function TerminalHeader() {
     };
   }, []);
 
-  // Scrollspy — highlight the nav link for the section in view. Only
+  // Scrollspy, highlight the nav link for the section in view. Only
   // same-page anchors are observed; full-page links (e.g. /tracks) skip it.
   useEffect(() => {
     if (typeof IntersectionObserver === "undefined") return;
@@ -161,7 +161,7 @@ export default function TerminalHeader() {
                 Login
               </Link>
               <Link
-                href="/login?register=true"
+                href="/register"
                 className="px-4 py-1.5 text-sm font-semibold text-zinc-950 bg-emerald-500 rounded-full hover:bg-emerald-400 transition-colors shadow-glow-sm hover:scale-[1.03] active:scale-[0.97]"
               >
                 Get Started
@@ -226,7 +226,7 @@ export default function TerminalHeader() {
                 Login
               </Link>
               <Link
-                href="/login?register=true"
+                href="/register"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="px-4 py-3 min-h-[44px] flex items-center justify-center text-center text-sm font-semibold text-zinc-950 bg-emerald-500 rounded-full hover:bg-emerald-400 transition-colors shadow-glow-sm active:scale-[0.98]"
               >

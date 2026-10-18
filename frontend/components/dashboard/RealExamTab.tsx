@@ -286,7 +286,7 @@ export default function RealExamTab() {
     void openPaper(target);
   }, [papersLoading, papers, searchParams, openPaper]);
 
-  // Offline countdown — wall-clock based so background throttling / tab hidden doesn't slip,
+  // Offline countdown, wall-clock based so background throttling / tab hidden doesn't slip,
   // and auto-submits (locks answers + shows score) when time runs out.
   useEffect(() => {
     if (phase !== "offline" || checked) return;
@@ -312,7 +312,7 @@ export default function RealExamTab() {
       clearInterval(idRef.current!);
       document.removeEventListener("visibilitychange", onVisible);
     };
-    // timeLeft is intentionally not a dep — we snapshot the duration when entering offline
+    // timeLeft is intentionally not a dep, we snapshot the duration when entering offline
     // so the countdown doesn't extend on each tick.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase, checked]);
@@ -366,7 +366,7 @@ export default function RealExamTab() {
     if (generatedMeta && questions.length === 0) return;
     const title = generatedMeta
       ? generatedMeta.title
-      : `${selectedPaper?.titleBn ?? "প্রশ্নপত্র"} — প্রশ্নপত্র`;
+      : `${selectedPaper?.titleBn ?? "প্রশ্নপত্র"}, প্রশ্নপত্র`;
     const examName = generatedMeta
       ? generatedMeta.examName
       : `${selectedPaper?.examNameBn ?? ""} (${selectedPaper?.examType ?? ""})`;
@@ -467,7 +467,7 @@ export default function RealExamTab() {
             <h2 className="text-lg font-bold">রিয়েল এক্সাম (অফলাইন)</h2>
           </div>
           <p className="text-xs text-[var(--dashboard-text-muted)]">
-            আসল পরীক্ষার প্রশ্নপত্র PDF-এ ডাউনলোড করুন, প্রিন্ট করে অফলাইনে পরীক্ষা দিন — উত্তরসহ বা উত্তর ছাড়া।
+            আসল পরীক্ষার প্রশ্নপত্র PDF-এ ডাউনলোড করুন, প্রিন্ট করে অফলাইনে পরীক্ষা দিন, উত্তরসহ বা উত্তর ছাড়া।
           </p>
         </motion.div>
 
@@ -485,7 +485,7 @@ export default function RealExamTab() {
             <div className="flex-1 min-w-0">
               <h3 className="text-sm font-bold">নিজের রিয়েল এক্সাম প্রশ্নপত্র বানান</h3>
               <p className="text-xs text-[var(--dashboard-text-muted)] font-mono mt-0.5">
-                সব বিষয়ের টপিক ও সাবটপিক থেকে নিজের প্রশ্নপত্র তৈরি করুন — PDF-এ ডাউনলোড করে প্রিন্ট করুন।
+                সব বিষয়ের টপিক ও সাবটপিক থেকে নিজের প্রশ্নপত্র তৈরি করুন, PDF-এ ডাউনলোড করে প্রিন্ট করুন।
               </p>
             </div>
             <button
@@ -574,7 +574,7 @@ export default function RealExamTab() {
             <h2 className="text-lg font-bold">নতুন প্রশ্নপত্র তৈরি করুন</h2>
           </div>
           <p className="text-xs text-[var(--dashboard-text-muted)]">
-            যেকোনো বিষয়ের টপিক ও সাবটপিক বেছে নিয়ে নিজের রিয়েল এক্সাম প্রশ্নপত্র বানান — PDF-এ ডাউনলোড করে প্রিন্ট করে আসল পরীক্ষার মতো দিন।
+            যেকোনো বিষয়ের টপিক ও সাবটপিক বেছে নিয়ে নিজের রিয়েল এক্সাম প্রশ্নপত্র বানান, PDF-এ ডাউনলোড করে প্রিন্ট করে আসল পরীক্ষার মতো দিন।
           </p>
         </motion.div>
 
@@ -653,7 +653,7 @@ export default function RealExamTab() {
                 <Warning className="w-4 h-4 flex-shrink-0 mt-0.5" />
                 <p>
                   নির্বাচিত টপিক থেকে শুধু <span className="font-mono">{availableTotal}টি</span> প্রশ্ন
-                  পাওয়া যায় — মোট <span className="font-mono">{totalCount}টি</span> চাওয়া হয়েছে।
+                  পাওয়া যায়, মোট <span className="font-mono">{totalCount}টি</span> চাওয়া হয়েছে।
                 </p>
               </div>
             )}
@@ -662,7 +662,7 @@ export default function RealExamTab() {
               <div className="flex items-start gap-2 rounded-xl border border-[var(--warning)]/30 bg-[var(--dashboard-warning-subtle)] p-3 text-xs text-[var(--dashboard-warning)]">
                 <Warning className="w-4 h-4 flex-shrink-0 mt-0.5" />
                 <p>
-                  PDF-এ সর্বোচ্চ 200টি প্রশ্ন যায় — সবার আগের 200টি অন্তর্ভুক্ত হবে।
+                  PDF-এ সর্বোচ্চ 200টি প্রশ্ন যায়, সবার আগের 200টি অন্তর্ভুক্ত হবে।
                 </p>
               </div>
             )}
@@ -779,12 +779,12 @@ export default function RealExamTab() {
               </p>
             </div>
 
-            {/* Offline exam header — Phase 3 calm: no pulse until ≤60s, palette for backtracking, familiarization mode */}
+            {/* Offline exam header, Phase 3 calm: no pulse until ≤60s, palette for backtracking, familiarization mode */}
             {phase === "offline" && (
               <div className="mt-4 space-y-3">
                 <div className="command-card rounded-2xl border border-[var(--primary)]/30 px-4 py-3 flex items-center justify-between gap-3 flex-wrap">
                   {familiarize ? (
-                    <span className="text-xs font-mono text-[var(--dashboard-success)]">🌱 Familiarization — 3 questions, no timer. Feel the interface first.</span>
+                    <span className="text-xs font-mono text-[var(--dashboard-success)]">🌱 Familiarization, 3 questions, no timer. Feel the interface first.</span>
                   ) : (
                     <CalmCountdown
                       remainingSec={timeLeft}
@@ -829,7 +829,7 @@ export default function RealExamTab() {
             {phase === "offline" && checked && timeLeft === 0 && (
               <div className="mt-3 flex items-center gap-2 rounded-xl border border-[var(--dashboard-warning)]/30 bg-[var(--dashboard-warning-subtle)] px-3 py-2 text-xs text-[var(--dashboard-warning)]" role="status" aria-live="polite">
                 <Clock className="w-3.5 h-3.5 shrink-0" />
-                সময় শেষ — উত্তর স্বয়ংক্রিয়ভাবে জমা হয়েছে।
+                সময় শেষ, উত্তর স্বয়ংক্রিয়ভাবে জমা হয়েছে।
               </div>
             )}
 

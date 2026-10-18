@@ -8,7 +8,7 @@ import {
 } from "./animation/AnimationDirector"
 import { useVisualQuality, type VisualQuality } from "@/lib/motion/device"
 
-// Deterministic ember field (seeded by index) — drifting light motes that make
+// Deterministic ember field (seeded by index), drifting light motes that make
 // the room feel alive. Only opacity/transform, GPU-friendly. The rendered
 // count is clamped by the quality governor and the current scene state.
 const EMBER_POOL = Array.from({ length: 12 }, (_, i) => {
@@ -32,7 +32,7 @@ const EMBER_BASE_COUNT: Record<VisualQuality, number> = {
   reduced: 0,
 }
 
-/** Per-state lighting values — the room never jumps, it eases. */
+/** Per-state lighting values, the room never jumps, it eases. */
 const SCENE: Record<
   AuthEnvironmentState,
   { scrim: number; moonlight: number; vignette: number; bloom: number; bloomScale: number }
@@ -54,7 +54,7 @@ const SCENE: Record<
  * pause when the tab is hidden.
  *
  * `quietLevel` (0-3) progressively quiets the environment as the user
- * engages with the form — fewer embers, dimmer bloom.
+ * engages with the form, fewer embers, dimmer bloom.
  */
 export function AuthEnvironment({
   state,
@@ -93,7 +93,7 @@ export function AuthEnvironment({
 
   return (
     <div className="relative min-h-dvh overflow-hidden">
-      {/* Dark scrim — lifts as the room wakes */}
+      {/* Dark scrim, lifts as the room wakes */}
       <motion.div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 z-0 bg-[#04060c]"
@@ -102,7 +102,7 @@ export function AuthEnvironment({
         transition={{ duration: 0.8, ease: "easeInOut" }}
       />
 
-      {/* Cold moonlight shaft — the only light before the lamp is on */}
+      {/* Cold moonlight shaft, the only light before the lamp is on */}
       <motion.div
         aria-hidden="true"
         className="pointer-events-none absolute -top-[12%] left-[-6%] z-0 h-[75vh] w-[46vw] rotate-[24deg]"
@@ -143,7 +143,7 @@ export function AuthEnvironment({
         }}
       />
 
-      {/* Ember motes — density follows scene state × device quality */}
+      {/* Ember motes, density follows scene state × device quality */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0">
         {EMBER_POOL.slice(0, embers).map((e) => (
           <span

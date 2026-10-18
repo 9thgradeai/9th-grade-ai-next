@@ -11,8 +11,8 @@ export type MetaChipTone = "primary" | "warning" | "danger" | "success" | "teal"
  * 10–11px fail 4.5:1 on their own subtle backgrounds. The text is mixed
  * 60% toward the theme's primary body text, so the hue still reads while
  * the ratio holds in BOTH light and dark themes:
- *   light: tone darkens toward near-black — dark on light tint ✓
- *   dark:  tone lightens toward near-white — light on dark tint ✓
+ *   light: tone darkens toward near-black, dark on light tint ✓
+ *   dark:  tone lightens toward near-white, light on dark tint ✓
  * Tint bg + 1px border + bold 11px mono complete the affordance without
  * relying on color alone (chips always sit beside a text label).
  */

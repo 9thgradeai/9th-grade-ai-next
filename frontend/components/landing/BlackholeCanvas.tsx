@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useMotionCapabilities, useVisualQuality } from "@/lib/motion/device";
 
 /**
- * Real-time black hole rendered with raw WebGL — no three.js, no camera libs.
+ * Real-time black hole rendered with raw WebGL, no three.js, no camera libs.
  *
  * Photon paths are integrated through curved space (a = -1.5·h²·p/r⁵). Rays that
  * cross the event horizon (r < 1) are swallowed → the black shadow. A *volumetric*
@@ -17,7 +17,7 @@ import { useMotionCapabilities, useVisualQuality } from "@/lib/motion/device";
  * Stability & performance (the priority here):
  *  - Render scale ADAPTS with hysteresis + a deadband: it starts conservative and
  *    only ramps DOWN hard when FPS is clearly bad, only ramps UP when there is clear
- *    headroom — so it never oscillates the canvas size frame-to-frame (no flicker).
+ *    headroom, so it never oscillates the canvas size frame-to-frame (no flicker).
  *  - DPR is capped; step count is chosen per device tier at compile time.
  *  - No per-frame allocations; the loop does one draw call.
  *  - A static, time-independent dither kills 8-bit banding (no shimmer).
@@ -136,7 +136,7 @@ void main() {
     dir += accel * dt;
     pos += dir * dt;
 
-    // Volumetric accretion disk — emitted every step the ray is inside the slab.
+    // Volumetric accretion disk, emitted every step the ray is inside the slab.
     float rad = length(pos.xz);
     if (rad > DISK_IN && rad < DISK_OUT) {
       float tn = (rad - DISK_IN) / (DISK_OUT - DISK_IN);
@@ -341,7 +341,7 @@ export default function BlackholeCanvas({ className = "" }: { className?: string
 
     // --- run-state management: only animate when visible AND on-screen ---
     // Continuous orbit is allowed on every device (incl. touch / small
-    // viewports) — the quality tier + adaptive scaler keep it smooth. We no
+    // viewports), the quality tier + adaptive scaler keep it smooth. We no
     // longer freeze the canvas on mobile; prefers-reduced-motion users still
     // get a single static frame via `continuousEffects` being false.
     const updateRun = () => {
@@ -361,7 +361,7 @@ export default function BlackholeCanvas({ className = "" }: { className?: string
       }
     };
 
-    // Accumulated animation clock — advances ONLY while the loop runs, so
+    // Accumulated animation clock, advances ONLY while the loop runs, so
     // scrolling away and back (or a tab switch) resumes seamlessly instead of
     // jumping the camera to a new absolute-time angle. Clamped so a stalled
     // frame (GC / throttled tab) can't lurch the scene during a long session.
@@ -453,7 +453,7 @@ export default function BlackholeCanvas({ className = "" }: { className?: string
       io.disconnect();
       canvas.removeEventListener("webglcontextlost", onLost as EventListener);
       // Do NOT call loseContext(): React Strict Mode remounts the effect on the
-      // same canvas, and a lost context stays dead — every draw becomes a no-op.
+      // same canvas, and a lost context stays dead, every draw becomes a no-op.
       gl.deleteBuffer(buffer);
       gl.deleteProgram(program);
       gl.deleteShader(vs);

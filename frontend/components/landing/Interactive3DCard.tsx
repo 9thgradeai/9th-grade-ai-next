@@ -27,7 +27,7 @@ export default function Interactive3DCard({
 }: {
   children: ReactNode;
   className?: string;
-  /** Peak tilt in degrees on each axis. Keep this small — ±3° reads premium. */
+  /** Peak tilt in degrees on each axis. Keep this small, ±3° reads premium. */
   maxRotation?: number;
   glow?: boolean;
 }) {

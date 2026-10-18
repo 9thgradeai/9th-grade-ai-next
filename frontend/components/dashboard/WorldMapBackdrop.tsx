@@ -89,7 +89,7 @@ export default function WorldMapBackdrop() {
         >
           <path d={WORLD_MAP_PATH} className="world-map-land" />
         </svg>
-        {/* Weak-topic spotlight — one pulsing dot, position in % of viewBox */}
+        {/* Weak-topic spotlight, one pulsing dot, position in % of viewBox */}
         <span
           className="world-map-spot"
           style={{

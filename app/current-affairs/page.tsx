@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import { Newspaper, ArrowUpRight, Radio } from "@phosphor-icons/react/dist/ssr";
 import PublicShell from "@/components/public/PublicShell";
@@ -9,12 +10,12 @@ import { getFlashNews } from "~backend/services/content";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  alternates: { canonical: "/current-affairs" },
-  title: "Current Affairs — 9Th-Grade AI",
+export const metadata: Metadata = pageMeta({
+  path: "/current-affairs",
+  title: "Current Affairs | 9Th-Grade AI",
   description:
     "Curated national and international current-affairs items for BCS, Bank, and Teacher recruitment exam preparation.",
-};
+});
 
 export default async function CurrentAffairsPage() {
   const feed = await getFlashNews();
@@ -25,9 +26,9 @@ export default async function CurrentAffairsPage() {
         eyebrow="CURRENT AFFAIRS"
         title="One Daily Feed,"
         highlight="Zero Missed Marks"
-        description="National and international affairs distilled into exam-ready facts — tied to the current-affairs sections of every paper."
+        description="National and international affairs distilled into exam-ready facts, tied to the current-affairs sections of every paper."
         actions={[
-          { href: "/login?register=true", label: "Start Free Preparation" },
+          { href: "/register", label: "Start Free Preparation" },
           { href: "/dashboard?tab=flashcards", label: "Revise with Flashcards", variant: "ghost" },
         ]}
       />
@@ -81,7 +82,7 @@ export default async function CurrentAffairsPage() {
 
           <div className="mt-6 text-center">
             <Link
-              href="/login?register=true"
+              href="/register"
               className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-sm font-semibold text-zinc-950 bg-emerald-500 hover:bg-emerald-400 transition-colors shadow-[0_0_24px_rgba(16,185,129,0.3)]"
             >
               Track Current Affairs Daily

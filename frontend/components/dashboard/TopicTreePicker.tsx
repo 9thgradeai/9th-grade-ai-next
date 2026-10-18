@@ -278,7 +278,7 @@ export default function TopicTreePicker({
 
               {allSelected ? (
                 <p className="text-xs text-[var(--dashboard-text-muted)] font-mono mb-3">
-                  বিষয়ের সব টপিক নির্বাচিত — {subject.questionCount}টি প্রশ্ন
+                  বিষয়ের সব টপিক নির্বাচিত, {subject.questionCount}টি প্রশ্ন
                 </p>
               ) : null}
 

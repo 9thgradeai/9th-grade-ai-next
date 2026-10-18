@@ -51,7 +51,7 @@ export default function AIMockTestTab() {
       const weak = await api.weakTopics();
       const labels = weak.slice(0, 3).map((w) => `${w.subject} → ${w.topic}`);
       if (labels.length === 0) {
-        setError("দুর্বল টপিক পাওয়া যায়নি — আগে কিছু প্রশ্ন সমাধান করো।");
+        setError("দুর্বল টপিক পাওয়া যায়নি, আগে কিছু প্রশ্ন সমাধান করো।");
         return;
       }
       setTopics(labels);

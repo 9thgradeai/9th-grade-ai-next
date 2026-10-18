@@ -7,7 +7,7 @@ import { AuthEnvironment } from "./AuthEnvironment"
 import BrandMark from "@/components/ui/BrandMark"
 
 /**
- * AuthShell — the shared frame for the secondary auth routes (recovery,
+ * AuthShell, the shared frame for the secondary auth routes (recovery,
  * reset, verification). It drops each flow into the same cinematic room as
  * the sign-in / sign-up experience so the whole authentication surface reads
  * as one connected world rather than a set of disconnected cards. The

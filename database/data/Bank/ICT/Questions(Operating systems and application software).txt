@@ -1,0 +1,810 @@
+﻿Section 1: Operating System Fundamentals
+1. Which of the following best describes an operating system?
+A. A device used exclusively for data storage B. System software that manages hardware and provides services to applications C. An application used only for word processing D. A programming language used to develop websites
+Correct Answer: B. System software that manages hardware and provides services to applications
+Explanation: An operating system (OS) manages resources such as the CPU, memory, storage, and input/output devices. It also provides an environment in which application software runs.
+2. Which of the following is NOT an operating system?
+A. Linux B. Microsoft Windows C. Microsoft Excel D. macOS
+Correct Answer: C. Microsoft Excel
+Explanation: Excel is spreadsheet application software, not an operating system. Windows, Linux, and macOS are operating systems that manage computer resources and support applications.
+3. Which component of an operating system interacts most directly with the hardware and manages core system resources?
+A. Spreadsheet B. Web browser C. Word processor D. Kernel
+Correct Answer: D. Kernel
+Explanation: The kernel is the core of an operating system. It manages CPU scheduling, memory, device communication, and other fundamental operations.
+4. Which type of software acts as an intermediary between computer hardware and application programs?
+A. System software B. Presentation software C. Database content D. Desktop publishing documents
+Correct Answer: A. System software
+Explanation: System software includes operating systems, device drivers, and utilities. It helps applications use hardware resources without requiring each application to control the hardware independently.
+5. Which of the following is an example of application software?
+A. Linux kernel B. Device driver C. Microsoft Word D. UEFI firmware
+Correct Answer: C. Microsoft Word
+Explanation: Microsoft Word is application software designed for creating and editing documents. A kernel, device driver, and firmware serve system-level functions.
+6. What is the primary function of a device driver?
+A. To create presentation slides B. To enable the operating system to communicate with a hardware device C. To convert every document into a PDF automatically D. To replace the computer's processor
+Correct Answer: B. To enable the operating system to communicate with a hardware device
+Explanation: A device driver provides software instructions that allow the operating system to control or communicate with hardware such as printers, graphics adapters, and network interfaces.
+7. Which operating-system function is primarily responsible for allocating CPU time to competing processes?
+A. File compression B. Page formatting C. Spell checking D. Process scheduling
+Correct Answer: D. Process scheduling
+Explanation: Process scheduling determines which process or thread receives CPU time and when. It supports efficient resource utilization and responsive multitasking.
+8. Virtual memory allows an operating system to:
+A. Use secondary storage to supplement physical RAM B. Increase the physical size of the CPU C. eliminate the need for permanent storage D. execute programs without any memory
+Correct Answer: A. Use secondary storage to supplement physical RAM
+Explanation: Virtual memory allows the OS to keep some memory contents on secondary storage and bring them into RAM when needed. It does not make storage as fast as physical RAM, and excessive paging can reduce performance.
+9. Which of the following is a key responsibility of an operating system's file-management system?
+A. Designing presentation themes B. Calculating spreadsheet averages C. Organizing files and directories and controlling file access D. Translating every high-level program into machine code
+Correct Answer: C. Organizing files and directories and controlling file access
+Explanation: File management includes creating, naming, organizing, storing, retrieving, and protecting files. The exact features depend on the operating system and file system.
+10. Which of the following best distinguishes a process from a program?
+A. A process is always a hardware device, while a program is software. B. A program is a set of instructions; a process is a program in execution. C. A program must be online, while a process must be offline. D. A process is a file extension, while a program is a folder.
+Correct Answer: B. A program is a set of instructions; a process is a program in execution.
+Explanation: A program is a stored set of instructions, whereas a process is an executing instance with associated resources and state. One program may have multiple running instances.
+11. Which operating-system capability prevents one ordinary application from freely accessing another application's protected memory?
+A. Slide transition B. Mail merge C. Cell referencing D. Memory protection
+Correct Answer: D. Memory protection
+Explanation: Memory protection restricts processes from accessing memory regions they are not permitted to use. It helps improve system stability and security.
+12. What is the principal purpose of a user account in a multiuser operating system?
+A. To identify a user and associate access rights and settings with that user B. To increase the processor's clock speed C. To convert all files into executable programs D. To eliminate the need for authentication
+Correct Answer: A. To identify a user and associate access rights and settings with that user
+Explanation: User accounts help the OS distinguish users, manage permissions, and maintain separate settings and files. Authentication may use passwords, security keys, biometrics, or other mechanisms.
+13. Which of the following is an example of a command-line interface (CLI)?
+A. A graphical desktop containing icons only B. A slide-show view in PowerPoint C. A terminal in which users enter text commands D. A spreadsheet displayed as a grid
+Correct Answer: C. A terminal in which users enter text commands
+Explanation: A CLI accepts textual commands, commonly through a terminal or shell. A graphical user interface (GUI), by contrast, uses visual elements such as windows, menus, and icons.
+14. Which statement about open-source operating systems is correct?
+A. They can never be used commercially. B. Their source code is made available under a license that permits specified forms of use, inspection, or modification. C. They cannot support graphical interfaces. D. They are necessarily free of security vulnerabilities.
+Correct Answer: B. Their source code is made available under a license that permits specified forms of use, inspection, or modification.
+Explanation: Open-source software is governed by a license that grants particular rights concerning source code. Open source does not automatically mean that all services are free or that vulnerabilities cannot occur.
+15. Which of the following is most directly associated with managing files, folders, and storage locations through a graphical Windows environment?
+A. Windows File Explorer B. Microsoft PowerPoint Slide Show C. Excel Formula Bar D. Word Mail Merge Wizard
+Correct Answer: A. Windows File Explorer
+Explanation: File Explorer is the Windows file-management application used to browse drives and folders, copy or move files, rename items, and inspect file properties.
+16. Which of the following is an example of a real-time operating system (RTOS)?
+A. An OS designed to guarantee responses within specified timing constraints B. An OS that can run only one program per day C. An OS used exclusively for creating spreadsheets D. An OS that does not manage memory
+Correct Answer: A. An OS designed to guarantee responses within specified timing constraints
+Explanation: An RTOS is designed to respond to events within defined timing requirements. It is used in embedded control systems, industrial automation, and other time-sensitive applications.
+17. Which of the following is a primary function of a file system?
+A. Increasing the physical capacity of RAM B. Determining the monitor's refresh rate C. Organizing and tracking files on a storage device D. Replacing the operating system kernel
+Correct Answer: C. Organizing and tracking files on a storage device
+Explanation: A file system defines how files and directories are organized and how storage locations and metadata are managed. Examples include NTFS, FAT32, ext4, and APFS.
+18. What is the main purpose of a user interface in an operating system?
+A. To manufacture hardware components B. To provide a means for users to interact with the computer C. To guarantee unlimited storage capacity D. To eliminate all application software
+Correct Answer: B. To provide a means for users to interact with the computer
+Explanation: A user interface enables users to issue commands, access applications, and manage system resources. Common forms include graphical and command-line interfaces.
+19. Which of the following is a utility program rather than a general-purpose application?
+A. Microsoft Word B. Microsoft PowerPoint C. A presentation editor D. A disk-cleanup utility
+Correct Answer: D. A disk-cleanup utility
+Explanation: Utility software performs maintenance, diagnostic, security, or optimization tasks. Word and PowerPoint are productivity applications used to create documents and presentations.
+20. Which statement about an operating system and application software is correct?
+A. Application software commonly relies on OS services to access hardware and system resources. B. Every application must contain its own operating system. C. An operating system is always a spreadsheet program. D. Application software cannot use files.
+Correct Answer: A. Application software commonly relies on OS services to access hardware and system resources.
+Explanation: Applications normally request services through operating-system interfaces and libraries. The OS manages access to hardware, files, memory, and other resources.
+Section 2: Windows, Linux, Android and macOS
+21. Which company develops Microsoft Windows?
+A. Apple B. Google C. Microsoft D. Canonical
+Correct Answer: C. Microsoft
+Explanation: Microsoft develops the Windows operating-system family for personal computers and other devices. Apple develops macOS, Google develops Android with contributions from the broader Android ecosystem, and Canonical publishes Ubuntu Linux.
+22. Which of the following is a Linux distribution?
+A. Microsoft Excel B. Ubuntu C. macOS Finder D. Android Studio
+Correct Answer: B. Ubuntu
+Explanation: Ubuntu is a Linux distribution based on the Linux kernel. Other examples include Debian, Fedora, and Linux Mint.
+23. Android is primarily built around which operating-system kernel?
+A. Windows NT kernel B. XNU kernel C. FreeBSD kernel exclusively D. Linux kernel
+Correct Answer: D. Linux kernel
+Explanation: Android uses the Linux kernel, together with Android-specific system components and application frameworks. Android is not simply a conventional desktop Linux distribution.
+24. Which operating system is developed by Apple for its Mac computers?
+A. macOS B. Ubuntu C. Android D. ChromeOS Flex only
+Correct Answer: A. macOS
+Explanation: macOS is Apple's desktop operating system for Mac computers. It provides a graphical environment and includes system services, security mechanisms, and application support.
+25. Which statement best describes Linux?
+A. It is exclusively a spreadsheet application. B. It cannot operate on servers. C. It is an open-source kernel used by many operating-system distributions. D. It can be installed only on smartphones.
+Correct Answer: C. It is an open-source kernel used by many operating-system distributions.
+Explanation: The Linux kernel is the core of numerous operating systems used on servers, desktops, embedded systems, and other devices. Linux distributions combine the kernel with utilities, libraries, package managers, and often a desktop environment.
+26. Which Windows feature provides a graphical area containing application icons, open windows, and the taskbar?
+A. BIOS setup B. Desktop C. Command interpreter only D. CPU cache
+Correct Answer: B. Desktop
+Explanation: The Windows desktop is the primary graphical workspace. Users can launch applications, access files, and switch between open windows using desktop elements and the taskbar.
+27. Which Windows tool is commonly used to view running processes and end an unresponsive application?
+A. Character Map B. WordPad C. Paint D. Task Manager
+Correct Answer: D. Task Manager
+Explanation: Task Manager displays information about running applications, processes, resource usage, and startup apps. It can be used to end a frozen task, although unsaved work may be lost.
+28. In a typical Linux command-line environment, which command lists files and directories?
+A. ls B. dirword C. showppt D. listxls
+Correct Answer: A. ls
+Explanation: The ls command lists directory contents in common Linux shells. Commands such as cd, pwd, and mkdir are used to change directories, display the current directory, and create directories, respectively.
+29. Which Linux command is commonly used to change the current working directory?
+A. rm B. grep C. cd D. chmod
+Correct Answer: C. cd
+Explanation: The cd command changes the current working directory. By contrast, rm removes files or directories, grep searches text, and chmod changes file permissions.
+30. Which of the following is commonly used as a graphical file manager in many Linux desktop environments?
+A. Microsoft Access B. GNOME Files C. Excel Formula Bar D. Windows Registry Editor
+Correct Answer: B. GNOME Files
+Explanation: GNOME Files, also known as Nautilus, is a graphical file manager associated with the GNOME desktop environment. Other Linux desktop environments have their own file managers.
+31. What is the name of the graphical file-management application commonly used in macOS?
+A. Task Manager B. File Explorer C. Control Panel D. Finder
+Correct Answer: D. Finder
+Explanation: Finder allows macOS users to browse files and folders, access storage locations, and manage documents. File Explorer performs a comparable role in Windows.
+32. Which statement correctly distinguishes Android from iOS?
+A. Android is associated with Google's mobile OS ecosystem, whereas iOS is Apple's mobile operating system for iPhones. B. Android is a desktop word processor, whereas iOS is a spreadsheet. C. Android cannot run mobile applications. D. iOS is a Linux distribution maintained by Canonical.
+Correct Answer: A. Android is associated with Google's mobile OS ecosystem, whereas iOS is Apple's mobile operating system for iPhones.
+Explanation: Android and iOS are major mobile operating-system platforms. They differ in system architecture, application distribution, development frameworks, and device ecosystems.
+33. Which macOS feature is commonly used to search for applications, files, and other information on a Mac?
+A. Disk Defragmenter B. Task View only C. Spotlight D. Mail Merge
+Correct Answer: C. Spotlight
+Explanation: Spotlight is macOS's system-wide search feature. It can locate files and applications and provide results from other supported sources.
+34. Which statement about Windows and Linux is correct?
+A. Both are exclusively mobile operating systems. B. Both can support multitasking and multiple user accounts. C. Neither supports networking. D. Linux cannot use a graphical user interface.
+Correct Answer: B. Both can support multitasking and multiple user accounts.
+Explanation: Modern Windows and Linux systems support multitasking, networking, and user accounts. Linux can be operated through a CLI, a GUI, or both.
+35. Which of the following is a common characteristic of Android devices?
+A. They can never connect to wireless networks. B. They cannot run applications. C. They are designed exclusively for desktop towers. D. They commonly support touch-based interaction and mobile applications.
+Correct Answer: D. They commonly support touch-based interaction and mobile applications.
+Explanation: Android is widely used on smartphones, tablets, and other embedded devices. Touch interaction and application-based functionality are common, although Android also supports devices with other input methods.
+36. What is a key distinction between macOS and most Linux distributions?
+A. macOS is developed by Apple, while Linux distributions are built around the Linux kernel by various organizations and communities. B. macOS cannot manage files. C. Linux distributions cannot run applications. D. macOS is a Microsoft Office application.
+Correct Answer: A. macOS is developed by Apple, while Linux distributions are built around the Linux kernel by various organizations and communities.
+Explanation: macOS is Apple's proprietary operating system. Linux distributions use the Linux kernel and combine it with other software under their respective licensing arrangements.
+37. Which operating system is most closely associated with the Windows Registry?
+A. Android B. Ubuntu C. Microsoft Windows D. macOS
+Correct Answer: C. Microsoft Windows
+Explanation: The Windows Registry is a hierarchical database that stores configuration information for Windows and many installed applications. It should be modified carefully because incorrect changes can cause system problems.
+38. In Windows, what is the primary purpose of the Recycle Bin?
+A. To permanently increase disk capacity B. To temporarily hold many deleted files so they can potentially be restored C. To run antivirus scans exclusively D. To store CPU instructions permanently
+Correct Answer: B. To temporarily hold many deleted files so they can potentially be restored
+Explanation: Files deleted through supported Windows operations are often moved to the Recycle Bin, from which they can be restored or permanently deleted. Some deletions, removable-drive operations, and other actions bypass it.
+39. Which of the following is a package-management tool commonly associated with Debian-based Linux distributions?
+A. PowerPoint Designer B. Windows Registry C. macOS Spotlight D. APT
+Correct Answer: D. APT
+Explanation: APT, or Advanced Package Tool, manages software packages on Debian-based systems such as Ubuntu. It can install, update, and remove software while handling dependencies.
+40. Which statement about operating-system updates is most accurate?
+A. Updates may provide security fixes, bug fixes, and feature improvements. B. Updates always double the physical RAM. C. Updates permanently eliminate every possible vulnerability. D. Updates are used only to change document extensions.
+Correct Answer: A. Updates may provide security fixes, bug fixes, and feature improvements.
+Explanation: Operating-system updates can address known vulnerabilities, improve compatibility, and fix defects. They reduce risk but cannot guarantee that a system will never be compromised.
+Section 3: Booting, Multitasking and File Management
+41. What is booting?
+A. Formatting a document B. Sorting spreadsheet data C. Starting a computer and loading the operating system D. Printing a presentation
+Correct Answer: C. Starting a computer and loading the operating system
+Explanation: Booting is the startup process in which the computer initializes hardware and loads the OS. A computer may undergo a cold boot after being powered off or a warm boot when restarted.
+42. Which type of booting occurs when a computer is started from a powered-off state?
+A. Warm boot B. Cold boot C. Safe formatting D. Multitasking boot
+Correct Answer: B. Cold boot
+Explanation: A cold boot begins from a powered-off state. A warm boot generally refers to restarting a computer without fully powering it off first.
+43. Which firmware standard is commonly used on modern computers to initialize hardware and start the operating-system boot process?
+A. SMTP B. HTML C. JPEG D. UEFI
+Correct Answer: D. UEFI
+Explanation: UEFI stands for Unified Extensible Firmware Interface. It provides firmware interfaces and boot services, and it commonly replaces or modernizes the role historically associated with traditional BIOS firmware.
+44. What is the principal role of a bootloader?
+A. To help load the operating system or its kernel during startup B. To calculate the average of spreadsheet values C. To merge mailing lists into letters D. To create slide transitions
+Correct Answer: A. To help load the operating system or its kernel during startup
+Explanation: A bootloader helps transfer control to the operating system during startup. Depending on the system, it may also offer boot options or allow selection among multiple operating systems.
+45. What is multitasking in an operating system?
+A. Connecting multiple monitors without software B. Using several keyboards to type one letter C. Managing the execution of multiple tasks so they can make progress concurrently D. Storing several extensions in one filename
+Correct Answer: C. Managing the execution of multiple tasks so they can make progress concurrently
+Explanation: Multitasking allows multiple tasks to progress through CPU scheduling and, on suitable hardware, parallel execution. On a single CPU core, tasks often share processor time through rapid switching.
+46. Which statement best describes multiprocessing?
+A. A method of changing a file extension B. The use of multiple processing units or CPU cores to execute work C. A method of formatting paragraphs D. A process for combining spreadsheet cells
+Correct Answer: B. The use of multiple processing units or CPU cores to execute work
+Explanation: Multiprocessing uses more than one processing unit or core to execute tasks, potentially in parallel. Multitasking refers to managing multiple tasks and can occur even on a single-core processor.
+47. A computer has a single CPU core and rapidly switches between a browser and a word processor. This is an example of:
+A. Multiprocessing necessarily involving two CPUs B. File compression C. Mail merge D. Multitasking through time-sharing
+Correct Answer: D. Multitasking through time-sharing
+Explanation: A single core can execute different tasks in alternating time slices, making them appear to run simultaneously. True parallel execution of separate CPU instructions requires multiple processing resources.
+48. Which of the following is a primary function of memory management?
+A. Allocating and tracking memory used by processes B. Changing slide backgrounds C. Correcting spelling in documents D. Sorting names alphabetically in a worksheet
+Correct Answer: A. Allocating and tracking memory used by processes
+Explanation: Memory management controls the allocation, use, and protection of memory. It also supports mechanisms such as virtual memory where provided by the operating system.
+49. What is a file path?
+A. The speed of a processor B. The number of worksheet rows C. The location of a file or directory within a file-system hierarchy D. The duration of a slide transition
+Correct Answer: C. The location of a file or directory within a file-system hierarchy
+Explanation: A file path identifies a file or directory's location. For example, C:\Reports\Annual.docx is a typical Windows-style path.
+50. Which of the following is an example of an absolute path in a typical Linux file system?
+A. ../reports B. /home/user/reports/report.txt C. reports/report.txt D. ./report.txt
+Correct Answer: B. /home/user/reports/report.txt
+Explanation: An absolute Linux path begins at the root directory, represented by /. Paths such as ../reports and ./report.txt are relative to the current working directory.
+51. Which statement about a file and a folder is correct?
+A. A folder can contain only one file. B. A file is always an operating system. C. A folder cannot contain subfolders. D. A folder can organize files and other folders.
+Correct Answer: D. A folder can organize files and other folders.
+Explanation: Folders, also called directories, organize files in a hierarchical structure. A folder can contain multiple files and subfolders, subject to file-system limitations.
+52. What is the primary purpose of a file extension?
+A. To indicate a file's format or type, commonly through its suffix B. To guarantee that a file is free of malware C. To specify the physical size of the hard disk D. To identify the computer's processor manufacturer
+Correct Answer: A. To indicate a file's format or type, commonly through its suffix
+Explanation: Extensions such as .docx, .xlsx, and .pptx help identify file formats and associate files with applications. Renaming an extension does not necessarily convert the file's actual format.
+53. Which of the following is an example of a hidden file on many Unix-like systems?
+A. report.docx B. image.png C. .config D. budget.xlsx
+Correct Answer: C. .config
+Explanation: In Unix-like systems, a filename beginning with a period is conventionally treated as hidden by many tools and file managers. This naming convention does not itself provide security or encryption.
+54. Which file-system permission is commonly associated with the ability to modify a file's contents?
+A. Execute only B. Write C. Read only D. Search only
+Correct Answer: B. Write
+Explanation: In conventional Unix/Linux permissions, read permits reading, write permits modification, and execute permits execution or, for directories, traversal. Effective access also depends on ownership, directory permissions, and other security rules.
+55. What happens when a user creates a shortcut to an application in Windows?
+A. The application must be duplicated in full. B. The operating system is reinstalled. C. The original application is automatically deleted. D. A link is created that provides convenient access to the target.
+Correct Answer: D. A link is created that provides convenient access to the target.
+Explanation: A Windows shortcut normally points to a target file, folder, or application. Deleting the shortcut generally does not delete the original target.
+56. Which key combination commonly opens Task Manager directly in modern Windows versions?
+A. Ctrl + Shift + Esc B. Ctrl + P C. Alt + F4 D. Ctrl + S
+Correct Answer: A. Ctrl + Shift + Esc
+Explanation: Ctrl + Shift + Esc opens Task Manager directly. Ctrl + P commonly invokes printing, Alt + F4 closes the active window, and Ctrl + S saves the current document.
+57. Which Windows key combination locks the computer?
+A. Windows + E B. Windows + R C. Windows + L D. Windows + P
+Correct Answer: C. Windows + L
+Explanation: Windows + L locks the current session. Windows + E opens File Explorer, Windows + R opens the Run dialog, and Windows + P opens display-projection options.
+58. Which Windows shortcut opens File Explorer?
+A. Windows + D B. Windows + E C. Windows + I D. Windows + Tab
+Correct Answer: B. Windows + E
+Explanation: Windows + E opens File Explorer. Windows + D shows or hides the desktop, Windows + I opens Settings, and Windows + Tab opens Task View.
+59. In a typical Linux shell, which command creates a new directory?
+A. pwd B. cat C. whoami D. mkdir
+Correct Answer: D. mkdir
+Explanation: The mkdir command creates directories. pwd prints the current working directory, cat displays or concatenates file contents, and whoami displays the current effective username.
+60. Which Linux command is commonly used to display the current working directory?
+A. pwd B. cd C. touch D. mv
+Correct Answer: A. pwd
+Explanation: pwd stands for “print working directory.” The cd command changes the current directory, while mv moves or renames files and directories.
+Section 4: GUI, CLI and Common File Operations
+61. What does GUI stand for?
+A. General Utility Instruction B. Graphical Universal Internet C. Graphical User Interface D. General User Integration
+Correct Answer: C. Graphical User Interface
+Explanation: A GUI allows users to interact through graphical elements such as windows, icons, buttons, and menus. It is designed to make many operations accessible without memorizing commands.
+62. Which is a major advantage of a command-line interface?
+A. It always requires more memory than a GUI. B. It can support efficient automation through scripts and commands. C. It cannot operate remotely. D. It prevents users from managing files.
+Correct Answer: B. It can support efficient automation through scripts and commands.
+Explanation: CLIs are useful for repetitive operations, administration, scripting, and remote management. They may require familiarity with commands and syntax.
+63. Which interface is generally most suitable for a novice user who wants to move a file by dragging its icon into another folder?
+A. Machine-code interface B. CPU instruction interface C. Binary-only interface D. GUI
+Correct Answer: D. GUI
+Explanation: A graphical interface supports direct manipulation through visual elements. Drag-and-drop file management is a common GUI operation, although exact behavior depends on the operating system and context.
+64. Which of the following is a command-line shell commonly used on modern Windows systems?
+A. PowerShell B. Microsoft Word C. Microsoft Excel D. Finder
+Correct Answer: A. PowerShell
+Explanation: PowerShell is a command-line shell and scripting environment used for administration and automation. Windows also supports Command Prompt and other terminal-based environments.
+65. What is the function of the clipboard in a computer operating system?
+A. To permanently store every file on the computer B. To execute the computer's bootloader C. To hold content temporarily for operations such as copying and pasting D. To replace RAM completely
+Correct Answer: C. To hold content temporarily for operations such as copying and pasting
+Explanation: The clipboard holds copied or cut content so that it can be pasted elsewhere. Depending on the operating system, it may support text, images, files, and clipboard history.
+66. Which keyboard shortcut is commonly used to copy selected content?
+A. Ctrl + X B. Ctrl + C C. Ctrl + V D. Ctrl + Z
+Correct Answer: B. Ctrl + C
+Explanation: Ctrl + C copies selected content in many Windows applications. Ctrl + X cuts, Ctrl + V pastes, and Ctrl + Z undoes a recent action.
+67. Which keyboard shortcut is commonly used to cut selected content?
+A. Ctrl + A B. Ctrl + P C. Ctrl + Y D. Ctrl + X
+Correct Answer: D. Ctrl + X
+Explanation: Ctrl + X cuts selected content for subsequent pasting. For files, the operation typically marks the selected items for moving when pasted into another location.
+68. Which shortcut selects all selectable content in many Windows applications?
+A. Ctrl + A B. Ctrl + D C. Ctrl + F D. Ctrl + N
+Correct Answer: A. Ctrl + A
+Explanation: Ctrl + A commonly selects all content in the current document, field, or list. The exact scope of selection depends on the application and the active control.
+69. Which shortcut generally reverses the most recent undoable action?
+A. Ctrl + S B. Ctrl + F C. Ctrl + Y D. Ctrl + Z
+Correct Answer: C. Ctrl + Y
+Explanation: In many Windows applications, Ctrl + Y performs Redo, reversing an earlier Undo. Ctrl + Z normally performs Undo, although shortcut behavior may vary between applications.
+70. What is the usual effect of pressing F2 on a selected file in Windows File Explorer?
+A. Open the print dialog B. Rename the selected file or folder C. Lock the computer D. Open the spreadsheet formula bar
+Correct Answer: B. Rename the selected file or folder
+Explanation: F2 is the standard rename shortcut in Windows File Explorer. Users should take care not to change the extension unintentionally when file extensions are visible.
+71. Which shortcut commonly opens the Find or Search function in many desktop applications?
+A. Ctrl + H only B. Ctrl + E only C. Ctrl + F D. Ctrl + W only
+Correct Answer: C. Ctrl + F
+Explanation: Ctrl + F commonly opens a search field for locating text or other content. Ctrl + H is often used for Replace or History, depending on the application.
+72. Which keyboard shortcut commonly closes the active application window in Windows?
+A. Alt + F4 B. Ctrl + C C. Windows + E D. Ctrl + Home
+Correct Answer: A. Alt + F4
+Explanation: Alt + F4 closes the active window or application, depending on the context. If a document contains unsaved changes, the application may prompt the user to save them.
+73. Which operation creates a second copy of a file while leaving the original in its existing location?
+A. Rename B. Delete C. Cut and move D. Copy and paste
+Correct Answer: D. Copy and paste
+Explanation: Copying and pasting creates a duplicate at the destination while retaining the source. Moving a file changes its location rather than creating an independent copy in the usual case.
+74. What is the purpose of file compression?
+A. To guarantee that all files become encrypted B. To reduce storage requirements or transmission size when possible C. To increase the physical capacity of RAM D. To convert every file into an executable program
+Correct Answer: B. To reduce storage requirements or transmission size when possible
+Explanation: Compression represents data more efficiently or uses encoding methods that reduce file size. Lossless compression preserves the original data; lossy compression discards some information to achieve greater reduction.
+75. Which file extension commonly identifies a ZIP archive?
+A. .xlsx B. .pptx C. .zip D. .exe
+Correct Answer: C. .zip
+Explanation: ZIP is a widely used archive format that can package multiple files and directories and may compress their contents. It does not inherently guarantee encryption or malware-free content.
+Section 5: Microsoft Word
+76. Microsoft Word is primarily used for:
+A. Word processing and document creation B. Managing the CPU scheduler C. Operating a computer's firmware D. Designing network routing protocols
+Correct Answer: A. Word processing and document creation
+Explanation: Word is a word-processing application used to create, edit, format, and print documents. Typical uses include letters, reports, applications, and official correspondence.
+77. Which extension is the default modern Word document format?
+A. .xlsx B. .pptx C. .txt D. .docx
+Correct Answer: D. .docx
+Explanation: .docx is the standard modern Word document extension based on Office Open XML. The older .doc extension is associated with earlier binary Word document formats.
+78. Which keyboard shortcut saves a document in Microsoft Word?
+A. Ctrl + P B. Ctrl + S C. Ctrl + B D. Ctrl + L
+Correct Answer: B. Ctrl + S
+Explanation: Ctrl + S saves the current document. Ctrl + P opens printing options, Ctrl + B toggles bold formatting, and Ctrl + L commonly aligns a paragraph to the left.
+79. Which shortcut makes selected text bold in Microsoft Word?
+A. Ctrl + U B. Ctrl + I C. Ctrl + B D. Ctrl + E
+Correct Answer: C. Ctrl + B
+Explanation: Ctrl + B toggles bold formatting. Ctrl + I toggles italics, while Ctrl + U toggles underlining.
+80. Which shortcut applies italics to selected text in Word?
+A. Ctrl + I B. Ctrl + B C. Ctrl + P D. Ctrl + J
+Correct Answer: A. Ctrl + I
+Explanation: Ctrl + I toggles italic formatting. It changes the appearance of text without changing the underlying words.
+81. Which shortcut commonly underlines selected text in Microsoft Word?
+A. Ctrl + M B. Ctrl + K C. Ctrl + R D. Ctrl + U
+Correct Answer: D. Ctrl + U
+Explanation: Ctrl + U toggles underlining in Word. Ctrl + K commonly inserts a hyperlink, while Ctrl + R aligns a paragraph to the right.
+82. Which Word feature is used to produce many personalized letters from one template and a recipient list?
+A. Track Changes B. Mail Merge C. Word Count D. Page Color
+Correct Answer: B. Mail Merge
+Explanation: Mail Merge combines a main document with a data source containing recipient-specific fields. It can generate personalized letters, labels, envelopes, and similar documents efficiently.
+83. In a mail-merge operation, what is the role of the data source?
+A. It determines the monitor resolution. B. It stores the operating system kernel. C. It supplies recipient-specific information such as names and addresses. D. It automatically corrects every grammatical error.
+Correct Answer: C. It supplies recipient-specific information such as names and addresses.
+Explanation: The data source contains records and fields that are inserted into the main document. For example, a bank could use a recipient list to generate personalized customer letters.
+84. Which Word feature controls paper size, page orientation, and page margins?
+A. Page Setup or the corresponding Layout controls B. Mail Merge recipient filtering C. Spell Check only D. The Windows taskbar
+Correct Answer: A. Page Setup or the corresponding Layout controls
+Explanation: Page setup controls the physical layout of the document, including margins, paper size, and portrait or landscape orientation. The exact ribbon labels can vary by Word version.
+85. Which page orientation is taller than it is wide?
+A. Landscape B. Panoramic C. Reverse D. Portrait
+Correct Answer: D. Portrait
+Explanation: Portrait orientation has a greater height than width. Landscape orientation has a greater width than height and is often used for wide tables or diagrams.
+86. Which Word feature allows text or graphics to appear repeatedly at the top of pages?
+A. Footnote B. Header C. Endnote D. Status bar
+Correct Answer: B. Header
+Explanation: A header appears in the upper page area and can contain titles, logos, dates, or page information. A footer appears in the lower page area.
+87. What is the purpose of a footer in Microsoft Word?
+A. To run spreadsheet calculations B. To manage CPU processes C. To place recurring content in the bottom area of pages D. To insert transitions between slides
+Correct Answer: C. To place recurring content in the bottom area of pages
+Explanation: Footers commonly contain page numbers, document titles, dates, or confidentiality notices. Headers provide similar recurring content in the top page area.
+88. Which Word feature identifies possible spelling and grammatical errors?
+A. Editor or spelling and grammar tools B. Slide Sorter C. PivotTable D. Task View
+Correct Answer: A. Editor or spelling and grammar tools
+Explanation: Word's proofing tools flag possible spelling, grammar, and style issues. Suggestions are not always correct, particularly for specialized terminology, names, or context-dependent wording.
+89. Which shortcut commonly opens the Print interface in Microsoft Word?
+A. Ctrl + O B. Ctrl + N C. Ctrl + F D. Ctrl + P
+Correct Answer: D. Ctrl + P
+Explanation: Ctrl + P opens the Print interface, where users can select a printer, specify page ranges, and adjust supported print settings.
+90. Which shortcut commonly aligns a paragraph to the center in Word?
+A. Ctrl + L B. Ctrl + E C. Ctrl + R D. Ctrl + J
+Correct Answer: B. Ctrl + E
+Explanation: Ctrl + E centers a paragraph. Ctrl + L aligns left, Ctrl + R aligns right, and Ctrl + J justifies text between the margins.
+91. Which shortcut commonly applies justified paragraph alignment in Word?
+A. Ctrl + T B. Ctrl + D C. Ctrl + J D. Ctrl + Q
+Correct Answer: C. Ctrl + J
+Explanation: Justification aligns text with both the left and right paragraph margins by adjusting spacing between words. This can create a uniform block of text in formal documents.
+92. Which Word feature records insertions and deletions so that reviewers can examine proposed edits?
+A. Track Changes B. Slide Master C. AutoFilter D. Freeze Panes
+Correct Answer: A. Track Changes
+Explanation: Track Changes records revisions for review and acceptance or rejection. It is especially useful for collaborative editing of official documents and reports.
+93. Which Word feature is best suited to displaying the number of words in a document?
+A. Mail Merge B. Page Color C. SmartArt D. Word Count
+Correct Answer: D. Word Count
+Explanation: Word Count reports the number of words and can provide other statistics such as characters and pages. It is useful when preparing documents subject to length limits.
+94. Which feature allows a user to replace every occurrence of one word with another throughout a document?
+A. Slide Show B. Find and Replace C. Sort D. Freeze Panes
+Correct Answer: B. Find and Replace
+Explanation: Find and Replace locates specified text and replaces it with other text. Users should review the scope and matching options to avoid unintended replacements.
+95. What is the main function of styles in Microsoft Word?
+A. To increase physical memory B. To convert the document into a database automatically C. To apply consistent formatting to document elements D. To prevent all edits permanently
+Correct Answer: C. To apply consistent formatting to document elements
+Explanation: Styles apply predefined combinations of formatting to headings, paragraphs, and other text. Consistent use of styles also supports navigation and automatic table-of-contents generation.
+96. Which Word feature is commonly used to create an automatically generated list of document headings and their page numbers?
+A. Table of Contents B. AutoSum C. Slide Sorter D. Goal Seek
+Correct Answer: A. Table of Contents
+Explanation: Word can generate a table of contents from appropriately structured heading styles. Updating the table refreshes its entries and page numbers after document changes.
+97. What is the purpose of a page break in Word?
+A. To delete the current document B. To change a file into a spreadsheet C. To insert a calculation formula D. To force subsequent content to begin on a new page
+Correct Answer: D. To force subsequent content to begin on a new page
+Explanation: A manual page break starts the following content on a new page without requiring repeated blank paragraphs. This helps maintain stable document layout.
+98. Which shortcut commonly inserts a hyperlink in Microsoft Word?
+A. Ctrl + H B. Ctrl + K C. Ctrl + G D. Ctrl + W
+Correct Answer: B. Ctrl + K
+Explanation: Ctrl + K opens the hyperlink insertion interface in Word and many other Office applications. A hyperlink can point to a website, email address, file, or document location.
+99. Which Word feature can divide text into newspaper-style vertical sections?
+A. Word Count B. Mail Merge C. Columns D. Track Changes
+Correct Answer: C. Columns
+Explanation: The Columns feature arranges text in multiple vertical columns. It is useful for newsletters, brochures, and magazine-style layouts.
+100. Which file format is generally suitable for sharing a document while preserving its intended page layout across different devices?
+A. PDF B. .exe C. .bat D. .sys
+Correct Answer: A. PDF
+Explanation: PDF is designed to preserve document layout across compatible viewers and platforms. A PDF is not necessarily editable like a Word document, and its content can still vary depending on fonts, rendering, and document settings.
+Section 6: Microsoft Excel — Formulas, Functions and Cell References
+101. Microsoft Excel is primarily a:
+A. Word processor B. Spreadsheet application C. Operating-system kernel D. Presentation application
+Correct Answer: B. Spreadsheet application
+Explanation: Excel organizes data into rows and columns and supports calculations, analysis, charts, and data management. It is widely used for financial statements, budgets, and banking reports.
+102. What is the intersection of a row and a column in Excel called?
+A. Worksheet B. Workbook C. Formula D. Cell
+Correct Answer: D. Cell
+Explanation: A cell is the basic unit in which data or formulas are stored. For example, B5 identifies the cell at the intersection of column B and row 5.
+103. Which symbol normally begins a formula in Excel?
+A. = B. # C. @ D. &
+Correct Answer: A. =
+Explanation: Excel formulas generally begin with an equals sign. For example, =A1+B1 adds the values in cells A1 and B1.
+104. Which formula correctly adds the values in cells A1 and B1?
+A. A1 PLUS B1 B. ADD(A1;B1) C. =A1+B1 D. A1=B1+
+Correct Answer: C. =A1+B1
+Explanation: The plus operator performs addition in Excel formulas. The formula must begin with = to be evaluated as a formula rather than ordinary text.
+105. Which Excel function calculates the arithmetic mean of numerical values?
+A. COUNT B. AVERAGE C. MAX D. ROUND
+Correct Answer: B. AVERAGE
+Explanation: AVERAGE calculates the arithmetic mean of its numeric arguments. For example, =AVERAGE(A1:A5) calculates the mean of the numerical values in that range.
+106. Which Excel function returns the largest numerical value in a range?
+A. MIN B. COUNT C. SUM D. MAX
+Correct Answer: D. MAX
+Explanation: MAX returns the largest value among its numerical arguments. MIN returns the smallest, while SUM adds values and COUNT counts numeric entries.
+107. What does the formula =SUM(A1:A10) do?
+A. Adds the values in cells A1 through A10 B. Counts only blank cells in A1 through A10 C. Finds the smallest value in the range D. Sorts the range alphabetically
+Correct Answer: A. Adds the values in cells A1 through A10
+Explanation: The colon represents a continuous cell range. SUM(A1:A10) adds the numeric values in the ten cells from A1 to A10.
+108. Which function counts cells containing numbers?
+A. COUNTA B. SUM C. COUNT D. COUNTBLANK
+Correct Answer: C. COUNT
+Explanation: COUNT counts cells containing numeric values, including dates stored as numeric serial values. COUNTA counts nonempty cells, while COUNTBLANK counts blank cells.
+109. Which function counts nonempty cells in a range?
+A. COUNTBLANK B. COUNTA C. MAX D. AVERAGE
+Correct Answer: B. COUNTA
+Explanation: COUNTA counts cells that contain data, including text and numbers. This distinguishes it from COUNT, which counts numeric values.
+110. What is the result of the Excel formula =10+5*2?
+A. 30 B. 20 C. 25 D. 20 only if the values are formatted as currency
+Correct Answer: B. 20
+Explanation: Excel follows standard operator precedence: multiplication is performed before addition. Therefore, .
+111. What is the result of =(10+5)*2?
+A. 20 B. 25 C. 35 D. 30
+Correct Answer: D. 30
+Explanation: Parentheses require Excel to calculate  first. The result is then multiplied by 2, giving 30.
+112. Which function returns the smallest numerical value in a range?
+A. MIN B. MAX C. SUM D. AVERAGE
+Correct Answer: A. MIN
+Explanation: MIN returns the smallest value among the supplied numeric arguments. For example, =MIN(B2:B20) finds the minimum numerical value in that range.
+113. Which Excel function performs a logical test and returns one result if true and another if false?
+A. SUM B. COUNT C. IF D. MAX
+Correct Answer: C. IF
+Explanation: The IF function has the general form =IF(logical_test, value_if_true, value_if_false). It is useful for applying conditions, such as classifying a score as pass or fail.
+114. Which formula returns “Pass” if A1 is at least 50 and “Fail” otherwise?
+A. =SUM(A1>=50,"Pass","Fail") B. =IF(A1>=50,"Pass","Fail") C. =COUNT(A1,"Pass","Fail") D. =MAX(A1>=50,"Pass","Fail")
+Correct Answer: B. =IF(A1>=50,"Pass","Fail")
+Explanation: The logical test A1>=50 checks whether the value in A1 is at least 50. If true, Excel returns “Pass”; otherwise, it returns “Fail.” Formula argument separators may vary with regional settings.
+115. Which function counts cells satisfying a specified condition?
+A. SUM B. AVERAGE C. MAX D. COUNTIF
+Correct Answer: D. COUNTIF
+Explanation: COUNTIF counts cells that meet one criterion. For example, =COUNTIF(B2:B20,">=50") counts values greater than or equal to 50.
+116. Which function adds values that meet a specified criterion?
+A. SUMIF B. COUNT C. MIN D. COUNTA
+Correct Answer: A. SUMIF
+Explanation: SUMIF adds values satisfying a condition. For example, it can total transactions associated with a particular category or customer.
+117. What is the result of =ROUND(12.567,2)?
+A. 12 B. 12.5 C. 12.57 D. 12.56
+Correct Answer: C. 12.57
+Explanation: ROUND(number, num_digits) rounds a number to the specified number of decimal places. Here, the third decimal digit is 7, so 12.56 rounds up to 12.57.
+118. What is the result of =MOD(17,5)?
+A. 3 B. 2 C. 5 D. 12
+Correct Answer: B. 2
+Explanation: MOD returns the remainder after division. Since , the remainder is 2.
+119. Which function returns the current date in Excel?
+A. NOWTIME() B. DATECURRENT() C. TODAYDATE() D. TODAY()
+Correct Answer: D. TODAY()
+Explanation: TODAY() returns the current date as recognized by Excel's calculation environment. NOW() returns both the current date and time.
+120. Which Excel function returns the current date and time?
+A. NOW() B. TODAY() C. TIMEONLY() D. CLOCK()
+Correct Answer: A. NOW()
+Explanation: NOW() returns the current date and time. The displayed precision depends on cell formatting, and the result can update when Excel recalculates the worksheet.
+121. Which of the following is an absolute cell reference in Excel?
+A. A1 B. A$1 C. 1 D. $A1
+Correct Answer: C. 1
+Explanation: The dollar signs lock both the column and the row. When the formula is copied, the reference remains 1.
+122. Which reference locks the column but allows the row to change when a formula is copied?
+A. A1 B. $A1 C. A$1 D. 1
+Correct Answer: B. $A1
+Explanation: $A1 is a mixed reference: the column is absolute, while the row is relative. It is useful when copying formulas vertically while retaining the same column.
+123. Which reference locks the row but allows the column to change?
+A. 1 B. $A1 C. A1 D. A$1
+Correct Answer: D. A$1
+Explanation: In A$1, the row number is fixed but the column is relative. Copying the formula across columns changes the column letter while retaining row 1.
+124. Cell C2 contains =A2*B2. If this formula is copied to C3 using ordinary relative references, what will it become?
+A. =A3*B3 B. =A2*B2 C. =2*2 D. =C2*C3
+Correct Answer: A. =A3*B3
+Explanation: Relative references adjust based on the formula's new location. Copying the formula down one row changes A2 and B2 to A3 and B3.
+125. In Excel, which symbol is commonly used to join text strings using the concatenation operator?
+A. ^ B. % C. & D. !
+Correct Answer: C. &
+Explanation: The & operator joins text values. For example, =A1&" "&B1 combines the contents of A1 and B1 with a space between them.
+126. Which function searches for a value in the first column of a table and returns a corresponding value from another column in the same table?
+A. SUMIF B. VLOOKUP C. COUNTBLANK D. ROUND
+Correct Answer: B. VLOOKUP
+Explanation: VLOOKUP searches vertically in the first column of a specified table array and returns a value from a specified column. Exact-match searches commonly use FALSE or 0 as the final argument.
+127. Which Excel function can search for a value in a range and return a corresponding value from another range, with flexible lookup direction?
+A. COUNT B. SUM C. ROUND D. XLOOKUP
+Correct Answer: D. XLOOKUP
+Explanation: XLOOKUP can search a lookup array and return a corresponding result from a separate return array. It supports exact matching by default and can search in different directions, although availability depends on the Excel version.
+128. What does the formula =LEN("BANK") return?
+A. 4 B. 3 C. 5 D. 8
+Correct Answer: A. 4
+Explanation: LEN returns the number of characters in a text string, including spaces. The word “BANK” contains four characters.
+129. Which function removes extra spaces from text while leaving single spaces between words?
+A. CLEAN B. PROPER C. TRIM D. LOWER
+Correct Answer: C. TRIM
+Explanation: TRIM removes leading and trailing ordinary spaces and reduces repeated internal spaces to single spaces. CLEAN removes many nonprinting characters, which is a different operation.
+130. Which function converts text to uppercase letters?
+A. LOWER B. UPPER C. PROPER D. TRIM
+Correct Answer: B. UPPER
+Explanation: UPPER converts lowercase letters in a text string to uppercase. LOWER converts text to lowercase, and PROPER capitalizes the first letter of each word according to its rules.
+131. What does the Excel error #DIV/0! generally indicate?
+A. The worksheet contains no formatting. B. The file extension is invalid. C. The formula is necessarily misspelled. D. A formula is attempting to divide by zero or an empty divisor.
+Correct Answer: D. A formula is attempting to divide by zero or an empty divisor.
+Explanation: Excel displays #DIV/0! when a division operation has a divisor of zero or a blank cell interpreted as zero. The formula or source data must be checked to resolve the error.
+132. What does #REF! commonly indicate in Excel?
+A. An invalid cell reference B. A number formatted as a date C. A correctly calculated average D. A hidden worksheet
+Correct Answer: A. An invalid cell reference
+Explanation: #REF! often appears when a formula refers to a cell or range that has been deleted or otherwise made invalid. Inspecting the formula's references can help resolve the issue.
+133. Which Excel feature arranges records in ascending or descending order?
+A. Freeze Panes B. Conditional Formatting C. Sort D. Goal Seek
+Correct Answer: C. Sort
+Explanation: Sorting organizes records by selected values, such as names, dates, or amounts. When sorting a table, the user should ensure that related rows remain together.
+134. What is the primary purpose of AutoFilter in Excel?
+A. To permanently delete all records that do not match a condition B. To display only records that meet selected criteria C. To convert every formula into a chart D. To lock every cell in a worksheet
+Correct Answer: B. To display only records that meet selected criteria
+Explanation: Filtering hides rows that do not meet the selected criteria without normally deleting the underlying data. Users can clear the filter to display the hidden rows again.
+135. Which Excel feature keeps specified rows or columns visible while scrolling through a large worksheet?
+A. Data Validation B. Mail Merge C. Slide Master D. Freeze Panes
+Correct Answer: D. Freeze Panes
+Explanation: Freeze Panes keeps selected rows or columns visible as the user scrolls. It is useful for maintaining visibility of column headings in large banking datasets.
+136. Which feature highlights cells automatically based on rules such as values greater than a specified threshold?
+A. Conditional Formatting B. Mail Merge C. Page Break Preview only D. Track Changes
+Correct Answer: A. Conditional Formatting
+Explanation: Conditional Formatting applies visual styles when cell values meet defined conditions. For example, overdue amounts can be highlighted to make them easier to identify.
+137. Which Excel feature creates a summarized report by grouping and aggregating data?
+A. Word Count B. Slide Sorter C. PivotTable D. Spelling and Grammar
+Correct Answer: C. PivotTable
+Explanation: A PivotTable summarizes data by categories and can calculate totals, counts, and other aggregates. It is useful for analyzing transaction records by branch, month, product, or customer category.
+138. A bank employee wants to calculate total deposits for each branch from thousands of transaction records. Which Excel tool is especially suitable for interactive summaries?
+A. Mail Merge B. PivotTable C. Slide Transition D. WordArt
+Correct Answer: B. PivotTable
+Explanation: A PivotTable can group transaction records by branch and summarize deposit amounts. It can also organize the same data by date, account category, or other fields.
+139. What is the purpose of data validation in Excel?
+A. To increase the number of physical CPU cores B. To convert formulas into slide animations C. To guarantee that all data is factually correct D. To restrict or guide the type of data entered into cells
+Correct Answer: D. To restrict or guide the type of data entered into cells
+Explanation: Data validation can limit entries to specified ranges, dates, lists, or other criteria. It reduces input errors but cannot guarantee that all entered information is factually accurate.
+140. Which Excel feature allows a user to change an input value and find the value required in another cell to reach a target result?
+A. Goal Seek B. Freeze Panes C. AutoFilter D. Word Count
+Correct Answer: A. Goal Seek
+Explanation: Goal Seek performs a form of what-if analysis by adjusting one input cell until a formula reaches a specified result. It is useful for financial calculations involving target payments, profits, or interest outcomes.
+Section 7: Microsoft PowerPoint
+141. Microsoft PowerPoint is primarily designed for:
+A. Operating-system boot management B. Database server administration C. Creating and delivering slide-based presentations D. Editing the Windows Registry
+Correct Answer: C. Creating and delivering slide-based presentations
+Explanation: PowerPoint is presentation software used to communicate information through slides containing text, images, charts, audio, video, and other elements.
+142. What is the default modern PowerPoint presentation extension?
+A. .docx B. .pptx C. .xlsx D. .accdb
+Correct Answer: B. .pptx
+Explanation: .pptx is the standard modern PowerPoint presentation format. The older .ppt extension is associated with earlier binary presentation files.
+143. Which PowerPoint feature controls the visual effect that occurs when moving from one slide to the next?
+A. Cell Reference B. Mail Merge C. Conditional Formatting D. Transition
+Correct Answer: D. Transition
+Explanation: Slide transitions control how one slide gives way to the next. Animations, by contrast, control the appearance, movement, or disappearance of objects within a slide.
+144. Which feature adds movement or visual effects to text, shapes, or pictures on an individual slide?
+A. Animation B. Page Orientation C. AutoFilter D. Track Changes
+Correct Answer: A. Animation
+Explanation: Animations affect individual slide objects and can be triggered automatically or by user action. Transitions apply to the change between slides.
+145. Which PowerPoint view is especially useful for rearranging slides by dragging their thumbnails?
+A. Notes Page view B. Reading view C. Slide Sorter view D. Outline-only printing
+Correct Answer: C. Slide Sorter view
+Explanation: Slide Sorter displays slides as thumbnails, making it convenient to reorder, duplicate, or delete slides. Normal view is commonly used for editing individual slides.
+146. Which PowerPoint feature controls the overall layout, placeholders, and recurring design elements across a presentation?
+A. Formula Bar B. Slide Master C. Mail Merge D. Recycle Bin
+Correct Answer: B. Slide Master
+Explanation: Slide Master helps maintain a consistent design across slides by controlling shared formatting, layouts, and placeholders. Changes to the master can affect slides that use its layouts.
+147. Which PowerPoint shortcut starts a slide show from the beginning in many desktop versions on Windows?
+A. Ctrl + S B. Alt + F4 C. Ctrl + P D. F5
+Correct Answer: D. F5
+Explanation: F5 starts the slide show from the beginning in PowerPoint for Windows. Shift + F5 commonly starts from the current slide.
+148. Which shortcut commonly starts a PowerPoint slide show from the current slide in Windows?
+A. Shift + F5 B. Ctrl + F5 C. Alt + F5 only D. Ctrl + Shift + S
+Correct Answer: A. Shift + F5
+Explanation: Shift + F5 is used to present from the current slide in desktop PowerPoint for Windows. This is useful when testing a specific slide without restarting the entire presentation.
+149. What is the purpose of Presenter View in PowerPoint?
+A. To display worksheet formulas B. To manage computer boot files C. To let the presenter view notes and presentation controls while the audience sees the slide show D. To merge recipient addresses into letters
+Correct Answer: C. To let the presenter view notes and presentation controls while the audience sees the slide show
+Explanation: Presenter View can display speaker notes, timing, and navigation controls on the presenter's screen. When a supported multi-display setup is used, the audience can see the clean slide show separately.
+150. Which file format is designed to open a PowerPoint presentation directly as a slide show in compatible Windows versions?
+A. .docx B. .ppsx C. .xlsx D. .txt
+Correct Answer: B. .ppsx
+Explanation: .ppsx is the modern PowerPoint Open XML slide-show format. Opening it in a compatible version typically starts the presentation in slide-show mode rather than opening the file directly for ordinary editing.
+Section 8: PowerPoint, Office Integration and Presentation Tools
+151. Which PowerPoint feature allows a presenter to add private notes associated with individual slides?
+A. Slide Transition B. Animation Pane C. Slide Sorter D. Speaker Notes
+Correct Answer: D. Speaker Notes
+Explanation: Speaker notes provide additional information for the presenter without normally appearing on the audience's slide. They can include reminders, explanations, and supporting facts.
+152. Which PowerPoint feature is best suited to displaying a visual representation of an organizational hierarchy?
+A. SmartArt B. AutoFilter C. Mail Merge D. Freeze Panes
+Correct Answer: A. SmartArt
+Explanation: SmartArt provides predefined visual layouts for processes, hierarchies, relationships, and other concepts. An organizational chart is a common example of a hierarchy diagram.
+153. What is the primary purpose of the Animation Pane in PowerPoint?
+A. To calculate numerical averages B. To change file permissions C. To manage the order and timing of slide-object animations D. To change the computer's screen resolution
+Correct Answer: C. To manage the order and timing of slide-object animations
+Explanation: The Animation Pane allows users to inspect and control the sequence, timing, and triggers of animations on a slide. It does not manage transitions between separate slides.
+154. Which file extension commonly identifies a PowerPoint template in the modern Office format?
+A. .docx B. .potx C. .xlsx D. .ppsx
+Correct Answer: B. .potx
+Explanation: .potx is the PowerPoint Open XML template format. Templates provide reusable design elements and layouts for creating new presentations.
+155. Which practice generally improves the readability of a presentation for a large audience?
+A. Using several unrelated fonts on every slide B. Filling every slide with lengthy paragraphs C. Using very small text to fit more information D. Using readable text, consistent formatting, and clear visual hierarchy
+Correct Answer: D. Using readable text, consistent formatting, and clear visual hierarchy
+Explanation: Clear typography, consistent formatting, and concise content help an audience understand a presentation. Excessive text, poor contrast, and distracting effects can reduce readability.
+156. A bank officer wants to display monthly deposit growth using a visual chart in PowerPoint. Which approach is most appropriate?
+A. Insert a chart and represent the monthly data visually B. Rename the presentation to .xlsx C. Use only a slide transition D. Insert a Windows shortcut
+Correct Answer: A. Insert a chart and represent the monthly data visually
+Explanation: Charts help communicate numerical patterns and comparisons. A line chart may be suitable for showing changes over time, while a column chart can compare values across months.
+157. Which keyboard key commonly advances to the next slide during a PowerPoint slide show?
+A. Esc B. Backspace only C. Right Arrow D. F2
+Correct Answer: C. Right Arrow
+Explanation: During a slide show, the Right Arrow or Spacebar commonly advances to the next slide or animation. Esc normally exits the slide show.
+158. Which PowerPoint command is most appropriate for creating a duplicate of a selected slide?
+A. Freeze Panes B. Duplicate Slide C. Mail Merge D. Goal Seek
+Correct Answer: B. Duplicate Slide
+Explanation: Duplicate Slide creates a copy of the selected slide, including its content and formatting. It is useful when several slides share a common layout.
+159. What is the principal difference between a presentation theme and a slide transition?
+A. A theme is a file-system permission, while a transition is a spreadsheet formula. B. A theme calculates totals, while a transition checks spelling. C. A theme is used only in Word, while a transition is used only in Excel. D. A theme defines coordinated visual design, while a transition controls the effect between slides.
+Correct Answer: D. A theme defines coordinated visual design, while a transition controls the effect between slides.
+Explanation: A theme provides coordinated colors, fonts, and visual effects. A transition determines how one slide changes to the next during a slide show.
+160. Which PowerPoint format is generally suitable for distributing a presentation as a fixed-layout document for viewing or printing?
+A. PDF B. .exe C. .sys D. .bat
+Correct Answer: A. PDF
+Explanation: Exporting a presentation to PDF preserves a document-style layout for compatible viewers. However, some interactive presentation behavior, such as animations and slide-show controls, may not be retained.
+Section 9: Common Keyboard Shortcuts
+161. Which shortcut creates a new document in many Microsoft Office desktop applications?
+A. Ctrl + O B. Ctrl + W C. Ctrl + N D. Ctrl + F
+Correct Answer: C. Ctrl + N
+Explanation: Ctrl + N commonly creates a new document, workbook, or presentation. Ctrl + O opens an existing file, while Ctrl + W generally closes the current document or window.
+162. Which shortcut opens an existing file in many Office applications?
+A. Ctrl + B B. Ctrl + O C. Ctrl + E D. Ctrl + Y
+Correct Answer: B. Ctrl + O
+Explanation: Ctrl + O opens the file-opening interface. It is commonly used to locate and open an existing document, workbook, or presentation.
+163. Which shortcut commonly opens the Replace interface in Microsoft Word?
+A. Ctrl + R B. Ctrl + T C. Ctrl + M D. Ctrl + H
+Correct Answer: D. Ctrl + H
+Explanation: Ctrl + H commonly opens Find and Replace in Word. It allows users to locate specified text and replace it with other text.
+164. Which shortcut commonly inserts a page break in Microsoft Word?
+A. Ctrl + Enter B. Alt + Enter C. Shift + Enter D. Ctrl + Shift + Enter
+Correct Answer: A. Ctrl + Enter
+Explanation: Ctrl + Enter inserts a page break in Word, forcing subsequent content onto a new page. Shift + Enter typically inserts a line break without starting a new paragraph.
+165. Which shortcut commonly inserts a new worksheet in many desktop versions of Excel?
+A. Ctrl + N B. Ctrl + W C. Shift + F11 D. Alt + F4
+Correct Answer: C. Shift + F11
+Explanation: Shift + F11 commonly inserts a new worksheet in Excel. Exact behavior can depend on the application version and keyboard configuration.
+166. Which shortcut commonly opens the Format Cells dialog in desktop Excel for Windows?
+A. Ctrl + P B. Ctrl + 1 C. Ctrl + 2 D. Ctrl + 9
+Correct Answer: B. Ctrl + 1
+Explanation: Ctrl + 1 opens the Format Cells dialog, which includes number formats, alignment, fonts, borders, and other formatting options.
+167. Which shortcut commonly toggles bold formatting in Excel?
+A. Ctrl + I B. Ctrl + U C. Ctrl + P D. Ctrl + B
+Correct Answer: D. Ctrl + B
+Explanation: Ctrl + B toggles bold formatting in Excel and many other Office applications. It affects the selected cells or text, depending on the active context.
+168. Which shortcut commonly edits the active cell directly in desktop Excel for Windows?
+A. F2 B. F5 C. F7 D. F12
+Correct Answer: A. F2
+Explanation: F2 enters edit mode for the active cell in desktop Excel. It allows the user to modify the cell's existing content or formula.
+169. Which key combination commonly inserts the current date into a selected Excel cell in desktop Excel for Windows?
+A. Ctrl + Shift + ; B. Alt + Enter C. Ctrl + ; D. Ctrl + Shift + :
+Correct Answer: C. Ctrl + ;
+Explanation: Ctrl + semicolon inserts the current date as a fixed value in many desktop Excel versions. Ctrl + Shift + semicolon commonly inserts the current time.
+170. Which shortcut commonly opens the spelling-check tool in Word and many other Office desktop applications?
+A. F2 B. F7 C. F5 D. F12
+Correct Answer: B. F7
+Explanation: F7 commonly opens spelling and grammar checking or related proofing tools. The precise features available depend on the application and version.
+171. Which shortcut commonly opens the Save As dialog in many desktop Office applications?
+A. Ctrl + F B. Ctrl + G C. Ctrl + E D. F12
+Correct Answer: D. F12
+Explanation: F12 commonly opens Save As in desktop Office applications. It allows users to specify a filename, location, or file format when saving a copy.
+172. Which Windows shortcut opens the Run dialog?
+A. Windows + R B. Windows + E C. Windows + L D. Windows + D
+Correct Answer: A. Windows + R
+Explanation: Windows + R opens the Run dialog, where users can enter a command or program name. For example, notepad commonly launches Notepad.
+173. Which shortcut commonly opens Windows Settings?
+A. Windows + E B. Windows + L C. Windows + I D. Windows + M
+Correct Answer: C. Windows + I
+Explanation: Windows + I opens Settings in modern Windows versions. Windows + E opens File Explorer, while Windows + L locks the session.
+174. Which shortcut commonly minimizes all open windows or restores them, depending on the current state?
+A. Ctrl + Shift + Esc B. Windows + D C. Ctrl + Alt + Delete D. Alt + Tab
+Correct Answer: B. Windows + D
+Explanation: Windows + D toggles between showing the desktop and restoring the previous window arrangement. Alt + Tab switches between open windows, while Ctrl + Shift + Esc opens Task Manager.
+175. Which keyboard shortcut commonly switches between open applications in Windows?
+A. Ctrl + P B. Windows + R C. Ctrl + U D. Alt + Tab
+Correct Answer: D. Alt + Tab
+Explanation: Alt + Tab displays a switcher for moving between open windows. It is useful when working with several applications, such as Excel, Word, and a web browser.
+176. Which shortcut commonly closes the current browser tab in many desktop browsers?
+A. Ctrl + W B. Ctrl + A C. Ctrl + C D. Ctrl + Z
+Correct Answer: A. Ctrl + W
+Explanation: Ctrl + W closes the active tab or document window in many applications. In a browser, it normally closes the current tab rather than the entire browser process.
+177. Which shortcut commonly reopens a recently closed browser tab in many desktop browsers?
+A. Ctrl + Shift + P B. Ctrl + Alt + Delete C. Ctrl + Shift + T D. Ctrl + Shift + N
+Correct Answer: C. Ctrl + Shift + T
+Explanation: Ctrl + Shift + T commonly restores the most recently closed browser tab. Repeated use can often restore additional recently closed tabs.
+178. Which shortcut commonly selects the address bar in many desktop web browsers?
+A. Ctrl + B B. Ctrl + L C. Ctrl + U D. Ctrl + J
+Correct Answer: B. Ctrl + L
+Explanation: Ctrl + L moves focus to the browser's address bar in many desktop browsers. Users can then enter a website address or a search query.
+179. Which keyboard shortcut commonly refreshes a web page in Windows browsers?
+A. Ctrl + S B. Ctrl + P C. Ctrl + D D. F5
+Correct Answer: D. F5
+Explanation: F5 commonly reloads the current webpage. Ctrl + R also commonly reloads a page in desktop browsers.
+180. Which shortcut commonly creates a new folder in Windows File Explorer?
+A. Ctrl + Shift + N B. Ctrl + Shift + S C. Alt + Shift + F D. Windows + Ctrl + F
+Correct Answer: A. Ctrl + Shift + N
+Explanation: Ctrl + Shift + N creates a new folder in Windows File Explorer. It is a convenient way to organize files without using the context menu.
+Section 10: File Extensions, Formats and Integrated Applications
+181. Which file extension is associated with a modern Excel workbook?
+A. .docx B. .pptx C. .xlsx D. .accdb
+Correct Answer: C. .xlsx
+Explanation: .xlsx is the modern Excel workbook format. It stores worksheets, formulas, formatting, and other workbook information using Office Open XML.
+182. Which Excel extension is specifically associated with a macro-enabled workbook?
+A. .xlsx B. .xlsm C. .xltx D. .csv
+Correct Answer: B. .xlsm
+Explanation: .xlsm is a macro-enabled Excel workbook format that can store VBA macros. Macro-enabled files should be treated cautiously when obtained from untrusted sources.
+183. Which extension is associated with an Excel template in the modern Office format?
+A. .pptx B. .docm C. .xlsx D. .xltx
+Correct Answer: D. .xltx
+Explanation: .xltx identifies an Excel Open XML template. Templates provide reusable worksheet layouts, formatting, and formulas for new workbooks.
+184. Which extension commonly represents a plain-text file?
+A. .txt B. .pptx C. .xlsx D. .exe
+Correct Answer: A. .txt
+Explanation: A plain-text file stores text without the rich formatting and embedded structures typical of Word documents. Its appearance depends on the encoding and the application used to open it.
+185. Which extension is commonly associated with a comma-separated values file?
+A. .docx B. .pptx C. .csv D. .dll
+Correct Answer: C. .csv
+Explanation: CSV stands for Comma-Separated Values. It is commonly used to exchange tabular data between spreadsheets, databases, and other applications, but it does not preserve all workbook features such as formulas and formatting.
+186. Which extension identifies a Portable Network Graphics image?
+A. .gif B. .png C. .mp3 D. .wav
+Correct Answer: B. .png
+Explanation: PNG is a raster image format that supports lossless compression and transparency. JPEG is also a common image format but typically uses lossy compression.
+187. Which extension is commonly associated with a JPEG image?
+A. .mp4 B. .docx C. .zip D. .jpg
+Correct Answer: D. .jpg
+Explanation: .jpg and .jpeg commonly identify JPEG images. JPEG typically uses lossy compression and is widely used for photographs.
+188. Which file extension is commonly associated with an executable program in Windows?
+A. .exe B. .txt C. .jpg D. .csv
+Correct Answer: A. .exe
+Explanation: .exe is a common Windows executable extension. An executable file can run code, so files from unknown or untrusted sources should not be launched without appropriate safety checks.
+189. Which extension commonly identifies a Windows batch file?
+A. .docx B. .xlsx C. .bat D. .png
+Correct Answer: C. .bat
+Explanation: A .bat file contains commands intended for execution by the Windows command interpreter. Batch files can automate tasks but may also execute harmful commands.
+190. Which extension is commonly associated with a Windows dynamic-link library?
+A. .pptx B. .dll C. .csv D. .pdf
+Correct Answer: B. .dll
+Explanation: DLL stands for Dynamic-Link Library. It contains code or resources that can be used by compatible programs, allowing software components to be shared.
+191. Which file extension commonly identifies a PDF document?
+A. .psd B. .pptx C. .xlsx D. .pdf
+Correct Answer: D. .pdf
+Explanation: PDF stands for Portable Document Format. It is commonly used to distribute documents while preserving their intended layout across compatible viewers.
+192. Which extension is commonly associated with an MP3 audio file?
+A. .mp3 B. .mp4 C. .mkv D. .html
+Correct Answer: A. .mp3
+Explanation: MP3 is a widely used digital audio format that typically employs lossy compression. MP4 is a multimedia container format commonly used for video and audio.
+193. Which extension commonly identifies an MP4 multimedia file?
+A. .xlsx B. .docx C. .mp4 D. .ini
+Correct Answer: C. .mp4
+Explanation: MP4 is a multimedia container format that can contain video, audio, subtitles, and related data. The actual codecs used inside an MP4 file can vary.
+194. Which extension commonly identifies an HTML document?
+A. .sys B. .html C. .dll D. .xlsx
+Correct Answer: B. .html
+Explanation: HTML stands for HyperText Markup Language. It defines the structure of web content, which web browsers interpret and display.
+195. Which extension commonly identifies a Cascading Style Sheets file?
+A. .js B. .py C. .xml D. .css
+Correct Answer: D. .css
+Explanation: CSS controls the presentation and styling of web documents, including colors, spacing, typography, and layout. HTML provides document structure, while JavaScript commonly supplies interactive behavior.
+196. Which extension commonly identifies a JavaScript source file?
+A. .js B. .css C. .docx D. .xlsx
+Correct Answer: A. .js
+Explanation: .js is the conventional extension for JavaScript source files. JavaScript is widely used for web development and can also run in server-side and other environments.
+197. Which of the following is a correct match between an application and its primary file extension?
+A. Word — .xlsx B. PowerPoint — .docx C. Excel — .xlsx D. Windows — .pptx
+Correct Answer: C. Excel — .xlsx
+Explanation: .xlsx is the standard modern Excel workbook extension. Word normally uses .docx, while PowerPoint normally uses .pptx.
+198. A bank employee needs to send a spreadsheet's tabular data to another system that supports simple text-based data exchange. Which format is particularly appropriate?
+A. .ppsx B. .csv C. .exe D. .dll
+Correct Answer: B. .csv
+Explanation: CSV is widely used for exchanging rows and columns of data between systems. It generally does not preserve Excel-specific formulas, multiple worksheets, formatting, or macros.
+199. A user renames report.docx to report.pdf using only the file-renaming command. What is the most accurate statement?
+A. The file is automatically converted into a valid PDF. B. The file becomes encrypted automatically. C. All formatting is guaranteed to remain identical in every application. D. The extension changes, but the file's underlying format is not necessarily converted.
+Correct Answer: D. The extension changes, but the file's underlying format is not necessarily converted.
+Explanation: Renaming a file changes its name, not necessarily its internal structure. Proper conversion requires exporting, saving, or converting the document to the target format using suitable software.
+200. A bank officer prepares a report in Word, analyzes transaction figures in Excel, and presents the findings in PowerPoint. Which statement best describes this workflow?
+A. The three applications serve complementary purposes: document creation, numerical analysis, and presentation. B. All three applications are operating systems. C. Excel is the only application capable of storing files. D. PowerPoint replaces the need for an operating system.
+Correct Answer: A. The three applications serve complementary purposes: document creation, numerical analysis, and presentation.
+Explanation: Word is designed primarily for document creation, Excel for spreadsheets and numerical analysis, and PowerPoint for slide-based presentations. Together, they support a typical office workflow in which data is analyzed, documented, and communicated.

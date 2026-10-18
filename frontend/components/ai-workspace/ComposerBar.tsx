@@ -7,7 +7,7 @@
 // forces a vision-capable provider); the auto-read toggle streams the AI reply
 // back through the browser's speechSynthesis (Bengali vs English auto-detected).
 //
-// Layout is a single inline flex row — textarea stretches with its content on
+// Layout is a single inline flex row, textarea stretches with its content on
 // the left, action buttons stay bottom-aligned on the right (separated by a
 // hairline divider). No fake "thinking" indicators.
 
@@ -86,7 +86,7 @@ export default function ComposerBar({
 
   return (
     <div className="border-t border-[var(--dashboard-border-muted)] px-3 pb-[calc(0.9rem+env(safe-area-inset-bottom))] pt-2 sm:px-6 sm:pb-6 sm:pt-3">
-      {/* Honest status strip — slims to nil when quiet, never shows fake activity */}
+      {/* Honest status strip, slims to nil when quiet, never shows fake activity */}
       <div
         aria-live="polite"
         className="mx-auto mb-2 flex min-h-5 max-w-3xl items-center gap-1.5 px-1 sm:px-0"

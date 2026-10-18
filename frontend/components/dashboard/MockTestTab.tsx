@@ -137,7 +137,7 @@ export default function MockTestTab() {
   };
 
   // Lazy review disclosures: wrong/unanswered auto-expand (AI mounts on open).
-  // Derived defaults (open unless correct) + explicit user toggles — plain
+  // Derived defaults (open unless correct) + explicit user toggles, plain
   // helpers so the React compiler keeps its memoization (see CustomExamTab).
   const [reviewToggles, setReviewToggles] = useState<Record<number, boolean>>({});
   const isReviewOpen = (questionId: number, status: string) => {
@@ -197,7 +197,7 @@ export default function MockTestTab() {
   }, [configReloadKey, ecosystem]);
 
   const fetchConfig = useCallback(() => {
-    // Retry path — reset UI state, then re-run the config effect.
+    // Retry path, reset UI state, then re-run the config effect.
     setConfigLoading(true);
     setConfigError(null);
     setConfigReloadKey((k) => k + 1);
@@ -213,7 +213,7 @@ export default function MockTestTab() {
       if (cancelled) return;
       // 1) Finish an interrupted submission FIRST: if a previous submit reached
       //    the server (or is recoverable), show its result rather than reviving
-      //    the attempted exam. Idempotent — the server dedupes by attemptId.
+      //    the attempted exam. Idempotent, the server dedupes by attemptId.
       try {
         const recovered = await recoverPendingSubmission(STORAGE_KEY);
         if (cancelled) return;
@@ -225,7 +225,7 @@ export default function MockTestTab() {
           return;
         }
       } catch {
-        /* network still unusable — fall through to resume; submit will retry */
+        /* network still unusable, fall through to resume; submit will retry */
       }
       if (cancelled) return;
       // 2) Resume an in-progress attempt from localStorage so tab switches or a
@@ -235,7 +235,7 @@ export default function MockTestTab() {
       {
         const elapsedSec = Math.floor((Date.now() - saved.startsAt) / 1000);
         if (elapsedSec >= saved.durationSec + 5) {
-          // Long expired — drop it rather than resurfacing a finished exam.
+          // Long expired, drop it rather than resurfacing a finished exam.
           dropExamSnapshot(STORAGE_KEY);
           return;
         }
@@ -330,7 +330,7 @@ export default function MockTestTab() {
         setBuildError("এই কনফিগারেশনে কোনো প্রশ্ন পাওয়া যায়নি।");
         return;
       }
-      // A fresh build must bind to a brand-new attempt token — never reuse a
+      // A fresh build must bind to a brand-new attempt token, never reuse a
       // stale one or the server keeps the old question-set hash and the new
       // exam's submit 409s with ATTEMPT_HASH_MISMATCH.
       clearAttemptId(STORAGE_KEY);
@@ -413,7 +413,7 @@ export default function MockTestTab() {
         setSubmitError("পরীক্ষার সেশন শনাক্ত করা যায়নি। পৃষ্ঠা রিফ্রেশ করে আবার চেষ্টা করুন।");
         return;
       }
-      // Immediate ref guard — state `submitting` updates async, so without this a
+      // Immediate ref guard, state `submitting` updates async, so without this a
       // mobile double-tap could double-trigger. Duplicate hits are safe anyway
       // (the canonical layer joins in-flight same-attempt submissions).
       if (submittingRef.current) {
@@ -468,7 +468,7 @@ export default function MockTestTab() {
     void submit(questions, answers);
   };
 
-  // Countdown — wall-clock based (survives remounts, no per-second interval
+  // Countdown, wall-clock based (survives remounts, no per-second interval
   // churn) and auto-submits when time runs out.
   useEffect(() => {
     if (testState !== "active") return;
@@ -491,7 +491,7 @@ export default function MockTestTab() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [testState]);
 
-  // Always show the top of the test/result when state switches — fixes landing
+  // Always show the top of the test/result when state switches, fixes landing
   // in the middle of questions or in the middle of the review.
   useEffect(() => {
     if (testState === "active" || testState === "completed") {
@@ -589,7 +589,7 @@ export default function MockTestTab() {
               <h2 className="text-lg font-bold text-[var(--text-primary)]">মক টেস্ট</h2>
             </div>
             <p className="text-xs text-[var(--dashboard-text-muted)]">
-              বিষয়, টপিক ও সাবটপিক বেছে নিয়ে সময়সীমা সহ পূর্ণাঙ্গ মক পরীক্ষা দিন — নেগেটিভ মার্কিং সহ {ecosystem === "BCS" ? "বিসিএস" : "ব্যাংক"} ধাঁচে (ভুল {negativeLabel})।
+              বিষয়, টপিক ও সাবটপিক বেছে নিয়ে সময়সীমা সহ পূর্ণাঙ্গ মক পরীক্ষা দিন, নেগেটিভ মার্কিং সহ {ecosystem === "BCS" ? "বিসিএস" : "ব্যাংক"} ধাঁচে (ভুল {negativeLabel})।
             </p>
           </div>
         </motion.div>
@@ -637,7 +637,7 @@ export default function MockTestTab() {
                   <p className="text-xs text-[var(--dashboard-text-muted)] mt-0.5">
                     উপলব্ধ:{" "}
                     <span className={`font-mono tabular-nums ${insufficient ? "text-[var(--dashboard-warning)] font-bold" : "text-[var(--dashboard-primary)]"}`}>
-                      {availableTotal}টি{insufficient ? " — কম আছে" : ""}
+                      {availableTotal}টি{insufficient ? ", কম আছে" : ""}
                     </span>
                   </p>
                 </div>
@@ -681,7 +681,7 @@ export default function MockTestTab() {
                 <Warning className="w-4 h-4 flex-shrink-0 mt-0.5" />
                 <p>
                   নির্বাচিত টপিক থেকে শুধু <span className="font-mono">{availableTotal}টি</span> প্রশ্ন
-                  পাওয়া যায় — মোট <span className="font-mono">{totalCount}টি</span> চাওয়া হয়েছে।
+                  পাওয়া যায়, মোট <span className="font-mono">{totalCount}টি</span> চাওয়া হয়েছে।
                 </p>
               </div>
             )}
@@ -693,7 +693,7 @@ export default function MockTestTab() {
               </div>
             )}
 
-            {/* Sticky start dock — thumb-reachable above the bottom nav */}
+            {/* Sticky start dock, thumb-reachable above the bottom nav */}
             <div className="sticky z-[var(--z-sticky)] bottom-[calc(var(--bottom-nav-h)+env(safe-area-inset-bottom,0px)+8px)] lg:bottom-2 mt-4">
               <button
                 onClick={() => void buildAndStart()}
@@ -712,7 +712,7 @@ export default function MockTestTab() {
   }
 
   // ═══════════════ ACTIVE ═══════════════
-  // Live exam workspace — the root carries data-exam-session (see
+  // Live exam workspace, the root carries data-exam-session (see
   // PracticeTab note) so shell digit→tab shortcuts stay inert here.
   if (testState === "active") {
     const timeLow = timeRemaining > 0 && timeRemaining <= 60;
@@ -817,7 +817,7 @@ export default function MockTestTab() {
               <h3 className="text-base md:text-[16px] font-semibold leading-relaxed" style={{ color: "var(--dashboard-text-primary)", lineHeight: "1.6" }}><RichText text={q.question} /></h3>
             </div>
 
-            <div className="space-y-2.5" role="radiogroup" aria-label={`প্রশ্ন ${currentQuestion + 1} — উত্তর নির্বাচন করুন`}>
+            <div className="space-y-2.5" role="radiogroup" aria-label={`প্রশ্ন ${currentQuestion + 1}, উত্তর নির্বাচন করুন`}>
               {q.options.map((option, i) => {
                 const isSelected = answers[q.id] === option;
                 const isLocked = answers[q.id] !== undefined;
@@ -871,7 +871,7 @@ export default function MockTestTab() {
           </div>
         )}
 
-        {/* Sticky thumb nav — always in reach above the bottom nav */}
+        {/* Sticky thumb nav, always in reach above the bottom nav */}
         <div className="sticky z-[var(--z-sticky)] bottom-[calc(var(--bottom-nav-h)+env(safe-area-inset-bottom,0px)+8px)] lg:bottom-2 pt-2 pb-1" style={{ background: "linear-gradient(to top, var(--dashboard-surface) 70%, transparent)" }}>
           <div className="flex items-center gap-2 rounded-2xl border p-2 backdrop-blur-md" style={{ background: "color-mix(in srgb, var(--dashboard-surface-muted) 92%, transparent)", borderColor: "var(--dashboard-border-muted)" }}>
             <button
@@ -913,7 +913,7 @@ export default function MockTestTab() {
           </div>
         </div>
 
-        {/* Question map — horizontal scroll on mobile, sticky grid sidebar on desktop */}
+        {/* Question map, horizontal scroll on mobile, sticky grid sidebar on desktop */}
         <div className="glass-card rounded-2xl border border-terminal-border p-3 lg:sticky lg:top-24">
           <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-widest mb-2">
             প্রশ্ন তালিকা
@@ -936,7 +936,7 @@ export default function MockTestTab() {
                         ? "border-[var(--dashboard-primary)]/30 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] hover:border-[var(--dashboard-primary)]/50"
                         : "border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)] hover:border-[var(--dashboard-primary)]/40"
                   }`}
-                  aria-label={`প্রশ্ন ${i + 1}${isAnswered ? " — উত্তর দেওয়া হয়েছে" : ""}${isCurrent ? " — বর্তমান" : ""}${isFlagged ? " — ফ্ল্যাগ করা" : ""}`}
+                  aria-label={`প্রশ্ন ${i + 1}${isAnswered ? ", উত্তর দেওয়া হয়েছে" : ""}${isCurrent ? ", বর্তমান" : ""}${isFlagged ? ", ফ্ল্যাগ করা" : ""}`}
                   aria-current={isCurrent ? "true" : undefined}
                 >
                   {i + 1}
@@ -1124,7 +1124,7 @@ export default function MockTestTab() {
                       questionIds: retryQs.map((qq) => qq.id),
                       durationSec,
                     }).catch(() => {
-                      /* non-fatal — submit upserts */
+                      /* non-fatal, submit upserts */
                     });
                   }}
                   className="px-5 py-2.5 min-h-[48px] bg-[var(--dashboard-primary)] text-[var(--dashboard-text-inverse)] font-mono text-sm font-bold rounded-xl hover:brightness-110 active:opacity-90 cursor-pointer transition-all flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
@@ -1136,7 +1136,7 @@ export default function MockTestTab() {
           </div>
         </motion.div>
 
-        {/* Review — lazy disclosures (AI mounts on open) */}
+        {/* Review, lazy disclosures (AI mounts on open) */}
         <div className="space-y-2 max-h-96 overflow-y-auto overscroll-contain">
           <h4 className="text-sm font-medium text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider px-1">
             উত্তর পর্যালোচনা
@@ -1173,7 +1173,7 @@ export default function MockTestTab() {
                   type="button"
                   onClick={() => setReviewToggles((prev) => ({ ...prev, [r.questionId]: !isReviewOpen(r.questionId, r.status) }))}
                   aria-expanded={open}
-                  aria-label={`প্রশ্ন ${i + 1} — ${verdictLabel} — ${open ? "সংকুচিত করুন" : "বিস্তারিত দেখুন"}`}
+                  aria-label={`প্রশ্ন ${i + 1}, ${verdictLabel}, ${open ? "সংকুচিত করুন" : "বিস্তারিত দেখুন"}`}
                   className="w-full flex items-center gap-3 p-3.5 min-h-[60px] text-left cursor-pointer transition-[background-color] duration-150 hover:bg-[var(--dashboard-surface-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--dashboard-focus-ring)]"
                 >
                   {isCorrect ? (

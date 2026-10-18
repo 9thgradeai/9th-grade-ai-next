@@ -1,6 +1,6 @@
 "use client";
 
-// PracticeDrillOverlay — a global, event-driven modal that starts a practice
+// PracticeDrillOverlay, a global, event-driven modal that starts a practice
 // session from the AI study coach's action chips. The agent never picks
 // question ids itself: `create_practice_session` / `create_mock_exam` mint a
 // question set server-side, the loop injects it into the `practice` /
@@ -55,13 +55,13 @@ export default function PracticeDrillOverlay() {
           const qs = await api.questions({ ids: questionIds });
           if (req !== requestRef.current) return;
           if (qs.length === 0) {
-            setError("খুঁজে পাওয়া প্রশ্ন পাওয়া যায়নি — আবার চেষ্টা করুন।");
+            setError("খুঁজে পাওয়া প্রশ্ন পাওয়া যায়নি, আবার চেষ্টা করুন।");
             return;
           }
           setQuestions(qs);
         } catch {
           if (req !== requestRef.current) return;
-          setError("প্রশ্ন লোড করা যায়নি — আবার চেষ্টা করুন।");
+          setError("প্রশ্ন লোড করা যায়নি, আবার চেষ্টা করুন।");
         } finally {
           if (req === requestRef.current) setLoadingText("");
         }
@@ -76,7 +76,7 @@ export default function PracticeDrillOverlay() {
       startPractice(payload.questionIds, payload.title);
     };
 
-    // `ai:open-question` surfaces a single question the coach recommends — load
+    // `ai:open-question` surfaces a single question the coach recommends, load
     // it through the same drill path so the per-answer submission + errorType
     // capture is reused (AgentBlocks dispatches this after opening a current
     // conversation; the tab switch lives in the block dispatcher, not here).

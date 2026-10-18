@@ -2,9 +2,9 @@
 
 // Lightweight, dependency-free Markdown renderer for AI responses.
 //
-// Renders the subset of Markdown the AI models emit — bold, italic, inline
+// Renders the subset of Markdown the AI models emit, bold, italic, inline
 // code, fenced code blocks, ATX headings, bullet/numbered lists, blockquotes,
-// tables, links and horizontal rules — while aggressively cleaning the
+// tables, links and horizontal rules, while aggressively cleaning the
 // decorative asterisk noise (stray `**`, `****`, empty emphasis) that makes
 // raw responses look broken.
 //
@@ -185,7 +185,7 @@ function tokenize(text: string): Block[] {
       continue;
     }
 
-    // Paragraph — gather consecutive non-empty, non-block lines.
+    // Paragraph, gather consecutive non-empty, non-block lines.
     const para: string[] = [];
     while (
       i < lines.length &&
@@ -247,7 +247,7 @@ function renderInline(text: string, keyBase: string): ReactNode[] {
       continue;
     }
 
-    // `$...$` / `$$...$$` LaTeX — typeset atomically so emphasis/code
+    // `$...$` / `$$...$$` LaTeX, typeset atomically so emphasis/code
     // handlers never split the span's internals.
     if (ch === "$") {
       MATH_SPAN_AT.lastIndex = i;

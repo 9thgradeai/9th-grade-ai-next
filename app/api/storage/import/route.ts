@@ -19,7 +19,7 @@ export async function POST(request: Request) {
   // Verify checksum
   const computed = computeChecksum(envelope.data);
   if (computed !== envelope.checksum) {
-    return NextResponse.json({ error: "Checksum mismatch — corrupted file", code: "CHECKSUM_MISMATCH" }, { status: 400 });
+    return NextResponse.json({ error: "Checksum mismatch, corrupted file", code: "CHECKSUM_MISMATCH" }, { status: 400 });
   }
   // Migrate
   try {
@@ -31,5 +31,5 @@ export async function POST(request: Request) {
 
   // For now, import is validated but not automatically applied — user must use /restore for Drive files
   // This endpoint is for manual file upload validation (safe import validation)
-  return NextResponse.json({ ok: true, message: "File validated — use /api/storage/restore for Drive restore" });
+  return NextResponse.json({ ok: true, message: "File validated, use /api/storage/restore for Drive restore" });
 }

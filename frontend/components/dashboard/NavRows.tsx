@@ -13,7 +13,7 @@ interface NavRowsProps {
 }
 
 /**
- * Phase 2 shared navigation rows — single source for SideNav (desktop),
+ * Phase 2 shared navigation rows, single source for SideNav (desktop),
  * collapsed rail, and the mobile drawer. Single-line rows: Bengali primary
  * + English secondary trailing (halves row height vs stacked dual-line).
  * 48px minimum touch target; active = filled primary-soft + 3px rail.

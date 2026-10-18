@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 
 /**
  * The toaster relies on Framer Motion for enter/exit transitions. It is not part
- * of first paint, so we load it lazily (client-only) — this keeps the animation
+ * of first paint, so we load it lazily (client-only), this keeps the animation
  * library out of the initial JavaScript bundle and off the critical path for
  * Lighthouse performance.
  */

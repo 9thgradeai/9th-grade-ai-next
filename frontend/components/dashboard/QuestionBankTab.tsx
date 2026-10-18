@@ -34,7 +34,7 @@ export default function QuestionBankTab() {
   const [savedQuestions, setSavedQuestions] = useState<QuestionDTO[]>([]);
   const [browseMode, setBrowseMode] = useState<"subject" | "exam">("subject");
   const [practiceMode, setPracticeMode] = useState<"none" | "scroll">("none");
-  // Honest outage signal — a failed fetch shows an error with retry instead
+  // Honest outage signal, a failed fetch shows an error with retry instead
   // of silently serving static sample questions (which masked outages and
   // broke bookmarks with unpersistable negative ids).
   const [loadFailed, setLoadFailed] = useState(false);
@@ -89,7 +89,7 @@ export default function QuestionBankTab() {
     };
   }, [ecosystem]);
 
-  // Load questions for the active category from the DB (PYQ only — the
+  // Load questions for the active category from the DB (PYQ only, the
   // Question Bank tab shows Previous Years Questions exclusively; the
   // subject-wise practice pool lives in Practice / Mock flows).
   useEffect(() => {
@@ -206,7 +206,7 @@ export default function QuestionBankTab() {
     return (
       <ScrollPractice
         questions={savedQuestions}
-        title="সংরক্ষিত প্রশ্ন — স্ক্রল প্র্যাকটিস"
+        title="সংরক্ষিত প্রশ্ন, স্ক্রল প্র্যাকটিস"
         onExit={() => setDrilling(false)}
       />
     );
@@ -224,7 +224,7 @@ export default function QuestionBankTab() {
         </button>
         <ScrollPractice
           questions={visibleQuestions}
-          title={`${activeCategory} — স্ক্রল প্র্যাকটিস (${ecosystem === "BANGLADESH_BANK" ? "ব্যাংক" : "BCS"})`}
+          title={`${activeCategory}, স্ক্রল প্র্যাকটিস (${ecosystem === "BANGLADESH_BANK" ? "ব্যাংক" : "BCS"})`}
           onExit={() => setPracticeMode("none")}
         />
       </div>
@@ -319,12 +319,12 @@ export default function QuestionBankTab() {
             onClick={() => setPracticeMode("scroll")}
             className="px-3 py-1.5 rounded-full text-xs font-mono border border-[var(--dashboard-primary)]/30 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] hover:bg-[var(--dashboard-primary-subtle)] transition-all flex items-center gap-1.5"
           >
-            <Play className="w-3.5 h-3.5" /> স্ক্রল প্র্যাকটিস — {visibleQuestions.length} প্রশ্ন
+            <Play className="w-3.5 h-3.5" /> স্ক্রল প্র্যাকটিস, {visibleQuestions.length} প্রশ্ন
           </button>
         )}
       </div>
 
-      {/* PYQ filters (year + source exam) — only meaningful for the "all" view */}
+      {/* PYQ filters (year + source exam), only meaningful for the "all" view */}
       {view === "all" && (
         <div className="flex flex-wrap gap-2 items-center">
           <span className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider">PYQ:</span>

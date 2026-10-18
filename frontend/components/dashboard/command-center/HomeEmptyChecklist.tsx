@@ -41,7 +41,7 @@ const STEPS: Array<{
 
 /**
  * Single onboarding checklist for users with no recommendations yet.
- * Replaces the stacked bespoke empties — one path forward, three steps.
+ * Replaces the stacked bespoke empties, one path forward, three steps.
  * Steps 1–2 dispatch through the standard rec pipeline (funnel intact);
  * step 3 opens the planner directly.
  */
@@ -61,7 +61,7 @@ export default function HomeEmptyChecklist({ onAction, onOpenPlanner }: HomeEmpt
     >
       <h3 id="home-empty-checklist-title" className="command-eyebrow flex items-center gap-1.5">
         <Target className="w-3.5 h-3.5" />
-        {t(lang, "শুরু করুন — ৩টি ধাপ", "Get started — 3 steps")}
+        {t(lang, "শুরু করুন, ৩টি ধাপ", "Get started, 3 steps")}
       </h3>
       <ol className="mt-3 space-y-2">
         {STEPS.map((step, i) => {

@@ -52,10 +52,10 @@ export default function ProgressTab() {
   const startTopicDrill = async (subject: string, topic: string) => {
     try {
       const qs = await api.questions({ subject, topic, limit: 50 });
-      setDrillTitle(t(lang, `${topic} — অনুশীলন`, `${topic} — practice`));
+      setDrillTitle(t(lang, `${topic}, অনুশীলন`, `${topic}, practice`));
       setDrillQuestions(qs);
     } catch {
-      /* ignore — section simply won't open */
+      /* ignore, section simply won't open */
     }
   };
 
@@ -90,7 +90,7 @@ export default function ProgressTab() {
 
   return (
     <div className="space-y-5 pb-24 sm:pb-6">
-      {/* Sprint 7: display-voice page header — matches Home. */}
+      {/* Sprint 7: display-voice page header, matches Home. */}
       <div>
         <p className="command-eyebrow">{t(lang, "Progress", "Progress")}</p>
         <h1 className="font-display text-xl font-semibold tracking-tight mt-1">
@@ -102,7 +102,7 @@ export default function ProgressTab() {
         <QuestionDrill questions={drillQuestions} title={drillTitle} onExit={() => setDrillQuestions(null)} />
       )}
 
-      {/* Total-outage banner — data failure must be visible, not silent zeros */}
+      {/* Total-outage banner, data failure must be visible, not silent zeros */}
       {loadFailed && (
         <div
           role="alert"
@@ -113,8 +113,8 @@ export default function ProgressTab() {
           <div className="flex-1">
             {t(
               lang,
-              "অংশবিশেষ লোড করা যায়নি — কিছুক্ষণ পরে রিফ্রেশ করুন।",
-              "Some sections could not be loaded — refresh shortly.",
+              "অংশবিশেষ লোড করা যায়নি, কিছুক্ষণ পরে রিফ্রেশ করুন।",
+              "Some sections could not be loaded, refresh shortly.",
             )}
           </div>
           <button

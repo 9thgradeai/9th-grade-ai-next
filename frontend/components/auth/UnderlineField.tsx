@@ -3,7 +3,7 @@
 import { useState, type KeyboardEvent, type ReactNode } from "react"
 
 /**
- * UnderlineField — a document-style input with a label above and an
+ * UnderlineField, a document-style input with a label above and an
  * underline that expands from center on focus. Used for the auth forms'
  * "examination document" aesthetic.
  */

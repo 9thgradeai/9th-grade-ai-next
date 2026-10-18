@@ -94,7 +94,7 @@ export default function ProgressOverview({ intelligence }: ProgressOverviewProps
 
   return (
     <div className="space-y-5">
-      {/* Extended KPI grid — distinct from Home pulse */}
+      {/* Extended KPI grid, distinct from Home pulse */}
       <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3" aria-label={t(lang, "সম্প্রসারিত সারাংশ", "Extended progress overview")}>
         {kpis.map((kpi) => (
           <div

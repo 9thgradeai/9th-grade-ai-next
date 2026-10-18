@@ -14,7 +14,7 @@ type StreakEngineProps = {
 };
 
 /**
- * Sprint 1 — one streak/XP voice for Home. Previously the header pill, the
+ * Sprint 1, one streak/XP voice for Home. Previously the header pill, the
  * heatmap, the freeze shield and the XP curve each spoke differently;
  * this strip unifies streak count + 7-day heat + freeze status + level
  * progress in a single glanceable unit.

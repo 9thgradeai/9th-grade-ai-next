@@ -3,7 +3,7 @@
 import { useState, type KeyboardEvent, type ReactNode } from "react"
 
 /**
- * AuthField — a labelled text input with an animated floating label.
+ * AuthField, a labelled text input with an animated floating label.
  *
  * The label rests inside the field as a placeholder (clear of the leading
  * icon) and lifts onto the top border once the field is focused or holds a

@@ -3,7 +3,7 @@
 import { motion, useAnimationControls, useReducedMotion } from "framer-motion"
 
 /**
- * The midnight desk lamp — the opening interaction of the auth journey.
+ * The midnight desk lamp, the opening interaction of the auth journey.
  *
  * Drama sources: an articulated arm, a pull-cord with a physical tug-and-
  * rebound, a volumetric light cone with fluorescent start-up flicker, and a
@@ -63,7 +63,7 @@ export function Lamp({
           <stop offset="0%" stopColor="rgba(251,191,36,0.5)" />
           <stop offset="100%" stopColor="rgba(251,191,36,0)" />
         </radialGradient>
-        {/* Volumetric cone — bright at the shade, dissolving onto the desk */}
+        {/* Volumetric cone, bright at the shade, dissolving onto the desk */}
         <linearGradient id="lamp-cone" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="rgba(251,191,36,0.34)" />
           <stop offset="55%" stopColor="rgba(251,191,36,0.12)" />
@@ -71,7 +71,7 @@ export function Lamp({
         </linearGradient>
       </defs>
 
-      {/* Invitation halo — pulses gently while off so the lamp reads touchable */}
+      {/* Invitation halo, pulses gently while off so the lamp reads touchable */}
       {!lit && (
         <motion.circle
           cx="96"
@@ -83,7 +83,7 @@ export function Lamp({
           style={{ transformOrigin: "96px 196px" }}
         />
       )}
-      {/* Hover pre-light — warms up as you approach */}
+      {/* Hover pre-light, warms up as you approach */}
       {!lit && (
         <circle
           cx="96"
@@ -94,7 +94,7 @@ export function Lamp({
         />
       )}
 
-      {/* Volumetric light cone — flickers on like a real tube */}
+      {/* Volumetric light cone, flickers on like a real tube */}
       {lit && (
         <>
           <motion.polygon
@@ -159,7 +159,7 @@ export function Lamp({
           fill="url(#lamp-bulb)"
           className={`transition-opacity duration-500 ${lit ? "opacity-100" : "opacity-40"}`}
         />
-        {/* Filament — pre-warms on hover even while off */}
+        {/* Filament, pre-warms on hover even while off */}
         <path
           d="M 99 121 Q 104 115 109 121"
           fill="none"
@@ -171,7 +171,7 @@ export function Lamp({
           }`}
         />
 
-        {/* Pull cord with bead — hangs from the shade lip */}
+        {/* Pull cord with bead, hangs from the shade lip */}
         <motion.g animate={cord} style={{ transformOrigin: "152px 122px" }}>
           {!reduced && !lit ? (
             <motion.g

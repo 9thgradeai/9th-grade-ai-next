@@ -1,0 +1,859 @@
+﻿Vocabulary Words, Meanings, and Antonyms
+
+
+#
+	Word
+	Meaning
+	Antonym
+	1
+	Adept
+	Highly skilled
+	Incompetent
+	2
+	Parsimony
+	Extreme stinginess
+	Extravagant
+	3
+	Plenty
+	Abundance
+	Shortage
+	4
+	Satisfaction
+	Fulfillment
+	Discontent
+	5
+	Cacophonous
+	Harsh-sounding
+	Harmonious
+	6
+	Commence
+	To begin / start
+	End / Terminate
+	7
+	Comply
+	To obey
+	Resist
+	8
+	Criticize
+	To find fault
+	Extol
+	9
+	Describe
+	To portray clearly
+	Obscure
+	10
+	Deter
+	To discourage
+	Inspire / Encourage
+	11
+	Enhance
+	To increase / heighten
+	Lessen
+	12
+	Fertile
+	Productive / Fruitful
+	Barren
+	13
+	Benevolent
+	Kind / Well-meaning
+	Selfish
+	14
+	Frank
+	Open / Sincere
+	Artful
+	15
+	Indifference
+	Lack of concern / interest
+	Attention / Ardour
+	16
+	Indigenous
+	Native
+	Foreign
+	17
+	Ingenuous
+	Innocent / Frank
+	Tricky
+	18
+	Monstrous
+	Huge
+	Tiny
+	19
+	Optimistic
+	Hopeful
+	Pessimistic
+	20
+	Wicked
+	Evil
+	Virtuous
+	21
+	Amazing
+	Extraordinary
+	Usual
+	22
+	Assist
+	To help / aid
+	Prevent
+	23
+	Blunt
+	Dull / Direct
+	Sharp
+	24
+	Brief
+	Short
+	Lengthy
+	25
+	Purify
+	To clean
+	Pollute
+	26
+	Sage
+	Wise
+	Ignorant
+	27
+	Gargantuan
+	Massive
+	Tiny in size
+	28
+	Inevitable
+	Unavoidable
+	Avoidable
+	29
+	Amass
+	To gather
+	Distribute
+	30
+	Contaminate
+	To pollute
+	Make pure
+	31
+	Collaborate
+	To work together
+	Work alone
+	32
+	Release
+	To let go
+	Grasp
+	33
+	Abhor
+	To hate / detest
+	Love
+	34
+	Acme
+	Highest point
+	Nadir
+	35
+	Altruism
+	Selflessness
+	Selfishness
+	36
+	Apathy
+	Lack of feeling or interest
+	Attention / Concern
+	37
+	Audacious
+	Bold / Daring
+	Timid
+	38
+	Avarice
+	Extreme greed
+	Generosity
+	39
+	Evanescent
+	Fleeting / Short-lived
+	Permanent
+	40
+	Hesitate
+	To delay
+	Decide
+	41
+	Stamina
+	Endurance
+	Lack of endurance
+	42
+	Scarcity
+	Shortage
+	Abundance
+	43
+	Clumsy
+	Awkward
+	Deft
+	44
+	Compliant
+	Obedient
+	Disobedient
+	45
+	Commend
+	To praise
+	Criticize
+	46
+	Coward
+	Person who lacks courage
+	Brave
+	47
+	Deleterious
+	Harmful
+	Beneficial
+	48
+	Hearten
+	To encourage
+	Discourage / Deceive
+	49
+	Spacious
+	Roomy
+	Cramped
+	50
+	Confuse
+	To bewilder
+	Enlighten
+	51
+	Despise
+	To hate
+	Admire
+	52
+	Din
+	Loud, confusing noise
+	Silent
+	53
+	Dispute
+	To argue
+	Agree
+	54
+	Docile
+	Compliant / Submissive
+	Unruly
+	55
+	Ecstasy
+	Extreme joy
+	Unhappy
+	56
+	Eligible
+	Qualified
+	Unsuitable
+	57
+	Extravagant
+	Spending excessively
+	Thrifty
+	58
+	Meticulous
+	Extremely careful
+	Careless
+	59
+	Messy
+	Disordered
+	Tidy
+	60
+	Monotonous
+	Dull / Lacking variety
+	Interesting
+	61
+	Munificent
+	Very generous
+	Indigent
+	62
+	Neophyte
+	Beginner
+	Expert
+	63
+	Novice
+	Beginner
+	Master
+	64
+	Obsolete
+	Outdated
+	Modern
+	65
+	Massive
+	Huge
+	Tiny
+	66
+	Meager
+	Scarce / Lacking in quantity
+	Plentiful
+	67
+	Melancholy
+	Sad / Gloomy
+	Happy
+	68
+	Ominous
+	Threatening
+	Favorable
+	69
+	Paltry
+	Insignificant
+	Significant
+	70
+	Vague
+	Unclear
+	Clear
+	71
+	Thrifty
+	Economical
+	Prodigal
+	72
+	Timorous
+	Fearful / Timid
+	Intrepid
+	73
+	Steadfast
+	Firm / Unwavering
+	Wavering
+	74
+	Sanguine
+	Optimistic / Hopeful
+	Pessimistic
+	75
+	Shabby
+	Worn out
+	New
+	76
+	Scanty
+	Meager / Insufficient
+	Copious
+	77
+	Penalize
+	To punish
+	Enlighten / Reward
+	78
+	Obdurate
+	Stubborn
+	Obedient
+	79
+	Abrogate
+	To repeal / annul
+	Enact
+	80
+	Weary
+	Tired / Exhausted
+	Energetic
+	81
+	Infinitesimal
+	Extremely small
+	Colossal
+	82
+	Abortive
+	Unsuccessful / Failing
+	Effective
+	83
+	Hospitality
+	Cordiality / Welcoming guests
+	Hostility
+	84
+	Adversary
+	Opponent
+	Supporter
+	85
+	Archaic
+	Ancient / Old-fashioned
+	New
+	86
+	Synthetic
+	Artificial
+	Natural
+	87
+	Nocturnal
+	Occurring at night
+	Diurnal
+	88
+	Tedious
+	Boring / Tiresome
+	Stimulating / Refreshing
+	89
+	Veracious
+	Truthful
+	Untruthful / Culpable
+	90
+	Desultory
+	Lacking plan / Random
+	Organized
+	91
+	Extol
+	To praise highly
+	Criticize
+	92
+	Tacit
+	Unexpressed / Silent
+	Spoken
+	93
+	Tardy
+	Late / Slow
+	Speedy
+	94
+	Stubborn
+	Obstinate / Rigid
+	Flexible / Agreeable
+	95
+	Surreptitious
+	Secret / Stealthy
+	Open
+	96
+	Duplicity
+	Deceitfulness
+	Candor
+	97
+	Conviction
+	Firm belief
+	Doubt
+	98
+	Diligent
+	Hardworking
+	Indolent / Lazy
+	99
+	Disinterested
+	Impartial / Unbiased
+	Biased
+	100
+	Transitory
+	Short-lived
+	Permanent
+	101
+	Lasting
+	Enduring
+	Momentary
+	102
+	Trite
+	Overused / Clichéd
+	New
+	103
+	Unkempt
+	Untidy / Messy
+	Tidy
+	104
+	Unanimous
+	In complete agreement
+	Divided / Chaotic
+	105
+	Curtail
+	To shorten
+	Lengthen
+	106
+	Curious
+	Unusual / Inquisitive
+	Ordinary
+	107
+	Uphold
+	To support
+	Oppose
+	108
+	Adulteration
+	Making impure
+	Purification
+	109
+	Flexible
+	Pliable / Adaptable
+	Hard / Rigid
+	110
+	Amplify
+	To increase
+	Diminish
+	111
+	Evanescence
+	Briefness / Fleetingness
+	Permanence
+	112
+	Apex
+	Highest point
+	Lowest point
+	113
+	Chaos
+	Complete disorder
+	Order
+	114
+	Punctual
+	On time
+	Tardy
+	115
+	Enclose
+	To box in / Surround
+	Take out
+	116
+	Maternal
+	Relating to motherhood
+	Unmotherly
+	117
+	Exploit
+	To utilize / Abuse
+	Foster
+	118
+	Obstacle
+	Barrier
+	Assistance
+	119
+	Vacillate
+	To waver
+	Determine
+	120
+	Soothe
+	To calm
+	Irritate / Hate
+	121
+	Ameliorate
+	To improve
+	Deteriorate
+	122
+	Dearth
+	Scarcity
+	Abundance
+	123
+	Fallacious
+	False / Misleading
+	Valid
+	124
+	Fragile
+	Easily broken
+	Enduring
+	125
+	Furtive
+	Hidden / Secret
+	Unconcealed
+	126
+	Constructive
+	Helpful / Productive
+	Destructive
+	127
+	Glamorous
+	Charming / Attractive
+	Unattractive
+	128
+	Tangible
+	Physical / Concrete
+	Abstract
+	129
+	Prolix
+	Using too many words
+	Terse
+	130
+	Castigate
+	To criticize severely
+	Extol
+	131
+	Dormant
+	Inactive / Asleep
+	Active
+	132
+	Blasphemous
+	Disrespectful to sacred things
+	Respectful
+	133
+	Superficial
+	Shallow / Surface-level
+	Deep
+	134
+	Dogma
+	Firmly held belief
+	Unbelief
+	135
+	Prosperity
+	Success / Wealth
+	Adversity
+	136
+	Juvenile
+	Young / Childish
+	Old / Adult
+	137
+	Severity
+	Harshness / Strictness
+	Mildness
+	138
+	Decorous
+	Polite and appropriate
+	Unsuitable
+	139
+	Familiar
+	Well known
+	Strange
+	140
+	Plaintiff
+	Party bringing a lawsuit
+	Defendant
+	141
+	Migrant
+	Moving from place to place
+	Native
+	142
+	Hazardous
+	Dangerous / Risky
+	Safe
+	143
+	Applaud
+	Praise
+	Censure
+	144
+	Assail
+	Attack violently
+	Befriend
+	145
+	Delicious
+	Pleasing to taste
+	Displeasing
+	146
+	Extempore
+	Spoken without preparation
+	Prepared
+	147
+	Infatuation
+	Intense passion
+	Apathy
+	148
+	Domestic
+	Native / Relating to home
+	Foreign
+	149
+	Amnesty
+	Official pardon
+	Detention
+	150
+	Feasible
+	Possible / Practicable
+	Impractical
+	151
+	Hypothetical
+	Based on supposition
+	Rational
+	152
+	Hypocritical
+	Insincere / Contradictory
+	Sincere
+	153
+	Reprimand
+	Scold / Rebuke
+	Praise
+	154
+	Bankrupt
+	Financially ruined
+	Wealthy
+	155
+	Famous
+	Widely known
+	Obscure
+	156
+	Omniscient
+	All-knowing
+	Ignorant
+	157
+	Fake
+	Counterfeit
+	Authentic
+	158
+	Avid
+	Keen / Enthusiastic
+	Indifferent
+	159
+	Presumptuous
+	Overly bold
+	Humble
+	160
+	Pernicious
+	Subtle harmful effect
+	Helpful
+	161
+	Polite
+	Respectful
+	Rude
+	162
+	Incessant
+	Unceasing
+	Interrupted
+	163
+	Gratify
+	Please / Satisfy
+	Displease
+	164
+	Commendable
+	Praiseworthy
+	Deplorable
+	165
+	Orthodoxy
+	Traditional belief
+	Unconventionality
+	166
+	Spendthrift
+	Extravagant spender
+	Careful / Thrifty
+	167
+	Illicit
+	Forbidden by law
+	Lawful
+	168
+	Honorary
+	Unpaid position
+	Salaried
+	169
+	Edible
+	Fit to be eaten
+	Indigestible
+	170
+	Random
+	Unsystematic
+	Systematic
+	171
+	Incompetent
+	
+
+	
+
+	172
+	Extravagant
+	Spending excessively
+	Thrifty
+	173
+	Shortage
+	Shortage
+	Abundance
+	174
+	Discontent
+	
+
+	
+
+	175
+	Harmonious
+	
+
+	
+
+	176
+	End / Terminate
+	
+
+	
+
+	177
+	Resist
+	
+
+	
+
+	178
+	Obscure
+	
+
+	
+
+	179
+	Inspire / Encourage
+	
+
+	
+
+	180
+	Lessen
+	
+
+	
+
+	181
+	Barren
+	
+
+	
+
+	182
+	Selfish
+	
+
+	
+
+	183
+	Artful
+	
+
+	
+
+	184
+	Attention / Ardour
+	
+
+	
+
+	185
+	Foreign
+	
+
+	
+
+	186
+	Tricky
+	
+
+	
+
+	187
+	Tiny
+	
+
+	
+
+	188
+	Pessimistic
+	
+
+	
+
+	189
+	Virtuous
+	
+
+	
+
+	190
+	Usual
+	
+
+	
+
+	191
+	Prevent
+	
+
+	
+
+	192
+	Sharp
+	
+
+	
+
+	193
+	Lengthy
+	
+
+	
+
+	194
+	Pollute
+	
+
+	
+
+	195
+	Deft
+	
+
+	
+
+	196
+	Tiny in size
+	
+
+	
+
+	197
+	Avoidable
+	
+
+	
+
+	198
+	Distribute
+	
+
+	
+
+	199
+	Make pure
+	
+
+	
+
+	200
+	Work alone

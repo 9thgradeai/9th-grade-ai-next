@@ -3,7 +3,7 @@
 import { useState, type KeyboardEvent, type ReactNode } from "react"
 
 /**
- * SurfaceField — an Outlier-inspired rounded field used by the auth forms.
+ * SurfaceField, an Outlier-inspired rounded field used by the auth forms.
  * Label sits above a rounded-rectangle surface input with a hairline border
  * and an emerald focus ring; errors render below the input. Keeps the exact
  * accessible-label contract of the old underline field so tests and the

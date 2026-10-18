@@ -5,7 +5,7 @@
 // pin/unpin and delete via a small overflow menu; rename switches the row into
 // an inline edit input.
 //
-// `grouped` toggles the workspace layout — history is split into Today /
+// `grouped` toggles the workspace layout, history is split into Today /
 // Yesterday / This week / Earlier sections (pinned conversations stay on top
 // within each group). The default flat, pinned-first order is preserved for
 // standalone consumers.

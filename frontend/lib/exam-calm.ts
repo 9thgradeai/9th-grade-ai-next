@@ -1,5 +1,5 @@
 /**
- * Phase 3 — Calm exam engine helpers (LMU 2025: familiarization, backtracking,
+ * Phase 3, Calm exam engine helpers (LMU 2025: familiarization, backtracking,
  * calm countdown, randomization as least-stressful anti-cheat).
  * Pure functions only.
  */
@@ -40,5 +40,5 @@ export function paletteStates(
 /** Wrapped-style share line for post-exam virality (score, accuracy, streak). */
 export function wrappedLine(score: number, total: number, streakDays: number): string {
   const pct = total > 0 ? Math.round((score / total) * 100) : 0;
-  return `আমি 9th-Grade AI মকে ${score}/${total} (${pct}%) পেয়েছি — 🔥 ${streakDays} দিনের স্ট্রিক!`;
+  return `আমি 9th-Grade AI মকে ${score}/${total} (${pct}%) পেয়েছি, 🔥 ${streakDays} দিনের স্ট্রিক!`;
 }

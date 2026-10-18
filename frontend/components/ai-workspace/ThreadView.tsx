@@ -1,6 +1,6 @@
 "use client";
 
-// The conversation thread — an aria-live transcript of user rows and AI rows
+// The conversation thread, an aria-live transcript of user rows and AI rows
 // (prose, suggested actions, coach cards, metadata). Rows stream in the same
 // DOM frame they resolve into; only the actively streaming row re-renders
 // thanks to memoized ChatMessage rows.
@@ -51,7 +51,7 @@ export default function ThreadView({
     meta && lastAiIndex === messages.length - 1 && status !== "generating" && last.text !== "";
 
   // Production guard: structured coach turns stream as a raw JSON blocks
-  // array mid-flight. Never paint that payload as chat prose — collapse it
+  // array mid-flight. Never paint that payload as chat prose, collapse it
   // to the typing indicator until the typed cards resolve.
   const isBlocksPayload = (text: string): boolean => {
     const trimmed = text.trim();
@@ -114,7 +114,7 @@ export default function ThreadView({
         {showMeta && (
           <p className="break-words px-1 font-mono text-[10px] leading-relaxed tracking-[0.12em] text-[var(--dashboard-text-muted)]">
             {meta.provider === "mock"
-              ? "demo source — set an AI key to go live (verify counts)"
+              ? "demo source, set an AI key to go live (verify counts)"
               : `AI guidance · ${lastAi?.tools?.length ?? 0} tools · verify with the question bank`}
           </p>
         )}

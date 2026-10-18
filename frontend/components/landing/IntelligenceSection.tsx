@@ -15,7 +15,7 @@ const flow = [
   {
     step: "02",
     title: "Topics",
-    body: "Subjects decompose into hundreds of examinable units — each one tracked independently.",
+    body: "Subjects decompose into hundreds of examinable units, each one tracked independently.",
   },
   {
     step: "03",
@@ -25,7 +25,7 @@ const flow = [
   {
     step: "04",
     title: "Performance",
-    body: "Accuracy, speed, and confidence are scored per node — not as one blurry average.",
+    body: "Accuracy, speed, and confidence are scored per node, not as one blurry average.",
   },
   {
     step: "05",
@@ -82,7 +82,7 @@ export default function IntelligenceSection() {
         <ol className="relative mx-auto mt-4 max-w-xl space-y-0 lg:hidden" aria-label="How the knowledge model works">
           <span
             aria-hidden="true"
-            className="absolute bottom-6 left-[15px] top-6 w-px bg-gradient-to-b from-emerald-400/50 via-indigo-400/30 to-transparent"
+            className="absolute bottom-6 left-[15px] top-6 w-px bg-gradient-to-b from-emerald-400/50 via-cyan-400/30 to-transparent"
           />
           {flow.map((item) => (
             <li key={item.step} className="relative flex gap-4 pb-8 last:pb-0">

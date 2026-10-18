@@ -79,7 +79,7 @@ export function truncateMathSafe(text: string, max = 60): string {
  *
  * Imported MCQs carry markdown-style emphasis (converted from the source
  * .docx bold/italic runs). Plain strings render unchanged; unmatched `*`
- * characters pass through literally. React escapes all text — no HTML
+ * characters pass through literally. React escapes all text, no HTML
  * injection surface. Optional `query` highlights search matches.
  */
 export default function RichText({

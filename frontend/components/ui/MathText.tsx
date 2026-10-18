@@ -9,7 +9,7 @@ let katexCssRequested = false;
 
 /**
  * Loads KaTeX's stylesheet on first math render only. Previously it was a
- * global `@import` in globals.css — ~25KB render-blocking on every page
+ * global `@import` in globals.css, ~25KB render-blocking on every page
  * including the landing, which renders zero math (mobile Lighthouse tax).
  */
 export function ensureKatexCss() {
@@ -50,7 +50,7 @@ function renderLatex(latex: string, key: number, display: boolean, onError?: (e:
         data-math-error={hasError ? "true" : undefined}
         // KaTeX output is generated from our own canonical LaTeX
         // (escaping is done at ingestion time); trust:false keeps it to
-        // safe HTML-only output. Prose itself is never innerHTML — React
+        // safe HTML-only output. Prose itself is never innerHTML, React
         // escapes it.
         dangerouslySetInnerHTML={{ __html: html }}
       />
@@ -65,10 +65,10 @@ function renderLatex(latex: string, key: number, display: boolean, onError?: (e:
 
 /**
  * Renders plain text with `$...$` inline and `$$...$$` display LaTeX spans
- * typeset by KaTeX (shared renderer — ALL question surfaces use this via
+ * typeset by KaTeX (shared renderer, ALL question surfaces use this via
  * RichText → MathSpans → KaTeX; no page implements its own math parsing).
  *
- * Plain segments (no `$`) render byte-identical to the input string — React
+ * Plain segments (no `$`) render byte-identical to the input string, React
  * escapes them, so there is no HTML injection surface. Malformed LaTeX falls
  * back to raw text via `throwOnError: false` and is flagged with
  * `data-math-error="true"` for production diagnostics.

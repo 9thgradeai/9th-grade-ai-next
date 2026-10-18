@@ -23,7 +23,7 @@ type TaskDTO = {
   completed: boolean;
 };
 
-// Server is the single source of truth — no static mock paint. `tasks`
+// Server is the single source of truth, no static mock paint. `tasks`
 // starts null (loading), then holds the real plan (possibly empty) or an
 // error. Fake ids are never sent to the API.
 export default function StudyPlannerTab() {
@@ -95,16 +95,16 @@ export default function StudyPlannerTab() {
       await api.toggleStudyTask(taskId);
     } catch {
       setTasks(prev);
-      toast.error("কাজ আপডেট করা যায়নি — আবার চেষ্টা করুন");
+      toast.error("কাজ আপডেট করা যায়নি, আবার চেষ্টা করুন");
     } finally {
       setTogglingId(null);
     }
   };
 
-  // "Start" navigates into practice — it never marks the task complete.
+  // "Start" navigates into practice, it never marks the task complete.
   const startTask = (task: TaskDTO) => {
     setPracticeIntent({ subject: task.subject, mode: "quick" });
-    router.push("/dashboard?tab=practice&mode=quick");
+    router.push("/dashboard/practice?mode=quick");
   };
 
   const completedSet = new Set(
@@ -130,7 +130,7 @@ export default function StudyPlannerTab() {
 
   return (
     <div className="space-y-6">
-      {/* Sprint 7: display-voice page header — matches Home. */}
+      {/* Sprint 7: display-voice page header, matches Home. */}
       <div>
         <p className="command-eyebrow">{t("planner.eyebrow")}</p>
         <h1 className="font-display text-xl font-semibold tracking-tight mt-1" style={{ color: "var(--dashboard-text-primary)" }}>
@@ -204,7 +204,7 @@ export default function StudyPlannerTab() {
           <EmptyState
             eyebrow={t("planner.eyebrow")}
             title="কোনো স্টাডি প্ল্যান নেই"
-            body="এখনো কোনো পরিকল্পনা তৈরি হয়নি — প্র্যাকটিস ট্যাব থেকে পড়া শুরু করুন।"
+            body="এখনো কোনো পরিকল্পনা তৈরি হয়নি, প্র্যাকটিস ট্যাব থেকে পড়া শুরু করুন।"
           />
         </div>
       )}
@@ -252,7 +252,7 @@ export default function StudyPlannerTab() {
         </span>
       </motion.div>
 
-      {/* Tasks — shared EmptyState when the day has no plan (was silent blank). */}
+      {/* Tasks, shared EmptyState when the day has no plan (was silent blank). */}
       <div className="space-y-3">
         <AnimatePresence mode="popLayout">
           {dayPlan.tasks.length === 0 && (
@@ -266,7 +266,7 @@ export default function StudyPlannerTab() {
               <EmptyState
                 eyebrow={t("planner.eyebrow")}
                 title="আজকের কোনো কাজ নেই"
-                body="এই দিনের জন্য কোনো স্টাডি প্ল্যান নেই — বিশ্রাম নিন অথবা প্র্যাকটিস ট্যাব থেকে নিজে শুরু করুন।"
+                body="এই দিনের জন্য কোনো স্টাডি প্ল্যান নেই, বিশ্রাম নিন অথবা প্র্যাকটিস ট্যাব থেকে নিজে শুরু করুন।"
               />
             </motion.div>
           )}
@@ -289,7 +289,7 @@ export default function StudyPlannerTab() {
                       void toggleTask(task.id);
                     }}
                     disabled={togglingId === task.id}
-                    aria-label={`${task.title} — সম্পন্ন হিসেবে চিহ্নিত করুন`}
+                    aria-label={`${task.title}, সম্পন্ন হিসেবে চিহ্নিত করুন`}
                     aria-pressed={isCompleted}
                     className={`mt-0.5 w-5 h-5 rounded border-2 flex items-center justify-center transition-all flex-shrink-0 ${
                       isCompleted
@@ -334,7 +334,7 @@ export default function StudyPlannerTab() {
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => startTask(task)}
-                      aria-label={`${task.title} — প্র্যাকটিস শুরু করুন`}
+                      aria-label={`${task.title}, প্র্যাকটিস শুরু করুন`}
                       className="px-3 py-1.5 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-xs rounded hover:bg-[var(--accent-hover)] transition-colors flex items-center gap-1"
                     >
                       {t("planner.start")} <CaretRight className="w-3 h-3" />
@@ -347,7 +347,7 @@ export default function StudyPlannerTab() {
         </AnimatePresence>
       </div>
 
-      {/* Study tip — static guidance, honestly labelled (not AI-generated) */}
+      {/* Study tip, static guidance, honestly labelled (not AI-generated) */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -357,7 +357,7 @@ export default function StudyPlannerTab() {
         <div>
           <p className="text-sm text-[var(--dashboard-text-secondary)]">
             <span className="text-[var(--dashboard-primary)] font-mono">স্টাডি টিপ:</span> প্রতিদিন অন্তত একটি দুর্বল টপিকে ১৫ মিনিট
-            অতিরিক্ত সময় দিন। ছোট ছোট নিয়মিত প্র্যাকটিস সেশন ধারাবাহিকতা তৈরি করে — পরীক্ষার আগের রাতের ভরোসা।
+            অতিরিক্ত সময় দিন। ছোট ছোট নিয়মিত প্র্যাকটিস সেশন ধারাবাহিকতা তৈরি করে, পরীক্ষার আগের রাতের ভরোসা।
           </p>
         </div>
       </motion.div>

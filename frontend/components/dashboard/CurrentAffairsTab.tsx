@@ -1,6 +1,6 @@
 "use client";
 
-// Daily Current Affairs tab — the autonomous agent's
+// Daily Current Affairs tab, the autonomous agent's
 // daily note for BCS / Bank / 9th-grade aspirants:
 // verified note, source citations, interactive MCQs,
 // personal re-edits, and PDF/DOCX/Markdown export.
@@ -193,7 +193,7 @@ export default function CurrentAffairsTab() {
 
   // Self-heal: when the cron missed a day, research + generate the note
   // on demand instead of leaving the tab empty until tomorrow.
-  // Generation takes a while (web research + LLM) — the button shows
+  // Generation takes a while (web research + LLM), the button shows
   // progress, and failures surface the server's message (429 rate-limit
   // vs 503 provider outage need different user actions).
   const generateToday = async () => {
@@ -211,8 +211,8 @@ export default function CurrentAffairsTab() {
         toast.error(
           t(
             lang,
-            "অনেকবার চেষ্টা করা হয়েছে — এক ঘণ্টা পর আবার চেষ্টা করুন",
-            "Too many tries — please wait an hour and try again",
+            "অনেকবার চেষ্টা করা হয়েছে, এক ঘণ্টা পর আবার চেষ্টা করুন",
+            "Too many tries, please wait an hour and try again",
           ),
         );
       } else if (err instanceof ApiError && err.message) {
@@ -236,7 +236,7 @@ export default function CurrentAffairsTab() {
               {t(lang, "দৈনিক সাম্প্রতিক সমাচার", "Daily Current Affairs")}
             </h1>
             <p className="mt-0.5 text-xs" style={{ color: "var(--dashboard-text-muted)" }}>
-              {t(lang, "BCS · ব্যাংক · ৯ম গ্রেড — যাচাইকৃত উৎসের দৈনিক নোট", "BCS · Bank · 9th Grade — daily notes from verified sources")}
+              {t(lang, "BCS · ব্যাংক · ৯ম গ্রেড, যাচাইকৃত উৎসের দৈনিক নোট", "BCS · Bank · 9th Grade, daily notes from verified sources")}
             </p>
           </div>
 

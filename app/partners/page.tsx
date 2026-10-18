@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { Handshake, GraduationCap, Globe, EnvelopeSimple, ArrowUpRight } from "@phosphor-icons/react/dist/ssr";
 import PublicShell from "@/components/public/PublicShell";
 import PageHero from "@/components/public/PageHero";
 import SectionHeading from "@/components/ui/SectionHeading";
 
-export const metadata: Metadata = {
-  alternates: { canonical: "/partners" },
-  title: "Partnerships — 9Th-Grade AI",
+export const metadata: Metadata = pageMeta({
+  path: "/partners",
+  title: "Partnerships | 9Th-Grade AI",
   description:
-    "Partner with 9Th-Grade AI — universities, coaching centers, publishers, and organizations serving government job aspirants in Bangladesh.",
-};
+    "Partner with 9Th-Grade AI, universities, coaching centers, publishers, and organizations serving government job aspirants in Bangladesh.",
+});
 
 const partners = [
   {
@@ -38,7 +39,7 @@ const steps = [
   {
     number: "02",
     title: "We scope the fit",
-    text: "We agree on goals, audience, and what each side contributes — from content to events.",
+    text: "We agree on goals, audience, and what each side contributes, from content to events.",
   },
   {
     number: "03",
@@ -54,7 +55,7 @@ export default function PartnersPage() {
         eyebrow="PARTNERSHIPS"
         title="Partner With a Platform"
         highlight="That Reaches 50K+ Aspirants"
-        description="Whether you run a coaching center, a university chapter, or a publishing house — we'd love to build the future of exam prep together."
+        description="Whether you run a coaching center, a university chapter, or a publishing house, we'd love to build the future of exam prep together."
         actions={[{ href: "mailto:hello@9thgrade.ai?subject=Partnership", label: "Start a Conversation" }]}
       />
 

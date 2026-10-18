@@ -133,7 +133,7 @@ export default function AdaptiveLoop() {
         ))}
       </div>
 
-      {/* Mobile / low-tier vertical pipeline — shares the live cursor */}
+      {/* Mobile / low-tier vertical pipeline, shares the live cursor */}
       <ol className="mx-auto max-w-md space-y-0 md:hidden" aria-label="Practice loop stages">
         {LOOP_STEPS.map((step, i) => (
           <li key={step.id} className="relative flex gap-4 pb-7 last:pb-0">

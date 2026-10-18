@@ -31,5 +31,5 @@ export const PRESET_PROMPTS: PresetPrompt[] = [
 // ---------------------------------------------------------------- 2️⃣ Flash News
 // Flash news is editorially curated from verified official sources only (e.g.
 // BPSC circulars, government press releases). No placeholder or fabricated
-// items are shipped in code — the dashboard hides the section when there is
+// items are shipped in code, the dashboard hides the section when there is
 // nothing verified to show, rather than inventing announcements.

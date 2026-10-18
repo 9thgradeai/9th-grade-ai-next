@@ -66,7 +66,7 @@ export default function SubjectConstellation() {
               activeSubject ? "shadow-glow-sm" : ""
             }`}
           >
-            <span className={`mb-1.5 h-1.5 w-1.5 rounded-full transition-colors duration-500 ${activeSubject ? "bg-violet-400 shadow-glow-sm" : "pulse-soft bg-emerald-400"}`} />
+            <span className={`mb-1.5 h-1.5 w-1.5 rounded-full transition-colors duration-500 ${activeSubject ? "bg-sky-400 shadow-glow-sm" : "pulse-soft bg-emerald-400"}`} />
             <span className="px-3 text-center font-mono text-[0.55rem] uppercase tracking-[0.18em] text-zinc-400">
               Knowledge Core
             </span>
@@ -115,7 +115,7 @@ export default function SubjectConstellation() {
         })}
       </div>
 
-      {/* Mobile / tablet grid — same data, intentionally designed */}
+      {/* Mobile / tablet grid, same data, intentionally designed */}
       <div className="mx-auto flex max-w-xl flex-wrap justify-center gap-2.5 lg:hidden">
         {SUBJECTS.map((subject) => (
           <button
@@ -135,7 +135,7 @@ export default function SubjectConstellation() {
         ))}
       </div>
 
-      {/* Shared detail panel — the accessible source of truth */}
+      {/* Shared detail panel, the accessible source of truth */}
       <div aria-live="polite" className="mx-auto mt-8 max-w-md text-center">
         {activeSubject ? (
           <div key={activeSubject.name} className="glass-card rounded-2xl p-5">

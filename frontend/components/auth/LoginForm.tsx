@@ -27,7 +27,7 @@ export function LoginForm({
   onFocusChange: (field: FocusField) => void
   onClearError: () => void
   onTyping?: () => void
-  /** Increments after each rejected submit — secrets are never preserved. */
+  /** Increments after each rejected submit, secrets are never preserved. */
   failedAttempt?: number
   /** Epoch ms until which submission is blocked (rate-limit backoff). */
   lockoutUntil?: number | null
@@ -47,7 +47,7 @@ export function LoginForm({
     setPassword("")
   }
 
-  // Rate-limit backoff countdown — ticks every 500ms while locked.
+  // Rate-limit backoff countdown, ticks every 500ms while locked.
   const [now, setNow] = useState(() => Date.now())
   useEffect(() => {
     if (!lockoutUntil) return

@@ -27,7 +27,7 @@ import type { PerfRange } from "./command-center/PerformanceCard";
 import TodayPlanCard from "./command-center/TodayPlanCard";
 import type { HomeHeroSignals } from "./ai/HomeHero";
 
-// PerformanceCard carries the SVG chart chunk — split it off the initial
+// PerformanceCard carries the SVG chart chunk, split it off the initial
 // Home bundle; the skeleton covers the load gap.
 const PerformanceCard = dynamic(() => import("./command-center/PerformanceCard"), {
   ssr: false,
@@ -63,7 +63,7 @@ function lastSevenDayLabels(): string[] {
 const WEEKDAY_LABELS_7 = lastSevenDayLabels();
 
 /**
- * Phase 3 calm entrance — a single fade-up (16px / 220ms easeOut) per Home
+ * Phase 3 calm entrance, a single fade-up (16px / 220ms easeOut) per Home
  * section, fired once on scroll into view. No spring, no scale, no stagger.
  * Opacity/transform only; low-tier and reduced-motion render instantly.
  */
@@ -101,7 +101,7 @@ function RevealSection({ children, className, id, style }: { children: React.Rea
 }
 
 /**
- * Unified section placeholder (Phase 3) — one shimmer style for every
+ * Unified section placeholder (Phase 3), one shimmer style for every
  * not-yet-loaded Home section. Uses the shared `skeleton-shimmer` sweep,
  * never a bare `animate-pulse` block.
  */
@@ -120,7 +120,7 @@ function ScopeSkeleton({ label }: { label: string }) {
 }
 
 /**
- * Unified inline retry (Phase 3) — one error style per failed scope; the
+ * Unified inline retry (Phase 3), one error style per failed scope; the
  * rest of Home keeps working. Retry uses the shared secondary button.
  */
 function ScopeError({ message, retryLabel, onRetry }: { message: string; retryLabel: string; onRetry: () => void }) {
@@ -138,7 +138,7 @@ function ScopeError({ message, retryLabel, onRetry }: { message: string; retryLa
 }
 
 /**
- * Sprint 3 — weekly coach disclosure. Inline (expanded) on first view each
+ * Sprint 3, weekly coach disclosure. Inline (expanded) on first view each
  * ISO week so fresh strategy is seen; collapsed after, toggleable anytime.
  * State-driven button disclosure, never details/summary.
  */
@@ -163,7 +163,7 @@ function CoachDisclosure() {
       try {
         if (next) localStorage.setItem("home-coach-week", weekKey());
       } catch {
-        /* storage unavailable — ignore */
+        /* storage unavailable, ignore */
       }
       return next;
     });
@@ -214,7 +214,7 @@ export default function HomeTab() {
   const reduceMotion = useReducedMotion();
   const caps = useMotionCapabilities();
   // Phase 3: low-tier devices (coarse pointer, low RAM, save-data) skip the
-  // stagger/spring choreography entirely — sections paint instantly.
+  // stagger/spring choreography entirely, sections paint instantly.
   const lowMotion = reduceMotion || caps.tier === "low";
 
   const [intelligence, setIntelligence] = useState<Server.PreparationIntelligenceDTO | null>(null);
@@ -278,10 +278,10 @@ export default function HomeTab() {
   useEffect(() => {
     cancelledRef.current = false;
     homePerf.start();
-    // Stage 1 — pulse: cheap header fields, paints first.
+    // Stage 1, pulse: cheap header fields, paints first.
     void (async () => {
       if ((await runScope("pulse", true)) && !cancelledRef.current) {
-        // Stage 2 — tasks + analytics in parallel once the header is up.
+        // Stage 2, tasks + analytics in parallel once the header is up.
         void runScope("tasks", true);
         void runScope("analytics", true);
       }
@@ -291,7 +291,7 @@ export default function HomeTab() {
     };
   }, [reloadKey, runScope]);
 
-  // Phase 4: background revalidation — refresh-merge without skeleton flash
+  // Phase 4: background revalidation, refresh-merge without skeleton flash
   // when data is already on screen; full staged load only on first paint.
   const revalidateAll = useCallback(() => {
     invalidateCache("/api/preparation-intelligence");
@@ -328,7 +328,7 @@ export default function HomeTab() {
       setPracticeIntent({ mode: "quick" });
       setActiveTab("practice");
     };
-    // Long-open tabs go stale (no polling by design) — refresh on return.
+    // Long-open tabs go stale (no polling by design), refresh on return.
     const onVisible = () => {
       if (document.visibilityState === "visible") revalidateAll();
     };
@@ -394,7 +394,7 @@ export default function HomeTab() {
             }
           : prev,
       );
-      toast.error(t(lang, "কাজ আপডেট করা যায়নি — আবার চেষ্টা করুন", "Could not update task — please try again"));
+      toast.error(t(lang, "কাজ আপডেট করা যায়নি, আবার চেষ্টা করুন", "Could not update task, please try again"));
     }
   };
 
@@ -447,7 +447,7 @@ export default function HomeTab() {
     }
   };
 
-  // Global navigation lives in the layout (⌘K, 1–0, ?, Esc) — HomeTab owns
+  // Global navigation lives in the layout (⌘K, 1–0, ?, Esc), HomeTab owns
   // no key handlers; the layout ShortcutsSheet is the single cheat-sheet.
   const skeleton = !pulseReady && !pulseFailed;
 
@@ -462,7 +462,7 @@ export default function HomeTab() {
     setReloadKey((k) => k + 1);
   };
 
-  // P1: fixed product order — Mission > Plan/Performance > Continue >
+  // P1: fixed product order, Mission > Plan/Performance > Continue >
   // Pulse > Actions > Mocks > Coach. No ambient CSS `order` ranking:
   // visual order must match DOM/screen-reader order. Urgency is shown
   // *inside* cards (badges), never by moving cards.
@@ -470,7 +470,7 @@ export default function HomeTab() {
 
   return (
     <div className="study-home flex flex-col gap-5 pb-24 sm:pb-6">
-      {/* ── Page header — hierarchy first: title, target, streak, exam countdown. ── */}
+      {/* ── Page header, hierarchy first: title, target, streak, exam countdown. ── */}
       <motion.header
         initial={lowMotion ? false : "hidden"}
         whileInView={lowMotion ? undefined : "show"}
@@ -535,7 +535,7 @@ export default function HomeTab() {
         <HomeWelcome onStartPractice={startDailyWarmup} />
       </RevealSection>
 
-      {/* ── 1 · Performance Velocity + today's plan — pinned directly under
+      {/* ── 1 · Performance Velocity + today's plan, pinned directly under
              the welcome card (explicit product order, never ambient-ranked). ── */}
       <div className="study-home-analytics grid gap-5 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
         <RevealSection className="min-w-0">
@@ -570,14 +570,14 @@ export default function HomeTab() {
         </RevealSection>
       </div>
 
-      {/* ── 5b · Spotlight MCQ — random database question, rotates across
+      {/* ── 5b · Spotlight MCQ, random database question, rotates across
               all subjects every ~3 minutes. Independent of the intelligence
               scopes so it never blocks on (or blocks) the staged load. ── */}
       <RevealSection className="min-w-0">
         <SpotlightQuiz onPracticeSubject={(subject) => practiceSubject(subject)} />
       </RevealSection>
 
-      {/* ── Non-blocking pulse notice — header always paints; sections show
+      {/* ── Non-blocking pulse notice, header always paints; sections show
            their own skeletons/retries below (Phase 3: no full-page block). ── */}
       {pulseFailed && !intelligence && (
         <div
@@ -586,7 +586,7 @@ export default function HomeTab() {
           style={{ borderColor: "var(--dashboard-danger)" }}
         >
           <p className="text-xs font-bold" style={{ color: "var(--dashboard-text-primary)" }}>
-            {t(lang, "ড্যাশবোর্ড ডেটা লোড করা যায়নি — সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।", "Dashboard data could not be loaded — check your connection and try again.")}
+            {t(lang, "ড্যাশবোর্ড ডেটা লোড করা যায়নি, সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।", "Dashboard data could not be loaded, check your connection and try again.")}
           </p>
           <button onClick={retryAll} className="command-primary-btn !py-2 text-xs">
             <ArrowCounterClockwise className="w-4 h-4" /> {t(lang, "আবার চেষ্টা করুন", "Try again")}
@@ -618,7 +618,7 @@ export default function HomeTab() {
         )}
       </RevealSection>
 
-      {/* ── 1b · Revision due strip — SRS cards needing review today ── */}
+      {/* ── 1b · Revision due strip, SRS cards needing review today ── */}
       {analyticsReady && (intelligence?.flashcardsDue ?? 0) > 0 && (
         <RevealSection className="min-w-0" style={{ order: 1 }}>
           <button
@@ -634,7 +634,7 @@ export default function HomeTab() {
                 {t(lang, `আজ ${intelligence!.flashcardsDue}টি কার্ড রিভিশন বাকি`, `${intelligence!.flashcardsDue} cards due for revision today`)}
               </span>
               <span className="block text-[11px] font-mono text-[var(--dashboard-text-muted)]">
-                {t(lang, "স্পেসড রিপিটিশন — ~৫ মিনিট", "Spaced repetition — ~5 min")}
+                {t(lang, "স্পেসড রিপিটিশন, ~৫ মিনিট", "Spaced repetition, ~5 min")}
               </span>
             </span>
             <span className="flex items-center gap-1 text-xs font-mono font-bold text-[var(--dashboard-primary)] flex-shrink-0">
@@ -696,7 +696,7 @@ export default function HomeTab() {
         )}
       </RevealSection>
 
-      {/* ── 7 · Recent mocks — real accordion button (details/summary with a
+      {/* ── 7 · Recent mocks, real accordion button (details/summary with a
              nested button is keyboard/hostile); collapsed by default. ── */}
       {results.length > 0 && (
         <RevealSection className="scroll-mt-6" style={{ order: 7 }}>
@@ -731,7 +731,7 @@ export default function HomeTab() {
                 <button
                   key={r.id}
                   onClick={() => setActiveTab("progress")}
-                  aria-label={`${r.title} — ${r.score}%${r.score >= 80 ? (lang === "bn" ? ", ভালো" : ", strong") : r.score >= 50 ? (lang === "bn" ? ", মাঝারি" : ", average") : (lang === "bn" ? ", উন্নতি দরকার" : ", needs work")}`}
+                  aria-label={`${r.title}, ${r.score}%${r.score >= 80 ? (lang === "bn" ? ", ভালো" : ", strong") : r.score >= 50 ? (lang === "bn" ? ", মাঝারি" : ", average") : (lang === "bn" ? ", উন্নতি দরকার" : ", needs work")}`}
                   className="w-full flex items-center gap-3 rounded-xl border px-3 py-2.5 text-left hover:border-[var(--dashboard-primary)]/40 transition-colors min-h-[56px]"
                   style={{ background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-muted)" }}
                 >
@@ -765,7 +765,7 @@ export default function HomeTab() {
         </RevealSection>
       )}
 
-      {/* ── 8 · AI Study Coach — inline once per week when fresh, collapsed
+      {/* ── 8 · AI Study Coach, inline once per week when fresh, collapsed
              after (state-driven disclosure, same pattern as recent mocks). ── */}
       <RevealSection id="dashboard-ai-coach" className="scroll-mt-6" style={{ order: 8 }}>
         <CoachDisclosure />

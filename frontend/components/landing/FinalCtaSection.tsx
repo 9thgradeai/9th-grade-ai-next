@@ -17,7 +17,7 @@ const trustPointKeys = [
 
 /**
  * Final conversion moment. Ambient lighting and the closing knowledge-field
- * echo are pure CSS/SVG — no canvas mounts this deep in the page.
+ * echo are pure CSS/SVG, no canvas mounts this deep in the page.
  */
 export default function FinalCtaSection() {
   const t = useT();
@@ -33,16 +33,16 @@ export default function FinalCtaSection() {
     <section ref={ref} className="relative px-4 py-24 sm:px-6 md:py-32" aria-labelledby="final-cta-heading">
       <motion.div className="mx-auto max-w-5xl will-change-transform" style={{ opacity: ctaOpacity, scale: ctaScale }}>
         <Reveal>
-          <div className="relative overflow-hidden rounded-3xl border border-emerald-500/20 bg-gradient-to-b from-emerald-500/[0.06] via-indigo-500/[0.03] to-transparent p-8 text-center shadow-panel md:p-16">
+          <div className="relative overflow-hidden rounded-3xl border border-emerald-500/20 bg-gradient-to-b from-emerald-500/[0.06] via-cyan-500/[0.03] to-transparent p-8 text-center shadow-panel md:p-16">
             {/* Ambient radial light */}
             <AuroraOrb
-              colorClass="bg-violet-500/[0.13]"
+              colorClass="bg-sky-500/[0.13]"
               size="34rem"
               duration={11}
               breatheTo={1.1}
               className="absolute -top-28 left-1/2 -translate-x-1/2"
             />
-            {/* Knowledge-field echo — faint constellation arcs */}
+            {/* Knowledge-field echo, faint constellation arcs */}
             <svg
               aria-hidden="true"
               viewBox="0 0 600 200"
@@ -76,7 +76,7 @@ export default function FinalCtaSection() {
 
               <div className="mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row">
                 <Magnetic>
-                  <Button href="/login?register=true" size="lg" className="glow-border w-full font-semibold sm:w-auto">
+                  <Button href="/register" size="lg" className="glow-border w-full font-semibold sm:w-auto">
                     {t("finalCta.primary")}
                     <ArrowRight className="h-4 w-4" aria-hidden="true" />
                   </Button>

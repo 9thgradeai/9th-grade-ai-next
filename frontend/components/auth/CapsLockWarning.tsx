@@ -5,7 +5,7 @@ import { Keyboard } from "@phosphor-icons/react"
 /**
  * Inline "Caps Lock is on" hint for password fields. Rendered with
  * role="status" so screen readers hear it without stealing focus.
- * Purely advisory — never blocks submission.
+ * Purely advisory, never blocks submission.
  */
 export function CapsLockWarning({ visible }: { visible: boolean }) {
   if (!visible) return null
@@ -15,7 +15,7 @@ export function CapsLockWarning({ visible }: { visible: boolean }) {
       className="mt-1.5 flex items-center gap-1.5 text-xs text-amber-400"
     >
       <Keyboard className="h-3.5 w-3.5" aria-hidden="true" />
-      Caps Lock is on — double-check your password.
+      Caps Lock is on, double-check your password.
     </p>
   )
 }

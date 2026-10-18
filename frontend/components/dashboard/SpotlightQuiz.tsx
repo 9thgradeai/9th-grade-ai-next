@@ -9,17 +9,17 @@ import { getCorrectSet, isAnswerCorrect } from "@/lib/question-type";
 import QuestionRenderer from "./practice/QuestionRenderer";
 
 /**
- * SpotlightQuiz — Home-tab rotating MCQ.
+ * SpotlightQuiz, Home-tab rotating MCQ.
  *
  * Shows ONE random question at a time drawn strictly from the stored
- * question bank (`GET /api/spotlight` — database reads only, never
+ * question bank (`GET /api/spotlight`, database reads only, never
  * generated). The batch arrives round-robin across subjects, and this
  * component walks it in order so the cycle covers ALL subjects:
  *   • auto-rotates to the next question every 3.5 minutes,
  *   • answering locks the question and immediately moves to another one,
  *   • exhausted batches refetch excluding already-shown ids (no repeats).
  */
-const ROTATE_MS = 210_000; // 3.5 min — inside the "every 3–4 minutes" window
+const ROTATE_MS = 210_000; // 3.5 min, inside the "every 3–4 minutes" window
 const REVEAL_MS = 2_500; // feedback pause after answering before advancing
 const BATCH_SIZE = 12;
 const MAX_SEEN_IDS = 500;
@@ -39,7 +39,7 @@ export default function SpotlightQuiz({
   const [multiLocked, setMultiLocked] = useState(false);
   // Judgement-of-Learning: the learner rates confidence BEFORE seeing the
   // verdict, then gets a calibration note (confident + wrong, unsure + right…)
-  // instead of a bare ✓/✗. Optional — grading works without it.
+  // instead of a bare ✓/✗. Optional, grading works without it.
   const [confidence, setConfidence] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -94,7 +94,7 @@ export default function SpotlightQuiz({
     }
   }, [ecosystem, remember, resetQuestionState]);
 
-  // Fresh cycle per ecosystem — never mix another ecosystem's leftovers in.
+  // Fresh cycle per ecosystem, never mix another ecosystem's leftovers in.
   useEffect(() => {
     seenIds.current = [];
     setBatch([]);
@@ -116,7 +116,7 @@ export default function SpotlightQuiz({
       setIndex(i + 1);
       resetQuestionState();
     } else {
-      // Batch exhausted — pull a fresh round-robin batch (seen ids excluded).
+      // Batch exhausted, pull a fresh round-robin batch (seen ids excluded).
       void fetchBatch();
     }
   }, [fetchBatch, resetQuestionState]);
@@ -152,7 +152,7 @@ export default function SpotlightQuiz({
   }, [question, isLocked, isMulti, gradeAndMoveOn]);
 
   const chooseConfidence = useCallback((value: number) => {
-    // Pre-answer rating only — it never locks by itself. Tap an option
+    // Pre-answer rating only, it never locks by itself. Tap an option
     // afterwards for the instant verdict + calibration.
     if (!question || isLocked) return;
     setConfidence((prev) => (prev === value ? null : value));
@@ -169,10 +169,10 @@ export default function SpotlightQuiz({
   const calibrationNote = (q: Server.QuestionDTO, selection: string[], conf: number | null): string => {
     if (conf === null) return "";
     const ok = isAnswerCorrect(q, selection);
-    if (ok && conf >= 75) return " · আত্মবিশ্বাস আর ফল মিলেছে — দারুণ ক্যালিব্রেশন";
-    if (ok) return " · কম আত্মবিশ্বাস, তবু সঠিক — এগিয়ে যান";
-    if (conf >= 75) return " · অতিরিক্ত আত্মবিশ্বাস ছিল — ধারণাটা ঝালিয়ে নিন";
-    return " · ঠিক ধরেছেন, এটা দুর্বল জায়গা — প্র্যাকটিস করুন";
+    if (ok && conf >= 75) return " · আত্মবিশ্বাস আর ফল মিলেছে, দারুণ ক্যালিব্রেশন";
+    if (ok) return " · কম আত্মবিশ্বাস, তবু সঠিক, এগিয়ে যান";
+    if (conf >= 75) return " · অতিরিক্ত আত্মবিশ্বাস ছিল, ধারণাটা ঝালিয়ে নিন";
+    return " · ঠিক ধরেছেন, এটা দুর্বল জায়গা, প্র্যাকটিস করুন";
   };
 
   return (
@@ -252,7 +252,7 @@ export default function SpotlightQuiz({
           {!isLocked && (
             <div className="mt-3 flex flex-wrap items-center gap-1.5" role="group" aria-label="উত্তরের আগে নিশ্চয়তা">
               <span className="text-[11px] font-mono" style={{ color: "var(--dashboard-text-muted)" }}>
-                আগে বলুন — কতটা নিশ্চিত?
+                আগে বলুন, কতটা নিশ্চিত?
               </span>
               {[25, 50, 75, 100].map((v) => (
                 <button
@@ -274,7 +274,7 @@ export default function SpotlightQuiz({
           )}
           {isLocked && (
             <p role="status" className="text-xs font-mono mt-3" style={{ color: "var(--dashboard-text-muted)" }}>
-              {picked.length > 0 && isAnswerCorrect(question, picked) ? "✓ সঠিক!" : picked.length === 0 ? "" : "✗ ভুল — সঠিক উত্তর সবুজে দেখুন"}{calibrationNote(question, picked, confidence)} · পরের প্রশ্ন আসছে…
+              {picked.length > 0 && isAnswerCorrect(question, picked) ? "✓ সঠিক!" : picked.length === 0 ? "" : "✗ ভুল, সঠিক উত্তর সবুজে দেখুন"}{calibrationNote(question, picked, confidence)} · পরের প্রশ্ন আসছে…
             </p>
           )}
 

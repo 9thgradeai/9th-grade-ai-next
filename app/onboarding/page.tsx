@@ -34,9 +34,9 @@ export default function OnboardingPage() {
       router.push("/dashboard");
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Something went wrong.";
-      // Not signed in — send the user to sign in, then they can onboard after.
+      // Not signed in, send the user to sign in, then they can onboard after.
       if (msg.includes("Authentication") || msg.includes("401")) {
-        router.push("/login?register=true");
+        router.push("/register");
         return;
       }
       setMessage(msg);
@@ -54,7 +54,7 @@ export default function OnboardingPage() {
       <div className="glass-card w-full max-w-md rounded-3xl border border-white/10 p-6 shadow-panel sm:p-8">
         <h1 className="font-display text-xl font-semibold text-[var(--foreground)]">Tell us about your goal</h1>
         <p className="mt-1 text-sm text-[var(--text-muted)]">
-          This helps tailor your study plan. Everything here is optional — you can skip and set it later.
+          This helps tailor your study plan. Everything here is optional, you can skip and set it later.
         </p>
 
         <form onSubmit={(e) => { void onSubmit(e); }} className="mt-6 space-y-4">

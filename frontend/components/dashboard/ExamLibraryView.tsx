@@ -35,7 +35,7 @@ export default function ExamLibraryView() {
   const [questions, setQuestions] = useState<QuestionDTO[]>([]);
   const [loadingQuestions, setLoadingQuestions] = useState(false);
   const [drilling, setDrilling] = useState(false);
-  // Discovery controls — client-side search/filter/sort over real taxonomy.
+  // Discovery controls, client-side search/filter/sort over real taxonomy.
   const [paperQuery, setPaperQuery] = useState("");
   const [paperSort, setPaperSort] = useState<"recent" | "questions" | "title">("recent");
 
@@ -121,7 +121,7 @@ export default function ExamLibraryView() {
   if (!loadingTree && categories.length === 0) {
     return (
       <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
-        <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">কোনো পরীক্ষার লাইব্রেরি নেই — BCS ডেটা এখনো ইমপোর্ট করা হয়নি।</p>
+        <p className="text-sm text-[var(--dashboard-text-muted)] font-mono">কোনো পরীক্ষার লাইব্রেরি নেই, BCS ডেটা এখনো ইমপোর্ট করা হয়নি।</p>
       </div>
     );
   }
@@ -141,7 +141,7 @@ export default function ExamLibraryView() {
           <ScrollPractice
             key={`paper-${paper.id}`}
             questions={questions}
-            title={`${paper.titleBn} — স্ক্রল প্র্যাকটিস (${questions.length} প্রশ্ন)`}
+            title={`${paper.titleBn}, স্ক্রল প্র্যাকটিস (${questions.length} প্রশ্ন)`}
             onExit={() => setDrilling(false)}
           />
         </div>
@@ -321,7 +321,7 @@ export default function ExamLibraryView() {
           {/* Exam panel */}
           {activeCategory && (
             <div>
-              <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider mb-2">ঝটপট — {activeCategory.nameBn}</p>
+              <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider mb-2">ঝটপট, {activeCategory.nameBn}</p>
               <div className="flex flex-wrap gap-2">
                 {activeCategory.exams.map((exam) => (
                   <button
@@ -345,7 +345,7 @@ export default function ExamLibraryView() {
             <div>
               <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
                 <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider">
-                  {activeExam.nameBn} — সিলেক্ট করুন
+                  {activeExam.nameBn}, সিলেক্ট করুন
                 </p>
                 <div className="flex items-center gap-2">
                   <label htmlFor="paper-search" className="sr-only">পেপার খুঁজুন</label>

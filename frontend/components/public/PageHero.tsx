@@ -1,8 +1,8 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
 import Button from "@/components/ui/Button";
 import AuroraOrb from "@/components/ui/AuroraOrb";
+import Breadcrumbs, { type BreadcrumbItem } from "@/components/ui/Breadcrumbs";
 
 export type PageHeroAction = {
   href: string;
@@ -16,24 +16,19 @@ export default function PageHero({
   highlight,
   description,
   actions = [],
+  breadcrumbs,
 }: {
   eyebrow: string;
   title: string;
   highlight?: string;
   description?: string;
   actions?: PageHeroAction[];
+  /** Optional explicit trail; defaults to the current pathname. */
+  breadcrumbs?: BreadcrumbItem[];
 }) {
-  const shouldReduceMotion = useReducedMotion();
-
-  const enter = (delay: number) => ({
-    initial: shouldReduceMotion ? false : ({ opacity: 0, y: 14 } as const),
-    animate: { opacity: 1, y: 0 },
-    transition: shouldReduceMotion ? { duration: 0 } : { duration: 0.55, delay },
-  });
-
   return (
     <section className="relative pt-20 pb-14 md:pt-28 md:pb-20 px-4 sm:px-6 overflow-hidden">
-      {/* Ambient aurora orbs — same language as the landing hero */}
+      {/* Ambient aurora orbs, same language as the landing hero */}
       <AuroraOrb
         colorClass="bg-emerald-500/10"
         size="34rem"
@@ -41,7 +36,7 @@ export default function PageHero({
         className="absolute -top-24 left-1/4"
       />
       <AuroraOrb
-        colorClass="bg-indigo-500/10"
+        colorClass="bg-sky-500/10"
         size="26rem"
         blur="110px"
         duration={14}
@@ -51,13 +46,14 @@ export default function PageHero({
       />
 
       <div className="relative max-w-4xl mx-auto text-center">
-        <motion.p {...enter(0)} className="section-eyebrow justify-center mb-4">
+        <Breadcrumbs items={breadcrumbs} className="mb-6" />
+        <p className="page-hero-rise section-eyebrow justify-center mb-4" style={{ animationDelay: "0s" }}>
           <span className="text-emerald-400" aria-hidden="true">{"//"}</span>
           {eyebrow}
-        </motion.p>
-        <motion.h1
-          {...enter(0.05)}
-          className="font-display text-4xl sm:text-5xl md:text-6xl font-semibold text-white leading-[1.05] tracking-tight text-balance break-words"
+        </p>
+        <h1
+          className="page-hero-rise font-display text-4xl sm:text-5xl md:text-6xl font-semibold text-white leading-[1.05] tracking-tight text-balance break-words"
+          style={{ animationDelay: "0.05s" }}
         >
           {title}
           {highlight ? (
@@ -66,19 +62,19 @@ export default function PageHero({
               <span className="text-gradient">{highlight}</span>
             </>
           ) : null}
-        </motion.h1>
+        </h1>
         {description ? (
-          <motion.p
-            {...enter(0.12)}
-            className="mt-5 text-base sm:text-lg text-[var(--text-muted)] max-w-2xl mx-auto leading-relaxed"
+          <p
+            className="page-hero-rise mt-5 text-base sm:text-lg text-[var(--text-muted)] max-w-2xl mx-auto leading-relaxed"
+            style={{ animationDelay: "0.12s" }}
           >
             {description}
-          </motion.p>
+          </p>
         ) : null}
         {actions.length > 0 ? (
-          <motion.div
-            {...enter(0.18)}
-            className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4"
+          <div
+            className="page-hero-rise mt-8 flex flex-col sm:flex-row items-center justify-center gap-4"
+            style={{ animationDelay: "0.18s" }}
           >
             {actions.map((action) => (
               <Button
@@ -95,7 +91,7 @@ export default function PageHero({
                 {action.label}
               </Button>
             ))}
-          </motion.div>
+          </div>
         ) : null}
       </div>
     </section>

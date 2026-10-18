@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 
 // Sprint 9: registers the hand-rolled service worker (assets/pwa/sw.js,
-// copied to public/sw.js at build time). Production only — registering in
+// copied to public/sw.js at build time). Production only, registering in
 // dev would serve stale chunks across hot reloads.
 export default function ServiceWorkerRegister() {
   useEffect(() => {

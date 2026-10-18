@@ -141,7 +141,7 @@ export default function WrongAnswerNotebookTab() {
     return () => { cancelled = true; };
   }, [loadStats, loadMistakes]);
 
-  // Consume cross-tab mistake intent (from Command Center) — filter by subject.
+  // Consume cross-tab mistake intent (from Command Center), filter by subject.
   useEffect(() => {
     if (mistakeIntent?.subject && mistakeIntent.subject !== filterSubject) {
       queueMicrotask(() => {
@@ -365,7 +365,7 @@ export default function WrongAnswerNotebookTab() {
     const stillErrors = answered.filter((a) => !a.correct).length;
     const score = total > 0 ? Math.round((correct / total) * 100) : 0;
     const stayPositive = stillErrors > 0
-      ? `${stillErrors}টি আবার ভুল হয়েছে — ব্যাখ্যা ভালো করে পড়ে আবার চেষ্টা করুন।`
+      ? `${stillErrors}টি আবার ভুল হয়েছে, ব্যাখ্যা ভালো করে পড়ে আবার চেষ্টা করুন।`
       : "চমৎকার! সব প্রশ্ন ঠিক করেছেন। ভুলগুলো ধীরে ধীরে উন্নত হচ্ছে।";
 
     return (
@@ -479,7 +479,7 @@ export default function WrongAnswerNotebookTab() {
 
   return (
     <div className="space-y-6">
-      {/* Sprint 7: display-voice header — matches Home. */}
+      {/* Sprint 7: display-voice header, matches Home. */}
       <div>
         <p className="command-eyebrow">Mistakes</p>
         <h1 className="font-display text-xl font-semibold tracking-tight mt-1" style={{ color: "var(--dashboard-text-primary)" }}>
@@ -802,7 +802,7 @@ export default function WrongAnswerNotebookTab() {
                         <span
                           className="text-[10px] px-1.5 py-0.5 rounded border font-mono"
                           style={{ color: "var(--dashboard-warning)", borderColor: "color-mix(in srgb, var(--dashboard-warning) 25%, transparent)", background: "var(--dashboard-warning-subtle)" }}
-                          title={`${m.latestErrorType} — latest mistake classification`}
+                          title={`${m.latestErrorType}, latest mistake classification`}
                         >
                           {ERROR_TYPE_LABELS[m.latestErrorType] ?? m.latestErrorType}
                         </span>
@@ -925,7 +925,7 @@ export default function WrongAnswerNotebookTab() {
           transition={{ delay: 0.3 }}
           className="text-center text-xs text-[var(--dashboard-text-muted)] font-mono"
         >
-          You&apos;ve mastered {mastered} question{mastered !== 1 ? "s" : ""} — keep going, you&apos;re improving!
+          You&apos;ve mastered {mastered} question{mastered !== 1 ? "s" : ""}, keep going, you&apos;re improving!
         </motion.p>
       )}
     </div>

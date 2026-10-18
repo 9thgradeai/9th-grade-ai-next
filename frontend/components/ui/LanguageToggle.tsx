@@ -1,14 +1,13 @@
 "use client";
 
 import { useContext } from "react";
-import { motion, useReducedMotion } from "framer-motion";
 import { Translate } from "@phosphor-icons/react";
 import { LanguageContext, type Language } from "@/lib/lang-ctx";
 import { LANGUAGE_KEY } from "@/lib/lang-key";
 
 export default function LanguageToggle({ className }: { className?: string }) {
   const ctx = useContext(LanguageContext);
-  // Safe fallback for tests / SSR without provider — defaults to en and no-ops toggle gracefully
+  // Safe fallback for tests / SSR without provider, defaults to en and no-ops toggle gracefully
   const lang: Language = ctx?.lang ?? "en";
   const toggleLang = ctx?.toggleLang ?? (() => {
     try {
@@ -20,23 +19,19 @@ export default function LanguageToggle({ className }: { className?: string }) {
     } catch { /* ignore */ }
   });
 
-  const reduceMotion = useReducedMotion();
-
   return (
-    <motion.button
-      whileHover={reduceMotion ? undefined : { scale: 1.05 }}
-      whileTap={reduceMotion ? undefined : { scale: 0.95 }}
+    <button
+      type="button"
       onClick={toggleLang}
       className={
         className ??
-        "relative min-h-[44px] px-2.5 flex items-center gap-1.5 text-[var(--dashboard-text-muted)] hover:text-[var(--dashboard-primary)] transition-colors rounded-lg hover:bg-emerald-500/5 font-mono text-xs uppercase tracking-wider"
+        "relative min-h-[44px] px-2.5 flex items-center gap-1.5 text-[var(--dashboard-text-muted)] hover:text-[var(--dashboard-primary)] hover:scale-[1.05] active:scale-95 transition-all rounded-lg hover:bg-emerald-500/5 font-mono text-xs uppercase tracking-wider"
       }
       title={lang === "bn" ? "Switch to English" : "বাংলায় টগল করুন"}
       aria-label={lang === "bn" ? "Switch interface language to English" : "ইন্টারফেস ভাষা বাংলায় পরিবর্তন করুন"}
-      type="button"
     >
       <Translate className="w-4 h-4" aria-hidden="true" />
       <span aria-hidden="true">{lang === "bn" ? "বাং" : "EN"}</span>
-    </motion.button>
+    </button>
   );
 }

@@ -1,7 +1,7 @@
 /* Server-only web-search helper for AI endpoints.
    Uses Tavily's plain REST API (no SDK dependency) to fetch top results for a
    query. Returns a formatted, injectable grounding block, or "" when no key is
-   set or the search fails — callers fall back to model-only answers. */
+   set or the search fails, callers fall back to model-only answers. */
 
 const TAVILY_URL = "https://api.tavily.com/search";
 const MAX_RESULTS = 5;

@@ -4,7 +4,7 @@ import { useState } from "react"
 import { motion } from "framer-motion"
 import { ArrowRight } from "@phosphor-icons/react"
 
-/** Google "G" mark — inline so we don't add an icon dependency. */
+/** Google "G" mark, inline so we don't add an icon dependency. */
 function GoogleIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 48 48" className={className} aria-hidden="true">
@@ -29,9 +29,9 @@ function GoogleIcon({ className }: { className?: string }) {
 }
 
 /**
- * Candidate identification — two clear paths with exam-hall language.
+ * Candidate identification, two clear paths with exam-hall language.
  * Social auth above, credential options below. No 3D tilt, no serial
- * numbers on the choice cards — clean, decisive.
+ * numbers on the choice cards, clean, decisive.
  */
 export function AuthChoice({
   onChoose,

@@ -12,7 +12,7 @@ import { SkeletonDeck } from "@/components/ui/Skeleton";
 /* --------------------------------------------------------------------------
    A shared "current time" clock backed by useSyncExternalStore. Reading the
    time through this hook means we never call Date.now() during render, never
-   access a ref during render, and never call setState inside an effect — all
+   access a ref during render, and never call setState inside an effect, all
    of which the React Compiler lint rules forbid.
    -------------------------------------------------------------------------- */
 let nowValue = typeof window === "undefined" ? 0 : Date.now();
@@ -66,7 +66,7 @@ function sessionTitle(session: SessionKind): string {
 // ── Learning phases ─────────────────────────────────────
 // learn: brand-new cards the student has never reviewed.
 // practice: seen cards still being acquired (due or low interval).
-// mastered: interval ≥ 21 days — the SM-2 "graduated" threshold.
+// mastered: interval ≥ 21 days, the SM-2 "graduated" threshold.
 type Phase = "learn" | "practice" | "mastered";
 type ExamFilter = "ALL" | "BCS" | "Bank";
 type Card = Flashcard & { isNew: boolean; examRelevance?: string[] | null };
@@ -98,7 +98,7 @@ export default function FlashcardsTab() {
   const [sessionTotal, setSessionTotal] = useState(0);
   const [sessionDone, setSessionDone] = useState(false);
   const [reviewQueue, setReviewQueue] = useState<Card[]>([]);
-  // Decks come exclusively from the database — there is no static fallback.
+  // Decks come exclusively from the database, there is no static fallback.
   // Studying unauthenticated placeholder cards used to silently drop every
   // review (their string ids never reach the server), so an empty/error
   // state is shown instead of fake studyable decks.
@@ -148,7 +148,7 @@ export default function FlashcardsTab() {
         setIsLoading(false);
       } catch {
         if (cancelled) return;
-        setLoadError("ফ্ল্যাশকার্ড লোড করা যায়নি — আবার চেষ্টা করুন");
+        setLoadError("ফ্ল্যাশকার্ড লোড করা যায়নি, আবার চেষ্টা করুন");
         setIsLoading(false);
       }
     })();
@@ -235,7 +235,7 @@ export default function FlashcardsTab() {
       setSessionDone(false);
       if (!syncFailureNotified.current) {
         syncFailureNotified.current = true;
-        toast.error("রিভিউ সংরক্ষণ করা যায়নি — আবার চেষ্টা করুন");
+        toast.error("রিভিউ সংরক্ষণ করা যায়নি, আবার চেষ্টা করুন");
       }
     };
     setSessionStats((prev) => ({
@@ -299,7 +299,7 @@ export default function FlashcardsTab() {
         });
     } else if (!syncFailureNotified.current) {
       syncFailureNotified.current = true;
-      toast.error("রিভিউ সংরক্ষণ করা যায়নি — অগ্রগতি সীমিত হতে পারে");
+      toast.error("রিভিউ সংরক্ষণ করা যায়নি, অগ্রগতি সীমিত হতে পারে");
     }
   };
 
@@ -322,7 +322,7 @@ export default function FlashcardsTab() {
 
   return (
     <div className="space-y-6">
-      {/* Sprint 7: display-voice page header — matches Home. */}
+      {/* Sprint 7: display-voice page header, matches Home. */}
       <div>
         <p className="command-eyebrow">Decks</p>
         <h1 className="font-display text-xl font-semibold tracking-tight mt-1" style={{ color: "var(--dashboard-text-primary)" }}>
@@ -416,7 +416,7 @@ export default function FlashcardsTab() {
           className="command-card p-10 text-center"
         >
           <p className="command-eyebrow mb-2">Session complete</p>
-          <h3 className="font-display text-xl font-bold text-[var(--text-primary)] mb-4">{sessionTitle(session)} — শেষ!</h3>
+          <h3 className="font-display text-xl font-bold text-[var(--text-primary)] mb-4">{sessionTitle(session)}, শেষ!</h3>
           <div className="flex items-center justify-center gap-6 text-sm font-mono text-[var(--dashboard-text-muted)] mb-6">
             <span>Reviewed: {sessionStats.reviewed}</span>
             <span>Correct: {sessionStats.correct}</span>
@@ -472,7 +472,7 @@ export default function FlashcardsTab() {
             <span>Accuracy: {sessionStats.reviewed > 0 ? Math.round((sessionStats.correct / sessionStats.reviewed) * 100) : 0}%</span>
           </div>
 
-          {/* Flashcard — two faces with hidden backsides, so the answer
+          {/* Flashcard, two faces with hidden backsides, so the answer
               reads normally instead of mirrored after the flip. */}
           <AnimatePresence mode="wait">
             {currentCard && reviewQueue.length > 0 && (
@@ -488,7 +488,7 @@ export default function FlashcardsTab() {
                 <div
                   role="button"
                   tabIndex={0}
-                  aria-label={isFlipped ? "উত্তর দেখানো হচ্ছে — প্রশ্নে ফিরে যেতে ক্লিক করুন" : "প্রশ্ন — উত্তর দেখতে ক্লিক বা Enter চাপুন"}
+                  aria-label={isFlipped ? "উত্তর দেখানো হচ্ছে, প্রশ্নে ফিরে যেতে ক্লিক করুন" : "প্রশ্ন, উত্তর দেখতে ক্লিক বা Enter চাপুন"}
                   aria-pressed={isFlipped}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") {
@@ -504,7 +504,7 @@ export default function FlashcardsTab() {
                     transition: "transform 0.45s ease",
                   }}
                 >
-                  {/* Front — question */}
+                  {/* Front, question */}
                   <div
                     aria-hidden={isFlipped}
                     className="absolute inset-0 rounded-2xl border-2 bg-subtle border-[var(--dashboard-border-muted)] flex items-center justify-center p-6"
@@ -533,7 +533,7 @@ export default function FlashcardsTab() {
                       )}
                     </div>
                   </div>
-                  {/* Back — answer (pre-rotated so it reads correctly) */}
+                  {/* Back, answer (pre-rotated so it reads correctly) */}
                   <div
                     aria-hidden={!isFlipped}
                     className="absolute inset-0 rounded-2xl border-2 bg-[var(--dashboard-primary-subtle)] border-[var(--primary)]/30 flex items-center justify-center p-6"
@@ -563,7 +563,7 @@ export default function FlashcardsTab() {
             <div className="glass-card rounded-2xl border border-terminal-border p-10 text-center">
               <p className="text-sm text-[var(--dashboard-text-muted)] font-mono mb-1">$ deck empty</p>
               <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">
-                No cards due in this deck right now — come back later or reset the session.
+                No cards due in this deck right now, come back later or reset the session.
               </p>
             </div>
           )}
@@ -637,7 +637,7 @@ export default function FlashcardsTab() {
 }
 
 /* --------------------------------------------------------------------------
-   DeckPicker — exam filter + learning-phase tabs + per-deck progress.
+   DeckPicker, exam filter + learning-phase tabs + per-deck progress.
    -------------------------------------------------------------------------- */
 function DeckPicker({
   decks,

@@ -9,7 +9,7 @@ import {
 import { useMotionCapabilities } from "@/lib/motion/device";
 
 /**
- * Magnetic CTA wrapper — the child drifts a few pixels toward the cursor.
+ * Magnetic CTA wrapper, the child drifts a few pixels toward the cursor.
  * Max displacement ~5px; disabled on touch, reduced motion, and low-tier
  * devices. Pure MotionValues: no re-renders while tracking the pointer.
  */

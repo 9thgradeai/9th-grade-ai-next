@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode, type CSSProperties } from "react";
 
-// Below-fold fade-up reveal driven by IntersectionObserver + CSS — no motion
+// Below-fold fade-up reveal driven by IntersectionObserver + CSS, no motion
 // runtime. Same props/API as the previous framer-motion version so the five
 // landing sections using it need no changes. Respects the global
 // prefers-reduced-motion kill-switch in globals.css (transitions collapse to

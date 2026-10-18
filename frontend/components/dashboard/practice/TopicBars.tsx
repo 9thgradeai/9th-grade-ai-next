@@ -9,7 +9,7 @@ export type TopicBarItem = {
 };
 
 /**
- * TopicBars — per-topic accuracy breakdown for result panels.
+ * TopicBars, per-topic accuracy breakdown for result panels.
  * Aggregates items by subject › topic, worst-first, top 6.
  * Shared by Quick / Mock / Custom results.
  */

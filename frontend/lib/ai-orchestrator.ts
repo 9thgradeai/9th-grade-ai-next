@@ -30,7 +30,7 @@ export const ORCHESTRATOR_MODES: OrchestratorMeta[] = [
     id: "tutor",
     labelBn: "টিউটর",
     labelEn: "Tutor",
-    descBn: "উত্তর না দিয়ে প্রশ্ন করে শেখায় — Socratic পদ্ধতি।",
+    descBn: "উত্তর না দিয়ে প্রশ্ন করে শেখায়, Socratic পদ্ধতি।",
     endpoint: "/api/ai/tutor",
     socratic: true,
     voice: false,
@@ -86,7 +86,7 @@ export function ghostPrompt(mode: OrchestratorMode): string {
     case "mock":
       return "আমার দুর্বল টপিক থেকে ৫টি MCQ বানাও…";
     case "voice":
-      return "বলো — আজ কী পড়বো?";
+      return "বলো, আজ কী পড়বো?";
     case "coach":
       return "আমার ডেটা দেখে আজকের প্ল্যান দাও…";
     default:

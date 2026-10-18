@@ -5,7 +5,7 @@
 // practice / revision / exam action). Action chips execute allowlisted UI
 // actions: switching dashboard tabs, opening a question in the practice drill
 // overlay, or refreshing the home feed. The leading text block is omitted
-// here — the chat bubble already renders it as prose.
+// here, the chat bubble already renders it as prose.
 
 import { useMemo } from "react";
 import { motion } from "framer-motion";
@@ -56,7 +56,7 @@ function useBlockDispatcher(onClose?: () => void) {
       }
       if (action.type === "open_question") {
         // The PracticeDrillOverlay owns this surface: it listens for the
-        // question id and loads it directly. No tab switch here — switching
+        // question id and loads it directly. No tab switch here, switching
         // rows under a mounted drill would tear down the chord overlay.
         const qid = action.params?.questionId as number | undefined;
         if (qid) {
@@ -67,7 +67,7 @@ function useBlockDispatcher(onClose?: () => void) {
       }
       // Practice / mock-exam actions that carry a concrete, server-minted
       // question set launch the drill overlay directly instead of merely
-      // switching tabs (the LLM never picks the questions — the session
+      // switching tabs (the LLM never picks the questions, the session
       // tools injected the ids, see backend/ai/agent/response.ts).
       if (action.type === "practice" || action.type === "mock_exam") {
         const ids = Array.isArray(action.params?.questionIds)

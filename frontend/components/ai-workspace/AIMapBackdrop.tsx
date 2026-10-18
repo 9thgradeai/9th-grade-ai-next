@@ -1,7 +1,7 @@
 "use client";
 
 // World-map backdrop rendered INSIDE the AI workspace modal, so the AI
-// Assistant always shows the same ambient map as the user dashboard — on
+// Assistant always shows the same ambient map as the user dashboard, on
 // every viewport, regardless of what sits underneath the modal overlay.
 // Decorative only: pointer-transparent, hidden in forced-colors mode,
 // motion-guarded by the shared world-map keyframes. Asset: world-map.ts.

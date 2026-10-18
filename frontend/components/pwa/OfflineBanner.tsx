@@ -21,7 +21,7 @@ function getServerSnapshot(): boolean {
   return true;
 }
 
-/** Offline indicator — pairs with the registered service worker so users
+/** Offline indicator, pairs with the registered service worker so users
  *  know cached content is being served instead of failing silently. */
 export default function OfflineBanner() {
   const online = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);

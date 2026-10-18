@@ -1,11 +1,11 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "9Th-Grade AI — Free AI-powered exam prep for Bangladesh";
+export const alt = "9Th-Grade AI, Free AI-powered exam prep for Bangladesh";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 // The official brand mark (knowledge constellation) rebuilt with satori-safe
-// primitives — satori does not support raw <svg>, so the geometry from
+// primitives, satori does not support raw <svg>, so the geometry from
 // /assets/favicon.svg is approximated with positioned divs.
 function BrandMark({ size: px }: { size: number }) {
   const c = px / 2;

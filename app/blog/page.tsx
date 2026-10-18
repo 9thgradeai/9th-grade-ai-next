@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import { BookOpen, ArrowUpRight, CalendarDots, Clock } from "@phosphor-icons/react/dist/ssr";
 import PublicShell from "@/components/public/PublicShell";
@@ -7,12 +8,12 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import StatusPill from "@/components/ui/StatusPill";
 import { BLOG_POSTS } from "@/lib/data/blog";
 
-export const metadata: Metadata = {
-  alternates: { canonical: "/blog" },
-  title: "Blog & Tips — 9Th-Grade AI",
+export const metadata: Metadata = pageMeta({
+  path: "/blog",
+  title: "Blog & Tips | 9Th-Grade AI",
   description:
     "Study strategies, exam insights, and preparation tips from the 9Th-Grade AI team for BCS, Bank, and Teacher recruitment aspirants.",
-};
+});
 
 const posts = BLOG_POSTS.map((post) => ({
   tag: post.tag,
@@ -30,8 +31,8 @@ export default function BlogPage() {
         eyebrow="BLOG & TIPS"
         title="Smarter Study,"
         highlight="Every Single Day"
-        description="Tactical guides and exam insights distilled from how successful aspirants actually prepare — no fluff, just systems that work."
-        actions={[{ href: "/login?register=true", label: "Start Free Preparation" }]}
+        description="Tactical guides and exam insights distilled from how successful aspirants actually prepare, no fluff, just systems that work."
+        actions={[{ href: "/register", label: "Start Free Preparation" }]}
       />
 
       <section className="py-16 md:py-24 px-4 sm:px-6">
@@ -84,7 +85,7 @@ export default function BlogPage() {
           <div className="mt-12 text-center">
             <p className="inline-flex items-center gap-2 text-sm text-zinc-500 font-mono">
               <BookOpen className="w-4 h-4 text-emerald-400" aria-hidden="true" />
-              New guides published weekly. Coming soon — full article pages.
+              New guides published weekly. Coming soon, full article pages.
             </p>
           </div>
         </div>

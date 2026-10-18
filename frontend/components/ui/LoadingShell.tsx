@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
-/* ── Compact inline loading panel — 9G circle + slim progress.
+/* ── Compact inline loading panel, 9G circle + slim progress.
      Used at route boundaries (app/loading.tsx, app/dashboard/loading.tsx),
      dashboard auth gate, and lazy tab chunk fallback. */
 
@@ -53,7 +53,7 @@ export function LoadingShell({
           />
           <motion.div
             aria-hidden="true"
-            className="absolute inset-[18%] rounded-full bg-gradient-to-br from-emerald-400 via-cyan-400 to-violet-400 blur-[0.5px]"
+            className="absolute inset-[18%] rounded-full bg-gradient-to-br from-emerald-400 via-cyan-400 to-sky-400 blur-[0.5px]"
             animate={{ scale: [1, 1.06, 1] }}
             transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
           />
@@ -68,7 +68,7 @@ export function LoadingShell({
           </div>
           <div className="mt-2 h-1 overflow-hidden rounded-full bg-white/10">
             <motion.div
-              className="h-full rounded-full bg-gradient-to-r from-emerald-400 via-cyan-400 to-violet-400"
+              className="h-full rounded-full bg-gradient-to-r from-emerald-400 via-cyan-400 to-sky-400"
               animate={{ width: `${progress}%` }}
               transition={{ ease: [0.22, 1, 0.36, 1], duration: 0.2 }}
             />

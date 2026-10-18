@@ -29,7 +29,7 @@ type HeroResult = {
 /**
  * Production guard: structured agent output streams as raw JSON mid-flight.
  * Anything that parses/looks like a blocks payload must never render as
- * prose — the typed cards below are the only rendering surface.
+ * prose, the typed cards below are the only rendering surface.
  */
 function looksLikeBlocksPayload(text: string): boolean {
   const trimmed = text.trim();
@@ -63,15 +63,15 @@ function greeting(lang: "bn" | "en", name?: string | null): string {  const hour
 }
 
 /**
- * AI Hero command bar (Phase 2) — the conversational entry point of Home.
+ * AI Hero command bar (Phase 2), the conversational entry point of Home.
  * Asks the `home_brief` agent turn (grounded on todayPlan/exam/mistakes/
  * revision/mockPerformance slices) and streams prose + executable blocks.
- * Suggested chips are deterministic, built from live Home signals — the LLM
+ * Suggested chips are deterministic, built from live Home signals, the LLM
  * never invents the numbers, it only narrates the next step.
  *
  * With `autoBrief`, the hero drafts the brief itself once per distinct
  * signals snapshot (aborted on unmount / superseded by manual asks), so the
- * summary — not an empty input — is what returning users see first.
+ * summary, not an empty input, is what returning users see first.
  */
 export default function HomeHero({
   signals,
@@ -80,7 +80,7 @@ export default function HomeHero({
 }: {
   signals: HomeHeroSignals;
   autoBrief?: boolean;
-  /** Bare mode: no card chrome — embeds inside TodayMission so Home speaks
+  /** Bare mode: no card chrome, embeds inside TodayMission so Home speaks
    *  with one mission voice instead of two stacked hero cards. */
   bare?: boolean;
 }) {
@@ -166,15 +166,15 @@ export default function HomeHero({
   const chips = useCallback((): { label: string; prompt: string }[] => {
     const out: { label: string; prompt: string }[] = [];
     // Elicit-first: research (ILAD 2026) shows asking the learner beats
-    // telling — this chip makes the coach quiz instead of lecture.
+    // telling, this chip makes the coach quiz instead of lecture.
     const quizTarget = signals.weakTopic ?? signals.weakSubject;
     if (quizTarget) {
       out.push({
         label: t(lang, "আমাকে একটা প্রশ্ন করো", "Quiz me with one question"),
         prompt: t(
           lang,
-          `${quizTarget} থেকে আমাকে মাত্র একটা সংক্ষিপ্ত প্রশ্ন করো — উত্তর বা ব্যাখ্যা দিও না, আমার উত্তরের অপেক্ষা করো।`,
-          `Ask me exactly ONE short question on ${quizTarget} — give no answer or explanation, wait for my reply.`,
+          `${quizTarget} থেকে আমাকে মাত্র একটা সংক্ষিপ্ত প্রশ্ন করো, উত্তর বা ব্যাখ্যা দিও না, আমার উত্তরের অপেক্ষা করো।`,
+          `Ask me exactly ONE short question on ${quizTarget}, give no answer or explanation, wait for my reply.`,
         ),
       });
     }
@@ -223,7 +223,7 @@ export default function HomeHero({
 
   const chipList = chips();
 
-  // Sprint 3 calm motion: no own entrance animation — the parent
+  // Sprint 3 calm motion: no own entrance animation, the parent
   // RevealSection owns the single section fade. (Previously a second
   // motion wrapper stacked on top of it.)
   return (
@@ -256,12 +256,12 @@ export default function HomeHero({
                 {greeting(lang, user?.name.split(" ")[0])} ✦
               </p>
               <p className="text-xs truncate" style={{ color: "var(--dashboard-text-muted)" }}>
-                {t(lang, "জিজ্ঞেস করো — আজকের সেরা পরবর্তী ধাপ বলে দিচ্ছি", "Ask — I'll name your best next step today")}
+                {t(lang, "জিজ্ঞেস করো, আজকের সেরা পরবর্তী ধাপ বলে দিচ্ছি", "Ask, I'll name your best next step today")}
               </p>
             </>
           ) : (
             <p className="text-xs truncate" style={{ color: "var(--dashboard-text-muted)" }}>
-              {t(lang, "জিজ্ঞেস করো — আজকের সেরা পরবর্তী ধাপ বলে দিচ্ছি", "Ask — I'll name your best next step today")}
+              {t(lang, "জিজ্ঞেস করো, আজকের সেরা পরবর্তী ধাপ বলে দিচ্ছি", "Ask, I'll name your best next step today")}
             </p>
           )}
         </div>
@@ -288,7 +288,7 @@ export default function HomeHero({
             if (e.key === "Escape" && running) stop();
           }}
           disabled={running}
-          placeholder={t(lang, "যেমন: ২০ মিনিট আছে, কী পড়ব?", "E.g. I have 20 minutes — what should I study?")}
+          placeholder={t(lang, "যেমন: ২০ মিনিট আছে, কী পড়ব?", "E.g. I have 20 minutes, what should I study?")}
           autoComplete="off"
           className="min-w-0 flex-1 rounded-xl border px-4 py-2.5 min-h-[44px] text-sm outline-none transition-colors focus:border-[var(--dashboard-primary)] disabled:opacity-60"
           style={{
@@ -363,8 +363,8 @@ export default function HomeHero({
           {result && (
             <p className="pt-1 font-mono text-[10px]" style={{ color: "var(--dashboard-text-muted)" }}>
               {result.provider === "mock"
-                ? t(lang, "ডেমো উৎস — AI কী সেট করলে লাইভ হবে", "Demo source — set an AI key to go live")
-                : t(lang, "এআই-নির্দেশনা — প্রশ্নব্যাংক দিয়ে যাচাই করুন", "AI guidance — verify with the question bank")}
+                ? t(lang, "ডেমো উৎস, AI কী সেট করলে লাইভ হবে", "Demo source, set an AI key to go live")
+                : t(lang, "এআই-নির্দেশনা, প্রশ্নব্যাংক দিয়ে যাচাই করুন", "AI guidance, verify with the question bank")}
             </p>
           )}
         </div>

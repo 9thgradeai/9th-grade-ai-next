@@ -1,5 +1,5 @@
 // Centralized authentication experience state machine.
-// The whole flow is driven by a single explicit stage — there are no free-floating
+// The whole flow is driven by a single explicit stage, there are no free-floating
 // booleans that can contradict each other. The avatar's expression/text/animation
 // are derived from that stage plus transient signals (busy / error / focus).
 //
@@ -12,7 +12,7 @@ export type AuthSuccessKind = "login" | "signup"
 
 export type FocusField = "name" | "email" | "password" | "confirm" | null
 
-// The avatar companion — expression + copy are mapped below, never scattered
+// The avatar companion, expression + copy are mapped below, never scattered
 // across components.
 export type AuthAvatarState =
   | "hidden"
@@ -79,7 +79,7 @@ export const avatarStates: Record<AuthAvatarState, AvatarConfig> = {
   },
   signup: {
     expression: { eyes: "open", mouth: "smile", brows: "curious", blush: false },
-    message: "Form fill-up — takes under a minute.",
+    message: "Form fill-up, takes under a minute.",
     sparkle: false,
     headTilt: 2,
   },
@@ -90,13 +90,13 @@ export const avatarStates: Record<AuthAvatarState, AvatarConfig> = {
   },
   weak: {
     expression: { eyes: "open", mouth: "flat", brows: "concerned", blush: false, gaze: "down" },
-    message: "Hmm — that password needs a little more.",
+    message: "Hmm, that password needs a little more.",
     sparkle: false,
     headTilt: -4,
   },
   moderate: {
     expression: { eyes: "open", mouth: "small", brows: "curious", blush: false, gaze: "down" },
-    message: "Getting there — keep going.",
+    message: "Getting there, keep going.",
     sparkle: false,
     headTilt: 1,
   },
@@ -108,7 +108,7 @@ export const avatarStates: Record<AuthAvatarState, AvatarConfig> = {
   },
   excellent: {
     expression: { eyes: "happy", mouth: "wide", brows: "calm", blush: true, gaze: "down" },
-    message: "Excellent — a fortress of a password.",
+    message: "Excellent, a fortress of a password.",
     sparkle: true,
     headTilt: -2,
   },

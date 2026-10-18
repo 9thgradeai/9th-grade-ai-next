@@ -5,7 +5,7 @@ import { Crosshair } from "@phosphor-icons/react";
 import { useLanguage, t } from "@/lib/lang-ctx";
 
 /**
- * Sprint 3 — the single Home empty pattern. One surface, one eyebrow voice,
+ * Sprint 3, the single Home empty pattern. One surface, one eyebrow voice,
  * one primary action. TodayMission's onboarding and future empty slots share
  * this shell instead of bespoke markup per section.
  */

@@ -8,7 +8,7 @@ import { EASE_OUT_EXPO } from "@/lib/motion/variants";
  * Interactive knowledge graph for the Intelligence section (desktop).
  * SVG supplies the connective tissue; real HTML buttons supply the nodes so
  * hover AND keyboard focus drive the same illumination state. The whole
- * canvas is decorative — the accessible narrative lives in the section's
+ * canvas is decorative, the accessible narrative lives in the section's
  * semantic markup (vertical map on mobile, sr-only summary on desktop).
  */
 

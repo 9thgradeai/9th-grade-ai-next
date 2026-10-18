@@ -231,15 +231,15 @@ export default function ScrollPractice({
                 <div className="mt-3 flex items-center gap-2 text-xs font-mono flex-wrap">
                   {qFb?.justMastered ? (
                     <span className="px-2 py-0.5 rounded bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] border border-[var(--primary)]/40">
-                      এই প্রশ্নটি এখন আয়ত্ত — চমৎকার!
+                      এই প্রশ্নটি এখন আয়ত্ত, চমৎকার!
                     </span>
                   ) : isCorrect ? (
                     <span className="px-2 py-0.5 rounded bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] border border-[var(--primary)]/25">
-                      সঠিক হয়েছে — অগ্রগতি হয়েছে।
+                      সঠিক হয়েছে, অগ্রগতি হয়েছে।
                     </span>
                   ) : (
                     <span className="px-2 py-0.5 rounded bg-[var(--dashboard-warning-subtle)] text-[var(--dashboard-warning)] border border-amber-500/25">
-                      ভুল হয়েছে — সঠিক উত্তর সবুজে চিহ্নিত।
+                      ভুল হয়েছে, সঠিক উত্তর সবুজে চিহ্নিত।
                     </span>
                   )}
 

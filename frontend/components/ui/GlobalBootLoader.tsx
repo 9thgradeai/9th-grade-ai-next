@@ -19,7 +19,7 @@ export default function GlobalBootLoader() {
   const startRef = useRef<number>(0);
   const allowedToDismissRef = useRef(false);
 
-  // every hard navigation shows boot — no sessionStorage skip
+  // every hard navigation shows boot, no sessionStorage skip
   useEffect(() => {
     if (typeof document !== "undefined" && document.readyState === "complete") return;
     let shown = false;
@@ -151,7 +151,7 @@ export default function GlobalBootLoader() {
               {/* core glow */}
               <motion.div
                 aria-hidden="true"
-                className="absolute inset-[28%] rounded-full bg-gradient-to-br from-emerald-400 via-cyan-400 to-violet-400 blur-[1px]"
+                className="absolute inset-[28%] rounded-full bg-gradient-to-br from-emerald-400 via-cyan-400 to-sky-400 blur-[1px]"
                 animate={{ scale: [1, 1.06, 1], opacity: [0.95, 1, 0.95] }}
                 transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
               />
@@ -189,7 +189,7 @@ export default function GlobalBootLoader() {
               </div>
               <div className="mt-2 h-1 overflow-hidden rounded-full bg-white/10">
                 <motion.div
-                  className="h-full rounded-full bg-gradient-to-r from-emerald-400 via-cyan-400 to-violet-400"
+                  className="h-full rounded-full bg-gradient-to-r from-emerald-400 via-cyan-400 to-sky-400"
                   initial={{ width: "0%" }}
                   animate={{ width: `${progress}%` }}
                   transition={{ ease: [0.22, 1, 0.36, 1], duration: 0.18 }}

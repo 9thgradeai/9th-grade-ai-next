@@ -57,7 +57,7 @@ export default function StudentModelTab() {
       <div>
         <h1 className="text-xl font-semibold text-[var(--dashboard-text-primary)]">দীর্ঘমেয়াদী শিক্ষার্থী প্রোফাইল</h1>
         <p className="mt-1 text-sm text-[var(--dashboard-text-muted)]">
-          তোমার লক্ষ্য, ভাষা এবং দুর্বল-শক্ত বিষয় AI ধরে রাখে — যাতে পরবর্তী পড়াশোনা ব্যক্তিগতকৃত হয়।
+          তোমার লক্ষ্য, ভাষা এবং দুর্বল-শক্ত বিষয় AI ধরে রাখে, যাতে পরবর্তী পড়াশোনা ব্যক্তিগতকৃত হয়।
         </p>
       </div>
 
@@ -89,7 +89,7 @@ export default function StudentModelTab() {
             {model.weakTopics.map((t, i) => (
               <li key={i} className="text-sm text-[var(--dashboard-text-secondary)]">
                 <span className="font-medium text-[var(--dashboard-text-primary)]">{t.topic}</span>
-                {t.detail && <span className="text-[var(--dashboard-text-muted)]"> — {t.detail}</span>}
+                {t.detail && <span className="text-[var(--dashboard-text-muted)]">, {t.detail}</span>}
               </li>
             ))}
           </ul>
@@ -103,7 +103,7 @@ export default function StudentModelTab() {
             {model.strongTopics.map((t, i) => (
               <li key={i} className="text-sm text-[var(--dashboard-text-secondary)]">
                 <span className="font-medium text-[var(--dashboard-text-primary)]">{t.topic}</span>
-                {t.detail && <span className="text-[var(--dashboard-text-muted)]"> — {t.detail}</span>}
+                {t.detail && <span className="text-[var(--dashboard-text-muted)]">, {t.detail}</span>}
               </li>
             ))}
           </ul>

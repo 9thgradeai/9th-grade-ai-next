@@ -12,9 +12,9 @@ export const PERF_RANGES: PerfRange[] = ["7D", "30D", "90D", "ALL"];
 type MetricTheme = { from: string; to: string; glow: string };
 
 /* Token-driven metric accents (hex fallbacks for non-themed contexts).
-   Dark gets luminous series, light gets deeper ones — see --viz-* tokens. */
+   Dark gets luminous series, light gets deeper ones, see --viz-* tokens. */
 const METRIC_THEMES: Record<MetricMode, MetricTheme> = {
-  solved: { from: "var(--viz-violet, #8B5CF6)", to: "var(--viz-cyan, #22D3EE)", glow: "color-mix(in srgb, var(--viz-violet, #8B5CF6) 45%, transparent)" },
+  solved: { from: "var(--viz-violet, #3B82F6)", to: "var(--viz-cyan, #22D3EE)", glow: "color-mix(in srgb, var(--viz-violet, #3B82F6) 45%, transparent)" },
   accuracy: { from: "var(--viz-emerald, #10B981)", to: "var(--viz-lime, #A3E635)", glow: "color-mix(in srgb, var(--viz-emerald, #10B981) 45%, transparent)" },
   time: { from: "var(--viz-amber, #F59E0B)", to: "var(--viz-rose, #FB7185)", glow: "color-mix(in srgb, var(--viz-amber, #F59E0B) 45%, transparent)" },
 };
@@ -70,7 +70,7 @@ function usePrefersReducedMotion(): boolean {
   return reduced;
 }
 
-/** Animated count-up toward `target` — instant when reduced motion is on. */
+/** Animated count-up toward `target`, instant when reduced motion is on. */
 function useCountUp(target: number, reducedMotion: boolean, durationMs = 650): number {
   const [value, setValue] = useState(target);
   const fromRef = useRef(target);
@@ -103,7 +103,7 @@ function useCountUp(target: number, reducedMotion: boolean, durationMs = 650): n
   return value;
 }
 
-/** Live session clock (HH:MM:SS) — the trading-hub heartbeat. */
+/** Live session clock (HH:MM:SS), the trading-hub heartbeat. */
 function useSessionClock(): string {
   const [now, setNow] = useState(() => new Date());
   useEffect(() => {
@@ -115,7 +115,7 @@ function useSessionClock(): string {
 
 /**
  * Trading-hub performance overview. Every number is derived from the
- * server-provided activity window — count-ups, deltas and the ticker only
+ * server-provided activity window, count-ups, deltas and the ticker only
  * animate real values, never invented ones.
  */
 export default function PerformanceCard({
@@ -372,7 +372,7 @@ export default function PerformanceCard({
       <div className="perf-terminal relative mt-3 rounded-xl border p-4" style={{ borderColor: "var(--dashboard-border-muted)", background: "color-mix(in srgb, var(--dashboard-surface-muted) 60%, transparent)" }}>
         {coords.length === 0 || points.every((p) => p.answered === 0 && metric !== "time") ? (
           <p className="text-sm py-8 text-center" style={{ color: "var(--dashboard-text-muted)" }}>
-            No activity points in the selected window — start practicing to see performance curves.
+            No activity points in the selected window, start practicing to see performance curves.
           </p>
         ) : (
           <>
@@ -489,7 +489,7 @@ export default function PerformanceCard({
                 </span>
               ))}
             </div>
-            {/* Screen-reader data table fallback — color-independent access to the same trend. */}
+            {/* Screen-reader data table fallback, color-independent access to the same trend. */}
             <table className="sr-only">
               <caption>{metricLabel} by day, last {range}</caption>
               <tbody>

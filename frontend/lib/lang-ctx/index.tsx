@@ -52,7 +52,7 @@ function writeLang(lang: Language) {
   try {
     localStorage.setItem(LANGUAGE_KEY, lang);
   } catch {
-    /* storage unavailable — ignore */
+    /* storage unavailable, ignore */
   }
   document.documentElement.lang = lang === "bn" ? "bn" : "en";
   if (typeof window !== "undefined") {

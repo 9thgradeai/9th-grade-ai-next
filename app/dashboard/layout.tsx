@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-/* framer-motion deferred — drawer uses CSS transitions */
+/* framer-motion deferred, drawer uses CSS transitions */
 import SideNav from "@/components/dashboard/SideNav";
 import BottomNav from "@/components/dashboard/BottomNav";
 import ExamSwitcher from "@/components/dashboard/ExamSwitcher";
@@ -38,13 +38,13 @@ const VoiceAITutor = dynamic(() => import("@/components/dashboard/VoiceAITutor")
 });
 
 // The AI coach's practice-drill modal is small but only needed when an agent
-// action carries a server-minted question set — load it lazily too.
+// action carries a server-minted question set, load it lazily too.
 const PracticeDrillOverlay = dynamic(
   () => import("@/components/dashboard/ai/PracticeDrillOverlay"),
   { ssr: false },
 );
 
-// Drawer reuses the shared NavRows source — zero row-markup duplication
+// Drawer reuses the shared NavRows source, zero row-markup duplication
 // with SideNav (Phase 2 shell dedup).
 function SideNavDrawerContent({ activeTab, onChange }: { activeTab: TabId; onChange: (t: TabId) => void }) {
   const { user } = useAuth();
@@ -55,7 +55,7 @@ function SideNavDrawerContent({ activeTab, onChange }: { activeTab: TabId; onCha
       <div className="px-3 pt-3">
         <ExamSwitcher />
       </div>
-      {/* Ecosystem quick switch — the header drops this below `sm`
+      {/* Ecosystem quick switch, the header drops this below `sm`
           to keep the language button visible, so it lives here on
           phones. */}
       <div className="px-3 pt-3">
@@ -100,7 +100,7 @@ function EmailVerificationGate({ children }: { children: React.ReactNode }) {
   }, [authLoading, user, router]);
 
   // Logged-out visits (expired session, direct URL) bounce to login instead
-  // of rendering a blank shell — the previous `return null` left users on an
+  // of rendering a blank shell, the previous `return null` left users on an
   // empty page with no recovery path.
   useEffect(() => {
     if (!authLoading && !user) {
@@ -172,7 +172,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const handleTabChange = useCallback((tab: TabId) => {
     setActiveTab(tab);
-    router.push(`/dashboard?tab=${tab}`);
+    router.push(`/dashboard/${tab}`);
     closeNavDrawer();
     // setActiveTab is a module-stable store action; router/closeNavDrawer are
     // stable across renders, so this callback identity never churns.
@@ -196,7 +196,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   // ⌘K lives in CommandBar. No single-letter hijacks anywhere.
   useEffect(() => {
     // Sprint 2: typing targets include selects, content-editables and any
-    // element inside them — digits typed there must never switch tabs.
+    // element inside them, digits typed there must never switch tabs.
     const isTypingTarget = (t: EventTarget | null) => {
       if (t instanceof HTMLInputElement || t instanceof HTMLTextAreaElement || t instanceof HTMLSelectElement) return true;
       if (t instanceof HTMLElement && (t.isContentEditable || t.closest?.("[contenteditable='true']"))) return true;
@@ -219,7 +219,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       if (isTypingTarget(e.target)) return;
       // Don't hijack keys while a dialog (command palette, sheets) is open
       if (e.target instanceof HTMLElement && e.target.closest('[role="dialog"]')) return;
-      // Don't hijack digits inside an active exam session — 1-6/A-D answer
+      // Don't hijack digits inside an active exam session, 1-6/A-D answer
       // options there (PracticeTab, MockTestTab, CustomExamTab mark their
       // live workspaces with data-exam-session). Navigating away would
       // abandon the attempt; digits are inert until the exam ends.
@@ -255,7 +255,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="dashboard-shell h-dvh overflow-hidden flex" style={{ background: "var(--dashboard-background)" }}>
             {/* Ambient world map (desktop only, decorative, non-interactive) */}
             <WorldMapBackdrop />
-            {/* Skip link — first focusable element for keyboard users */}
+            {/* Skip link, first focusable element for keyboard users */}
             <a
               href="#dashboard-content"
               className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[var(--z-tooltip)] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-emerald-500 focus:text-zinc-950 focus:font-mono focus:text-sm"
@@ -263,10 +263,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               {t("dashboard.skipToContent")}
             </a>
 
-            {/* Desktop Side Navigation (>=1024px) — locked column, never scrolls away */}
+            {/* Desktop Side Navigation (>=1024px), locked column, never scrolls away */}
             <SideNav activeTab={activeTab} onChange={handleTabChange} />
 
-            {/* Tablet/Mobile Drawer — makes left tab sections fully visible on <lg */}
+            {/* Tablet/Mobile Drawer, makes left tab sections fully visible on <lg */}
             {navDrawerOpen && (
               <div
                 className="fixed inset-0 z-[var(--z-modal)] lg:hidden"
@@ -293,7 +293,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     </button>
                   </div>
                   <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
-                    {/* Reuse same grouped nav inline for drawer — avoids duplicating SideNav hidden logic */}
+                    {/* Reuse same grouped nav inline for drawer, avoids duplicating SideNav hidden logic */}
                     <SideNavDrawerContent activeTab={activeTab} onChange={handleTabChange} />
                   </div>
                 </div>
@@ -302,10 +302,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
             {/* Main Column */}
             <div className="flex-1 min-w-0 flex flex-col h-full">
-              {/* Fixed Top Header — Phase 2: breadcrumb left, search center, actions right */}
+              {/* Fixed Top Header, Phase 2: breadcrumb left, search center, actions right */}
               <header className="shrink-0 z-[var(--z-sticky)] border-b pt-safe backdrop-blur-md" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)" }}>
                 <div className="flex items-center gap-1.5 sm:gap-3 px-2 sm:px-4 lg:px-6 h-16 min-w-0">
-                  {/* Hamburger — visible on tablet + mobile (<lg) to expose left tabs */}
+                  {/* Hamburger, visible on tablet + mobile (<lg) to expose left tabs */}
                   <button
                     onClick={() => setNavDrawerOpen(true)}
                     className="lg:hidden inline-flex items-center justify-center w-11 h-11 min-h-[44px] min-w-[44px] rounded-xl border shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
@@ -316,7 +316,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   >
                     <List className="w-5 h-5" />
                   </button>
-                  {/* Mobile logo icon only — text removed to keep search + actions visible on 320px */}
+                  {/* Mobile logo icon only, text removed to keep search + actions visible on 320px */}
                   <Link
                     href="/"
                     className="lg:hidden flex items-center min-w-0 shrink-0"
@@ -326,7 +326,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     <BrandMark className="h-8 w-8 rounded-lg ring-1 ring-black/5 shrink-0" />
                   </Link>
 
-                  {/* Breadcrumb — desktop: group › tab (replaces bare activeLabel) */}
+                  {/* Breadcrumb, desktop: group › tab (replaces bare activeLabel) */}
                   <nav aria-label="Breadcrumb" className="hidden lg:flex min-w-0 shrink-0 items-center gap-1.5 text-[13px]">
                     <span className="shrink-0 font-medium" style={{ color: "var(--dashboard-text-muted)" }}>
                       {activeGroup?.label ?? "Dashboard"}
@@ -337,7 +337,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     </span>
                   </nav>
 
-                  {/* Command trigger — fluid center (icon-only on xs) */}
+                  {/* Command trigger, fluid center (icon-only on xs) */}
                   <button
                     type="button"
                     onClick={() => window.dispatchEvent(new Event("app:open-command"))}
@@ -366,7 +366,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 </div>
               </header>
 
-              {/* Scrollable Content — isolated dashboard canvas. Transparent so
+              {/* Scrollable Content, isolated dashboard canvas. Transparent so
                   the ambient world map shows through the gutters; the shell
                   behind it keeps the base background color. */}
               <main id="dashboard-content" className="relative z-[1] flex-1 min-h-0 overflow-y-auto overscroll-contain pb-[calc(var(--bottom-nav-h)+env(safe-area-inset-bottom,0px)+8px)] lg:pb-8" style={{ background: "transparent" }}>

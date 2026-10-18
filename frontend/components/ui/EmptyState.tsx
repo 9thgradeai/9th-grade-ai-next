@@ -2,7 +2,7 @@ import type { ComponentType, ReactNode } from "react";
 
 /**
  * Single empty-state primitive. Explains why a surface is empty and offers
- * the next action — replaces the icon+text+button block copy-pasted across
+ * the next action, replaces the icon+text+button block copy-pasted across
  * dashboard tabs and landing sections.
  */
 export default function EmptyState({

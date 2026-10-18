@@ -28,7 +28,7 @@ export default function AISourceFooter({ provider, model, latencyMs, toolCount, 
       {model ? ` · ${model}` : ""}
       {latencyMs !== undefined && latencyMs !== null && latencyMs > 0 ? ` · ${Math.round(latencyMs)}ms` : ""}
       {toolCount !== undefined && toolCount !== null ? ` · ${toolCount} tools` : ""}
-      {isMock ? ` · ${t(lang, "(মক উত্তর — API কী সেট করা নেই, তথ্য যাচাই করুন)", "(mock answer — no API key set, verify facts)")}` : ""}
+      {isMock ? ` · ${t(lang, "(মক উত্তর, API কী সেট করা নেই, তথ্য যাচাই করুন)", "(mock answer, no API key set, verify facts)")}` : ""}
     </p>
   );
 }

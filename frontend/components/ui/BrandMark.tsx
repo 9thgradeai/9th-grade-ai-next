@@ -1,14 +1,14 @@
 /**
- * The official 9Th-Grade AI brand mark — a knowledge constellation:
+ * The official 9Th-Grade AI brand mark, a knowledge constellation:
  * four connected nodes orbiting a luminous core on a deep-space tile,
- * ringed by the product's blue→cyan→violet spectrum.
+ * ringed by the product's blue→cyan→sky spectrum.
  *
  * Source of truth: /assets/favicon.svg. Rendered inline (not an <img>) so it
  * stays crisp at any size and inherits layout like any other element.
  * Gradient ids are namespaced per instance so multiple marks can coexist.
  * Uses currentColor so it inherits the text color of its parent context,
  * making it theme-aware across light/dark dashboard modes.
- * No intrinsic shadow — the wrapper controls any elevation.
+ * No intrinsic shadow, the wrapper controls any elevation.
  */
 import { useId } from "react";
 
@@ -43,7 +43,7 @@ export default function BrandMark({
           <stop offset="100%" stopColor="#1e1b4b" />
         </linearGradient>
       </defs>
-      {/* Fixed premium tile — always dark/indigo so it pops on white sidebar & dark sidebar */}
+      {/* Fixed premium tile, always dark/indigo so it pops on white sidebar & dark sidebar */}
       <rect width="64" height="64" rx="14" fill={`url(#${gid}-bg)`} />
       <rect width="64" height="64" rx="14" fill="none" stroke="white" strokeOpacity="0.08" />
       <circle cx="32" cy="32" r="24" fill="none" stroke={`url(#${gid}-g)`} strokeWidth="1.8" opacity="0.9" />

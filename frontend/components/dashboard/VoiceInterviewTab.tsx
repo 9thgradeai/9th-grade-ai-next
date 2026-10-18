@@ -121,7 +121,7 @@ export default function VoiceInterviewTab() {
         <div>
           <h1 className="text-xl font-semibold text-[var(--dashboard-text-primary)]">ভয়েস ইন্টারভিউ</h1>
           <p className="mt-1 text-sm text-[var(--dashboard-text-muted)]">
-            কথা বলে প্র্যাকটিস করো — মাইক চাপো, উত্তর দাও, আর AI-এর জবাব শুনে নাও।
+            কথা বলে প্র্যাকটিস করো, মাইক চাপো, উত্তর দাও, আর AI-এর জবাব শুনে নাও।
           </p>
         </div>
         <label className="flex items-center gap-2 text-xs text-[var(--dashboard-text-muted)]">

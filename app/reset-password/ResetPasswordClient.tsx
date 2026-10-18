@@ -64,7 +64,7 @@ export default function ResetPasswordClient() {
       <AuthField id="password" label="New password" type={show ? "text" : "password"} name="new-password" value={password} onChange={setPassword} autoComplete="new-password" placeholder="At least 8 characters" leftIcon={<Key className="h-4.5 w-4.5" aria-hidden="true" />} rightSlot={eyeToggle} />
       <AuthField id="confirm" label="Confirm new password" type={show ? "text" : "password"} name="new-password" value={confirm} onChange={setConfirm} autoComplete="new-password" placeholder="Repeat your password" leftIcon={<Key className="h-4.5 w-4.5" aria-hidden="true" />} />
       {status === "done" ? (
-        <button type="button" onClick={() => router.push("/login")} className="block w-full text-center text-sm font-medium text-emerald-400/80 transition-colors hover:text-emerald-400">Password updated — continue to sign in</button>
+        <button type="button" onClick={() => router.push("/login")} className="block w-full text-center text-sm font-medium text-emerald-400/80 transition-colors hover:text-emerald-400">Password updated, continue to sign in</button>
       ) : (
         <AuthSubmitButton busy={status === "saving"} busyLabel="Updating…">Update password</AuthSubmitButton>
       )}

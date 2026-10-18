@@ -29,7 +29,7 @@ import {
 } from "./Unit9Face"
 
 /**
- * ORACLE-9 — the product's living sigil.
+ * ORACLE-9, the product's living sigil.
  *
  * No longer a static robot tile: it is a floating crest of light that reads
  * as the exam hall's keeper. A shield-bezel frames a glowing visor; a ring of
@@ -66,7 +66,7 @@ export function Avatar({
   const containerRef = useRef<HTMLDivElement>(null)
   const [hovered, setHovered] = useState(false)
 
-  // Pointer attention — springs keep the lean physical; never a re-render.
+  // Pointer attention, springs keep the lean physical; never a re-render.
   const rawGazeX = useMotionValue(0)
   const rawGazeY = useMotionValue(0)
   const gazeSpring = { stiffness: 90, damping: 18 }
@@ -140,7 +140,7 @@ export function Avatar({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tick])
 
-  // Error glitch — a hard little shudder.
+  // Error glitch, a hard little shudder.
   useEffect(() => {
     if (danger && !reduced) {
       void headControls.start({
@@ -175,7 +175,7 @@ export function Avatar({
     blink && cfg.expression.eyes === "open" ? "closed" : cfg.expression.eyes
   const privacyOn = focusField === "password" || focusField === "confirm"
 
-  // Orbit nodes — fixed angles, the group spins (cheap, GPU transform).
+  // Orbit nodes, fixed angles, the group spins (cheap, GPU transform).
   const NODES = [0, 1, 2, 3, 4, 5].map((i) => {
     const a = (i * Math.PI) / 3
     return { x: 120 + 108 * Math.cos(a), y: 120 + 108 * Math.sin(a), i }
@@ -215,7 +215,7 @@ export function Avatar({
           <svg viewBox="0 0 240 240" className="h-full w-full" role="img" aria-label="A friendly companion guiding you through sign in">
             {UNIT9_GRADIENTS}
 
-            {/* Reactive aura — breathes, flushes with mood */}
+            {/* Reactive aura, breathes, flushes with mood */}
             <motion.circle
               cx="120"
               cy="120"
@@ -316,7 +316,7 @@ export function Avatar({
                 </g>
               </g>
 
-              {/* Face — keyed by mood so expressions cross-fade; tracks pointer */}
+              {/* Face, keyed by mood so expressions cross-fade; tracks pointer */}
               <motion.g key={mood} className="avatar-face-fade" style={pointerGaze ? { x: faceX, y: faceY } : undefined}>
                 <LedBrow kind={cfg.expression.brows} cx={94} cy={86} color={palette.led} />
                 <LedBrow kind={cfg.expression.brows} cx={146} cy={86} color={palette.led} />
@@ -333,7 +333,7 @@ export function Avatar({
                 <LedMouth kind={cfg.expression.mouth} color={palette.led} loading={loading} />
               </motion.g>
 
-              {/* Visor core — a second parallax layer that also tracks the pointer */}
+              {/* Visor core, a second parallax layer that also tracks the pointer */}
               <motion.circle
                 cx="120"
                 cy="120"
