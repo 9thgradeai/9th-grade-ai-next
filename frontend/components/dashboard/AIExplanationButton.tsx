@@ -63,7 +63,7 @@ export default function AIExplanationButton(props: AIExplanationButtonProps) {
       </button>
 
       {error && (
-        <p className="text-[10px] text-[var(--dashboard-danger)] mt-1 font-mono">{error}</p>
+        <p className="text-[11px] text-[var(--dashboard-danger)] mt-1 font-mono">{error}</p>
       )}
 
       <AnimatePresence>
@@ -80,7 +80,7 @@ export default function AIExplanationButton(props: AIExplanationButtonProps) {
               <div>
                 <div className="flex items-center gap-1.5 mb-1.5">
                   <CheckCircle className="w-3.5 h-3.5 text-[var(--dashboard-success)]" />
-                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[var(--dashboard-success)]">
+                  <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-[var(--dashboard-success)]">
                     সঠিক উত্তর কেন
                   </span>
                 </div>
@@ -94,7 +94,7 @@ export default function AIExplanationButton(props: AIExplanationButtonProps) {
                 <div>
                   <div className="flex items-center gap-1.5 mb-1.5">
                     <XCircle className="w-3.5 h-3.5 text-[var(--dashboard-danger)]" />
-                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[var(--dashboard-danger)]">
+                    <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-[var(--dashboard-danger)]">
                       অন্য অপশন কেন ভুল
                     </span>
                   </div>
@@ -119,7 +119,7 @@ export default function AIExplanationButton(props: AIExplanationButtonProps) {
                 <div>
                   <div className="flex items-center gap-1.5 mb-1.5">
                     <BookOpen className="w-3.5 h-3.5 text-[var(--dashboard-primary)]" />
-                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[var(--dashboard-primary)]">
+                    <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-[var(--dashboard-primary)]">
                       মূল সংজ্ঞা
                     </span>
                   </div>
@@ -136,7 +136,7 @@ export default function AIExplanationButton(props: AIExplanationButtonProps) {
                 <div>
                   <div className="flex items-center gap-1.5 mb-1">
                     <BookOpen className="w-3.5 h-3.5 text-[var(--dashboard-teal)]" />
-                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[var(--dashboard-teal)]">
+                    <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-[var(--dashboard-teal)]">
                       সম্পর্কিত বিষয়
                     </span>
                   </div>
@@ -149,7 +149,7 @@ export default function AIExplanationButton(props: AIExplanationButtonProps) {
                 <div className="rounded-lg p-2.5" style={{ background: "var(--dashboard-warning-subtle)" }}>
                   <div className="flex items-center gap-1.5 mb-1">
                     <Lightbulb className="w-3.5 h-3.5 text-[var(--dashboard-warning)]" />
-                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[var(--dashboard-warning)]">
+                    <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-[var(--dashboard-warning)]">
                       পরীক্ষার টিপ
                     </span>
                   </div>

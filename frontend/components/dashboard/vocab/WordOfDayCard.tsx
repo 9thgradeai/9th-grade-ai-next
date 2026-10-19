@@ -153,7 +153,7 @@ export default function WordOfDayCard() {
         <div className="flex items-center gap-2">
           {countdown !== null && (
             <span
-              className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[var(--surface-raised)] border border-terminal-border text-[var(--dashboard-text-muted)]"
+              className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-[var(--surface-raised)] border border-terminal-border text-[var(--dashboard-text-muted)]"
               title={t(lang, "পরের শব্দ আসছে", "Next word in")}
               aria-live="off"
             >
@@ -175,7 +175,7 @@ export default function WordOfDayCard() {
         >
       <div className="flex items-center gap-3 mb-1">
         <h3 className="text-2xl font-bold text-[var(--dashboard-text)]">{word.word}</h3>
-        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[var(--surface-raised)] border border-terminal-border text-[var(--dashboard-text-muted)] uppercase tracking-wider">
+        <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-[var(--surface-raised)] border border-terminal-border text-[var(--dashboard-text-muted)] uppercase tracking-wider">
           {word.partOfSpeech}
         </span>
       </div>
@@ -228,14 +228,14 @@ export default function WordOfDayCard() {
       {/* Difficulty badge + exam tags (always visible) */}
       <div className="flex flex-wrap items-center gap-1.5 mb-3">
         <span
-          className={`text-[10px] font-mono px-2 py-0.5 rounded-full border ${DIFFICULTY_BADGE[word.difficulty] ?? DIFFICULTY_BADGE.medium}`}
+          className={`text-[11px] font-mono px-2 py-0.5 rounded-full border ${DIFFICULTY_BADGE[word.difficulty] ?? DIFFICULTY_BADGE.medium}`}
         >
           {word.difficulty}
         </span>
         {word.examRelevance.slice(0, 3).map((tag) => (
           <span
             key={tag}
-            className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[var(--surface-raised)] border border-terminal-border text-[var(--dashboard-text-muted)]"
+            className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-[var(--surface-raised)] border border-terminal-border text-[var(--dashboard-text-muted)]"
           >
             {tag}
           </span>
@@ -267,7 +267,7 @@ export default function WordOfDayCard() {
               {/* Example in Bengali if available */}
               {word.exampleSentenceBn && (
                 <div>
-                  <span className="text-[10px] font-mono text-[var(--dashboard-text-muted)] uppercase tracking-wider">
+                  <span className="text-[11px] font-mono text-[var(--dashboard-text-muted)] uppercase tracking-wider">
                     {t(lang, "বাংলা উদাহরণ", "Bengali Example")}
                   </span>
                   <p className="text-xs text-[var(--dashboard-text-secondary)] mt-0.5 italic">
@@ -279,14 +279,14 @@ export default function WordOfDayCard() {
               {/* Synonyms */}
               {word.synonyms.length > 0 && (
                 <div>
-                  <span className="text-[10px] font-mono text-[var(--dashboard-text-muted)] uppercase tracking-wider">
+                  <span className="text-[11px] font-mono text-[var(--dashboard-text-muted)] uppercase tracking-wider">
                     {t(lang, "সমার্থক", "Synonyms")}
                   </span>
                   <div className="flex flex-wrap gap-1 mt-1">
                     {word.synonyms.slice(0, 4).map((s) => (
                       <span
                         key={s}
-                        className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600"
+                        className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600"
                       >
                         {s}
                       </span>
@@ -298,14 +298,14 @@ export default function WordOfDayCard() {
               {/* Antonyms */}
               {word.antonyms.length > 0 && (
                 <div>
-                  <span className="text-[10px] font-mono text-[var(--dashboard-text-muted)] uppercase tracking-wider">
+                  <span className="text-[11px] font-mono text-[var(--dashboard-text-muted)] uppercase tracking-wider">
                     {t(lang, "বিপরীতার্থক", "Antonyms")}
                   </span>
                   <div className="flex flex-wrap gap-1 mt-1">
                     {word.antonyms.slice(0, 4).map((a) => (
                       <span
                         key={a}
-                        className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-red-500/10 border border-red-500/20 text-red-600"
+                        className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-red-500/10 border border-red-500/20 text-red-600"
                       >
                         {a}
                       </span>

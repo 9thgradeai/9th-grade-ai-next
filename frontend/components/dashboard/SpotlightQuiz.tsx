@@ -209,7 +209,7 @@ export default function SpotlightQuiz({
         <div role="alert" className="py-4 text-center">
           <Warning className="w-8 h-8 mx-auto mb-2" style={{ color: "var(--dashboard-warning)" }} aria-hidden="true" />
           <p className="text-xs mb-3" style={{ color: "var(--dashboard-text-muted)" }}>{error}</p>
-          <button onClick={() => void fetchBatch()} className="command-secondary-btn !py-2 text-xs">
+          <button onClick={() => void fetchBatch()} className="command-secondary-btn !py-2 text-xs min-h-11">
             আবার চেষ্টা করুন
           </button>
         </div>
@@ -218,17 +218,17 @@ export default function SpotlightQuiz({
       {!loading && !error && question && (
         <div key={question.id} className="mt-3">
           <div className="flex flex-wrap items-center gap-1.5 mb-3">
-            <span className="px-2 py-0.5 rounded text-[10px] font-mono"
+            <span className="px-2 py-0.5 rounded text-[11px] font-mono"
               style={{ background: "var(--dashboard-surface-muted)", color: "var(--dashboard-text-secondary)", border: "1px solid var(--dashboard-border-muted)" }}>
               {question.subject}
             </span>
             {question.topic && (
-              <span className="px-2 py-0.5 rounded text-[10px] font-mono"
+              <span className="px-2 py-0.5 rounded text-[11px] font-mono"
                 style={{ background: "var(--dashboard-surface-muted)", color: "var(--dashboard-text-muted)", border: "1px solid var(--dashboard-border-muted)" }}>
                 {question.topic}
               </span>
             )}
-            <span className="ml-auto text-[10px] font-mono" style={{ color: "var(--dashboard-text-muted)" }}>
+            <span className="ml-auto text-[11px] font-mono" style={{ color: "var(--dashboard-text-muted)" }}>
               {index + 1}/{batch.length}
             </span>
           </div>
@@ -244,7 +244,7 @@ export default function SpotlightQuiz({
           {isMulti && !isLocked && picked.length > 0 && (
             <button
               onClick={lockMultiAnswer}
-              className="w-full mt-3 py-2.5 rounded-xl bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm flex items-center justify-center gap-2"
+              className="w-full mt-3 py-2.5 min-h-11 rounded-xl bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm flex items-center justify-center gap-2"
             >
               <Check className="w-4 h-4" /> উত্তর লক করুন ({picked.length}টি নির্বাচিত)
             </button>
@@ -260,7 +260,7 @@ export default function SpotlightQuiz({
                   type="button"
                   onClick={() => chooseConfidence(v)}
                   aria-pressed={confidence === v}
-                  className="px-2.5 py-1 rounded-full border font-mono text-[11px] font-bold transition-colors min-h-[32px]"
+                  className="px-2.5 py-1 rounded-full border font-mono text-[11px] font-bold transition-colors min-h-11"
                   style={
                     confidence === v
                       ? { background: "var(--dashboard-primary)", color: "var(--dashboard-text-inverse)", borderColor: "transparent" }
@@ -281,7 +281,7 @@ export default function SpotlightQuiz({
           <div className="flex items-center gap-2 mt-4">
             <button
               onClick={advance}
-              className="flex-1 py-2.5 rounded-xl border font-mono text-xs flex items-center justify-center gap-1.5 transition-colors"
+              className="flex-1 py-2.5 min-h-11 rounded-xl border font-mono text-xs flex items-center justify-center gap-1.5 transition-colors"
               style={{ background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-strong)", color: "var(--dashboard-text-secondary)" }}
             >
               <Shuffle className="w-3.5 h-3.5" /> {isLocked ? "পরের প্রশ্ন" : "এড়িয়ে যান"}
@@ -289,7 +289,7 @@ export default function SpotlightQuiz({
             {onPracticeSubject && question.subject && (
               <button
                 onClick={() => onPracticeSubject(question.subject)}
-                className="flex-1 py-2.5 rounded-xl font-mono text-xs flex items-center justify-center gap-1.5 transition-colors"
+                className="flex-1 py-2.5 min-h-11 rounded-xl font-mono text-xs flex items-center justify-center gap-1.5 transition-colors"
                 style={{ background: "var(--dashboard-primary)", color: "var(--dashboard-text-inverse)" }}
               >
                 <Target className="w-3.5 h-3.5" /> এই বিষয়ে প্র্যাকটিস <ArrowRight className="w-3.5 h-3.5" />

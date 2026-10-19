@@ -103,7 +103,7 @@ export default function HomeWelcome({ onStartPractice }: { onStartPractice?: () 
                   {quote.workBn && (
                     <span> · {t(lang, quote.workBn, quote.workEn ?? "")}</span>
                   )}
-                  <span className="ml-2 rounded-full border px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider">
+                  <span className="ml-2 rounded-full border px-1.5 py-0.5 text-[11px] font-bold uppercase tracking-wider">
                     {quote.lang === "bn" ? t(lang, "বাংলা", "Bangla") : "English"}
                   </span>
                 </figcaption>
@@ -152,7 +152,7 @@ export default function HomeWelcome({ onStartPractice }: { onStartPractice?: () 
           <div className="shrink-0 sm:pt-8">
             <button
               onClick={onStartPractice}
-              className="command-primary-btn !py-2.5 text-sm"
+              className="command-primary-btn !py-2.5 text-sm min-h-11"
             >
               {t(lang, "পড়া শুরু করুন", "Start studying")}
               <ArrowRight className="h-4 w-4" aria-hidden="true" />

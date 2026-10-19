@@ -115,7 +115,7 @@ function TopicNodeRow({
         </button>
         <button onClick={() => onToggle(node)} className="flex-1 text-left min-w-0">
           <span className="text-xs font-medium text-[var(--text-primary)] break-words">{node.name}</span>
-          <span className="block text-[10px] text-[var(--dashboard-text-muted)] font-mono">{node.questionCount}টি প্রশ্ন</span>
+          <span className="block text-[11px] text-[var(--dashboard-text-muted)] font-mono">{node.questionCount}টি প্রশ্ন</span>
         </button>
       </div>
       {expanded && node.children.length > 0 && (
@@ -236,7 +236,7 @@ export default function TopicTreePicker({
                     {selected && <Check className="w-3 h-3 text-[var(--dashboard-text-inverse)]" />}
                   </span>
                 </div>
-                <p className="text-[10px] font-mono mt-1.5" style={{ color: "var(--dashboard-text-muted)" }}>
+                <p className="text-[11px] font-mono mt-1.5" style={{ color: "var(--dashboard-text-muted)" }}>
                   {subject.questionCount}টি প্রশ্ন
                 </p>
               </motion.button>
@@ -266,7 +266,7 @@ export default function TopicTreePicker({
                 </div>
                 <button
                   onClick={() => toggleWholeSubject(subject)}
-                  className={`px-2.5 py-1 rounded-lg text-[10px] font-mono border transition-colors flex-shrink-0 ${
+                  className={`px-2.5 py-1 rounded-lg text-[11px] font-mono border transition-colors flex-shrink-0 ${
                     allSelected
                       ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] border-[var(--accent)]"
                       : "border-[var(--border-strong)] text-[var(--dashboard-text-muted)] hover:border-[var(--accent)]/40"
@@ -298,7 +298,7 @@ export default function TopicTreePicker({
               <div className="mt-3 pt-3 border-t border-[var(--dashboard-border-muted)] flex items-center justify-between gap-3">
                 <div className="min-w-0">
                   <p className="text-xs text-[var(--dashboard-text-secondary)] font-mono">এই বিষয় থেকে প্রশ্ন</p>
-                  <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">
+                  <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">
                     উপলব্ধ: <span className="text-[var(--dashboard-primary)]">{availableForSubject(subject, selection)}টি</span>
                   </p>
                 </div>
@@ -312,6 +312,7 @@ export default function TopicTreePicker({
                   </button>
                   <input
                     type="number"
+                    inputMode="numeric"
                     min={0}
                     max={availableForSubject(subject, selection)}
                     value={sel.count ?? 0}

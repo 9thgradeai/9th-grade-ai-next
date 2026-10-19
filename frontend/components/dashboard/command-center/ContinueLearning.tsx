@@ -45,7 +45,7 @@ export default function ContinueLearning({ intelligence, onResumeExam, onStartDa
         </h3>
         {unfinished.length + (dailyQuizPending ? 1 : 0) > 1 && (
           <span
-            className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border"
+            className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-full border"
             style={{ background: "var(--dashboard-surface-muted)", color: "var(--dashboard-text-muted)", borderColor: "var(--dashboard-border-muted)" }}
           >
             {unfinished.length + (dailyQuizPending ? 1 : 0)}

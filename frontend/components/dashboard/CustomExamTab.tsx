@@ -714,22 +714,22 @@ export default function CustomExamTab() {
               layout
               className="glass-card rounded-2xl border border-[var(--primary)]/30 p-4"
             >
-              <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-widest mb-2">লাইভ কনফিগারেশন সামারি</p>
+              <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-widest mb-2">লাইভ কনফিগারেশন সামারি</p>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
                 <div>
                   <List className="w-4 h-4 mx-auto text-[var(--dashboard-primary)] mb-1" />
                   <p className="text-lg font-bold text-[var(--text-primary)] font-mono">{selectedSubjects.length}</p>
-                  <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">বিষয়</p>
+                  <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">বিষয়</p>
                 </div>
                 <div>
                   <BookOpen className="w-4 h-4 mx-auto text-[var(--dashboard-primary)] mb-1" />
                   <p className="text-lg font-bold text-[var(--text-primary)] font-mono">{selectedGroupCount}</p>
-                  <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">টপিক</p>
+                  <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">টপিক</p>
                 </div>
                 <div>
                   <CircleDashed className="w-4 h-4 mx-auto text-[var(--dashboard-primary)] mb-1" />
                   <p className="text-lg font-bold text-[var(--text-primary)] font-mono">{selectedSubTopicCount}</p>
-                  <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">সাবটপিক</p>
+                  <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">সাবটপিক</p>
                 </div>
                 <div>
                   <Clock className="w-4 h-4 mx-auto text-[var(--dashboard-primary)] mb-1" />
@@ -737,7 +737,7 @@ export default function CustomExamTab() {
                     {totalCount}
                     <span className="text-xs text-[var(--dashboard-text-muted)] ml-1">প্র.</span>
                   </p>
-                  <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">{durationMin} মিনিট</p>
+                  <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">{durationMin} মিনিট</p>
                 </div>
               </div>
             </motion.div>
@@ -922,7 +922,7 @@ export default function CustomExamTab() {
           <div className="flex items-center justify-between gap-2 mb-2 flex-wrap">
             <div className="flex items-center gap-2">
               <CircleDashed className="w-3.5 h-3.5 text-[var(--dashboard-primary)]" aria-hidden="true" />
-              <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-widest">প্রশ্ন তালিকা</p>
+              <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-widest">প্রশ্ন তালিকা</p>
             </div>
             <div className="flex items-center gap-1 rounded-lg border p-0.5" style={{ borderColor: "var(--dashboard-border-muted)" }} role="group" aria-label="প্রশ্ন দেখার ধরন">
               <button
@@ -943,7 +943,7 @@ export default function CustomExamTab() {
               </button>
             </div>
           </div>
-          <div className="flex flex-wrap gap-1.5 md:grid md:grid-cols-8 lg:grid-cols-6" role="group" aria-label="প্রশ্ন তালিকা">
+          <div className="flex flex-wrap gap-1.5 md:grid md:grid-cols-6 lg:grid-cols-8" role="group" aria-label="প্রশ্ন তালিকা">
             {exam.questions.map((q, i) => {
               const isAnswered = answers[q.id] !== undefined;
               const isCurrent = examView === "one" && i === examIndex;
@@ -966,7 +966,7 @@ export default function CustomExamTab() {
               );
             })}
           </div>
-          <ul className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] font-mono" style={{ color: "var(--dashboard-text-muted)" }} aria-label="প্রশ্ন অবস্থার নির্দেশিকা">
+          <ul className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-mono" style={{ color: "var(--dashboard-text-muted)" }} aria-label="প্রশ্ন অবস্থার নির্দেশিকা">
             <li className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full" style={{ background: "var(--dashboard-primary)" }} aria-hidden="true" /> বর্তমান</li>
             <li className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full border" style={{ borderColor: "var(--dashboard-primary)", background: "var(--dashboard-primary-subtle)" }} aria-hidden="true" /> ✓ উত্তর দেওয়া</li>
             <li className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full border" style={{ borderColor: "var(--dashboard-border-muted)" }} aria-hidden="true" /> ○ বাকি</li>
@@ -987,10 +987,10 @@ export default function CustomExamTab() {
                 >
                   <p className="sr-only" aria-live="polite">প্রশ্ন {examIndex + 1} / {totalQuestions}</p>
                   <div className="flex flex-wrap items-center gap-2 mb-3">
-                    <span className="px-2 py-0.5 rounded bg-[var(--surface-overlay)] text-[10px] font-mono text-[var(--dashboard-text-secondary)]">
+                    <span className="px-2 py-0.5 rounded bg-[var(--surface-overlay)] text-[11px] font-mono text-[var(--dashboard-text-secondary)]">
                       প্রশ্ন {examIndex + 1} / {totalQuestions}
                     </span>
-                    <span className="px-2 py-0.5 rounded bg-[var(--surface-overlay)] text-[10px] font-mono text-[var(--dashboard-text-muted)]">
+                    <span className="px-2 py-0.5 rounded bg-[var(--surface-overlay)] text-[11px] font-mono text-[var(--dashboard-text-muted)]">
                       {q.subject}
                     </span>
                     <MetaChip
@@ -1000,12 +1000,12 @@ export default function CustomExamTab() {
                       {DIFFICULTY_LABEL[q.difficulty] ?? q.difficulty}
                     </MetaChip>
                     {q.topic && (
-                      <span className="px-2 py-0.5 rounded bg-[var(--surface-overlay)] text-[10px] font-mono text-[var(--dashboard-text-muted)]">
+                      <span className="px-2 py-0.5 rounded bg-[var(--surface-overlay)] text-[11px] font-mono text-[var(--dashboard-text-muted)]">
                         {q.topic}
                       </span>
                     )}
                     {userAnswer !== undefined && (
-                      <span className="ml-auto px-2 py-0.5 rounded bg-[var(--dashboard-primary-subtle)] border border-[var(--primary)]/20 text-[10px] font-mono text-[var(--dashboard-primary)]">
+                      <span className="ml-auto px-2 py-0.5 rounded bg-[var(--dashboard-primary-subtle)] border border-[var(--primary)]/20 text-[11px] font-mono text-[var(--dashboard-primary)]">
                         ✓ উত্তর দেওয়া হয়েছে
                       </span>
                     )}
@@ -1107,10 +1107,10 @@ export default function CustomExamTab() {
                 className="glass-card rounded-2xl border border-terminal-border p-4 md:p-5 scroll-mt-32"
               >
                 <div className="flex flex-wrap items-center gap-2 mb-3">
-                  <span className="px-2 py-0.5 rounded bg-[var(--surface-overlay)] text-[10px] font-mono text-[var(--dashboard-text-secondary)]">
+                  <span className="px-2 py-0.5 rounded bg-[var(--surface-overlay)] text-[11px] font-mono text-[var(--dashboard-text-secondary)]">
                     প্রশ্ন {index + 1}
                   </span>
-                  <span className="px-2 py-0.5 rounded bg-[var(--surface-overlay)] text-[10px] font-mono text-[var(--dashboard-text-muted)]">
+                  <span className="px-2 py-0.5 rounded bg-[var(--surface-overlay)] text-[11px] font-mono text-[var(--dashboard-text-muted)]">
                     {q.subject}
                   </span>
                   <MetaChip
@@ -1120,12 +1120,12 @@ export default function CustomExamTab() {
                     {DIFFICULTY_LABEL[q.difficulty] ?? q.difficulty}
                   </MetaChip>
                   {q.topic && (
-                    <span className="px-2 py-0.5 rounded bg-[var(--surface-overlay)] text-[10px] font-mono text-[var(--dashboard-text-muted)]">
+                    <span className="px-2 py-0.5 rounded bg-[var(--surface-overlay)] text-[11px] font-mono text-[var(--dashboard-text-muted)]">
                       {q.topic}
                     </span>
                   )}
                   {userAnswer !== undefined && (
-                    <span className="ml-auto px-2 py-0.5 rounded bg-[var(--dashboard-primary-subtle)] border border-[var(--primary)]/20 text-[10px] font-mono text-[var(--dashboard-primary)]">
+                    <span className="ml-auto px-2 py-0.5 rounded bg-[var(--dashboard-primary-subtle)] border border-[var(--primary)]/20 text-[11px] font-mono text-[var(--dashboard-primary)]">
                       ✓ উত্তর দেওয়া হয়েছে
                     </span>
                   )}
@@ -1314,7 +1314,7 @@ export default function CustomExamTab() {
                 aria-label={`সঠিক ${summary.correct}টি প্রশ্ন`}
                 className="rounded-xl bg-[var(--dashboard-success-subtle)] border border-[var(--dashboard-success)]/25 p-3 min-h-[64px] text-left cursor-pointer transition-[border-color,opacity] duration-150 hover:border-[var(--dashboard-success)]/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-success)] disabled:opacity-50 disabled:cursor-default"
               >
-                <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">সঠিক</p>
+                <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">সঠিক</p>
                 <p className="text-lg font-bold text-[var(--dashboard-success)] font-mono">+{summary.correct}</p>
               </button>
               <button
@@ -1324,7 +1324,7 @@ export default function CustomExamTab() {
                 aria-label={`ভুল ${summary.wrong}টি প্রশ্ন`}
                 className="rounded-xl bg-[var(--dashboard-danger-subtle)] border border-[var(--dashboard-danger)]/25 p-3 min-h-[64px] text-left cursor-pointer transition-[border-color,opacity] duration-150 hover:border-[var(--dashboard-danger)]/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-danger)] disabled:opacity-50 disabled:cursor-default"
               >
-                <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">ভুল</p>
+                <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">ভুল</p>
                 <p className="text-lg font-bold text-[var(--dashboard-danger)] font-mono">−{summary.wrong}</p>
               </button>
               <button
@@ -1334,19 +1334,19 @@ export default function CustomExamTab() {
                 aria-label={`উত্তর দেওয়া হয়নি ${summary.unanswered}টি প্রশ্ন`}
                 className="rounded-xl bg-[var(--dashboard-teal-subtle)] border border-[var(--dashboard-teal)]/30 p-3 min-h-[64px] text-left cursor-pointer transition-[border-color,opacity] duration-150 hover:border-[var(--dashboard-teal)]/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-teal)] disabled:opacity-50 disabled:cursor-default"
               >
-                <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">উত্তর দেওয়া হয়নি</p>
+                <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">উত্তর দেওয়া হয়নি</p>
                 <p className="text-lg font-bold text-[var(--dashboard-teal)] font-mono">{summary.unanswered}</p>
               </button>
               <div className="rounded-xl bg-[var(--dashboard-primary-subtle)] border border-[var(--dashboard-border-muted)] p-3">
-                <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">ইতিবাচক</p>
+                <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">ইতিবাচক</p>
                 <p className="text-lg font-bold text-[var(--dashboard-primary)] font-mono">+{summary.positiveMarks}</p>
               </div>
               <div className="rounded-xl bg-[var(--dashboard-danger-subtle)] border border-[var(--dashboard-border-muted)] p-3">
-                <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">নেতিবাচক</p>
+                <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">নেতিবাচক</p>
                 <p className="text-lg font-bold text-[var(--dashboard-danger)] font-mono">−{summary.negativeMarks}</p>
               </div>
               <div className="rounded-xl bg-[var(--dashboard-primary-subtle)] border border-[var(--dashboard-border-muted)] p-3">
-                <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">অ্যাকুরেসি</p>
+                <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">অ্যাকুরেসি</p>
                 <p className="text-lg font-bold text-[var(--text-primary)] font-mono">{summary.accuracy}%</p>
               </div>
             </div>
@@ -1479,7 +1479,7 @@ export default function CustomExamTab() {
                       <MetaChip tone={isCorrect ? "success" : isUnanswered ? "teal" : "danger"}>
                         {isCorrect ? "+১" : isUnanswered ? "০" : "−০.৫"} · {verdictLabel}
                       </MetaChip>
-                      <span className="text-[10px] font-mono" style={{ color: "var(--dashboard-text-secondary)" }}>{item.subject}</span>
+                      <span className="text-[11px] font-mono" style={{ color: "var(--dashboard-text-secondary)" }}>{item.subject}</span>
                     </span>
                   </span>
                   <CaretRight className={`w-4 h-4 flex-shrink-0 transition-transform duration-150 ${open ? "rotate-[270deg]" : "rotate-90"}`} style={{ color: "var(--dashboard-text-muted)" }} aria-hidden="true" />

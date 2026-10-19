@@ -133,9 +133,11 @@ export default function QuizMode({
         return;
       }
       const idx = Number(e.key) - 1;
-      if (idx >= 0 && idx < 4) {
-        const word = state.questions[state.currentIndex];
-        const opts = shuffleOptions(word);
+      const word = state.questions[state.currentIndex];
+      const opts = shuffleOptions(word);
+      // Bounds against the actual option count — a shorter set used to crash
+      // on opts[idx].id when idx reached into 3 but only 2 options existed.
+      if (Number.isInteger(idx) && idx >= 0 && idx < opts.length) {
         handleSelect(opts[idx].id);
       }
     };
@@ -223,7 +225,7 @@ export default function QuizMode({
             <div className="w-3 h-3 rounded-full bg-emerald-400" />
           </div>
           <span className="font-mono text-xs text-[var(--text-muted)]">quiz_results</span>
-          <button onClick={onExit} className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
+          <button onClick={onExit} aria-label="কুইজ বন্ধ করুন" className="w-11 h-11 flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
             <XCircle className="w-4 h-4" />
           </button>
         </div>
@@ -293,7 +295,8 @@ export default function QuizMode({
             if (advanceTimer.current) clearTimeout(advanceTimer.current);
             onExit();
           }}
-          className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+          aria-label="কুইজ বন্ধ করুন"
+          className="w-11 h-11 flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
         >
           <XCircle className="w-4 h-4" />
         </button>
@@ -359,7 +362,7 @@ export default function QuizMode({
                   disabled={state.answered}
                   className={`relative p-4 rounded-xl border transition-all duration-200 font-medium text-sm text-left ${optClass} ${state.answered ? "cursor-default" : "cursor-pointer"}`}
                 >
-                  <span className="absolute top-2 left-3 font-mono text-[10px] text-[var(--text-muted)]">
+                  <span className="absolute top-2 left-3 font-mono text-[11px] text-[var(--text-muted)]">
                     {i + 1}
                   </span>
                   <span className="ml-4">{opt.bengaliMeaning}</span>
@@ -378,7 +381,7 @@ export default function QuizMode({
 
       {/* Keyboard hint */}
       <div className="px-6 pb-4 text-center">
-        <p className="font-mono text-[10px] text-[var(--text-muted)]">
+        <p className="font-mono text-[11px] text-[var(--text-muted)]">
           {t(lang, "১-৪: বিকল্প নির্বাচন · এন্টার: পরবরী · এস্কেপ: বের", "1-4: select · Enter: next · Esc: exit")}
         </p>
       </div>

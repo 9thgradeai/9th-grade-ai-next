@@ -53,7 +53,7 @@ export default function StudentModelTab() {
     model.totalAiQuestions > 0;
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-5 px-4 py-6">
+    <div className="mx-auto flex w-full max-w-3xl flex-col gap-5">
       <div>
         <h1 className="text-xl font-semibold text-[var(--dashboard-text-primary)]">দীর্ঘমেয়াদী শিক্ষার্থী প্রোফাইল</h1>
         <p className="mt-1 text-sm text-[var(--dashboard-text-muted)]">

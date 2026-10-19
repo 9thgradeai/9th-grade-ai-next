@@ -42,6 +42,7 @@ export default function ScrollPractice({
   const [answers, setAnswers] = useState<Record<number, string | undefined>>({});
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(false);
   const [feedback, setFeedback] = useState<
     Record<number, { masteryStatus?: string | null; justMastered?: boolean } | undefined>
   >({});
@@ -87,7 +88,9 @@ export default function ScrollPractice({
       const fb = res.feedback ?? {};
       setFeedback(fb);
     } catch {
-      /* Recording failure shouldn't block the user from reviewing the answers. */
+      // Recording failure shouldn't block the user from reviewing the
+      // answers — but it must not be silent either (B15): surface it.
+      setSubmitError(true);
     } finally {
       submitInFlightRef.current = false;
       setSubmitting(false);
@@ -130,9 +133,9 @@ export default function ScrollPractice({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-2">
         <h3 className="text-sm font-medium text-[var(--text-primary)] font-mono">{title}</h3>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
           <span className="text-xs text-[var(--dashboard-text-muted)] font-mono">
             {submitted
               ? `${drillResults.filter((a) => a.correct).length}/${total} ঠিক`
@@ -142,7 +145,7 @@ export default function ScrollPractice({
             <button
               type="button"
               onClick={onExit}
-              className="text-xs text-[var(--dashboard-text-muted)] font-mono hover:text-[var(--dashboard-text-secondary)] transition-colors"
+              className="min-h-11 px-3 text-xs text-[var(--dashboard-text-muted)] font-mono hover:text-[var(--dashboard-text-secondary)] transition-colors"
             >
               বাতিল
             </button>
@@ -161,7 +164,7 @@ export default function ScrollPractice({
 
       <div
         ref={listRef}
-        className="space-y-4 max-h-[60vh] overflow-y-auto pr-1 scroll-pb-4"
+        className="space-y-4 max-h-[60vh] overflow-y-auto overscroll-contain pr-1 scroll-pb-4"
       >
         {questions.map((q, qi) => {
           const selected = answers[q.id];
@@ -184,7 +187,7 @@ export default function ScrollPractice({
                   : "border-terminal-border"
               }`}
             >
-              <div className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider mb-2">
+              <div className="text-[11px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider mb-2">
                 {q.subject} • {q.topic}
                 {q.year ? ` • ${q.year}` : ""}
                 {q.sourceExam ? ` • ${q.sourceExam}` : ""}
@@ -215,7 +218,7 @@ export default function ScrollPractice({
                       type="button"
                       disabled={submitted}
                       onClick={() => setAnswers((prev) => ({ ...prev, [q.id]: opt }))}
-                      className="w-full text-left px-3.5 py-2.5 rounded-lg border text-sm transition-all flex items-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                      className="w-full min-h-11 text-left px-3.5 py-2.5 rounded-lg border text-sm transition-all flex items-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
                       style={style}
                     >
                       <span className="font-bold">{optLetter}.</span>
@@ -247,7 +250,7 @@ export default function ScrollPractice({
                     <button
                       type="button"
                       onClick={() => toggleExpand(q.id)}
-                      className="ml-auto flex items-center gap-1 text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)] transition-colors"
+                      className="ml-auto min-h-11 flex items-center gap-1 text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)] transition-colors"
                     >
                       <CaretDown className={`w-3.5 h-3.5 transition-transform ${isOpen ? "rotate-180" : ""}`} />
                       ব্যাখ্যা
@@ -271,7 +274,13 @@ export default function ScrollPractice({
         })}
       </div>
 
-      <div className="flex items-center justify-between gap-3 sticky bottom-0 z-30 -mx-1 px-1 pb-1 bg-[var(--dashboard-surface)]">
+      {submitError && (
+        <p role="alert" className="text-xs text-red-500 mb-2">
+          সার্ভারে উত্তর সংরক্ষণ করা যায়নি — তবুও নিচে আপনার উত্তরগুলো দেখতে পারেন।
+        </p>
+      )}
+
+      <div className="flex items-center justify-between gap-3 flex-wrap sticky bottom-[calc(var(--bottom-nav-h)+env(safe-area-inset-bottom,0px)+8px)] lg:bottom-2 z-30 -mx-1 px-1 pb-1 bg-[var(--dashboard-surface)]">
         {!submitted ? (
           <>
             <span className="text-xs text-[var(--dashboard-text-muted)] font-mono">
@@ -289,7 +298,7 @@ export default function ScrollPractice({
           <>
             <button
               onClick={reset}
-              className="px-4 py-2 bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] rounded-lg text-[var(--dashboard-text-secondary)] font-mono text-sm hover:text-[var(--text-primary)] transition-colors flex items-center gap-2"
+              className="min-h-11 px-4 py-2 bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] rounded-lg text-[var(--dashboard-text-secondary)] font-mono text-sm hover:text-[var(--text-primary)] transition-colors flex items-center gap-2"
             >
               <ArrowCounterClockwise className="w-4 h-4" /> আবার
             </button>

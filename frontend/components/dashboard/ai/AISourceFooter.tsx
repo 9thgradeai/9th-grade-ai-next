@@ -23,7 +23,7 @@ export default function AISourceFooter({ provider, model, latencyMs, toolCount, 
   const lang = useContext(LanguageContext)?.lang ?? "en";
   const isMock = provider === "mock";
   return (
-    <p className={`break-words font-mono text-[10px] leading-relaxed tracking-[0.12em] text-[var(--dashboard-text-muted)] ${className ?? ""}`}>
+    <p className={`break-words font-mono text-[11px] leading-relaxed tracking-[0.12em] text-[var(--dashboard-text-muted)] ${className ?? ""}`}>
       {t(lang, "উৎস", "source")}: <span className="text-[var(--dashboard-primary)]">{provider ?? t(lang, "অজানা", "unset")}</span>
       {model ? ` · ${model}` : ""}
       {latencyMs !== undefined && latencyMs !== null && latencyMs > 0 ? ` · ${Math.round(latencyMs)}ms` : ""}

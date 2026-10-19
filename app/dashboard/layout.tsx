@@ -13,6 +13,10 @@ import HeaderActions, { GlobalEcosystemToggle } from "@/components/dashboard/Hea
 import CommandBar from "@/components/dashboard/CommandBar";
 import { DashboardThemeProvider } from "@/lib/dashboard-theme-ctx";
 import { EcosystemProvider } from "@/lib/ecosystem-ctx";
+// MotionConfig honours prefers-reduced-motion for every framer-motion
+// animation below the shell (P2). framer-motion is loaded anyway by the
+// tabs — this adds no new weight to the initial bundle.
+import { MotionConfig } from "framer-motion";
 import { useAuth } from "@/lib/auth-ctx";
 import { LoadingShell } from "@/components/ui/LoadingShell";
 
@@ -146,7 +150,7 @@ function ShortcutsSheet({ open, onClose }: { open: boolean; onClose: () => void 
       <div ref={ref} tabIndex={-1} className="relative w-full max-w-md rounded-2xl border shadow-xl p-5" style={{ background: "var(--dashboard-surface-solid)", borderColor: "var(--dashboard-border-muted)" }}>
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-bold" style={{ color: "var(--dashboard-text-primary)" }}>{t("shell.shortcuts")}</h2>
-          <button onClick={onClose} className="inline-flex h-9 w-9 items-center justify-center rounded-lg" style={{ color: "var(--dashboard-text-muted)" }} aria-label={t("common.close")}><X className="w-4 h-4" /></button>
+          <button onClick={onClose} className="inline-flex h-11 w-11 items-center justify-center rounded-lg" style={{ color: "var(--dashboard-text-muted)" }} aria-label={t("common.close")}><X className="w-4 h-4" /></button>
         </div>
         {/* Unified global keyboard-shortcut map (single cheat-sheet). */}
         <div className="mt-4">
@@ -250,6 +254,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <DashboardThemeProvider>
+      <MotionConfig reducedMotion="user">
       <EcosystemProvider>
       <EmailVerificationGate>
           <div className="dashboard-shell h-dvh overflow-hidden flex" style={{ background: "var(--dashboard-background)" }}>
@@ -258,7 +263,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             {/* Skip link, first focusable element for keyboard users */}
             <a
               href="#dashboard-content"
-              className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[var(--z-tooltip)] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-emerald-500 focus:text-zinc-950 focus:font-mono focus:text-sm"
+              className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[var(--z-tooltip)] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-emerald-500 focus:text-zinc-950 focus:font-mono focus:text-sm min-h-11 min-w-11"
             >
               {t("dashboard.skipToContent")}
             </a>
@@ -343,7 +348,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     onClick={() => window.dispatchEvent(new Event("app:open-command"))}
                     aria-label={t("shell.searchDashboard")}
                     aria-haspopup="dialog"
-                    className="hidden sm:flex h-10 flex-1 max-w-md items-center gap-3 rounded-xl border px-3 text-sm text-[var(--dashboard-text-secondary)] bg-[var(--dashboard-surface-muted)] border-[var(--dashboard-border-muted)] hover:border-[var(--dashboard-primary)] transition-colors"
+                    className="hidden sm:flex h-11 flex-1 max-w-md items-center gap-3 rounded-xl border px-3 text-sm text-[var(--dashboard-text-secondary)] bg-[var(--dashboard-surface-muted)] border-[var(--dashboard-border-muted)] hover:border-[var(--dashboard-primary)] transition-colors"
                   >
                     <MagnifyingGlass className="h-4 w-4 shrink-0" aria-hidden="true" />
                     <span className="truncate">{t("dashboard.controlCenter")}</span>
@@ -354,7 +359,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     onClick={() => window.dispatchEvent(new Event("app:open-command"))}
                     aria-label={t("shell.searchDashboard")}
                     aria-haspopup="dialog"
-                    className="sm:hidden inline-flex h-10 w-10 items-center justify-center rounded-xl border shrink-0"
+                    className="sm:hidden inline-flex h-11 w-11 items-center justify-center rounded-xl border shrink-0"
                     style={{ borderColor: "var(--dashboard-border-muted)", background: "var(--dashboard-surface-muted)", color: "var(--dashboard-text-secondary)" }}
                   >
                     <MagnifyingGlass className="h-4 w-4" aria-hidden="true" />
@@ -388,6 +393,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </div>
         </EmailVerificationGate>
       </EcosystemProvider>
+      </MotionConfig>
     </DashboardThemeProvider>
   );
 }

@@ -161,11 +161,11 @@ export default function StudyPlannerTab() {
           <div className="flex items-center gap-4">
             <div className="text-center px-4 py-2 bg-subtle border border-[var(--accent)]/20 rounded-2xl">
               <div className="text-2xl font-bold text-[var(--dashboard-primary)] font-mono">{progress}%</div>
-              <div className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase">{t("planner.statProgress")}</div>
+              <div className="text-[11px] text-[var(--dashboard-text-muted)] font-mono uppercase">{t("planner.statProgress")}</div>
             </div>
             <div className="text-center px-4 py-2 bg-subtle border border-[var(--accent)]/20 rounded-2xl">
               <div className="text-2xl font-bold text-[var(--dashboard-primary)] font-mono">{completedMinutes}m</div>
-              <div className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase">{t("planner.statStudied")}</div>
+              <div className="text-[11px] text-[var(--dashboard-text-muted)] font-mono uppercase">{t("planner.statStudied")}</div>
             </div>
           </div>
         </div>
@@ -224,8 +224,8 @@ export default function StudyPlannerTab() {
               }`}
             >
               <div className="text-sm font-mono font-medium">{dayName}</div>
-              <div className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">{date}</div>
-              <div className="text-[10px] font-mono mt-1">
+              <div className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">{date}</div>
+              <div className="text-[11px] font-mono mt-1">
                 {done}/{dayTasks.length}
               </div>
             </button>
@@ -291,7 +291,7 @@ export default function StudyPlannerTab() {
                     disabled={togglingId === task.id}
                     aria-label={`${task.title}, সম্পন্ন হিসেবে চিহ্নিত করুন`}
                     aria-pressed={isCompleted}
-                    className={`mt-0.5 w-5 h-5 rounded border-2 flex items-center justify-center transition-all flex-shrink-0 ${
+                    className={`mt-0.5 h-11 w-11 -m-3 rounded border-2 flex items-center justify-center transition-all flex-shrink-0 ${
                       isCompleted
                         ? "bg-[var(--accent)] border-[var(--accent)] text-[var(--dashboard-text-inverse)]"
                         : "border-[var(--accent)]/30 hover:border-[var(--accent)]/50"
@@ -308,7 +308,7 @@ export default function StudyPlannerTab() {
                         </h4>
                         <p className="text-xs text-[var(--dashboard-text-muted)] font-mono mt-0.5">{task.description}</p>
                       </div>
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-mono border ${priorityColor(task.priority)}`}>
+                      <span className={`px-2 py-0.5 rounded text-[11px] font-mono border ${priorityColor(task.priority)}`}>
                         {task.priority.toUpperCase()}
                       </span>
                     </div>

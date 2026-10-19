@@ -116,6 +116,7 @@ export default function OnboardingPage() {
             <input
               id="studyHoursPerDay"
               type="number"
+              inputMode="numeric"
               min={0}
               max={24}
               value={studyHoursPerDay}

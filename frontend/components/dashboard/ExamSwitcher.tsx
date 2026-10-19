@@ -197,7 +197,7 @@ export default function ExamSwitcher({ compact = false, id }: ExamSwitcherProps)
         </span>
         <span className="min-w-0 flex-1">
           <span
-            className="block text-[10px] font-bold uppercase tracking-[0.12em]"
+            className="block text-[11px] font-bold uppercase tracking-[0.12em]"
             style={{ color: "var(--dashboard-text-muted)" }}
           >
             Practice scope

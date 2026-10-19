@@ -56,12 +56,15 @@ export default function TodayPlanCard({ tasks, onToggle, onTaskAdded }: Props) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span
-              className="w-7 h-7 rounded-lg flex items-center justify-center border shadow-sm"
+              className="w-11 h-11 rounded-lg flex items-center justify-center border shadow-sm"
               style={{ background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-primary)" }}
             >
               <Calendar className="w-4 h-4" />
             </span>
-            <p className="command-eyebrow !text-[10px]">{t(lang, "আজকের অভিযোজন পরিকল্পনা", "Today's Adaptive Plan")}</p>
+            <p className="command-eyebrow !text-[11px]">{t(lang, "আজকের অভিযোজন পরিকল্পনা", "Today's Adaptive Plan")}</p>
+            {tasks.length < 5 && (
+              <span className="ml-2 text-[11px] font-bold bg-[var(--dashboard-primary)] text-[var(--dashboard-text-inverse)] rounded-full w-2.5 h-2.5">{tasks.length}</span>
+            )}
           </div>
           <div className="flex items-center gap-2">
             {tasks.length > 0 && (
@@ -71,7 +74,7 @@ export default function TodayPlanCard({ tasks, onToggle, onTaskAdded }: Props) {
             )}
             <button
               onClick={() => setShowAddForm((p) => !p)}
-              className="w-7 h-7 rounded-lg border flex items-center justify-center text-[var(--dashboard-primary)] hover:bg-[var(--dashboard-primary-subtle)] transition-colors"
+              className="w-11 h-11 rounded-lg border flex items-center justify-center text-[var(--dashboard-primary)] hover:bg-[var(--dashboard-primary-subtle)] transition-colors"
               style={{ borderColor: "var(--dashboard-border-muted)" }}
               title={t(lang, "আজকের পরিকল্পনায় কাজ যোগ করুন", "Add task to today's plan")}
             >
@@ -100,7 +103,7 @@ export default function TodayPlanCard({ tasks, onToggle, onTaskAdded }: Props) {
             placeholder={t(lang, "যেমন: বিসিএস ইতিহাসের ২০টি প্রশ্ন সমাধান", "e.g. Solve 20 BCS History Questions")}
             value={newTitle}
             onChange={(e) => setNewTitle(e.target.value)}
-            className="w-full px-3 py-1.5 text-xs rounded-lg border focus:outline-none"
+            className="w-full px-3 min-h-11 text-xs rounded-lg border focus:outline-none"
             style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-primary)" }}
             autoFocus
           />
@@ -108,7 +111,7 @@ export default function TodayPlanCard({ tasks, onToggle, onTaskAdded }: Props) {
             <select
               value={newSubject}
               onChange={(e) => setNewSubject(e.target.value)}
-              className="text-xs px-2 py-1 rounded-lg border"
+              className="text-xs px-2 min-h-11 rounded-lg border"
               style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-primary)" }}
             >
               <option value="বাংলাদেশ বিষয়াবলি">বাংলাদেশ বিষয়াবলি</option>
@@ -121,14 +124,14 @@ export default function TodayPlanCard({ tasks, onToggle, onTaskAdded }: Props) {
               <button
                 type="button"
                 onClick={() => setShowAddForm(false)}
-                className="px-2.5 py-1 text-xs font-semibold rounded-lg text-[var(--dashboard-text-muted)]"
+                className="px-2.5 min-h-11 text-xs font-semibold rounded-lg text-[var(--dashboard-text-muted)]"
               >
                 {t(lang, "বাতিল", "Cancel")}
               </button>
               <button
                 type="submit"
                 disabled={adding || !newTitle.trim()}
-                className="command-primary-btn !px-3 !py-1 !text-xs"
+                className="command-primary-btn !px-3 min-h-11 !text-xs"
               >
                 {adding ? <Spinner className="w-3 h-3 animate-spin" /> : t(lang, "সংরক্ষণ", "Save")}
               </button>
@@ -161,7 +164,7 @@ export default function TodayPlanCard({ tasks, onToggle, onTaskAdded }: Props) {
                 onClick={() => void onToggle(t.id)}
                 aria-pressed={t.completed}
                 aria-label={t.completed ? "Mark incomplete" : "Mark complete"}
-                className="w-5 h-5 rounded-md border flex items-center justify-center shrink-0 transition-transform active:scale-90"
+                className="h-11 w-11 -m-3 rounded-md border flex items-center justify-center shrink-0 transition-transform active:scale-90"
                 style={{
                   background: t.completed ? "var(--dashboard-success)" : "transparent",
                   borderColor: t.completed ? "var(--dashboard-success)" : "var(--dashboard-border-strong)",
@@ -185,7 +188,7 @@ export default function TodayPlanCard({ tasks, onToggle, onTaskAdded }: Props) {
                 </p>
               </div>
               <span
-                className="text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0"
+                className="text-[11px] font-bold px-2 py-0.5 rounded-full shrink-0"
                 style={{
                   background: t.priority === "high" ? "var(--dashboard-danger-subtle)" : t.priority === "medium" ? "var(--dashboard-warning-subtle)" : "var(--dashboard-surface)",
                   color: t.priority === "high" ? "var(--dashboard-danger)" : t.priority === "medium" ? "var(--dashboard-warning)" : "var(--dashboard-text-muted)",
@@ -203,7 +206,7 @@ export default function TodayPlanCard({ tasks, onToggle, onTaskAdded }: Props) {
         <button onClick={() => setActiveTab("study-planner")} className="text-xs font-semibold inline-flex items-center gap-1" style={{ color: "var(--dashboard-primary)" }}>
           {t(lang, "সম্পূর্ণ AI প্ল্যানার", "Full AI Planner")} <ArrowRight className="w-3.5 h-3.5" />
         </button>
-        <span className="text-[10px] font-mono text-[var(--dashboard-text-muted)]">{t(lang, "অভিযোজন সারি", "Adaptive Queue")}</span>
+        <span className="text-[11px] font-mono text-[var(--dashboard-text-muted)]">{t(lang, "অভিযোজন সারি", "Adaptive Queue")}</span>
       </div>
     </div>
   );

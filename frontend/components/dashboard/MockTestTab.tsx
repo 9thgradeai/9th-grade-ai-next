@@ -779,10 +779,10 @@ export default function MockTestTab() {
             className="glass-card rounded-2xl border border-terminal-border p-4 md:p-6 overscroll-contain scroll-mt-28"
           >
             <div className="flex flex-wrap items-center gap-2 mb-3">
-              <span className="px-2 py-0.5 rounded bg-[var(--surface-overlay)] text-[10px] font-mono text-[var(--dashboard-text-secondary)]">
+              <span className="px-2 py-0.5 rounded bg-[var(--surface-overlay)] text-[11px] font-mono text-[var(--dashboard-text-secondary)]">
                 প্রশ্ন {currentQuestion + 1}/{totalQuestions}
               </span>
-              <span className="px-2 py-0.5 rounded bg-[var(--surface-overlay)] text-[10px] font-mono text-[var(--dashboard-text-muted)]">
+              <span className="px-2 py-0.5 rounded bg-[var(--surface-overlay)] text-[11px] font-mono text-[var(--dashboard-text-muted)]">
                 {q.subject}
               </span>
               <MetaChip
@@ -792,7 +792,7 @@ export default function MockTestTab() {
                 {DIFFICULTY_LABEL[q.difficulty] ?? q.difficulty}
               </MetaChip>
               {q.topic && (
-                <span className="px-2 py-0.5 rounded bg-[var(--surface-overlay)] text-[10px] font-mono text-[var(--dashboard-text-muted)]">
+                <span className="px-2 py-0.5 rounded bg-[var(--surface-overlay)] text-[11px] font-mono text-[var(--dashboard-text-muted)]">
                   {q.topic}
                 </span>
               )}
@@ -801,7 +801,7 @@ export default function MockTestTab() {
                 onClick={() => toggleFlag(q.id)}
                 aria-pressed={flagged[q.id] === true}
                 aria-label="পরে দেখার জন্য ফ্ল্যাগ করুন"
-                className="inline-flex items-center gap-1 min-h-[44px] px-3 rounded-full border font-mono text-[10px] cursor-pointer transition-all active:scale-95 [touch-action:manipulation] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                className="inline-flex items-center gap-1 min-h-[44px] px-3 rounded-full border font-mono text-[11px] cursor-pointer transition-all active:scale-95 [touch-action:manipulation] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
                 style={
                   flagged[q.id]
                     ? { color: "var(--dashboard-warning)", borderColor: "var(--dashboard-warning)", background: "var(--dashboard-warning-subtle)" }
@@ -915,10 +915,10 @@ export default function MockTestTab() {
 
         {/* Question map, horizontal scroll on mobile, sticky grid sidebar on desktop */}
         <div className="glass-card rounded-2xl border border-terminal-border p-3 lg:sticky lg:top-24">
-          <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-widest mb-2">
+          <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-widest mb-2">
             প্রশ্ন তালিকা
           </p>
-          <div className="flex flex-wrap gap-1.5 md:grid md:grid-cols-8 lg:grid-cols-5" role="group" aria-label="প্রশ্ন তালিকা">
+          <div className="flex flex-wrap gap-1.5 md:grid md:grid-cols-5 lg:grid-cols-8" role="group" aria-label="প্রশ্ন তালিকা">
             {questions.map((qq, i) => {
               const isAnswered = answers[qq.id] !== undefined;
               const isCurrent = i === currentQuestion;
@@ -944,7 +944,7 @@ export default function MockTestTab() {
               );
             })}
           </div>
-          <ul className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] font-mono" style={{ color: "var(--dashboard-text-muted)" }} aria-label="প্রশ্ন অবস্থার নির্দেশিকা">
+          <ul className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-mono" style={{ color: "var(--dashboard-text-muted)" }} aria-label="প্রশ্ন অবস্থার নির্দেশিকা">
             <li className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full" style={{ background: "var(--dashboard-primary)" }} aria-hidden="true" /> বর্তমান</li>
             <li className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full border" style={{ borderColor: "var(--dashboard-primary)", background: "var(--dashboard-primary-subtle)" }} aria-hidden="true" /> ✓ উত্তর দেওয়া</li>
             <li className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full" style={{ background: "var(--dashboard-warning)" }} aria-hidden="true" /> ⚑ ফ্ল্যাগ</li>
@@ -1058,7 +1058,7 @@ export default function MockTestTab() {
                 aria-label={`সঠিক ${summary.correct}টি প্রশ্ন`}
                 className="rounded-xl bg-[var(--dashboard-success-subtle)] border border-[var(--dashboard-success)]/25 p-3 min-h-[64px] text-left cursor-pointer transition-[border-color,opacity] duration-150 hover:border-[var(--dashboard-success)]/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-success)] disabled:opacity-50 disabled:cursor-default"
               >
-                <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">সঠিক</p>
+                <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">সঠিক</p>
                 <p className="text-lg font-bold text-[var(--dashboard-success)] font-mono">+{summary.correct}</p>
               </button>
               <button
@@ -1068,7 +1068,7 @@ export default function MockTestTab() {
                 aria-label={`ভুল ${summary.wrong}টি প্রশ্ন`}
                 className="rounded-xl bg-[var(--dashboard-danger-subtle)] border border-[var(--dashboard-danger)]/25 p-3 min-h-[64px] text-left cursor-pointer transition-[border-color,opacity] duration-150 hover:border-[var(--dashboard-danger)]/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-danger)] disabled:opacity-50 disabled:cursor-default"
               >
-                <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">ভুল</p>
+                <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">ভুল</p>
                 <p className="text-lg font-bold text-[var(--dashboard-danger)] font-mono">−{summary.wrong}</p>
               </button>
               <button
@@ -1078,7 +1078,7 @@ export default function MockTestTab() {
                 aria-label={`উত্তর দেওয়া হয়নি ${summary.unanswered}টি প্রশ্ন`}
                 className="rounded-xl bg-[var(--dashboard-teal-subtle)] border border-[var(--dashboard-teal)]/30 p-3 min-h-[64px] text-left cursor-pointer transition-[border-color,opacity] duration-150 hover:border-[var(--dashboard-teal)]/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-teal)] disabled:opacity-50 disabled:cursor-default"
               >
-                <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">উত্তর দেওয়া হয়নি</p>
+                <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">উত্তর দেওয়া হয়নি</p>
                 <p className="text-lg font-bold text-[var(--dashboard-teal)] font-mono">{summary.unanswered}</p>
               </button>
             </div>

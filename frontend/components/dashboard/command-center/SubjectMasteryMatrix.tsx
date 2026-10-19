@@ -114,7 +114,7 @@ function SubjectRow({
                         {topic.topic}{" "}
                         {stale && (
                           <span
-                            className="ml-1 inline-block align-middle text-[10px] font-mono font-bold px-1.5 py-px rounded-full border"
+                            className="ml-1 inline-block align-middle text-[11px] font-mono font-bold px-1.5 py-px rounded-full border"
                             style={{ color: "var(--dashboard-warning)", borderColor: "color-mix(in srgb, var(--dashboard-warning) 35%, transparent)", background: "var(--dashboard-warning-subtle)" }}
                             title={t(lang, "১৪+ দিন ধরা হয়নি, ভুলে যাওয়ার ঝুঁকি", "Untouched for 14+ days, forgetting risk")}
                           >
@@ -129,7 +129,7 @@ function SubjectRow({
                     <span className="text-xs font-mono font-extrabold shrink-0" style={{ color: tt }}>{topic.accuracy}%</span>
                     <button
                       onClick={() => onDrill(topic.subject, topic.topic)}
-                      className="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-colors"
+                      className="shrink-0 inline-flex items-center gap-1 px-2.5 min-h-11 rounded-lg text-[11px] font-bold transition-colors"
                       style={{ background: "var(--dashboard-primary-subtle)", color: "var(--dashboard-primary)", border: "1px solid color-mix(in srgb, var(--dashboard-primary) 24%, transparent)" }}
                     >
                       <Play className="w-3 h-3" aria-hidden="true" />

@@ -60,7 +60,7 @@ export default function StreakHeatmap({ activeDays, labels, freezeAvailable = fa
             } ${i === days.length - 1 ? "ring-1 ring-[var(--dashboard-primary)]" : ""}`}
             aria-hidden="true"
           />
-          <span className="text-[9px] text-[var(--dashboard-text-muted)] font-mono">{dayLabels[i]}</span>
+          <span className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">{dayLabels[i]}</span>
         </motion.div>
       ))}
       {freezeAvailable && (

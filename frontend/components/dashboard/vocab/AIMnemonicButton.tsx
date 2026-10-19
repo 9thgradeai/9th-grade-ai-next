@@ -85,7 +85,7 @@ export default function AIMnemonicButton({ word, bengaliMeaning, context, existi
         {existingMnemonic && (
           <button
             onClick={() => setShowSeed(!showSeed)}
-            className="flex items-center gap-1 px-2 py-1.5 rounded-lg border border-terminal-border bg-[var(--surface-raised)] text-[var(--dashboard-text-muted)] font-mono text-[10px] hover:border-[var(--accent)]/40 transition-colors"
+            className="flex items-center gap-1 px-2 py-1.5 rounded-lg border border-terminal-border bg-[var(--surface-raised)] text-[var(--dashboard-text-muted)] font-mono text-[11px] hover:border-[var(--accent)]/40 transition-colors"
           >
             <Lightbulb className="w-2.5 h-2.5" />
             {showSeed ? t(lang, "সিড লুকান", "Hide Seed") : t(lang, "সিড দেখুন", "Show Seed")}
@@ -105,7 +105,7 @@ export default function AIMnemonicButton({ word, bengaliMeaning, context, existi
               <div className="flex-1">
                 <div className="flex items-center gap-1.5 mb-1">
                   <Sparkle className="w-3 h-3 text-amber-500" />
-                  <span className="text-[10px] font-mono text-amber-600 bg-amber-500/10 px-1.5 py-0.5 rounded">AI</span>
+                  <span className="text-[11px] font-mono text-amber-600 bg-amber-500/10 px-1.5 py-0.5 rounded">AI</span>
                 </div>
                 <p className="text-sm text-[var(--dashboard-text-secondary)] leading-relaxed">{aiMnemonic}</p>
                 <AISourceFooter provider={aiSource} className="mt-2" />
@@ -130,7 +130,7 @@ export default function AIMnemonicButton({ word, bengaliMeaning, context, existi
           >
             <div className="flex items-center gap-1.5 mb-1">
               <Lightbulb className="w-3 h-3 text-[var(--accent)]" />
-              <span className="text-[10px] font-mono text-[var(--dashboard-text-muted)]">{t(lang, "সিড মনেমন্ত্র", "Seed Mnemonic")}</span>
+              <span className="text-[11px] font-mono text-[var(--dashboard-text-muted)]">{t(lang, "সিড মনেমন্ত্র", "Seed Mnemonic")}</span>
             </div>
             <p className="text-sm text-[var(--dashboard-text-secondary)]">{existingMnemonic}</p>
           </motion.div>

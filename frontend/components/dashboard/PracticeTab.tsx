@@ -130,6 +130,7 @@ export default function PracticeTab() {
     });
   }, []);
   const [result, setResult] = useState<{ correct: number; total: number; score: number; pointsEarned: number; wrong?: number; negativeMarks?: number; finalScore?: number; penaltyPerWrong?: number } | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   // Offline outbox: a network-failed submit queues the payload for retry

@@ -18,7 +18,10 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'npm run dev',
+    // RL_REGISTER_PER_MIN: the audit suite registers one user per worker;
+    // the default IP limit (3/min) 429s parallel workers. Raised for the
+    // local e2e server only — production defaults are unchanged.
+    command: 'RL_REGISTER_PER_MIN=60 npm run dev',
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
     timeout: 120000,

@@ -403,7 +403,7 @@ export default function FlashcardsTab() {
               ].map((stat) => (
                 <div key={stat.label} className="command-card command-card--compact text-center">
                   <div className={`text-2xl font-bold font-mono ${stat.color}`}>{stat.value}</div>
-                  <div className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider">{stat.label}</div>
+                  <div className="text-[11px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider">{stat.label}</div>
                 </div>
               ));
             })()}
@@ -511,7 +511,7 @@ export default function FlashcardsTab() {
                     style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}
                   >
                     <div className="text-center max-w-lg">
-                      <div className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider mb-3">
+                      <div className="text-[11px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider mb-3">
                         {currentCard.subject} • {currentCard.difficulty}
                       </div>
                       <h4 className="text-xl font-medium mb-4 text-[var(--text-primary)]">Question</h4>
@@ -544,7 +544,7 @@ export default function FlashcardsTab() {
                     }}
                   >
                     <div className="text-center max-w-lg">
-                      <div className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider mb-3">
+                      <div className="text-[11px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider mb-3">
                         {currentCard.subject} • {currentCard.difficulty}
                       </div>
                       <h4 className="text-xl font-medium mb-4 text-[var(--dashboard-primary)]">Answer</h4>
@@ -683,14 +683,14 @@ function DeckPicker({
       </div>
 
       {/* Phase tabs */}
-      <div className="grid grid-cols-3 gap-2 mb-4" role="tablist" aria-label="Learning phase">
+      <div className="flex gap-2 mb-4" role="tablist" aria-label="Learning phase">
         {PHASES.map((p) => (
           <button
             key={p.id}
             role="tab"
             aria-selected={phase === p.id}
             onClick={() => onPhaseChange(p.id)}
-            className={`rounded-lg border p-3 text-center transition-colors ${
+            className={`flex-1 rounded-lg border p-3 text-center transition-colors ${
               phase === p.id
                 ? "bg-[var(--dashboard-primary-subtle)] border-[var(--primary)]/40"
                 : "bg-[var(--surface-raised)] border-[var(--dashboard-border-muted)]"
@@ -700,7 +700,7 @@ function DeckPicker({
               {counts[p.id]}
             </div>
             <div className="text-xs font-medium text-[var(--text-primary)]">{p.label}</div>
-            <div className="text-[10px] font-mono text-[var(--dashboard-text-muted)]">{p.hint}</div>
+            <div className="text-[11px] font-mono text-[var(--dashboard-text-muted)]">{p.hint}</div>
           </button>
         ))}
       </div>
@@ -732,7 +732,7 @@ function DeckPicker({
             >
               <div className="flex items-center justify-between mb-2">
                 <h3 className="text-sm font-medium text-[var(--text-primary)]">{deckName}</h3>
-                <span className="px-2 py-0.5 bg-[var(--dashboard-primary-subtle)] border border-[var(--accent)]/20 rounded text-[10px] font-mono text-[var(--dashboard-primary)]">
+                <span className="px-2 py-0.5 bg-[var(--dashboard-primary-subtle)] border border-[var(--accent)]/20 rounded text-[11px] font-mono text-[var(--dashboard-primary)]">
                   {phase === "practice" ? `${dueCount} due` : `${inPhase} cards`}
                 </span>
               </div>

@@ -50,7 +50,7 @@ export default function UsageTab() {
   const maxProv = Math.max(1, ...data.byProvider.map((p) => p.calls));
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-5 px-4 py-6">
+    <div className="mx-auto flex w-full max-w-3xl flex-col gap-5">
       <div>
         <h1 className="text-xl font-semibold text-[var(--dashboard-text-primary)]">AI ব্যবহার ও পর্যবেক্ষণ</h1>
         <p className="mt-1 text-sm text-[var(--dashboard-text-muted)]">
@@ -95,7 +95,7 @@ export default function UsageTab() {
                   className="w-full rounded-t bg-[var(--accent)]/70"
                   style={{ height: `${Math.max(4, (d.calls / maxDay) * 64)}px` }}
                 />
-                <span className="text-[9px] text-[var(--dashboard-text-muted)]">{d.date.slice(5)}</span>
+                <span className="text-[11px] text-[var(--dashboard-text-muted)]">{d.date.slice(5)}</span>
               </div>
             ))}
           </div>

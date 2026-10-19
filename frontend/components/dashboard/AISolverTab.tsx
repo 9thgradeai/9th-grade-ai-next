@@ -175,7 +175,7 @@ export default function AISolverTab() {
             <button
               key={subject}
               onClick={() => setSelectedSubject(subject)}
-              className={`px-3 py-1.5 rounded-lg border border-border text-xs font-mono transition-all ${
+              className={`px-3 py-1.5 rounded-lg border border-border text-xs font-mono transition-all min-h-11 ${
                 selectedSubject === subject
                   ? "bg-primary-subtle border-primary/30 text-primary"
                   : "bg-subtle border-border-muted text-text-muted hover:border-primary/20"
@@ -190,7 +190,7 @@ export default function AISolverTab() {
         <div className="flex gap-2 mb-4">
           <button
             onClick={() => setInputType("text")}
-            className={`flex-1 py-2.5 rounded-lg border border-border font-mono text-sm transition-all ${
+            className={`flex-1 py-2.5 rounded-lg border border-border font-mono text-sm transition-all min-h-11 ${
               inputType === "text"
                 ? "bg-primary-subtle border-primary/30 text-primary"
                 : "bg-subtle border-border-muted text-text-muted"
@@ -200,7 +200,7 @@ export default function AISolverTab() {
           </button>
           <button
             onClick={() => setInputType("image")}
-            className={`flex-1 py-2.5 rounded-lg border border-border font-mono text-sm transition-all ${
+            className={`flex-1 py-2.5 rounded-lg border border-border font-mono text-sm transition-all min-h-11 ${
               inputType === "image"
                 ? "bg-primary-subtle border-primary/30 text-primary"
                 : "bg-subtle border-border-muted text-text-muted"
@@ -227,7 +227,8 @@ export default function AISolverTab() {
               {textInput && (
                 <button
                   onClick={clearAll}
-                  className="absolute top-3 right-3 p-1 text-text-muted hover:text-text-primary transition-colors"
+                  aria-label="লেখা মুছুন"
+                  className="absolute top-3 right-3 p-3 text-text-muted hover:text-text-primary transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -249,7 +250,8 @@ export default function AISolverTab() {
                     src={imagePreview}
                     alt="Uploaded question"
                     decoding="async"
-                    className="w-full max-h-64 object-contain rounded-2xl border border-primary/20"
+                    loading="lazy"
+                    className="w-full max-h-64 object-contain rounded-2xl border border-primary/20 aspect-[4/3]"
                   />
                   <button
                     type="button"
@@ -281,7 +283,7 @@ export default function AISolverTab() {
                   key={i}
                   disabled={isSolving}
                   onClick={() => { setTextInput(ex.question); setInputType("text"); }}
-                  className="px-3 py-1.5 bg-subtle border border-border rounded-lg text-xs text-text-muted hover:border-primary/20 hover:text-text-primary transition-all"
+                  className="px-3 py-1.5 min-h-11 bg-subtle border border-border rounded-lg text-xs text-text-muted hover:border-primary/20 hover:text-text-primary transition-all"
                 >
                   {ex.subject}: <RichText text={truncateMathSafe(ex.question, 40)} />
                 </button>
@@ -293,7 +295,7 @@ export default function AISolverTab() {
           {solverError && (
             <div role="alert" className="rounded-xl border border-red-500/30 bg-red-500/10 p-3 flex items-center justify-between gap-2">
               <p className="text-xs font-mono text-red-300">{solverError}</p>
-              <button type="button" onClick={() => void solveQuestion()} className="px-3 py-1.5 rounded-lg border border-red-500/30 text-xs font-mono">আবার চেষ্টা করুন</button>
+              <button type="button" onClick={() => void solveQuestion()} className="px-3 py-1.5 min-h-11 rounded-lg border border-red-500/30 text-xs font-mono">আবার চেষ্টা করুন</button>
             </div>
           )}
 

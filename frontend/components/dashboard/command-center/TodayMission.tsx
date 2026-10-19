@@ -294,7 +294,7 @@ export default function TodayMission({
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
             <p className="font-mono text-lg font-bold leading-none text-[var(--dashboard-text-primary)]">{orbitValue}</p>
-            <p className="mt-1 text-[9px] font-bold uppercase tracking-[0.14em] text-[var(--dashboard-text-muted)]">{orbitLabel}</p>
+            <p className="mt-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--dashboard-text-muted)]">{orbitLabel}</p>
           </div>
         </div>
 

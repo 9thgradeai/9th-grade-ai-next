@@ -146,7 +146,7 @@ export default function ExamHistoryTab() {
           <Warning className="w-10 h-10 mx-auto mb-3 text-[var(--warning)]" aria-hidden="true" />
           <p className="text-sm text-[var(--dashboard-text-muted)]">{error}</p>
           <Button variant="primary" size="sm" className="mt-4" onClick={handleRetry}>
-            আবার চেষ্টা করুন
+            {t("common.retry")}
           </Button>
         </motion.div>
       </div>
@@ -173,19 +173,19 @@ export default function ExamHistoryTab() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
               <div className="glass-card rounded-xl border border-terminal-border p-4 text-center">
                 <p className="text-2xl font-bold font-mono text-[var(--dashboard-primary)]">{stats.total}</p>
-                <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider">মোট পরীক্ষা</p>
+                <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider">মোট পরীক্ষা</p>
               </div>
               <div className="glass-card rounded-xl border border-terminal-border p-4 text-center">
                 <p className="text-2xl font-bold font-mono text-[var(--dashboard-warning)]">{stats.avgScore}%</p>
-                <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider">গড় স্কোর</p>
+                <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider">গড় স্কোর</p>
               </div>
               <div className="glass-card rounded-xl border border-terminal-border p-4 text-center">
                 <p className="text-2xl font-bold font-mono text-[var(--dashboard-success)]">{stats.bestScore}%</p>
-                <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider">সেরা স্কোর</p>
+                <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider">সেরা স্কোর</p>
               </div>
               <div className="glass-card rounded-xl border border-terminal-border p-4 text-center">
                 <p className="text-2xl font-bold font-mono text-[var(--dashboard-info)]">{stats.totalQuestions}</p>
-                <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider">মোট প্রশ্ন</p>
+                <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider">মোট প্রশ্ন</p>
               </div>
             </div>
           )}
@@ -197,7 +197,7 @@ export default function ExamHistoryTab() {
                 <button
                   key={f}
                   onClick={() => setFilter(f)}
-                  className={`px-3 py-1.5 text-xs font-mono rounded-md transition-all ${
+                  className={`px-3 py-1.5 text-xs font-mono rounded-md transition-all min-h-11 min-w-11 ${
                     filter === f
                       ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)]"
                       : "text-[var(--dashboard-text-secondary)] hover:text-[var(--text-primary)]"
@@ -211,7 +211,7 @@ export default function ExamHistoryTab() {
             <div className="flex items-center gap-1">
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="px-3 py-1.5 text-xs font-mono rounded-lg border border-[var(--dashboard-border-muted)] bg-[var(--surface-raised)] text-[var(--dashboard-text-secondary)] hover:text-[var(--text-primary)] transition-colors flex items-center gap-1"
+                className="px-3 py-1.5 text-xs font-mono rounded-lg border border-[var(--dashboard-border-muted)] bg-[var(--surface-raised)] text-[var(--dashboard-text-secondary)] hover:text-[var(--text-primary)] transition-colors flex items-center gap-1 min-h-11"
               >
                 <Funnel className="w-3.5 h-3.5" />
                 <span>সাজান</span>
@@ -232,7 +232,7 @@ export default function ExamHistoryTab() {
                 <select
                   value={sortOrder}
                   onChange={(e) => setSortOrder(e.target.value as SortOrder)}
-                  className="px-3 py-1.5 text-xs font-mono rounded-lg border border-[var(--dashboard-border-muted)] bg-[var(--surface-muted)] text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--dashboard-focus-ring)]"
+                  className="px-3 py-1.5 text-xs font-mono rounded-lg border border-[var(--dashboard-border-muted)] bg-[var(--surface-muted)] text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--dashboard-focus-ring)] min-h-11"
                 >
                   <option value="newest">সবচেয়ে নতুন আগে</option>
                   <option value="oldest">সবচেয়ে পুরনো আগে</option>
@@ -253,7 +253,8 @@ export default function ExamHistoryTab() {
               <Calendar className="w-5 h-5 text-[var(--dashboard-warning)]" />
               <h3 className="text-lg font-bold text-[var(--text-primary)]">আপকামিং পরীক্ষা</h3>
             </div>
-            <span className="px-2 py-0.5 rounded bg-[var(--dashboard-warning-subtle)] text-[var(--dashboard-warning)] text-xs font-mono">
+            <span className="flex items-center gap-1 px-2 py-0.5 rounded bg-[var(--dashboard-warning-subtle)] text-[var(--dashboard-warning)] text-xs font-mono">
+                {history.upcoming.length > 0 && (<span className="bg-[var(--dashboard-danger)] text-[var(--dashboard-text-inverse)] rounded-full text-[1px] w-1.5 h-1.5">{history.upcoming.length}</span>)}
               {history.upcoming.length}টি
             </span>
           </div>
@@ -269,10 +270,10 @@ export default function ExamHistoryTab() {
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="px-2 py-0.5 rounded bg-[var(--dashboard-warning-subtle)] text-[var(--dashboard-warning)] text-[10px] font-mono">
+                      <span className="px-2 py-0.5 rounded bg-[var(--dashboard-warning-subtle)] text-[var(--dashboard-warning)] text-[11px] font-mono">
                         {exam.type}
                       </span>
-                      <span className="px-2 py-0.5 rounded bg-[var(--dashboard-info-subtle)] text-[var(--dashboard-info)] text-[10px] font-mono">
+                      <span className="px-2 py-0.5 rounded bg-[var(--dashboard-info-subtle)] text-[var(--dashboard-info)] text-[11px] font-mono">
                         {exam.year || "২০২৬"}
                       </span>
                     </div>
@@ -284,8 +285,8 @@ export default function ExamHistoryTab() {
                     <p className={`text-xl font-bold font-mono ${exam.daysUntil <= 7 ? "text-[var(--dashboard-danger)]" : exam.daysUntil <= 30 ? "text-[var(--dashboard-warning)]" : "text-[var(--dashboard-primary)]"}`}>
                       {exam.daysUntil} দিন
                     </p>
-                    <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">বাকি</p>
-                    <p className="text-[10px] text-[var(--dashboard-text-muted)] mt-1">{formatDate(exam.date)}</p>
+                    <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">বাকি</p>
+                    <p className="text-[11px] text-[var(--dashboard-text-muted)] mt-1">{formatDate(exam.date)}</p>
                   </div>
                 </div>
                 {exam.sourceUrl && (
@@ -323,7 +324,7 @@ export default function ExamHistoryTab() {
             <Trophy className="w-16 h-16 mx-auto mb-4 text-[var(--dashboard-text-muted)]/30" aria-hidden="true" />
             <h4 className="text-lg font-semibold text-[var(--text-primary)] mb-2">কোনো পরীক্ষার ইতিহাস নেই</h4>
             <p className="text-sm text-[var(--dashboard-text-muted)] max-w-xs mx-auto">
-              এখনো কোনো পরীক্ষা দেননি। প্রথম পরীক্ষা দিতে প্র্যাকটিস বা মক টেস্ট ট্যাবে যান।
+              {t("exam-history.no-exams")}। প্রথম পরীক্ষা দিতে প্র্যাকটিস বা মক টেস্ট ট্যাবে যান।
             </p>
           </div>
         ) : (
@@ -351,7 +352,7 @@ export default function ExamHistoryTab() {
                       <p className={`text-xl font-bold font-mono ${getScoreColor(item.percentage)}`}>
                         {item.percentage}%
                       </p>
-                      <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">{getScoreLabel(item.percentage)}</p>
+                      <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">{getScoreLabel(item.percentage)}</p>
                     </div>
                   </div>
 
@@ -394,19 +395,19 @@ export default function ExamHistoryTab() {
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
                         <div className="glass-card rounded-xl border border-terminal-border p-3 text-center">
                           <p className="text-2xl font-bold font-mono text-[var(--dashboard-primary)]">{item.correct}</p>
-                          <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">সঠিক</p>
+                          <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">সঠিক</p>
                         </div>
                         <div className="glass-card rounded-xl border border-terminal-border p-3 text-center">
                           <p className="text-2xl font-bold font-mono text-[var(--dashboard-danger)]">{Math.max(0, item.total - item.correct)}</p>
-                          <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">ভুল / উত্তরহীন</p>
+                          <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">ভুল / উত্তরহীন</p>
                         </div>
                         <div className="glass-card rounded-xl border border-terminal-border p-3 text-center">
                           <p className="text-2xl font-bold font-mono text-[var(--dashboard-warning)]">{item.total}</p>
-                          <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">মোট প্রশ্ন</p>
+                          <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">মোট প্রশ্ন</p>
                         </div>
                         <div className="glass-card rounded-xl border border-terminal-border p-3 text-center">
                           <p className="text-2xl font-bold font-mono text-[var(--dashboard-info)]">{formatTime(item.durationSec)}</p>
-                          <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">সময় লেগেছে</p>
+                          <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">সময় লেগেছে</p>
                         </div>
                       </div>
                     </motion.div>

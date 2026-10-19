@@ -139,9 +139,9 @@ export default function HomeCoach() {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <p className="command-eyebrow !text-[10px]">AI স্টাডি কোচ</p>
+              <p className="command-eyebrow !text-[11px]">AI স্টাডি কোচ</p>
               <span
-                className="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full border"
+                className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-full border"
                 style={{ background: "var(--dashboard-surface-muted)", borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-muted)" }}
               >
                 v2.4
@@ -157,7 +157,7 @@ export default function HomeCoach() {
           type="button"
           onClick={runDefault}
           disabled={running}
-          className="command-primary-btn shrink-0"
+          className="command-primary-btn shrink-0 min-h-11"
         >
           {running ? (
             <>
@@ -190,7 +190,7 @@ export default function HomeCoach() {
               key={sp.label}
               disabled={running}
               onClick={() => void runWithPrompt(sp.prompt)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold transition-all hover:border-[var(--dashboard-primary)] hover:bg-[var(--dashboard-primary-subtle)] disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 min-h-11 rounded-xl border text-xs font-semibold transition-all hover:border-[var(--dashboard-primary)] hover:bg-[var(--dashboard-primary-subtle)] disabled:opacity-50"
               style={{
                 background: "var(--dashboard-surface-muted)",
                 borderColor: "var(--dashboard-border-muted)",

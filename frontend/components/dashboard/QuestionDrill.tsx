@@ -255,7 +255,7 @@ export default function QuestionDrill({
       </div>
 
       <div className="rounded-xl border p-5" style={{ background: "var(--dashboard-surface)", borderColor: "var(--dashboard-border-muted)", boxShadow: "var(--dashboard-shadow-sm)" }}>
-        <div className="text-[10px] font-mono uppercase tracking-wider mb-2" style={{ color: "var(--dashboard-text-muted)" }}>
+        <div className="text-[11px] font-mono uppercase tracking-wider mb-2" style={{ color: "var(--dashboard-text-muted)" }}>
           {current.subject} • {current.topic}
           {current.year ? ` • ${current.year}` : ""}
           {current.sourceExam ? ` • ${current.sourceExam}` : ""}
@@ -364,7 +364,7 @@ export default function QuestionDrill({
         {onExit && (
           <button
             onClick={onExit}
-            className="px-3 py-2 text-xs text-[var(--dashboard-text-muted)] font-mono hover:text-[var(--dashboard-text-secondary)] transition-colors"
+            className="px-3 py-2 min-h-11 text-xs text-[var(--dashboard-text-muted)] font-mono hover:text-[var(--dashboard-text-secondary)] transition-colors"
           >
             বাতিল
           </button>

@@ -130,7 +130,7 @@ function ScopeError({ message, retryLabel, onRetry }: { message: string; retryLa
       className="command-card p-5 text-center"
     >
       <p className="text-xs font-bold" style={{ color: "var(--dashboard-text-primary)" }}>{message}</p>
-      <button onClick={onRetry} className="btn-primary mt-3 !py-2 text-xs">
+      <button onClick={onRetry} className="btn-primary mt-3 !py-2 text-xs min-h-11">
         <ArrowCounterClockwise className="w-3.5 h-3.5" /> {retryLabel}
       </button>
     </div>
@@ -462,14 +462,9 @@ export default function HomeTab() {
     setReloadKey((k) => k + 1);
   };
 
-  // P1: fixed product order, Mission > Plan/Performance > Continue >
-  // Pulse > Actions > Mocks > Coach. No ambient CSS `order` ranking:
-  // visual order must match DOM/screen-reader order. Urgency is shown
-  // *inside* cards (badges), never by moving cards.
-  const regionOrder = { actions: 5, pulse: 4 };
 
   return (
-    <div className="study-home flex flex-col gap-5 pb-24 sm:pb-6">
+    <div className="study-home flex flex-col gap-5">
       {/* ── Page header, hierarchy first: title, target, streak, exam countdown. ── */}
       <motion.header
         initial={lowMotion ? false : "hidden"}
@@ -511,7 +506,7 @@ export default function HomeTab() {
           >
             <div className="text-center">
               <p className="font-display text-2xl font-extrabold tabular-nums leading-none text-[var(--dashboard-primary)]">{examDaysLeft}</p>
-              <p className="text-[10px] font-bold uppercase tracking-widest mt-1 text-[var(--dashboard-text-muted)]">{t(lang, "দিন বাকি", "Days left")}</p>
+              <p className="text-[11px] font-bold uppercase tracking-widest mt-1 text-[var(--dashboard-text-muted)]">{t(lang, "দিন বাকি", "Days left")}</p>
             </div>
             <div className="w-px h-10 bg-[var(--dashboard-border-muted)]" aria-hidden="true" />
             <div>
@@ -523,7 +518,7 @@ export default function HomeTab() {
                   ? t(lang, "চূড়ান্ত নিবিড় পর্ব", "Final Sprint Phase")
                   : examDaysLeft <= 30
                     ? t(lang, "নিবিড় পুনর্বিবেচনা", "Focused Revision Window")
-                    : t(lang, "ন regular প্রস্তুতি", "Steady Preparation Window")}
+                    : t(lang, "নিয়মিত প্রস্তুতি", "Steady Preparation Window")}
               </p>
             </div>
           </div>
@@ -588,7 +583,7 @@ export default function HomeTab() {
           <p className="text-xs font-bold" style={{ color: "var(--dashboard-text-primary)" }}>
             {t(lang, "ড্যাশবোর্ড ডেটা লোড করা যায়নি, সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।", "Dashboard data could not be loaded, check your connection and try again.")}
           </p>
-          <button onClick={retryAll} className="command-primary-btn !py-2 text-xs">
+          <button onClick={retryAll} className="command-primary-btn !py-2 text-xs min-h-11">
             <ArrowCounterClockwise className="w-4 h-4" /> {t(lang, "আবার চেষ্টা করুন", "Try again")}
           </button>
         </div>
@@ -597,7 +592,7 @@ export default function HomeTab() {
       {/* ── 1 · One mission voice: the AI brief narrates, the mission acts.
              HomeHero renders bare (no second hero card) as TodayMission's
              narrative header. Auto-drafts once per signals snapshot. ── */}
-      <RevealSection className="min-w-0" style={{ order: 0 }}>
+      <RevealSection className="min-w-0" >
         {analyticsFailed && !analyticsReady ? (
           <ScopeError
             message={t(lang, "আজকের মিশন লোড করা যায়নি", "Could not load today's mission")}
@@ -620,7 +615,7 @@ export default function HomeTab() {
 
       {/* ── 1b · Revision due strip, SRS cards needing review today ── */}
       {analyticsReady && (intelligence?.flashcardsDue ?? 0) > 0 && (
-        <RevealSection className="min-w-0" style={{ order: 1 }}>
+        <RevealSection className="min-w-0" >
           <button
             type="button"
             onClick={() => setActiveTab("flashcards")}
@@ -645,7 +640,7 @@ export default function HomeTab() {
       )}
 
       {/* ── 4 · Recommended actions (ambient-ranked region) ── */}
-      <RevealSection className="min-w-0 min-h-[220px]" style={{ order: regionOrder.actions }}>
+      <RevealSection className="min-w-0 min-h-[220px]" >
         {analyticsFailed && !analyticsReady ? (
           <ScopeError
             message={t(lang, "প্রস্তাবনা লোড করা যায়নি", "Could not load recommendations")}
@@ -664,7 +659,7 @@ export default function HomeTab() {
       </RevealSection>
 
       {/* ── 5 · Continue learning (fixed slot) ── */}
-      <RevealSection className="min-h-[120px]" style={{ order: 5 }}>
+      <RevealSection className="min-h-[120px]" >
         {!tasksReady && !tasksFailed ? (
           <ScopeSkeleton label={t(lang, "চলমান শেখা লোড হচ্ছে", "Loading continue learning")} />
         ) : (
@@ -680,7 +675,7 @@ export default function HomeTab() {
       </RevealSection>
 
       {/* ── 6 · Secondary pulse (ambient-ranked region) ── */}
-      <RevealSection style={{ order: regionOrder.pulse }}>
+      <RevealSection >
         {!pulseReady ? (
           pulseFailed ? (
             <ScopeError
@@ -699,7 +694,7 @@ export default function HomeTab() {
       {/* ── 7 · Recent mocks, real accordion button (details/summary with a
              nested button is keyboard/hostile); collapsed by default. ── */}
       {results.length > 0 && (
-        <RevealSection className="scroll-mt-6" style={{ order: 7 }}>
+        <RevealSection className="scroll-mt-6" >
           <div className="command-card">
             <div className="flex items-center justify-between gap-3 p-5">
               <span className="command-eyebrow">{t(lang, "সাম্প্রতিক মক টেস্ট", "Recent mock tests")}</span>
@@ -767,7 +762,7 @@ export default function HomeTab() {
 
       {/* ── 8 · AI Study Coach, inline once per week when fresh, collapsed
              after (state-driven disclosure, same pattern as recent mocks). ── */}
-      <RevealSection id="dashboard-ai-coach" className="scroll-mt-6" style={{ order: 8 }}>
+      <RevealSection id="dashboard-ai-coach" className="scroll-mt-6" >
         <CoachDisclosure />
       </RevealSection>
     </div>

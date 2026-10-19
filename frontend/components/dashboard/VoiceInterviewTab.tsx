@@ -116,7 +116,7 @@ export default function VoiceInterviewTab() {
   }, [listening, voiceIn]);
 
   return (
-    <div className="mx-auto flex h-full w-full max-w-3xl flex-col gap-4 px-4 py-6">
+    <div className="mx-auto flex h-full w-full max-w-3xl flex-col gap-4">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-semibold text-[var(--dashboard-text-primary)]">ভয়েস ইন্টারভিউ</h1>
@@ -125,7 +125,7 @@ export default function VoiceInterviewTab() {
           </p>
         </div>
         <label className="flex items-center gap-2 text-xs text-[var(--dashboard-text-muted)]">
-          <input type="checkbox" checked={autoSpeak} onChange={(e) => setAutoSpeak(e.target.checked)} />
+          <input type="checkbox" checked={autoSpeak} onChange={(e) => setAutoSpeak(e.target.checked)} className="h-11 w-11 -m-3 accent-[var(--primary)]" />
           অটো-বলি
         </label>
       </div>
@@ -136,7 +136,7 @@ export default function VoiceInterviewTab() {
         </p>
       )}
 
-      <div className="flex-1 space-y-3 overflow-y-auto rounded-2xl border border-[var(--border-subtle)] bg-[var(--dashboard-surface)] p-4">
+      <div className="flex-1 space-y-3 overflow-y-auto overscroll-contain rounded-2xl border border-[var(--border-subtle)] bg-[var(--dashboard-surface)] p-4">
         {messages.length === 0 && (
           <p className="text-sm text-[var(--dashboard-text-muted)]">
             মাইকে চাপ দিয়ে শুরু করো, অথবা নিচে লিখে পাঠাও। যেমন: “BCS প্রিলির জন্য কীভাবে প্রস্তুতি নেব?”
@@ -200,7 +200,7 @@ export default function VoiceInterviewTab() {
           type="button"
           onClick={() => void send(input)}
           disabled={busy || !input.trim()}
-          className="rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-medium text-[var(--dashboard-text-inverse)] hover:bg-[var(--accent-hover)] disabled:opacity-60"
+          className="rounded-xl bg-[var(--accent)] px-4 py-2 min-h-11 text-sm font-medium text-[var(--dashboard-text-inverse)] hover:bg-[var(--accent-hover)] disabled:opacity-60"
         >
           পাঠাও
         </button>

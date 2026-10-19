@@ -25,7 +25,7 @@ export default function MediaAttachmentView({
           key={m.url}
           src={m.url}
           alt={m.alt ?? `Figure ${i + 1}`}
-          className="rounded-xl border border-terminal-border max-w-full h-auto mx-auto"
+          className="rounded-xl border border-terminal-border max-w-full h-auto mx-auto aspect-[4/3] object-cover"
           loading="lazy"
           decoding="async"
         />

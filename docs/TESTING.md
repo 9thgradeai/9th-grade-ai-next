@@ -31,6 +31,7 @@
 
 - **AI route streaming**: `/api/ai/tutor` stream behavior untested at HTTP level.
 - **Accessibility/performance**: no axe-core or Lighthouse gates.
+- **P6–P8 completeness**: i18n copy integrity (P6), states/forms (P7), and cleanup (P8) from the Dashboard UI/UX Fix Plan are pending final audit reconciliation.
 
 ## Running Tests
 

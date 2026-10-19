@@ -162,7 +162,7 @@ export function ThemeToggle() {
     <span className="inline-flex items-center gap-1">
       <button
         onClick={toggleTheme}
-        className="relative flex h-10 w-10 items-center justify-center rounded-xl border text-[var(--dashboard-text-muted)] transition-colors hover:text-[var(--dashboard-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+        className="relative flex h-11 w-11 items-center justify-center rounded-xl border text-[var(--dashboard-text-muted)] transition-colors hover:text-[var(--dashboard-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
         style={{ borderColor: "var(--dashboard-border-muted)", background: "var(--dashboard-surface-muted)" }}
         aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} dashboard mode`}
         title={cycling ? "Following system, click to set explicit mode" : undefined}

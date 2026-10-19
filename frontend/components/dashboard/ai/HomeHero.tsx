@@ -361,7 +361,7 @@ export default function HomeHero({
           )}
           {(result?.blocks ?? runBlocks).length > 0 && <AgentBlocks blocks={result?.blocks ?? runBlocks} />}
           {result && (
-            <p className="pt-1 font-mono text-[10px]" style={{ color: "var(--dashboard-text-muted)" }}>
+            <p className="pt-1 font-mono text-[11px]" style={{ color: "var(--dashboard-text-muted)" }}>
               {result.provider === "mock"
                 ? t(lang, "ডেমো উৎস, AI কী সেট করলে লাইভ হবে", "Demo source, set an AI key to go live")
                 : t(lang, "এআই-নির্দেশনা, প্রশ্নব্যাংক দিয়ে যাচাই করুন", "AI guidance, verify with the question bank")}

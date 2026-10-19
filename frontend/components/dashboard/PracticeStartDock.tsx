@@ -69,7 +69,7 @@ export default function PracticeStartDock({
         <div className="flex flex-col lg:flex-row lg:items-center gap-3 p-3 sm:p-4">
           {/* Difficulty, consolidated here so config needs no scrolling */}
           <div className="flex items-center gap-1.5 flex-wrap" role="group" aria-label="প্রশ্নের কাঠিন্য">
-            <span className="text-[10px] font-mono uppercase tracking-widest mr-1" style={{ color: "var(--dashboard-text-secondary)" }}>
+            <span className="text-[11px] font-mono uppercase tracking-widest mr-1" style={{ color: "var(--dashboard-text-secondary)" }}>
               কাঠিন্য
             </span>
             {(["ALL", "EASY", "MEDIUM", "HARD"] as const).map((d) => (
@@ -146,7 +146,7 @@ export default function PracticeStartDock({
                 >
                   <Plus className="w-4 h-4" />
                 </button>
-                <span className="text-[10px] font-mono hidden sm:inline" style={{ color: "var(--dashboard-text-secondary)" }}>
+                <span className="text-[11px] font-mono hidden sm:inline" style={{ color: "var(--dashboard-text-secondary)" }}>
                   মিনিট{autoCaption}
                 </span>
               </div>

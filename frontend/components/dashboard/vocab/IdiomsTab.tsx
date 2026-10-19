@@ -136,7 +136,7 @@ export default function IdiomsTab() {
                     aria-expanded={open}
                     className="w-full flex items-center gap-3 p-4 text-left"
                   >
-                    <span className="px-1.5 py-0.5 bg-[var(--surface-overlay)] rounded text-[10px] font-mono text-[var(--dashboard-text-muted)]">
+                    <span className="px-1.5 py-0.5 bg-[var(--surface-overlay)] rounded text-[11px] font-mono text-[var(--dashboard-text-muted)]">
                       #{String(i + 1).padStart(3, "0")}
                     </span>
                     <span className="flex-1 min-w-0">
@@ -147,7 +147,7 @@ export default function IdiomsTab() {
                         {w.bengaliMeaning}
                       </span>
                     </span>
-                    <span className="px-2 py-0.5 rounded-full bg-[var(--accent)]/10 border border-[var(--accent)]/20 text-[10px] font-mono text-[var(--accent)] shrink-0">
+                    <span className="px-2 py-0.5 rounded-full bg-[var(--accent)]/10 border border-[var(--accent)]/20 text-[11px] font-mono text-[var(--accent)] shrink-0">
                       {w.partOfSpeech}
                     </span>
                     <CaretDown className={`w-4 h-4 text-[var(--dashboard-text-muted)] transition-transform shrink-0 ${open ? "rotate-180" : ""}`} />
@@ -170,7 +170,7 @@ export default function IdiomsTab() {
                               <SpeakerSimpleHigh className="w-4 h-4" />
                             </button>
                             {w.examRelevance?.map((e) => (
-                              <span key={e} className="px-2 py-0.5 rounded-full bg-[var(--accent)]/10 border border-[var(--accent)]/20 text-[10px] font-mono text-[var(--accent)]">
+                              <span key={e} className="px-2 py-0.5 rounded-full bg-[var(--accent)]/10 border border-[var(--accent)]/20 text-[11px] font-mono text-[var(--accent)]">
                                 {e}
                               </span>
                             ))}

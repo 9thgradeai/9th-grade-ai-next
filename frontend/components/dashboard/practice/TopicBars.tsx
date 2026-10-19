@@ -34,7 +34,7 @@ export default function TopicBars({ items }: { items: TopicBarItem[] }) {
 
   return (
     <div className="rounded-xl border p-3 sm:p-4" style={{ borderColor: "var(--dashboard-border-muted)", background: "var(--dashboard-surface)" }}>
-      <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-widest mb-2.5">
+      <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-widest mb-2.5">
         টপিকভিত্তিক পারফরম্যান্স
       </p>
       <div className="space-y-2">

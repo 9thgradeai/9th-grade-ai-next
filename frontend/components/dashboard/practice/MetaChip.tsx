@@ -43,7 +43,7 @@ export default function MetaChip({
   };
   return (
     <span
-      className="px-2 py-0.5 rounded text-[11px] font-mono font-bold whitespace-nowrap"
+      className="px-2 py-0.5 rounded text-[11px] font-mono font-bold whitespace-normal overflow-wrap:anywhere min-w-0"
       style={style}
       aria-label={label}
     >

@@ -91,7 +91,7 @@ export default function SideNav({ activeTab, onChange }: SideNavProps) {
           aria-expanded={!collapsed}
           aria-label={collapsed ? "পার্শ্ব মেনু প্রসারিত করুন" : "পার্শ্ব মেনু সংকুচিত করুন"}
           title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          className="inline-flex h-10 w-10 items-center justify-center rounded-xl border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+          className="inline-flex h-11 w-11 items-center justify-center rounded-xl border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
           style={{ borderColor: "var(--dashboard-border-muted)", color: "var(--dashboard-text-secondary)", background: "var(--dashboard-surface-muted)" }}
         >
           {collapsed ? <CaretDoubleRight className="h-4 w-4" /> : <CaretDoubleLeft className="h-4 w-4" />}

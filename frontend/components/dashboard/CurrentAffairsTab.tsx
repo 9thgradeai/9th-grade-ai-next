@@ -242,7 +242,7 @@ export default function CurrentAffairsTab() {
 
           <div className="flex flex-wrap items-center gap-2">
             <span
-              className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide"
+              className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide"
               style={{ borderColor: "var(--dashboard-success)", background: "var(--dashboard-success-subtle)", color: "var(--dashboard-success)" }}
             >
               <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
@@ -262,7 +262,7 @@ export default function CurrentAffairsTab() {
                   if (/^\d{4}-\d{2}-\d{2}$/.test(v)) setDate(v);
                 }}
                 aria-label={t(lang, "তারিখ নির্বাচন করুন", "Select date")}
-                className="bg-transparent font-mono text-xs font-semibold focus:outline-none"
+                className="bg-transparent font-mono text-xs font-semibold focus:outline-none min-h-11"
                 style={{ color: "var(--dashboard-text-primary)" }}
               />
             </label>
@@ -290,7 +290,7 @@ export default function CurrentAffairsTab() {
             {/* Note + export toolbar */}
             <div className="space-y-2">
               <div className="flex flex-wrap items-center gap-1.5" role="toolbar" aria-label="Export options">
-                <span className="mr-1 text-[10px] font-bold uppercase tracking-[0.12em]" style={{ color: "var(--dashboard-text-muted)" }}>
+                <span className="mr-1 text-[11px] font-bold uppercase tracking-[0.12em]" style={{ color: "var(--dashboard-text-muted)" }}>
                   {t(lang, "এক্সপোর্ট", "Export")}:
                 </span>
                 <button

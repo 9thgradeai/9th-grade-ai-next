@@ -1,0 +1,93 @@
+{
+  "exam-history": {
+    "overflow": 0,
+    "touchTargets": 0,
+    "textSizes": 1,
+    "axeRules": [
+      "color-contrast"
+    ],
+    "targetSamples": []
+  },
+  "flashcards": {
+    "overflow": 0,
+    "touchTargets": 0,
+    "textSizes": 1,
+    "axeRules": [
+      "color-contrast"
+    ],
+    "targetSamples": []
+  },
+  "home": {
+    "overflow": 0,
+    "touchTargets": 0,
+    "textSizes": 1,
+    "axeRules": [
+      "color-contrast"
+    ],
+    "targetSamples": []
+  },
+  "mistakes": {
+    "overflow": 0,
+    "touchTargets": 0,
+    "textSizes": 1,
+    "axeRules": [
+      "color-contrast"
+    ],
+    "targetSamples": []
+  },
+  "practice": {
+    "overflow": 0,
+    "touchTargets": 0,
+    "textSizes": 1,
+    "axeRules": [
+      "color-contrast"
+    ],
+    "targetSamples": []
+  },
+  "progress": {
+    "overflow": 0,
+    "touchTargets": 0,
+    "textSizes": 1,
+    "axeRules": [
+      "color-contrast"
+    ],
+    "targetSamples": []
+  },
+  "question-bank": {
+    "overflow": 0,
+    "touchTargets": 0,
+    "textSizes": 1,
+    "axeRules": [
+      "color-contrast"
+    ],
+    "targetSamples": []
+  },
+  "real-exam": {
+    "overflow": 0,
+    "touchTargets": 0,
+    "textSizes": 1,
+    "axeRules": [
+      "color-contrast"
+    ],
+    "targetSamples": []
+  },
+  "study-planner": {
+    "overflow": 0,
+    "touchTargets": 0,
+    "textSizes": 1,
+    "axeRules": [
+      "color-contrast",
+      "scrollable-region-focusable"
+    ],
+    "targetSamples": []
+  },
+  "vocab": {
+    "overflow": 0,
+    "touchTargets": 0,
+    "textSizes": 1,
+    "axeRules": [
+      "color-contrast"
+    ],
+    "targetSamples": []
+  }
+}

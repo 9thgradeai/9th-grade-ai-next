@@ -101,7 +101,7 @@ export default function DataStorageCard() {
         <div className="flex-1 min-w-0">
           <h3 className="text-sm font-semibold text-[var(--text-primary)] uppercase tracking-wider flex items-center gap-2">
             {t(lang, "ডেটা ও স্টোরেজ", "Data & Storage")}
-            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${connected ? "bg-[var(--dashboard-success-subtle)] border-[var(--dashboard-border-muted)] text-[var(--dashboard-success)]" : "bg-[var(--dashboard-surface-muted)] border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-secondary)]"}`}>
+            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold border ${connected ? "bg-[var(--dashboard-success-subtle)] border-[var(--dashboard-border-muted)] text-[var(--dashboard-success)]" : "bg-[var(--dashboard-surface-muted)] border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-secondary)]"}`}>
               <span className={`w-1.5 h-1.5 rounded-full ${connected ? "bg-[var(--dashboard-success)] animate-pulse" : "bg-[var(--dashboard-text-muted)]"}`} />
               {connected ? t(lang, "সংযুক্ত", "Connected") : t(lang, "সংযুক্ত নয়", "Not connected")}
             </span>
@@ -115,17 +115,17 @@ export default function DataStorageCard() {
       {/* Status grid */}
       <div className="grid sm:grid-cols-3 gap-3 mb-4">
         <div className="p-3 rounded-xl bg-subtle border border-[var(--dashboard-border-muted)]">
-          <p className="text-[10px] font-mono uppercase tracking-wider text-[var(--dashboard-text-muted)] flex items-center gap-1"><Link className="w-3 h-3" />{t(lang, "অ্যাকাউন্ট", "Account")}</p>
+          <p className="text-[11px] font-mono uppercase tracking-wider text-[var(--dashboard-text-muted)] flex items-center gap-1"><Link className="w-3 h-3" />{t(lang, "অ্যাকাউন্ট", "Account")}</p>
           <p className="text-sm font-medium text-[var(--text-primary)] truncate mt-1">{status?.googleEmail ?? "—"}</p>
           <p className="text-xs text-[var(--dashboard-text-muted)] truncate">{status?.googleName ?? ""}</p>
         </div>
         <div className="p-3 rounded-xl bg-subtle border border-[var(--dashboard-border-muted)]">
-          <p className="text-[10px] font-mono uppercase tracking-wider text-[var(--dashboard-text-muted)] flex items-center gap-1"><Cloud className="w-3 h-3" />{t(lang, "লোকেশন", "Location")}</p>
+          <p className="text-[11px] font-mono uppercase tracking-wider text-[var(--dashboard-text-muted)] flex items-center gap-1"><Cloud className="w-3 h-3" />{t(lang, "লোকেশন", "Location")}</p>
           <p className="text-sm font-medium text-[var(--text-primary)] truncate mt-1">/{status?.rootFolderName ?? "9Th-Grade AI"}</p>
           <p className="text-xs text-[var(--dashboard-text-muted)] truncate">{status?.rootFolderId ? `ID ${status.rootFolderId.slice(0, 8)}…` : t(lang, "এখনো তৈরি হয়নি", "Not created yet")}</p>
         </div>
         <div className="p-3 rounded-xl bg-subtle border border-[var(--dashboard-border-muted)]">
-          <p className="text-[10px] font-mono uppercase tracking-wider text-[var(--dashboard-text-muted)] flex items-center gap-1"><ClockCounterClockwise className="w-3 h-3" />{t(lang, "শেষ সিঙ্ক", "Last sync")}</p>
+          <p className="text-[11px] font-mono uppercase tracking-wider text-[var(--dashboard-text-muted)] flex items-center gap-1"><ClockCounterClockwise className="w-3 h-3" />{t(lang, "শেষ সিঙ্ক", "Last sync")}</p>
           <p className="text-sm font-medium text-[var(--text-primary)] truncate mt-1">{lastSuccess}</p>
           <p className="text-xs text-[var(--dashboard-text-muted)]">
             {status?.pendingJobs ? `${status.pendingJobs} ${t(lang, "পেন্ডিং", "pending")}` : status?.failedJobs ? `${status.failedJobs} ${t(lang, "ব্যর্থ", "failed")}` : t(lang, "আপ-টু-ডেট", "Up to date")}

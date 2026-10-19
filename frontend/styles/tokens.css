@@ -1,9 +1,0 @@
-/**
- * Phase 0 token unification — CANONICAL TOKENS LIVE IN `app/globals.css` ONLY.
- *
- * This file is a compatibility stub. It was previously a full duplicate of the
- * globals token system and drifted (border values, z-scale, tap feedback).
- * Nothing imports it (verified 2026-10-05) — do NOT add values here.
- * Import the canonical system instead: `@import "../../app/globals.css";`
- */
-@import "../../app/globals.css";

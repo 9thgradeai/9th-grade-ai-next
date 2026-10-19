@@ -446,7 +446,7 @@ export default function CommandBar() {
             className="flex-1 bg-transparent py-3.5 text-sm text-[var(--text-primary)] placeholder:text-[var(--dashboard-text-muted)] focus:outline-none"
           />
           <kbd
-            className="hidden rounded-md border px-1.5 py-0.5 font-mono text-[10px] sm:inline"
+            className="hidden rounded-md border px-1.5 py-0.5 font-mono text-[11px] sm:inline"
             style={{
               borderColor: "var(--dashboard-border-muted)",
               color: "var(--dashboard-text-muted)",
@@ -475,7 +475,7 @@ export default function CommandBar() {
           {query.trim().length >= 2 && (
             <li role="presentation">
               <p
-                className="px-4 pb-1 pt-2 text-[10px] font-bold uppercase tracking-[0.14em]"
+                className="px-4 pb-1 pt-2 text-[11px] font-bold uppercase tracking-[0.14em]"
                 style={{ color: "var(--dashboard-text-muted)" }}
                 aria-hidden="true"
               >
@@ -525,7 +525,7 @@ export default function CommandBar() {
           {sections.map((section) => (
             <li key={section.id} role="presentation">
               <p
-                className="px-4 pb-1 pt-2 text-[10px] font-bold uppercase tracking-[0.14em]"
+                className="px-4 pb-1 pt-2 text-[11px] font-bold uppercase tracking-[0.14em]"
                 style={{ color: "var(--dashboard-text-muted)" }}
                 aria-hidden="true"
               >

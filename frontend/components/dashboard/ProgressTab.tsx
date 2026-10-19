@@ -89,12 +89,12 @@ export default function ProgressTab() {
   }
 
   return (
-    <div className="space-y-5 pb-24 sm:pb-6">
+    <div className="space-y-5">
       {/* Sprint 7: display-voice page header, matches Home. */}
       <div>
         <p className="command-eyebrow">{t(lang, "Progress", "Progress")}</p>
         <h1 className="font-display text-xl font-semibold tracking-tight mt-1">
-          {t(lang, "прогресс", "Progress")}
+          {t(lang, "প্রোগ্রেস", "Progress")}
         </h1>
       </div>
 
@@ -149,7 +149,7 @@ export default function ProgressTab() {
                 {user?.name ?? "Student"}
               </h3>
               <span
-                className="px-2 py-0.5 rounded text-[10px] font-mono whitespace-nowrap"
+                className="px-2 py-0.5 rounded text-[11px] font-mono whitespace-nowrap"
                 style={{ background: "var(--dashboard-primary-subtle)", border: "1px solid color-mix(in srgb, var(--dashboard-primary) 30%, transparent)", color: "var(--dashboard-primary)" }}
               >
                 @{user?.handle ?? "student"}
@@ -204,7 +204,7 @@ export default function ProgressTab() {
                     <span className="text-lg font-bold font-mono">{wt.score}%</span>
                     <button
                       onClick={() => void startTopicDrill(wt.subject, wt.topic)}
-                      className="px-3 py-1.5 rounded-lg text-xs font-mono transition-colors"
+                      className="px-3 min-h-11 rounded-lg text-xs font-mono transition-colors"
                       style={{ border: "1px solid color-mix(in srgb, var(--dashboard-primary) 30%, transparent)", background: "var(--dashboard-primary-subtle)", color: "var(--dashboard-primary)" }}
                     >
                       {t(lang, "অভ্যাস", "Practice")}
@@ -271,7 +271,7 @@ export default function ProgressTab() {
           </h3>
           {board?.me && (
             <span className="text-xs font-mono">
-              {t(lang, `আপনার র‍্যাংক: #${board.me.rank} (${board.me.points} পয়েন্ট`, `Your rank: #${board.me.rank} (${board.me.points} points)`)}
+              {t(lang, `আপনার র‍্যাংক: #${board.me.rank} (${board.me.points} পয়েন্ট)`, `Your rank: #${board.me.rank} (${board.me.points} points)`)}
             </span>
           )}
         </div>

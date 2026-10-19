@@ -93,7 +93,7 @@ function PopupTopicNode({
           <span className="text-xs font-medium text-[var(--text-primary)] break-words">
             {node.name}
           </span>
-          <span className="block text-[10px] text-[var(--dashboard-text-muted)] font-mono">
+          <span className="block text-[11px] text-[var(--dashboard-text-muted)] font-mono">
             {node.questionCount}টি প্রশ্ন
           </span>
         </button>
@@ -306,19 +306,19 @@ export default function SubjectTopicSelect({
                     {selected && <Check className="w-3 h-3 text-[var(--dashboard-text-inverse)]" aria-hidden="true" />}
                   </span>
                 </div>
-                <p className="text-[10px] font-mono mt-1.5" style={{ color: "var(--dashboard-text-muted)" }}>
+                <p className="text-[11px] font-mono mt-1.5" style={{ color: "var(--dashboard-text-muted)" }}>
                   {subject.questionCount}টি প্রশ্ন
                 </p>
                 {selected && sel?.count !== undefined && (
                   <>
                     <p
-                      className="text-[10px] font-mono mt-0.5 tabular-nums"
+                      className="text-[11px] font-mono mt-0.5 tabular-nums"
                       style={{ color: "var(--dashboard-primary)" }}
                     >
                       নির্বাচিত: {sel.count}/{subject.questionCount}
                     </p>
                     <p
-                      className="text-[10px] font-mono mt-0.5 truncate"
+                      className="text-[11px] font-mono mt-0.5 truncate"
                       style={{ color: "var(--dashboard-text-muted)" }}
                     >
                       {scopeLabel}
@@ -392,7 +392,7 @@ export default function SubjectTopicSelect({
                   >
                     {openSubject.nameBn}
                   </h3>
-                  <p id="subject-topic-popup-desc" className="text-[10px] font-mono" style={{ color: "var(--dashboard-text-muted)" }}>
+                  <p id="subject-topic-popup-desc" className="text-[11px] font-mono" style={{ color: "var(--dashboard-text-muted)" }}>
                     {openSubject.questionCount}টি প্রশ্ন উপলব্ধ · খালি নির্বাচন = পুরো বিষয়
                   </p>
                 </div>
@@ -452,7 +452,7 @@ export default function SubjectTopicSelect({
                   <p className="text-xs font-mono" style={{ color: "var(--dashboard-text-secondary)" }}>
                     এই বিষয় থেকে প্রশ্ন
                   </p>
-                  <p className="text-[10px] font-mono" style={{ color: "var(--dashboard-text-muted)" }}>
+                  <p className="text-[11px] font-mono" style={{ color: "var(--dashboard-text-muted)" }}>
                     উপলব্ধ:{" "}
                     <span style={{ color: "var(--dashboard-primary)" }} className="tabular-nums">
                       {popupAvailable}টি
@@ -471,6 +471,7 @@ export default function SubjectTopicSelect({
                   </button>
                   <input
                     type="number"
+                    inputMode="numeric"
                     min={0}
                     max={popupAvailable}
                     value={popupSel?.count ?? 0}

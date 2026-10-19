@@ -291,7 +291,7 @@ export default function PerformanceCard({
                 onClick={() => setMetric(val)}
                 aria-pressed={metric === val}
                 title={label}
-                className="flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-bold rounded-lg transition-all min-h-[36px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                className="flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-bold rounded-lg transition-all min-h-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
                 style={
                   metric === val
                     ? { background: `linear-gradient(135deg, ${METRIC_THEMES[val].from}, ${METRIC_THEMES[val].to})`, color: "#fff", boxShadow: `0 2px 12px ${METRIC_THEMES[val].glow}` }
@@ -311,7 +311,7 @@ export default function PerformanceCard({
                 onClick={() => onRangeChange(r)}
                 aria-pressed={range === r}
                 title={`Last ${r}`}
-                className="px-2.5 py-0.5 rounded-full text-[11px] font-bold transition-colors min-h-[36px] min-w-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                className="px-2.5 py-0.5 rounded-full text-[11px] font-bold transition-colors min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
                 style={
                   range === r
                     ? { background: "var(--dashboard-primary)", color: "var(--dashboard-text-inverse)" }
@@ -326,7 +326,7 @@ export default function PerformanceCard({
       </div>
 
       {/* ── KPI ticker tiles with animated count-ups + period deltas ── */}
-      <div className="relative mt-4 grid grid-cols-3 gap-2">
+      <div className="relative mt-4 grid grid-cols-2 sm:grid-cols-3 gap-2">
         <div className="perf-kpi rounded-xl border px-3 py-2.5 text-center" style={{ background: "var(--dashboard-surface-solid, var(--dashboard-surface))", borderColor: "var(--dashboard-border-muted)", borderTop: `2px solid ${METRIC_THEMES.solved.from}` }}>
           <p className="text-[11px] font-bold uppercase tracking-wider" style={{ color: "var(--dashboard-text-secondary)" }}>
             Total Solved
@@ -361,7 +361,7 @@ export default function PerformanceCard({
           {metric === "time" ? (
             <DeltaPill value={timeDelta} format={fmtDeltaTime} visible={hasPrev} />
           ) : (
-            <span className="font-mono text-[10px]" style={{ color: "var(--dashboard-text-muted)" }}>
+            <span className="font-mono text-[11px]" style={{ color: "var(--dashboard-text-muted)" }}>
               {metric === "accuracy" ? "peak" : fmtTime(Math.round(animatedTime))}
             </span>
           )}

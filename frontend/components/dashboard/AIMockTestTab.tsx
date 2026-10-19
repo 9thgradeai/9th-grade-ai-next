@@ -70,7 +70,7 @@ export default function AIMockTestTab() {
   const percentage = test ? Math.round((score / test.questions.length) * 100) : 0;
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-8">
+    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
       <div>
         <h1 className="text-2xl font-bold text-text-primary">AI মক টেস্ট</h1>
         <p className="text-sm text-text-muted">
@@ -85,18 +85,19 @@ export default function AIMockTestTab() {
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
             placeholder="যেমন: ইতিহাস"
-            className="w-48 rounded-lg border border-border bg-surface-raised px-3 py-2 text-sm text-text-primary outline-none focus:border-primary/50"
+            className="w-48 rounded-lg border border-border bg-surface-raised px-3 py-2 min-h-11 text-sm text-text-primary outline-none focus:border-primary/50"
           />
         </label>
         <label className="flex flex-col gap-1 text-sm text-text-secondary">
           প্রশ্ন সংখ্যা
           <input
             type="number"
+            inputMode="numeric"
             min={1}
             max={25}
             value={count}
             onChange={(e) => setCount(Math.max(1, Math.min(25, Number(e.target.value) || 10)))}
-            className="w-32 rounded-lg border border-border bg-surface-raised px-3 py-2 text-sm text-text-primary outline-none focus:border-primary/50"
+            className="w-32 rounded-lg border border-border bg-surface-raised px-3 py-2 min-h-11 text-sm text-text-primary outline-none focus:border-primary/50"
           />
         </label>
         <label className="flex flex-col gap-1 text-sm text-text-secondary">
@@ -107,7 +108,7 @@ export default function AIMockTestTab() {
               const v = e.target.value;
               setDifficulty(v === "EASY" || v === "MEDIUM" || v === "HARD" ? v : "");
             }}
-            className="w-40 rounded-lg border border-border bg-surface-raised px-3 py-2 text-sm text-text-primary outline-none focus:border-primary/50"
+            className="w-40 rounded-lg border border-border bg-surface-raised px-3 py-2 min-h-11 text-sm text-text-primary outline-none focus:border-primary/50"
           >
             <option value="">যেকোনো</option>
             <option value="EASY">সহজ</option>
@@ -119,7 +120,7 @@ export default function AIMockTestTab() {
           type="button"
           onClick={() => void generate()}
           disabled={loading}
-          className="rounded-xl bg-accent px-5 py-2 text-sm font-medium text-text-inverse transition-colors hover:bg-accent-hover disabled:opacity-60 disabled:cursor-not-allowed"
+          className="rounded-xl bg-accent px-5 py-2 min-h-11 text-sm font-medium text-text-inverse transition-colors hover:bg-accent-hover disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {loading ? "তৈরি হচ্ছে…" : "টেস্ট তৈরি করো"}
         </button>
@@ -127,7 +128,7 @@ export default function AIMockTestTab() {
           type="button"
           onClick={() => void loadWeakTopics()}
           disabled={loading || topicsLoading}
-          className="rounded-xl border border-border px-5 py-2 text-sm font-medium text-text-secondary transition-colors hover:border-primary/40 disabled:opacity-60 disabled:cursor-not-allowed"
+          className="rounded-xl border border-border px-5 py-2 min-h-11 text-sm font-medium text-text-secondary transition-colors hover:border-primary/40 disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {topicsLoading ? "খুঁজছি…" : "দুর্বল টপিক থেকে বানাও"}
         </button>
@@ -142,7 +143,7 @@ export default function AIMockTestTab() {
                 type="button"
                 onClick={() => setTopics((prev) => prev.filter((x) => x !== tp))}
                 aria-label={`${tp} সরাও`}
-                className="flex h-6 w-6 items-center justify-center rounded-full hover:bg-surface-raised"
+                className="flex h-11 w-11 -m-2.5 items-center justify-center rounded-full hover:bg-surface-raised"
               >
                 ✕
               </button>
@@ -247,7 +248,7 @@ export default function AIMockTestTab() {
       )}
 
       {test && test.questions.length === 0 && !loading && (
-        <p className="text-sm text-text-muted">কোনো প্রশ্ন তৈরি হয়নি। আবার চেষ্টা করো。</p>
+        <p className="text-sm text-text-muted">কোনো প্রশ্ন তৈরি হয়নি। আবার চেষ্টা করো।</p>
       )}
     </div>
   );
@@ -274,7 +275,7 @@ function QuestionCard({
         <span className="mt-0.5 font-mono text-xs text-text-muted">{index}.</span>
         <div>
           <p className="text-sm text-text-primary"><RichText text={q.question} /></p>
-          {q.topic && <span className="text-[10px] text-text-muted">{q.topic}</span>}
+          {q.topic && <span className="text-[11px] text-text-muted">{q.topic}</span>}
         </div>
       </div>
 

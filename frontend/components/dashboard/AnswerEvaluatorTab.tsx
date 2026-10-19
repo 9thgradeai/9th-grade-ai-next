@@ -97,7 +97,7 @@ export default function AnswerEvaluatorTab() {
             <div className="flex items-center gap-4">
               <div className="flex h-20 w-20 flex-col items-center justify-center rounded-2xl bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] ring-1 ring-[var(--primary)]/20">
                 <span className="text-2xl font-bold">{result.score}</span>
-                <span className="text-[10px] uppercase tracking-wide">/ 100</span>
+                <span className="text-[11px] uppercase tracking-wide">/ 100</span>
               </div>
               <div>
                 <div className={`text-lg font-semibold ${VERDICT_LABEL[result.verdict].color}`}>

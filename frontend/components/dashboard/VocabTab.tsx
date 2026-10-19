@@ -259,7 +259,7 @@ export default function VocabTab() {
       <div className="flex gap-2 flex-wrap">
         <button
           onClick={() => setSection("words")}
-          className={`px-3 py-1.5 rounded-full text-xs font-mono border transition-all flex items-center gap-1.5 ${
+          className={`px-3 py-1.5 rounded-full min-h-11 min-w-11 text-xs font-mono border transition-all flex items-center gap-1.5 ${
             section === "words"
               ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] border-[var(--accent)]"
               : "bg-subtle border-[var(--accent)]/20 text-[var(--dashboard-text-muted)] hover:border-[var(--accent)]/40 hover:text-[var(--text-primary)]"
@@ -269,7 +269,7 @@ export default function VocabTab() {
         </button>
         <button
           onClick={() => setSection("idioms")}
-          className={`px-3 py-1.5 rounded-full text-xs font-mono border transition-all flex items-center gap-1.5 ${
+          className={`px-3 py-1.5 rounded-full min-h-11 min-w-11 text-xs font-mono border transition-all flex items-center gap-1.5 ${
             section === "idioms"
               ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] border-[var(--accent)]"
               : "bg-subtle border-[var(--accent)]/20 text-[var(--dashboard-text-muted)] hover:border-[var(--accent)]/40 hover:text-[var(--text-primary)]"
@@ -340,14 +340,14 @@ export default function VocabTab() {
                 onChange={(e) => { setSearchQuery(e.target.value); setIdx(0); setRevealed(false); }}
                 placeholder={t(lang, "শব্দ খুঁজুন... ( / )", "Search words... ( / )")}
                 aria-label="Search words"
-                className="w-full pl-9 pr-3 py-2 rounded-xl bg-[var(--surface-raised)] border border-terminal-border text-sm text-[var(--text-primary)] placeholder:text-[var(--dashboard-text-muted)] focus:outline-none focus:border-[var(--accent)]/50 font-mono"
+                className="w-full pl-9 pr-3 py-2 min-h-11 rounded-xl bg-[var(--surface-raised)] border border-terminal-border text-sm text-[var(--text-primary)] placeholder:text-[var(--dashboard-text-muted)] focus:outline-none focus:border-[var(--accent)]/50 font-mono"
               />
             </div>
             {(["all", "new", "learning", "due", "mastered"] as StatusFilter[]).map((s) => (
               <button
                 key={s}
                 onClick={() => setStatusFilter(s)}
-                className={`px-3 py-1.5 rounded-full text-xs font-mono border transition-colors ${
+                className={`px-3 py-1.5 rounded-full min-h-11 min-w-11 text-xs font-mono border transition-colors ${
                   statusFilter === s
                     ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] border-[var(--accent)]"
                     : "bg-[var(--surface-raised)] text-[var(--dashboard-text-muted)] border-terminal-border hover:border-[var(--accent)]/40"
@@ -358,7 +358,7 @@ export default function VocabTab() {
             ))}
             <button
               onClick={() => setShowQuiz(true)}
-              className="px-3 py-1.5 rounded-full text-xs font-mono border border-[var(--accent)]/30 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] hover:bg-[var(--accent-hover)] transition-all flex items-center gap-1.5"
+              className="px-3 py-1.5 rounded-full min-h-11 min-w-11 text-xs font-mono border border-[var(--accent)]/30 bg-[var(--accent)] text-[var(--dashboard-text-inverse)] hover:bg-[var(--accent-hover)] transition-all flex items-center gap-1.5"
             >
               <GameController className="w-3.5 h-3.5" /> {t(lang, "কুইজ", "Quiz")}
             </button>
@@ -406,7 +406,7 @@ export default function VocabTab() {
                         <SpeakerSimpleHigh className="w-5 h-5" />
                       </button>
                       {current.progress && (
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono border ${STATUS_COLORS[current.progress.status] ?? STATUS_COLORS.new}`}>
+                        <span className={`px-2 py-0.5 rounded-full text-[11px] font-mono border ${STATUS_COLORS[current.progress.status] ?? STATUS_COLORS.new}`}>
                           {(current.progress.status ?? "new").toUpperCase()}
                         </span>
                       )}
@@ -418,7 +418,7 @@ export default function VocabTab() {
                   </div>
                   <div className="flex gap-1.5 flex-shrink-0">
                     {current.examRelevance?.map((e) => (
-                      <span key={e} className="px-2 py-1 rounded-full bg-[var(--accent)]/10 border border-[var(--accent)]/20 text-[10px] font-mono text-[var(--accent)]">{e}</span>
+                      <span key={e} className="px-2 py-1 rounded-full bg-[var(--accent)]/10 border border-[var(--accent)]/20 text-[11px] font-mono text-[var(--accent)]">{e}</span>
                     ))}
                   </div>
                 </div>
@@ -456,7 +456,7 @@ export default function VocabTab() {
                           onClick={() => void review(r)}
                           className={`flex-1 min-w-[70px] min-h-[48px] py-2.5 rounded-xl border font-mono text-sm flex items-center justify-center gap-2 transition-all hover:scale-105 active:scale-95 ${RATING_CONFIG[r].color}`}
                         >
-                          <span className="text-[10px] opacity-60">{RATING_CONFIG[r].keyHint}</span>
+                          <span className="text-[11px] opacity-60">{RATING_CONFIG[r].keyHint}</span>
                           {RATING_CONFIG[r].label}
                         </button>
                       ))}
@@ -483,7 +483,7 @@ export default function VocabTab() {
                       onClick={() => setAutoRotate((v) => !v)}
                       aria-pressed={autoRotate}
                       aria-label={autoRotate ? t(lang, "স্বয়ংক্রিয় ঘূর্ণন বিরতি দিন", "Pause auto-rotation") : t(lang, "স্বয়ংক্রিয় ঘূর্ণন চালু করুন", "Resume auto-rotation")}
-                      className="w-9 h-9 min-w-[36px] rounded-full flex items-center justify-center text-[var(--dashboard-text-secondary)] hover:text-[var(--accent)] hover:bg-[var(--surface-muted)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                      className="w-11 h-11 min-w-11 rounded-full flex items-center justify-center text-[var(--dashboard-text-secondary)] hover:text-[var(--accent)] hover:bg-[var(--surface-muted)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
                     >
                       {autoRotate ? <Pause className="w-4 h-4" weight="fill" /> : <Play className="w-4 h-4" weight="fill" />}
                     </button>
@@ -495,7 +495,7 @@ export default function VocabTab() {
                       onClick={() => { setRevealed(false); setIdx((i) => (filteredRef.current.length > 0 ? (i + 1) % filteredRef.current.length : i)); }}
                       disabled={filtered.length <= 1}
                       aria-label={t(lang, "এখনই পরের শব্দ", "Next word now")}
-                      className="w-9 h-9 min-w-[36px] rounded-full flex items-center justify-center text-[var(--dashboard-text-secondary)] hover:text-[var(--accent)] hover:bg-[var(--surface-muted)] transition-colors disabled:opacity-30 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
+                      className="w-11 h-11 min-w-11 rounded-full flex items-center justify-center text-[var(--dashboard-text-secondary)] hover:text-[var(--accent)] hover:bg-[var(--surface-muted)] transition-colors disabled:opacity-30 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
                     >
                       <SkipForward className="w-4 h-4" weight="fill" />
                     </button>
@@ -532,7 +532,7 @@ function Stat({ value, label, accent }: { value: number; label: string; accent: 
   return (
     <div className="text-center">
       <p className={`text-lg font-bold font-mono ${accent}`}>{value}</p>
-      <p className="text-[9px] text-[var(--dashboard-text-muted)] font-mono tracking-wider">{label}</p>
+      <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono tracking-wider">{label}</p>
     </div>
   );
 }

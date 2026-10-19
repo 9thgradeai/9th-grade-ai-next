@@ -66,6 +66,9 @@ export default function MistakeRecoveryCard({ intelligence, onOpenMistakes }: Mi
     >
       <div className="flex items-center justify-between">
         <h3 id="mistake-recovery-title" className="command-eyebrow flex items-center gap-1.5">
+          {totalUnmastered > 0 && (
+            <span className="ml-2 text-[10px] font-bold bg-[var(--dashboard-danger)] text-[var(--dashboard-text-inverse)] rounded-full w-2.5 h-2.5">{totalUnmastered}</span>
+          )}
           <Book className="w-3.5 h-3.5" style={{ color: "var(--dashboard-danger)" }} />
           {t(lang, "ভুল পুনরুদ্ধার", "Mistake recovery")}
         </h3>

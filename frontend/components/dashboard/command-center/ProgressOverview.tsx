@@ -32,7 +32,7 @@ function TrendDelta({ delta, suffix = "" }: { delta: number; suffix?: string }) 
   const Icon = up ? TrendUp : TrendDown;
   return (
     <span
-      className="inline-flex items-center gap-0.5 text-[10px] font-bold font-mono"
+      className="inline-flex items-center gap-0.5 text-[11px] font-bold font-mono"
       style={{ color: up ? "var(--dashboard-success)" : "var(--dashboard-danger)" }}
       aria-label={`${up ? "+" : ""}${delta}${suffix} vs previous 30 days`}
     >
@@ -85,7 +85,7 @@ export default function ProgressOverview({ intelligence }: ProgressOverviewProps
             "Start practicing and your full progress analytics will appear here.",
           )}
         </p>
-        <button type="button" onClick={() => window.dispatchEvent(new CustomEvent("dashboard:start-practice"))} className="command-primary-btn mt-4">
+        <button type="button" onClick={() => window.dispatchEvent(new CustomEvent("dashboard:start-practice"))} className="command-primary-btn mt-4" style={{ minHeight: 45 }}>
           {t(lang, "প্র্যাকটিস শুরু করুন", "Start practicing")}
         </button>
       </section>
@@ -109,7 +109,7 @@ export default function ProgressOverview({ intelligence }: ProgressOverviewProps
               >
                 <kpi.icon className="w-4 h-4" aria-hidden="true" />
               </span>
-              <span className="text-[10px] font-bold uppercase tracking-wider truncate" style={{ color: "var(--dashboard-text-muted)" }}>
+              <span className="text-[11px] font-bold uppercase tracking-wider truncate" style={{ color: "var(--dashboard-text-muted)" }}>
                 {kpi.label}
               </span>
             </div>

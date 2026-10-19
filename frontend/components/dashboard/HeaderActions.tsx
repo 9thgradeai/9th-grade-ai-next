@@ -25,7 +25,7 @@ export function GlobalEcosystemToggle() {
           onClick={() => setEcosystem(code)}
           aria-pressed={ecosystem === code}
           aria-label={code === "BCS" ? "BCS" : pickLang(lang, "বাংলাদেশ ব্যাংক", "Bangladesh Bank")}
-          className={`min-h-[40px] min-w-[52px] px-3 py-1 text-xs font-bold rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] ${ecosystem === code ? "bg-[var(--dashboard-primary)] text-white shadow-sm" : "text-[var(--dashboard-text-secondary)] hover:text-[var(--dashboard-text-primary)]"}`}
+          className={`min-h-11 min-w-11 px-3 py-1 text-xs font-bold rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] ${ecosystem === code ? "bg-[var(--dashboard-primary)] text-white shadow-sm" : "text-[var(--dashboard-text-secondary)] hover:text-[var(--dashboard-text-primary)]"}`}
         >
           {code === "BCS" ? "BCS" : pickLang(lang, "ব্যাংক", "Bank")}
         </button>

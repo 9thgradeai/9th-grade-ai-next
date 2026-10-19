@@ -147,6 +147,23 @@ export default function SettingsTab() {
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
+  // ── Unsaved changes tracker ──
+  const hasUnsavedNameChange = nameDraft.trim().length > 0 && !editingName;
+  const hasUnsavedPwChange = pw.next.length > 0 || pw.current.length > 0;
+  const hasUnsavedChanges = hasUnsavedNameChange || hasUnsavedPwChange;
+
+  const unsavedNameBadge = hasUnsavedNameChange && (
+    <span className="ml-2 text-[10px] font-bold bg-[var(--dashboard-warning)] text-[var(--dashboard-text-inverse)] rounded-full w-2.5 h-2.5" title="Unsaved name change">
+      +
+    </span>
+  );
+
+  const unsavedPwBadge = hasUnsavedPwChange && (
+    <span className="ml-2 text-[10px] font-bold bg-[var(--dashboard-warning)] text-[var(--dashboard-text-inverse)] rounded-full w-2.5 h-2.5" title="Unsaved password change">
+      +
+    </span>
+  );
+
   const sessionInfo = useMemo(() => {
     if (!user) return null;
     return {
@@ -168,8 +185,22 @@ export default function SettingsTab() {
       await updateProfile(trimmed);
       setNameMsg({ ok: true, text: t("settings.profileUpdated") });
       setEditingName(false);
+      // Announce success
+      const statusDiv = document.createElement("div");
+      statusDiv.setAttribute("role", "status");
+      statusDiv.className = "sr-only";
+      statusDiv.textContent = t("settings.profileUpdated");
+      document.body.appendChild(statusDiv);
+      setTimeout(() => statusDiv.remove(), 3000);
     } catch (error) {
       setNameMsg({ ok: false, text: handleApiError(error).message });
+      // Announce error
+      const statusDiv = document.createElement("div");
+      statusDiv.setAttribute("role", "alert");
+      statusDiv.className = "sr-only";
+      statusDiv.textContent = handleApiError(error).message;
+      document.body.appendChild(statusDiv);
+      setTimeout(() => statusDiv.remove(), 5000);
     } finally {
       setSavingName(false);
     }
@@ -193,8 +224,22 @@ export default function SettingsTab() {
       await refreshToken();
       setPwMsg({ ok: true, text: t("settings.pwChanged") });
       setPw({ current: "", next: "", confirm: "" });
+      // Announce success
+      const statusDiv = document.createElement("div");
+      statusDiv.setAttribute("role", "status");
+      statusDiv.className = "sr-only";
+      statusDiv.textContent = t("settings.pwChanged");
+      document.body.appendChild(statusDiv);
+      setTimeout(() => statusDiv.remove(), 3000);
     } catch (error) {
       setPwMsg({ ok: false, text: handleApiError(error).message });
+      // Announce error
+      const statusDiv = document.createElement("div");
+      statusDiv.setAttribute("role", "alert");
+      statusDiv.className = "sr-only";
+      statusDiv.textContent = handleApiError(error).message;
+      document.body.appendChild(statusDiv);
+      setTimeout(() => statusDiv.remove(), 5000);
     } finally {
       setChangingPw(false);
     }
@@ -277,6 +322,16 @@ export default function SettingsTab() {
             <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[var(--primary)]/30 to-[var(--info)]/10 border border-[var(--accent)]/35 flex items-center justify-center text-xl font-bold text-[var(--dashboard-primary)]">
               {initial}
             </div>
+            {hasUnsavedNameChange && (
+              <span className="absolute top-1 left-1 text-[10px] font-bold bg-[var(--dashboard-warning)] text-[var(--dashboard-text-inverse)] rounded-full w-2.5 h-2.5" title="Unsaved changes">
+                +
+              </span>
+            )}
+            {hasUnsavedPwChange && (
+              <span className="absolute top-1 left-1.5 text-[10px] font-bold bg-[var(--dashboard-warning)] text-[var(--dashboard-text-inverse)] rounded-full w-2.5 h-2.5" title="Unsaved password change">
+                +
+              </span>
+            )}
             <span className="absolute bottom-1 right-1 w-3 h-3 rounded-full bg-[var(--accent)] border-2 border-[var(--surface-solid)]" aria-hidden="true" />
           </div>
           <div className="min-w-0">
