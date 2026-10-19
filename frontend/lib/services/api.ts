@@ -643,6 +643,68 @@ export const api = {
     return cachedGet<{ subjects: Server.ExamSubjectDTO[] }>(`/api/exam/config${qs}`).then((d) => d.subjects);
   },
 
+  /**
+   * Compact summary of the canonical syllabus-driven config for an ecosystem
+   * (marks, question counts, scoring, provenance, validity). Returns `null`
+   * when the ecosystem has no registered config.
+   *
+   * `?full=1` is intentionally NOT used here — call `examConfigFull` when the
+   * full topic tree (with allocation paths) is needed.
+   */
+  examConfigSummary: (ecosystem: string): Promise<Server.ExamConfigSummaryDTO | null> =>
+    cachedGet<{ examConfigSummary: Server.ExamConfigSummaryDTO | null }>(
+      `/api/exam/config?v=2&ecosystem=${encodeURIComponent(ecosystem)}`,
+    ).then((d) => d.examConfigSummary),
+
+  /** Full canonical config (subjects + nested topic tree + allocation paths). */
+  examConfigFull: (ecosystem: string): Promise<Server.ExamConfigDTO | null> =>
+    cachedGet<{ examConfig: Server.ExamConfigDTO | null }>(
+      `/api/exam/config?v=2&full=1&ecosystem=${encodeURIComponent(ecosystem)}`,
+    ).then((d) => d.examConfig),
+
+  // ── Syllabus-driven paper build ─────────────────────────────
+
+  /**
+   * Report whether the official full paper for an ecosystem can be assembled
+   * from live inventory today (per-subject capacity + deficits). Read-only.
+   */
+  paperReadiness: (ecosystem: string): Promise<Server.PaperReadinessDTO> =>
+    request<{ readiness: Server.PaperReadinessDTO }>(
+      `/api/exam/paper?ecosystem=${encodeURIComponent(ecosystem)}`,
+      { method: "GET", ...AUTH_FETCH_INIT },
+    ).then((d) => d.readiness),
+
+  /**
+   * Assemble a syllabus-driven paper for an ecosystem + mode.
+   *
+   * Selection uses CONFIG subject/topic ids (e.g. `bcs.bangla`), unlike
+   * `buildExam` which uses numeric DB subject ids. Omit `selection` for the
+   * official full paper; full papers (mock/real) reject with
+   * `EXAM_PAPER_INFEASIBLE` (HTTP 422) when inventory cannot meet the quotas.
+   */
+  buildConfiguredPaper: async (params: {
+    ecosystem: Server.ExamEcosystemCode;
+    mode: Server.ExamMode;
+    selection?: {
+      subjects?: Array<{ subjectId: string; topics?: string[] }>;
+      requested?: number;
+      perSubject?: Record<string, number>;
+    };
+    shuffleQuestions?: boolean;
+    seed?: number;
+  }): Promise<Server.ConfiguredPaperDTO> => {
+    const data = await request<{ paper: Server.ConfiguredPaperDTO }>("/api/exam/paper", {
+      method: "POST",
+      ...AUTH_FETCH_INIT,
+      body: JSON.stringify(params),
+      headers: { "Content-Type": "application/json" },
+      retries: 1,
+      timeoutMs: 30_000,
+    });
+    return data.paper;
+  },
+
+
   // ── Exam History & Real Exam ────────────────────────────────
 
   /** Fetch user's exam history (past attempts + upcoming exams). */

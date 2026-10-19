@@ -76,6 +76,15 @@ ever rebuilt outside migrations:
 
 ## Schema
 
+> **No schema change for the syllabus-driven exam pipeline (ADR-064).** The
+> canonical exam configuration (BCS/Bank subjects, marks, official
+> suballocations, scoring) is a **versioned code registry**
+> (`backend/services/exam-config/*`), not a Prisma model — deliberately, because
+> adding tables would require a production migration the change was scoped to
+> avoid. Nothing in `database/prisma/schema.prisma` changed. Paper-assembly
+> immutability reuses the existing per-attempt question-set hash on the exam
+> attempt, so no content-snapshot table was added either.
+
 ### Enums
 
 #### UserRole

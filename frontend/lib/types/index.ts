@@ -1251,6 +1251,136 @@ export namespace Server {
     note: CurrentAffairsNoteDTO | null;
     userNote: { customContentJson: unknown; updatedAt: string } | null;
   };
+
+  // ── Syllabus-driven exam configuration (canonical paper shape) ──
+  // Mirrors backend/services/exam-config/types.ts. Served by /api/exam/config.
+  export type ExamEcosystemCode = "BCS" | "BANGLADESH_BANK";
+  export type ExamMode = "practice" | "mock" | "real";
+  export type ExamAllocationSource = "official" | "configured" | "inferred";
+  export type ExamConfigProvenance = "OFFICIAL" | "CURATED" | "UNKNOWN";
+
+  export type ExamScoringPolicyDTO = {
+    marksPerQuestion: number;
+    penaltyPerWrong: number;
+    marksForUnanswered: number;
+  };
+
+  export type ExamTopicNodeDTO = {
+    id: string;
+    nameBn: string;
+    nameEn?: string;
+    paths: string[];
+    marks?: number;
+    allocationSource: ExamAllocationSource;
+    weight?: number;
+    minQuota?: number;
+    maxQuota?: number;
+    mandatory?: boolean;
+    children: ExamTopicNodeDTO[];
+  };
+
+  export type ExamConfigSubjectDTO = {
+    id: string;
+    nameBn: string;
+    nameEn: string;
+    marks: number;
+    allocationSource: ExamAllocationSource;
+    rootSegment: string;
+    matchNameBn?: string;
+    children: ExamTopicNodeDTO[];
+  };
+
+  export type ExamConfigDTO = {
+    examCode: ExamEcosystemCode;
+    version: number;
+    label: string;
+    labelBn: string;
+    effectiveFrom?: string;
+    effectiveTo?: string | null;
+    provenance: ExamConfigProvenance;
+    reviewStatus: "draft" | "reviewed" | "approved";
+    scoring: ExamScoringPolicyDTO;
+    totalMarks: number;
+    totalQuestions: number;
+    durationMin?: number;
+    subjects: ExamConfigSubjectDTO[];
+    notes: string[];
+  };
+
+  export type ExamConfigSummaryDTO = {
+    examCode: ExamEcosystemCode;
+    version: number;
+    label: string;
+    labelBn: string;
+    totalMarks: number;
+    totalQuestions: number;
+    durationMin?: number;
+    provenance: ExamConfigProvenance;
+    reviewStatus: "draft" | "reviewed" | "approved";
+    scoring: ExamScoringPolicyDTO;
+    subjectCount: number;
+    valid: boolean;
+  };
+
+  export type AllocationDiagnosticDTO = {
+    code: string;
+    severity: "info" | "warning" | "error";
+    message: string;
+    subjectId?: string;
+    topicId?: string;
+    requested?: number;
+    achievable?: number;
+    deficit?: number;
+  };
+
+  export type PaperSubjectPlanDTO = {
+    id: string;
+    nameBn: string;
+    nameEn: string;
+    requested: number;
+    allocated: number;
+    capacity: number;
+    source: ExamAllocationSource;
+    mandatory: boolean;
+  };
+
+  /** A syllabus-driven paper built by POST /api/exam/paper. */
+  export type ConfiguredPaperDTO = {
+    examCode: ExamEcosystemCode;
+    configVersion: number;
+    mode: ExamMode;
+    examId: string;
+    questions: ExamQuestionDTO[];
+    requested: number;
+    achievable: number;
+    totalQuestions: number;
+    durationSec: number;
+    scoring: ExamScoringPolicyDTO;
+    seed: number;
+    allocation: {
+      outcome: "feasible" | "redistributed" | "deviations" | "infeasible" | "invalid";
+      subjects: PaperSubjectPlanDTO[];
+      diagnostics: AllocationDiagnosticDTO[];
+    };
+  };
+
+  export type PaperReadinessDTO = {
+    examCode: ExamEcosystemCode;
+    configVersion: number;
+    mode: ExamMode;
+    feasible: boolean;
+    outcome: "feasible" | "redistributed" | "deviations" | "infeasible" | "invalid";
+    required: number;
+    achievable: number;
+    subjects: Array<{
+      id: string;
+      nameBn: string;
+      required: number;
+      capacity: number;
+      deficit: number;
+    }>;
+    diagnostics: AllocationDiagnosticDTO[];
+  };
 }
 
 // ── Re-exports for convenience ──────────────────────────────
@@ -1354,3 +1484,19 @@ export type ExamHistoryDTO = Server.ExamHistoryDTO;
 export type RealExamExportOptions = Server.RealExamExportOptions;
 export type RealExamQuestionDTO = Server.RealExamQuestionDTO;
 export type RealExamConfigDTO = Server.RealExamConfigDTO;
+
+// ── Syllabus-driven exam config / paper DTOs ─────────────
+// `ExamEcosystemCode` is already exported at the top of this file (line ~22),
+// so it is intentionally not re-aliased here.
+export type ExamMode = Server.ExamMode;
+export type ExamAllocationSource = Server.ExamAllocationSource;
+export type ExamConfigProvenance = Server.ExamConfigProvenance;
+export type ExamScoringPolicyDTO = Server.ExamScoringPolicyDTO;
+export type ExamTopicNodeDTO = Server.ExamTopicNodeDTO;
+export type ExamConfigSubjectDTO = Server.ExamConfigSubjectDTO;
+export type ExamConfigDTO = Server.ExamConfigDTO;
+export type ExamConfigSummaryDTO = Server.ExamConfigSummaryDTO;
+export type AllocationDiagnosticDTO = Server.AllocationDiagnosticDTO;
+export type PaperSubjectPlanDTO = Server.PaperSubjectPlanDTO;
+export type ConfiguredPaperDTO = Server.ConfiguredPaperDTO;
+export type PaperReadinessDTO = Server.PaperReadinessDTO;

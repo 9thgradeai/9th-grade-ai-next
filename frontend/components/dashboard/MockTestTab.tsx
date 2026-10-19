@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { motion, AnimatePresence, useReducedMotion, useDragControls } from "framer-motion";
-import { Trophy, Play, Flag, Timer, Check, CaretLeft, CaretRight, Minus, Plus, Spinner, Warning, CircleDashed, CheckCircle, XCircle, ArrowCounterClockwise, } from "@phosphor-icons/react";
+import { Trophy, Play, Flag, Timer, Check, CaretLeft, CaretRight, Minus, Plus, Spinner, Warning, CircleDashed, CheckCircle, XCircle, ArrowCounterClockwise, ListChecks, } from "@phosphor-icons/react";
 import { api } from "@/lib/services/api";
 import { useEcosystem } from "@/lib/ecosystem-ctx";
 import { autoDurationMin, autoDurationSec, formatDurationShort, negativeLabelForEcosystem } from "@/lib/exam-scoring";
@@ -80,6 +80,13 @@ export default function MockTestTab() {
   const [durationTouched, setDurationTouched] = useState(false);
   const [buildLoading, setBuildLoading] = useState(false);
   const [buildError, setBuildError] = useState<string | null>(null);
+
+  // Opt-in: assemble the OFFICIAL, syllabus-driven full paper (subject quotas +
+  // marks from the canonical exam config) instead of a hand-picked selection.
+  // Off by default — the manual flow below is untouched.
+  const [officialPaper, setOfficialPaper] = useState(false);
+  const [paperReadiness, setPaperReadiness] = useState<Server.PaperReadinessDTO | null>(null);
+  const [readinessLoading, setReadinessLoading] = useState(false);
 
   // ── Test state ──
   const [testState, setTestState] = useState<TestState>("setup");
@@ -203,6 +210,27 @@ export default function MockTestTab() {
     setConfigReloadKey((k) => k + 1);
   }, []);
 
+  // Readiness for the official full paper (only fetched when the user opts in,
+  // so the common manual path costs nothing).
+  useEffect(() => {
+    if (!officialPaper) return;
+    let cancelled = false;
+    setReadinessLoading(true);
+    void (async () => {
+      try {
+        const readiness = await api.paperReadiness(ecosystem);
+        if (!cancelled) setPaperReadiness(readiness);
+      } catch {
+        if (!cancelled) setPaperReadiness(null);
+      } finally {
+        if (!cancelled) setReadinessLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [officialPaper, ecosystem]);
+
   // Resume an in-progress attempt from localStorage so tab switches or a
   // refresh never destroy an active test. The wall-clock timer below
   // auto-submits if time ran out while away.
@@ -323,12 +351,32 @@ export default function MockTestTab() {
     setBuildLoading(true);
     setBuildError(null);
     try {
-      const built = await api.buildExam(
-        buildExamSelectionRequest(selectedSubjects, selection, totalCount, durationMin * 60),
-      );
-      if (built.questions.length === 0) {
-        setBuildError("এই কনফিগারেশনে কোনো প্রশ্ন পাওয়া যায়নি।");
-        return;
+      // Official syllabus-driven paper: server owns quotas, marks and scoring.
+      // Falls back to the manual selection builder when the toggle is off.
+      let builtQuestions: Server.ExamQuestionDTO[];
+      let builtDurationSec: number;
+      if (officialPaper) {
+        const paper = await api.buildConfiguredPaper({
+          ecosystem,
+          mode: "mock",
+          shuffleQuestions: false,
+        });
+        if (paper.questions.length === 0) {
+          setBuildError("অফিসিয়াল পেপার তৈরি করা যায়নি — বর্তমানে পর্যাপ্ত প্রশ্ন নেই।");
+          return;
+        }
+        builtQuestions = paper.questions;
+        builtDurationSec = paper.durationSec;
+      } else {
+        const built = await api.buildExam(
+          buildExamSelectionRequest(selectedSubjects, selection, totalCount, durationMin * 60),
+        );
+        if (built.questions.length === 0) {
+          setBuildError("এই কনফিগারেশনে কোনো প্রশ্ন পাওয়া যায়নি।");
+          return;
+        }
+        builtQuestions = built.questions;
+        builtDurationSec = built.durationSec;
       }
       // A fresh build must bind to a brand-new attempt token, never reuse a
       // stale one or the server keeps the old question-set hash and the new
@@ -336,26 +384,42 @@ export default function MockTestTab() {
       clearAttemptId(STORAGE_KEY);
       const attemptId = ensureAttemptId(STORAGE_KEY);
       // Serve-time option shuffle, seeded by the attempt (see CustomExamTab).
-      setQuestions(shuffleSessionOptions(built.questions, `exam-${attemptId}`));
+      setQuestions(shuffleSessionOptions(builtQuestions, `exam-${attemptId}`));
       setAnswers({});
       setCurrentQuestion(0);
       clearOtherExams(STORAGE_KEY);
       startedAtRef.current = Date.now();
-      totalSecRef.current = built.durationSec;
-      setTimeRemaining(built.durationSec);
+      totalSecRef.current = builtDurationSec;
+      setTimeRemaining(builtDurationSec);
       setTestState("active");
       requestAnimationFrame(() => scrollDashboardTop());
       // Best-effort server registration. The submit endpoint will upsert the
       // attempt row on its own if this call fails.
       void registerExam({
         attemptId,
-        questionIds: built.questions.map((q) => q.id),
-        durationSec: built.durationSec,
+        questionIds: builtQuestions.map((q) => q.id),
+        durationSec: builtDurationSec,
       }).catch(() => {
         /* non-fatal */
       });
-    } catch {
-      setBuildError("মক টেস্ট তৈরি করা যায়নি। আবার চেষ্টা করুন।");
+    } catch (err) {
+      // The configured builder reports infeasibility explicitly (HTTP 422,
+      // code EXAM_PAPER_INFEASIBLE) rather than silently serving a short paper.
+      const code =
+        err && typeof err === "object" && "code" in err
+          ? String((err as { code?: unknown }).code ?? "")
+          : "";
+      if (officialPaper && code === "EXAM_PAPER_INFEASIBLE") {
+        setBuildError(
+          "অফিসিয়াল পূর্ণ পেপার আজ তৈরি করা সম্ভব নয় — কিছু বিষয়ের প্রশ্ন এখনো যথেষ্ট নয়। ম্যানুয়াল মোডে টেস্ট দিন বা পরে চেষ্টা করুন।",
+        );
+      } else {
+        setBuildError(
+          officialPaper
+            ? "অফিসিয়াল পেপার তৈরি করা যায়নি। আবার চেষ্টা করুন।"
+            : "মক টেস্ট তৈরি করা যায়নি। আবার চেষ্টা করুন।",
+        );
+      }
     } finally {
       setBuildLoading(false);
     }
@@ -622,6 +686,60 @@ export default function MockTestTab() {
 
         {!configLoading && !configError && (
           <>
+            {/* Opt-in: assemble the OFFICIAL, syllabus-driven full paper. Off by
+                default so the manual selection flow below is unchanged. */}
+            <label className="glass-card rounded-2xl border border-terminal-border p-4 flex items-start gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={officialPaper}
+                onChange={(e) => setOfficialPaper(e.target.checked)}
+                className="mt-1 w-5 h-5 accent-[var(--accent)] flex-shrink-0"
+              />
+              <span className="min-w-0">
+                <span className="block text-sm font-mono text-[var(--text-primary)]">
+                  অফিসিয়াল সিলেবাস পেপার (নির্ধারিত মার্ক বণ্টন)
+                </span>
+                <span className="block text-xs text-[var(--dashboard-text-muted)] mt-0.5">
+                  {ecosystem === "BCS" ? "বিসিএস প্রিলিমিনারি" : "বাংলাদেশ ব্যাংক প্রিলিমিনারি"} সিলেবাস অনুযায়ী সার্ভার নিজেই বিষয়ভিত্তিক মার্ক ও প্রশ্ন বণ্টন করে পূর্ণ পেপার তৈরি করবে।
+                </span>
+              </span>
+            </label>
+
+            {officialPaper ? (
+              <div className="glass-card rounded-2xl border border-terminal-border p-4 space-y-3">
+                <div className="flex items-center gap-2">
+                  <ListChecks className="w-4 h-4 text-[var(--dashboard-primary)]" aria-hidden="true" />
+                  <h3 className="text-sm font-mono text-[var(--text-primary)]">পেপার প্রস্তুতি</h3>
+                </div>
+                {readinessLoading ? (
+                  <p role="status" className="text-xs text-[var(--dashboard-text-muted)] font-mono flex items-center gap-2">
+                    <Spinner className="w-4 h-4 animate-spin text-[var(--accent)]" aria-hidden="true" /> যাচাই হচ্ছে…
+                  </p>
+                ) : !paperReadiness ? (
+                  <p className="text-xs text-[var(--dashboard-text-muted)] font-mono">প্রস্তুতি তথ্য পাওয়া যায়নি।</p>
+                ) : (
+                  <>
+                    <p className={`text-xs font-mono ${paperReadiness.feasible ? "text-[var(--dashboard-primary)]" : "text-[var(--dashboard-warning)]"}`}>
+                      {paperReadiness.feasible
+                        ? `পূর্ণ পেপার তৈরি সম্ভব (${paperReadiness.achievable}/${paperReadiness.required} প্রশ্ন)।`
+                        : `এখনই পূর্ণ পেপার তৈরি সম্ভব নয়: প্রয়োজন ${paperReadiness.required}, পাওয়া যাবে ${paperReadiness.achievable}।`}
+                    </p>
+                    <div className="space-y-1.5 max-h-64 overflow-y-auto overscroll-contain pr-1">
+                      {paperReadiness.subjects.map((s) => (
+                        <div key={s.id} className="flex items-center justify-between gap-2 text-[11px] font-mono">
+                          <span className="text-[var(--dashboard-text-secondary)] truncate">{s.nameBn}</span>
+                          <span className={`tabular-nums flex-shrink-0 ${s.deficit > 0 ? "text-[var(--dashboard-warning)]" : "text-[var(--dashboard-primary)]"}`}>
+                            {s.capacity}/{s.required}
+                            {s.deficit > 0 ? ` (−${s.deficit})` : ""}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+            ) : (
+            <>
             <SmartMixButton subjects={subjects} totalQuestions={Math.max(totalCount || 20, 20)} onApply={setSelection} />
             <SubjectTopicSelect
               subjects={subjects}
@@ -685,6 +803,8 @@ export default function MockTestTab() {
                 </p>
               </div>
             )}
+            </>
+            )}
 
             {buildError && (
               <div className="flex items-start gap-2 rounded-xl border border-[var(--danger)]/30 bg-[var(--dashboard-danger-subtle)] p-3 text-xs text-[var(--dashboard-danger)]">
@@ -697,12 +817,21 @@ export default function MockTestTab() {
             <div className="sticky z-[var(--z-sticky)] bottom-[calc(var(--bottom-nav-h)+env(safe-area-inset-bottom,0px)+8px)] lg:bottom-2 mt-4">
               <button
                 onClick={() => void buildAndStart()}
-                disabled={selectedSubjects.length === 0 || totalCount === 0 || buildLoading}
+                disabled={
+                  buildLoading ||
+                  (officialPaper
+                    ? !paperReadiness?.feasible
+                    : selectedSubjects.length === 0 || totalCount === 0)
+                }
                 className="w-full py-3 min-h-[52px] bg-[var(--accent)] text-[var(--dashboard-text-inverse)] font-mono text-sm font-bold rounded-2xl hover:bg-[var(--accent-hover)] active:opacity-90 cursor-pointer transition-[background-color,opacity] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)] flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
                 style={{ boxShadow: "var(--dashboard-shadow-md)" }}
               >
                 <Play className="w-4 h-4" aria-hidden="true" />
-                {buildLoading ? "তৈরি হচ্ছে..." : `মক টেস্ট শুরু করুন${totalCount > 0 ? ` · ${totalCount}টি` : ""}`}
+                {buildLoading
+                  ? "তৈরি হচ্ছে..."
+                  : officialPaper
+                    ? `অফিসিয়াল পেপার শুরু করুন${paperReadiness ? ` · ${paperReadiness.required}টি` : ""}`
+                    : `মক টেস্ট শুরু করুন${totalCount > 0 ? ` · ${totalCount}টি` : ""}`}
               </button>
             </div>
           </>
