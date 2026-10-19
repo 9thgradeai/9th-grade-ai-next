@@ -7,6 +7,16 @@
 - **Primary**: Inter (`--font-inter`)
 - **Mono**: JetBrains Mono (`--font-jetbrains-mono`)
 - Weights: 400 (body), 500 (medium), 600/700 (display/bold)
+- **Minimum size — 11px floor.** Body/label text must render at **≥ 11px**
+  (`--text-xs`, `app/globals.css`). `text-[8px]`, `text-[9px]`, and
+  `text-[10px]` are forbidden in the dashboard: the `scripts/check-ui-lint.sh`
+  ratchet (wired into `npm run lint`) fails on them, and the e2e dashboard audit
+  measures computed font sizes at runtime. For micro-labels use `text-[11px]`
+  or the `.command-eyebrow` token.
+- **Dense numeric badges.** When an 11px glyph must sit inside a small dot, make
+  the badge flexible — `inline-flex items-center justify-center min-w-2.5 h-2.5
+  leading-none px-0.5` — rather than a fixed `w-2.5 h-2.5` box that clips the
+  text.
 
 ## Colors
 

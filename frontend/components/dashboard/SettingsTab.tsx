@@ -96,7 +96,7 @@ function Field({
       <input
         id={id}
         {...props}
-        className="w-full px-3.5 py-2.5 rounded-xl bg-subtle border border-[var(--dashboard-border-muted)] text-sm text-[var(--text-primary)] placeholder:text-[var(--text-secondary)] outline-none transition-colors focus:border-[var(--accent)]/50 focus:ring-2 focus:ring-[var(--accent)]/20"
+        className="w-full min-h-11 px-3.5 py-2.5 rounded-xl bg-subtle border border-[var(--dashboard-border-muted)] text-sm text-[var(--text-primary)] placeholder:text-[var(--text-secondary)] outline-none transition-colors focus:border-[var(--accent)]/50 focus:ring-2 focus:ring-[var(--accent)]/20"
       />
     </label>
   );
@@ -153,13 +153,13 @@ export default function SettingsTab() {
   const hasUnsavedChanges = hasUnsavedNameChange || hasUnsavedPwChange;
 
   const unsavedNameBadge = hasUnsavedNameChange && (
-    <span className="ml-2 text-[10px] font-bold bg-[var(--dashboard-warning)] text-[var(--dashboard-text-inverse)] rounded-full w-2.5 h-2.5" title="Unsaved name change">
+    <span className="ml-2 text-[11px] leading-none font-bold bg-[var(--dashboard-warning)] text-[var(--dashboard-text-inverse)] rounded-full inline-flex items-center justify-center min-w-2.5 h-2.5 px-0.5" title="Unsaved name change">
       +
     </span>
   );
 
   const unsavedPwBadge = hasUnsavedPwChange && (
-    <span className="ml-2 text-[10px] font-bold bg-[var(--dashboard-warning)] text-[var(--dashboard-text-inverse)] rounded-full w-2.5 h-2.5" title="Unsaved password change">
+    <span className="ml-2 text-[11px] leading-none font-bold bg-[var(--dashboard-warning)] text-[var(--dashboard-text-inverse)] rounded-full inline-flex items-center justify-center min-w-2.5 h-2.5 px-0.5" title="Unsaved password change">
       +
     </span>
   );
@@ -323,12 +323,12 @@ export default function SettingsTab() {
               {initial}
             </div>
             {hasUnsavedNameChange && (
-              <span className="absolute top-1 left-1 text-[10px] font-bold bg-[var(--dashboard-warning)] text-[var(--dashboard-text-inverse)] rounded-full w-2.5 h-2.5" title="Unsaved changes">
+              <span className="absolute top-1 left-1 text-[11px] leading-none font-bold bg-[var(--dashboard-warning)] text-[var(--dashboard-text-inverse)] rounded-full inline-flex items-center justify-center min-w-2.5 h-2.5 px-0.5" title="Unsaved changes">
                 +
               </span>
             )}
             {hasUnsavedPwChange && (
-              <span className="absolute top-1 left-1.5 text-[10px] font-bold bg-[var(--dashboard-warning)] text-[var(--dashboard-text-inverse)] rounded-full w-2.5 h-2.5" title="Unsaved password change">
+              <span className="absolute top-1 left-1.5 text-[11px] leading-none font-bold bg-[var(--dashboard-warning)] text-[var(--dashboard-text-inverse)] rounded-full inline-flex items-center justify-center min-w-2.5 h-2.5 px-0.5" title="Unsaved password change">
                 +
               </span>
             )}
@@ -346,12 +346,12 @@ export default function SettingsTab() {
                   }}
                   autoFocus
                   aria-label={t("settings.editNameLabel")}
-                  className="px-3 py-1.5 rounded-lg bg-subtle border border-[var(--accent)]/40 text-sm text-[var(--text-primary)] outline-none"
+                  className="min-h-11 px-3 py-1.5 rounded-lg bg-subtle border border-[var(--accent)]/40 text-sm text-[var(--text-primary)] outline-none"
                 />
                 <button
                   onClick={() => void saveName()}
                   disabled={savingName}
-                  className="px-3 py-1.5 rounded-lg bg-[var(--accent)] text-[var(--dashboard-text-inverse)] text-xs font-mono font-semibold hover:bg-[var(--accent-hover)] transition-colors disabled:opacity-60"
+                  className="min-h-11 px-3 py-1.5 rounded-lg bg-[var(--accent)] text-[var(--dashboard-text-inverse)] text-xs font-mono font-semibold hover:bg-[var(--accent-hover)] transition-colors disabled:opacity-60"
                 >
                   {savingName ? t("settings.saving") : t("common.save")}
                 </button>
@@ -360,7 +360,7 @@ export default function SettingsTab() {
                     setEditingName(false);
                     setNameMsg(null);
                   }}
-                  className="px-2.5 py-1.5 rounded-lg border border-[var(--border-strong)] text-xs font-mono text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)] transition-colors"
+                  className="min-h-11 px-2.5 py-1.5 rounded-lg border border-[var(--border-strong)] text-xs font-mono text-[var(--dashboard-text-muted)] hover:text-[var(--text-primary)] transition-colors"
                   aria-label={t("settings.cancelEditing")}
                 >
                   {t("settings.cancel")}
@@ -375,7 +375,7 @@ export default function SettingsTab() {
                     setNameMsg(null);
                     setEditingName(true);
                   }}
-                  className="p-1.5 rounded-lg text-[var(--dashboard-text-muted)] hover:text-[var(--dashboard-primary)] hover:bg-[var(--dashboard-primary-subtle)] transition-colors"
+                  className="inline-flex items-center justify-center min-w-11 min-h-11 rounded-lg text-[var(--dashboard-text-muted)] hover:text-[var(--dashboard-primary)] hover:bg-[var(--dashboard-primary-subtle)] transition-colors"
                   aria-label={t("settings.editName")}
                 >
                   <PencilSimple className="w-4 h-4" />
@@ -392,26 +392,20 @@ export default function SettingsTab() {
           </p>
         ) : null}
         <dl className="grid sm:grid-cols-2 gap-3">
-          <div className="flex items-center gap-2.5 p-3 rounded-xl bg-subtle border border-[var(--dashboard-border-muted)]">
-            <Envelope className="w-4 h-4 text-[var(--dashboard-primary)] flex-shrink-0" aria-hidden="true" />
-            <div className="min-w-0">
-              <dt className="text-[10px] font-mono uppercase tracking-wider text-[var(--dashboard-text-muted)]">{t("settings.email")}</dt>
-              <dd className="text-sm text-[var(--dashboard-text-primary)] truncate">{user?.email ?? "—"}</dd>
-            </div>
+          <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-2.5 gap-y-0.5 p-3 rounded-xl bg-subtle border border-[var(--dashboard-border-muted)]">
+            <Envelope className="w-4 h-4 row-span-2 text-[var(--dashboard-primary)] flex-shrink-0" aria-hidden="true" />
+            <dt className="text-[11px] font-mono uppercase tracking-wider text-[var(--dashboard-text-muted)]">{t("settings.email")}</dt>
+            <dd className="text-sm text-[var(--dashboard-text-primary)] truncate">{user?.email ?? "—"}</dd>
           </div>
-          <div className="flex items-center gap-2.5 p-3 rounded-xl bg-subtle border border-[var(--dashboard-border-muted)]">
-            <At className="w-4 h-4 text-[var(--dashboard-primary)] flex-shrink-0" aria-hidden="true" />
-            <div className="min-w-0">
-              <dt className="text-[10px] font-mono uppercase tracking-wider text-[var(--dashboard-text-muted)]">{t("settings.handle")}</dt>
-              <dd className="text-sm text-[var(--dashboard-text-primary)] truncate">@{user?.handle ?? "student"}</dd>
-            </div>
+          <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-2.5 gap-y-0.5 p-3 rounded-xl bg-subtle border border-[var(--dashboard-border-muted)]">
+            <At className="w-4 h-4 row-span-2 text-[var(--dashboard-primary)] flex-shrink-0" aria-hidden="true" />
+            <dt className="text-[11px] font-mono uppercase tracking-wider text-[var(--dashboard-text-muted)]">{t("settings.handle")}</dt>
+            <dd className="text-sm text-[var(--dashboard-text-primary)] truncate">@{user?.handle ?? "student"}</dd>
           </div>
-          <div className="flex items-center gap-2.5 p-3 rounded-xl bg-subtle border border-[var(--dashboard-border-muted)] sm:col-span-2">
-            <Calendar className="w-4 h-4 text-[var(--dashboard-primary)] flex-shrink-0" aria-hidden="true" />
-            <div className="min-w-0">
-              <dt className="text-[10px] font-mono uppercase tracking-wider text-[var(--dashboard-text-muted)]">{t("settings.memberSince")}</dt>
-              <dd className="text-sm text-[var(--dashboard-text-primary)]">{formatDate(user?.createdAt)}</dd>
-            </div>
+          <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-2.5 gap-y-0.5 p-3 rounded-xl bg-subtle border border-[var(--dashboard-border-muted)] sm:col-span-2">
+            <Calendar className="w-4 h-4 row-span-2 text-[var(--dashboard-primary)] flex-shrink-0" aria-hidden="true" />
+            <dt className="text-[11px] font-mono uppercase tracking-wider text-[var(--dashboard-text-muted)]">{t("settings.memberSince")}</dt>
+            <dd className="text-sm text-[var(--dashboard-text-primary)]">{formatDate(user?.createdAt)}</dd>
           </div>
         </dl>
       </SectionCard>
@@ -457,7 +451,7 @@ export default function SettingsTab() {
         <button
           onClick={() => void changePassword()}
           disabled={changingPw}
-          className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--accent)] text-[var(--dashboard-text-inverse)] text-sm font-mono font-semibold hover:bg-[var(--accent-hover)] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+          className="mt-4 inline-flex items-center gap-2 min-h-11 px-4 py-2 rounded-xl bg-[var(--accent)] text-[var(--dashboard-text-inverse)] text-sm font-mono font-semibold hover:bg-[var(--accent-hover)] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {changingPw ? <Spinner className="w-4 h-4 animate-spin" aria-hidden="true" /> : <Key className="w-4 h-4" aria-hidden="true" />}
           {changingPw ? t("settings.updating") : t("settings.changePw")}
@@ -481,7 +475,7 @@ export default function SettingsTab() {
           <button
             onClick={() => void handleRevokeSessions()}
             disabled={revokingAll}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-[var(--danger)]/40 bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)] text-sm font-mono font-semibold hover:bg-[var(--dashboard-danger-subtle)] transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex-shrink-0"
+            className="inline-flex items-center gap-2 min-h-11 px-4 py-2 rounded-xl border border-[var(--danger)]/40 bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)] text-sm font-mono font-semibold hover:bg-[var(--dashboard-danger-subtle)] transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex-shrink-0"
           >
             {revokingAll ? <Spinner className="w-4 h-4 animate-spin" aria-hidden="true" /> : <ArrowCounterClockwise className="w-4 h-4" aria-hidden="true" />}
             {revokingAll ? t("auth.signingOut") : t("settings.revokeAll")}
@@ -553,16 +547,18 @@ export default function SettingsTab() {
             </div>
             <button
               onClick={toggleNotif}
-              className="relative w-14 h-7 rounded-full bg-[var(--surface-overlay)] border border-[var(--border-strong)] transition-colors"
+              className="inline-flex items-center justify-center min-h-11 min-w-11 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--dashboard-focus-ring)]"
               role="switch"
               aria-checked={notifPref}
               aria-label={t("settings.toggleNotif")}
             >
-              <motion.span
-                layout
-                transition={{ type: "spring", stiffness: 500, damping: 32 }}
-                className={`absolute top-0.5 w-6 h-6 rounded-full bg-[var(--accent)] ${notifPref ? "left-[30px]" : "left-0.5"}`}
-              />
+              <span className="relative block w-14 h-7 rounded-full bg-[var(--surface-overlay)] border border-[var(--border-strong)]" aria-hidden="true">
+                <motion.span
+                  layout
+                  transition={{ type: "spring", stiffness: 500, damping: 32 }}
+                  className={`absolute top-0.5 w-6 h-6 rounded-full bg-[var(--accent)] ${notifPref ? "left-[30px]" : "left-0.5"}`}
+                />
+              </span>
             </button>
           </div>
         </div>
@@ -578,26 +574,22 @@ export default function SettingsTab() {
         description={t("settings.sessionDesc")}
       >
         <dl className="grid sm:grid-cols-2 gap-3 mb-5">
-          <div className="flex items-center gap-2.5 p-3 rounded-xl bg-subtle border border-[var(--dashboard-border-muted)]">
-            <DeviceMobile className="w-4 h-4 text-[var(--dashboard-primary)] flex-shrink-0" aria-hidden="true" />
-            <div className="min-w-0">
-              <dt className="text-[10px] font-mono uppercase tracking-wider text-[var(--dashboard-text-muted)]">{t("settings.signedInAs")}</dt>
-              <dd className="text-sm text-[var(--dashboard-text-primary)] truncate">{user?.email ?? "—"}</dd>
-            </div>
+          <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-2.5 gap-y-0.5 p-3 rounded-xl bg-subtle border border-[var(--dashboard-border-muted)]">
+            <DeviceMobile className="w-4 h-4 row-span-2 text-[var(--dashboard-primary)] flex-shrink-0" aria-hidden="true" />
+            <dt className="text-[11px] font-mono uppercase tracking-wider text-[var(--dashboard-text-muted)]">{t("settings.signedInAs")}</dt>
+            <dd className="text-sm text-[var(--dashboard-text-primary)] truncate">{user?.email ?? "—"}</dd>
           </div>
-          <div className="flex items-center gap-2.5 p-3 rounded-xl bg-subtle border border-[var(--dashboard-border-muted)]">
-            <ArrowCounterClockwise className="w-4 h-4 text-[var(--dashboard-primary)] flex-shrink-0" aria-hidden="true" />
-            <div className="min-w-0">
-              <dt className="text-[10px] font-mono uppercase tracking-wider text-[var(--dashboard-text-muted)]">{t("settings.sessionExpiry")}</dt>
-              <dd className="text-sm text-[var(--dashboard-text-primary)] truncate">{sessionInfo?.expires ?? "—"}</dd>
-            </div>
+          <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-2.5 gap-y-0.5 p-3 rounded-xl bg-subtle border border-[var(--dashboard-border-muted)]">
+            <ArrowCounterClockwise className="w-4 h-4 row-span-2 text-[var(--dashboard-primary)] flex-shrink-0" aria-hidden="true" />
+            <dt className="text-[11px] font-mono uppercase tracking-wider text-[var(--dashboard-text-muted)]">{t("settings.sessionExpiry")}</dt>
+            <dd className="text-sm text-[var(--dashboard-text-primary)] truncate">{sessionInfo?.expires ?? "—"}</dd>
           </div>
         </dl>
 
         <div className="flex flex-wrap gap-3">
           <button
             onClick={exportData}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-[var(--accent)]/30 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] text-sm font-mono hover:bg-[var(--dashboard-primary-subtle)] transition-colors"
+            className="inline-flex items-center gap-2 min-h-11 px-4 py-2.5 rounded-xl border border-[var(--accent)]/30 bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] text-sm font-mono hover:bg-[var(--dashboard-primary-subtle)] transition-colors"
           >
             <Download className="w-4 h-4" aria-hidden="true" />
             {t("settings.exportData")}
@@ -606,7 +598,7 @@ export default function SettingsTab() {
             onClick={() => {
               resetStore();
             }}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-[var(--border-strong)] bg-subtle text-[var(--dashboard-text-secondary)] text-sm font-mono hover:border-[var(--border-default)] hover:text-[var(--text-primary)] transition-colors"
+            className="inline-flex items-center gap-2 min-h-11 px-4 py-2.5 rounded-xl border border-[var(--border-strong)] bg-subtle text-[var(--dashboard-text-secondary)] text-sm font-mono hover:border-[var(--border-default)] hover:text-[var(--text-primary)] transition-colors"
           >
             <Database className="w-4 h-4" aria-hidden="true" />
             {t("settings.clearLocal")}
@@ -633,7 +625,7 @@ export default function SettingsTab() {
           <LogoutButton variant="solid" aria-label={t("settings.logoutAccount")} />
           <button
             onClick={() => setConfirmDelete(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--dashboard-danger-subtle)] border border-[var(--danger)]/30 text-[var(--dashboard-danger)] text-sm font-mono hover:bg-[var(--dashboard-danger-subtle)] transition-colors"
+            className="inline-flex items-center gap-2 min-h-11 px-4 py-2 rounded-xl bg-[var(--dashboard-danger-subtle)] border border-[var(--danger)]/30 text-[var(--dashboard-danger)] text-sm font-mono hover:bg-[var(--dashboard-danger-subtle)] transition-colors"
           >
             <Trash className="w-4 h-4" aria-hidden="true" />
             {t("settings.deleteAccount")}
@@ -658,15 +650,15 @@ export default function SettingsTab() {
         </header>
         <dl className="flex flex-wrap gap-x-8 gap-y-2 text-xs font-mono">
           <div>
-            <dt className="text-[var(--dashboard-text-muted)] uppercase tracking-wider text-[10px]">{t("settings.version")}</dt>
+            <dt className="text-[var(--dashboard-text-muted)] uppercase tracking-wider text-[11px]">{t("settings.version")}</dt>
             <dd className="text-[var(--dashboard-text-primary)] mt-0.5">v{APP_VERSION}</dd>
           </div>
           <div>
-            <dt className="text-[var(--dashboard-text-muted)] uppercase tracking-wider text-[10px]">{t("settings.plan")}</dt>
+            <dt className="text-[var(--dashboard-text-muted)] uppercase tracking-wider text-[11px]">{t("settings.plan")}</dt>
             <dd className="text-[var(--dashboard-text-primary)] mt-0.5">{t("settings.freeForever")}</dd>
           </div>
           <div>
-            <dt className="text-[var(--dashboard-text-muted)] uppercase tracking-wider text-[10px]">{t("settings.oss")}</dt>
+            <dt className="text-[var(--dashboard-text-muted)] uppercase tracking-wider text-[11px]">{t("settings.oss")}</dt>
             <dd className="text-[var(--dashboard-text-primary)] mt-0.5">MIT License</dd>
           </div>
         </dl>

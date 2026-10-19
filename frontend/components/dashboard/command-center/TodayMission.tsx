@@ -356,7 +356,7 @@ export default function TodayMission({
           <button
             onClick={() => mission && runAction(mission)}
             disabled={!mission}
-            className="command-primary-btn inline-flex items-center justify-center gap-2"
+            className="command-primary-btn inline-flex items-center justify-center gap-2 min-h-11"
           >
             <Target className="w-4 h-4" aria-hidden="true" />
             {mission?.cta ?? t(lang, "শুরু করুন", "Start")}

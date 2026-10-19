@@ -114,7 +114,7 @@ export default function GlobalBootLoader() {
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15, duration: 0.5 }}
-              className="font-mono text-[10px] tracking-[0.32em] text-emerald-400/80"
+              className="font-mono text-[11px] tracking-[0.32em] text-emerald-400/80"
             >
               9TH-GRADE AI
             </motion.p>
@@ -183,7 +183,7 @@ export default function GlobalBootLoader() {
               aria-valuemax={100}
               aria-valuenow={Math.round(progress)}
             >
-              <div className="flex items-center justify-between font-mono text-[10px] tracking-[0.18em] text-zinc-500">
+              <div className="flex items-center justify-between font-mono text-[11px] tracking-[0.18em] text-zinc-500">
                 <span>LOADING</span>
                 <span className="tabular-nums text-emerald-400">{Math.round(progress)}%</span>
               </div>

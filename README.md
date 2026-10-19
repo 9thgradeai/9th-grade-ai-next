@@ -899,7 +899,7 @@ Open **http://localhost:3000**. Local dev seeding creates a demo account:
 │   ├── seed-questions.ts       # Question import + taxonomy rebuild
 │   ├── taxonomy.ts             # Taxonomy helpers
 │   └── clear-content.ts        # Clean seed-managed tables
-├── docs/                       # Canonical documentation (14 files)
+├── docs/                       # Canonical documentation (see README §Documentation)
 ├── public/                     # Static assets
 ├── proxy.ts                     # Edge proxy — auth guards, security headers
 ├── vitest.config.ts            # Test configuration
@@ -1016,17 +1016,25 @@ The `docs/` directory is the canonical reference:
 
 | Document | Contents |
 |----------|----------|
+| [`REQUIREMENTS.md`](./docs/REQUIREMENTS.md) | Functional/non-functional requirements, acceptance criteria, traceability |
+| [`PRODUCT.md`](./docs/PRODUCT.md) | Feature matrix and target users |
 | [`ARCHITECTURE.md`](./docs/ARCHITECTURE.md) | System boundaries, layers, auth flow |
+| [`IMPLEMENTATION.md`](./docs/IMPLEMENTATION.md) | How the codebase is built — slices, data/AI/frontend layers, release |
+| [`INTEGRATION.md`](./docs/INTEGRATION.md) | Seams, cross-cutting modules, wiring new slices |
+| [`FEATURES.md`](./docs/FEATURES.md) | Per-feature map: UI → API → service → models |
 | [`TECH-STACK.md`](./docs/TECH-STACK.md) | Full technology inventory |
 | [`DATABASE.md`](./docs/DATABASE.md) | Every Prisma model, relationship, and index |
 | [`API.md`](./docs/API.md) | All endpoints, request/response shapes |
 | [`AI-SYSTEM.md`](./docs/AI-SYSTEM.md) | Providers, models, prompts, failure modes |
-| [`PRODUCT.md`](./docs/PRODUCT.md) | Feature matrix and target users |
+| [`AGENTS.md`](./docs/AGENTS.md) | Agentic development — how coding agents are connected |
+| [`MCP.md`](./docs/MCP.md) | Model Context Protocol server configuration |
 | [`DECISIONS.md`](./docs/DECISIONS.md) | Architecture decision records (ADRs) |
 | [`DESIGN-SYSTEM.md`](./docs/DESIGN-SYSTEM.md) | Design tokens, components, accessibility |
-| [`TESTING.md`](./docs/TESTING.md) | Test strategy, coverage, CI |
+| [`TESTING.md`](./docs/TESTING.md) | Test strategy, content QA, perf gates, CI |
+| [`DEBUGGING.md`](./docs/DEBUGGING.md) | Error model, observability, debugging playbook |
 | [`SECURITY.md`](./docs/SECURITY.md) | Threat model, auth, secrets |
 | [`DEPLOYMENT.md`](./docs/DEPLOYMENT.md) | Build, host, database setup |
+| [`RUNBOOK.md`](./docs/RUNBOOK.md) | Production operations & incident response |
 | [`DEVELOPMENT.md`](./docs/DEVELOPMENT.md) | Local dev guide |
 | [`DOMAIN.md`](./docs/DOMAIN.md) | Domain model reference |
 | [`CHANGELOG.md`](./docs/CHANGELOG.md) | Version history |

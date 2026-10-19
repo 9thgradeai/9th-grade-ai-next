@@ -11,7 +11,7 @@ Single authenticated route: `/dashboard?tab=<id>` — 11 client-switched tabs, U
 |---|---|---|
 | `home` | `HomeTab.tsx` (+ `command-center/*` 17 cards) | Daily briefing: mission, pulse, plan, recommendations, continue-learning |
 | `practice` | `PracticeTab.tsx` (hub: quick + embeds `CustomExamTab`, `MockTestTab`) | Build and take practice/mock sessions |
-| `question-bank` | `QuestionBankTab.tsx` + `ExamLibraryView.tsx`, `ScrollPractice.tsx` | Browse PYQ by exam tree / infinite practice list |
+| `question-bank` | `QuestionBankTab.tsx` + `ExamLibraryView.tsx`, `ScrollPractice.tsx` | Browse PYQ with search/highlight, category + filter chips, saved view, and inline practice |
 | `mistakes` | `WrongAnswerNotebookTab.tsx` + `QuestionDrill.tsx` | Mistake review + mistake-exam drill |
 | `progress` | `ProgressTab.tsx` | Intelligence, trends, weak-topic drill, leaderboard |
 | `flashcards` | `FlashcardsTab.tsx` | SRS flashcard review (per-user `FlashcardUserState`) |

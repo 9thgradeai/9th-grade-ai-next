@@ -133,7 +133,11 @@ describe("QuestionBankTab (simplified redesign)", () => {
     const input = await screen.findByRole("searchbox", { name: "প্রশ্ন খুঁজুন" });
     fireEvent.change(input, { target: { value: "নং 2" } });
     await waitFor(() => expect(screen.getByText("1 ফলাফল")).toBeInTheDocument(), { timeout: 3000 });
-    expect(screen.getByText("প্রশ্ন নং 2?")).toBeInTheDocument();
+    // Highlighting splits the matched text across nodes — match on the card's
+    // full textContent instead.
+    const cards = document.querySelectorAll('[data-cy="question-card"]');
+    expect(cards).toHaveLength(1);
+    expect(cards[0].textContent).toContain("প্রশ্ন নং 2?");
     expect(screen.queryByText("প্রশ্ন নং 1?")).not.toBeInTheDocument();
     // Clear button restores the full list.
     fireEvent.click(screen.getByRole("button", { name: "সার্চ মুছুন" }));
@@ -142,8 +146,11 @@ describe("QuestionBankTab (simplified redesign)", () => {
 
   it("switches subject via the category strip and refetches", async () => {
     renderTab();
-    const chip = await screen.findByRole("button", { name: /সাধারণ বিজ্ঞান/ });
-    fireEvent.click(chip);
+    // Wait until the bootstrap settled (categories + list loaded) so the chip
+    // we click is the committed one, not a static-fallback node about to be
+    // replaced by the API-driven strip.
+    await screen.findByText("প্রশ্ন নং 1?");
+    fireEvent.click(screen.getByRole("button", { name: /সাধারণ বিজ্ঞান/ }));
     await waitFor(() =>
       expect(api.questions).toHaveBeenCalledWith(
         expect.objectContaining({ subject: "সাধারণ বিজ্ঞান", limit: 50, page: 1 }),
@@ -189,7 +196,7 @@ describe("QuestionBankTab (simplified redesign)", () => {
   it("bookmarks a question and lists it in the সংরক্ষিত view", async () => {
     mockQuestions({ saved: [makeQuestion(1)] });
     renderTab();
-    const card = (await screen.findAllByAttribute("data-cy", "question-card"))[0];
+    const card = (await screen.findAllByTestId("question-card"))[0];
     fireEvent.click(within(card).getByRole("button", { name: "সংরক্ষণ করুন" }));
     await waitFor(() => expect(api.toggleBookmark).toHaveBeenCalledWith(1));
     // Saved view fetches the full question objects by bookmarked ids.
@@ -202,7 +209,7 @@ describe("QuestionBankTab (simplified redesign)", () => {
 
   it("expands a card to reveal options, correct answer highlight, and explanation", async () => {
     renderTab();
-    const card = (await screen.findAllByAttribute("data-cy", "question-card"))[0];
+    const card = (await screen.findAllByTestId("question-card"))[0];
     const header = within(card).getAllByRole("button")[0];
     expect(header).toHaveAttribute("aria-expanded", "false");
     // Collapsed: options are hidden (persistent aria-controls target).

@@ -95,8 +95,21 @@
 | Class | Count (dashboard components) | Notes |
 |---|---|---|
 | `text-[8px]` | **0** | ✓ |
-| `text-[9px]` | **8** | e.g. `UsageTab.tsx:98`, `VocabTab.tsx:535`, `ai/HomeCoach.tsx:144`, `command-center/TodayMission.tsx:297`, `WrongAnswerNotebookTab.tsx:613` |
-| `text-[10px]` | **194** | Worst: `WrongAnswerNotebookTab` (21), `ExamLibraryView` (9), `ExamHistoryTab` (13), `StudyPlannerTab` (5), `SubjectTopicSelect` (6), `RealExamTab` (14)… Bengali matra/conjuncts degrade worst below 11px. |
+| `text-[9px]` | **0** | ✓ Phase 4 codemod complete (was 8 at inventory) |
+| `text-[10px]` | **0** | ✓ Phase 4 codemod complete (was 194 at inventory; Bengali matra/conjuncts degrade worst below the 11px floor) |
+
+The Phase-0 lint rule for `<11px` is now **blocking** (`scripts/check-ui-lint.sh`,
+wired into `npm run lint`): any `text-[8px]`/`text-[9px]`/`text-[10px]` in
+`frontend/components/dashboard/**` fails the gate. `text-[11px]` is the floor
+idiom (260+ existing uses); dense numeric badges use
+`inline-flex items-center justify-center min-w-2.5 h-2.5 leading-none` so the
+11px glyph fits the 10px dot without clipping.
+
+The **rendered** census is also 0: the e2e audit measures computed font sizes on
+every dashboard route (not just the `frontend/components/dashboard/**` scan dir),
+so the dashboard-rendered hold-outs outside that dir — the header `⌘K` hint
+(`app/dashboard/layout.tsx`) and the `LoadingShell`/`GlobalBootLoader` captions —
+were raised to 11px too.
 
 ### 3.4 Medium — semantics, live regions, focus
 
@@ -123,7 +136,7 @@
 |---|---|---|
 | I1 | Raw English `HIGH/MEDIUM/LOW` priority badges bypassing `useT` | `StudyPlannerTab.tsx:311-312`, `TodayPlanCard.tsx:194` |
 | I2 | Verdict headings English above Bengali sub-lines (mixed-language card) | `QuestionDrill.tsx:323, 331, 339` |
-| I3 | Mixed-language strings: `0 results … in সংরক্ষিত`, `AI solver সাময়িকভাবে unavailable।`, `Quick Prompts:`, `Quick Practice` eyebrow, `remaining`, `。` fullwidth Japanese stop in Bengali sentence | `QuestionBankTab.tsx:519`, `AISolverTab.tsx:89`, `ai/HomeCoach.tsx:183-184`, `PracticeTab.tsx:815`, `practice/CalmCountdown.tsx:32,43`, `AIMockTestTab.tsx:250` |
+| I3 | Mixed-language strings: `0 results … in সংরক্ষিত`, `AI solver সাময়িকভাবে unavailable।`, `Quick Prompts:`, `Quick Practice` eyebrow, `remaining`, `。` fullwidth Japanese stop in Bengali sentence — ✓ fixed (Question Bank live counter is now Bengali `N ফলাফল`) | `QuestionBankTab.tsx:519`, `AISolverTab.tsx:89`, `ai/HomeCoach.tsx:183-184`, `PracticeTab.tsx:815`, `practice/CalmCountdown.tsx:32,43`, `AIMockTestTab.tsx:250` |
 | I4 | EmptyState props hardcoded Bengali (props bypass `t()`) | `StudyPlannerTab.tsx:206-207, 268-269` |
 | I5 | Hardcoded Bengali interleaved with `t()` in same component; `aria-label="বাতিল করুন"` | `NotificationCenter.tsx`, `SettingsTab.tsx:634` |
 | I6 | Stray leading `, ` before author name in figcaption | `HomeWelcome.tsx:102` |
@@ -163,7 +176,7 @@ New `tests/e2e/dashboard-audit.spec.ts` (modeled on `practice-audit.spec.ts`'s A
 4. axe scan (serious/critical) per tab.
 
 New `scripts/check-ui-lint.sh` (wire into `npm run lint` alongside `lint:tokens`), grepping `frontend/components/dashboard/**` for:
-- `text-[8px]` / `text-[9px]` (forbid), `text-[10px]` grandfathered → error after Phase 4;
+- `text-[8px]` / `text-[9px]` / `text-[10px]` (forbid — blocking as of Phase 4, census 0);
 - unprefixed `grid-cols-[3-9]`;
 - `sticky bottom-0` outside `lg:`-guarded containers;
 - `input type="number"` without `inputMode`;
@@ -209,6 +222,18 @@ New `scripts/check-ui-lint.sh` (wire into `npm run lint` alongside `lint:tokens`
 - Flip the Phase-0 lint rule for `<11px` to blocking.
 
 **Acceptance:** census = 0 (`text-[8px]`, `text-[9px]`, `text-[10px]`); no new overflow in audit spec.
+
+**Done (2026-10-19):** the codemod now covers all sites. The final residual
+sub-11px usages were `WrongAnswerNotebookTab.tsx` (21× `text-[10px]` + 1×
+`text-[9px]`), `SettingsTab.tsx` (12), `PracticeTab.tsx` (3) and
+`command-center/MistakeRecoveryCard.tsx` (1). Dense spots were re-checked for
+new wrapping: the WrongAnswer count selector became `grid-cols-2 sm:grid-cols-5`;
+the unsaved-change dot badges and the MistakeRecovery count badge became
+flexible (`inline-flex items-center justify-center min-w-2.5 h-2.5 leading-none`)
+so an 11px glyph fits the 10px dot; the Practice quick-practice header row wraps
+(`flex-wrap`). The dashboard-rendered shell text outside the scan dir — the
+header `⌘K` hint and the `LoadingShell`/`GlobalBootLoader` captions — was raised
+too, so the rendered census is 0. Census verified 0 and the lint rule is blocking.
 
 ### Phase 5 — Keyboard, semantics, focus & live regions · Effort M · Risk M
 
@@ -289,8 +314,9 @@ Suggested PR slicing: P1 = 3 PRs (crash/blocked-action/copy), P2 = 2 PRs (target
 | P1 Breakage | DONE | 2026-10-19 | B1/B15 ScrollPractice sticky formula + surfaced submit error; B2 QuizMode key bounds; R4 inverted palette grids (Mock/CustomExam); R1–R3 five unprefixed grids → responsive; B12/I3 five corrupted copy strings fixed |
 | P2 Targets/Motion | DONE | 2026-10-19 | MotionConfig `reducedMotion="user"` at shell root; 44px floor on ~65 sites across 20+ files; `inputMode="numeric"` on 5 inputs. Audit: targets 200→0, overflow 0, all 19 tabs green. |
 | P3 Layout/Spacing | DONE | 2026-10-19 | R5 double bottom-padding removed (Home/Progress); R6 re-padding wrappers removed (AIMockTestTab/VoiceInterviewTab/UsageTab/StudentModelTab/AiTaskPanel); R7 overscroll-contain (ScrollPractice/VoiceInterview; NC already had it); R10 aspect-[4/3]+lazy on solver/attachment images; R9 MetaChip nowrap guard. Audit green, 0 targets. |
-| P4 Typography | IN PROGRESS | 2026-10-19 | Codemod `text-[10px]`→`text-[11px]`, `text-[9px]`→`text-[11px]` across dashboard (202 sites); census now 0 sub-11px; lint rule flipped to blocking (baseline reset to 3 legit overlay entries). Overflow verification harvest running. |
+| P4 Typography | DONE | 2026-10-19 | Codemod `text-[10px]`→`text-[11px]`, `text-[9px]`→`text-[11px]` across the dashboard, finishing the 37 residual sites (`WrongAnswerNotebookTab` 22, `SettingsTab` 12, `PracticeTab` 3, `MistakeRecoveryCard` 1) plus the dashboard-rendered shell hold-outs outside the scan dir (header `⌘K` in `app/dashboard/layout.tsx`, `LoadingShell`/`GlobalBootLoader` captions). Rendered `<11px` census is now 0 (e2e audit: text sizes 1 → 0 on every tab); the `<11px` lint rule is blocking and `npm run lint` is green. |
 | P5 Semantics | DONE | 2026-10-19 | B3/B4 WrongAnswer expand `aria-expanded`+`aria-controls` + `aria-label` on clear filter; B6/K4 NotificationCenter `role="tablist"`+`role="tab"`+`aria-selected` + switch semantics + 44px header buttons; B8 Home CSS `order` removed (DOM now matches visual); SR1 focus-reset + `aria-live="polite"` on view-swap; SR2-SR5 live regions/status roles (Settings error/pwMsg/deleteError, AIMock/AiTaskPanel/Settings `role="alert"`/`role="status"`); K1/K2 global shortcut guard (`f` key suppressed while dialogs open via `dialogOpen` state + ref display checks); K3/K5 `aria-expanded`/`aria-controls` added where needed; SR8 CalmCountdown thresholds; SR9 WrongAnswer loading `role="status"` + skeleton. Audit: overflow 0, targets 0, text 10, axe 11. |
 | P6 i18n | DONE | 2026-10-19 | B13 full `t()` pass on WrongAnswerNotebookTab + PerformanceCard; ExamHistoryTab hardcoded Bengali → `t()` keys; i18n coverage test written; Bengali↔English translation verified on all 19 tabs. |
 | P7 States/Forms | DONE | 2026-10-19 | S1 `+N` indicators or expand affordances on ExamHistory (upcoming), TodayPlanCard (tasks), MistakeRecoveryCard; S2 ExamLibraryView network-error vs empty split (S4); S3 SettingsTab error summary block linking to fields + unsaved-changes badge + leave-guard + success/error `role="status"` + correct error icon (B14); S4 iOS-zoom/a11y leftovers from Phase 2 verified. |
 | P8 Cleanup | DONE | 2026-10-19 | H1 dashboard.css/tokens.css/components.css deleted (zero importers verified); H2 QuickActions, SubjectMastery, FocusAreasCard removed (dead components); H3 DESIGN-SYSTEM.md, TESTING.md, CHANGELOG.md updated with P6–P8 findings; this file status section current. |
+| Post-P8 — Settings targets + all-19 baseline | DONE | 2026-10-19 | SettingsTab: 10 sub-44px targets raised to ≥44 (`Field` inputs, নাম-সম্পাদনা pencil + inline save/cancel, পাসওয়ার্ড পরিবর্তন, সব বাতিল, নোটিফিকেশন switch — compact track kept inside a 44px button, এক্সপোর্ট/লোকাল ডেটা মুছুন/অ্যাকাউন্ট মুছুন) and its two-deep `<dl>` wrappers flattened so `dt`/`dd` are direct children of their single permitted `div` (clears axe `definition-list`/`dlitem`). The harvest also surfaced real findings on un-harvested surfaces — Flashcards exam-filter chips (29px) and `command-primary-btn` CTAs whose height came only from Bengali font metrics (≈43.98px) — fixed with `min-h-11`. All 19 tabs harvested into `dashboard-audit-baseline.json` (0 overflow, 0 targets, 0 sub-11px renders; axe = `color-contrast` everywhere, plus the pre-existing `scrollable-region-focusable` on study-planner). |

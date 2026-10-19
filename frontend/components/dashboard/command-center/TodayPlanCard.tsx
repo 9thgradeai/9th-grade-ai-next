@@ -145,7 +145,7 @@ export default function TodayPlanCard({ tasks, onToggle, onTaskAdded }: Props) {
         <div className="mt-6 flex-1 flex flex-col items-center justify-center text-center py-6">
           <p className="text-sm font-semibold" style={{ color: "var(--dashboard-text-primary)" }}>{t(lang, "আজকের জন্য কোনো কাজ নির্ধারিত নেই", "No tasks scheduled for today")}</p>
           <p className="text-xs mt-1" style={{ color: "var(--dashboard-text-muted)" }}>{t(lang, "পড়ার সময়সূচি তৈরি করুন বা নিজের কাজ যোগ করুন।", "Generate a study schedule or add your custom task.")}</p>
-          <button onClick={() => setActiveTab("study-planner")} className="command-primary-btn mt-4">
+          <button onClick={() => setActiveTab("study-planner")} className="command-primary-btn mt-4 min-h-11">
             {t(lang, "AI প্ল্যানার খুলুন", "Open AI Planner")} <ArrowRight className="w-4 h-4" />
           </button>
         </div>

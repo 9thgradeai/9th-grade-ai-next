@@ -37,7 +37,7 @@ export function LoadingShell({
       <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_-10%,rgba(45,212,191,0.14),transparent_60%),radial-gradient(ellipse_50%_40%_at_90%_80%,rgba(167,139,250,0.12),transparent_55%)]" />
 
       <div className="relative flex flex-col items-center gap-4 px-6 py-8 text-center">
-        <p className="font-mono text-[10px] tracking-[0.32em] text-emerald-400/80">{title}</p>
+        <p className="font-mono text-[11px] tracking-[0.32em] text-emerald-400/80">{title}</p>
 
         <div className="relative flex h-[84px] w-[84px] items-center justify-center">
           <motion.div
@@ -62,7 +62,7 @@ export function LoadingShell({
         </div>
 
         <div className="w-full max-w-[220px]" role="progressbar" aria-label={progressLabel} aria-valuenow={Math.round(progress)} aria-valuemin={0} aria-valuemax={100}>
-          <div className="flex items-center justify-between font-mono text-[10px] tracking-[0.18em] text-zinc-500">
+          <div className="flex items-center justify-between font-mono text-[11px] tracking-[0.18em] text-zinc-500">
             <span>{progressLabel}</span>
             <span className="tabular-nums text-emerald-400">{Math.round(progress)}%</span>
           </div>

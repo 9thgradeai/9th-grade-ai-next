@@ -352,7 +352,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   >
                     <MagnifyingGlass className="h-4 w-4 shrink-0" aria-hidden="true" />
                     <span className="truncate">{t("dashboard.controlCenter")}</span>
-                    <kbd className="ml-auto hidden lg:inline-flex items-center gap-1 rounded bg-[var(--dashboard-surface)] border border-[var(--dashboard-border-muted)] px-1.5 py-0.5 text-[10px] font-mono">⌘K</kbd>
+                    <kbd className="ml-auto hidden lg:inline-flex items-center gap-1 rounded bg-[var(--dashboard-surface)] border border-[var(--dashboard-border-muted)] px-1.5 py-0.5 text-[11px] font-mono">⌘K</kbd>
                   </button>
                   <button
                     type="button"

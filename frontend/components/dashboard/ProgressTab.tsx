@@ -80,7 +80,7 @@ export default function ProgressTab() {
             setLoadFailed(false);
             setReloadKey((k) => k + 1);
           }}
-          className="command-primary-btn mt-4"
+          className="command-primary-btn mt-4 min-h-11"
         >
           <ArrowCounterClockwise className="w-4 h-4" /> {t(lang, "আবার চেষ্টা করুন", "Try again")}
         </button>

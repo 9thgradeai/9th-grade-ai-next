@@ -44,7 +44,7 @@ export default function EmptyState({
         {body}
       </p>
       {actionLabel && onAction && (
-        <button onClick={onAction} className="command-primary-btn mt-4">
+        <button onClick={onAction} className="command-primary-btn mt-4 min-h-11">
           {actionLabel}
           <span aria-hidden="true">→</span>
         </button>

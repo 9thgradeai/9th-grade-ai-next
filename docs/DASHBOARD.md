@@ -116,11 +116,28 @@ instant drill (30s timer, resumable session). Embeds: `CustomExamTab`,
 
 ### Question Bank — `QuestionBankTab.tsx`
 
-Terminal live search (`grep -r '…'`, `<mark>` highlights, hit counter) →
-বিষয়/পরীক্ষা browse toggle → All/Saved views → PYQ year, source-exam,
-BCS-term pills → subject pills → bookmarkable cards → inline drill.
-Exam mode → `ExamLibraryView` (Category → Exam → Paper hierarchy, paper
-stats, provenance badge, Practice button).
+Simplified zone layout, mobile-first and fluid from 320px up:
+
+1. **Header card** — `h1` + বিষয়/পরীক্ষা browse segmented control + 44px
+   search with `<mark>` highlights, a 44px clear button, and an `aria-live`
+   result count (`N ফলাফল`).
+2. **Category strip** — horizontally scrollable chip row (`overflow-x-auto`,
+   scrollbar hidden, keyboard-reachable `role="group"`).
+3. **Control row** — `সব প্রশ্ন` / `সংরক্ষিত (n)` view segmented control, a
+   `ফিল্টার` toggle with an active-count badge, and a `প্র্যাকটিস (n)` launcher.
+4. **Filters** — collapsible panel (PYQ year, sources, BCS terms) with groups
+   and clear-all; collapses to applied-filter chips when closed.
+5. **List** — accordion question cards (one open at a time; `aria-expanded` /
+   `aria-controls`; option letters ক/খ/গ/ঘ, correct option highlighted,
+   "সঠিক উত্তর" + explanation blocks, 44px bookmark button outside the expand
+   hit target) → `আরও দেখুন` pagination (50 per page).
+
+Saved view (deep-linked from `?view=bookmarks` via the `__saved__` sentinel)
+loads only bookmarked questions; load failures render an error + retry state.
+Practice runs an inline `ScrollPractice` drill over the current filtered set.
+
+Exam mode → `ExamLibraryView` (Category → Exam → Paper hierarchy, progressive
+rendering, paper stats, provenance badge, Practice button).
 
 ### Mistakes — `WrongAnswerNotebookTab.tsx`
 

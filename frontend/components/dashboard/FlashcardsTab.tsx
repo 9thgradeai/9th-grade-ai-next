@@ -671,7 +671,7 @@ function DeckPicker({
             key={e}
             onClick={() => onExamChange(e)}
             aria-pressed={examFilter === e}
-            className={`px-4 py-1.5 rounded-lg font-mono text-xs border transition-colors ${
+            className={`min-h-11 px-4 py-1.5 rounded-lg font-mono text-xs border transition-colors ${
               examFilter === e
                 ? "bg-[var(--accent)] text-[var(--dashboard-text-inverse)] border-transparent"
                 : "bg-[var(--surface-raised)] border-[var(--dashboard-border-muted)] text-[var(--dashboard-text-muted)]"

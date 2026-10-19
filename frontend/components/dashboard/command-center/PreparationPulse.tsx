@@ -151,7 +151,7 @@ export default function PreparationPulse({ intelligence }: PreparationPulseProps
         <button
           type="button"
           onClick={() => window.dispatchEvent(new CustomEvent("dashboard:start-practice"))}
-          className="command-primary-btn mt-4"
+          className="command-primary-btn mt-4 min-h-11"
         >
           {t(lang, "১০-প্রশ্ন ওয়ার্ম-আপ শুরু করুন", "Start 10-question warm-up")}
         </button>

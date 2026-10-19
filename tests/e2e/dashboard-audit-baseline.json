@@ -1,8 +1,53 @@
 {
+  "advisor": {
+    "overflow": 0,
+    "touchTargets": 0,
+    "textSizes": 0,
+    "axeRules": [
+      "color-contrast"
+    ],
+    "targetSamples": []
+  },
+  "ai-mock": {
+    "overflow": 0,
+    "touchTargets": 0,
+    "textSizes": 0,
+    "axeRules": [
+      "color-contrast"
+    ],
+    "targetSamples": []
+  },
+  "ai-solver": {
+    "overflow": 0,
+    "touchTargets": 0,
+    "textSizes": 0,
+    "axeRules": [
+      "color-contrast"
+    ],
+    "targetSamples": []
+  },
+  "current-affairs": {
+    "overflow": 0,
+    "touchTargets": 0,
+    "textSizes": 0,
+    "axeRules": [
+      "color-contrast"
+    ],
+    "targetSamples": []
+  },
+  "evaluator": {
+    "overflow": 0,
+    "touchTargets": 0,
+    "textSizes": 0,
+    "axeRules": [
+      "color-contrast"
+    ],
+    "targetSamples": []
+  },
   "exam-history": {
     "overflow": 0,
     "touchTargets": 0,
-    "textSizes": 1,
+    "textSizes": 0,
     "axeRules": [
       "color-contrast"
     ],
@@ -11,7 +56,7 @@
   "flashcards": {
     "overflow": 0,
     "touchTargets": 0,
-    "textSizes": 1,
+    "textSizes": 0,
     "axeRules": [
       "color-contrast"
     ],
@@ -20,7 +65,7 @@
   "home": {
     "overflow": 0,
     "touchTargets": 0,
-    "textSizes": 1,
+    "textSizes": 0,
     "axeRules": [
       "color-contrast"
     ],
@@ -29,7 +74,7 @@
   "mistakes": {
     "overflow": 0,
     "touchTargets": 0,
-    "textSizes": 1,
+    "textSizes": 0,
     "axeRules": [
       "color-contrast"
     ],
@@ -38,7 +83,7 @@
   "practice": {
     "overflow": 0,
     "touchTargets": 0,
-    "textSizes": 1,
+    "textSizes": 0,
     "axeRules": [
       "color-contrast"
     ],
@@ -47,7 +92,7 @@
   "progress": {
     "overflow": 0,
     "touchTargets": 0,
-    "textSizes": 1,
+    "textSizes": 0,
     "axeRules": [
       "color-contrast"
     ],
@@ -56,7 +101,7 @@
   "question-bank": {
     "overflow": 0,
     "touchTargets": 0,
-    "textSizes": 1,
+    "textSizes": 0,
     "axeRules": [
       "color-contrast"
     ],
@@ -65,7 +110,25 @@
   "real-exam": {
     "overflow": 0,
     "touchTargets": 0,
-    "textSizes": 1,
+    "textSizes": 0,
+    "axeRules": [
+      "color-contrast"
+    ],
+    "targetSamples": []
+  },
+  "settings": {
+    "overflow": 0,
+    "touchTargets": 0,
+    "textSizes": 0,
+    "axeRules": [
+      "color-contrast"
+    ],
+    "targetSamples": []
+  },
+  "student-model": {
+    "overflow": 0,
+    "touchTargets": 0,
+    "textSizes": 0,
     "axeRules": [
       "color-contrast"
     ],
@@ -74,17 +137,35 @@
   "study-planner": {
     "overflow": 0,
     "touchTargets": 0,
-    "textSizes": 1,
+    "textSizes": 0,
     "axeRules": [
       "color-contrast",
       "scrollable-region-focusable"
     ],
     "targetSamples": []
   },
+  "usage": {
+    "overflow": 0,
+    "touchTargets": 0,
+    "textSizes": 0,
+    "axeRules": [
+      "color-contrast"
+    ],
+    "targetSamples": []
+  },
   "vocab": {
     "overflow": 0,
     "touchTargets": 0,
-    "textSizes": 1,
+    "textSizes": 0,
+    "axeRules": [
+      "color-contrast"
+    ],
+    "targetSamples": []
+  },
+  "voice-interview": {
+    "overflow": 0,
+    "touchTargets": 0,
+    "textSizes": 0,
     "axeRules": [
       "color-contrast"
     ],

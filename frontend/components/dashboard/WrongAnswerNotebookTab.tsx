@@ -243,7 +243,7 @@ export default function WrongAnswerNotebookTab() {
           {/* Count */}
           <div>
             <label className="block text-xs text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider mb-2">Questions</label>
-            <div className="grid grid-cols-5 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
               {[10, 20, 30, 50].map((n) => (
                 <button
                   key={n}
@@ -388,15 +388,15 @@ export default function WrongAnswerNotebookTab() {
 
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-w-lg mx-auto text-left">
               <div className="rounded-xl bg-[var(--dashboard-primary-subtle)] border border-[var(--accent)]/25 p-3">
-                <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">সঠিক</p>
+                <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">সঠিক</p>
                 <p className="text-lg font-bold text-[var(--dashboard-primary)] font-mono">{correct}</p>
               </div>
               <div className="rounded-xl bg-[var(--dashboard-danger-subtle)] border border-[var(--danger)]/25 p-3">
-                <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">আবার ভুল</p>
+                <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">আবার ভুল</p>
                 <p className="text-lg font-bold text-[var(--dashboard-danger)] font-mono">{stillErrors}</p>
               </div>
               <div className="rounded-xl bg-[var(--dashboard-primary-subtle)] border border-[var(--accent)]/20 p-3">
-                <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">এরমধ্যে Mastered</p>
+                <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">এরমধ্যে Mastered</p>
                 <p className="text-lg font-bold text-[var(--dashboard-primary)] font-mono">{justMastered}</p>
               </div>
             </div>
@@ -449,15 +449,15 @@ export default function WrongAnswerNotebookTab() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                      <span className="text-[10px] font-mono text-[var(--dashboard-text-muted)]">প্রশ্ন {i + 1}</span>
-                      <span className="text-[10px] font-mono text-[var(--dashboard-text-muted)]">{q.subject}</span>
+                      <span className="text-[11px] font-mono text-[var(--dashboard-text-muted)]">প্রশ্ন {i + 1}</span>
+                      <span className="text-[11px] font-mono text-[var(--dashboard-text-muted)]">{q.subject}</span>
                       {isMastered && (
-                        <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]">
+                        <span className="px-1.5 py-0.5 rounded text-[11px] font-mono bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)]">
                           Mastered
                         </span>
                       )}
                       {!isCorrect && (
-                        <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)]">
+                        <span className="px-1.5 py-0.5 rounded text-[11px] font-mono bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)]">
                           আবার ভুল
                         </span>
                       )}
@@ -521,28 +521,28 @@ export default function WrongAnswerNotebookTab() {
           <motion.div variants={STAGGER_ITEM} className="command-card p-4">
             <div className="flex items-center gap-2 mb-1">
               <Warning className="w-4 h-4 text-[var(--dashboard-danger)]" />
-              <span className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase">Total Mistakes</span>
+              <span className="text-[11px] text-[var(--dashboard-text-muted)] font-mono uppercase">Total Mistakes</span>
             </div>
             <p className="text-2xl font-bold text-[var(--text-primary)] font-mono">{stats.totalMistakes}</p>
           </motion.div>
           <motion.div variants={STAGGER_ITEM} className="command-card p-4">
             <div className="flex items-center gap-2 mb-1">
               <Sun className="w-4 h-4 text-[var(--dashboard-warning)]" />
-              <span className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase">Unmastered</span>
+              <span className="text-[11px] text-[var(--dashboard-text-muted)] font-mono uppercase">Unmastered</span>
             </div>
             <p className="text-2xl font-bold text-[var(--text-primary)] font-mono">{unmastered}</p>
           </motion.div>
           <motion.div variants={STAGGER_ITEM} className="command-card p-4">
             <div className="flex items-center gap-2 mb-1">
               <TrendUp className="w-4 h-4 text-[var(--info)]" />
-              <span className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase">Improving</span>
+              <span className="text-[11px] text-[var(--dashboard-text-muted)] font-mono uppercase">Improving</span>
             </div>
             <p className="text-2xl font-bold text-[var(--text-primary)] font-mono">{stats.improving}</p>
           </motion.div>
           <motion.div variants={STAGGER_ITEM} className="command-card p-4">
             <div className="flex items-center gap-2 mb-1">
               <Medal className="w-4 h-4 text-[var(--dashboard-primary)]" />
-              <span className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase">Mastered</span>
+              <span className="text-[11px] text-[var(--dashboard-text-muted)] font-mono uppercase">Mastered</span>
             </div>
             <p className="text-2xl font-bold text-[var(--text-primary)] font-mono">{mastered}</p>
           </motion.div>
@@ -610,7 +610,7 @@ export default function WrongAnswerNotebookTab() {
                     <div className="flex items-center gap-2">
                       <span className="text-sm text-[var(--text-primary)] font-mono truncate">{s.subject}</span>
                       {isHot && (
-                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)] font-mono border border-[var(--danger)]/20">
+                        <span className="text-[11px] px-1.5 py-0.5 rounded bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)] font-mono border border-[var(--danger)]/20">
                           NEEDS ATTENTION
                         </span>
                       )}
@@ -624,7 +624,7 @@ export default function WrongAnswerNotebookTab() {
                   </div>
                   <div className="text-right shrink-0">
                     <p className="text-sm font-bold text-[var(--text-primary)] font-mono">{s.count}</p>
-                    <p className="text-[10px] text-[var(--dashboard-text-muted)] font-mono">{s.unmastered} active</p>
+                    <p className="text-[11px] text-[var(--dashboard-text-muted)] font-mono">{s.unmastered} active</p>
                   </div>
                 </button>
               );
@@ -646,7 +646,7 @@ export default function WrongAnswerNotebookTab() {
           <Funnel className="w-4 h-4" />
           Filters
           {(filterSubject || filterStatus || filterErrorType) && (
-            <span className="px-1.5 py-0.5 text-[10px] bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] rounded font-mono">
+            <span className="px-1.5 py-0.5 text-[11px] bg-[var(--dashboard-primary-subtle)] text-[var(--dashboard-primary)] rounded font-mono">
               Active
             </span>
           )}
@@ -664,7 +664,7 @@ export default function WrongAnswerNotebookTab() {
               <div className="command-card p-4 space-y-3">
                 {/* Status filter */}
                 <div>
-                  <label className="block text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider mb-1.5">Status</label>
+                  <label className="block text-[11px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider mb-1.5">Status</label>
                   <div className="flex flex-wrap gap-1.5">
                     {["", "STRUGGLING", "REVIEWING", "IMPROVING", "MASTERED"].map((s) => (
                       <button
@@ -684,7 +684,7 @@ export default function WrongAnswerNotebookTab() {
 
                 {/* Error-type filter (Phase 2 classification) */}
                 <div>
-                  <label className="block text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider mb-1.5">Error Type</label>
+                  <label className="block text-[11px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider mb-1.5">Error Type</label>
                   <div className="flex flex-wrap gap-1.5">
                     {["", ...Object.keys(ERROR_TYPE_LABELS)].map((t) => (
                       <button
@@ -705,7 +705,7 @@ export default function WrongAnswerNotebookTab() {
 
                 {/* Sort */}
                 <div>
-                  <label className="block text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider mb-1.5">Sort By</label>
+                  <label className="block text-[11px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider mb-1.5">Sort By</label>
                   <select
                     value={filterSort}
                     onChange={(e) => { setFilterSort(e.target.value); setPage(1); }}
@@ -792,15 +792,15 @@ export default function WrongAnswerNotebookTab() {
                 >
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
-                      <span className="text-[10px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider">
+                      <span className="text-[11px] text-[var(--dashboard-text-muted)] font-mono uppercase tracking-wider">
                         {q.subject} • {q.topic || "General"}
                       </span>
-                      <span className={`text-[10px] px-1.5 py-0.5 rounded border font-mono ${statusCls}`}>
+                      <span className={`text-[11px] px-1.5 py-0.5 rounded border font-mono ${statusCls}`}>
                         {MASTERY_LABELS[m.masteryStatus]}
                       </span>
                       {m.latestErrorType && (
                         <span
-                          className="text-[10px] px-1.5 py-0.5 rounded border font-mono"
+                          className="text-[11px] px-1.5 py-0.5 rounded border font-mono"
                           style={{ color: "var(--dashboard-warning)", borderColor: "color-mix(in srgb, var(--dashboard-warning) 25%, transparent)", background: "var(--dashboard-warning-subtle)" }}
                           title={`${m.latestErrorType}, latest mistake classification`}
                         >
@@ -816,7 +816,7 @@ export default function WrongAnswerNotebookTab() {
                 </div>
 
                 {/* Stats row */}
-                <div className="flex items-center gap-4 mt-3 text-[10px] text-[var(--dashboard-text-muted)] font-mono">
+                <div className="flex items-center gap-4 mt-3 text-[11px] text-[var(--dashboard-text-muted)] font-mono">
                   <span>Wrong: {m.mistakeCount}×</span>
                   <span>Accuracy: {accuracy}%</span>
                   <span>Score: {Math.round(m.masteryScore)}</span>
@@ -870,7 +870,7 @@ export default function WrongAnswerNotebookTab() {
                           </p>
                         )}
 
-                        <div className="flex items-center gap-3 text-[10px] text-[var(--dashboard-text-muted)] font-mono">
+                        <div className="flex items-center gap-3 text-[11px] text-[var(--dashboard-text-muted)] font-mono">
                           {m.firstIncorrectAt && (
                             <span className="flex items-center gap-1">
                               <Clock className="w-3 h-3" />

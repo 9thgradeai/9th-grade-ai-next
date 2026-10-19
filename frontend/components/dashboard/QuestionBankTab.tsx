@@ -352,7 +352,11 @@ export default function QuestionBankTab() {
       ? questionBankFilters.category
       : DEFAULT_CATEGORY;
   const categoryRef = useRef(category);
-  categoryRef.current = category;
+  // Keep the ref in sync via an effect (declared before the bootstrap effect
+  // below) so async callbacks always see the latest committed category.
+  useEffect(() => {
+    categoryRef.current = category;
+  }, [category]);
 
   useEffect(() => {
     let cancelled = false;
@@ -420,39 +424,46 @@ export default function QuestionBankTab() {
   // from a previous key are ignored instead of clobbering fresh state.
   const listKey = [category, yearFilter, sourceFilter, bcsTerm, ecosystem, reloadKey].join("|");
   const listKeyRef = useRef(listKey);
-  listKeyRef.current = listKey;
+  // Sync via effect (declared before the effects that read it in async
+  // callbacks) — refs must not be written during render (react-hooks/refs).
+  useEffect(() => {
+    listKeyRef.current = listKey;
+  }, [listKey]);
 
   useEffect(() => {
     if (view === "saved") return; // saved view loads via its own effect
     let cancelled = false;
-    setLoading(true);
-    setLoadFailed(false);
-    api
-      .questions({
-        subject: category,
-        pyqOnly: true,
-        limit: PAGE_SIZE,
-        page: 1,
-        year: yearFilter ?? undefined,
-        sourceExam: sourceFilter ?? undefined,
-        bcsTerm: bcsTerm ?? undefined,
-        ecosystem,
-      })
-      .then((qs) => {
+    // Defer the synchronous setLoading(true) so it doesn't run during the
+    // effect's own commit pass (react-hooks/set-state-in-effect).
+    void (async () => {
+      await Promise.resolve();
+      if (cancelled) return;
+      setLoading(true);
+      setLoadFailed(false);
+      try {
+        const qs = await api.questions({
+          subject: category,
+          pyqOnly: true,
+          limit: PAGE_SIZE,
+          page: 1,
+          year: yearFilter ?? undefined,
+          sourceExam: sourceFilter ?? undefined,
+          bcsTerm: bcsTerm ?? undefined,
+          ecosystem,
+        });
         if (cancelled || listKeyRef.current !== listKey) return;
         setQuestions(qs);
         setHasMore(qs.length === PAGE_SIZE);
-      })
-      .catch((err: unknown) => {
+      } catch (err: unknown) {
         if (cancelled || listKeyRef.current !== listKey) return;
         console.error("[QuestionBank] Failed to load questions:", err);
         setQuestions([]);
         setHasMore(false);
         setLoadFailed(true);
-      })
-      .finally(() => {
+      } finally {
         if (!cancelled) setLoading(false);
-      });
+      }
+    })();
     return () => {
       cancelled = true;
     };
@@ -496,18 +507,21 @@ export default function QuestionBankTab() {
   useEffect(() => {
     if (view !== "saved") return;
     let cancelled = false;
-    setLoading(true);
-    (bookmarks.length > 0 ? api.questions({ ids: bookmarks, limit: 200 }) : Promise.resolve([] as QuestionDTO[]))
-      .then((qs) => {
+    // Deferred setLoading — see the display-list effect above for rationale.
+    void (async () => {
+      await Promise.resolve();
+      if (cancelled) return;
+      setLoading(true);
+      try {
+        const qs = bookmarks.length > 0 ? await api.questions({ ids: bookmarks, limit: 200 }) : ([] as QuestionDTO[]);
         if (!cancelled) setSavedQuestions(qs);
-      })
-      .catch((err: unknown) => {
+      } catch (err: unknown) {
         console.error("[QuestionBank] Failed to load saved questions:", err);
         if (!cancelled) setSavedQuestions([]);
-      })
-      .finally(() => {
+      } finally {
         if (!cancelled) setLoading(false);
-      });
+      }
+    })();
     return () => {
       cancelled = true;
     };
