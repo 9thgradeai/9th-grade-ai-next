@@ -93,7 +93,7 @@ UI: `WrongAnswerNotebookTab.tsx`.
 
 **Models:** `AIConversation`, `AIMessage`, `AIMemory`, `AIUsage`, `AIFeedback`, `AgentRun`, `AgentToolCall`.
 
-**Implementation notes:** provider registry (`backend/ai/providers/registry.ts`) + model router (`backend/ai/router/`) with tier routing; agent loop bounded by `AI_AGENT_MAX_STEPS` (default 8); every response labelled with its `source` (mock when unkeyed); daily USD budget guard (`AI_DAILY_BUDGET_USD`). Details: `AI-SYSTEM.md`, `AI_AGENT_*` docs.
+**Implementation notes:** provider registry (`backend/ai/providers/registry.ts`) + model router (`backend/ai/router/`) with tier routing; agent loop bounded by `MAX_AGENT_STEPS` (8, `backend/ai/agent/prompt.ts`); every response labelled with its `source` (mock when unkeyed); daily USD budget guard (`AI_DAILY_BUDGET_USD`). Details: `AI-SYSTEM.md`, `AI_AGENT_*` docs.
 
 ## 8. Progress & Gamification
 

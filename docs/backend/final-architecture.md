@@ -133,7 +133,7 @@ verification of correctness only — no aspirational numbers claimed anywhere.
 | TRUST_CLIENT_IP | opt | P8 | `false` ⇒ opaque anonymous bucket |
 | REDIS_URL | opt | P8/P23 | Requires adapter adoption first |
 | STORAGE_DRIVER / STORAGE_LOCAL_DIR | opt | P17 | local-disk default |
-| LOG_FORMAT | opt | P18 | `json` forces structured lines |
+| LOG_LEVEL | opt | P18 | Pino level: debug locally / info in prod |
 | EMBEDDINGS_ENABLED | opt | P15 | Gate for RAG pipeline |
 
 ## 15. Known limitations & future scaling path

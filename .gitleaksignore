@@ -1,0 +1,8 @@
+# Gitleaks ignore list — fingerprints of findings that are NOT secrets.
+# Format: <commit>:<path>:<rule>:<line>  (or <path>:<rule>:<line> for dir scans)
+#
+# 0cdb731: SettingsTab NOTIF_KEY — localStorage preference key name
+# ("9th_grade_ai_notif_pref"), added in that commit. The source line now
+# carries a `// gitleaks:allow` comment, so only this historical fingerprint
+# needs ignoring; all future commits are covered by the inline comment.
+0cdb731be4d71b0dca16c126a30d08dda7a6c836:frontend/components/dashboard/SettingsTab.tsx:generic-api-key:36

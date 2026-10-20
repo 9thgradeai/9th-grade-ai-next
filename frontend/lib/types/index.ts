@@ -29,10 +29,9 @@ export namespace Client {
     name: string;
     email: string;
     handle: string;
-    role: "student" | "admin";
-    createdAt: string;
-    authProvider?: "password" | "google" | "apple" | "both";
-    imageUrl?: string;
+    role?: "student" | "admin";
+    createdAt?: string;
+    authProvider?: "password" | "google" | "both";
     emailVerified: boolean;
     onboarded?: boolean;
     examTarget?: string;
@@ -1004,7 +1003,7 @@ export namespace Server {
     createdAt: string;
     emailVerified: boolean;
     onboarded?: boolean;
-    authProvider?: "password" | "google" | "apple" | "both";
+    authProvider?: "password" | "google" | "both";
     imageUrl?: string;
     examTarget?: string;
     examDate?: string;

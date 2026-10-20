@@ -1,0 +1,27 @@
+#!/bin/sh
+# Pre-commit secret scan (see docs/SECURITY.md § Secret scanning).
+#
+# Blocks commits whose STAGED changes contain credential-shaped strings
+# (gitleaks default rules + .gitleaks.toml project allowlist).
+# Enabled automatically by `npm install`/`npm ci` via scripts/setup-hooks.mjs
+# (sets `core.hooksPath` to .githooks). To disable locally:
+#   git config --local --unset core.hooksPath
+#
+# Skips gracefully when gitleaks is not installed so the hook never breaks
+# a commit on machines without it — CI runs the same scan as a hard gate.
+
+if ! command -v gitleaks >/dev/null 2>&1; then
+  echo "pre-commit: gitleaks not found — secret scan SKIPPED." >&2
+  echo "  install: https://github.com/gitleaks/gitleaks#installation (macOS: brew install gitleaks)" >&2
+  exit 0
+fi
+
+# --staged: scan only what is about to be committed (index contents).
+# --redact: never echo the matched secret itself, even on failure.
+if ! gitleaks git --staged --no-banner --redact; then
+  echo "" >&2
+  echo "pre-commit: secret-like string detected in staged changes." >&2
+  echo "  Nothing was printed in cleartext (--redact). Review the file(s) above;" >&2
+  echo "  if it is a false positive, see docs/SECURITY.md § Secret scanning." >&2
+  exit 1
+fi

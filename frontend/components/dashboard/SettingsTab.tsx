@@ -16,7 +16,7 @@ import LogoutButton from "./LogoutButton";
 import { useT } from "@/lib/i18n";
 
 const STORE_KEY = "9th_grade_ai_store_v2";
-const NOTIF_KEY = "9th_grade_ai_notif_pref";
+const NOTIF_KEY = "9th_grade_ai_notif_pref"; // gitleaks:allow — localStorage preference key name, not a credential
 
 const APP_VERSION = "0.4.0";
 

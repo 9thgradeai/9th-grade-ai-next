@@ -53,6 +53,7 @@ All content — questions, question banks, exam archives, flashcards, study plan
    npm run typecheck
    npm run lint
    npm run test
+   npm run secret-scan
    ```
 4. Open a Pull Request describing the *why* and the *what*. Link any related issue.
 

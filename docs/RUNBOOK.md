@@ -16,15 +16,14 @@ Production deployment for 9Th-Grade AI exam preparation platform.
 | `REDIS_URL` | Redis connection (Upstash/Railway) | ✅ |
 | `AUTH_SECRET` | JWT signing key (32+ bytes, `openssl rand -base64 32`) | ✅ |
 | `NEXT_PUBLIC_SITE_URL` | Production URL (e.g., `https://9thgrade.ai`) | ✅ |
-| `SENDGRID_API_KEY` / `RESEND_API_KEY` | Email transport | ✅ |
-| `EMAIL_FROM` | Sender address (e.g., `9Th-Grade AI <noreply@9thgrade.ai>`) | ✅ |
-| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | OAuth 2.0 | ✅ |
-| `APPLE_CLIENT_ID` / `APPLE_TEAM_ID` / `APPLE_KEY_ID` / `APPLE_PRIVATE_KEY` | Apple Sign-In | ✅ |
-| `ANTHROPIC_API_KEY` | Claude API (fallback) | ✅ |
-| `GROQ_API_KEY` | Groq API (primary) | ✅ |
-| `SENTRY_DSN` | Error tracking | ✅ |
-| `NEXT_PUBLIC_SENTRY_DSN` | Client-side Sentry | ✅ |
-| `POSTHOG_KEY` | Product analytics | ✅ |
+| `SMTP_HOST` / `SMTP_USER` / `SMTP_PASS` / `RESEND_API_KEY` | Email transport (SMTP preferred, Resend fallback — `backend/lib/email.ts`) | Optional (accounts auto-verify when unset) |
+| `EMAIL_FROM` | Sender address (e.g., `9Th-Grade AI <noreply@9thgrade.ai>`) | Optional |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | OAuth 2.0 ("Continue with Google") | Optional |
+| `ANTHROPIC_API_KEY` | Claude API (fallback) | Optional |
+| `GROQ_API_KEY` | Groq API (primary) | Optional |
+| `SENTRY_DSN` | Error tracking | Optional |
+| `NEXT_PUBLIC_SENTRY_DSN` | Client-side Sentry (DSN, public by design) | Optional |
+| `CRON_SECRET` | Vercel Cron / storage-worker Bearer auth | ✅ (production) |
 | `AI_DAILY_BUDGET_USD` | Per-user daily AI cost cap (default: 0.50) | Optional |
 | `RL_AI_DAILY` | Daily AI request quota (default: 60) | Optional |
 | `LOG_LEVEL` | Pino log level (debug/info/warn/error) | Optional |
@@ -158,7 +157,7 @@ npm run db:prune-activity -- --apply
 
 ### Auth Issues (Login/Register Broken)
 1. Check `AUTH_SECRET` is set and consistent
-2. Check `SENDGRID_API_KEY` / `RESEND_API_KEY` for email flows
+2. Check `SMTP_*` / `RESEND_API_KEY` for email flows
 3. Verify OAuth credentials in Google/Apple consoles
 4. Check rate limits: `RL_LOGIN_PER_MIN`, `RL_LOGIN_ACCOUNT_PER_HOUR`
 

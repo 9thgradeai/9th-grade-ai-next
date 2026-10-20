@@ -102,7 +102,7 @@ Requirement IDs are stable; cite them in issues and PRs.
 | FR-AI-01 | The AI tutor shall stream bilingual (Bangla/English) responses grounded in live web search when `TAVILY_API_KEY` is set. |
 | FR-AI-02 | The AI solver shall accept text **and** base64 image input and return a solution plus numbered steps as structured JSON. |
 | FR-AI-03 | Every AI response shall carry an explicit provenance label (`source`: `groq+web` / `groq` / `anthropic` / `mock`, plus the `X-AI-Source` header). **When no API key is set, the app must run end-to-end on clearly-labelled mock responses.** |
-| FR-AI-04 | The study-coach agent (`/api/ai/agent`) shall run a bounded loop (`AI_AGENT_MAX_STEPS`, default 8) with checkpointing and persistence, and shall fall back to mock when unkeyed. |
+| FR-AI-04 | The study-coach agent (`/api/ai/agent`) shall run a bounded loop (`MAX_AGENT_STEPS` = 8, `backend/ai/agent/prompt.ts`) with checkpointing and persistence, and shall fall back to mock when unkeyed. |
 | FR-AI-05 | AI traffic shall be rate-limited per user (`RL_AI_PER_MIN`, `RL_AI_DAILY`) and guarded by a daily spend cap (`AI_DAILY_BUDGET_USD`). |
 | FR-AI-06 | Model selection shall go through the model router (`AI_MODEL_PRIMARY`, `AI_MODEL_FAST`, tier routing) with the provider registry as the swap point (Groq/Anthropic/Mock). |
 | FR-AI-07 | **LLM output shall never be used for authorization, validation, or security decisions.** |

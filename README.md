@@ -718,14 +718,19 @@ DOCUMENT
 
 ### Pre-commit Checklist
 
-Every change must pass all four gates before pushing:
+Every change must pass all five gates before pushing:
 
 ```bash
 npm run typecheck    # tsc --noEmit
 npm run lint         # ESLint
 npm run test         # Vitest
 npm run build        # Production build
+npm run secret-scan  # gitleaks (brew install gitleaks)
 ```
+
+The same secret scan runs automatically on every commit (`.githooks/pre-commit`,
+enabled by `npm install`) and as the CI `secret-scan` job — see
+`docs/SECURITY.md` § Secret scanning.
 
 ---
 
@@ -779,8 +784,8 @@ Open **http://localhost:3000**. Local dev seeding creates a demo account:
 | `ANTHROPIC_API_KEY` | No | — | Enables the AI Solver (mock fallback if unset) |
 | `GROQ_API_KEY` | No | — | Enables the AI Tutor (mock fallback if unset) |
 | `TAVILY_API_KEY` | No | — | Web-search grounding for the tutor |
-| `NEXT_PUBLIC_APP_URL` | No | `http://localhost:3000` | Public app origin |
-| `NEXT_PUBLIC_API_URL` | No | `http://localhost:3000` | Public API origin |
+| `NEXT_PUBLIC_APP_URL` | No | `http://localhost:3000` | Public app origin (`NEXT_PUBLIC_*` is inlined into the client bundle — public by design, never put credentials there) |
+| `NEXT_PUBLIC_SITE_URL` | No | `http://localhost:3000` | Canonical site origin (sitemap/robots/metadata) |
 | `REDIS_URL` | Prod: Yes | — | Distributed rate limiting (Upstash/Redis); see ADR-0009 |
 | `RL_LOGIN_PER_MIN` | No | `5` | Login attempts per IP per minute |
 | `RL_LOGIN_ACCOUNT_PER_HOUR` | No | `10` | Attempts per account per hour (hashed key) |
@@ -804,6 +809,7 @@ Open **http://localhost:3000**. Local dev seeding creates a demo account:
 | `npm run test:coverage` | Vitest with Istanbul coverage report |
 | `npm run format` | Prettier write |
 | `npm run format:check` | Prettier check |
+| `npm run secret-scan` | Gitleaks scan of tracked files + git history (requires `gitleaks`; CI runs the same scan) |
 | `npm run analyze` | Build with bundle analyzer |
 | `npm run db:push` | Sync Prisma schema to the DB |
 | `npm run db:seed` | Idempotent content seed |

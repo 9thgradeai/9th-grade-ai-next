@@ -47,14 +47,8 @@ export default function AuthExperience({
       google_state_mismatch: "Google sign-in was blocked for security. Please try again.",
       google_invalid: "Google sign-in didn't complete. Please try again.",
       google_failed: "We couldn't sign you in with Google. Please try again or use your password.",
-      apple_unavailable: "Apple sign-in isn't available right now. Please use your email and password.",
-      apple_rate_limited: "Too many Apple sign-in attempts. Please wait a moment and try again.",
-      apple_state_missing: "Your Apple sign-in session expired. Please try again.",
-      apple_state_mismatch: "Apple sign-in was blocked for security. Please try again.",
-      apple_invalid: "Apple sign-in didn't complete. Please try again.",
-      apple_failed: "We couldn't sign you in with Apple. Please try again or use your password.",
     }
-    if (flag.startsWith("google_") || flag.startsWith("apple_") || flag === "google_access_denied") {
+    if (flag.startsWith("google_") || flag === "google_access_denied") {
       return messages[flag] ?? messages.google_failed
     }
     return messages.google_failed

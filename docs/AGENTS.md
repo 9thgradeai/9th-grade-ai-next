@@ -102,7 +102,7 @@ The product itself ships an agentic study coach. Architecture summary (details i
 
 | Piece | Location | Responsibility |
 |-------|----------|----------------|
-| Agent loop | `backend/ai/agent/loop.ts` | Bounded multi-step loop (`AI_AGENT_MAX_STEPS`, default 8) |
+| Agent loop | `backend/ai/agent/loop.ts` | Bounded multi-step loop (`MAX_AGENT_STEPS` = 8, `backend/ai/agent/prompt.ts`) |
 | Checkpointing / persistence | `backend/ai/agent/checkpoint.ts`, `persistence.ts` | Crash-safe resume of agent state |
 | Prompt | `backend/ai/agent/prompt.ts` | System prompt assembly |
 | Provider registry | `backend/ai/providers/` (groq, anthropic, mock) | Model swap point |

@@ -1,9 +1,20 @@
 import { NextResponse } from "next/server";
 import { prisma } from "~backend/db";
 import { getRateLimitStore } from "~backend/infrastructure/cache";
+import { log } from "~backend/infrastructure/observability/logger";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+
+// Raw checker errors are kept for logging, but ONLY development exposes them
+// in the response body: Prisma/Redis connection failures embed the database
+// host and connection topology, and /api/health is unauthenticated. Matches
+// the toHttpResponse() policy — internals for local dev, generic elsewhere.
+const exposeDetails = process.env.NODE_ENV === "development";
+
+function safeErrorMessage(raw: string): string {
+  return exposeDetails ? raw : "unavailable";
+}
 
 async function checkDatabase(): Promise<{ healthy: boolean; latencyMs: number; error?: string }> {
   const start = Date.now();
@@ -45,14 +56,21 @@ export async function GET() {
   const allHealthy = db.healthy && redis.healthy;
   const status = allHealthy ? 200 : 503;
 
+  if (!allHealthy) {
+    log.error("health.degraded", {
+      database: db.error ?? "healthy",
+      redis: redis.error ?? "healthy",
+    });
+  }
+
   return NextResponse.json(
     {
       status: allHealthy ? "ok" : "degraded",
       timestamp: new Date().toISOString(),
       uptimeMs: Date.now() - ((globalThis as { __startTime?: number }).__startTime ?? Date.now()),
       checks: {
-        database: { status: db.healthy ? "healthy" : "unhealthy", latencyMs: db.latencyMs, ...(db.error ? { error: db.error } : {}) },
-        redis: { status: redis.healthy ? "healthy" : "unhealthy", latencyMs: redis.latencyMs, ...(redis.error ? { error: redis.error } : {}) },
+        database: { status: db.healthy ? "healthy" : "unhealthy", latencyMs: db.latencyMs, ...(db.error ? { error: safeErrorMessage(db.error) } : {}) },
+        redis: { status: redis.healthy ? "healthy" : "unhealthy", latencyMs: redis.latencyMs, ...(redis.error ? { error: safeErrorMessage(redis.error) } : {}) },
       },
     },
     { status },

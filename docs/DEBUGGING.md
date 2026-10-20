@@ -46,7 +46,7 @@ Rules:
 
 | Tool | Where | Notes |
 |------|-------|-------|
-| **pino logger** | `backend/infrastructure/observability/logger.ts` | JSON lines in prod, pretty one-liners in dev, **no-op in tests**. Auto-redacts `password|secret|token|authorization|cookie|apikey`. Level via `LOG_LEVEL`, format via `LOG_FORMAT`. |
+| **pino logger** | `backend/infrastructure/observability/logger.ts` | JSON lines in prod, pretty one-liners in dev, **no-op in tests**. Auto-redacts `password|secret|token|authorization|cookie|apikey`. Level via `LOG_LEVEL`. |
 | **Sentry** | `instrumentation.ts`, `backend/infrastructure/observability/sentry.ts`, `frontend/lib/sentry.tsx` | Enabled only in production; client is **error-only** (no replay/browser tracing, ADR-0013). No-op without `SENTRY_DSN`. |
 | **`X-Request-ID`** | set on every response (`proxy.ts`) | Correlate a user report with server logs |
 | **`/api/health`** | `app/api/health` | Post-deploy and uptime checks |
@@ -90,7 +90,7 @@ For AI/agent behavior, check the `source` label; for data questions, `npm run db
 
 1. Read the `source` label / `X-AI-Source` header — it tells you which provider (or mock) actually answered.
 2. Check provider env keys and `AI_GROQ_MODEL` / `AI_ANTHROPIC_MODEL` overrides.
-3. For the agent loop: `AgentRun` / `AgentToolCall` rows persist each run — inspect via `db:studio`; loop bound is `AI_AGENT_MAX_STEPS` (default 8).
+3. For the agent loop: `AgentRun` / `AgentToolCall` rows persist each run — inspect via `db:studio`; loop bound is the `MAX_AGENT_STEPS` constant (8, `backend/ai/agent/prompt.ts`).
 4. Mock mode is a feature: run keyless to isolate app bugs from provider bugs.
 
 ### 3.4 Debugging data/content issues
