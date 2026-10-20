@@ -57,7 +57,7 @@ Ordering guarantees:
   | `VERCEL_TOKEN` | Vercel → Account Settings → Tokens (team-scoped) |
   | `VERCEL_ORG_ID` | Team slug/ID (dashboard URL segment after `/teams/`), or `npx vercel link` locally and read `.vercel/project.json` |
   | `VERCEL_PROJECT_ID` | From `.vercel/project.json` after `vercel link`, or `npx vercel project ls` |
-- **Settings → Environments → `production`** (created automatically on first deploy run): optionally add required reviewers for a manual approval gate; add variable `PRODUCTION_URL` if the site is not at the built-in default `https://9thgrade.ai`.
+- **Settings → Environments → `production`** (created automatically on first deploy run): optionally add required reviewers for a manual approval gate; variable `PRODUCTION_URL` (already set to `https://9th-grade-ai.vercel.app` — the project's primary domain; update it if a custom domain is attached).
 - **Settings → Branches → Branch protection on `main`**: require PRs, block direct pushes, and require these status checks: `test`, `e2e`, `perf`, `secret-scan` (the `CI` workflow jobs).
 
 ### 4. Cutover order (important)
@@ -72,7 +72,7 @@ Full classification (PRIVILEGED / SENSITIVE / PUBLIC) lives in `.env.local.examp
 |----------|:-:|:-:|:-:|
 | `DATABASE_URL` (pooled) / `DIRECT_DATABASE_URL` | ✅ Neon main branch | ✅ Neon **preview** branch | — (pulled from Vercel at deploy time) |
 | `AUTH_SECRET` (+ optional `AUTH_SECRET_PREVIOUS`) | ✅ | ✅ | — |
-| `APP_URL` / `NEXT_PUBLIC_SITE_URL` | ✅ `https://9thgrade.ai` | ✅ preview URL | — |
+| `NEXT_PUBLIC_APP_URL` (+ optional `NEXT_PUBLIC_SITE_URL` for canonical URLs) | ✅ `https://9th-grade-ai.vercel.app` | ✅ preview URL | — |
 | `CRON_SECRET` | ✅ (both crons 503 without it) | — | — |
 | `REDIS_URL` | ✅ (falls back to per-instance memory — see ADR-0009) | optional | — |
 | `ANTHROPIC_API_KEY` / `GROQ_API_KEY` | ✅ optional (mock fallback when unset) | optional | — |

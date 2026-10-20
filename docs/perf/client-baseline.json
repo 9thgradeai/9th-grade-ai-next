@@ -4,16 +4,16 @@
     "gzip": 164030.14334006945
   },
   "framer-motion": {
-    "parsed": 161825,
-    "gzip": 54006.47723793135
+    "parsed": 162244,
+    "gzip": 54503.56316306697
   },
   "next-runtime": {
     "parsed": 709228,
-    "gzip": 211323.15750923113
+    "gzip": 211283.18196836
   },
   "first-party": {
-    "parsed": 1175873,
-    "gzip": 336540.86447545775
+    "parsed": 1262646,
+    "gzip": 356708.89034055494
   },
   "assets": [
     {
@@ -52,9 +52,9 @@
       "gzip": 59752
     },
     {
-      "asset": "static/chunks/5875-a07bf98c4b91e801.js",
+      "asset": "static/chunks/5875-a63d87ff18f952c5.js",
       "parsed": 128029,
-      "gzip": 42029
+      "gzip": 42028
     },
     {
       "asset": "static/chunks/main-c8e146f33c03c28b.js",
@@ -67,6 +67,11 @@
       "gzip": 39061
     },
     {
+      "asset": "static/chunks/5943.4a9518b8f4962bf7.js",
+      "parsed": 171963,
+      "gzip": 35139
+    },
+    {
       "asset": "static/chunks/70e0d97a.a510bbcae203c191.js",
       "parsed": 97234,
       "gzip": 30909
@@ -77,24 +82,19 @@
       "gzip": 28195
     },
     {
-      "asset": "static/chunks/app/dashboard/layout-a0c85d2c5a4081b1.js",
-      "parsed": 92848,
-      "gzip": 27432
+      "asset": "static/chunks/app/dashboard/layout-8f4cfee1084e7181.js",
+      "parsed": 92823,
+      "gzip": 27369
     },
     {
-      "asset": "static/chunks/2340.b38c9eb881cf3749.js",
-      "parsed": 97501,
-      "gzip": 25410
+      "asset": "static/chunks/2340.9bf1e5174829ad45.js",
+      "parsed": 97648,
+      "gzip": 25402
     },
     {
-      "asset": "static/chunks/4629.4f0ccfe0b611245d.js",
-      "parsed": 119886,
-      "gzip": 24026
-    },
-    {
-      "asset": "static/chunks/app/login/page-387e69b1bccc58e3.js",
-      "parsed": 62711,
-      "gzip": 17724
+      "asset": "static/chunks/9687-cf41c3ecc6fe4f6d.js",
+      "parsed": 61745,
+      "gzip": 17407
     },
     {
       "asset": "static/chunks/1123-5a5c21c64d088e22.js",
@@ -102,14 +102,14 @@
       "gzip": 14816
     },
     {
-      "asset": "static/chunks/4977.4dae9efe30d449f9.js",
-      "parsed": 66344,
-      "gzip": 14748
+      "asset": "static/chunks/7137-50a57dbb9fc3506b.js",
+      "parsed": 51252,
+      "gzip": 14604
     },
     {
-      "asset": "static/chunks/7137-040df43286954e06.js",
-      "parsed": 51247,
-      "gzip": 14600
+      "asset": "static/chunks/9429-fa2d21c4811f2b11.js",
+      "parsed": 50490,
+      "gzip": 13434
     },
     {
       "asset": "static/chunks/8296.3331a1dfddc84f2d.js",

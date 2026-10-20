@@ -18,7 +18,7 @@ concurrency:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     env:
       NODE_ENV: test
       CI: true
@@ -43,12 +43,19 @@ jobs:
           node-version: "22"
           cache: "npm"
       - run: npm ci
-      - name: Prepare test database (schema push)
-        run: npx prisma db push --skip-generate --schema database/prisma/schema.prisma
+      # The real-Postgres integration test (tests/integration/*) asserts against
+      # SEEDED data — ecosystems, taxonomy, and the imported Bangla-vasha MCQs —
+      # so the fresh database needs the same three-step prep the e2e job uses:
+      # schema push, seed, then the idempotent vasha import (~25s total).
+      - name: Prepare test database (schema push + seed + vasha import)
+        run: |
+          npx prisma db push --skip-generate --schema database/prisma/schema.prisma
+          npm run db:seed
+          npx tsx scripts/import-bangla-vasha.ts --yes
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/app_test
-      # The real-Postgres integration test skips silently without DATABASE_URL;
-      # providing it makes the raw-SQL regression guard actually run in CI.
+      # Providing DATABASE_URL makes the raw-SQL + integration regression
+      # guards actually run in CI instead of silently skipping.
       - name: Typecheck, lint, tests (coverage enforced), build
         run: |
           npm run typecheck

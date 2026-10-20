@@ -12,7 +12,7 @@ name: Deploy
 # One-time setup lives in docs/DEPLOYMENT.md § One-time setup:
 #   repo secrets   : VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID
 #   environment    : production (optional reviewers; PRODUCTION_URL var —
-#                    https://9thgrade.ai is the built-in default)
+#                    defaults to the project's primary *.vercel.app domain)
 #   Vercel Preview env: DATABASE_URL / DIRECT_DATABASE_URL → Neon PREVIEW branch
 
 on:
@@ -96,7 +96,7 @@ jobs:
     timeout-minutes: 25
     environment:
       name: production
-      url: https://9thgrade.ai
+      url: ${{ vars.PRODUCTION_URL }}
     env:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
@@ -145,7 +145,7 @@ jobs:
       # deployment settles, then require the full healthy payload.
       - name: Smoke test production
         env:
-          PRODUCTION_URL: ${{ vars.PRODUCTION_URL || 'https://9thgrade.ai' }}
+          PRODUCTION_URL: ${{ vars.PRODUCTION_URL || 'https://9th-grade-ai.vercel.app' }}
         run: |
           curl --fail --silent --show-error \
             --retry 10 --retry-delay 15 --retry-all-errors --max-time 15 \
