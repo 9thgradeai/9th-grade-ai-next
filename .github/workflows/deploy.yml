@@ -1,0 +1,153 @@
+name: Deploy
+
+# CI-gated Vercel deployments (ADR-065). GitHub Actions is the ONLY deploy
+# path — Vercel's own Git integration is disabled (vercel.json "github.enabled").
+#
+#   pull_request                → preview: vercel pull → build → deploy --prebuilt
+#                                 + sticky PR comment with the URL
+#   CI succeeded on main        → production: schema sync → build → deploy --prod
+#                                 (workflow_run trigger) → /api/health smoke test
+#   workflow_dispatch           → manual production deploy (from main)
+#
+# One-time setup lives in docs/DEPLOYMENT.md § One-time setup:
+#   repo secrets   : VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID
+#   environment    : production (optional reviewers; PRODUCTION_URL var —
+#                    https://9thgrade.ai is the built-in default)
+#   Vercel Preview env: DATABASE_URL / DIRECT_DATABASE_URL → Neon PREVIEW branch
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+# One deploy per ref at a time. PR previews: newest commit wins (cancel
+# superseded runs). Production: never cancel — queue, so the newest green
+# commit always deploys last.
+concurrency:
+  group: deploy-${{ github.workflow_run.head_branch || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+  pull-requests: write # sticky preview URL comment
+  actions: read # workflow_run payload
+
+jobs:
+  preview:
+    # Same-repo PRs only — fork PRs never receive secrets.
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Pull preview environment
+        run: npx --yes vercel@64.7.0 pull --yes --environment=preview --token "$VERCEL_TOKEN"
+
+      - name: Build (same artifact production would get)
+        run: npx --yes vercel@64.7.0 build --token "$VERCEL_TOKEN"
+
+      - name: Deploy preview
+        id: deploy
+        run: |
+          URL=$(npx --yes vercel@64.7.0 deploy --prebuilt --token "$VERCEL_TOKEN" | tail -n1)
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+          echo "Deployed preview: $URL"
+
+      - name: Upsert PR comment with preview URL
+        uses: actions/github-script@v7
+        env:
+          PREVIEW_URL: ${{ steps.deploy.outputs.url }}
+        with:
+          script: |
+            const marker = '<!-- vercel-preview-url -->';
+            const body = `${marker}\n### 🚀 Preview deployment\n${process.env.PREVIEW_URL}`;
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+            const { data: comments } = await github.rest.issues.listComments({
+              owner, repo, issue_number, per_page: 100,
+            });
+            const existing = comments.find((c) => c.body && c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number, body });
+            }
+
+  production:
+    # Only after the CI workflow is green on main (workflow_run), or manually.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment:
+      name: production
+      url: https://9thgrade.ai
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies (prisma CLI for schema sync)
+        run: npm ci
+
+      - name: Pull production environment
+        run: npx --yes vercel@64.7.0 pull --yes --environment=production --token "$VERCEL_TOKEN"
+
+      # Database secrets live in exactly one place (Vercel env). Pull them for
+      # the sync step instead of duplicating them as GitHub secrets.
+      - name: Pull env file for schema sync
+        run: npx --yes vercel@64.7.0 env pull --environment=production .env.deploy --token "$VERCEL_TOKEN"
+
+      # Schema BEFORE code: db push + seed run against Neon via
+      # DIRECT_DATABASE_URL, so the new deployment never boots against a stale
+      # schema (db:deploy-sync = prisma db push, idempotent + additive-first).
+      - name: Sync database schema (push + seed)
+        run: |
+          set -a
+          . ./.env.deploy # dotenv-compatible (Vercel quotes values)
+          set +a
+          npm run db:deploy-sync
+
+      # Build uses Vercel-managed env from `vercel pull` — drop the plaintext
+      # copy before it can linger in later steps' contexts.
+      - name: Remove pulled env file
+        run: rm .env.deploy
+
+      - name: Build
+        run: npx --yes vercel@64.7.0 build --token "$VERCEL_TOKEN"
+
+      - name: Deploy to production
+        run: npx --yes vercel@64.7.0 deploy --prebuilt --prod --token "$VERCEL_TOKEN"
+
+      # Health route returns 503 while DB/Redis are degraded — retry until the
+      # deployment settles, then require the full healthy payload.
+      - name: Smoke test production
+        env:
+          PRODUCTION_URL: ${{ vars.PRODUCTION_URL || 'https://9thgrade.ai' }}
+        run: |
+          curl --fail --silent --show-error \
+            --retry 10 --retry-delay 15 --retry-all-errors --max-time 15 \
+            "$PRODUCTION_URL/api/health" | tee /tmp/health.json
+          grep -q '"status":"ok"' /tmp/health.json

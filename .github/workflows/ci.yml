@@ -6,6 +6,15 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+
+# Cancel superseded PR runs; main runs always complete — the Deploy workflow
+# gates production on this suite finishing green (workflow_run, ADR-065).
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   test:
     runs-on: ubuntu-latest

@@ -1,104 +1,119 @@
 # Deployment
 
-## Build
+Production runs on **Vercel**; **GitHub Actions is the only thing that deploys** (ADR-065). Vercel's own Git-integration deploys are disabled (`"github": { "enabled": false }` in `vercel.json`), so nothing reaches an environment without passing CI first.
 
-```bash
-npm run build
+## Pipeline
+
+```
+pull request ──► CI (.github/workflows/ci.yml)
+                  test · e2e · perf · secret-scan
+             └─► Deploy [preview] (.github/workflows/deploy.yml)
+                  vercel pull (Preview env) → vercel build → deploy --prebuilt
+                  → sticky PR comment with the preview URL
+
+push to main ──► CI (same gates)
+             └─► Deploy [production]  (workflow_run — only if CI succeeded)
+                  1. npm ci
+                  2. vercel pull --environment=production
+                  3. db:deploy-sync   ← schema push + seed, BEFORE code goes live
+                  4. vercel build + deploy --prebuilt --prod
+                  5. smoke test: GET /api/health must return 200 { "status": "ok" }
+
+manual       ──► workflow_dispatch on the Deploy workflow → production deploy
 ```
 
-This creates an optimized production build in `.next/`.
+Ordering guarantees:
 
-## Start
+- **Nothing ships from a red branch.** Production is triggered by `workflow_run` on a successful CI run of `main`; a failed CI means no deploy.
+- **Schema before code.** `db:deploy-sync` runs in the deploy job *before* `vercel deploy`, against Neon via `DIRECT_DATABASE_URL` — the new deployment never boots against a stale schema. Old code keeps serving while the deploy builds, so schema changes must be **additive-first** (add columns/tables → deploy → backfill → drop only in a later deploy).
+- **Previews never touch production data.** Preview builds use Vercel's *Preview* environment variables, whose `DATABASE_URL` points at a dedicated Neon **preview branch**.
+- **One deploy per ref.** PR previews cancel superseded runs (newest commit wins); production deploys serialize — the newest green commit always deploys last.
 
-```bash
-npm run start
-```
+## One-time setup
 
-Runs the production server on the port defined by `PORT` (default 3000).
+### 1. Vercel (project settings)
 
-## Environment Variables (Production)
+- Import the GitHub repo. Leave "Deployments" settings as they are — auto-deploy from Git is off via `vercel.json`.
+- **Production environment variables** — set every variable in the matrix below (Project → Settings → Environment Variables → *Production*).
+- **Preview environment variables** — same keys, but `DATABASE_URL` and `DIRECT_DATABASE_URL` point at the Neon **preview branch** (see step 2). `AUTH_SECRET` may reuse the production value or a separate preview secret.
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `AUTH_SECRET` | Yes | JWT signing secret (generate with `openssl rand -base64 32`) |
-| `DATABASE_URL` | Yes | PostgreSQL connection string — on Neon/serverless use the **pooled** host with `?connection_limit=10` so function fan-out cannot exhaust `max_connections` |
-| `REDIS_URL` | Yes (prod) | Distributed rate limiting (Upstash/Redis). Without it each serverless instance enforces its own counters — see `docs/DECISIONS.md` ADR-0009 |
-| `ANTHROPIC_API_KEY` | No | AI features (mock fallback if empty) |
-| `SMTP_HOST` / `SMTP_USER` / `SMTP_PASS` | No | Transactional email (verification links) via SMTP, e.g. a free Gmail App Password. See `docs/EMAIL.md`. When unset, `RESEND_API_KEY` is used; when neither is set, accounts auto-verify. |
-| `SMTP_PORT` / `SMTP_SECURE` / `EMAIL_FROM` | No | Optional SMTP tuning. Defaults: port `587`, `SMTP_SECURE=false`, `EMAIL_FROM` falls back to `SMTP_USER`. |
-| `RESEND_API_KEY` | No | Alternative transactional transport when SMTP is not configured. See `docs/EMAIL.md`. |
-| `NODE_ENV` | Auto | Set to `production` |
+### 2. Neon (database branches)
 
-## Database (Production)
+- **Production branch**: whatever the production `DATABASE_URL` already points at (the `main` Neon branch by default).
+- **Preview branch** (one-time, ~1 minute):
 
-**Production database: Neon PostgreSQL** (`ninth_grade_ai`). Runtime uses the
-**pooled** connection (function fan-out cannot exhaust `max_connections`); the
-build-time schema sync uses the **direct** connection.
+  ```bash
+  npx @neondatabase/cli@latest branches create --name preview
+  # or: Neon dashboard → Branches → Create branch → "preview"
+  ```
 
-| Variable | Purpose |
-|---|---|
-| `DATABASE_URL` | Neon **pooled** URL — runtime reads/writes |
-| `DIRECT_DATABASE_URL` | Neon **direct** URL — build-time `db:deploy-sync` schema push + seed |
+  Put the branch's **pooled** URL into Vercel Preview `DATABASE_URL` and its **direct** URL into Preview `DIRECT_DATABASE_URL`, then seed it once: `npm run db:seed` with those URLs exported.
 
-Schema changes ship via **direct push** (`prisma db push`), not migration files
-(single truthful baseline migration exists so `migrate deploy` stays a no-op, but
-it is not the deploy mechanism). On every Vercel deploy the `prebuild` hook runs
-`npm run db:deploy-sync` when `VERCEL=1`:
-1. `scripts/heal-source-keys.ts` — dedupe seed-source key collisions, and
-2. `prisma db push --skip-generate --accept-data-loss --schema …`, then
-3. `npm run db:seed` — idempotent upsert-only seed (never deletes content rows).
+### 3. GitHub (repo settings)
 
-It targets `DIRECT_DATABASE_URL` when set, falling back to `DATABASE_URL`.
+- **Settings → Secrets and variables → Actions → Secrets**:
+  | Secret | Value |
+  |--------|-------|
+  | `VERCEL_TOKEN` | Vercel → Account Settings → Tokens (team-scoped) |
+  | `VERCEL_ORG_ID` | Team slug/ID (dashboard URL segment after `/teams/`), or `npx vercel link` locally and read `.vercel/project.json` |
+  | `VERCEL_PROJECT_ID` | From `.vercel/project.json` after `vercel link`, or `npx vercel project ls` |
+- **Settings → Environments → `production`** (created automatically on first deploy run): optionally add required reviewers for a manual approval gate; add variable `PRODUCTION_URL` if the site is not at the built-in default `https://9thgrade.ai`.
+- **Settings → Branches → Branch protection on `main`**: require PRs, block direct pushes, and require these status checks: `test`, `e2e`, `perf`, `secret-scan` (the `CI` workflow jobs).
 
-**Deploys are content-safe but schema-forgiving.** The push uses a non-empty
-`--accept-data-loss` diff to drift back to the declared schema — the schema is
-the source of truth and DB content (rows) is never dropped by it except when a
-matching column/table is removed from `schema.prisma`. Before removing a column
-or table, run the force-push flow once by hand against production and review
-the diff first:
+### 4. Cutover order (important)
 
-```bash
-DATABASE_URL="<prod-direct-url>" npm run db:push-force   # review the diff first!
-```
+Set the GitHub secrets **first**, then merge the change that added `github.enabled: false`. If the merge lands before the secrets exist, Vercel stops auto-deploying `main` and the Deploy workflow fails on missing secrets — production simply keeps serving the last deployed build (nothing breaks, but nothing ships until the secrets are added and the workflow is re-run).
 
-If a deploy fails during schema sync, the build aborts before the new code goes
-live. Inspect the deploy log for the offending table, fix the schema or run the
-manual command above, then redeploy.
+## Environment variables
 
-Seeding is idempotent (upserts keyed on stable `sourceKey`s). Per-user data
-(attempts, progress, bookmarks, reviews) is never wiped by a deploy —
-`SEED_RESET_USERS=1` is required to reset it and is never set in builds.
+Full classification (PRIVILEGED / SENSITIVE / PUBLIC) lives in `.env.local.example`. Where each is set:
 
-For manual provisioning from scratch (from the repo alone — no external dump):
+| Variable | Vercel Production | Vercel Preview | GitHub Actions |
+|----------|:-:|:-:|:-:|
+| `DATABASE_URL` (pooled) / `DIRECT_DATABASE_URL` | ✅ Neon main branch | ✅ Neon **preview** branch | — (pulled from Vercel at deploy time) |
+| `AUTH_SECRET` (+ optional `AUTH_SECRET_PREVIOUS`) | ✅ | ✅ | — |
+| `APP_URL` / `NEXT_PUBLIC_SITE_URL` | ✅ `https://9thgrade.ai` | ✅ preview URL | — |
+| `CRON_SECRET` | ✅ (both crons 503 without it) | — | — |
+| `REDIS_URL` | ✅ (falls back to per-instance memory — see ADR-0009) | optional | — |
+| `ANTHROPIC_API_KEY` / `GROQ_API_KEY` | ✅ optional (mock fallback when unset) | optional | — |
+| `SMTP_*` / `RESEND_API_KEY` / `EMAIL_FROM` | ✅ optional | — | — |
+| `SENTRY_DSN` / `NEXT_PUBLIC_SENTRY_DSN` | ✅ optional | — | — |
+| `VERCEL_TOKEN` / `VERCEL_ORG_ID` / `VERCEL_PROJECT_ID` | — | — | ✅ repo secrets |
 
-1. Provision a PostgreSQL database (e.g., Neon, Supabase, AWS RDS).
-2. Update `DATABASE_URL` (+ `DIRECT_DATABASE_URL` for direct-host syncs) in
-   `.env.local` or your hosting provider's env config.
-3. Push the schema:
-4. Seed data:
+No secrets are ever duplicated into GitHub except the three `VERCEL_*` values — database credentials stay in Vercel and are pulled at deploy time (`vercel env pull`, step 3 of the production job).
 
-```bash
-npm run db:push
-npm run db:seed
-```
+## Database sync on deploy
 
-## Hosting
+- The repo does not use Prisma migrations; the schema is pushed directly (`db:deploy-sync` = `prisma db push` + `db:seed`, idempotent).
+- Sync runs **only** in the production deploy job, **before** the new code is promoted. It does **not** run in `vercel build` and never runs for previews.
+- Destructive changes (renames, drops, type changes) need an explicit, human-run step — `prisma db push` will refuse data-loss changes without `--accept-data-loss` (never add it to the deploy pipeline). Do those out-of-band per `docs/DATABASE.md`.
 
-- **Vercel**: Recommended. Zero-config Next.js deployment.
-- **Database**: Neon PostgreSQL (pooled `-pooler.neon.tech` connection string in serverless). Other PaaS options (Supabase/AWS RDS) also work via `DATABASE_URL`.
-- **Docker**: Not currently configured, but can be added.
+## Crons
+
+Defined in `vercel.json` (Vercel Cron, no extra infra):
+
+| Path | Schedule | Purpose |
+|------|----------|---------|
+| `/api/cron/daily-current-affairs` | daily 00:00 UTC | AI-generated daily current-affairs |
+| `/api/storage/worker` | daily 01:00 UTC | Storage cleanup job queue |
+
+Both require `Authorization: Bearer $CRON_SECRET` and return `503` when `CRON_SECRET` is unset — set it in Vercel Production.
 
 ## Rollback
 
-- Vercel: Instant rollback via dashboard.
-- Manual: Redeploy previous Git commit.
+1. **Fastest**: Vercel dashboard → Deployments → previous healthy deployment → **Promote to Production** (instant, no rebuild).
+2. Then align `main`: `git revert <sha> && git push origin main` — the Deploy workflow re-runs; `db:deploy-sync` is idempotent so the schema step is a no-op unless the revert touched `schema.prisma`.
+3. **Schema rollback is forward-fix**: `db push` does not down-grade. Write a new additive change and redeploy (step 2).
 
 ## Monitoring
 
-- No application monitoring configured.
-- Consider adding Vercel Analytics or Sentry.
+- **Health**: `GET /api/health` → `200 { "status": "ok" }` when DB + Redis are healthy (`503` otherwise). The production deploy smoke-tests it with retries after every deploy; alert on repeated failures (Vercel + Neon + Upstash dashboards).
+- **Errors**: Sentry via `instrumentation.ts` — set `SENTRY_DSN` (server) and `NEXT_PUBLIC_SENTRY_DSN` (client); releases are auto-tagged from `COMMIT_SHA`.
+- **Logs**: structured JSON via `~backend/infrastructure/observability/logger`; level tunable with `LOG_LEVEL`. View in Vercel → Observability / runtime logs.
 
-## SSL
+## Local parity
 
-- Handled by hosting provider (Vercel, Railway, etc.).
-- Ensure `secure: true` on cookies in production (already handled in `backend/auth.ts`).
+```bash
+npx vercel env pull .env.local   # same env the preview build would use
+npm run build && npm run start   # identical to Vercel's buildCommand/start
+```

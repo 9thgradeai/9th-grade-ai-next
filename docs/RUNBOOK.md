@@ -3,7 +3,8 @@
 ## Overview
 Production deployment for 9Th-Grade AI exam preparation platform.
 
-**Stack**: Next.js 15 (App Router) + Prisma + PostgreSQL + Redis + Vercel
+**Stack**: Next.js 16 (App Router, Turbopack) + Prisma + PostgreSQL (Neon) + Redis + Vercel
+**Deploy**: GitHub Actions (CI-gated) → Vercel — see `docs/DEPLOYMENT.md` (ADR-065)
 **AI**: Groq (primary) → Anthropic (fallback) → Mock (last resort)
 
 ---
@@ -72,7 +73,7 @@ npm run db:seed
 | `GET /api/health` | Full system health (DB + Redis) | `200 { status: "ok" }` |
 | `GET /api/auth/me` | Auth session validity | `200 { user: {...} }` or `401` |
 
-**Monitoring**: Configure Vercel/Upstash alerts on health check failures.
+**Monitoring**: Sentry is integrated (`instrumentation.ts` — set `SENTRY_DSN` / `NEXT_PUBLIC_SENTRY_DSN`); every production deploy smoke-tests `/api/health`. Configure Vercel/Upstash/Neon alerts on health check failures (see `docs/DEPLOYMENT.md`).
 
 ---
 
@@ -81,24 +82,27 @@ npm run db:seed
 ### Deploy New Version
 ```bash
 git push origin main
-# Vercel auto-deploys; monitor build logs
-# Check /api/health after deploy
+# 1. CI runs (test · e2e · perf · secret-scan)
+# 2. Deploy workflow (workflow_run, only if CI is green):
+#    db:deploy-sync (schema push) → vercel deploy --prod → /api/health smoke test
+# Monitor the "Deploy" workflow in GitHub Actions; check /api/health after.
 ```
 
 ### Rollback
 ```bash
-# Vercel: Instant rollback via dashboard → Deployments → "Rollback"
-# Or: git revert <commit> && git push origin main
+# Fastest: Vercel dashboard → Deployments → previous deployment → Promote
+# Then align main: git revert <sha> && git push origin main
+# Schema rollback is forward-fix (db push does not down-grade) — see docs/DEPLOYMENT.md
 ```
 
 ### Database Schema Changes
 ```bash
-# 1. Edit database/prisma/schema.prisma
-# 2. Generate migration
-npx prisma migrate dev --name descriptive_name --schema database/prisma/schema.prisma
-# 3. Test locally
-npm run db:sync
-# 4. Deploy - migration runs automatically in CI
+# This repo does NOT use Prisma migrations — schema is pushed directly (db push).
+# 1. Edit database/prisma/schema.prisma (additive-first: add → deploy → backfill → drop later)
+# 2. Test locally: npm run db:sync
+# 3. Commit + push — production sync runs automatically in the Deploy workflow
+#    (db:deploy-sync, before the new code goes live)
+# Destructive changes: never in the pipeline; run explicitly per docs/DATABASE.md
 ```
 
 ### Clear Rate Limits (Emergency)
@@ -126,6 +130,7 @@ npm run db:reconcile-progress -- --apply
 npx tsx scripts/reconcile-progress.ts --apply --userId <id>
 npx tsx scripts/reconcile-progress.ts --apply
 # Run weekly via cron until the award path has an outbox worker.
+```
 
 ### Prune ephemeral activity rows
 ```bash
@@ -229,5 +234,5 @@ npm run db:prune-activity -- --apply
 
 ---
 
-*Last updated: 2026-08-30*
-*Version: 1.0*
+*Last updated: 2026-10-20*
+*Version: 1.1*
