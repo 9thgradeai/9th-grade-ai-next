@@ -136,7 +136,8 @@ export default function AppNavbar() {
                   <Link
                     href="/dashboard"
                     aria-current={pathname === "/dashboard" ? "page" : undefined}
-                    className={`rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 ${pathname.startsWith("/dashboard") ? "bg-white text-black" : "text-zinc-300 hover:bg-white/10 hover:text-white"}`}
+                    className={`nav-link rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 ${pathname.startsWith("/dashboard") ? "bg-white text-black" : "text-zinc-300 hover:bg-white/10 hover:text-white"}`}
+                    data-active={pathname.startsWith("/dashboard") ? "true" : undefined}
                   >
                     {t("nav.dashboard")}
                   </Link>
@@ -164,7 +165,7 @@ export default function AppNavbar() {
                       const next = e.key === "ArrowRight" ? triggers[(i + 1) % triggers.length] : triggers[(i - 1 + triggers.length) % triggers.length];
                       next?.focus();
                     }}
-                    className={`nav-rise inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 ${expanded ? "bg-white text-black" : "text-zinc-300 hover:bg-white/10 hover:text-white"}`}
+                    className={`nav-rise nav-link inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 ${expanded ? "bg-white text-black" : "text-zinc-300 hover:bg-white/10 hover:text-white"}`}
                   >
                     {(m.labelBn && lang==="bn" ? m.labelBn : m.label)} {m.id === "ai" && <AiLogo className="h-3.5 w-3.5" />} <CaretDown className={`h-3.5 w-3.5 transition-transform ${expanded ? "rotate-180" : ""}`} aria-hidden="true" />
                   </button>
@@ -200,7 +201,7 @@ export default function AppNavbar() {
               {!isAuthed ? (
                 <>
                   <Link href="/login" className="hidden sm:inline-flex min-h-[44px] items-center rounded-full border border-white/15 px-4 py-1.5 text-sm font-medium text-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400">{t("nav.login")}</Link>
-                  <Link href="/register" className="inline-flex min-h-[44px] items-center rounded-full bg-white px-4 py-1.5 text-sm font-semibold text-black hover:bg-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400">{t("nav.getStarted")}</Link>
+                  <Link href="/register" className="cta-shine inline-flex min-h-[44px] items-center rounded-full bg-gradient-to-br from-emerald-400 via-cyan-400 to-sky-500 px-4 py-1.5 text-sm font-semibold text-black shadow-glow-sm transition hover:brightness-110 active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400">{t("nav.getStarted")}</Link>
                 </>
               ) : (
                 <>
@@ -278,7 +279,7 @@ export default function AppNavbar() {
                     <div className="mt-4 rounded-2xl border border-white/10 bg-gradient-to-br from-sky-500/15 via-cyan-500/10 to-transparent p-4">
                       <p className="text-sm font-semibold text-white">{pickLang(lang, activeMenu.highlight.titleBn, activeMenu.highlight.title)}</p>
                       <p className="mt-1 text-xs leading-relaxed text-zinc-400">{pickLang(lang, activeMenu.highlight.descBn, activeMenu.highlight.desc)}</p>
-                      <Link href={activeMenu.highlight.href} onClick={closeAll} className="mt-3 inline-flex items-center gap-1 rounded-full bg-white px-3.5 py-1.5 text-xs font-semibold text-black hover:bg-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400">{pickLang(lang, activeMenu.highlight.ctaBn, activeMenu.highlight.cta)} →</Link>
+                      <Link href={activeMenu.highlight.href} onClick={closeAll} className="cta-shine mt-3 inline-flex items-center gap-1 rounded-full bg-gradient-to-br from-emerald-400 via-cyan-400 to-sky-500 px-3.5 py-1.5 text-xs font-semibold text-black shadow-glow-sm transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400">{pickLang(lang, activeMenu.highlight.ctaBn, activeMenu.highlight.cta)} →</Link>
                     </div>
                   )}
                 </div>
@@ -377,7 +378,7 @@ export default function AppNavbar() {
               {!isAuthed ? (
                 <div className="grid grid-cols-2 gap-2">
                   <Link href="/login" onClick={() => setMobileOpen(false)} className="rounded-full border border-white/15 py-3 text-center text-sm font-medium text-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400">{t("nav.login")}</Link>
-                  <Link href="/register" onClick={() => setMobileOpen(false)} className="rounded-full bg-white py-3 text-center text-sm font-semibold text-black hover:bg-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400">{t("nav.getStarted")}</Link>
+                  <Link href="/register" onClick={() => setMobileOpen(false)} className="cta-shine rounded-full bg-gradient-to-br from-emerald-400 via-cyan-400 to-sky-500 py-3 text-center text-sm font-semibold text-black shadow-glow-sm transition hover:brightness-110 active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400">{t("nav.getStarted")}</Link>
                 </div>
               ) : (
                 <div className="flex items-center gap-3 px-2 py-1">

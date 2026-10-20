@@ -43,6 +43,9 @@ export default async function Home() {
           components preserved inside the arcs; each lazy chunk = one story beat. */}
       <LazySection name="ArcProblem" />
       <LazySection name="ArcIntelligence" />
+      {/* Kinetic-type interlude between the intelligence and tutor beats —
+          pure CSS scroll-driven animation, no JS chunk beyond its markup. */}
+      <LazySection name="ScrollTypeSection" minHeight={420} />
       <LazySection name="ArcTutor" />
       <LazySection name="ArcProof" />
       <LazySection name="ArcCta" />

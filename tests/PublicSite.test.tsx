@@ -16,6 +16,7 @@ vi.mock("@/lib/auth-ctx", async (importOriginal) => {
 const VALID_INTERNAL_PREFIXES = [
   "/",
   "/login",
+  "/register",
   "/dashboard",
   "/tracks",
   "/archive",
@@ -37,10 +38,10 @@ function isInternal(href: string) {
 }
 
 describe("Footer", () => {
-  it("renders minimal footer with brand and legal links", () => {
+  it("renders curated footer with brand and legal links", () => {
     render(<Footer />);
     expect(screen.getByRole("contentinfo")).toBeInTheDocument();
-    // Minimal footer exposes only essential legal/navigation links
+    // Curated footer keeps the essential legal/navigation links
     expect(screen.getByRole("link", { name: "Privacy" })).toHaveAttribute("href", "/privacy");
     expect(screen.getByRole("link", { name: "Terms" })).toHaveAttribute("href", "/terms");
     const github = screen.getByRole("link", { name: "GitHub" });
@@ -77,7 +78,7 @@ describe("Footer", () => {
 
   it("keeps full navigation in AppNavbar mega menus (not duplicated in footer)", () => {
     render(<Footer />);
-    // Footer is intentionally minimal; deep navigation lives in AppNavbar
+    // Footer columns are a curated subset; deep navigation lives in AppNavbar
     const hrefs = screen.getAllByRole("link").map((l) => l.getAttribute("href"));
     // Should not contain deep nav like /tracks# or /blog from legacy footer columns
     expect(hrefs.filter((h) => h?.startsWith("/tracks#")).length).toBe(0);

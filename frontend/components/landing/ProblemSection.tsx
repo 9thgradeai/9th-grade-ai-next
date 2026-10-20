@@ -1,26 +1,26 @@
 "use client";
 
-import { Shuffle, MapPin, Broadcast } from "@phosphor-icons/react";
 import MotionText from "@/components/ui/MotionText";
 import Reveal from "@/components/ui/Reveal";
 import Interactive3DCard from "@/components/landing/Interactive3DCard";
+import Icon3D, { type Icon3DName } from "@/components/landing/icons/Icon3D";
 import { useT } from "@/lib/i18n";
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 
-const frictionKeys = [
+const frictionKeys: Array<{ icon: Icon3DName; titleKey: string; bodyKey: string }> = [
   {
-    icon: Shuffle,
+    icon: "scatter",
     titleKey: "problem.card1.title",
     bodyKey: "problem.card1.body",
   },
   {
-    icon: MapPin,
+    icon: "calendar",
     titleKey: "problem.card2.title",
     bodyKey: "problem.card2.body",
   },
   {
-    icon: Broadcast,
+    icon: "clock",
     titleKey: "problem.card3.title",
     bodyKey: "problem.card3.body",
   },
@@ -73,10 +73,10 @@ export default function ProblemSection() {
                 <article className="glass-card flex h-full flex-col rounded-2xl p-6 transition-colors duration-300 [transform-style:preserve-3d] group-hover:border-emerald-400/30">
                   <div className="mb-6 flex items-center justify-between">
                     <span
-                      className="flex h-11 w-11 items-center justify-center rounded-xl border border-emerald-500/25 bg-gradient-to-br from-emerald-500/20 to-cyan-500/10"
+                      className="icon-3d-tile flex h-14 w-14 items-center justify-center rounded-xl border border-emerald-500/25 bg-gradient-to-br from-emerald-500/20 to-cyan-500/10 [transform-style:preserve-3d]"
                       aria-hidden="true"
                     >
-                      <friction.icon className="h-5 w-5 text-emerald-400" />
+                      <Icon3D name={friction.icon} className="h-10 w-10" />
                     </span>
                     <span className="font-mono text-xs tabular-nums text-zinc-600" aria-hidden="true">
                       {String(i + 1).padStart(2, "0")}

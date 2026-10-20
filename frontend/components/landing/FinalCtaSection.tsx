@@ -59,6 +59,16 @@ export default function FinalCtaSection() {
               ))}
             </svg>
 
+            {/* Retro sticker: the single Retro-Styles accent on the page —
+                a seal badge that wobbles gently, pure CSS (globals.css). */}
+            <div
+              aria-hidden="true"
+              className="retro-badge absolute right-5 top-5 z-10 hidden h-24 w-24 flex-col items-center justify-center text-center font-display text-[11px] font-black uppercase leading-tight tracking-wide sm:flex md:right-9 md:top-9 md:h-28 md:w-28 md:text-[13px]"
+            >
+              <span className="relative z-10">{t("finalCta.badgeTop")}</span>
+              <span className="relative z-10">{t("finalCta.badgeBottom")}</span>
+            </div>
+
             <div className="relative">
               <p className="section-eyebrow justify-center mb-4">
                 <span aria-hidden="true">{"//"}</span>
@@ -66,7 +76,7 @@ export default function FinalCtaSection() {
               </p>
               <h2
                 id="final-cta-heading"
-                className="font-display text-[clamp(2rem,6vw,3.75rem)] font-semibold uppercase leading-tight tracking-tight text-white"
+                className="font-display text-[clamp(2rem,6vw,3.75rem)] font-semibold uppercase leading-tight tracking-tight text-white text-balance"
               >
                 <MotionText>{t("finalCta.title")}</MotionText>
               </h2>
@@ -76,7 +86,7 @@ export default function FinalCtaSection() {
 
               <div className="mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row">
                 <Magnetic>
-                  <Button href="/register" size="lg" className="glow-border w-full font-semibold sm:w-auto">
+                  <Button href="/register" size="lg" className="cta-shine glow-border w-full font-semibold shadow-[0_8px_40px_rgba(139,156,255,0.35)] sm:w-auto">
                     {t("finalCta.primary")}
                     <ArrowRight className="h-4 w-4" aria-hidden="true" />
                   </Button>

@@ -34,6 +34,7 @@ const REGISTRY = {
   PlannerSection: dynamic(() => import("@/components/landing/PlannerSection"), { ssr: false }),
   PhilosophySection: dynamic(() => import("@/components/landing/PhilosophySection"), { ssr: false }),
   FinalCtaSection: dynamic(() => import("@/components/landing/FinalCtaSection"), { ssr: false }),
+  ScrollTypeSection: dynamic(() => import("@/components/landing/ScrollTypeSection"), { ssr: false }),
 } as const;
 
 export type LazySectionName = keyof typeof REGISTRY;

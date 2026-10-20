@@ -218,8 +218,16 @@ export default function HeroContent({ questionCount }: { questionCount: number }
         </div>
 
         {/* Reskin: stats graduate from a bare row to a glass proof-strip —
-            one surface, hairline dividers, tabular numerals. */}
-        <dl className="hero-stats mt-9 flex max-w-2xl flex-wrap items-stretch gap-y-4 rounded-2xl border border-white/10 bg-white/[0.04] px-2 py-4 shadow-[0_16px_48px_rgba(0,0,0,0.35)] backdrop-blur-xl sm:gap-y-0">
+            one surface, hairline dividers, tabular numerals. Retro sticker
+            pinned to its corner as a playful free-forever seal. */}
+        <dl className="hero-stats relative mt-9 flex max-w-2xl flex-wrap items-stretch gap-y-4 rounded-2xl border border-white/10 bg-white/[0.04] px-2 py-4 shadow-[0_16px_48px_rgba(0,0,0,0.35)] backdrop-blur-xl sm:gap-y-0">
+          <div
+            aria-hidden="true"
+            className="retro-badge absolute -top-7 right-4 hidden h-[4.5rem] w-[4.5rem] flex-col items-center justify-center text-center font-display text-[10px] font-black uppercase leading-tight tracking-wide md:flex"
+          >
+            <span className="relative z-10">{t("hero.stickerTop")}</span>
+            <span className="relative z-10">{t("hero.stickerBottom")}</span>
+          </div>
           {statItems.map((stat, i) => (
             <div key={stat.label} className={`flex flex-1 flex-col justify-center gap-1 px-5 sm:px-7 ${i > 0 ? "border-l border-white/10" : ""}`}>
               <dt className="sr-only">{t(`hero.stats.${stat.label}`)}</dt>
