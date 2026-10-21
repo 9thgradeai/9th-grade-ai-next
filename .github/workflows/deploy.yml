@@ -135,8 +135,11 @@ jobs:
       - name: Remove pulled env file
         run: rm .env.deploy
 
+      # --prod matters: `vercel build` tags the prebuilt output with a target,
+      # and `deploy --prebuilt --prod` refuses output built for "preview"
+      # (prebuilt-environment-mismatch). Build and deploy must agree.
       - name: Build
-        run: npx --yes vercel@64.7.0 build --token "$VERCEL_TOKEN"
+        run: npx --yes vercel@64.7.0 build --prod --token "$VERCEL_TOKEN"
 
       - name: Deploy to production
         run: npx --yes vercel@64.7.0 deploy --prebuilt --prod --token "$VERCEL_TOKEN"
