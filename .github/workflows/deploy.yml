@@ -130,19 +130,17 @@ jobs:
           set +a
           npm run db:deploy-sync
 
-      # Build uses Vercel-managed env from `vercel pull` — drop the plaintext
-      # copy before it can linger in later steps' contexts.
+      # Drop the plaintext copy before it can linger in later steps' contexts.
       - name: Remove pulled env file
         run: rm .env.deploy
 
-      # --prod matters: `vercel build` tags the prebuilt output with a target,
-      # and `deploy --prebuilt --prod` refuses output built for "preview"
-      # (prebuilt-environment-mismatch). Build and deploy must agree.
-      - name: Build
-        run: npx --yes vercel@64.7.0 build --prod --token "$VERCEL_TOKEN"
-
+      # Remote build (no --prebuilt): Vercel builds on its own infrastructure
+      # with native runtime env resolution. A local `vercel build --prod` +
+      # `deploy --prebuilt` bakes the env snapshot from the CI runner, which
+      # left the deployed function without DATABASE_URL at runtime (the DB
+      # check failed instantly while the same URL worked from the runner).
       - name: Deploy to production
-        run: npx --yes vercel@64.7.0 deploy --prebuilt --prod --token "$VERCEL_TOKEN"
+        run: npx --yes vercel@64.7.0 deploy --prod --token "$VERCEL_TOKEN"
 
       # Health route returns 503 while DB/Redis are degraded — retry until the
       # deployment settles, then require the full healthy payload.
