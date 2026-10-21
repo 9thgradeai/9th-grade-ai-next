@@ -65,12 +65,18 @@ jobs:
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/app_test
 
-  # End-to-end suite (Playwright, tests/e2e/*). Runs against `next dev`
-  # via the Playwright webServer, with a seeded Postgres (the login spec
-  # signs in as the seeded demo user). Runs in parallel with `test`.
+  # End-to-end suite (Playwright, tests/e2e/*). Runs against a production
+  # `next build` + `next start` via the Playwright webServer (dev-mode route
+  # compiles blew the time budget, and Next's devtools profiling in the dev
+  # runtime throws uncaught pageerrors the audit fixtures fail on), with a
+  # seeded Postgres. Runs in parallel with `test`.
   e2e:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    # Budget: npm ci + Playwright install + DB seed (~3min), then the
+    # webServer runs `next build` before `next start` (~3-4min on a runner)
+    # and the full suite against the prod server (~5-8min). 20min was not
+    # enough when the suite ran against `next dev`.
+    timeout-minutes: 25
     env:
       CI: true
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/app_test

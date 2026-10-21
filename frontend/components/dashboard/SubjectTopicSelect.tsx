@@ -250,7 +250,7 @@ export default function SubjectTopicSelect({
               onChange={(e) => setQuery(e.target.value)}
               placeholder="বিষয় খুঁজুন…"
               aria-label="বিষয় খুঁজুন"
-              className="w-full bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] rounded-xl pl-9 pr-8 py-2.5 text-sm text-[var(--dashboard-text-primary)] placeholder:text-[var(--dashboard-text-muted)] focus:outline-none focus:border-[var(--accent)]/50 transition-colors [&::-webkit-search-cancel-button]:hidden"
+              className="w-full min-h-11 bg-[var(--surface-raised)] border border-[var(--dashboard-border-muted)] rounded-xl pl-9 pr-8 py-2.5 text-sm text-[var(--dashboard-text-primary)] placeholder:text-[var(--dashboard-text-muted)] focus:outline-none focus:border-[var(--accent)]/50 transition-colors [&::-webkit-search-cancel-button]:hidden"
             />
             {query && (
               <button

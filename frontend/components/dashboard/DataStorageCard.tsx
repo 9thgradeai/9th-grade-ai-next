@@ -168,26 +168,26 @@ export default function DataStorageCard() {
       {/* Actions */}
       <div className="flex flex-wrap gap-2">
         {!connected ? (
-          <button onClick={connect} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--info)] text-white text-sm font-semibold hover:brightness-110 transition-all shadow-sm">
+          <button onClick={connect} className="inline-flex min-h-11 items-center gap-2 px-4 py-2 rounded-xl bg-[var(--info)] text-white text-sm font-semibold hover:brightness-110 transition-all shadow-sm">
             <Plugs className="w-4 h-4" /> {t(lang, "Google Drive সংযুক্ত করুন", "Connect Google Drive")}
           </button>
         ) : (
           <>
-            <button onClick={() => void sync(true)} disabled={!!actionLoading} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--success)] text-white text-sm font-semibold hover:brightness-110 disabled:opacity-60 transition-all">
+            <button onClick={() => void sync(true)} disabled={!!actionLoading} className="inline-flex min-h-11 items-center gap-2 px-4 py-2 rounded-xl bg-[var(--success)] text-white text-sm font-semibold hover:brightness-110 disabled:opacity-60 transition-all">
               {actionLoading === "sync" ? <Spinner className="w-4 h-4 animate-spin" /> : <ArrowsClockwise className="w-4 h-4" />} {t(lang, "এখনই সিঙ্ক করুন", "Sync now")}
             </button>
-            <button onClick={connect} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-[var(--border-strong)] bg-[var(--dashboard-surface)] text-[var(--dashboard-text-primary)] text-sm font-medium hover:bg-[var(--surface-hover)] transition-colors">
+            <button onClick={connect} className="inline-flex min-h-11 items-center gap-2 px-4 py-2 rounded-xl border border-[var(--border-strong)] bg-[var(--dashboard-surface)] text-[var(--dashboard-text-primary)] text-sm font-medium hover:bg-[var(--surface-hover)] transition-colors">
               <Link className="w-4 h-4" /> {t(lang, "পুনরায় সংযুক্ত", "Reconnect")}
             </button>
-            <button onClick={() => void disconnect()} disabled={!!actionLoading} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-[var(--dashboard-border-muted)] bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)] text-sm font-medium hover:bg-[var(--dashboard-surface-muted)] disabled:opacity-60 transition-colors">
+            <button onClick={() => void disconnect()} disabled={!!actionLoading} className="inline-flex min-h-11 items-center gap-2 px-4 py-2 rounded-xl border border-[var(--dashboard-border-muted)] bg-[var(--dashboard-danger-subtle)] text-[var(--dashboard-danger)] text-sm font-medium hover:bg-[var(--dashboard-surface-muted)] disabled:opacity-60 transition-colors">
               {actionLoading === "disconnect" ? <Spinner className="w-4 h-4 animate-spin" /> : <X className="w-4 h-4" />} {t(lang, "বিচ্ছিন্ন করুন", "Disconnect")}
             </button>
           </>
         )}
-        <button onClick={() => void sync(true)} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-[var(--border-strong)] bg-subtle text-sm font-mono hover:bg-[var(--surface-hover)] transition-colors">
+        <button onClick={() => void sync(true)} className="inline-flex min-h-11 items-center gap-2 px-4 py-2 rounded-xl border border-[var(--border-strong)] bg-subtle text-sm font-mono hover:bg-[var(--surface-hover)] transition-colors">
           <Download className="w-4 h-4" /> {t(lang, "এক্সপোর্ট", "Export")}
         </button>
-        <button onClick={() => void sync(true)} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-[var(--border-strong)] bg-subtle text-sm font-mono hover:bg-[var(--surface-hover)] transition-colors">
+        <button onClick={() => void sync(true)} className="inline-flex min-h-11 items-center gap-2 px-4 py-2 rounded-xl border border-[var(--border-strong)] bg-subtle text-sm font-mono hover:bg-[var(--surface-hover)] transition-colors">
           <UploadSimple className="w-4 h-4" /> {t(lang, "রিস্টোর", "Restore")}
         </button>
       </div>

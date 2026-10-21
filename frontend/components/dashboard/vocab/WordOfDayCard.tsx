@@ -188,7 +188,7 @@ export default function WordOfDayCard() {
       {/* Pronunciation button */}
       <button
         onClick={() => speakWord(word.word)}
-        className="flex items-center gap-1.5 text-xs text-[var(--dashboard-primary)] hover:underline mb-4"
+        className="flex items-center gap-1.5 min-h-11 text-xs text-[var(--dashboard-primary)] hover:underline mb-4"
       >
         <SpeakerSimpleHigh size={14} />
         <span className="font-mono">{t(lang, "উচ্চারণ", "Pronounce")}</span>
@@ -200,7 +200,7 @@ export default function WordOfDayCard() {
       <div className="mb-3">
         <button
           onClick={() => setMnemonicOpen((v) => !v)}
-          className="flex items-center gap-1.5 text-xs font-mono text-[var(--dashboard-text-muted)] hover:text-[var(--dashboard-text)] transition-colors"
+          className="flex items-center gap-1.5 min-h-11 text-xs font-mono text-[var(--dashboard-text-muted)] hover:text-[var(--dashboard-text)] transition-colors"
         >
           <Lightbulb size={12} />
           {t(lang, "মনে রাখার উপায়", "Mnemonic")}
@@ -245,7 +245,7 @@ export default function WordOfDayCard() {
       {/* Expand toggle */}
       <button
         onClick={() => setExpanded((v) => !v)}
-        className="flex items-center gap-1.5 text-xs font-mono px-3 py-1.5 rounded-lg bg-[var(--surface-raised)] border border-terminal-border text-[var(--dashboard-text)] hover:bg-[var(--surface-overlay)] transition-colors w-full justify-center"
+        className="flex items-center gap-1.5 min-h-11 text-xs font-mono px-3 py-1.5 rounded-lg bg-[var(--surface-raised)] border border-terminal-border text-[var(--dashboard-text)] hover:bg-[var(--surface-overlay)] transition-colors w-full justify-center"
       >
         <BookOpen size={12} />
         {expanded

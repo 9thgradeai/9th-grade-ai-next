@@ -40,6 +40,8 @@ npm run test              # Run once
 npm run test:watch        # Watch mode
 npm run test:coverage     # Enforce coverage thresholds
 npm run test:e2e          # Playwright suite (needs seeded DB: npm run db:seed)
+                          # Builds + starts a production `next start` server via
+                          # the Playwright webServer — no dev server needed.
 ```
 
 ## Content & Data QA

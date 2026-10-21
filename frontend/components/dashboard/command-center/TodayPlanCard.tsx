@@ -203,7 +203,7 @@ export default function TodayPlanCard({ tasks, onToggle, onTaskAdded }: Props) {
 
       {/* Footer Link */}
       <div className="mt-4 pt-2 border-t flex items-center justify-between" style={{ borderColor: "var(--dashboard-border-muted)" }}>
-        <button onClick={() => setActiveTab("study-planner")} className="text-xs font-semibold inline-flex items-center gap-1" style={{ color: "var(--dashboard-primary)" }}>
+        <button onClick={() => setActiveTab("study-planner")} className="min-h-11 px-2 text-xs font-semibold inline-flex items-center gap-1" style={{ color: "var(--dashboard-primary)" }}>
           {t(lang, "সম্পূর্ণ AI প্ল্যানার", "Full AI Planner")} <ArrowRight className="w-3.5 h-3.5" />
         </button>
         <span className="text-[11px] font-mono text-[var(--dashboard-text-muted)]">{t(lang, "অভিযোজন সারি", "Adaptive Queue")}</span>

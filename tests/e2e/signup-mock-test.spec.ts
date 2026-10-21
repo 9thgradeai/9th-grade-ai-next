@@ -1,81 +1,66 @@
 // tests/e2e/signup-mock-test.spec.ts
-// Critical user journey: Signup → Email verification → Onboarding → First mock test
+// Critical user journey: Signup → Email verification → Onboarding → First mock
+// test, and Login → Dashboard → Practice.
+//
+// The auth UI is the AuthExperience wizard (lamp intro → choice → form →
+// verification ceremony → admit card), driven through the shared helpers in
+// ./auth-helpers. The AI mock tab lives at /dashboard/ai-mock and its content
+// is Bangla-first.
 
 import { test, expect } from './browser-logs';
+import { uiSignup, uiLogin, registerViaApi } from './auth-helpers';
 
 test.describe('Critical User Journey', () => {
   test('signup → verify → onboarding → first mock test', async ({ page }) => {
-    const testEmail = `test+${Date.now()}@example.com`;
-    const testPassword = 'StrongPass123!';
+    // Journey budget: register API + ceremony transitions + mock generation
+    // (Groq locally, deterministic MockProvider in CI).
+    test.setTimeout(180_000);
 
-    // 1. Navigate to signup page
-    await page.goto('/login?register=true');
-    await expect(page.locator('h1')).toContainText('Create account');
-
-    // 2. Fill signup form
-    await page.fill('[name="name"]', 'Test User');
-    await page.fill('[name="email"]', testEmail);
-    await page.fill('[name="password"]', testPassword);
-    await page.click('button[type="submit"]');
-
-    // 3. Should redirect to dashboard (or verify-email if email verification required)
-    await page.waitForURL(/\/dashboard|\/verify-email/);
-
-    // If email verification page, we'd need to handle that
-    // For now, check if we're on dashboard
-    if (page.url().includes('/verify-email')) {
-      // In dev mode, the dev link is shown - click it
-      const devLink = page.locator('a[href*="devLink"]');
-      if (await devLink.isVisible()) {
-        await devLink.click();
-      }
-    }
-
-    // 4. Should be on dashboard now
+    // 1–6. UI signup through the wizard; the verification ceremony
+    // auto-completes (no email transport in e2e) into the admit card, whose
+    // continue button routes to onboarding, completed by the helper.
+    await uiSignup(page, 'critical');
     await expect(page).toHaveURL(/\/dashboard/);
 
-    // 5. Complete onboarding if prompted
-    if (page.url().includes('/onboarding')) {
-      await page.selectOption('[name="examTarget"]', 'BCS');
-      await page.fill('[name="examDate"]', '2026-12-31');
-      await page.selectOption('[name="prepLevel"]', 'BEGINNER');
-      await page.fill('[name="studyHoursPerDay"]', '3');
-      await page.click('button[type="submit"]');
-      await page.waitForURL(/\/dashboard/);
-    }
+    // 7. AI mock tab (tab key is `ai-mock`; heading is Bangla).
+    await page.goto('/dashboard/ai-mock');
+    await expect(page.getByRole('heading', { name: 'AI মক টেস্ট' })).toBeVisible({ timeout: 30_000 });
 
-    // 6. Navigate to AI Mock Test tab
-    await page.goto('/dashboard?tab=ai-mock-test');
-    await expect(page.locator('text=AI Mock Test')).toBeVisible();
+    // 8. Configure and generate. MockProvider answers keyless in CI; Groq
+    // answers locally — either way questions render.
+    await page.getByPlaceholder('যেমন: ইতিহাস').fill('বাংলাদেশ পরিচয়');
+    await page.getByRole('button', { name: 'টেস্ট তৈরি করো' }).click();
+    const submitButton = page.getByRole('button', { name: /জমা দাও/ });
+    await expect(submitButton).toBeVisible({ timeout: 60_000 });
 
-    // 7. Start a mock test
-    await page.click('button:has-text("Start Mock Test")');
+    // 9. Answer the first question: option buttons are the only buttons with
+    // a direct-child `.font-mono` span (the ক./খ. option key).
+    await page.locator('button:has(> span.font-mono)').first().click();
 
-    // 8. Verify question card appears
-    await expect(page.locator('[data-testid="question-card"], .question-card, text=Question')).toBeVisible({ timeout: 10000 });
-
-    // 9. Answer a question (select first option)
-    const firstOption = page.locator('input[type="radio"]').first();
-    if (await firstOption.isVisible()) {
-      await firstOption.click();
-    }
-
-    // 10. Submit test
-    await page.click('button:has-text("Submit"), button:has-text("Finish")');
-
-    // 11. Verify results page
-    await expect(page.locator('text=Result, text=Score, text=Accuracy')).toBeVisible({ timeout: 10000 });
+    // 10–11. Submit and verify the score renders ("{percentage}%", "0/10"…).
+    await submitButton.click();
+    await expect(page.getByText(/^\d+%$/).first()).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByText(/^\d+\/\d+$/).first()).toBeVisible();
   });
 
   test('login → dashboard → practice', async ({ page }) => {
-    // This test assumes a user exists
-    // In CI, the test DB would be seeded
-    await page.goto('/login');
-    await page.fill('[name="email"]', 'demo@9thgrade.ai');
-    await page.fill('[name="password"]', 'demo12345');
-    await page.click('button[type="submit"]');
+    test.setTimeout(120_000);
 
-    await page.waitForURL(/\/dashboard/);
-    await expect(page.locator('text=Dashboard')).toBeVisible();
+    // Provision credentials via the API (auth is setup here, not the journey
+    // under test), then exercise the real login UI. clearCookies drops the
+    // session the register call created so /login shows the form instead of
+    // bouncing authenticated visitors to the dashboard.
+    const creds = await registerViaApi(page, 'login');
+    await page.context().clearCookies();
+    await uiLogin(page, creds);
+    await expect(page).toHaveURL(/\/dashboard/);
+    await expect(page.locator('#dashboard-content')).toBeVisible({ timeout: 30_000 });
+
+    // Practice tab renders its header and the mode selector (Quick Drill /
+    // Custom Exam / Mock Test) — the কুইক প্র্যাকটিস h2 only exists inside
+    // the Quick Drill panel, which is not the default active mode.
+    await page.goto('/dashboard/practice');
+    await expect(page.getByRole('heading', { name: 'প্র্যাকটিস' })).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByRole('button', { name: /Quick Drill/ })).toBeVisible();
   });
 });

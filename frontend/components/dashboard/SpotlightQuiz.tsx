@@ -260,7 +260,7 @@ export default function SpotlightQuiz({
                   type="button"
                   onClick={() => chooseConfidence(v)}
                   aria-pressed={confidence === v}
-                  className="px-2.5 py-1 rounded-full border font-mono text-[11px] font-bold transition-colors min-h-11"
+                  className="min-w-11 px-2.5 py-1 rounded-full border font-mono text-[11px] font-bold transition-colors min-h-11"
                   style={
                     confidence === v
                       ? { background: "var(--dashboard-primary)", color: "var(--dashboard-text-inverse)", borderColor: "transparent" }

@@ -2,6 +2,7 @@
 // Sprint 8: E2E for the reskinned landing + new Home-tab flows.
 
 import { test, expect } from '@playwright/test';
+import { registerViaApi } from './auth-helpers';
 
 test.describe('Landing reskin (public)', () => {
   test('hero speaks with one billboard voice + stats strip', async ({ page }) => {
@@ -39,35 +40,13 @@ test.describe('Landing reskin (public)', () => {
 });
 
 test.describe('Dashboard Home (authenticated)', () => {
-  // NOTE: dev-server cold compile on this machine exceeds the default 30s
-  // action timeout — authenticated steps budget 90s explicitly.
+  // Auth is setup here, not the journey under test: register through the
+  // real API (the session cookie lands on the page's context) and go
+  // straight to the home tab. Replaces the pre-AuthExperience UI helper that
+  // filled the old flat /login?register=true form.
   async function signup(page) {
-    const stamp = Date.now().toString(36);
-    const testEmail = `home+${stamp}@example.com`;
-    // High-entropy per run: common passwords trip the breached-password
-    // validator, and short patterns collide with breach corpora.
-    const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%&*";
-    let testPassword = "";
-    for (let i = 0; i < 24; i++) testPassword += alphabet[Math.floor(Math.random() * alphabet.length)];
-    await page.goto('/login?register=true');
-    await page.fill('#signup-name', 'Home Tester', { timeout: 90000 });
-    await page.fill('#signup-email', testEmail, { timeout: 90000 });
-    await page.fill('#signup-password', testPassword, { timeout: 90000 });
-    await page.fill('#signup-confirm', testPassword, { timeout: 90000 });
-    await page.click('button[type="submit"]', { timeout: 90000 });
-    // The app celebrates in place (verify ceremony) instead of navigating —
-    // the session cookie is already set, so go to the dashboard directly.
-    await page.waitForTimeout(5000);
-    await page.goto('/dashboard?tab=home');
-    if (page.url().includes('/onboarding')) {
-      await page.fill('#examTarget', 'BCS', { timeout: 90000 });
-      await page.fill('#examDate', '2026-12-31', { timeout: 90000 });
-      await page.selectOption('#prepLevel', 'BEGINNER', { timeout: 90000 });
-      await page.fill('#studyHoursPerDay', '3', { timeout: 90000 });
-      await page.click('button[type="submit"]', { timeout: 90000 });
-      await page.waitForURL(/\/dashboard/, { timeout: 90000 });
-    }
-    await page.goto('/dashboard?tab=home');
+    await registerViaApi(page, 'home');
+    await page.goto('/dashboard/home');
   }
 
   test('one mission voice + streak engine + disclosures', async ({ page }) => {

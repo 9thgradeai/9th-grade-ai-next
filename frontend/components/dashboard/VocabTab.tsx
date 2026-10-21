@@ -400,7 +400,7 @@ export default function VocabTab() {
                       <h3 className="text-2xl sm:text-3xl font-bold text-[var(--dashboard-primary)] tracking-tight break-words">{current.word}</h3>
                       <button
                         onClick={() => speak(current.word)}
-                        className="p-1.5 rounded-lg hover:bg-[var(--surface-raised)] transition-colors text-[var(--dashboard-text-muted)] hover:text-[var(--accent)]"
+                        className="min-w-11 min-h-11 flex items-center justify-center p-1.5 rounded-lg hover:bg-[var(--surface-raised)] transition-colors text-[var(--dashboard-text-muted)] hover:text-[var(--accent)]"
                         aria-label={`Pronounce ${current.word}`}
                       >
                         <SpeakerSimpleHigh className="w-5 h-5" />
@@ -504,7 +504,7 @@ export default function VocabTab() {
                     <button
                       onClick={() => { setRevealed(false); setIdx((i) => Math.max(0, i - 1)); }}
                       disabled={idx === 0}
-                      className="px-3 py-1.5 min-h-[44px] rounded-lg border border-terminal-border text-xs text-[var(--dashboard-text-secondary)] disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1"
+                      className="px-3 py-1.5 min-h-[44px] min-w-[44px] rounded-lg border border-terminal-border text-xs text-[var(--dashboard-text-secondary)] disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1"
                       aria-label="Previous word"
                     >
                       <CaretLeft className="w-3.5 h-3.5" />
@@ -512,7 +512,7 @@ export default function VocabTab() {
                     <button
                       onClick={() => { setRevealed(false); setIdx((i) => (i + 1 < filtered.length ? i + 1 : i)); }}
                       disabled={idx >= filtered.length - 1}
-                      className="px-3 py-1.5 min-h-[44px] rounded-lg border border-terminal-border text-xs text-[var(--dashboard-text-secondary)] disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1"
+                      className="px-3 py-1.5 min-h-[44px] min-w-[44px] rounded-lg border border-terminal-border text-xs text-[var(--dashboard-text-secondary)] disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1"
                       aria-label="Next word"
                     >
                       <CaretRight className="w-3.5 h-3.5" />

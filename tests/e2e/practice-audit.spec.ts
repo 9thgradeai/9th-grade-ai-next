@@ -26,12 +26,23 @@ async function waitForVisualCalm(page: Page) {
   // ancestor opacity < 1 mid-flight, and axe blends ancestor opacity into
   // contrast ratios — scanning during the ~0.2s entrance reports phantom
   // violations on perfectly fine text. Wait until animated surfaces settle.
+  //
+  // Selector set is deliberately broad (any element still carrying a
+  // non-1 opacity, plus the known surfaces below) because the config panel
+  // re-animates on every viewport resize and its wrappers are not all
+  // `.scroll-mt-28`/dialog/timer nodes.
   try {
     await page.waitForFunction(
-      () =>
-        [...document.querySelectorAll<HTMLElement>('.scroll-mt-28, [role="dialog"], [role="timer"]')].every(
-          (e) => getComputedStyle(e).opacity === '1',
-        ),
+      () => {
+        const known = [...document.querySelectorAll<HTMLElement>('.scroll-mt-28, [role="dialog"], [role="timer"]')];
+        const fading = [...document.querySelectorAll<HTMLElement>('#dashboard-content, #dashboard-content *')].filter(
+          (e) => {
+            const o = getComputedStyle(e).opacity;
+            return o !== '' && Number(o) < 1;
+          },
+        );
+        return [...known, ...fading].every((e) => getComputedStyle(e).opacity === '1');
+      },
       null,
       { timeout: 15_000 },
     );
@@ -99,11 +110,29 @@ test.describe('Practice tab audit — a11y, responsive, keyboard, full journey',
     await page.goto('/dashboard?tab=practice&mode=quick');
     await expect(page.getByRole('heading', { name: 'প্র্যাকটিস', exact: true })).toBeVisible({ timeout: 30_000 });
 
+    // `?mode=quick` is consumed as a one-shot cross-tab "practice intent"
+    // effect. Under load that intent can land before the practice tab mounts
+    // and be dropped, leaving the panel on its default (Custom Exam) — the
+    // quick-drill dock then does not exist. A user picks the mode from the
+    // selector, so make the test do the same: click Quick Drill explicitly
+    // (idempotent — a no-op when the intent already applied).
+    const quickDrill = page.getByRole('button', { name: /Quick Drill/ });
+    await expect(quickDrill).toBeVisible({ timeout: 15_000 });
+    await quickDrill.click();
+    await expect(page.getByTestId('dock-start')).toBeVisible({ timeout: 15_000 });
+
     for (const vp of [{ width: 360, height: 740 }, { width: 768, height: 900 }, { width: 1280, height: 800 }]) {
       await page.setViewportSize(vp);
       await expectNoDocumentOverflow(page);
     }
     await page.setViewportSize({ width: 1280, height: 800 });
+    // The resize loop above re-triggers the config panel's entrance
+    // transitions (mode cards) on every viewport change; scanning before they
+    // settle makes axe blend a mid-flight ancestor opacity into the contrast
+    // ratio and report phantom violations on fine text. Let the panel come
+    // back to rest first.
+    await waitForVisualCalm(page);
+    await expect(page.getByRole('heading', { name: 'প্র্যাকটিস', exact: true })).toBeVisible();
     expect(await axeSeriousOrCritical(page), 'config axe violations').toEqual([]);
 
     // ── Select first subject (card → popup → whole-subject default → done) ──
@@ -145,14 +174,31 @@ test.describe('Practice tab audit — a11y, responsive, keyboard, full journey',
     // forever. The probe suite verified the button is stably mounted, so a
     // real dispatched click is still a faithful interaction here.
     await page.getByRole('button', { name: 'ফলাফল জমা দিন' }).click({ force: true });
+
+    // The confirm dialog is portaled and mounted in the same React commit as
+    // the click's state update, but the *browser* paints it a frame later.
+    // `isVisible()` is an instantaneous check (no auto-wait), so probing it
+    // immediately after the click races the paint and routinely reads false —
+    // the dialog then renders unanswered and the run stalls. Wait, bounded,
+    // for either the dialog or the results panel, then answer the dialog.
+    //
+    // Real actionability click on the dialog button (force stays reserved for
+    // the sticky bar above): it waits for a stable box + a point that actually
+    // receives the event, so it cannot land on the backdrop/padding, where the
+    // click would be swallowed. finalizeSubmit() closes the dialog
+    // synchronously, so a landed click is immediately observable.
     const unanswered = page.getByRole('dialog', { name: 'উত্তর দেওয়া বাকি আছে' });
-    if (await unanswered.isVisible()) {
-      // Settle first: a force-click dispatched mid-entrance can land on the
-      // backdrop (which dismisses the dialog) instead of the button.
-      await waitForVisualCalm(page);
-      await unanswered.getByRole('button', { name: 'জমা দিন' }).click({ force: true });
+    const results = page.getByText('প্র্যাকটিস সম্পন্ন!');
+    const outcome = await Promise.race([
+      unanswered.waitFor({ state: 'visible', timeout: 10_000 }).then(() => 'dialog' as const),
+      results.waitFor({ state: 'visible', timeout: 10_000 }).then(() => 'results' as const),
+    ]).catch(() => 'neither' as const);
+
+    if (outcome === 'dialog') {
+      await unanswered.getByRole('button', { name: 'জমা দিন' }).click();
     }
-    await expect(page.getByText('প্র্যাকটিস সম্পন্ন!')).toBeVisible({ timeout: 30_000 });
+
+    await expect(results).toBeVisible({ timeout: 30_000 });
 
     // ── Results ──
     await expectNoDocumentOverflow(page);
