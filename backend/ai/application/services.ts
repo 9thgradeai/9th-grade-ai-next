@@ -291,7 +291,7 @@ async function finalizeUsage(opts: {
 // total outage of the real providers degrades gracefully instead of erroring.
 async function withFailover<T>(
   task: "tutor" | "assistant" | "solver",
-  opts: { image?: boolean },
+  opts: { image?: boolean; mockTask?: string },
   fn: (p: LLMProvider, name: LLMProviderName) => Promise<T>,
   candidatesOverride?: ModelSelection[],
 ): Promise<{ value: T; provider: LLMProviderName; model: string; isMock: boolean }> {
@@ -1428,7 +1428,7 @@ export async function generateMockTest(opts: {
     });
   } else {
     try {
-      const fo = await withFailover("solver", {}, (p) =>
+      const fo = await withFailover("solver", { mockTask: "mock-test" }, (p) =>
         p.generate({ system, messages: [{ role: "user", content: userText }], maxTokens: 4000 }),
       );
       rawText = fo.value.text;

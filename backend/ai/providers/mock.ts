@@ -45,6 +45,30 @@ function mockText(task: string, messages: AIMessageInput[]): string {
       '"relatedConcept": "AI solver configuration"}'
     );
   }
+  if (task === "mock-test") {
+    // Mock-test generation shares the "solver" provider chain, but its output
+    // must be the mock-test schema — validateMockTestOutput drops anything
+    // else, so a solver-shaped reply would render an empty test (the AI mock
+    // tab then shows "no questions" with the submit button unmounted). This
+    // keeps keyless dev/CI/production-without-a-key functional and honest:
+    // the questions are labelled mocks, never presented as real AI output.
+    const count = 10;
+    const questions = Array.from({ length: count }, (_, i) => ({
+      id: `q${i + 1}`,
+      question: `[MOCK] Sample question ${i + 1} — set GROQ_API_KEY or ANTHROPIC_API_KEY for real AI questions.`,
+      options: [
+        { id: "A", text: "Option A" },
+        { id: "B", text: "Option B" },
+        { id: "C", text: "Option C" },
+        { id: "D", text: "Option D" },
+      ],
+      answer: "A",
+      explanation: "This is a labelled mock question — no real model was called.",
+      topic: "mock",
+      difficulty: "EASY",
+    }));
+    return JSON.stringify({ title: "Mock Test (no AI key configured)", questions });
+  }
   return (
     `${label}\n\n${question}\n\n` +
     "আমি বিষয়টি সহজভাবে বুঝিয়ে দেব। প্রথমে মূল ধারণাটি দেখি, তারপর একটি উদাহরণ দিব।"

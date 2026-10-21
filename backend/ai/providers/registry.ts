@@ -58,11 +58,12 @@ function buildSelections(
   order: LLMProviderName[],
   modelFor: (provider: Exclude<LLMProviderName, "mock">) => string,
   task: string,
+  mockTask: string = task,
 ): ModelSelection[] {
   const out: ModelSelection[] = [];
   for (const name of order) {
     if (name === "mock") {
-      out.push({ provider: getProvider("mock", task), name: "mock" });
+      out.push({ provider: getProvider("mock", mockTask), name: "mock" });
       break;
     }
     const configured = name === "groq" ? isGroqConfigured() : isAnthropicConfigured();
@@ -73,7 +74,7 @@ function buildSelections(
   }
   // Guarantee a mock fallback even if no real provider was configured.
   if (out.length === 0 || out[out.length - 1].name !== "mock") {
-    out.push({ provider: getProvider("mock", task), name: "mock" });
+    out.push({ provider: getProvider("mock", mockTask), name: "mock" });
   }
   warnIfMockOnly(out);
   return out;
@@ -129,13 +130,17 @@ export function reportProviderOutcome(
  * defaults (solver: Anthropic first; tutor/assistant: Groq first). Models use
  * the primary tier (existing endpoints are reasoning-heavy).
  */
-export function resolveModelCandidates(task: AITask, opts?: { image?: boolean }): ModelSelection[] {
+export function resolveModelCandidates(
+  task: AITask,
+  opts?: { image?: boolean; mockTask?: string },
+): ModelSelection[] {
   const { image = false } = opts ?? {};
   const order = candidateOrder({ solverLike: task === "solver", image });
   return buildSelections(
     order,
     (provider) => resolveModelName(provider, "primary"),
     task,
+    opts?.mockTask,
   );
 }
 
@@ -179,11 +184,14 @@ export function resolveCandidatesForModelTask(
 /**
  * Resolve a provider for a task (primary candidate only).
  */
-export function resolveModel(task: AITask, opts?: { image?: boolean }): ModelSelection {
+export function resolveModel(task: AITask, opts?: { image?: boolean; mockTask?: string }): ModelSelection {
   return resolveModelCandidates(task, opts)[0];
 }
 
 /** Provider name for a task with the same resolution order (cheap check). */
-export function resolvedProviderName(task: AITask, opts?: { image?: boolean }): LLMProviderName {
+export function resolvedProviderName(
+  task: AITask,
+  opts?: { image?: boolean; mockTask?: string },
+): LLMProviderName {
   return resolveModel(task, opts).name;
 }

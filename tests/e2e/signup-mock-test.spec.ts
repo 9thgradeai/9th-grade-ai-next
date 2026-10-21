@@ -28,10 +28,24 @@ test.describe('Critical User Journey', () => {
 
     // 8. Configure and generate. MockProvider answers keyless in CI; Groq
     // answers locally — either way questions render.
+    //
+    // Capture the generation response so a failure reports WHY (status +
+    // server message) instead of a bare "submit button not visible" — the
+    // tab swallows the error into a banner and leaves the button unmounted,
+    // so without this the run tells us nothing about the cause.
+    const generateResponse = page.waitForResponse(
+      (r) => r.url().includes('/api/ai/mock-test'),
+      { timeout: 60_000 },
+    );
     await page.getByPlaceholder('যেমন: ইতিহাস').fill('বাংলাদেশ পরিচয়');
     await page.getByRole('button', { name: 'টেস্ট তৈরি করো' }).click();
+    const generate = await generateResponse;
+    const generateBody = await generate.text().catch(() => '<unreadable>');
     const submitButton = page.getByRole('button', { name: /জমা দাও/ });
-    await expect(submitButton).toBeVisible({ timeout: 60_000 });
+    await expect(
+      submitButton,
+      `mock generation responded ${generate.status()}: ${generateBody}`,
+    ).toBeVisible({ timeout: 60_000 });
 
     // 9. Answer the first question: option buttons are the only buttons with
     // a direct-child `.font-mono` span (the ক./খ. option key).
