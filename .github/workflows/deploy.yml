@@ -68,7 +68,7 @@ jobs:
           echo "Deployed preview: $URL"
 
       - name: Upsert PR comment with preview URL
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         env:
           PREVIEW_URL: ${{ steps.deploy.outputs.url }}
         with:
