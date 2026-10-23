@@ -63,15 +63,17 @@ const VASHA_DIR = join(
 type FileRoute = {
   file: string;
   label: string;
+  /** Taxonomy leaf (relative to `<root>/ভাষা`) — the BCS and Bank Bangla
+   *  trees use the same leaf names, so one leaf serves both ecosystems. */
   leaf: string;
   subtopic: string;
 };
 
 const ROUTES: FileRoute[] = [
-  { file: "Questions(সমাস).txt", label: "সমাস", leaf: "সমাস", subtopic: "সমাস" },
-  { file: "Questions(প্রকৃতি ও প্রত্যয়).txt", label: "প্রকৃতি ও প্রত্যয়", leaf: "প্রত্যয়", subtopic: "প্রকৃতি ও প্রত্যয়" },
-  { file: "Questions(বাক্য সংকোচন, এক কথায় প্রকাশ).txt", label: "বাক্য সংকোচন, এক কথায় প্রকাশ", leaf: "বাক্য", subtopic: "বাক্য সংকোচন, এক কথায় প্রকাশ" },
-  { file: "Questions(বাগধারা).txt", label: "বাগধারা", leaf: "বাগধারা", subtopic: "বাগধারা" },
+  { file: "Questions(সমাস).txt", label: "সমাস", leaf: "শব্দতত্ত্ব/সমাস", subtopic: "সমাস" },
+  { file: "Questions(প্রকৃতি ও প্রত্যয়).txt", label: "প্রকৃতি ও প্রত্যয়", leaf: "শব্দতত্ত্ব/প্রকৃতি_ও_প্রত্যয়", subtopic: "প্রকৃতি ও প্রত্যয়" },
+  { file: "Questions(বাক্য সংকোচন, এক কথায় প্রকাশ).txt", label: "বাক্য সংকোচন, এক কথায় প্রকাশ", leaf: "অর্থতত্ত্ব_ও_শব্দভাণ্ডার/এককথায়_প্রকাশ", subtopic: "বাক্য সংকোচন, এক কথায় প্রকাশ" },
+  { file: "Questions(বাগধারা).txt", label: "বাগধারা", leaf: "অর্থতত্ত্ব_ও_শব্দভাণ্ডার/বাগধারা_ও_প্রবাদ_প্রবচন", subtopic: "বাগধারা" },
 ];
 
 const LETTERS = ["ক", "খ", "গ", "ঘ", "ঙ"] as const;
@@ -207,14 +209,16 @@ export async function importBanglaVasha(
     where: { ecosystemId: bcs.id, nameBn: "বাংলা ভাষা ও সাহিত্য" },
   });
   const bbSubject = await prisma.subject.findFirst({
-    where: { ecosystemId: bb.id, nameBn: "০১_বাংলা_ভাষা_ও_সাহিত্য" },
+    where: { ecosystemId: bb.id, nameBn: "01_Bangla_Language_and_Literature" },
   });
   if (!bcsSubject || !bbSubject) throw new Error("Bangla subject missing in BCS/Bank");
 
   const targets = [
     { eco: bcs, subject: bcsSubject, root: "01_বাংলা_ভাষা_ও_সাহিত্য" },
-    { eco: bb, subject: bbSubject, root: "০১_বাংলা_ভাষা_ও_সাহিত্য" },
+    { eco: bb, subject: bbSubject, root: "01_Bangla_Language_and_Literature" },
   ];
+  // The BCS and Bank Bangla trees use the SAME leaf names (ADR-068) — the
+  // shared Bangla pool pairs them 1:1.
 
   // topicId lookup per subject.
   const topicIdBySubjectPath = new Map<number, Map<string, number>>();

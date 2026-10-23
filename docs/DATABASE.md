@@ -968,7 +968,7 @@ Seed sources:
 - `database/data/ques/<Subject>/<Node>/…/<file>.txt` — folder-structured questions; the folder path IS the taxonomy (each segment matched by NFC-normalised name).
 - `database/data/bcs_syllabus/BCS_Question_Bank_Detailed_*.txt` — **canonical architecture tree** (the source of truth for the topic hierarchy). Regenerate the taxonomy with `npx tsx scripts/generate-taxonomy.ts` after editing it, then rename any `data/ques/` folders that moved.
 - `database/data/taxonomy.json` — parsed taxonomy tree driving subject/topic creation, round-robin flat-question distribution, and folder imports via `scripts/taxonomy.ts`.
-- `database/data/Bank/Taxonomy/Bank_Grade9_Question_Bank_Detailed.txt` — **canonical Bank architecture tree** (6 subjects, root `Bank_Grade9_Question_Bank_Detailed`). Regenerate with `npx tsx scripts/generate-taxonomy.ts --ecosystem=bank` into `database/data/bb-taxonomy.json`. Subject display names are the architecture node names verbatim (`BB_SUBJECT_META` in `scripts/taxonomy.ts`); topic trees are built by `scripts/seed-bb-subjects.ts` straight from the JSON. Since 2026-10-12 the main `prisma db seed` flow calls `seedBbSubjects()` itself (before the Bangla-Lit/Shondhi/Samarthok importers that address Bank topic paths) — the standalone `npx tsx scripts/seed-bb-subjects.ts` remains for targeted rebuilds.
+- `database/data/Bank/Taxonomy/Bank_Grade9_Question_Bank_Detailed.txt` — **canonical Bank architecture tree** (kept in sync with `database/data/Bank/Taxonomy/Updated/Taxonomy.txt`, the 2026-10-22 revision) (6 subjects, root `Bank_Grade9_Question_Bank_Detailed`). Regenerate with `npx tsx scripts/generate-taxonomy.ts --ecosystem=bank` into `database/data/bb-taxonomy.json`. Subject display names are the architecture node names verbatim (`BB_SUBJECT_META` in `scripts/taxonomy.ts`); topic trees are built by `scripts/seed-bb-subjects.ts` straight from the JSON. Since 2026-10-12 the main `prisma db seed` flow calls `seedBbSubjects()` itself (before the Bangla-Lit/Shondhi/Samarthok importers that address Bank topic paths) — the standalone `npx tsx scripts/seed-bb-subjects.ts` remains for targeted rebuilds.
 
 ### Bank taxonomy (6 + 1 subjects)
 
@@ -976,13 +976,31 @@ The BANGLADESH_BANK ecosystem has 6 syllabus subjects from the Bank architecture
 
 | # | nameBn (= architecture node) | nameEn |
 |---|---|---|
-| 1 | ০১_বাংলা_ভাষা_ও_সাহিত্য | Bangla Language & Literature |
+| 1 | 01_Bangla_Language_and_Literature | Bangla Language & Literature |
 | 2 | 02_English_Language_and_Literature | English Language and Literature |
 | 3 | 03_Mathematics | Mathematics |
 | 4 | 04_Analytical_Skills | Analytical Skills |
 | 5 | 05_ICT | ICT |
 | 6 | 06_Financial_Knowledge | Financial Knowledge |
 | — | সাধারণ জ্ঞান | General Knowledge *(archive-only: Subject row, no topic tree — import target for out-of-syllabus PYQs)* |
+
+**Bank taxonomy revision 2026-10-22.** The Bank architecture tree was replaced by the revised tree in `database/data/Bank/Taxonomy/Updated/Taxonomy.txt` (mirrored into the canonical file above and regenerated into `database/data/bb-taxonomy.json`):
+
+- the Bangla subject root became `01_Bangla_Language_and_Literature` (was `০১_বাংলা_ভাষা_ও_সাহিত্য`);
+- the flat `ভাষা/` grammar leaves were regrouped into `শব্দতত্ত্ব` · `ধ্বনিতত্ত্ব` · `বাক্যতত্ত্ব` · `অর্থতত্ত্ব_ও_শব্দভাণ্ডার` · `অন্যান্য_আলোচ্য_বিষয়`;
+- the Math `Part_06_Time_Work_and_Speed` group and the ICT `06_Database_and_Information_Systems` / `Digital_Bangladesh_…` topics are gone — their questions were folded onto the closest surviving node.
+
+`scripts/migrate-bank-taxonomy.ts` applies the revision to live data (dry run by default, `--yes` to apply): it renames the Subject row (keeping its id), rebuilds the Topic tree from `bb-taxonomy.json`, re-points every Bank MCQ at a node of the new tree, prunes the removed topics and refreshes `questionCount`. **No MCQ is deleted** — the per-subject question count is asserted before and after, and every question keeps its row id (so bookmarks, attempts and progress survive). The path mapping lives in `scripts/bank-taxonomy-mapping.ts`.
+
+**BCS ↔ Bank Bangla parity (the shared-pool rule).** The two ecosystems share ONE Bangla practice pool: the union in `backend/services/bangla-union.ts` pairs a leaf on one side with the leaf of the **same relative path** on the other side. Both Bangla trees must therefore use the same leaf names for the same content, or a topic silently loses (or duplicates) the other ecosystem's questions in the Practice tab. The revision therefore realigned the BCS tree as well:
+
+- the BCS `ভাষা/` branch adopted the same grouped grammar leaves as the Bank (the BCS architecture file was updated to match, `database/data/taxonomy.json` regenerated);
+- the Bank's literary-history sets (বাংলা_কথা-সাহিত্য · বাংলা_গদ্যের_উৎপত্তি_ও_বিকাশ · বাংলা_নাটক) got their own leaves again, mirroring the BCS tree;
+- both architecture files are NFC-normalised, so a leaf name always matches byte-for-byte (a non-NFC Bengali `য়` in one tree used to orphan rows in the other).
+
+`scripts/migrate-bangla-taxonomy-alignment.ts` applies that realignment to live data (dry run by default): it re-paths the BCS grammar rows (splitting the mixed `বাক্য` leaf by subtopic), re-paths the Bank's literary-history rows, rebuilds both topic trees, prunes the emptied legacy leaves, normalises non-NFC paths and refreshes `questionCount`. **No MCQ is deleted** — the per-subject question count is asserted before and after.
+
+`tests/unit/backend/bangla-taxonomy-parity.test.ts` guards the rule: the two trees must expose the same grammar leaves and the same literary-history leaves.
 
 **Superseded Bank subjects (consolidated 2026-09).** The pre-2026-09 Bank subject rows (`বাংলা ব্যাকরণ ও সাহিত্য`, `English Grammar & Literature`, `সাধারণ গণিত`, `আর্থিক ও ব্যাংকিং জ্ঞান`, `তথ্য ও যোগাযোগ প্রযুক্তি`, plus the earlier display-named `বাংলা ভাষা ও সাহিত্য` / `English Language and Literature` / `গণিত` / `আর্থিক জ্ঞান` duplicates) were consolidated by `scripts/migrate-bank-subjects.ts`: questions moved to the exact-name subjects (ICT rows also remapped to the new topic tree by path), byte-identical cross-subject duplicates dropped only when carrying zero user data (rows with bookmarks/attempts are moved, never deleted), and the emptied legacy subjects deleted. `সাধারণ জ্ঞান` stays as the archive subject.
 

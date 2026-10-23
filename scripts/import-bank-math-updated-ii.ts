@@ -25,9 +25,9 @@
  * Each file carries 7–17 internal section headers. Every section maps to a
  * taxonomy leaf: existing Bank-Math leaves are reused where the section name
  * matches (Percentages, Profit_Loss…, AP/GP, Probability, Sets… — several of
- * which were EMPTY before), and 19 new leaves (plus one new Part node,
- * `Part_06_Time_Work_and_Speed`) are created as upsert-only data — the
- * taxonomy seeder never deletes (same approach as import-bank-ict-v2.ts).
+ * which were EMPTY before). Since the 2026-10-22 taxonomy revision every
+ * section maps onto an existing taxonomy node (the revised tree has no
+ * extra Part / leaf nodes to create).
  * Each question keeps its exact section title in `subtopic`.
  *
  * Errata — the documents' own corrections are APPLIED (per project decision)
@@ -80,7 +80,6 @@ export const P2 = "03_Mathematics/Part_02_Algebra";
 export const P3 = "03_Mathematics/Part_03_Sequences_and_Series";
 export const P4 = "03_Mathematics/Part_04_Geometry_and_Mensuration";
 export const P5 = "03_Mathematics/Part_05_Statistics_and_Probability";
-export const P6 = "03_Mathematics/Part_06_Time_Work_and_Speed";
 
 // ── config types ─────────────────────────────────────────────────────────────
 
@@ -109,21 +108,21 @@ export const FILES: FileConfig[] = [
       { re: /Simple and Compound Interest/, leaf: `${P1}/Simple_and_Compound_Interest` },
       { re: /Ratio, Proportion and Variation/, leaf: `${P1}/Ratios_Proportions_and_Mixtures` },
       { re: /Mixtures and Alligation/, leaf: `${P1}/Ratios_Proportions_and_Mixtures` },
-      { re: /Average and Weighted Average/, leaf: `${P1}/Averages_and_Weighted_Average` },
-      { re: /Income, Expenditure and Savings/, leaf: `${P1}/Income_Expenditure_and_Savings` },
-      { re: /Age Problems/, leaf: `${P1}/Age_Problems` },
-      { re: /Fractions, Decimals and Proportional Comparisons/, leaf: `${P1}/Fractions_Decimals_and_Proportional_Comparisons` },
+      { re: /Average and Weighted Average/, leaf: `${P5}/Statistics_Mean_Median_Mode` },
+      { re: /Income, Expenditure and Savings/, leaf: `${P1}/Ratios_Proportions_and_Mixtures` },
+      { re: /Age Problems/, leaf: `${P1}/Ratios_Proportions_and_Mixtures` },
+      { re: /Fractions, Decimals and Proportional Comparisons/, leaf: `${P1}/Real_Numbers` },
     ],
-    fallbackLeaf: `${P1}/Comprehensive_Arithmetic`,
+    fallbackLeaf: `${P1}`,
   },
   {
     slug: "number-system",
     file: "Questions(Number System and Number Theory).docx",
     rules: [
       { re: /HCF and LCM|HCF, LCM, Factors/, leaf: `${P1}/LCM_and_HCF` },
-      { re: /Fractions/, leaf: `${P1}/Fractions_Decimals_and_Proportional_Comparisons` },
+      { re: /Fractions/, leaf: `${P1}/Real_Numbers` },
     ],
-    fallbackLeaf: `${P1}/Number_System_and_Number_Teory`,
+    fallbackLeaf: `${P1}/Real_Numbers`,
   },
   {
     slug: "algebra",
@@ -132,21 +131,21 @@ export const FILES: FileConfig[] = [
       { re: /^Section [ABJLMO]:/, leaf: `${P2}/Equations_and_Inequalities` },
       { re: /^Section [CDN]:/, leaf: `${P2}/Algebraic_Identities_and_Factorization` },
       { re: /^Section [EFGK]:/, leaf: `${P2}/Indices_and_Logarithms` },
-      { re: /^Section H:/, leaf: `${P2}/Algebraic_Fractions_and_Rational_Expressions` },
-      { re: /^Section I:/, leaf: `${P2}/Functions_Substitution_and_Graph_Concepts` },
+      { re: /^Section H:/, leaf: `${P2}/Equations_and_Inequalities` },
+      { re: /^Section I:/, leaf: `${P2}/Equations_and_Inequalities` },
     ],
-    fallbackLeaf: `${P2}/Comprehensive_Algebra`,
+    fallbackLeaf: `${P2}`,
   },
   {
     slug: "geometry",
     file: "Questions(Geometry and Mensuration).docx",
     rules: [
-      { re: /^Section 1[1-3]:/, leaf: `${P4}/Comprehensive_Geometry_and_Mensuration` },
+      { re: /^Section 1[1-3]:/, leaf: `${P4}` },
       { re: /^(?:Section|Subtopic) 4:/, leaf: `${P4}/Pythagorean_Theorem` },
       { re: /^(?:Section|Subtopic) 5:/, leaf: `${P4}/Lines_Angles_Triangles_Quadrilaterals_Circles` },
       { re: /^(?:Section|Subtopic) 8:/, leaf: `${P4}/2D_Mensuration_Area_Perimeter` },
       { re: /^(?:Section|Subtopic) 9:/, leaf: `${P4}/3D_Mensuration_Volume_Surface_Area` },
-      { re: /^(?:Section|Subtopic) 10:/, leaf: `${P4}/Coordinate_Geometry` },
+      { re: /^(?:Section|Subtopic) 10:/, leaf: `${P4}/Lines_Angles_Triangles_Quadrilaterals_Circles` },
       { re: /^(?:Section|Subtopic) [12367]:/, leaf: `${P4}/Lines_Angles_Triangles_Quadrilaterals_Circles` },
     ],
     fallbackLeaf: `${P4}/Lines_Angles_Triangles_Quadrilaterals_Circles`,
@@ -158,7 +157,7 @@ export const FILES: FileConfig[] = [
       { re: /^Section [ABI]:/, leaf: `${P5}/Probability` },
       { re: /^Section [CDEGH]:/, leaf: `${P5}/Permutations_and_Combinations` },
     ],
-    fallbackLeaf: `${P5}/Probability_and_Counting_Mixed_Practice`,
+    fallbackLeaf: `${P5}`,
   },
   {
     slug: "sequences-series",
@@ -167,7 +166,7 @@ export const FILES: FileConfig[] = [
       { re: /^Section [125]:/, leaf: `${P3}/Arithmetic_Progression` },
       { re: /^Section [36]:/, leaf: `${P3}/Geometric_Progression` },
     ],
-    fallbackLeaf: `${P3}/Mixed_Sequences_and_Series`,
+    fallbackLeaf: `${P3}`,
   },
   {
     slug: "sets-statistics",
@@ -175,10 +174,10 @@ export const FILES: FileConfig[] = [
     rules: [
       { re: /^Section 1:/, leaf: `${P5}/Set_Theory_and_Venn_Diagrams` },
       { re: /^Section 2:/, leaf: `${P5}/Statistics_Mean_Median_Mode` },
-      { re: /^Section 3:/, leaf: `${P5}/Data_Interpretation_and_Analysis` },
-      { re: /^Section 4:/, leaf: `${P4}/Coordinate_Geometry` },
-      { re: /^Section 5:/, leaf: `${P4}/Trigonometry_and_Height_Distance` },
-      { re: /^Section 6:/, leaf: `${P2}/Matrices_and_Determinants` },
+      { re: /^Section 3:/, leaf: `${P5}/Statistics_Mean_Median_Mode` },
+      { re: /^Section 4:/, leaf: `${P4}/Lines_Angles_Triangles_Quadrilaterals_Circles` },
+      { re: /^Section 5:/, leaf: `${P4}/Lines_Angles_Triangles_Quadrilaterals_Circles` },
+      { re: /^Section 6:/, leaf: `${P2}/Equations_and_Inequalities` },
       { re: /^Section 7:/, leaf: `${P2}/Equations_and_Inequalities` },
     ],
     fallbackLeaf: `${P5}/Statistics_Mean_Median_Mode`,
@@ -187,41 +186,21 @@ export const FILES: FileConfig[] = [
     slug: "time-work-speed",
     file: "Questions(Time, Work and Speed).docx",
     rules: [
-      { re: /^Section 1[0-2]:/, leaf: `${P6}/Mixed_Time_Work_and_Speed` },
-      { re: /^Section [1239]:/, leaf: `${P6}/Time_and_Work` },
-      { re: /^Section [4-8]:/, leaf: `${P6}/Speed_Distance_and_Time` },
+      { re: /^Section 1[0-2]:/, leaf: `${P1}` },
+      { re: /^Section [1239]:/, leaf: `${P1}/Ratios_Proportions_and_Mixtures` },
+      { re: /^Section [4-8]:/, leaf: `${P1}/Ratios_Proportions_and_Mixtures` },
     ],
-    fallbackLeaf: `${P6}/Mixed_Time_Work_and_Speed`,
+    fallbackLeaf: `${P1}`,
   },
 ];
 
-/** New Part node (created as data; the taxonomy seeder never deletes). */
-export const NEW_PARENTS: { path: string; depth: number; sortOrder: number }[] = [
-  { path: P6, depth: 1, sortOrder: 25 },
-];
+/** The revised Bank taxonomy (2026-10-22) has no extra Part node — every
+ *  target below exists in database/data/bb-taxonomy.json. */
+export const NEW_PARENTS: { path: string; depth: number; sortOrder: number }[] = [];
 
-/** New leaves not present in bb-taxonomy.json (upsert-only, like ICT v2). */
-export const NEW_LEAVES: { path: string; parent: string }[] = [
-  { path: `${P1}/Averages_and_Weighted_Average`, parent: P1 },
-  { path: `${P1}/Income_Expenditure_and_Savings`, parent: P1 },
-  { path: `${P1}/Age_Problems`, parent: P1 },
-  { path: `${P1}/Fractions_Decimals_and_Proportional_Comparisons`, parent: P1 },
-  { path: `${P1}/Comprehensive_Arithmetic`, parent: P1 },
-  { path: `${P1}/Number_System_and_Number_Teory`, parent: P1 },
-  { path: `${P2}/Algebraic_Fractions_and_Rational_Expressions`, parent: P2 },
-  { path: `${P2}/Functions_Substitution_and_Graph_Concepts`, parent: P2 },
-  { path: `${P2}/Matrices_and_Determinants`, parent: P2 },
-  { path: `${P2}/Comprehensive_Algebra`, parent: P2 },
-  { path: `${P3}/Mixed_Sequences_and_Series`, parent: P3 },
-  { path: `${P4}/Coordinate_Geometry`, parent: P4 },
-  { path: `${P4}/Trigonometry_and_Height_Distance`, parent: P4 },
-  { path: `${P4}/Comprehensive_Geometry_and_Mensuration`, parent: P4 },
-  { path: `${P5}/Data_Interpretation_and_Analysis`, parent: P5 },
-  { path: `${P5}/Probability_and_Counting_Mixed_Practice`, parent: P5 },
-  { path: `${P6}/Time_and_Work`, parent: P6 },
-  { path: `${P6}/Speed_Distance_and_Time`, parent: P6 },
-  { path: `${P6}/Mixed_Time_Work_and_Speed`, parent: P6 },
-];
+/** No leaf outside bb-taxonomy.json is needed any more — the sections that
+ *  used to create their own leaves now map onto the revised taxonomy. */
+export const NEW_LEAVES: { path: string; parent: string }[] = [];
 
 // ── record types ─────────────────────────────────────────────────────────────
 

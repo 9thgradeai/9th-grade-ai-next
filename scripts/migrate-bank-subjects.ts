@@ -3,11 +3,11 @@
  * scripts/migrate-bank-subjects.ts
  * ----------------------------------------------------------------------------
  * One-time migration: consolidate legacy Bank subjects under the exact-name
- * taxonomy subjects (০১_বাংলা_ভাষা_ও_সাহিত্য … 06_Financial_Knowledge) so the
+ * taxonomy subjects (01_Bangla_Language_and_Literature … 06_Financial_Knowledge) so the
  * Practice Bank section shows taxonomy names with their questions.
  *
  *   keepers (oldest rows, moved)          → new subject
- *     #3872 বাংলা ব্যাকরণ ও সাহিত্য      → #4958  ০১_বাংলা_ভাষা_ও_সাহিত্য
+ *     #3872 বাংলা ব্যাকরণ ও সাহিত্য      → #4958  01_Bangla_Language_and_Literature
  *     #3873 English Grammar & Literature  → #4959  02_English_…
  *     #3874 সাধারণ গণিত                  → #4960  03_Mathematics
  *     #3876 আর্থিক ও ব্যাংকিং জ্ঞান       → #4963  06_Financial_Knowledge

@@ -5,7 +5,9 @@
  * with their full recursive topic trees.
  *
  * Single source of truth: database/data/bb-taxonomy.json (generated from
- * database/data/Bank/Taxonomy/Subjects_Taxonomy(Bank).txt via
+ * database/data/Bank/Taxonomy/Bank_Grade9_Question_Bank_Detailed.txt — the
+ * revised tree of 2026-10-22, mirrored from
+ * database/data/Bank/Taxonomy/Updated/Taxonomy.txt — via
  * `npx tsx scripts/generate-taxonomy.ts --ecosystem=bank`) crossed with
  * BB_SUBJECT_META display names in scripts/taxonomy.ts. Topic name/slug/
  * path mirror the taxonomy node names exactly (same contract as the BCS

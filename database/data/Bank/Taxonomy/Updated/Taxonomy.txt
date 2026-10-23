@@ -1,0 +1,199 @@
+Bank_Grade9_Question_Bank_Detailed/
+│
+├── 01_Bangla_Language_and_Literature/
+│   ├── ভাষা/
+│   │   ├── শব্দতত্ত্ব/
+│   │   │   ├── পদ_ও_পদ_পরিবর্তন/
+│   │   │   ├── কারক_ও_বিভক্তি/
+│   │   │   ├── সমাস/
+│   │   │   ├── প্রকৃতি_ও_প্রত্যয়/
+│   │   │   ├── উপসর্গ_ও_অনুসর্গ/
+│   │   │   ├── বচন_ও_লিঙ্গ/
+│   │   │   └── শব্দরূপ_ও_শব্দদ্বৈত/
+│   │   ├── ধ্বনিতত্ত্ব/
+│   │   │   ├── সন্ধি_বা_ধ্বনিসংযোগ/
+│   │   │   ├── ণ-ত্ব_ও_ষ-ত্ব_বিধি/
+│   │   │   ├── ধ্বনি_উচ্চারণপ্রণালী_ও_উচ্চারণের_স্থান/
+│   │   │   ├── ধ্বনির_পরিবর্তন_ও_লোপ/
+│   │   │   └── ধ্বনির_প্রতীক_বা_বর্ণের_বিন্যাস/
+│   │   ├── বাক্যতত্ত্ব/
+│   │   │   ├── বাক্য_ও_বাক্যবিন্যাস/
+│   │   │   ├── পদবিন্যাস/
+│   │   │   ├── বাচ্য/
+│   │   │   └── ছেদচিহ্ন_বা_বিরামচিহ্ন/
+│   │   ├── অর্থতত্ত্ব_ও_শব্দভাণ্ডার/
+│   │   │   ├── সমার্থক_শব্দ/
+│   │   │   ├── বিপরীতার্থক_শব্দ/
+│   │   │   ├── এককথায়_প্রকাশ/
+│   │   │   ├── বাগধারা_ও_প্রবাদ_প্রবচন/
+│   │   │   ├── প্রয়োগ-অপপ্রয়োগ/
+│   │   │   ├── পরিভাষা/
+│   │   │   ├── শব্দের_অর্থবিচার_ও_বাক্যের_অর্থবিচার/
+│   │   │   └── অর্থের_প্রকারভেদ_মুখ্যার্থ_ও_গৌণার্থ/
+│   │   └── অন্যান্য_আলোচ্য_বিষয়/
+│   │       ├── অভিধান/
+│   │       └── ছন্দ_ও_অলংকার/
+│   └── সাহিত্য/
+│       ├── প্রাচীন_যুগ/
+│       │   ├── চর্যাপদ/
+│       │   │   ├── আবিষ্কার_ও_ইতিহাস/
+│       │   │   ├── পদকর্তা_ও_টীকাকার/
+│       │   │   └── ভাষা_ও_সাহিত্যমূল্য/
+│       │   └── ড_হংসনারায়ণ_ভট্টাচার্য_ও_অন্যান্য_নিদর্শন/
+│       ├── মধ্যযুগ/
+│       │   ├── অন্ধকার_যুগ_১২০০_১৩৫০/
+│       │   ├── শ্রীকৃষ্ণকীর্তন_ও_বড়ু_চণ্ডীদাস/
+│       │   ├── মঙ্গলকাব্যের_ধারা/
+│       │   │   ├── মনসামঙ্গল/
+│       │   │   ├── চণ্ডীমঙ্গল/
+│       │   │   └── ধর্মমঙ্গল/
+│       │   ├── বৈষ্ণব_পদাবলী/
+│       │   ├── শাক্ত_পদাবলী/
+│       │   ├── অনুবাদ_সাহিত্য/
+│       │   │   ├── রামায়ণী_সাহিত্য_কর্ত্তিবাসী/
+│       │   │   └── মহাভারতের_অনুবাদ_কাশীরাম_দাস/
+│       │   ├── রোমান্টিক_প্রণয়োপাখ্যান/
+│       │   │   ├── ইউসুফ_জুলেখা_শাহ_মুহম্মদ_সগীর/
+│       │   │   └── লয়লা_মজনু_ও_সৈয়দ_সুলতান/
+│       │   ├── মীর_সৈয়দ_সুলতান_ও_নাথ_সাহিত্য/
+│       │   └── পুথি_সাহিত্য_ও_লোকসাহিত্য/
+│       └── আধুনিক_যুগ_১৮০০_হতে_বর্তমান/
+│           ├── বাংলা_গদ্যের_উৎপত্তি_ও_বিকাশ/
+│           ├── বাংলা_কথা-সাহিত্য/
+│           ├── বাংলা_নাটক/
+│           ├── Tier_01_মাস্টার_হট_স্পট/
+│           │   ├── 01_রবীন্দ্রনাথ_ঠাকুর/
+│           │   └── 02_কাজী_নজরুল_ইসলাম/
+│           ├── Tier_02_ভেরি_হাই_ইল্ড/
+│           │   ├── 03_জসীমউদ্দীন/
+│           │   ├── 04_বঙ্কিমচন্দ্র_চট্টোপাধ্যায়/
+│           │   ├── 05_মাইকেল_মধুসূদন_দত্ত/
+│           │   ├── 06_শরৎচন্দ্র_চট্টোপাধ্যায়/
+│           │   ├── 07_মীর_মশাররফ_হোসেন/
+│           │   └── 08_জীবনানন্দ_দাস/
+│           ├── Tier_03_ফোকাসড_লেখক/
+│           │   ├── 09_মুনীর_চৌধুরী/
+│           │   ├── 10_জহির_রায়হান/
+│           │   ├── 11_সৈয়দ_শামসুল_হক/
+│           │   ├── 12_বেগম_রোকেয়া_সাখাওয়াত_হোসেন/
+│           │   ├── 13_ঈশ্বরচন্দ্র_বিদ্যাসাগর/
+│           │   ├── 14_হুমায়ূন_আহমেদ/
+│           │   └── 15_শামসুর_রহমান/
+│           └── Tier_04_সিলেক্টিভ_ও_স্ট্র্যাটেজিক/
+│               ├── 16_আখতারুজ্জামান_ইলিয়াস/
+│               ├── 17_সেলিনা_হোসেন/
+│               ├── 18_সৈয়দ_ওয়ালীউল্লাহ/
+│               ├── 19_শওকত_ওসমান/
+│               └── 20_আহমদ_ছফা/
+│
+├── 02_English_Language_and_Literature/
+│   ├── PART-I_Language/
+│   │   ├── Parts_of_Speech/
+│   │   │   ├── Noun_Pronoun_Determiner_Gender_Number/
+│   │   │   ├── Verb_Transitive_Intransitive_Non-finite_Gerund_Participle/
+│   │   │   ├── Phrasal_Verb/
+│   │   │   ├── Adjective_and_Adverb/
+│   │   │   └── Preposition/
+│   │   ├── Idioms_and_Phrases/
+│   │   │   ├── Meanings_of_Idioms/
+│   │   │   └── Identifying_Phrases/
+│   │   ├── Corrections_and_Agreement/
+│   │   │   ├── Subject-Verb_Agreement/
+│   │   │   ├── Tense_and_Structure_Errors/
+│   │   │   └── Parallelism_and_Modifiers/
+│   │   ├── Sentences_and_Transformations/
+│   │   │   ├── Active_and_Passive_Voice/
+│   │   │   ├── Direct_and_Indirect_Narration/
+│   │   │   └── Degrees_of_Comparison/
+│   │   └── Words_Vocabulary/
+│   │       ├── Synonyms_and_Antonyms/
+│   │       ├── Spellings/
+│   │       └── One-Word_Substitutions/
+│   └── PART-II_Literature/
+│       ├── Major_Shakespearean_and_Romantic_Quotes/
+│       └── Literary_Terms_and_Movements/
+│
+├── 03_Mathematics/
+│   ├── Part_01_Arithmetic/
+│   │   ├── Real_Numbers/
+│   │   ├── LCM_and_HCF/
+│   │   ├── Percentages/
+│   │   ├── Simple_and_Compound_Interest/
+│   │   ├── Ratios_Proportions_and_Mixtures/
+│   │   └── Profit_Loss_and_Discount/
+│   ├── Part_02_Algebra/
+│   │   ├── Algebraic_Identities_and_Factorization/
+│   │   ├── Equations_and_Inequalities/
+│   │   └── Indices_and_Logarithms/
+│   ├── Part_03_Sequences_and_Series/
+│   │   ├── Arithmetic_Progression/
+│   │   └── Geometric_Progression/
+│   ├── Part_04_Geometry_and_Mensuration/
+│   │   ├── Lines_Angles_Triangles_Quadrilaterals_Circles/
+│   │   ├── Pythagorean_Theorem/
+│   │   ├── 2D_Mensuration_Area_Perimeter/
+│   │   └── 3D_Mensuration_Volume_Surface_Area/
+│   └── Part_05_Statistics_and_Probability/
+│       ├── Set_Theory_and_Venn_Diagrams/
+│   │   ├── Permutations_and_Combinations/
+│   │   ├── Statistics_Mean_Median_Mode/
+│   │   └── Probability/
+│   ├── Part_06_Time_Work_and_Speed/
+│   │   ├── Mixed_Time_Work_and_Speed/
+│   │   ├── Speed_Distance_and_Time/
+│   │   └── Time_and_Work/
+│
+├── 04_Analytical_Skills/
+│   ├── 01_Verbal_Reasoning/
+│   │   ├── Logical_Deduction_and_Syllogism/
+│   │   └── Statement_and_Assumptions/
+│   ├── 02_Problem_Solving/
+│   │   ├── Blood_Relations/
+│   │   ├── Ranking_and_Seating_Arrangements/
+│   │   └── Age_and_Calendar_Logic/
+│   ├── 03_Space_Relation/
+│   │   ├── Direction_and_Distance_Vectors/
+│   │   └── Mirror_and_Water_Images/
+│   └── 04_Numerical_and_Series_Ability/
+│       ├── Number_and_Alphabet_Series/
+│       └── Data_Sufficiency_Logic/
+│
+├── 05_ICT/
+│   ├── 01_Computer_Hardware_and_Architecture/
+│   │   ├── Peripherals_Keyboards_Scanners_OCR/
+│   │   ├── CPU_ALU_Registers_Memory_Hierarchy_RAM_CMOS/
+│   │   └── Storage_Devices_HDD_SSD_Optical/
+│   ├── 02_Software_and_OS/
+│   │   ├── Operating_Systems_Windows_Linux_MacOS/
+│   │   ├── System_vs_Application_Software/
+│   │   └── Utility_Software_Antivirus_Compression/
+│   ├── 03_MS_Office_Suite/
+│   │   ├── MS_Word_Shortcuts_Formatting_Mail_Merge/
+│   │   ├── MS_Excel_Formulas_Cell_Addressing_Functions/
+│   │   └── MS_PowerPoint_Transitions_Animations_Views/
+│   ├── 04_Networking_and_Web/
+│   │   ├── Network_Topologies_LAN_WAN_Wi-Fi_WiMAX/
+│   │   ├── Protocols_SMTP_POP3_FTP_TCP_IP/
+│   │   ├── World_Wide_Web_and_Cloud_Computing/
+│   │   └── Internet_Security_Firewalls_Dark_Web/
+│   └── 05_Emerging_Tech_and_Number_Systems/
+│       ├── Binary_Decimal_Hexadecimal_Conversions/
+│       └── Artificial_Intelligence_Chatbots_Prolog/
+│
+└── 06_Financial_Knowledge/
+    ├── 01_Bangladesh_Bank_Framework/
+    │   ├── Core_Functions_and_Monetary_Policy/
+    │   ├── Banking_Regulations_and_Paid-up_Capital_Guidelines/
+    │   └── Financial_Inclusion_and_Digital_Banking/
+    ├── 02_Payment_and_Settlement_Systems/
+    │   ├── RTGS_Real_Time_Gross_Settlement/
+    │   ├── BEFTN_and_NPSB/
+    │   └── MFS_and_FinTech_Regulations/
+    ├── 03_Macroeconomics_and_Indicators/
+    │   ├── Inflation_GDP_Targets_and_Five_Year_Plans/
+    │   ├── Interest_Rate_Benchmarks_SOFR/
+    │   └── Exchange_Rates_and_Remittance_Flows/
+    └── 04_Banking_Commerce_and_Taxation/
+        ├── Commercial_Banking_Operations/
+        ├── Capital_Markets_BSEC_and_CMSF/
+        └── International_Trade_Finance_LCs_and_Brent_Index/

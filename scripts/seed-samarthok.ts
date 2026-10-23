@@ -4,8 +4,8 @@
  * Imports 200 সমার্থক-শব্দ (synonym) MCQs from
  *   database/data/ques/বাংলা ভাষা ও সাহিত্য/ভাষা/Bangla Grammar /Questions(সমার্থক শব্দ).txt
  * for BOTH BCS and Bank ecosystems under the canonical leaf:
- *   BCS : 01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/সমার্থক_শব্দ
- *   Bank: ০১_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/সমার্থক_শব্দ
+ *   BCS : 01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/অর্থতত্ত্ব_ও_শব্দভাণ্ডার/সমার্থক_শব্দ
+ *   Bank: 01_Bangla_Language_and_Literature/ভাষা/অর্থতত্ত্ব_ও_শব্দভাণ্ডার/সমার্থক_শব্দ
  * with topicId pointing at the leaf Topic row (upserted here when missing).
  *
  * File format: 4-line blocks —
@@ -103,7 +103,7 @@ export async function seedSamarthokQuestions(prisma: PrismaClient): Promise<numb
     where: { ecosystemId: bcsEcosystem.id, nameBn: "বাংলা ভাষা ও সাহিত্য" },
   });
   const bbSubject = await prisma.subject.findFirst({
-    where: { ecosystemId: bbEcosystem.id, nameBn: "০১_বাংলা_ভাষা_ও_সাহিত্য" },
+    where: { ecosystemId: bbEcosystem.id, nameBn: "01_Bangla_Language_and_Literature" },
   });
   if (!bcsSubject) throw new Error("BCS subject not found");
   if (!bbSubject) throw new Error("Bank subject not found");
@@ -118,7 +118,7 @@ export async function seedSamarthokQuestions(prisma: PrismaClient): Promise<numb
 
   const ecosystems: ShondhiEcosystem[] = [
     { id: bcsEcosystem.id, subjectId: bcsSubject.id, prefix: "01_বাংলা_ভাষা_ও_সাহিত্য", label: "BCS" },
-    { id: bbEcosystem.id, subjectId: bbSubject.id, prefix: "০১_বাংলা_ভাষা_ও_সাহিত্য", label: "Bank" },
+    { id: bbEcosystem.id, subjectId: bbSubject.id, prefix: "01_Bangla_Language_and_Literature", label: "Bank" },
   ];
 
   const raw = readFileSync(join(process.cwd(), FILE), "utf8");
@@ -173,14 +173,17 @@ export async function seedSamarthokQuestions(prisma: PrismaClient): Promise<numb
       where: { subjectId_path: { subjectId: eco.subjectId, path: parentPath } },
     });
     if (!parent) throw new Error(`Parent topic missing: subject ${eco.subjectId} path "${parentPath}"`);
-    const path = `${parentPath}/${LEAF}`;
+    // The revised Bank taxonomy nests this leaf under অর্থতত্ত্ব_ও_শব্দভাণ্ডার.
+    const segments = LEAF.split("/").filter(Boolean);
+    const path = `${parentPath}/${segments.join("/")}`;
+    const leafName = segments[segments.length - 1];
     const leaf = await prisma.topic.upsert({
       where: { subjectId_path: { subjectId: eco.subjectId, path } },
-      update: { name: LEAF, slug: LEAF, depth: parent.depth + 1, parentId: parent.id },
+      update: { name: leafName, slug: leafName, depth: parent.depth + 1, parentId: parent.id },
       create: {
         subjectId: eco.subjectId,
-        name: LEAF,
-        slug: LEAF,
+        name: leafName,
+        slug: leafName,
         path,
         depth: parent.depth + 1,
         sortOrder: 0,

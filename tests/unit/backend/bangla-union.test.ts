@@ -11,7 +11,7 @@ import {
 describe("isBanglaSubjectName (Bangla-only gate)", () => {
   it("matches BCS + Bank + legacy Bangla subjects", () => {
     expect(isBanglaSubjectName("বাংলা ভাষা ও সাহিত্য")).toBe(true);
-    expect(isBanglaSubjectName("০১_বাংলা_ভাষা_ও_সাহিত্য")).toBe(true);
+    expect(isBanglaSubjectName("01_Bangla_Language_and_Literature")).toBe(true);
     expect(isBanglaSubjectName("বাংলা ব্যাকরণ ও সাহিত্য")).toBe(true);
   });
 
@@ -28,7 +28,7 @@ describe("isBanglaSubjectName (Bangla-only gate)", () => {
 
 describe("pathSuffix", () => {
   it("strips the subject root segment", () => {
-    expect(pathSuffix("০১_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/বানান")).toBe("ভাষা/বানান");
+    expect(pathSuffix("01_Bangla_Language_and_Literature/ভাষা/বানান")).toBe("ভাষা/বানান");
     expect(pathSuffix("01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা")).toBe("ভাষা");
     expect(pathSuffix("root")).toBe("");
   });
@@ -37,7 +37,7 @@ describe("pathSuffix", () => {
 const BCS = 1;
 const BANK = 7;
 const BCS_ROOT = "01_বাংলা_ভাষা_ও_সাহিত্য";
-const BANK_ROOT = "০১_বাংলা_ভাষা_ও_সাহিত্য";
+const BANK_ROOT = "01_Bangla_Language_and_Literature";
 
 function leafCounts(): Map<number, Map<string, number>> {
   return new Map([

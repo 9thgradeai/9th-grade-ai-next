@@ -51,6 +51,15 @@ const ALLOWLIST: Record<
     reason: "subjectId/topicId moves + dupe drops only (no text writes)",
     allowedTextFields: [],
   },
+  "scripts/mirror-bangla-bcs-to-bank.ts": {
+    reason:
+      "copies Question rows from BCS Bangla into Bank Bangla to equalize counts — text fields are already-gated BCS rows, no new text",
+  },
+  "scripts/repair-orphan-topics.ts": {
+    reason:
+      "re-points topicId / questionCount only — creates the missing Topic rows for questions whose path lost its node (no text writes)",
+    allowedTextFields: [],
+  },
   "scripts/update-bcs-terms.ts": {
     reason: "bcsTerm metadata only (no text writes)",
     allowedTextFields: [],

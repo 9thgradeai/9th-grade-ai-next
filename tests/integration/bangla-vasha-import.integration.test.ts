@@ -29,15 +29,10 @@ function loadDatabaseUrl(): string | undefined {
 
 const databaseUrl = loadDatabaseUrl();
 
-// The four sourceExam labels written by import-bangla-vasha.ts. বাগধারা routes
-// to a standalone leaf (no taxonomy node); the rest hit existing ভাষা leaves.
+// The four sourceExam labels written by import-bangla-vasha.ts. The leaf each
+// label lands on differs per ecosystem (the 2026-10-22 Bank taxonomy revision
+// regrouped the grammar leaves), so the path is read back from the rows.
 const NEW_LABELS = ["সমাস", "বাগধারা", "বাক্য সংকোচন, এক কথায় প্রকাশ", "প্রকৃতি ও প্রত্যয়"];
-const LEAF_OF: Record<string, string> = {
-  সমাস: "সমাস",
-  বাগধারা: "বাগধারা",
-  "বাক্য সংকোচন, এক কথায় প্রকাশ": "বাক্য",
-  "প্রকৃতি ও প্রত্যয়": "প্রত্যয়",
-};
 
 describe("import-bangla-vasha rows (real PostgreSQL read path)", () => {
   const prisma = new PrismaClient({
@@ -115,6 +110,7 @@ describe("import-bangla-vasha rows (real PostgreSQL read path)", () => {
 
       // Per-ecosystem row counts (what the import wrote).
       const perEco = new Map<number, number>();
+      const leafPathBySubject = new Map<number, string>();
       for (const eco of ecosystems) {
         const subject = subjectsByEco.get(eco.id)!;
         const count = await prisma.question.count({
@@ -122,6 +118,14 @@ describe("import-bangla-vasha rows (real PostgreSQL read path)", () => {
         });
         expect(count, `${eco.code}/${label} rows missing`).toBeGreaterThan(0);
         perEco.set(eco.id, count);
+        // The leaf the rows actually live on (per ecosystem — the Bank tree
+        // groups the grammar leaves differently).
+        const sample = await prisma.question.findFirst({
+          where: { subjectId: subject.id, sourceExam },
+          select: { path: true },
+        });
+        expect(sample?.path, `${eco.code}/${label} has no path`).toBeTruthy();
+        if (sample?.path) leafPathBySubject.set(subject.id, sample.path);
       }
       const sumBoth = [...perEco.values()].reduce((a, b) => a + b, 0);
 
@@ -135,7 +139,7 @@ describe("import-bangla-vasha rows (real PostgreSQL read path)", () => {
       // onto the sibling by suffix — so we do the same here, per side.
       const unionTotalFrom = async (ecoId: number): Promise<number> => {
         const subject = subjectsByEco.get(ecoId)!;
-        const leafPath = `${rootBySubject.get(subject.id)}/ভাষা/${LEAF_OF[label]}`;
+        const leafPath = leafPathBySubject.get(subject.id)!;
         const { total, questions } = await getQuestionsPage({
           subject: subject.nameBn,
           paths: [leafPath],

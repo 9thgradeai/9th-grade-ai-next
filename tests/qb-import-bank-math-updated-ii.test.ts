@@ -17,11 +17,12 @@
  * ----------------------------------------------------------------------------
  */
 import { describe, it, expect } from "vitest";
+import { readFileSync } from "fs";
+import { join } from "path";
 import {
   FILES,
   NEW_LEAVES,
   NEW_PARENTS,
-  P6,
   applyBlockEntry,
   applyInRecordLine,
   cleanSectionTitle,
@@ -32,6 +33,23 @@ import {
   type FileConfig,
   type WorkingRec,
 } from "../scripts/import-bank-math-updated-ii";
+
+type TaxonomyNode = { name: string; children: TaxonomyNode[] };
+
+/** Every node path of the revised Bank taxonomy (2026-10-22). */
+const TAXONOMY_PATHS: Set<string> = (() => {
+  const root = JSON.parse(
+    readFileSync(join(process.cwd(), "database", "data", "bb-taxonomy.json"), "utf8"),
+  ) as { children: TaxonomyNode[] };
+  const out = new Set<string>();
+  const walk = (n: TaxonomyNode, prefix: string) => {
+    const p = prefix ? `${prefix}/${n.name}` : n.name;
+    out.add(p);
+    for (const c of n.children) walk(c, p);
+  };
+  for (const c of root.children) walk(c, "");
+  return out;
+})();
 
 const arithmetic = FILES.find((f) => f.slug === "arithmetic")!;
 const algebra = FILES.find((f) => f.slug === "algebra")!;
@@ -596,33 +614,31 @@ describe("leafForSection / difficultyFor / cleanSectionTitle", () => {
     expect(leafForSection(arithmetic, "MCQs 101–120: Mixtures and Alligation")).toBe(
       "03_Mathematics/Part_01_Arithmetic/Ratios_Proportions_and_Mixtures",
     );
+    // The 2026-10-22 taxonomy revision dropped the importer's own leaves, so
+    // these sections now map onto the closest surviving taxonomy node.
     expect(leafForSection(arithmetic, "MCQs 121–140: Income, Expenditure and Savings")).toBe(
-      "03_Mathematics/Part_01_Arithmetic/Income_Expenditure_and_Savings",
+      "03_Mathematics/Part_01_Arithmetic/Ratios_Proportions_and_Mixtures",
     );
     expect(leafForSection(arithmetic, "MCQs 201–220: Mixed Arithmetic Practice")).toBe(
-      "03_Mathematics/Part_01_Arithmetic/Comprehensive_Arithmetic",
+      "03_Mathematics/Part_01_Arithmetic",
     );
   });
 
   it("maps algebra letter sections and the time-work numeric sections", () => {
     expect(leafForSection(algebra, "Section H: Algebraic Fractions")).toBe(
-      "03_Mathematics/Part_02_Algebra/Algebraic_Fractions_and_Rational_Expressions",
+      "03_Mathematics/Part_02_Algebra/Equations_and_Inequalities",
     );
     expect(leafForSection(algebra, "Section D: Factorisation")).toBe(
       "03_Mathematics/Part_02_Algebra/Algebraic_Identities_and_Factorization",
     );
-    expect(leafForSection(algebra, "Section Q: Review")).toBe(
-      "03_Mathematics/Part_02_Algebra/Comprehensive_Algebra",
-    );
+    expect(leafForSection(algebra, "Section Q: Review")).toBe("03_Mathematics/Part_02_Algebra");
     expect(leafForSection(timeWork, "Section 2: Time and Work")).toBe(
-      "03_Mathematics/Part_06_Time_Work_and_Speed/Time_and_Work",
+      "03_Mathematics/Part_01_Arithmetic/Ratios_Proportions_and_Mixtures",
     );
     expect(leafForSection(timeWork, "Section 6: Trains and Boats")).toBe(
-      "03_Mathematics/Part_06_Time_Work_and_Speed/Speed_Distance_and_Time",
+      "03_Mathematics/Part_01_Arithmetic/Ratios_Proportions_and_Mixtures",
     );
-    expect(leafForSection(timeWork, "Section 11: Mixed Problems")).toBe(
-      "03_Mathematics/Part_06_Time_Work_and_Speed/Mixed_Time_Work_and_Speed",
-    );
+    expect(leafForSection(timeWork, "Section 11: Mixed Problems")).toBe("03_Mathematics/Part_01_Arithmetic");
   });
 
   it("derives difficulty from the section title", () => {
@@ -640,42 +656,15 @@ describe("leafForSection / difficultyFor / cleanSectionTitle", () => {
     expect(cleanSectionTitle("MCQs 200–210: Sequences Review")).toBe("Sequences Review");
   });
 
-  it("every configured new topic is declared exactly once", () => {
-    const parentPaths = NEW_PARENTS.map((p) => p.path);
-    expect(new Set(parentPaths).size).toBe(parentPaths.length);
-    const leafPaths = NEW_LEAVES.map((l) => l.path);
-    expect(new Set(leafPaths).size).toBe(leafPaths.length);
-    // Leaves may hang off a NEW part (Part 06) or one of the five pre-existing
-    // Bank-Math parts — either way the parent must be a Part node.
-    for (const l of NEW_LEAVES) {
-      expect(l.parent).toMatch(/^03_Mathematics\/Part_0\d_/);
-      expect(l.path.startsWith(`${l.parent}/`)).toBe(true);
-    }
-    expect(parentPaths).toContain(P6); // the one genuinely new Part node
+  it("creates no topic outside the revised taxonomy", () => {
+    // The 2026-10-22 revision removed the importer's own Part / leaf nodes, so
+    // every target now lives in database/data/bb-taxonomy.json.
+    expect(NEW_PARENTS).toEqual([]);
+    expect(NEW_LEAVES).toEqual([]);
   });
 
-  it("every leaf referenced by a file config is an existing or declared new leaf", () => {
-    const declared = new Set([
-      ...NEW_LEAVES.map((l) => l.path),
-      "03_Mathematics/Part_01_Arithmetic/Percentages",
-      "03_Mathematics/Part_01_Arithmetic/Profit_Loss_and_Discount",
-      "03_Mathematics/Part_01_Arithmetic/Simple_and_Compound_Interest",
-      "03_Mathematics/Part_01_Arithmetic/Ratios_Proportions_and_Mixtures",
-      "03_Mathematics/Part_01_Arithmetic/LCM_and_HCF",
-      "03_Mathematics/Part_02_Algebra/Equations_and_Inequalities",
-      "03_Mathematics/Part_02_Algebra/Algebraic_Identities_and_Factorization",
-      "03_Mathematics/Part_02_Algebra/Indices_and_Logarithms",
-      "03_Mathematics/Part_03_Sequences_and_Series/Arithmetic_Progression",
-      "03_Mathematics/Part_03_Sequences_and_Series/Geometric_Progression",
-      "03_Mathematics/Part_04_Geometry_and_Mensuration/Pythagorean_Theorem",
-      "03_Mathematics/Part_04_Geometry_and_Mensuration/Lines_Angles_Triangles_Quadrilaterals_Circles",
-      "03_Mathematics/Part_04_Geometry_and_Mensuration/2D_Mensuration_Area_Perimeter",
-      "03_Mathematics/Part_04_Geometry_and_Mensuration/3D_Mensuration_Volume_Surface_Area",
-      "03_Mathematics/Part_05_Statistics_and_Probability/Probability",
-      "03_Mathematics/Part_05_Statistics_and_Probability/Permutations_and_Combinations",
-      "03_Mathematics/Part_05_Statistics_and_Probability/Set_Theory_and_Venn_Diagrams",
-      "03_Mathematics/Part_05_Statistics_and_Probability/Statistics_Mean_Median_Mode",
-    ]);
+  it("every leaf referenced by a file config exists in the revised taxonomy", () => {
+    const declared = TAXONOMY_PATHS;
     const used = new Set<string>();
     for (const cfg of FILES as FileConfig[]) {
       for (const r of cfg.rules) used.add(r.leaf);

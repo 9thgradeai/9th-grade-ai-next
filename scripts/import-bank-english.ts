@@ -29,6 +29,7 @@ import { PrismaClient, type Prisma } from "@prisma/client";
 import { readFileSync, readdirSync } from "fs";
 import { join } from "path";
 import { sourceKey } from "./seed-keys";
+import { classifyCorrections } from "./bank-taxonomy-mapping";
 import { scanMca, mcaSignature } from "./qb-forensics/import-gate";
 import { QueryCache } from "../backend/infrastructure/cache/query-cache";
 
@@ -46,8 +47,10 @@ const TOPIC_ROUTE: Record<string, { path: string; topic: string; subtopic: strin
     subtopic: "Clauses & Phrases",
   },
   "errors-detection": {
-    path: "02_English_Language_and_Literature/PART-I_Language/Corrections_and_Agreement",
-    topic: "Corrections_and_Agreement",
+    // Default leaf — the per-question router below refines it to
+    // Subject-Verb_Agreement / Tense_and_Structure_Errors.
+    path: "02_English_Language_and_Literature/PART-I_Language/Corrections_and_Agreement/Tense_and_Structure_Errors",
+    topic: "Tense_and_Structure_Errors",
     subtopic: "Errors Detection",
   },
   "idioms-and-phrases": {
@@ -66,6 +69,16 @@ const TOPIC_ROUTE: Record<string, { path: string; topic: string; subtopic: strin
     subtopic: "Voice & Narration",
   },
 };
+
+/** Error-detection questions split between the two Corrections_and_Agreement
+ *  leaves (agreement vs. structure/tense). */
+export function routeErrorsDetection(question: string): { path: string; topic: string } {
+  const leaf = classifyCorrections(question);
+  return {
+    path: `02_English_Language_and_Literature/PART-I_Language/Corrections_and_Agreement/${leaf}`,
+    topic: leaf,
+  };
+}
 
 const VOICE_NARRATION_PATH =
   "02_English_Language_and_Literature/PART-I_Language/Sentences_and_Transformations/Direct_and_Indirect_Narration";
@@ -231,11 +244,13 @@ export async function importBankEnglish(prisma: PrismaClient, opts?: { dryRun?: 
         console.warn(`  [skip] ${file} Q#${r.n}: no taxonomy route for slug '${r.slug}'`);
         continue;
       }
-      const topicIdRow = topicIdByPath.get(
-        r.slug === "voice-and-narration" ? routeVoiceNarration(r.question).path : route.path,
-      );
       const routed =
-        r.slug === "voice-and-narration" ? routeVoiceNarration(r.question) : { path: route.path, topic: route.topic };
+        r.slug === "voice-and-narration"
+          ? routeVoiceNarration(r.question)
+          : r.slug === "errors-detection"
+            ? routeErrorsDetection(r.question)
+            : { path: route.path, topic: route.topic };
+      const topicIdRow = topicIdByPath.get(routed.path);
       const key = sourceKey(subject.id, `bank-english:${r.slug}`, r.question, r.options.join(" | "));
       ops.push({
         key,

@@ -109,9 +109,16 @@ describe("routeTopicV2 + fileSlugV2", () => {
   it("routes sections to the right leaves", () => {
     expect(routeTopicV2("internet-networking-web", "Section 4: IP Address, MAC Address, DNS, DHCP and URL")).toContain("Protocols");
     expect(routeTopicV2("cybersecurity-data-protection", "Section 2: Antivirus, Firewalls and Security Controls")).toContain("Utility_Software");
-    expect(routeTopicV2("database-information-systems", "Section 3: SQL and Basic Query Concepts")).toContain("SQL");
+    // The 2026-10-22 Bank taxonomy revision dropped the
+    // `06_Database_and_Information_Systems` group — the database sections now
+    // fold onto the web & cloud leaf.
+    expect(routeTopicV2("database-information-systems", "Section 3: SQL and Basic Query Concepts")).toContain(
+      "World_Wide_Web_and_Cloud",
+    );
     expect(routeTopicV2("modern-ict-digital-bangladesh", "Section B: Cloud Computing — IaaS, PaaS and SaaS")).toContain("World_Wide_Web_and_Cloud");
-    expect(routeTopicV2("modern-ict-digital-bangladesh", "Section F: Bangladesh ICT Institutions")).toContain("Digital_Bangladesh");
+    expect(routeTopicV2("modern-ict-digital-bangladesh", "Section F: Bangladesh ICT Institutions")).toContain(
+      "World_Wide_Web_and_Cloud",
+    );
     expect(routeTopicV2("os-application-software", "Section 6: Microsoft Excel — Formulas")).toContain("MS_Excel");
   });
 });

@@ -15,7 +15,7 @@
 
 import type { ExamConfig, SubjectNode, TopicNode } from "./types";
 
-const BANGLA = "০১_বাংলা_ভাষা_ও_সাহিত্য";
+const BANGLA = "01_Bangla_Language_and_Literature";
 const ENGLISH = "02_English_Language_and_Literature";
 const MATH = "03_Mathematics";
 const ANALYTICAL = "04_Analytical_Skills";
@@ -69,7 +69,6 @@ const math: SubjectNode = {
     domain("bank.math.series", "Sequences and Series", `${MATH}/Part_03_Sequences_and_Series`),
     domain("bank.math.geometry", "Geometry and Mensuration", `${MATH}/Part_04_Geometry_and_Mensuration`),
     domain("bank.math.statistics", "Statistics and Probability", `${MATH}/Part_05_Statistics_and_Probability`),
-    domain("bank.math.speed", "Time, Work and Speed", `${MATH}/Part_06_Time_Work_and_Speed`),
   ],
 };
 

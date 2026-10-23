@@ -4,8 +4,8 @@
  * Imports 282 Bangla-grammar সন্ধি MCQs from
  *   database/data/ques/বাংলা ভাষা ও সাহিত্য/ভাষা/Bangla Grammar /সন্ধি/Questions(সন্ধি).txt
  * for BOTH BCS and Bank ecosystems under the canonical সন্ধি leaf:
- *   BCS : 01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/সন্ধি
- *   Bank: ০১_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/সন্ধি
+ *   BCS : 01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/ধ্বনিতত্ত্ব/সন্ধি_বা_ধ্বনিসংযোগ
+ *   Bank: 01_Bangla_Language_and_Literature/ভাষা/ধ্বনিতত্ত্ব/সন্ধি_বা_ধ্বনিসংযোগ
  * with topicId pointing at the leaf Topic row (upserted here when missing).
  *
  * File format: one question per line —
@@ -220,38 +220,50 @@ export function toParsedWithOriginalExplanations(
 // Display tags mirroring seed-questions.ts leafTags(): topic is the group
 // directly under the subject, subtopic is the leaf name.
 const TOPIC = "ভাষা";
-const LEAF = "সন্ধি";
+const LEAF = "ধ্বনিতত্ত্ব/সন্ধি_বা_ধ্বনিসংযোগ";
 const FILE =
   "database/data/ques/বাংলা ভাষা ও সাহিত্য/ভাষা/Bangla Grammar /সন্ধি/Questions(সন্ধি).txt";
 
+/** Ensure the leaf (and any missing intermediate group) exists for an
+ *  ecosystem and return the leaf Topic id. `leafPath` is relative to
+ *  `<prefix>/ভাষা` and may be nested (the revised Bank taxonomy groups the
+ *  grammar leaves under ধ্বনিতত্ত্ব / বাক্যতত্ত্ব / …). */
 async function ensureLeafTopic(
   prisma: PrismaClient,
   subjectId: number,
   subjectPrefix: string,
+  leafPath: string = LEAF,
 ): Promise<number> {
-  const parentPath = `${subjectPrefix}/${TOPIC}`;
-  const parent = await prisma.topic.findUnique({
+  const rootPath = `${subjectPrefix}/${TOPIC}`;
+  const segments = leafPath.split("/").filter(Boolean);
+  let parentPath = rootPath;
+  const root = await prisma.topic.findUnique({
     where: { subjectId_path: { subjectId, path: parentPath } },
   });
-  if (!parent) {
+  if (!root) {
     throw new Error(`Parent topic missing for Shondhi import: subject ${subjectId} path "${parentPath}"`);
   }
-  const path = `${parentPath}/${LEAF}`;
-  const row = await prisma.topic.upsert({
-    where: { subjectId_path: { subjectId, path } },
-    update: { name: LEAF, slug: LEAF, depth: parent.depth + 1, parentId: parent.id },
-    create: {
-      subjectId,
-      name: LEAF,
-      slug: LEAF,
-      path,
-      depth: parent.depth + 1,
-      sortOrder: 0,
-      parentId: parent.id,
-      questionCount: 0,
-    },
-  });
-  return row.id;
+  let current = root;
+  for (const segment of segments) {
+    const path = `${parentPath}/${segment}`;
+    const row = await prisma.topic.upsert({
+      where: { subjectId_path: { subjectId, path } },
+      update: { name: segment, slug: segment, depth: current.depth + 1, parentId: current.id },
+      create: {
+        subjectId,
+        name: segment,
+        slug: segment,
+        path,
+        depth: current.depth + 1,
+        sortOrder: 0,
+        parentId: current.id,
+        questionCount: 0,
+      },
+    });
+    current = row;
+    parentPath = path;
+  }
+  return current.id;
 }
 
 export function gateParsedQuestions(
@@ -293,14 +305,14 @@ export async function seedShondhiQuestions(prisma: PrismaClient): Promise<number
     where: { ecosystemId: bcsEcosystem.id, nameBn: "বাংলা ভাষা ও সাহিত্য" },
   });
   const bbSubject = await prisma.subject.findFirst({
-    where: { ecosystemId: bbEcosystem.id, nameBn: "০১_বাংলা_ভাষা_ও_সাহিত্য" },
+    where: { ecosystemId: bbEcosystem.id, nameBn: "01_Bangla_Language_and_Literature" },
   });
   if (!bcsSubject) throw new Error("BCS subject not found");
   if (!bbSubject) throw new Error("Bank subject not found");
 
   const ecosystems = [
     { id: bcsEcosystem.id, subjectId: bcsSubject.id, prefix: "01_বাংলা_ভাষা_ও_সাহিত্য", label: "BCS" },
-    { id: bbEcosystem.id, subjectId: bbSubject.id, prefix: "০১_বাংলা_ভাষা_ও_সাহিত্য", label: "Bank" },
+    { id: bbEcosystem.id, subjectId: bbSubject.id, prefix: "01_Bangla_Language_and_Literature", label: "Bank" },
   ];
 
   const raw = readFileSync(join(process.cwd(), FILE), "utf8").replace(/^\uFEFF/, "");
@@ -312,7 +324,12 @@ export async function seedShondhiQuestions(prisma: PrismaClient): Promise<number
   return seedParsedShondhi(prisma, ecosystems, parsed);
 }
 
-export type ShondhiEcosystem = { id: number; subjectId: number; prefix: string; label: string };
+export type ShondhiEcosystem = {
+  id: number;
+  subjectId: number;
+  prefix: string;
+  label: string;
+};
 
 export async function seedParsedShondhi(
   prisma: PrismaClient,
@@ -340,7 +357,7 @@ export async function seedParsedShondhi(
   let totalMigrated = 0;
   for (const eco of ecosystems) {
     const path = `${eco.prefix}/${TOPIC}/${LEAF}`;
-    const topicId = await ensureLeafTopic(prisma, eco.subjectId, eco.prefix);
+    const topicId = await ensureLeafTopic(prisma, eco.subjectId, eco.prefix, LEAF);
 
     const existing = await prisma.question.findMany({
       where: { subjectId: eco.subjectId },
@@ -442,14 +459,14 @@ export async function seedCorrectedShondhi(prisma: PrismaClient): Promise<number
     where: { ecosystemId: bcsEcosystem.id, nameBn: "বাংলা ভাষা ও সাহিত্য" },
   });
   const bbSubject = await prisma.subject.findFirst({
-    where: { ecosystemId: bbEcosystem.id, nameBn: "০১_বাংলা_ভাষা_ও_সাহিত্য" },
+    where: { ecosystemId: bbEcosystem.id, nameBn: "01_Bangla_Language_and_Literature" },
   });
   if (!bcsSubject) throw new Error("BCS subject not found");
   if (!bbSubject) throw new Error("Bank subject not found");
 
   const ecosystems: ShondhiEcosystem[] = [
     { id: bcsEcosystem.id, subjectId: bcsSubject.id, prefix: "01_বাংলা_ভাষা_ও_সাহিত্য", label: "BCS" },
-    { id: bbEcosystem.id, subjectId: bbSubject.id, prefix: "০১_বাংলা_ভাষা_ও_সাহিত্য", label: "Bank" },
+    { id: bbEcosystem.id, subjectId: bbSubject.id, prefix: "01_Bangla_Language_and_Literature", label: "Bank" },
   ];
 
   const originalRaw = readFileSync(join(process.cwd(), FILE), "utf8").replace(/^\uFEFF/, "");

@@ -53,14 +53,15 @@ const P = {
   netSec:
     "05_ICT/04_Networking_and_Web/Internet_Security_Firewalls_Dark_Web",
   ai: "05_ICT/05_Emerging_Tech_and_Number_Systems/Artificial_Intelligence_Chatbots_Prolog",
-  dbParent: "05_ICT/06_Database_and_Information_Systems",
-  dbFund:
-    "05_ICT/06_Database_and_Information_Systems/Database_Fundamentals_DBMS_RDBMS_Keys",
-  dbSql: "05_ICT/06_Database_and_Information_Systems/SQL_and_Query_Concepts",
-  dbIs:
-    "05_ICT/06_Database_and_Information_Systems/Information_Systems_Warehousing_Mining",
-  emergingDig:
-    "05_ICT/05_Emerging_Tech_and_Number_Systems/Digital_Bangladesh_Ecommerce_Egovernance_Law",
+  // The 2026-10-22 Bank taxonomy revision has no `06_Database_and_Information_
+  // Systems` group and no `Digital_Bangladesh_…` leaf any more — those
+  // sections fold onto the closest surviving node (information systems and
+  // e-commerce / e-governance live with the web & cloud leaf).
+  dbParent: "05_ICT/04_Networking_and_Web",
+  dbFund: "05_ICT/04_Networking_and_Web/World_Wide_Web_and_Cloud_Computing",
+  dbSql: "05_ICT/04_Networking_and_Web/World_Wide_Web_and_Cloud_Computing",
+  dbIs: "05_ICT/04_Networking_and_Web/World_Wide_Web_and_Cloud_Computing",
+  emergingDig: "05_ICT/04_Networking_and_Web/World_Wide_Web_and_Cloud_Computing",
 };
 
 export type V2Record = {
@@ -268,46 +269,7 @@ export async function importBankIctV2(prisma: PrismaClient): Promise<V2Report> {
   });
   if (!subject) throw new Error(`Bank ICT subject "${BB_ICT_NAMEBN}" missing — run seed-bb-subjects.ts first`);
 
-  // Database + Digital-Bangladesh leaves have no home in bb-taxonomy.json —
-  // create them as data (upsert-only; the taxonomy seeder never deletes).
-  const extraParents: { path: string; name: string; children: string[] }[] = [
-    { path: P.dbParent, name: "06_Database_and_Information_Systems", children: [P.dbFund, P.dbSql, P.dbIs] },
-  ];
-  for (const p of extraParents) {
-    await prisma.topic.upsert({
-      where: { subjectId_path: { subjectId: subject.id, path: p.path } },
-      update: {},
-      create: { subjectId: subject.id, name: p.name, slug: p.name, path: p.path, depth: 2, sortOrder: 60 },
-    });
-  }
-  const extraLeaves = [
-    { path: P.dbFund, name: "Database_Fundamentals_DBMS_RDBMS_Keys", parent: P.dbParent },
-    { path: P.dbSql, name: "SQL_and_Query_Concepts", parent: P.dbParent },
-    { path: P.dbIs, name: "Information_Systems_Warehousing_Mining", parent: P.dbParent },
-    {
-      path: P.emergingDig,
-      name: "Digital_Bangladesh_Ecommerce_Egovernance_Law",
-      parent: "05_ICT/05_Emerging_Tech_and_Number_Systems",
-    },
-  ];
-  for (const [idx, l] of extraLeaves.entries()) {
-    const parent = await prisma.topic.findUnique({
-      where: { subjectId_path: { subjectId: subject.id, path: l.parent } },
-    });
-    await prisma.topic.upsert({
-      where: { subjectId_path: { subjectId: subject.id, path: l.path } },
-      update: {},
-      create: {
-        subjectId: subject.id,
-        name: l.name,
-        slug: l.name,
-        path: l.path,
-        depth: 3,
-        parentId: parent?.id ?? null,
-        sortOrder: 60 + idx,
-      },
-    });
-  }
+  // Every target now exists in bb-taxonomy.json — nothing to create.
 
   const topicRows = await prisma.topic.findMany({
     where: { subjectId: subject.id },

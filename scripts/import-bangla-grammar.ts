@@ -54,20 +54,22 @@ const GRAMMAR_DIR = join(
 type FileRoute = {
   file: string;
   label: string;
+  /** Taxonomy leaf (relative to `<root>/ভাষা`) — the BCS and Bank Bangla
+   *  trees use the same leaf names, so one leaf serves both ecosystems. */
   leaf: string;
   subtopic: string;
 };
 
 const ROUTES: FileRoute[] = [
-  { file: "Questions(বাক্য সংকোচন).txt", label: "বাক্য সংকোচন", leaf: "বাক্য", subtopic: "বাক্য সংকোচন" },
-  { file: "Questions(বাংলা বানান).txt", label: "বাংলা বানান", leaf: "বানান_ও_বাক্য_শুদ্ধি", subtopic: "বানান_ও_বাক্য_শুদ্ধি" },
-  { file: "Questions(বিপরীত শব্দ).txt", label: "বিপরীত শব্দ", leaf: "বিপরীতার্থক_শব্দ", subtopic: "বিপরীতার্থক_শব্দ" },
-  { file: "Questions(Terminology).txt", label: "Terminology", leaf: "পরিভাষা", subtopic: "পরিভাষা" },
-  { file: "Questions(উপসর্গ).txt", label: "উপসর্গ", leaf: "উপসর্গ", subtopic: "উপসর্গ" },
-  { file: "Questions(কারক)up.txt", label: "কারক", leaf: "কারক", subtopic: "কারক" },
-  { file: "Questions(ধাতু, প্রকৃতি এবং প্রত্যয়).txt", label: "ধাতু, প্রকৃতি এবং প্রত্যয়", leaf: "প্রত্যয়", subtopic: "প্রত্যয়" },
-  { file: "প্রয়োগ-অপপ্রয়োগ (1).txt", label: "প্রয়োগ-অপপ্রয়োগ", leaf: "প্রয়োগ-অপপ্রয়োগ", subtopic: "প্রয়োগ-অপপ্রয়োগ" },
-  { file: "Questions(বাচ্য).txt", label: "বাচ্য", leaf: "বাক্য", subtopic: "বাচ্য" },
+  { file: "Questions(বাক্য সংকোচন).txt", label: "বাক্য সংকোচন", leaf: "বাক্যতত্ত্ব/বাক্য_ও_বাক্যবিন্যাস", subtopic: "বাক্য সংকোচন" },
+  { file: "Questions(বাংলা বানান).txt", label: "বাংলা বানান", leaf: "ধ্বনিতত্ত্ব/ধ্বনির_প্রতীক_বা_বর্ণের_বিন্যাস", subtopic: "বানান_ও_বাক্য_শুদ্ধি" },
+  { file: "Questions(বিপরীত শব্দ).txt", label: "বিপরীত শব্দ", leaf: "অর্থতত্ত্ব_ও_শব্দভাণ্ডার/বিপরীতার্থক_শব্দ", subtopic: "বিপরীতার্থক_শব্দ" },
+  { file: "Questions(Terminology).txt", label: "Terminology", leaf: "অর্থতত্ত্ব_ও_শব্দভাণ্ডার/পরিভাষা", subtopic: "পরিভাষা" },
+  { file: "Questions(উপসর্গ).txt", label: "উপসর্গ", leaf: "শব্দতত্ত্ব/উপসর্গ_ও_অনুসর্গ", subtopic: "উপসর্গ" },
+  { file: "Questions(কারক)up.txt", label: "কারক", leaf: "শব্দতত্ত্ব/কারক_ও_বিভক্তি", subtopic: "কারক" },
+  { file: "Questions(ধাতু, প্রকৃতি এবং প্রত্যয়).txt", label: "ধাতু, প্রকৃতি এবং প্রত্যয়", leaf: "শব্দতত্ত্ব/প্রকৃতি_ও_প্রত্যয়", subtopic: "প্রত্যয়" },
+  { file: "প্রয়োগ-অপপ্রয়োগ (1).txt", label: "প্রয়োগ-অপপ্রয়োগ", leaf: "অর্থতত্ত্ব_ও_শব্দভাণ্ডার/প্রয়োগ-অপপ্রয়োগ", subtopic: "প্রয়োগ-অপপ্রয়োগ" },
+  { file: "Questions(বাচ্য).txt", label: "বাচ্য", leaf: "বাক্যতত্ত্ব/বাচ্য", subtopic: "বাচ্য" },
 ];
 
 const LETTERS = ["ক", "খ", "গ", "ঘ", "ঙ"] as const;
@@ -167,14 +169,16 @@ export async function importBanglaGrammar(
     where: { ecosystemId: bcs.id, nameBn: "বাংলা ভাষা ও সাহিত্য" },
   });
   const bbSubject = await prisma.subject.findFirst({
-    where: { ecosystemId: bb.id, nameBn: "০১_বাংলা_ভাষা_ও_সাহিত্য" },
+    where: { ecosystemId: bb.id, nameBn: "01_Bangla_Language_and_Literature" },
   });
   if (!bcsSubject || !bbSubject) throw new Error("Bangla subject missing in BCS/Bank");
 
   const targets = [
     { eco: bcs, subject: bcsSubject, root: "01_বাংলা_ভাষা_ও_সাহিত্য" },
-    { eco: bb, subject: bbSubject, root: "০১_বাংলা_ভাষা_ও_সাহিত্য" },
+    { eco: bb, subject: bbSubject, root: "01_Bangla_Language_and_Literature" },
   ];
+  // The BCS and Bank Bangla trees use the SAME leaf names (ADR-068) — the
+  // shared Bangla pool pairs them 1:1.
 
   // topicId lookup per subject.
   const topicIdBySubjectPath = new Map<number, Map<string, number>>();

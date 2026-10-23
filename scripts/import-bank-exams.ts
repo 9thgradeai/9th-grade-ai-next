@@ -79,7 +79,7 @@ const PAPERS = [
 // Names are EXACT taxonomy node names (see BB_SUBJECT_META in taxonomy.ts).
 // GK is archive-only (BB_ARCHIVE_SUBJECT_META): out-of-syllabus PYQs land
 // there instead of being dropped as unclassified.
-const BB_BANGLA = "০১_বাংলা_ভাষা_ও_সাহিত্য";
+const BB_BANGLA = "01_Bangla_Language_and_Literature";
 const BB_ENGLISH = "02_English_Language_and_Literature";
 const BB_MATH = "03_Mathematics";
 const BB_ANALYTICAL = "04_Analytical_Skills";

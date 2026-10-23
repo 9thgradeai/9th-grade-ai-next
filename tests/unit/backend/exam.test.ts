@@ -233,7 +233,7 @@ describe("buildCustomExam", () => {
   });
 
   it("keeps a Bank Bangla node with zero own rows when the BCS union has them", async () => {
-    const BANK = "০১_বাংলা_ভাষা_ও_সাহিত্য";
+    const BANK = "01_Bangla_Language_and_Literature";
     const BCS_ROOT = "01_বাংলা_ভাষা_ও_সাহিত্য";
     vi.mocked(prisma.subject.findMany).mockImplementation((async (args: never) => {
       const hasSelect = !!(args as { select?: unknown } | undefined)?.select;
@@ -260,7 +260,7 @@ describe("buildCustomExam", () => {
   });
 
   it("builds a Bank Bangla exam from BCS union rows", async () => {
-    const BANK = "০১_বাংলা_ভাষা_ও_সাহিত্য";
+    const BANK = "01_Bangla_Language_and_Literature";
     const BCS_ROOT = "01_বাংলা_ভাষা_ও_সাহিত্য";
     vi.mocked(prisma.subject.findMany).mockResolvedValue([
       { id: 1, nameBn: "বাংলা ভাষা ও সাহিত্য" },

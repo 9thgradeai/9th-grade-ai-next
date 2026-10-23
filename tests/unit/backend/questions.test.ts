@@ -141,7 +141,7 @@ describe("getQuestions paperId filter (exam library)", () => {
 });
 
 describe("getQuestions Bangla union (BCS pool shared into Bank Bangla)", () => {
-  const BANK_BN = "০১_বাংলা_ভাষা_ও_সাহিত্য";
+  const BANK_BN = "01_Bangla_Language_and_Literature";
   const BCS_LEAF = "01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/বানান";
 
   beforeEach(async () => {

@@ -74,7 +74,7 @@ describe("Bank record parsing", () => {
 
 describe("Bank subject classification", () => {
   it("routes Bangla grammar questions to বাংলা ভাষা ও সাহিত্য", () => {
-    expect(classifyBankSubject("ব্যাকরণের আলোচ্য বিষয় কোনটি?", "ধ্বনি ও শব্দ")).toBe("০১_বাংলা_ভাষা_ও_সাহিত্য");
+    expect(classifyBankSubject("ব্যাকরণের আলোচ্য বিষয় কোনটি?", "ধ্বনি ও শব্দ")).toBe("01_Bangla_Language_and_Literature");
   });
   it("routes Latin-script vocab questions to English", () => {
     expect(classifyBankSubject("The term DISINTER is same as -", "explanation")).toBe("02_English_Language_and_Literature");

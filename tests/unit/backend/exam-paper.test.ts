@@ -209,7 +209,7 @@ describe("getPaperReadiness", () => {
     // sibling holding rows at a taxonomy-relative suffix the BCS Bangla subject
     // also exposes, so those rows are eligible for the BCS paper.
     const bankBanglaId = 4958;
-    const bankRoot = "০১_বাংলা_ভাষা_ও_সাহিত্য";
+    const bankRoot = "01_Bangla_Language_and_Literature";
     const bangla = BCS_PRELIMINARY_CONFIG.subjects.find((s) => s.id === "bcs.bangla")!;
     const leaves: string[] = [];
     const walk = (nodes: typeof bangla.children) => {

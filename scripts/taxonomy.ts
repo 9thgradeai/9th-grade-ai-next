@@ -83,7 +83,7 @@ export function subjectMetaByNameBn(nameBn: string): SubjectMeta | undefined {
 // segments: the Bank Practice section shows subject names exactly as they
 // appear in the taxonomy file.
 export const BB_SUBJECT_META: SubjectMeta[] = [
-  { nameBn: "০১_বাংলা_ভাষা_ও_সাহিত্য", nameEn: "Bangla Language & Literature", architectureName: "০১_বাংলা_ভাষা_ও_সাহিত্য", icon: "📖", color: "text-emerald-400", bg: "bg-emerald-500/10" },
+  { nameBn: "01_Bangla_Language_and_Literature", nameEn: "Bangla Language & Literature", architectureName: "01_Bangla_Language_and_Literature", icon: "📖", color: "text-emerald-400", bg: "bg-emerald-500/10" },
   { nameBn: "02_English_Language_and_Literature", nameEn: "English Language and Literature", architectureName: "02_English_Language_and_Literature", icon: "📚", color: "text-sky-400", bg: "bg-sky-500/10" },
   { nameBn: "03_Mathematics", nameEn: "Mathematics", architectureName: "03_Mathematics", icon: "🧮", color: "text-amber-400", bg: "bg-amber-500/10" },
   { nameBn: "04_Analytical_Skills", nameEn: "Analytical Skills", architectureName: "04_Analytical_Skills", icon: "🧠", color: "text-rose-400", bg: "bg-rose-500/10" },

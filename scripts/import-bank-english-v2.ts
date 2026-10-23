@@ -38,6 +38,7 @@ import { PrismaClient, type Prisma } from "@prisma/client";
 import { readFileSync, readdirSync } from "fs";
 import { join } from "path";
 import { sourceKey } from "./seed-keys";
+import { classifyCorrections, classifyPartsOfSpeech } from "./bank-taxonomy-mapping";
 import { scanMca, mcaSignature } from "./qb-forensics/import-gate";
 
 const ENG_DIR = join(process.cwd(), "database", "data", "Bank", "English", "untitled folder");
@@ -250,9 +251,12 @@ export function routeTopicEn(slug: string, header = "", subheader = "", question
       if (/adjective|adverb|comparison|modifier/.test(h)) return P.posAdj;
       if (/noun|pronoun|determiner|article|gender|number/.test(h)) return P.posNoun;
       if (/verb|participle|gerund|infinitive/.test(h)) return P.posVerb;
-      return P.pos;
+      // Fallback: classify the parts-of-speech question onto its leaf.
+      return `${R}/PART-I_Language/${classifyPartsOfSpeech(question)}`;
     case "prepositions":
-      if (/error detection|sentence completion|exam-level/.test(h)) return P.corr;
+      if (/error detection|sentence completion|exam-level/.test(h)) {
+        return `${R}/PART-I_Language/Corrections_and_Agreement/${classifyCorrections(question)}`;
+      }
       return P.posPrep;
     case "sentence-correction-error-detection": {
       if (/narration|reported speech|indirect speech|direct speech/.test(h)) return P.narr;
@@ -264,7 +268,7 @@ export function routeTopicEn(slug: string, header = "", subheader = "", question
       if (/parallelism|gerund|infinitive|verb pattern/.test(h)) return P.corrPar;
       if (/modifier|adjective|adverb|comparison/.test(h)) return P.posAdj;
       if (/word choice|redundan|idiomatic|formal english/.test(h)) return P.idMean;
-      return P.corr;
+      return `${R}/PART-I_Language/Corrections_and_Agreement/${classifyCorrections(question)}`;
     }
     case "spelling-appropriate-words":
       if (/spell/.test(h)) return P.wvSpell;

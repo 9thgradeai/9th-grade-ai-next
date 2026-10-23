@@ -13,7 +13,7 @@
  * SOURCE_FILES (file → canonical leaf name). Questions land on the canonical
  * content paths used by the Topic tree:
  *   BCS : 01_বাংলা_ভাষা_ও_সাহিত্য/সাহিত্য/আধুনিক_যুগ_১৮০০_হতে_বর্তমান/<leaf>
- *   Bank: ০১_বাংলা_ভাষা_ও_সাহিত্য/সাহিত্য/আধুনিক_যুগ_১৮০০_হতে_বর্তমান/<leaf>
+ *   Bank: 01_Bangla_Language_and_Literature/সাহিত্য/আধুনিক_যুগ_১৮০০_হতে_বর্তমান/<leaf>
  * with topicId pointing at the leaf Topic row (upserted here when missing).
  *
  * File format: one question per line carrying `উত্তর:` (bare-letter answers
@@ -217,14 +217,14 @@ export async function seedBanglaLitQuestions(prisma: PrismaClient): Promise<numb
     where: { ecosystemId: bcsEcosystem.id, nameBn: "বাংলা ভাষা ও সাহিত্য" },
   });
   const bbSubject = await prisma.subject.findFirst({
-    where: { ecosystemId: bbEcosystem.id, nameBn: "০১_বাংলা_ভাষা_ও_সাহিত্য" },
+    where: { ecosystemId: bbEcosystem.id, nameBn: "01_Bangla_Language_and_Literature" },
   });
   if (!bcsSubject) throw new Error("BCS subject not found");
   if (!bbSubject) throw new Error("Bank subject not found");
 
   const ecosystems = [
     { id: bcsEcosystem.id, subjectId: bcsSubject.id, prefix: "01_বাংলা_ভাষা_ও_সাহিত্য", label: "BCS" },
-    { id: bbEcosystem.id, subjectId: bbSubject.id, prefix: "০১_বাংলা_ভাষা_ও_সাহিত্য", label: "Bank" },
+    { id: bbEcosystem.id, subjectId: bbSubject.id, prefix: "01_Bangla_Language_and_Literature", label: "Bank" },
   ];
 
   // Per-ecosystem duplicate-identity sets over live rows.
@@ -293,6 +293,8 @@ export async function seedBanglaLitQuestions(prisma: PrismaClient): Promise<numb
     }
 
     for (const eco of ecosystems) {
+      // The BCS and Bank Bangla trees use the SAME literature leaves
+      // (ADR-068) — the shared pool pairs them 1:1.
       const path = `${eco.prefix}/${TOPIC}/${ERA}/${src.leafName}`;
       const topicId = await ensureLeafTopic(prisma, eco.subjectId, eco.prefix, src.leafName);
 

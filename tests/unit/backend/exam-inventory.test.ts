@@ -14,7 +14,7 @@ import {
 import { prisma } from "~backend/db";
 
 const BANGLA = "01_বাংলা_ভাষা_ও_সাহিত্য";
-const BANK_BANGLA = "০১_বাংলা_ভাষা_ও_সাহিত্য";
+const BANK_BANGLA = "01_Bangla_Language_and_Literature";
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -31,7 +31,7 @@ describe("resolveDbSubjectId", () => {
 
   it("falls back to the root segment (Bank subjects are named by root)", () => {
     const id = resolveDbSubjectId(BANK_PRELIMINARY_CONFIG.subjects[1], [
-      { id: 4958, nameBn: "০১_বাংলা_ভাষা_ও_সাহিত্য" },
+      { id: 4958, nameBn: "01_Bangla_Language_and_Literature" },
     ]);
     expect(id).toBe(4958);
   });
@@ -53,7 +53,7 @@ describe("path matching", () => {
   });
 
   it("matches sibling Bangla leaves by relative suffix", () => {
-    // A Bank request prefix ("০১_বাংলা/ভাষা") should match BCS leaf suffixes.
+    // A Bank request prefix ("01_Bangla…/ভাষা") should match BCS leaf suffixes.
     expect(suffixMatchesPrefixes(`${BANGLA}/ভাষা/বানান`, [`${BANK_BANGLA}/ভাষা`])).toBe(true);
     expect(suffixMatchesPrefixes(`${BANGLA}/সাহিত্য/x`, [`${BANK_BANGLA}/ভাষা`])).toBe(false);
   });
@@ -118,7 +118,7 @@ describe("materializeScope", () => {
 
   it("folds the cross-ecosystem Bangla pool into a Bangla subject by suffix", () => {
     // Bank scope sees BCS Bangla rows (sibling pool) matched by suffix.
-    const bankSubjects = [{ id: 4958, nameBn: "০১_বাংলা_ভাষা_ও_সাহিত্য" }];
+    const bankSubjects = [{ id: 4958, nameBn: "01_Bangla_Language_and_Literature" }];
     const inv: EcosystemInventory = {
       ecosystemCode: "BANGLADESH_BANK",
       ecosystemId: 2,
