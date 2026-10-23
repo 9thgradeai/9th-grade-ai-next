@@ -122,15 +122,11 @@ export async function getExamSelectionTree(ecosystemId?: number): Promise<ExamSu
     // always by the (nullable) ecosystemId tag on the question row (e.g. the
     // BCS→Bank mirrored Bangla rows retained Bank subjectIds but lost the
     // ecosystem tag), so filter COUNTS through the ecosystem's own subjects.
-    const siblingBanglaIds: number[] = [];
-    const subjectIds = subjects.map((s) => s.id);
-    const countWhere =
-      ecosystemId && subjectIds.length > 0
-        ? { subjectId: { in: subjectIds } }
-        : {};
     const subjectWhere = ecosystemId ? { ecosystemId } : {};
-    const [subjects, topicRows, countRows] = await Promise.all([
-      prisma.subject.findMany({ where: subjectWhere, orderBy: { sortOrder: "asc" } }),
+    const subjects = await prisma.subject.findMany({ where: subjectWhere, orderBy: { sortOrder: "asc" } });
+    const subjectIds = subjects.map((s) => s.id);
+    const countWhere = subjectIds.length > 0 ? { subjectId: { in: subjectIds } } : {};
+    const [topicRows, countRows] = await Promise.all([
       prisma.topic.findMany({
         orderBy: [{ subjectId: "asc" }, { sortOrder: "asc" }, { id: "asc" }],
       }),
@@ -140,6 +136,7 @@ export async function getExamSelectionTree(ecosystemId?: number): Promise<ExamSu
         where: countWhere,
       }),
     ]);
+    const siblingBanglaIds: number[] = [];
 
     const countMap = new Map<number, Map<string, number>>();
     for (const row of countRows) {
