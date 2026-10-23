@@ -118,13 +118,13 @@ export async function getExamSelectionTree(ecosystemId?: number): Promise<ExamSu
     // counting even when building a single-ecosystem tree — otherwise sparse
     // nodes prune to zero and the picker hides pool the union would serve.
     const bangla = await getBanglaSubjects().catch(() => null);
-    const siblingBanglaIds = (bangla?.ids ?? []).filter((id) => id > 0);
-    const countWhere =
-      ecosystemId && siblingBanglaIds.length > 1
-        ? { OR: [{ ecosystemId }, { subjectId: { in: siblingBanglaIds } }] }
-        : ecosystemId
-          ? { ecosystemId }
-          : {};
+    // Strict per-ecosystem view: the selection-tree counts reflect ONLY this
+    // ecosystem's own rows (no sibling-fold, so each side's Bangla subject
+    // reports its raw 6,099). Practice fetch (buildCustomExam) still unions.
+    const siblingBanglaIds = ecosystemId
+      ? (bangla?.ids ?? []).filter((id) => id > 0)
+      : [];
+    const countWhere = ecosystemId ? { ecosystemId } : {};
     const subjectWhere = ecosystemId ? { ecosystemId } : {};
     const [subjects, topicRows, countRows] = await Promise.all([
       prisma.subject.findMany({ where: subjectWhere, orderBy: { sortOrder: "asc" } }),
@@ -150,7 +150,7 @@ export async function getExamSelectionTree(ecosystemId?: number): Promise<ExamSu
 
     // Fold sibling Bangla counts into each Bangla subject's map (matched by
     // taxonomy-relative suffix) so tree nodes reflect the combined pool.
-    if (siblingBanglaIds.length > 1) {
+    if (!ecosystemId && siblingBanglaIds.length > 1) {
       const banglaInTree = subjects.filter((s) => (bangla?.names.has(s.id) ?? false));
       for (const s of banglaInTree) {
         const sibs = siblingBanglaIds.filter((id) => id !== s.id);
