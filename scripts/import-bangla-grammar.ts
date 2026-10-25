@@ -40,6 +40,7 @@ import { join } from "path";
 import { PrismaClient } from "@prisma/client";
 import { sourceKey } from "./seed-keys";
 import { scanMca, mcaSignature } from "./qb-forensics/import-gate";
+import { BANGLA_SUBJECT_NAMEBNS } from "./taxonomy";
 
 const GRAMMAR_DIR = join(
   process.cwd(),
@@ -166,16 +167,16 @@ export async function importBanglaGrammar(
   if (!bcs || !bb) throw new Error("BCS / BANGLADESH_BANK ecosystem missing");
 
   const bcsSubject = await prisma.subject.findFirst({
-    where: { ecosystemId: bcs.id, nameBn: "বাংলা ভাষা ও সাহিত্য" },
+    where: { ecosystemId: bcs.id, nameBn: { in: BANGLA_SUBJECT_NAMEBNS } },
   });
   const bbSubject = await prisma.subject.findFirst({
-    where: { ecosystemId: bb.id, nameBn: "01_Bangla_Language_and_Literature" },
+    where: { ecosystemId: bb.id, nameBn: { in: BANGLA_SUBJECT_NAMEBNS } },
   });
   if (!bcsSubject || !bbSubject) throw new Error("Bangla subject missing in BCS/Bank");
 
   const targets = [
     { eco: bcs, subject: bcsSubject, root: "01_বাংলা_ভাষা_ও_সাহিত্য" },
-    { eco: bb, subject: bbSubject, root: "01_Bangla_Language_and_Literature" },
+    { eco: bb, subject: bbSubject, root: "01_বাংলা_ভাষা_ও_সাহিত্য" },
   ];
   // The BCS and Bank Bangla trees use the SAME leaf names (ADR-068) — the
   // shared Bangla pool pairs them 1:1.

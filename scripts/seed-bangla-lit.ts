@@ -13,7 +13,7 @@
  * SOURCE_FILES (file → canonical leaf name). Questions land on the canonical
  * content paths used by the Topic tree:
  *   BCS : 01_বাংলা_ভাষা_ও_সাহিত্য/সাহিত্য/আধুনিক_যুগ_১৮০০_হতে_বর্তমান/<leaf>
- *   Bank: 01_Bangla_Language_and_Literature/সাহিত্য/আধুনিক_যুগ_১৮০০_হতে_বর্তমান/<leaf>
+ *   Bank: 01_বাংলা_ভাষা_ও_সাহিত্য/সাহিত্য/আধুনিক_যুগ_১৮০০_হতে_বর্তমান/<leaf>
  * with topicId pointing at the leaf Topic row (upserted here when missing).
  *
  * File format: one question per line carrying `উত্তর:` (bare-letter answers
@@ -40,6 +40,7 @@ import { PrismaClient } from "@prisma/client";
 import { sourceKey } from "./seed-keys";
 import { scanMca, mcaSignature } from "./qb-forensics/import-gate";
 import { resolveAnswerToOption } from "./qb-forensics/parse-flat";
+import { BANGLA_SUBJECT_NAMEBNS } from "./taxonomy";
 
 const BANGLA_MARKERS = ["ক.", "খ.", "গ.", "ঘ."];
 
@@ -214,17 +215,17 @@ export async function seedBanglaLitQuestions(prisma: PrismaClient): Promise<numb
   if (!bcsEcosystem || !bbEcosystem) throw new Error("Ecosystems not found");
 
   const bcsSubject = await prisma.subject.findFirst({
-    where: { ecosystemId: bcsEcosystem.id, nameBn: "বাংলা ভাষা ও সাহিত্য" },
+    where: { ecosystemId: bcsEcosystem.id, nameBn: { in: BANGLA_SUBJECT_NAMEBNS } },
   });
   const bbSubject = await prisma.subject.findFirst({
-    where: { ecosystemId: bbEcosystem.id, nameBn: "01_Bangla_Language_and_Literature" },
+    where: { ecosystemId: bbEcosystem.id, nameBn: { in: BANGLA_SUBJECT_NAMEBNS } },
   });
   if (!bcsSubject) throw new Error("BCS subject not found");
   if (!bbSubject) throw new Error("Bank subject not found");
 
   const ecosystems = [
     { id: bcsEcosystem.id, subjectId: bcsSubject.id, prefix: "01_বাংলা_ভাষা_ও_সাহিত্য", label: "BCS" },
-    { id: bbEcosystem.id, subjectId: bbSubject.id, prefix: "01_Bangla_Language_and_Literature", label: "Bank" },
+    { id: bbEcosystem.id, subjectId: bbSubject.id, prefix: "01_বাংলা_ভাষা_ও_সাহিত্য", label: "Bank" },
   ];
 
   // Per-ecosystem duplicate-identity sets over live rows.

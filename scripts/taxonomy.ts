@@ -82,8 +82,16 @@ export function subjectMetaByNameBn(nameBn: string): SubjectMeta | undefined {
 // Display names (nameBn) are intentionally IDENTICAL to the architecture
 // segments: the Bank Practice section shows subject names exactly as they
 // appear in the taxonomy file.
+//
+// The Bangla root is the BCS-canonical Bengali segment (`01_বাংলা_ভাষা_ও_সাহিত্য`),
+// adopted with the exact-canonical taxonomy (2026-10-23) so both ecosystems
+// spell it the same way — the other five Bank subjects stay latin. The latin
+// spelling `01_Bangla_Language_and_Literature` (ADR-068) survives only as an
+// *input* alias in mapBankQuestionPath. `seed-bb-subjects.ts` upserts the
+// Subject row on `nameBn`, so this value MUST equal the live Subject nameBn —
+// otherwise a seed run creates a second Bangla subject (ADR-070).
 export const BB_SUBJECT_META: SubjectMeta[] = [
-  { nameBn: "01_Bangla_Language_and_Literature", nameEn: "Bangla Language & Literature", architectureName: "01_Bangla_Language_and_Literature", icon: "📖", color: "text-emerald-400", bg: "bg-emerald-500/10" },
+  { nameBn: "01_বাংলা_ভাষা_ও_সাহিত্য", nameEn: "Bangla Language & Literature", architectureName: "01_বাংলা_ভাষা_ও_সাহিত্য", icon: "📖", color: "text-emerald-400", bg: "bg-emerald-500/10" },
   { nameBn: "02_English_Language_and_Literature", nameEn: "English Language and Literature", architectureName: "02_English_Language_and_Literature", icon: "📚", color: "text-sky-400", bg: "bg-sky-500/10" },
   { nameBn: "03_Mathematics", nameEn: "Mathematics", architectureName: "03_Mathematics", icon: "🧮", color: "text-amber-400", bg: "bg-amber-500/10" },
   { nameBn: "04_Analytical_Skills", nameEn: "Analytical Skills", architectureName: "04_Analytical_Skills", icon: "🧠", color: "text-rose-400", bg: "bg-rose-500/10" },
@@ -100,6 +108,21 @@ export function bbSubjectMetaByNameBn(nameBn: string): SubjectMeta | undefined {
 // from bb-taxonomy.json, so they carry no topic tree.
 export const BB_ARCHIVE_SUBJECT_META: { nameBn: string; nameEn: string }[] = [
   { nameBn: "সাধারণ জ্ঞান", nameEn: "General Knowledge" },
+];
+
+/** Every `Subject.nameBn` the Bangla subject has carried in either ecosystem.
+ * Content importers address the row by name and throw when it misses, so they
+ * accept all three spellings instead of exactly one:
+ *   • `01_বাংলা_ভাষা_ও_সাহিত্য` — the live value in BOTH ecosystems (ADR-070);
+ *   • `বাংলা ভাষা ও সাহিত্য` — the name a freshly seeded BCS database gets
+ *     (`SUBJECT_META[0].nameBn`, which doubles as the content-folder name in
+ *     `database/data/ques/`);
+ *   • `01_Bangla_Language_and_Literature` — the ADR-068 latin rename, still
+ *     present on databases seeded between 2026-10-22 and 2026-10-23. */
+export const BANGLA_SUBJECT_NAMEBNS: string[] = [
+  "01_বাংলা_ভাষা_ও_সাহিত্য",
+  "বাংলা ভাষা ও সাহিত্য",
+  "01_Bangla_Language_and_Literature",
 ];
 // Legacy folder names (pre-architecture) mapped to the current architecture
 // subject segment so existing files keep importing without a rename.

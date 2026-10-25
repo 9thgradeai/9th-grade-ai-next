@@ -5,7 +5,7 @@
  *   database/data/ques/বাংলা ভাষা ও সাহিত্য/ভাষা/Bangla Grammar /সন্ধি/Questions(সন্ধি).txt
  * for BOTH BCS and Bank ecosystems under the canonical সন্ধি leaf:
  *   BCS : 01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/ধ্বনিতত্ত্ব/সন্ধি_বা_ধ্বনিসংযোগ
- *   Bank: 01_Bangla_Language_and_Literature/ভাষা/ধ্বনিতত্ত্ব/সন্ধি_বা_ধ্বনিসংযোগ
+ *   Bank: 01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/ধ্বনিতত্ত্ব/সন্ধি_বা_ধ্বনিসংযোগ
  * with topicId pointing at the leaf Topic row (upserted here when missing).
  *
  * File format: one question per line —
@@ -32,6 +32,7 @@ import { join } from "path";
 import { PrismaClient } from "@prisma/client";
 import { sourceKey } from "./seed-keys";
 import { scanMca, mcaSignature } from "./qb-forensics/import-gate";
+import { BANGLA_SUBJECT_NAMEBNS } from "./taxonomy";
 
 const LETTER_TO_IDX: Record<string, number> = {
   "ক": 0,
@@ -302,17 +303,17 @@ export async function seedShondhiQuestions(prisma: PrismaClient): Promise<number
   if (!bcsEcosystem || !bbEcosystem) throw new Error("Ecosystems not found");
 
   const bcsSubject = await prisma.subject.findFirst({
-    where: { ecosystemId: bcsEcosystem.id, nameBn: "বাংলা ভাষা ও সাহিত্য" },
+    where: { ecosystemId: bcsEcosystem.id, nameBn: { in: BANGLA_SUBJECT_NAMEBNS } },
   });
   const bbSubject = await prisma.subject.findFirst({
-    where: { ecosystemId: bbEcosystem.id, nameBn: "01_Bangla_Language_and_Literature" },
+    where: { ecosystemId: bbEcosystem.id, nameBn: { in: BANGLA_SUBJECT_NAMEBNS } },
   });
   if (!bcsSubject) throw new Error("BCS subject not found");
   if (!bbSubject) throw new Error("Bank subject not found");
 
   const ecosystems = [
     { id: bcsEcosystem.id, subjectId: bcsSubject.id, prefix: "01_বাংলা_ভাষা_ও_সাহিত্য", label: "BCS" },
-    { id: bbEcosystem.id, subjectId: bbSubject.id, prefix: "01_Bangla_Language_and_Literature", label: "Bank" },
+    { id: bbEcosystem.id, subjectId: bbSubject.id, prefix: "01_বাংলা_ভাষা_ও_সাহিত্য", label: "Bank" },
   ];
 
   const raw = readFileSync(join(process.cwd(), FILE), "utf8").replace(/^\uFEFF/, "");
@@ -456,17 +457,17 @@ export async function seedCorrectedShondhi(prisma: PrismaClient): Promise<number
   if (!bcsEcosystem || !bbEcosystem) throw new Error("Ecosystems not found");
 
   const bcsSubject = await prisma.subject.findFirst({
-    where: { ecosystemId: bcsEcosystem.id, nameBn: "বাংলা ভাষা ও সাহিত্য" },
+    where: { ecosystemId: bcsEcosystem.id, nameBn: { in: BANGLA_SUBJECT_NAMEBNS } },
   });
   const bbSubject = await prisma.subject.findFirst({
-    where: { ecosystemId: bbEcosystem.id, nameBn: "01_Bangla_Language_and_Literature" },
+    where: { ecosystemId: bbEcosystem.id, nameBn: { in: BANGLA_SUBJECT_NAMEBNS } },
   });
   if (!bcsSubject) throw new Error("BCS subject not found");
   if (!bbSubject) throw new Error("Bank subject not found");
 
   const ecosystems: ShondhiEcosystem[] = [
     { id: bcsEcosystem.id, subjectId: bcsSubject.id, prefix: "01_বাংলা_ভাষা_ও_সাহিত্য", label: "BCS" },
-    { id: bbEcosystem.id, subjectId: bbSubject.id, prefix: "01_Bangla_Language_and_Literature", label: "Bank" },
+    { id: bbEcosystem.id, subjectId: bbSubject.id, prefix: "01_বাংলা_ভাষা_ও_সাহিত্য", label: "Bank" },
   ];
 
   const originalRaw = readFileSync(join(process.cwd(), FILE), "utf8").replace(/^\uFEFF/, "");

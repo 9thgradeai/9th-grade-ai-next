@@ -12,11 +12,13 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
   BB_BANGLA_ROOT,
+  BB_BANGLA_ROOT_LATIN,
   BB_BANGLA_ROOT_LEGACY,
   mapBankQuestionPath,
   classifyPartsOfSpeech,
   classifyCorrections,
 } from "../../../scripts/bank-taxonomy-mapping";
+import { BB_SUBJECT_META } from "../../../scripts/taxonomy";
 
 type TaxonomyNode = { name: string; children: TaxonomyNode[] };
 
@@ -39,7 +41,7 @@ const NODE_PATHS: Set<string> = (() => {
 describe("bb-taxonomy.json", () => {
   it("exposes the revised Bangla subject root and the grouped grammar leaves", () => {
     expect(TAXONOMY.children.map((c) => c.name)).toEqual([
-      "01_Bangla_Language_and_Literature",
+      "01_বাংলা_ভাষা_ও_সাহিত্য",
       "02_English_Language_and_Literature",
       "03_Mathematics",
       "04_Analytical_Skills",
@@ -49,6 +51,26 @@ describe("bb-taxonomy.json", () => {
     expect(NODE_PATHS.has(`${BB_BANGLA_ROOT}/ভাষা/শব্দতত্ত্ব/সমাস`)).toBe(true);
     expect(NODE_PATHS.has(`${BB_BANGLA_ROOT}/ভাষা/ধ্বনিতত্ত্ব/সন্ধি_বা_ধ্বনিসংযোগ`)).toBe(true);
     expect(NODE_PATHS.has(`${BB_BANGLA_ROOT}/ভাষা/অর্থতত্ত্ব_ও_শব্দভাণ্ডার/এককথায়_প্রকাশ`)).toBe(true);
+  });
+
+  // The 2026-10-23 drift guard: BB_SUBJECT_META architected the seed upsert
+  // key (seed-bb-subjects.ts matches `architectureName` against this JSON and
+  // upserts the Subject row on `nameBn`). When the JSON moved to the
+  // BCS-canonical root and the metadata did not, `prisma db seed` threw
+  // "BB taxonomy drift" and both CI database jobs went red (ADR-070).
+  it("keeps BB_SUBJECT_META in lockstep with the JSON roots", () => {
+    const jsonRoots = TAXONOMY.children.map((c) => c.name);
+    expect(BB_SUBJECT_META.map((m) => m.architectureName)).toEqual(jsonRoots);
+    expect(BB_SUBJECT_META.map((m) => m.nameBn)).toEqual(jsonRoots);
+  });
+
+  it("still maps rows written under the superseded latin root", () => {
+    const mapped = mapBankQuestionPath({
+      path: `${BB_BANGLA_ROOT_LATIN}/ভাষা/সমার্থক_শব্দ`,
+      subtopic: "",
+      question: "q",
+    });
+    expect(mapped).toBe(`${BB_BANGLA_ROOT}/ভাষা/অর্থতত্ত্ব_ও_শব্দভাণ্ডার/সমার্থক_শব্দ`);
   });
 });
 

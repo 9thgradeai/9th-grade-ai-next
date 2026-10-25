@@ -21,6 +21,7 @@
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
 import { randomUUID } from "crypto";
+import { BANGLA_SUBJECT_NAMEBNS } from "./taxonomy";
 
 const prisma = new PrismaClient();
 
@@ -38,10 +39,10 @@ async function main() {
   if (!bcsEco || !bankEco) throw new Error("Ecosystems missing");
 
   const bcsBangla = await prisma.subject.findFirst({
-    where: { ecosystemId: bcsEco.id, nameBn: "বাংলা ভাষা ও সাহিত্য" },
+    where: { ecosystemId: bcsEco.id, nameBn: { in: BANGLA_SUBJECT_NAMEBNS } },
   });
   const bankBangla = await prisma.subject.findFirst({
-    where: { ecosystemId: bankEco.id, nameBn: "01_Bangla_Language_and_Literature" },
+    where: { ecosystemId: bankEco.id, nameBn: { in: BANGLA_SUBJECT_NAMEBNS } },
   });
   if (!bcsBangla || !bankBangla) throw new Error("Bangla subjects missing");
 

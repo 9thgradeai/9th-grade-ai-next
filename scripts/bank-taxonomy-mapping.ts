@@ -9,7 +9,9 @@
  *
  * Revision 2026-10-22 (source: database/data/Bank/Taxonomy/Updated/Taxonomy.txt):
  *   • the Bangla subject root became `01_Bangla_Language_and_Literature`
- *     (was `০১_বাংলা_ভাষা_ও_সাহিত্য`);
+ *     (was `০১_বাংলা_ভাষা_ও_সাহিত্য`) — then, with the exact-canonical
+ *     taxonomy (2026-10-23), both ecosystems converged on the BCS-canonical
+ *     `01_বাংলা_ভাষা_ও_সাহিত্য` (ADR-070);
  *   • the flat `ভাষা/` grammar leaves were regrouped into
  *     শব্দতত্ত্ব · ধ্বনিতত্ত্ব · বাক্যতত্ত্ব · অর্থতত্ত্ব_ও_শব্দভাণ্ডার · অন্যান্য_আলোচ্য_বিষয়.
  *
@@ -25,15 +27,22 @@
  */
 
 // ── Subject roots (must match database/data/bb-taxonomy.json) ──────────────
-export const BB_BANGLA_ROOT = "01_Bangla_Language_and_Literature";
+export const BB_BANGLA_ROOT = "01_বাংলা_ভাষা_ও_সাহিত্য";
 export const BB_ENGLISH_ROOT = "02_English_Language_and_Literature";
 export const BB_MATH_ROOT = "03_Mathematics";
 export const BB_ANALYTICAL_ROOT = "04_Analytical_Skills";
 export const BB_ICT_ROOT = "05_ICT";
 export const BB_FINANCIAL_ROOT = "06_Financial_Knowledge";
 
-/** Legacy Bangla subject root (pre-2026-10-22 revision). */
+/** Legacy Bangla subject root (pre-2026-10-22 revision, Bengali digits). */
 export const BB_BANGLA_ROOT_LEGACY = "০১_বাংলা_ভাষা_ও_সাহিত্য";
+/** Superseded Bangla subject root (ADR-068 revision, latin) — still accepted
+ * as INPUT so rows written by an ADR-068-era importer keep mapping; outputs
+ * always carry BB_BANGLA_ROOT. */
+export const BB_BANGLA_ROOT_LATIN = "01_Bangla_Language_and_Literature";
+
+/** Every Bangla root spelling a live or historical Question.path may carry. */
+const BANGLA_ROOTS = new Set<string>([BB_BANGLA_ROOT, BB_BANGLA_ROOT_LEGACY, BB_BANGLA_ROOT_LATIN]);
 
 // ── English leaves ─────────────────────────────────────────────────────────
 export const ENG_NOUN = "Noun_Pronoun_Determiner_Gender_Number";
@@ -278,7 +287,7 @@ export function mapBankQuestionPath(args: {
   const segs = path.split("/");
   const root = segs[0];
 
-  if (root === BB_BANGLA_ROOT_LEGACY || root === BB_BANGLA_ROOT) {
+  if (BANGLA_ROOTS.has(root)) {
     const rest = segs.slice(1);
     if (rest[0] === "সাহিত্য") {
       // The revised taxonomy has no leaf for the literary-history sets

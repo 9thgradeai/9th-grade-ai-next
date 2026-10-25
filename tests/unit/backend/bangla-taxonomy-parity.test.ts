@@ -18,7 +18,7 @@ import { join } from "node:path";
 type Node = { name: string; children: Node[] };
 
 const BCS_ROOT = "01_বাংলা_ভাষা_ও_সাহিত্য";
-const BANK_ROOT = "01_Bangla_Language_and_Literature";
+const BANK_ROOT = "01_বাংলা_ভাষা_ও_সাহিত্য";
 
 function load(file: string): Node {
   return JSON.parse(readFileSync(join(process.cwd(), file), "utf8")) as Node;

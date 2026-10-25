@@ -15,7 +15,7 @@
 
 import type { ExamConfig, SubjectNode, TopicNode } from "./types";
 
-const BANGLA = "01_Bangla_Language_and_Literature";
+const BANGLA = "01_বাংলা_ভাষা_ও_সাহিত্য";
 const ENGLISH = "02_English_Language_and_Literature";
 const MATH = "03_Mathematics";
 const ANALYTICAL = "04_Analytical_Skills";

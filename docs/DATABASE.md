@@ -966,9 +966,9 @@ Seed sources:
 - `database/data/bcs_syllabus/*.md` — syllabus documents.
 - `database/data/ques/questions_database.txt` — raw flat question text for `scripts/seed-questions.ts`.
 - `database/data/ques/<Subject>/<Node>/…/<file>.txt` — folder-structured questions; the folder path IS the taxonomy (each segment matched by NFC-normalised name).
-- `database/data/bcs_syllabus/BCS_Question_Bank_Detailed_*.txt` — **canonical architecture tree** (the source of truth for the topic hierarchy). Regenerate the taxonomy with `npx tsx scripts/generate-taxonomy.ts` after editing it, then rename any `data/ques/` folders that moved.
+- `database/data/bcs_syllabus/BCS_Question_Bank_Detailed_*.txt` — **canonical architecture tree** (the source of truth for the topic hierarchy). Regenerate the taxonomy with `npx tsx scripts/generate-taxonomy.ts` after editing it, then rename any `data/ques/` folders that moved. Its Bangla `ভাষা/` branch carries the grouped ADR-068 grammar tree (শব্দতত্ত্ব · ধ্বনিতত্ত্ব · বাক্যতত্ত্ব · অর্থতত্ত্ব_ও_শব্দভাণ্ডার · অন্যান্য_আলোচ্য_বিষয়) — restored 2026-10-25 (ADR-071); editing the `.txt` and regenerating is the supported way to change the shape, since regeneration round-trips byte-for-byte.
 - `database/data/taxonomy.json` — parsed taxonomy tree driving subject/topic creation, round-robin flat-question distribution, and folder imports via `scripts/taxonomy.ts`.
-- `database/data/Bank/Taxonomy/Bank_Grade9_Question_Bank_Detailed.txt` — **canonical Bank architecture tree** (kept in sync with `database/data/Bank/Taxonomy/Updated/Taxonomy.txt`, the 2026-10-22 revision) (6 subjects, root `Bank_Grade9_Question_Bank_Detailed`). Regenerate with `npx tsx scripts/generate-taxonomy.ts --ecosystem=bank` into `database/data/bb-taxonomy.json`. Subject display names are the architecture node names verbatim (`BB_SUBJECT_META` in `scripts/taxonomy.ts`); topic trees are built by `scripts/seed-bb-subjects.ts` straight from the JSON. Since 2026-10-12 the main `prisma db seed` flow calls `seedBbSubjects()` itself (before the Bangla-Lit/Shondhi/Samarthok importers that address Bank topic paths) — the standalone `npx tsx scripts/seed-bb-subjects.ts` remains for targeted rebuilds.
+- `database/data/Bank/Taxonomy/Bank_Grade9_Question_Bank_Detailed.txt` — **canonical Bank architecture tree** (6 subjects, root `Bank_Grade9_Question_Bank_Detailed`). Regenerate with `npx tsx scripts/generate-taxonomy.ts --ecosystem=bank` into `database/data/bb-taxonomy.json`. Subject display names are the architecture node names verbatim (`BB_SUBJECT_META` in `scripts/taxonomy.ts`); topic trees are built by `scripts/seed-bb-subjects.ts` straight from the JSON. Since 2026-10-12 the main `prisma db seed` flow calls `seedBbSubjects()` itself (before the Bangla-Lit/Shondhi/Samarthok importers that address Bank topic paths) — the standalone `npx tsx scripts/seed-bb-subjects.ts` remains for targeted rebuilds. The Bangla root in the canonical file is `01_বাংলা_ভাষা_ও_সাহিত্য` (BCS-canonical, ADR-070); `database/data/Bank/Taxonomy/Updated/Taxonomy.txt` is the frozen 2026-10-22 revision snapshot and still reads `01_Bangla_Language_and_Literature` there — superseded on that one line, never read by any script. Its Bangla `ভাষা/` branch carries the grouped ADR-068 grammar tree (শব্দতত্ত্ব · ধ্বনিতত্ত্ব · বাক্যতত্ত্ব · অর্থতত্ত্ব_ও_শব্দভাণ্ডার · অন্যান্য_আলোচ্য_বিষয়, 31 nodes), matching production and the paths `mapBankQuestionPath` emits — restored 2026-10-25 because `f4222c6` had regenerated both JSONs from the flat 13-leaf branch (ADR-071). The grouped branch is mirrored in all five architecture listings under `database/data/Bank/Taxonomy/` so no copy can re-flatten it; edit a `.txt`, then regenerate.
 
 ### Bank taxonomy (6 + 1 subjects)
 
@@ -976,7 +976,7 @@ The BANGLADESH_BANK ecosystem has 6 syllabus subjects from the Bank architecture
 
 | # | nameBn (= architecture node) | nameEn |
 |---|---|---|
-| 1 | 01_Bangla_Language_and_Literature | Bangla Language & Literature |
+| 1 | 01_বাংলা_ভাষা_ও_সাহিত্য | Bangla Language & Literature |
 | 2 | 02_English_Language_and_Literature | English Language and Literature |
 | 3 | 03_Mathematics | Mathematics |
 | 4 | 04_Analytical_Skills | Analytical Skills |
@@ -986,7 +986,7 @@ The BANGLADESH_BANK ecosystem has 6 syllabus subjects from the Bank architecture
 
 **Bank taxonomy revision 2026-10-22.** The Bank architecture tree was replaced by the revised tree in `database/data/Bank/Taxonomy/Updated/Taxonomy.txt` (mirrored into the canonical file above and regenerated into `database/data/bb-taxonomy.json`):
 
-- the Bangla subject root became `01_Bangla_Language_and_Literature` (was `০১_বাংলা_ভাষা_ও_সাহিত্য`);
+- the Bangla subject root became `01_Bangla_Language_and_Literature` (was `০১_বাংলা_ভাষা_ও_সাহিত্য`) — **superseded by ADR-070**: the exact-canonical taxonomy of 2026-10-23 converged both ecosystems on `01_বাংলা_ভাষা_ও_সাহিত্য`, and the latin spelling survives only as an input alias in `scripts/bank-taxonomy-mapping.ts`;
 - the flat `ভাষা/` grammar leaves were regrouped into `শব্দতত্ত্ব` · `ধ্বনিতত্ত্ব` · `বাক্যতত্ত্ব` · `অর্থতত্ত্ব_ও_শব্দভাণ্ডার` · `অন্যান্য_আলোচ্য_বিষয়`;
 - the Math `Part_06_Time_Work_and_Speed` group and the ICT `06_Database_and_Information_Systems` / `Digital_Bangladesh_…` topics are gone — their questions were folded onto the closest surviving node.
 

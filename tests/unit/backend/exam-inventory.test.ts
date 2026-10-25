@@ -14,7 +14,7 @@ import {
 import { prisma } from "~backend/db";
 
 const BANGLA = "01_বাংলা_ভাষা_ও_সাহিত্য";
-const BANK_BANGLA = "01_Bangla_Language_and_Literature";
+const BANK_BANGLA = "01_বাংলা_ভাষা_ও_সাহিত্য";
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -31,7 +31,7 @@ describe("resolveDbSubjectId", () => {
 
   it("falls back to the root segment (Bank subjects are named by root)", () => {
     const id = resolveDbSubjectId(BANK_PRELIMINARY_CONFIG.subjects[1], [
-      { id: 4958, nameBn: "01_Bangla_Language_and_Literature" },
+      { id: 4958, nameBn: "01_বাংলা_ভাষা_ও_সাহিত্য" },
     ]);
     expect(id).toBe(4958);
   });
@@ -118,7 +118,7 @@ describe("materializeScope", () => {
 
   it("folds the cross-ecosystem Bangla pool into a Bangla subject by suffix", () => {
     // Bank scope sees BCS Bangla rows (sibling pool) matched by suffix.
-    const bankSubjects = [{ id: 4958, nameBn: "01_Bangla_Language_and_Literature" }];
+    const bankSubjects = [{ id: 4958, nameBn: "01_বাংলা_ভাষা_ও_সাহিত্য" }];
     const inv: EcosystemInventory = {
       ecosystemCode: "BANGLADESH_BANK",
       ecosystemId: 2,

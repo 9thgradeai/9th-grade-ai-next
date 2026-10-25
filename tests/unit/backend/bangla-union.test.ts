@@ -11,6 +11,9 @@ import {
 describe("isBanglaSubjectName (Bangla-only gate)", () => {
   it("matches BCS + Bank + legacy Bangla subjects", () => {
     expect(isBanglaSubjectName("বাংলা ভাষা ও সাহিত্য")).toBe(true);
+    // Live nameBn in BOTH ecosystems since the exact-canonical taxonomy.
+    expect(isBanglaSubjectName("01_বাংলা_ভাষা_ও_সাহিত্য")).toBe(true);
+    // Superseded latin spelling — rows/subjects may still carry it.
     expect(isBanglaSubjectName("01_Bangla_Language_and_Literature")).toBe(true);
     expect(isBanglaSubjectName("বাংলা ব্যাকরণ ও সাহিত্য")).toBe(true);
   });
@@ -37,6 +40,9 @@ describe("pathSuffix", () => {
 const BCS = 1;
 const BANK = 7;
 const BCS_ROOT = "01_বাংলা_ভাষা_ও_সাহিত্য";
+// Deliberately the SUPERSEDED latin spelling: suffix pairing must work across
+// two different root spellings, which is what makes pre-rename rows pair with
+// post-rename ones. Same-spelling roots are covered by BCS_ROOT above.
 const BANK_ROOT = "01_Bangla_Language_and_Literature";
 
 function leafCounts(): Map<number, Map<string, number>> {

@@ -232,13 +232,13 @@ describe("buildCustomExam", () => {
     });
   });
 
-  it("keeps a Bank Bangla node with zero own rows when the BCS union has them", async () => {
-    const BANK = "01_Bangla_Language_and_Literature";
+  it("keeps selection-tree counts strictly per ecosystem (no sibling fold)", async () => {
+    const BANK = "01_বাংলা_ভাষা_ও_সাহিত্য";
     const BCS_ROOT = "01_বাংলা_ভাষা_ও_সাহিত্য";
     vi.mocked(prisma.subject.findMany).mockImplementation((async (args: never) => {
       const hasSelect = !!(args as { select?: unknown } | undefined)?.select;
       const all = [
-        { id: 1, nameBn: "বাংলা ভাষা ও সাহিত্য" },
+        { id: 1, nameBn: "01_বাংলা_ভাষা_ও_সাহিত্য" },
         { id: 7, nameBn: BANK },
       ];
       // Bangla detection (select) sees both ecosystems; the tree list is Bank-only.
@@ -254,13 +254,16 @@ describe("buildCustomExam", () => {
 
     const tree = await getExamSelectionTree(2);
     expect(tree).toHaveLength(1);
-    expect(tree[0].questionCount).toBe(40);
-    expect(tree[0].nodes[0]).toMatchObject({ name: "ভাষা", questionCount: 40 });
-    expect(tree[0].nodes[0].children[0]).toMatchObject({ name: "বানান", questionCount: 40 });
+    // Strict per-ecosystem view: the PICKER counts only this ecosystem's own
+    // rows (d3dc858), so a Bank node whose rows live only in the BCS pool
+    // reports 0 and is pruned. The union still serves those questions — see
+    // "builds a Bank Bangla exam from BCS union rows" below.
+    expect(tree[0].questionCount).toBe(0);
+    expect(tree[0].nodes).toHaveLength(0);
   });
 
   it("builds a Bank Bangla exam from BCS union rows", async () => {
-    const BANK = "01_Bangla_Language_and_Literature";
+    const BANK = "01_বাংলা_ভাষা_ও_সাহিত্য";
     const BCS_ROOT = "01_বাংলা_ভাষা_ও_সাহিত্য";
     vi.mocked(prisma.subject.findMany).mockResolvedValue([
       { id: 1, nameBn: "বাংলা ভাষা ও সাহিত্য" },

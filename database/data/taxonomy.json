@@ -8,95 +8,221 @@
           "name": "ভাষা",
           "children": [
             {
-              "name": "প্রয়োগ-অপপ্রয়োগ",
-              "children": [],
-              "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/প্রয়োগ-অপপ্রয়োগ",
-              "depth": 3,
-              "leaf": true
+              "name": "শব্দতত্ত্ব",
+              "children": [
+                {
+                  "name": "পদ_ও_পদ_পরিবর্তন",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/শব্দতত্ত্ব/পদ_ও_পদ_পরিবর্তন",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "কারক_ও_বিভক্তি",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/শব্দতত্ত্ব/কারক_ও_বিভক্তি",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "সমাস",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/শব্দতত্ত্ব/সমাস",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "প্রকৃতি_ও_প্রত্যয়",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/শব্দতত্ত্ব/প্রকৃতি_ও_প্রত্যয়",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "উপসর্গ_ও_অনুসর্গ",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/শব্দতত্ত্ব/উপসর্গ_ও_অনুসর্গ",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "বচন_ও_লিঙ্গ",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/শব্দতত্ত্ব/বচন_ও_লিঙ্গ",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "শব্দরূপ_ও_শব্দদ্বৈত",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/শব্দতত্ত্ব/শব্দরূপ_ও_শব্দদ্বৈত",
+                  "depth": 4,
+                  "leaf": true
+                }
+              ],
+              "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/শব্দতত্ত্ব",
+              "depth": 3
             },
             {
-              "name": "বানান_ও_বাক্য_শুদ্ধি",
-              "children": [],
-              "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/বানান_ও_বাক্য_শুদ্ধি",
-              "depth": 3,
-              "leaf": true
+              "name": "ধ্বনিতত্ত্ব",
+              "children": [
+                {
+                  "name": "সন্ধি_বা_ধ্বনিসংযোগ",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/ধ্বনিতত্ত্ব/সন্ধি_বা_ধ্বনিসংযোগ",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "ণ-ত্ব_ও_ষ-ত্ব_বিধি",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/ধ্বনিতত্ত্ব/ণ-ত্ব_ও_ষ-ত্ব_বিধি",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "ধ্বনি_উচ্চারণপ্রণালী_ও_উচ্চারণের_স্থান",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/ধ্বনিতত্ত্ব/ধ্বনি_উচ্চারণপ্রণালী_ও_উচ্চারণের_স্থান",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "ধ্বনির_পরিবর্তন_ও_লোপ",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/ধ্বনিতত্ত্ব/ধ্বনির_পরিবর্তন_ও_লোপ",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "ধ্বনির_প্রতীক_বা_বর্ণের_বিন্যাস",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/ধ্বনিতত্ত্ব/ধ্বনির_প্রতীক_বা_বর্ণের_বিন্যাস",
+                  "depth": 4,
+                  "leaf": true
+                }
+              ],
+              "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/ধ্বনিতত্ত্ব",
+              "depth": 3
             },
             {
-              "name": "পরিভাষা",
-              "children": [],
-              "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/পরিভাষা",
-              "depth": 3,
-              "leaf": true
+              "name": "বাক্যতত্ত্ব",
+              "children": [
+                {
+                  "name": "বাক্য_ও_বাক্যবিন্যাস",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/বাক্যতত্ত্ব/বাক্য_ও_বাক্যবিন্যাস",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "পদবিন্যাস",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/বাক্যতত্ত্ব/পদবিন্যাস",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "বাচ্য",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/বাক্যতত্ত্ব/বাচ্য",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "ছেদচিহ্ন_বা_বিরামচিহ্ন",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/বাক্যতত্ত্ব/ছেদচিহ্ন_বা_বিরামচিহ্ন",
+                  "depth": 4,
+                  "leaf": true
+                }
+              ],
+              "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/বাক্যতত্ত্ব",
+              "depth": 3
             },
             {
-              "name": "সমার্থক_শব্দ",
-              "children": [],
-              "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/সমার্থক_শব্দ",
-              "depth": 3,
-              "leaf": true
+              "name": "অর্থতত্ত্ব_ও_শব্দভাণ্ডার",
+              "children": [
+                {
+                  "name": "সমার্থক_শব্দ",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/অর্থতত্ত্ব_ও_শব্দভাণ্ডার/সমার্থক_শব্দ",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "বিপরীতার্থক_শব্দ",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/অর্থতত্ত্ব_ও_শব্দভাণ্ডার/বিপরীতার্থক_শব্দ",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "এককথায়_প্রকাশ",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/অর্থতত্ত্ব_ও_শব্দভাণ্ডার/এককথায়_প্রকাশ",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "বাগধারা_ও_প্রবাদ_প্রবচন",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/অর্থতত্ত্ব_ও_শব্দভাণ্ডার/বাগধারা_ও_প্রবাদ_প্রবচন",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "প্রয়োগ-অপপ্রয়োগ",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/অর্থতত্ত্ব_ও_শব্দভাণ্ডার/প্রয়োগ-অপপ্রয়োগ",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "পরিভাষা",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/অর্থতত্ত্ব_ও_শব্দভাণ্ডার/পরিভাষা",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "শব্দের_অর্থবিচার_ও_বাক্যের_অর্থবিচার",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/অর্থতত্ত্ব_ও_শব্দভাণ্ডার/শব্দের_অর্থবিচার_ও_বাক্যের_অর্থবিচার",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "অর্থের_প্রকারভেদ_মুখ্যার্থ_ও_গৌণার্থ",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/অর্থতত্ত্ব_ও_শব্দভাণ্ডার/অর্থের_প্রকারভেদ_মুখ্যার্থ_ও_গৌণার্থ",
+                  "depth": 4,
+                  "leaf": true
+                }
+              ],
+              "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/অর্থতত্ত্ব_ও_শব্দভাণ্ডার",
+              "depth": 3
             },
             {
-              "name": "বিপরীতার্থক_শব্দ",
-              "children": [],
-              "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/বিপরীতার্থক_শব্দ",
-              "depth": 3,
-              "leaf": true
-            },
-            {
-              "name": "ধ্বনি",
-              "children": [],
-              "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/ধ্বনি",
-              "depth": 3,
-              "leaf": true
-            },
-            {
-              "name": "বর্ণ",
-              "children": [],
-              "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/বর্ণ",
-              "depth": 3,
-              "leaf": true
-            },
-            {
-              "name": "শব্দ",
-              "children": [],
-              "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/শব্দ",
-              "depth": 3,
-              "leaf": true
-            },
-            {
-              "name": "পদ",
-              "children": [],
-              "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/পদ",
-              "depth": 3,
-              "leaf": true
-            },
-            {
-              "name": "বাক্য",
-              "children": [],
-              "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/বাক্য",
-              "depth": 3,
-              "leaf": true
-            },
-            {
-              "name": "প্রত্যয়",
-              "children": [],
-              "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/প্রত্যয়",
-              "depth": 3,
-              "leaf": true
-            },
-            {
-              "name": "সন্ধি",
-              "children": [],
-              "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/সন্ধি",
-              "depth": 3,
-              "leaf": true
-            },
-            {
-              "name": "সমাস",
-              "children": [],
-              "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/সমাস",
-              "depth": 3,
-              "leaf": true
+              "name": "অন্যান্য_আলোচ্য_বিষয়",
+              "children": [
+                {
+                  "name": "অভিধান",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/অন্যান্য_আলোচ্য_বিষয়/অভিধান",
+                  "depth": 4,
+                  "leaf": true
+                },
+                {
+                  "name": "ছন্দ_ও_অলংকার",
+                  "children": [],
+                  "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/অন্যান্য_আলোচ্য_বিষয়/ছন্দ_ও_অলংকার",
+                  "depth": 4,
+                  "leaf": true
+                }
+              ],
+              "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/অন্যান্য_আলোচ্য_বিষয়",
+              "depth": 3
             }
           ],
           "path": "/BCS_Question_Bank_Detailed/01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা",

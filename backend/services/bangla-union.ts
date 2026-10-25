@@ -1,23 +1,26 @@
 // backend/services/bangla-union.ts — Bangla-only cross-ecosystem question union.
 //
-// Product rule: the BCS Bangla pool ("বাংলা ভাষা ও সাহিত্য") is shared into the
-// Bank Bangla subject ("01_Bangla_Language_and_Literature") and vice versa, so Practice
-// (quick fetch + custom-exam build) sees one combined Bangla pool. ONLY Bangla
-// subjects participate — every other subject keeps strict ecosystem isolation.
+// Product rule: the BCS Bangla pool (subject `01_বাংলা_ভাষা_ও_সাহিত্য`) is
+// shared into the Bank Bangla subject (same nameBn, id 4958) and vice versa, so
+// Practice (quick fetch + custom-exam build) sees one combined Bangla pool. ONLY
+// Bangla subjects participate — every other subject keeps strict ecosystem
+// isolation.
 //
-// Why suffix mapping: the two taxonomies use different root segments
-// (BCS `01_বাংলা_ভাষা_ও_সাহিত্য/…` vs Bank `01_Bangla_Language_and_Literature/…`), so an
-// absolute path selected on one side never matches rows on the other. Leaves
-// are matched by taxonomy-relative suffix (everything after the first `/`),
-// exact or subtree, computed in JS over absolute paths — no LIKE games.
+// Why suffix mapping: an absolute path selected on one side never matches rows
+// on the other side's ecosystem, and paths written before the exact-canonical
+// rename still carry a different root segment (`01_Bangla_Language_and_Literature`,
+// `০১_…`). Leaves are therefore matched by taxonomy-relative suffix (everything
+// after the first `/`), exact or subtree, computed in JS over absolute paths —
+// no LIKE games.
 
 import "server-only";
 
 import { prisma } from "~backend/db";
 
 /** True for Bangla language/literature subjects in any ecosystem. The second
- * clause excludes lookalikes such as "বাংলাদেশ বিষয়াবলি". The Bank subject
- * uses the latin root segment (`01_Bangla_Language_and_Literature`), so both
+ * clause excludes lookalikes such as "বাংলাদেশ বিষয়াবলি". The subject nameBn
+ * has been spelled three ways (`01_বাংলা_ভাষা_ও_সাহিত্য`, `বাংলা ভাষা ও সাহিত্য`,
+ * `01_Bangla_Language_and_Literature` — see BANGLA_SUBJECT_NAMEBNS), so both
  * scripts are accepted. */
 export function isBanglaSubjectName(nameBn: string | null | undefined): boolean {
   if (!nameBn) return false;
@@ -30,7 +33,7 @@ export function isBanglaSubjectName(nameBn: string | null | undefined): boolean 
 }
 
 /** Taxonomy-relative suffix: everything after the first path segment
- * ("01_Bangla…/ভাষা/বানান" → "ভাষা/বানান"). Paths without "/" have no suffix. */
+ * ("01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/বানান" → "ভাষা/বানান"). Paths without "/" have no suffix. */
 export function pathSuffix(path: string): string {
   const i = path.indexOf("/");
   return i < 0 ? "" : path.slice(i + 1);
