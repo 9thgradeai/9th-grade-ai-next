@@ -63,6 +63,16 @@ None · Small.
 **P-D3** · UI · Token bypasses (`CommandPalette`, `AppNavbar` black/white, raw `z-50/z-40`) · Light-theme
 breakage · Consistency · Medium · File:line list in UX audit · Tokenize · None · Small.
 
+**P-D4** · Data pipeline · `scripts/import-bangla-vasha.ts:158-215` — `parseLineTolerant` Repairs 2 & 3 ·
+The doctored line is `line.slice(0, ansEnd) + <letter>`, which truncates everything after `Ans.`,
+including `ব্যাখ্যা: …`, so the explanation the code had just split off is never spliced back · The repair
+re-uses the strict parser for question/option extraction but not for the explanation tail · A
+gloss-answer record ("Ans. ক. সত্যায়িত / প্রত্যয়িত") returns `explanation:""`, the gate then REJECTs it
+as `EMPTY_EXPLANATION`, and the MCQ never lands in the bank · Medium · Terminology records ১২, ৫৭,
+১১২ are absent from both ecosystems (absent from the older `.txt` import too) · Re-splice
+` ${tail.slice(explIdx)}` after the letter — the pattern `import-bangla-grammar-ii.ts` ships as
+`repairAnswerByLetter` · None · Trivial.
+
 **P-C1** · Content/Data · `MockTestResult(mockTestId=null)` mixes exam + mock rows · History ambiguity ·
 Analytics · Low · Schema note · Add `kind` discriminator · Migration · Small.
 
