@@ -4,9 +4,16 @@
  * Imports 200 সমার্থক-শব্দ (synonym) MCQs from
  *   database/data/ques/বাংলা ভাষা ও সাহিত্য/ভাষা/Bangla Grammar /Questions(সমার্থক শব্দ).txt
  * for BOTH BCS and Bank ecosystems under the canonical leaf:
- *   BCS : 01_বাংলা_ভাষা_ও_সাহিত্য/ভাষা/অর্থতত্ত্ব_ও_শব্দভাণ্ডার/সমার্থক_শব্দ
- *   Bank: 01_Bangla_Language_and_Literature/ভাষা/অর্থতত্ত্ব_ও_শব্দভাণ্ডার/সমার্থক_শব্দ
- * with topicId pointing at the leaf Topic row (upserted here when missing).
+ *   <subject-root>/ভাষা/অর্থতত্ত্ব_ও_শব্দভাণ্ডার/সমার্থক_শব্দ
+ * with topicId pointing at the leaf Topic row (its parent chain is upserted
+ * here when missing, so the row lands under অর্থতত্ত্ব_ও_শব্দভাণ্ডার rather than
+ * as a direct child of ভাষা).
+ *
+ * The subject root segment is resolved from the live topic tree (the subject
+ * that owns a `<root>/ভাষা` branch) instead of a hardcoded `nameBn`/prefix:
+ * both ecosystems are currently named `01_বাংলা_ভাষা_ও_সাহিত্য`, which the
+ * previous hardcoded names (`বাংলা ভাষা ও সাহিত্য` / `01_Bangla_Language_and_Literature`)
+ * no longer matched — this seed would throw on lookup.
  *
  * File format: 4-line blocks —
  *   `<num>. <question>`
@@ -16,19 +23,26 @@
  *
  * NON-DESTRUCTIVE: rows keyed by md5(subjectId|path|question), identical to
  * scripts/seed-shondhi.ts. Uses the shared import gate for Unicode validation.
+ * Re-running when the 200 rows are already at the leaf is a no-op.
  *
  * Run: npx tsx scripts/seed-samarthok.ts
  * ----------------------------------------------------------------------------
  */
 import { readFileSync } from "fs";
 import { join } from "path";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, type Topic } from "@prisma/client";
 import { sourceKey } from "./seed-keys";
 import { scanMca, mcaSignature } from "./qb-forensics/import-gate";
 import { seedParsedShondhi, type ShondhiEcosystem, type ParsedShondhiQuestion } from "./seed-shondhi";
 
 const FILE =
   "database/data/ques/বাংলা ভাষা ও সাহিত্য/ভাষা/Bangla Grammar /Questions(সমার্থক শব্দ).txt";
+
+/** Canonical taxonomy, relative to the subject's `ভাষা` branch. The group
+ * segment must be part of the path — dropping it parked the 200 rows as a
+ * direct child of ভাষা (see repair-samarthok-placement.ts). */
+const ORTHO_GROUP = "অর্থতত্ত্ব_ও_শব্দভাণ্ডার";
+const SYNONYM_LEAF = "সমার্থক_শব্দ";
 
 const OPT_RE =
   /^ক\.\s*(.+?)\s+খ\.\s*(.+?)\s+গ\.\s*(.+?)\s+ঘ\.\s*(.+?)\s*$/u;
@@ -99,14 +113,31 @@ export async function seedSamarthokQuestions(prisma: PrismaClient): Promise<numb
   const bbEcosystem = await prisma.examEcosystem.findUnique({ where: { code: "BANGLADESH_BANK" } });
   if (!bcsEcosystem || !bbEcosystem) throw new Error("Ecosystems not found");
 
-  const bcsSubject = await prisma.subject.findFirst({
-    where: { ecosystemId: bcsEcosystem.id, nameBn: "বাংলা ভাষা ও সাহিত্য" },
-  });
-  const bbSubject = await prisma.subject.findFirst({
-    where: { ecosystemId: bbEcosystem.id, nameBn: "01_Bangla_Language_and_Literature" },
-  });
-  if (!bcsSubject) throw new Error("BCS subject not found");
-  if (!bbSubject) throw new Error("Bank subject not found");
+  const TOPIC = "ভাষা";
+  // Canonical leaf, relative to the ভাষা branch: the group segment must be part
+  // of the path or the row lands as a direct child of ভাষা instead of under
+  // অর্থতত্ত্ব_ও_শব্দভাণ্ডার (the Practice tab then shows it at the wrong level).
+  const LEAF = `${ORTHO_GROUP}/${SYNONYM_LEAF}`;
+
+  /** The Bangla subject of an ecosystem = the one owning a `<root>/ভাষা`
+   * branch; its root segment is derived from that topic's path. Resolving it
+   * from the tree (rather than nameBn) survives subject renames. */
+  const resolveBangla = async (ecosystemId: number, label: string) => {
+    const hits = await prisma.topic.findMany({
+      where: { path: { endsWith: `/${TOPIC}` }, subject: { ecosystemId } },
+      select: { path: true, subjectId: true },
+    });
+    if (hits.length !== 1) {
+      throw new Error(
+        `${label}: expected exactly 1 subject with a "${TOPIC}" branch, found ${hits.length}`,
+      );
+    }
+    const { path, subjectId } = hits[0];
+    return { subjectId, prefix: path.slice(0, path.length - TOPIC.length - 1) };
+  };
+
+  const bcs = await resolveBangla(bcsEcosystem.id, "BCS");
+  const bb = await resolveBangla(bbEcosystem.id, "Bank");
 
   // NOTE: leaf here is সমার্থক_শব্দ (taxonomy canonical), while seed-shondhi's
   // internal TOPIC/LEAF constants target সন্ধি — so we seed via a local path
@@ -117,8 +148,8 @@ export async function seedSamarthokQuestions(prisma: PrismaClient): Promise<numb
   void seedParsedShondhi;
 
   const ecosystems: ShondhiEcosystem[] = [
-    { id: bcsEcosystem.id, subjectId: bcsSubject.id, prefix: "01_বাংলা_ভাষা_ও_সাহিত্য", label: "BCS" },
-    { id: bbEcosystem.id, subjectId: bbSubject.id, prefix: "01_Bangla_Language_and_Literature", label: "Bank" },
+    { id: bcsEcosystem.id, subjectId: bcs.subjectId, prefix: bcs.prefix, label: "BCS" },
+    { id: bbEcosystem.id, subjectId: bb.subjectId, prefix: bb.prefix, label: "Bank" },
   ];
 
   const raw = readFileSync(join(process.cwd(), FILE), "utf8");
@@ -147,8 +178,6 @@ export async function seedSamarthokQuestions(prisma: PrismaClient): Promise<numb
   }
   console.log(`  parsed=${rawParsed.length} accepted=${accepted.length} rejected=${rejected}`);
 
-  const TOPIC = "ভাষা";
-  const LEAF = "সমার্থক_শব্দ";
   let totalInserted = 0;
 
   const sigsByEcosystem = new Map<number, Set<string>>();
@@ -168,29 +197,40 @@ export async function seedSamarthokQuestions(prisma: PrismaClient): Promise<numb
   }
 
   for (const eco of ecosystems) {
-    const parentPath = `${eco.prefix}/${TOPIC}`;
-    const parent = await prisma.topic.findUnique({
-      where: { subjectId_path: { subjectId: eco.subjectId, path: parentPath } },
-    });
-    if (!parent) throw new Error(`Parent topic missing: subject ${eco.subjectId} path "${parentPath}"`);
-    // The revised Bank taxonomy nests this leaf under অর্থতত্ত্ব_ও_শব্দভাণ্ডার.
     const segments = LEAF.split("/").filter(Boolean);
-    const path = `${parentPath}/${segments.join("/")}`;
     const leafName = segments[segments.length - 1];
-    const leaf = await prisma.topic.upsert({
-      where: { subjectId_path: { subjectId: eco.subjectId, path } },
-      update: { name: leafName, slug: leafName, depth: parent.depth + 1, parentId: parent.id },
-      create: {
-        subjectId: eco.subjectId,
-        name: leafName,
-        slug: leafName,
-        path,
-        depth: parent.depth + 1,
-        sortOrder: 0,
-        parentId: parent.id,
-        questionCount: 0,
-      },
+
+    // Walk the leaf segments one at a time so the group node
+    // (অর্থতত্ত্ব_ও_শব্দভাণ্ডার) hangs off ভাষা and সমার্থক_শব্দ hangs off the group.
+    // A single upsert of the full path would have given the leaf the ভাষা
+    // topic as parent (depth+1), i.e. exactly the mis-placement the repair
+    // script exists to undo.
+    const startPath = `${eco.prefix}/${TOPIC}`;
+    const root = await prisma.topic.findUnique({
+      where: { subjectId_path: { subjectId: eco.subjectId, path: startPath } },
     });
+    if (!root) throw new Error(`Parent topic missing: subject ${eco.subjectId} path "${startPath}"`);
+
+    let path = startPath;
+    let parent: Topic = root;
+    for (const seg of segments) {
+      path = `${path}/${seg}`;
+      parent = await prisma.topic.upsert({
+        where: { subjectId_path: { subjectId: eco.subjectId, path } },
+        update: { name: seg, slug: seg, depth: parent.depth + 1, parentId: parent.id },
+        create: {
+          subjectId: eco.subjectId,
+          name: seg,
+          slug: seg,
+          path,
+          depth: parent.depth + 1,
+          sortOrder: 0,
+          parentId: parent.id,
+          questionCount: 0,
+        },
+      });
+    }
+    const leaf = parent;
 
     const existing = await prisma.question.findMany({
       where: { subjectId: eco.subjectId },
@@ -218,7 +258,7 @@ export async function seedSamarthokQuestions(prisma: PrismaClient): Promise<numb
         topicId: leaf.id,
         path,
         topic: TOPIC,
-        subtopic: LEAF,
+        subtopic: leafName,
         question: p.question,
         options: p.options,
         correctAnswer: p.correctAnswer,

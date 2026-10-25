@@ -60,6 +60,11 @@ const ALLOWLIST: Record<
       "re-points topicId / questionCount only — creates the missing Topic rows for questions whose path lost its node (no text writes)",
     allowedTextFields: [],
   },
+  "scripts/repair-samarthok-placement.ts": {
+    reason:
+      "re-homes existing rows between leaves (path/topicId, and sourceKey only when it is provably md5 of the damaged path) plus a Topic.questionCount refresh — moves rows, never writes question text",
+    allowedTextFields: [],
+  },
   "scripts/update-bcs-terms.ts": {
     reason: "bcsTerm metadata only (no text writes)",
     allowedTextFields: [],
