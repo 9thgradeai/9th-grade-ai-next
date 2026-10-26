@@ -1499,3 +1499,16 @@ export type AllocationDiagnosticDTO = Server.AllocationDiagnosticDTO;
 export type PaperSubjectPlanDTO = Server.PaperSubjectPlanDTO;
 export type ConfiguredPaperDTO = Server.ConfiguredPaperDTO;
 export type PaperReadinessDTO = Server.PaperReadinessDTO;
+
+// ── Verified MCQ explanation (single server contract, type-only) ─────────
+export type {
+  VerifiedExplanationDto,
+  VerifiedOptionAnalysis,
+  VerifiedEvidence,
+  VerifiedEvidenceRecord,
+  VerifiedDatabaseAudit,
+  VerifiedStatus,
+  VerifiedQuestionValidity,
+  VerifiedOptionVerdict,
+  VerifiedDatabaseAuditStatus,
+} from "./verified-explanation";

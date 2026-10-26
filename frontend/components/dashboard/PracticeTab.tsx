@@ -1491,6 +1491,7 @@ export default function PracticeTab() {
                                         question={q.question}
                                         options={q.options}
                                         correctAnswer={q.correctAnswer}
+                                        selectedAnswers={isUnanswered ? [] : userAnswer}
                                         userAnswer={isUnanswered ? undefined : serializeAnswer(userAnswer)}
                                         subject={q.subject}
                                         topic={q.topic}

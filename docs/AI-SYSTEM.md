@@ -34,6 +34,7 @@ Model resolution is task-driven via `resolveModel(task, { image })`:
 | `POST /api/ai/tutor` | required | **Streaming** teaching turn (SSE-style text stream + headers) |
 | `POST /api/ai/solver` | required | Structured step-by-step solver (`{ solution, steps, explanation, relatedConcept }`) |
 | `POST /api/ai/explain` | required | Post-exam MCQ explanation (`{ correctAnswerExplanation, whyOthersWrong[], keyDefinitions[], relatedConcepts, examTip }`). The system prompt carries an episodic topic-history block (attempts/accuracy/open mistakes on that exact topic from `UserQuestionProgress`, fail-open) so repeat struggles get misconception-level teaching |
+| `POST /api/ai/explain-v2` | required | **Independent, evidence-audited** MCQ verification (`MCQExplanation`). The client sends only `questionId`, its own selection, and the display order; the stored key is read server-side after the finding exists and is audited, never solved from. Falls back to the legacy explanation when disabled or unavailable (see below) |
 | `POST /api/ai/assistant` | required | Structured study guidance (`{ reply, suggestedActions }`) |
 | `POST /api/ai/evaluate` | required | Answer evaluator: grade a learner's written answer (`{ score, verdict, strengths[], gaps[], modelAnswer, improvementTips[] }`), grounded on the curated question bank when `questionId` is supplied |
 | `POST /api/ai/mock-test` | required | AI mock-test generator: produce N multiple-choice questions (`{ title, questions:[{ id, question, options[], answer, explanation, topic, difficulty }] }`) for a subject/exam. Accepts optional `topics` (max 5 `"Subject → Topic"` labels, e.g. from `/api/weak-topics`) — at least half the questions focus on those weak topics; included in the response-cache key |
@@ -47,6 +48,53 @@ Model resolution is task-driven via `resolveModel(task, { image })`:
 | `GET /api/cron/daily-current-affairs` | cron secret | Triggers the Daily Current Affairs agent (see below) — not a user endpoint |
 
 Response headers: `X-AI-Source` (`groq` | `anthropic` | `mock`), `X-Conversation-Id`, `X-AI-Intent`, `X-AI-Model`.
+
+
+## Independent MCQ verification (`explain-v2`)
+
+`frontend/components/dashboard/AIExplanationButton.tsx` tries `POST /api/ai/explain-v2` after a practice answer is submitted. Every failure is recoverable: the UI falls back to the legacy `/api/ai/explain` response, rendered with a visible **“যাচাইকৃত নয় · unverified”** banner. The v2 response renders through `frontend/components/dashboard/ai/VerifiedExplanation.tsx`.
+
+### Trust boundary (staged)
+
+```
+server snapshot (no key) → evidence (untrusted) → solver (no key)
+  → second-pass verifier (no key) → database-key audit (key read HERE) → contract
+```
+
+1. **Snapshot** (`backend/ai/explain-engine/canonical-snapshot.ts`) — loads only non-answer-revealing Prisma columns (`id`, question, options, context). Option IDs are server-derived and stable (`q{id}_o{index}`); `questionVersion` and `contentHash` are content-addressed. The client's `displayOptions` must be a permutation of the stored options (session shuffling is allowed; substituted text is rejected). Bangla/English/Unicode/math text is preserved exactly; NFC is used only for comparisons and NFKC is never applied.
+2. **Evidence** (`evidence/`) — Tavily structured search. URLs are validated syntactically (`url-policy.ts`) and never fetched server-side, so there is no SSRF surface; reachability is never claimed. Snippets are fenced and instruction-like text is defanged. Search failure (`FAILED`), no results (`NO_RESULTS`) and unavailability (`UNAVAILABLE`) are operational states, never evidence against an option.
+3. **Solver** (`solver/independent-solver.ts`) — receives a strict allowlist payload: question, options, non-answer context, validated evidence. It never receives `correctAnswer`, `correctAnswers`, the stored explanation, the student's answer, or prior AI output. Zod + semantic validation require exactly one verdict per original option and bounded repair (max 2 attempts, 25 s).
+4. **Verifier** (`verify/verifier.ts`) — a second, preferably different, provider checks the finding. Agreement raises confidence; disagreement forces `INCONCLUSIVE` rather than picking a winner. A second LLM pass is a contradiction detector, not ground truth.
+5. **Audit** (`audit/database-audit.ts`) — reads the stored key only after the finding exists, maps key text/label/index to canonical option IDs without guessing, and records overlapping findings. It never mutates the question, the completed attempt, or a historical score.
+
+### Response contract
+
+`backend/ai/explain-engine/schema/types.ts` is the single Zod contract used by the solver, verifier, cache validation, API response, and UI. Key fields:
+
+- `questionValidity`: `VALID_SINGLE_ANSWER | VALID_MULTIPLE_ANSWERS | NO_CORRECT_OPTION | AMBIGUOUS | INCOMPLETE_OR_MALFORMED | OUTDATED_OR_CONTEXT_DEPENDENT | INCONCLUSIVE`.
+- `verificationStatus`: `EVIDENCE_VERIFIED | INDEPENDENTLY_VERIFIED | PARTIALLY_VERIFIED | INCONCLUSIVE | NOT_VERIFIED | PROVIDER_FAILED`. `EVIDENCE_VERIFIED` is accepted only with a successful search and at least one validated source.
+- `databaseAuditStatus`: `NOT_AUDITED | AGREES | KEY_MISMATCH | INVALID_QUESTION | MULTIPLE_ANSWERS | AMBIGUOUS_QUESTION | CONTEXT_OR_DATE_MISMATCH | INCONCLUSIVE`.
+- `studentResult` is **always** computed against the original stored key (all-or-nothing set equality, matching the exam engine) with `studentResultBasis: "DATABASE_KEY"`. `independentStudentResult` is a separate counterfactual.
+- `acceptedOptionIds`, `optionsAnalysis` (exactly four for a structurally valid MCQ), `correctedAnswer` (only on a discrepancy), `evidence.records` (IDs only; citations must exist), `limitations`, and provenance metadata.
+- Every evidence reference in `optionsAnalysis` must exist in `evidence.records`; unknown IDs are dropped by the orchestrator and reported as limitations.
+
+### Cache, dedup, rollout
+
+- Findings are cached by content version + policy + schema + prompt version + provider set + search mode. Question-level findings contain no student data; per-student results are recomputed. Evidence searches have their own short TTL (45 min current affairs, 6 h general).
+- Logical freshness is carried in `expiresAt`; the physical cache TTL is 24 h.
+- Concurrent identical requests are deduplicated per user.
+- Audit findings are persisted best-effort to `AuditLog` with `action: "mcq_verification_audit"`; the stored key is represented only by `keyHash` (SHA-256), never as text.
+- Feature flag: `AI_EXPLAIN_V2_ENABLED` defaults **on**; set `0`/`false`/`off`/`no`/`disabled` to disable. Disabled or failed v2 responses fall back to the legacy, explicitly unverified explanation.
+- Operational failures return `502 AI_VERIFICATION_UNAVAILABLE`; malformed requests return `400 VALIDATION_ERROR`; unauthenticated requests return `401`. The route is auth- and quota-gated and rejects cross-origin POSTs.
+
+### Known limitations
+
+- Semantic answer accuracy is not measured by unit tests; tests assert the trust boundary, schema invariants, audit mapping, score immutability, Unicode preservation, URL policy, and failure modes.
+- Practice attempts are client-persisted, so `attemptId` is informational; there is no server-side attempt-ownership check.
+- Without a configured search key, results are `PARTIALLY_VERIFIED`/`INDEPENDENTLY_VERIFIED` at best, never `EVIDENCE_VERIFIED`.
+- No automatic key correction is performed. Discrepancies require human review.
+
+Tests: `tests/ai/explain-engine.test.ts` (engine, audit, evidence, Unicode, contract) and `tests/ai/explain-v2.route.test.ts` (auth, flag, validation, CSRF, headers, provider failure).
 
 ## Daily Current Affairs Agent (`backend/ai/current-affairs.ts`)
 
