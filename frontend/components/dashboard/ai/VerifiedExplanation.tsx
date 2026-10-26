@@ -121,7 +121,7 @@ function Badge({
 }) {
   return (
     <span
-      className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider"
+      className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-mono font-bold uppercase tracking-wider"
       style={{ color: tone, borderColor: tone, background: "transparent" }}
     >
       {Icon ? <Icon className="w-3 h-3" weight="bold" /> : null}
@@ -224,7 +224,7 @@ export default function VerifiedExplanation({
         </Badge>
         <Badge tone="var(--dashboard-text-secondary)">{validity.bn}</Badge>
         {result.metadata?.cacheHit ? (
-          <span className="text-[10px] font-mono text-[var(--dashboard-text-muted)]">
+          <span className="text-[11px] font-mono text-[var(--dashboard-text-muted)]">
             cached · {result.metadata.llmCalls} LLM · {result.metadata.searchCalls} search
           </span>
         ) : null}
@@ -344,7 +344,7 @@ export default function VerifiedExplanation({
           className="rounded-lg p-2.5"
           style={{ background: "var(--dashboard-surface)", border: "1px solid var(--dashboard-border)" }}
         >
-          <p className="text-[10px] font-mono uppercase tracking-wider text-[var(--dashboard-text-muted)]">
+          <p className="text-[11px] font-mono uppercase tracking-wider text-[var(--dashboard-text-muted)]">
             আপনার উত্তর
           </p>
           <p className="text-xs mt-0.5" style={{ color: "var(--dashboard-text-primary)" }}>
@@ -355,7 +355,7 @@ export default function VerifiedExplanation({
           className="rounded-lg p-2.5"
           style={{ background: "var(--dashboard-surface)", border: "1px solid var(--dashboard-border)" }}
         >
-          <p className="text-[10px] font-mono uppercase tracking-wider text-[var(--dashboard-text-muted)]">
+          <p className="text-[11px] font-mono uppercase tracking-wider text-[var(--dashboard-text-muted)]">
             মূল কী অনুযায়ী ফলাফল (অপরিবর্তিত)
           </p>
           <p
@@ -395,7 +395,7 @@ export default function VerifiedExplanation({
           <div className="flex flex-wrap items-center gap-1.5 mb-1">
             <Badge tone="var(--dashboard-warning)">{audit.bn}</Badge>
             {result.databaseAudit?.reviewStatus === "PENDING_REVIEW" ? (
-              <span className="text-[10px] font-mono text-[var(--dashboard-text-muted)]">
+              <span className="text-[11px] font-mono text-[var(--dashboard-text-muted)]">
                 human review pending
               </span>
             ) : null}
@@ -435,7 +435,7 @@ export default function VerifiedExplanation({
               >
                 <div className="flex items-start gap-2">
                   <span
-                    className="flex-shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-md text-[10px] font-mono font-bold"
+                    className="flex-shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-md text-[11px] font-mono font-bold"
                     style={{ color: verdict.tone, border: `1px solid ${verdict.tone}` }}
                   >
                     {label}
@@ -469,7 +469,7 @@ export default function VerifiedExplanation({
                       </p>
                     ) : null}
                     {analysis.evidenceIds.length > 0 ? (
-                      <p className="mt-1 text-[10px] font-mono text-[var(--dashboard-text-muted)]">
+                      <p className="mt-1 text-[11px] font-mono text-[var(--dashboard-text-muted)]">
                         sources: {analysis.evidenceIds.join(", ")}
                       </p>
                     ) : null}
@@ -523,7 +523,7 @@ export default function VerifiedExplanation({
           >
             {search.bn}
           </Badge>
-          <span className="text-[10px] font-mono text-[var(--dashboard-text-muted)]">
+          <span className="text-[11px] font-mono text-[var(--dashboard-text-muted)]">
             {result.evidence.validatedSourceCount} validated source(s)
           </span>
         </div>
