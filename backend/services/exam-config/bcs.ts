@@ -86,6 +86,41 @@ const english: SubjectNode = {
   matchNameBn: "English Language and Literature",
   children: [
     official("bcs.english.language", "PART-I: Language", [`${ENGLISH}/PART-I_Language`], 15),
+    {
+      id: "bcs.english.language.parts_of_speech",
+      nameBn: "Parts of Speech",
+      paths: [`${ENGLISH}/PART-I_Language/Parts_of_Speech`],
+      allocationSource: "inferred",
+      children: [],
+    },
+    {
+      id: "bcs.english.language.idioms",
+      nameBn: "Idioms and Phrases",
+      paths: [`${ENGLISH}/PART-I_Language/Idioms_and_Phrases`],
+      allocationSource: "inferred",
+      children: [],
+    },
+    {
+      id: "bcs.english.language.corrections",
+      nameBn: "Corrections and Agreement",
+      paths: [`${ENGLISH}/PART-I_Language/Corrections_and_Agreement`],
+      allocationSource: "inferred",
+      children: [],
+    },
+    {
+      id: "bcs.english.language.sentences",
+      nameBn: "Sentences and Transformations",
+      paths: [`${ENGLISH}/PART-I_Language/Sentences_and_Transformations`],
+      allocationSource: "inferred",
+      children: [],
+    },
+    {
+      id: "bcs.english.language.words",
+      nameBn: "Words Vocabulary",
+      paths: [`${ENGLISH}/PART-I_Language/Words_Vocabulary`],
+      allocationSource: "inferred",
+      children: [],
+    },
     official(
       "bcs.english.literature",
       "PART-II: Literature",
