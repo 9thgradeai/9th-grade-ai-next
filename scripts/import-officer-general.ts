@@ -7,7 +7,7 @@
  * Files:
  *   - Officer (General)_2022.txt
  *   - Officer (General)_2024.txt
- *   - Officer (General)-2022.txt
+ *   - Officer(General)_2022.txt
  *
  * Each file follows the same Bangla MCQ format:
  *   <num>. <question>
@@ -144,6 +144,7 @@ function parseBanglaTxt(file: string, content: string): {
     const ansMatchAns = line.match(ansReAns);
     if (ansMatchBangla) {
       cur.answerLetter = ansMatchBangla[1];
+      // map Bengali option letters to A-D
       const map = { "\u0995": "A", "\u0996": "B", "\u0997": "C", "\u0998": "D" };
       cur.answerLetter = map[cur.answerLetter] || cur.answerLetter;
       continue;
@@ -192,6 +193,40 @@ export async function importOfficerGeneral(prisma: PrismaClient, opts?: { dryRun
   });
   if (!topicRow) throw new Error("Bangla root topic path not found");
 
+  // Exam and Paper for Officer (General)
+  const exam = await prisma.exam.findFirst({
+    where: { nameEn: 'Officer (General)' },
+  });
+  if (!exam) throw new Error('Officer (General) exam not found');
+
+  async function getPaperId(yearStr: string): Promise<number> {
+    const year = parseInt(yearStr);
+    if (isNaN(year)) throw new Error(`Invalid year: ${yearStr}`);
+    // Try to find existing paper
+    const existing = await prisma.examPaper.findFirst({
+      where: { examId: exam.id, year: year },
+    });
+    if (existing) return existing.id;
+    // Create new paper
+    const paper = await prisma.examPaper.create({
+      data: {
+        examId: exam.id,
+        slug: `officer-general-${year}`,
+        titleBn: `অফিসার (জেনারেল) ${year}`,
+        titleEn: `Officer (General) ${year}`,
+        year: year,
+        heldOn: new Date(`${year}-01-01`),
+        totalQuestions: null,
+        availableQuestions: 0,
+        source: '',
+        provenance: 'UNKNOWN',
+        verified: false,
+        sortOrder: 0,
+      },
+    });
+    return paper.id;
+  }
+
   // Global deduplication set
   const existing = await prisma.question.findMany({
     where: { subjectId: banglaSubject.id },
@@ -218,6 +253,7 @@ export async function importOfficerGeneral(prisma: PrismaClient, opts?: { dryRun
 
     const year = yearFromFilename(fname) ?? "";
     const sourceExam = `Officer (General) ${year}`;
+    const paperId = await getPaperId(year);
 
     for (const r of records) {
       const answerIdx = LETTERS.indexOf(r.answerLetter);
@@ -234,7 +270,9 @@ export async function importOfficerGeneral(prisma: PrismaClient, opts?: { dryRun
       });
       if (gate.verdict === "REJECT") {
         report.rejected++;
-        console.warn(`  [reject] ${fname} Q#${r.n}: ${gate.fatal.map((f) => f.code).join(",")}`);
+        console.warn(
+          `  [reject] ${fname} Q#${r.n}: ${gate.fatal.map((f) => f.code).join(",")}`
+        );
         continue;
       }
       const sig = mcaSignature({
@@ -265,6 +303,8 @@ export async function importOfficerGeneral(prisma: PrismaClient, opts?: { dryRun
           path: "01_বাংলা_ভাষা_ও_সাহিত্য",
           topic: "Bangla",
           subtopic: "Officer (General)",
+          examId: exam.id,
+          paperId: paperId,
           sourceExam,
           questionNumber: r.n,
           question: r.question,
@@ -289,7 +329,7 @@ export async function importOfficerGeneral(prisma: PrismaClient, opts?: { dryRun
     (await prisma.question.findMany({
       where: { subjectId: banglaSubject.id, sourceKey: { in: ops.map((o) => o.key) } },
       select: { sourceKey: true },
-    })).map((r) => r.sourceKey),
+    })).map((r) => r.sourceKey)
   );
 
   const fresh = ops.filter((o) => !existingKeys.has(o.key));
@@ -297,7 +337,9 @@ export async function importOfficerGeneral(prisma: PrismaClient, opts?: { dryRun
 
   for (let i = 0; i < fresh.length; i += 200) {
     const chunk = fresh.slice(i, i + 200);
-    await prisma.question.createMany({ data: chunk.map((o) => ({ sourceKey: o.key, ...o.data })) });
+    await prisma.question.createMany({
+      data: chunk.map((o) => ({ sourceKey: o.key, ...o.data })),
+    });
     report.inserted += chunk.length;
   }
   if (stale.length) {
@@ -306,8 +348,8 @@ export async function importOfficerGeneral(prisma: PrismaClient, opts?: { dryRun
         prisma.question.update({
           where: { subjectId_sourceKey: { subjectId: banglaSubject.id, sourceKey: o.key } },
           data: o.data,
-        }),
-      ),
+        })
+      )
     );
     report.updated += stale.length;
   }
@@ -323,7 +365,9 @@ export async function importOfficerGeneral(prisma: PrismaClient, opts?: { dryRun
 
 if (process.argv[1]?.endsWith("import-officer-general.ts")) {
   (async () => {
-    const prisma = new PrismaClient({ datasources: { db: { url: process.env.DATABASE_URL } } });
+    const prisma = new PrismaClient({
+      datasources: { db: { url: process.env.DATABASE_URL } },
+    });
     try {
       const rep = await importOfficerGeneral(prisma);
       console.log('\nImport finished:', rep);
