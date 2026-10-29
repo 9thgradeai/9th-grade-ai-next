@@ -105,9 +105,11 @@ returned in API responses, never logged (pino auto-redacts matching keys).
 
 ## Authorization
 
-- The proxy (`proxy.ts`) **cryptographically verifies** the session JWT (signature + expiry via `isValidSessionToken`) before rendering `/dashboard` or bouncing `/login` — not mere cookie presence; a stale/garbage cookie counts as signed-out.
+- The proxy (`proxy.ts`) **cryptographically verifies** the session JWT (signature + expiry via `isValidSessionToken`) before rendering `/dashboard`, `/admin` or bouncing `/login` — not mere cookie presence; a stale/garbage cookie counts as signed-out.
 - Protected API routes verify JWT via `getUserIdFromRequest()` and return `401` if invalid. Database failures propagate as `500` (never masquerade as `401`) so outages are visible.
 - Roles: `student` / `admin` / `banned`. `BANNED` users are rejected at session resolution (`getSessionUser` returns `null`) and explicitly in `requireRole` (`403`), so bans take effect immediately even with an unexpired JWT.
+- **Admin console (`/admin`)**: `app/admin/layout.tsx` is a Server Component gate that runs before any admin markup is sent. It resolves the session via `getSessionUserFromCookies()` (same JWT → user → ban → tokenVersion → session-table chain as the API), redirects unauthenticated visitors to `/login`, and calls `notFound()` for authenticated non-admins so the route's existence is not disclosed. Every `/api/admin/*` route independently calls `requireRole(request, ["admin"])` — the page gate is defence-in-depth, never the only control.
+- Every user-owned resource is scoped to the authenticated `userId` at the service layer (composite keys such as `userId_questionId`, `userId_idempotencyKey`, `userId_dailyNoteId`). No route accepts `userId`, `ownerId`, or `role` from the body/query/params. Covered by `tests/api/authorization-idor.routes.test.ts`, `tests/api/admin-page-guard.test.ts`, `tests/api/session-cookies.test.ts`.
 
 ## API Validation
 
@@ -138,14 +140,25 @@ returned in API responses, never logged (pino auto-redacts matching keys).
 
 ## CSRF
 
-- SameSite=Lax cookies provide basic CSRF protection.
-- No CSRF tokens.
+- Session cookies are `SameSite=Lax`, which blocks cross-site `POST`/`PATCH`/`DELETE` from carrying the cookie in modern browsers.
+- Defense-in-depth: every cookie-authenticated mutating route calls `assertSameOrigin(request)` (`app/api/_middleware.ts`). A present `Origin` header whose host differs from the request host is rejected with `403`. Non-browser clients send no `Origin` and hold no ambient cookies.
+- Background endpoints (`/api/cron/*`, `/api/storage/worker`) use a constant-time `CRON_SECRET`/`WORKER_SECRET` bearer check and fail closed in production when the secret is unset.
 
 ## Database Security
 
 - Prisma parameterizes all queries — no raw SQL concatenation.
-- Passwords hashed with `bcryptjs` (cost 10).
-- No SQL injection vectors identified.
+- Passwords hashed with `bcryptjs` (cost 10); `UserRecord` DTOs never include `passwordHash`.
+- Connections require TLS: `DATABASE_URL` / `DIRECT_DATABASE_URL` must include `sslmode=require` (documented in `.env.local.example`). Production uses the pooled Neon endpoint for the app and the direct endpoint only for schema/backup tasks.
+- The database is reachable only from the server runtime (Prisma runs in `backend/*`, guarded by `server-only`). No client component imports `~backend/*`, so the DB credential is never bundled.
+- Least privilege: use a dedicated Neon role for the app; never the project owner role. Rotate the role password by updating both `DATABASE_URL` and `DIRECT_DATABASE_URL`.
+- Backups: see § Backups.
+
+## Backups
+
+- **Primary — point-in-time restore (PITR)**: Neon keeps continuous WAL history for the project; the restore window depends on the plan. Confirm the current window in the Neon console and treat PITR as the first recovery path for accidental deletes/corruption.
+- **Secondary — nightly logical dump**: `npm run db:backup` (`scripts/backup-db.sh`) writes a compressed `pg_dump -Fc` archive plus a SHA-256 sidecar to `BACKUP_DIR` (default `./backups/db`, gitignored) and prunes archives older than `BACKUP_RETENTION_DAYS` (default 14).
+- **Storage rule**: a dump contains emails, password hashes and user content. Keep it on private storage. Never commit it, and **never upload it as a GitHub Actions artifact** — this repository is public, so artifacts are downloadable by anyone with a GitHub account.
+- **Restore drill**: quarterly, restore the newest dump into a scratch Neon branch (`pg_restore --no-owner --clean --if-exists`) and run the smoke tests. See `docs/RUNBOOK.md` § Backup & Recovery.
 
 ## File Uploads
 
@@ -185,3 +198,21 @@ returned in API responses, never logged (pino auto-redacts matching keys).
   tests with enforced coverage against a real Postgres service container,
   build, and a full-history secret scan (`secret-scan` job, gitleaks).
 - Dependabot monitors npm dependencies weekly (`.github/dependabot.yml`).
+- **Audit posture (2026-10-29)**: `npm audit --omit=dev` = **0 critical, 12 high**.
+  The critical Next.js advisories were cleared by pinning `next@16.4.3`.
+  Remaining highs require **breaking major upgrades** and are tracked as
+  follow-ups rather than forced:
+  - `ai` / `@ai-sdk/*` v4 → v7 (also clears `jsondiffpatch`): API rewrite; not
+    shipped to security-sensitive paths. Mitigation: AI responses are never
+    used for authorization; endpoints are auth-gated + rate-limited + budgeted.
+  - `zod` v3 → v4 (memory exhaustion on oversized constrained collections):
+    the AI SDK v4 stack requires zod 3. Mitigation: request bodies are bounded
+    by the platform body-size limit and route-level field/count caps.
+  - `nodemailer` v9 → v10 (SMTP server/MITM DoS, DNS-cache cross-tenant):
+    one transport, server-controlled recipients. Upgrade with the next email
+    feature change.
+  - `@prisma/client` v6 → v7 (`deepmerge-ts` via `@prisma/config`): CLI/build
+    time only, not request-time. Upgrade alongside a Prisma schema review.
+- Do **not** run `npm audit fix --force`: it rewrites majors (zod, AI SDK,
+  Prisma, vitest) and the app depends on their current APIs.
+

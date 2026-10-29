@@ -190,11 +190,39 @@ npm run db:prune-activity -- --apply
 
 | Asset | Frequency | Retention |
 |-------|-----------|-----------|
-| PostgreSQL | Daily (managed) | 30 days (Neon) |
+| PostgreSQL — PITR (Neon WAL history) | Continuous | Plan-dependent window — verify in the Neon console |
+| PostgreSQL — logical dump (`npm run db:backup`) | Daily (schedule it) | 14 days by default (`BACKUP_RETENTION_DAYS`) |
 | Redis | Not backed up (ephemeral) | N/A |
 | Code | GitHub | Forever |
 
-**Recovery**: Point-in-time restore via Neon dashboard.
+**Primary recovery — point-in-time restore**: use the Neon console to restore
+the project/branch to the timestamp immediately before the incident. This is
+the fastest path for accidental deletes or bad writes.
+
+**Secondary — nightly logical dump**:
+
+```bash
+# from the repo root; reads DIRECT_DATABASE_URL (or DATABASE_URL) from .env.local
+npm run db:backup
+
+# optional overrides
+BACKUP_DIR=/mnt/private/db BACKUP_RETENTION_DAYS=30 npm run db:backup
+```
+
+The script writes `9thgradeai-<UTC timestamp>.dump` (`pg_dump -Fc`) plus a
+`.sha256` sidecar. Schedule it with cron/systemd on an operator host, or with
+your platform's scheduler.
+
+**Restore drill** (quarterly — never restore straight onto production):
+
+```bash
+pg_restore --dbname="$DIRECT_DATABASE_URL" --no-owner --clean --if-exists \
+  backups/db/9thgradeai-<timestamp>.dump
+```
+
+**Storage rules**: dumps contain PII and password hashes. Keep them on
+private storage, never commit them, and never upload them as GitHub Actions
+artifacts — this repository is public.
 
 ---
 

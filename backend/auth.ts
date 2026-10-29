@@ -9,6 +9,7 @@ import * as crypto from "crypto";
 
 import { SignJWT, jwtVerify } from "jose";
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { prisma } from "~backend/db";
 import type { UserRecord } from "~backend/services/user";
 
@@ -350,6 +351,15 @@ export function getSessionUser(req: Request): Promise<UserRecord | null> {
 async function loadSessionUser(req: Request): Promise<UserRecord | null> {
   const token = extractSessionToken(req);
   if (!token) return null;
+  return resolveUserFromToken(token);
+}
+
+/**
+ * Resolve the session user from the token alone. Shared by the Request-based
+ * path and the React Server Component path (`getSessionUserFromCookies`), so
+ * the ban / tokenVersion / session-table checks can never drift between them.
+ */
+async function resolveUserFromToken(token: string): Promise<UserRecord | null> {
   // NOTE: cached per-Request only (see getSessionUser). This stays a live
   // lookup on every new request, so ban/tokenVersion revocation is never
   // delayed across requests. Correctness wins.
@@ -407,6 +417,23 @@ async function loadSessionUser(req: Request): Promise<UserRecord | null> {
     studyHoursPerDay: u.studyHoursPerDay ?? undefined,
     goal: u.goal ?? undefined,
   };
+}
+
+/**
+ * Server Component / Server Action variant of {@link getSessionUser}.
+ * Reads the HttpOnly session cookie via `next/headers` and applies the exact
+ * same verification chain (JWT signature → user lookup → ban → tokenVersion →
+ * session-table). Use this to gate pages and layouts server-side so protected
+ * UI is never shipped to an unauthorized browser, even before an API call.
+ *
+ * Returns null when unauthenticated — callers decide between redirect("/login")
+ * and notFound() (hiding the route's existence from non-admins).
+ */
+export async function getSessionUserFromCookies(): Promise<UserRecord | null> {
+  const store = await cookies();
+  const token = store.get(SESSION_COOKIE)?.value;
+  if (!token) return null;
+  return resolveUserFromToken(token);
 }
 
 // Export session tracking functions

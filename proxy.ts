@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { isValidSessionToken, readSessionCookie } from "~backend/session-verify";
 
-const PROTECTED_PREFIXES = ["/dashboard"];
+const PROTECTED_PREFIXES = ["/dashboard", "/admin"];
 const AUTH_ROUTES = ["/login", "/register"];
 
 function generateRequestId(): string {
@@ -107,5 +107,5 @@ export const config = {
   // gate below only redirects PAGES (/dashboard, /login). API routes enforce
   // their own auth (getUserIdFromRequest → 401) — the proxy never pretends
   // to authorize them.
-  matcher: ["/dashboard/:path*", "/login/:path*", "/api/:path*"],
+  matcher: ["/dashboard/:path*", "/admin/:path*", "/login/:path*", "/api/:path*"],
 };

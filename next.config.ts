@@ -20,6 +20,9 @@ const cspDirectives = [
   "base-uri 'self'",
   "form-action 'self'",
   "frame-ancestors 'none'",
+  // Production pages are HTTPS-only; upgrade any legacy absolute http:// asset
+  // reference. Omitted in dev so http://localhost subresources keep working.
+  ...(process.env.NODE_ENV === "production" ? ["upgrade-insecure-requests"] : []),
 ].join("; ");
 
 const securityHeaders = [

@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import { getUserIdFromRequest } from "~backend/services/user";
 import { verifyEnvelope, migrateEnvelope, computeChecksum } from "~backend/services/storage/dataFormat";
+import { assertSameOrigin } from "../../_middleware";
 
 export async function POST(request: Request) {
+  assertSameOrigin(request);
   const userId = await getUserIdFromRequest(request);
   if (!userId) return NextResponse.json({ error: "Unauthorized", code: "AUTH_UNAUTHORIZED" }, { status: 401 });
 
@@ -25,8 +27,9 @@ export async function POST(request: Request) {
   try {
     const migrated = migrateEnvelope(envelope as never);
     if (!verifyEnvelope(migrated as never)) throw new Error("Verify failed");
-  } catch (e) {
-    return NextResponse.json({ error: (e as Error).message, code: "MIGRATION_FAILED" }, { status: 400 });
+  } catch {
+    // Never echo migration internals (schema/DB messages) to the client.
+    return NextResponse.json({ error: "Backup file could not be migrated.", code: "MIGRATION_FAILED" }, { status: 400 });
   }
 
   // For now, import is validated but not automatically applied — user must use /restore for Drive files

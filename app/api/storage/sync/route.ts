@@ -3,6 +3,7 @@ import { getUserIdFromRequest } from "~backend/services/user";
 import { prisma } from "~backend/db";
 import { enqueueSync, processPendingJobs } from "~backend/services/storage/syncService";
 import { assertSubmitAllowed } from "~backend/rate-limit";
+import { assertSameOrigin } from "../../_middleware";
 
 // GET status, POST trigger
 export async function GET(request: Request) {
@@ -17,6 +18,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  assertSameOrigin(request);
   const userId = await getUserIdFromRequest(request);
   if (!userId) return NextResponse.json({ error: "Unauthorized", code: "AUTH_UNAUTHORIZED" }, { status: 401 });
   await assertSubmitAllowed(userId);

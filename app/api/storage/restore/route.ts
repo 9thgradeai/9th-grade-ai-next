@@ -2,10 +2,12 @@ import { NextResponse } from "next/server";
 import { getUserIdFromRequest } from "~backend/services/user";
 import { restoreEntity, restoreAll } from "~backend/services/storage/restoreService";
 import type { SyncEntityType } from "~backend/services/storage/types";
+import { assertSameOrigin } from "../../_middleware";
 
 const ALLOWED: SyncEntityType[] = ["BOOKMARKS", "FLASHCARD_STATE", "VOCAB_PROGRESS", "MISTAKE_NOTES", "USER_PREFERENCES", "EXAM_ARCHIVE"];
 
 export async function POST(request: Request) {
+  assertSameOrigin(request);
   const userId = await getUserIdFromRequest(request);
   if (!userId) return NextResponse.json({ error: "Unauthorized", code: "AUTH_UNAUTHORIZED" }, { status: 401 });
 
