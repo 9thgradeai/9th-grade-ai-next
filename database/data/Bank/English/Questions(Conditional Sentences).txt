@@ -1,0 +1,1760 @@
+﻿Section 1: Fundamentals and Types of Conditionals (1–25)
+1. If water reaches 100°C at standard atmospheric pressure, it _____.
+A. boiled
+B. boils
+C. will boil
+D. would boil
+Correct Answer: B. boils
+Explanation: The zero conditional expresses general truths and scientific facts. Its usual structure is if + present simple, present simple. Example: If ice melts, it becomes water.
+2. If it rains tomorrow, we _____ the match.
+A. cancel
+B. cancelled
+C. will cancel
+D. would cancel
+Correct Answer: C. will cancel
+Explanation: The first conditional describes a realistic future possibility. It normally follows if + present simple, will + base verb. Do not usually use will in the if-clause.
+3. If I were rich, I _____ a hospital for the poor.
+A. build
+B. will build
+C. would build
+D. had built
+Correct Answer: C. would build
+Explanation: The second conditional describes an unreal or unlikely present or future situation. Its standard structure is if + past simple, would + base verb.
+4. If she had studied harder, she _____ the examination.
+A. would pass
+B. will pass
+C. would have passed
+D. passed
+Correct Answer: C. would have passed
+Explanation: The third conditional describes an unreal past situation and its imagined result. The structure is if + past perfect, would have + past participle.
+5. If you heat ice, it _____.
+A. melted
+B. melts
+C. would melt
+D. will have melted
+Correct Answer: B. melts
+Explanation: This is a zero conditional because it expresses a general scientific fact. Both clauses use the present simple.
+6. If he hurries, he _____ the train.
+A. catches
+B. would catch
+C. caught
+D. will catch
+Correct Answer: D. will catch
+Explanation: The sentence describes a possible future result. The present simple hurries appears in the if-clause, while will catch expresses the expected result.
+7. If I _____ you, I would accept the offer.
+A. am
+B. was
+C. were
+D. had been
+Correct Answer: C. were
+Explanation: In formal hypothetical statements, were is conventionally used with all subjects in the second conditional. The expression If I were you is especially common in advice.
+8. If they had left earlier, they _____ the flight.
+A. would not miss
+B. would not have missed
+C. will not miss
+D. did not miss
+Correct Answer: B. would not have missed
+Explanation: The third conditional imagines a different past and its consequence. The negative result takes would not have + past participle.
+9. If you mix blue and yellow, you _____ green.
+A. get
+B. got
+C. would get
+D. will have got
+Correct Answer: A. get
+Explanation: A zero conditional is used for predictable facts and general results. Both the condition and result are expressed in the present simple.
+10. If he does not work hard, he _____ the competition.
+A. would lose
+B. lost
+C. will lose
+D. would have lost
+Correct Answer: C. will lose
+Explanation: This is a first conditional expressing a possible future consequence. The negative present simple appears in the if-clause, followed by will + base verb.
+11. If I had enough money, I _____ a new laptop.
+A. will buy
+B. would buy
+C. would have bought
+D. bought
+Correct Answer: B. would buy
+Explanation: The second conditional describes a hypothetical present situation. Had means “possessed” here and is the past simple form of have.
+12. If she had taken the medicine, she _____ better now.
+A. would feel
+B. will feel
+C. would have felt
+D. felt
+Correct Answer: A. would feel
+Explanation: This is a mixed conditional: an unreal past condition has a present result. The if-clause uses the past perfect, while the main clause uses would + base verb.
+13. If I knew his address, I _____ him yesterday.
+A. would visit
+B. will visit
+C. would have visited
+D. visited
+Correct Answer: C. would have visited
+Explanation: This is a mixed conditional with a present condition and an unreal past result. Not knowing his address now explains why the visit did not happen yesterday.
+14. If the temperature falls below zero, water _____ into ice.
+A. turned
+B. would turn
+C. turns
+D. will have turned
+Correct Answer: C. turns
+Explanation: The zero conditional expresses a general scientific relationship. The present simple is appropriate in both clauses.
+15. If you invite her, she _____ to the party.
+A. came
+B. would come
+C. will come
+D. had come
+Correct Answer: C. will come
+Explanation: This is a first conditional because the invitation and attendance are realistic future possibilities. Use will + base verb in the result clause.
+16. If he _____ more careful, he would not make so many mistakes.
+A. is
+B. were
+C. had been
+D. will be
+Correct Answer: B. were
+Explanation: The second conditional expresses an unreal or unlikely present situation. The hypothetical condition takes the past simple; were is preferred in formal English.
+17. If they had informed me, I _____ them.
+A. help
+B. will help
+C. would help
+D. would have helped
+Correct Answer: D. would have helped
+Explanation: The third conditional concerns an unreal past condition and result. Had informed is past perfect, and would have helped is the correct result construction.
+18. If you press this button, the machine _____.
+A. starts
+B. started
+C. would start
+D. would have started
+Correct Answer: A. starts
+Explanation: This is a zero conditional describing how a machine normally operates. The present simple is used for the condition and its predictable result.
+19. If it were not raining, we _____ for a walk.
+A. go
+B. will go
+C. would go
+D. would have gone
+Correct Answer: C. would go
+Explanation: The sentence describes an unreal present situation: it is raining, so the walk is not happening. The second conditional uses were not and would + base verb.
+20. If he had followed the instructions, the device _____ properly.
+A. works
+B. would work
+C. would have worked
+D. will work
+Correct Answer: C. would have worked
+Explanation: The sentence imagines a different past outcome. The third conditional requires would have + past participle in the result clause.
+21. If I were more confident, I _____ for the post.
+A. applied
+B. will apply
+C. would apply
+D. would have applied
+Correct Answer: C. would apply
+Explanation: The second conditional is used for an imagined present characteristic and a possible future consequence. The past form were does not indicate past time here.
+22. If the alarm rings, everyone _____ the building.
+A. evacuated
+B. would evacuate
+C. will evacuate
+D. had evacuated
+Correct Answer: C. will evacuate
+Explanation: The first conditional expresses a possible future event and its expected result. The if-clause uses the present simple rings.
+23. If he had not wasted his time, he _____ the work by now.
+A. would finish
+B. will finish
+C. would have finished
+D. finished
+Correct Answer: C. would have finished
+Explanation: This is a mixed-time interpretation: a past failure to use time wisely affects completion by the present. Would have finished expresses the unreal result, with by now marking the present deadline.
+24. If people exercise regularly, they generally _____ healthier.
+A. became
+B. become
+C. would become
+D. will have become
+Correct Answer: B. become
+Explanation: The sentence states a general tendency rather than one specific future event. The zero conditional commonly uses the present simple in both clauses.
+25. If you had told me about the problem, I _____ you.
+A. would help
+B. helped
+C. will help
+D. would have helped
+Correct Answer: D. would have helped
+Explanation: This is a third conditional because the opportunity to tell and help belongs to the past. The result clause takes would have + past participle.
+Section 2: First Conditional and Future Possibilities (26–50)
+26. Unless you _____ immediately, you will miss the bus.
+A. left
+B. leave
+C. will leave
+D. would leave
+Correct Answer: B. leave
+Explanation: Unless means “if not.” It is followed by the present simple when referring to a future possibility: Unless you leave now, you will miss the bus.
+27. If she _____ the application today, she will be considered for the post.
+A. submits
+B. submitted
+C. will submit
+D. would submit
+Correct Answer: A. submits
+Explanation: The first conditional uses the present simple in the if-clause and will + base verb in the result clause. Avoid using will in the if-clause in ordinary conditional sentences.
+28. If you do not water these plants, they _____.
+A. died
+B. would die
+C. will die
+D. had died
+Correct Answer: C. will die
+Explanation: This first conditional expresses a likely future consequence. The negative present simple do not water introduces the condition.
+29. If the weather is fine tomorrow, we _____ a picnic.
+A. had
+B. would have
+C. will have
+D. would have had
+Correct Answer: C. will have
+Explanation: A realistic future condition takes the present simple after if. The result is expressed with will + base verb.
+30. If you _____ any difficulty, contact the manager.
+A. encounter
+B. encountered
+C. will encounter
+D. would encounter
+Correct Answer: A. encounter
+Explanation: The sentence gives a future-oriented instruction. The present simple is used in the conditional clause, while the main clause uses the imperative contact.
+31. If he works overtime, he _____ the project tonight.
+A. completed
+B. would complete
+C. will complete
+D. would have completed
+Correct Answer: C. will complete
+Explanation: The first conditional describes a possible future result of working overtime. The main clause takes will + base verb.
+32. If you _____ the instructions carefully, you will understand the procedure.
+A. read
+B. will read
+C. had read
+D. would read
+Correct Answer: A. read
+Explanation: The present simple read is used in the if-clause. Note that read has the same spelling in the present and past, but the pronunciation differs.
+33. If the bank reduces its interest rate, more people _____ money.
+A. borrowed
+B. would borrow
+C. will borrow
+D. would have borrowed
+Correct Answer: C. will borrow
+Explanation: This first conditional predicts a possible future response to a change in interest rates. The result clause uses will borrow.
+34. Provided that you _____ the fee, your registration will be confirmed.
+A. paid
+B. pay
+C. will pay
+D. would pay
+Correct Answer: B. pay
+Explanation: Provided that means “on the condition that.” Like if, it normally takes the present simple when referring to a future condition.
+35. If he _____ late again, the supervisor will reprimand him.
+A. arrive
+B. arrived
+C. arrives
+D. will arrive
+Correct Answer: C. arrives
+Explanation: The subject he requires the third-person singular form arrives. The first conditional uses the present simple in its condition clause.
+36. If you follow this route, you _____ the station sooner.
+A. reached
+B. will reach
+C. would reach
+D. had reached
+Correct Answer: B. will reach
+Explanation: The sentence describes a realistic future outcome. Use the present simple in the if-clause and will + base verb in the result clause.
+37. If she does not hurry, she _____ the opening ceremony.
+A. misses
+B. would miss
+C. will miss
+D. had missed
+Correct Answer: C. will miss
+Explanation: The first conditional expresses a likely consequence of failing to hurry. The negative condition uses does not hurry, not does not hurries.
+38. You may borrow my laptop provided that you _____ it carefully.
+A. handle
+B. handled
+C. will handle
+D. would handle
+Correct Answer: A. handle
+Explanation: Provided that introduces a condition. The present simple handle is correct because the sentence establishes a condition for a possible future action.
+39. If the examination starts at nine, we _____ there by eight thirty.
+A. arrived
+B. would arrive
+C. will arrive
+D. had arrived
+Correct Answer: C. will arrive
+Explanation: The first conditional is appropriate for a planned future situation. The if-clause uses the present simple starts.
+40. If you need further information, you _____ the official website.
+A. consulted
+B. should consult
+C. would have consulted
+D. had consulted
+Correct Answer: B. should consult
+Explanation: The first conditional can use modal verbs such as should, can, or may in the result clause. Here, should consult gives advice conditional on needing more information.
+41. If he _____ the deadline, he will have to pay a penalty.
+A. misses
+B. missed
+C. will miss
+D. would miss
+Correct Answer: A. misses
+Explanation: The present simple is required in the if-clause for this future possibility. The result clause uses will have to to express future obligation.
+42. If the power goes out, the backup generator _____.
+A. started
+B. would start
+C. will start
+D. would have started
+Correct Answer: C. will start
+Explanation: The first conditional describes the expected future response to a power failure. Goes is the present simple form required after if.
+43. If you practise regularly, you _____ your performance.
+A. improved
+B. will improve
+C. would improve
+D. had improved
+Correct Answer: B. will improve
+Explanation: This is a first conditional because regular practice may produce a future improvement. Will improve is the correct result construction.
+44. Unless he _____ his identity, he cannot enter the examination hall.
+A. proves
+B. proved
+C. will prove
+D. would prove
+Correct Answer: A. proves
+Explanation: Unless introduces a negative condition, and the present simple is used here. The meaning is that he cannot enter if he does not prove his identity.
+45. If you press the red button, the machine _____ immediately.
+A. stopped
+B. would stop
+C. will stop
+D. had stopped
+Correct Answer: C. will stop
+Explanation: The sentence describes the expected consequence of an action. A first conditional is appropriate when referring to a particular future operation.
+46. If she _____ the interview successfully, she may get the job.
+A. completes
+B. completed
+C. will complete
+D. would complete
+Correct Answer: A. completes
+Explanation: The present simple is used in the if-clause, while may get expresses a possible result. Conditional result clauses do not always require will.
+47. If you leave now, you _____ the traffic jam.
+A. avoided
+B. would avoid
+C. will avoid
+D. had avoided
+Correct Answer: C. will avoid
+Explanation: This first conditional predicts a possible future benefit of leaving immediately. The condition is expressed in the present simple.
+48. As long as you _____ the rules, you can participate.
+A. follow
+B. followed
+C. will follow
+D. would follow
+Correct Answer: A. follow
+Explanation: As long as means “provided that” in this context. It introduces a condition and is followed by the present simple.
+49. If the committee approves the proposal, construction _____ next month.
+A. began
+B. would begin
+C. will begin
+D. would have begun
+Correct Answer: C. will begin
+Explanation: The first conditional expresses a future event dependent on committee approval. The passive subject construction takes will begin in this active intransitive construction.
+50. If he does not submit the documents, his application _____ rejected.
+A. would be
+B. will be
+C. would have been
+D. had been
+Correct Answer: B. will be
+Explanation: The result clause requires the future passive form will be + past participle. The sentence predicts a possible rejection based on a future failure to submit documents.
+Section 3: Second Conditional and Unreal Present Situations (51–75)
+51. If I _____ a bird, I would fly across the ocean.
+A. am
+B. were
+C. had been
+D. will be
+Correct Answer: B. were
+Explanation: The second conditional describes an imaginary present situation. In formal hypothetical statements, were is preferred to was with I.
+52. If she knew French, she _____ for the position in Paris.
+A. will apply
+B. applied
+C. would apply
+D. would have applied
+Correct Answer: C. would apply
+Explanation: The second conditional uses the past simple in the if-clause and would + base verb in the result clause. The past form knew expresses an unreal present condition.
+53. If I had a car, I _____ to work every day.
+A. drive
+B. will drive
+C. would drive
+D. would have driven
+Correct Answer: C. would drive
+Explanation: The speaker imagines possessing a car now. The result is expressed with would drive, the standard second-conditional construction.
+54. If he _____ more intelligent, he would solve the problem easily.
+A. is
+B. were
+C. has been
+D. will be
+Correct Answer: B. were
+Explanation: The sentence expresses an unreal or unlikely present characteristic. The formal hypothetical form is were.
+55. If I were the director, I _____ the working conditions.
+A. improved
+B. will improve
+C. would improve
+D. would have improved
+Correct Answer: C. would improve
+Explanation: The second conditional is used for an imagined role and its possible consequence. Would improve is followed by the base form of the verb.
+56. If she _____ harder, she would be more successful.
+A. works
+B. worked
+C. had worked
+D. will work
+Correct Answer: B. worked
+Explanation: The past simple worked expresses a hypothetical present condition. The result clause uses would be.
+57. If I _____ his telephone number, I would call him.
+A. know
+B. knew
+C. had known
+D. will know
+Correct Answer: B. knew
+Explanation: The sentence describes a present lack of knowledge and an imagined consequence. The second conditional uses if + past simple and would + base verb.
+58. If the weather _____ warmer, we would go swimming.
+A. is
+B. were
+C. will be
+D. had been
+Correct Answer: B. were
+Explanation: Were is the conventional formal form for unreal conditions. The result clause would go confirms that the sentence is a second conditional.
+59. If I _____ you, I would not invest all my savings in one company.
+A. am
+B. was
+C. were
+D. had been
+Correct Answer: C. were
+Explanation: If I were you is a standard expression used to offer advice. The imaginary condition is followed by would not invest.
+60. If he lived closer, we _____ him more frequently.
+A. visit
+B. will visit
+C. would visit
+D. would have visited
+Correct Answer: C. would visit
+Explanation: The sentence imagines a different present living arrangement. The result clause takes would + base verb.
+61. If I _____ more free time, I would learn another language.
+A. have
+B. had
+C. will have
+D. would have
+Correct Answer: B. had
+Explanation: The past simple had indicates an unreal present situation, not a completed past event. The main clause uses would learn.
+62. If she were more careful, she _____ fewer errors.
+A. makes
+B. will make
+C. would make
+D. would have made
+Correct Answer: C. would make
+Explanation: The second conditional describes a hypothetical present characteristic and its possible result. Would make is the correct result form.
+63. If I _____ the answer, I would tell you.
+A. know
+B. knew
+C. had known
+D. will know
+Correct Answer: B. knew
+Explanation: The sentence implies that the speaker does not know the answer. The past simple knew expresses the unreal condition.
+64. If he were more experienced, he _____ this responsibility.
+A. can handle
+B. could handle
+C. could have handled
+D. will handle
+Correct Answer: B. could handle
+Explanation: The second conditional may use could in the result clause to express ability. The structure describes a hypothetical present situation.
+65. If I _____ a million taka, I would start a small business.
+A. win
+B. won
+C. had won
+D. will win
+Correct Answer: B. won
+Explanation: Won is the past simple form used for an unreal or unlikely future possibility. The result clause uses would start.
+66. If she _____ nearer to the office, she would not need to travel so far.
+A. lives
+B. lived
+C. had lived
+D. will live
+Correct Answer: B. lived
+Explanation: The sentence imagines a different present residence. The second conditional takes the past simple in the condition clause.
+67. If I were you, I _____ the offer carefully before accepting it.
+A. consider
+B. will consider
+C. would consider
+D. would have considered
+Correct Answer: C. would consider
+Explanation: If I were you introduces hypothetical advice. The main clause uses would + base verb.
+68. If he _____ more patient, he would be a better teacher.
+A. is
+B. was
+C. were
+D. had been
+Correct Answer: C. were
+Explanation: Formal hypothetical English generally prefers were in unreal conditions, even with singular subjects. The sentence concerns a present characteristic.
+69. If we had a larger office, we _____ more employees.
+A. accommodate
+B. will accommodate
+C. would accommodate
+D. would have accommodated
+Correct Answer: C. would accommodate
+Explanation: The second conditional describes an imagined present office and its possible consequence. Would accommodate is the appropriate result clause.
+70. If I _____ the manager, I would change the recruitment policy.
+A. am
+B. were
+C. had been
+D. will be
+Correct Answer: B. were
+Explanation: The condition is hypothetical, so were is the formal choice. It is followed by would change.
+71. If he had better communication skills, he _____ the presentation more effectively.
+A. delivers
+B. will deliver
+C. would deliver
+D. would have delivered
+Correct Answer: C. would deliver
+Explanation: The sentence describes a hypothetical present ability. The second conditional uses had in the if-clause and would deliver in the result clause.
+72. If I _____ in your position, I would seek professional advice.
+A. am
+B. was
+C. were
+D. had been
+Correct Answer: C. were
+Explanation: If I were in your position is a formal hypothetical expression. It is commonly used to introduce advice.
+73. If she spoke more slowly, everyone _____ her.
+A. understands
+B. will understand
+C. would understand
+D. would have understood
+Correct Answer: C. would understand
+Explanation: The sentence describes an unreal or unlikely present manner of speaking. The second conditional uses would understand in the result clause.
+74. If the company _____ more capital, it could expand its operations.
+A. has
+B. had
+C. will have
+D. had had
+Correct Answer: B. had
+Explanation: The past simple had indicates a hypothetical present lack of capital. Could expand expresses a possible ability or opportunity.
+75. If I _____ taller, I could become a basketball player.
+A. am
+B. were
+C. had been
+D. will be
+Correct Answer: B. were
+Explanation: The second conditional describes an unreal present physical characteristic and a possible consequence. The result clause uses could + base verb.
+Section 4: Third Conditional and Unreal Past Situations (76–100)
+76. If he had studied harder, he _____ the examination.
+A. would pass
+B. would have passed
+C. will pass
+D. passed
+Correct Answer: B. would have passed
+Explanation: The third conditional describes an unreal past condition and result. Its standard structure is if + past perfect, would have + past participle.
+77. If they _____ earlier, they would have caught the train.
+A. leave
+B. left
+C. had left
+D. would leave
+Correct Answer: C. had left
+Explanation: The third conditional requires the past perfect in the if-clause. The imagined result is would have caught.
+78. If she had followed the doctor's advice, she _____ so ill.
+A. would not be
+B. will not be
+C. would not have become
+D. did not become
+Correct Answer: C. would not have become
+Explanation: The sentence imagines a different past and its consequence. The negative third-conditional result is would not have + past participle.
+79. If I had known about the meeting, I _____ it.
+A. would attend
+B. would have attended
+C. will attend
+D. attended
+Correct Answer: B. would have attended
+Explanation: The speaker did not know about the past meeting. The unreal result takes would have attended.
+80. If he _____ the map, he would not have got lost.
+A. checks
+B. checked
+C. had checked
+D. would check
+Correct Answer: C. had checked
+Explanation: The third conditional refers to an unreal past action. The if-clause takes the past perfect had checked.
+81. If the driver had been more careful, the accident _____.
+A. would not happen
+B. will not happen
+C. would not have happened
+D. did not happen
+Correct Answer: C. would not have happened
+Explanation: The sentence imagines that greater care in the past would have prevented the accident. Use would not have + past participle.
+82. If she had arrived on time, she _____ the opening speech.
+A. would hear
+B. heard
+C. would have heard
+D. will hear
+Correct Answer: C. would have heard
+Explanation: This is a third conditional expressing an unreal past result. Had arrived is paired with would have heard.
+83. If we had booked the tickets earlier, we _____ a discount.
+A. would get
+B. will get
+C. would have got
+D. got
+Correct Answer: C. would have got
+Explanation: The condition concerns a missed opportunity in the past. Would have got is a correct British-English form; would have gotten is common in American English.
+84. If he had not missed the bus, he _____ late for work.
+A. would not be
+B. would not have been
+C. will not be
+D. was not
+Correct Answer: B. would not have been
+Explanation: The sentence refers to an unreal past event. The third-conditional result uses would not have been.
+85. If I had seen her, I _____ her about the news.
+A. would tell
+B. would have told
+C. will tell
+D. told
+Correct Answer: B. would have told
+Explanation: The speaker did not see her, so the imagined conversation did not occur. The result clause requires would have told.
+86. If the company had invested in new technology, it _____ more competitive.
+A. becomes
+B. will become
+C. would have become
+D. would become
+Correct Answer: C. would have become
+Explanation: The condition and its result belong to an unreal past situation. Would have become is the appropriate third-conditional form.
+87. If he had taken my advice, he _____ into trouble.
+A. would not get
+B. would not have got
+C. will not get
+D. did not get
+Correct Answer: B. would not have got
+Explanation: The sentence imagines that following advice would have prevented a past problem. The result clause uses would not have + past participle.
+88. If they had informed us, we _____ the necessary arrangements.
+A. would make
+B. will make
+C. would have made
+D. made
+Correct Answer: C. would have made
+Explanation: The condition refers to a past failure to inform. The unreal result is expressed by would have made.
+89. If she _____ the instructions, she would not have made that mistake.
+A. understands
+B. understood
+C. had understood
+D. would understand
+Correct Answer: C. had understood
+Explanation: The third conditional requires the past perfect in the if-clause. The result clause indicates a mistake that could have been avoided.
+90. If I had saved enough money, I _____ that house last year.
+A. would buy
+B. would have bought
+C. will buy
+D. bought
+Correct Answer: B. would have bought
+Explanation: The unreal purchase relates to a completed past period. The correct form is would have bought.
+91. If the team had trained regularly, it _____ the final.
+A. would reach
+B. reaches
+C. would have reached
+D. will reach
+Correct Answer: C. would have reached
+Explanation: The sentence describes an unreal past sporting outcome. The third conditional takes would have reached.
+92. If you had reminded me, I _____ the appointment.
+A. would not forget
+B. would not have forgotten
+C. will not forget
+D. did not forget
+Correct Answer: B. would not have forgotten
+Explanation: The imagined reminder would have prevented a past failure to remember. Use the negative perfect conditional would not have forgotten.
+93. If he had driven more slowly, he _____ control of the car.
+A. would not lose
+B. would not have lost
+C. will not lose
+D. did not lose
+Correct Answer: B. would not have lost
+Explanation: This sentence imagines a different past driving action and outcome. The third conditional uses would not have lost.
+94. If she had accepted the scholarship, she _____ abroad.
+A. would study
+B. will study
+C. would have studied
+D. studied
+Correct Answer: C. would have studied
+Explanation: The scholarship decision belongs to the past, and the imagined study would also have occurred in the past. Hence, would have studied is correct.
+95. If the police had arrived sooner, they _____ the suspect.
+A. might catch
+B. might have caught
+C. will catch
+D. caught
+Correct Answer: B. might have caught
+Explanation: Third-conditional results may use might have to express a possible but uncertain past outcome. The construction is might have + past participle.
+96. If he had worked harder, he _____ a promotion.
+A. might receive
+B. might have received
+C. will receive
+D. receives
+Correct Answer: B. might have received
+Explanation: The sentence describes a possible unreal past consequence. Might have received expresses possibility rather than certainty.
+97. If we had taken a taxi, we _____ the flight.
+A. would catch
+B. would have caught
+C. will catch
+D. caught
+Correct Answer: B. would have caught
+Explanation: The third conditional is used to imagine a different past travel decision. The result clause takes would have caught.
+98. If he had not been careless, he _____ his job.
+A. would not lose
+B. would not have lost
+C. will not lose
+D. did not lose
+Correct Answer: B. would not have lost
+Explanation: The sentence links past carelessness to a past consequence. The negative third conditional is would not have lost.
+99. If the manager had approved the request, we _____ the project last month.
+A. would start
+B. will start
+C. would have started
+D. started
+Correct Answer: C. would have started
+Explanation: The phrase last month identifies a past time. The imagined result is expressed using would have started.
+100. If I had known that the road was closed, I _____ another route.
+A. would take
+B. will take
+C. would have taken
+D. took
+Correct Answer: C. would have taken
+Explanation: The speaker did not know about the closure at the relevant past time. The third conditional expresses the alternative action that would have occurred.
+Section 5: Mixed Conditionals (101–125)
+101. If I had accepted the job, I _____ in Dhaka now.
+A. would live
+B. will live
+C. would have lived
+D. lived
+Correct Answer: A. would live
+Explanation: This is a mixed conditional: an unreal past decision has a present consequence. The if-clause uses the past perfect, while the result clause uses would + base verb.
+102. If she were more disciplined, she _____ the assignment yesterday.
+A. would complete
+B. will complete
+C. would have completed
+D. completed
+Correct Answer: C. would have completed
+Explanation: This mixed conditional links a hypothetical present characteristic to an unreal past result. The condition uses the past simple, while the result uses would have + past participle.
+103. If he had taken the medicine, he _____ better now.
+A. would feel
+B. will feel
+C. would have felt
+D. felt
+Correct Answer: A. would feel
+Explanation: The unreal past action affects the present state. The past-perfect condition is paired with would feel.
+104. If I were better at mathematics, I _____ the problem yesterday.
+A. would solve
+B. would have solved
+C. will solve
+D. solved
+Correct Answer: B. would have solved
+Explanation: This mixed conditional connects a present ability with an unreal past result. The result clause uses would have solved.
+105. If they had invested wisely, they _____ wealthy now.
+A. will be
+B. would be
+C. would have been
+D. are
+Correct Answer: B. would be
+Explanation: The unreal investment occurred in the past, but its imagined consequence concerns the present. Therefore, would be is correct.
+106. If she were not afraid of public speaking, she _____ at the conference yesterday.
+A. would speak
+B. would have spoken
+C. will speak
+D. speaks
+Correct Answer: B. would have spoken
+Explanation: The hypothetical present fear explains a missed past opportunity. The result clause uses would have spoken.
+107. If he had studied medicine, he _____ a doctor now.
+A. would be
+B. will be
+C. would have been
+D. is
+Correct Answer: A. would be
+Explanation: This mixed conditional describes an unreal educational choice in the past and its hypothetical present result. Use would be for the present consequence.
+108. If I had gone to bed earlier, I _____ tired now.
+A. would not be
+B. will not be
+C. would not have been
+D. am not
+Correct Answer: A. would not be
+Explanation: The past failure to sleep early is linked to a present state of tiredness. The result clause therefore uses would not be.
+109. If he were more responsible, he _____ the deadline last week.
+A. would meet
+B. would have met
+C. will meet
+D. meets
+Correct Answer: B. would have met
+Explanation: The sentence links a hypothetical present personality trait to an unreal past result. Would have met is the appropriate construction.
+110. If she had not moved abroad, she _____ with us today.
+A. would stay
+B. will stay
+C. would have stayed
+D. stayed
+Correct Answer: A. would stay
+Explanation: The past move has a hypothetical consequence for the present. The result clause uses would + base verb.
+111. If I were more organised, I _____ my documents before the deadline yesterday.
+A. would submit
+B. would have submitted
+C. will submit
+D. submitted
+Correct Answer: B. would have submitted
+Explanation: A present hypothetical characteristic is connected to a past failure. The mixed conditional uses would have submitted for the past result.
+112. If he had not injured his leg, he _____ football now.
+A. would play
+B. will play
+C. would have played
+D. played
+Correct Answer: A. would play
+Explanation: The unreal past injury affects his present ability to play. The result clause takes would play.
+113. If she knew how to drive, she _____ us to the airport last night.
+A. would take
+B. would have taken
+C. will take
+D. took
+Correct Answer: B. would have taken
+Explanation: This mixed conditional links a present lack of driving ability to an unreal past action. The result clause uses would have taken.
+114. If they had followed the safety rules, they _____ injured now.
+A. would not be
+B. will not be
+C. would not have been
+D. are not
+Correct Answer: A. would not be
+Explanation: The sentence describes a hypothetical present consequence of past behaviour. The result clause uses would not be.
+115. If I were more confident, I _____ for the position last month.
+A. would apply
+B. would have applied
+C. will apply
+D. applied
+Correct Answer: B. would have applied
+Explanation: A hypothetical present characteristic is linked to a missed past opportunity. The result clause takes would have applied.
+116. If he had saved more money, he _____ a house now.
+A. would own
+B. will own
+C. would have owned
+D. owns
+Correct Answer: A. would own
+Explanation: The unreal past saving behaviour affects present ownership. This is a mixed conditional with a past condition and a present result.
+117. If she were more careful, she _____ the confidential file yesterday.
+A. would not lose
+B. would not have lost
+C. will not lose
+D. did not lose
+Correct Answer: B. would not have lost
+Explanation: The sentence connects a hypothetical present characteristic with an unreal past outcome. The result clause requires would not have lost.
+118. If we had left earlier, we _____ here by now.
+A. would be
+B. will be
+C. would have been
+D. are
+Correct Answer: A. would be
+Explanation: The unreal past departure time affects the present location. By now supports the present-result interpretation.
+119. If he were not so careless, he _____ the report correctly yesterday.
+A. would prepare
+B. would have prepared
+C. will prepare
+D. prepared
+Correct Answer: B. would have prepared
+Explanation: The condition describes a hypothetical present trait, while the result concerns yesterday. The correct result form is would have prepared.
+120. If I had learned English earlier, I _____ it fluently now.
+A. would speak
+B. will speak
+C. would have spoken
+D. spoke
+Correct Answer: A. would speak
+Explanation: Learning English earlier is an unreal past condition; fluency is the imagined present result. Thus, would speak is correct.
+121. If she were a trained accountant, she _____ the accounts last year.
+A. would audit
+B. would have audited
+C. will audit
+D. audits
+Correct Answer: B. would have audited
+Explanation: A hypothetical present qualification is linked to an unreal past action. The result clause takes would have audited.
+122. If he had accepted the scholarship, he _____ his degree by now.
+A. would complete
+B. would have completed
+C. will complete
+D. completed
+Correct Answer: B. would have completed
+Explanation: The past scholarship decision affects a result expected by the present. Would have completed is appropriate because the imagined completion is viewed as achieved by now.
+123. If I were not so busy, I _____ you yesterday.
+A. would visit
+B. would have visited
+C. will visit
+D. visited
+Correct Answer: B. would have visited
+Explanation: The hypothetical present condition of being less busy is linked to an unreal past visit. This mixed conditional uses would have visited.
+124. If they had repaired the road, traffic _____ smoother now.
+A. would be
+B. will be
+C. would have been
+D. is
+Correct Answer: A. would be
+Explanation: The unreal past repair would have a present effect on traffic. The result clause uses would be.
+125. If she were more fluent in English, she _____ the interview successfully yesterday.
+A. would pass
+B. would have passed
+C. will pass
+D. passes
+Correct Answer: B. would have passed
+Explanation: The sentence links a hypothetical present language ability to an unreal past interview result. The mixed conditional requires would have passed.
+Section 6: Unless, Provided That, As Long As and Other Conditional Expressions (126–150)
+126. Unless you work hard, you _____ the examination.
+A. will not pass
+B. would not pass
+C. would not have passed
+D. did not pass
+Correct Answer: A. will not pass
+Explanation: Unless means “if not.” The sentence predicts a future consequence, so will not pass is correct.
+127. You can use my car provided that you _____ it before midnight.
+A. return
+B. returned
+C. will return
+D. would return
+Correct Answer: A. return
+Explanation: Provided that introduces a condition. The present simple is used for the future return requirement.
+128. As long as you _____ the truth, I will support you.
+A. tell
+B. told
+C. will tell
+D. would tell
+Correct Answer: A. tell
+Explanation: As long as means “on the condition that.” It normally takes the present simple in a future-oriented conditional clause.
+129. Even if it _____ tomorrow, we will continue the programme indoors.
+A. rains
+B. rained
+C. will rain
+D. would rain
+Correct Answer: A. rains
+Explanation: Even if introduces a condition that will not change the main decision. In a first conditional, the present simple is used in the subordinate clause.
+130. You will not succeed unless you _____ your mistakes.
+A. correct
+B. corrected
+C. will correct
+D. would correct
+Correct Answer: A. correct
+Explanation: The present simple follows unless in a future-oriented condition. The sentence means that success depends on correcting mistakes.
+131. I will lend you the money on condition that you _____ it next month.
+A. repay
+B. repaid
+C. will repay
+D. would repay
+Correct Answer: A. repay
+Explanation: On condition that introduces a requirement. The present simple repay is standard for a future condition.
+132. Suppose you _____ the lottery, what would you do?
+A. win
+B. won
+C. had won
+D. will win
+Correct Answer: B. won
+Explanation: Suppose can introduce a hypothetical situation. The second conditional uses the past simple won and the result would do.
+133. In case you _____ any difficulty, contact the help desk.
+A. encounter
+B. encountered
+C. will encounter
+D. would encounter
+Correct Answer: A. encounter
+Explanation: In case introduces a precaution for a possible situation. The present simple is used even though the difficulty may occur in the future.
+134. Take an umbrella in case it _____ later.
+A. rains
+B. rained
+C. will rain
+D. would rain
+Correct Answer: A. rains
+Explanation: The present simple follows in case when referring to a possible future event. The umbrella is taken as a precaution.
+135. Whether you agree or not, I _____ the decision.
+A. would implement
+B. will implement
+C. would have implemented
+D. implemented
+Correct Answer: B. will implement
+Explanation: Whether ... or not presents alternatives, not necessarily an if-clause. The main clause uses will implement to express the speaker's future intention.
+136. If need _____, we can postpone the meeting.
+A. arise
+B. arises
+C. arose
+D. will arise
+Correct Answer: B. arises
+Explanation: The idiomatic expression is if need arises. The present simple is used for a possible future circumstance.
+137. If necessary, the documents _____ translated into English.
+A. can be
+B. were
+C. would have
+D. had been
+Correct Answer: A. can be
+Explanation: If necessary is a shortened conditional expression meaning “if it is necessary.” Can be translated expresses possibility in the passive voice.
+138. You may enter the room as long as you _____ permission.
+A. have
+B. had
+C. will have
+D. would have
+Correct Answer: A. have
+Explanation: As long as establishes a condition for entry. The present simple have is appropriate for this general requirement.
+139. Unless the weather improves, the match _____.
+A. would resume
+B. will not resume
+C. would have resumed
+D. resumed
+Correct Answer: B. will not resume
+Explanation: The sentence predicts a future result unless conditions change. Unless has a negative meaning, so the main clause naturally expresses non-resumption.
+140. Provided that all members agree, the proposal _____ adopted.
+A. will be
+B. would have been
+C. had been
+D. would be
+Correct Answer: A. will be
+Explanation: This first conditional predicts a future decision subject to agreement. The passive construction is will be adopted.
+141. Even if he _____ hard, he may not win the race.
+A. trains
+B. trained
+C. will train
+D. would train
+Correct Answer: A. trains
+Explanation: Even if introduces a possible future condition that may not change the result. The present simple trains is correct.
+142. I will stay here until you _____.
+A. will return
+B. returned
+C. return
+D. would return
+Correct Answer: C. return
+Explanation: Future time clauses beginning with until normally use the present simple. Thus, until you return is correct.
+143. Once the results _____ published, candidates will be notified.
+A. are
+B. were
+C. will be
+D. would be
+Correct Answer: A. are
+Explanation: Once introduces a future time clause, where the present simple is standard. The passive form are published is correct.
+144. You can borrow the book provided that you _____ it on time.
+A. returned
+B. return
+C. will return
+D. would return
+Correct Answer: B. return
+Explanation: The present simple is used after provided that for a future condition. The sentence establishes a requirement for borrowing the book.
+145. If only I _____ more time, I could finish this work.
+A. have
+B. had
+C. will have
+D. had had
+Correct Answer: B. had
+Explanation: If only can express a wish or regret. Here, the past simple had expresses an unreal present lack of time.
+146. If it were not for your help, I _____ the task.
+A. cannot complete
+B. could not complete
+C. could not have completed
+D. will not complete
+Correct Answer: B. could not complete
+Explanation: If it were not for expresses an unreal present condition. The second conditional result uses could not + base verb.
+147. If it had not been for her assistance, we _____ the deadline.
+A. would miss
+B. would have missed
+C. will miss
+D. missed
+Correct Answer: B. would have missed
+Explanation: If it had not been for introduces an unreal past condition. The result clause uses would have missed.
+148. Should you _____ any assistance, please contact our office.
+A. needed
+B. need
+C. will need
+D. would need
+Correct Answer: B. need
+Explanation: Should you need is an inverted conditional equivalent to if you should need. After should, use the base form of the verb.
+149. Were I in your position, I _____ the offer.
+A. accept
+B. will accept
+C. would accept
+D. would have accepted
+Correct Answer: C. would accept
+Explanation: This is an inverted second conditional: Were I in your position means If I were in your position. The result clause uses would accept.
+150. Had they informed us earlier, we _____ the arrangements.
+A. would make
+B. would have made
+C. will make
+D. made
+Correct Answer: B. would have made
+Explanation: Had they informed us is an inverted third conditional equivalent to If they had informed us. The result clause takes would have made.
+Section 7: Conditional Inversion and Advanced Structures (151–175)
+151. _____ you require further clarification, please contact the examiner.
+A. Should
+B. Would
+C. Had
+D. Were
+Correct Answer: A. Should
+Explanation: Should you require is a formal inversion of if you should require. It is commonly used in formal correspondence and instructions.
+152. _____ I known about the cancellation, I would have stayed at home.
+A. Were
+B. Should
+C. Had
+D. Would
+Correct Answer: C. Had
+Explanation: The correct inversion is Had I known, equivalent to If I had known. It expresses an unreal past condition.
+153. _____ he more careful, he would not make such mistakes.
+A. Had
+B. Were
+C. Should
+D. Has
+Correct Answer: B. Were
+Explanation: Were he more careful is an inverted second conditional equivalent to If he were more careful. The auxiliary were precedes the subject.
+154. Had I been informed earlier, I _____ the necessary steps.
+A. would take
+B. will take
+C. would have taken
+D. took
+Correct Answer: C. would have taken
+Explanation: The if-clause is already inverted and uses the past perfect meaning if I had been informed. The result clause requires would have taken.
+155. Should the situation worsen, the authorities _____ emergency measures.
+A. would have taken
+B. will take
+C. had taken
+D. took
+Correct Answer: B. will take
+Explanation: Should the situation worsen is a formal first-conditional inversion. The future result is expressed with will take.
+156. Were the proposal accepted, the project _____ immediately.
+A. would begin
+B. will have begun
+C. began
+D. would have begun
+Correct Answer: A. would begin
+Explanation: Were the proposal accepted is an inverted hypothetical condition. The result clause uses would + base verb.
+157. Had she worked harder, she _____ the scholarship.
+A. would win
+B. will win
+C. would have won
+D. won
+Correct Answer: C. would have won
+Explanation: The inversion Had she worked harder replaces If she had worked harder. The unreal past result requires would have won.
+158. Should you need a receipt, one _____ provided on request.
+A. would be
+B. can be
+C. had been
+D. were
+Correct Answer: B. can be
+Explanation: Should you need expresses a possible future condition. The modal passive can be provided expresses availability.
+159. Were it not for his support, the team _____ unable to continue.
+A. will be
+B. would be
+C. would have been
+D. had been
+Correct Answer: B. would be
+Explanation: Were it not for expresses an unreal present condition. The result clause uses would be.
+160. Had it not been for the timely intervention, the situation _____ worse.
+A. would become
+B. will become
+C. would have become
+D. became
+Correct Answer: C. would have become
+Explanation: Had it not been for is an inverted third-conditional expression. It describes a past situation that was prevented from becoming worse.
+161. If he should arrive before noon, _____ him to wait.
+A. ask
+B. asked
+C. would ask
+D. had asked
+Correct Answer: A. ask
+Explanation: The main clause may take the imperative to give an instruction conditional on a future event. If he should arrive expresses a possible future condition.
+162. If I were to resign, what _____ you do?
+A. will
+B. would
+C. did
+D. had
+Correct Answer: B. would
+Explanation: Were to + base verb can express a hypothetical future possibility. The result clause uses would.
+163. If the chairman _____ to reject the proposal, we would need another plan.
+A. were
+B. was
+C. had
+D. would
+Correct Answer: A. were
+Explanation: The structure if + subject + were to + base verb expresses a hypothetical future situation. The correct phrase is were to reject.
+164. If I _____ you, I would reconsider the decision.
+A. have been
+B. were
+C. had been
+D. will be
+Correct Answer: B. were
+Explanation: The conventional expression for hypothetical advice is If I were you. The result clause uses would reconsider.
+165. If he had been more attentive, he _____ the warning.
+A. would notice
+B. would have noticed
+C. will notice
+D. noticed
+Correct Answer: B. would have noticed
+Explanation: The third conditional describes an unreal past failure to notice a warning. Its result clause takes would have noticed.
+166. _____ you had followed the instructions, you would not have failed.
+A. If
+B. Unless
+C. Were
+D. Should
+Correct Answer: A. If
+Explanation: If you had followed is the ordinary third-conditional form. The other options do not fit the clause structure and meaning.
+167. If he _____ to win the election, he would introduce reforms.
+A. were
+B. had
+C. would
+D. is
+Correct Answer: A. were
+Explanation: The phrase were to win describes a hypothetical future possibility. It is followed by would introduce in the result clause.
+168. If the payment _____ made by Friday, the order will be cancelled.
+A. is not
+B. were not
+C. had not been
+D. would not be
+Correct Answer: A. is not
+Explanation: The first conditional uses the present simple passive in the if-clause. Is not made is the correct form for a future payment condition.
+169. If the proposal were approved, the funds _____ released.
+A. will be
+B. would be
+C. would have been
+D. are
+Correct Answer: B. would be
+Explanation: This is a second conditional with a passive result. The structure is if + past simple passive, would + be + past participle.
+170. If the proposal had been approved, the funds _____ released last week.
+A. would be
+B. will be
+C. would have been
+D. are
+Correct Answer: C. would have been
+Explanation: This is a third conditional in the passive voice. The result structure is would have been + past participle.
+171. If the rules _____ strictly enforced, violations would decrease.
+A. are
+B. were
+C. had been
+D. will be
+Correct Answer: B. were
+Explanation: The second conditional uses were enforced to describe a hypothetical present situation. The result is would decrease.
+172. If the rules had been enforced strictly, violations _____ reduced.
+A. would be
+B. will be
+C. would have been
+D. are
+Correct Answer: C. would have been
+Explanation: The sentence describes an unreal past condition and result. The third-conditional passive construction is would have been reduced.
+173. If he _____ not been promoted, he would still be working in the old department.
+A. has
+B. had
+C. was
+D. would
+Correct Answer: B. had
+Explanation: The sentence combines a past condition with a present consequence. The correct past-perfect clause is if he had not been promoted.
+174. If the manager were available, the issue _____ resolved now.
+A. will be
+B. would be
+C. would have been
+D. had been
+Correct Answer: B. would be
+Explanation: The second conditional uses were available for a hypothetical present condition. The passive result is would be resolved.
+175. Had the warning been taken seriously, the accident _____.
+A. would prevent
+B. will be prevented
+C. would have been prevented
+D. was prevented
+Correct Answer: C. would have been prevented
+Explanation: This is an inverted third conditional in the passive voice. The correct result is would have been prevented.
+Section 8: Error Detection and Sentence Correction (176–200)
+176. Choose the grammatically correct sentence.
+A. If he will come, I will meet him.
+B. If he comes, I will meet him.
+C. If he came, I will meet him.
+D. If he had come, I will meet him.
+Correct Answer: B. If he comes, I will meet him.
+Explanation: The first conditional normally uses the present simple in the if-clause and will + base verb in the main clause. Option A incorrectly uses will in the ordinary if-clause.
+177. Identify the incorrect part: “If I was you, I would accept the offer.”
+A. If
+B. was
+C. would accept
+D. the offer
+Correct Answer: B. was
+Explanation: In formal hypothetical advice, were is preferred: If I were you, I would accept the offer. Although was occurs in informal speech, were is the standard examination answer.
+178. Choose the correct sentence.
+A. If she had studied, she would pass the examination yesterday.
+B. If she studied, she would have passed yesterday.
+C. If she had studied, she would have passed the examination.
+D. If she would have studied, she passed the examination.
+Correct Answer: C. If she had studied, she would have passed the examination.
+Explanation: The third conditional describes an unreal past condition and result. It uses had + past participle in the if-clause and would have + past participle in the main clause.
+179. Which sentence contains a grammatical error?
+A. If it rains, we will stay home.
+B. If I were rich, I would travel widely.
+C. If he had called, I would have answered.
+D. If she will arrive early, she can help us.
+Correct Answer: D. If she will arrive early, she can help us.
+Explanation: In a standard future conditional, the if-clause takes the present simple: If she arrives early, she can help us. Will may occur in an if-clause in special cases expressing willingness, but that meaning is not intended here.
+180. Choose the correct completion: If he had not overslept, he _____ on time.
+A. would arrive
+B. would have arrived
+C. will arrive
+D. arrived
+Correct Answer: B. would have arrived
+Explanation: The sentence refers to an unreal past situation. The third conditional requires would have arrived.
+181. Choose the grammatically correct sentence.
+A. Unless you do not hurry, you will miss the train.
+B. Unless you hurry, you will miss the train.
+C. Unless you will hurry, you miss the train.
+D. Unless you hurried, you will miss the train.
+Correct Answer: B. Unless you hurry, you will miss the train.
+Explanation: Unless already means “if not,” so adding not after it usually creates an unintended double negative. The present simple hurry is correct for a future condition.
+182. Identify the error: “If he had worked hard, he will have succeeded.”
+A. If
+B. had worked
+C. will have succeeded
+D. hard
+Correct Answer: C. will have succeeded
+Explanation: The sentence intends a third conditional, so the result should be would have succeeded. The correct sentence is: If he had worked hard, he would have succeeded.
+183. Choose the correct sentence.
+A. If I had money, I would have bought a car yesterday.
+B. If I had had money, I would have bought a car yesterday.
+C. If I have had money, I would buy a car yesterday.
+D. If I would have money, I bought a car yesterday.
+Correct Answer: B. If I had had money, I would have bought a car yesterday.
+Explanation: A past unreal condition requires the past perfect. Had had is correct: the first had is the auxiliary, and the second is the past participle of have.
+184. Which sentence is correct?
+A. If he were here, he would help us.
+B. If he was here yesterday, he would help us now.
+C. If he is here, he would help us.
+D. If he had been here, he would help us yesterday.
+Correct Answer: A. If he were here, he would help us.
+Explanation: Option A is a standard second conditional describing a hypothetical present situation. Option D would require would have helped if the intended result were in the past.
+185. Choose the correct form: If you _____ earlier, you would not have missed the bus.
+A. leave
+B. left
+C. had left
+D. would leave
+Correct Answer: C. had left
+Explanation: The result would not have missed signals a third conditional. Therefore, the if-clause requires the past perfect had left.
+186. Which sentence is grammatically correct?
+A. If he studied harder, he will pass.
+B. If he studies harder, he would pass.
+C. If he studied harder, he would pass.
+D. If he had studied harder, he would pass yesterday.
+Correct Answer: C. If he studied harder, he would pass.
+Explanation: Option C follows the standard second-conditional structure. Option A mixes the second-conditional condition with a first-conditional result.
+187. Identify the incorrect part: “If she would have known, she would have helped us.”
+A. If
+B. would have known
+C. would have helped
+D. us
+Correct Answer: B. would have known
+Explanation: In a standard third conditional, the if-clause takes the past perfect: If she had known, she would have helped us. The auxiliary would normally belongs in the result clause.
+188. Choose the correct sentence.
+A. If he comes yesterday, I would meet him.
+B. If he had come yesterday, I would have met him.
+C. If he came yesterday, I will meet him.
+D. If he will come yesterday, I meet him.
+Correct Answer: B. If he had come yesterday, I would have met him.
+Explanation: The word yesterday indicates a past situation that did not occur. The third conditional is appropriate for expressing its imagined result.
+189. Choose the correct completion: If I _____ the answer now, I would tell you.
+A. know
+B. knew
+C. had known
+D. will know
+Correct Answer: B. knew
+Explanation: The word now indicates a present situation. The second conditional uses the past simple knew to express a hypothetical present condition.
+190. Which sentence correctly expresses a general truth?
+A. If you heat metal, it expands.
+B. If you heated metal, it will expand.
+C. If you will heat metal, it expands.
+D. If you had heated metal, it expands.
+Correct Answer: A. If you heat metal, it expands.
+Explanation: The zero conditional expresses general truths using the present simple in both clauses. This sentence describes a predictable physical process.
+191. Choose the correct sentence.
+A. If he had arrived earlier, he would see the manager yesterday.
+B. If he arrives earlier, he would have seen the manager.
+C. If he had arrived earlier, he would have seen the manager.
+D. If he would arrive earlier, he had seen the manager.
+Correct Answer: C. If he had arrived earlier, he would have seen the manager.
+Explanation: This is a third conditional, describing an unreal past meeting. Both clauses use the correct perfect forms.
+192. Identify the error: “If I knew his address, I would have visited him yesterday.”
+A. If
+B. knew
+C. would have visited
+D. his address
+Correct Answer: B. knew
+Explanation: The sentence intends to connect a present lack of knowledge with an unreal past visit. The mixed conditional requires If I had known his address, I would have visited him yesterday if the knowledge itself was absent at the relevant past time; the original wording does not express that past condition appropriately.
+193. Choose the correct sentence.
+A. Unless you study, you will fail.
+B. Unless you do not study, you will fail.
+C. Unless you studied, you will fail.
+D. Unless you will study, you fail.
+Correct Answer: A. Unless you study, you will fail.
+Explanation: Unless you study means if you do not study. The present simple is used in this future-oriented conditional clause.
+194. Which sentence is correct?
+A. If he were rich, he will buy a mansion.
+B. If he had been rich, he would buy a mansion yesterday.
+C. If he were rich, he would buy a mansion.
+D. If he is rich, he would have bought a mansion.
+Correct Answer: C. If he were rich, he would buy a mansion.
+Explanation: This is a standard second conditional about an unreal present situation. The past simple were pairs with would buy.
+195. Choose the correct completion: If the train had not been delayed, we _____ by now.
+A. arrive
+B. would arrive
+C. would have arrived
+D. will arrive
+Correct Answer: C. would have arrived
+Explanation: The delay occurred in the past, and the expected arrival is considered completed by now. Would have arrived is the suitable result form.
+196. Identify the incorrect part: “If he studies hard, he would pass the examination.”
+A. If
+B. studies hard
+C. would pass
+D. the examination
+Correct Answer: C. would pass
+Explanation: For a realistic future condition, the result should be will pass: If he studies hard, he will pass the examination. The original mixes first- and second-conditional forms.
+197. Choose the correct sentence.
+A. Had I knew, I would have helped.
+B. Had I known, I would have helped.
+C. Had I know, I would help.
+D. Had I been know, I would have helped.
+Correct Answer: B. Had I known, I would have helped.
+Explanation: Inverted third conditionals use had + past participle before the subject. The past participle of know is known.
+198. Which sentence correctly uses “provided that”?
+A. Provided that you will agree, we will proceed.
+B. Provided that you agreed, we will proceed.
+C. Provided that you agree, we will proceed.
+D. Provided that you would agree, we proceed.
+Correct Answer: C. Provided that you agree, we will proceed.
+Explanation: Provided that introduces a condition and normally takes the present simple for a future possibility. The result clause uses will proceed.
+199. Choose the correct sentence.
+A. If she had studied, she would have been successful.
+B. If she would study, she would have been successful.
+C. If she studied, she would have been successful yesterday.
+D. If she has studied, she would have been successful.
+Correct Answer: A. If she had studied, she would have been successful.
+Explanation: The sentence describes an unreal past condition and outcome. The past perfect and would have + past participle form the third conditional.
+200. Choose the correct completion: If he _____ more careful now, he would not have made that mistake yesterday.
+A. is
+B. were
+C. had been
+D. will be
+Correct Answer: B. were
+Explanation: This is a mixed conditional connecting a hypothetical present characteristic with a past result. Were more careful is the present hypothetical condition, while would not have made expresses the unreal past consequence.
+Section 9: Sentence Completion and Contextual Applications (201–225)
+201. If the central bank raises the policy rate, borrowing costs _____.
+A. increased
+B. would increase
+C. may increase
+D. had increased
+Correct Answer: C. may increase
+Explanation: The first conditional can use may to express a possible future consequence. The present simple raises is appropriate in the if-clause.
+202. If a bank fails to verify a customer's identity, it _____ regulatory risks.
+A. faces
+B. faced
+C. would have faced
+D. had faced
+Correct Answer: A. faces
+Explanation: This zero conditional expresses a general consequence of failing to verify identity. The present simple is used in both clauses.
+203. If the applicant meets all the requirements, the bank _____ the application.
+A. would approve
+B. will consider
+C. had considered
+D. considered
+Correct Answer: B. will consider
+Explanation: The sentence predicts a possible future action based on meeting requirements. Will consider is the appropriate first-conditional result.
+204. If the auditor had detected the error earlier, the loss _____ avoided.
+A. will be
+B. would be
+C. would have been
+D. is
+Correct Answer: C. would have been
+Explanation: This is a third conditional in the passive voice. The correct structure is would have been + past participle.
+205. If interest rates were lower, more businesses _____ to expand.
+A. will be able
+B. would be able
+C. would have been able
+D. are able
+Correct Answer: B. would be able
+Explanation: The second conditional describes a hypothetical present economic situation. Would be able to expand expresses the imagined result.
+206. If the candidate had checked the instructions, the answer sheet _____ correctly.
+A. would complete
+B. would have been completed
+C. will complete
+D. completed
+Correct Answer: B. would have been completed
+Explanation: The unreal past condition is paired with a passive result. The third-conditional passive is would have been completed.
+207. If inflation continues to rise, purchasing power _____.
+A. may decline
+B. would have declined
+C. declined yesterday
+D. had declined
+Correct Answer: A. may decline
+Explanation: May decline expresses a possible future result of continuing inflation. Modal verbs can replace will in the first conditional.
+208. If the company had diversified its investments, it _____ less vulnerable now.
+A. will be
+B. would be
+C. would have been
+D. is
+Correct Answer: B. would be
+Explanation: This mixed conditional connects a past investment decision with a present consequence. Would be is correct for the present result.
+209. If the candidate _____ the written test, he will be invited to the viva.
+A. passes
+B. passed
+C. will pass
+D. would pass
+Correct Answer: A. passes
+Explanation: The first conditional uses the present simple in the if-clause. The result clause refers to a future invitation.
+210. If the borrower had repaid the loan on time, the bank _____ additional penalties.
+A. would not impose
+B. will not impose
+C. would not have imposed
+D. does not impose
+Correct Answer: C. would not have imposed
+Explanation: The sentence imagines a different past repayment history. The result clause takes would not have imposed.
+211. If employees receive proper training, they generally _____ more efficiently.
+A. worked
+B. work
+C. would work
+D. will have worked
+Correct Answer: B. work
+Explanation: The sentence expresses a general relationship between training and performance. The zero conditional uses the present simple.
+212. If the data had been accurate, the analysts _____ the correct conclusion.
+A. would reach
+B. will reach
+C. would have reached
+D. reached
+Correct Answer: C. would have reached
+Explanation: The condition refers to past data quality, and the imagined conclusion belongs to the past. Use the third conditional.
+213. If I were responsible for recruitment, I _____ greater emphasis on analytical skills.
+A. place
+B. will place
+C. would place
+D. would have placed
+Correct Answer: C. would place
+Explanation: The second conditional describes an imagined present role and its possible consequence. Would place is the correct result form.
+214. If the applicant submits false information, the application _____ rejected.
+A. would have been
+B. may be
+C. had been
+D. would have
+Correct Answer: B. may be
+Explanation: The result clause uses the modal passive may be rejected to express a possible consequence. The condition is expressed in the present simple.
+215. If the bank had adopted stronger security measures, the cyberattack _____ less damaging.
+A. would be
+B. will be
+C. would have been
+D. is
+Correct Answer: C. would have been
+Explanation: This is a third conditional describing an unreal past security decision and result. Would have been less damaging is the correct form.
+216. If the economy grows steadily, employment opportunities _____.
+A. would have increased
+B. may increase
+C. had increased
+D. would have been increasing
+Correct Answer: B. may increase
+Explanation: The sentence describes a possible future economic consequence. May increase is a suitable modal result clause.
+217. If she had prepared adequately, she _____ so nervous during the interview.
+A. would not be
+B. will not be
+C. would not have been
+D. is not
+Correct Answer: C. would not have been
+Explanation: The preparation and interview are past events. The third conditional expresses the imagined past emotional state.
+218. If I knew the examiner's expectations, I _____ my answers accordingly.
+A. will tailor
+B. would tailor
+C. would have tailored
+D. tailored
+Correct Answer: B. would tailor
+Explanation: The second conditional expresses a hypothetical present lack of knowledge. The result clause uses would tailor.
+219. If the manager had acted promptly, the dispute _____ resolved before it escalated.
+A. would be
+B. would have been
+C. will be
+D. is
+Correct Answer: B. would have been
+Explanation: The sentence describes an unreal past action and result. The passive third conditional is would have been resolved.
+220. If you do not back up your files, you _____ them permanently if the drive fails.
+A. might lose
+B. would have lost
+C. had lost
+D. lost
+Correct Answer: A. might lose
+Explanation: Might lose expresses a possible future consequence. The first conditional allows modals such as might instead of will.
+221. If he had accepted the transfer, he _____ in Chattogram now.
+A. would work
+B. will work
+C. would have worked
+D. works
+Correct Answer: A. would work
+Explanation: The past transfer decision affects the hypothetical present location. This mixed conditional uses would work for the present consequence.
+222. If the documents are incomplete, the application _____ processed.
+A. would not be
+B. will not be
+C. would not have been
+D. had not been
+Correct Answer: B. will not be
+Explanation: The first conditional predicts a future administrative consequence. The result clause uses the future passive will not be processed.
+223. If the company were more transparent, investors _____ greater confidence in it.
+A. have
+B. will have
+C. would have
+D. would have had
+Correct Answer: C. would have
+Explanation: The second conditional describes an unreal present company characteristic and its imagined effect. Would have means “would possess” in this context.
+224. If the system had not crashed, we _____ the transaction yesterday.
+A. would complete
+B. would have completed
+C. will complete
+D. completed
+Correct Answer: B. would have completed
+Explanation: The crash and transaction refer to the past. The third conditional uses would have completed.
+225. If a candidate manages time effectively, the candidate _____ more questions.
+A. can answer
+B. would have answered
+C. had answered
+D. would have been answering yesterday
+Correct Answer: A. can answer
+Explanation: A conditional result may use can to express ability or a practical consequence. The present simple condition describes a general exam strategy.
+Section 10: Advanced Mixed Practice and Transformations (226–250)
+226. “Work hard, or you will fail.” Which conditional sentence has the same meaning?
+A. If you work hard, you will fail.
+B. If you do not work hard, you will fail.
+C. If you worked hard, you would fail.
+D. If you had worked hard, you would have failed.
+Correct Answer: B. If you do not work hard, you will fail.
+Explanation: The original sentence warns of a consequence unless the person works hard. The equivalent first conditional uses the negative condition if you do not work hard.
+227. “Without your help, I would have failed.” Which conditional sentence is equivalent?
+A. If you helped me, I would fail.
+B. If you had not helped me, I would have failed.
+C. If you do not help me, I would fail.
+D. If you had helped me, I would have failed.
+Correct Answer: B. If you had not helped me, I would have failed.
+Explanation: Without your help implies that the help was actually given and that failure would otherwise have occurred. The equivalent third conditional uses if you had not helped me.
+228. Choose the correct conditional transformation of “Study hard to pass the examination.”
+A. If you studied hard, you pass the examination.
+B. If you study hard, you will pass the examination.
+C. If you had studied hard, you pass the examination.
+D. If you will study hard, you passed the examination.
+Correct Answer: B. If you study hard, you will pass the examination.
+Explanation: The imperative expresses advice about a future result. Its natural conditional equivalent is the first conditional.
+229. Which sentence correctly expresses regret about a past failure?
+A. If I study harder, I would pass.
+B. If I had studied harder, I would have passed.
+C. If I studied harder, I would have passed yesterday.
+D. If I would study harder, I had passed.
+Correct Answer: B. If I had studied harder, I would have passed.
+Explanation: The third conditional is used to express regret about an unreal past event. It pairs the past perfect with would have + past participle.
+230. Choose the correct completion: If he were to resign tomorrow, the board _____ an emergency meeting.
+A. convened
+B. will convene
+C. would convene
+D. would have convened
+Correct Answer: C. would convene
+Explanation: Were to resign expresses a hypothetical future event. The result clause takes would + base verb.
+231. Which sentence correctly expresses a general truth?
+A. If people eat too much, they gain weight.
+B. If people ate too much, they will gain weight.
+C. If people will eat too much, they gained weight.
+D. If people had eaten too much, they gain weight.
+Correct Answer: A. If people eat too much, they gain weight.
+Explanation: The zero conditional expresses general tendencies and facts. Both clauses normally use the present simple.
+232. Choose the correct completion: If the government _____ more in education, literacy rates could improve.
+A. invests
+B. invested
+C. had invested
+D. will invest
+Correct Answer: B. invested
+Explanation: The second conditional expresses a hypothetical present policy and a possible consequence. Invested is the past simple form, paired with could improve.
+233. “Had I known the truth, I would have acted differently.” Choose its equivalent.
+A. If I knew the truth, I would act differently.
+B. If I had known the truth, I would have acted differently.
+C. If I would have known the truth, I acted differently.
+D. If I know the truth, I would have acted differently.
+Correct Answer: B. If I had known the truth, I would have acted differently.
+Explanation: Inversion places had before the subject in a third conditional. Restoring if gives the ordinary form if I had known.
+234. Choose the correct completion: If he had not been promoted, he _____ in the same position now.
+A. would remain
+B. will remain
+C. would have remained
+D. remains
+Correct Answer: A. would remain
+Explanation: This mixed conditional links a past event to a present consequence. The result clause takes would remain.
+235. Which sentence correctly uses “even if”?
+A. Even if he will apologise, I will not forgive him.
+B. Even if he apologised yesterday, I will not forgive him tomorrow.
+C. Even if he apologises, I will not forgive him.
+D. Even if he would apologise, I will not forgive him.
+Correct Answer: C. Even if he apologises, I will not forgive him.
+Explanation: The first conditional normally uses the present simple after even if when referring to the future. The phrase indicates that the apology will not change the speaker's decision.
+236. Choose the correct sentence.
+A. If I had wings, I would fly around the world.
+B. If I have wings, I would fly around the world.
+C. If I had had wings, I would fly around the world yesterday.
+D. If I would have wings, I flew around the world.
+Correct Answer: A. If I had wings, I would fly around the world.
+Explanation: The sentence describes an imaginary present situation. The second conditional uses if + past simple and would + base verb.
+237. Complete the sentence: If the application had been submitted before the deadline, it _____ considered.
+A. would be
+B. will be
+C. would have been
+D. is
+Correct Answer: C. would have been
+Explanation: The third conditional in the passive voice uses would have been + past participle. The condition concerns a missed past deadline.
+238. Which conditional sentence is equivalent to “But for his timely advice, I would have made a serious mistake”?
+A. If he had not advised me in time, I would have made a serious mistake.
+B. If he advised me in time, I would make a serious mistake.
+C. If he advises me in time, I will make a serious mistake.
+D. If he had advised me in time, I would have made a serious mistake.
+Correct Answer: A. If he had not advised me in time, I would have made a serious mistake.
+Explanation: But for means “if it had not been for” in this past context. The sentence indicates that his timely advice prevented the mistake.
+239. Choose the correct completion: If she _____ the necessary qualifications, she would be eligible for the post.
+A. has
+B. had
+C. had had
+D. will have
+Correct Answer: B. had
+Explanation: The second conditional describes a hypothetical present lack of qualifications. The past simple had pairs with would be.
+240. Which sentence correctly uses a conditional with a modal result?
+A. If you follow the instructions, you can complete the task.
+B. If you will follow the instructions, you can complete the task.
+C. If you followed the instructions, you can completed the task.
+D. If you had followed the instructions, you can complete the task yesterday.
+Correct Answer: A. If you follow the instructions, you can complete the task.
+Explanation: A first conditional may use can to express ability or possibility. The present simple condition follow is correct.
+241. Choose the correct completion: If he had exercised regularly, he _____ healthier now.
+A. would be
+B. will be
+C. would have been
+D. is
+Correct Answer: A. would be
+Explanation: The unreal past exercise routine is linked to a present health state. The mixed conditional uses would be for the present result.
+242. Which sentence correctly expresses an unreal past condition with an uncertain result?
+A. If they had left earlier, they might have caught the train.
+B. If they left earlier, they might have caught the train yesterday.
+C. If they had left earlier, they might catch the train yesterday.
+D. If they would leave earlier, they might have caught the train.
+Correct Answer: A. If they had left earlier, they might have caught the train.
+Explanation: Might have caught expresses an uncertain unreal past result. The if-clause correctly uses the past perfect.
+243. Choose the correct sentence with “in case.”
+A. Carry some cash in case the card machine does not work.
+B. Carry some cash in case the card machine will not work.
+C. Carry some cash in case the card machine would not work.
+D. Carry some cash in case the card machine did not work tomorrow.
+Correct Answer: A. Carry some cash in case the card machine does not work.
+Explanation: In case introduces a precaution for a possible future situation. The present simple does not work is used rather than will not work.
+244. Choose the correct completion: If the manager _____ present, the meeting would have proceeded as planned.
+A. were
+B. is
+C. had been
+D. would be
+Correct Answer: C. had been
+Explanation: The result refers to an unreal past event. The third conditional requires the past perfect had been in the if-clause.
+245. Which sentence expresses a hypothetical future condition most clearly?
+A. If he were to win the scholarship, he would study abroad.
+B. If he wins the scholarship yesterday, he would study abroad.
+C. If he had won the scholarship, he studies abroad.
+D. If he would win the scholarship, he studied abroad.
+Correct Answer: A. If he were to win the scholarship, he would study abroad.
+Explanation: Were to + base verb can express a hypothetical future possibility. The result clause takes would + base verb.
+246. Choose the correct sentence.
+A. If I had known you were coming, I would prepare dinner.
+B. If I knew you were coming, I would have prepared dinner yesterday.
+C. If I had known you were coming, I would have prepared dinner.
+D. If I would have known you were coming, I prepared dinner.
+Correct Answer: C. If I had known you were coming, I would have prepared dinner.
+Explanation: The sentence describes an unreal past situation and its imagined result. The correct structure is had known and would have prepared.
+247. Complete the sentence: If the evidence _____ sufficient, the court would reach a different verdict.
+A. is
+B. were
+C. had been
+D. will be
+Correct Answer: B. were
+Explanation: The second conditional describes a hypothetical present situation. Were sufficient is paired with would reach.
+248. Which sentence is correct?
+A. If he had not worked hard, he would not have succeeded.
+B. If he did not work hard, he would not have succeeded yesterday.
+C. If he would not work hard, he did not succeed.
+D. If he had not worked hard, he will not succeed.
+Correct Answer: A. If he had not worked hard, he would not have succeeded.
+Explanation: This third conditional expresses the relationship between past effort and a past result. Both clauses use the appropriate perfect constructions.
+249. Choose the correct completion: _____ the bank fail to meet its obligations, the authorities would intervene.
+A. Had
+B. Were
+C. Should
+D. Would
+Correct Answer: C. Should
+Explanation: Should the bank fail is a formal inverted conditional equivalent to if the bank should fail. The result clause uses would intervene to express a hypothetical outcome.
+250. Choose the sentence that correctly combines a past condition with a present result.
+A. If she had taken the course, she would understand the topic now.
+B. If she took the course, she would have understood the topic yesterday.
+C. If she had taken the course, she will understand the topic now.
+D. If she would take the course, she understands the topic now.
+Correct Answer: A. If she had taken the course, she would understand the topic now.
+Explanation: This is a mixed conditional: an unreal past action has a hypothetical present consequence. The structure is if + past perfect, would + base verb.

@@ -9,21 +9,20 @@
  *   - Officer (General)_2024.txt
  *   - Officer(General)_2022.txt
  *
- * Each file follows the same Bangla MCQ format:
+ * Each file follows the Bangla MCQ format:
  *   <num>. <question>
- *   A. <option>
- *   B. <option>
- *   C. <option>
- *   D. <option>
+ *   ক. <option>
+ *   খ. <option>
+ *   গ. <option>
+ *   ঘ. <option>
  *   উত্তর: <letter>. <option text>
  *   ব্যাখ্যা: <explanation>
  *
- * The script parses the files, validates them via the shared import‑gate
- * (scanMca), and upserts them using a deterministic sourceKey. The
- * `sourceExam` column now includes the year extracted from the filename
- * so the Question Bank UI shows separate exam headings.
- * ------------------------------------------------------------
- */
+ * The script handles both multiline and inline formats by detecting
+ * question start via a leading number and dot, then extracting fields
+ * using marker positions. It also normalizes alternative option markers
+ * (e.g., "(ক) /") to standard format before parsing.
+ * ------------------------------------------------------------ */
 import { PrismaClient, type Prisma } from "@prisma/client";
 import { readFileSync } from "fs";
 import { join } from "path";
@@ -55,117 +54,130 @@ function yearFromFilename(name: string): string | null {
   return m ? m[1] : null;
 }
 
+const BN_DIGITS = "০১২৩৪৫৬৭৮৯";
+const BN_TO_INDEX: Record<string, number> = { "ক": 0, "খ": 1, "গ": 2, "ঘ": 3 };
+const LATIN_TO_INDEX: Record<string, number> = { A: 0, B: 1, C: 2, D: 3 };
+
+function toAsciiDigits(value: string): string {
+  return value.replace(/[০-৯]/g, (d) => String(BN_DIGITS.indexOf(d)));
+}
+
+function recordNumber(raw: string): number {
+  const n = Number.parseInt(toAsciiDigits(raw), 10);
+  return Number.isFinite(n) ? n : NaN;
+}
+
+/** Map an answer letter (Bengali or Latin) to its A–D index, or -1. */
+function answerIndexOf(letter: string): number {
+  return BN_TO_INDEX[letter] ?? LATIN_TO_INDEX[letter.toUpperCase()] ?? -1;
+}
+
+/**
+ * Parse one MCQ block. Records are either a single line (2024-style) or
+ * several lines (2022-style); the block is joined before parsing.
+ *
+ * Only records with the Bengali ক/খ/গ/ঘ option markers are accepted. The
+ * mixed 2022 file also contains English and mathematics sections (using
+ * `(a)`/`Answer:` markers); those must never be imported as Bangla.
+ */
+function parseBlock(file: string, block: string): TxtRecord | null {
+  const text = block.replace(/\s+/g, " ").trim();
+  const start = text.match(/^([০-৯]+|\d+)\s*\.\s*/);
+  if (!start) return null;
+
+  const body = text.slice(start[0].length);
+
+  // Collect Bengali option markers in source order. The answer line repeats
+  // one marker, but the first ক,খ,গ,ঘ run is always the option list.
+  const markerRe = /(?:^|\s)[（(]?([কখগঘ])[)\.]\s*/g;
+  const markers: Array<{ letter: string; start: number; end: number }> = [];
+  for (let m = markerRe.exec(body); m; m = markerRe.exec(body)) {
+    const lead = m[0].length - m[0].trimStart().length;
+    markers.push({ letter: m[1], start: m.index + lead, end: markerRe.lastIndex });
+  }
+
+  let optionsStart = -1;
+  for (let i = 0; i + 3 < markers.length; i++) {
+    if (
+      markers[i].letter === "ক" &&
+      markers[i + 1].letter === "খ" &&
+      markers[i + 2].letter === "গ" &&
+      markers[i + 3].letter === "ঘ"
+    ) {
+      optionsStart = i;
+      break;
+    }
+  }
+  if (optionsStart === -1) return null;
+
+  const ka = markers[optionsStart]!;
+  const kha = markers[optionsStart + 1]!;
+  const ga = markers[optionsStart + 2]!;
+  const gha = markers[optionsStart + 3]!;
+
+  const question = body.slice(0, ka.start).trim();
+  if (question.length < 3) return null;
+
+  const tail = body.slice(gha.end);
+  const answerMatch = /(?:উত্তর\s*[:ঃ]|Ans\s*[.:])\s*([কখগঘA-Da-d])/.exec(tail);
+  if (!answerMatch) return null;
+
+  const answerIdx = answerIndexOf(answerMatch[1]);
+  if (answerIdx < 0) return null;
+
+  const explanationMatch = /ব্যাখ্যা\s*:\s*/.exec(tail);
+  const explanation = explanationMatch
+    ? tail.slice(explanationMatch.index + explanationMatch[0].length).trim()
+    : "";
+
+  const options = [
+    body.slice(ka.end, kha.start).trim(),
+    body.slice(kha.end, ga.start).trim(),
+    body.slice(ga.end, gha.start).trim(),
+    tail.slice(0, answerMatch.index).trim(),
+  ];
+  if (options.some((o) => o.length === 0)) return null;
+
+  return {
+    file,
+    n: recordNumber(start[1]),
+    question,
+    options,
+    answerLetter: LETTERS[answerIdx],
+    explanation,
+  };
+}
+
 function parseBanglaTxt(file: string, content: string): {
   records: TxtRecord[];
   skipped: string[];
 } {
   const records: TxtRecord[] = [];
   const skipped: string[] = [];
-  const lines = content.split("\n");
-  let cur: Partial<TxtRecord> | null = null;
-  let opts: string[] = [];
+  const lines = content.replace(/^\uFEFF/, "").split(/\r?\n/);
+  const isQuestionStart = (line: string) => /^\s*(?:[০-৯]+|\d+)\s*\.\s*/.test(line);
+  const isSectionHeader = (line: string) => /^\s*Section\b/i.test(line);
 
-  const flush = () => {
-    if (!cur) return;
-    if (!cur.question || cur.question.length < 3) {
-      skipped.push(`Q#${cur.n}: empty/short question`);
-    } else if (opts.length < 4) {
-      skipped.push(`Q#${cur.n}: only ${opts.length} options`);
-    } else if (!cur.answerLetter) {
-      skipped.push(`Q#${cur.n}: missing answer`);
-    } else {
-      const answerIdx = LETTERS.indexOf(cur.answerLetter);
-      if (answerIdx < 0 || !opts[answerIdx]) {
-        skipped.push(`Q#${cur.n}: bad answer letter '${cur.answerLetter}'`);
-      } else {
-        records.push({
-          file,
-          n: cur.n,
-          question: cur.question,
-          options: opts,
-          answerLetter: cur.answerLetter,
-          explanation: cur.explanation,
-        });
-      }
-    }
-    cur = null;
-    opts = [];
-  };
+  for (let i = 0; i < lines.length; i++) {
+    if (!isQuestionStart(lines[i])) continue;
 
-  const qRe = /^(\d|[\u09E6-\u09EF]+)\.\s*(.*)$/;
-  const optReEng = /^([A-D])\.\s*(.*)$/;
-  const ansReBangla = /^উত্তর:\s*([A-D])\.\s*(.*)$/;
-  const ansReAns = /^Ans\.?\s*([A-D\u0995-\u0998])\.?\s*(.*)$/;
-  const expRe = /^ব্যাখ্যা:\s*(.*)$/;
+    // A record runs until the next question or section header. Section
+    // headers are boundaries, not content — the mixed file switches from
+    // Bangla to English/math partway through.
+    const block: string[] = [lines[i]];
+    let j = i + 1;
+    while (j < lines.length && !isQuestionStart(lines[j]) && !isSectionHeader(lines[j])) {
+      block.push(lines[j]);
+      j++;
+    }
 
-  for (const raw of lines) {
-    const line = raw.trimEnd();
-    // Skip empty or header lines that don’t start a question
-    if (!line || line.startsWith("Section") || line.startsWith("প্রশ্ন") || line.startsWith("Topic")) {
-      continue;
-    }
-    const qMatch = line.match(qRe);
-    if (qMatch) {
-      // Inline style (question, all options, answer and explanation on one line)
-      const inline = line.match(/^.*?ক\.\s*(.*?)\s*খ\.\s*(.*?)\s*গ\.\s*(.*?)\s*ঘ\.\s*(.*?)\s*উত্তর:\s*([A-D\u0995-\u0998])\.\s*(.*?)\s*ব্যাখ্যা:\s*(.*)$/);
-      if (inline) {
-        const [_full, optA, optB, optC, optD, ansLetterRaw, ansText, expl] = inline;
-        const map = { "\u0995": "A", "\u0996": "B", "\u0997": "C", "\u0998": "D" };
-        const ansLetter = map[ansLetterRaw] || ansLetterRaw;
-        records.push({
-          file,
-          n: parseInt(qMatch[1]),
-          question: qMatch[2].trim(),
-          options: [optA, optB, optC, optD],
-          answerLetter: ansLetter,
-          explanation: expl.trim(),
-        });
-        // skip normal processing for this line
-        continue;
-      }
-      flush();
-      cur = { file, n: parseInt(qMatch[1]), question: qMatch[2] } as any;
-      opts = [];
-      continue;
-    }
-    if (!cur) continue;
-    const optMatchEng = line.match(optReEng);
-    const optMatchBeng = line.match(/^([\u0995-\u0998])\.\s*(.*)$/);
-    if (optMatchEng) {
-      opts.push(optMatchEng[2]);
-      continue;
-    }
-    if (optMatchBeng) {
-      // map Bengali option letters to A-D order based on appearance
-      opts.push(optMatchBeng[2]);
-      continue;
-    }
-    const ansMatchBangla = line.match(ansReBangla);
-    const ansMatchAns = line.match(ansReAns);
-    if (ansMatchBangla) {
-      cur.answerLetter = ansMatchBangla[1];
-      // map Bengali option letters to A-D
-      const map = { "\u0995": "A", "\u0996": "B", "\u0997": "C", "\u0998": "D" };
-      cur.answerLetter = map[cur.answerLetter] || cur.answerLetter;
-      continue;
-    }
-    if (ansMatchAns) {
-      cur.answerLetter = ansMatchAns[1];
-      const map = { "\u0995": "A", "\u0996": "B", "\u0997": "C", "\u0998": "D" };
-      cur.answerLetter = map[cur.answerLetter] || cur.answerLetter;
-      continue;
-    }
-    const expMatch = line.match(expRe);
-    if (expMatch) {
-      cur.explanation = expMatch[1];
-      continue;
-    }
-    // If we get here, treat it as a continuation of the question stem
-    if (line && cur.question) {
-      cur.question = (cur.question + " " + line).trim();
-    }
+    const label = lines[i].trim().split(/\s+/)[0] ?? "?";
+    const rec = parseBlock(file, block.join(" "));
+    if (rec) records.push(rec);
+    else skipped.push(`Q#${label}: not a Bengali 4-option MCQ`);
+    i = j - 1;
   }
-  flush();
+
   return { records, skipped };
 }
 
@@ -198,19 +210,20 @@ export async function importOfficerGeneral(prisma: PrismaClient, opts?: { dryRun
     where: { nameEn: 'Officer (General)' },
   });
   if (!exam) throw new Error('Officer (General) exam not found');
+  const examId = exam.id;
 
   async function getPaperId(yearStr: string): Promise<number> {
     const year = parseInt(yearStr);
     if (isNaN(year)) throw new Error(`Invalid year: ${yearStr}`);
     // Try to find existing paper
     const existing = await prisma.examPaper.findFirst({
-      where: { examId: exam.id, year: year },
+      where: { examId, year: year },
     });
     if (existing) return existing.id;
     // Create new paper
     const paper = await prisma.examPaper.create({
       data: {
-        examId: exam.id,
+        examId,
         slug: `officer-general-${year}`,
         titleBn: `অফিসার (জেনারেল) ${year}`,
         titleEn: `Officer (General) ${year}`,
@@ -303,7 +316,7 @@ export async function importOfficerGeneral(prisma: PrismaClient, opts?: { dryRun
           path: "01_বাংলা_ভাষা_ও_সাহিত্য",
           topic: "Bangla",
           subtopic: "Officer (General)",
-          examId: exam.id,
+          examId,
           paperId: paperId,
           sourceExam,
           questionNumber: r.n,
@@ -365,9 +378,7 @@ export async function importOfficerGeneral(prisma: PrismaClient, opts?: { dryRun
 
 if (process.argv[1]?.endsWith("import-officer-general.ts")) {
   (async () => {
-    const prisma = new PrismaClient({
-      datasources: { db: { url: process.env.DATABASE_URL } },
-    });
+    const prisma = new PrismaClient({ datasources: { db: { url: process.env.DATABASE_URL } } });
     try {
       const rep = await importOfficerGeneral(prisma);
       console.log('\nImport finished:', rep);

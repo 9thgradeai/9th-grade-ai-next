@@ -85,41 +85,25 @@ const english: SubjectNode = {
   rootSegment: ENGLISH,
   matchNameBn: "English Language and Literature",
   children: [
-    official("bcs.english.language", "PART-I: Language", [`${ENGLISH}/PART-I_Language`], 15),
+    // PART-I carries the official 15-mark quota; its subtopics have no
+    // official marks in the syllabus, so they are inferred/neutral. They must
+    // stay *inside* PART-I — as subject-level siblings they would consume part
+    // of the 30-mark subject total and leave the official quotas unmet.
     {
-      id: "bcs.english.language.parts_of_speech",
-      nameBn: "Parts of Speech",
-      paths: [`${ENGLISH}/PART-I_Language/Parts_of_Speech`],
-      allocationSource: "inferred",
-      children: [],
-    },
-    {
-      id: "bcs.english.language.idioms",
-      nameBn: "Idioms and Phrases",
-      paths: [`${ENGLISH}/PART-I_Language/Idioms_and_Phrases`],
-      allocationSource: "inferred",
-      children: [],
-    },
-    {
-      id: "bcs.english.language.corrections",
-      nameBn: "Corrections and Agreement",
-      paths: [`${ENGLISH}/PART-I_Language/Corrections_and_Agreement`],
-      allocationSource: "inferred",
-      children: [],
-    },
-    {
-      id: "bcs.english.language.sentences",
-      nameBn: "Sentences and Transformations",
-      paths: [`${ENGLISH}/PART-I_Language/Sentences_and_Transformations`],
-      allocationSource: "inferred",
-      children: [],
-    },
-    {
-      id: "bcs.english.language.words",
-      nameBn: "Words Vocabulary",
-      paths: [`${ENGLISH}/PART-I_Language/Words_Vocabulary`],
-      allocationSource: "inferred",
-      children: [],
+      id: "bcs.english.language",
+      nameBn: "PART-I: Language",
+      paths: [],
+      marks: 15,
+      allocationSource: "official",
+      children: [
+        inferred("bcs.english.language.parts_of_speech", "Parts of Speech", [`${ENGLISH}/PART-I_Language/Parts_of_Speech`]),
+        inferred("bcs.english.language.idioms", "Idioms and Phrases", [`${ENGLISH}/PART-I_Language/Idioms_and_Phrases`]),
+        inferred("bcs.english.language.corrections", "Corrections and Agreement", [`${ENGLISH}/PART-I_Language/Corrections`]),
+        inferred("bcs.english.language.sentences", "Sentences and Transformations", [`${ENGLISH}/PART-I_Language/Sentences_and_Transformations`]),
+        inferred("bcs.english.language.words", "Words and Vocabulary", [`${ENGLISH}/PART-I_Language/Words`]),
+        inferred("bcs.english.language.clauses", "Clauses", [`${ENGLISH}/PART-I_Language/Clauses`]),
+        inferred("bcs.english.language.composition", "Composition", [`${ENGLISH}/PART-I_Language/Composition`]),
+      ],
     },
     official(
       "bcs.english.literature",

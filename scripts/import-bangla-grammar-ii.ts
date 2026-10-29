@@ -1,22 +1,32 @@
 /**
  * scripts/import-bangla-grammar-ii.ts
  * ----------------------------------------------------------------------------
- * Imports the four Bangla Grammar .docx sources supplied under
- *   database/data/Bank/Bangla/Grammar/*.docx
+ * Imports the seven Bangla Grammar .docx sources supplied under
+ *   database/data/Bank/Bangla/Grammar/*.docx                    (wave 1: four)
+ *   database/data/ques/বাংলা ভাষা ও সাহিত্য/ভাষা/*.docx          (wave 2: three)
  * into BOTH ecosystems (BCS + Bangladesh Bank) so the Practice tab shows them
  * under the right grammar leaf.
  *
  * The .docx files are converted first (scripts/docx-bangla-grammar-to-txt.py)
  * to one-record-per-line .txt under …/Bangla/Grammar/txt/ — the exact shape
  * `parseLine` in import-bangla-grammar.ts already understands — so this script
- * never needs docx awareness. Conversion yields 738 records (138 + 300 + 200 +
- * 100) and every one of them is written.
+ * never needs docx awareness. The shared staging folder sits outside
+ * database/data/ques on purpose: seed-questions.ts walks that tree and would
+ * otherwise ingest the generated .txt a second time.
+ *
+ * Conversion yields 1,212 records (wave 1: 138 + 300 + 200 + 100; wave 2:
+ * 150 + 224 + 100). Three wave-2 records genuinely carry only three options in
+ * the .docx and are reported as unparsed rather than padded with invented
+ * content — everything else is written.
  *
  * Topic routing (leaf is relative to `<root>/ভাষা`; identical in both trees):
  *   Questions(Terminology).txt → অর্থতত্ত্ব_ও_শব্দভাণ্ডার/পরিভাষা
  *   Questions(বাগধারা).txt     → অর্থতত্ত্ব_ও_শব্দভাণ্ডার/বাগধারা_ও_প্রবাদ_প্রবচন
  *   Questions(পদ).txt          → শব্দতত্ত্ব/পদ_ও_পদ_পরিবর্তন
  *   Questions(বাচ্য).txt       → বাক্যতত্ত্ব/বাচ্য
+ *   Questions(ণ-ত্ব ও ষ-ত্ব বিধান).txt → ধ্বনিতত্ত্ব/ণ-ত্ব_ও_ষ-ত্ব_বিধি
+ *   Questions(বিপরীত শব্দ).txt          → অর্থতত্ত্ব_ও_শব্দভাণ্ডার/বিপরীতার্থক_শব্দ
+ *   Questions(বিরাম চিহ্ন বা যতি চিহ্ন).txt → বাক্যতত্ত্ব/ছেদচিহ্ন_বা_বিরামচিহ্ন
  *
  * ── Record repairs (strict-first; each logged, none fire on a clean record) ──
  * The strict parser resolves 731/738 as-is. The remaining 7 are source quirks:
@@ -31,6 +41,12 @@
  *                 inside option ক makes the option longer than the answer
  *                 text. (The same question recurs in the document as record
  *                 ২৭১ without the marker, so the content is unambiguous.)
+ *   latin-marker  “খ. প্রত্যয়  g. বিসর্জন” — an ASCII “g” where the গ marker
+ *                 belongs (wave 2, record ৯০). Only the marker is rewritten.
+ *   dup-marker    “ক. জীর্ণ খ. … ঘ. দুর্বল ঘ. ভঙ্গুর” — the third marker
+ *                 repeats ঘ instead of continuing to গ (wave 2, record ১৩১).
+ *                 Only the repeated marker is rewritten; option text is
+ *                 untouched.
  *   gloss-answer  “Ans. ক. সত্যায়িত / প্রত্যয়িত” — the answer words gloss the
  *                 keyed option instead of restating it exactly. Resolved off
  *                 the answer LETTER (never guessed from prose), explanation
@@ -59,12 +75,15 @@
  *      (a row parked unclassified by seed-questions.ts — skipping would leave
  *      the MCQ out of the very Practice section it belongs to, and copying it
  *      would duplicate it); anywhere else: SKIP and report the path.
- *   2. same stem already at this leaf (key RECOMPUTED as sourceKey(subject,
- *      path, question) — the stored column is ignored because seeded rows
- *      carry keys like "sqlclone:64039" that never match): UPDATE that row,
- *      unless its current content already matches another record of this file
- *      (then a second record with the same stem would only clobber good data —
- *      the (subjectId, sourceKey) uniqueness allows one row per stem anyway).
+ *   2. same question + option set already at this leaf (key RECOMPUTED as
+ *      sourceKey(subject, path, question, options) — the stored column is
+ *      ignored because seeded rows carry keys like "sqlclone:64039" that never
+ *      match): UPDATE that row, unless its current content already matches
+ *      another record of this file (then a second record with the same identity
+ *      would only clobber good data — the (subjectId, sourceKey) uniqueness
+ *      allows one row per identity anyway). The option set is part of the
+ *      identity because the ণ-ত্ব source repeats one stem 80 times with
+ *      different options; question-only keys would collapse 150 records to 54.
  *   3. otherwise CREATE, keyed so a repeated record in the source file can
  *      never produce a second row.
  * A record whose explanation is empty never erases an existing explanation.
@@ -89,15 +108,22 @@ const ANSWER_MARK = /(উত্তর\s*:|Ans\.\s*|Answer\s*:)/i;
 const EXPLANATION_MARK = /ব্যাখ্যা\s*:|Explanation\s*:/i;
 
 /**
- * Identity key for "is this the same stem at this path?", used for the
+ * Identity key for "is this the same question at this path?", used for the
  * in-subject stem index. Normalizing here means two spellings of one question
  * (Unicode composition, stray spaces) resolve to the same row instead of
  * quietly earning a second copy — the unique index itself only ever sees the
  * stored, un-normalized sourceKey.
+ *
+ * The option set is part of the identity on purpose. Several Bangla Grammar
+ * sources legitimately repeat one stem with different options (the ণ-ত্ব set
+ * has 150 records but only 54 distinct "কোন বানানটি শুদ্ধ?" stems). Keying on
+ * the question alone would collapse them into one row; keying on
+ * question + options keeps every distinct MCQ while still making a rerun
+ * update the same row. Precedent: import-grammar-english.ts does the same.
  */
-function stemKey(subjectId: number, path: string, question: string): string {
-  const stem = question.normalize("NFC").replace(/\s+/g, " ").trim();
-  return sourceKey(subjectId, path, stem);
+function stemKey(subjectId: number, path: string, question: string, options: readonly string[]): string {
+  const norm = (s: string) => s.normalize("NFC").replace(/\s+/g, " ").trim();
+  return sourceKey(subjectId, path, norm(question), options.map(norm).join(" | "));
 }
 
 type Parsed = {
@@ -107,7 +133,7 @@ type Parsed = {
   explanation: string;
 };
 
-type Repair = "colon" | "stray-number" | "gloss-answer" | "letter-keyed";
+type Repair = "colon" | "stray-number" | "gloss-answer" | "letter-keyed" | "latin-marker" | "dup-marker";
 
 type FileRoute = {
   file: string;
@@ -122,6 +148,10 @@ const ROUTES: FileRoute[] = [
   { file: "Questions(বাগধারা).txt", label: "বাগধারা", leaf: "অর্থতত্ত্ব_ও_শব্দভাণ্ডার/বাগধারা_ও_প্রবাদ_প্রবচন", subtopic: "বাগধারা" },
   { file: "Questions(পদ).txt", label: "পদ", leaf: "শব্দতত্ত্ব/পদ_ও_পদ_পরিবর্তন", subtopic: "পদ" },
   { file: "Questions(বাচ্য).txt", label: "বাচ্য", leaf: "বাক্যতত্ত্ব/বাচ্য", subtopic: "বাচ্য" },
+  // Wave 2 — the three .docx sets supplied under …/ques/বাংলা ভাষা ও সাহিত্য/ভাষা.
+  { file: "Questions(ণ-ত্ব ও ষ-ত্ব বিধান).txt", label: "ণ-ত্ব ও ষ-ত্ব বিধান", leaf: "ধ্বনিতত্ত্ব/ণ-ত্ব_ও_ষ-ত্ব_বিধি", subtopic: "ণ-ত্ব_ও_ষ-ত্ব_বিধি" },
+  { file: "Questions(বিপরীত শব্দ).txt", label: "বিপরীত শব্দ", leaf: "অর্থতত্ত্ব_ও_শব্দভাণ্ডার/বিপরীতার্থক_শব্দ", subtopic: "বিপরীতার্থক_শব্দ" },
+  { file: "Questions(বিরাম চিহ্ন বা যতি চিহ্ন).txt", label: "বিরাম চিহ্ন বা যতি চিহ্ন", leaf: "বাক্যতত্ত্ব/ছেদচিহ্ন_বা_বিরামচিহ্ন", subtopic: "ছেদচিহ্ন_বা_বিরামচিহ্ন" },
 ];
 
 function isParsed(p: Parsed | { skip: string } | null): p is Parsed {
@@ -154,6 +184,38 @@ function repairStrayOptionNumber(line: string): string | null {
   if (!m) return null;
   const fixed = line.replace(m[0], m[1]);
   return fixed === line ? null : fixed;
+}
+
+// ── Repair: an ASCII g standing in for the Bangla option marker গ ───────────
+// Source: Questions(বিপরীত শব্দ).docx ৯০ — "খ. প্রত্যয়  g. বিসর্জন". Only the
+// marker letter is rewritten; option text stays byte-identical.
+function repairLatinOptionMarker(line: string): string | null {
+  if (!/[কখগঘ]\s*[.)]\s+/.test(line)) return null; // not a Bangla option list
+  const m = line.match(/(^|\s)[gG]\s*[.)]\s+/);
+  if (!m || m.index === undefined) return null;
+  const at = m.index + m[1].length;
+  return `${line.slice(0, at)}গ${line.slice(at + 1)}`;
+}
+
+// ── Repair: a duplicated option marker that skips a letter ──────────────────
+// Source: Questions(বিপরীত শব্দ).docx ১৩১ — "ক. জীর্ণ খ. … ঘ. দুর্বল ঘ. ভঙ্গুর":
+// the third marker repeats ঘ where the sequence must be ক খ গ ঘ. Only the
+// repeated marker is rewritten, and only when that produces a strict parse.
+function repairMisorderedOptionMarker(line: string): string | null {
+  const expected = ["ক", "খ", "গ", "ঘ"] as const;
+  const re = /(^|\s)([কখগঘ])\s*[.)]\s+/g;
+  const marks: Array<{ letter: string; index: number }> = [];
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(line)) !== null) {
+    marks.push({ letter: m[2], index: m.index + m[1].length });
+  }
+  if (marks.length !== expected.length) return null;
+  const bad = marks.findIndex((mk, i) => mk.letter !== expected[i]);
+  if (bad < 0) return null;
+  // A repeated letter is a marker typo; a one-off wrong letter is not ours.
+  if (marks.filter((mk) => mk.letter === marks[bad].letter).length < 2) return null;
+  const { index } = marks[bad];
+  return `${line.slice(0, index)}${expected[bad]}${line.slice(index + 1)}`;
 }
 
 // ── Repairs: resolve the answer off its LETTER, keeping the explanation ─────
@@ -207,6 +269,18 @@ export function parseDocxRecord(
   if (stray) {
     const p = parseLine(stray);
     if (isParsed(p)) return { parsed: p, repair: "stray-number" };
+  }
+
+  const latin = repairLatinOptionMarker(line);
+  if (latin) {
+    const p = parseLine(latin);
+    if (isParsed(p)) return { parsed: p, repair: "latin-marker" };
+  }
+
+  const misordered = repairMisorderedOptionMarker(line);
+  if (misordered) {
+    const p = parseLine(misordered);
+    if (isParsed(p)) return { parsed: p, repair: "dup-marker" };
   }
 
   const gloss = repairAnswerByLetter(line, { requireContainment: true });
@@ -367,10 +441,12 @@ export async function importBanglaGrammarDocx(
   for (const t of targets) {
     const rows = await prisma.question.findMany({
       where: { subjectId: t.subject.id },
-      select: { id: true, path: true, question: true },
+      select: { id: true, path: true, question: true, options: true },
     });
     const m = new Map<string, number>();
-    for (const r of rows) m.set(stemKey(t.subject.id, r.path, r.question), r.id);
+    for (const r of rows) {
+      m.set(stemKey(t.subject.id, r.path, r.question, r.options as string[]), r.id);
+    }
     stemIndex.set(t.subject.id, m);
   }
 
@@ -492,7 +568,7 @@ export async function importBanglaGrammarDocx(
         // 2. Same stem already at this leaf → refresh it in place, unless its
         //    current content is already carried by another record of this file
         //    (a second record with the same stem could only clobber good data).
-        const stemId = stemIndex.get(t.subject.id)?.get(stemKey(t.subject.id, path, q.question));
+        const stemId = stemIndex.get(t.subject.id)?.get(stemKey(t.subject.id, path, q.question, q.options));
         if (stemId !== undefined) {
           if (queuedUpdateIds.has(stemId)) {
             stats.skipped += 1;
@@ -520,14 +596,14 @@ export async function importBanglaGrammarDocx(
         // 3. Genuinely new content (a repeated record of this file shares the
         //    normalized stem key, so it is caught here rather than earning a
         //    twin row).
-        const createKey = stemKey(t.subject.id, path, q.question);
+        const createKey = stemKey(t.subject.id, path, q.question, q.options);
         if (pendingCreates.has(createKey)) {
           stats.skipped += 1;
           report.skipped += 1;
           continue;
         }
         pendingCreates.add(createKey);
-        const computedSourceKey = sourceKey(t.subject.id, path, q.question);
+        const computedSourceKey = createKey;
         sigToRows.set(`${t.eco.id}|${sig}`, [{ id: -1, path, subjectId: t.subject.id }]);
         ops.push({
           kind: "create",

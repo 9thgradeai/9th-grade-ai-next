@@ -1,18 +1,29 @@
 #!/usr/bin/env python3
-"""Convert the four Bangla Grammar .docx sources to one-MCQ-per-line .txt records.
+"""Convert seven Bangla Grammar .docx sources to one-MCQ-per-line .txt records.
 
-Source : database/data/Bank/Bangla/Grammar/Questions(<topic>).docx
-Output : database/data/Bank/Bangla/Grammar/txt/Questions(<topic>).txt
+Sources:
+  database/data/Bank/Bangla/Grammar/Questions(<topic>).docx
+  database/data/ques/বাংলা ভাষা ও সাহিত্য/ভাষা/Questions(<topic>).docx
+Output:
+  database/data/Bank/Bangla/Grammar/txt/Questions(<topic>).txt
+
+Every source writes into the one staging folder the importer reads, including
+the three supplied under `ques/.../ভাষা`: they deliberately do NOT get a `txt/`
+beside themselves because `scripts/seed-questions.ts` walks `database/data/ques`
+recursively and would ingest the generated files a second time. Nothing walks
+the Bank staging folder, so these files stay inert except to the importer.
 
 The .txt shape is exactly what scripts/import-bangla-grammar.ts parses
 (strict `parseLine`), so the importer needs no docx awareness. stdlib only
 (zipfile + ElementTree), mirroring scripts/docx-grammar-to-md.py.
 
-Layouts handled (all four files use one, or a mix of both):
+Layouts handled (every file uses one, or a mix of both):
 
-  A) single paragraph per MCQ   — Terminology, বাচ্য, 299/300 of বাগধারা
+  A) single paragraph per MCQ   — Terminology, বাচ্য, 299/300 of বাগধারা,
+                                  বিপরীত শব্দ, বিরাম চিহ্ন
        NN. <question> ক. <o1> খ. <o2> গ. <o3> ঘ. <o4> Ans./উত্তর: <key> ব্যাখ্যা: <exp>
-  B) one paragraph per field    — all 200 of পদ, the split বাগধারা row
+  B) one paragraph per field    — all 200 of পদ, the split বাগধারা row,
+                                  ণ-ত্ব ও ষ-ত্ব বিধান
        NN. <question>
        ক. <o1> খ. <o2> গ. <o3> ঘ. <o4>
        উত্তর: <key>
@@ -33,12 +44,16 @@ from pathlib import Path
 
 W = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
 SRC = Path("database/data/Bank/Bangla/Grammar")
+VASHA = Path("database/data/ques/বাংলা ভাষা ও সাহিত্য/ভাষা")
 OUT = SRC / "txt"
-FILES = [
-    "Questions(Terminology).docx",
-    "Questions(বাগধারা).docx",
-    "Questions(পদ).docx",
-    "Questions(বাচ্য).docx",
+SOURCES = [
+    (SRC, "Questions(Terminology).docx"),
+    (SRC, "Questions(বাগধারা).docx"),
+    (SRC, "Questions(পদ).docx"),
+    (SRC, "Questions(বাচ্য).docx"),
+    (VASHA, "Questions(ণ-ত্ব ও ষ-ত্ব বিধান).docx"),
+    (VASHA, "Questions(বিপরীত শব্দ).docx"),
+    (VASHA, "Questions(বিরাম চিহ্ন বা যতি চিহ্ন).docx"),
 ]
 
 NUMBERED = re.compile(r"^\s*[০-৯0-9]+\s*[.)]")
@@ -90,10 +105,14 @@ def assemble(paras: list[str]) -> tuple[list[str], list[str]]:
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     total = 0
-    for name in FILES:
-        path = SRC / name
+    seen: set[str] = set()
+    for src, name in SOURCES:
+        path = src / name
         if not path.is_file():
             raise SystemExit(f"missing source: {path}")
+        if path.stem in seen:
+            raise SystemExit(f"duplicate target name: {path.stem}.txt")
+        seen.add(path.stem)
         records, dropped = assemble(paragraphs(path))
         target = OUT / (path.stem + ".txt")
         target.write_text("\n".join(records) + "\n", encoding="utf-8")

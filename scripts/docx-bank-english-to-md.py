@@ -41,6 +41,8 @@ FILES = [
     ("Questions(Idioms&Phrases).docx", "Idioms & Phrases", "multi"),
     ("Questions(Synonym-Antonym).docx", "Synonym-Antonym", "single"),
     ("Questions(Voice & Narration Transformation,).docx", "Voice & Narration", "multi"),
+    ("Questions(Right Form of Verbs).docx", "Right Form of Verbs", "single"),
+    ("Questions(Subject-Verb Agreement).docx", "Subject-Verb Agreement", "single"),
 ]
 
 NUM_RE = re.compile(r"^\d+\.\s*")

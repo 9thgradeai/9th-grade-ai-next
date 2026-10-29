@@ -84,6 +84,39 @@ describe("parseDocxRecord (docx-derived bangla grammar records)", () => {
     expect(parsed.correctAnswer).toBe("ক ও খ উভয়ই");
   });
 
+  // Source: Questions(বিপরীত শব্দ).docx ৯০ — an ASCII "g" stands in for the
+  // Bangla option marker গ.
+  it("repairs an ASCII g option marker", () => {
+    const line =
+      "৯০. 'আগমনী' শব্দের বিপরীত শব্দ কোনটি? ক. বিদায়ী খ. প্রত্যয়  g. বিসর্জন ঘ. প্রাক্কনী উত্তর: ক ব্যাখ্যা: আগমন সূচক হলো 'আগমনী', আর চলে যাওয়ার সূচক হলো 'বিদায়ী'।";
+    const { parsed, repair } = asRec(parseDocxRecord(line));
+    expect(repair).toBe("latin-marker");
+    expect(parsed.options).toEqual(["বিদায়ী", "প্রত্যয়", "বিসর্জন", "প্রাক্কনী"]);
+    expect(parsed.correctAnswer).toBe("বিদায়ী");
+    expect(parsed.explanation).toContain("আগমন সূচক");
+  });
+
+  // Source: Questions(বিপরীত শব্দ).docx ১৩১ — the third marker repeats ঘ.
+  it("repairs a duplicated option marker that skips a letter", () => {
+    const line =
+      "১৩১. 'পুষ্ট' শব্দের বিপরীত শব্দ কোনটি? ক. জীর্ণ খ. ক্ষীণ/ কৃশ ঘ. দুর্বল ঘ. ভঙ্গুর উত্তর: খ ব্যাখ্যা: শরীরিকভাবে সুগঠিত হওয়া 'পুষ্ট', আর শুকিয়ে যাওয়া বা কৃশ হওয়া হলো 'ক্ষীণ'।";
+    const { parsed, repair } = asRec(parseDocxRecord(line));
+    expect(repair).toBe("dup-marker");
+    expect(parsed.options).toEqual(["জীর্ণ", "ক্ষীণ/ কৃশ", "দুর্বল", "ভঙ্গুর"]);
+    expect(parsed.correctAnswer).toBe("ক্ষীণ/ কৃশ");
+    expect(parsed.explanation).toContain("সুগঠিত");
+  });
+
+  // Source: Questions(বিপরীত শব্দ).docx ৬৪ / ৬৯ — the .docx genuinely has
+  // three options. padding a fourth would invent content, so the record stays
+  // unparsed and the importer reports it.
+  it("does not invent a fourth option for a three-option source record", () => {
+    const line =
+      "৬৪. 'হর্ষ'-এর বিপরীতার্থক শব্দ কোনটি? ক. আনন্দ খ. কষ্ট গ. বিষাদ উত্তর: গ ব্যাখ্যা: 'হর্ষ' অর্থ আনন্দ বা উল্লাস, এর সঠিক বিপরীতার্থক শব্দ 'বিষাদ' (দুঃখ)।";
+    const r = parseDocxRecord(line);
+    expect(r === null || (r !== null && "skip" in r)).toBe(true);
+  });
+
   it("returns null or a skip for a line that is not a record", () => {
     const r = parseDocxRecord("শব্দতত্ত্ব");
     expect(r === null || (r !== null && "skip" in r)).toBe(true);

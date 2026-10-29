@@ -105,10 +105,11 @@ Bank_Grade9_Question_Bank_Detailed/
 │   │   │   ├── Active_and_Passive_Voice/
 │   │   │   ├── Direct_and_Indirect_Narration/
 │   │   │   └── Degrees_of_Comparison/
-│   │   └── Words_Vocabulary/
-│   │       ├── Synonyms_and_Antonyms/
-│   │       ├── Spellings/
-│   │       └── One-Word_Substitutions/
+│   │   ├── Words_Vocabulary/
+│   │   │   ├── Synonyms_and_Antonyms/
+│   │   │   ├── Spellings/
+│   │   │   └── One-Word_Substitutions/
+│   │   └── Right_Form_of_Verbs/
 │   └── PART-II_Literature/
 │       ├── Major_Shakespearean_and_Romantic_Quotes/
 │       └── Literary_Terms_and_Movements/

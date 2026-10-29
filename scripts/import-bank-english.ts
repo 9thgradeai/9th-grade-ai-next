@@ -68,6 +68,11 @@ const TOPIC_ROUTE: Record<string, { path: string; topic: string; subtopic: strin
     topic: "Active_and_Passive_Voice",
     subtopic: "Voice & Narration",
   },
+  "subject-verb-agreement": {
+    path: "02_English_Language_and_Literature/PART-I_Language/Corrections_and_Agreement/Subject-Verb_Agreement",
+    topic: "Subject-Verb_Agreement",
+    subtopic: "Subject-Verb Agreement",
+  },
 };
 
 /** Error-detection questions split between the two Corrections_and_Agreement
